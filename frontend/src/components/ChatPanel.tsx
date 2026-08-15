@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
   Check,
@@ -23,13 +23,17 @@ import {
   fetchGuestDataSummary,
   migrateGuestData,
   getUserId,
+  fetchProfileSuggestions,
+  resolveProfileSuggestion,
   type AuthSession,
+  type ProfileSuggestion,
 } from "../api";
 import type { ChatMessage, TurnEffect } from "../types";
 import { trackEvent } from "../analytics";
 import { saveTurnMeta, withStoredTurnMeta } from "../turnMetadata";
 import { openAccountSettings } from "./accountSettings";
 import BrandIdentity from "./BrandIdentity";
+import ProfileSuggestionCard from "./ProfileSuggestionCard";
 import TripInputCard, { formatTripInputResponse } from "./TripInputCard";
 import {
   elapsedLabel,
@@ -156,6 +160,7 @@ export default function ChatPanel({
   const copyTimerRef = useRef<number | null>(null);
   const onSendStartRef = useRef<() => void>(() => setInput(""));
   const [copiedMessage, setCopiedMessage] = useState<number | null>(null);
+  const [profileSuggestions, setProfileSuggestions] = useState<ProfileSuggestion[]>([]);
   const {
     activeTool,
     busy,
@@ -183,6 +188,28 @@ export default function ChatPanel({
     handledAssistantRequestRef.current = assistantRequest.id;
     sendRequestedMessageRef.current(assistantRequest.message, assistantRequest.proposalOnly);
   }, [assistantRequest, busy, transcriptReady]);
+
+  // Facts the planner noticed this turn are only offered once the turn settles,
+  // so a confirm-or-save card never competes with a streaming reply.
+  useEffect(() => {
+    if (busy || !transcriptReady) return;
+    let cancelled = false;
+    void fetchProfileSuggestions()
+      .then((items) => {
+        if (!cancelled) setProfileSuggestions(items);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [busy, transcriptReady]);
+
+  const resolveSuggestion = useCallback((id: string, action: "save" | "dismiss") => {
+    setProfileSuggestions((current) => current.filter((item) => item.id !== id));
+    void resolveProfileSuggestion(id, action)
+      .then(setProfileSuggestions)
+      .catch(() => undefined);
+  }, []);
 
   useEffect(() => () => {
     if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current);
@@ -754,6 +781,15 @@ export default function ChatPanel({
             disabled={busy}
             onSubmit={(values) => void sendMessage(formatTripInputResponse(tripInputRequest, values))}
             onSkip={() => void sendMessage("Use the prefilled defaults and continue.")}
+          />
+        )}
+        {!tripInputRequest && profileSuggestions.length > 0 && (
+          <ProfileSuggestionCard
+            key={profileSuggestions[0].id}
+            suggestion={profileSuggestions[0]}
+            remaining={profileSuggestions.length}
+            busy={busy}
+            onResolve={resolveSuggestion}
           />
         )}
         <div ref={endRef} />

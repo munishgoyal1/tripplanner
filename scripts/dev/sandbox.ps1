@@ -13,6 +13,7 @@
 .EXAMPLE
     .\scripts\dev\sandbox.ps1 -New lab16-chatdock "Assistant dock rework" -LabId chat-agent-workspace
     .\scripts\dev\sandbox.ps1 -Run 2
+    .\scripts\dev\sandbox.ps1 -RunAll
     .\scripts\dev\sandbox.ps1 -Serve lab16-chatdock -IterationSummary "Adjusted the dock and passed focused UI checks."
     .\scripts\dev\sandbox.ps1 -Stop 2
     .\scripts\dev\sandbox.ps1 -Update 2
@@ -24,7 +25,11 @@
 
 .NOTES
   Every verb except -New takes the number, the full name, or the short name
-  without its number prefix.
+  without its number prefix. -Serve, -Stop, -Update, -Promote, -Merge, and
+  -Discard also accept a comma-separated list (e.g. -Promote 4,6) or the
+  literal "all" for every registered sandbox, to run that verb across several
+  sandboxes in one call; each one still goes through that verb's normal gates
+  and gets its own transcript, and one failure does not stop the rest.
 
   -Run holds the terminal; -Serve starts the same stack detached and waits for
   the endpoints to answer, so a sandbox is verifiable the moment it is created.
@@ -35,6 +40,11 @@
     the endpoints answer, so an iteration loop ends at -Promote with no separate step.
     Pass -IterationSummary to either -Serve or -Promote to choose that wording instead
     of the commit subjects. Verified promotion appends Completed before sandbox cleanup.
+
+    Every recorded Lab version note is stamped with the lane, its branch, the commit,
+    the UTC recording time, and the agent chat session title. Supply that title with
+    -SessionTitle or the TRIPPLANNER_AGENT_SESSION environment variable; an omitted
+    title records "(unlabelled)" rather than guessing.
 
     -New and -Update fetch the latest origin/master before branching or merging, so
     each sandbox starts from the current canonical baseline. Pass -NoSync to skip
@@ -84,6 +94,9 @@ param(
     [Parameter(Mandatory = $true, ParameterSetName = "Run")]
     [string]$Run,
 
+    [Parameter(Mandatory = $true, ParameterSetName = "RunAll")]
+    [switch]$RunAll,
+
     [Parameter(Mandatory = $true, ParameterSetName = "Serve")]
     [string]$Serve,
 
@@ -132,6 +145,10 @@ param(
     [Parameter(ParameterSetName = "Serve")]
     [Parameter(ParameterSetName = "Promote")]
     [string]$IterationSummary = "",
+
+    [Parameter(ParameterSetName = "Serve")]
+    [Parameter(ParameterSetName = "Promote")]
+    [string]$SessionTitle = "",
 
     [Parameter(ParameterSetName = "New")]
     [switch]$NoOpen,
@@ -331,6 +348,76 @@ function Get-SandboxOutstandingWork {
     return $outstanding
 }
 
+function Commit-SandboxDebugStoreArtifacts {
+    param(
+        [Parameter(Mandatory = $true)][object]$Entry,
+        [Parameter(Mandatory = $true)][string]$Base
+    )
+
+    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("fetch", "-q", "origin", $Base) | Out-Null
+    $baseFiles = @(Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+        "ls-tree", "-r", "--name-only", "origin/$Base", "--", "debug-store"
+    ) | Where-Object { $_ -match '\.json$' })
+    $baseRecords = @{}
+    foreach ($baseFile in $baseFiles) {
+        try {
+            $record = (Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+                "show", "origin/$Base`:$baseFile"
+            ) | Out-String) | ConvertFrom-Json
+            $revisions = @($record.revisions)
+            $latestHash = if ($revisions.Count -gt 0) { [string]$revisions[-1].content_hash } else { "" }
+            $key = "$( $record.trip_id )|$( $record.created_date )"
+            if ($key -and $latestHash) { $baseRecords[$key] = $latestHash }
+        } catch {
+            Write-Warning "Could not inspect base debug archive '$baseFile'; leaving the local archive untouched."
+        }
+    }
+
+    $status = @(Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+        "status", "--porcelain=v1", "--untracked-files=all", "--", "debug-store"
+    ))
+    $statusByPath = @{}
+    foreach ($line in $status) {
+        if ($line.Length -ge 4) { $statusByPath[$line.Substring(3).Trim()] = $line.Substring(0, 2) }
+    }
+    $jsonPaths = @($status | ForEach-Object {
+        if ($_.Length -lt 4) { return }
+        $path = $_.Substring(3).Trim()
+        if ($path -match '\.json$') { $path }
+    } | Where-Object { $_ })
+    if ($jsonPaths.Count -eq 0) { return $false }
+
+    $commitPaths = @()
+    foreach ($jsonPath in $jsonPaths) {
+        try {
+            $record = Get-Content -Raw -Path (Join-Path $Entry.worktree $jsonPath) | ConvertFrom-Json
+            $revisions = @($record.revisions)
+            $latestHash = if ($revisions.Count -gt 0) { [string]$revisions[-1].content_hash } else { "" }
+            $key = "$( $record.trip_id )|$( $record.created_date )"
+            if ($baseRecords.ContainsKey($key) -and $baseRecords[$key] -eq $latestHash) {
+                if ($statusByPath[$jsonPath] -eq "??") {
+                    Remove-Item -LiteralPath (Join-Path $Entry.worktree $jsonPath) -Force
+                } else {
+                    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("restore", "--", $jsonPath) | Out-Null
+                }
+                Write-Host "[debug]   dropped unchanged archive $jsonPath (already in origin/$Base)" -ForegroundColor DarkGray
+            } else {
+                $commitPaths += $jsonPath
+            }
+        } catch {
+            $commitPaths += $jsonPath
+        }
+    }
+    if ($commitPaths.Count -eq 0) { return $false }
+
+    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments (@("add", "--") + $commitPaths) | Out-Null
+    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments (
+        @("commit", "-m", "Capture debug-store trip archives", "--") + $commitPaths
+    ) | Out-Null
+    Write-Host "[debug]   committed $($commitPaths.Count) generated debug-store JSON archive(s)" -ForegroundColor DarkGray
+    return $true
+}
+
 function Save-SandboxPromotion {
     param(
         [Parameter(Mandatory = $true)][object]$Entry,
@@ -390,6 +477,16 @@ function Save-SandboxLabIteration {
     Save-Registry -Entries $entries
 }
 
+function Get-AgentSessionTitle {
+    # The agent chat session has no machine-readable name, so the caller supplies it via
+    # -SessionTitle or TRIPPLANNER_AGENT_SESSION; an unlabelled run stays honest about it.
+    $title = if ($script:SessionTitle) { $script:SessionTitle } else { $env:TRIPPLANNER_AGENT_SESSION }
+    $title = "$title".Trim() -replace "\s+", " "
+    if (-not $title) { return "(unlabelled)" }
+    if ($title.Length -gt 80) { return $title.Substring(0, 77) + "..." }
+    return $title
+}
+
 function Write-SandboxLabVersion {
     param(
         [Parameter(Mandatory = $true)][object]$Entry,
@@ -423,7 +520,13 @@ function Write-SandboxLabVersion {
             throw "Sandbox '$($Entry.slug)' HEAD is not descended from its Lab baseline or last recorded iteration."
         }
     }
-    $evidence = "$($Summary.Trim())`nSandbox: $($Entry.slug); commit: $($commit.Substring(0, 12))"
+    $marker = @(
+        "Lane: $($Entry.slug) ($($Entry.branch))"
+        "Commit: $($commit.Substring(0, 12))"
+        "Recorded: $((Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm')) UTC"
+        "Session: $(Get-AgentSessionTitle)"
+    ) -join "; "
+    $evidence = "$($Summary.Trim())`n$marker"
     # The recorder defaults its store to the lane that launched this script, which wrote
     # sandbox records into whichever worktree happened to invoke it. An iteration belongs
     # to the sandbox branch so it travels with the PR; a completed record outlives the
@@ -1171,6 +1274,89 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     return
 }
 
+if ($PSCmdlet.ParameterSetName -eq "RunAll") {
+    $entries = @(Get-Registry | Sort-Object { [int]$_.slot })
+    if ($entries.Count -eq 0) {
+        throw "No sandboxes are registered."
+    }
+
+    $pwsh = (Get-Command pwsh -ErrorAction Stop).Source
+    $runLogRoot = Join-Path $primaryRoot "logs/sandbox/run-all"
+    New-Item -ItemType Directory -Path $runLogRoot -Force | Out-Null
+    Write-Host "Starting $($entries.Count) sandbox(es) in the background..." -ForegroundColor Cyan
+
+    foreach ($entry in $entries) {
+        $number = Get-SandboxNumber -Entry $entry
+        if (-not (Test-SandboxWorktree -Entry $entry)) {
+            Write-Warning "Skipping #$number $($entry.slug): worktree is missing or invalid."
+            continue
+        }
+        $logBase = Join-Path $runLogRoot $entry.slug
+        $child = Start-Process -FilePath $pwsh -WorkingDirectory $entry.worktree -PassThru `
+            -RedirectStandardOutput "$logBase.out.log" -RedirectStandardError "$logBase.err.log" `
+            -ArgumentList @("-NoProfile", "-File", $PSCommandPath, "-Run", "$number")
+        Write-Host ("[started] #{0} {1} (pid {2}) -> http://localhost:{3}" -f `
+                $number, $entry.slug, $child.Id, $entry.frontendPort) -ForegroundColor Green
+    }
+    Write-Host "Each sandbox writes output to $runLogRoot" -ForegroundColor DarkGray
+    return
+}
+
+# -Serve/-Stop/-Update/-Promote/-Merge/-Discard accept a comma-separated list
+# (e.g. -Promote 4,6) or the literal "all" for every registered sandbox, so a
+# batch needs one call instead of one per sandbox. Each target re-invokes this
+# same script with the other bound parameters forwarded, so it gets that
+# verb's normal gates and its own transcript. A failure is recorded but does
+# not stop the remaining sandboxes, except the last one still throws so a
+# calling script sees a non-zero exit.
+$multiTargetVerbs = @("Serve", "Stop", "Update", "Promote", "Merge", "Discard")
+$isAllTarget = $reference -and $reference.Trim().ToLowerInvariant() -eq "all"
+if ($multiTargetVerbs -contains $PSCmdlet.ParameterSetName -and ($reference -match "," -or $isAllTarget)) {
+    $verb = $PSCmdlet.ParameterSetName
+    $targets = if ($isAllTarget) {
+        $registered = @(Get-Registry | Sort-Object { [int]$_.slot })
+        if ($registered.Count -eq 0) {
+            throw "No sandboxes are registered."
+        }
+        @($registered | ForEach-Object { $_.slug })
+    } else {
+        @($reference -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    }
+    if ($targets.Count -eq 0) {
+        throw "No sandbox reference given for -$verb."
+    }
+    Write-Host "Running -$verb across $($targets.Count) sandbox(es): $($targets -join ', ')" -ForegroundColor Cyan
+    $failed = [System.Collections.Generic.List[string]]::new()
+    $pwshExe = (Get-Command pwsh -ErrorAction Stop).Source
+    foreach ($target in $targets) {
+        Write-Host ""
+        Write-Host "== -$verb $target ==" -ForegroundColor Green
+        $forward = [System.Collections.Generic.List[object]]::new()
+        $forward.Add("-$verb"); $forward.Add($target)
+        foreach ($key in $PSBoundParameters.Keys) {
+            if ($key -eq $verb) { continue }
+            $value = $PSBoundParameters[$key]
+            if ($value -is [switch]) {
+                if ($value.IsPresent) { $forward.Add("-$key") }
+            } else {
+                $forward.Add("-$key"); $forward.Add($value)
+            }
+        }
+        # A plain array splat on this script's own call operator binds each element
+        # positionally instead of re-parsing "-Verb" as a flag, so route through a
+        # fresh pwsh process instead, exactly as a caller on the command line would.
+        & $pwshExe -NoProfile -File $PSCommandPath @forward
+        if ($LASTEXITCODE -ne 0) {
+            $failed.Add($target)
+            Write-Warning "-$verb $target failed; continuing with the remaining sandboxes."
+        }
+    }
+    if ($failed.Count -gt 0) {
+        throw "-$verb failed for: $($failed -join ', ')."
+    }
+    return
+}
+
 $entry = Resolve-SandboxEntry -Reference $reference
 $LabId = $LabId.Trim()
 if ($LabId) {
@@ -1246,6 +1432,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
     }
     $wd = $entry.worktree
     $label = "Sandbox '$slug'"
+    Commit-SandboxDebugStoreArtifacts -Entry $entry -Base $BaseBranch | Out-Null
     $actualBranch = (Invoke-Git -WorkingDirectory $wd -Arguments @("branch", "--show-current")).Trim()
     if ($actualBranch -ne $entry.branch) {
         throw "$label must be on $($entry.branch), not $actualBranch."
@@ -1439,6 +1626,7 @@ if ($PSCmdlet.ParameterSetName -eq "Merge") {
         throw "Sandbox worktree is missing: $($entry.worktree)."
     }
     $gh = Get-RequiredGhCli -Verb "-Merge"
+    Commit-SandboxDebugStoreArtifacts -Entry $entry -Base $BaseBranch | Out-Null
     $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before merging."
@@ -1526,6 +1714,7 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
         throw "Sandbox worktree is missing: $($entry.worktree)."
     }
     $gh = Get-RequiredGhCli -Verb "-Promote"
+    Commit-SandboxDebugStoreArtifacts -Entry $entry -Base $BaseBranch | Out-Null
     $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before promoting."

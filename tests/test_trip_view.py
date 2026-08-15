@@ -388,15 +388,14 @@ def test_structured_target_uses_published_fx_provenance(monkeypatch) -> None:
     # Seeded relative to now: a fixed timestamp ages past the rate TTL and the
     # test then silently reaches the live rate service.
     fetched_at = datetime.now(UTC)
-    monkeypatch.setitem(
-        fx._cache,
+    fx._cache.set(
         "EUR",
         fx.RateTable(
             base="EUR",
             rates={"USD": 1.2},
             fetched_at=fetched_at,
             rate_date="2026-08-10",
-        ),
+        ).to_payload(),
     )
     budget = trip_view.build_budget(
         {

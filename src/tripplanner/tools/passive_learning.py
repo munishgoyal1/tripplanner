@@ -7,9 +7,8 @@ model is in use — those calls get dropped and the durable signal is lost.
 
 This module is the deterministic safety net: after each user turn it runs the
 same conservative LLM extractor used by the "About me" settings blurb over the
-latest user message and overlays whatever it finds ADDITIVELY. It never removes
-anything and dedupes against what's already saved (including anything the agent
-captured this same turn), so double-capture is harmless.
+latest user message. What it finds is queued as a pending *suggestion* rather
+than saved, so nothing becomes durable until the user confirms it in chat.
 
 Best-effort: every entry point swallows errors and never raises into the chat
 turn.
@@ -20,9 +19,7 @@ import logging
 import re
 from typing import Any
 
-from tripplanner.tools import about_me_extractor
-from tripplanner.tools.preferences_merge import additive_overlay_extracted
-from tripplanner.tools.user_preferences import mutate_preferences
+from tripplanner.tools import about_me_extractor, profile_suggestions
 
 log = logging.getLogger(__name__)
 
@@ -74,12 +71,13 @@ def has_learnable_signal(text: str) -> bool:
 
 
 def learn_from_message(text: str) -> list[str]:
-    """Extract durable prefs from one user message and overlay additively.
+    """Extract durable prefs from one user message and queue them for review.
 
-    Returns the list of top-level preference keys touched (empty on no-op or on
-    any failure). Trip-scoped one-offs ("just for this trip") are routed to the
-    active trip's constraints instead and return ``["trip_constraint"]`` (no
-    durable change). Never raises.
+    Returns the ids of the suggestions raised (empty on no-op or on any
+    failure). Nothing is written to the durable profile here: the user confirms
+    each suggestion through :mod:`tripplanner.tools.profile_suggestions`.
+    Trip-scoped one-offs ("just for this trip") are still routed straight to the
+    active trip's constraints and return ``["trip_constraint"]``. Never raises.
     """
     try:
         text = (text or "").strip()
@@ -100,34 +98,8 @@ def learn_from_message(text: str) -> list[str]:
         if not extracted and not learned:
             return []
 
-        touched: list[str] = []
-
-        def apply(prefs: dict[str, Any]) -> dict[str, Any]:
-            touched.clear()
-            if extracted:
-                prefs = additive_overlay_extracted(prefs, extracted)
-                touched.extend(extracted.keys())
-            if learned:
-                existing = list(prefs.get("learned_notes") or [])
-                seen = {
-                    (entry.get("note") or "").strip().lower()
-                    for entry in existing
-                    if isinstance(entry, dict)
-                }
-                for entry in learned:
-                    if not isinstance(entry, dict):
-                        continue
-                    note = (entry.get("note") or "").strip()
-                    if not note or note.lower() in seen:
-                        continue
-                    seen.add(note.lower())
-                    existing.append(entry)
-                prefs["learned_notes"] = existing
-                touched.append("learned_notes")
-            return prefs
-
-        mutate_preferences(apply)
-        return touched
+        records = profile_suggestions.build_suggestions(extracted, learned, text)
+        return [record["id"] for record in profile_suggestions.queue_suggestions(records)]
     except Exception as exc:  # never break the chat turn
         log.warning("passive learning sweep failed: %s", exc)
         return []

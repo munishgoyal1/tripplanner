@@ -21,6 +21,20 @@ Assistant build its first proposal.
 
 **Expected:**
 
+- The structured kickoff asks only for unresolved, materially useful facts. Explicit
+  prompt values and configured preferences are not repeated; schema defaults are not
+  treated as user choices. Budget level, trip style, and pace are included when
+  unresolved, while destination-only travel never invents an origin. The inline
+  controls preserve prefilled values, skip/not-answered behavior, and existing
+  structured labels.
+- Asking to plan a destination other than the active trip runs the kickoff before the
+  replacement trip is created, without requiring the words "new" or "another". A
+  follow-up naming the active destination, and a day trip elsewhere, still skip the
+  kickoff and leave the active trip in place.
+- No planning turn can create a trip before the kickoff has been presented, whatever
+  the wording. `create_trip_plan` is withheld until the user submits or skips the
+  request, so a phrasing the deterministic gates do not recognise cannot produce a
+  silent trip. Proposal-only reviews and non-planning turns are unaffected.
 - The Assistant batches hotel research for every overnight city in one parallel
   tool phase and accepts usable results when another city-specific query fails.
 - While planning is active, the top command bar beside the trip selector shows
@@ -148,6 +162,23 @@ or the separate Skip to the app action.
 
 - [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx)
 - [`frontend/src/components/AccountSettingsController.test.tsx`](../frontend/src/components/AccountSettingsController.test.tsx)
+
+### EB-PUBLIC-004 - Open the planner workspace directly
+
+**Trigger:** Navigate directly to `/planner`, the permanent address of the main
+app workspace.
+
+**Expected:** The workspace opens immediately for a signed-in visitor, without
+consulting the saved-trip list. A guest is held until the saved-trip list answers:
+a guest with at least one trip opens the workspace, and a guest with no trip yet
+sees the public landing experience first. If the lookup fails the workspace opens
+rather than blocking the visitor. Plan mine and Skip to the app keep the address
+on `/planner` instead of rewriting it to `/`. `/planner/` behaves the same as
+`/planner`.
+
+**Executable proof:**
+
+- [`frontend/src/publicEntry/Root.test.tsx`](../frontend/src/publicEntry/Root.test.tsx)
 
 ## Planner workspace
 

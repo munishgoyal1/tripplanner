@@ -17,7 +17,7 @@ from tripplanner.tools import amadeus_client
 from tripplanner.tools.flight_search import resolve_iata
 from tripplanner.tools.google_places import search_places_with_reviews
 
-_HOTEL_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache()
+_HOTEL_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache("hotel-search")
 
 
 def _format_hotels(data: dict) -> str:

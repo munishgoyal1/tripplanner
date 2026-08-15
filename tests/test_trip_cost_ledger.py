@@ -83,8 +83,11 @@ def test_an_item_with_no_price_is_unpriced_and_says_why():
 
 
 def test_two_currencies_are_converted_before_being_added():
-    fx._cache["USD"] = fx.RateTable(
-        base="USD", rates={"EUR": 0.9}, fetched_at=datetime.now(UTC), rate_date="2026-08-10"
+    fx._cache.set(
+        "USD",
+        fx.RateTable(
+            base="USD", rates={"EUR": 0.9}, fetched_at=datetime.now(UTC), rate_date="2026-08-10"
+        ).to_payload(),
     )
     plan = {
         "currency": "EUR",

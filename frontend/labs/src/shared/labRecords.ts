@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 26;
+export const LAST_ASSIGNED_LAB_NUMBER = 28;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -53,6 +53,32 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // Committed defaults are the fallback only. The tracked canonical selection store
 // in docs/ux-experiments overrides them at runtime and merges any newer local draft.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 28,
+    id: "profile-workspace",
+    title: "Room to edit your profile",
+    category: "Profile editing surface",
+    description: "Today every profile section shares one 384px drawer. Compare five roomier, consolidated homes for identity, travel preferences, travellers, documents, and privacy, with family promoted to its own destination.",
+    createdAt: "2026-08-15",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-15",
+    decision: "Open · Recommended starting point: B · Full profile page",
+    href: "./lab-28-profile-workspace.html",
+    icon: SlidersHorizontal,
+  },
+  {
+    labNumber: 27,
+    id: "chat-inputs",
+    title: "The agent asks, you tap",
+    category: "Agent-requested inputs",
+    description: "Compare five ways the planner can request a missing fact inside the conversation using tap-sized controls instead of forms, including an explicit destination-only answer for trips that genuinely have no origin.",
+    createdAt: "2026-08-14",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-14",
+    decision: "Open · Recommended starting point: A · Inline chips",
+    href: "./lab-27-chat-inputs.html",
+    icon: MessageCircle,
+  },
   {
     labNumber: 26,
     id: "family-details",

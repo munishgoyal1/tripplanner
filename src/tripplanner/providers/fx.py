@@ -14,12 +14,17 @@ from datetime import UTC, datetime, timedelta
 import httpx
 
 from tripplanner import http_client
+from tripplanner.caching import get_cache
 
 logger = logging.getLogger(__name__)
 
 _BASE_URL = "https://api.frankfurter.dev/v1"
 _RATE_TTL = timedelta(hours=12)
 _SOURCE = "European Central Bank via Frankfurter"
+# The entry outlives its freshness on purpose: a stale table is still a real
+# rate, and rate_table falls back to it when a refresh fails.
+_RETENTION_SECONDS = int(timedelta(days=7).total_seconds())
+_cache = get_cache("fx-rates", default_ttl_seconds=_RETENTION_SECONDS)
 
 
 @dataclass(frozen=True)
@@ -33,8 +38,25 @@ class RateTable:
     def is_fresh(self) -> bool:
         return datetime.now(UTC) - self.fetched_at < _RATE_TTL
 
+    def to_payload(self) -> dict:
+        return {
+            "base": self.base,
+            "rates": self.rates,
+            "fetched_at": self.fetched_at.isoformat(),
+            "rate_date": self.rate_date,
+        }
 
-_cache: dict[str, RateTable] = {}
+    @classmethod
+    def from_payload(cls, payload: dict) -> RateTable | None:
+        try:
+            return cls(
+                base=str(payload["base"]),
+                rates={str(k): float(v) for k, v in (payload["rates"] or {}).items()},
+                fetched_at=datetime.fromisoformat(str(payload["fetched_at"])),
+                rate_date=str(payload.get("rate_date") or ""),
+            )
+        except (KeyError, TypeError, ValueError):
+            return None
 
 
 @dataclass(frozen=True)
@@ -91,13 +113,14 @@ def rate_table(base: str) -> RateTable | None:
     base = (base or "").upper()
     if not base:
         return None
-    cached = _cache.get(base)
+    payload = _cache.get(base)
+    cached = RateTable.from_payload(payload) if isinstance(payload, dict) else None
     if cached and cached.is_fresh:
         return cached
     fetched = _fetch(base)
     if fetched is None:
         return cached
-    _cache[base] = fetched
+    _cache.set(base, fetched.to_payload())
     return fetched
 
 

@@ -24,7 +24,7 @@ from tripplanner.providers.openrouteservice import OpenRouteServiceError, OpenRo
 _ENDPOINT = "https://routes.googleapis.com/directions/v2:computeRoutes"
 
 _VALID_MODES = {"DRIVE", "WALK", "BICYCLE", "TRANSIT", "TWO_WHEELER"}
-_ORS_ROUTE_CACHE: ProviderTTLCache[dict] = ProviderTTLCache()
+_ORS_ROUTE_CACHE: ProviderTTLCache[dict] = ProviderTTLCache("ors-route")
 
 
 def is_configured() -> bool:

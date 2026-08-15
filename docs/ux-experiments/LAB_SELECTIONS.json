@@ -1,4 +1,102 @@
 {
+  "chat-inputs": {
+    "labId": "chat-inputs",
+    "labTitle": "The agent asks, you tap",
+    "selection": "chips",
+    "selectionLabel": "A · Inline chips",
+    "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+    "disposition": "implemented-review",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "chips",
+        "selectionLabel": "A · Inline chips",
+        "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+        "disposition": "ready",
+        "recordedAt": "2026-08-14T14:19:46.527Z"
+      },
+      {
+        "version": 2,
+        "selection": "chips",
+        "selectionLabel": "A · Inline chips",
+        "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+        "disposition": "implemented-review",
+        "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
+        "recordedAt": "2026-08-15T14:17:39.0984070Z"
+      }
+    ],
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "chips",
+        "selectionLabel": "A · Inline chips",
+        "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+        "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
+        "recordedAt": "2026-08-15T14:17:39.0984070Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-15T14:17:39.0984070Z",
+    "updatedAt": "2026-08-15T14:17:39.0984070Z",
+    "implementation": {
+      "handoffVersion": 2.0,
+      "selection": "chips",
+      "selectionLabel": "A · Inline chips",
+      "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+      "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
+      "recordedAt": "2026-08-15T14:17:39.0984070Z"
+    },
+    "implementationSummary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796."
+  },
+  "family-details": {
+    "labId": "family-details",
+    "labTitle": "A family profile that grows with the trip",
+    "selection": "chat",
+    "selectionLabel": "D · Chat-led profile",
+    "comment": "",
+    "disposition": "implemented-review",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "chat",
+        "selectionLabel": "D · Chat-led profile",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-08-14T14:29:55.901Z"
+      },
+      {
+        "version": 2,
+        "selection": "chat",
+        "selectionLabel": "D · Chat-led profile",
+        "comment": "",
+        "disposition": "implemented-review",
+        "summary": "Chat-led 'Learned while planning' suggestion card implemented in SettingsModal.tsx with explicit Remember/Not now confirmation; 345 frontend tests, TypeScript, and production build passed. PR #47; commit 214b5aa.",
+        "recordedAt": "2026-08-15T14:17:36.889925Z"
+      }
+    ],
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "chat",
+        "selectionLabel": "D · Chat-led profile",
+        "comment": "",
+        "summary": "Chat-led 'Learned while planning' suggestion card implemented in SettingsModal.tsx with explicit Remember/Not now confirmation; 345 frontend tests, TypeScript, and production build passed. PR #47; commit 214b5aa.",
+        "recordedAt": "2026-08-15T14:17:36.889925Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-15T14:17:36.889925Z",
+    "updatedAt": "2026-08-15T14:17:36.889925Z",
+    "implementation": {
+      "handoffVersion": 2.0,
+      "selection": "chat",
+      "selectionLabel": "D · Chat-led profile",
+      "comment": "",
+      "summary": "Chat-led 'Learned while planning' suggestion card implemented in SettingsModal.tsx with explicit Remember/Not now confirmation; 345 frontend tests, TypeScript, and production build passed. PR #47; commit 214b5aa.",
+      "recordedAt": "2026-08-15T14:17:36.889925Z"
+    },
+    "implementationSummary": "Chat-led 'Learned while planning' suggestion card implemented in SettingsModal.tsx with explicit Remember/Not now confirmation; 345 frontend tests, TypeScript, and production build passed. PR #47; commit 214b5aa."
+  },
   "live-plan": {
     "labId": "live-plan",
     "labTitle": "The live plan, and what the visitor is meant to do while it runs",
@@ -93,6 +191,64 @@
     "implementationSummary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
     "stateChangedAt": "2026-08-09T10:27:00Z",
     "updatedAt": "2026-08-09T10:27:00Z"
+  },
+  "localization": {
+    "labId": "localization",
+    "labTitle": "Regional content and currency",
+    "selection": "profile",
+    "selectionLabel": "C · Profile-first",
+    "comment": "",
+    "disposition": "completed",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-08-09T17:56:28.86Z"
+      },
+      {
+        "version": 2,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "disposition": "implemented-review",
+        "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
+        "recordedAt": "2026-08-10T07:47:19.9529480Z"
+      },
+      {
+        "version": 3,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "disposition": "completed",
+        "summary": "Promoted to master via PR #39 after validation and verification.\nSandbox: 1-lab24-real-preview; commit: 5cb31e0a2ba0",
+        "recordedAt": "2026-08-10T08:04:58.4184540Z"
+      }
+    ],
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
+        "recordedAt": "2026-08-10T07:47:19.9529480Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-10T08:04:58.418454Z",
+    "updatedAt": "2026-08-10T08:04:58.418454Z",
+    "implementation": {
+      "handoffVersion": 2.0,
+      "selection": "profile",
+      "selectionLabel": "C · Profile-first",
+      "comment": "",
+      "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
+      "recordedAt": "2026-08-10T07:47:19.952948Z"
+    },
+    "implementationSummary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867"
   },
   "product-themes": {
     "labId": "product-themes",
@@ -224,62 +380,53 @@
     },
     "implementationSummary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664"
   },
-  "localization": {
-    "labId": "localization",
-    "labTitle": "Regional content and currency",
-    "selection": "profile",
-    "selectionLabel": "C · Profile-first",
+  "profile-preferences": {
+    "labId": "profile-preferences",
+    "labTitle": "Profile, in choices you can see",
+    "selection": "shelf",
+    "selectionLabel": "A · Preference shelf",
     "comment": "",
-    "disposition": "completed",
+    "disposition": "implemented-review",
     "handoffs": [
       {
         "version": 1,
-        "selection": "profile",
-        "selectionLabel": "C · Profile-first",
+        "selection": "shelf",
+        "selectionLabel": "A · Preference shelf",
         "comment": "",
         "disposition": "ready",
-        "recordedAt": "2026-08-09T17:56:28.86Z"
+        "recordedAt": "2026-08-14T14:31:16.300Z"
       },
       {
-        "version": 2.0,
-        "selection": "profile",
-        "selectionLabel": "C · Profile-first",
+        "version": 2,
+        "selection": "shelf",
+        "selectionLabel": "A · Preference shelf",
         "comment": "",
         "disposition": "implemented-review",
-        "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
-        "recordedAt": "2026-08-10T07:47:19.9529480Z"
-      },
-      {
-        "version": 3.0,
-        "selection": "profile",
-        "selectionLabel": "C · Profile-first",
-        "comment": "",
-        "disposition": "completed",
-        "summary": "Promoted to master via PR #39 after validation and verification.\nSandbox: 1-lab24-real-preview; commit: 5cb31e0a2ba0",
-        "recordedAt": "2026-08-10T08:04:58.4184540Z"
+        "summary": "Preference shelf implemented in SettingsModal.tsx; 339 frontend tests, TypeScript, and production build passed. PR #46; commit d6f801b.",
+        "recordedAt": "2026-08-15T14:17:34.634298Z"
       }
     ],
     "implementations": [
       {
         "version": 1,
-        "handoffVersion": 2.0,
-        "selection": "profile",
-        "selectionLabel": "C · Profile-first",
+        "handoffVersion": 2,
+        "selection": "shelf",
+        "selectionLabel": "A · Preference shelf",
         "comment": "",
-        "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
-        "recordedAt": "2026-08-10T07:47:19.9529480Z"
+        "summary": "Preference shelf implemented in SettingsModal.tsx; 339 frontend tests, TypeScript, and production build passed. PR #46; commit d6f801b.",
+        "recordedAt": "2026-08-15T14:17:34.634298Z"
       }
     ],
-    "stateChangedAt": "2026-08-10T08:04:58.4184540Z",
-    "updatedAt": "2026-08-10T08:04:58.4184540Z",
+    "stateChangedAt": "2026-08-15T14:17:34.634298Z",
+    "updatedAt": "2026-08-15T14:17:34.634298Z",
     "implementation": {
       "handoffVersion": 2.0,
-      "selection": "profile",
-      "selectionLabel": "C · Profile-first",
+      "selection": "shelf",
+      "selectionLabel": "A · Preference shelf",
       "comment": "",
-      "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
-      "recordedAt": "2026-08-10T07:47:19.9529480Z"
+      "summary": "Preference shelf implemented in SettingsModal.tsx; 339 frontend tests, TypeScript, and production build passed. PR #46; commit d6f801b.",
+      "recordedAt": "2026-08-15T14:17:34.634298Z"
     },
-    "implementationSummary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867"
+    "implementationSummary": "Preference shelf implemented in SettingsModal.tsx; 339 frontend tests, TypeScript, and production build passed. PR #46; commit d6f801b."
   }
 }

@@ -111,6 +111,10 @@ class PrivacyActionRequest(BaseModel):
     action: Literal["delete_trip_history", "clear_all_data", "delete_account"]
     confirm_text: str = ""
 
+class ProfileSuggestionRequest(BaseModel):
+    user_id: str = "local"
+    action: Literal["save", "dismiss"]
+
 
 class DocumentExtractRequest(BaseModel):
     user_id: str = "local"

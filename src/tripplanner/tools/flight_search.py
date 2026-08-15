@@ -15,7 +15,7 @@ from tripplanner.providers.registry import get_flight_providers
 from tripplanner.providers.runtime import run_provider_chain
 from tripplanner.tools import amadeus_client
 
-_FLIGHT_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache()
+_FLIGHT_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache("flight-search")
 
 # Common city → IATA code mapping (India-focused + major international)
 _IATA_CODES: dict[str, str] = {

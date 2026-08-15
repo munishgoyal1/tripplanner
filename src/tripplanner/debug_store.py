@@ -305,10 +305,24 @@ def merge_revision(
     if not revisions or revisions[-1].get("content_hash") != fingerprint:
         revisions.append({"at": where["at"], "content_hash": fingerprint, "plan": plan})
     else:
-        revisions[-1] = {"at": where["at"], "content_hash": fingerprint, "plan": plan}
+        # A revision is stamped when it was produced, not when it was re-observed.
+        # Restamping an unchanged trip rewrote the file in every workspace that
+        # merely opened it, which collided across lanes on identical content.
+        revisions[-1] = {
+            "at": revisions[-1].get("at") or where["at"],
+            "content_hash": fingerprint,
+            "plan": plan,
+        }
     record["revisions"] = revisions[-MAX_REVISIONS:]
     if bundle is not None:
+        previous = record.get("bundle")
         record["bundle"] = bundle
+        if isinstance(previous, dict) and previous.get("captured_at"):
+            unchanged = {k: v for k, v in bundle.items() if k != "captured_at"} == {
+                k: v for k, v in previous.items() if k != "captured_at"
+            }
+            if unchanged:
+                record["bundle"] = {**bundle, "captured_at": previous["captured_at"]}
     record["descriptor"] = {
         **describe(plan),
         "label": str((record.get("descriptor") or {}).get("label") or ""),
