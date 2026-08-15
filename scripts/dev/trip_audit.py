@@ -27,9 +27,26 @@ for _variable in ("COSMOS_ENDPOINT", "COSMOS_KEY", "COSMOS_CONNECTION_STRING"):
     os.environ[_variable] = ""
 
 from tripplanner.validation import findings as findings_module  # noqa: E402
+from tripplanner.validation import observations as observations_module  # noqa: E402
+from tripplanner.validation import registry as registry_module  # noqa: E402
 from tripplanner.validation import runner  # noqa: E402
 
 _BAR = "-" * 78
+
+
+def _print_rules() -> None:
+    print(f"{'code':<6} {'severity':<8} rule")
+    print(_BAR)
+    for rule in registry_module.registry():
+        print(f"{rule.code:<6} {rule.severity:<8} {rule.statement}")
+
+
+def _print_observations(result: runner.AuditResult) -> None:
+    print(_BAR)
+    print("What these trips actually look like:")
+    for item in observations_module.observe(result.records):
+        detail = f"  ({item.detail})" if item.detail else ""
+        print(f"  {item.label:<34} {item.value}{detail}")
 
 
 def _print_report(result: runner.AuditResult, *, show_all: bool, rule: str) -> None:
@@ -69,7 +86,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-mutate", action="store_true", help="skip metamorphic checks")
     parser.add_argument("--database", action="append", default=None, help="repeatable")
     parser.add_argument("--json", dest="as_json", action="store_true")
+    parser.add_argument("--rules", action="store_true", help="list every rule and exit")
+    parser.add_argument("--observe", action="store_true", help="describe the corpus too")
     args = parser.parse_args(argv)
+
+    if args.rules:
+        _print_rules()
+        return 0
 
     result = runner.audit(
         REPO_ROOT,
@@ -106,6 +129,8 @@ def main(argv: list[str] | None = None) -> int:
         )
     else:
         _print_report(result, show_all=args.all, rule=args.rule)
+        if args.observe:
+            _print_observations(result)
 
     path = runner.baseline_path(REPO_ROOT)
     if args.accept:

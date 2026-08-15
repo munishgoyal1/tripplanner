@@ -1084,3 +1084,24 @@ the outcome.
 - Both changes came out of reading a grouped report rather than a single trip.
   One count of 21 identical findings is the signal that a rule is miscalibrated;
   the same 21 spread across weeks of manual testing read as noise.
+
+## 2026-08-15 - A Test Suite That Six Lanes Share Is Not Isolated
+
+- Seven test files pinned their fixture directory to a fixed name under the home
+  directory (`~/.tripplanner_test`, `~/.tripplanner_chat_test`, ...) and deleted
+  it in teardown. One suite at a time, that is fine. Six sandboxes running their
+  suites at once means one run's teardown removes another run's fixture between
+  two assertions, and the failure lands wherever the timing put it -- 15 failures
+  in one run, 4 and 7 in the next, none of them reproducible alone.
+- The tell was that the same test passed in isolation, three times in a row,
+  after "failing" in a full run. A failure that will not reproduce alone is a
+  statement about the environment, not about the test.
+- The fix is one line per file: put the process id in the directory name. Proven
+  by running two suites concurrently before the change (4 and 7 failures) and
+  after it (both clean). `test_observability.py` already had the better pattern
+  -- patch `Path.home` to a tmp_path -- and was the only one unaffected.
+- Beware the automatic import fix. Running `ruff --fix` for the import sort my
+  edit disturbed silently split one aliased import into five and added three
+  E402s elsewhere in the file. Compare the lint profile by rule count before and
+  after, not the raw line list, because inserting three lines renumbers every
+  finding below it and hides a real regression among the noise.

@@ -8,6 +8,7 @@ mentioned flights. These tests drive the real tools against isolated storage.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 from pathlib import Path
 
@@ -22,7 +23,10 @@ from tripplanner.tools.trip_planner import (
     update_trip_plan,
 )
 
-_TEST_DIR = Path.home() / ".tripplanner_guard_test"
+# Parallel sandboxes run this suite at the same time against one home
+# directory, so a shared name means one run's teardown deletes another
+# run's fixture mid-test. The pid keeps them disjoint.
+_TEST_DIR = Path.home() / f".tripplanner_guard_test-{os.getpid()}"
 
 
 @pytest.fixture(autouse=True)

@@ -21,12 +21,14 @@ MAX_GROUND_LEG_KM = 300.0
 MAX_LEG_MINUTES = 16 * 60
 _GROUND_MODES = frozenset({"Walk", "Taxi", "Drive", "Bus", "Metro", "Cab", "Car"})
 
+RULE_CRASH = "R0"
 RULE_GROUND_LEG = "R1"
 RULE_LEG_DURATION = "R2"
 RULE_EMPTY_LEG = "R3"
 RULE_UNMAPPED = "R4"
 
 RENDER_RULES: tuple[tuple[str, str], ...] = (
+    (RULE_CRASH, "A stored trip must be renderable at all."),
     (RULE_GROUND_LEG, "A leg drawn as ground travel must be a distance you could drive."),
     (RULE_LEG_DURATION, "No single leg of a day may take longer than a day."),
     (RULE_EMPTY_LEG, "A leg between two points in the same place is not a journey."),
@@ -167,7 +169,8 @@ def check_render(record: CorpusRecord) -> list[Finding]:
         except Exception as error:  # noqa: BLE001 - a crash is the strongest finding
             message = f"Rendering the trip raised {type(error).__name__}: {error}"
             return [
-                Finding("R0", symptom_of(message, names), message, record.id, record.provenance)
+                Finding(RULE_CRASH, symptom_of(message, names), message, record.id,
+                        record.provenance)
             ]
 
     return [*_leg_findings(record, view, names), *_unmapped_findings(record, view, names)]

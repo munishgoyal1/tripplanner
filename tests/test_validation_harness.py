@@ -9,7 +9,15 @@ from typing import Any
 
 import pytest
 
-from tripplanner.validation import corpus, findings, mutations, render, runner
+from tripplanner.validation import (
+    corpus,
+    findings,
+    mutations,
+    observations,
+    registry,
+    render,
+    runner,
+)
 from tripplanner.validation.checks import check_record, plan_names
 from tripplanner.validation.emulator import assert_sandbox_database
 
@@ -292,3 +300,55 @@ def test_a_guard_that_stops_running_is_caught_by_the_relations(
         mutations.RULE_UNNOTICED
     ]
 
+
+
+# ---- registry -------------------------------------------------------------
+
+
+def test_every_rule_the_harness_can_report_is_described_in_the_registry() -> None:
+    """A new rule cannot arrive without a sentence explaining what it means."""
+    record = _record()
+    emitted = {
+        finding.rule
+        for finding in [
+            *check_record(record),
+            *render.check_render(record),
+            *mutations.check_metamorphic(record),
+        ]
+    }
+
+    assert emitted
+    assert emitted <= registry.codes()
+
+
+def test_a_rule_states_itself_and_declares_how_hard_it_bites() -> None:
+    for rule in registry.registry():
+        assert rule.statement.strip().endswith(".")
+        assert rule.severity in {registry.GATE, registry.REPORT, registry.OBSERVE}
+        assert rule.evaluated_in.startswith("tripplanner.")
+
+
+def test_the_gate_severity_follows_the_completion_gate_itself() -> None:
+    from tripplanner.tools.trip_validation import _COHERENCE_CODES
+
+    gated = {rule.code for rule in registry.registry() if rule.severity == registry.GATE}
+    assert set(_COHERENCE_CODES) <= gated
+
+
+# ---- observations ---------------------------------------------------------
+
+
+def test_observations_describe_the_corpus_without_judging_it() -> None:
+    described = observations.observe([_record()])
+    labels = {item.label for item in described}
+
+    assert "Trips" in labels
+    assert "Days with a named meal" in labels
+    # An observation is never a finding: it carries no rule to violate.
+    assert all(not hasattr(item, "rule") for item in described)
+
+
+def test_an_empty_corpus_describes_itself_without_dividing_by_zero() -> None:
+    described = observations.observe([])
+
+    assert any(item.label == "Trips" and item.value == "0" for item in described)

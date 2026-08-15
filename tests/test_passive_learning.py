@@ -1,5 +1,6 @@
 """Tests for the post-turn passive-learning sweep (safety net)."""
 
+import os
 import shutil
 from pathlib import Path
 
@@ -8,7 +9,10 @@ import pytest
 from tripplanner.tools import passive_learning, user_preferences
 from tripplanner.tools.user_preferences import load_preferences
 
-_TEST_DIR = Path.home() / ".tripplanner_passive_test"
+# Parallel sandboxes run this suite at the same time against one home
+# directory, so a shared name means one run's teardown deletes another
+# run's fixture mid-test. The pid keeps them disjoint.
+_TEST_DIR = Path.home() / f".tripplanner_passive_test-{os.getpid()}"
 _TEST_FILE = _TEST_DIR / "user_preferences.json"
 
 
