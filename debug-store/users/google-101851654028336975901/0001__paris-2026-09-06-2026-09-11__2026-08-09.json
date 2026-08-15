@@ -6,7 +6,7 @@
   "first_captured_at": "2026-08-15T11:32:23Z",
   "revisions": [
     {
-      "at": "2026-08-15T11:32:23Z",
+      "at": "2026-08-15T12:44:03Z",
       "content_hash": "550f18c24c5e0118",
       "plan": {
         "status": "draft",
@@ -799,7 +799,7 @@
     "label": "",
     "notes": []
   },
-  "last_seen_at": "2026-08-15T11:32:23Z",
+  "last_seen_at": "2026-08-15T12:44:03Z",
   "schema_version": 1,
   "seen_in": [
     {
@@ -807,6 +807,12 @@
       "branch": "sandbox/7-lab25-profile",
       "database": "tripplanner-sbx-7-lab25-profile",
       "at": "2026-08-15T11:32:23Z"
+    },
+    {
+      "workspace": "tripplanner",
+      "branch": "master",
+      "database": "tripplanner-local",
+      "at": "2026-08-15T12:44:03Z"
     }
   ]
 }
