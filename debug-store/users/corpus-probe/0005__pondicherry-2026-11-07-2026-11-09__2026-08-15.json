@@ -1,0 +1,1061 @@
+{
+  "archive_no": 5,
+  "trip_id": "pondicherry_2026-11-07_2026-11-09",
+  "user_id": "corpus-probe",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T13:02:23Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T13:02:28Z",
+      "content_hash": "3d5cd4d77d34a835",
+      "plan": {
+        "status": "draft",
+        "trip_id": "pondicherry_2026-11-07_2026-11-09",
+        "trip_number": 1,
+        "created_at": "2026-08-15T18:32:23.969041",
+        "destination": "Pondicherry",
+        "origin": "",
+        "departure_date": "2026-11-07",
+        "return_date": "2026-11-09",
+        "travelers": "2 adults",
+        "notes": "Balanced trip style, moderate budget.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Pondicherry",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 3-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 3,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2026-11-07",
+            "title": "Day 1 · Arrival & French Quarter",
+            "summary": "Arrive in Pondicherry, check in to hotel, explore the French Quarter and Promenade Beach.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-in"
+              },
+              {
+                "name": "French Quarter",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 120,
+                "note": "Walk through colonial streets"
+              },
+              {
+                "name": "Promenade Beach",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 90,
+                "note": "Relax by the sea"
+              },
+              {
+                "name": "Café des Arts",
+                "kind": "meal",
+                "time": "16:00",
+                "duration_min": 60,
+                "note": "Coffee break"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2026-11-08",
+            "title": "Day 2 · Auroville & Serenity Beach",
+            "summary": "Visit Auroville, enjoy Serenity Beach, and sample local cuisine.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Auroville",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120,
+                "note": "Visit Matrimandir and explore community"
+              },
+              {
+                "name": "Serenity Beach",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 90,
+                "note": "Beach time"
+              },
+              {
+                "name": "Villa Shanti",
+                "kind": "meal",
+                "time": "14:30",
+                "duration_min": 75,
+                "note": "Lunch"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-11-09",
+            "title": "Day 3 · Local Culture & Departure",
+            "summary": "Explore local markets, visit Sri Aurobindo Ashram, and depart.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check out"
+              },
+              {
+                "name": "Sri Aurobindo Ashram",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 60,
+                "note": "Spiritual visit"
+              },
+              {
+                "name": "Goubert Market",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60,
+                "note": "Local shopping"
+              },
+              {
+                "name": "Le Dupleix",
+                "kind": "meal",
+                "time": "12:30",
+                "duration_min": 75,
+                "note": "Lunch before departure"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T18:32:28.647623"
+      }
+    },
+    {
+      "at": "2026-08-15T13:03:46Z",
+      "content_hash": "f1d48a8488425ebf",
+      "plan": {
+        "status": "draft",
+        "trip_id": "pondicherry_2026-11-07_2026-11-09",
+        "trip_number": 1,
+        "created_at": "2026-08-15T18:32:23.969041",
+        "destination": "Pondicherry",
+        "origin": "",
+        "departure_date": "2026-11-07",
+        "return_date": "2026-11-09",
+        "travelers": "2 adults",
+        "notes": "Balanced trip style, moderate budget.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Pondicherry",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 3-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 3,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2026-11-07",
+            "title": "Day 1 · Arrival & French Quarter",
+            "summary": "Arrive in Pondicherry, check in to hotel, explore the French Quarter and Promenade Beach.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-in"
+              },
+              {
+                "name": "French Quarter",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 120,
+                "note": "Walk through colonial streets"
+              },
+              {
+                "name": "Promenade Beach",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 90,
+                "note": "Relax by the sea"
+              },
+              {
+                "name": "Café des Arts",
+                "kind": "meal",
+                "time": "16:00",
+                "duration_min": 60,
+                "note": "Coffee break"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2026-11-08",
+            "title": "Day 2 · Auroville & Serenity Beach",
+            "summary": "Visit Auroville, enjoy Serenity Beach, and sample local cuisine.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Auroville",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120,
+                "note": "Visit Matrimandir and explore community"
+              },
+              {
+                "name": "Serenity Beach",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 90,
+                "note": "Beach time"
+              },
+              {
+                "name": "Villa Shanti",
+                "kind": "meal",
+                "time": "14:30",
+                "duration_min": 75,
+                "note": "Lunch"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-11-09",
+            "title": "Day 3 · Local Culture & Departure",
+            "summary": "Explore local markets, visit Sri Aurobindo Ashram, and depart.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check out"
+              },
+              {
+                "name": "Sri Aurobindo Ashram",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 60,
+                "note": "Spiritual visit"
+              },
+              {
+                "name": "Goubert Market",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60,
+                "note": "Local shopping"
+              },
+              {
+                "name": "Le Dupleix",
+                "kind": "meal",
+                "time": "12:30",
+                "duration_min": 75,
+                "note": "Lunch before departure"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T18:33:46.457346"
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T13:03:46Z",
+    "user_id": "corpus-probe",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {
+      "french quarter|pondicherry": {
+        "place_id": "ChIJ8StPHQBjUzoReBuMjpnAY2s",
+        "name": "French Colony",
+        "address": "WRHM+9FC, Romain Rolland St, White Town, Puducherry, 605001, India",
+        "rating": 4.4,
+        "review_count": 390,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 11.9283798,
+        "lng": 79.8336641,
+        "photo_refs": [
+          "places/ChIJ8StPHQBjUzoReBuMjpnAY2s/photos/AWCwydjMZC1l4Xn-OeEAC-e6_bUQQXXVp8s9WbnEXB6CJ4tQStqd8fvubxBzQtTBn7Ox2N6TF3Q5ODdfg9e107cgzjr2OZsBbX5i-Hbe53Q69B2_ipOP4UJa1VY7nVd5f-CVZ8G4C_mHTs_-HqmyWW-AtKRpM8Z7V2vvHmyXj2bLlApDbh2OZJJ-ZXl5WoHrtPTjhiT5LDaf5jcYm-gp2jwiRcB28GgebW0sc6voOvtp6toiT5APr2Y4ts7hpnTdd8kUjNQQl9c7xamdfgYXl3qPAbOIoJjiGEPh-MuLCVg0A9wh720orTGBeZXMbnQkdkWVp0xZJSzCvbrcf2-ZCEzZNCwpS4G0HyMgz8hL7SZnSEer4ETLVPazTeWdwafgky6o0DsUaMOJhB8kwH48-1ZwdiTClXnpksM1n1yw5d0rDKX8o0VNfL4qH3xS82Lblg",
+          "places/ChIJ8StPHQBjUzoReBuMjpnAY2s/photos/AWCwydj42Joe4Hcla9XhXxScyUiOdcApqmTg6SHxtcq9KyUYAFggKnXCt4MCrXiwuqYshvLvAPwwgq57HXDt5h8CBT1EF3n1CBc29Sc4UVKGCDS040OBdpofMKHI9C4hlaVnga_Kv14YgZi7C9jJAT4rzLaqyBfc7Cv5x2SMVh7_Ni4eu1o6EG1a5BML2Nib56QHa6UG4AIw_msjMv6404HiF1hfoM083VwFGNWncDg4Hz6NeG789M-JjVFriQXno5gsLOxwMOiY44_4iQerkT3B0lyI8SwghyaK9Ym37AOyevmH41oihxWq5e-Hh1zpJz4X_ZVIMZZj1tYLmCQC1ZWShUBo5tWl7IuPZxPWzU2I78ndHP72vlHE5G62AOvYQvytHLYCKf7-ZjebLwmi4Q9EKMpYJm4C4iu2YXYH9xFRV1mQZtxFGcDJQmVuqxp5ZHu5",
+          "places/ChIJ8StPHQBjUzoReBuMjpnAY2s/photos/AWCwydjH_QvVQmSL6WH2l74fKnvjZ7JCWhrPyBmjiqZazuS0gMzdi2w5w8mld8ukL-JtVkDzet5ii0sPFHQ1V-s9VtChLzf03P8-J5H-9f11x_FXLLzHhrV31P5YaHblANVZDLHr2-XhkHazDRCcLBzy4C-rKjuYfWlE6kgrBTKqqoHJuPBjPmWSZge399fc_0G-RXDUM-_TSyoanXk2BXt8MAInkEU7hIb8U5DdECj27tuqPmln5c8iIpAXk5y3z67fixnfVSkf41OlyRkOqYHHi8pzAFsJtrC4zIO42zs0iaN_MJmAxgIGogmiogcHr0c3p7RLu1lnudK2oYBmTmp5fVgJO4UGkLgQSsU2MviP_UNbzN3fWSHBNNA1pyUut8s1XLzVDA2DAHRIPrfjkslf4PzQdx8ZVAbusqlS9xHrYGilk3bYeYXnNmdN6pJPZQ",
+          "places/ChIJ8StPHQBjUzoReBuMjpnAY2s/photos/AWCwydjwDKhyOkeV2Qk4D1D2vZwsyWfAvoWt-ZsFtR0Bx4fmXnWeZxA3MWfnJ6nZ14SgYxweAuIGy7IU_x6vh6-10HMtlBw8nl5iWp769XlAXf2wwM08OFkXMpZWS--999rk8JcWFp4JqjCM-jRd-QID2-iAIspwMFZgG2RL1pGzUd-pn2Z7c7X4yMhFyaipJYMNBBVBiKBWVclW5bu6JAwpkIOPIYWqfCwtWjeI3KB16GQFMdWXiHkEe9uDZOD1r3gNYJCh0DPQUq6EBn-Z6N-X33zxaQbKKRc1dRwzxEKFI1XXCSVwcS6Rry9xbxrqJzwmdhknl05lYOD5vHY9ZqIN8gJBG3bIOfx55jmqI_qZkPNraxwoF_RHNkodqJJBaLwxWl-Bdq4Dlf3urW7NTuWdUHv9D1sbJ62NbEaZGpsAOdDJFmgD_3V8w9V_shdvqA",
+          "places/ChIJ8StPHQBjUzoReBuMjpnAY2s/photos/AWCwydhiLOBVutKgZRjHRLHpfOO1eX6h2kOPn2_SPFAIp9k3fDEqxBhwugTdI2PCZ17Gip0wAtWxfLXGd9fcV_GOhlbKzSqSkBRboun_UKVbRdoTIU5z92X_lxl935qVRuGhRxp5nLEdpOU7RWCf-OCoiMGRSZZnjfL4WjMn_nAjtR74sllFjxCHSl2DvUobaSxOX3Y08ifrJ2VAJy6fUeyNjdmm54pF6lfXdrhwPIZ3xT5by81EvdxVJnlyVzAxN4ZrzNeqRVOtBRQt11gIPf0RST5_wS746s3l89h-VuBebyPyD54NBnwdbMdma2ek-sF9fttuHNuCDlvZ7xzToGKAtKL2va9R0RMYz_Q8vRPiUjRQirR8MXBKEGhYIn8bDZqKOCTsL1nif9PC3EIdDp70-1cU-bln7DScQ53IvTxkIKMmSuVMwHb2XKqhLLHwoswY",
+          "places/ChIJ8StPHQBjUzoReBuMjpnAY2s/photos/AWCwydj-NLe6fFNjmOhSYtaLcGqX-x7rnelvz0JOmagL1cmVfG7FV5sWZU_2JmFq8qLmAjhWcjmdS3BIbOS6hN9v_WpNDG-3btnPeM7q-ROXeV1_dquW1_0kev8LdyXvNyTfs6xCY6uQj4J7LzSNQx9Wy6YKjeHRfmwBdke84-aoBB00SYIIYu-L7WcN4dBfot3Y7zNGaC72bMho0KfV5u0GMuWluIBU7hNoBNDQr09O62q7HjJsH12NYcgsRy42v0o4A68HPMpw4RuPIvsO9FSmMKc7oxkm8FS5eK5k2E8u6CiM_ByFaNats-d4mM2ZkxMts95haBUfw3gFYFL39vu4-dLEqe3-t0WjXHuPPICBj5bEThg-QOMdkUJod4KqpUTboCyVXgsiDAjtWG_wsKhWS7lPl-M5L42MuOytckKYVvtLoZM2mPAhbGjG1yMrMA",
+          "places/ChIJ8StPHQBjUzoReBuMjpnAY2s/photos/AWCwydhXsF-T4myrYNWhTTBoDmNCyn3r-jbx_6qDiRWRj2wnNxOZr9G1jyCV8VAEJrzAl2eTGK2FoBxY2zQUmHMNsoTPhzbEptQQ3PtI7kybZYW70y2RzGuqccSfzB0wjM4X6_yNMyVmE3zyMmAwHZwDqcH0lRGyL-D5MhNrPGjtpbpa2tVYXAyZ1NDX--D4dYal17aj5DJlHtA4Blr3iIQGH9ECnDn-X6Ep4sH7hAtloS3Q_AnnkhW7Lb3KQN8vcFXX54XV9R4XInTlAuaJAZRLTZ6-Yp9eizvkkLZ_5K0uIJnw77tOLYxmIosbzTZ8OzYGDoYbYGpNd2qG-D2_5MVqjJF4L1D36XEYn-46GZCFqSTQSERhJgTuR2jgRWB0kQEu3P50RIaHeqCejmRQVbCmceJkkCC-uyRpOZyEmhSCcVscHzt66BJRwo5QjMZebTqU",
+          "places/ChIJ8StPHQBjUzoReBuMjpnAY2s/photos/AWCwydh0luHTOoUKEnQgVagNP6m9qQ-a9sMmJy_jGQI-IE83X6inGegT6fofJoP4jATEQ1K-nAtsXJr1P1ry5CkUrmD6jU9DGv4IANnr7GLhTOgin6l2xf6kczEHYd7IgRHMVXZQkVizVZ-45sZfKqxQkVJk0C0OLtkz3XFnd4V96a4bh08W_Vquctu1DvGdEUdkNKh2zlkbSEMyOY-FsVQGnqzb1o7wk4PK-Shcp3kK_8o5ZMCqmeKOmOc59W9ufZriQ6nRS5zltkYSUuGV3lfJ0Qw8VRN4hBiFlA_Pk88O99pVFkksPTQuj6pyTN1v5udEfsRnrnodT1Ne0SSxvUnZRO1gEm4lNN6Ec9Lgq2Klm9oKRB2jWmcEKo8bLhAaRPqxBA7ejgkGDSvD82k4Xquo4OYUko2JmlAGls7mSL4tZPXj_m1ezcLzmEyc7cR0ZtS9",
+          "places/ChIJ8StPHQBjUzoReBuMjpnAY2s/photos/AWCwydiOI5IeFS1yU72Z4XCFgvk3DD4JysDE2RjFlfgavwMtbY5MzpXO31N_bSYPj_0boxNOF2VYv3NYHE3TqV7RR8rTRAU6rs6eF63Ncmb159ZWxh8Jv_dIGtjk9h-o3N2i37JWBOENlS3twXyBJXn9zTHvktpICFRwuoDAaHIndxbzO53_LaW-B1UZiPbj1nv8UgD3xH1GHaDzJtluq4Wh-ndeAqyw84jjwZRvCEadrPtQtUQ25Cl8HzzJNurg1_ul6hU4rce8rZ4XxZ0T2EuyiU0RHcT3-Xdq2h320EIamaYFwiOMg7PI-5EY0B5Bj_f1tPorlYJpvUz0jGDh_0KTMvhEWJKzYWaGLQfIg0zWwU5NExgFwVxw0rgxXCLtSa-xSV7q0AQuL5xJkxlAd3ZH7e7BNkXnqVQGRsEIo2MqvPuyIW4allQrKPyJvmZ0gjpr",
+          "places/ChIJ8StPHQBjUzoReBuMjpnAY2s/photos/AWCwydiZ651A_R_zZBzgZP6-DvopNBXXu6NajPftBTcEgE-Szln90UBqXkiqVipiKWzlVrOCxG6Evw_Vc_IRwXHbiIuddtsYNYaIpNLoy-KR6tTYHBkVaN8VY7xrqvL2yg_PIg1aRiM2iaVUW3VwP5N-RuIU1G1ogSWcIzY9srOUvP7jqTiMzZZPl9OEpRYWWeBx-_BHBnk0vCe7j6lzQdnwE3BS6UHZUPQdT_p2PACKpUT_qqgdfmPcyVBA9OdT718G76mjgPupxWajq_dE9z0VX9-ostb8OCsPc_pbv6v0bo08xYQvOBu2xE-I2jCxfIM3SB37mOPfk0nUFyyh9zNLsSZXdSJj1FXeq46Zmkc15BCBmSgIJzkReIITl9EN_10XVDsgtib8EAng3pGsOkmozAoDdNkt-EvkwfUaQyk5m7sfOvXdtUadrFM5i6JYPy5x"
+        ],
+        "__at__": 1786798949.2761862,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "One of the must-visit spots while in Pondicherry. The colonial era buildings have their unique styles, well decorated and very colourful. The streets are quiet and well-maintained. The cafes offer exquisite experience. It is best to explore this area on bicycle or on foot.",
+            "author": "M B Das"
+          },
+          {
+            "rating": 5,
+            "text": "Decent picturesque place. Lots of French style buildings in the area. Well worth the visit for quick aesthetic photos. You can visit the Rock beach near this too. Lots of cafes, bakeries available here.\n\nStreet car parking can be a bit difficult during weekend evenings/nights.",
+            "author": "Suman Sourabh"
+          },
+          {
+            "rating": 5,
+            "text": "French Colony in Pondicherry is a truly charming and peaceful place that reflects the city’s unique French heritage beautifully. Walking through the area feels like stepping into a different era, with its colourful colonial buildings, bougainvillea‑lined streets, and calm, well‑planned surroundings.",
+            "author": "neeurittogonpachiro"
+          },
+          {
+            "rating": 5,
+            "text": "Exploring the French Colony in Puducherry was an absolutely magical experience. The streets are beautifully maintained with colorful French-style buildings, peaceful cafes, charming yellow walls, and a calm coastal vibe that makes you feel like you are walking through a small European town in India.",
+            "author": "Ram Kamarthi"
+          },
+          {
+            "rating": 5,
+            "text": "One of the best places to visit in Puducherry. Beautiful French-style buildings, clean streets, and a peaceful atmosphere. Perfect for a relaxing walk and great photos. Highly recommended!”",
+            "author": "Pallavi Ashok"
+          }
+        ]
+      },
+      "promenade beach|pondicherry": {
+        "place_id": "ChIJq_oNnCxiUzoR8fNcqLDnp_s",
+        "name": "Promenade Beach",
+        "address": "Promenade Beach, Puducherry, India",
+        "rating": 4.5,
+        "review_count": 9603,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Strip of rocky shoreline in a populous urban area with a promenade, a war memorial & a park.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 11.931277300000001,
+        "lng": 79.83580189999999,
+        "photo_refs": [
+          "places/ChIJq_oNnCxiUzoR8fNcqLDnp_s/photos/AWCwydj_MM6fCqXQU6DEvKuAU8k4GdrwrckXgz0Y3lUiV0TqtcaHAOx39fyLKWXsH27KdvNsHiOYsttY1GeJ-2y7M6kAxiN-_vb5KHQxRyQuvxeCA-XVAcExnD-tH5FTj7YcP9JRLJxC4yxHmh0Zv7iocKzjL94PyLosG_wFnGWumY83rxUZysy-p1QeUcr1wjuGOVwRzmAbUxH4eZ5XN6syXq0z4JfQ818UPEh9aOYWe5sAigWnJvYhXIQxTJjQt2-ZlCQB-jh_6qV4Z9kKd_ZOJwp26_LiiDMzA3iSnm5MtZWMPlw6-YZ9bqE-Ru3CHNGJscykcC-5Xit_GBCj9Ic96laZAh38kmau_NG5rMlUQGpxBPHeXHipCgVjTIt9cK-tM5dk5lMgu5-1DzYSJxoIns8Ey9s_XX2tsdeoxEOjqFz5bYul",
+          "places/ChIJq_oNnCxiUzoR8fNcqLDnp_s/photos/AWCwydgENKrLzlWVC6kG9Uryc_tCc3b_4s3Vj3Okb2271SdPB5gBvw0CidUMgYj6It7bgU6JZi5qlfN5CIfcrjVQyutVmn0JXLbtuGIpdc3RM8ywpKYXaxbw9IOIfgF8-hbSO0d96Oh63oGoifEEqySrzI7ulm5_wGDcd36BvDz624bgtWV_9zXp8KPRJby_8OZPp6iAsAHONYZUvkV5hl_hFUWFWwHYhflw-Zz1I1jVyqx-M3UlpoaDAF9IZMP-fqnWMp_SyNun6MnI7vY47dAE2CZ-PJ2LRN1k7US9_0nyb8kYedtv9DyAF3UXg6qaJ4U8mu-pHSchhdrEf-EjOhuP4cOR8zZeLSUtRYg-zjT1uZtkxGIB0woPVEYeC9F2R5p5cO2YGQv3NAy_TyfxmE2bn78saN66sr5B7sZb7tcBezFu6w",
+          "places/ChIJq_oNnCxiUzoR8fNcqLDnp_s/photos/AWCwydhKYd8Xme54t1H99P5xEoQhfFf__IP_ntuVRECLfnc2WLEnWGoGKlcHA8RIyum8TXzLPn82WdkEgVb8yS-hoXAzY7dnzhHQYOXoDuo9msOxHDW_EGLNMRrNUstSQLnLIo-vcbRs56j0yhFu_CaHyc_1bvpmgXSYMHOTj0enURDxDRTFIRZcmEA2MI-lpMEcC_UGfb7pXvecoltF8xss47exc8KQW_ya9LA-LbHeiGqLqdEuS3tyeRBxK0z1jukzuGl73lpunIg2dBKmCgqdx8tSggBqzsOWxnsXSaHPKA6Zrh0hvT6_oFTFFzasde1TYnNUNeMXUE1tu_negDIE_lfcDLRFMAqBMXlOqo15l9OzC62RznnULTrKddnrntNDaNaMHCmSYZo8BJGOsMQ-yTEryektzS7bCx-TryNHfZ6JKw",
+          "places/ChIJq_oNnCxiUzoR8fNcqLDnp_s/photos/AWCwydi7K5xuDE3CfHO1jScTIxyfhJSCqGwF8bsAMLxtK19FnpH6DfuqHfrLgy-pqkBFWMsKk22s1qp5XDTdWPxhyYUoQyEuhpja1XMWQQE4lW8nvB_E7H09hN4hHITD36KREFOb0wNvTlCle8S72xe-ZbD_-gouZBZcC9vUFptNkBxkWuQ0oTBP4QcCtywRojtEe9az11F5ewu-taLeCx6bSg9I8M0JtQhpWKAuZyhgmJ8pV_CC6bdz8-z3y-eThImny0T9OWlChFO6iGo4gmyEbuPOszm-0YlEisya6QRJybG1Wf3vxhHo-qYYlZ-JHztwQ0saqi__UyA2J0n5dk_BSVyLW8cpxUyuF3NiG1Y4zQW3dTol4GPz-eChSrNr1MmiHgdGvxcWUSNsUy1yQzmz0xCI8L2G1fYMxqK9G706vjD4Sp0rqUhJb15S7SMyaA",
+          "places/ChIJq_oNnCxiUzoR8fNcqLDnp_s/photos/AWCwydiWPZr_2qK3SYDkgOfxlBA50wYSPnalA8WXHVSKYGWMMUYFVTtaa6Ykl2YpVZRJfiOnwfdrEdzi9nS_Ci6Lp4ZI4zJxhUfYl9TkfUYcG5fYpc-V56Ne_PLt2GZ3Pak7anSjvd9MgtifoY_w9CAU7c6vOASaY95xAnqKAN_AW1ympuGBPtTtS0Xr0XE0J1pzVHdWDwiufdnNuyqk5ZjAaqgn3xsU5X1jR5uq73uBthZ5j8gx29ia4xe3Iz6jZSaf4qrZH4OdiCMTS0oD9o_EYziuSzlw1FtkhI7TX5-Ja1RhtUmETPHe9IpCpdcd3tDt1Lm7v1_6q9QWDGSsZtC3Kt8C1mCnsFn4jWTzwy-S_ZW6q_uRW5iL7BpzZ_kAC7gk6gFmQQe6ulXnGI8IEJonhYqFMFcf84XZd0PgpX3DC0GzcwTA3qD_7PI0fe3ic8oW",
+          "places/ChIJq_oNnCxiUzoR8fNcqLDnp_s/photos/AWCwydjQoRfeBRxZMIXRpow_yzWgDq_L5wOa4gcCh1VzLyuWBzflNcNWm1QALKJNxWhcH0pXWv8nEJUUJ4_MlCvU1TN8kRFdWj8v6kY2IVYfFgrNJpmd8iK3MkycL_Hmhy8OKLLYGKFDElYVEIJwO1kWPEhA6xASo24ZFQqbyqL2vegMu4otVLGriDtU9u4GuaFbXquO2gCgJkBiZJVB3DQUJugiFYpu33OehMTiQZMvkhtJ99PDsXg0va3TMmjAfVKX4C8XgWCJ-vZbZvnG1LcEyklgp0seDzEOzwPm6MVPOLheQno1-uA_ZhB9PQmVGtLcxjZTnIHffKWThSrJnsP2eMWFy0wjF30Wr6ikaHHN1h0S8bvOSWgJqLxGR8YpbwHVcSrhjWIdeu_756eXcslSKqNDOC6hpbq_MFO2e7VIVOpzsLvP",
+          "places/ChIJq_oNnCxiUzoR8fNcqLDnp_s/photos/AWCwydiPixiHVUr9ILqDrTdz-Y3tB1p8Hkm8vkZ1v6GNgVsVXiEmSRMCofF-kreStq5NSQlJ-7pXMAqY2agJ30zMTfZDd13Os_myDc_HFy9eWDZ9BvMl2ZUDTztEcjoci0n_E9xbm-6NZKaWENolD-PgwbkDzgiW9iA_JpCpRy8F70qtveedEuHA4CSlzvbbqRaN4qwHgpGAfVSz2S7TNVRi-S8TOp8lJ_sqNe0mjAF3MmZvSwIlpTN3H9Tj3mMa2ephMmwkb9YVBtEV8FCEcKb1Bf-j-Ln9mSuyCQ06r5raiQ-qobvCujH1_GrAwzSMC2aTmxGkEpoamCAH73kIPqZ5VW7LEvOTmclphtAMnafUiNES3a7FjOPJpLFuT0aZ8DFIpF4d5K5qiGdNuY7KXo6Fo_3QjXvOA1MU0X-PT2-KmZccyQ",
+          "places/ChIJq_oNnCxiUzoR8fNcqLDnp_s/photos/AWCwydhxGqM30iVY4HBe3xaoXAmPB1pegy7thXpS9XsN1Q2_tYs0mvCYy-p-U3aJ6xe4SOCaIgZvtVrJdxOnORRKarGP4jmlLRIzqYJ51Sjd-J3NMSVIYrLp2lSbjx7mOLwxcXLhfHClZYHI5w4I0ydI12IJASYsTKg_PqsG9bJZ_DLY0MkqomjrO7n4kMZ0nUJnmDpTjVzDoNh6Ev5Ge-3RpedkVKm2CQzB2u6bUjIOFTiVMNR39tZGu1fDgTm7-j-gCnlhe79lG2u4nR6Anuk-ylx1sXZLTWQ1uCN7ZpbKB8qV7WCBpqrHRtZhDo-uirCBsAhCpLBpjdmSwNlFfJiRGkFUEcU4QvEGRw0ocKq0sDtbtjkEEsLV8cphxjSpVO1rGlXH2PpWnX2wJF0lds2qkAed_cno1LIeWwHzyZl-O1L2rao",
+          "places/ChIJq_oNnCxiUzoR8fNcqLDnp_s/photos/AWCwydjMrrTkbi2Z4aTpohlBCRN-tKKlCzw1tcjmj9eK0aJMkQ7KS8LO1Ies-s-SKaM9yrMLpY8aG2ZFLdKlLunAlf-TOJh7YwUymW3BdVjoZR6GhYG1THKbT49GCwb0blnrmtGFWEWGCa6AkM5VGipBWrFIO8_sFVSlcNmjqTI7SF_sUdhO6SWh7t8CMdCWoA9q1lEAKGdN-RZmbkJSGZHnTqci6YxkY9iqKHHOZztQg8CXFZcXC92Ya3y__8uj6_RkoOOHUFCvAhQouzIbCyEsoWxOe3R6WClH_z0-lyIV5QuxW9K3dQKK7sfOQ8OklwXOBYxmW0Weic3fkpLxFwm9yUbYC7_j5XOZm0WB42S2J3I9y_6EQQDSXiuE3gG2o8sgq0kJNaDHqRYUkj9FxEaAXifLTPasjdH3XpjyQyuHHJOGRzs",
+          "places/ChIJq_oNnCxiUzoR8fNcqLDnp_s/photos/AWCwydhKvcNgnX6YK1BvmKTkxBy4mNrA2pcEn1-uAzmVib-cGXTE6_kDSI9GtTQzfDlS9_paJ5Naxc6pECu9sbVbRC792l_55hpQhAgp9Jn454LJ38VWepW6WXJ0FeDkwHV7cTC1CFeTYbFr7ub3Uv1VfP4SgGny8qi2HxqrPomMQbE8GKWXJd0PYiENskjo7cgVrjCNBaonhE-8R045RP42yLDziQi828QWtonilWMe_PYkVFcZRLWOCS9Z3KDCimLq4YilBZ-Axji_F5xh8QbclDUdeKtR5SxwSjr_EV5F1VeH8-XV7sNbHM7BuMNBSTf0JF9_zs4CLt_UcT7zRq1fOttcXm6R9fWwQSAd-oSncIFEbM7VL_JoZF1lcKOVw2M-MosdbRE4gch-fhXwjFTNN3pcii97PgrF891EavNcIWUeMwct"
+        ],
+        "__at__": 1786798949.699157,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "This is a very nice beach to walk up and down! You can sit on the rocks and watch the waves crash into the beach. You cannot swim here but only dip your feet in. There are plenty of shops and restaurants around. Family friendly tourist destination I recommend!",
+            "author": "Ashley"
+          },
+          {
+            "rating": 4,
+            "text": "One of the cleanest beach in Pondicherry.\nThe entire stretch would be approx 1.5km long.\nThere are no street side hawkers or vendors here. The entire beach is meant for public. This is a vehicle free zone.\nParking is available free for public in all the narrow lanes leading to the beach.\nThe old lig",
+            "author": "Radhakrishna P"
+          },
+          {
+            "rating": 5,
+            "text": "The rock beach is neat and clean. Roads are only for walking and no vehicles are allowed. Good spot for early morning or late evenings. The restaurant near rock beach are always busy and have a long queue during the weekends. There are many other visit places near the rock beach. Suggest this place ",
+            "author": "Jagan Gopal"
+          },
+          {
+            "rating": 4,
+            "text": "Same as Rock Beach — locals use both names. It’s the 1.2 km sea-facing stretch that defines White Town. Promenade Beach is Called Rock Beach because of the boulders lining the shore. 5–8 AM & 5–9 PM vehicles are banned. Turns into Pondy’s living room.",
+            "author": "priyanka singh"
+          },
+          {
+            "rating": 5,
+            "text": "Promenade Rock Beach is easily one of the best spots in Puducherry. The place is beautiful, clean, and very well maintained.\n\nWhat really stands out is the crowd and the overall vibe. It feels lively but not chaotic, with a great mix of people just enjoying the sea, walking along the promenade, or s",
+            "author": "Kangkan Goswami"
+          }
+        ]
+      },
+      "café des arts|pondicherry": {
+        "place_id": "ChIJT21bCCtiUzoRz2HuhAzof0Y",
+        "name": "Café des Arts",
+        "address": "58, Capitane Marius Xavier St, MG Road Area, Puducherry, 605001, India",
+        "rating": 3.9,
+        "review_count": 6752,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "",
+        "editorial_summary": "This 19th-century building with vintage decor & garden seating offers French cafe fare & coffee.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 8:30 AM – 11:00 PM",
+          "Tuesday: Closed",
+          "Wednesday: 8:30 AM – 11:00 PM",
+          "Thursday: 8:30 AM – 11:00 PM",
+          "Friday: 8:30 AM – 11:00 PM",
+          "Saturday: 8:30 AM – 11:00 PM",
+          "Sunday: 8:30 AM – 11:00 PM"
+        ],
+        "lat": 11.9304882,
+        "lng": 79.8312705,
+        "photo_refs": [
+          "places/ChIJT21bCCtiUzoRz2HuhAzof0Y/photos/AWCwydjV0sO7uzP4tjtP8A2pMnHN4OWS4x-JVfh_wjJruWwXZeNS5c1ecbYlx3GVuz0nUwP0G9nLROkDqrLCgHL8FYFo_HgDlw0rUvGyCuAx0p1DxKZoI9tAEKFXqRPLL5hjr7iXhT7W1c07GQ9T1fKlQq3GFhoeQus35CG3iw9Ks-6fOlt-RO3Oht9PxCJHtJmoLtKYzEmhTTvqZkvPbTYbbirOxVP0UCKOkFOcu04X20TKT1RA9ypCTOHIQxcfC6F1rOIHcV4JXcsP2iDgfYtFeiqj_qULzYKKlObYBgqrOdHvrA2XiWp4yF1P9InrrAY-5_woF-DyaQG57c4TK1BkzRmLj5_M7dv46-mGEqcvoL959l8aIeY3n8np4-XAX9ogHbzIOC7zqknBmRCYeNqmALmQKpf8PAcGhOxFlzo2OhC4bK8FOsY8RXLyvQSxtSFx",
+          "places/ChIJT21bCCtiUzoRz2HuhAzof0Y/photos/AWCwydgDOY47JEZ6wgJgLBieDnw2CdFIngoFbwRwIMFOGQ47HkZNKCHebPX-ZSjuDKFRgDLftc-NKYevwJ5uoTVDyYckMzp6NmfAgs_emJxH4SiIdtwEuLUmPewdvIo1zFj26P9TjZInOhif8J-PlvbH9uuOHML-HpTmTJ8VU9UoOc6dMSEz8Cn2w7yuSPi0JXRtHVX2w0R0I-Q3SFNLKtJldm88rmBbW-I12cBFZphJRzfgRMPGv8dbBlfQofwNxKkempSPxMxN4kTDu2DVCAE5vtC3-41HCFaXvLtOngwW0llGzLZpDFdfhZ6E7LYm6PMx1QZ8wKt0L54Y8tQuZnd51sltNgM5TKXiLFOpxUp9soYR3T7j4fRZAgie5CCk7qBvs2rdaHOjyHrpZPu1qlXt18AV4L8gFnogrrcAx-pwm8WT0BjwNsAytFu6bBBuevJR",
+          "places/ChIJT21bCCtiUzoRz2HuhAzof0Y/photos/AWCwydi29HGaqrC-HKwyxaYQxrBE_jjB_dBsiGiKFtkUfXFbU61WoXHrCvusNI7L-wQdrL50TKYBcZB-cMPOz6uhkunAIx4rdXRwHxzweh__c6_80r0QO_b7S3KkDyo7L1vvsqmwC-iCt91wSFtC1ivAAVihrp1t1zvLnyVa61jA0Ek0srj_OlYx4uceVBjqXD6PTrGnS8hYyP8w38wqmMJkkC7Yy5IlzUbJdQvoQoAieDmBd6w1E4C8ckzP99-NmFJFVJuIEjZ9wSfHCvLPxitw_DV9KAlt_McgcM4Sy-G9C3gc8ua7lo8_1mpKCBYfQI1hpzGILUpcueIddxYmXLwk0eKlgy3jwwN-G5iKZBs54Tq_COSDNXnY_qjCos2NHcHnvYJAKNqrEN6vx1HNrESKTYf98uOOei3avTmZ7DPqSQntKjWVaxQ9CQZ1QeDl8w",
+          "places/ChIJT21bCCtiUzoRz2HuhAzof0Y/photos/AWCwydi7jwFAyHzWmAwiidW-Sf98FkfOwXXhg6tFXC3Thx2KvnDiacs3npZaEOB_HUfY0wHhXcM8LvnkTM2NdvEt7lC1Z5D4x8sss-t8IJPUZT2u3rB9jbAZfBH6eW6cRzZ5xKjnX-SZSCfHAPOm-jyU0DP75cV5DSNF3v3pDI3QMKwaha3ovXnLKsgXSmzXAeS1b9VHOU4VElT7DSugav9gcj6UChGjsd9ff87C7s20gG5zumsn0RatSkDmEnIqmJ8Sb7HJEiUsH95HGbJU1h3P6suxm_kEeEkqvK6kSyXFRDIje802qYoHwO1oUKzMXezucp-KDnWTcoUaF8bI7qE8l_pJVJQUp-mi2EEQjSCXKUwaO1ywm5n3ABLg6a6EGGCGlIfTBXALSzyEayhV5dBvs0NSZhsYnImIcWAXmYHpPNQfNg",
+          "places/ChIJT21bCCtiUzoRz2HuhAzof0Y/photos/AWCwydisDqWG-BO8od3XXtWP_2gdI_wwL5yvyJwz5bNsRA8QZpuPK-nUIaVSSfdsfre2VCcQY2_8jgu673xo7GOY_ax0cg4z60JO7fI4JuRLiczqf0tLlzzNgErc8WwILiqE2W65N6uG7rlVrvDHJ6VoIzsc6DsRo4uDTwD7aAdhNzp_NKq-e0RqAfawalSm9JUPMCJeXrxd_lQ9DS6XRXIAYPIuXbOoTA_3L3gGe1GAVGDjmZNmETjxKUSf2HuZyjTR8tMs5HbJ7GKYxbh1uX21Qjugx-_APCze8rtsLCmZiJO9bP3JCE84LRMJDFQlNgHtW9EKkP5XfIwHv4AqvM9lA45QarED0LwhMdqvoygXaPwcDSxUDDMmQe0HMELIWXjS8Wgs4HBEqaQAzVsGlAwBDEX9K-hqYw0PMhCPG3N7zjQRXmR6yhrgnjsaJFt0TnzM",
+          "places/ChIJT21bCCtiUzoRz2HuhAzof0Y/photos/AWCwydgQHoDY82TVONofBcoXQ0JnFqOtnat7IEF2qJCiblItUe2kzYHVOcnmUov4AwrgruiyZ6yTEGdggBlgO8PdYAu9-HyI6SdxM9uvguPJPoeb-sXOHVqJ8y2k76kbAmj4GZWRPmnVoZvchfNnyJwxyIgQsPcG0eBvo0GmRnbrtISZ3UEeu3hNqVgwZ5Wlhh0z5XpaynT1KFKjoDFQNUN2BzNe2UvRDoxe7Y9VtcFOrd5aEm-MJ59Po6Pc5G4MCyRaTygQmrM9uXvqgGsc9Z2oam1Xsbgzc03m3dIzLxWRzc4yhE5f-zKXKYSRrJO4Ph2Bk3GCyPLiTnS_4OWYySdPrTju0uQHzP-PpSIcJ3Q3EoNoGYUF47lwEwBDXxV-mvy032_9ZKHAd-6MSBWCBva4NnFEreLVkQIg8meocXLE8EyeZw",
+          "places/ChIJT21bCCtiUzoRz2HuhAzof0Y/photos/AWCwydj6smGLTRvK5jU8O97D1HKMDTzQ2rAlu9UI--KH68prRD1xU-WylotE0S9JpubbuXgVBCaNjvehDlGpaWYPV-7jeJVvF7xd1F5A7FtTPkDS6qsThw7w6DKhRAYOOKbDwg9dQmbIOBV9DLrL5IkXowRT26FjZsv0RXIZIKKFjk7-HWhLG7Zl3H6KfXWamH5DQvDfuCk5UXTJ-CD8sOStwI8O0XR7ewzQHJFJfjdxkfww_sOLpd1fIbs471KxenaeKQcbjd06eSS-NAm0I9Q0YIXQXvI7S2zbQRNlwVu8xFX7tdqkNSL0g0XK8imKmbGiwpAFUqRhRmpafKfnkIN1QzZRYkrkxXgl3tViq_kwU6sGJva6NQ-niOMyL3zJQ4lo5XgFEdlZjmU3qLwoyWtugYczEPkmyw63ngDUxl8iUXA",
+          "places/ChIJT21bCCtiUzoRz2HuhAzof0Y/photos/AWCwydjHnJGTZW5ocVcgeOvOR2catg0Yp6CBeUFWNmUubhUmPUMf_xuX-r41wo1lOuxLFH1w2eOkG8XHJpvNsJY27NOVmwMEttIy6RYqKr4R2wO-8RO-ngpxc3Iyqts4fuxMrTUzDdaLI8MCokVESo0gEEQQjO5r1IWN3ff0vS9-hdl_bSRW9A-Kb3IBmoTzaEClP5q6-WBjGhDcSZBFgEzxDQTgeVd4JViNo2mu_JOVoxvesb6yMs624IoMpIHYPFW9jnpEMzDb1cKqB7VndkkhlAMAlMuSzeiUpLXeXPAXUmJI_z9WGVTvDeFIWvqYCRTjpGsOWwzaiFHKVaUBg1bvvyseeAcYe28MRFPZHo2VbhRX0XrSkJDRBYgEf4UjdzQSNUfGXB8kkbGS_QHIshq6ZM2PCY3SRtJ7NkWbSSdGHSTrQsu1",
+          "places/ChIJT21bCCtiUzoRz2HuhAzof0Y/photos/AWCwydjy3eMZobrAkNymRdVMXzMixgkrQgw9KVT1bC8Rkva36tTJ_nESFYmS6Ri_zL5JvnDZr77Jm2RsMHdSh_YCyAMJVO0D2bc7upc2PrlV9c3yXuBZZwZDvMKMJ85oercO-ITPWkgJ2fpAe8G9eq6pWXSWQ1kQifBt4FmRNVoRJe31Jk48BzlFU140fGk_0vbPzYseGs6UJk7r5DE5m9-nxrm6iJJadzqdj69BVaai6QalYIZQwxuQ0CoYmdLS_gVPruUfR28oQ2U-c66PWEAZ60KF60ZxYg-rYPJw1o5i6iLM_G547POK4qE0tWlYGZPUoYz9ktceaGl9kT7SZO0aC-72BBmbdctCgQZ7THC93yfB-LxSHx5O3DB79T9HUeA2DIC1lI3byJRVm2uAuEz5vB7IbF0qj6X2G9ZON11l0dVSe8hpAyS52x36MLeGAw",
+          "places/ChIJT21bCCtiUzoRz2HuhAzof0Y/photos/AWCwydjYDTCvhleWVw3JL3oincIfeZ466KlyOBWdoQm-2UQ4AeW3tNokomB0LpgHczOMaOTCyIcmw8mky358KPpsl3C1ezHYpf4vUMg6RbtYXA4_h4DvaYuCA8lJNG-z6p0QJ5pqFbQmxLcJKJnpXh4rY8mrCX9odcmxZx7N-m_nv0lq0xbNfhV6sBtBUc6GnLf9_-6uI709aT_RkRs4SNVF5kIgE9hpkM7yt3G_1cTy_JQKa2AWEwaNAoWom7DqbMu0C9XjqFvo1QweNDf8hCxutEIvTGqeBVNQX-5sjjNy9p6E1WkzCFakBwFw_mJYiZsHpbnecFPTKTDMyzoz5j5ecldbaEqpQYBYbpH7Q6cyw0YoqNb9YyI-AN2Q_gsFkd-jXWruIUODjyK5h_bB05rT7vprUuh2NUQ0F0PED1jMAQTIKA"
+        ],
+        "__at__": 1786798950.110678,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A lovely café with a warm, cozy ambience and a perfect spot for a relaxed breakfast. We enjoyed a delicious Classic French Omelette, a flaky butter croissant, and two smooth café lattes. The food was fresh, comforting, and beautifully presented, making for a delightful start to the day. Great servic",
+            "author": "Riktam Dutta"
+          },
+          {
+            "rating": 5,
+            "text": "We got the Cesar salad chicken and bacon & poached egg in a crepe. I forgot to take a picture because the salad before was really good. We also got an Irish cold coffee with oat milk and a golden latte for my wife's sore throat. Everything was really tasty. The place was super cozy, with lots of art",
+            "author": "samarth rangreji"
+          },
+          {
+            "rating": 5,
+            "text": "I had a Latte, pain au chocolate, caesar salad chicken. Everything was tasty and delicious. Would recommend this to anyone who is planning to visit this restaurant. Rajesh who is an employee there, clicked great pictures of me. Overall 10/10.",
+            "author": "Sahil Ahmed"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing food! We had Mushroom Tortine and Creme broulie French toast. Both were next level. It was the best mushroom dish I ever had! And the ambience is so good and cozy. The staff is also very friendly and kind. Definitely a 11/10",
+            "author": "Mahesh Sreshti"
+          },
+          {
+            "rating": 5,
+            "text": "Compared to Indian standards, the food is expensive. That said, it's the same with the reputation of French food around the world. It's more of a place to hang out with fine artistic displays and a good book en français (even if most people I encountered in Pondicherry aren't literate in French).",
+            "author": "Alvin Ma"
+          }
+        ]
+      },
+      "auroville|pondicherry": {
+        "place_id": "ChIJxQ9lgJNmUzoRMgEU8kVhy10",
+        "name": "Auroville",
+        "address": "Auroville, Tamil Nadu, India",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "http://www.auroville.org/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 12.0052483,
+        "lng": 79.8068922,
+        "photo_refs": [
+          "places/ChIJxQ9lgJNmUzoRMgEU8kVhy10/photos/AWCwydjkNBEoNUmH3f-zvIofjphbpKfAz_lILh_uBFXvNxlMaoFIu3aYD0gGrf5abMj3iEwtSbmVZcBtW1r9UK5ukHNHCr78aaAMIcQOStEcy5OcD-3vwpuGNbccE5FTRZiSjlyyFWt8bqKE4PDC__qK4lmKTXcJ5N9FVuN8AQBEqMyKs7eqQ1e_rBu1UHQX3tE6208N-Ba-CpahdoXFkpVt66IlQ-i2EvDLOOcDnZVjjypLbvWFuCgUBoYhurABbugV5z7TUYtSl-BecftW4fyyRHACP0dOze6b9ovZG6JCKH647cKJcZQFZE7sU1Q-A6Doyuo8ZxorImG4aqDs1TTvgXiDcPtiZwEcEvboOSUQ60jc2lHUuijOrfuLH6-OEM9xVQSMdzjJfv3oOK9CpF7jtkolVkZbhbIaKglNjWZq8RRA5XBM",
+          "places/ChIJxQ9lgJNmUzoRMgEU8kVhy10/photos/AWCwydj7EeFhyzX6U1cofXM-ogXLO82mDCRgJjIcvTIcKpCuKnh0LxeBLoq7RRkjbPQeO9bd6t-SQG8YRCVSRIuTdJ6jfT_7fkshunvROeXwN1TENmvcPf2XO8_yPwjWV8bnWXprB_cYObwmMca8vpwfS3IQWYXqMnXXXDSW9vlGAUI06jk-hQWeli__q6UdiNi1uIWE6npuATmnu49ZDVixh8sfyicT9pXkpYpBNnA4XxgnfB9pAHeLHJt44N3Yib1szOWiq3nAhlV1zzr9AotZPUG8YcTs7Zg6t2TOn_Es4DDOo_gyM2A0Mf7ZWnJjpynq0axfZ0DwID1fRJSkz3ff4LWk0QeeB_nntXdHLmsjwvv-OE0m6UrKV7swyOYebVltL7OynWS_OuLomp9UsvMylo0DuIBBzssLPEihNb1Q8EszzA",
+          "places/ChIJxQ9lgJNmUzoRMgEU8kVhy10/photos/AWCwydifPnT57dB5MkJ-qk4xP5kMhB7vYlLbDfsH7U-2ou65SQkXO_zXlU5mCwFl7VDa5Q2MzU4dQtQigbup9_y1lV6NC2huhf-3FFjvTQ7SVGTtUVGX9dMHK-B1NhxQY1yifJXGduIUH3j2MSgoVx2KM1V8kdKmD_vJYzoZkJ175Beek9YjB3rBq58dZ9IYTw0riAZq1xVRemqnSAkkRVKYNlDZ6WQVTxORDbPcjGfUHCaLQSoiGHARYDdXqcWztl__BHNlWZCE0B1sMOkbf68iGjAjxGd47eZ14e8Ka9fbBbKu0a_IsS7MQ0m910fdkJcdQDZehZvsaMur2vIHMvVkBuarDHLwmNk4H1icpMSUhDJukUPaaJHdlVW9-1gLn3KwYDR6X3MLoqW9Iv4FUm9ATU73cqw9wi1bdqhSABTfBygL7E8",
+          "places/ChIJxQ9lgJNmUzoRMgEU8kVhy10/photos/AWCwydh1H0uS2WE07AeY2OfoCaCB6JEZrFYANyHsDW_koNX3o4pCpZksrjisNdLDvbOidmVinhW1s-49rsgn_ubWfQt8JOCAfPSGRamMoVHiZJvtBFgzsY1gAehck5eAtsYrCSIgHfnHy5h1BRQHDL85UF8q88qPKqAGgfbh9P_wZtDPRzVfoLd5-JTOsVkettJafkMmuczrZhLo9rCcltebqQiL16bfvSGegXgeZoJh1dbFXHnXAjyri64GXg9iCddtj9sQP0aSNkTnLo0Q154-9YrEDdgcvBiZ3wWbyFbAgvXRzqlZFMrsYMsm_aBi2JW3QC5_PuZl5OprAYxgPnVPqpa1bIex7RMfG_Ao5-v9ELxCJMCIlx0QVmk1hma5zeFqZUzE7ZjOyX_OmK_TLRg55LgqiBE-Az1P0r5H1iSqXBPqbyjy",
+          "places/ChIJxQ9lgJNmUzoRMgEU8kVhy10/photos/AWCwydh9KuT34_I1L13xa8CTg6qZyNEDJ6RitI9_5n6hUmTOhNDF3TJWAYvgPpPHKwfxHXkT6FDpEocwWPHKLP1_Ho6fbS3qC9hakYSx1U6CyRaUzCQj5UJ48kwCg79Ef-VG5L8juKF7ruglqoxdrIZvaveE4liRsXf0F6qAaIN65fFdGG3zNBm_cnUXBwuB6Dxo9sTlJqGhqhJtQyoiP4mkNCoqalv55HLJYmu0rBaE2asrCPojowaTxZ7PJoBDBja2IPilW7D7qAbbNatXqLOQFA_j7cbXzT6zUm_LF4u9tvYN2ko3jWI5ynnT5mVeaR9Ymo1Q9Ly7cvGZ-KFuCsrXLh3ujErKy4j_4h_JumD7hqcEPIcpICoFcoAODYFb2s54NAUNU7E7sqlH6x2AusvbPzG3YhClqcNQCrYk-Yjzd6Msmqep",
+          "places/ChIJxQ9lgJNmUzoRMgEU8kVhy10/photos/AWCwydjNLp-HKDTo4n1wNNWSOl1nKaaicbPI7Q02Emce6zDiuNU8_dfGtV8ElOW_IXU8W9kXHlHafkkqr4qBRB5l8nwPBZnPdei6_XHUgfQ7FYJIoUTfnpHfjZ9MP_rT3YNUez4zqIS6vUXfGiRv7DBUe9DG31zIvMjEW3qxBWf69APl-bR6iD0Uuvts0i_tHIcbF83Gy-PAS2DgMDNUa1YXmjdYZYz97yijWufYiUo7NifHHtSkdxezOLq53tFTXT-OxgK96xSY6ZQZBOAa8AQaJEqkxaeYpjyNpdGUE_6vYb8idgF3T2drf6VVYAFoCeDa0YY0_DPXv2CNrkX9xU71s2THrvsQkpyJLKfXh9LhoVLyyeqjM661-Z_AU_H7mrlbdStnh7RYN7ysbL40vJvnrI8mwdCWv4kg1dDyhUS5XqQmAw",
+          "places/ChIJxQ9lgJNmUzoRMgEU8kVhy10/photos/AWCwydhf0M4q8xPAW6nB-aLX8i-_RhtyIhTmb7uWZyEXKPd5BsMYSH9hgm3sTZzU98LpInLVKLRZllpxAi_MeDglyaK6YolRuuv8yedORtYRzMyg_lqOrLR4S5degjM0FzQt5hz8FqNfCafkyG1ia2BL28tDQ6nx31vnlYHCDJNaFKAEUEorcSaB704-51MFqit18Ud_ysWTxDgevuF00oRaZL0pFEG-V1qGZ5r0SpxkvVH7kmeLBu9D-KfyFBD8spBSWi4iGteoUBOvKhE1sMawtVe8EVLwjKKCfe1GYPy91WFDTAJhVpKGw-OzKTSwTL4YR2iHe-SlCX3ev98yBlXi1XLLEgntdp6-YVAJxjRdJxpmhXE4lGpKyLEKCEPdOxgkye2TIFPCvfzsRO9w19M60fjxk_Mk4PSWxAEJKiv68pfRkA",
+          "places/ChIJxQ9lgJNmUzoRMgEU8kVhy10/photos/AWCwydj099IZpoTGhqYmEj4IVKacSJgo0c55TnXhirya8YbgtTC0n5hYsl6c4zWWSgrdN-aN7kAO1GfNMVtoWzxSQZdMrUKIM9BOpUdkoHPSlf3xMjBQ58lcOLP9SVImP5SDsAu1TDY8EYbFtiBPVk7D_VrownUVDJA_tYh9ZcjNOnGfoiXTc65I-FBk8BJ0w3u9WBjcnN9yRvJggDaFJRJYm4dTMncc7wqUWAIlpJI3CYxAUrfohFNM8bqWFzxYl5XXzAYpi5gXtThDXIOMI1FbuenL8jShLI02HGUtCl6u8Lbi5yQBFayuD1ICq7-Z8JMP8zNImrta2ytUFRnXZYNzU_pFOY2C3kBOQCg9JhczooKLejLv9-tBsXhseZobehYsd25uZ46IN9WmB4c3AP9hAZutGmHOR2cfI04QabO75vSLk6Y",
+          "places/ChIJxQ9lgJNmUzoRMgEU8kVhy10/photos/AWCwydhoSOF0urdaSe2RKxYrW1xPPuOnSiCXngvffoyyp1bWh6-Ketc12Z8G8M5CQBBcWOtuyjooaPsFJ4JDwCNB9F7_FqCrC53u2VhLtG9CNTZkdXnxBOOnDzJxr6TRYakVGCwEjlJ3g1xxHjKe-dya84NXcnwoI8IgL5nPqiCtAeBui2KEnGEVjGIG09lzhbZYEpYRtQrpT5sq-_vT3XQ_UUwoEi8bpzYiTNGDEbuGmtih1qQnE79HzK7DCtg1jrHsimkuOZtlQPwpY7mnpoebRSaeCwqsDa9byitEk1Z6juh2zp2XQquY0mocdwUu8Q-Zhp5jG3BZZmMOM19H3HuUCG3QuEQhpukg28XddLBn6aBXG0loLCleWr4_lbmZut0N8jwaO5sOA_r0pY_7LB0XaSs60sLjs4oWhXo8Nq77a44BOA",
+          "places/ChIJxQ9lgJNmUzoRMgEU8kVhy10/photos/AWCwydhd7qeSPx2Eey9mu1v6IUSEkptz2dqqOHIKKm4IYEMVF4hZ73mR-jPLCCHALrJs6LBHlxAq3w-TnwkUfWzMDrjlM56nYasfB6Hlkp4WZb4XfH4zqKDJAyOgQCTGMdH6JxFGR1jcNWJNM7ua89q0byDUlN-I1za58HJS1Ramm9xvzHRykznmcRRRzguqfgP6FWZxBxSiKCY71btrgzb75SkEQnw0zuIk2vLYwiO618RwT6fYLguvHO56IWAz0v9BKFavGaHUpEo2l5IP0LlQGCptRiSVtAOO618-upsLJ0XQzTXND7I5HOajmt1Qgbx_-NNKFbBwyczoeFiJ1eZmsshrELS5rmivTJUyq-8xvQife7SWfJendk8gbt-bVeRlJvl5QDMPPJ_r4RwWi_9guZHtuCYw5C-SqwjTVFe3GeAOPA"
+        ],
+        "__at__": 1786798950.468622,
+        "reviews": []
+      },
+      "serenity beach|pondicherry": {
+        "place_id": "ChIJoRP3A6ZjUzoRxMA1IxiNz9A",
+        "name": "Serenity Beach",
+        "address": "XRFV+8W, Kottakuppam, Puducherry, Kottakuppam, Tamil Nadu 605104, India",
+        "rating": 4.2,
+        "review_count": 2111,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 11.9733731,
+        "lng": 79.8448683,
+        "photo_refs": [
+          "places/ChIJoRP3A6ZjUzoRxMA1IxiNz9A/photos/AWCwydgYTvseUvTsff9N81J5joTuFueSDyRbJJXgJenaSLdytaX-kzze_QHsEM8TDgnsJoU6ebT8IJCbG13S8d10CleiNWnvWm2Az-HpXTjcaJs5hwjm4k84jgh2-EEaRLaSZNrs1raWwkr-8AW_iPtB5Zp4Kr8zoIKxNyPje0Tl-5Dj9T4EnOytPrTKeuMygYOQAv19_Tx0yqy2XFaDqDNo7ifWlPHEMaG6kPEf7pmvA3BGO_sLVIMUg9tMtAu-ziNlg9ltCzdKf4UJgpB2bjmXs7EAaGeOus9AG1LDU3U1A7Q-rutHGrMXdmtTdAAbJ6etTOmkdmfEFAEVg75Ely2HcREd6DnF9cPJV4cLkwOYPQkiVP9M7yyfDpCBlKKXixXpGwchOs11-QZ3NVlI8tjEA0IAHPcNDpPW9aDbkXoAfl4dEA",
+          "places/ChIJoRP3A6ZjUzoRxMA1IxiNz9A/photos/AWCwydg1ACINZdaW8tls8IsWMpnabIgmNy8Om2tillaEfOFYK3CMtCgqXMqImRUyDC3lj_wNbZDdbEpVoHRGM35wczOtLt1k1IbREOljQqYmv2sw45aOGbCCThOjZix8rf3vvt25UL3fWhIIvTTpHdg-q3zIixm2NWTdZA_JiBxuZFJrCzFM-9HNGU8wXrkUOZ-6pKRUnWss9PIUoHoVnnkAe710YcoLenrbcLa4HscogWyswz5ZNhp_fzpnTmQSCndQGtebrEybqDShOu7v48-3uuQwqFjrOFgyfQqlsOHyxnh-KUZyLU2jYoohwJrqhHdiQTsQZvp70NrTmywq7hX1QPzCnCyfZVhlG-6ezAs5rYaDoBb5JZXpbeohaoY7UCHXWMd3BhXFLmzEIzqHI1a8hNiVjcn3NgLfh0MVqLh-ReZtW53aqKHxyvFVcRJHk9Wf",
+          "places/ChIJoRP3A6ZjUzoRxMA1IxiNz9A/photos/AWCwydjgsRo7Qyj4dMZyUcX-eBjSKrrHiRTcvqQZWtMEW9joduKULxne9NQeTAqurm0dNGoNMBVJH4uaJvtkn-ZGBdxCmAzKGpxjB_PYm5CUvQe5WP7qx4nOiJGADrOCxgzVcYrLtLSzI4mxjxQObLA92TPo2Ybo4G4oecoe6ANLujbCLaR-LnzXE-VWPWKK0V1_8VEor5pBXsvLnSJ4MDfcedHx7iQ7ViXucBzFG4FmXcjBECbwWBmhng7LCV8Ce5T-l7ZzLmADgrjsB9w3TLCGdus4sTx2_eRG7pnOdokDTI-9gn4hg__CM64RtJ0a2owqWWlpeZy8TVwwM9wY_hKtP2NkRxVwU_UbCKWJ3z-_nesVMYgKAuJiYeHMnucown1Ysb17DzpzKLSBM7KHianbbCf8IfbGMBMOWTR5eNfOEhS9rw",
+          "places/ChIJoRP3A6ZjUzoRxMA1IxiNz9A/photos/AWCwydiTxn4fNiGIL4TxVb7Hd4VnCawdqXlZwtPtEEr8Ou3Cq-wcXnZm3QNCCcLgj8e8kOvohGA4Tj8Yjl6W6_V45w3X44VTan5lZAZZVDTBlw-E1HL33Lo6J-lJRKAtP-UIrkAYJq1YQ3QuVeP8ahF-hBH_T2d_RsV-CN8gU33pNgZcwywYg7zl1cboNhcQtFZru0kV_Tz1IJYH3bRzCPSSyuYTBrJBmGd27RXtCdTHdX_kgC33XNABE-nTJl1dQmutu5tTeJdTE7KnFbCGDHTHfkfm_d6aISHkedRMvfWnmAfaJFtcmzb1xQdSMeEtLNca0Vp-B00ngsJLXpHYKmwpyFZbHDsm6rO2GSRupgRcycnHyfGbpmLgY73AzB0OYdWOiFuiWusbYAsP8AtjClaqUH64wo4ny5PuLuv1x6K9hVZd6A",
+          "places/ChIJoRP3A6ZjUzoRxMA1IxiNz9A/photos/AWCwydhgoDqNBVTrRPfcsz_aFn9Lx3qLsRQ9tKOrmPsMOSxFUjT_Wyd2jHKKUqKdujaTWqlHGSJivBhktbsLccOUYIyAZEaNB2WEz_q0FhWgcHSvMQky-5CtQFLT9Az49YSwvReiyVz2_QGsta3qJyoKgTzksufdQylJnK-pb0AZy2KMsviyWepZjma_vwGLHT1lU-SXzICfb-AX-_Yjmc4S7MKukH9MvkmprwYD8fHbIVNm9s-OKL2-DjiG1x1eflfLdEhlJCjDRt4emk-RkFp5keXM--x0pRhJqfS3wK26CHCIWda2ktitC5MWgywJ9Qtz6CAtKgZEK2W4K4H7T6803tXddrVoFOrPUKydZXca2Fu5xDJKtIj8CUiW3pqMpt1MnvQmlya0jlEokHPvdHOtnVDLC602wEUZ8TokQy07A2iWaMY",
+          "places/ChIJoRP3A6ZjUzoRxMA1IxiNz9A/photos/AWCwydgRlJKJgHR0pF3YUJaQYb9zl9R4r97GF031Rm3kAbkzojJ8wh9OL1jEFa4n2q9pH-uYE-N7lA3RgX0MVt1xP-r8kwZsFUY1edMPZ-zyPMErhAGVSBsT-enSQA9GccsQsvjpPoP-U22Lfugz5O4bSmPRVhSeuFrpS8K59JKLarY_l74MMXKc7nKo0YJs6gNTNYE-Ld9uc4s5lOd1SCHo7i5ZQTBdtJcJfCPi6_8Qnu2VOL5qua7eELcVA_FJlv0s6lxj763CWnwG-hG6Hc_UV4nFPJ4qeZaoL2WPdkdVrXTDrOZyXjiPckNMRG221RoCKmGGdCdXTKB7KLobaFlK4gKM0UsPu9NtSzNwS7gFnNSOLYhtJ57qOOvzvV4G9KZADbJMLYMVwDoftf4XyVl-KnALtz366_KCa-oaXzxlFJw",
+          "places/ChIJoRP3A6ZjUzoRxMA1IxiNz9A/photos/AWCwydi6o2IQenmadcADbwunNVcd17BrDUphU5EeKva-k1aPVlMceWVBXKEEuOhS0D_5aSWBzVbbwRc1-7gWnCLtQ5F7mlFOH7gVflCeM-D0o0ARTlyp8naUp8pv2BbdTeHs6wPfK8S965gxcixzXYnsnwOTXJn4Cvu5pAYoNK_BY7egUKd8kWHpBqtKXyorjKMCPmev4JaS1ai_8BXHIgLdka7CBPRkcjl-wjbsY4J1D1t-nbEdTDwduRJ-ypAb4S2uMYl1wg9fK0hawYU-UuLWc0vn5JpLsoz_6p5LJYEK0NL_kjo1KZsahkNhMdkTzT2zIb1vfNqdskikBgwBHKncjS3wTA-f9mJyu3iiEbdAB0vyJ6iyZZDE8h7RG6mAehtyyZunhJP99ArOMNrI76jPUGJ7xgiFNB168vei_tKwZIutXsU",
+          "places/ChIJoRP3A6ZjUzoRxMA1IxiNz9A/photos/AWCwydguahfhBk1FlMjypGfnTMkj-cRS9cjr79rFMaheRhci0-DZe0t0les2kFI-aa7JyBDJpB9GsIfrI7JCYpq0H5YOWwUvJlw4c12Xo_bmFmv-pE45L_y591AZr-QbZ2kW0KLs2lVW7iwn7O8OSgV8Cywi14hP9GDs58oZ59upN_2d1vEXgWPsK0pXta1wGATNwkKqePWRf9P9O68yoywfU1R6M1PYRkYwxF9RfctawKZctPexk2xuHYsAUyZWcL_HLRaxqc6zsEqpx3jpY-_XRZD5S7BEVoJv2JBPI9y40hOz67ncNZ8Xg3OWGCXnob0DaoS6c3wrrYVnfgzY-BZQdAkyEhlJEqNBrh5I865_Jsicn07jWM072DW4hEudOcatfeXKVTcwgfI5FP7EqG4dDRVumT1lEove75s0E7mcZbA",
+          "places/ChIJoRP3A6ZjUzoRxMA1IxiNz9A/photos/AWCwydjKRy-ZzFBLRiJ-EJo3cb9z5-bhJRdhh6sfff7wEE24zwzExehGJzDOxuRsas3ZUfvcUSdTpDwMc3AdALbn2dqJJD4X9fkqZvUpdwKoxt_eDel3ZEsfRuv3buQ-JglrzXOmV90qm_-vigvwJyocmgTgVsR0x57NfHVMP32V0RejaNuIxUOlTazeFiftqK2cuZBmrBR9P1XOKZYMIA5yr11kJZ4JHgmzOoZBUrI121FS0dVoW463Y7F_-qcMRdqmTKa8P8k3TkthHGVB2jRTT2_TEmO9R6LWePhx5g_5pkJBgajUnMdagl2RXj66JNA4OBxg2rgcfMYk51RI7CHbPYBv3OI2Gjsfx7630_AVeIf4QNfn4FAb79gqD7G19mTjGRNR3_FnQeeLiTlcdepE51INTy05CDIhyvXpi_xnVh58Uw",
+          "places/ChIJoRP3A6ZjUzoRxMA1IxiNz9A/photos/AWCwydjcaU4ISjOH54bS33-txn2NKohSCkS6fJVGevGqjYj7PSh6jXmk9b7OXBpi7vR-GdxwoVcHmFw5VLlzaTJ4bPUdbbzV4WDuU_aIflvBR3mnwN88b5sgZLetXZBe5XADC4efx38oADWkboCdCMPHn0QGgSpNaaLHZQwaRuFMDaLOZSk0-PPe4itM2gD07XfU7krf82VRY3-kf65fAyMT2C88LR3sLQN4Bzjp8FWvONwm_2UkZ-QnaTUVZsHM3Ltp4wAopA3obltLO461_oAfaU2UbAx3ixjQlm_yxMHMnV3lo0ZcWrp9YIjCZv6uK3infZ1RrUP4lBHAprwwOeLNzGd3VC2ODJHdIilNc80YTnYW_yTvFSOfs5OyVrDX1ChVU2G-q-AOB2ppcnlTKcmnJSRlKrmyxJPG38lDpTESPUUi8ax233dQzOak0_PqqB_z"
+        ],
+        "__at__": 1786798950.784995,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Serenity Beach is beautiful and peaceful, but it can get crowded on weekends. There are limited facilities, cleanliness could be improved in some areas, and food prices near the beach are a bit high. Parking can also be difficult during peak hours.",
+            "author": "Pallavi Ashok"
+          },
+          {
+            "rating": 5,
+            "text": "Serenity Beach truly lives up to its name! 🌴 A peaceful escape from the usual crowd, with a perfect mix of calm waves, golden sand, and soothing sea breeze. The beach has a rustic charm — ideal for a morning walk, quiet reflection, or just soaking up the sun. You’ll find local surfers adding a livel",
+            "author": "Imran Reviews"
+          },
+          {
+            "rating": 4,
+            "text": "Visited Serenity Beach during our Puducherry trip and had a relaxing experience. The beach truly lives up to its name, offering a calm and peaceful atmosphere away from the crowded city areas.\n\nThe sound of the waves, cool sea breeze, and scenic ocean views make it a perfect place to sit back and un",
+            "author": "Kiran"
+          },
+          {
+            "rating": 4,
+            "text": "A very calm and peaceful beach on the northern side of Pondicherry. The coastline has many fishing boats, which gives the place an authentic local vibe.\nHowever, the beach is not very clean, and there were quite a few dead fish along the shore. Despite that, it’s still a good spot to relax, and you ",
+            "author": "RUCHIT PATIL"
+          },
+          {
+            "rating": 5,
+            "text": "If you're in Pondy, Serenity Beach is a must-visit for a peaceful morning. It stands out for being better maintained than other nearby shores. The rock pier is the best seat in the house for sunrise and sunset—a simple, joyful spot to sit back and watch the tide come in. A Quick Tip: If you're plann",
+            "author": "Shyam R"
+          }
+        ]
+      },
+      "villa shanti|pondicherry": {
+        "place_id": "ChIJlc4YpitiUzoRdYwRO2XtHAY",
+        "name": "Villa Shanti Hotel Restaurant",
+        "address": "14, Suffren St, White Town, Puducherry, 605001, India",
+        "rating": 4.3,
+        "review_count": 8923,
+        "price_level": null,
+        "website": "http://www.lavillashanti.com/",
+        "editorial_summary": "Down-to-earth pick offering bright rooms & suites, plus a bar/cafe & a restaurant with a patio.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 12:00 – 10:30 PM",
+          "Tuesday: 12:00 – 10:30 PM",
+          "Wednesday: 12:00 – 10:30 PM",
+          "Thursday: 12:00 – 10:30 PM",
+          "Friday: 12:00 – 10:30 PM",
+          "Saturday: 12:00 – 10:30 PM",
+          "Sunday: 12:00 – 10:30 PM"
+        ],
+        "lat": 11.9296296,
+        "lng": 79.8331082,
+        "photo_refs": [
+          "places/ChIJlc4YpitiUzoRdYwRO2XtHAY/photos/AWCwydim0R5i81vnWnbHUAsugK2zP-g9qCdZ-NeF45Bh7TyzxbpXgSyapS6E8oYkthx3WoJMhbL6QIjmf7SxHHUiydhlA2m7OvxFwCrwx0lpaRKZL1ND0I9A3zKcffccCpjXkbrcwX0VavWH-eaP4_RQbwq4Fp0pxUnOCmeO58OvYyVsc6yCCf0uU9TUev24NfiE3WzwRtAtCiq1qDNiSGCsuO6LXqqMF1-DiF7Y9YSA_b4k3ck2TPBklKflHzOxShvJ_tnclHH_nfRERXG6-wVqHF7ss4PVlOApoAvTSGtZQZQSVRz87DM2ZLYi7oVYVSSFacGgnAiNMpJoLh8i1JX8qBEUujD0DiZDYYRyMOKDWaRuRzkiDh4vN7z1giJGz_CLZuY_XfuKTiTBWTtF9flD9k_X5GCevokl01wIfBy_QezFvC8p",
+          "places/ChIJlc4YpitiUzoRdYwRO2XtHAY/photos/AWCwydh3VeqUZFFLI0nR1SkVOCUU3J1DGVHY3w9IoS64yP1zU0DSsSGxoMr7foLSV7P5mXOq0Mhfu-nDmTd76N5N5rNhaoxRvJWwYi5zW6YFiXL3Rumsl8X1AhVc9KlLcKr6wtn9qWvFY4lVb8tHESl97lVPGPZlWe9G2fRXhz1A0P--RzZfngKd_lG6QtYRQwcTYhJ0OZqQ-XUIvfaJ-kJ3E3NI33ha7aCwvoguTmL5OGadUZwTPqrRhEQ6S9b4dc5EF-DR3sBRuNf_GN6rj-k1Rrk8sOI516wTZO1X7KAL-FgeGUEV-4OpmGaSfGmZ2pr8wMq1lJFGkTzscrj35QQMGljHuuXOrytTTS9mosak71PNhz6ZkNYrfWKTN4XRhXGqbZf1uSRxH60FbEqdaBxgR2SYvxB1rZenQ0Xc4gmoKGQixA",
+          "places/ChIJlc4YpitiUzoRdYwRO2XtHAY/photos/AWCwydjzrtAL1FfNKznr5c3kK7mKcPah4gj-v9p3w6zM4T1cxyA0D607rHagEssDMK7pUcHru3aCjOP7HM8kF6sogDJloUv8TebMxVLH8Q0jMYWZiL9TppcUzySMQ-4xLwcBRcA9wxfSVEqQI-uYPZCl_6uivnE3IkjWGcgaBJyRsfMIXw-nO8LDhuShp-0i2-4xbwkONQi__tl0ldlntTRMmGd2s8VcZ08av4O3wJyu5S4tB4UihemTpLLu2zdV36xDoZ2cde39ojx7qFEScFAc2O1Ol68tMqPLBOOtkewb5WBe2Gb3v3JwRpb2XM6Xw7gLVEhHW0EzV6wjrEu1A5ni7j8zb4KfimQj-GVcU78twmPORrFZ5o430hmHL8l4mwQdF81xy-y1uay5vY-r8-ei3IvShFNa8ZdOOzeOkZctlt_g-w",
+          "places/ChIJlc4YpitiUzoRdYwRO2XtHAY/photos/AWCwydji6v_mi0IN8m30fO4EQTHA5VRmgyNnaenWBPJBZvEHo-agM1bhyCgZIz6_6NP1P-iCDi-8TR0Df7Mzgsd81jv9yGJrRnMf-IyMvAPcHnHHsjmYHsAgmP29We3X3cC_fmakrEojfhLp8KcrP9ZEqCAUSlR-CAx6fZggjD-oJ4pe7R96K_NbO_8rApgg_icgaX-Gjaef-clORN3R-gP9gFakQCEKZkSlH_3FqKXiCnCLtieSu2zG3FnFdGY1SBZMwsGL2LwVOTfNegVtGOwfBZi2y3klt_Crxdb3XUOeb_NO4Vr3V97vcpx77y5bzadPhEL2on2x_bd5P5qbCNRb0AhtGNHLLLrDF3nf1GMhy9JFtKc9hJpSfM0FPhNa74QOjXtu3Kie-tyLagVRAvHHaL_jRpeqs7c-CjxfvJ_wtKOwJf6G",
+          "places/ChIJlc4YpitiUzoRdYwRO2XtHAY/photos/AWCwydgtBhEyXMREB9vnJe2H8tm4PPG6LUJopyrwWwNPdmDHBJbd5WVFBeiq7wiBpNkJ0U4AuRzrRn0UUeqOBayu1b6-G0pr5cFKc--YnSIzCFVFPI4gdt8RRqeD4mGbPNsTPIyUi3R4PtI4OnlVkESSy3FLaZ8itBaglYnp2caVUmqZLoNlYie5loH4pEc29GVsCIOQMMmtcCidTfdDVCqOfvKm1oxXebh37W074A7UB47kHP1VC2wVOewHojMslqiAME_DD_xgFOt4DkYR_jMR1F5nK-MqDZEulhKUJNhbWcG7aI4ssRtCXGzx-53qIxta7_73aHcX1l3s6UTH0Dh2THi2ygs0d89GvPjZnW2SnVFJTxt7vNPKhiQraMZ22Vk3NCxxXxTc7R5jkewfKXbIvKs0W6VH8JNlEqttz2Z8OLkJPQ",
+          "places/ChIJlc4YpitiUzoRdYwRO2XtHAY/photos/AWCwydgsWxba2FC1a4oQNgM-k9iCUrAg0DdEWsdXGS0VoG3v8s3GVkBMoj39uTKpHmWrscJKDtGKOVYtiO5nuRXcaRG6bucQWw9KmvoeYwkDapY-AO1fRsLsLrTnp05Dv-Z8Wa4UHpfgq52aRzMYl01ZqZuuUnukMXnJhhsIcJ9cMaS0894Zt4T9zQV9ufrha5vh3Jzm25uB6dRb6YuUPnnNRyMGaBfZbb8QlDaGLQcEU_chguugQfeEc-VuyrjOJ5ok6GonRTEv0ydQlTorxmXfdfvUQcB2mO6oXj7C-m0lOBwFCzz9lfXUFTFILGh2LbKakFFYv_vD_3_EYQ_tfhW8NyaWx7WOWUqNPF02EiwHWGDzUlWxhJFkbamoaIoAX4eiJ5ehTI0smfsJqyp5DFOVRsk0KSAZCqE2v2HTKBmS93AsOw",
+          "places/ChIJlc4YpitiUzoRdYwRO2XtHAY/photos/AWCwydjbxVAtb8_rk9bG9L8E1LaFxej3ONHXtPt7WpnS65rRH16O_wJCG-ZrQ2QSLi0XU8YEWDKM97LF6HgKZseA1gjcfMpIoZ3ok8m_sw5y3IuMmRAk0pnViCYDSRuTWbaPkMGcvXhA7nx6cByHcOXwdeLcqNv7NfcjV-pquqpz7sVylL87ZDB1LydyG5SOuVLr6bfsuV0DWy_xrSCwX7SLzenTkAWWbuYNBOLETkk6BBqVG3-fvWTc0VzOy5aELtqfRszJlaPUSzcMxc5PUUY7_Pohcyi8aGEebdRAQGuVLMT11H9saOrqcbxi2ZMXQYmJVGHXd5nLwCfSxKMhRVU76uM0SHDihErV-tpiJh2NN8OAA8sF7ce_hZe6o5H596uzKBVq7cNvtX_xid4OzVluNHiZUqVUgYg0QWLLJ6A",
+          "places/ChIJlc4YpitiUzoRdYwRO2XtHAY/photos/AWCwydh5Oa4e2n0wutj1Zw90Whd1Agfj0XTyVxUWGoCJJ2PvYUIC239GsSqDl_-iyZig9YgQdzzfzjyYIKv-mbvQiSNmr1IxhEdeGUsQe-F7H2w-4mPpoWjYi58fOqNaM_biJrGHVAF24MOadENPMJkyLXE_dpzwEKhBgQlOpAwsyL8R8xjAxEZLy0bxqU3EBvWrr8zTp22Stf6OeMPNogV1Mbj_n2VP9iCQW5Nf-aObovfier8Jmrf91L11JdGVFd8svU9bi6DgcFUEicvHqqin4q3w2yo6EEI_mJ1OPdqTdweFXiLG4p5Hc-AWHBQwigMMZuqmvftu9Wvm3TwEoB3zPYqQFXYg6TcOQwesOaWp-KaLLyq4H7pimVuHQc-9EOYkOdgLE9RnJM2SgGS_iLz91EUVP0N1J3YGp6n24heyTKRZSZ5VdEFHEgWlScjdTA",
+          "places/ChIJlc4YpitiUzoRdYwRO2XtHAY/photos/AWCwydjGysLJG0PefPUMFH4i2N_RC_l_68Kmo1uv9ca8IIEL3RxNR5YfT8mVzgqZpA1hyjSOeFlg3Y7cJ7sE0LlqQe1s5CFcKI7x6_Nb9VZP6ECsrqH8wmrRWYfEqVc-wLTigToHs9pbziSVZekjdK1M4BlDvmAJpm8zMogtRiglStwh9mvT8jQpTyhDClhDS7V2g6DrcuVFdDF0rqD2_f6nb5P41qqxV1xtV5dPWxb7OLhDbdbs8ySVaRIZVy_7uicNOzOO5tqsSyvdBARUFrK-Bao2UfHwkdPIWqtKUgCxdx8TWY6F62qH4BLrXLrkZdK37oHZkYGw2lKnFxilVLlHhd6-5UUqDe7-5XYxKytsLQNgp-FP9gseLWbtTvOpbQnWv2v01BxkvwXC6oUH-nb7iQNO7ueSb_CRxVpAWiWfTG9EI-PySoqJPWaYjC46uw",
+          "places/ChIJlc4YpitiUzoRdYwRO2XtHAY/photos/AWCwydiBw60216K86zuIJLSK7kMjto2PYJwLDALpq_eTdJe7c8MG9Yol2OVS46il9EoTwYS0Sh1oNZ3JAnRCUVUxErtYAQIx1pOAJV4qS3ImvxlwprmgWuWNfYGNi5mc-6ml-2FjtFhnOPfHrk7ykOCYNE4sDyHimyubB4U9K9GY_rqbBM5Yd-O7cUVsfMDnaMuHs-eRdqWzdPTXDkhcQXFS06p1C-6TVerlE-cxhqvFMA-SMFxfoyzU9jqnEyXbeflS7LCUxttkG92d0ylu1ykBCfajEJbMYxm98o69XYpbcw5nMcTCoCwNhQ9lk-9JcnQhe6KZSsf1F6avyvSToiZ3u4Vqbdrls44LgEPbzAv5ye-s7QAPYIzpag3iOrHFpnJQb0SzQlLqMbliKfsLcrNAyFu4XKFj7TXmmobOTQKqp9eJRAsjGOpKoXsaRwiW_crR"
+        ],
+        "__at__": 1786798951.1231098,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "White Town Trip - On my visit to White Town last week, I tried Villa Shanti—highly recommended—and it did not disappoint. Sat in the beautiful courtyard, enjoying a refreshing watermelon and tomato gazpacho followed by tiger prawns with pumpkin, orange, and spinach — perfectly balanced and flavorful",
+            "author": "Prem Joseph"
+          },
+          {
+            "rating": 5,
+            "text": "Had a wonderful dining experience! The food was absolutely delicious, well-presented, and full of flavor. Every dish we tried was fresh and perfectly cooked.\n\nA special mention to our server, Sunitha—she was incredibly attentive, polite, and made sure we were comfortable throughout. Her service trul",
+            "author": "vedh maddi"
+          },
+          {
+            "rating": 5,
+            "text": "We just came for fowzieya's service she is the one always suggest the chef special and she is so dedicated.this is our second time here!!!the chicken salad was just the point and we add the French lamb was so creamy and amazing! And day special sushi was interesting and we tried first time here it's",
+            "author": "Agber"
+          },
+          {
+            "rating": 5,
+            "text": "We had the great fortune to stay four nights at Villa Shanti and we wished we could stay longer.  The staff were amazing and helpful and made us feel really welcome.  The rooms are very comfortable and beautifully appointed.\n\nAnd the restaurant... amazing!  Awesome local and French dishes with a gre",
+            "author": "Geoff Drummond"
+          },
+          {
+            "rating": 4,
+            "text": "This French restaurant was a pleasant surprise for us. It looked unique with a nice open space in the middle and the inside seating area was done in all white and high ceilings.\nThe service and food was lovely.\nWe ordered Coq Au Vin- chicken and Pork & Duck sphaghetti.\nThe chicken was a bit bland fo",
+            "author": "shine potter"
+          }
+        ]
+      },
+      "sri aurobindo ashram|pondicherry": {
+        "place_id": "ChIJ5yDbPytiUzoRD2ZGY-0faC4",
+        "name": "Sri Aurobindo Ashram",
+        "address": "and, No. 9, Marine Street, White Town, Puducherry, 605002, India",
+        "rating": 4.4,
+        "review_count": 13703,
+        "price_level": null,
+        "website": "http://www.sriaurobindoashram.org/",
+        "editorial_summary": "Large residential spiritual community with meditation & yoga practice, open to day visitors.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 8:00 – 11:30 AM, 2:00 – 6:00 PM",
+          "Tuesday: 8:00 – 11:30 AM, 2:00 – 6:00 PM",
+          "Wednesday: 8:00 – 11:30 AM, 2:00 – 6:00 PM",
+          "Thursday: 8:00 – 11:30 AM, 2:00 – 6:00 PM",
+          "Friday: 8:00 – 11:30 AM, 2:00 – 6:00 PM",
+          "Saturday: 8:00 – 11:30 AM, 2:00 – 6:00 PM",
+          "Sunday: 8:00 – 11:30 AM, 2:00 – 6:00 PM"
+        ],
+        "lat": 11.936707199999999,
+        "lng": 79.834115,
+        "photo_refs": [
+          "places/ChIJ5yDbPytiUzoRD2ZGY-0faC4/photos/AWCwydj_5NB4Ln75VpJJ_Wsiu1GblAB_S0bhdfPnbTkH2W-cktSIY_nS7iqRgMUcYjIWPuHy7PGvMIcq4cuapiK1QPsL7Ap-V2Zh2FIwapiQwbS-vrnN6MJNNfo2g1DBb8wyGRkbA-gBNEKrXOcB6Dt4gbWtT7wbDgck7o-qPQFfWsR4rxLuL_GdgLeFsJ_0xKdiIdBL_glYehbtTJtvqDqiozZR350Q7vZ0kX2Kys6pI5shYwyv9VwGUXOhb1fhQecTdyGHLcQsNHMnZxHXAuQvg0nI6B45qpBSQB_weKF2vwNqkrtfh-JoTxKAcYP4yAUTx940To3r8e4uqbvSJ3ryluTiHiIm9Y54Zt6-mtfTUIskMtY9XesOITTXUd_kCF2r4-eemjrj6ZSaMmh7A_2OKYHrloN8kho1902JCupZdGalDQ",
+          "places/ChIJ5yDbPytiUzoRD2ZGY-0faC4/photos/AWCwydifhLxNG8774-1c9H_PHk3MUq5Ab55xX6oP3NW0YtBud60qpTYkXuVDwRDlf6Bh_H-fVaRQtgpHkss42NDad8IEw4moMj5Den2_E7ieDyJpwK-caIVavJ5Bi-nzNgzZQ-RuEkWnfPKiKd2om3BMzNET1idqrEABRKF68pAxYPzd07fM_rv6x7H1Spg8OaThTQQJthTyweodw99f3HHkN1MAotKVZdDnrNXmZhUd-F-TrXigs2lq4cnc5IvXLvxfqyRWqFzVpaafeVjt9xmZ3F9OXZF3XZjFYwEIbwK_H6mAZ2SfKQ55MYTPCaPaEUlcaJ93rVJ2q2FGwE4XxCgF2It_aL8zZ6M6SCjBOY3BRi0QniKPCayYFTnxXySOYAW_2Yu_49GaPzKx97XEFgESnWd-os3xUR8h-Av-CpKgWZnLOI9t",
+          "places/ChIJ5yDbPytiUzoRD2ZGY-0faC4/photos/AWCwydgYC-qm-Xn75LFiFE5eOLmI6ytNVIQah-GwVFXMQeMHp4dIKeNk8MBzxSVOKKrQv_ovebp5ABQC1FjCBpCSanhijza8pCdoYFbDd_i6a0-JHy_sGoNMdtgVZ2358llg3NHLcHpchueXQKeJZI71tk17XlnKqAFWcbRbkZGdFDKYUwinAMvMRqXCUKfolju2go1KX5tz3VilVEvwumUfsLak1LqOBbA2Z1f4GUXWKQj7J0Rp6M3Kc5w6QXt1rBefHw0mG-QF_WLx8GKesdtBoo0T_vPX0Nc4f5su_lJhuD0Iflr7Zpt2-Vt6sCT6vL6PL5_FLYkKVI0_yy6uGnul5AwPZhrwmuNVjNGoItpfMVswbYfk5Sw6E4e6uYuBU3Ovn8j2GP75hDcFplFpRcrcyFjAGhH2-PT8cgFuAcjhHBBMQlCI",
+          "places/ChIJ5yDbPytiUzoRD2ZGY-0faC4/photos/AWCwydhIMyRKwD8OUKaoyQtFhtcrXVY2M-pvBJeKYFzIEveeFhYNy1-H4aPrA5xt554Uxp2aupn8H1YJmsZuvv4K-LUM6xrhe2bFW26X5H5BNz2fT1I1H01u7V_wVpp4dpogRqED82fqZrsF4u6q9OxEh55g2e39wT4mC7vO5mRlJmw6JVaed4JkO_vQW6g-A4pEdP5F6ga1H5_QprzmaoFaCr80Oa7A0NmGUCrMhth6RYYfY5KqssdKYD19nP06My8x_qJX89I-EdnjXCXtLcSdrt8lPT3n2eE9czQX5OuORCFxSaj425fUT9wWyLlMHxsjJqzbCj3CtkklKF3TZNUwtNpEXzfZNPxk0a4dmoqyGwYlTXbVWsELHuJ2PRVdp_O5lt_iRRMJyG6FjriJpfeMUZ84BWPkxhdYc_-BYwwvCAc",
+          "places/ChIJ5yDbPytiUzoRD2ZGY-0faC4/photos/AWCwydhZ3dULs-bddYheJIHlEyliLEoG_C4C8tZEDcdMwYErs7Ef5GYf4EF-W2BF1X03YMYR4MBuumSgCt7nyw5T5qp68jjvFKEl_nyBBJzmMxnnetQBSiW9N1_Q7UVlF9fP6fxt_UZPojHjTyG8q-v6hJBTZXlGFS3iDTLiLan8njC-rl_wEiqbFak8MQtdpGQmnFjeTgKsxhGgehMAmH-RGegvFtSBhxm_u6psy-Qx6sO1l9ij8BsEEZNjHvtW3UGCiRihGjPtl9B0FzcgLFSuw2f7xY5IdqltDck0-71gaKrAVnDdWL0Y15GGEV8kcfriJsPICghq2tW5mKi3qUijHF2ZjkQkbaZjYVjgQTZeZlowOFS6j0HjGj9ill111XwnnVgpj0Ly2k13JhvYdmUs4Cg-2Z3KkaMBW-t4b0QBENg94w",
+          "places/ChIJ5yDbPytiUzoRD2ZGY-0faC4/photos/AWCwydhov-jVNVvVpXtwggW896vibmQ-ISPDH8BXq7YfF-Ria_e7fdLarokarhA9udpZyPJ2uNFzmfatcyjoVx8XTx3skcNdohUFSAJhxHekWiSaO7FVWIfQX75vBZ4k1CwhMPanwb8CjgZEUpdNCG8t7O6E4Qdwk3a4ql7fowMvr3bhLxD1fPp7oOcpB0zfH0f77qxzL0rjtxeCxwVFGAZW333H6ZltZXrFVTDH1z7cV7oa1SShl54_DfrYuoI0z5YgdtBPTMPMKUYabVKJg1v4dQWYQPuoiplwFzR4RwcXEaKUZD8p2-8qS-N7R7MXxY-NLn7o1L6hgdGC8X1fFkxdd6K20VFySmtVonTkCz1a0PRdQryeU_G2TdaJxeDqaP1rDLTGgKj3lS5BmP7SZnkMvu7WiM2f6GNF7L6DtY3caiS7TQ",
+          "places/ChIJ5yDbPytiUzoRD2ZGY-0faC4/photos/AWCwydiLT6T8J8A_wXQ_AA132_dq8kK5F8_LtkbJMI1lmJ7w6ixcyiURLLe10Mh1345TxV_uSKgfqWrbyz69_OeO6xIpbx5cjvrduMkCfUjBsbP2ABsA2XLxLPa8QAgAP7XRm6c70snYhCDj0DxxmkVTJd2hpPtXHfvQhM_flQfDJ_HsAmeywsiII-yf3FGNPlLDaSGeqpJ1eY8CSJ3mQHeR2DtRdVz1PzQSzJEuZV86mTnThi3s7cKRIXitrSALW0ceIn78l2Y_RpesxxQlXFwBFfXhK-845qCRsHBTH19MIzvN8fLJefc7VHDwhttXYcsbFX3_GuGo5hx-OvQyvh1CYT7JGTWUnV17Jo236m_nst3VZS8VK9ajA7SFlaEUTGLlNpxrrhrG3waEEqM9DcQHkdwIOb69yeyDuiX124anvvgWRg",
+          "places/ChIJ5yDbPytiUzoRD2ZGY-0faC4/photos/AWCwydi3cPTdIgqlR9HaiY4UOYciRGn2xRnK838duNWZZjIj-TqZJpmZjzmHOjhcpLj3_TBnivcRq5zGOyu-013VMQDE1k3KaPTe3q-0pxm-S08zHqRVO07AmJz8G-thyCnfxPvt8pI6iQ4unfbmgA0rEvmfhKvxKveUxC_JcjIgaODltn_FbsAJddkLJM90sft3Obdvf8M8CiA964brThEetSbqDoT9RzZyV6SKaen2fGAkW64ubLBTh2RXWVxqUnyMAHRSopm2N6FWxOo9tKPNfdfO8IldW383fzSU9rLNKzjeoggksmW3kz7ZYl9vhoX_6R8_4jqq8QFuvfCS4qRylTGLVeVP-W66Rvbh0v79sJfDyTaH8K0uU9fb-SakNkHYdmOG476KL5ElaZU-Gq8vpSwe776Z3giZZ1KFqXczFcU",
+          "places/ChIJ5yDbPytiUzoRD2ZGY-0faC4/photos/AWCwydjDpZF0xwhfxV15YO63MZW9x2mFPYeMLJEP3qeldoKy_VDbOoELAaYpz54z97UIIoSBLoYhearX27bwsMP_qeVU3JTWI-tQO6NpOq30XY-GeIYLlPCUqaWUj1hxwYCBsdCGRwMZkNDXWvRTSDa981IutYKC_bt4IZoqq2Z0eebgQ-BLD8QUVJow1IgtyCf3hXnBhPpcN5F3CW75lI6_CFCFnFU6Bh8rC6DScdAhi7u4_6YpxJkgFZ8Ctfok3hQTFdVaUWp506_VsSfR9akL8fY2-_lkPdhmQkptQN3qZwAKnqtG4J4ZUiiUEs-IvEojlQWzg-d_VIfIKFqEvx1cpvXGBqHyfiIPieOuhRgeHFhW-jFGsloQZqUojFbc5NabCUWsYA9ibzS6MRVmjcrFMd83nOqAmjXZ7lpsud7tYfGBDw",
+          "places/ChIJ5yDbPytiUzoRD2ZGY-0faC4/photos/AWCwydi7JbAUOCMmyQgSA4lsTzEb0vwKL-D1Tqg-pvgXWItwuYpJie0W09hRhOmcw2orW3MrFFoMaPsk3C_QDvwKBuYmPU5Sh1LYxpjmiRL6mLBCvddt5LS_uoB26h_5VLyQW6H8STSXTOtYR7PCBIr5YhTPvumg616y4iGa1Fnhz6KbpwGCYYJeNfZffTzcFHLLkDHtE1EO2ev8RaZqayXL9ySeaCOJ5ciZoN1oc2Yf1bBYJ7G9EJ5Nyh2v4ifGTBRLBKh2DzlsT3sPIFGgvaJ2YwrdI2puSQ6-ONseWGcMfgIy3XO5Jd7s0MiYU_6rCv5w8Uix0UaIWoWtEaIReyydi96zv8hU63A3ovK1_BjFBX5NiHYUCX9v3_aItlpivueeRF7MjxzH7riFaofWoArRS5Us_LLNw9KAKoWrkhNVT6JoKa-g"
+        ],
+        "__at__": 1786798951.548182,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "In the middle of Puducherry’s lively White Town filled with cafés, tourists and busy streets, Sri Aurobindo Ashram feels like stepping into a completely different dimension of calm. The moment you enter the premises, the noise of the city almost disappears... replaced by absolute pin-drop silence an",
+            "author": "Bharat K.V."
+          },
+          {
+            "rating": 4,
+            "text": "It was a truly divine experience!\n\nThe Ashram has a unique vibe and a deeply peaceful atmosphere that brings a sense of calm and serenity. It’s a wonderful place for reflection, relaxation, and spiritual rejuvenation.\n\nA must-visit destination in Pondicherry for anyone seeking peace and a meaningful",
+            "author": "Indrani Sarkar"
+          },
+          {
+            "rating": 5,
+            "text": "In the hushed sanctuary of Sri Aurobindo Ashram,\nsilence itself becomes a living divinity\na golden hush that dissolves the mind\nand reveals the Mother’s vast, luminous heart.\n\nHere, the air breathes God.\nNo word is needed.\nOnly the quiet flame of the soul,\nburning forever in perfect peace.\n\nGet conn",
+            "author": "Gopi Shankar Madurai"
+          },
+          {
+            "rating": 5,
+            "text": "The primary Sri Aurobindo Ashram is a renowned spiritual community located in Puducherry, India, founded by Sri Aurobindo after he settled there in 1910.\n\nThe main Ashram in Puducherry is the central hub of the community, where the bodies of Sri Aurobindo and his collaborator Mirra Alfassa (The Moth",
+            "author": "bhavik tailor"
+          },
+          {
+            "rating": 3,
+            "text": "The Sri Aurobindo Ashram has a generally serene atmosphere. The presence of trees 🌳 contributes to a calm environment, although the surrounding area can be a bit busy 🚶‍♀️. It's a place that offers some quiet reflection 🙏, but it might not be for everyone looking for a deeply immersive spiritual exp",
+            "author": "Ganesh kadam"
+          }
+        ]
+      },
+      "goubert market|pondicherry": {
+        "place_id": "ChIJ9RjEC3BhUzoRJi4-7G3ZY4g",
+        "name": "Goubert Market",
+        "address": "131 Big market, MG Road Area, Puducherry, 605001, India",
+        "rating": 4.1,
+        "review_count": 405,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 11.9353701,
+        "lng": 79.828002,
+        "photo_refs": [
+          "places/ChIJ9RjEC3BhUzoRJi4-7G3ZY4g/photos/AWCwydgFzOhJrtrN3RPL7DslbiHFdJIuoLTiX7KeWdO6QObZaj0FM5eobJbb2JSZlLM5EL8qeo97AiwJ-mgVoMbN0wvyrTcZO6vj_bBQg4XATG_QcA3DtO3uqiW0M6R6stp7YqDdW5gVfPwKcR8k__MwLqf77QtGkoqhqx9oO93O2GTWHT4AXytsbHmrvRg649GzvAusamTI8tO2V3AI0fdQ43m2LdP2ukHaMGNg2zuue2jOFNBMd85ircufXib9npgUI_Rqum9PJoFRJvYSVKSjxU0aawSv4yfobuXMauhJhW-TgdFLQPfSNSgYfKEX5QfPKT6TMjy83-V-KVdnIa8JkkYcvjNyK5BWJK2X-cKlE3x7ABX-74qvbVdWJDRs4yoPEOOFsR5UvUKknM3RHIIx0BAULjwZgJxWHPJAAtKT1fQ",
+          "places/ChIJ9RjEC3BhUzoRJi4-7G3ZY4g/photos/AWCwydi9tbd68ESBSetw8UulfrZD-V_76syHGLveLugMGYmwu9c4r-4GXLjWY_3xlUTez-qeJyvf65gkaLrZjTjY9PqUH6Zvlym2NI21NFy21NvWtkMdz9mlD9STHSCeQPMinaluRZHt-bD5hUx4KD6LxU-5DLpL7oNNF34yk0uEGA61QY0VLNBHORbAcRVKyFN6P4b7Nsqsb5B3_GFuawqrYs0k45tPIVBuwpyJFcPv7nXRDmHX3zhcAwJvn1IVYbHB_kWD9MBT_i-VUQd1Q1BOsKquY-pPujVJ5dBkobkcFPh-XM_ZshGx2AjPp7bO4ir3yBFetT9UzTdSzfe5LIpLqEHh6vcpYBP__sW32M5iyO15gbe2D-D2p_raTSintAgxqE4RT4H5EOOu3B8PtA_HMb0LnF1MdwlL4-0OkAUEKFuYOC1R1GD-aff4qpR_YhHd",
+          "places/ChIJ9RjEC3BhUzoRJi4-7G3ZY4g/photos/AWCwydg8Iek25bJX8msnl8hnah3yjSpmA9tqm1YKHgM5FaBARqzxts35pGL84oSq1d-tMcL4tEo--mgzQZQn9AOXB2a49281da7MXi0JHp-om0SXDtIH-wJirBMCihAoiyMeLkQcza7qQ1_1UjX2CKRRUH0WrgKy6F38fnNDEOusQOk9MmUpdDkaksy3JB3o77pTrQewxp6eAmfs7TgV51FbVsnhEnDVO8plw_UhCavXG7VSHjM3UpQK1wCdPFu7tcr3cgRtoGerViguRQpd5fXsIJz58s-9kfAbJW8RMa6jcRt8DKX5Tw28U24js-v7LGU40vFGchDgRZm9E3OSlWR9OXq5ywBiQJRzmLCWQpTaoWl36s-iDYPf-116AejZUUteNnWvbNLGFYtfJGFzgVRCzxagtn3c_WAqamGHoNqD-piVQe8h",
+          "places/ChIJ9RjEC3BhUzoRJi4-7G3ZY4g/photos/AWCwydiPHYyEwVehm3y9TVj3AmIBsY-JJRFUboCAazKgDCOznB8nDPs6AwoMouSpp2nFQGiOR2YCjfR40YZO431CspgO5CAi647chKpE2ShuADYwcoISB-BMWg15IF3aDTzRAhUziKByOg6S30D_GbD1e__3ZzDIBKmOREhNE6N9bBG09QwGLPGmN33nlgownsyHD9HItqEWdnuLTWFEwD4SN-QlBS3g1LM_5zY8RJyfwRK58Zdd7emfeiqbRaHYejJ366Kbh7dfeZ3X7u5HQZ8p9D5LGH93E0umH972m0vV4Y526GHOzepp2t2Blq0pFL3qm7bEOnWdwQD2lTDE61PXafAzs1d1gNnHDxEqeeLurzO_3ESMjYkcGZdZsGs_NFJ_AepuTpCsuka2aZ9ehQL86GV484XNKyv6gwfh2K0r-msTuOxZEIXj1MYRHK-I3Q",
+          "places/ChIJ9RjEC3BhUzoRJi4-7G3ZY4g/photos/AWCwydgeoGG9_Ata-RZxxyzRq0DfO3HdQBtuvdF2cE94BqiTs7hm9-aHFu2DKN7F34X256PT4ucTgwguY6nFlmXOKeBmLSad71CEqf_3pJd2i1QwkVqRoIjh1NPHq0W6P1yaADDdIIrrn5UI_XYfgooWxggMssKTRZB6KOcjFHDIVOaVt9jLFKzkbtmvegwgBME34q6cKzxdBMzsuGOm1D8Vpkr1CS7k8BgeKGwx6X6leoMTYccraFzqz80Zko_bHdXNy2t9ycOJCFbMC7D-zj-kmDx6nqfxSwDPDV0Fni7XNg5FiwK6T8q7wuRk99RzPkDFVTW0MJlRoW8aLFiPbEO0IeEa_daX1pSTtOLaPMDeNVQ_kFgOJ_T72dhp7XkhKLnVqcU670l7lthtuigvDNtlKFiuEyXNAbTIxhAetU7Y0qMsUQ",
+          "places/ChIJ9RjEC3BhUzoRJi4-7G3ZY4g/photos/AWCwydhpc6AuitfzT8cngVrVze5gnVezL0D74tJtDNqizSJEbSqqCKvDQYlo0F4tRM7bAtlETwfytkTM1OM5UUnp-YKGjdD50poIpidbrSjxo6DitdqkIlkoaEio2rsOP-kD7pddILbq1bksEDsDptyU5AJ6oMqEazwy86O6Wo0EPy7yIL1BNPBBOsWBJO4Gkcf7ZT8Qbz8wvJ5SE9X5nAc3Gv2UQWv099ViH_x6eT12xrsYWQSpCYpIfPTJ7jVnMALtr0pR7tY69ZbKRrne0oXOrHL8vtW_1_rDBOQphdVAGCWDxsEP3uK3QDw0rw3O4dU5bEmfy4LXqhgBcVf9OT0Q9BBlsA2N5nO0iXn6YqeyjNAJ8xG1zn1uJm1cgvbz-hGplHn3xWKSDYa4sXuu4e-9Rfwuj7FZnJVoXqPK0uezSArILA",
+          "places/ChIJ9RjEC3BhUzoRJi4-7G3ZY4g/photos/AWCwydgQ_i72uFYuT9AgoVcSW-ezvMxu26KpUYfWgGxZDbxdBaijTormDliqq27VO7CaJ_WyEXa6x3n9kvQ9BB-Z4Tfzb_C5MaCPuMkMH7_-aMMc_ymQWbgLs5r5jvWaISmPXfjSUpQMcX-KFzqJqwl0g12ifbnUnZRBnvDa14V6ad0-hkzY1M_UcntAxQxjs3d44LgAO-S8Svn42QnsCyp2v23WBfgobPhuqJBgzUh7Fig01jvo3avEDXHNf-G5GHmh9Z2iGZXMpCLxTttdUbTurWti9lIMMicigbb_0zmKUkLmKbZlXFXY89hNz0fv_5X0yfsb2Ur-O91LuznHPmPrkQ7VmmNJisp6f9dtzSp_Pwo1yao0jW_RVeImtGv7hCpNDWrtyZdkmCcGi2SOeAhGyjESCJN1wW9nDjDsBrp379mF_X0r",
+          "places/ChIJ9RjEC3BhUzoRJi4-7G3ZY4g/photos/AWCwydi5tHTLqrpU4yY70Z_LqqfXLlMqkZzaIzDmvso9tUXj-tZ8N8TczIep0Qe1yZ7L42H_ErbMXu75SXQwTy-OZAfyZ76G7wzS2xAmpOawlLJzEf-08pYPonqaIj_9sdEaiClyph_bUr5xk-5tvv1gCYfhaQd998ACbJonsCotB_Gib_fCqvgT95DzPiA5EB9DUXu8xkaYZbcTZWmYzuKCAVS28f8MrT1t4C6VZTH2h58Lkx8nbP_0cbNRz2u3UcIMXLH5zcjsYV7il23G0_A0fH_nW5Ej2CZWnw6KwP56-i7dLicDyrATgayiDp7ysu3yE7fN9sMRvNwBVicPKlCS-FfR0u6ayh8_6rMzdYrby2wbz2cmuYOnIYKgxgSCNhzrE7JZG92kWoCdDZr70llH0WGDM0r_8lh_tvg25rHur3WIyaOy",
+          "places/ChIJ9RjEC3BhUzoRJi4-7G3ZY4g/photos/AWCwydiwm5MBi40fQwV3Ypr7hg3IuTZojiwFSaukYA25d9xLrFrAd3DFzLmrBRu68ougnyTVHpmYEO5zzWXv7ktY1OCmromJhluCqMpeJ4FwFR1u0EHsii7MoRTgmYOwNEiaIzy1kSkQ4XmeH8-2Zr_1C5-__NMTySieQXi-OIsno7wh7LxCCOYy13BkNJ3lkjQoZ5kYukd9KGCGNeoZVoaTiGCMA0k3WDVKzfNVnhNNY1mr1tIeDpaK1p-4p6MR_re5R6YYR46JM6POSGMqIcqGvC3dnyZwW0yN2Z9x88SO106EEkr7oTL55y4kt4ngLQwCRSjzqEuX-DCuTN5lVj79-HbSgdnnlsBypFkWW2Sk076wQ3P2cPG_U-OX2m3siQxaeTNgAl2iVMnbz1L2_2mSqC22MNSB8WVqOHsgP4lw9mJZvpy2",
+          "places/ChIJ9RjEC3BhUzoRJi4-7G3ZY4g/photos/AWCwydhFtxP4co-5NzPtOEPaVsH8mAaHqlxW0INsvGb3Uknbd-6RN_dhbIklciYKhJHwSBO2Akbcz1yq83CNNfCJ_rdCyaHNlDrZSkL3uz4KG3utSvk7lSNjtWhJiFulAmR8RiEWte9E5xOwf4i1ebvjfBIhr9VekTgXcko1vb4omgAZ5qZT_eNwUjb2FjZZQokKPOFhhbVY0tyv03du6aVAvuxYnsOmoUS52piIdqilwA7zUuIY8LAaDvaKw6YF8XEs0jxATQiK-HQ-2Kq5-n9AoOCx5QUi6zFrmp2-5bUxr7VP0NwDj1CTrfJ00gApugGA17XTDS9mZqSrMCu6CpJzJ4wYVOUQsEbRYKUyEOW1pKkNye9F5W5lefNACYCIpgmNnwKVwOTRtYuY70Y74I4uwB36N8c9v5JgWRPLZ2hWb0P6xAf5TCMKtvFSGuCdbOvg"
+        ],
+        "__at__": 1786798951.9405508,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "You can buy many things for your house , fruits , cooking items , house holding items , dress , vegetable, all the items are available in the reasonable rates.\n\nAlways busy place and fully crowded.\nAvoid going to this place with kids and too much luggages.",
+            "author": "Bharathi Bonamy"
+          },
+          {
+            "rating": 4,
+            "text": "Major market and commercial hub in pondicherry. Market is quite big and can buy A-Z items here. Near to market, branded showrooms, shops, restaurants are available. It's bit organized and great to see many branded showrooms and small shops. Good to purchase all items under one roof. Clean and well m",
+            "author": "Sakthi Narayanan"
+          },
+          {
+            "rating": 5,
+            "text": "Great Market. The largest and oldest market in the city. All kinds of things are available in this market.",
+            "author": "Debasish Pramanik"
+          },
+          {
+            "rating": 5,
+            "text": "The market is vibrant and bustling, offering a wide array of fresh fruits, flowers, and vegetables. It’s a lively place where you can find the best local produce, all vibrant and full of life. Taking a walk through the market is a delightful experience, with the colorful displays and tempting scents",
+            "author": "George Stephen"
+          },
+          {
+            "rating": 5,
+            "text": "Goubert market is one of my fav spot in Pondicherry. Especially the flower market i love the fragrance which makes me feel positive and peaceful. This wonderful sprawling market is well worth walking around. One can find fish, vegetable, fruit,grocery stalls etc, including beautiful flower stalls .S",
+            "author": "Deepa Perumal"
+          }
+        ]
+      },
+      "le dupleix|pondicherry": {
+        "place_id": "ChIJVVVVFStiUzoRERj4wEKOSdY",
+        "name": "Le Dupleix, Pondicherry",
+        "address": "5, Caserne Street, White Town, Puducherry, 605001, India",
+        "rating": 4.3,
+        "review_count": 3786,
+        "price_level": null,
+        "website": "http://www.sarovarhotels.com/le-dupleix-pondicherry/",
+        "editorial_summary": "Individually decorated quarters with antique furniture in a storied hotel with a restaurant & a bar.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 11.9309752,
+        "lng": 79.8338362,
+        "photo_refs": [
+          "places/ChIJVVVVFStiUzoRERj4wEKOSdY/photos/AWCwydjrZi8A2kZdN4_ix4YlPskXx-wpfJuLqtH0g8yI7Xq2Yv5_fyapqlPaLo_RGf4u13AKwu4AS323zEUuVjGVa2GTIpkrsCwcOIZLNrdFNVhGxppbYPamHwz4-7DiCkMnFOR95LIS7s1Wdldq4mIi-q2y35-8ctHefL9QHBoA_8nWNP7HbolUbvUKNC2u4N8BtKJwUfznGM85FVw9l4NKtQX7ne8kIjbELmeovxgGG3HnwHkv-8H5NGUa9Wv73YXdtGUN9MQJqLSh6p_Av0f1hMSq5nQ4xJypRqphDyOs0ZpfZbvwnyLbTAAvby7yI2luJE4k6Y7cpE5Qv0sSqsJBZTUabPKaitrfKvHO-84nM1F-dSIxRtKY_nsONHX6UKF7-GQZo_31WWbDr-sF_tJuY7zUcgwe157L67vdrqE3K-QmMpgE",
+          "places/ChIJVVVVFStiUzoRERj4wEKOSdY/photos/AWCwydhLhODy04Pv3fCdUP-U-f8U9BbzIkFvauR2fUhMo0l09hwki-SBwB-20Q4vlH2H0RGVDjR-c_doe_t5etDMjMehibSwdZNEVKvUaUGu-svUUT5rcMtVE2aOHTPgxXhXQEI8NL3mHnEHTpXWP5AdVqjlOvrHtLV6xhjohudmgf5EEYXPAmDb7OmStJbUz1Wa0ccX5lG3EgFUP2PFz_3di6YwdefNnySN-zBFK1D44ONHEi7KLpsYuStAmuT9xFxRIx6imaYxwyg6IpXw1Y6PaqMATodtCiMPhlOb2A8m50MlMzjdBj1U0hMGZCmXQW1eKCBNkqWb-RMJ_R-GrvfgQoWWmT6ySFwxWP8VQsHOY2feYS5ip53tfC0HDhw5D8RL3nB7Ul2d-YS5iBoTT8NOU3PRz1Y69-2dSkaVaKUdMOm2YFHF",
+          "places/ChIJVVVVFStiUzoRERj4wEKOSdY/photos/AWCwydhBwU61K7UY_RzU5uA58BdQEanaGyIV3sPaNsl4n6I7J2iuhR8w2N7XAAaR0SEOm_-9hUFoXv16chEPkdvNEOIELa2qN0fGUM14AFD-L12uGne12IwJnFtYKKGkW9ZmfKlDoTORRne6GV1SkpAa4E2E9Vu5Cr3EBKywG3QFL7GesTNmAHpSO7jHH57ADO2tMJi-V5UA7zZF6f759BP5WsOk5EKJWiDhKV6_uxa2a-4Frp69jK7mzbMpEzjefWvs8YAU34_WyA94DJBNRQglidN4lr5-HRjgs2fof7iUOAnYSdq37U8iZ7xbXbxDtHJqTmV5YAFDJsBu-mGnFSmIJcnGA91g7nvDjthTPK3UDZHNsoqwcHQTPZChwW9GBj_lAhtj3StUv-RnKUm68exlaWMW7i4iQFOyWqAHczDmAvqfPQ",
+          "places/ChIJVVVVFStiUzoRERj4wEKOSdY/photos/AWCwydgcIg9kvLHaoZs52aWlgnoj5yhvedkOclr0D5997IzJWKDkf_NVY7EvX29kDEVF1zkXXaeKpUsBffgLSQyVUUNyOihLietumXo-fdr2w2gGwOEYFjI11sf4jvT4N3uYf7Fp5WF6yOkK_6mySSr3a0LBQckNPj8W9U7_gSqHxQyLuuhZEAOS5gPJqw7Y5u9QLgQqGfBaOovDUnYIdiQa119RweRwj3HN3tjoZRYwWDtIwtF6jhcZ1ilUFi1RyiXckorg5fqpL93B4RxYydqb5b6Mfl3S8DDGJdbxVIECbdRIzpisyuIiNECKwnTQP25e0OFkIh_lKk74U7QBhbwH9S3WMajFM1OIpCKct1DsI3HPdL2RbtpsEVfmLHGJtz4HBLpVgn72L4pYzv76N1eT79j0gHUfZ6BOq9YBxwelmkEp9A",
+          "places/ChIJVVVVFStiUzoRERj4wEKOSdY/photos/AWCwydhlTeOip4-V-z54KZdhsoMqYgsocBAlX9OsPwp23UHsII3-7Jd_zH-IvJH-flfVFvoAA3_v2BnV2pP5PgbcxCdVdffdNJsBkEg8RYhZpHACiGYOV0j_SCN0y9TBxeNBiJQoyZlk6A-bhLUDtSda5QoI6MS2tc_IFhKf2Z7KLJ3TiVV2krBKkcB30KqFa0ERl2WGt7YVLSkHzSXKpKyhYQm-W5Ok07ZpTY3sjcNMHkF4rzwELQuOvUSgcplIRvArmXZwKZCWSfREA3oaUeMZo9q-dslk0uBYb8TrApwil9ujTcmFBcwsOpL7Po67XrQIwSlDhxy1NSJdD7B4LZQly7GLzsCa9HeJn4qXw9qoNFs0KsnRVU0L7F7Wl3NnDcbS88vQXieSh2tnbw4V78Fv1me8mZ-saWQ77CLFpIRtb5iTqQ",
+          "places/ChIJVVVVFStiUzoRERj4wEKOSdY/photos/AWCwydi4trfjMCrg2yyW_bstqFHubLBofw3N_CJRfh59EEP6Z-LWaVLNOWD86-v--eFgK14iogO90otOagnfyV1BHwPS2fDX7MBc9ZmSXjQIJzJDy4Etaijc354yotEzbNZBuBleHggq0VFrxDG8L5mox2ldeZbp-gGpZZTWdZftC-qUYSRl5plv3lfeln8xbEXVRkxfONE0Lra1pNq9Rd1Kzbh62Z6EenrLDyHJa6Lox384Zq97CJI_f8xmfvuCgSKR0Nd1KTkhOIh8AmCKSLg3CepBWJKNHMwdAgoqycdj_pXcjOcviyqJAeRbLLN0yOLrp7evsTkYkABNLw0b5tFNiy-XkZC5hs3VEP4cXR0l-xvQfkE5tTaUG3-FIxv2veUL5msVow6hchLytHEgWWzpF3ZextDye0fZRIMBK--3jutT6w",
+          "places/ChIJVVVVFStiUzoRERj4wEKOSdY/photos/AWCwydi9dighczg8cAejld6NvlMzD8DcZTJ0XOWvr7AcfoiQ1JllFu6lrM_FW_CaDTddqbTpiRjW-QLgnXEHsBB4QRVTveMhqAy8jYX7eUUsdnRLrTniGLJcB-ONW9dOVgswMM3tAQaFMBpcklKsiBMdxHJPKyf9QN2NCwRm_8m_lQSlAeOgklObFXWXY35YKhcmnonrZeH-GAfbQeydz9lDvqOsiyzwk3N1MZQ9qv1j1ThBS7EnBQa-C_d41SrXHNA_IVuDzlWZh8BIzNQop7KOh5MqmdYg3_2JTzyJIbUWlLR5aEEFQkf0_dH5rXq7Fbu3GsS0PlFWwOZ5UeaI2ob-Qk87fFRDzzg-Zx1TqWuxf-AaiDDfFsb5mydNuxLDT0SgvEPK2Tgwk91Q9L6hHRV3P0l-it1rOrhVxUM995PWQ5vm-w",
+          "places/ChIJVVVVFStiUzoRERj4wEKOSdY/photos/AWCwydgJvX93TsFDnWHEjJ2QU1bsUISW2bLtD9PgZZ3tFEfP_jJ7OuJrRqSBsiKmK5GALTVDXlwflcNco7F3QxBl6XRPHR6cfAMUnEcmGeQVni8lyWTEjZOtHFh8xw4GSGNHqD90zeG9u7N1s7Jmu224KOse1JQj33QDOE554z0oFtu-ZRnxcbIktbVzSfGBwHxRJcB3w2K-Ap_5cAV8EY6SzB8SSA6SWjBZip48YiBK8dVINOdmEMEDA0ASLKI_1QBZJFgcYGbdJP69RPLGXj0Ao77-FSRChTLy5sku25LEY_utOa6hylZQNBRPq6_dFraW9ydpehzOn06cmUCkN5l-jFnrt-oV1iOGIx_dKzDpVJO1vmfv0pByTn8qywLKfZudlbByEZ0ROFlr1Za4WFVdeFosS6I3JtZFYPvcWKukXB2uNQ",
+          "places/ChIJVVVVFStiUzoRERj4wEKOSdY/photos/AWCwydjbYFhLZW9NHhbBRaNyEaCz7bpef8VQ3siBKRfcgkwxP_nVSbR-FB5i36aoZRuNyxm0W7vT4a-ButhejiynrXlbYjGZeGSTMfG27MmHEXsV68MA2zFEs5rXzVtqMQkxjViYegIEiC5RGq9V2wrdqgaZu6DtTmF7TQAX5ZJkyhFBY-wtMbY51m2b12Vm5uQxLm_yTkEymcMV71tY7x-ipWQY3SfSrG2CFJJirguFazLILm-orDHQmT9QvWh_pL6WQvkvzmrimvhuN_9JDmGUpn-QBHNPT4HcLtttgw9Abkxk46XmtKPoHOGYblF-18YmLxOpcWJ1Izc5G_e1vQW4nCUOAk-xrGQKuXDw0feoPS0Bq1h8a5aBU9AC26Jpb8jugBzuVVtKV98IC0IHYQX2GJ8SrGo2_KfKbwMFhlZkFNojhA",
+          "places/ChIJVVVVFStiUzoRERj4wEKOSdY/photos/AWCwydiIEvIRpLWCFhVhU5sl3aNoNRslWWeWYpodLxool0fWTpZkeu0TtaP0cxX0YwbvhuwcsY8WyeDA4sSELlvq-BS15dPCABc3ZYRMkNg6dFCeRLS6OFasljpRp9cbQBni63IopzRiKrxAOexazQ8UAW7TJZZXVRbzASlr0eE9YqQk_KEox7DAaMoEuTfgcee_r8g5W7t3li4T0W1RHKlcDFoiKgC8rtI9Y3ALjfZZs6_mRdUjlPTAXCJQcUZUaQ5XVnZUvZKO-hIhA-LGZRWLXc7IoHIil_i3N-DPQP0c6Ttcv2uISF4FTne6tvxIarRituyZ2xOwILOcd0hYSTL3Bm1ajsjbRajHOzb37H-RAJ08bam7Sv87d0ud0Rz7k8vSzNBkwFk36JIFgveLZsiUPSKuc7hBTVyBb5oZu629Jks"
+        ],
+        "__at__": 1786798952.252039,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Had a really lovely stay at Le Dupleix. The hotel has a beautiful heritage charm, and the rooms were clean, spacious, and very comfortable. The staff were warm, friendly, and always ready to help, which made the whole experience even better. The service was smooth from check-in to check-out, and we ",
+            "author": "arya krishnan"
+          },
+          {
+            "rating": 5,
+            "text": "Anamika has been super attentive and ensured the food suggested meets our expectation. We love the food . Authentic  french and Italian cuisines. Who ever is the chef has done a magic. Every item we ordered was mind boggling. My taste buds enjoyed and had feast today. Thank you so much. Amazing plac",
+            "author": "Surmila Hemam"
+          },
+          {
+            "rating": 5,
+            "text": "Some meals stay with you forever.\n\nHonoured to meet Chef Muthu at Le Dupleix, Pondicherry. ✨\n\nThe most soulful Continental cuisine I’ve experienced—every dish carried precision, passion, and a mother’s touch. Simply unforgettable.\n\nSome chefs don’t just cook; they create memories.",
+            "author": "Ramu Krishey"
+          },
+          {
+            "rating": 4,
+            "text": "Les Dupliex restaurant turned out to be one of those meals you keep thinking about long after you’ve left. We started with the soba noodle soup, and honestly, it was pure bliss in a bowl. Light yet deeply comforting, every spoonful felt perfectly balanced. Even though the portion was generous and sh",
+            "author": "Megha Malhotra"
+          },
+          {
+            "rating": 5,
+            "text": "Just had one of the best veg biriyani experiences! ⭐⭐⭐⭐⭐\nThe biriyani was absolutely delicious — perfectly cooked rice, rich flavors, and every bite was satisfying. You can really taste the quality and care put into it.\nA special mention to Albina — she’s super cute and served the food with the best",
+            "author": "All india flea Market"
+          }
+        ]
+      },
+      "hotel (tbd)|pondicherry": {
+        "place_id": "ChIJd-8MryxiUzoR51gb948YN4o",
+        "name": "The Promenade",
+        "address": "23, Goubert Ave, White Town, Puducherry, 605001, India",
+        "rating": 4.2,
+        "review_count": 5803,
+        "price_level": null,
+        "website": "https://www.sarovarhotels.com/the-promenade-pondicherry/",
+        "editorial_summary": "Modern hotel offering 2 restaurants, plus a terrace, an outdoor pool & bay views.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 11.933294,
+        "lng": 79.835729,
+        "photo_refs": [
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydifTFwwJaKLMRLaNslv5WrRK8oMjb_abmjV2qWOuNSS_bX5pEPrF3OBcJq3QRc5eHWMw36J4O-URdGEQOdfeu9dF27iUGbcve8lBgIohnVNdJQxsUSGW7hQ3M_cADM9Nq5v52_Zr7tjAAa5GoKULaW1rnLCrtIrFE32yoCikS7EmfuotnF8V8rNMy0_DntevIoulF4pH5EXp_bMNwcuNU6gpLjiNfRqP7vvYz-iSOUcyHGw5hbK7u8PTX9R9mbkcAGCgzQWFzc_MdeSA7Xzr6g3OGqVQRhosBK8_-5J-M7cYQBANsS7S6_ejoJWctxJZvhs7vstIuRMi61V-hCFwjHmWhzcIAjYGdfHVfdEX7FOFOcmItWe_-Xv2L82Dp8zW4AHrI_2mDNEmfrJDiBmskYaBn8LfFtJKR9-5ds",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydir0mofNmYHn_KrxZAn4bVRHmuyxXepHEYvt60YJZ0rZUNfHR_30rq6QZe5SaXw2F_1cFLKNhZ9kgJLZR5yjAKRCNvCLYerECvFbSxGYHuMMFTGFk60nllp8Zv5_ULBCq7r3BI2Bbfv56QnQ8NNFzx7rOW-2unrPUZF1urwkzQ6zhHvMOTyH2onuwkVXg_Bp2cDBpXV6a9dpA3sDA0NfV68zSeP2cvcWKrKglaytPkCwoUVBf5M8y9XXGIpaHBMdJTHlCqZqqmWrVbiOmwzdVd3TprD0-baVbj5OFQRQG1e5dGKrlQdxXb3YIum_HYD6Lgw3dD-_RODOvJPs50-zSUw_FykrZ1nf2YoFmOx6uqOBPv6KtOv9Cu1_o10QfOdbVgcMDzmze9lFOvFbFR7rzqodbI4ogZTen5kbpfJqNJVRg",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydgXSbQJ_pUaZigUXJl-Pc49_7R_d0xJtoR8rOS3b7uQcZx7XucGfUXPlrdawL8ULcSCzbiKFIqJH2KrTedrL787_UecfccqnHx3XDoVP88N0hHXDB3wfeYSkXfSFH3vfh6Ec9ALpQfTPlUCxZLbFeVOXTIyLSXc-IbZb_jdoWSi1glV84QncVnx5PvbibvfGLxfHTlNha8LMlE8MFsC0HLarKxLVMBdBgMteCh3NHoVk4vo3OZQ3pKLxy0jXSDu1DMbDZphN6g4eARjKG9A3IAdZl8zcQGvhoT315L90ZVDH5GKdUkK4dgax3MhUEJ3Inc2k9XlwhKOCKmDpNXq__O0LqyxJ9HlUxh5DVuZZ77_UEDAyuGvzGJnPFn6m-OXYtGwrEjtCqoPHzMde5dcTaTK4cvpBwf-lbF5qMT_p5fcZg",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydh_F_ZPf8JUcen0cKxL8l7z-v6K8Lr6RA3X4pzuBkLINPNpk967L9qLKyRQN7cKSmCvKFFRuax2hBHXSAt7ZukQ02i0xD9q39xFaOkCt0Ub35tKZd1C_qvlHX6TIQgmN5TfbDdQah-K4T7yal-I0-cB9AeknPiGfgwNWnYv65VRYShd-qkoq38Lh1_DYqtYaEmqYtaWG1GtiG0_RU2nJhroELj1e4QAYHauAM0FJ-TO_ESsQFZpPi6F6I6bRnGJEkRIgpMvuoVC_KjJS8xBfMMIzn7JE9GrACkCkw3LrXgINKQm_i-u8d0ig2hFmVRnNnICBbsdYxGrSGVFjcTCgsKM1tzjAhRK-bsy5rsDm0dG79numwQajzCJ4o5Sv1fzDSOr5c94Mpds-L7eZnWjcXwqYpnmc9Q1iPSjkeVH_28",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydgBdrAGUvXRyOCLrAyjV3WlfJ6oitUFqmxJet0eZmxM_H4GZ_j6mJfIREqdjqwE14e_YNBknmSY0NOf8rGHoV4vFf_kWMP60kWcE_fMXloVDYRfpoOIEjd1QBfw2EAIyy3_4hND6lRvTUe73dABfm8iKyaMu9tswdu5UCPIoblTxoPaSqFnXcGdis0jcfs5LYxz7IjzoRE3cJBDrSqzRQ_5chpMGe_MTKvdwMLkjR4mBmAYOiCce2FVicGHXeZEHnsXXND7vGcF_aLVL1NchJm2O0ntehjmSABW-tm8SxKrW6YX3nFkVvANi0nKHpM_VBnIkWvi-eT_70OQviyDkt-z8FjvKw6AwUytNicLAu-UB0yHp2WdBwB0w-shhAxYCd0fRKVzSrKDjR_3Klmqd44eqGZbFkIRnVyjJNAo-ckY4A",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhfKbCZE57vXULIj0GYPOiEF9qJDtVmyo4hHGvEbcH3nGwty8rx1NzenGPesSS3ghNGeq4hYB1bR3a9UD6zn5AqYnXwlk2vngfO1vsjBrz7tW0GMdggW30RflxqOg7aJxFEpMcHQ7pGXo82bHXVwcelhx0XYxKVU7zHFfXT7rNsjaCG_UvHKHBZH5510okn86zddKM-OSMooHoE9lHHQ4IOeNZfMj82i5_LuJ5IANFlEdeJ-XGVINTdYEILw3YTSPgzUKbR7iSp9bXsrAn7vSnLRSLa0Bk4M8jkan7rTSfwz2jGNaNGS3wMnDK1U1y98-0tX_cC3GzoJZ4RBf_DHAz6jtxxDN39kd8NOBt2Xl0VEWSYbnDs2DQudjN78YNJLXN4252AZX8xAU9Q7tYOrxiG5-7WK64fAw2WuVKuTjGwLQ",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhKAgCHcwWoKF4L1EhFlHX_l7pRxoMmyo45trbVy-mC9YmWJ_tBURAu7FRjiUHhBBAp3Pw0NTL3pMZ8qsfMucqfyu3OnzFZ5G7qb0TcGYUsq5o5cAd6nYt3h5CoG__O9yEct1Yczq4qPOg4W7axEhNVEnmMG_c4rHqjg0g_0M3QR_4JmaM_fnYnJwkdtcwYIRKAu_C0QMU6kannedRHdQuDG4vyAiZk7W5Y-ZBVINdwuxGyuzK-fFIdY0dZnXcOl1S38lCJ8HqqaL3qQoZ7_SAn_orw1HIeBYAlbyDsyvWW-9wqUPzfJymcMZiJTCWvreTcDycSUAn-bNLFzxLNOS8Ywq8sAYgiSKzkgQzU4cO8EbwQMb4GPTpBNqKE5GwzdGpFelb43HVDnDQjO5Bh_E8f-OvCjIdQNvJtmFw9_CU",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhbBOiz0MBGcUgP5mURGs-GbyWkPFBRvpKHnDcTMUYXatsSGOQIvhwNwXOW8fsn-Tn0W9hWLLh4xOOOEdSzPXi76PCd-p1xpOs1S_m7qD72_yTbV22g2WtUozbXeWm0aGU9BP0gj7gdVkD2lW6WNFUBNqLX7jPYinTcGN24uOMgVpAD-wiaDMr0r91RToREesXjIQXDshY128EwasMqkzF1Fp0v4DX4ddNaaVzBNScWuVVmWbMLgLVZ7Wgx5egsAMpCKdGZJ6vWAt9cFLniFlcNu5D2YPiU2sDyQP5uqAGq_vlA1ORwqsbNPHR3-09hSvFwQbtrUZCSzDPJ0IvBWBrM4Da46JL0cSJK_I64ODD7ulkjVAdwQp1ZXfxFOShWDU5oZTHCAzq4T-xBzGBglyYbTEN7rVno52BdCVw0EoE",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydiqWB4wqDQQE3GB9zS0Uzk5lIn46CN7nkfcVpxxlYcXjNbRVtn3kqTqs_8ElBIpoac5T8BA0DgyOO5NSGsOQRKPBMQFk54nIGVEmWPuROcZrfbgW2r8APx7uMXCNWnACeoPIjpRNZN2Ertez3wjHR6AgXpZrJ1FO6jQiqO6VMRoPVXnEtXKJYZ9yfQGkUwiMD56pRZiPbWH8NPp0aLRoZNK5EnpfU5A-HdKIvjBvbjkWGyzpnAk61FG7hRMmEMwwZALccQoxhcSDf7L0cU-ihH4tZL1XSePOclf9rCDZfRjoMIKdc8F1-tjYhUHQdVoTtfPDfgQokbe3q6bpMLLGOKjAYeRFSdO-T5cAh8oLAVwOi7S9y1vLOya43G8IMVg61qwVdydpOEupymX5NIcoIUSMD5aZsb-TBrVku-fgNnJBUcj",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydj0zyIb68eWqUa95x_HnIFH-sFzUql74xVY9WcYCbvJacD2n0SbOoA6te3uhcbqlCQ-jFz4rJ0au7yzEJ0BqEzn_tSNUUrePt4fQpEzWMOWIckLPub2tu1D7MM9MFHayYs4dvyLlLUe_qclTjuXqAQx3Kb6aAE6jgNLorBxdmXFXs3xAERjalB3teX_t83HHTPNjiMNyAOQl3q6fngCujB4vpVuqfyhDwJXZ6znNuuzMDsk6zEseA5PZIPer0uN2P9NXmH0XBSYEPuwPhzVpUIazGfdcde83nKg0iOs1Zh47R3GIe_xwuLqaszzYXLIOsAehwj7515wyQuBSds8G6rjPRSId0GCvtc48exQw4lra1E-jb9P9EMcZxfN7FRBxf09d0qXpjyCdMhzUxNWs8MZPrYZezKgoun1jryvvTqKIQjX"
+        ],
+        "__at__": 1786798953.440507,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We stayed for one day in the sea facing premium room and didn’t feel like going anywhere else, the view was so good. The room itself was well maintained and very clean.\nCheck-in was super smooth and Zara Haider and Prabu were extremely helpful from airport pickup booking to room extension and helped",
+            "author": "Shyam Bhat"
+          },
+          {
+            "rating": 5,
+            "text": "We had an excellent two-day stay at The Promenade Hotel, Pondicherry. Our experience was truly memorable, thanks to the warm hospitality and outstanding service provided by the entire team.\n\nThe room was comfortable, well-maintained, and made our stay very pleasant. A special appreciation to the che",
+            "author": "Abirami C"
+          },
+          {
+            "rating": 4,
+            "text": "I stayed at The Promenade for one night. The location is great just on the seafront promenade as well as being in the French quarter so you can walk the streets easily to visit. All the staff are great, very friendly and provide a top service. The guest manager in the restaurant makes the effort in ",
+            "author": "Christopher Woods"
+          },
+          {
+            "rating": 5,
+            "text": "Had a wonderful stay at The Promenade Pondicherry.  Beautiful hotel with best location and service.\nRecommend if visiting Pondicherry. White town is beautiful and we covered every bit of it by walk.\nSpecial thanks to Bikram for his wonderful hospitality.  Their spa also was very relaxing and recomme",
+            "author": "prina sodhi"
+          },
+          {
+            "rating": 4,
+            "text": "Stayed there in May end and hotel is on nice location with nice staff overall. People address your needs and make sure that stay is comfortable. Special mention to GM Shubhi who made sure that our stay is comfortable and going out of the way to do that as well. Food is good and location is right on ",
+            "author": "Mudit Agarwal"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Pondicherry",
+    "departure_date": "2026-11-07",
+    "return_date": "2026-11-09",
+    "nights": 2,
+    "month_year": "Nov 2026",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 0,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Pondicherry",
+      "Day 1 · Arrival & French Quarter",
+      "Hotel (TBD)",
+      "French Quarter",
+      "Promenade Beach",
+      "Café des Arts",
+      "Day 2 · Auroville & Serenity Beach",
+      "Auroville",
+      "Serenity Beach",
+      "Villa Shanti",
+      "Day 3 · Local Culture & Departure",
+      "Sri Aurobindo Ashram",
+      "Goubert Market",
+      "Le Dupleix"
+    ],
+    "auto_summary": "2-night Pondicherry, Nov 2026",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T13:03:46Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T13:02:24Z"
+    }
+  ]
+}
