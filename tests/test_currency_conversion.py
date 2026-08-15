@@ -21,8 +21,11 @@ def _no_network(monkeypatch: pytest.MonkeyPatch):
 
 
 def seed(base: str, rates: dict[str, float]) -> None:
-    fx._cache[base] = fx.RateTable(
-        base=base, rates=rates, fetched_at=datetime.now(UTC), rate_date="2026-08-10"
+    fx._cache.set(
+        base,
+        fx.RateTable(
+            base=base, rates=rates, fetched_at=datetime.now(UTC), rate_date="2026-08-10"
+        ).to_payload(),
     )
 
 

@@ -13,7 +13,7 @@ from tripplanner.providers.registry import get_activity_providers
 from tripplanner.providers.runtime import run_provider_chain
 from tripplanner.tools import amadeus_client
 
-_ACTIVITY_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache()
+_ACTIVITY_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache("activity-search")
 
 # Approximate coordinates for popular destinations
 _CITY_COORDS: dict[str, tuple[float, float]] = {
