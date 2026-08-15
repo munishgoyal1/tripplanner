@@ -1299,6 +1299,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
     }
     $wd = $entry.worktree
     $label = "Sandbox '$slug'"
+    Commit-SandboxDebugStoreArtifacts -Entry $entry | Out-Null
     $actualBranch = (Invoke-Git -WorkingDirectory $wd -Arguments @("branch", "--show-current")).Trim()
     if ($actualBranch -ne $entry.branch) {
         throw "$label must be on $($entry.branch), not $actualBranch."
