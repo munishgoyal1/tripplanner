@@ -241,7 +241,7 @@
         "recordedAt": "2026-08-09T17:56:28.86Z"
       },
       {
-        "version": 2.0,
+        "version": 2,
         "selection": "profile",
         "selectionLabel": "C · Profile-first",
         "comment": "",
@@ -250,7 +250,7 @@
         "recordedAt": "2026-08-10T07:47:19.9529480Z"
       },
       {
-        "version": 3.0,
+        "version": 3,
         "selection": "profile",
         "selectionLabel": "C · Profile-first",
         "comment": "",
@@ -262,7 +262,7 @@
     "implementations": [
       {
         "version": 1,
-        "handoffVersion": 2.0,
+        "handoffVersion": 2,
         "selection": "profile",
         "selectionLabel": "C · Profile-first",
         "comment": "",
@@ -273,7 +273,7 @@
     "stateChangedAt": "2026-08-10T08:04:58.4184540Z",
     "updatedAt": "2026-08-10T08:04:58.4184540Z",
     "implementation": {
-      "handoffVersion": 2.0,
+      "handoffVersion": 2,
       "selection": "profile",
       "selectionLabel": "C · Profile-first",
       "comment": "",
@@ -281,5 +281,68 @@
       "recordedAt": "2026-08-10T07:47:19.9529480Z"
     },
     "implementationSummary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867"
+  },
+  "chat-inputs": {
+    "labId": "chat-inputs",
+    "labTitle": "The agent asks, you tap",
+    "selection": "chips",
+    "selectionLabel": "A · Inline chips",
+    "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+    "disposition": "ready",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "chips",
+        "selectionLabel": "A · Inline chips",
+        "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+        "disposition": "ready",
+        "recordedAt": "2026-08-14T14:19:46.527Z"
+      }
+    ],
+    "implementations": [],
+    "stateChangedAt": "2026-08-14T14:19:46.527Z",
+    "updatedAt": "2026-08-14T14:19:46.527Z"
+  },
+  "family-details": {
+    "labId": "family-details",
+    "labTitle": "A family profile that grows with the trip",
+    "selection": "chat",
+    "selectionLabel": "D · Chat-led profile",
+    "comment": "",
+    "disposition": "ready",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "chat",
+        "selectionLabel": "D · Chat-led profile",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-08-14T14:29:55.901Z"
+      }
+    ],
+    "implementations": [],
+    "stateChangedAt": "2026-08-14T14:29:55.901Z",
+    "updatedAt": "2026-08-14T14:29:55.901Z"
+  },
+  "profile-preferences": {
+    "labId": "profile-preferences",
+    "labTitle": "Profile, in choices you can see",
+    "selection": "shelf",
+    "selectionLabel": "A · Preference shelf",
+    "comment": "",
+    "disposition": "ready",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "shelf",
+        "selectionLabel": "A · Preference shelf",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-08-14T14:31:16.300Z"
+      }
+    ],
+    "implementations": [],
+    "stateChangedAt": "2026-08-14T14:31:16.300Z",
+    "updatedAt": "2026-08-14T14:31:16.300Z"
   }
 }
