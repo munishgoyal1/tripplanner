@@ -200,7 +200,7 @@
       }
     },
     {
-      "at": "2026-08-15T13:03:46Z",
+      "at": "2026-08-15T13:07:59Z",
       "content_hash": "f1d48a8488425ebf",
       "plan": {
         "status": "draft",
@@ -272,48 +272,34 @@
         "day_wise_itinerary": [
           {
             "day": 1,
-            "date": "2026-11-07",
-            "title": "Day 1 · Arrival & French Quarter",
-            "summary": "Arrive in Pondicherry, check in to hotel, explore the French Quarter and Promenade Beach.",
+            "date": "2026-12-05",
+            "title": "Arrival & Relaxation",
+            "summary": "Arrive in Coorg, check in to hotel (selection pending), unwind and explore the resort. Enjoy a leisurely evening amidst the hills.",
             "stops": [
               {
                 "name": "Hotel (TBD)",
                 "kind": "hotel",
-                "note": "Check-in"
+                "note": "Check-in and relax"
               },
               {
-                "name": "French Quarter",
+                "name": "Resort Nature Walk",
                 "kind": "attraction",
-                "time": "11:00",
-                "duration_min": 120,
-                "note": "Walk through colonial streets"
-              },
-              {
-                "name": "Promenade Beach",
-                "kind": "attraction",
-                "time": "14:00",
-                "duration_min": 90,
-                "note": "Relax by the sea"
-              },
-              {
-                "name": "Café des Arts",
-                "kind": "meal",
                 "time": "16:00",
-                "duration_min": 60,
-                "note": "Coffee break"
+                "duration_min": 90,
+                "note": "Explore the lush surroundings"
               },
               {
                 "name": "Hotel (TBD)",
                 "kind": "hotel",
-                "note": "Return to hotel"
+                "note": "Return for dinner"
               }
             ]
           },
           {
             "day": 2,
-            "date": "2026-11-08",
-            "title": "Day 2 · Auroville & Serenity Beach",
-            "summary": "Visit Auroville, enjoy Serenity Beach, and sample local cuisine.",
+            "date": "2026-12-06",
+            "title": "Coffee Plantations & Abbey Falls",
+            "summary": "Visit a coffee plantation, then Abbey Falls. Lunch at Beans N Brews. Evening at Raja's Seat.",
             "stops": [
               {
                 "name": "Hotel (TBD)",
@@ -321,64 +307,69 @@
                 "note": "Start from hotel"
               },
               {
-                "name": "Auroville",
+                "name": "Mercara Gold Estate Coffee Plantation",
                 "kind": "attraction",
                 "time": "09:30",
                 "duration_min": 120,
-                "note": "Visit Matrimandir and explore community"
+                "note": "Guided plantation tour"
               },
               {
-                "name": "Serenity Beach",
+                "name": "Abbey Falls",
                 "kind": "attraction",
-                "time": "12:30",
-                "duration_min": 90,
-                "note": "Beach time"
+                "time": "12:00",
+                "duration_min": 60,
+                "note": "Scenic waterfall"
               },
               {
-                "name": "Villa Shanti",
+                "name": "Beans N Brews",
                 "kind": "meal",
-                "time": "14:30",
-                "duration_min": 75,
-                "note": "Lunch"
+                "time": "13:30",
+                "duration_min": 60,
+                "note": "Lunch with local flavors"
+              },
+              {
+                "name": "Raja's Seat",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 60,
+                "note": "Sunset viewpoint"
               },
               {
                 "name": "Hotel (TBD)",
                 "kind": "hotel",
-                "note": "Return to hotel"
+                "note": "Return for the night"
               }
             ]
           },
           {
             "day": 3,
-            "date": "2026-11-09",
-            "title": "Day 3 · Local Culture & Departure",
-            "summary": "Explore local markets, visit Sri Aurobindo Ashram, and depart.",
+            "date": "2026-12-07",
+            "title": "Dubare Elephant Camp & Departure",
+            "summary": "Morning visit to Dubare Elephant Camp, lunch at The Coorg Cuisine, then return to hotel for checkout.",
             "stops": [
               {
                 "name": "Hotel (TBD)",
                 "kind": "hotel",
-                "note": "Check out"
+                "note": "Start from hotel"
               },
               {
-                "name": "Sri Aurobindo Ashram",
+                "name": "Dubare Elephant Camp",
                 "kind": "attraction",
-                "time": "09:30",
-                "duration_min": 60,
-                "note": "Spiritual visit"
+                "time": "09:00",
+                "duration_min": 120,
+                "note": "Interact with elephants"
               },
               {
-                "name": "Goubert Market",
-                "kind": "attraction",
-                "time": "11:00",
-                "duration_min": 60,
-                "note": "Local shopping"
-              },
-              {
-                "name": "Le Dupleix",
+                "name": "The Coorg Cuisine",
                 "kind": "meal",
-                "time": "12:30",
-                "duration_min": 75,
-                "note": "Lunch before departure"
+                "time": "12:00",
+                "duration_min": 60,
+                "note": "Lunch with authentic Coorgi dishes"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Checkout and depart"
               }
             ]
           }
@@ -390,7 +381,15 @@
         "weather": {},
         "visa": {},
         "trip_constraints": [],
-        "updated_at": "2026-08-15T18:33:46.457346"
+        "updated_at": "2026-08-15T18:37:59.205925",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T18:37:50",
+            "expires_at": "2026-08-16T06:37:50"
+          }
+        ]
       }
     }
   ],
@@ -1030,25 +1029,23 @@
     },
     "keywords": [
       "Pondicherry",
-      "Day 1 · Arrival & French Quarter",
+      "Arrival & Relaxation",
       "Hotel (TBD)",
-      "French Quarter",
-      "Promenade Beach",
-      "Café des Arts",
-      "Day 2 · Auroville & Serenity Beach",
-      "Auroville",
-      "Serenity Beach",
-      "Villa Shanti",
-      "Day 3 · Local Culture & Departure",
-      "Sri Aurobindo Ashram",
-      "Goubert Market",
-      "Le Dupleix"
+      "Resort Nature Walk",
+      "Coffee Plantations & Abbey Falls",
+      "Mercara Gold Estate Coffee Plantation",
+      "Abbey Falls",
+      "Beans N Brews",
+      "Raja's Seat",
+      "Dubare Elephant Camp & Departure",
+      "Dubare Elephant Camp",
+      "The Coorg Cuisine"
     ],
     "auto_summary": "2-night Pondicherry, Nov 2026",
     "label": "",
     "notes": []
   },
-  "last_seen_at": "2026-08-15T13:03:46Z",
+  "last_seen_at": "2026-08-15T13:07:59Z",
   "schema_version": 1,
   "seen_in": [
     {
