@@ -27,6 +27,10 @@ Assistant build its first proposal.
   unresolved, while destination-only travel never invents an origin. The inline
   controls preserve prefilled values, skip/not-answered behavior, and existing
   structured labels.
+- Asking to plan a destination other than the active trip runs the kickoff before the
+  replacement trip is created, without requiring the words "new" or "another". A
+  follow-up naming the active destination, and a day trip elsewhere, still skip the
+  kickoff and leave the active trip in place.
 - The Assistant batches hotel research for every overnight city in one parallel
   tool phase and accepts usable results when another city-specific query fails.
 - While planning is active, the top command bar beside the trip selector shows

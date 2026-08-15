@@ -152,8 +152,10 @@ def test_explicit_destination_switch_preempts_old_trip_completion() -> None:
         has_planning_intent=True,
     )
 
-    assert decision.forced_tool == "create_trip_plan"
-    assert decision.forced_reason == "new_trip_creation"
+    # Switching destination starts the kickoff rather than completing Paris; the new
+    # trip is created after the kickoff is answered.
+    assert decision.forced_tool == "get_travel_preferences"
+    assert decision.forced_reason == "trip_kickoff"
 
 
 def test_answered_kickoff_preempts_old_trip_completion() -> None:
