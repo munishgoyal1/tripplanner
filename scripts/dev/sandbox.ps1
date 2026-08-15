@@ -37,6 +37,11 @@
     Pass -IterationSummary to either -Serve or -Promote to choose that wording instead
     of the commit subjects. Verified promotion appends Completed before sandbox cleanup.
 
+    Every recorded Lab version note is stamped with the lane, its branch, the commit,
+    the UTC recording time, and the agent chat session title. Supply that title with
+    -SessionTitle or the TRIPPLANNER_AGENT_SESSION environment variable; an omitted
+    title records "(unlabelled)" rather than guessing.
+
     -New and -Update fetch the latest origin/master before branching or merging, so
     each sandbox starts from the current canonical baseline. Pass -NoSync to skip
     that refresh. Sandbox work reaches master only through -Merge or -Promote.
@@ -136,6 +141,10 @@ param(
     [Parameter(ParameterSetName = "Serve")]
     [Parameter(ParameterSetName = "Promote")]
     [string]$IterationSummary = "",
+
+    [Parameter(ParameterSetName = "Serve")]
+    [Parameter(ParameterSetName = "Promote")]
+    [string]$SessionTitle = "",
 
     [Parameter(ParameterSetName = "New")]
     [switch]$NoOpen,
@@ -464,6 +473,16 @@ function Save-SandboxLabIteration {
     Save-Registry -Entries $entries
 }
 
+function Get-AgentSessionTitle {
+    # The agent chat session has no machine-readable name, so the caller supplies it via
+    # -SessionTitle or TRIPPLANNER_AGENT_SESSION; an unlabelled run stays honest about it.
+    $title = if ($script:SessionTitle) { $script:SessionTitle } else { $env:TRIPPLANNER_AGENT_SESSION }
+    $title = "$title".Trim() -replace "\s+", " "
+    if (-not $title) { return "(unlabelled)" }
+    if ($title.Length -gt 80) { return $title.Substring(0, 77) + "..." }
+    return $title
+}
+
 function Write-SandboxLabVersion {
     param(
         [Parameter(Mandatory = $true)][object]$Entry,
@@ -497,7 +516,13 @@ function Write-SandboxLabVersion {
             throw "Sandbox '$($Entry.slug)' HEAD is not descended from its Lab baseline or last recorded iteration."
         }
     }
-    $evidence = "$($Summary.Trim())`nSandbox: $($Entry.slug); commit: $($commit.Substring(0, 12))"
+    $marker = @(
+        "Lane: $($Entry.slug) ($($Entry.branch))"
+        "Commit: $($commit.Substring(0, 12))"
+        "Recorded: $((Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm')) UTC"
+        "Session: $(Get-AgentSessionTitle)"
+    ) -join "; "
+    $evidence = "$($Summary.Trim())`n$marker"
     # The recorder defaults its store to the lane that launched this script, which wrote
     # sandbox records into whichever worktree happened to invoke it. An iteration belongs
     # to the sandbox branch so it travels with the PR; a completed record outlives the

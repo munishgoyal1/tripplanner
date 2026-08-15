@@ -88,6 +88,8 @@ for sandbox lifecycle and promotion.
   confirming the endpoints answer, so an iteration loop ends at promotion with no
   separate step. Pass `-IterationSummary` to `-Serve` or `-Promote` only to choose
   that wording, or to record an intermediate iteration you want in the Lab history.
+  Pass `-SessionTitle` with the current chat title so the recorded version note
+  names the lane and session that produced it.
   Do not record a startup with no Lab changes as an
   iteration. Successful verified promotion appends Completed before cleanup.
 - Never deploy production without explicit owner approval.
