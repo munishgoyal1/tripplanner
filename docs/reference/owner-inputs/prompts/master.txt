@@ -1267,3 +1267,8 @@ implment lab25 in a new sandbox
 
 [2026-08-14 20:04] [master !] Rank labeling for scored options
 update the labs logic to name and order the choices in descending order of the scores. In this case naturally A will always be the highest scored option will always sit at A. So it is easy to always assume for me to try highest one A first. Currently options are first named and stacked then scored.
+
+[2026-08-15 16:47] [master] Why sbx5 main URL not working
+why the main url of sbx5 is not working
+
+- Frontend: `http://localhost:5313`
