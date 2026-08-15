@@ -39,7 +39,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `user/sandbox/Run-All-Sandboxes.cmd` | Seed and run every registered sandbox in independent background processes |
-| `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
+| `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` (stamped with the lane, commit, UTC time, and `-SessionTitle`) |
 | `user/sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
 | `user/sandbox/Update-Sandbox.cmd` | Merge the sandbox's remote head and current `origin/master` into its local branch, then push that sandbox branch; never promotes to `master` |
 | `user/sandbox/Rename-Sandbox.cmd <sandbox> <new-name>` | Rename a sandbox's name part; its branch, worktree, and database follow while the number keeps its ports |
