@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
@@ -43,6 +44,10 @@ _RATES: list[tuple[str, float, float]] = [
 
 _DEFAULT_RATE = (0.001, 0.003)  # if we don't know the model, assume cheap-ish
 
+# A deployment cannot contain a dot, so "gpt-4.1" is deployed as "gpt-4-1-local"
+# and would otherwise fall through to the far dearer "gpt-4" prefix.
+_VERSION_SEPARATOR_RE = re.compile(r"(?<=\d)-(?=\d)")
+
 _CONTAINER = "users"
 _LOCK = threading.Lock()
 
@@ -58,7 +63,7 @@ def _doc_id(month: str) -> str:
 
 def cost_for(model: str, prompt_tokens: int, completion_tokens: int) -> float:
     """Estimate USD cost for a single LLM call."""
-    name = (model or "").lower()
+    name = _VERSION_SEPARATOR_RE.sub(".", (model or "").lower())
     p_rate, c_rate = _DEFAULT_RATE
     for prefix, p, c in _RATES:
         if name.startswith(prefix):

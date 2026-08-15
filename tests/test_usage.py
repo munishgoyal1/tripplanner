@@ -331,3 +331,19 @@ def test_sync_chat_retry_replaces_interrupted_attempt(monkeypatch, tmp_path):
 
 
 
+
+
+def test_a_deployment_named_with_hyphens_is_priced_as_the_model_it_is() -> None:
+    """Azure deployment names cannot hold a dot, so gpt-4.1 ships as gpt-4-1-*.
+
+    Matching that against the "gpt-4" prefix charged the old GPT-4 rate, nearly
+    nine times the real one, which both overstates spend and trips the monthly
+    cap early.
+    """
+    from tripplanner.usage import cost_for
+
+    assert cost_for("gpt-4-1-local", 150_000, 15_000) == cost_for("gpt-4.1", 150_000, 15_000)
+    assert cost_for("gpt-4-1-mini-dev", 1000, 1000) == cost_for("gpt-4.1-mini", 1000, 1000)
+    assert cost_for("gpt-3-5-turbo", 1000, 1000) == cost_for("gpt-3.5", 1000, 1000)
+    # A genuine gpt-4 deployment keeps the gpt-4 price.
+    assert cost_for("gpt-4", 1000, 0) > cost_for("gpt-4-1-local", 1000, 0)

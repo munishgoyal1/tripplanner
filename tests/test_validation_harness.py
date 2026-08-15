@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 
 from tripplanner.validation import (
+    budget,
     corpus,
     findings,
     mutations,
@@ -352,3 +353,60 @@ def test_an_empty_corpus_describes_itself_without_dividing_by_zero() -> None:
     described = observations.observe([])
 
     assert any(item.label == "Trips" and item.value == "0" for item in described)
+
+
+# ---- budget ---------------------------------------------------------------
+
+
+def test_a_first_run_may_spend_the_default_and_no_more(tmp_path: Path) -> None:
+    allowed = budget.authorize(tmp_path)
+
+    assert allowed.budget_inr == budget.DEFAULT_RUN_BUDGET_INR
+    assert allowed.spent_inr == 0.0
+    assert allowed.remaining_inr == budget.CUMULATIVE_CAP_INR
+
+
+def test_what_was_already_spent_is_remembered_between_runs(tmp_path: Path) -> None:
+    budget.record(
+        tmp_path, spent_inr_amount=900, trips=12, model="gpt-4.1", stopped_because="budget"
+    )
+    budget.record(
+        tmp_path, spent_inr_amount=600, trips=8, model="gpt-4.1", stopped_because="target"
+    )
+
+    assert budget.spent_inr(tmp_path) == 1500.0
+    assert budget.authorize(tmp_path).spent_inr == 1500.0
+
+
+def test_a_run_is_clamped_to_the_headroom_the_cap_leaves(tmp_path: Path) -> None:
+    budget.record(
+        tmp_path, spent_inr_amount=4700, trips=60, model="gpt-4.1", stopped_because="budget"
+    )
+
+    assert budget.authorize(tmp_path).budget_inr == 300.0
+
+
+def test_the_cumulative_cap_refuses_a_further_run(tmp_path: Path) -> None:
+    budget.record(
+        tmp_path, spent_inr_amount=5000, trips=64, model="gpt-4.1", stopped_because="budget"
+    )
+
+    with pytest.raises(budget.BudgetExhaustedError):
+        budget.authorize(tmp_path)
+
+
+def test_an_unreadable_ledger_never_reads_as_nothing_spent(tmp_path: Path) -> None:
+    budget.ledger_path(tmp_path).parent.mkdir(parents=True, exist_ok=True)
+    budget.ledger_path(tmp_path).write_text("{ this is not json", encoding="utf-8")
+
+    with pytest.raises(budget.BudgetExhaustedError):
+        budget.authorize(tmp_path)
+
+
+def test_the_conversion_rate_is_recorded_with_every_run(tmp_path: Path) -> None:
+    entry = budget.record(
+        tmp_path, spent_inr_amount=10, trips=1, model="gpt-4.1", stopped_because="target"
+    )
+
+    assert entry["usd_inr"] > 0
+    assert entry["model"] == "gpt-4.1"
