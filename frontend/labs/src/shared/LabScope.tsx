@@ -10,6 +10,20 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "chat-inputs": {
+    changes: [
+      "How the planner requests a missing planning fact inside the conversation: inline chips, an ask card, a stated assumption, a one-at-a-time queue, or a persistent context bar",
+      "Which control each fact type uses - chips, stepper, date range, slider, segmented control, or multi-select tags - so an answer is a tap rather than a sentence",
+      "How an explicit opt-out is offered and recorded, including a destination-only trip that has no origin at all",
+      "How answered, unanswered, and deliberately declined facts are shown back to the traveller and can be added, changed, or removed later",
+    ],
+    context: [
+      "The trip fixture, itinerary content, and the planner's underlying reasoning; only the request surface varies",
+      "Free-text chat remains available in every option and is never removed as an input path",
+      "Agent tool selection, provider searches, persistence contracts, and existing trip records; this Lab never back-fills a stored trip",
+      "Profile and preference storage, which is Lab #25 and Lab #26 territory rather than this decision",
+    ],
+  },
   "family-details": {
     changes: [
       "How a family is introduced: roster, trip question, shared defaults, chat suggestion, or comparison matrix",

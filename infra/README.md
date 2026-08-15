@@ -24,10 +24,14 @@ from this table.
 
 | Environment | Resource group | App prefix | Cosmos database | Purpose |
 | --- | --- | --- | --- | --- |
-| Local | None | Local processes | `tripplanner-local` emulator database | Development |
+| Local | `rg-tripplanner-local` | Local processes | `tripplanner-local` emulator database | Development |
 | Canary | `rg-tripplanner-canary` | `canary-*` | `tripplanner-canary` | Hosted testing |
 | Production | `rg-tripplanner-prod` | `prod-*` | `tripplanner-prod` | Approved live releases |
 | Shared data | `rg-tripplanner-data` | n/a | Shared account | Canary/prod data plane |
+
+`rg-tripplanner-local` holds owner-only development resources, currently the
+Azure OpenAI account and the provider-cache Redis. It is not part of any hosted
+release.
 
 Production serves `aitripplanner.co` and `www.aitripplanner.co`. Namecheap owns
 DNS; Bicep owns the existing Azure-managed certificates and hostname bindings.
@@ -40,6 +44,8 @@ a database or fall back to local `.env` credentials.
 | --- | --- |
 | `data-stack.bicep` | Subscription-scope shared data resource group orchestration |
 | `data.bicep` | Shared Cosmos data-plane deployment |
+| `local-stack.bicep` | Subscription-scope local resource group orchestration |
+| `local-redis.bicep` | Local-only Azure Managed Redis backing the provider cache |
 | `modules/cosmos-data.bicep` | Cosmos account, databases, containers, throughput, and TTL |
 | `main.bicep` | Container Apps, Log Analytics, configuration, domains, and production alerting |
 | `canary.bicepparam` | Canary app and database binding |
@@ -110,6 +116,27 @@ COSMOS_DEV_BACKEND=azure
 The Azure local database is prepared in IaC but not deployed. Deploying it would
 raise provisioned shared throughput from 800 RU/s to 1,200 RU/s, above the
 lifetime free-tier throughput allowance.
+
+## Provider Cache
+
+`ProviderTTLCache` fronts the paid provider lookups — flight, hotel and activity
+search, routing, and the provider capability runtime — so the same query is not
+purchased twice. It always keeps an in-process dictionary; `CACHE_REDIS_ENABLED`
+decides whether a shared Redis sits in front of it. Redis is read first, then
+memory, and a cache miss or an unreachable Redis degrades to memory rather than
+failing the request.
+
+Only local runs it. `.env.canary` and `.env.prod` set `CACHE_REDIS_ENABLED=0`,
+so both hosted environments stay on the in-memory fallback and neither depends
+on a paid cache. The Redis instance described by `local-redis.bicep` is a
+single-developer convenience:
+
+```powershell
+az deployment sub create --location eastus2 --template-file infra/local-stack.bicep
+```
+
+Each environment must keep its own `CACHE_REDIS_NAMESPACE`. Sharing one
+namespace lets a canary response be served to production, and vice versa.
 
 ## Data Movement and Recovery
 
