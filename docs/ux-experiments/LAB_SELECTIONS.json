@@ -22,7 +22,7 @@
         "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
         "disposition": "implemented-review",
         "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
-        "recordedAt": "2026-08-15T14:17:39.0984070Z"
+        "recordedAt": "2026-08-15T14:17:39.098407Z"
       }
     ],
     "implementations": [
@@ -33,18 +33,18 @@
         "selectionLabel": "A · Inline chips",
         "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
         "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
-        "recordedAt": "2026-08-15T14:17:39.0984070Z"
+        "recordedAt": "2026-08-15T14:17:39.098407Z"
       }
     ],
-    "stateChangedAt": "2026-08-15T14:17:39.0984070Z",
-    "updatedAt": "2026-08-15T14:17:39.0984070Z",
+    "stateChangedAt": "2026-08-15T14:17:39.098407Z",
+    "updatedAt": "2026-08-15T14:17:39.098407Z",
     "implementation": {
       "handoffVersion": 2,
       "selection": "chips",
       "selectionLabel": "A · Inline chips",
       "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
       "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
-      "recordedAt": "2026-08-15T14:17:39.0984070Z"
+      "recordedAt": "2026-08-15T14:17:39.098407Z"
     },
     "implementationSummary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796."
   },
@@ -222,7 +222,7 @@
         "comment": "",
         "disposition": "implemented-review",
         "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
-        "recordedAt": "2026-08-10T07:47:19.9529480Z"
+        "recordedAt": "2026-08-10T07:47:19.952948Z"
       },
       {
         "version": 3,
@@ -231,7 +231,7 @@
         "comment": "",
         "disposition": "completed",
         "summary": "Promoted to master via PR #39 after validation and verification.\nSandbox: 1-lab24-real-preview; commit: 5cb31e0a2ba0",
-        "recordedAt": "2026-08-10T08:04:58.4184540Z"
+        "recordedAt": "2026-08-10T08:04:58.418454Z"
       }
     ],
     "implementations": [
@@ -242,7 +242,7 @@
         "selectionLabel": "C · Profile-first",
         "comment": "",
         "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
-        "recordedAt": "2026-08-10T07:47:19.9529480Z"
+        "recordedAt": "2026-08-10T07:47:19.952948Z"
       }
     ],
     "stateChangedAt": "2026-08-10T08:04:58.418454Z",
@@ -401,7 +401,7 @@
         "selectionLabel": "A · Preference shelf",
         "comment": "",
         "disposition": "ready",
-        "recordedAt": "2026-08-14T14:31:16.300Z"
+        "recordedAt": "2026-08-14T14:31:16.3Z"
       },
       {
         "version": 2,
@@ -418,7 +418,7 @@
         "selectionLabel": "A · Preference shelf",
         "comment": "",
         "disposition": "completed",
-        "recordedAt": "2026-08-15T15:30:26.050Z"
+        "recordedAt": "2026-08-15T15:30:26.05Z"
       }
     ],
     "implementation": {
@@ -440,8 +440,8 @@
         "recordedAt": "2026-08-15T14:17:34.634298Z"
       }
     ],
-    "stateChangedAt": "2026-08-15T15:30:26.050Z",
-    "updatedAt": "2026-08-15T15:30:26.050Z"
+    "stateChangedAt": "2026-08-15T15:30:26.05Z",
+    "updatedAt": "2026-08-15T15:30:26.05Z"
   },
   "profile-workspace": {
     "labId": "profile-workspace",
@@ -449,7 +449,7 @@
     "selection": "full-page",
     "selectionLabel": "B · Full profile page",
     "comment": "Full profile, go with highest scoring most recommedned option.",
-    "disposition": "ready",
+    "disposition": "implemented-review",
     "handoffs": [
       {
         "version": 1,
@@ -458,10 +458,38 @@
         "comment": "Full profile, go with highest scoring most recommedned option.",
         "disposition": "ready",
         "recordedAt": "2026-08-15T15:38:29.906Z"
+      },
+      {
+        "version": 2.0,
+        "selection": "full-page",
+        "selectionLabel": "B · Full profile page",
+        "comment": "Full profile, go with highest scoring most recommedned option.",
+        "disposition": "implemented-review",
+        "summary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed.",
+        "recordedAt": "2026-08-15T16:40:34.0723850Z"
       }
     ],
-    "implementations": [],
-    "stateChangedAt": "2026-08-15T15:38:29.906Z",
-    "updatedAt": "2026-08-15T15:38:29.906Z"
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2.0,
+        "selection": "full-page",
+        "selectionLabel": "B · Full profile page",
+        "comment": "Full profile, go with highest scoring most recommedned option.",
+        "summary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed.",
+        "recordedAt": "2026-08-15T16:40:34.0723850Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-15T16:40:34.0723850Z",
+    "updatedAt": "2026-08-15T16:40:34.0723850Z",
+    "implementation": {
+      "handoffVersion": 2.0,
+      "selection": "full-page",
+      "selectionLabel": "B · Full profile page",
+      "comment": "Full profile, go with highest scoring most recommedned option.",
+      "summary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed.",
+      "recordedAt": "2026-08-15T16:40:34.0723850Z"
+    },
+    "implementationSummary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed."
   }
 }

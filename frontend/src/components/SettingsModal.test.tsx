@@ -26,6 +26,7 @@ const preferences: Preferences = {
 const mocks = vi.hoisted(() => ({
   fetchPreferences: vi.fn(() => Promise.resolve(preferences)),
   savePreferences: vi.fn(() => Promise.resolve({ ok: true, about_me_extracted: [] })),
+  fetchProfileSuggestions: vi.fn(() => Promise.resolve([])),
 }));
 
 vi.mock("../api", async () => {
@@ -48,16 +49,5 @@ describe("SettingsModal preference shelf", () => {
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => expect(mocks.savePreferences).toHaveBeenCalledWith({ trip_style: "packed" }));
-  });
-
-  it("requires confirmation before remembering a family detail from chat", async () => {
-    render(<SettingsModal embedded onClose={vi.fn()} />);
-
-    expect(await screen.findByRole("region", { name: "Suggested family detail" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /Remember/ }));
-    expect(screen.getByText(/Remembered for future trips/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
-
-    await waitFor(() => expect(mocks.savePreferences).toHaveBeenCalledWith({ about_me: "Rhea prefers relaxed mornings." }));
   });
 });
