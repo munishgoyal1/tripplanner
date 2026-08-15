@@ -4,15 +4,23 @@ import { writeDisplayPreferences } from "../lib/displayPreferences";
 import type { Itinerary, TripOverview } from "../types";
 import ItineraryPanel from "./ItineraryPanel";
 
-const { fetchItineraryMock, setStopBookedMock } = vi.hoisted(() => ({
-  fetchItineraryMock: vi.fn(),
-  setStopBookedMock: vi.fn(),
-}));
+const { fetchItineraryMock, setStopBookedMock, fetchVerificationMock, repairTripMock } =
+  vi.hoisted(() => ({
+    fetchItineraryMock: vi.fn(),
+    setStopBookedMock: vi.fn(),
+    fetchVerificationMock: vi.fn(),
+    repairTripMock: vi.fn(),
+  }));
 const scrollIntoViewMock = vi.fn();
 
+// The panel renders TripVerificationCard, so its API calls have to be mocked
+// here too. No report means the card renders nothing, which keeps these tests
+// about the itinerary rather than about verification.
 vi.mock("../api", () => ({
   fetchItinerary: fetchItineraryMock,
   setStopBooked: setStopBookedMock,
+  fetchVerification: fetchVerificationMock,
+  repairTrip: repairTripMock,
 }));
 
 const itinerary: Itinerary = {
@@ -129,6 +137,8 @@ describe("ItineraryPanel", () => {
     writeDisplayPreferences({ region: "IN", language: "en", currency: "USD" });
     fetchItineraryMock.mockReset().mockResolvedValue(itinerary);
     setStopBookedMock.mockReset();
+    fetchVerificationMock.mockReset().mockResolvedValue(null);
+    repairTripMock.mockReset();
     scrollIntoViewMock.mockReset();
     Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
       configurable: true,
