@@ -144,3 +144,9 @@ closures.
 - Seasonal and renovation closure grounding (should-ship item 7) may land as a
   second increment once the certificate surface is validated.
 - Export, share, and native parity are deliberately deferred.
+- The arrival day has no soft protection. A plan with no inbound leg is not
+  evidence that the traveller lands that morning, so the rebalance may place an
+  early stop on day one. This closes when a trip records its travel scope.
+- Retitling changes the theme term, so a second repair can find further
+  improvements the first could not see. It converges within two or three runs
+  and then reports nothing to do.

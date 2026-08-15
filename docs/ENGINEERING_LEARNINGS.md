@@ -1089,3 +1089,32 @@ the outcome.
   here and would have failed elsewhere, and a genuine improvement to the guard
   looked like a regression. Isolating the suite from `places_cache` made the
   failure legible in one run.
+
+- An absolute ordering is not a strong preference, it is a blank cheque. Ranking
+  contradictions lexicographically ahead of cost meant no arrangement that
+  cleared one could ever lose, so the first real run moved the Louvre onto the
+  departure day and a Paris district onto the Versailles excursion -- the theme
+  penalty fired on both and was simply outranked. A cleared fault is now worth a
+  large finite number of minutes: heavy enough to beat any ordinary saving,
+  finite enough that it cannot buy an arrangement which ruins the rest of the
+  trip. Reserve lexicographic ordering for things that are genuinely
+  incomparable, and price everything else.
+
+- A rebalancer needs exchanges, not just relocations. Lifting one stop off a day
+  and adding it to another always leaves one day heavy and one light, and that
+  imbalance costs more than the travel it saves, so a search over relocations
+  alone found zero improving moves on a deliberately scrambled trip and was
+  right every time. Trading two stops keeps both days the size they were. If an
+  optimiser reports nothing to do on an obviously bad input, suspect the
+  neighbourhood before the objective.
+
+- Rearranging a plan without rewriting what it calls itself leaves the plan
+  lying. "Day 3 - Louvre & Marais" holding neither is worse than the crooked
+  schedule that was just fixed, because the traveller now cannot trust the
+  labels either. Any operation that moves things has to own the words that
+  describe them.
+
+- Do not point a new mutation at real data on its first run. The repair pass was
+  wired to a button and tried against a live trip the same hour it was written;
+  it degraded the trip and there was no undo. A corpus harness would have shown
+  all three defects without touching anything a person cared about.
