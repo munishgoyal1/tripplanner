@@ -40,7 +40,16 @@ def _lookup(places: dict[str, Any]):
     by_name: dict[str, Any] = {}
     for key, entry in places.items():
         name, _, _city = str(key).partition("|")
-        by_name.setdefault(name.strip().lower(), entry or {})
+        wanted = name.strip().lower()
+        previous = by_name.get(wanted)
+        # One name can be cached against several destinations, and they do not
+        # always agree. Prefer the entry the provider named the same thing, so
+        # the audit reads one place per name instead of inventing two.
+        if previous is None or (
+            str((entry or {}).get("name") or "").strip().lower() == wanted
+            and str(previous.get("name") or "").strip().lower() != wanted
+        ):
+            by_name[wanted] = entry or {}
 
     def get_details(name: str, city: str = "", **_kwargs: Any) -> dict[str, Any] | None:
         wanted = str(name or "").strip().lower()
