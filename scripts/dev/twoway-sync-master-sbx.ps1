@@ -7,9 +7,10 @@
   Merges each sandbox into master and then brings every sandbox back up to the
   resulting master, so all worktrees end on the same commit.
 
-  With no argument this covers every registered sandbox. Pass a sandbox number,
-  full slug, or short name to merge only that one; the closing refresh still
-  levels every sandbox so no lane is left behind.
+  With no argument, or the literal "all", this covers every registered
+  sandbox. Pass a sandbox number, full slug, or short name to merge only that
+  one; the closing refresh still levels every sandbox so no lane is left
+  behind.
 
   This is the only script that pushes sandbox work to master in bulk, so it is
   deliberately rare and gated: it prints exactly what would land, then requires
@@ -24,6 +25,7 @@
 .EXAMPLE
   ./scripts/dev/twoway-sync-master-sbx.ps1 -WhatIf
   ./scripts/dev/twoway-sync-master-sbx.ps1
+  ./scripts/dev/twoway-sync-master-sbx.ps1 all
   ./scripts/dev/twoway-sync-master-sbx.ps1 2
 #>
 
@@ -68,10 +70,13 @@ if ($registered.Count -eq 0) {
     return
 }
 
-$targets = if ($Sandbox) {
-    @(Select-SandboxEntry -Entries $registered -Reference $Sandbox)
-} else {
+# The literal "all" is the explicit spelling of the same default every other
+# sandbox launcher now accepts; omitting -Sandbox keeps working too.
+$isAllSandboxes = -not $Sandbox -or $Sandbox.Trim().ToLowerInvariant() -eq "all"
+$targets = if ($isAllSandboxes) {
     $registered
+} else {
+    @(Select-SandboxEntry -Entries $registered -Reference $Sandbox)
 }
 
 # Preflight before anything is offered for approval: a sandbox holding
@@ -108,7 +113,7 @@ if ($blocked.Count -gt 0) {
 
 $withWork = @($plan | Where-Object { $_.Commits.Count -gt 0 })
 
-$scope = if ($Sandbox) { "sandbox '$($targets[0].slug)'" } else { "every registered sandbox" }
+$scope = if ($isAllSandboxes) { "every registered sandbox" } else { "sandbox '$($targets[0].slug)'" }
 Write-Host ""
 Write-Host "╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  TWO-WAY SANDBOX SYNCHRONIZATION                          ║"

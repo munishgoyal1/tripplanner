@@ -50,6 +50,7 @@ class CompletionPolicyDecision:
     kickoff_tool: str | None = None
     budget_exhausted: bool = False
     completion_gaps: tuple[str, ...] = ()
+    block_trip_creation: bool = False
 
 
 _NEW_TRIP_REQUEST_RE = re.compile(
@@ -286,6 +287,62 @@ def latest_user_starts_new_trip(messages: Sequence[BaseMessage]) -> bool:
     return False
 
 
+def latest_user_requests_different_trip(
+    messages: Sequence[BaseMessage],
+    active_trip: dict[str, Any],
+) -> bool:
+    """True when the newest message asks to plan somewhere other than the active trip."""
+    active_destination = str(active_trip.get("destination") or "").strip()
+    if not active_destination:
+        return False
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    if latest_human < 0:
+        return False
+    request = str(messages[latest_human].content or "").strip()
+    if "day trip" in request.lower() or not _NEW_TRIP_REQUEST_RE.search(request):
+        return False
+    return active_destination.lower() not in request.lower()
+
+
+def trip_kickoff_owed(
+    messages: Sequence[BaseMessage],
+    *,
+    has_planning_intent: bool,
+) -> bool:
+    """True while a trip may still be created without the user having been asked anything.
+
+    Wording-independent on purpose: the model creates trips on its own initiative, so
+    no phrase list can decide this. Emitting the request is not enough -- the block
+    holds until the user's reply lands, otherwise the same turn asks and then answers
+    itself.
+    """
+    if not has_planning_intent:
+        return False
+    positions = _tool_call_positions(messages)
+    latest_create = max(
+        (index for index, name in positions if name == "create_trip_plan"),
+        default=-1,
+    )
+    latest_kickoff = max(
+        (
+            index
+            for index, name in positions
+            if name == "request_trip_input" and index > latest_create
+        ),
+        default=-1,
+    )
+    if latest_kickoff < 0:
+        return True
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    return latest_human < latest_kickoff
+
+
 def pending_trip_kickoff_answer(messages: Sequence[BaseMessage]) -> bool:
     positions = _tool_call_positions(messages)
     latest_create = max(
@@ -313,7 +370,12 @@ def trip_kickoff_tool_choice(
     *,
     has_planning_intent: bool,
 ) -> str | None:
-    if active_trip.get("destination") and not latest_user_starts_new_trip(messages):
+    # A turn that will create a different trip must still run the kickoff; otherwise the
+    # creation policy silently replaces the workspace without asking anything.
+    if active_trip.get("destination") and not (
+        latest_user_starts_new_trip(messages)
+        or latest_user_requests_different_trip(messages, active_trip)
+    ):
         return None
 
     positions = _tool_call_positions(messages)
@@ -363,10 +425,7 @@ def trip_creation_tool_choice(
     if "create_trip_plan" in turn_tools:
         return None
 
-    request = str(messages[latest_human].content or "").strip()
-    if "day trip" in request.lower() or not _NEW_TRIP_REQUEST_RE.search(request):
-        return None
-    if active_destination.lower() in request.lower():
+    if not latest_user_requests_different_trip(messages, active_trip):
         return None
     return "create_trip_plan"
 
@@ -416,8 +475,10 @@ def resolve_completion_policy(
     creation_tool = (
         None if proposal_only else trip_creation_tool_choice(messages, active_trip)
     )
-    new_trip_flow = latest_user_starts_new_trip(messages) or pending_trip_kickoff_answer(
-        messages
+    new_trip_flow = (
+        latest_user_starts_new_trip(messages)
+        or latest_user_requests_different_trip(messages, active_trip)
+        or pending_trip_kickoff_answer(messages)
     )
     hotel_fallback_requirement = (
         None
@@ -460,6 +521,10 @@ def resolve_completion_policy(
         )
     )
     kickoff_answered = pending_trip_kickoff_answer(messages)
+    # The kickoff outranks creation, otherwise switching destination would build the new
+    # trip before asking anything. Creation resumes once the kickoff is answered.
+    if kickoff_tool:
+        creation_tool = None
     forced_tool = (
         creation_tool
         if creation_tool
@@ -504,4 +569,9 @@ def resolve_completion_policy(
         forced_reason=forced_reason,
         requirement=requirement,
         kickoff_tool=kickoff_tool,
+        block_trip_creation=(
+            forced_tool is None
+            and not proposal_only
+            and trip_kickoff_owed(messages, has_planning_intent=has_planning_intent)
+        ),
     )
