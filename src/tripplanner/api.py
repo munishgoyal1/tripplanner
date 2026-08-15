@@ -56,6 +56,7 @@ from tripplanner.api_contracts import (
     GuestMigrateRequest,
     PreferencesRequest,
     PrivacyActionRequest,
+    ProfileSuggestionRequest,
     SelectRequest,
     StopBookedRequest,
     TripIdRequest,
@@ -1595,6 +1596,30 @@ async def trip_shared_import(token: str, req: UserRequest, request: Request) -> 
         return {"ok": True, "view": view}
     finally:
         await release_workspace_exclusive(workspace)
+
+
+
+@app.get("/profile/suggestions")
+async def get_profile_suggestions(request: Request, user_id: str = "local") -> dict:
+    """Facts chat noticed that are waiting for the user to confirm or decline."""
+    from tripplanner.tools import profile_suggestions
+
+    _set_request_user(request, user_id)
+    return {"suggestions": profile_suggestions.list_pending()}
+
+
+@app.post("/profile/suggestions/{suggestion_id}")
+async def resolve_profile_suggestion(
+    suggestion_id: str, req: ProfileSuggestionRequest, request: Request
+) -> dict:
+    """Confirm a noticed fact into the durable profile, or decline it for good."""
+    from tripplanner.tools import profile_suggestions
+
+    _set_request_user(request, req.user_id)
+    resolved = profile_suggestions.resolve(suggestion_id, req.action)
+    if resolved is None:
+        raise HTTPException(status_code=404, detail="Suggestion not found")
+    return {"resolved": resolved, "suggestions": profile_suggestions.list_pending()}
 
 
 @app.get("/preferences")
