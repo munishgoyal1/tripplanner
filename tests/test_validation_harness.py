@@ -322,6 +322,27 @@ def test_every_rule_the_harness_can_report_is_described_in_the_registry() -> Non
     assert emitted <= registry.codes()
 
 
+def test_every_code_the_guard_names_is_registered() -> None:
+    """The fixture above only proves what happened to fire on one trip.
+
+    I11 and I13 shipped, fired on the real corpus, and stayed absent from the
+    registry because no synthetic record triggered them. Assert over the code
+    sets the system declares instead, which no choice of fixture can dodge.
+    """
+    from tripplanner.tools import trip_guard
+    from tripplanner.web import trip_verification
+
+    declared = (
+        set(trip_guard.KNOWN_FACT_CODES)
+        | set(trip_verification.CONTRADICTION_CODES)
+        | set(trip_verification.ADVISORY_CODES)
+        | set(trip_verification.COVERAGE_CODES)
+        | set(trip_verification._REQUIREMENTS)
+    )
+
+    assert declared <= registry.codes()
+
+
 def test_a_rule_states_itself_and_declares_how_hard_it_bites() -> None:
     for rule in registry.registry():
         assert rule.statement.strip().endswith(".")
@@ -436,3 +457,75 @@ def test_the_audit_never_reaches_for_a_provider_even_without_facts() -> None:
         trip_common._summary_for_place = original
 
     assert called == []
+
+
+# ---- report ---------------------------------------------------------------
+
+
+def _audit_of(*records: corpus.CorpusRecord, tmp_path: Path) -> runner.AuditResult:
+    return runner.audit(tmp_path, records=list(records), baseline={"accepted": {}})
+
+
+def test_every_reported_finding_names_a_record_that_is_in_the_corpus(tmp_path: Path) -> None:
+    """A finding that cannot be traced back to a trip cannot be opened."""
+    from tripplanner.validation import report as report_module
+
+    result = _audit_of(_record(), tmp_path=tmp_path)
+    payload = report_module.build_report(result, {"accepted": {}})
+
+    known = {item["id"] for item in payload["records"]}
+    assert payload["groups"]
+    for item in payload["groups"]:
+        assert item["findings"]
+        for finding in item["findings"]:
+            assert finding["record_id"] in known
+
+
+def test_a_rule_that_never_fired_is_still_listed(tmp_path: Path) -> None:
+    """Absence from the report would read as "no such rule" instead of "no hits"."""
+    from tripplanner.validation import report as report_module
+
+    result = _audit_of(_record(), tmp_path=tmp_path)
+    payload = report_module.build_report(result, {"accepted": {}})
+
+    listed = {item["code"] for item in payload["rules"]}
+    assert listed == registry.codes()
+    assert any(item["hits"] == 0 for item in payload["rules"])
+
+
+def test_a_record_without_a_stored_identity_is_not_offered_as_openable(
+    tmp_path: Path,
+) -> None:
+    """Debug-store revisions never existed in a database, so nothing can load them."""
+    from tripplanner.validation import report as report_module
+
+    stored = corpus.CorpusRecord(
+        id="db:trip-1",
+        provenance=corpus.REAL,
+        source="tripplanner-sbx-2-auto-validation",
+        plan=_plan(user_id="corpus-hampi", trip_id="hampi_2027-01-05"),
+        places=_PLACES,
+    )
+    result = _audit_of(_record(), stored, tmp_path=tmp_path)
+    payload = report_module.build_report(result, {"accepted": {}})
+
+    by_id = {item["id"]: item for item in payload["records"]}
+    assert by_id["db:trip-1"]["openable"] is True
+    assert by_id["db:trip-1"]["user_id"] == "corpus-hampi"
+    assert by_id["test:1"]["openable"] is False
+
+
+def test_an_accepted_group_carries_the_date_it_was_accepted(tmp_path: Path) -> None:
+    from tripplanner.validation import report as report_module
+
+    result = _audit_of(_record(), tmp_path=tmp_path)
+    key = result.groups[0].key
+    baseline = {"accepted": {key: {"accepted_on": "2026-08-01"}}}
+
+    payload = report_module.build_report(runner.audit(
+        tmp_path, records=result.records, baseline=baseline
+    ), baseline)
+
+    accepted = {item["key"]: item for item in payload["groups"]}[key]
+    assert accepted["new"] is False
+    assert accepted["accepted_on"] == "2026-08-01"

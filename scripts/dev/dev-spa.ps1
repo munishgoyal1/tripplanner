@@ -391,6 +391,9 @@ if (-not $BackendOnly) {
         $env:VITE_API_TARGET = "http://localhost:$ApiPort"
         $env:VITE_PORT = "$FrontendPort"
         $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
+        # Local-only: enables ?inspect=<user_id> so an audit finding can be
+        # opened in the real UI. Never set for a production build.
+        $env:VITE_DEBUG_TOOLS = "1"
         # Stable guest identity for emulator dev; the sandbox seed re-owns the
         # owner's data under this id (keep in sync with sandbox_seed.py).
         if ($configuredCosmosBackend -eq "emulator") {

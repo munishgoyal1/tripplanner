@@ -72,6 +72,13 @@ INVARIANTS: tuple[tuple[str, str, str], ...] = (
         "Guard coverage",
         "A plan must say where the trip starts, or the envelope invariants cannot run.",
     ),
+    ("I11", "Closed day", "A visit must fall on a day the place is actually open."),
+    (
+        "I12",
+        "Permanently closed",
+        "A place reported as shut down for good must not be planned at all.",
+    ),
+    ("I13", "Duplicate visit", "The same sight must not be planned on two different days."),
 )
 
 #: A trip the traveller will reach on their own. Named by the user, never
