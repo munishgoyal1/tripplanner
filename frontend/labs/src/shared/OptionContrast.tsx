@@ -33,6 +33,18 @@ interface ContrastDefinition {
 }
 
 const contrasts: Record<string, ContrastDefinition> = {
+  "profile-workspace": {
+    axis: "Every option holds the same five sections, the same fields, and promotes travellers to its own destination. They disagree about how much room the profile gets and whether it floats over the trip, replaces it, or grows only when asked.",
+    rows: [
+      { option: "A · Wider drawer", score: 83, idea: "Keep the right-side drawer but widen it into a two-column editing surface.", buys: "The cheapest change that fixes the cramped column, with no new destination to learn.", costs: "A wide overlay still covers the trip and fights long forms on smaller laptops.", choose: "The profile should stay one keystroke from the workspace." },
+      { option: "B · Full profile page", score: 92, idea: "A dedicated page with a section rail and a genuinely wide canvas.", buys: "The most room, the calmest editing, and space for family and documents to breathe.", costs: "It leaves the workspace, so returning to the trip is an explicit step.", choose: "Profile editing is an occasional, deliberate task rather than a quick peek." },
+      { option: "C · Centered workspace", score: 86, idea: "A large centered dialog with its own rail, floating above the trip.", buys: "Roomy without losing your place in the plan behind it.", costs: "Modal focus and scroll trapping stay awkward once forms get long.", choose: "Users edit preferences mid-planning and must not lose trip context." },
+      { option: "D · People-first two pane", score: 88, idea: "A category rail plus a detail pane, with travellers as the primary object.", buys: "The best home for families: people are first-class, not a nested block.", costs: "Slightly indirect for a solo traveller changing a single preference.", choose: "Most profiles cover several travellers with different needs." },
+      { option: "E · Expand on demand", score: 79, idea: "The compact drawer stays for quick edits and expands to full width when needed.", buys: "Fast edits stay fast while deep edits still get room.", costs: "Two states of one screen to design, test, and explain.", choose: "Quick single-field edits genuinely outnumber full profile sessions." },
+    ],
+    same: "The same five sections, the same preference fields and internal keys, the same traveller records and shared family defaults, the same document and privacy behavior, the same save semantics, and the same phone layout where extra width does not exist.",
+    verdict: "The full profile page wins because the content is simply too large for an overlay: four preference groups, a traveller roster, documents, and privacy cannot share 384px without becoming a scroll tunnel. The people-first two pane is the strongest variant when families are the common case, and the centered workspace is the best compromise when losing trip context is unacceptable. The wider drawer is the cheapest real improvement, while expand-on-demand is a refinement of today's shape rather than a new home.",
+  },
   "chat-inputs": {
     axis: "Every option asks for the same missing facts with the same tap-sized controls and the same explicit opt-out. They disagree about where the request sits relative to the conversation and how much it interrupts before the plan appears.",
     rows: [

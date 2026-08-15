@@ -6,7 +6,7 @@
   "first_captured_at": "2026-08-15T11:32:23Z",
   "revisions": [
     {
-      "at": "2026-08-15T12:44:03Z",
+      "at": "2026-08-15T11:35:26Z",
       "content_hash": "87076b453e50a9a2",
       "plan": {
         "status": "draft",
@@ -580,6 +580,12 @@
       "branch": "sandbox/7-lab25-profile",
       "database": "tripplanner-sbx-7-lab25-profile",
       "at": "2026-08-15T11:32:23Z"
+    },
+    {
+      "workspace": "sbx-6-lab-factory",
+      "branch": "sandbox/6-lab-factory",
+      "database": "tripplanner-sbx-6-lab-factory",
+      "at": "2026-08-15T11:35:26Z"
     },
     {
       "workspace": "tripplanner",
