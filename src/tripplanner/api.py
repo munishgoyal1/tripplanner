@@ -60,6 +60,7 @@ from tripplanner.api_contracts import (
     SelectRequest,
     StopBookedRequest,
     TripIdRequest,
+    TripRepairRequest,
     UserRequest,
 )
 from tripplanner.chat_interactions import extract_input_request
@@ -1094,6 +1095,28 @@ async def trip_verification_endpoint(request: Request, user_id: str = "local") -
 
     _set_request_user(request, user_id)
     return await asyncio.to_thread(trip_operations.build_verification)
+
+
+@app.post("/trip/repair")
+async def trip_repair_endpoint(req: TripRepairRequest, request: Request) -> dict:
+    """Rearrange the planner's own stops until the saved trip reads correctly."""
+    from tripplanner.web import trip_operations
+
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        payload = await asyncio.to_thread(
+            trip_operations.repair_trip, expected_updated_at=req.updated_at
+        )
+        if payload.get("changed"):
+            payload["view"] = await asyncio.to_thread(trip_operations.build_view)
+            payload["itinerary"] = await asyncio.to_thread(trip_operations.build_itinerary)
+        payload["verification"] = await asyncio.to_thread(
+            trip_operations.build_verification
+        )
+        return payload
+    finally:
+        await release_workspace_exclusive(workspace)
 
 
 @app.post("/trip/stop/booked")

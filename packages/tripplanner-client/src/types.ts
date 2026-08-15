@@ -576,6 +576,36 @@ export interface TripVerification {
   unverified_stops: VerificationGap[];
 }
 
+export interface RepairMove {
+  name: string;
+  from_day: number;
+  to_day: number;
+  time: string;
+}
+
+/** A finding the planner may not fix alone, because the stop is the user's. */
+export interface BlockedFinding {
+  code: string;
+  day: number | null;
+  stop: string;
+  message: string;
+  reason: string;
+}
+
+export interface TripRepairResult {
+  ok: boolean;
+  stale: boolean;
+  changed: boolean;
+  message: string;
+  moves: RepairMove[];
+  blocked: BlockedFinding[];
+  before: { contradictions: number; travel_min: number };
+  after: { contradictions: number; travel_min: number };
+  view?: TripView;
+  itinerary?: Itinerary;
+  verification?: TripVerification;
+}
+
 /** Every panel's view-model for one trip, returned together on a trip switch. */
 export interface TripWorkspaceView {
   view: TripView;

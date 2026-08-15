@@ -1,6 +1,6 @@
-import { AlertTriangle, CheckCircle2, HelpCircle, ShieldCheck } from "lucide-react";
+import { AlertTriangle, CheckCircle2, HelpCircle, ShieldCheck, Wand2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { fetchVerification } from "../api";
+import { fetchVerification, repairTrip } from "../api";
 import type { TripVerification, VerificationStatus } from "../types";
 
 const TONE: Record<VerificationStatus, { icon: typeof CheckCircle2; className: string }> = {
@@ -22,9 +22,17 @@ const HEADLINE: Record<TripVerification["verdict"], string> = {
  * The unverified column is the point: an itinerary nobody could check must not
  * look like one that passed.
  */
-export default function TripVerificationCard({ revision }: { revision?: number }) {
+export default function TripVerificationCard({
+  revision,
+  onRepaired,
+}: {
+  revision?: number;
+  onRepaired?: () => void;
+}) {
   const [report, setReport] = useState<TripVerification | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [repairing, setRepairing] = useState(false);
+  const [outcome, setOutcome] = useState<string[]>([]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -35,6 +43,26 @@ export default function TripVerificationCard({ revision }: { revision?: number }
       });
     return () => controller.abort();
   }, [revision]);
+
+  async function runRepair() {
+    setRepairing(true);
+    try {
+      const result = await repairTrip();
+      setOutcome(
+        result.changed
+          ? result.moves.map(
+              (move) => `Moved ${move.name} to Day ${move.to_day} at ${move.time}.`,
+            )
+          : [result.message],
+      );
+      if (result.verification) setReport(result.verification);
+      if (result.changed) onRepaired?.();
+    } catch {
+      setOutcome(["Could not rearrange the trip just now."]);
+    } finally {
+      setRepairing(false);
+    }
+  }
 
   if (!report || report.counts.total === 0) return null;
 
@@ -80,6 +108,29 @@ export default function TripVerificationCard({ revision }: { revision?: number }
               </li>
             )),
           )}
+        </ul>
+      )}
+
+      {failed.length > 0 && (
+        <div className="mt-2 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={runRepair}
+            disabled={repairing}
+            className="inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-60"
+          >
+            <Wand2 className="h-3.5 w-3.5" aria-hidden />
+            {repairing ? "Rearranging…" : "Rearrange the trip"}
+          </button>
+          <span className="text-xs text-slate-500">Only stops you have not chosen will move.</span>
+        </div>
+      )}
+
+      {outcome.length > 0 && (
+        <ul className="mt-2 space-y-0.5 text-xs text-slate-700">
+          {outcome.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
         </ul>
       )}
 

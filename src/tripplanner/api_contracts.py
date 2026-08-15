@@ -74,6 +74,11 @@ class StopBookedRequest(BaseModel):
     user_id: str = "local"
 
 
+class TripRepairRequest(BaseModel):
+    user_id: str = "local"
+    updated_at: str = ""
+
+
 class ConfirmPlaceRequest(BaseModel):
     name: str
     user_id: str = "local"

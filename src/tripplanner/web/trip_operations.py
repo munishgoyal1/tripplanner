@@ -99,6 +99,9 @@ def build_verification() -> dict[str, Any]:
     return trip_verification.build_verification(trip_planner.load_active_trip_dict())
 
 
+def repair_trip(*, expected_updated_at: str = "") -> dict[str, Any]:
+    return trip_planner.repair_active_trip(expected_updated_at=expected_updated_at)
+
 def select(
     kind: str,
     name: str,

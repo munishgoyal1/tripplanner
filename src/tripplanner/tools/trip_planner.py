@@ -1518,6 +1518,40 @@ def apply_decision_overrides(
     }
 
 
+@_serialized_mutation
+def repair_active_trip(*, expected_updated_at: str = "") -> dict[str, Any]:
+    """Rearrange the planner's own stops until the saved trip reads correctly."""
+    from tripplanner.web import trip_repair
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+        }
+
+    outcome = trip_repair.repair(plan)
+    if outcome["changed"]:
+        _save_active_trip(outcome["plan"])
+    return {
+        "ok": True,
+        "stale": False,
+        "changed": outcome["changed"],
+        "message": (
+            " ".join(outcome["sentences"])
+            if outcome["changed"]
+            else "Nothing to rearrange; the plan is already the best I can make it."
+        ),
+        "moves": outcome["moves"],
+        "blocked": outcome["blocked"],
+        "before": outcome["before"],
+        "after": outcome["after"],
+    }
+
+
 def _mirror_to_history(plan: dict[str, Any]) -> None:
     """Persist the plan into the per-user trips collection under its trip_id."""
     tid = plan.get("trip_id")

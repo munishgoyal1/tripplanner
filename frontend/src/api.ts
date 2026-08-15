@@ -1,4 +1,4 @@
-import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, Receipt, SavedTrip, Itinerary, PlaceGuidePage, TripVerification, TripWorkspaceView } from "./types";
+import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, Receipt, SavedTrip, Itinerary, PlaceGuidePage, TripRepairResult, TripVerification, TripWorkspaceView } from "./types";
 import {
   type DeselectItemOptions,
   type SelectItemOptions,
@@ -673,6 +673,11 @@ export async function fetchItinerary(signal?: AbortSignal): Promise<Itinerary> {
 /** What the planner checked on this trip, and what it could not check. */
 export async function fetchVerification(signal?: AbortSignal): Promise<TripVerification> {
   return sharedClient.fetchVerification(signal);
+}
+
+/** Rearrange the planner's own stops until the saved trip reads correctly. */
+export async function repairTrip(updatedAt = ""): Promise<TripRepairResult> {
+  return sharedClient.repairTrip(updatedAt);
 }
 
 /** Toggle one itinerary stop's booked flag; returns the refreshed itinerary. */

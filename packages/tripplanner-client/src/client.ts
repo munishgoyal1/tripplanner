@@ -15,6 +15,7 @@ import type {
   StreamOptions,
   TripInputRequest,
   TripView,
+  TripRepairResult,
   TripVerification,
   TripWorkspaceView,
 } from "./types";
@@ -209,6 +210,16 @@ export class TripplannerClient {
     );
     ensureOk(response, "Could not load the verification report");
     return response.json() as Promise<TripVerification>;
+  }
+
+  async repairTrip(updatedAt = ""): Promise<TripRepairResult> {
+    const response = await this.request(this.url("/trip/repair"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: await this.userId(), updated_at: updatedAt }),
+    });
+    ensureOk(response, "Could not rearrange the trip");
+    return response.json() as Promise<TripRepairResult>;
   }
 
   async fetchMapView(signal?: AbortSignal): Promise<MapView> {    const response = await this.request(

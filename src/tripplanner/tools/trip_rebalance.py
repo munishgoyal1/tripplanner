@@ -60,6 +60,17 @@ class Score:
         # Minutes are the unit; the rest are converted into minutes of regret.
         return self.travel_min + self.imbalance * 0.5 + self.rushed * 20 + self.misplaced * 45
 
+    @property
+    def rank(self) -> tuple[int, float]:
+        """Contradictions first, cost second.
+
+        Folding a contradiction into the cost would let a big enough travel
+        saving buy one, and no number of saved minutes is worth arriving at a
+        museum that is shut. Clearing one has to win outright, which also means
+        a repair that costs travel time is still an improvement.
+        """
+        return (self.contradictions, self.total)
+
 
 @dataclass(frozen=True)
 class Move:
@@ -320,18 +331,16 @@ def rebalance(
 
     while rounds < max_rounds:
         rounds += 1
-        best: tuple[float, dict[str, Any], tuple[Move, ...]] | None = None
+        best: tuple[tuple[int, float], dict[str, Any], tuple[Move, ...]] | None = None
 
         for candidate, candidate_moves in _candidates(current, set(pinned), deadline):
             candidate_score = score(candidate)
-            if candidate_score.contradictions > best_score.contradictions:
+            if candidate_score.rank >= best_score.rank:
                 continue
-            if candidate_score.total >= best_score.total:
-                continue
-            if best is None or candidate_score.total < best[0]:
+            if best is None or candidate_score.rank < best[0]:
                 saved = best_score.travel_min - candidate_score.travel_min
                 best = (
-                    candidate_score.total,
+                    candidate_score.rank,
                     candidate,
                     tuple(
                         Move(move.name, move.from_day, move.to_day, move.time, saved)
@@ -343,7 +352,7 @@ def rebalance(
             exhausted = True
         if best is None:
             break
-        _total, current, accepted = best
+        _rank, current, accepted = best
         best_score = score(current)
         moves.extend(accepted)
         if exhausted:
