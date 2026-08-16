@@ -52,10 +52,14 @@ export async function getApiSessionToken(): Promise<string | null> {
 // session outranks any claimed user_id -- so without this header every request
 // would quietly return the owner's own workspace. Keys mirror debug/inspectSession;
 // read inline so an unset flag leaves no reference to that module in the bundle.
+function inspectedUser(): string | null {
+  if (import.meta.env.VITE_DEBUG_TOOLS !== "1") return null;
+  if (localStorage.getItem("tripplanner_inspect_restore") === null) return null;
+  return localStorage.getItem("tripplanner_user_id");
+}
+
 function inspectHeaders(): Record<string, string> {
-  if (import.meta.env.VITE_DEBUG_TOOLS !== "1") return {};
-  if (localStorage.getItem("tripplanner_inspect_restore") === null) return {};
-  const inspected = localStorage.getItem("tripplanner_user_id");
+  const inspected = inspectedUser();
   return inspected ? { "X-Inspect-User": inspected } : {};
 }
 
@@ -141,7 +145,12 @@ export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string
     if (session.authenticated && session.user_id) {
       const prevId = localStorage.getItem("tripplanner_user_id") ?? "";
       const guestId = prevId.startsWith("web-") ? prevId : undefined;
-      localStorage.setItem("tripplanner_user_id", session.user_id);
+      // This runs after the first render, so mirroring unconditionally would
+      // overwrite an inspected identity and silently restore the owner's own
+      // workspace a moment after the inspected trip had loaded.
+      if (!inspectedUser()) {
+        localStorage.setItem("tripplanner_user_id", session.user_id);
+      }
       if (session.display_name) {
         localStorage.setItem("tripplanner_display_name", session.display_name);
       }

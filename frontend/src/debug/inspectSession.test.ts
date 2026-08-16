@@ -68,3 +68,35 @@ describe("inspect deep link", () => {
     });
   });
 });
+
+describe("inspecting a browser whose identity lives in a cookie", () => {
+  it("still marks the session when localStorage holds no identity yet", async () => {
+    // A Google session is mirrored into localStorage only after the first
+    // render, so at this point there is usually nothing there to remember.
+    const session = await load(true);
+
+    session.beginInspection("?inspect=corpus-probe&trip=pondicherry_2026-11-07_2026-11-09");
+
+    expect(session.inspectedUserId()).toBe("corpus-probe");
+    expect(localStorage.getItem(RESTORE_KEY)).toBe("");
+  });
+
+  it("leaves no identity behind when there was none to begin with", async () => {
+    const session = await load(true);
+    session.beginInspection("?inspect=corpus-probe");
+
+    session.endInspection();
+
+    expect(localStorage.getItem(USER_KEY)).toBeNull();
+    expect(session.inspectedUserId()).toBeNull();
+  });
+
+  it("marks the session even when the inspected id matches the current one", async () => {
+    const session = await load(true);
+    localStorage.setItem(USER_KEY, "corpus-probe");
+
+    session.beginInspection("?inspect=corpus-probe");
+
+    expect(session.inspectedUserId()).toBe("corpus-probe");
+  });
+});

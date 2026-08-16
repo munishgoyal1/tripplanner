@@ -34,11 +34,12 @@ export function beginInspection(search: string): InspectRequest | null {
   const request = readInspectRequest(search);
   if (!request) return null;
 
-  // Remember the owner's own identity once, so hopping between several
-  // inspected trips still returns to the workspace they started from.
-  const current = localStorage.getItem(USER_KEY);
-  if (current && current !== request.userId && localStorage.getItem(RESTORE_KEY) === null) {
-    localStorage.setItem(RESTORE_KEY, current);
+  // The restore key doubles as the "currently inspecting" flag, so it has to be
+  // written even when there is nothing to come back to. A Google session lives
+  // in a cookie and is only mirrored into localStorage after the first render,
+  // long after this runs, so the previous identity is often simply absent.
+  if (localStorage.getItem(RESTORE_KEY) === null) {
+    localStorage.setItem(RESTORE_KEY, localStorage.getItem(USER_KEY) ?? "");
   }
   localStorage.setItem(USER_KEY, request.userId);
   localStorage.removeItem(GUEST_KEY);
@@ -53,7 +54,10 @@ export function inspectedUserId(): string | null {
 export function endInspection(): void {
   const previous = localStorage.getItem(RESTORE_KEY);
   if (previous === null) return;
-  localStorage.setItem(USER_KEY, previous);
+  // An empty sentinel means there was no identity before; leaving the inspected
+  // one behind would silently make it the owner's own.
+  if (previous) localStorage.setItem(USER_KEY, previous);
+  else localStorage.removeItem(USER_KEY);
   localStorage.removeItem(RESTORE_KEY);
   localStorage.removeItem(GUEST_KEY);
 }
