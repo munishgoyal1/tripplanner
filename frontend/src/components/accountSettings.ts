@@ -6,6 +6,7 @@ const ACCOUNT_DESTINATIONS = new Set<AccountDestination>([
   "menu",
   "profile",
   "travel",
+  "family",
   "documents",
   "analytics",
   "privacy",

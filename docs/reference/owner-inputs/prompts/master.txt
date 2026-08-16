@@ -1349,3 +1349,9 @@ I am trying ot rerun the build corpus in lane2 for second time but it completed 
 
 [2026-08-16 09:42] [master !] Self-generating corpus requests within budget
 It should generate the trip requests on its own and should not send duplicate requests with existing corpus. There should be a catalog that can quickly help lookup if anything existing try different. With given budget it should be able to go upto that and get as many requests as possible within that budget.
+
+[2026-08-16 10:55] [master !] Corpus run shows no progress logs
+no logs beyond initial plan are coming from this script .. i have intiiated a run
+
+[2026-08-16 11:05] [master !] Parallelise corpus generation
+build parallelism to seepd up. i can reinitiate run once you are done

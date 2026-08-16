@@ -116,6 +116,26 @@ class ProfileSuggestionRequest(BaseModel):
     action: Literal["save", "dismiss"]
 
 
+class FamilyMemberRequest(BaseModel):
+    user_id: str = "local"
+    # Identifies the entry being edited; omitted when adding a new traveller.
+    original_relationship: str | None = None
+    original_name: str | None = None
+    relationship: Literal["self", "spouse", "partner", "child", "parent", "sibling", "friend", "other"]
+    name: str = ""
+    age: int | None = None
+    dietary: list[str] = []
+    mobility: list[str] = []
+    interests: list[str] = []
+    notes: str = ""
+
+
+class RemoveFamilyMemberRequest(BaseModel):
+    user_id: str = "local"
+    relationship: str
+    name: str = ""
+
+
 class DocumentExtractRequest(BaseModel):
     user_id: str = "local"
     type: str

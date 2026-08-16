@@ -4,15 +4,21 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import AccountSettingsController from "./AccountSettingsController";
 import { openAccountSettings } from "./accountSettings";
 
-vi.mock("../api", () => ({
-  fetchAuthConfig: vi.fn().mockResolvedValue({ google: true }),
-  loginWithGoogle: vi.fn(),
-  logoutGoogle: vi.fn().mockResolvedValue(undefined),
-  runPrivacyAction: vi.fn(),
-  signIn: vi.fn(),
-  signOut: vi.fn(),
-  syncAuth: vi.fn().mockResolvedValue({ authenticated: true, display_name: "Munish" }),
-}));
+vi.mock("../api", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../api")>();
+  return {
+    ...actual,
+    fetchAuthConfig: vi.fn().mockResolvedValue({ google: true }),
+    loginWithGoogle: vi.fn(),
+    logoutGoogle: vi.fn().mockResolvedValue(undefined),
+    runPrivacyAction: vi.fn(),
+    signIn: vi.fn(),
+    signOut: vi.fn(),
+    syncAuth: vi.fn().mockResolvedValue({ authenticated: true, display_name: "Munish" }),
+    fetchPreferences: vi.fn().mockRejectedValue(new Error("not needed for this test")),
+    fetchProfileSuggestions: vi.fn().mockResolvedValue([]),
+  };
+});
 
 describe("AccountSettingsController", () => {
   beforeEach(() => {

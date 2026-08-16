@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -661,8 +662,7 @@ def test_a_run_keeps_asking_until_the_budget_is_spent(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     usage = {"cost_usd": 0.0}
-    monkeypatch.setattr(generate, "assert_sandbox_database", lambda name: name)
-    monkeypatch.setattr(generate, "_usage_for", lambda database, user_id: dict(usage))
+    _stub_generate(monkeypatch, usage)
     monkeypatch.setattr(
         generate,
         "_saved_trip",
@@ -677,13 +677,98 @@ def test_a_run_keeps_asking_until_the_budget_is_spent(
 
     monkeypatch.setattr(generate, "_ask", _spend)
 
+    budget_inr = 3.5 * budget.usd_inr()
     result = generate.build(
         tmp_path,
         database="tripplanner-sbx-test",
         api="http://127.0.0.1:0",
-        requested_budget_inr=3.5 * budget.usd_inr(),
+        requested_budget_inr=budget_inr,
+        workers=1,
     )
 
     assert result["stopped_because"] == "budget"
-    assert len(result["produced"]) == 4
-    assert len({entry["slug"] for entry in result["produced"]}) == 4
+    assert len(result["produced"]) == 3
+    assert result["spent_inr"] <= budget_inr
+
+
+def test_turns_in_flight_together_still_cannot_overshoot_the_budget(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Reserving before asking is what keeps four open turns inside one cap."""
+    usage = {"cost_usd": 0.0}
+    lock = threading.Lock()
+    _stub_generate(monkeypatch, usage)
+    monkeypatch.setattr(
+        generate,
+        "_saved_trip",
+        lambda database, user_id: {
+            "id": user_id,
+            "day_wise_itinerary": [{"stops": [{"name": "a stop"}]}],
+        },
+    )
+
+    def _spend(api: str, message: str, user_id: str, request_id: str) -> None:
+        with lock:
+            usage["cost_usd"] += 1.0
+
+    monkeypatch.setattr(generate, "_ask", _spend)
+
+    budget_inr = 6.0 * budget.usd_inr()
+    result = generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        requested_budget_inr=budget_inr,
+        workers=4,
+    )
+
+    assert result["spent_inr"] <= budget_inr
+    assert result["stopped_because"] == "budget"
+
+
+def test_planning_turns_are_asked_at_the_same_time(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The barrier only clears if three turns are genuinely open at once."""
+    barrier = threading.Barrier(3, timeout=10)
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(
+        generate,
+        "_ask",
+        lambda api, message, user_id, request_id: barrier.wait(),
+    )
+
+    generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        requests=matrix.candidates(Catalog(), limit=3),
+        requested_budget_inr=1000,
+        workers=3,
+    )
+
+    assert not barrier.broken
+
+
+def test_a_request_is_announced_before_the_slow_call_not_after(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    events: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(
+        generate,
+        "_ask",
+        lambda api, message, user_id, request_id: events.append("asked"),
+    )
+
+    generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        target=1,
+        requests=_ONE_REQUEST,
+        on_progress=events.append,
+    )
+
+    assert events[0].startswith("  -> corpus-slug")
+    assert events[1] == "asked"

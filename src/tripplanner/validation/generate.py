@@ -16,7 +16,8 @@ import time
 import urllib.error
 import urllib.request
 import uuid
-from dataclasses import asdict, dataclass
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
+from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -31,6 +32,12 @@ MANIFEST_FILE = "manifest.json"
 TRIPS_DIR = "trips"
 #: A planning turn is slow; the probe on 2026-08-15 took over two minutes.
 REQUEST_TIMEOUT_SEC = 900
+#: Matches the API's own CHAT_MAX_CONCURRENT_GLOBAL default; more only earns 429s.
+DEFAULT_WORKERS = 4
+#: What to hold back for a request in flight before the run has priced one itself.
+ASSUMED_COST_INR = 45.0
+_RETRY_STATUS = frozenset({429, 503})
+_MAX_ATTEMPTS = 4
 
 
 @dataclass
@@ -140,6 +147,50 @@ def _saved_trip(database: str, user_id: str) -> dict[str, Any] | None:
     return None
 
 
+@dataclass
+class _Attempt:
+    request: TripRequest
+    cost_inr: float = 0.0
+    seconds: float = 0.0
+    trip: dict[str, Any] | None = None
+    model: str = ""
+    error: str = ""
+    user_id: str = field(default="")
+
+
+def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -> _Attempt:
+    """One planning turn, priced by what this user's ledger moved by."""
+    user_id = f"corpus-{request.slug}"
+    # A repeat attempt needs its own request id, or the API replays the earlier
+    # completed turn and the slug can never recover from a failed first run.
+    request_id = f"{user_id}-{uuid.uuid4().hex[:12]}"
+    before_usd = _spent_usd(database, user_id)
+    started = time.monotonic()
+    for attempt in range(1, _MAX_ATTEMPTS + 1):
+        try:
+            _ask(api, request.message, user_id, request_id)
+            break
+        except urllib.error.HTTPError as error:
+            # A refused admission never ran, so the same id may be offered again.
+            if error.code not in _RETRY_STATUS or attempt == _MAX_ATTEMPTS:
+                return _Attempt(request, error=str(error), user_id=user_id)
+            time.sleep(min(30.0, 2.0 * attempt))
+        except (urllib.error.URLError, TimeoutError) as error:
+            return _Attempt(request, error=str(error), user_id=user_id)
+
+    seconds = time.monotonic() - started
+    usage = _usage_for(database, user_id)
+    cost_inr = max(0.0, float(usage.get("cost_usd") or 0.0) - before_usd) * usd_inr
+    return _Attempt(
+        request,
+        cost_inr=cost_inr,
+        seconds=seconds,
+        trip=_saved_trip(database, user_id),
+        model=str(usage.get("model") or ""),
+        user_id=user_id,
+    )
+
+
 def build(
     corpus_root: Path,
     *,
@@ -149,8 +200,14 @@ def build(
     requested_budget_inr: float | None = None,
     requests: tuple[TripRequest, ...] | None = None,
     on_progress: Any = None,
+    workers: int = DEFAULT_WORKERS,
 ) -> dict[str, Any]:
-    """Generate trips until the budget, the target, or the candidates run out."""
+    """Generate trips until the budget, the target, or the candidates run out.
+
+    Requests run concurrently because a planning turn is nearly all waiting. The
+    budget is reserved before a request is sent rather than charged after it
+    returns, so several turns in flight can never overshoot the cap between them.
+    """
     assert_sandbox_database(database)
     allowed = budget_module.authorize(corpus_root, requested_budget_inr)
     manifest = load_manifest(corpus_root)
@@ -163,64 +220,51 @@ def build(
 
     spent = 0.0
     produced: list[Produced] = []
-    stopped = "exhausted"
     model = ""
+    workers = max(1, workers)
+    queue = (request for request in requests if request.slug not in done)
+    in_flight: dict[Future[_Attempt], float] = {}
+    reserved = 0.0
+    exhausted = False
 
-    for request in requests:
-        if target > 0 and len(produced) >= target:
-            stopped = "target"
-            break
-        if spent >= allowed.budget_inr:
-            stopped = "budget"
-            break
-        if request.slug in done:
-            continue
+    def _estimate() -> float:
+        return max(1.0, spent / len(produced)) if produced else ASSUMED_COST_INR
 
-        user_id = f"corpus-{request.slug}"
-        # A repeat attempt needs its own request id, or the API replays the earlier
-        # completed turn and the slug can never recover from a failed first run.
-        request_id = f"{user_id}-{uuid.uuid4().hex[:12]}"
-        before_usd = _spent_usd(database, user_id)
-        started = time.monotonic()
-        try:
-            _ask(api, request.message, user_id, request_id)
-        except (urllib.error.URLError, TimeoutError) as error:
+    def _record(result: _Attempt) -> None:
+        nonlocal spent, model
+        request = result.request
+        spent += result.cost_inr
+        model = result.model or model
+        if result.error:
             if on_progress:
-                on_progress(f"  {request.slug}: request failed ({error})")
-            continue
-        seconds = time.monotonic() - started
-
-        usage = _usage_for(database, user_id)
-        cost_inr = max(0.0, float(usage.get("cost_usd") or 0.0) - before_usd) * allowed.usd_inr
-        model = str(usage.get("model") or model)
-        spent += cost_inr
-
-        trip = _saved_trip(database, user_id)
-        if trip is None:
+                on_progress(f"  {request.slug}: request failed ({result.error})")
+            return
+        if result.trip is None:
             if on_progress:
                 on_progress(
                     f"  {request.slug}: no itinerary saved "
-                    f"(INR {cost_inr:.1f}, {seconds:.0f}s)"
+                    f"(INR {result.cost_inr:.1f}, {result.seconds:.0f}s)"
                 )
-            continue
-
-        days = [day for day in (trip.get("day_wise_itinerary") or []) if isinstance(day, dict)]
+            return
+        days = [
+            day for day in (result.trip.get("day_wise_itinerary") or []) if isinstance(day, dict)
+        ]
         entry = Produced(
             slug=request.slug,
             shape=request.shape,
-            trip_id=str(trip.get("id") or trip.get("trip_id") or request.slug),
+            trip_id=str(result.trip.get("id") or result.trip.get("trip_id") or request.slug),
             days=len(days),
             stops=sum(len(day.get("stops") or []) for day in days),
-            spent_inr=round(cost_inr, 2),
-            seconds=round(seconds, 1),
-            user_id=user_id,
+            spent_inr=round(result.cost_inr, 2),
+            seconds=round(result.seconds, 1),
+            user_id=result.user_id,
             destination=request.destination,
             emphasis=request.emphasis,
             party=request.party,
             signature=request.signature.key,
         )
         (trips_dir / f"{request.slug}.json").write_text(
-            json.dumps(trip, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+            json.dumps(result.trip, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
         produced.append(entry)
         catalog.add(request.signature, request.slug)
@@ -229,8 +273,45 @@ def build(
         if on_progress:
             on_progress(
                 f"  {request.slug}: {entry.days}d/{entry.stops} stops "
-                f"(INR {cost_inr:.1f}, {seconds:.0f}s)"
+                f"(INR {result.cost_inr:.1f}, {result.seconds:.0f}s)"
             )
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        while True:
+            while not exhausted and len(in_flight) < workers:
+                if target > 0 and len(produced) + len(in_flight) >= target:
+                    break
+                hold = _estimate()
+                if spent + reserved + hold > allowed.budget_inr:
+                    break
+                request = next(queue, None)
+                if request is None:
+                    exhausted = True
+                    break
+                if on_progress:
+                    headroom = allowed.budget_inr - spent - reserved
+                    on_progress(
+                        f"  -> {request.slug} (asking; {len(produced)} produced, "
+                        f"INR {headroom:.0f} left)"
+                    )
+                future = pool.submit(
+                    _attempt, request, database=database, api=api, usd_inr=allowed.usd_inr
+                )
+                in_flight[future] = hold
+                reserved += hold
+            if not in_flight:
+                break
+            completed, _ = wait(list(in_flight), return_when=FIRST_COMPLETED)
+            for future in completed:
+                reserved -= in_flight.pop(future)
+                _record(future.result())
+
+    if target > 0 and len(produced) >= target:
+        stopped = "target"
+    elif exhausted:
+        stopped = "exhausted"
+    else:
+        stopped = "budget"
 
     budget_module.record(
         corpus_root,

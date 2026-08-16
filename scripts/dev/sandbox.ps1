@@ -410,7 +410,8 @@ function Commit-SandboxDebugStoreArtifacts {
     }
     if ($commitPaths.Count -eq 0) { return $false }
 
-    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments (@("add", "--") + $commitPaths) | Out-Null
+    # debug-store is gitignored, so these archives only stage with -f.
+    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments (@("add", "-f", "--") + $commitPaths) | Out-Null
     Invoke-Git -WorkingDirectory $Entry.worktree -Arguments (
         @("commit", "-m", "Capture debug-store trip archives", "--") + $commitPaths
     ) | Out-Null
