@@ -24,7 +24,9 @@ import {
   migrateGuestData,
   getUserId,
   fetchProfileSuggestions,
+  fetchPreferences,
   resolveProfileSuggestion,
+  savePreferences,
   type AuthSession,
   type ProfileSuggestion,
 } from "../api";
@@ -161,6 +163,7 @@ export default function ChatPanel({
   const onSendStartRef = useRef<() => void>(() => setInput(""));
   const [copiedMessage, setCopiedMessage] = useState<number | null>(null);
   const [profileSuggestions, setProfileSuggestions] = useState<ProfileSuggestion[]>([]);
+  const [smartDefaults, setSmartDefaults] = useState(true);
   const {
     activeTool,
     busy,
@@ -210,6 +213,31 @@ export default function ChatPanel({
       .then(setProfileSuggestions)
       .catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadPlanningMode = () => {
+      void fetchPreferences()
+        .then((preferences) => {
+          if (!cancelled) setSmartDefaults(preferences.planning_mode !== "interactive");
+        })
+        .catch(() => undefined);
+    };
+    loadPlanningMode();
+    window.addEventListener("tripplanner:preferences-changed", loadPlanningMode);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("tripplanner:preferences-changed", loadPlanningMode);
+    };
+  }, []);
+
+  const updateSmartDefaults = (checked: boolean) => {
+    const previous = smartDefaults;
+    setSmartDefaults(checked);
+    void savePreferences({ planning_mode: checked ? "direct" : "interactive" })
+      .then(() => window.dispatchEvent(new Event("tripplanner:preferences-changed")))
+      .catch(() => setSmartDefaults(previous));
+  };
 
   useEffect(() => () => {
     if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current);
@@ -867,6 +895,15 @@ export default function ChatPanel({
             {busy ? <Square size={15} fill="currentColor" /> : <Send size={18} />}
           </button>
         </div>
+        <label className="mt-2 flex cursor-pointer items-center gap-2 px-1 text-[11px] text-slate-500">
+          <input
+            type="checkbox"
+            checked={smartDefaults}
+            onChange={(event) => updateSmartDefaults(event.target.checked)}
+            disabled={busy || !transcriptReady}
+          />
+          <span>Let the agent decide with smart defaults</span>
+        </label>
       </div>
   );
 

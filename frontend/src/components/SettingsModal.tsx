@@ -255,6 +255,7 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
         updates.profile_summary_updated_at = prefs.profile_summary_updated_at ?? null;
       }
       const result = await savePreferences(updates);
+      window.dispatchEvent(new Event("tripplanner:preferences-changed"));
       if (result.summary_conflict) {
         const fresh = await fetchPreferences();
         setPrefs(fresh);
