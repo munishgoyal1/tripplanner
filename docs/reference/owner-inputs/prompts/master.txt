@@ -1355,3 +1355,6 @@ no logs beyond initial plan are coming from this script .. i have intiiated a ru
 
 [2026-08-16 11:05] [master !] Parallelise corpus generation
 build parallelism to seepd up. i can reinitiate run once you are done
+
+[2026-08-16 11:30] [master !] Check last corpus run failures
+check the last failures from buiold corpus run

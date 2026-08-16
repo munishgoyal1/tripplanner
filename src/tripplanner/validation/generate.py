@@ -11,6 +11,7 @@ never paid for twice.
 
 from __future__ import annotations
 
+import http.client
 import json
 import time
 import urllib.error
@@ -173,10 +174,16 @@ def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -
         except urllib.error.HTTPError as error:
             # A refused admission never ran, so the same id may be offered again.
             if error.code not in _RETRY_STATUS or attempt == _MAX_ATTEMPTS:
-                return _Attempt(request, error=str(error), user_id=user_id)
+                return _Attempt(request, error=f"HTTP {error.code}", user_id=user_id)
             time.sleep(min(30.0, 2.0 * attempt))
-        except (urllib.error.URLError, TimeoutError) as error:
-            return _Attempt(request, error=str(error), user_id=user_id)
+        except (OSError, http.client.HTTPException) as error:
+            # A dropped connection may still have completed the turn, so the retry keeps
+            # the request id: a finished turn replays instead of being paid for twice.
+            if attempt == _MAX_ATTEMPTS:
+                return _Attempt(
+                    request, error=f"{type(error).__name__}: {error}", user_id=user_id
+                )
+            time.sleep(min(30.0, 2.0 * attempt))
 
     seconds = time.monotonic() - started
     usage = _usage_for(database, user_id)
@@ -223,7 +230,7 @@ def build(
     model = ""
     workers = max(1, workers)
     queue = (request for request in requests if request.slug not in done)
-    in_flight: dict[Future[_Attempt], float] = {}
+    in_flight: dict[Future[_Attempt], tuple[TripRequest, float]] = {}
     reserved = 0.0
     exhausted = False
 
@@ -297,14 +304,19 @@ def build(
                 future = pool.submit(
                     _attempt, request, database=database, api=api, usd_inr=allowed.usd_inr
                 )
-                in_flight[future] = hold
+                in_flight[future] = (request, hold)
                 reserved += hold
             if not in_flight:
                 break
             completed, _ = wait(list(in_flight), return_when=FIRST_COMPLETED)
             for future in completed:
-                reserved -= in_flight.pop(future)
-                _record(future.result())
+                request, hold = in_flight.pop(future)
+                reserved -= hold
+                try:
+                    result = future.result()
+                except Exception as error:  # noqa: BLE001 - one bad turn must not end a long run
+                    result = _Attempt(request, error=f"{type(error).__name__}: {error}")
+                _record(result)
 
     if target > 0 and len(produced) >= target:
         stopped = "target"
