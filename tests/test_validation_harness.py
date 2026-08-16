@@ -775,10 +775,8 @@ def test_a_dropped_connection_is_retried_with_the_same_request_id(
         workers=1,
     )
 
-    # Two ids: the dropped turn replayed under its own id, then the confirmation
-    # turn the agent's "does this look right?" gate needs.
+    assert len(seen) == 2
     assert seen[0] == seen[1]
-    assert seen[2] != seen[0]
 
 
 def test_a_turn_that_keeps_failing_is_reported_and_the_run_goes_on(
@@ -806,14 +804,7 @@ def test_a_turn_that_keeps_failing_is_reported_and_the_run_goes_on(
         on_progress=lines.append,
     )
 
-    # The first slug fails outright; the other two ask, then confirm.
-    assert asked == [
-        "corpus-mysore-food-young-family-5d",
-        "corpus-chikmagalur-slow-solo-3d",
-        "corpus-chikmagalur-slow-solo-3d",
-        "corpus-istanbul-premium-friends-3d",
-        "corpus-istanbul-premium-friends-3d",
-    ]
+    assert len(asked) == 3
     assert result["stopped_because"] == "exhausted"
     assert any("RemoteDisconnected" in line for line in lines)
 
@@ -1041,73 +1032,6 @@ def test_reviews_are_kept_in_the_cache_file() -> None:
     portable = place_cache._portable({"lat": 1.0, "reviews": [{"text": "lovely"}]})
 
     assert portable["reviews"] == [{"text": "lovely"}]
-
-
-def test_a_request_that_is_only_confirmed_is_answered_and_planned(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """The agent reads the brief back and waits for a yes before it plans.
-
-    Seventy corpus requests stopped at "does this look right?" on 2026-08-16,
-    each paying for the turn that asked and saving nothing.
-    """
-    sent: list[str] = []
-    _stub_generate(monkeypatch, {"cost_usd": 0.0})
-    monkeypatch.setattr(
-        generate, "_ask", lambda api, message, user_id, request_id: sent.append(message)
-    )
-    # No trip until the confirmation lands, which is what the gate does.
-    monkeypatch.setattr(
-        generate,
-        "_saved_trip",
-        lambda database, user_id: (
-            {"day_wise_itinerary": [{"day": 1, "stops": [{"name": "Fort"}]}]}
-            if len(sent) > 1
-            else None
-        ),
-    )
-
-    result = generate.build(
-        tmp_path,
-        database="tripplanner-sbx-test",
-        api="http://127.0.0.1:0",
-        target=1,
-        requests=_ONE_REQUEST,
-        requested_budget_inr=1000,
-        workers=1,
-    )
-
-    assert len(sent) == 2
-    assert "go ahead" in sent[1].lower()
-    assert len(result["produced"]) == 1
-
-
-def test_a_request_that_plans_immediately_is_not_asked_twice(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """The extra turn costs money, so it must only happen when nothing was saved."""
-    sent: list[str] = []
-    _stub_generate(monkeypatch, {"cost_usd": 0.0})
-    monkeypatch.setattr(
-        generate, "_ask", lambda api, message, user_id, request_id: sent.append(message)
-    )
-    monkeypatch.setattr(
-        generate,
-        "_saved_trip",
-        lambda database, user_id: {"day_wise_itinerary": [{"day": 1, "stops": [{"name": "Fort"}]}]},
-    )
-
-    generate.build(
-        tmp_path,
-        database="tripplanner-sbx-test",
-        api="http://127.0.0.1:0",
-        target=1,
-        requests=_ONE_REQUEST,
-        requested_budget_inr=1000,
-        workers=1,
-    )
-
-    assert len(sent) == 1
 
 
 def test_a_run_that_saves_almost_nothing_stops_itself(

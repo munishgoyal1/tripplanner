@@ -47,11 +47,6 @@ _MAX_RETRY_WAIT_SEC = 180.0
 #: request or two that legitimately needed a question.
 MIN_ATTEMPTS_BEFORE_GIVING_UP = 10
 MAX_BARREN_SHARE = 0.25
-#: The answer to the agent's "does this look right?" gate. It reads the brief
-#: back before planning, so a single-turn caller never gets past the question.
-_CONFIRM_BRIEF = (
-    "Yes, that is all correct. Please go ahead and build the full day-by-day plan now."
-)
 _MAX_ATTEMPTS = 4
 
 
@@ -187,11 +182,8 @@ def _retry_delay(error: urllib.error.HTTPError, attempt: int) -> float:
     return min(_MAX_RETRY_WAIT_SEC, max(asked, min(30.0, 2.0 * attempt)))
 
 
-def _send_with_retry(api: str, message: str, user_id: str) -> str | None:
+def _send_with_retry(api: str, message: str, user_id: str, request_id: str) -> str | None:
     """One turn, retried on a refusal. Returns an error description or None."""
-    # A repeat attempt needs its own request id, or the API replays the earlier
-    # completed turn and the slug can never recover from a failed first run.
-    request_id = f"{user_id}-{uuid.uuid4().hex[:12]}"
     for attempt in range(1, _MAX_ATTEMPTS + 1):
         try:
             _ask(api, message, user_id, request_id)
@@ -213,20 +205,15 @@ def _send_with_retry(api: str, message: str, user_id: str) -> str | None:
 def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -> _Attempt:
     """One planning turn, priced by what this user's ledger moved by."""
     user_id = f"corpus-{request.slug}"
+    # Built before the ledger is read, so nothing sits between that read and the
+    # send: a concurrent attempt's spend would otherwise land in this one's cost.
+    # A repeat attempt needs its own id, or the API replays the earlier completed
+    # turn and the slug can never recover from a failed first run.
+    request_id = f"{user_id}-{uuid.uuid4().hex[:12]}"
     before_usd = _spent_usd(database, user_id)
     started = time.monotonic()
 
-    error = _send_with_retry(api, request.message, user_id)
-    trip = None if error else _saved_trip(database, user_id)
-
-    if not error and trip is None:
-        # The agent reads the brief back and waits for a yes before it plans. A
-        # caller that never answers leaves every request stopped at "shall I?",
-        # having paid for the turn that asked.
-        error = _send_with_retry(api, _CONFIRM_BRIEF, user_id)
-        if not error:
-            trip = _saved_trip(database, user_id)
-
+    error = _send_with_retry(api, request.message, user_id, request_id)
     seconds = time.monotonic() - started
     usage = _usage_for(database, user_id)
     cost_inr = max(0.0, float(usage.get("cost_usd") or 0.0) - before_usd) * usd_inr
@@ -236,7 +223,7 @@ def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -
         request,
         cost_inr=cost_inr,
         seconds=seconds,
-        trip=trip,
+        trip=_saved_trip(database, user_id),
         model=str(usage.get("model") or ""),
         user_id=user_id,
     )

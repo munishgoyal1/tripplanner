@@ -517,6 +517,15 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             issues = critique(reply, result.get("messages", []))
             if issues:
                 app_event("hallucination_critic", issues=len(issues), claims=issues)
+
+        turn_tools = set(_ran_tools(result.get("messages") or [], len(history)).get(
+            graph_policy.RAN_TOOLS_KEY, []
+        ))
+        # The agent sometimes writes the itinerary out instead of saving it. The
+        # SSE path has recovered that for a while; without the same net here a
+        # native or scripted caller is left with a trip that has no days.
+        if not req.proposal_only and _should_auto_persist_itinerary(turn_tools):
+            await asyncio.to_thread(_auto_persist_itinerary, reply)
         completed_turn = [
             HumanMessage(content=req.message),
             AIMessage(

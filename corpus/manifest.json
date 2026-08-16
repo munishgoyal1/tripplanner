@@ -272,6 +272,21 @@
       "party": "",
       "signature": "|traveller arranges their own arrival||0",
       "at": "2026-08-16T10:18:04.035491+00:00"
+    },
+    {
+      "slug": "istanbul-premium-friends-3d",
+      "shape": "Istanbul, high budget, premium stays, friends",
+      "trip_id": "istanbul_2027-05-03_2027-05-06",
+      "days": 3,
+      "stops": 17,
+      "spent_inr": 40.63,
+      "seconds": 254.4,
+      "user_id": "corpus-istanbul-premium-friends-3d",
+      "destination": "istanbul",
+      "emphasis": "premium",
+      "party": "friends",
+      "signature": "istanbul|premium|friends|3",
+      "at": "2026-08-16T13:50:12.708757+00:00"
     }
   ]
 }
