@@ -38,6 +38,8 @@ DEFAULT_WORKERS = 4
 #: What to hold back for a request in flight before the run has priced one itself.
 ASSUMED_COST_INR = 45.0
 _RETRY_STATUS = frozenset({429, 503})
+#: Long enough to outlast a token-per-minute window, short enough to notice.
+_MAX_RETRY_WAIT_SEC = 180.0
 _MAX_ATTEMPTS = 4
 
 
@@ -159,6 +161,20 @@ class _Attempt:
     user_id: str = field(default="")
 
 
+def _retry_delay(error: urllib.error.HTTPError, attempt: int) -> float:
+    """Wait as long as the server asked, not as long as we guessed.
+
+    A token-per-minute throttle holds for a minute or more; retrying after two
+    seconds spends the remaining attempts against a window that is still shut.
+    """
+    header = error.headers.get("Retry-After") if error.headers else None
+    try:
+        asked = float(header) if header else 0.0
+    except (TypeError, ValueError):
+        asked = 0.0
+    return min(_MAX_RETRY_WAIT_SEC, max(asked, min(30.0, 2.0 * attempt)))
+
+
 def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -> _Attempt:
     """One planning turn, priced by what this user's ledger moved by."""
     user_id = f"corpus-{request.slug}"
@@ -175,7 +191,7 @@ def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -
             # A refused admission never ran, so the same id may be offered again.
             if error.code not in _RETRY_STATUS or attempt == _MAX_ATTEMPTS:
                 return _Attempt(request, error=f"HTTP {error.code}", user_id=user_id)
-            time.sleep(min(30.0, 2.0 * attempt))
+            time.sleep(_retry_delay(error, attempt))
         except (OSError, http.client.HTTPException) as error:
             # A dropped connection may still have completed the turn, so the retry keeps
             # the request id: a finished turn replays instead of being paid for twice.

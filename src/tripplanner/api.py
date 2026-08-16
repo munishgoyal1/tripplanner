@@ -131,6 +131,26 @@ def _set_request_user(request: Request, claimed_user_id: str = "local") -> str:
     return user_id
 
 
+def _rate_limit_response(exc: BaseException) -> JSONResponse | None:
+    """A provider throttle is the caller going too fast, not a server fault.
+
+    Returned as 500 it looked like a crash, so callers that already back off on
+    429 -- the corpus builder among them -- discarded the request instead.
+    """
+    from tripplanner.observability import model_rate_limit_fields
+
+    fields = model_rate_limit_fields(exc, "")
+    if not fields:
+        return None
+    retry_ms = fields.get("retry_after_ms")
+    seconds = max(1, round((retry_ms or 60_000) / 1000))
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "The model is busy right now. Try again shortly."},
+        headers={"Retry-After": str(seconds)},
+    )
+
+
 def _best_effort_plan_reply() -> tuple[str, int]:
     from tripplanner.tools.trip_planner import (
         load_active_trip_dict,
@@ -444,7 +464,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             # freshly created trip was left with no itinerary and no answer.
             budget_exhausted = True
             result = {"messages": list(history), "current_agent": "trip"}
-        except Exception:
+        except Exception as exc:
             try:
                 await asyncio.to_thread(
                     _save_chat,
@@ -459,6 +479,12 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
                 )
             except Exception:
                 pass
+            throttled = _rate_limit_response(exc)
+            if throttled is not None:
+                _record_chat_operation(
+                    started, user_id=user_id, transport="json", outcome="rate_limited"
+                )
+                return throttled
             raise
 
         if budget_exhausted:

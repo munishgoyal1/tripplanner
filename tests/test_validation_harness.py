@@ -920,16 +920,6 @@ def test_restoring_refuses_a_database_that_is_not_a_sandbox() -> None:
         place_cache.restore("tripplanner-prod", {"a|b": {"lat": 1.0}})
 
 
-def test_reviews_are_never_committed_to_the_cache_file() -> None:
-    """Third-party content stays in the cache database, which expires it."""
-    from tripplanner.validation import place_cache
-
-    portable = place_cache._portable(
-        {"lat": 1.0, "reviews": [{"text": "lovely"}], "weekday_descriptions": ["Mon: open"]}
-    )
-
-    assert "reviews" not in portable
-    assert portable["weekday_descriptions"] == ["Mon: open"]
 
 
 # ---- lane snapshots -------------------------------------------------------
@@ -1004,3 +994,42 @@ def test_the_primary_local_database_may_hold_cache_but_hosted_ones_may_not() -> 
             place_cache.assert_cache_target(hosted)
     with pytest.raises(ValueError):
         place_cache.assert_cache_target("something-else")
+
+
+def test_a_throttled_run_waits_as_long_as_the_server_asked() -> None:
+    """A token-per-minute window outlasts any backoff we would have guessed."""
+    import urllib.error
+    from email.message import Message
+
+    from tripplanner.validation import generate
+
+    headers = Message()
+    headers["Retry-After"] = "120"
+    throttled = urllib.error.HTTPError("u", 429, "Too Many Requests", headers, None)
+
+    assert generate._retry_delay(throttled, attempt=1) == 120.0
+
+    plain = urllib.error.HTTPError("u", 503, "Unavailable", Message(), None)
+    assert generate._retry_delay(plain, attempt=1) == 2.0
+
+
+def test_a_throttle_never_waits_without_bound() -> None:
+    import urllib.error
+    from email.message import Message
+
+    from tripplanner.validation import generate
+
+    headers = Message()
+    headers["Retry-After"] = "99999"
+    forever = urllib.error.HTTPError("u", 429, "Too Many Requests", headers, None)
+
+    assert generate._retry_delay(forever, attempt=1) == generate._MAX_RETRY_WAIT_SEC
+
+
+def test_reviews_are_kept_in_the_cache_file() -> None:
+    """Owner decision: keep the grounding whole while the product is small."""
+    from tripplanner.validation import place_cache
+
+    portable = place_cache._portable({"lat": 1.0, "reviews": [{"text": "lovely"}]})
+
+    assert portable["reviews"] == [{"text": "lovely"}]
