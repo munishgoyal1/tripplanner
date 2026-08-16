@@ -8,9 +8,10 @@
   the same code again. It differs from twoway-sync-master-sbx.ps1 in what it
   tolerates rather than in what it does:
 
-  * Uncommitted work does not stop it. Each lane's changes are committed on that
-    lane's own branch first, so nothing is lost and nothing has to be stashed by
-    hand. Work still only reaches master through the same merge gates.
+  * Uncommitted work does not stop it. Each lane's changes are set aside before
+    the sync and handed back afterwards, so nothing has to be stashed by hand.
+    Work in progress is never committed and never published: it is not
+    finished, and only commits a lane already had reach the base branch.
   * One bad lane does not stop the others. Every failure is caught, the run
     continues, and the end of the report is a numbered list of what is left.
   * Conflicts are handed to the existing resolver, which replays resolutions
@@ -64,6 +65,8 @@ $resolverScript = Join-Path $PSScriptRoot "resolve-sandbox-conflicts.ps1"
 # Numbered at the end. Each entry is one thing a person still has to do.
 $remaining = [System.Collections.Generic.List[string]]::new()
 $did = [System.Collections.Generic.List[string]]::new()
+# Lane -> the stash this run created, so it can be handed back untouched.
+$stashed = @{}
 
 function Add-Did {
     # A dry run must not claim it changed anything.
@@ -87,34 +90,61 @@ function Get-Unmerged {
     return @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
 }
 
-function Save-LocalWork {
+function Push-LaneStash {
     <#
-      Commit whatever is lying around so the lane can take part in a sync.
-      This is the relaxation this script exists for. It commits to the lane's
-      own branch, never to the base, so publishing still goes through a merge.
+      Set uncommitted work aside so the lane can take part in a sync, and
+      remember the exact stash commit so only this script's own stash is ever
+      restored. Work in progress is never committed: it is not finished, and
+      publishing it would put it on the base branch.
     #>
     param([string]$WorkingDirectory, [string]$Lane)
 
     $dirty = Get-Dirty -WorkingDirectory $WorkingDirectory
     if ($dirty.Count -eq 0) { return $true }
-    if (-not $PSCmdlet.ShouldProcess($Lane, "Commit $($dirty.Count) uncommitted path(s)")) { return $true }
+    if (-not $PSCmdlet.ShouldProcess($Lane, "Set aside $($dirty.Count) uncommitted path(s)")) { return $true }
 
-    & git -C $WorkingDirectory add -A
+    # -u so untracked files travel too, otherwise a merge can collide with one.
+    & git -C $WorkingDirectory stash push -u -q -m "full-2way-sync $Lane" 2>&1 | Out-Null
     if ($LASTEXITCODE -ne 0) {
-        Add-Remaining -Lane $Lane -Problem "could not stage its uncommitted changes" `
+        Add-Remaining -Lane $Lane -Problem "has uncommitted changes that could not be set aside" `
             -NextStep "Inspect 'git -C $WorkingDirectory status' by hand."
         return $false
     }
-    $stamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm 'UTC'")
-    & git -C $WorkingDirectory commit -q -m "Work in progress on $Lane, committed by full sync at $stamp"
-    if ($LASTEXITCODE -ne 0) {
-        Add-Remaining -Lane $Lane -Problem "could not commit its uncommitted changes" `
-            -NextStep "Inspect 'git -C $WorkingDirectory status' by hand."
+    $stashCommit = (& git -C $WorkingDirectory rev-parse --quiet --verify refs/stash).Trim()
+    if (-not $stashCommit) {
+        Add-Remaining -Lane $Lane -Problem "set aside its changes but no stash was recorded" `
+            -NextStep "Check 'git -C $WorkingDirectory stash list' before re-running."
         return $false
     }
-    Write-Host "[wip]     $Lane - committed $($dirty.Count) uncommitted path(s)" -ForegroundColor Yellow
-    Add-Did "$Lane - committed work in progress"
+    $stashed[$Lane] = @{ WorkingDirectory = $WorkingDirectory; Commit = $stashCommit; Count = $dirty.Count }
+    Write-Host "[hold]    $Lane - set aside $($dirty.Count) uncommitted path(s)" -ForegroundColor Yellow
     return $true
+}
+
+function Restore-LaneStash {
+    <# Give the lane its work in progress back, exactly as it was handed over. #>
+    param([string]$Lane, [hashtable]$Held)
+
+    $workingDirectory = $Held.WorkingDirectory
+    # Find our own stash by commit rather than assuming it is still on top;
+    # anything else in the stack belongs to the owner and must not be touched.
+    $entries = @(& git -C $workingDirectory stash list --format="%H")
+    $index = [Array]::IndexOf($entries, $Held.Commit)
+    if ($index -lt 0) {
+        Add-Remaining -Lane $Lane -Problem "work in progress is no longer in its stash list" `
+            -NextStep "Recover it with 'git -C $workingDirectory stash list' and 'git stash apply <ref>'."
+        return
+    }
+    if (-not $PSCmdlet.ShouldProcess($Lane, "Restore $($Held.Count) set-aside path(s)")) { return }
+
+    & git -C $workingDirectory stash pop "stash@{$index}" 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        Add-Remaining -Lane $Lane -Problem "work in progress conflicts with the code it just took" `
+            -NextStep "Resolve it in $workingDirectory; the stash is kept, so 'git stash list' still holds it."
+        return
+    }
+    Write-Host "[restore] $Lane - returned $($Held.Count) path(s)" -ForegroundColor Green
+    Add-Did "$Lane - kept its work in progress uncommitted"
 }
 
 function Resolve-Pending {
@@ -194,7 +224,7 @@ Write-Host "[sync]    fetching origin" -ForegroundColor Cyan
 if ($LASTEXITCODE -ne 0) { throw "Could not fetch origin." }
 
 # The primary checkout is a lane too, and a dirty one blocks every merge below.
-if (-not (Save-LocalWork -WorkingDirectory $primaryRoot -Lane $BaseBranch)) {
+if (-not (Push-LaneStash -WorkingDirectory $primaryRoot -Lane $BaseBranch)) {
     Write-Host "[stop]    $BaseBranch itself could not be made clean." -ForegroundColor Red
 }
 & git -C $primaryRoot merge --ff-only "origin/$BaseBranch" 2>&1 | Out-Null
@@ -225,7 +255,7 @@ if ($registered.Count -eq 0) {
 }
 
 Write-Host ""
-Write-Host "== 1/4 make every lane clean and current ==" -ForegroundColor Green
+Write-Host "== 1/5 make every lane clean and current ==" -ForegroundColor Green
 $ready = [System.Collections.Generic.List[object]]::new()
 foreach ($entry in $registered) {
     $lane = $entry.slug
@@ -235,14 +265,14 @@ foreach ($entry in $registered) {
         continue
     }
     Write-Host "[lane]    $lane" -ForegroundColor Cyan
-    if (-not (Save-LocalWork -WorkingDirectory $entry.worktree -Lane $lane)) { continue }
+    if (-not (Push-LaneStash -WorkingDirectory $entry.worktree -Lane $lane)) { continue }
     if (-not (Resolve-Pending -WorkingDirectory $entry.worktree -Lane $lane)) { continue }
     if (-not (Update-Lane -WorkingDirectory $entry.worktree -Lane $lane)) { continue }
     $ready.Add($entry)
 }
 
 Write-Host ""
-Write-Host "== 2/4 publish lane work to $BaseBranch ==" -ForegroundColor Green
+Write-Host "== 2/5 publish lane work to $BaseBranch ==" -ForegroundColor Green
 if ($PullOnly) {
     Write-Host "[skip]    -PullOnly: nothing is published." -ForegroundColor Yellow
 } else {
@@ -294,19 +324,29 @@ if ($PullOnly) {
 }
 
 Write-Host ""
-Write-Host "== 3/4 bring every lane up to the new $BaseBranch ==" -ForegroundColor Green
+Write-Host "== 3/5 bring every lane up to the new $BaseBranch ==" -ForegroundColor Green
 & git -C $primaryRoot fetch -q origin $BaseBranch
 & git -C $primaryRoot merge --ff-only "origin/$BaseBranch" 2>&1 | Out-Null
 foreach ($entry in $registered) {
     if (-not (Test-Path $entry.worktree -PathType Container)) { continue }
     if ($remaining | Where-Object { $_.StartsWith("$($entry.slug)|") }) { continue }
     Write-Host "[level]   $($entry.slug)" -ForegroundColor Cyan
-    if (-not (Save-LocalWork -WorkingDirectory $entry.worktree -Lane $entry.slug)) { continue }
+    if (-not (Push-LaneStash -WorkingDirectory $entry.worktree -Lane $entry.slug)) { continue }
     Update-Lane -WorkingDirectory $entry.worktree -Lane $entry.slug | Out-Null
 }
 
 Write-Host ""
-Write-Host "== 4/4 verify ==" -ForegroundColor Green
+Write-Host "== 4/5 return work in progress ==" -ForegroundColor Green
+if ($stashed.Count -eq 0) {
+    Write-Host "[none]    No lane had uncommitted work." -ForegroundColor DarkGray
+} else {
+    foreach ($lane in @($stashed.Keys)) {
+        Restore-LaneStash -Lane $lane -Held $stashed[$lane]
+    }
+}
+
+Write-Host ""
+Write-Host "== 5/5 verify ==" -ForegroundColor Green
 & git -C $primaryRoot fetch -q origin $BaseBranch
 $baseHead = (& git -C $primaryRoot rev-parse "origin/$BaseBranch").Trim()
 $level = 0
