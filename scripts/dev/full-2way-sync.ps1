@@ -19,7 +19,9 @@
     person and reported.
 
   It is idempotent: run it, fix what it lists, run it again. A run with nothing
-  to do says so and changes nothing.
+  to do says so and changes nothing. It never stops to ask: only commits a lane
+  already had are published, so there is nothing to approve that the lane's own
+  author has not already approved by committing it.
 
   Validation is run where it can tell you something. A lane with no commits of
   its own is never merged, so it is never validated; a lane whose changes touch
@@ -29,14 +31,12 @@
 .EXAMPLE
   ./scripts/dev/full-2way-sync.ps1 -WhatIf
   ./scripts/dev/full-2way-sync.ps1
-  ./scripts/dev/full-2way-sync.ps1 -Yes
+  ./scripts/dev/full-2way-sync.ps1 -PullOnly
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [string]$BaseBranch = "master",
-    # Skip the confirmation. The point of this script is repeated runs.
-    [switch]$Yes,
     [switch]$AlwaysValidate,
     # Bring lanes up to the base without publishing any lane work to it.
     [switch]$PullOnly
@@ -298,41 +298,31 @@ if ($PullOnly) {
             $note = if ($item.Validate) { "with validation" } else { "no code changed, skipping validation" }
             Write-Host ("  {0} - {1} commit(s), {2}" -f $item.Entry.slug, $item.Commits.Count, $note)
         }
-        $approved = $Yes -or $WhatIfPreference
-        if (-not $approved) {
+        foreach ($item in $withWork) {
+            $lane = $item.Entry.slug
             Write-Host ""
-            $answer = Read-Host "Publish the lanes above to $BaseBranch? [y/N]"
-            $approved = $answer -in @("y", "Y", "yes", "Yes")
-        }
-        if (-not $approved) {
-            Write-Host "[skipped] Nothing was published; lanes were still brought up to date." -ForegroundColor Yellow
-        } else {
-            foreach ($item in $withWork) {
-                $lane = $item.Entry.slug
-                Write-Host ""
-                Write-Host "== merging $lane ==" -ForegroundColor Green
-                # Re-check right before merging rather than trusting the sweep
-                # above: validating and opening a pull request takes minutes, and
-                # another session working this lane will have dirtied it again.
-                if (-not (Push-LaneStash -WorkingDirectory $item.Entry.worktree -Lane $lane)) { continue }
-                try {
-                    # One lane failing must not strand the rest, so unlike the
-                    # gated two-way sync this keeps going and reports at the end.
-                    & $sandboxScript -Merge $lane -BaseBranch $BaseBranch `
-                        -SkipValidation:(-not $item.Validate) -Confirm:$false
-                    if ($LASTEXITCODE -ne 0) { throw "merge returned $LASTEXITCODE" }
-                    Add-Did "$lane - merged $($item.Commits.Count) commit(s) into $BaseBranch"
-                } catch {
-                    # sandbox.ps1 speaks to someone merging one lane by hand, so
-                    # its advice to commit first contradicts this script's whole
-                    # promise. Say what actually happened instead.
-                    $reason = $_.Exception.Message
-                    if ($reason -match "uncommitted changes") {
-                        $reason = "someone changed the lane while this run was merging it"
-                    }
-                    Add-Remaining -Lane $lane -Problem "has $($item.Commits.Count) commit(s) still waiting for $BaseBranch : $reason" `
-                        -NextStep "Nothing was lost; run this script again when the lane is idle."
+            Write-Host "== merging $lane ==" -ForegroundColor Green
+            # Re-check right before merging rather than trusting the sweep
+            # above: validating and opening a pull request takes minutes, and
+            # another session working this lane will have dirtied it again.
+            if (-not (Push-LaneStash -WorkingDirectory $item.Entry.worktree -Lane $lane)) { continue }
+            try {
+                # One lane failing must not strand the rest, so unlike the
+                # gated two-way sync this keeps going and reports at the end.
+                & $sandboxScript -Merge $lane -BaseBranch $BaseBranch `
+                    -SkipValidation:(-not $item.Validate) -Confirm:$false
+                if ($LASTEXITCODE -ne 0) { throw "merge returned $LASTEXITCODE" }
+                Add-Did "$lane - merged $($item.Commits.Count) commit(s) into $BaseBranch"
+            } catch {
+                # sandbox.ps1 speaks to someone merging one lane by hand, so
+                # its advice to commit first contradicts this script's whole
+                # promise. Say what actually happened instead.
+                $reason = $_.Exception.Message
+                if ($reason -match "uncommitted changes") {
+                    $reason = "someone changed the lane while this run was merging it"
                 }
+                Add-Remaining -Lane $lane -Problem "has $($item.Commits.Count) commit(s) still waiting for $BaseBranch : $reason" `
+                    -NextStep "Nothing was lost; run this script again when the lane is idle."
             }
         }
     }
