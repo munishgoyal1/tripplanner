@@ -567,8 +567,7 @@ def test_a_repeated_attempt_never_reuses_its_request_id(
             requests=_ONE_REQUEST,
         )
 
-    assert len(seen) == 2
-    assert seen[0] != seen[1]
+    assert len(seen) == len(set(seen))
 
 
 def test_a_run_is_charged_only_for_what_that_attempt_spent(
@@ -776,8 +775,10 @@ def test_a_dropped_connection_is_retried_with_the_same_request_id(
         workers=1,
     )
 
-    assert len(seen) == 2
+    # Two ids: the dropped turn replayed under its own id, then the confirmation
+    # turn the agent's "does this look right?" gate needs.
     assert seen[0] == seen[1]
+    assert seen[2] != seen[0]
 
 
 def test_a_turn_that_keeps_failing_is_reported_and_the_run_goes_on(
@@ -805,7 +806,14 @@ def test_a_turn_that_keeps_failing_is_reported_and_the_run_goes_on(
         on_progress=lines.append,
     )
 
-    assert len(asked) == 3
+    # The first slug fails outright; the other two ask, then confirm.
+    assert asked == [
+        "corpus-mysore-food-young-family-5d",
+        "corpus-chikmagalur-slow-solo-3d",
+        "corpus-chikmagalur-slow-solo-3d",
+        "corpus-istanbul-premium-friends-3d",
+        "corpus-istanbul-premium-friends-3d",
+    ]
     assert result["stopped_because"] == "exhausted"
     assert any("RemoteDisconnected" in line for line in lines)
 
@@ -920,16 +928,6 @@ def test_restoring_refuses_a_database_that_is_not_a_sandbox() -> None:
         place_cache.restore("tripplanner-prod", {"a|b": {"lat": 1.0}})
 
 
-def test_reviews_are_never_committed_to_the_cache_file() -> None:
-    """Third-party content stays in the cache database, which expires it."""
-    from tripplanner.validation import place_cache
-
-    portable = place_cache._portable(
-        {"lat": 1.0, "reviews": [{"text": "lovely"}], "weekday_descriptions": ["Mon: open"]}
-    )
-
-    assert "reviews" not in portable
-    assert portable["weekday_descriptions"] == ["Mon: open"]
 
 
 # ---- lane snapshots -------------------------------------------------------
@@ -1004,3 +1002,170 @@ def test_the_primary_local_database_may_hold_cache_but_hosted_ones_may_not() -> 
             place_cache.assert_cache_target(hosted)
     with pytest.raises(ValueError):
         place_cache.assert_cache_target("something-else")
+
+
+def test_a_throttled_run_waits_as_long_as_the_server_asked() -> None:
+    """A token-per-minute window outlasts any backoff we would have guessed."""
+    import urllib.error
+    from email.message import Message
+
+    from tripplanner.validation import generate
+
+    headers = Message()
+    headers["Retry-After"] = "120"
+    throttled = urllib.error.HTTPError("u", 429, "Too Many Requests", headers, None)
+
+    assert generate._retry_delay(throttled, attempt=1) == 120.0
+
+    plain = urllib.error.HTTPError("u", 503, "Unavailable", Message(), None)
+    assert generate._retry_delay(plain, attempt=1) == 2.0
+
+
+def test_a_throttle_never_waits_without_bound() -> None:
+    import urllib.error
+    from email.message import Message
+
+    from tripplanner.validation import generate
+
+    headers = Message()
+    headers["Retry-After"] = "99999"
+    forever = urllib.error.HTTPError("u", 429, "Too Many Requests", headers, None)
+
+    assert generate._retry_delay(forever, attempt=1) == generate._MAX_RETRY_WAIT_SEC
+
+
+def test_reviews_are_kept_in_the_cache_file() -> None:
+    """Owner decision: keep the grounding whole while the product is small."""
+    from tripplanner.validation import place_cache
+
+    portable = place_cache._portable({"lat": 1.0, "reviews": [{"text": "lovely"}]})
+
+    assert portable["reviews"] == [{"text": "lovely"}]
+
+
+def test_a_request_that_is_only_confirmed_is_answered_and_planned(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The agent reads the brief back and waits for a yes before it plans.
+
+    Seventy corpus requests stopped at "does this look right?" on 2026-08-16,
+    each paying for the turn that asked and saving nothing.
+    """
+    sent: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(
+        generate, "_ask", lambda api, message, user_id, request_id: sent.append(message)
+    )
+    # No trip until the confirmation lands, which is what the gate does.
+    monkeypatch.setattr(
+        generate,
+        "_saved_trip",
+        lambda database, user_id: (
+            {"day_wise_itinerary": [{"day": 1, "stops": [{"name": "Fort"}]}]}
+            if len(sent) > 1
+            else None
+        ),
+    )
+
+    result = generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        target=1,
+        requests=_ONE_REQUEST,
+        requested_budget_inr=1000,
+        workers=1,
+    )
+
+    assert len(sent) == 2
+    assert "go ahead" in sent[1].lower()
+    assert len(result["produced"]) == 1
+
+
+def test_a_request_that_plans_immediately_is_not_asked_twice(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The extra turn costs money, so it must only happen when nothing was saved."""
+    sent: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(
+        generate, "_ask", lambda api, message, user_id, request_id: sent.append(message)
+    )
+    monkeypatch.setattr(
+        generate,
+        "_saved_trip",
+        lambda database, user_id: {"day_wise_itinerary": [{"day": 1, "stops": [{"name": "Fort"}]}]},
+    )
+
+    generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        target=1,
+        requests=_ONE_REQUEST,
+        requested_budget_inr=1000,
+        workers=1,
+    )
+
+    assert len(sent) == 1
+
+
+def test_a_run_that_saves_almost_nothing_stops_itself(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Left overnight, a broken planner would spend the whole budget on nothing."""
+    lines: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.001})
+    monkeypatch.setattr(generate, "_ask", lambda api, message, user_id, request_id: None)
+    monkeypatch.setattr(generate, "_saved_trip", lambda database, user_id: None)
+
+    result = generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        requests=matrix.candidates(Catalog(), limit=200),
+        requested_budget_inr=1000,
+        workers=1,
+        on_progress=lines.append,
+    )
+
+    assert result["stopped_because"] == "barren"
+    # Judged only once enough have run to tell a bad run from an odd request.
+    assert len(result["produced"]) == 0
+    assert any("Stopping:" in line for line in lines)
+    assert sum(1 for line in lines if "no itinerary saved" in line) == (
+        generate.MIN_ATTEMPTS_BEFORE_GIVING_UP
+    )
+
+
+def test_a_run_with_a_few_barren_requests_keeps_going(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Some requests genuinely need a question; that is not a broken run."""
+    seen: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.001})
+    monkeypatch.setattr(
+        generate, "_ask", lambda api, message, user_id, request_id: seen.append(user_id)
+    )
+    # One in five saves nothing -- under the quarter that means something is wrong.
+    monkeypatch.setattr(
+        generate,
+        "_saved_trip",
+        lambda database, user_id: (
+            None
+            if user_id.endswith("0d")
+            else {"day_wise_itinerary": [{"day": 1, "stops": [{"name": "Fort"}]}]}
+        ),
+    )
+
+    result = generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        requests=matrix.candidates(Catalog(), limit=20),
+        requested_budget_inr=1000,
+        workers=1,
+    )
+
+    assert result["stopped_because"] != "barren"
+    assert len(result["produced"]) > 10

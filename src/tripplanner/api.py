@@ -131,6 +131,42 @@ def _set_request_user(request: Request, claimed_user_id: str = "local") -> str:
     return user_id
 
 
+def _ran_tools(messages: list[Any], since: int) -> dict[str, list[str]]:
+    """Tool names this turn ran, for the saved assistant message to carry.
+
+    The graph's tool messages are dropped when a turn is persisted, so a policy
+    that spans turns -- whether the trip kickoff was ever asked -- would other-
+    wise re-decide from scratch every time and never clear.
+    """
+    names: list[str] = []
+    for message in list(messages)[since:]:
+        for call in getattr(message, "tool_calls", None) or []:
+            name = call.get("name") if isinstance(call, dict) else getattr(call, "name", None)
+            if name and name not in names:
+                names.append(str(name))
+    return {graph_policy.RAN_TOOLS_KEY: names} if names else {}
+
+
+def _rate_limit_response(exc: BaseException) -> JSONResponse | None:
+    """A provider throttle is the caller going too fast, not a server fault.
+
+    Returned as 500 it looked like a crash, so callers that already back off on
+    429 -- the corpus builder among them -- discarded the request instead.
+    """
+    from tripplanner.observability import model_rate_limit_fields
+
+    fields = model_rate_limit_fields(exc, "")
+    if not fields:
+        return None
+    retry_ms = fields.get("retry_after_ms")
+    seconds = max(1, round((retry_ms or 60_000) / 1000))
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "The model is busy right now. Try again shortly."},
+        headers={"Retry-After": str(seconds)},
+    )
+
+
 def _best_effort_plan_reply() -> tuple[str, int]:
     from tripplanner.tools.trip_planner import (
         load_active_trip_dict,
@@ -444,7 +480,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             # freshly created trip was left with no itinerary and no answer.
             budget_exhausted = True
             result = {"messages": list(history), "current_agent": "trip"}
-        except Exception:
+        except Exception as exc:
             try:
                 await asyncio.to_thread(
                     _save_chat,
@@ -459,6 +495,12 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
                 )
             except Exception:
                 pass
+            throttled = _rate_limit_response(exc)
+            if throttled is not None:
+                _record_chat_operation(
+                    started, user_id=user_id, transport="json", outcome="rate_limited"
+                )
+                return throttled
             raise
 
         if budget_exhausted:
@@ -475,7 +517,13 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             issues = critique(reply, result.get("messages", []))
             if issues:
                 app_event("hallucination_critic", issues=len(issues), claims=issues)
-        completed_turn = [HumanMessage(content=req.message), AIMessage(content=reply)]
+        completed_turn = [
+            HumanMessage(content=req.message),
+            AIMessage(
+                content=reply,
+                additional_kwargs=_ran_tools(result.get("messages") or [], len(history)),
+            ),
+        ]
         agent = result.get("current_agent", "unknown")
         tid_after = await asyncio.to_thread(
             _save_chat,
@@ -848,7 +896,17 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         issues = critique(reply, tool_outputs)
         if issues:
             app_event("hallucination_critic", issues=len(issues), claims=issues)
-        completed_turn = [HumanMessage(content=req.message), AIMessage(content=reply)]
+        completed_turn = [
+            HumanMessage(content=req.message),
+            AIMessage(
+                content=reply,
+                additional_kwargs=(
+                    {graph_policy.RAN_TOOLS_KEY: sorted(tool_names_called)}
+                    if tool_names_called
+                    else {}
+                ),
+            ),
+        ]
         # Safety net: if the agent described a day-wise itinerary but never
         # called update_trip_plan, parse the reply and persist it directly so
         # the Itinerary panel is never left blank.

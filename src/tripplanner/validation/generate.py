@@ -33,11 +33,25 @@ MANIFEST_FILE = "manifest.json"
 TRIPS_DIR = "trips"
 #: A planning turn is slow; the probe on 2026-08-15 took over two minutes.
 REQUEST_TIMEOUT_SEC = 900
-#: Matches the API's own CHAT_MAX_CONCURRENT_GLOBAL default; more only earns 429s.
-DEFAULT_WORKERS = 4
+#: The API admits four at once, but four planning turns of ~30k prompt characters
+#: crossed the model deployment's tokens-per-minute quota on 2026-08-16 and every
+#: request came back throttled. The narrower limit is the provider's, not ours.
+DEFAULT_WORKERS = 2
 #: What to hold back for a request in flight before the run has priced one itself.
 ASSUMED_COST_INR = 45.0
 _RETRY_STATUS = frozenset({429, 503})
+#: Long enough to outlast a token-per-minute window, short enough to notice.
+_MAX_RETRY_WAIT_SEC = 180.0
+#: A run left going overnight must not spend the whole budget on turns that save
+#: nothing. Judged only once enough have finished to tell a bad run from a
+#: request or two that legitimately needed a question.
+MIN_ATTEMPTS_BEFORE_GIVING_UP = 10
+MAX_BARREN_SHARE = 0.25
+#: The answer to the agent's "does this look right?" gate. It reads the brief
+#: back before planning, so a single-turn caller never gets past the question.
+_CONFIRM_BRIEF = (
+    "Yes, that is all correct. Please go ahead and build the full day-by-day plan now."
+)
 _MAX_ATTEMPTS = 4
 
 
@@ -159,40 +173,70 @@ class _Attempt:
     user_id: str = field(default="")
 
 
-def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -> _Attempt:
-    """One planning turn, priced by what this user's ledger moved by."""
-    user_id = f"corpus-{request.slug}"
+def _retry_delay(error: urllib.error.HTTPError, attempt: int) -> float:
+    """Wait as long as the server asked, not as long as we guessed.
+
+    A token-per-minute throttle holds for a minute or more; retrying after two
+    seconds spends the remaining attempts against a window that is still shut.
+    """
+    header = error.headers.get("Retry-After") if error.headers else None
+    try:
+        asked = float(header) if header else 0.0
+    except (TypeError, ValueError):
+        asked = 0.0
+    return min(_MAX_RETRY_WAIT_SEC, max(asked, min(30.0, 2.0 * attempt)))
+
+
+def _send_with_retry(api: str, message: str, user_id: str) -> str | None:
+    """One turn, retried on a refusal. Returns an error description or None."""
     # A repeat attempt needs its own request id, or the API replays the earlier
     # completed turn and the slug can never recover from a failed first run.
     request_id = f"{user_id}-{uuid.uuid4().hex[:12]}"
-    before_usd = _spent_usd(database, user_id)
-    started = time.monotonic()
     for attempt in range(1, _MAX_ATTEMPTS + 1):
         try:
-            _ask(api, request.message, user_id, request_id)
-            break
+            _ask(api, message, user_id, request_id)
+            return None
         except urllib.error.HTTPError as error:
             # A refused admission never ran, so the same id may be offered again.
             if error.code not in _RETRY_STATUS or attempt == _MAX_ATTEMPTS:
-                return _Attempt(request, error=f"HTTP {error.code}", user_id=user_id)
-            time.sleep(min(30.0, 2.0 * attempt))
+                return f"HTTP {error.code}"
+            time.sleep(_retry_delay(error, attempt))
         except (OSError, http.client.HTTPException) as error:
             # A dropped connection may still have completed the turn, so the retry keeps
             # the request id: a finished turn replays instead of being paid for twice.
             if attempt == _MAX_ATTEMPTS:
-                return _Attempt(
-                    request, error=f"{type(error).__name__}: {error}", user_id=user_id
-                )
+                return f"{type(error).__name__}: {error}"
             time.sleep(min(30.0, 2.0 * attempt))
+    return "exhausted attempts"
+
+
+def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -> _Attempt:
+    """One planning turn, priced by what this user's ledger moved by."""
+    user_id = f"corpus-{request.slug}"
+    before_usd = _spent_usd(database, user_id)
+    started = time.monotonic()
+
+    error = _send_with_retry(api, request.message, user_id)
+    trip = None if error else _saved_trip(database, user_id)
+
+    if not error and trip is None:
+        # The agent reads the brief back and waits for a yes before it plans. A
+        # caller that never answers leaves every request stopped at "shall I?",
+        # having paid for the turn that asked.
+        error = _send_with_retry(api, _CONFIRM_BRIEF, user_id)
+        if not error:
+            trip = _saved_trip(database, user_id)
 
     seconds = time.monotonic() - started
     usage = _usage_for(database, user_id)
     cost_inr = max(0.0, float(usage.get("cost_usd") or 0.0) - before_usd) * usd_inr
+    if error:
+        return _Attempt(request, cost_inr=cost_inr, seconds=seconds, error=error, user_id=user_id)
     return _Attempt(
         request,
         cost_inr=cost_inr,
         seconds=seconds,
-        trip=_saved_trip(database, user_id),
+        trip=trip,
         model=str(usage.get("model") or ""),
         user_id=user_id,
     )
@@ -233,20 +277,28 @@ def build(
     in_flight: dict[Future[_Attempt], tuple[TripRequest, float]] = {}
     reserved = 0.0
     exhausted = False
+    barren = 0
+    giving_up = False
 
     def _estimate() -> float:
         return max(1.0, spent / len(produced)) if produced else ASSUMED_COST_INR
 
+    def _barren_share() -> float:
+        attempts = len(produced) + barren
+        return barren / attempts if attempts else 0.0
+
     def _record(result: _Attempt) -> None:
-        nonlocal spent, model
+        nonlocal spent, model, barren
         request = result.request
         spent += result.cost_inr
         model = result.model or model
         if result.error:
+            barren += 1
             if on_progress:
                 on_progress(f"  {request.slug}: request failed ({result.error})")
             return
         if result.trip is None:
+            barren += 1
             if on_progress:
                 on_progress(
                     f"  {request.slug}: no itinerary saved "
@@ -285,7 +337,7 @@ def build(
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         while True:
-            while not exhausted and len(in_flight) < workers:
+            while not exhausted and not giving_up and len(in_flight) < workers:
                 if target > 0 and len(produced) + len(in_flight) >= target:
                     break
                 hold = _estimate()
@@ -317,8 +369,24 @@ def build(
                 except Exception as error:  # noqa: BLE001 - one bad turn must not end a long run
                     result = _Attempt(request, error=f"{type(error).__name__}: {error}")
                 _record(result)
+            attempts = len(produced) + barren
+            if (
+                not giving_up
+                and attempts >= MIN_ATTEMPTS_BEFORE_GIVING_UP
+                and _barren_share() > MAX_BARREN_SHARE
+            ):
+                giving_up = True
+                if on_progress:
+                    on_progress(
+                        f"\n  Stopping: {barren} of {attempts} requests saved no itinerary "
+                        f"({_barren_share():.0%}, INR {spent:.0f} spent).\n"
+                        "  Something is wrong with planning, not with this run. Check one"
+                        " request by hand before spending more."
+                    )
 
-    if target > 0 and len(produced) >= target:
+    if giving_up:
+        stopped = "barren"
+    elif target > 0 and len(produced) >= target:
         stopped = "target"
     elif exhausted:
         stopped = "exhausted"

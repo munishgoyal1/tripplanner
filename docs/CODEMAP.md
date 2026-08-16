@@ -161,11 +161,45 @@ Cosmos containers have explicit ownership:
 | `email_exports` | Idempotent export records |
 | `guest_credentials` | Guest capability records |
 | `public_demo_runs` | Immutable regional public-demo artifacts and the shared `_public` active manifest |
+| `places_cache` | Google Places details, shared across users at partition `_shared` |
+| `tool_cache` | Results of read-only tools, shared unless the tool is user-specific |
 
 Canary and production databases are isolated within the shared Cosmos account.
 Local emulator data is also isolated and must never be reset automatically. Data
 copy is not backup; use the guarded backup/recovery procedure for recoverability
 evidence.
+
+### Cached external data
+
+Everything fetched from a provider lands in one of three places.
+
+| Source | Store | Freshness | In the repository |
+| --- | --- | --- | --- |
+| Google Places | `places_cache` + in-process | 7-day read check; photo URLs 50 min | Yes — `corpus/places.json` |
+| Read-only tools (flights, weather, visa, events, search) | `tool_cache` + in-process LRU | per-entry `expires_at`, set per tool | No |
+| FX rates | in-process only | 12 hours | No |
+
+Only Places data is committed, because it is audit input rather than a
+speed-up. Removing it silences eight rules — `I3`, `I4`, `I9`, `I11` and
+`R1`–`R4` — and 605 of 1073 findings, and the audit then reports clean rather
+than failing. Tool results are deliberately excluded: a frozen flight price or
+weather window preserves something that is meaningless once stale, and no rule
+reads them.
+
+`storage_cosmos` gives the two cache containers a **30-day TTL**, and gives the
+containers holding the user's own data none. The TTL is a storage backstop, not
+the freshness rule: Cosmos resets it on every write, so an entry still in use
+never expires and only abandoned ones are reclaimed.
+
+Two things follow that are easy to miss:
+
+- **`corpus/places.json` is exempt from all of this.** It is in git, so it is
+  kept indefinitely, including reviews. That is a deliberate choice made while
+  the product is small, not an oversight.
+- **The 30-day figure has not been checked against provider terms.** Google
+  Maps Platform restricts how long Places content may be cached, and that limit,
+  not our convenience, is the real ceiling. Revisit both points before the
+  product carries real traffic.
 
 ## Tool and Provider Boundaries
 

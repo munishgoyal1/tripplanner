@@ -67,6 +67,11 @@ _ORIGIN_CORRECTION_RE = re.compile(
 )
 
 
+#: Tools a saved turn ran, restored by chat_store. The graph's tool messages do
+#: not survive a turn, so anything deciding across turns must read this too.
+RAN_TOOLS_KEY = "ran_tools"
+
+
 def _tool_call_positions(messages: Sequence[BaseMessage]) -> list[tuple[int, str]]:
     positions: list[tuple[int, str]] = []
     for index, message in enumerate(messages):
@@ -78,6 +83,9 @@ def _tool_call_positions(messages: Sequence[BaseMessage]) -> list[tuple[int, str
             )
             if name:
                 positions.append((index, name))
+        for name in (getattr(message, "additional_kwargs", None) or {}).get(RAN_TOOLS_KEY) or []:
+            if name:
+                positions.append((index, str(name)))
     return positions
 
 

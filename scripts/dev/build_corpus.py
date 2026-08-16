@@ -1,7 +1,7 @@
 """Generate corpus trips with the real planner, inside a budget.
 
     python scripts/dev/build_corpus.py --dry-run
-    python scripts/dev/build_corpus.py --budget 1000 --workers 4
+    python scripts/dev/build_corpus.py --budget 1000 --workers 2
 
 Spends money. It refuses to run without headroom under the cumulative cap,
 measures each request's real cost from the app's own usage ledger, and stops at

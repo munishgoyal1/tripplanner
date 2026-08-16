@@ -289,3 +289,61 @@ def test_proposal_only_ignores_tool_phase_budget_and_completion_gates() -> None:
     assert not decision.budget_exhausted
     assert decision.forced_tool is None
     assert decision.forced_reason == "model_choice"
+
+
+def test_a_kickoff_asked_last_turn_is_recognised_this_turn() -> None:
+    """Tool messages do not survive a turn, so the answer must read what was saved.
+
+    In interactive mode the kickoff is asked in one turn and answered in the
+    next. Without the saved marker the answer is never recognised and the agent
+    asks again forever.
+    """
+    from langchain_core.messages import AIMessage, HumanMessage
+
+    from tripplanner import graph_policy as gp
+
+    asked = AIMessage(
+        content="Does this look right?",
+        additional_kwargs={gp.RAN_TOOLS_KEY: ["request_trip_input"]},
+    )
+    messages = [HumanMessage(content="Plan a 3 day Goa trip"), asked, HumanMessage(content="Yes")]
+
+    assert gp.pending_trip_kickoff_answer(messages)
+
+
+def test_a_conversation_that_never_asked_has_no_answer_pending() -> None:
+    """Only a real kickoff counts, or any second turn would look like an answer."""
+    from langchain_core.messages import AIMessage, HumanMessage
+
+    from tripplanner import graph_policy as gp
+
+    messages = [
+        HumanMessage(content="Plan a 3 day Goa trip"),
+        AIMessage(content="Sure, tell me more."),
+        HumanMessage(content="Yes"),
+    ]
+
+    assert not gp.pending_trip_kickoff_answer(messages)
+
+
+def test_a_saved_turn_carries_its_tools_back(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """chat_store is the only thing that can carry the marker across a turn."""
+    from langchain_core.messages import AIMessage, HumanMessage
+
+    from tripplanner.web import chat_store
+
+    rows = chat_store._serialize(
+        [
+            HumanMessage(content="Plan a 3 day Goa trip"),
+            AIMessage(
+                content="Does this look right?",
+                additional_kwargs={chat_store._RAN_TOOLS: ["request_trip_input"]},
+            ),
+        ]
+    )
+    restored = chat_store._deserialize(rows)
+
+    assert rows[1][chat_store._RAN_TOOLS] == ["request_trip_input"]
+    assert restored[1].additional_kwargs[chat_store._RAN_TOOLS] == ["request_trip_input"]
+    # Never as tool_calls: the provider would demand results this history lacks.
+    assert not getattr(restored[1], "tool_calls", None)

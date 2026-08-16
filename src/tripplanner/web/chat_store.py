@@ -39,6 +39,9 @@ _COSMOS_USERS_CONTAINER = "users"
 _GENERAL = "_general"
 _OPERATIONS_DOC_ID = "chat_operations"
 _MAX_TURNS = 80  # keep the persisted transcript bounded
+#: Names of the tools a saved assistant turn ran, carried in additional_kwargs.
+#: graph_policy reads these; see RAN_TOOLS_KEY there.
+_RAN_TOOLS = "ran_tools"
 _MAX_RECENT_WRITES = 80
 _MAX_RECENT_OPERATIONS = 80
 _MAX_WRITE_ATTEMPTS = 3
@@ -85,8 +88,8 @@ def _read_document(document_id: str) -> dict[str, Any]:
     return _read_local_document(document_id)
 
 
-def _serialize(messages: list[BaseMessage], *, bounded: bool = True) -> list[dict[str, str]]:
-    rows: list[dict[str, str]] = []
+def _serialize(messages: list[BaseMessage], *, bounded: bool = True) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
     for m in messages:
         mtype = getattr(m, "type", "")
         role = "user" if mtype == "human" else "assistant" if mtype == "ai" else None
@@ -95,7 +98,14 @@ def _serialize(messages: list[BaseMessage], *, bounded: bool = True) -> list[dic
         text = m.content if isinstance(m.content, str) else str(m.content)
         if not text.strip():
             continue
-        rows.append({"role": role, "text": text})
+        row: dict[str, Any] = {"role": role, "text": text}
+        # Which tools the turn ran. Policy decisions that span turns -- whether the
+        # kickoff was ever asked -- have no other way to know once the graph's
+        # tool messages are gone.
+        ran = (getattr(m, "additional_kwargs", None) or {}).get(_RAN_TOOLS)
+        if ran:
+            row[_RAN_TOOLS] = list(ran)
+        rows.append(row)
     return rows[-_MAX_TURNS:] if bounded else rows
 
 
@@ -108,7 +118,11 @@ def _deserialize(rows: list[dict[str, Any]]) -> list[BaseMessage]:
         if r.get("role") == "user":
             msgs.append(HumanMessage(content=text))
         else:
-            msgs.append(AIMessage(content=text))
+            ran = r.get(_RAN_TOOLS)
+            # Deliberately not tool_calls: the provider would demand matching
+            # tool results that this history no longer has.
+            extra = {_RAN_TOOLS: list(ran)} if ran else {}
+            msgs.append(AIMessage(content=text, additional_kwargs=extra))
     return msgs
 
 

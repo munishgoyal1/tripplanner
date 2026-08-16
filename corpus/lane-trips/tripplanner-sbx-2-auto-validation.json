@@ -1,7 +1,7 @@
 {
   "version": 1,
   "database": "tripplanner-sbx-2-auto-validation",
-  "saved_at": "2026-08-16T07:03:42Z",
+  "saved_at": "2026-08-16T07:53:21Z",
   "count": 31,
   "trips": [
     {
@@ -6044,7 +6044,7 @@
       },
       "visa": {},
       "trip_constraints": [],
-      "updated_at": "2026-08-16T11:39:08.316256",
+      "updated_at": "2026-08-16T13:17:19.398542",
       "price_checks": [
         {
           "kind": "lodging",
@@ -7548,7 +7548,7 @@
       "weather": {},
       "visa": {},
       "trip_constraints": [],
-      "updated_at": "2026-08-16T11:44:27.887729",
+      "updated_at": "2026-08-16T13:17:14.032616",
       "price_checks": [
         {
           "kind": "lodging",
@@ -8746,7 +8746,7 @@
       "weather": {},
       "visa": {},
       "trip_constraints": [],
-      "updated_at": "2026-08-16T11:48:22.986440",
+      "updated_at": "2026-08-16T13:17:13.446561",
       "price_checks": [
         {
           "kind": "lodging",

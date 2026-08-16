@@ -9,6 +9,9 @@ every other lane re-fetched the same places from Google at real cost.
 This module moves it into the repository alongside the trips, and back into any
 sandbox on demand. The file is the durable copy; a database is a warm cache of
 it.
+
+Unlike the cache containers, this file has no expiry: it is in git, so it is
+kept indefinitely. See docs/CODEMAP.md under "Cached external data".
 """
 
 from __future__ import annotations
@@ -47,10 +50,6 @@ def assert_cache_target(name: str) -> str:
     return name.strip()
 #: Signed photo URLs expire within the hour and are re-derived from photo_refs.
 _VOLATILE_FIELDS = frozenset({"photo_urls", "__photos_at__"})
-#: Reviews are third-party content that no rule reads, and committing them keeps
-#: them past any provider's retention window. They stay in the cache database,
-#: which now expires them, and re-fetch on demand.
-_UNCOMMITTABLE_FIELDS = frozenset({"reviews"})
 #: Google returns ten photo references per place and the app renders at most
 #: three, but each reference is ~500 characters -- four fifths of an unfiltered
 #: export. Mirrors places_cache._MAX_PHOTOS_PER_PLACE; a test keeps them equal.
@@ -69,8 +68,7 @@ def _worth_keeping(entry: Any) -> bool:
 
 
 def _portable(entry: dict[str, Any]) -> dict[str, Any]:
-    dropped = _VOLATILE_FIELDS | _UNCOMMITTABLE_FIELDS
-    trimmed = {k: v for k, v in entry.items() if k not in dropped}
+    trimmed = {k: v for k, v in entry.items() if k not in _VOLATILE_FIELDS}
     refs = trimmed.get("photo_refs")
     if isinstance(refs, list) and len(refs) > _MAX_PHOTO_REFS:
         trimmed["photo_refs"] = refs[:_MAX_PHOTO_REFS]
