@@ -1,0 +1,1592 @@
+{
+  "version": 1,
+  "database": "tripplanner-sbx-3-bugfixes",
+  "saved_at": "2026-08-16T07:03:42Z",
+  "count": 4,
+  "trips": [
+    {
+      "status": "draft",
+      "trip_id": "paris_2026-09-06_2026-09-11",
+      "created_at": "2026-08-09T15:48:49.044221",
+      "destination": "Paris",
+      "origin": "",
+      "departure_date": "2026-09-06",
+      "return_date": "2026-09-11",
+      "travelers": "1 adult",
+      "notes": "Balanced pace, moderate budget, 3-star+ hotel, economy direct flights, open to trains and rental car.",
+      "planning_recommendation": {
+        "confidence": "high",
+        "destination": "Paris",
+        "estimated_planned_minutes": 1172,
+        "evidence_place_count": 8,
+        "platform_prior_applied": false,
+        "platform_prior_version": null,
+        "reasons": [
+          "8 preference-matched places account for about 1172 planned minutes",
+          "balanced pace targets about 360 active minutes on a full day"
+        ],
+        "recommended_days": 5,
+        "recommended_range": [
+          4,
+          6
+        ],
+        "target_active_minutes_per_full_day": 360,
+        "user_duration_is_authoritative": false
+      },
+      "preferences_snapshot": {
+        "trip_style": "balanced",
+        "planning_preferences": {
+          "target_active_minutes_per_full_day": null,
+          "preferred_free_time_ratio": null,
+          "major_attractions_per_day": null,
+          "preferred_day_start": null,
+          "preferred_day_end": null
+        },
+        "budget_level": "moderate",
+        "hotel_preferences": {
+          "star_rating_min": 3,
+          "preferred_amenities": [],
+          "preferred_chains": [],
+          "room_type": "standard"
+        },
+        "transport_preferences": {
+          "flight_class": "economy",
+          "prefer_direct_flights": true,
+          "open_to_trains": true,
+          "open_to_rental_car": true,
+          "open_to_bus": false,
+          "preferred_road_transport": null,
+          "max_continuous_drive_min": null,
+          "road_break_duration_min": null,
+          "road_break_preferences": []
+        },
+        "food_preferences": {
+          "dietary": [],
+          "cuisine_likes": [],
+          "cuisine_dislikes": []
+        }
+      },
+      "selected_flights": [
+        {
+          "airline": "Air India",
+          "segments": [
+            {
+              "from": "BLR",
+              "to": "DEL",
+              "flight_number": "AI 2820",
+              "departure": "2026-09-06T17:25",
+              "arrival": "2026-09-06T20:25"
+            },
+            {
+              "from": "DEL",
+              "to": "CDG",
+              "flight_number": "AI 143",
+              "departure": "2026-09-07T02:55",
+              "arrival": "2026-09-07T11:15"
+            },
+            {
+              "from": "CDG",
+              "to": "DEL",
+              "flight_number": "AI 142",
+              "departure": "2026-09-11T13:15",
+              "arrival": "2026-09-12T00:35"
+            },
+            {
+              "from": "DEL",
+              "to": "BLR",
+              "flight_number": "AI 565",
+              "departure": "2026-09-12T02:10",
+              "arrival": "2026-09-12T04:50"
+            }
+          ],
+          "total_price": 107122,
+          "currency": "INR",
+          "stops": 1,
+          "booking_link": "https://www.airindia.com/"
+        }
+      ],
+      "selected_hotels": [
+        {
+          "name": "Hotel Chambiges Elysees",
+          "rating": 4.5,
+          "review_count": 890,
+          "price": 120000,
+          "checkin": "2026-09-06",
+          "checkout": "2026-09-11",
+          "address": "8 Rue Chambiges, 75008 Paris, France",
+          "booking_link": "https://www.booking.com/hotel/fr/chambiges-elysees.en-gb.html"
+        }
+      ],
+      "selected_activities": [],
+      "day_wise_itinerary": [
+        {
+          "day": 1,
+          "date": "2026-09-06",
+          "title": "Day 1 · Departure from Bangalore",
+          "summary": "Depart from Bangalore to Paris via Delhi. Overnight flight with layover in Delhi.",
+          "stops": [
+            {
+              "name": "Kempegowda International Airport, Bangalore (BLR)",
+              "kind": "flight",
+              "time": "17:25",
+              "note": "Check in and board Air India 2820"
+            },
+            {
+              "name": "Indira Gandhi International Airport, Delhi (DEL)",
+              "kind": "flight",
+              "time": "20:25",
+              "duration_min": 210,
+              "note": "Layover: 6h 30m. Change from domestic to international terminal."
+            },
+            {
+              "name": "Charles de Gaulle Airport, Paris (CDG)",
+              "kind": "flight",
+              "time": "11:15",
+              "note": "Arrive in Paris. Transfer to hotel."
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Check in and relax after arrival."
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "date": "2026-09-07",
+          "title": "Day 2 · Eiffel Tower & Seine",
+          "summary": "Explore the Eiffel Tower and enjoy a Seine River cruise. Dinner at Le Bistro Parisien.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from the hotel"
+            },
+            {
+              "name": "Eiffel Tower",
+              "kind": "attraction",
+              "time": "09:30",
+              "duration_min": 120,
+              "note": "Book tickets in advance"
+            },
+            {
+              "name": "Seine River Cruise",
+              "kind": "attraction",
+              "time": "13:00",
+              "duration_min": 90
+            },
+            {
+              "name": "Le Bistro Parisien",
+              "kind": "meal",
+              "time": "19:00",
+              "note": "Dinner with Eiffel Tower view"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return to hotel"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "date": "2026-09-08",
+          "title": "Day 3 · Louvre & Marais",
+          "summary": "Visit the Louvre Museum and explore Le Marais. Dinner at Café Charlot.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from the hotel"
+            },
+            {
+              "name": "Louvre Museum",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 180,
+              "note": "Arrive early to avoid crowds"
+            },
+            {
+              "name": "Le Marais",
+              "kind": "attraction",
+              "time": "13:00",
+              "duration_min": 120
+            },
+            {
+              "name": "Café Charlot",
+              "kind": "meal",
+              "time": "19:00",
+              "note": "Dinner in Le Marais"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return to hotel"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "date": "2026-09-09",
+          "title": "Day 4 · Montmartre & Sacré-Cœur",
+          "summary": "Explore Montmartre, Sacré-Cœur, and Musée d'Orsay. Lunch at Le Consulat.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from the hotel"
+            },
+            {
+              "name": "Montmartre & Sacré-Cœur",
+              "kind": "attraction",
+              "time": "09:30",
+              "duration_min": 120
+            },
+            {
+              "name": "Le Consulat",
+              "kind": "meal",
+              "time": "12:00",
+              "note": "Lunch in Montmartre"
+            },
+            {
+              "name": "Musée d'Orsay",
+              "kind": "attraction",
+              "time": "14:30",
+              "duration_min": 120
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return to hotel"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "date": "2026-09-10",
+          "title": "Day 5 · Versailles Day Trip",
+          "summary": "Day trip to Palace of Versailles and gardens. Lunch at La Petite Venise.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from the hotel"
+            },
+            {
+              "name": "Palace of Versailles",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 240
+            },
+            {
+              "name": "La Petite Venise",
+              "kind": "meal",
+              "time": "13:30",
+              "note": "Lunch after palace tour"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return to hotel"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "date": "2026-09-11",
+          "title": "Day 6 · Departure from Paris",
+          "summary": "Check out and return to Bangalore via Delhi. Layover in Delhi.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Check out"
+            },
+            {
+              "name": "Charles de Gaulle Airport, Paris (CDG)",
+              "kind": "flight",
+              "time": "13:15",
+              "note": "Board Air India 142"
+            },
+            {
+              "name": "Indira Gandhi International Airport, Delhi (DEL)",
+              "kind": "flight",
+              "time": "00:35",
+              "duration_min": 95,
+              "note": "Layover: 1h 35m. Change from international to domestic terminal."
+            },
+            {
+              "name": "Kempegowda International Airport, Bangalore (BLR)",
+              "kind": "flight",
+              "time": "04:50",
+              "note": "Arrive in Bangalore"
+            }
+          ]
+        }
+      ],
+      "cost_breakdown": {
+        "flights": 107122,
+        "hotel": 120000,
+        "meals": 25000,
+        "activities": 30000,
+        "local_transport": 10000
+      },
+      "total_cost": 292122,
+      "budget": 0,
+      "currency": "INR",
+      "weather": {
+        "destination": "Paris",
+        "country": "France",
+        "latitude": 48.85341,
+        "longitude": 2.3488,
+        "source": "seasonal_estimate",
+        "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+        "days": [
+          {
+            "date": "2026-09-06",
+            "summary": "Overcast",
+            "high_c": 23.9,
+            "low_c": 11.6,
+            "precip_mm": 0
+          },
+          {
+            "date": "2026-09-07",
+            "summary": "Overcast",
+            "high_c": 29.9,
+            "low_c": 14.8,
+            "precip_mm": 0
+          },
+          {
+            "date": "2026-09-08",
+            "summary": "Overcast",
+            "high_c": 22.7,
+            "low_c": 17,
+            "precip_mm": 0
+          },
+          {
+            "date": "2026-09-09",
+            "summary": "Overcast",
+            "high_c": 21.8,
+            "low_c": 13,
+            "precip_mm": 0
+          },
+          {
+            "date": "2026-09-10",
+            "summary": "Light rain",
+            "high_c": 20.7,
+            "low_c": 11.9,
+            "precip_mm": 5.4
+          },
+          {
+            "date": "2026-09-11",
+            "summary": "Light rain",
+            "high_c": 20.2,
+            "low_c": 13,
+            "precip_mm": 6.1
+          }
+        ],
+        "packing_advice": [
+          "Light layers for 21–29°C days",
+          "Umbrella/rain jacket for possible rain on Sep 10–11"
+        ]
+      },
+      "visa": {},
+      "trip_constraints": [],
+      "updated_at": "2026-08-13T14:47:54.829437",
+      "price_checks": [
+        {
+          "kind": "lodging",
+          "provider": "liteapi",
+          "checked_at": "2026-08-13T13:28:28",
+          "expires_at": "2026-08-14T01:28:28"
+        },
+        {
+          "kind": "flights",
+          "provider": "liteapi",
+          "checked_at": "2026-08-13T14:02:50",
+          "expires_at": "2026-08-13T14:32:50"
+        }
+      ],
+      "id": "paris_2026-09-06_2026-09-11",
+      "user_id": "google-101851654028336975901"
+    },
+    {
+      "status": "draft",
+      "trip_id": "paris_2026-09-06_2026-09-11",
+      "created_at": "2026-08-09T15:48:49.044221",
+      "destination": "Paris",
+      "origin": "",
+      "departure_date": "2026-09-06",
+      "return_date": "2026-09-11",
+      "travelers": "1 adult",
+      "notes": "Balanced pace, moderate budget, 3-star+ hotel, economy direct flights, open to trains and rental car.",
+      "planning_recommendation": {
+        "confidence": "high",
+        "destination": "Paris",
+        "estimated_planned_minutes": 1172,
+        "evidence_place_count": 8,
+        "platform_prior_applied": false,
+        "platform_prior_version": null,
+        "reasons": [
+          "8 preference-matched places account for about 1172 planned minutes",
+          "balanced pace targets about 360 active minutes on a full day"
+        ],
+        "recommended_days": 5,
+        "recommended_range": [
+          4,
+          6
+        ],
+        "target_active_minutes_per_full_day": 360,
+        "user_duration_is_authoritative": false
+      },
+      "preferences_snapshot": {
+        "trip_style": "balanced",
+        "planning_preferences": {
+          "target_active_minutes_per_full_day": null,
+          "preferred_free_time_ratio": null,
+          "major_attractions_per_day": null,
+          "preferred_day_start": null,
+          "preferred_day_end": null
+        },
+        "budget_level": "moderate",
+        "hotel_preferences": {
+          "star_rating_min": 3,
+          "preferred_amenities": [],
+          "preferred_chains": [],
+          "room_type": "standard"
+        },
+        "transport_preferences": {
+          "flight_class": "economy",
+          "prefer_direct_flights": true,
+          "open_to_trains": true,
+          "open_to_rental_car": true,
+          "open_to_bus": false,
+          "preferred_road_transport": null,
+          "max_continuous_drive_min": null,
+          "road_break_duration_min": null,
+          "road_break_preferences": []
+        },
+        "food_preferences": {
+          "dietary": [],
+          "cuisine_likes": [],
+          "cuisine_dislikes": []
+        }
+      },
+      "selected_flights": [
+        {
+          "airline": "Air India",
+          "segments": [
+            {
+              "from": "BLR",
+              "to": "DEL",
+              "flight_number": "AI 2820",
+              "departure": "2026-09-06T17:25",
+              "arrival": "2026-09-06T20:25"
+            },
+            {
+              "from": "DEL",
+              "to": "CDG",
+              "flight_number": "AI 143",
+              "departure": "2026-09-07T02:55",
+              "arrival": "2026-09-07T11:15"
+            },
+            {
+              "from": "CDG",
+              "to": "DEL",
+              "flight_number": "AI 142",
+              "departure": "2026-09-11T13:15",
+              "arrival": "2026-09-12T00:35"
+            },
+            {
+              "from": "DEL",
+              "to": "BLR",
+              "flight_number": "AI 565",
+              "departure": "2026-09-12T02:10",
+              "arrival": "2026-09-12T04:50"
+            }
+          ],
+          "total_price": 107122,
+          "currency": "INR",
+          "stops": 1,
+          "booking_link": "https://www.airindia.com/"
+        }
+      ],
+      "selected_hotels": [
+        {
+          "name": "Hotel Chambiges Elysees",
+          "rating": 4.5,
+          "review_count": 890,
+          "price": 120000,
+          "checkin": "2026-09-06",
+          "checkout": "2026-09-11",
+          "address": "8 Rue Chambiges, 75008 Paris, France",
+          "booking_link": "https://www.booking.com/hotel/fr/chambiges-elysees.en-gb.html"
+        }
+      ],
+      "selected_activities": [],
+      "day_wise_itinerary": [
+        {
+          "day": 1,
+          "date": "2026-09-06",
+          "title": "Day 1 · Departure from Bangalore",
+          "summary": "Depart from Bangalore to Paris via Delhi. Overnight flight with layover in Delhi.",
+          "stops": [
+            {
+              "name": "Kempegowda International Airport, Bangalore (BLR)",
+              "kind": "flight",
+              "time": "17:25",
+              "note": "Check in and board Air India 2820"
+            },
+            {
+              "name": "Indira Gandhi International Airport, Delhi (DEL)",
+              "kind": "flight",
+              "time": "20:25",
+              "duration_min": 210,
+              "note": "Layover: 6h 30m. Change from domestic to international terminal."
+            },
+            {
+              "name": "Charles de Gaulle Airport, Paris (CDG)",
+              "kind": "flight",
+              "time": "11:15",
+              "note": "Arrive in Paris. Transfer to hotel."
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Check in and relax after arrival."
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "date": "2026-09-07",
+          "title": "Day 2 · Eiffel Tower & Seine",
+          "summary": "Explore the Eiffel Tower and enjoy a Seine River cruise. Dinner at Le Bistro Parisien.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from the hotel"
+            },
+            {
+              "name": "Eiffel Tower",
+              "kind": "attraction",
+              "time": "09:30",
+              "duration_min": 120,
+              "note": "Book tickets in advance"
+            },
+            {
+              "name": "Seine River Cruise",
+              "kind": "attraction",
+              "time": "13:00",
+              "duration_min": 90
+            },
+            {
+              "name": "Le Bistro Parisien",
+              "kind": "meal",
+              "time": "19:00",
+              "note": "Dinner with Eiffel Tower view"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return to hotel"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "date": "2026-09-08",
+          "title": "Day 3 · Louvre & Marais",
+          "summary": "Visit the Louvre Museum and explore Le Marais. Dinner at Café Charlot.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from the hotel"
+            },
+            {
+              "name": "Louvre Museum",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 180,
+              "note": "Arrive early to avoid crowds"
+            },
+            {
+              "name": "Le Marais",
+              "kind": "attraction",
+              "time": "13:00",
+              "duration_min": 120
+            },
+            {
+              "name": "Café Charlot",
+              "kind": "meal",
+              "time": "19:00",
+              "note": "Dinner in Le Marais"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return to hotel"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "date": "2026-09-09",
+          "title": "Day 4 · Montmartre & Sacré-Cœur",
+          "summary": "Explore Montmartre, Sacré-Cœur, and Musée d'Orsay. Lunch at Le Consulat.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from the hotel"
+            },
+            {
+              "name": "Montmartre & Sacré-Cœur",
+              "kind": "attraction",
+              "time": "09:30",
+              "duration_min": 120
+            },
+            {
+              "name": "Le Consulat",
+              "kind": "meal",
+              "time": "12:00",
+              "note": "Lunch in Montmartre"
+            },
+            {
+              "name": "Musée d'Orsay",
+              "kind": "attraction",
+              "time": "14:30",
+              "duration_min": 120
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return to hotel"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "date": "2026-09-10",
+          "title": "Day 5 · Versailles Day Trip",
+          "summary": "Day trip to Palace of Versailles and gardens. Lunch at La Petite Venise.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from the hotel"
+            },
+            {
+              "name": "Palace of Versailles",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 240
+            },
+            {
+              "name": "La Petite Venise",
+              "kind": "meal",
+              "time": "13:30",
+              "note": "Lunch after palace tour"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return to hotel"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "date": "2026-09-11",
+          "title": "Day 6 · Departure from Paris",
+          "summary": "Check out and return to Bangalore via Delhi. Layover in Delhi.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Check out"
+            },
+            {
+              "name": "Charles de Gaulle Airport, Paris (CDG)",
+              "kind": "flight",
+              "time": "13:15",
+              "note": "Board Air India 142"
+            },
+            {
+              "name": "Indira Gandhi International Airport, Delhi (DEL)",
+              "kind": "flight",
+              "time": "00:35",
+              "duration_min": 95,
+              "note": "Layover: 1h 35m. Change from international to domestic terminal."
+            },
+            {
+              "name": "Kempegowda International Airport, Bangalore (BLR)",
+              "kind": "flight",
+              "time": "04:50",
+              "note": "Arrive in Bangalore"
+            }
+          ]
+        }
+      ],
+      "cost_breakdown": {
+        "flights": 107122,
+        "hotel": 120000,
+        "meals": 25000,
+        "activities": 30000,
+        "local_transport": 10000
+      },
+      "total_cost": 292122,
+      "budget": 0,
+      "currency": "INR",
+      "weather": {
+        "destination": "Paris",
+        "country": "France",
+        "latitude": 48.85341,
+        "longitude": 2.3488,
+        "source": "seasonal_estimate",
+        "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+        "days": [
+          {
+            "date": "2026-09-06",
+            "summary": "Overcast",
+            "high_c": 23.9,
+            "low_c": 11.6,
+            "precip_mm": 0
+          },
+          {
+            "date": "2026-09-07",
+            "summary": "Overcast",
+            "high_c": 29.9,
+            "low_c": 14.8,
+            "precip_mm": 0
+          },
+          {
+            "date": "2026-09-08",
+            "summary": "Overcast",
+            "high_c": 22.7,
+            "low_c": 17,
+            "precip_mm": 0
+          },
+          {
+            "date": "2026-09-09",
+            "summary": "Overcast",
+            "high_c": 21.8,
+            "low_c": 13,
+            "precip_mm": 0
+          },
+          {
+            "date": "2026-09-10",
+            "summary": "Light rain",
+            "high_c": 20.7,
+            "low_c": 11.9,
+            "precip_mm": 5.4
+          },
+          {
+            "date": "2026-09-11",
+            "summary": "Light rain",
+            "high_c": 20.2,
+            "low_c": 13,
+            "precip_mm": 6.1
+          }
+        ],
+        "packing_advice": [
+          "Light layers for 21–29°C days",
+          "Umbrella/rain jacket for possible rain on Sep 10–11"
+        ]
+      },
+      "visa": {},
+      "trip_constraints": [],
+      "updated_at": "2026-08-13T14:47:54.829437",
+      "price_checks": [
+        {
+          "kind": "lodging",
+          "provider": "liteapi",
+          "checked_at": "2026-08-13T13:28:28",
+          "expires_at": "2026-08-14T01:28:28"
+        },
+        {
+          "kind": "flights",
+          "provider": "liteapi",
+          "checked_at": "2026-08-13T14:02:50",
+          "expires_at": "2026-08-13T14:32:50"
+        }
+      ],
+      "id": "paris_2026-09-06_2026-09-11",
+      "user_id": "web-00000000-0000-4000-8000-000000000001"
+    },
+    {
+      "status": "draft",
+      "trip_id": "rajasthan_2026-09-10_2026-09-17",
+      "created_at": "2026-08-13T13:32:42.481600",
+      "destination": "Rajasthan",
+      "origin": "Bangalore",
+      "departure_date": "2026-09-10",
+      "return_date": "2026-09-17",
+      "travelers": "2 adults",
+      "notes": "User prefers itinerary focused only on Rajasthan, no flight links from originating city.",
+      "planning_recommendation": {
+        "recommended_days": 7,
+        "anchor_experiences": [
+          {
+            "city": "Jaipur",
+            "days": 2
+          },
+          {
+            "city": "Jodhpur",
+            "days": 2
+          },
+          {
+            "city": "Udaipur",
+            "days": 2
+          },
+          {
+            "city": "Pushkar",
+            "days": 1
+          }
+        ],
+        "rationale": "Classic Rajasthan circuit covering Jaipur, Jodhpur, Udaipur, and Pushkar. Balanced pace, covers forts, palaces, lakes, and local culture. 7 days is ideal for this route without feeling rushed."
+      },
+      "preferences_snapshot": {
+        "trip_style": "balanced",
+        "planning_preferences": {
+          "target_active_minutes_per_full_day": null,
+          "preferred_free_time_ratio": null,
+          "major_attractions_per_day": null,
+          "preferred_day_start": null,
+          "preferred_day_end": null
+        },
+        "budget_level": "moderate",
+        "hotel_preferences": {
+          "star_rating_min": 3,
+          "preferred_amenities": [],
+          "preferred_chains": [],
+          "room_type": "standard"
+        },
+        "transport_preferences": {
+          "flight_class": "economy",
+          "prefer_direct_flights": true,
+          "open_to_trains": true,
+          "open_to_rental_car": true,
+          "open_to_bus": false,
+          "preferred_road_transport": null,
+          "max_continuous_drive_min": null,
+          "road_break_duration_min": null,
+          "road_break_preferences": []
+        },
+        "food_preferences": {
+          "dietary": [],
+          "cuisine_likes": [],
+          "cuisine_dislikes": []
+        }
+      },
+      "selected_flights": [],
+      "selected_hotels": [
+        {
+          "city": "Jaipur",
+          "name": "Samode Haveli"
+        },
+        {
+          "city": "Jodhpur",
+          "name": "RAAS Jodhpur"
+        },
+        {
+          "city": "Udaipur",
+          "name": "Amet Haveli"
+        }
+      ],
+      "selected_activities": [],
+      "day_wise_itinerary": [
+        {
+          "day": 1,
+          "date": "2026-09-10",
+          "title": "Fly to Jaipur, Arrival & Old City",
+          "summary": "Morning flight from Bangalore to Jaipur, check-in, explore Johari Bazaar.",
+          "stops": [
+            {
+              "name": "Flight: Bangalore to Jaipur",
+              "kind": "flight",
+              "time": "07:00",
+              "arrival_time": "09:30",
+              "duration_min": 150,
+              "note": "Direct morning flight"
+            },
+            {
+              "name": "Samode Haveli",
+              "kind": "hotel",
+              "note": "Check-in and freshen up"
+            },
+            {
+              "name": "Tapri Central",
+              "kind": "meal",
+              "time": "13:00",
+              "note": "Lunch with city views"
+            },
+            {
+              "name": "Johari Bazaar",
+              "kind": "attraction",
+              "time": "17:00",
+              "note": "Evening stroll and shopping"
+            },
+            {
+              "name": "Samode Haveli",
+              "kind": "hotel",
+              "note": "Return for overnight"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "date": "2026-09-11",
+          "title": "Jaipur Forts & Palaces",
+          "summary": "Explore Amber Fort, City Palace, Hawa Mahal, and enjoy local cuisine.",
+          "stops": [
+            {
+              "name": "Samode Haveli",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Amber Fort",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 120,
+              "note": "Go early to avoid crowds"
+            },
+            {
+              "name": "City Palace",
+              "kind": "attraction",
+              "time": "12:00",
+              "duration_min": 90
+            },
+            {
+              "name": "Hawa Mahal",
+              "kind": "attraction",
+              "time": "14:00",
+              "duration_min": 60
+            },
+            {
+              "name": "Laxmi Mishthan Bhandar",
+              "kind": "meal",
+              "time": "15:30",
+              "note": "Traditional Rajasthani lunch"
+            },
+            {
+              "name": "Samode Haveli",
+              "kind": "hotel",
+              "note": "Return for overnight"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "date": "2026-09-12",
+          "title": "Jaipur to Jodhpur",
+          "summary": "Drive to Jodhpur, lunch en route, evening market visit.",
+          "stops": [
+            {
+              "name": "Samode Haveli",
+              "kind": "hotel",
+              "note": "Checkout"
+            },
+            {
+              "name": "Drive: Jaipur to Jodhpur",
+              "kind": "transport",
+              "time": "08:00",
+              "duration_min": 360,
+              "distance_km": 340,
+              "note": "Private car with driver"
+            },
+            {
+              "name": "Gypsy Restaurant",
+              "kind": "meal",
+              "time": "13:00",
+              "note": "Lunch stop"
+            },
+            {
+              "name": "RAAS Jodhpur",
+              "kind": "hotel",
+              "note": "Check-in"
+            },
+            {
+              "name": "Clock Tower Market",
+              "kind": "attraction",
+              "time": "18:00",
+              "note": "Evening market stroll"
+            },
+            {
+              "name": "RAAS Jodhpur",
+              "kind": "hotel",
+              "note": "Return for overnight"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "date": "2026-09-13",
+          "title": "Jodhpur Forts & Culture",
+          "summary": "Visit Mehrangarh Fort, Jaswant Thada, and enjoy local cuisine.",
+          "stops": [
+            {
+              "name": "RAAS Jodhpur",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Mehrangarh Fort",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 120
+            },
+            {
+              "name": "Jaswant Thada",
+              "kind": "attraction",
+              "time": "11:30",
+              "duration_min": 60
+            },
+            {
+              "name": "Indique Restaurant",
+              "kind": "meal",
+              "time": "13:00",
+              "note": "Lunch with fort views"
+            },
+            {
+              "name": "RAAS Jodhpur",
+              "kind": "hotel",
+              "note": "Return for overnight"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "date": "2026-09-14",
+          "title": "Jodhpur to Udaipur via Ranakpur",
+          "summary": "Drive to Udaipur with a stop at Ranakpur Jain Temple.",
+          "stops": [
+            {
+              "name": "RAAS Jodhpur",
+              "kind": "hotel",
+              "note": "Checkout"
+            },
+            {
+              "name": "Drive: Jodhpur to Udaipur",
+              "kind": "transport",
+              "time": "08:00",
+              "duration_min": 330,
+              "distance_km": 250,
+              "note": "Private car with driver"
+            },
+            {
+              "name": "Ranakpur Jain Temple",
+              "kind": "attraction",
+              "time": "12:00",
+              "duration_min": 90,
+              "note": "Midway stop"
+            },
+            {
+              "name": "Amet Haveli",
+              "kind": "hotel",
+              "note": "Check-in, lakeside hotel"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "date": "2026-09-15",
+          "title": "Udaipur Palaces & Lakes",
+          "summary": "City Palace, boat ride to Jag Mandir, lakeside dining.",
+          "stops": [
+            {
+              "name": "Amet Haveli",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "City Palace Udaipur",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 120
+            },
+            {
+              "name": "Jag Mandir (boat ride)",
+              "kind": "attraction",
+              "time": "12:00",
+              "duration_min": 90
+            },
+            {
+              "name": "Ambrai Restaurant",
+              "kind": "meal",
+              "time": "14:00",
+              "note": "Lunch with lake views"
+            },
+            {
+              "name": "Amet Haveli",
+              "kind": "hotel",
+              "note": "Return for overnight"
+            }
+          ]
+        },
+        {
+          "day": 7,
+          "date": "2026-09-16",
+          "title": "Udaipur to Pushkar & Return to Bangalore",
+          "summary": "Drive to Pushkar, visit temples/lake, then fly Jaipur to Bangalore.",
+          "stops": [
+            {
+              "name": "Amet Haveli",
+              "kind": "hotel",
+              "note": "Checkout"
+            },
+            {
+              "name": "Drive: Udaipur to Pushkar",
+              "kind": "transport",
+              "time": "08:00",
+              "duration_min": 300,
+              "distance_km": 270,
+              "note": "Private car with driver"
+            },
+            {
+              "name": "Brahma Temple",
+              "kind": "attraction",
+              "time": "13:30",
+              "duration_min": 60
+            },
+            {
+              "name": "Pushkar Lake",
+              "kind": "attraction",
+              "time": "15:00",
+              "duration_min": 60
+            },
+            {
+              "name": "The Laughing Buddha Café",
+              "kind": "meal",
+              "time": "16:30",
+              "note": "Vegetarian, lake views"
+            },
+            {
+              "name": "Drive: Pushkar to Jaipur Airport",
+              "kind": "transport",
+              "time": "18:00",
+              "duration_min": 150,
+              "distance_km": 145,
+              "note": "Private car"
+            },
+            {
+              "name": "Flight: Jaipur to Bangalore",
+              "kind": "flight",
+              "time": "21:30",
+              "arrival_time": "23:55",
+              "duration_min": 145,
+              "note": "Direct evening flight"
+            }
+          ]
+        }
+      ],
+      "cost_breakdown": {},
+      "total_cost": 0,
+      "budget": 0,
+      "currency": "INR",
+      "weather": {},
+      "visa": {},
+      "trip_constraints": [],
+      "updated_at": "2026-08-13T14:46:37.894924",
+      "price_checks": [
+        {
+          "kind": "lodging",
+          "provider": "liteapi",
+          "checked_at": "2026-08-13T13:41:51",
+          "expires_at": "2026-08-14T01:41:51"
+        }
+      ],
+      "id": "rajasthan_2026-09-10_2026-09-17",
+      "user_id": "google-101851654028336975901"
+    },
+    {
+      "status": "draft",
+      "trip_id": "rajasthan_2026-09-10_2026-09-17",
+      "created_at": "2026-08-13T13:32:42.481600",
+      "destination": "Rajasthan",
+      "origin": "Bangalore",
+      "departure_date": "2026-09-10",
+      "return_date": "2026-09-17",
+      "travelers": "2 adults",
+      "notes": "User prefers itinerary focused only on Rajasthan, no flight links from originating city.",
+      "planning_recommendation": {
+        "recommended_days": 7,
+        "anchor_experiences": [
+          {
+            "city": "Jaipur",
+            "days": 2
+          },
+          {
+            "city": "Jodhpur",
+            "days": 2
+          },
+          {
+            "city": "Udaipur",
+            "days": 2
+          },
+          {
+            "city": "Pushkar",
+            "days": 1
+          }
+        ],
+        "rationale": "Classic Rajasthan circuit covering Jaipur, Jodhpur, Udaipur, and Pushkar. Balanced pace, covers forts, palaces, lakes, and local culture. 7 days is ideal for this route without feeling rushed."
+      },
+      "preferences_snapshot": {
+        "trip_style": "balanced",
+        "planning_preferences": {
+          "target_active_minutes_per_full_day": null,
+          "preferred_free_time_ratio": null,
+          "major_attractions_per_day": null,
+          "preferred_day_start": null,
+          "preferred_day_end": null
+        },
+        "budget_level": "moderate",
+        "hotel_preferences": {
+          "star_rating_min": 3,
+          "preferred_amenities": [],
+          "preferred_chains": [],
+          "room_type": "standard"
+        },
+        "transport_preferences": {
+          "flight_class": "economy",
+          "prefer_direct_flights": true,
+          "open_to_trains": true,
+          "open_to_rental_car": true,
+          "open_to_bus": false,
+          "preferred_road_transport": null,
+          "max_continuous_drive_min": null,
+          "road_break_duration_min": null,
+          "road_break_preferences": []
+        },
+        "food_preferences": {
+          "dietary": [],
+          "cuisine_likes": [],
+          "cuisine_dislikes": []
+        }
+      },
+      "selected_flights": [],
+      "selected_hotels": [
+        {
+          "city": "Jaipur",
+          "name": "Samode Haveli"
+        },
+        {
+          "city": "Jodhpur",
+          "name": "RAAS Jodhpur"
+        },
+        {
+          "city": "Udaipur",
+          "name": "Amet Haveli"
+        }
+      ],
+      "selected_activities": [],
+      "day_wise_itinerary": [
+        {
+          "day": 1,
+          "date": "2026-09-10",
+          "title": "Fly to Jaipur, Arrival & Old City",
+          "summary": "Morning flight from Bangalore to Jaipur, check-in, explore Johari Bazaar.",
+          "stops": [
+            {
+              "name": "Flight: Bangalore to Jaipur",
+              "kind": "flight",
+              "time": "07:00",
+              "arrival_time": "09:30",
+              "duration_min": 150,
+              "note": "Direct morning flight"
+            },
+            {
+              "name": "Samode Haveli",
+              "kind": "hotel",
+              "note": "Check-in and freshen up"
+            },
+            {
+              "name": "Tapri Central",
+              "kind": "meal",
+              "time": "13:00",
+              "note": "Lunch with city views"
+            },
+            {
+              "name": "Johari Bazaar",
+              "kind": "attraction",
+              "time": "17:00",
+              "note": "Evening stroll and shopping"
+            },
+            {
+              "name": "Samode Haveli",
+              "kind": "hotel",
+              "note": "Return for overnight"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "date": "2026-09-11",
+          "title": "Jaipur Forts & Palaces",
+          "summary": "Explore Amber Fort, City Palace, Hawa Mahal, and enjoy local cuisine.",
+          "stops": [
+            {
+              "name": "Samode Haveli",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Amber Fort",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 120,
+              "note": "Go early to avoid crowds"
+            },
+            {
+              "name": "City Palace",
+              "kind": "attraction",
+              "time": "12:00",
+              "duration_min": 90
+            },
+            {
+              "name": "Hawa Mahal",
+              "kind": "attraction",
+              "time": "14:00",
+              "duration_min": 60
+            },
+            {
+              "name": "Laxmi Mishthan Bhandar",
+              "kind": "meal",
+              "time": "15:30",
+              "note": "Traditional Rajasthani lunch"
+            },
+            {
+              "name": "Samode Haveli",
+              "kind": "hotel",
+              "note": "Return for overnight"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "date": "2026-09-12",
+          "title": "Jaipur to Jodhpur",
+          "summary": "Drive to Jodhpur, lunch en route, evening market visit.",
+          "stops": [
+            {
+              "name": "Samode Haveli",
+              "kind": "hotel",
+              "note": "Checkout"
+            },
+            {
+              "name": "Drive: Jaipur to Jodhpur",
+              "kind": "transport",
+              "time": "08:00",
+              "duration_min": 360,
+              "distance_km": 340,
+              "note": "Private car with driver"
+            },
+            {
+              "name": "Gypsy Restaurant",
+              "kind": "meal",
+              "time": "13:00",
+              "note": "Lunch stop"
+            },
+            {
+              "name": "RAAS Jodhpur",
+              "kind": "hotel",
+              "note": "Check-in"
+            },
+            {
+              "name": "Clock Tower Market",
+              "kind": "attraction",
+              "time": "18:00",
+              "note": "Evening market stroll"
+            },
+            {
+              "name": "RAAS Jodhpur",
+              "kind": "hotel",
+              "note": "Return for overnight"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "date": "2026-09-13",
+          "title": "Jodhpur Forts & Culture",
+          "summary": "Visit Mehrangarh Fort, Jaswant Thada, and enjoy local cuisine.",
+          "stops": [
+            {
+              "name": "RAAS Jodhpur",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Mehrangarh Fort",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 120
+            },
+            {
+              "name": "Jaswant Thada",
+              "kind": "attraction",
+              "time": "11:30",
+              "duration_min": 60
+            },
+            {
+              "name": "Indique Restaurant",
+              "kind": "meal",
+              "time": "13:00",
+              "note": "Lunch with fort views"
+            },
+            {
+              "name": "RAAS Jodhpur",
+              "kind": "hotel",
+              "note": "Return for overnight"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "date": "2026-09-14",
+          "title": "Jodhpur to Udaipur via Ranakpur",
+          "summary": "Drive to Udaipur with a stop at Ranakpur Jain Temple.",
+          "stops": [
+            {
+              "name": "RAAS Jodhpur",
+              "kind": "hotel",
+              "note": "Checkout"
+            },
+            {
+              "name": "Drive: Jodhpur to Udaipur",
+              "kind": "transport",
+              "time": "08:00",
+              "duration_min": 330,
+              "distance_km": 250,
+              "note": "Private car with driver"
+            },
+            {
+              "name": "Ranakpur Jain Temple",
+              "kind": "attraction",
+              "time": "12:00",
+              "duration_min": 90,
+              "note": "Midway stop"
+            },
+            {
+              "name": "Amet Haveli",
+              "kind": "hotel",
+              "note": "Check-in, lakeside hotel"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "date": "2026-09-15",
+          "title": "Udaipur Palaces & Lakes",
+          "summary": "City Palace, boat ride to Jag Mandir, lakeside dining.",
+          "stops": [
+            {
+              "name": "Amet Haveli",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "City Palace Udaipur",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 120
+            },
+            {
+              "name": "Jag Mandir (boat ride)",
+              "kind": "attraction",
+              "time": "12:00",
+              "duration_min": 90
+            },
+            {
+              "name": "Ambrai Restaurant",
+              "kind": "meal",
+              "time": "14:00",
+              "note": "Lunch with lake views"
+            },
+            {
+              "name": "Amet Haveli",
+              "kind": "hotel",
+              "note": "Return for overnight"
+            }
+          ]
+        },
+        {
+          "day": 7,
+          "date": "2026-09-16",
+          "title": "Udaipur to Pushkar & Return to Bangalore",
+          "summary": "Drive to Pushkar, visit temples/lake, then fly Jaipur to Bangalore.",
+          "stops": [
+            {
+              "name": "Amet Haveli",
+              "kind": "hotel",
+              "note": "Checkout"
+            },
+            {
+              "name": "Drive: Udaipur to Pushkar",
+              "kind": "transport",
+              "time": "08:00",
+              "duration_min": 300,
+              "distance_km": 270,
+              "note": "Private car with driver"
+            },
+            {
+              "name": "Brahma Temple",
+              "kind": "attraction",
+              "time": "13:30",
+              "duration_min": 60
+            },
+            {
+              "name": "Pushkar Lake",
+              "kind": "attraction",
+              "time": "15:00",
+              "duration_min": 60
+            },
+            {
+              "name": "The Laughing Buddha Café",
+              "kind": "meal",
+              "time": "16:30",
+              "note": "Vegetarian, lake views"
+            },
+            {
+              "name": "Drive: Pushkar to Jaipur Airport",
+              "kind": "transport",
+              "time": "18:00",
+              "duration_min": 150,
+              "distance_km": 145,
+              "note": "Private car"
+            },
+            {
+              "name": "Flight: Jaipur to Bangalore",
+              "kind": "flight",
+              "time": "21:30",
+              "arrival_time": "23:55",
+              "duration_min": 145,
+              "note": "Direct evening flight"
+            }
+          ]
+        }
+      ],
+      "cost_breakdown": {},
+      "total_cost": 0,
+      "budget": 0,
+      "currency": "INR",
+      "weather": {},
+      "visa": {},
+      "trip_constraints": [],
+      "updated_at": "2026-08-13T14:46:37.894924",
+      "price_checks": [
+        {
+          "kind": "lodging",
+          "provider": "liteapi",
+          "checked_at": "2026-08-13T13:41:51",
+          "expires_at": "2026-08-14T01:41:51"
+        }
+      ],
+      "id": "rajasthan_2026-09-10_2026-09-17",
+      "user_id": "web-00000000-0000-4000-8000-000000000001"
+    }
+  ]
+}

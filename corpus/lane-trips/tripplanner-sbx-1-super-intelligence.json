@@ -1,0 +1,583 @@
+{
+  "version": 1,
+  "database": "tripplanner-sbx-1-super-intelligence",
+  "saved_at": "2026-08-16T07:03:41Z",
+  "count": 2,
+  "trips": [
+    {
+      "status": "draft",
+      "trip_id": "paris_2026-09-06_2026-09-11",
+      "created_at": "2026-08-09T15:48:49.044221",
+      "destination": "Paris",
+      "origin": "",
+      "departure_date": "2026-09-06",
+      "return_date": "2026-09-11",
+      "travelers": "1 adult",
+      "notes": "Balanced pace, moderate budget, 3-star+ hotel, economy direct flights, open to trains and rental car.",
+      "planning_recommendation": {
+        "confidence": "high",
+        "destination": "Paris",
+        "estimated_planned_minutes": 1172,
+        "evidence_place_count": 8,
+        "platform_prior_applied": false,
+        "platform_prior_version": null,
+        "reasons": [
+          "8 preference-matched places account for about 1172 planned minutes",
+          "balanced pace targets about 360 active minutes on a full day"
+        ],
+        "recommended_days": 5,
+        "recommended_range": [
+          4,
+          6
+        ],
+        "target_active_minutes_per_full_day": 360,
+        "user_duration_is_authoritative": false
+      },
+      "preferences_snapshot": {
+        "trip_style": "balanced",
+        "planning_preferences": {
+          "target_active_minutes_per_full_day": null,
+          "preferred_free_time_ratio": null,
+          "major_attractions_per_day": null,
+          "preferred_day_start": null,
+          "preferred_day_end": null
+        },
+        "budget_level": "moderate",
+        "hotel_preferences": {
+          "star_rating_min": 3,
+          "preferred_amenities": [],
+          "preferred_chains": [],
+          "room_type": "standard"
+        },
+        "transport_preferences": {
+          "flight_class": "economy",
+          "prefer_direct_flights": true,
+          "open_to_trains": true,
+          "open_to_rental_car": true,
+          "open_to_bus": false,
+          "preferred_road_transport": null,
+          "max_continuous_drive_min": null,
+          "road_break_duration_min": null,
+          "road_break_preferences": []
+        },
+        "food_preferences": {
+          "dietary": [],
+          "cuisine_likes": [],
+          "cuisine_dislikes": []
+        }
+      },
+      "selected_flights": [],
+      "selected_hotels": [
+        {
+          "name": "Hotel Chambiges Elysees",
+          "address": "8 Rue Chambiges, 75008 Paris, France",
+          "star_rating": 4,
+          "price_per_night": 220,
+          "currency": "EUR",
+          "total_price": 1100,
+          "checkin": "2026-09-06",
+          "checkout": "2026-09-11",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp1beec"
+          },
+          "google_rating": 4.5,
+          "google_review_count": 890
+        }
+      ],
+      "selected_activities": [],
+      "day_wise_itinerary": [
+        {
+          "day": 1,
+          "date": "2026-09-06",
+          "title": "Day 1 · Latin Quarter",
+          "summary": "Arrive in Paris, check in to your hotel, and enjoy a relaxing walk in the Latin Quarter.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Check-in"
+            },
+            {
+              "name": "Louvre Museum",
+              "kind": "attraction",
+              "time": "10:35",
+              "duration_min": 180,
+              "note": "Arrive early for fewer crowds"
+            },
+            {
+              "name": "Latin Quarter",
+              "kind": "attraction",
+              "time": "16:00",
+              "duration_min": 90,
+              "note": "Stroll and acclimatize"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "date": "2026-09-07",
+          "title": "Day 2 · Eiffel Tower & Seine",
+          "summary": "Visit the Eiffel Tower, enjoy a Seine River cruise, and dine nearby.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Eiffel Tower",
+              "kind": "attraction",
+              "time": "09:30",
+              "duration_min": 120,
+              "note": "Book tickets in advance"
+            },
+            {
+              "name": "Seine River Cruise",
+              "kind": "attraction",
+              "time": "13:00",
+              "duration_min": 90,
+              "note": "Relaxing cruise"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return"
+            },
+            {
+              "name": "Le Bistro Parisien",
+              "kind": "meal",
+              "time": "14:50",
+              "note": "Dinner with Eiffel Tower view"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "date": "2026-09-08",
+          "title": "Day 3 · Le Marais",
+          "summary": "Explore the Louvre Museum and stroll through Le Marais district.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Le Marais",
+              "kind": "attraction",
+              "time": "08:40",
+              "duration_min": 120,
+              "note": "Trendy shops & cafés"
+            },
+            {
+              "name": "La Petite Venise",
+              "kind": "meal",
+              "time": "12:55",
+              "note": "Late lunch at Versailles"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return"
+            },
+            {
+              "name": "Musée d'Orsay",
+              "kind": "attraction",
+              "time": "14:55",
+              "duration_min": 120,
+              "note": "Impressionist masterpieces"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "date": "2026-09-09",
+          "title": "Day 4 · Montmartre & Sacré-Cœur",
+          "summary": "Discover Montmartre, visit Sacré-Cœur, and enjoy local cuisine.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Montmartre & Sacré-Cœur",
+              "kind": "attraction",
+              "time": "10:00",
+              "duration_min": 150,
+              "note": "Artistic neighborhood"
+            },
+            {
+              "name": "Le Consulat",
+              "kind": "meal",
+              "time": "13:00",
+              "note": "Lunch in Montmartre"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return"
+            },
+            {
+              "name": "Café Charlot",
+              "kind": "meal",
+              "time": "14:55",
+              "note": "Classic Parisian dinner"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "date": "2026-09-10",
+          "title": "Day 5 · Versailles Day Trip",
+          "summary": "Take a day trip to the Palace of Versailles and its gardens. Late lunch at La Petite Venise after the palace tour.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Palace of Versailles",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 420,
+              "note": "Full day including gardens"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "date": "2026-09-11",
+          "title": "Day 6 · Departure",
+          "summary": "Check out and depart from Paris. Enjoy a farewell breakfast at Café de Flore before heading to the airport.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Check-out"
+            },
+            {
+              "name": "Café de Flore",
+              "kind": "meal",
+              "time": "08:30",
+              "note": "Farewell breakfast"
+            }
+          ]
+        }
+      ],
+      "cost_breakdown": {},
+      "total_cost": 0,
+      "budget": 0,
+      "currency": "EUR",
+      "weather": {},
+      "visa": {},
+      "trip_constraints": [],
+      "updated_at": "2026-08-15T18:48:25.345914",
+      "price_checks": [
+        {
+          "kind": "lodging",
+          "provider": "liteapi",
+          "checked_at": "2026-08-09T15:49:22",
+          "expires_at": "2026-08-10T03:49:22"
+        }
+      ],
+      "id": "paris_2026-09-06_2026-09-11",
+      "user_id": "google-101851654028336975901"
+    },
+    {
+      "status": "draft",
+      "trip_id": "paris_2026-09-06_2026-09-11",
+      "created_at": "2026-08-09T15:48:49.044221",
+      "destination": "Paris",
+      "origin": "",
+      "departure_date": "2026-09-06",
+      "return_date": "2026-09-11",
+      "travelers": "1 adult",
+      "notes": "Balanced pace, moderate budget, 3-star+ hotel, economy direct flights, open to trains and rental car.",
+      "planning_recommendation": {
+        "confidence": "high",
+        "destination": "Paris",
+        "estimated_planned_minutes": 1172,
+        "evidence_place_count": 8,
+        "platform_prior_applied": false,
+        "platform_prior_version": null,
+        "reasons": [
+          "8 preference-matched places account for about 1172 planned minutes",
+          "balanced pace targets about 360 active minutes on a full day"
+        ],
+        "recommended_days": 5,
+        "recommended_range": [
+          4,
+          6
+        ],
+        "target_active_minutes_per_full_day": 360,
+        "user_duration_is_authoritative": false
+      },
+      "preferences_snapshot": {
+        "trip_style": "balanced",
+        "planning_preferences": {
+          "target_active_minutes_per_full_day": null,
+          "preferred_free_time_ratio": null,
+          "major_attractions_per_day": null,
+          "preferred_day_start": null,
+          "preferred_day_end": null
+        },
+        "budget_level": "moderate",
+        "hotel_preferences": {
+          "star_rating_min": 3,
+          "preferred_amenities": [],
+          "preferred_chains": [],
+          "room_type": "standard"
+        },
+        "transport_preferences": {
+          "flight_class": "economy",
+          "prefer_direct_flights": true,
+          "open_to_trains": true,
+          "open_to_rental_car": true,
+          "open_to_bus": false,
+          "preferred_road_transport": null,
+          "max_continuous_drive_min": null,
+          "road_break_duration_min": null,
+          "road_break_preferences": []
+        },
+        "food_preferences": {
+          "dietary": [],
+          "cuisine_likes": [],
+          "cuisine_dislikes": []
+        }
+      },
+      "selected_flights": [],
+      "selected_hotels": [
+        {
+          "name": "Hotel Chambiges Elysees",
+          "address": "8 Rue Chambiges, 75008 Paris, France",
+          "star_rating": 4,
+          "price_per_night": 220,
+          "currency": "EUR",
+          "total_price": 1100,
+          "checkin": "2026-09-06",
+          "checkout": "2026-09-11",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp1beec"
+          },
+          "google_rating": 4.5,
+          "google_review_count": 890
+        }
+      ],
+      "selected_activities": [],
+      "day_wise_itinerary": [
+        {
+          "day": 1,
+          "date": "2026-09-06",
+          "title": "Day 1 · Arrival in Paris",
+          "summary": "Arrive in Paris, check in to your hotel, and enjoy a relaxing walk in the Latin Quarter.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Check-in"
+            },
+            {
+              "name": "Latin Quarter",
+              "kind": "attraction",
+              "time": "16:00",
+              "duration_min": 90,
+              "note": "Stroll and acclimatize"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "date": "2026-09-07",
+          "title": "Day 2 · Eiffel Tower & Seine",
+          "summary": "Visit the Eiffel Tower, enjoy a Seine River cruise, and dine nearby.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Eiffel Tower",
+              "kind": "attraction",
+              "time": "09:30",
+              "duration_min": 120,
+              "note": "Book tickets in advance"
+            },
+            {
+              "name": "Seine River Cruise",
+              "kind": "attraction",
+              "time": "13:00",
+              "duration_min": 90,
+              "note": "Relaxing cruise"
+            },
+            {
+              "name": "Le Bistro Parisien",
+              "kind": "meal",
+              "time": "19:00",
+              "note": "Dinner with Eiffel Tower view"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "date": "2026-09-08",
+          "title": "Day 3 · Louvre & Marais",
+          "summary": "Explore the Louvre Museum and stroll through Le Marais district.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Louvre Museum",
+              "kind": "attraction",
+              "time": "09:30",
+              "duration_min": 180,
+              "note": "Arrive early for fewer crowds"
+            },
+            {
+              "name": "Le Marais",
+              "kind": "attraction",
+              "time": "14:00",
+              "duration_min": 120,
+              "note": "Trendy shops & cafés"
+            },
+            {
+              "name": "Café Charlot",
+              "kind": "meal",
+              "time": "18:30",
+              "note": "Classic Parisian dinner"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "date": "2026-09-09",
+          "title": "Day 4 · Montmartre & Sacré-Cœur",
+          "summary": "Discover Montmartre, visit Sacré-Cœur, and enjoy local cuisine.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Montmartre & Sacré-Cœur",
+              "kind": "attraction",
+              "time": "10:00",
+              "duration_min": 150,
+              "note": "Artistic neighborhood"
+            },
+            {
+              "name": "Le Consulat",
+              "kind": "meal",
+              "time": "13:00",
+              "note": "Lunch in Montmartre"
+            },
+            {
+              "name": "Musée d'Orsay",
+              "kind": "attraction",
+              "time": "15:30",
+              "duration_min": 120,
+              "note": "Impressionist masterpieces"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "date": "2026-09-10",
+          "title": "Day 5 · Versailles Day Trip",
+          "summary": "Take a day trip to the Palace of Versailles and its gardens. Late lunch at La Petite Venise after the palace tour.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Start from hotel"
+            },
+            {
+              "name": "Palace of Versailles",
+              "kind": "attraction",
+              "time": "09:00",
+              "duration_min": 420,
+              "note": "Full day including gardens"
+            },
+            {
+              "name": "La Petite Venise",
+              "kind": "meal",
+              "time": "16:30",
+              "note": "Late lunch at Versailles"
+            },
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Return"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "date": "2026-09-11",
+          "title": "Day 6 · Departure",
+          "summary": "Check out and depart from Paris. Enjoy a farewell breakfast at Café de Flore before heading to the airport.",
+          "stops": [
+            {
+              "name": "Hotel Chambiges Elysees",
+              "kind": "hotel",
+              "note": "Check-out"
+            },
+            {
+              "name": "Café de Flore",
+              "kind": "meal",
+              "time": "08:30",
+              "note": "Farewell breakfast"
+            }
+          ]
+        }
+      ],
+      "cost_breakdown": {},
+      "total_cost": 0,
+      "budget": 0,
+      "currency": "EUR",
+      "weather": {},
+      "visa": {},
+      "trip_constraints": [],
+      "updated_at": "2026-08-09T15:49:47.149784",
+      "price_checks": [
+        {
+          "kind": "lodging",
+          "provider": "liteapi",
+          "checked_at": "2026-08-09T15:49:22",
+          "expires_at": "2026-08-10T03:49:22"
+        }
+      ],
+      "trip_number": 1,
+      "id": "paris_2026-09-06_2026-09-11",
+      "user_id": "web-00000000-0000-4000-8000-000000000001"
+    }
+  ]
+}

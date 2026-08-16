@@ -23,7 +23,7 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 for _name in ("COSMOS_ENDPOINT", "COSMOS_KEY", "COSMOS_DATABASE", "COSMOS_EMULATOR"):
     os.environ.pop(_name, None)
 
-from tripplanner.validation import place_cache, runner  # noqa: E402
+from tripplanner.validation import lane_trips, place_cache, runner  # noqa: E402
 from tripplanner.validation.emulator import (  # noqa: E402
     EmulatorUnreachableError,
     list_sandbox_databases,
@@ -58,7 +58,12 @@ def main(argv: list[str] | None = None) -> int:
             except (EmulatorUnreachableError, ValueError) as error:
                 print(f"  skipped {database}: {error}", file=sys.stderr)
                 continue
-            print(f"  read {database}: {len(found)} place(s)")
+            try:
+                trips = lane_trips.save(runner.corpus_root(REPO_ROOT), database)
+            except (EmulatorUnreachableError, ValueError, OSError) as error:
+                trips = 0
+                print(f"  could not save trips for {database}: {error}", file=sys.stderr)
+            print(f"  read {database}: {len(found)} place(s), {trips} trip(s)")
             merged = place_cache.merge(merged, found)
         added = len(merged) - len(stored)
         place_cache.save(path, merged)

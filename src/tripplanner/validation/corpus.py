@@ -103,6 +103,29 @@ def from_emulator(database: str, *, user_id: str = "") -> list[CorpusRecord]:
     ]
 
 
+def from_lane_snapshots(corpus_root: Path) -> list[CorpusRecord]:
+    """Trips saved out of a sandbox database before it could be discarded.
+
+    Deduplication drops these again when the lane is still alive, so a snapshot
+    costs nothing until the database it came from is gone.
+    """
+    from tripplanner.validation import lane_trips
+
+    records: list[CorpusRecord] = []
+    for database, trips in lane_trips.load(corpus_root):
+        records.extend(
+            CorpusRecord(
+                id=f"{database}:{trip.get('id') or trip.get('trip_id') or index}",
+                provenance=REAL,
+                source=f"{database} (saved)",
+                plan=trip,
+            )
+            for index, trip in enumerate(trips)
+            if _is_plan(trip)
+        )
+    return records
+
+
 def from_fixtures(directory: Path) -> list[CorpusRecord]:
     """Pinned known shapes captured by ``sandbox_seed capture``."""
     records: list[CorpusRecord] = []
