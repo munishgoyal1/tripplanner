@@ -43,9 +43,13 @@ param(
     [int]$ApiPort = 8000,
     [int]$FrontendPort = 5173,
     [int]$LabsPort = 5175,
+    # Audit inspector. Derived from LabsPort by default so every sandbox slot gets
+    # a free port without another entry in sandboxes.json.
+    [int]$InspectorPort = 0,
     [switch]$BackendOnly,
     [switch]$FrontendOnly,
     [switch]$NoLabs,
+    [switch]$NoInspector,
     [switch]$Watch,
     [switch]$Logs,
     [ValidateSet("azure", "emulator")]
@@ -77,13 +81,15 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
 Set-Location $repoRoot
 
 $activePorts = @()
+if ($InspectorPort -le 0) { $InspectorPort = $LabsPort + 2 }
 if (-not $FrontendOnly) { $activePorts += $ApiPort }
 if (-not $BackendOnly) {
     $activePorts += $FrontendPort
     if (-not $NoLabs) { $activePorts += $LabsPort }
+    if (-not $NoInspector) { $activePorts += $InspectorPort }
 }
 if (($activePorts | Sort-Object -Unique).Count -ne $activePorts.Count) {
-    throw "ApiPort, FrontendPort, and LabsPort must be different when their services are enabled."
+    throw "ApiPort, FrontendPort, LabsPort, and InspectorPort must be different when their services are enabled."
 }
 
 function Get-DotEnvValue {
@@ -280,6 +286,9 @@ if (-not $BackendOnly) {
     if (-not $NoLabs) {
         Clear-ListeningPort -Port $LabsPort -Service "UX Labs"
     }
+    if (-not $NoInspector) {
+        Clear-ListeningPort -Port $InspectorPort -Service "Audit Inspector"
+    }
 }
 
 if (-not $FrontendOnly -and -not $UseCanaryData -and $configuredCosmosBackend -eq "emulator") {
@@ -385,6 +394,18 @@ if (-not $BackendOnly) {
         Write-Host "  Labs: http://127.0.0.1:$LabsPort/catalog.html" -ForegroundColor Green
     }
 
+    $inspector = $null
+    if (-not $NoInspector) {
+        Write-Host "Starting Audit Inspector on :$InspectorPort ..." -ForegroundColor Cyan
+        $env:VITE_INSPECTOR_PORT = "$InspectorPort"
+        $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
+        # Where the inspector's "Open" links send the browser.
+        $env:VITE_APP_URL = "http://127.0.0.1:$FrontendPort"
+        $inspector = Start-Process -PassThru -NoNewWindow -WorkingDirectory $frontendRoot `
+            -FilePath $npmCommand -ArgumentList @("run", "dev:inspector")
+        Write-Host "  Inspector: http://127.0.0.1:$InspectorPort/" -ForegroundColor Green
+    }
+
     Write-Host "Starting Vite dev server on :$FrontendPort ..." -ForegroundColor Cyan
     Push-Location $frontendRoot
     try {
@@ -414,6 +435,16 @@ if (-not $BackendOnly) {
             }
             if (-not $labs.HasExited) {
                 Stop-Process -Id $labs.Id -ErrorAction SilentlyContinue
+            }
+        }
+        if ($inspector) {
+            try {
+                Clear-ListeningPort -Port $InspectorPort -Service "Audit Inspector"
+            } catch {
+                Write-Warning "Could not stop the inspector cleanly: $($_.Exception.Message)"
+            }
+            if (-not $inspector.HasExited) {
+                Stop-Process -Id $inspector.Id -ErrorAction SilentlyContinue
             }
         }
         if ($backend -and -not $backend.HasExited) {

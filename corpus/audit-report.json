@@ -1,14 +1,14 @@
 {
   "version": 1,
-  "generated_at": "2026-08-15T17:00:06+00:00",
+  "generated_at": "2026-08-16T05:35:48+00:00",
   "corpus": {
-    "size": 112,
+    "size": 117,
     "provenance": {
-      "revision": 34,
-      "real": 78
+      "revision": 36,
+      "real": 81
     },
     "sources": [
-      "debug-store (70)",
+      "debug-store (75)",
       "tripplanner-sbx-1-super-intelligence (2)",
       "tripplanner-sbx-2-auto-validation (32)",
       "tripplanner-sbx-3-bugfixes (4)",
@@ -24,7 +24,7 @@
       "statement": "Nothing in the destination may be scheduled before you arrive or after you leave.",
       "severity": "gate",
       "evaluated_in": "tripplanner.tools.trip_guard",
-      "hits": 26
+      "hits": 41
     },
     {
       "code": "I2",
@@ -40,7 +40,7 @@
       "statement": "A visit must start and end while the place is open.",
       "severity": "report",
       "evaluated_in": "tripplanner.tools.trip_guard",
-      "hits": 32
+      "hits": 33
     },
     {
       "code": "I4",
@@ -48,7 +48,7 @@
       "statement": "Visit plus travel must fit before the next stop starts.",
       "severity": "report",
       "evaluated_in": "tripplanner.tools.trip_guard",
-      "hits": 220
+      "hits": 238
     },
     {
       "code": "I5",
@@ -56,7 +56,7 @@
       "statement": "At least two hours must stay free before an onward journey.",
       "severity": "gate",
       "evaluated_in": "tripplanner.tools.trip_guard",
-      "hits": 69
+      "hits": 75
     },
     {
       "code": "I6",
@@ -88,7 +88,7 @@
       "statement": "Every move between stops must be explained by a journey.",
       "severity": "gate",
       "evaluated_in": "tripplanner.tools.trip_guard",
-      "hits": 77
+      "hits": 82
     },
     {
       "code": "I10",
@@ -96,7 +96,31 @@
       "statement": "A plan must say where the trip starts, or the envelope invariants cannot run.",
       "severity": "report",
       "evaluated_in": "tripplanner.tools.trip_guard",
-      "hits": 27
+      "hits": 26
+    },
+    {
+      "code": "I11",
+      "title": "Closed day",
+      "statement": "A visit must fall on a day the place is actually open.",
+      "severity": "report",
+      "evaluated_in": "tripplanner.tools.trip_guard",
+      "hits": 14
+    },
+    {
+      "code": "I12",
+      "title": "Permanently closed",
+      "statement": "A place reported as shut down for good must not be planned at all.",
+      "severity": "report",
+      "evaluated_in": "tripplanner.tools.trip_guard",
+      "hits": 0
+    },
+    {
+      "code": "I13",
+      "title": "Duplicate visit",
+      "statement": "The same sight must not be planned on two different days.",
+      "severity": "report",
+      "evaluated_in": "tripplanner.tools.trip_guard",
+      "hits": 14
     },
     {
       "code": "gap",
@@ -104,7 +128,7 @@
       "statement": "A trip presented as planned must not still be missing its parts.",
       "severity": "gate",
       "evaluated_in": "tripplanner.tools.trip_validation",
-      "hits": 269
+      "hits": 271
     },
     {
       "code": "R0",
@@ -120,7 +144,7 @@
       "statement": "A leg drawn as ground travel must be a distance you could drive.",
       "severity": "report",
       "evaluated_in": "tripplanner.validation.render",
-      "hits": 54
+      "hits": 55
     },
     {
       "code": "R2",
@@ -128,7 +152,7 @@
       "statement": "No single leg of a day may take longer than a day.",
       "severity": "report",
       "evaluated_in": "tripplanner.validation.render",
-      "hits": 5
+      "hits": 6
     },
     {
       "code": "R3",
@@ -136,7 +160,7 @@
       "statement": "A flight or train between two points in the same place is not a journey.",
       "severity": "report",
       "evaluated_in": "tripplanner.validation.render",
-      "hits": 17
+      "hits": 19
     },
     {
       "code": "R4",
@@ -144,7 +168,7 @@
       "statement": "An itinerary stop must reach the map or say why it did not.",
       "severity": "report",
       "evaluated_in": "tripplanner.validation.render",
-      "hits": 108
+      "hits": 115
     },
     {
       "code": "M1",
@@ -152,7 +176,7 @@
       "statement": "Making a trip worse must never make the report quieter.",
       "severity": "report",
       "evaluated_in": "tripplanner.validation.mutations",
-      "hits": 7
+      "hits": 9
     },
     {
       "code": "M2",
@@ -160,7 +184,7 @@
       "statement": "Removing part of a trip must be noticed by some rule.",
       "severity": "report",
       "evaluated_in": "tripplanner.validation.mutations",
-      "hits": 25
+      "hits": 27
     },
     {
       "code": "M3",
@@ -176,12 +200,12 @@
       "key": "I4|<place> cannot reach <place> in time on Day N; short by N minutes.",
       "rule": "I4",
       "symptom": "<place> cannot reach <place> in time on Day N; short by N minutes.",
-      "count": 220,
+      "count": 238,
       "new": true,
       "accepted_on": "",
       "provenances": {
-        "revision": 61,
-        "real": 159
+        "revision": 68,
+        "real": 170
       },
       "example": "Port Blair Hotel cannot reach Havelock Hotel in time on Day 3; short by 14 minutes.",
       "findings": [
@@ -618,6 +642,78 @@
           "message": "Hotel in Udaipur cannot reach Local restaurant en route in time on Day 8; short by 148 minutes."
         },
         {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 1,
+          "provenance": "revision",
+          "message": "Drive: Delhi to Shimla cannot reach Haveli, Karnal in time on Day 1; short by 526 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 1,
+          "provenance": "revision",
+          "message": "Haveli, Karnal cannot reach Timber Trail, Parwanoo in time on Day 1; short by 17 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 3,
+          "provenance": "revision",
+          "message": "Drive: Kufri to Shimla cannot reach The Retreat, Kufri in time on Day 3; short by 12 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 3,
+          "provenance": "revision",
+          "message": "The Retreat, Kufri cannot reach Hotel (Shimla, accessible) in time on Day 3; short by 58 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 4,
+          "provenance": "revision",
+          "message": "Annandale Army Heritage Museum cannot reach Hotel (Shimla, accessible) in time on Day 4; short by 14 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 5,
+          "provenance": "revision",
+          "message": "Drive: Shimla to Delhi cannot reach Timber Trail, Parwanoo in time on Day 5; short by 327 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 5,
+          "provenance": "revision",
+          "message": "Timber Trail, Parwanoo cannot reach Haveli, Karnal in time on Day 5; short by 32 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 1,
+          "provenance": "real",
+          "message": "Drive: Delhi to Shimla cannot reach Haveli, Karnal in time on Day 1; short by 526 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 1,
+          "provenance": "real",
+          "message": "Haveli, Karnal cannot reach Timber Trail, Parwanoo in time on Day 1; short by 17 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 4,
+          "provenance": "real",
+          "message": "Annandale Army Heritage Museum cannot reach Hotel (Shimla, accessible) in time on Day 4; short by 14 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Drive: Shimla to Delhi cannot reach Timber Trail, Parwanoo in time on Day 5; short by 327 minutes."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Timber Trail, Parwanoo cannot reach Haveli, Karnal in time on Day 5; short by 32 minutes."
+        },
+        {
           "record_id": "18:singapore_2027-06-04_2027-06-09#r2",
           "day": 1,
           "provenance": "revision",
@@ -834,6 +930,12 @@
           "message": "Kapaleeshwarar Temple cannot reach DakshinaChitra in time on Day 2; short by 14 minutes."
         },
         {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": 7,
+          "provenance": "real",
+          "message": "Kempegowda International Airport Bengaluru cannot reach Hotel Chambiges Elysees in time on Day 7; short by 11294 minutes."
+        },
+        {
           "record_id": "tripplanner-sbx-2-auto-validation:goa_2026-09-10_2026-09-17",
           "day": 5,
           "provenance": "real",
@@ -1006,6 +1108,36 @@
           "day": 8,
           "provenance": "real",
           "message": "Hotel in Udaipur cannot reach Local restaurant en route in time on Day 8; short by 148 minutes."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 1,
+          "provenance": "real",
+          "message": "Drive: Delhi to Shimla cannot reach Haveli, Karnal in time on Day 1; short by 526 minutes."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 1,
+          "provenance": "real",
+          "message": "Haveli, Karnal cannot reach Timber Trail, Parwanoo in time on Day 1; short by 17 minutes."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 4,
+          "provenance": "real",
+          "message": "Annandale Army Heritage Museum cannot reach Hotel (Shimla, accessible) in time on Day 4; short by 14 minutes."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Drive: Shimla to Delhi cannot reach Timber Trail, Parwanoo in time on Day 5; short by 327 minutes."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Timber Trail, Parwanoo cannot reach Haveli, Karnal in time on Day 5; short by 32 minutes."
         },
         {
           "record_id": "tripplanner-sbx-2-auto-validation:varanasi_and_ayodhya_2027-02-03_2027-02-08",
@@ -1511,12 +1643,12 @@
       "key": "R4|<place> on Day N never reached the map (no_match).",
       "rule": "R4",
       "symptom": "<place> on Day N never reached the map (no_match).",
-      "count": 100,
+      "count": 104,
       "new": true,
       "accepted_on": "",
       "provenances": {
         "revision": 36,
-        "real": 64
+        "real": 68
       },
       "example": "Ross Island on Day 2 never reached the map (no_match).",
       "findings": [
@@ -1573,6 +1705,12 @@
           "day": 2,
           "provenance": "real",
           "message": "Abbey Falls on Day 2 never reached the map (no_match)."
+        },
+        {
+          "record_id": "25:udaipur_2027-02-14_2027-02-17",
+          "day": 1,
+          "provenance": "real",
+          "message": "Hotel (TBD) on Day 1 never reached the map (no_match)."
         },
         {
           "record_id": "14:dubai_2026-11-20_2026-11-24#r1",
@@ -1893,6 +2031,12 @@
           "message": "Hotel (TBD) on Day 1 never reached the map (no_match)."
         },
         {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": 2,
+          "provenance": "real",
+          "message": "Seine River Cruise on Day 2 never reached the map (no_match)."
+        },
+        {
           "record_id": "tripplanner-sbx-1-super-intelligence:paris_2026-09-06_2026-09-11",
           "day": 2,
           "provenance": "real",
@@ -2007,6 +2151,12 @@
           "message": "Hotel in Udaipur on Day 5 never reached the map (no_match)."
         },
         {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 1,
+          "provenance": "real",
+          "message": "Delhi on Day 1 never reached the map (no_match)."
+        },
+        {
           "record_id": "tripplanner-sbx-2-auto-validation:varanasi_and_ayodhya_2027-02-03_2027-02-08",
           "day": 3,
           "provenance": "real",
@@ -2101,6 +2251,12 @@
           "day": 6,
           "provenance": "real",
           "message": "Galle Hotel on Day 6 never reached the map (no_match)."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:udaipur_2027-02-14_2027-02-17",
+          "day": 1,
+          "provenance": "real",
+          "message": "Hotel (TBD) on Day 1 never reached the map (no_match)."
         },
         {
           "record_id": "tripplanner-sbx-2-auto-validation:gujarat_2026-12-07_2026-12-12",
@@ -2735,12 +2891,12 @@
       "key": "I9|<place> is far from <place> on Day N, and no journey connects them.",
       "rule": "I9",
       "symptom": "<place> is far from <place> on Day N, and no journey connects them.",
-      "count": 73,
+      "count": 76,
       "new": true,
       "accepted_on": "",
       "provenances": {
         "revision": 12,
-        "real": 61
+        "real": 64
       },
       "example": "Dubare Elephant Camp is far from 3-star+ Hotel in Coorg on Day 3, and no journey connects them.",
       "findings": [
@@ -2761,6 +2917,18 @@
           "day": 3,
           "provenance": "real",
           "message": "Nisargadhama is far from Dubare Elephant Camp on Day 3, and no journey connects them."
+        },
+        {
+          "record_id": "25:udaipur_2027-02-14_2027-02-17",
+          "day": 1,
+          "provenance": "real",
+          "message": "Lake Pichola Boat Ride is far from Hotel (TBD) on Day 1, and no journey connects them."
+        },
+        {
+          "record_id": "25:udaipur_2027-02-14_2027-02-17",
+          "day": 2,
+          "provenance": "real",
+          "message": "City Palace Udaipur is far from Hotel (TBD) on Day 2, and no journey connects them."
         },
         {
           "record_id": "20:manali_2027-10-01_2027-10-07#r1",
@@ -2917,6 +3085,12 @@
           "day": 6,
           "provenance": "real",
           "message": "Old Manali is far from DoubleTree by Hilton Manali on Day 6, and no journey connects them."
+        },
+        {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": 7,
+          "provenance": "real",
+          "message": "Hotel Chambiges Elysees is far from Kempegowda International Airport Bengaluru on Day 7, and no journey connects them."
         },
         {
           "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
@@ -3188,12 +3362,12 @@
       "key": "gap|No concrete hotel is selected.",
       "rule": "gap",
       "symptom": "No concrete hotel is selected.",
-      "count": 60,
+      "count": 61,
       "new": true,
       "accepted_on": "",
       "provenances": {
-        "revision": 32,
-        "real": 28
+        "revision": 34,
+        "real": 27
       },
       "example": "No concrete hotel is selected.",
       "findings": [
@@ -3223,6 +3397,12 @@
         },
         {
           "record_id": "17:coorg_2027-07-15_2027-07-19#r2",
+          "day": null,
+          "provenance": "revision",
+          "message": "No concrete hotel is selected."
+        },
+        {
+          "record_id": "25:udaipur_2027-02-14_2027-02-17#r1",
           "day": null,
           "provenance": "revision",
           "message": "No concrete hotel is selected."
@@ -3348,9 +3528,9 @@
           "message": "No concrete hotel is selected."
         },
         {
-          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
           "day": null,
-          "provenance": "real",
+          "provenance": "revision",
           "message": "No concrete hotel is selected."
         },
         {
@@ -3480,6 +3660,12 @@
           "message": "No concrete hotel is selected."
         },
         {
+          "record_id": "30:goa_2026-09-10_2026-09-17",
+          "day": null,
+          "provenance": "real",
+          "message": "No concrete hotel is selected."
+        },
+        {
           "record_id": "tripplanner-sbx-2-auto-validation:goa_2026-09-10_2026-09-17",
           "day": null,
           "provenance": "real",
@@ -3493,12 +3679,6 @@
         },
         {
           "record_id": "tripplanner-sbx-2-auto-validation:goa_2027-03-10_2027-03-14",
-          "day": null,
-          "provenance": "real",
-          "message": "No concrete hotel is selected."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
           "day": null,
           "provenance": "real",
           "message": "No concrete hotel is selected."
@@ -3563,12 +3743,12 @@
       "key": "R1|Day N draws <place> to <place> as Taxi over N km.",
       "rule": "R1",
       "symptom": "Day N draws <place> to <place> as Taxi over N km.",
-      "count": 49,
+      "count": 50,
       "new": true,
       "accepted_on": "",
       "provenances": {
         "revision": 8,
-        "real": 41
+        "real": 42
       },
       "example": "Day 6 draws Hotel in Jaipur to City Palace Udaipur as Taxi over 336 km.",
       "findings": [
@@ -3709,6 +3889,12 @@
           "day": 6,
           "provenance": "real",
           "message": "Day 6 draws DoubleTree by Hilton Manali to Old Manali as Taxi over 406 km."
+        },
+        {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": 7,
+          "provenance": "real",
+          "message": "Day 7 draws Kempegowda International Airport Bengaluru to Hotel Chambiges Elysees as Taxi over 7842 km."
         },
         {
           "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
@@ -3872,12 +4058,12 @@
       "key": "I5|<place> leaves only N minutes before <place> on Day N; N are required.",
       "rule": "I5",
       "symptom": "<place> leaves only N minutes before <place> on Day N; N are required.",
-      "count": 45,
+      "count": 46,
       "new": true,
       "accepted_on": "",
       "provenances": {
         "revision": 9,
-        "real": 36
+        "real": 37
       },
       "example": "Brunch (TBD) leaves only 60 minutes before Flight: Goa to Bangalore (TBD) on Day 4; 120 are required.",
       "findings": [
@@ -4020,6 +4206,12 @@
           "message": "Drive: Pushkar to Jaipur Airport leaves only 60 minutes before Flight: Jaipur to Bangalore on Day 7; 120 are required."
         },
         {
+          "record_id": "31:nashik_2026-09-10_2026-09-17",
+          "day": 6,
+          "provenance": "real",
+          "message": "Ghatandevi Temple leaves only 0 minutes before Drive: Igatpuri to Nashik on Day 6; 10 are required."
+        },
+        {
           "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-11",
           "day": 1,
           "provenance": "real",
@@ -4134,22 +4326,436 @@
           "message": "Kempegowda International Airport, Bangalore (BLR) leaves only 60 minutes before Indira Gandhi International Airport, Delhi (DEL) on Day 1; 120 are required."
         },
         {
-          "record_id": "tripplanner-sbx-4-implement-labs:paris_2026-09-06_2026-09-11",
-          "day": 1,
-          "provenance": "real",
-          "message": "Kempegowda International Airport, Bangalore (BLR) leaves only 60 minutes before Indira Gandhi International Airport, Delhi (DEL) on Day 1; 120 are required."
-        },
-        {
-          "record_id": "tripplanner-sbx-4-implement-labs:rajasthan_2026-09-10_2026-09-17",
+          "record_id": "tripplanner-sbx-3-bugfixes:rajasthan_2026-09-10_2026-09-17",
           "day": 7,
           "provenance": "real",
           "message": "The Laughing Buddha Café leaves only 0 minutes before Drive: Pushkar to Jaipur Airport on Day 7; 10 are required."
         },
         {
-          "record_id": "tripplanner-sbx-4-implement-labs:rajasthan_2026-09-10_2026-09-17",
+          "record_id": "tripplanner-sbx-3-bugfixes:rajasthan_2026-09-10_2026-09-17",
           "day": 7,
           "provenance": "real",
           "message": "Drive: Pushkar to Jaipur Airport leaves only 60 minutes before Flight: Jaipur to Bangalore on Day 7; 120 are required."
+        },
+        {
+          "record_id": "tripplanner-sbx-4-implement-labs:paris_2026-09-06_2026-09-11",
+          "day": 1,
+          "provenance": "real",
+          "message": "Kempegowda International Airport, Bangalore (BLR) leaves only 60 minutes before Indira Gandhi International Airport, Delhi (DEL) on Day 1; 120 are required."
+        }
+      ]
+    },
+    {
+      "key": "I1|<place> runs to N:N on Day N, after <place> has left.",
+      "rule": "I1",
+      "symptom": "<place> runs to N:N on Day N, after <place> has left.",
+      "count": 35,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "revision": 9,
+        "real": 26
+      },
+      "example": "Delhi runs to 20:00 on Day 6, after Drive: Chandigarh to Delhi has left.",
+      "findings": [
+        {
+          "record_id": "20:manali_2027-10-01_2027-10-07#r1",
+          "day": 6,
+          "provenance": "revision",
+          "message": "Delhi runs to 20:00 on Day 6, after Drive: Chandigarh to Delhi has left."
+        },
+        {
+          "record_id": "20:manali_2027-10-01_2027-10-07",
+          "day": 6,
+          "provenance": "real",
+          "message": "Delhi runs to 20:00 on Day 6, after Drive: Chandigarh to Delhi has left."
+        },
+        {
+          "record_id": "22:meghalaya_2027-11-02_2027-11-08",
+          "day": 6,
+          "provenance": "real",
+          "message": "Hotel in Cherrapunji runs to 08:45 on Day 6, after Drive: Cherrapunji to Guwahati has left."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
+          "day": 8,
+          "provenance": "revision",
+          "message": "Hotel in Udaipur runs to 09:45 on Day 8, after Drive: Udaipur to Mumbai has left."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
+          "day": 8,
+          "provenance": "revision",
+          "message": "Local restaurant en route runs to 14:30 on Day 8, after Drive: Udaipur to Mumbai has left."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
+          "day": 9,
+          "provenance": "revision",
+          "message": "Mumbai runs to 10:30 on Day 9, after Drive: Udaipur to Mumbai has left."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
+          "day": 8,
+          "provenance": "real",
+          "message": "Hotel in Udaipur runs to 09:45 on Day 8, after Drive: Udaipur to Mumbai has left."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
+          "day": 8,
+          "provenance": "real",
+          "message": "Local restaurant en route runs to 14:30 on Day 8, after Drive: Udaipur to Mumbai has left."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
+          "day": 9,
+          "provenance": "real",
+          "message": "Mumbai runs to 10:30 on Day 9, after Drive: Udaipur to Mumbai has left."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 5,
+          "provenance": "revision",
+          "message": "Hotel (Shimla, accessible) runs to 08:45 on Day 5, after Drive: Shimla to Delhi has left."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 5,
+          "provenance": "revision",
+          "message": "Timber Trail, Parwanoo runs to 13:00 on Day 5, after Drive: Shimla to Delhi has left."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 5,
+          "provenance": "revision",
+          "message": "Haveli, Karnal runs to 16:15 on Day 5, after Drive: Shimla to Delhi has left."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Hotel (Shimla, accessible) runs to 08:45 on Day 5, after Drive: Shimla to Delhi has left."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Timber Trail, Parwanoo runs to 13:00 on Day 5, after Drive: Shimla to Delhi has left."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Haveli, Karnal runs to 16:15 on Day 5, after Drive: Shimla to Delhi has left."
+        },
+        {
+          "record_id": "26:gujarat_2026-12-07_2026-12-12",
+          "day": 5,
+          "provenance": "real",
+          "message": "Hotel (Kutch) runs to 09:45 on Day 5, after Drive: Kutch to Mumbai has left."
+        },
+        {
+          "record_id": "26:gujarat_2026-12-07_2026-12-12",
+          "day": 5,
+          "provenance": "real",
+          "message": "Jain Restaurant (En route) runs to 14:30 on Day 5, after Drive: Kutch to Mumbai has left."
+        },
+        {
+          "record_id": "26:gujarat_2026-12-07_2026-12-12",
+          "day": 6,
+          "provenance": "real",
+          "message": "Mumbai runs to 10:30 on Day 6, after Drive: Kutch to Mumbai has left."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-17#r1",
+          "day": 6,
+          "provenance": "revision",
+          "message": "Hotel (TBD) runs to 08:45 on Day 6, after Drive: Manali to Delhi has left."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-17#r1",
+          "day": 6,
+          "provenance": "revision",
+          "message": "Delhi runs to 19:30 on Day 6, after Drive: Manali to Delhi has left."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-17",
+          "day": 6,
+          "provenance": "real",
+          "message": "DoubleTree by Hilton Manali runs to 08:45 on Day 6, after Drive: Manali to Delhi has left."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-17",
+          "day": 6,
+          "provenance": "real",
+          "message": "Old Manali runs to 12:00 on Day 6, after Drive: Manali to Delhi has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
+          "day": 8,
+          "provenance": "real",
+          "message": "Hotel in Udaipur runs to 09:45 on Day 8, after Drive: Udaipur to Mumbai has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
+          "day": 8,
+          "provenance": "real",
+          "message": "Local restaurant en route runs to 14:30 on Day 8, after Drive: Udaipur to Mumbai has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
+          "day": 9,
+          "provenance": "real",
+          "message": "Mumbai runs to 10:30 on Day 9, after Drive: Udaipur to Mumbai has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Hotel (Shimla, accessible) runs to 08:45 on Day 5, after Drive: Shimla to Delhi has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Timber Trail, Parwanoo runs to 13:00 on Day 5, after Drive: Shimla to Delhi has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Haveli, Karnal runs to 16:15 on Day 5, after Drive: Shimla to Delhi has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:manali_2027-10-01_2027-10-07",
+          "day": 6,
+          "provenance": "real",
+          "message": "Delhi runs to 20:00 on Day 6, after Drive: Chandigarh to Delhi has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:meghalaya_2027-11-02_2027-11-08",
+          "day": 6,
+          "provenance": "real",
+          "message": "Hotel in Cherrapunji runs to 08:45 on Day 6, after Drive: Cherrapunji to Guwahati has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:gujarat_2026-12-07_2026-12-12",
+          "day": 5,
+          "provenance": "real",
+          "message": "Hotel (Kutch) runs to 09:45 on Day 5, after Drive: Kutch to Mumbai has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:gujarat_2026-12-07_2026-12-12",
+          "day": 5,
+          "provenance": "real",
+          "message": "Jain Restaurant (En route) runs to 14:30 on Day 5, after Drive: Kutch to Mumbai has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:gujarat_2026-12-07_2026-12-12",
+          "day": 6,
+          "provenance": "real",
+          "message": "Mumbai runs to 10:30 on Day 6, after Drive: Kutch to Mumbai has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
+          "day": 6,
+          "provenance": "real",
+          "message": "DoubleTree by Hilton Manali runs to 08:45 on Day 6, after Drive: Manali to Delhi has left."
+        },
+        {
+          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
+          "day": 6,
+          "provenance": "real",
+          "message": "Old Manali runs to 12:00 on Day 6, after Drive: Manali to Delhi has left."
+        }
+      ]
+    },
+    {
+      "key": "I5|<place> leaves only -N minutes before <place> on Day N; N are required.",
+      "rule": "I5",
+      "symptom": "<place> leaves only -N minutes before <place> on Day N; N are required.",
+      "count": 29,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "revision": 10,
+        "real": 19
+      },
+      "example": "Raj Mahal Palace, Mandi leaves only -45 minutes before Drive: Mandi to Manali on Day 2; 10 are required.",
+      "findings": [
+        {
+          "record_id": "20:manali_2027-10-01_2027-10-07#r1",
+          "day": 2,
+          "provenance": "revision",
+          "message": "Raj Mahal Palace, Mandi leaves only -45 minutes before Drive: Mandi to Manali on Day 2; 10 are required."
+        },
+        {
+          "record_id": "20:manali_2027-10-01_2027-10-07#r1",
+          "day": 5,
+          "provenance": "revision",
+          "message": "Roerich Art Gallery leaves only -30 minutes before Drive: Naggar to Manali on Day 5; 10 are required."
+        },
+        {
+          "record_id": "20:manali_2027-10-01_2027-10-07#r1",
+          "day": 6,
+          "provenance": "revision",
+          "message": "Hotel Snow Valley Resort, Manali leaves only -15 minutes before Drive: Manali to Chandigarh on Day 6; 10 are required."
+        },
+        {
+          "record_id": "20:manali_2027-10-01_2027-10-07",
+          "day": 6,
+          "provenance": "real",
+          "message": "Hotel Snow Valley Resort, Manali leaves only -15 minutes before Drive: Manali to Chandigarh on Day 6; 10 are required."
+        },
+        {
+          "record_id": "22:meghalaya_2027-11-02_2027-11-08",
+          "day": 1,
+          "provenance": "real",
+          "message": "Guwahati Airport leaves only -60 minutes before Drive: Guwahati to Shillong on Day 1; 10 are required."
+        },
+        {
+          "record_id": "22:meghalaya_2027-11-02_2027-11-08",
+          "day": 6,
+          "provenance": "real",
+          "message": "Hotel in Cherrapunji leaves only -15 minutes before Drive: Cherrapunji to Guwahati on Day 6; 10 are required."
+        },
+        {
+          "record_id": "8:paris_2027-04-05_2027-04-12#r1",
+          "day": 4,
+          "provenance": "revision",
+          "message": "Versailles Gardens leaves only -15 minutes before Train: Versailles to Paris on Day 4; 10 are required."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
+          "day": 3,
+          "provenance": "revision",
+          "message": "Ajmer Sharif Dargah leaves only -30 minutes before Drive: Ajmer to Pushkar on Day 3; 10 are required."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
+          "day": 3,
+          "provenance": "revision",
+          "message": "Pushkar Lake leaves only -30 minutes before Drive: Pushkar to Ajmer on Day 3; 10 are required."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
+          "day": 3,
+          "provenance": "real",
+          "message": "Ajmer Sharif Dargah leaves only -30 minutes before Drive: Pushkar to Ajmer on Day 3; 10 are required."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
+          "day": 3,
+          "provenance": "real",
+          "message": "Pushkar Lake leaves only -15 minutes before Drive: Ajmer to Jodhpur on Day 3; 10 are required."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 3,
+          "provenance": "revision",
+          "message": "Himalayan Nature Park, Kufri leaves only -15 minutes before Drive: Kufri to Shimla on Day 3; 10 are required."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 5,
+          "provenance": "revision",
+          "message": "Hotel (Shimla, accessible) leaves only -15 minutes before Drive: Shimla to Delhi on Day 5; 10 are required."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Hotel (Shimla, accessible) leaves only -15 minutes before Drive: Shimla to Delhi on Day 5; 10 are required."
+        },
+        {
+          "record_id": "19:switzerland_2027-09-10_2027-09-18#r1",
+          "day": 8,
+          "provenance": "revision",
+          "message": "Mont Cervin Palace leaves only -45 minutes before Train: Zermatt to Zurich on Day 8; 10 are required."
+        },
+        {
+          "record_id": "19:switzerland_2027-09-10_2027-09-18",
+          "day": 8,
+          "provenance": "real",
+          "message": "Mont Cervin Palace leaves only -45 minutes before Train: Zermatt to Zurich on Day 8; 10 are required."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-17#r1",
+          "day": 6,
+          "provenance": "revision",
+          "message": "Hotel (TBD) leaves only -15 minutes before Drive: Manali to Delhi on Day 6; 10 are required."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-17",
+          "day": 6,
+          "provenance": "real",
+          "message": "DoubleTree by Hilton Manali leaves only -15 minutes before Drive: Manali to Delhi on Day 6; 10 are required."
+        },
+        {
+          "record_id": "9:leh_ladakh_2026-09-12_2026-09-18",
+          "day": 5,
+          "provenance": "real",
+          "message": "Pangong Lake leaves only -30 minutes before Drive: Pangong Lake to Leh on Day 5; 10 are required."
+        },
+        {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": 7,
+          "provenance": "real",
+          "message": "Zayed International Airport (AUH) leaves only -255 minutes before Kempegowda International Airport Bengaluru on Day 7; 10 are required."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
+          "day": 7,
+          "provenance": "real",
+          "message": "Zayed International Airport (AUH) leaves only -255 minutes before Kempegowda International Airport Bengaluru on Day 7; 10 are required."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
+          "day": 3,
+          "provenance": "real",
+          "message": "Ajmer Sharif Dargah leaves only -30 minutes before Drive: Pushkar to Ajmer on Day 3; 10 are required."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
+          "day": 3,
+          "provenance": "real",
+          "message": "Pushkar Lake leaves only -15 minutes before Drive: Ajmer to Jodhpur on Day 3; 10 are required."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 5,
+          "provenance": "real",
+          "message": "Hotel (Shimla, accessible) leaves only -15 minutes before Drive: Shimla to Delhi on Day 5; 10 are required."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:manali_2027-10-01_2027-10-07",
+          "day": 6,
+          "provenance": "real",
+          "message": "Hotel Snow Valley Resort, Manali leaves only -15 minutes before Drive: Manali to Chandigarh on Day 6; 10 are required."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:switzerland_2027-09-10_2027-09-18",
+          "day": 8,
+          "provenance": "real",
+          "message": "Mont Cervin Palace leaves only -45 minutes before Train: Zermatt to Zurich on Day 8; 10 are required."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:meghalaya_2027-11-02_2027-11-08",
+          "day": 1,
+          "provenance": "real",
+          "message": "Guwahati Airport leaves only -60 minutes before Drive: Guwahati to Shillong on Day 1; 10 are required."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:meghalaya_2027-11-02_2027-11-08",
+          "day": 6,
+          "provenance": "real",
+          "message": "Hotel in Cherrapunji leaves only -15 minutes before Drive: Cherrapunji to Guwahati on Day 6; 10 are required."
+        },
+        {
+          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
+          "day": 6,
+          "provenance": "real",
+          "message": "DoubleTree by Hilton Manali leaves only -15 minutes before Drive: Manali to Delhi on Day 6; 10 are required."
         }
       ]
     },
@@ -4157,19 +4763,19 @@
       "key": "I10|The trip does not say where it starts from, so arrival, presence, stay coverage and the return leg cannot be checked. Ask the traveller where they are setting out from, or record that they are arranging their own way there.",
       "rule": "I10",
       "symptom": "The trip does not say where it starts from, so arrival, presence, stay coverage and the return leg cannot be checked. Ask the traveller where they are setting out from, or record that they are arranging their own way there.",
-      "count": 27,
+      "count": 26,
       "new": true,
       "accepted_on": "",
       "provenances": {
-        "real": 20,
-        "revision": 7
+        "revision": 8,
+        "real": 18
       },
       "example": "The trip does not say where it starts from, so arrival, presence, stay coverage and the return leg cannot be checked. Ask the traveller where they are setting out from, or record that they are arranging their own way there.",
       "findings": [
         {
-          "record_id": "25:udaipur_2027-02-14_2027-02-17",
+          "record_id": "25:udaipur_2027-02-14_2027-02-17#r1",
           "day": null,
-          "provenance": "real",
+          "provenance": "revision",
           "message": "The trip does not say where it starts from, so arrival, presence, stay coverage and the return leg cannot be checked. Ask the traveller where they are setting out from, or record that they are arranging their own way there."
         },
         {
@@ -4299,12 +4905,6 @@
           "message": "The trip does not say where it starts from, so arrival, presence, stay coverage and the return leg cannot be checked. Ask the traveller where they are setting out from, or record that they are arranging their own way there."
         },
         {
-          "record_id": "tripplanner-sbx-2-auto-validation:udaipur_2027-02-14_2027-02-17",
-          "day": null,
-          "provenance": "real",
-          "message": "The trip does not say where it starts from, so arrival, presence, stay coverage and the return leg cannot be checked. Ask the traveller where they are setting out from, or record that they are arranging their own way there."
-        },
-        {
           "record_id": "tripplanner-sbx-3-bugfixes:paris_2026-09-06_2026-09-11",
           "day": null,
           "provenance": "real",
@@ -4327,336 +4927,6 @@
           "day": null,
           "provenance": "real",
           "message": "The trip does not say where it starts from, so arrival, presence, stay coverage and the return leg cannot be checked. Ask the traveller where they are setting out from, or record that they are arranging their own way there."
-        }
-      ]
-    },
-    {
-      "key": "I1|<place> runs to N:N on Day N, after <place> has left.",
-      "rule": "I1",
-      "symptom": "<place> runs to N:N on Day N, after <place> has left.",
-      "count": 26,
-      "new": true,
-      "accepted_on": "",
-      "provenances": {
-        "revision": 6,
-        "real": 20
-      },
-      "example": "Delhi runs to 20:00 on Day 6, after Drive: Chandigarh to Delhi has left.",
-      "findings": [
-        {
-          "record_id": "20:manali_2027-10-01_2027-10-07#r1",
-          "day": 6,
-          "provenance": "revision",
-          "message": "Delhi runs to 20:00 on Day 6, after Drive: Chandigarh to Delhi has left."
-        },
-        {
-          "record_id": "20:manali_2027-10-01_2027-10-07",
-          "day": 6,
-          "provenance": "real",
-          "message": "Delhi runs to 20:00 on Day 6, after Drive: Chandigarh to Delhi has left."
-        },
-        {
-          "record_id": "22:meghalaya_2027-11-02_2027-11-08",
-          "day": 6,
-          "provenance": "real",
-          "message": "Hotel in Cherrapunji runs to 08:45 on Day 6, after Drive: Cherrapunji to Guwahati has left."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
-          "day": 8,
-          "provenance": "revision",
-          "message": "Hotel in Udaipur runs to 09:45 on Day 8, after Drive: Udaipur to Mumbai has left."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
-          "day": 8,
-          "provenance": "revision",
-          "message": "Local restaurant en route runs to 14:30 on Day 8, after Drive: Udaipur to Mumbai has left."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
-          "day": 9,
-          "provenance": "revision",
-          "message": "Mumbai runs to 10:30 on Day 9, after Drive: Udaipur to Mumbai has left."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
-          "day": 8,
-          "provenance": "real",
-          "message": "Hotel in Udaipur runs to 09:45 on Day 8, after Drive: Udaipur to Mumbai has left."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
-          "day": 8,
-          "provenance": "real",
-          "message": "Local restaurant en route runs to 14:30 on Day 8, after Drive: Udaipur to Mumbai has left."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
-          "day": 9,
-          "provenance": "real",
-          "message": "Mumbai runs to 10:30 on Day 9, after Drive: Udaipur to Mumbai has left."
-        },
-        {
-          "record_id": "26:gujarat_2026-12-07_2026-12-12",
-          "day": 5,
-          "provenance": "real",
-          "message": "Hotel (Kutch) runs to 09:45 on Day 5, after Drive: Kutch to Mumbai has left."
-        },
-        {
-          "record_id": "26:gujarat_2026-12-07_2026-12-12",
-          "day": 5,
-          "provenance": "real",
-          "message": "Jain Restaurant (En route) runs to 14:30 on Day 5, after Drive: Kutch to Mumbai has left."
-        },
-        {
-          "record_id": "26:gujarat_2026-12-07_2026-12-12",
-          "day": 6,
-          "provenance": "real",
-          "message": "Mumbai runs to 10:30 on Day 6, after Drive: Kutch to Mumbai has left."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-17#r1",
-          "day": 6,
-          "provenance": "revision",
-          "message": "Hotel (TBD) runs to 08:45 on Day 6, after Drive: Manali to Delhi has left."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-17#r1",
-          "day": 6,
-          "provenance": "revision",
-          "message": "Delhi runs to 19:30 on Day 6, after Drive: Manali to Delhi has left."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-17",
-          "day": 6,
-          "provenance": "real",
-          "message": "DoubleTree by Hilton Manali runs to 08:45 on Day 6, after Drive: Manali to Delhi has left."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-17",
-          "day": 6,
-          "provenance": "real",
-          "message": "Old Manali runs to 12:00 on Day 6, after Drive: Manali to Delhi has left."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
-          "day": 8,
-          "provenance": "real",
-          "message": "Hotel in Udaipur runs to 09:45 on Day 8, after Drive: Udaipur to Mumbai has left."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
-          "day": 8,
-          "provenance": "real",
-          "message": "Local restaurant en route runs to 14:30 on Day 8, after Drive: Udaipur to Mumbai has left."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
-          "day": 9,
-          "provenance": "real",
-          "message": "Mumbai runs to 10:30 on Day 9, after Drive: Udaipur to Mumbai has left."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:manali_2027-10-01_2027-10-07",
-          "day": 6,
-          "provenance": "real",
-          "message": "Delhi runs to 20:00 on Day 6, after Drive: Chandigarh to Delhi has left."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:meghalaya_2027-11-02_2027-11-08",
-          "day": 6,
-          "provenance": "real",
-          "message": "Hotel in Cherrapunji runs to 08:45 on Day 6, after Drive: Cherrapunji to Guwahati has left."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:gujarat_2026-12-07_2026-12-12",
-          "day": 5,
-          "provenance": "real",
-          "message": "Hotel (Kutch) runs to 09:45 on Day 5, after Drive: Kutch to Mumbai has left."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:gujarat_2026-12-07_2026-12-12",
-          "day": 5,
-          "provenance": "real",
-          "message": "Jain Restaurant (En route) runs to 14:30 on Day 5, after Drive: Kutch to Mumbai has left."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:gujarat_2026-12-07_2026-12-12",
-          "day": 6,
-          "provenance": "real",
-          "message": "Mumbai runs to 10:30 on Day 6, after Drive: Kutch to Mumbai has left."
-        },
-        {
-          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
-          "day": 6,
-          "provenance": "real",
-          "message": "DoubleTree by Hilton Manali runs to 08:45 on Day 6, after Drive: Manali to Delhi has left."
-        },
-        {
-          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
-          "day": 6,
-          "provenance": "real",
-          "message": "Old Manali runs to 12:00 on Day 6, after Drive: Manali to Delhi has left."
-        }
-      ]
-    },
-    {
-      "key": "I5|<place> leaves only -N minutes before <place> on Day N; N are required.",
-      "rule": "I5",
-      "symptom": "<place> leaves only -N minutes before <place> on Day N; N are required.",
-      "count": 24,
-      "new": true,
-      "accepted_on": "",
-      "provenances": {
-        "revision": 8,
-        "real": 16
-      },
-      "example": "Raj Mahal Palace, Mandi leaves only -45 minutes before Drive: Mandi to Manali on Day 2; 10 are required.",
-      "findings": [
-        {
-          "record_id": "20:manali_2027-10-01_2027-10-07#r1",
-          "day": 2,
-          "provenance": "revision",
-          "message": "Raj Mahal Palace, Mandi leaves only -45 minutes before Drive: Mandi to Manali on Day 2; 10 are required."
-        },
-        {
-          "record_id": "20:manali_2027-10-01_2027-10-07#r1",
-          "day": 5,
-          "provenance": "revision",
-          "message": "Roerich Art Gallery leaves only -30 minutes before Drive: Naggar to Manali on Day 5; 10 are required."
-        },
-        {
-          "record_id": "20:manali_2027-10-01_2027-10-07#r1",
-          "day": 6,
-          "provenance": "revision",
-          "message": "Hotel Snow Valley Resort, Manali leaves only -15 minutes before Drive: Manali to Chandigarh on Day 6; 10 are required."
-        },
-        {
-          "record_id": "20:manali_2027-10-01_2027-10-07",
-          "day": 6,
-          "provenance": "real",
-          "message": "Hotel Snow Valley Resort, Manali leaves only -15 minutes before Drive: Manali to Chandigarh on Day 6; 10 are required."
-        },
-        {
-          "record_id": "22:meghalaya_2027-11-02_2027-11-08",
-          "day": 1,
-          "provenance": "real",
-          "message": "Guwahati Airport leaves only -60 minutes before Drive: Guwahati to Shillong on Day 1; 10 are required."
-        },
-        {
-          "record_id": "22:meghalaya_2027-11-02_2027-11-08",
-          "day": 6,
-          "provenance": "real",
-          "message": "Hotel in Cherrapunji leaves only -15 minutes before Drive: Cherrapunji to Guwahati on Day 6; 10 are required."
-        },
-        {
-          "record_id": "8:paris_2027-04-05_2027-04-12#r1",
-          "day": 4,
-          "provenance": "revision",
-          "message": "Versailles Gardens leaves only -15 minutes before Train: Versailles to Paris on Day 4; 10 are required."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
-          "day": 3,
-          "provenance": "revision",
-          "message": "Ajmer Sharif Dargah leaves only -30 minutes before Drive: Ajmer to Pushkar on Day 3; 10 are required."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
-          "day": 3,
-          "provenance": "revision",
-          "message": "Pushkar Lake leaves only -30 minutes before Drive: Pushkar to Ajmer on Day 3; 10 are required."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
-          "day": 3,
-          "provenance": "real",
-          "message": "Ajmer Sharif Dargah leaves only -30 minutes before Drive: Pushkar to Ajmer on Day 3; 10 are required."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
-          "day": 3,
-          "provenance": "real",
-          "message": "Pushkar Lake leaves only -15 minutes before Drive: Ajmer to Jodhpur on Day 3; 10 are required."
-        },
-        {
-          "record_id": "19:switzerland_2027-09-10_2027-09-18#r1",
-          "day": 8,
-          "provenance": "revision",
-          "message": "Mont Cervin Palace leaves only -45 minutes before Train: Zermatt to Zurich on Day 8; 10 are required."
-        },
-        {
-          "record_id": "19:switzerland_2027-09-10_2027-09-18",
-          "day": 8,
-          "provenance": "real",
-          "message": "Mont Cervin Palace leaves only -45 minutes before Train: Zermatt to Zurich on Day 8; 10 are required."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-17#r1",
-          "day": 6,
-          "provenance": "revision",
-          "message": "Hotel (TBD) leaves only -15 minutes before Drive: Manali to Delhi on Day 6; 10 are required."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-17",
-          "day": 6,
-          "provenance": "real",
-          "message": "DoubleTree by Hilton Manali leaves only -15 minutes before Drive: Manali to Delhi on Day 6; 10 are required."
-        },
-        {
-          "record_id": "9:leh_ladakh_2026-09-12_2026-09-18",
-          "day": 5,
-          "provenance": "real",
-          "message": "Pangong Lake leaves only -30 minutes before Drive: Pangong Lake to Leh on Day 5; 10 are required."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
-          "day": 7,
-          "provenance": "real",
-          "message": "Zayed International Airport (AUH) leaves only -255 minutes before Kempegowda International Airport Bengaluru on Day 7; 10 are required."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
-          "day": 3,
-          "provenance": "real",
-          "message": "Ajmer Sharif Dargah leaves only -30 minutes before Drive: Pushkar to Ajmer on Day 3; 10 are required."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
-          "day": 3,
-          "provenance": "real",
-          "message": "Pushkar Lake leaves only -15 minutes before Drive: Ajmer to Jodhpur on Day 3; 10 are required."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:manali_2027-10-01_2027-10-07",
-          "day": 6,
-          "provenance": "real",
-          "message": "Hotel Snow Valley Resort, Manali leaves only -15 minutes before Drive: Manali to Chandigarh on Day 6; 10 are required."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:switzerland_2027-09-10_2027-09-18",
-          "day": 8,
-          "provenance": "real",
-          "message": "Mont Cervin Palace leaves only -45 minutes before Train: Zermatt to Zurich on Day 8; 10 are required."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:meghalaya_2027-11-02_2027-11-08",
-          "day": 1,
-          "provenance": "real",
-          "message": "Guwahati Airport leaves only -60 minutes before Drive: Guwahati to Shillong on Day 1; 10 are required."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:meghalaya_2027-11-02_2027-11-08",
-          "day": 6,
-          "provenance": "real",
-          "message": "Hotel in Cherrapunji leaves only -15 minutes before Drive: Cherrapunji to Guwahati on Day 6; 10 are required."
-        },
-        {
-          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
-          "day": 6,
-          "provenance": "real",
-          "message": "DoubleTree by Hilton Manali leaves only -15 minutes before Drive: Manali to Delhi on Day 6; 10 are required."
         }
       ]
     },
@@ -5060,126 +5330,15 @@
       ]
     },
     {
-      "key": "gap|No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned.",
-      "rule": "gap",
-      "symptom": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned.",
-      "count": 16,
-      "new": true,
-      "accepted_on": "",
-      "provenances": {
-        "revision": 11,
-        "real": 5
-      },
-      "example": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned.",
-      "findings": [
-        {
-          "record_id": "21:bali_2027-11-12_2027-11-19#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "17:coorg_2027-07-15_2027-07-19#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "25:udaipur_2027-02-14_2027-02-17",
-          "day": null,
-          "provenance": "real",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "11:kerala_2026-12-12_2026-12-18#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "13:leh_ladakh_2027-07-01_2027-07-08#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "22:meghalaya_2027-11-02_2027-11-08#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "29:new_york_2027-10-09_2027-10-14#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "27:lonavala_2027-01-20_2027-01-23#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "12:shimla_2027-05-05_2027-05-10",
-          "day": null,
-          "provenance": "real",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "18:singapore_2027-06-04_2027-06-09#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "24:sri_lanka_2027-08-04_2027-08-13#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-19#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "6:mussoorie_2026-09-12_2026-09-16#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "7:dehradun_2026-09-12_2026-09-16",
-          "day": null,
-          "provenance": "real",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
-          "day": null,
-          "provenance": "real",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:udaipur_2027-02-14_2027-02-17",
-          "day": null,
-          "provenance": "real",
-          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
-        }
-      ]
-    },
-    {
       "key": "I3|<place> is open N:N-N:N, N:N-N:N; the Day N visit runs N:N–N:N.",
       "rule": "I3",
       "symptom": "<place> is open N:N-N:N, N:N-N:N; the Day N visit runs N:N–N:N.",
-      "count": 14,
+      "count": 15,
       "new": true,
       "accepted_on": "",
       "provenances": {
         "revision": 4,
-        "real": 10
+        "real": 11
       },
       "example": "La Petite Venise is open 11:30-14:30, 19:00-23:00; the Day 4 visit runs 13:15–14:45.",
       "findings": [
@@ -5226,6 +5385,12 @@
           "message": "Kapaleeshwarar Temple is open 05:30-12:30, 16:00-21:30; the Day 2 visit runs 13:00–14:30."
         },
         {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": 5,
+          "provenance": "real",
+          "message": "La Petite Venise is open 11:30-14:30, 19:00-23:00; the Day 5 visit runs 13:30–15:00."
+        },
+        {
           "record_id": "tripplanner-sbx-1-super-intelligence:paris_2026-09-06_2026-09-11",
           "day": 5,
           "provenance": "real",
@@ -5266,6 +5431,203 @@
           "day": 2,
           "provenance": "real",
           "message": "Sri Aurobindo Ashram is open 08:00-11:30, 14:00-18:00; the Day 2 visit runs 13:00–14:00."
+        }
+      ]
+    },
+    {
+      "key": "I13|<place> is scheduled on Day N and again on Day N. Keep the better one and give the other day its own place.",
+      "rule": "I13",
+      "symptom": "<place> is scheduled on Day N and again on Day N. Keep the better one and give the other day its own place.",
+      "count": 14,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "revision": 4,
+        "real": 10
+      },
+      "example": "Nusa Dua Beach is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place.",
+      "findings": [
+        {
+          "record_id": "21:bali_2027-11-12_2027-11-19#r2",
+          "day": 7,
+          "provenance": "revision",
+          "message": "Nusa Dua Beach is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "21:bali_2027-11-12_2027-11-19",
+          "day": 7,
+          "provenance": "real",
+          "message": "Nusa Dua Beach is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "13:leh_ladakh_2027-07-01_2027-07-08#r2",
+          "day": 7,
+          "provenance": "revision",
+          "message": "Leh Main Market is scheduled on Day 2 and again on Day 7. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "13:leh_ladakh_2027-07-01_2027-07-08",
+          "day": 7,
+          "provenance": "real",
+          "message": "Leh Main Market is scheduled on Day 2 and again on Day 7. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-17#r1",
+          "day": 6,
+          "provenance": "revision",
+          "message": "Delhi is scheduled on Day 1 and again on Day 6. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-17",
+          "day": 5,
+          "provenance": "real",
+          "message": "Delhi is scheduled on Day 1 and again on Day 5. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-19#r2",
+          "day": 7,
+          "provenance": "revision",
+          "message": "Mall Road is scheduled on Day 1 and again on Day 7. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-19",
+          "day": 7,
+          "provenance": "real",
+          "message": "Mall Road is scheduled on Day 1 and again on Day 7. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "9:leh_ladakh_2026-09-12_2026-09-18",
+          "day": 6,
+          "provenance": "real",
+          "message": "Leh Market is scheduled on Day 1 and again on Day 6. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "31:nashik_2026-09-10_2026-09-17",
+          "day": 7,
+          "provenance": "real",
+          "message": "Nashik City Market is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:nashik_2026-09-10_2026-09-17",
+          "day": 7,
+          "provenance": "real",
+          "message": "Nashik City Market is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:bali_2027-11-12_2027-11-19",
+          "day": 7,
+          "provenance": "real",
+          "message": "Nusa Dua Beach is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:leh_ladakh_2027-07-01_2027-07-08",
+          "day": 7,
+          "provenance": "real",
+          "message": "Leh Main Market is scheduled on Day 2 and again on Day 7. Keep the better one and give the other day its own place."
+        },
+        {
+          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
+          "day": 5,
+          "provenance": "real",
+          "message": "Delhi is scheduled on Day 1 and again on Day 5. Keep the better one and give the other day its own place."
+        }
+      ]
+    },
+    {
+      "key": "M2|drop-first-leg removed part of the trip and no rule noticed.",
+      "rule": "M2",
+      "symptom": "drop-first-leg removed part of the trip and no rule noticed.",
+      "count": 14,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "real": 14
+      },
+      "example": "drop-first-leg removed part of the trip and no rule noticed.",
+      "findings": [
+        {
+          "record_id": "22:meghalaya_2027-11-02_2027-11-08",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "26:gujarat_2026-12-07_2026-12-12",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "1:paris_2026-09-06_2026-09-11",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "4:varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-11",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-11",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:meghalaya_2027-11-02_2027-11-08",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:gujarat_2026-12-07_2026-12-12",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "tripplanner-sbx-3-bugfixes:paris_2026-09-06_2026-09-11",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "tripplanner-sbx-4-implement-labs:paris_2026-09-06_2026-09-11",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "tripplanner-sbx-4-implement-labs:varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "tripplanner-sbx-4-implement-labs:varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-first-leg removed part of the trip and no rule noticed."
         }
       ]
     },
@@ -5369,199 +5731,14 @@
       ]
     },
     {
-      "key": "I13|<place> is scheduled on Day N and again on Day N. Keep the better one and give the other day its own place.",
-      "rule": "I13",
-      "symptom": "<place> is scheduled on Day N and again on Day N. Keep the better one and give the other day its own place.",
-      "count": 13,
-      "new": true,
-      "accepted_on": "",
-      "provenances": {
-        "revision": 4,
-        "real": 9
-      },
-      "example": "Nusa Dua Beach is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place.",
-      "findings": [
-        {
-          "record_id": "21:bali_2027-11-12_2027-11-19#r2",
-          "day": 7,
-          "provenance": "revision",
-          "message": "Nusa Dua Beach is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "21:bali_2027-11-12_2027-11-19",
-          "day": 7,
-          "provenance": "real",
-          "message": "Nusa Dua Beach is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "13:leh_ladakh_2027-07-01_2027-07-08#r2",
-          "day": 7,
-          "provenance": "revision",
-          "message": "Leh Main Market is scheduled on Day 2 and again on Day 7. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "13:leh_ladakh_2027-07-01_2027-07-08",
-          "day": 7,
-          "provenance": "real",
-          "message": "Leh Main Market is scheduled on Day 2 and again on Day 7. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-17#r1",
-          "day": 6,
-          "provenance": "revision",
-          "message": "Delhi is scheduled on Day 1 and again on Day 6. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-17",
-          "day": 5,
-          "provenance": "real",
-          "message": "Delhi is scheduled on Day 1 and again on Day 5. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-19#r2",
-          "day": 7,
-          "provenance": "revision",
-          "message": "Mall Road is scheduled on Day 1 and again on Day 7. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-19",
-          "day": 7,
-          "provenance": "real",
-          "message": "Mall Road is scheduled on Day 1 and again on Day 7. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "9:leh_ladakh_2026-09-12_2026-09-18",
-          "day": 6,
-          "provenance": "real",
-          "message": "Leh Market is scheduled on Day 1 and again on Day 6. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:nashik_2026-09-10_2026-09-17",
-          "day": 7,
-          "provenance": "real",
-          "message": "Nashik City Market is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:bali_2027-11-12_2027-11-19",
-          "day": 7,
-          "provenance": "real",
-          "message": "Nusa Dua Beach is scheduled on Day 4 and again on Day 7. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:leh_ladakh_2027-07-01_2027-07-08",
-          "day": 7,
-          "provenance": "real",
-          "message": "Leh Main Market is scheduled on Day 2 and again on Day 7. Keep the better one and give the other day its own place."
-        },
-        {
-          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
-          "day": 5,
-          "provenance": "real",
-          "message": "Delhi is scheduled on Day 1 and again on Day 5. Keep the better one and give the other day its own place."
-        }
-      ]
-    },
-    {
-      "key": "M2|drop-first-leg removed part of the trip and no rule noticed.",
+      "key": "M2|drop-last-leg removed part of the trip and no rule noticed.",
       "rule": "M2",
-      "symptom": "drop-first-leg removed part of the trip and no rule noticed.",
+      "symptom": "drop-last-leg removed part of the trip and no rule noticed.",
       "count": 13,
       "new": true,
       "accepted_on": "",
       "provenances": {
         "real": 13
-      },
-      "example": "drop-first-leg removed part of the trip and no rule noticed.",
-      "findings": [
-        {
-          "record_id": "22:meghalaya_2027-11-02_2027-11-08",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "26:gujarat_2026-12-07_2026-12-12",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "1:paris_2026-09-06_2026-09-11",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "4:varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-11",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-11",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:meghalaya_2027-11-02_2027-11-08",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:gujarat_2026-12-07_2026-12-12",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "tripplanner-sbx-3-bugfixes:paris_2026-09-06_2026-09-11",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "tripplanner-sbx-4-implement-labs:paris_2026-09-06_2026-09-11",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "tripplanner-sbx-4-implement-labs:varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        },
-        {
-          "record_id": "tripplanner-sbx-4-implement-labs:varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
-          "day": null,
-          "provenance": "real",
-          "message": "drop-first-leg removed part of the trip and no rule noticed."
-        }
-      ]
-    },
-    {
-      "key": "M2|drop-last-leg removed part of the trip and no rule noticed.",
-      "rule": "M2",
-      "symptom": "drop-last-leg removed part of the trip and no rule noticed.",
-      "count": 12,
-      "new": true,
-      "accepted_on": "",
-      "provenances": {
-        "real": 12
       },
       "example": "drop-last-leg removed part of the trip and no rule noticed.",
       "findings": [
@@ -5585,6 +5762,12 @@
         },
         {
           "record_id": "9:leh_ladakh_2026-09-12_2026-09-18",
+          "day": null,
+          "provenance": "real",
+          "message": "drop-last-leg removed part of the trip and no rule noticed."
+        },
+        {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
           "day": null,
           "provenance": "real",
           "message": "drop-last-leg removed part of the trip and no rule noticed."
@@ -5643,12 +5826,12 @@
       "key": "gap|Departure day has no flight or named road, bus, or train journey from <place> back to <place> after checkout.",
       "rule": "gap",
       "symptom": "Departure day has no flight or named road, bus, or train journey from <place> back to <place> after checkout.",
-      "count": 12,
+      "count": 13,
       "new": true,
       "accepted_on": "",
       "provenances": {
         "revision": 3,
-        "real": 9
+        "real": 10
       },
       "example": "Departure day has no flight or named road, bus, or train journey from Andaman (Port Blair & Havelock) back to Kolkata after checkout.",
       "findings": [
@@ -5695,6 +5878,12 @@
           "message": "Departure day has no flight or named road, bus, or train journey from Gujarat back to Mumbai after checkout."
         },
         {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": null,
+          "provenance": "real",
+          "message": "Departure day has no flight or named road, bus, or train journey from Paris back to Bangalore after checkout."
+        },
+        {
           "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
           "day": null,
           "provenance": "real",
@@ -5723,6 +5912,180 @@
           "day": null,
           "provenance": "real",
           "message": "Departure day has no flight or named road, bus, or train journey from New York back to Delhi after checkout."
+        }
+      ]
+    },
+    {
+      "key": "gap|No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned.",
+      "rule": "gap",
+      "symptom": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned.",
+      "count": 13,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "revision": 12,
+        "real": 1
+      },
+      "example": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned.",
+      "findings": [
+        {
+          "record_id": "21:bali_2027-11-12_2027-11-19#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "17:coorg_2027-07-15_2027-07-19#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "25:udaipur_2027-02-14_2027-02-17#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "11:kerala_2026-12-12_2026-12-18#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "13:leh_ladakh_2027-07-01_2027-07-08#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "22:meghalaya_2027-11-02_2027-11-08#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "29:new_york_2027-10-09_2027-10-14#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "27:lonavala_2027-01-20_2027-01-23#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "18:singapore_2027-06-04_2027-06-09#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "24:sri_lanka_2027-08-04_2027-08-13#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-19#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "6:mussoorie_2026-09-12_2026-09-16#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        },
+        {
+          "record_id": "7:dehradun_2026-09-12_2026-09-16",
+          "day": null,
+          "provenance": "real",
+          "message": "No day-by-day itinerary is saved. Save the full structured day_wise_itinerary before presenting the trip as planned."
+        }
+      ]
+    },
+    {
+      "key": "R4|<place> on Day N never reached the map (no_location).",
+      "rule": "R4",
+      "symptom": "<place> on Day N never reached the map (no_location).",
+      "count": 11,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "revision": 1,
+        "real": 10
+      },
+      "example": "Mumbai on Day 1 never reached the map (no_location).",
+      "findings": [
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
+          "day": 1,
+          "provenance": "revision",
+          "message": "Mumbai on Day 1 never reached the map (no_location)."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
+          "day": 1,
+          "provenance": "real",
+          "message": "Mumbai on Day 1 never reached the map (no_location)."
+        },
+        {
+          "record_id": "28:hampi_2027-01-05_2027-01-09",
+          "day": 1,
+          "provenance": "real",
+          "message": "Mobility Accessible, Roll in Shower on Day 1 never reached the map (no_location)."
+        },
+        {
+          "record_id": "tripplanner-sbx-1-super-intelligence:paris_2026-09-06_2026-09-11",
+          "day": 3,
+          "provenance": "real",
+          "message": "Café Charlot on Day 3 never reached the map (no_location)."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-11",
+          "day": 3,
+          "provenance": "real",
+          "message": "Café Charlot on Day 3 never reached the map (no_location)."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-11",
+          "day": 3,
+          "provenance": "real",
+          "message": "Café Charlot on Day 3 never reached the map (no_location)."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
+          "day": 3,
+          "provenance": "real",
+          "message": "Café Charlot on Day 3 never reached the map (no_location)."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:pondicherry_2026-11-07_2026-11-09",
+          "day": 2,
+          "provenance": "real",
+          "message": "Mercara Gold Estate Coffee Plantation on Day 2 never reached the map (no_location)."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:pondicherry_2026-11-07_2026-11-09",
+          "day": 2,
+          "provenance": "real",
+          "message": "Abbey Falls on Day 2 never reached the map (no_location)."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:coorg_2027-07-15_2027-07-19",
+          "day": 2,
+          "provenance": "real",
+          "message": "Abbey Falls on Day 2 never reached the map (no_location)."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:hampi_2027-01-05_2027-01-09",
+          "day": 1,
+          "provenance": "real",
+          "message": "Mobility Accessible, Roll in Shower on Day 1 never reached the map (no_location)."
         }
       ]
     },
@@ -5886,12 +6249,12 @@
       "key": "I11|<place> is closed on Tuesdays, and Day N is one. Move it to a day it is open.",
       "rule": "I11",
       "symptom": "<place> is closed on Tuesdays, and Day N is one. Move it to a day it is open.",
-      "count": 8,
+      "count": 9,
       "new": true,
       "accepted_on": "",
       "provenances": {
         "revision": 1,
-        "real": 7
+        "real": 8
       },
       "example": "Louvre Museum is closed on Tuesdays, and Day 2 is one. Move it to a day it is open.",
       "findings": [
@@ -5906,6 +6269,12 @@
           "day": 2,
           "provenance": "real",
           "message": "Louvre Museum is closed on Tuesdays, and Day 2 is one. Move it to a day it is open."
+        },
+        {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": 3,
+          "provenance": "real",
+          "message": "Louvre Museum is closed on Tuesdays, and Day 3 is one. Move it to a day it is open."
         },
         {
           "record_id": "tripplanner-sbx-1-super-intelligence:paris_2026-09-06_2026-09-11",
@@ -5946,78 +6315,15 @@
       ]
     },
     {
-      "key": "R4|<place> on Day N never reached the map (no_location).",
-      "rule": "R4",
-      "symptom": "<place> on Day N never reached the map (no_location).",
-      "count": 8,
-      "new": true,
-      "accepted_on": "",
-      "provenances": {
-        "revision": 1,
-        "real": 7
-      },
-      "example": "Mumbai on Day 1 never reached the map (no_location).",
-      "findings": [
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
-          "day": 1,
-          "provenance": "revision",
-          "message": "Mumbai on Day 1 never reached the map (no_location)."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
-          "day": 1,
-          "provenance": "real",
-          "message": "Mumbai on Day 1 never reached the map (no_location)."
-        },
-        {
-          "record_id": "28:hampi_2027-01-05_2027-01-09",
-          "day": 1,
-          "provenance": "real",
-          "message": "Mobility Accessible, Roll in Shower on Day 1 never reached the map (no_location)."
-        },
-        {
-          "record_id": "tripplanner-sbx-1-super-intelligence:paris_2026-09-06_2026-09-11",
-          "day": 3,
-          "provenance": "real",
-          "message": "Café Charlot on Day 3 never reached the map (no_location)."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:pondicherry_2026-11-07_2026-11-09",
-          "day": 2,
-          "provenance": "real",
-          "message": "Mercara Gold Estate Coffee Plantation on Day 2 never reached the map (no_location)."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:pondicherry_2026-11-07_2026-11-09",
-          "day": 2,
-          "provenance": "real",
-          "message": "Abbey Falls on Day 2 never reached the map (no_location)."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:coorg_2027-07-15_2027-07-19",
-          "day": 2,
-          "provenance": "real",
-          "message": "Abbey Falls on Day 2 never reached the map (no_location)."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:hampi_2027-01-05_2027-01-09",
-          "day": 1,
-          "provenance": "real",
-          "message": "Mobility Accessible, Roll in Shower on Day 1 never reached the map (no_location)."
-        }
-      ]
-    },
-    {
       "key": "gap|Arrival day has no flight or named road, bus, or train journey from <place> to <place> before destination check-in.",
       "rule": "gap",
       "symptom": "Arrival day has no flight or named road, bus, or train journey from <place> to <place> before destination check-in.",
-      "count": 6,
+      "count": 7,
       "new": true,
       "accepted_on": "",
       "provenances": {
         "revision": 1,
-        "real": 5
+        "real": 6
       },
       "example": "Arrival day has no flight or named road, bus, or train journey from Bangalore to Goa before destination check-in.",
       "findings": [
@@ -6040,6 +6346,12 @@
           "message": "Arrival day has no flight or named road, bus, or train journey from Mumbai to Gujarat before destination check-in."
         },
         {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": null,
+          "provenance": "real",
+          "message": "Arrival day has no flight or named road, bus, or train journey from Bangalore to Paris before destination check-in."
+        },
+        {
           "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
           "day": null,
           "provenance": "real",
@@ -6056,6 +6368,202 @@
           "day": null,
           "provenance": "real",
           "message": "Arrival day has no flight or named road, bus, or train journey from Delhi to New York before destination check-in."
+        }
+      ]
+    },
+    {
+      "key": "I1|<place> starts at N:N on Day N, before <place> gets you there.",
+      "rule": "I1",
+      "symptom": "<place> starts at N:N on Day N, before <place> gets you there.",
+      "count": 6,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "revision": 2,
+        "real": 4
+      },
+      "example": "Haveli, Karnal starts at 10:00 on Day 1, before Drive: Delhi to Shimla gets you there.",
+      "findings": [
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 1,
+          "provenance": "revision",
+          "message": "Haveli, Karnal starts at 10:00 on Day 1, before Drive: Delhi to Shimla gets you there."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10#r1",
+          "day": 1,
+          "provenance": "revision",
+          "message": "Timber Trail, Parwanoo starts at 13:30 on Day 1, before Drive: Delhi to Shimla gets you there."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 1,
+          "provenance": "real",
+          "message": "Haveli, Karnal starts at 10:00 on Day 1, before Drive: Delhi to Shimla gets you there."
+        },
+        {
+          "record_id": "12:shimla_2027-05-05_2027-05-10",
+          "day": 1,
+          "provenance": "real",
+          "message": "Timber Trail, Parwanoo starts at 13:30 on Day 1, before Drive: Delhi to Shimla gets you there."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 1,
+          "provenance": "real",
+          "message": "Haveli, Karnal starts at 10:00 on Day 1, before Drive: Delhi to Shimla gets you there."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:shimla_2027-05-05_2027-05-10",
+          "day": 1,
+          "provenance": "real",
+          "message": "Timber Trail, Parwanoo starts at 13:30 on Day 1, before Drive: Delhi to Shimla gets you there."
+        }
+      ]
+    },
+    {
+      "key": "I9|Day N starts at <place>, far from where Day N ended, and no journey connects them.",
+      "rule": "I9",
+      "symptom": "Day N starts at <place>, far from where Day N ended, and no journey connects them.",
+      "count": 6,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "real": 6
+      },
+      "example": "Day 3 starts at Dubare Elephant Camp, far from where Day 2 ended, and no journey connects them.",
+      "findings": [
+        {
+          "record_id": "17:coorg_2027-07-15_2027-07-19",
+          "day": 3,
+          "provenance": "real",
+          "message": "Day 3 starts at Dubare Elephant Camp, far from where Day 2 ended, and no journey connects them."
+        },
+        {
+          "record_id": "25:udaipur_2027-02-14_2027-02-17",
+          "day": 2,
+          "provenance": "real",
+          "message": "Day 2 starts at Hotel (TBD), far from where Day 1 ended, and no journey connects them."
+        },
+        {
+          "record_id": "25:udaipur_2027-02-14_2027-02-17",
+          "day": 3,
+          "provenance": "real",
+          "message": "Day 3 starts at Hotel (TBD), far from where Day 2 ended, and no journey connects them."
+        },
+        {
+          "record_id": "5:manali_2026-09-12_2026-09-17",
+          "day": 2,
+          "provenance": "real",
+          "message": "Day 2 starts at DoubleTree by Hilton Manali, far from where Day 1 ended, and no journey connects them."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:new_york_2027-10-09_2027-10-14",
+          "day": 6,
+          "provenance": "real",
+          "message": "Day 6 starts at Depart for airport, far from where Day 5 ended, and no journey connects them."
+        },
+        {
+          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
+          "day": 2,
+          "provenance": "real",
+          "message": "Day 2 starts at DoubleTree by Hilton Manali, far from where Day 1 ended, and no journey connects them."
+        }
+      ]
+    },
+    {
+      "key": "R2|Day N spends N hours going from <place> to <place>.",
+      "rule": "R2",
+      "symptom": "Day N spends N hours going from <place> to <place>.",
+      "count": 6,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "real": 6
+      },
+      "example": "Day 7 spends 224 hours going from Kempegowda International Airport Bengaluru to Hotel Chambiges Elysees.",
+      "findings": [
+        {
+          "record_id": "32:paris_2026-09-06_2026-09-12",
+          "day": 7,
+          "provenance": "real",
+          "message": "Day 7 spends 224 hours going from Kempegowda International Airport Bengaluru to Hotel Chambiges Elysees."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
+          "day": 7,
+          "provenance": "real",
+          "message": "Day 7 spends 224 hours going from Kempegowda International Airport Bengaluru to Hotel Chambiges Elysees."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
+          "day": 9,
+          "provenance": "real",
+          "message": "Day 9 spends 26 hours going from Hotel in Jaipur to Mumbai."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
+          "day": 9,
+          "provenance": "real",
+          "message": "Day 9 spends 26 hours going from Mumbai to Hotel in Jaipur."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:kerala_2026-12-12_2026-12-18",
+          "day": 4,
+          "provenance": "real",
+          "message": "Day 4 spends 21 hours going from Periyar Wildlife Sanctuary to Spice Plantation Tour."
+        },
+        {
+          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
+          "day": 5,
+          "provenance": "real",
+          "message": "Day 5 spends 19 hours going from Delhi to DoubleTree by Hilton Manali."
+        }
+      ]
+    },
+    {
+      "key": "M1|strand-a-stop made the trip worse, and the report went from N to N findings.",
+      "rule": "M1",
+      "symptom": "strand-a-stop made the trip worse, and the report went from N to N findings.",
+      "count": 5,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "real": 4,
+        "revision": 1
+      },
+      "example": "strand-a-stop made the trip worse, and the report went from 6 to 5 findings.",
+      "findings": [
+        {
+          "record_id": "25:udaipur_2027-02-14_2027-02-17",
+          "day": null,
+          "provenance": "real",
+          "message": "strand-a-stop made the trip worse, and the report went from 6 to 5 findings."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "strand-a-stop made the trip worse, and the report went from 20 to 19 findings."
+        },
+        {
+          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
+          "day": null,
+          "provenance": "real",
+          "message": "strand-a-stop made the trip worse, and the report went from 18 to 17 findings."
+        },
+        {
+          "record_id": "tripplanner-sbx-1-super-intelligence:paris_2026-09-06_2026-09-11",
+          "day": null,
+          "provenance": "real",
+          "message": "strand-a-stop made the trip worse, and the report went from 3 to 2 findings."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
+          "day": null,
+          "provenance": "real",
+          "message": "strand-a-stop made the trip worse, and the report went from 18 to 17 findings."
         }
       ]
     },
@@ -6105,46 +6613,92 @@
       ]
     },
     {
-      "key": "R2|Day N spends N hours going from <place> to <place>.",
-      "rule": "R2",
-      "symptom": "Day N spends N hours going from <place> to <place>.",
+      "key": "R3|Day N draws an inter-city Train from <place> to <place> that covers no distance.",
+      "rule": "R3",
+      "symptom": "Day N draws an inter-city Train from <place> to <place> that covers no distance.",
       "count": 5,
       "new": true,
       "accepted_on": "",
       "provenances": {
-        "real": 5
+        "revision": 1,
+        "real": 4
       },
-      "example": "Day 7 spends 224 hours going from Kempegowda International Airport Bengaluru to Hotel Chambiges Elysees.",
+      "example": "Day 1 draws an inter-city Train from Hampi Bazaar to Virupaksha Temple that covers no distance.",
       "findings": [
         {
-          "record_id": "tripplanner-sbx-2-auto-validation:paris_2026-09-06_2026-09-12",
-          "day": 7,
-          "provenance": "real",
-          "message": "Day 7 spends 224 hours going from Kempegowda International Airport Bengaluru to Hotel Chambiges Elysees."
+          "record_id": "28:hampi_2027-01-05_2027-01-09#r1",
+          "day": 1,
+          "provenance": "revision",
+          "message": "Day 1 draws an inter-city Train from Hampi Bazaar to Virupaksha Temple that covers no distance."
         },
         {
-          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
-          "day": 9,
+          "record_id": "28:hampi_2027-01-05_2027-01-09",
+          "day": 1,
           "provenance": "real",
-          "message": "Day 9 spends 26 hours going from Hotel in Jaipur to Mumbai."
+          "message": "Day 1 draws an inter-city Train from Hampi Bazaar to Virupaksha Temple that covers no distance."
         },
         {
-          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
-          "day": 9,
-          "provenance": "real",
-          "message": "Day 9 spends 26 hours going from Mumbai to Hotel in Jaipur."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:kerala_2026-12-12_2026-12-18",
+          "record_id": "tripplanner-sbx-2-auto-validation:paris_2027-04-05_2027-04-12",
           "day": 4,
           "provenance": "real",
-          "message": "Day 4 spends 21 hours going from Periyar Wildlife Sanctuary to Spice Plantation Tour."
+          "message": "Day 4 draws an inter-city Train from Palace of Versailles to La Petite Venise that covers no distance."
         },
         {
-          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
-          "day": 5,
+          "record_id": "tripplanner-sbx-2-auto-validation:paris_2027-04-05_2027-04-12",
+          "day": 4,
           "provenance": "real",
-          "message": "Day 5 spends 19 hours going from Delhi to DoubleTree by Hilton Manali."
+          "message": "Day 4 draws an inter-city Train from La Petite Venise to Versailles Gardens that covers no distance."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:hampi_2027-01-05_2027-01-09",
+          "day": 1,
+          "provenance": "real",
+          "message": "Day 1 draws an inter-city Train from Hampi Bazaar to Virupaksha Temple that covers no distance."
+        }
+      ]
+    },
+    {
+      "key": "gap|Hotel placeholders remain on Day(s) N, N, N.",
+      "rule": "gap",
+      "symptom": "Hotel placeholders remain on Day(s) N, N, N.",
+      "count": 5,
+      "new": true,
+      "accepted_on": "",
+      "provenances": {
+        "real": 4,
+        "revision": 1
+      },
+      "example": "Hotel placeholders remain on Day(s) 1, 2, 3.",
+      "findings": [
+        {
+          "record_id": "25:udaipur_2027-02-14_2027-02-17",
+          "day": null,
+          "provenance": "real",
+          "message": "Hotel placeholders remain on Day(s) 1, 2, 3."
+        },
+        {
+          "record_id": "5:pondicherry_2026-11-07_2026-11-09#r1",
+          "day": null,
+          "provenance": "revision",
+          "message": "Hotel placeholders remain on Day(s) 1, 2, 3."
+        },
+        {
+          "record_id": "5:pondicherry_2026-11-07_2026-11-09",
+          "day": null,
+          "provenance": "real",
+          "message": "Hotel placeholders remain on Day(s) 1, 2, 3."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:pondicherry_2026-11-07_2026-11-09",
+          "day": null,
+          "provenance": "real",
+          "message": "Hotel placeholders remain on Day(s) 1, 2, 3."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:udaipur_2027-02-14_2027-02-17",
+          "day": null,
+          "provenance": "real",
+          "message": "Hotel placeholders remain on Day(s) 1, 2, 3."
         }
       ]
     },
@@ -6184,83 +6738,6 @@
           "day": 4,
           "provenance": "real",
           "message": "The Empire Cafe is closed on Saturdays, and Day 4 is one. Move it to a day it is open."
-        }
-      ]
-    },
-    {
-      "key": "I9|Day N starts at <place>, far from where Day N ended, and no journey connects them.",
-      "rule": "I9",
-      "symptom": "Day N starts at <place>, far from where Day N ended, and no journey connects them.",
-      "count": 4,
-      "new": true,
-      "accepted_on": "",
-      "provenances": {
-        "real": 4
-      },
-      "example": "Day 3 starts at Dubare Elephant Camp, far from where Day 2 ended, and no journey connects them.",
-      "findings": [
-        {
-          "record_id": "17:coorg_2027-07-15_2027-07-19",
-          "day": 3,
-          "provenance": "real",
-          "message": "Day 3 starts at Dubare Elephant Camp, far from where Day 2 ended, and no journey connects them."
-        },
-        {
-          "record_id": "5:manali_2026-09-12_2026-09-17",
-          "day": 2,
-          "provenance": "real",
-          "message": "Day 2 starts at DoubleTree by Hilton Manali, far from where Day 1 ended, and no journey connects them."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:new_york_2027-10-09_2027-10-14",
-          "day": 6,
-          "provenance": "real",
-          "message": "Day 6 starts at Depart for airport, far from where Day 5 ended, and no journey connects them."
-        },
-        {
-          "record_id": "tripplanner-sbx-6-lab-factory:manali_2026-09-12_2026-09-17",
-          "day": 2,
-          "provenance": "real",
-          "message": "Day 2 starts at DoubleTree by Hilton Manali, far from where Day 1 ended, and no journey connects them."
-        }
-      ]
-    },
-    {
-      "key": "M1|strand-a-stop made the trip worse, and the report went from N to N findings.",
-      "rule": "M1",
-      "symptom": "strand-a-stop made the trip worse, and the report went from N to N findings.",
-      "count": 4,
-      "new": true,
-      "accepted_on": "",
-      "provenances": {
-        "revision": 1,
-        "real": 3
-      },
-      "example": "strand-a-stop made the trip worse, and the report went from 20 to 19 findings.",
-      "findings": [
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "strand-a-stop made the trip worse, and the report went from 20 to 19 findings."
-        },
-        {
-          "record_id": "10:rajasthan_2027-02-02_2027-02-10",
-          "day": null,
-          "provenance": "real",
-          "message": "strand-a-stop made the trip worse, and the report went from 18 to 17 findings."
-        },
-        {
-          "record_id": "tripplanner-sbx-1-super-intelligence:paris_2026-09-06_2026-09-11",
-          "day": null,
-          "provenance": "real",
-          "message": "strand-a-stop made the trip worse, and the report went from 3 to 2 findings."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:rajasthan_2027-02-02_2027-02-10",
-          "day": null,
-          "provenance": "real",
-          "message": "strand-a-stop made the trip worse, and the report went from 18 to 17 findings."
         }
       ]
     },
@@ -6343,68 +6820,34 @@
       ]
     },
     {
-      "key": "R3|Day N draws an inter-city Train from <place> to <place> that covers no distance.",
-      "rule": "R3",
-      "symptom": "Day N draws an inter-city Train from <place> to <place> that covers no distance.",
+      "key": "M1|reverse-days made the trip worse, and the report went from N to N findings.",
+      "rule": "M1",
+      "symptom": "reverse-days made the trip worse, and the report went from N to N findings.",
       "count": 3,
       "new": true,
       "accepted_on": "",
       "provenances": {
-        "revision": 1,
-        "real": 2
+        "real": 3
       },
-      "example": "Day 1 draws an inter-city Train from Hampi Bazaar to Virupaksha Temple that covers no distance.",
+      "example": "reverse-days made the trip worse, and the report went from 6 to 5 findings.",
       "findings": [
         {
-          "record_id": "28:hampi_2027-01-05_2027-01-09#r1",
-          "day": 1,
-          "provenance": "revision",
-          "message": "Day 1 draws an inter-city Train from Hampi Bazaar to Virupaksha Temple that covers no distance."
-        },
-        {
-          "record_id": "28:hampi_2027-01-05_2027-01-09",
-          "day": 1,
-          "provenance": "real",
-          "message": "Day 1 draws an inter-city Train from Hampi Bazaar to Virupaksha Temple that covers no distance."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:hampi_2027-01-05_2027-01-09",
-          "day": 1,
-          "provenance": "real",
-          "message": "Day 1 draws an inter-city Train from Hampi Bazaar to Virupaksha Temple that covers no distance."
-        }
-      ]
-    },
-    {
-      "key": "gap|Hotel placeholders remain on Day(s) N, N, N.",
-      "rule": "gap",
-      "symptom": "Hotel placeholders remain on Day(s) N, N, N.",
-      "count": 3,
-      "new": true,
-      "accepted_on": "",
-      "provenances": {
-        "revision": 1,
-        "real": 2
-      },
-      "example": "Hotel placeholders remain on Day(s) 1, 2, 3.",
-      "findings": [
-        {
-          "record_id": "5:pondicherry_2026-11-07_2026-11-09#r1",
-          "day": null,
-          "provenance": "revision",
-          "message": "Hotel placeholders remain on Day(s) 1, 2, 3."
-        },
-        {
-          "record_id": "5:pondicherry_2026-11-07_2026-11-09",
+          "record_id": "25:udaipur_2027-02-14_2027-02-17",
           "day": null,
           "provenance": "real",
-          "message": "Hotel placeholders remain on Day(s) 1, 2, 3."
+          "message": "reverse-days made the trip worse, and the report went from 6 to 5 findings."
         },
         {
-          "record_id": "tripplanner-sbx-2-auto-validation:pondicherry_2026-11-07_2026-11-09",
+          "record_id": "9:leh_ladakh_2026-09-12_2026-09-18",
           "day": null,
           "provenance": "real",
-          "message": "Hotel placeholders remain on Day(s) 1, 2, 3."
+          "message": "reverse-days made the trip worse, and the report went from 10 to 9 findings."
+        },
+        {
+          "record_id": "tripplanner-sbx-2-auto-validation:new_york_2027-10-09_2027-10-14",
+          "day": null,
+          "provenance": "real",
+          "message": "reverse-days made the trip worse, and the report went from 9 to 7 findings."
         }
       ]
     },
@@ -6437,32 +6880,6 @@
           "day": null,
           "provenance": "real",
           "message": "Sparse itinerary: Day 5 has about 180 planned minutes; this profile's useful-day threshold is 198 minutes; Day 7 has about 0 planned minutes; this profile's useful-day threshold is 90 minutes. Rebalance meaningful nearby stops or explicitly label intentional leisure; do not add filler."
-        }
-      ]
-    },
-    {
-      "key": "M1|reverse-days made the trip worse, and the report went from N to N findings.",
-      "rule": "M1",
-      "symptom": "reverse-days made the trip worse, and the report went from N to N findings.",
-      "count": 2,
-      "new": true,
-      "accepted_on": "",
-      "provenances": {
-        "real": 2
-      },
-      "example": "reverse-days made the trip worse, and the report went from 10 to 9 findings.",
-      "findings": [
-        {
-          "record_id": "9:leh_ladakh_2026-09-12_2026-09-18",
-          "day": null,
-          "provenance": "real",
-          "message": "reverse-days made the trip worse, and the report went from 10 to 9 findings."
-        },
-        {
-          "record_id": "tripplanner-sbx-2-auto-validation:new_york_2027-10-09_2027-10-14",
-          "day": null,
-          "provenance": "real",
-          "message": "reverse-days made the trip worse, and the report went from 9 to 7 findings."
         }
       ]
     },
@@ -6511,8 +6928,8 @@
   "observations": [
     {
       "label": "Trips",
-      "value": "112",
-      "detail": "546 planned days"
+      "value": "117",
+      "detail": "588 planned days"
     },
     {
       "label": "Trip length",
@@ -6526,18 +6943,18 @@
     },
     {
       "label": "Days with a named meal",
-      "value": "58%",
-      "detail": "228 days name nowhere to eat"
+      "value": "60%",
+      "detail": "233 days name nowhere to eat"
     },
     {
       "label": "Days with nothing planned",
-      "value": "10%",
+      "value": "9%",
       "detail": "beyond the stay and any journey"
     },
     {
       "label": "Arrival days with under two places",
       "value": "51%",
-      "detail": "of 74 arrival days"
+      "detail": "of 80 arrival days"
     },
     {
       "label": "Stays per trip",
@@ -6546,12 +6963,12 @@
     },
     {
       "label": "How the journey is made",
-      "value": "Drive 145, Flight 123, Train 32, unnamed 43",
+      "value": "Drive 159, Flight 127, Train 32, unnamed 49",
       "detail": "legs by mode across every trip"
     },
     {
       "label": "Travel scope",
-      "value": "unset 96",
+      "value": "destination_only 2, unset 102",
       "detail": "trips that say how the traveller gets there"
     }
   ],
@@ -6661,8 +7078,8 @@
       "findings": 3
     },
     {
-      "id": "25:udaipur_2027-02-14_2027-02-17",
-      "provenance": "real",
+      "id": "25:udaipur_2027-02-14_2027-02-17#r1",
+      "provenance": "revision",
       "source": "/Users/mugoy/repos/tripplanner.worktrees/sbx-2-auto-validation/debug-store/users/corpus-destination-only-udaipur/0025__udaipur-2027-02-14-2027-02-17__2026-08-15.json",
       "destination": "Udaipur",
       "days": 0,
@@ -6672,6 +7089,19 @@
       "trip_id": "udaipur_2027-02-14_2027-02-17",
       "openable": false,
       "findings": 3
+    },
+    {
+      "id": "25:udaipur_2027-02-14_2027-02-17",
+      "provenance": "real",
+      "source": "/Users/mugoy/repos/tripplanner.worktrees/sbx-2-auto-validation/debug-store/users/corpus-destination-only-udaipur/0025__udaipur-2027-02-14-2027-02-17__2026-08-15.json",
+      "destination": "Udaipur",
+      "days": 3,
+      "departure_date": "2027-02-14",
+      "return_date": "2027-02-17",
+      "user_id": "",
+      "trip_id": "udaipur_2027-02-14_2027-02-17",
+      "openable": false,
+      "findings": 9
     },
     {
       "id": "14:dubai_2026-11-20_2026-11-24#r1",
@@ -7012,17 +7442,30 @@
       "findings": 29
     },
     {
-      "id": "12:shimla_2027-05-05_2027-05-10",
-      "provenance": "real",
+      "id": "12:shimla_2027-05-05_2027-05-10#r1",
+      "provenance": "revision",
       "source": "/Users/mugoy/repos/tripplanner.worktrees/sbx-2-auto-validation/debug-store/users/corpus-shimla-seniors/0012__shimla-2027-05-05-2027-05-10__2026-08-15.json",
       "destination": "Shimla",
-      "days": 0,
+      "days": 5,
       "departure_date": "2027-05-05",
       "return_date": "2027-05-10",
       "user_id": "",
       "trip_id": "shimla_2027-05-05_2027-05-10",
       "openable": false,
-      "findings": 2
+      "findings": 15
+    },
+    {
+      "id": "12:shimla_2027-05-05_2027-05-10",
+      "provenance": "real",
+      "source": "/Users/mugoy/repos/tripplanner.worktrees/sbx-2-auto-validation/debug-store/users/corpus-shimla-seniors/0012__shimla-2027-05-05-2027-05-10__2026-08-15.json",
+      "destination": "Shimla",
+      "days": 5,
+      "departure_date": "2027-05-05",
+      "return_date": "2027-05-10",
+      "user_id": "",
+      "trip_id": "shimla_2027-05-05_2027-05-10",
+      "openable": false,
+      "findings": 11
     },
     {
       "id": "18:singapore_2027-06-04_2027-06-09#r1",
@@ -7467,6 +7910,45 @@
       "findings": 2
     },
     {
+      "id": "30:goa_2026-09-10_2026-09-17",
+      "provenance": "real",
+      "source": "/Users/mugoy/repos/tripplanner.worktrees/sbx-2-auto-validation/debug-store/users/google-101851654028336975901/0030__goa-2026-09-10-2026-09-17__2026-08-13.json",
+      "destination": "Goa",
+      "days": 7,
+      "departure_date": "2026-09-10",
+      "return_date": "2026-09-17",
+      "user_id": "",
+      "trip_id": "goa_2026-09-10_2026-09-17",
+      "openable": false,
+      "findings": 1
+    },
+    {
+      "id": "31:nashik_2026-09-10_2026-09-17",
+      "provenance": "real",
+      "source": "/Users/mugoy/repos/tripplanner.worktrees/sbx-2-auto-validation/debug-store/users/google-101851654028336975901/0031__nashik-2026-09-10-2026-09-17__2026-08-13.json",
+      "destination": "Nashik",
+      "days": 7,
+      "departure_date": "2026-09-10",
+      "return_date": "2026-09-17",
+      "user_id": "",
+      "trip_id": "nashik_2026-09-10_2026-09-17",
+      "openable": false,
+      "findings": 2
+    },
+    {
+      "id": "32:paris_2026-09-06_2026-09-12",
+      "provenance": "real",
+      "source": "/Users/mugoy/repos/tripplanner.worktrees/sbx-2-auto-validation/debug-store/users/google-101851654028336975901/0032__paris-2026-09-06-2026-09-12__2026-08-13.json",
+      "destination": "Paris",
+      "days": 7,
+      "departure_date": "2026-09-06",
+      "return_date": "2026-09-12",
+      "user_id": "",
+      "trip_id": "paris_2026-09-06_2026-09-12",
+      "openable": false,
+      "findings": 12
+    },
+    {
       "id": "tripplanner-sbx-1-super-intelligence:paris_2026-09-06_2026-09-11",
       "provenance": "real",
       "source": "tripplanner-sbx-1-super-intelligence",
@@ -7503,7 +7985,7 @@
       "user_id": "google-101851654028336975901",
       "trip_id": "paris_2026-09-06_2026-09-11",
       "openable": true,
-      "findings": 16
+      "findings": 18
     },
     {
       "id": "tripplanner-sbx-2-auto-validation:rajasthan_2026-09-10_2026-09-17",
@@ -7529,7 +8011,7 @@
       "user_id": "web-00000000-0000-4000-8000-000000000001",
       "trip_id": "paris_2026-09-06_2026-09-11",
       "openable": true,
-      "findings": 16
+      "findings": 18
     },
     {
       "id": "tripplanner-sbx-2-auto-validation:rajasthan_2026-09-10_2026-09-17",
@@ -7581,7 +8063,7 @@
       "user_id": "google-101851654028336975901",
       "trip_id": "paris_2026-09-06_2026-09-12",
       "openable": true,
-      "findings": 12
+      "findings": 13
     },
     {
       "id": "tripplanner-sbx-2-auto-validation:pondicherry_2026-11-07_2026-11-09",
@@ -7633,7 +8115,7 @@
       "user_id": "corpus-paris-longhaul",
       "trip_id": "paris_2027-04-05_2027-04-12",
       "openable": true,
-      "findings": 11
+      "findings": 13
     },
     {
       "id": "tripplanner-sbx-2-auto-validation:japan_tokyo_kyoto_2027-04-03_2027-04-09",
@@ -7666,13 +8148,13 @@
       "provenance": "real",
       "source": "tripplanner-sbx-2-auto-validation",
       "destination": "Shimla",
-      "days": 0,
+      "days": 5,
       "departure_date": "2027-05-05",
       "return_date": "2027-05-10",
       "user_id": "corpus-shimla-seniors",
       "trip_id": "shimla_2027-05-05_2027-05-10",
       "openable": true,
-      "findings": 2
+      "findings": 12
     },
     {
       "id": "tripplanner-sbx-2-auto-validation:varanasi_and_ayodhya_2027-02-03_2027-02-08",
@@ -7861,7 +8343,7 @@
       "provenance": "real",
       "source": "tripplanner-sbx-2-auto-validation",
       "destination": "Udaipur",
-      "days": 0,
+      "days": 3,
       "departure_date": "2027-02-14",
       "return_date": "2027-02-17",
       "user_id": "corpus-destination-only-udaipur",
@@ -7922,6 +8404,19 @@
       "findings": 5
     },
     {
+      "id": "tripplanner-sbx-3-bugfixes:rajasthan_2026-09-10_2026-09-17",
+      "provenance": "real",
+      "source": "tripplanner-sbx-3-bugfixes",
+      "destination": "Rajasthan",
+      "days": 7,
+      "departure_date": "2026-09-10",
+      "return_date": "2026-09-17",
+      "user_id": "google-101851654028336975901",
+      "trip_id": "rajasthan_2026-09-10_2026-09-17",
+      "openable": true,
+      "findings": 2
+    },
+    {
       "id": "tripplanner-sbx-4-implement-labs:paris_2026-09-06_2026-09-11",
       "provenance": "real",
       "source": "tripplanner-sbx-4-implement-labs",
@@ -7933,19 +8428,6 @@
       "trip_id": "paris_2026-09-06_2026-09-11",
       "openable": true,
       "findings": 5
-    },
-    {
-      "id": "tripplanner-sbx-4-implement-labs:rajasthan_2026-09-10_2026-09-17",
-      "provenance": "real",
-      "source": "tripplanner-sbx-4-implement-labs",
-      "destination": "Rajasthan",
-      "days": 7,
-      "departure_date": "2026-09-10",
-      "return_date": "2026-09-17",
-      "user_id": "google-101851654028336975901",
-      "trip_id": "rajasthan_2026-09-10_2026-09-17",
-      "openable": true,
-      "findings": 2
     },
     {
       "id": "tripplanner-sbx-4-implement-labs:varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
