@@ -43,6 +43,7 @@ from langgraph.errors import GraphRecursionError
 from starlette.background import BackgroundTask
 
 from tripplanner import config as _config  # noqa: F401  -- import triggers load_dotenv()
+from tripplanner import graph_policy
 from tripplanner.api_contracts import (
     ChatRequest,
     ChatResponse,
@@ -94,7 +95,14 @@ setup_logging()
 
 app = FastAPI(title="Personal Assistant API", version="0.1.0")
 
-_CHAT_GRAPH_RECURSION_LIMIT = 24
+# LangGraph counts every node, so a flat 24 cut the turn off at exactly the step
+# where the policy forces the still-owed first itinerary save, leaving a created
+# trip with no days. Keep the graceful policy budget the binding limit and this
+# a backstop: each phase costs an agent node plus a tool node, plus a final
+# reply node and one step of slack.
+_CHAT_GRAPH_RECURSION_LIMIT = 2 * (
+    graph_policy.MAX_TOOL_PHASES_PER_TURN + graph_policy.MAX_INITIAL_ITINERARY_UPDATES + 1
+) + 2
 
 # CORS — the SPA runs on a different origin in dev (Vite :5173). Override the
 # allowed origins in production via WEB_ALLOWED_ORIGINS (comma-separated).
@@ -415,6 +423,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
 
         base_history = list(history)
         history.append(HumanMessage(content=req.message))
+        budget_exhausted = False
         try:
             result = await asyncio.to_thread(
                 app_graph.invoke,
@@ -423,7 +432,14 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
                     "current_agent": "",
                     "proposal_only": req.proposal_only,
                 },
+                config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
             )
+        except GraphRecursionError:
+            # Native and scripted clients use this path; without the same
+            # handling the SSE path has, an exhausted turn raised a 500 and the
+            # freshly created trip was left with no itinerary and no answer.
+            budget_exhausted = True
+            result = {"messages": list(history), "current_agent": "trip"}
         except Exception:
             try:
                 await asyncio.to_thread(
@@ -441,16 +457,20 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
                 pass
             raise
 
-        reply = ""
-        for msg in reversed(result["messages"]):
-            if hasattr(msg, "content") and msg.content and msg.type == "ai":
-                reply = msg.content
-                break
-        from tripplanner.hallucination_critic import critique
+        if budget_exhausted:
+            reply, gap_count = await asyncio.to_thread(_best_effort_plan_reply)
+            app_event("api_chat_budget_exhausted", completion_gap_count=gap_count)
+        else:
+            reply = ""
+            for msg in reversed(result["messages"]):
+                if hasattr(msg, "content") and msg.content and msg.type == "ai":
+                    reply = msg.content
+                    break
+            from tripplanner.hallucination_critic import critique
 
-        issues = critique(reply, result.get("messages", []))
-        if issues:
-            app_event("hallucination_critic", issues=len(issues), claims=issues)
+            issues = critique(reply, result.get("messages", []))
+            if issues:
+                app_event("hallucination_critic", issues=len(issues), claims=issues)
         completed_turn = [HumanMessage(content=req.message), AIMessage(content=reply)]
         agent = result.get("current_agent", "unknown")
         tid_after = await asyncio.to_thread(

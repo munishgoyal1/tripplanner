@@ -10,8 +10,10 @@
   "scripts": {
     "dev": "vite",
     "dev:ux-lab": "vite --config labs/vite.config.ts",
+    "dev:inspector": "vite --config inspector/vite.config.ts",
     "build": "tsc -b && vite build",
     "build:ux-lab": "tsc -p labs/tsconfig.json && vite build --config labs/vite.config.ts",
+    "build:inspector": "tsc -p inspector/tsconfig.json && vite build --config inspector/vite.config.ts",
     "preview": "vite preview",
     "preview:ux-lab": "vite preview --config labs/vite.config.ts",
     "test": "vitest run",

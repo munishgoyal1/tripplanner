@@ -242,6 +242,21 @@
       "seconds": 274.3,
       "user_id": "corpus-newyork-business",
       "at": "2026-08-15T15:15:50.835076+00:00"
+    },
+    {
+      "slug": "shimla-seniors",
+      "shape": "mobility-constrained travellers",
+      "trip_id": "shimla_2027-05-05_2027-05-10",
+      "days": 5,
+      "stops": 25,
+      "spent_inr": 24.34,
+      "seconds": 68.6,
+      "user_id": "corpus-shimla-seniors",
+      "destination": "",
+      "emphasis": "",
+      "party": "",
+      "signature": "|mobility-constrained travellers||0",
+      "at": "2026-08-16T05:22:25.028274+00:00"
     }
   ]
 }

@@ -370,7 +370,7 @@ def test_live_chat_requests_enforce_same_user_concurrency(monkeypatch) -> None: 
     entered_model = threading.Event()
     release_model = threading.Event()
 
-    def invoke(_state):  # type: ignore[no-untyped-def]
+    def invoke(_state, **_config):  # type: ignore[no-untyped-def]
         entered_model.set()
         assert release_model.wait(timeout=2)
         return {"messages": [AIMessage(content="ready")], "current_agent": "trip"}
@@ -419,7 +419,7 @@ def test_live_chat_blocks_workspace_mutation_until_release(monkeypatch) -> None:
     entered_model = threading.Event()
     release_model = threading.Event()
 
-    def invoke(_state):  # type: ignore[no-untyped-def]
+    def invoke(_state, **_config):  # type: ignore[no-untyped-def]
         entered_model.set()
         assert release_model.wait(timeout=2)
         return {"messages": [AIMessage(content="ready")], "current_agent": "trip"}
@@ -511,3 +511,50 @@ def test_replay_access_and_workspace_changes_are_mutually_exclusive() -> None:
         await admission.release_workspace_exclusive(workspace)
 
     asyncio.run(scenario())
+
+
+def _local(monkeypatch) -> TestClient:  # type: ignore[no-untyped-def]
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    monkeypatch.setenv("WEB_SESSION_SECRET", _SECRET)
+    return TestClient(api.app)
+
+
+def test_inspecting_reads_another_identity_without_dropping_the_sign_in(
+    monkeypatch,
+) -> None:  # type: ignore[no-untyped-def]
+    """A session outranks a claimed user_id, so localStorage alone did nothing.
+
+    The audit inspector needs to read a corpus trip while the owner stays signed
+    in as themselves, which is what the header is for.
+    """
+    from tripplanner.request_identity import INSPECT_HEADER
+
+    client = _local(monkeypatch)
+    client.cookies.set(oauth.SESSION_COOKIE, _user_token("google-owner"))
+
+    without = client.get("/usage", params={"user_id": "corpus-probe"})
+    assert without.json()["user_id"] == "google-owner"
+
+    with_header = client.get(
+        "/usage",
+        params={"user_id": "corpus-probe"},
+        headers={INSPECT_HEADER: "corpus-probe"},
+    )
+    assert with_header.json()["user_id"] == "corpus-probe"
+
+
+def test_a_hosted_caller_cannot_inspect_another_identity(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """The override is a local development affordance and nothing more."""
+    from tripplanner.request_identity import INSPECT_HEADER
+
+    client = _hosted(monkeypatch)
+    client.cookies.set(oauth.SESSION_COOKIE, _user_token("google-owner"))
+
+    response = client.get(
+        "/usage",
+        params={"user_id": "google-victim"},
+        headers={INSPECT_HEADER: "google-victim"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["user_id"] == "google-owner"

@@ -1176,3 +1176,26 @@ the outcome.
   look at, not only by what it names. The rule was then narrowed to flights and
   trains, where a zero-distance journey is unambiguous, because a waypoint hop
   inside a drive is genuinely part of that drive.
+
+## 2026-08-15 -- The safety limit that fired exactly where the safety net was
+
+- Two of the twenty-four corpus requests spent real money and saved a trip with
+  destination, dates, and travellers set but no days at all. The most expensive
+  request of the whole run, at INR 47, was one of them and produced nothing.
+- `graph_policy` already anticipated this: when the tool-phase budget runs out it
+  lets the still-owed first `update_trip_plan` through before honoring the cap.
+  That escape never got to run. LangGraph counts every node, and the flat
+  `_CHAT_GRAPH_RECURSION_LIMIT = 24` equalled the worst-case walk to that point
+  -- ten tool phases at two nodes each, plus the two forced saves. The graceful
+  gate sat one step beyond the hard one, so the hard one always won.
+- A backstop must be derived from the budget it is backing, not chosen next to
+  it. The limit is now computed from `MAX_TOOL_PHASES_PER_TURN` and
+  `MAX_INITIAL_ITINERARY_UPDATES`, so raising either cannot silently re-create
+  the trap, and a test asserts the ordering rather than the number.
+- The same turn on `/chat/stream` degraded politely while `/chat` raised a 500:
+  only the streaming path passed the limit and caught `GraphRecursionError`. The
+  SPA uses the streaming path, so the broken one stayed invisible until a script
+  drove it. When two entry points reach the same graph, the protections belong
+  to the graph call, not to whichever caller someone remembered.
+- It took a paid corpus to surface this. No test failed, no user complained, and
+  the failure was a trip that merely looked unfinished.

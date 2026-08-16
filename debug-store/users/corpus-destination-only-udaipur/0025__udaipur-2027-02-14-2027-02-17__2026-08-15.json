@@ -85,14 +85,273 @@
         "trip_constraints": [],
         "updated_at": "2026-08-15T20:26:57.325095"
       }
+    },
+    {
+      "at": "2026-08-16T05:24:34Z",
+      "content_hash": "6d610b2c128606d2",
+      "plan": {
+        "status": "draft",
+        "trip_id": "udaipur_2027-02-14_2027-02-17",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:26:57.325060",
+        "destination": "Udaipur",
+        "origin": "",
+        "departure_date": "2027-02-14",
+        "return_date": "2027-02-17",
+        "travelers": "2 adults",
+        "notes": "User will arrange own travel to Udaipur. Plan only local itinerary.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Udaipur",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 3-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 3,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-02-14",
+            "title": "Arrival & Lake Pichola",
+            "summary": "Arrive in Udaipur, check into your hotel, enjoy a scenic boat ride on Lake Pichola, visit Jag Mandir, have lunch by the lake, and stroll at Gangaur Ghat.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-in and freshen up"
+              },
+              {
+                "name": "Lake Pichola Boat Ride",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 90,
+                "note": "Scenic boat ride with city views"
+              },
+              {
+                "name": "Jag Mandir",
+                "kind": "attraction",
+                "time": "13:30",
+                "duration_min": 60,
+                "note": "Island palace visit"
+              },
+              {
+                "name": "Upre by 1559 AD",
+                "kind": "meal",
+                "time": "15:00",
+                "note": "Lunch with lakeside views"
+              },
+              {
+                "name": "Gangaur Ghat",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 45,
+                "note": "Evening stroll"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-02-15",
+            "title": "City Palace & Old Town",
+            "summary": "Tour the City Palace, visit the Crystal Gallery, Jagdish Temple, enjoy local cuisine, explore the old city, and dine with lake views.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "City Palace Udaipur",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120,
+                "note": "Guided tour recommended"
+              },
+              {
+                "name": "Crystal Gallery",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 45
+              },
+              {
+                "name": "Jagdish Temple",
+                "kind": "attraction",
+                "time": "13:15",
+                "duration_min": 45
+              },
+              {
+                "name": "Natraj Restaurant",
+                "kind": "meal",
+                "time": "14:30",
+                "note": "Lunch, famous for thali"
+              },
+              {
+                "name": "Old City Walk",
+                "kind": "attraction",
+                "time": "16:15",
+                "duration_min": 90,
+                "note": "Explore markets and lanes"
+              },
+              {
+                "name": "The Sunset Terrace",
+                "kind": "meal",
+                "time": "18:30",
+                "note": "Rooftop dinner with lake views"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-02-16",
+            "title": "Saheliyon-ki-Bari & Monsoon Palace",
+            "summary": "Visit Saheliyon-ki-Bari gardens, walk by Fateh Sagar Lake, enjoy a healthy lunch, explore Monsoon Palace, and have a farewell dinner by the lake.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Saheliyon-ki-Bari",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Fateh Sagar Lake",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60,
+                "note": "Lakeside walk"
+              },
+              {
+                "name": "Millets of Mewar",
+                "kind": "meal",
+                "time": "12:30",
+                "note": "Healthy local food"
+              },
+              {
+                "name": "Monsoon Palace",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90,
+                "note": "Panoramic views of Udaipur"
+              },
+              {
+                "name": "Ambrai Restaurant",
+                "kind": "meal",
+                "time": "18:30",
+                "note": "Farewell lakeside dinner"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-16T10:54:34.406730",
+        "travel_scope": "destination_only"
+      }
     }
   ],
   "bundle": {
-    "captured_at": "2026-08-15T14:56:57Z",
+    "captured_at": "2026-08-16T05:23:37Z",
     "user_id": "corpus-destination-only-udaipur",
     "chat": {
-      "buckets": {},
-      "operations": {}
+      "buckets": {
+        "udaipur_2027-02-14_2027-02-17": {
+          "messages": [
+            {
+              "role": "user",
+              "text": "Plan a 3 day Udaipur itinerary for 2 adults, 14 to 17 February 2027. I will arrange my own travel to Udaipur, just plan what to do there.",
+              "ts": 1786805921208
+            },
+            {
+              "role": "assistant",
+              "text": "Draft — Here’s a 3-day itinerary for Udaipur, 14–17 February 2027, for 2 adults. You’ll arrange your own travel; this plan covers local sightseeing, meals, and experiences. (I’ll refine with real prices, reviews, and hotel options next.)\n\nDay 1 · Arrival & Lake Pichola\n- Arrive in Udaipur, check into your hotel\n- Scenic boat ride on Lake Pichola (11:30, 90 min)\n- Visit Jag Mandir island palace (13:30, 60 min)\n- Lunch at Upre by 1559 AD (15:00, lakeside restaurant)\n- Evening stroll at Gangaur Ghat (17:00, 45 min)\n\nDay 2 · City Palace & Old Town\n- Start from hotel\n- City Palace Udaipur tour (09:30, 2 hours)\n- Crystal Gallery (12:00, 45 min) — after Palace tour\n- Jagdish Temple (13:00, 45 min)\n- Lunch at Natraj Restaurant (14:30, local cuisine)\n- Old City Walk (16:00, 90 min, explore markets/lanes)\n- Rooftop dinner at The Sunset Terrace (18:30, Lake Pichola views)\n\nDay 3 · Saheliyon-ki-Bari & Monsoon Palace\n- Start from hotel\n- Saheliyon-ki-Bari gardens (09:30, 60 min)\n- Fateh Sagar Lake walk (11:00, 60 min)\n- Lunch at Millets of Mewar (12:30, healthy local food)\n- Monsoon Palace (15:00, 90 min, panoramic views)\n- Farewell dinner at Ambrai Restaurant (18:30, lakeside)\n\nNext, I’ll search for real hotel options, verify restaurant ratings, and suggest activity tickets. Does this structure look good, or would you like to adjust anything?",
+              "ts": 1786805921208,
+              "seconds": 182
+            }
+          ],
+          "recent_operations": [
+            {
+              "key": "bb04cc374a12954c1f1181db6acae1df1b0d462882263dc1f52417e5183b6229",
+              "status": "completed",
+              "reply": "Draft — Here’s a 3-day itinerary for Udaipur, 14–17 February 2027, for 2 adults. You’ll arrange your own travel; this plan covers local sightseeing, meals, and experiences. (I’ll refine with real prices, reviews, and hotel options next.)\n\nDay 1 · Arrival & Lake Pichola\n- Arrive in Udaipur, check into your hotel\n- Scenic boat ride on Lake Pichola (11:30, 90 min)\n- Visit Jag Mandir island palace (13:30, 60 min)\n- Lunch at Upre by 1559 AD (15:00, lakeside restaurant)\n- Evening stroll at Gangaur Ghat (17:00, 45 min)\n\nDay 2 · City Palace & Old Town\n- Start from hotel\n- City Palace Udaipur tour (09:30, 2 hours)\n- Crystal Gallery (12:00, 45 min) — after Palace tour\n- Jagdish Temple (13:00, 45 min)\n- Lunch at Natraj Restaurant (14:30, local cuisine)\n- Old City Walk (16:00, 90 min, explore markets/lanes)\n- Rooftop dinner at The Sunset Terrace (18:30, Lake Pichola views)\n\nDay 3 · Saheliyon-ki-Bari & Monsoon Palace\n- Start from hotel\n- Saheliyon-ki-Bari gardens (09:30, 60 min)\n- Fateh Sagar Lake walk (11:00, 60 min)\n- Lunch at Millets of Mewar (12:30, healthy local food)\n- Monsoon Palace (15:00, 90 min, panoramic views)\n- Farewell dinner at Ambrai Restaurant (18:30, lakeside)\n\nNext, I’ll search for real hotel options, verify restaurant ratings, and suggest activity tickets. Does this structure look good, or would you like to adjust anything?",
+              "agent": "trip",
+              "trip_id": "udaipur_2027-02-14_2027-02-17",
+              "message": "Plan a 3 day Udaipur itinerary for 2 adults, 14 to 17 February 2027. I will arrange my own travel to Udaipur, just plan what to do there."
+            }
+          ],
+          "recent_writes": [
+            "bb04cc374a12954c1f1181db6acae1df1b0d462882263dc1f52417e5183b6229"
+          ]
+        }
+      },
+      "operations": {
+        "recent_operations": [
+          {
+            "key": "bb04cc374a12954c1f1181db6acae1df1b0d462882263dc1f52417e5183b6229",
+            "status": "completed",
+            "reply": "Draft — Here’s a 3-day itinerary for Udaipur, 14–17 February 2027, for 2 adults. You’ll arrange your own travel; this plan covers local sightseeing, meals, and experiences. (I’ll refine with real prices, reviews, and hotel options next.)\n\nDay 1 · Arrival & Lake Pichola\n- Arrive in Udaipur, check into your hotel\n- Scenic boat ride on Lake Pichola (11:30, 90 min)\n- Visit Jag Mandir island palace (13:30, 60 min)\n- Lunch at Upre by 1559 AD (15:00, lakeside restaurant)\n- Evening stroll at Gangaur Ghat (17:00, 45 min)\n\nDay 2 · City Palace & Old Town\n- Start from hotel\n- City Palace Udaipur tour (09:30, 2 hours)\n- Crystal Gallery (12:00, 45 min) — after Palace tour\n- Jagdish Temple (13:00, 45 min)\n- Lunch at Natraj Restaurant (14:30, local cuisine)\n- Old City Walk (16:00, 90 min, explore markets/lanes)\n- Rooftop dinner at The Sunset Terrace (18:30, Lake Pichola views)\n\nDay 3 · Saheliyon-ki-Bari & Monsoon Palace\n- Start from hotel\n- Saheliyon-ki-Bari gardens (09:30, 60 min)\n- Fateh Sagar Lake walk (11:00, 60 min)\n- Lunch at Millets of Mewar (12:30, healthy local food)\n- Monsoon Palace (15:00, 90 min, panoramic views)\n- Farewell dinner at Ambrai Restaurant (18:30, lakeside)\n\nNext, I’ll search for real hotel options, verify restaurant ratings, and suggest activity tickets. Does this structure look good, or would you like to adjust anything?",
+            "agent": "trip",
+            "trip_id": "udaipur_2027-02-14_2027-02-17",
+            "message": "Plan a 3 day Udaipur itinerary for 2 adults, 14 to 17 February 2027. I will arrange my own travel to Udaipur, just plan what to do there."
+          }
+        ]
+      }
     },
     "preferences": {
       "profile": {
@@ -153,13 +412,475 @@
       "learned_notes": [],
       "behavior_signals": {},
       "about_me": "",
-      "profile_summary": "",
-      "profile_summary_updated_at": null,
+      "profile_summary": "Travels solo with a balanced approach to trip planning and prefers moderate comfort. Consistently chooses standard hotel rooms with at least a 3-star rating and flies economy, favoring direct flights but is also open to trains and rental cars. Shows interest in visiting Udaipur. No dietary restrictions or strong dislikes are indicated.",
+      "profile_summary_updated_at": "2026-08-15T20:29:09.585105",
       "planning_mode": "direct",
       "display_currency": "USD",
-      "profile_summary_digest": ""
+      "profile_summary_digest": "ca1b81ea82af1b188e967edeced1d247cc079e157b834a25a82486caa6e71fc3"
     },
-    "places": {}
+    "places": {
+      "hotel (tbd)|pondicherry": {
+        "place_id": "ChIJd-8MryxiUzoR51gb948YN4o",
+        "name": "The Promenade",
+        "address": "23, Goubert Ave, White Town, Puducherry, 605001, India",
+        "rating": 4.2,
+        "review_count": 5803,
+        "price_level": null,
+        "website": "https://www.sarovarhotels.com/the-promenade-pondicherry/",
+        "editorial_summary": "Modern hotel offering 2 restaurants, plus a terrace, an outdoor pool & bay views.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 11.933294,
+        "lng": 79.835729,
+        "photo_refs": [
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydifTFwwJaKLMRLaNslv5WrRK8oMjb_abmjV2qWOuNSS_bX5pEPrF3OBcJq3QRc5eHWMw36J4O-URdGEQOdfeu9dF27iUGbcve8lBgIohnVNdJQxsUSGW7hQ3M_cADM9Nq5v52_Zr7tjAAa5GoKULaW1rnLCrtIrFE32yoCikS7EmfuotnF8V8rNMy0_DntevIoulF4pH5EXp_bMNwcuNU6gpLjiNfRqP7vvYz-iSOUcyHGw5hbK7u8PTX9R9mbkcAGCgzQWFzc_MdeSA7Xzr6g3OGqVQRhosBK8_-5J-M7cYQBANsS7S6_ejoJWctxJZvhs7vstIuRMi61V-hCFwjHmWhzcIAjYGdfHVfdEX7FOFOcmItWe_-Xv2L82Dp8zW4AHrI_2mDNEmfrJDiBmskYaBn8LfFtJKR9-5ds",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydir0mofNmYHn_KrxZAn4bVRHmuyxXepHEYvt60YJZ0rZUNfHR_30rq6QZe5SaXw2F_1cFLKNhZ9kgJLZR5yjAKRCNvCLYerECvFbSxGYHuMMFTGFk60nllp8Zv5_ULBCq7r3BI2Bbfv56QnQ8NNFzx7rOW-2unrPUZF1urwkzQ6zhHvMOTyH2onuwkVXg_Bp2cDBpXV6a9dpA3sDA0NfV68zSeP2cvcWKrKglaytPkCwoUVBf5M8y9XXGIpaHBMdJTHlCqZqqmWrVbiOmwzdVd3TprD0-baVbj5OFQRQG1e5dGKrlQdxXb3YIum_HYD6Lgw3dD-_RODOvJPs50-zSUw_FykrZ1nf2YoFmOx6uqOBPv6KtOv9Cu1_o10QfOdbVgcMDzmze9lFOvFbFR7rzqodbI4ogZTen5kbpfJqNJVRg",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydgXSbQJ_pUaZigUXJl-Pc49_7R_d0xJtoR8rOS3b7uQcZx7XucGfUXPlrdawL8ULcSCzbiKFIqJH2KrTedrL787_UecfccqnHx3XDoVP88N0hHXDB3wfeYSkXfSFH3vfh6Ec9ALpQfTPlUCxZLbFeVOXTIyLSXc-IbZb_jdoWSi1glV84QncVnx5PvbibvfGLxfHTlNha8LMlE8MFsC0HLarKxLVMBdBgMteCh3NHoVk4vo3OZQ3pKLxy0jXSDu1DMbDZphN6g4eARjKG9A3IAdZl8zcQGvhoT315L90ZVDH5GKdUkK4dgax3MhUEJ3Inc2k9XlwhKOCKmDpNXq__O0LqyxJ9HlUxh5DVuZZ77_UEDAyuGvzGJnPFn6m-OXYtGwrEjtCqoPHzMde5dcTaTK4cvpBwf-lbF5qMT_p5fcZg",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydh_F_ZPf8JUcen0cKxL8l7z-v6K8Lr6RA3X4pzuBkLINPNpk967L9qLKyRQN7cKSmCvKFFRuax2hBHXSAt7ZukQ02i0xD9q39xFaOkCt0Ub35tKZd1C_qvlHX6TIQgmN5TfbDdQah-K4T7yal-I0-cB9AeknPiGfgwNWnYv65VRYShd-qkoq38Lh1_DYqtYaEmqYtaWG1GtiG0_RU2nJhroELj1e4QAYHauAM0FJ-TO_ESsQFZpPi6F6I6bRnGJEkRIgpMvuoVC_KjJS8xBfMMIzn7JE9GrACkCkw3LrXgINKQm_i-u8d0ig2hFmVRnNnICBbsdYxGrSGVFjcTCgsKM1tzjAhRK-bsy5rsDm0dG79numwQajzCJ4o5Sv1fzDSOr5c94Mpds-L7eZnWjcXwqYpnmc9Q1iPSjkeVH_28",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydgBdrAGUvXRyOCLrAyjV3WlfJ6oitUFqmxJet0eZmxM_H4GZ_j6mJfIREqdjqwE14e_YNBknmSY0NOf8rGHoV4vFf_kWMP60kWcE_fMXloVDYRfpoOIEjd1QBfw2EAIyy3_4hND6lRvTUe73dABfm8iKyaMu9tswdu5UCPIoblTxoPaSqFnXcGdis0jcfs5LYxz7IjzoRE3cJBDrSqzRQ_5chpMGe_MTKvdwMLkjR4mBmAYOiCce2FVicGHXeZEHnsXXND7vGcF_aLVL1NchJm2O0ntehjmSABW-tm8SxKrW6YX3nFkVvANi0nKHpM_VBnIkWvi-eT_70OQviyDkt-z8FjvKw6AwUytNicLAu-UB0yHp2WdBwB0w-shhAxYCd0fRKVzSrKDjR_3Klmqd44eqGZbFkIRnVyjJNAo-ckY4A",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhfKbCZE57vXULIj0GYPOiEF9qJDtVmyo4hHGvEbcH3nGwty8rx1NzenGPesSS3ghNGeq4hYB1bR3a9UD6zn5AqYnXwlk2vngfO1vsjBrz7tW0GMdggW30RflxqOg7aJxFEpMcHQ7pGXo82bHXVwcelhx0XYxKVU7zHFfXT7rNsjaCG_UvHKHBZH5510okn86zddKM-OSMooHoE9lHHQ4IOeNZfMj82i5_LuJ5IANFlEdeJ-XGVINTdYEILw3YTSPgzUKbR7iSp9bXsrAn7vSnLRSLa0Bk4M8jkan7rTSfwz2jGNaNGS3wMnDK1U1y98-0tX_cC3GzoJZ4RBf_DHAz6jtxxDN39kd8NOBt2Xl0VEWSYbnDs2DQudjN78YNJLXN4252AZX8xAU9Q7tYOrxiG5-7WK64fAw2WuVKuTjGwLQ",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhKAgCHcwWoKF4L1EhFlHX_l7pRxoMmyo45trbVy-mC9YmWJ_tBURAu7FRjiUHhBBAp3Pw0NTL3pMZ8qsfMucqfyu3OnzFZ5G7qb0TcGYUsq5o5cAd6nYt3h5CoG__O9yEct1Yczq4qPOg4W7axEhNVEnmMG_c4rHqjg0g_0M3QR_4JmaM_fnYnJwkdtcwYIRKAu_C0QMU6kannedRHdQuDG4vyAiZk7W5Y-ZBVINdwuxGyuzK-fFIdY0dZnXcOl1S38lCJ8HqqaL3qQoZ7_SAn_orw1HIeBYAlbyDsyvWW-9wqUPzfJymcMZiJTCWvreTcDycSUAn-bNLFzxLNOS8Ywq8sAYgiSKzkgQzU4cO8EbwQMb4GPTpBNqKE5GwzdGpFelb43HVDnDQjO5Bh_E8f-OvCjIdQNvJtmFw9_CU",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhbBOiz0MBGcUgP5mURGs-GbyWkPFBRvpKHnDcTMUYXatsSGOQIvhwNwXOW8fsn-Tn0W9hWLLh4xOOOEdSzPXi76PCd-p1xpOs1S_m7qD72_yTbV22g2WtUozbXeWm0aGU9BP0gj7gdVkD2lW6WNFUBNqLX7jPYinTcGN24uOMgVpAD-wiaDMr0r91RToREesXjIQXDshY128EwasMqkzF1Fp0v4DX4ddNaaVzBNScWuVVmWbMLgLVZ7Wgx5egsAMpCKdGZJ6vWAt9cFLniFlcNu5D2YPiU2sDyQP5uqAGq_vlA1ORwqsbNPHR3-09hSvFwQbtrUZCSzDPJ0IvBWBrM4Da46JL0cSJK_I64ODD7ulkjVAdwQp1ZXfxFOShWDU5oZTHCAzq4T-xBzGBglyYbTEN7rVno52BdCVw0EoE",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydiqWB4wqDQQE3GB9zS0Uzk5lIn46CN7nkfcVpxxlYcXjNbRVtn3kqTqs_8ElBIpoac5T8BA0DgyOO5NSGsOQRKPBMQFk54nIGVEmWPuROcZrfbgW2r8APx7uMXCNWnACeoPIjpRNZN2Ertez3wjHR6AgXpZrJ1FO6jQiqO6VMRoPVXnEtXKJYZ9yfQGkUwiMD56pRZiPbWH8NPp0aLRoZNK5EnpfU5A-HdKIvjBvbjkWGyzpnAk61FG7hRMmEMwwZALccQoxhcSDf7L0cU-ihH4tZL1XSePOclf9rCDZfRjoMIKdc8F1-tjYhUHQdVoTtfPDfgQokbe3q6bpMLLGOKjAYeRFSdO-T5cAh8oLAVwOi7S9y1vLOya43G8IMVg61qwVdydpOEupymX5NIcoIUSMD5aZsb-TBrVku-fgNnJBUcj",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydj0zyIb68eWqUa95x_HnIFH-sFzUql74xVY9WcYCbvJacD2n0SbOoA6te3uhcbqlCQ-jFz4rJ0au7yzEJ0BqEzn_tSNUUrePt4fQpEzWMOWIckLPub2tu1D7MM9MFHayYs4dvyLlLUe_qclTjuXqAQx3Kb6aAE6jgNLorBxdmXFXs3xAERjalB3teX_t83HHTPNjiMNyAOQl3q6fngCujB4vpVuqfyhDwJXZ6znNuuzMDsk6zEseA5PZIPer0uN2P9NXmH0XBSYEPuwPhzVpUIazGfdcde83nKg0iOs1Zh47R3GIe_xwuLqaszzYXLIOsAehwj7515wyQuBSds8G6rjPRSId0GCvtc48exQw4lra1E-jb9P9EMcZxfN7FRBxf09d0qXpjyCdMhzUxNWs8MZPrYZezKgoun1jryvvTqKIQjX"
+        ],
+        "__at__": 1786798953.440507,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We stayed for one day in the sea facing premium room and didn’t feel like going anywhere else, the view was so good. The room itself was well maintained and very clean.\nCheck-in was super smooth and Zara Haider and Prabu were extremely helpful from airport pickup booking to room extension and helped",
+            "author": "Shyam Bhat"
+          },
+          {
+            "rating": 5,
+            "text": "We had an excellent two-day stay at The Promenade Hotel, Pondicherry. Our experience was truly memorable, thanks to the warm hospitality and outstanding service provided by the entire team.\n\nThe room was comfortable, well-maintained, and made our stay very pleasant. A special appreciation to the che",
+            "author": "Abirami C"
+          },
+          {
+            "rating": 4,
+            "text": "I stayed at The Promenade for one night. The location is great just on the seafront promenade as well as being in the French quarter so you can walk the streets easily to visit. All the staff are great, very friendly and provide a top service. The guest manager in the restaurant makes the effort in ",
+            "author": "Christopher Woods"
+          },
+          {
+            "rating": 5,
+            "text": "Had a wonderful stay at The Promenade Pondicherry.  Beautiful hotel with best location and service.\nRecommend if visiting Pondicherry. White town is beautiful and we covered every bit of it by walk.\nSpecial thanks to Bikram for his wonderful hospitality.  Their spa also was very relaxing and recomme",
+            "author": "prina sodhi"
+          },
+          {
+            "rating": 4,
+            "text": "Stayed there in May end and hotel is on nice location with nice staff overall. People address your needs and make sure that stay is comfortable. Special mention to GM Shubhi who made sure that our stay is comfortable and going out of the way to do that as well. Food is good and location is right on ",
+            "author": "Mudit Agarwal"
+          }
+        ]
+      },
+      "hotel (tbd)|goa": {
+        "place_id": "ChIJ53KYH8nrvzsRtWmk8og8o8s",
+        "name": "Hacienda De Bastora, Goa, amã Stays & Trails",
+        "address": "House No. 29/29C, 29/30C & 29/31C, Survey No. 133/1, D & 133/1-B, Xell Bastora Rd, Xell, Balbot, Bastora, Goa 403507, India",
+        "rating": 4.8,
+        "review_count": 28,
+        "price_level": null,
+        "website": "https://www.amastaysandtrails.com/en-in/hacienda-de-bastora-goa/?utm_source=Organic&utm_medium=GMB_Local",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 15.577680700000002,
+        "lng": 73.81502499999999,
+        "photo_refs": [
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydjXHOpArjiebZv7Wbcq9T8SM1yIXMnNcB1awJqW9X7ZO_U7ZHCbEmRfRKvgnwFwhEXQOmRjn3JyepxQCNmKwxLChtfGSQr5sPsnto3MXf_qRYx8Y-2cHfwoyxk4z0ASZt4KEHgDWVoDxc5fM5Du1vH_2vJVR6W3HcV0-hma0w6fhj5y_vdv_x6PXTVPWn2VBbhqRDNug-XcwLg6mYK-xY4GnadTod5GB8hR2yrchsa-N6YDeM_oflnTAh-voSIBOX_-3za38OL_nGqv4NEVyNhn_msryAg2Qgrp6cW8aFIEvoWqiSnfkeeoD8k1_325wghJUTTR7RFDeQWWP08BFd5Ak90jE_gBz8UizcexoeDAtFGEIgYkBwdwvr0UpUnqO8l7JfgxDf61nlwwz3uChwSafFgdYlE4UAfVY-Qz3qybrg",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydjc8Sr4-0LL8k8QSjmoWoRAoOhTJaI-AtuC88LQ_KIT4rmmmL_KDaq_Clp_KQ-VEz2Y6sNTk9K81CEsCfknNn8kSGRCQs-3DnW78LmwKTowxSLNo7tmVG50fpA72jUB6WWL_TO_ceff2FqQmauRqcvdFEozwvYHyv48M2n_9h98GrJAxyfo42V_I7MJvgfzAs8r53wyLLd9nKvSUcfwXjfNW-tMxe2ibZRNvgGjmBbTRCn0FY5OlogPptgyuraMEfh__u9fjoLmks6xI-ZyRWrfVHBd4vyytbfeRRHBlFPbMWIL36BmvVJSw7bmLk6jlBRVfd0MyI_UELIgiF7iKpAaGQ3rRJk3GDktP4qya4OA2vkzUiZIfAnnJDwlBieL94VnYSTdTwrRkOxXxP30afiOODN98bLflxNSTaWQYGCx71jZ",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwyditvBIAbpqT_t5wOYsWiKQgCL5iiuJBGQ6rh7iRGJmM-Y9ydiuqVhxRImPxIzgjNnPzUEZGRbpFmrM65gvCL7Q-detJutKE1bXu8xzlj7V6WkRCZimwcbRYe_OLZc2KmRH2eJJ8jDoEJGpnMYcpBJS32EeHTPWwU4zBlk0b5ziNw5TwkkBfzRfIBG1YEkXWWBYs43-ZTAs_OHP6aP2jGg3RVNAMzaUt7Em9cV4AELUld37vYno_IdXYKs_FJmyye0LBsPPE_IieDsEBx1aL1nkLhjOcGNFgxaKJmqtaeCRwlOJarXye6ikmhpdItO5c-lx2GxWucrFafDI2s-F9PHQYtBy-CxU2jpmGT9HuM0N6QNKeOhKqZepRG0-Tw-lCMsiVqHBU3Y424pqSynDn6K1Jk2fnnSIzJp1fqZ6Q0T5wSg",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydga3pRGEB1QPcUvCD5hDtyWTDS9uo2zA4Azh6cVQhsm4HkaNlMzGi6BZMnaAKi8K44A8Jikq1Dx6h0A_UayWeWncsx5NFl9COxeToGocDfMFzWrqWFFBeKPuCqoRf6V9I2DnV_TYScedXriHymdGG5iUnA1F3DpD70uinfMlGirvg_A5sE7TTbznG3fw5cVsVLPlaI10iK0DLnL2WyUQNdOHlX3KydAmTTWFdpQ5aPJzTubAol8yPyo4nCWCSJ7Y34oC9EhQF-tnQZewuxew1yKoDTUg8sbIutnF00Opw2ii3m46vkUJqTyehWCJ2EWvmJH_hfznvhaQ8KKsiJWstj2csvcRf9P6IjmJyIbqFdo1m3NpCrP_Py1w-WNLBuJiujtIkXZSIJ_W86yzBY0CiBW2_zJ_DzE3jrdfosYedkMHg",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydgdpMcZ15UeNJud2slJSBeaZj-N-08dDYL5HKc44H12Mg37AskKBvtwI8CirswTW7V6yyRftIHjhJudJ356KDTPO6TBOTC_LInrk0HvNn9WO7dgQMvA_X6ivyCyuvXmNVyW7SrGwby5kUlyRJ_WYuR6HsX-1TJrKVZ6ZY3sG9wi-sCJxBaxIvAvoyVwPyJWUt6dO-xgLCNgNoEq2Wtexb5B873BO2CFgRtjlo8lKSNdg9MTQKrOGhlTWLT-LWW8UmKlVi3oxvVIMX86w9JsnrDV-5EY8p3CvEV2wHwUYvc-e11L_Lf0mSeBZxhMwXRmRFPrj_rM9AWhodydDCQNm3k8bLDIR3c9gLU2BU9mQPjcqV2c8MkPR7l4dtI8Yfxs93FS7K7-N2fHHd1jq31IkDsvzy7UVo_XnVXu8ynqPLXHEpBE",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydg98LhzOfcronbdnc0Jhwi22npYWMya3kWbMzo8CXEsp6JuBWHfn3rNXnD49NvOabfkcS9Y3x1VUlQH3i8_FnMseeonKW2m-6ncMcKt0-hO4LssQvfA4Mi1_WFyvmVrULFfA9kJNklySdBRChpQK2Hqf2592Fcoty2S3SArGU71UsceLOVOMrolsWyfwgApemrAuLnmCp68gSZtp_Ed1oP53ovWScEdrAbuVz9Trg-AlQmW0FfElEsqQqp1KVFL0NwfyN4sJttXJ-7Mv3kIJvi4QKivZFTqrA2BCXybp5D47Cvy0sNweMLOfe1B6hR_k6woqnclCyBRXSDV81rWVAR5Xa8qm3ZAPH_sE7IDxyajQgXfWEKayI4-m5z1pxRa7_8j_Xqs5BGfc0mM9d9ZftyZ1uNeCdjaOTTackUzvUAdjA",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydglT1dB020onoB-x0kJ2Iudaw9fMIiCwx6lbNlngS6bUFCjmBpHIzccd774_udNzr6unX4WO5k-c2hlVRna50LviOfxKZ8IWmJ4_7NFnBX3qt3Pak3EUIp2RN18k4wYeifpKW-wuIWyW-gjpc6YqfKRL7p39vGRbkxamXSlVpt82NJFDBv0x-7OEj5vAWDozO8O6Eskri1hnJz0TGKXfLeDmWdxc3IJq6FMdmHgZZVoyxCfLyLAV-qQ6yaGtCbtXopW7Z7orLAZSMxwjm5DcFJ2lqFZCauXXlUVYE8sJF1iD-qAZ492gOZIYkc94exQaX_9G1xf5jK2aOgBA04GI-cQVv4xt5oCcxYg-kgb0uErVsppr6EVU2NyKhWJo3YhaSMOS2xC-jt0eq0-UXzCv3vdnpFg_FLIjO2ENzVvjRRVtg"
+        ],
+        "__at__": 1786801231.838101,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "One of the beautiful villa stay one can have!\nVery well maintained, neat and classy.\nChef afrid’s food were top notch, Nirmal and team really made the stay very special.",
+            "author": "adarsh j a"
+          },
+          {
+            "rating": 5,
+            "text": "The property is a labour of love - beautiful restoration which has ensured a delicate balance of luxury, comfort, and aesthetics.\n\nPerhaps the best 5* place we have stayed in the country for a group holiday - can host up to  10 guests.\n\nVery centrally located in North Goa - while we didn’t feel the ",
+            "author": "A Chandra"
+          },
+          {
+            "rating": 5,
+            "text": "Had an amazing stay at this beautiful property. The place is ensconced in a  lush natural setting in the village of Bastora.  The varied vegetation, sourced from around the world and planted here, lends a charming quality to the resort. The suites are luxuriously appointed and the villas have everyt",
+            "author": "Natasha Grewal"
+          },
+          {
+            "rating": 5,
+            "text": "No words to describe the beauty of this villa. Impeccably done interiors - all facilities required and the most impeccable service and stay! Nirmal, Vikas and Ashish took super good care of us. And the chef was also fabulous.\nHaving your own private spa, gym and dining spaces was just fab. Coupled w",
+            "author": "Veda Dhaul"
+          },
+          {
+            "rating": 5,
+            "text": "Great service, very sweet and friendly staff, food was amazing would def recommend for ultimate luxury. Rooms are huge heated jacuzzi is great to relax in and the gym is fully equipped if you want to burn those calories after all the delicious food. Big shout out to the bar tender Peter his cocktail",
+            "author": "Malvika Shroff"
+          }
+        ]
+      },
+      "city palace udaipur|rajasthan": {
+        "place_id": "ChIJ1adZBmTlZzkRDqvq-navV5I",
+        "name": "City Palace",
+        "address": "Old City, Udaipur, Rajasthan 313001, India",
+        "rating": 4.5,
+        "review_count": 106446,
+        "price_level": null,
+        "website": "https://citypalacemuseum.org/",
+        "editorial_summary": "The palaces of 11 separate rulers sit together in this sprawling complex that was started in 1559.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 9:00 PM",
+          "Tuesday: 9:00 AM – 9:00 PM",
+          "Wednesday: 9:00 AM – 9:00 PM",
+          "Thursday: 9:00 AM – 9:00 PM",
+          "Friday: 9:00 AM – 9:00 PM",
+          "Saturday: 9:00 AM – 9:00 PM",
+          "Sunday: 9:00 AM – 9:00 PM"
+        ],
+        "lat": 24.576442099999998,
+        "lng": 73.6835109,
+        "photo_refs": [
+          "places/ChIJ1adZBmTlZzkRDqvq-navV5I/photos/AWCwydjyyNFC-VNOrLvE_BpptvxaNUTE2P5J3uVsrUztm__9nNooQ2-5v7D1CINNB2nn-Q5im6M2BPD1QghP9sXQSvpHe_be04HsjOwFEsYdYNjjOWexxCMuxImff6o24ndT_PMkt-P_w5L0Qe9TfWGIEj-8zuPdxq787Mf07riId0i_zbHj6A0-5wQNXg5kf3KaqJQgfcjk2mG8YIc4MtJCtUjQpQlsm5PUz7FBQMB4zEPcItHshp40skyPbpT5zaIVxs8Uhbz7keKBGYMs7GAiLKP0tO7y9bSRnKG35t39RDcNeQ68d8V_1jZET4njI4ANwYqdF_QM3jh0r9SWvWVmMHez9Ize95SGV_P3etNAQVMLra6ba7KeRrY6P8zPjYom_kbn8doCGOhQD_gFkTtjy8OVgiMIyQUZwvlvA_blG93aFQ",
+          "places/ChIJ1adZBmTlZzkRDqvq-navV5I/photos/AWCwydj5MUjOefw3Jnf7RgbL2-k79GIFsYk6Srf2qZDTqw6V0NLM0kagNKCzR2n7teZnpuWhAwAp0MRGpmOij9sKgUc73U4aJFEU0AV5jw9REL3ag0YcOwwCQua0dW_mvCIDp_oYNAscYFNx8oVjzJiLpSfC586Jx-VNdj23xwSKQn8p5oMoc7gu4vrabhNfa1dbEcq_6ITaatliumMQO4jBMVrfLL00c7SI2PaPW1LOVX6EiDer4QnTE02TUwL8MyXG3itg_F_sDZaeWI-QMYCF-CwMEjAxiiYFgdhXMPpkOu6ANaFEp8Zk5iHCBspnl1ONpk9Sl0izP0rELwOB4XcCNtbQ-8bHGOtMqOz3KuQBRbIB9fORTXrNR9p5u6UAjXQ-bPicPGFcdGXn1307XvYTFsVANOhqaXi-aWJYN6XkbuWbLYuf168p6acHBz9KYQ",
+          "places/ChIJ1adZBmTlZzkRDqvq-navV5I/photos/AWCwydgesQ7_Y0YNnW5mpgxCO7M28xt3mV0pYYPAtXFfHI1tePwnCrGOsYFcgPAANLRy5zfesn1JUklzwxdxvqbalV-ZMJsyoJvdKfcOjipX04vE0w8FrQvoIYzoVF145XX37xiBifenAqN_TAV4jj8dyWsG0spNpHuLiQqdyChMdIdTbplEXEwsIvGYyFoxr41PhGZj0HoMcnwdMcPPs1emH1DFeRKq3CZmWCNpUppxHL62qd0xjeP9T9pRyzEQc-CFURbqocszmBkW4537YMMBn3TMCYT8By3z1TOefQ_kdBGSU_FAOptt32yrhLef3WxppN4jbMpkTlq__quuPpJADvnwCkDxQDhuVnbWfwHgdgniVVtk2Rnwdnc09hhPGxztuBAtu5TI-US5qDD7h1h8jWeVsW1WC2NASjSFdX0XfVeGTNdnUw49ONYcUDVUYF7Q",
+          "places/ChIJ1adZBmTlZzkRDqvq-navV5I/photos/AWCwydgWUtLZ4itj3M7Vwc73B0QIqwKTtE9MdKGYFf7m0Y87HEq5lBWpEpufAx-lGOHuQhrOFcVAK-uNB5ZYJ2k4F8izlCWqp3wTiynPgGQCQtLTevXzJMmcyo4JbXaEAvGfC3ZLodS7TZSHv4MEmE3g1S0fVhoL4mSG7F81lmucq93WVFbMsOEsscBXzsHsi-augFqjxx1q6bdLgh1ElOuKisqjd95b2_7WGb4fR_oBiR0zIj633VqKQvetqTF8n9uFcR9Mu0k-4DRujbwPnkrdd6zO1eI8MYGcIrrIEnSTku2ZaJp2HNCp8t5h6YeXu2IBoqzHmQ0lADro1S37MNyBWHROc7Acv35qxlFkXm_B8fBuk8_TobFGnHzi6CMX6rAq8oJcw1bwgqzyYr9h7EcH8aGs0ziaAlG4HSFuG3UEggnPU7YKUR3gJ-yKISdWdRxD",
+          "places/ChIJ1adZBmTlZzkRDqvq-navV5I/photos/AWCwyditqYth0KmLvC05m-CXt0dA8Dlm8vc1k1kIz2Ctr4shBJA5lqI_ifn_bXz-E4iwE0YY7UafNOMcUo0Wg_jna04N_r0TvMKmjW7s_bBInZ-2UhLF7xRkEw3AzUPOig-BlKg9TqnsqGtUJgvcNcYJ1k9v-3gOP1bXxt9xYa1ih7JyCEvyWCfpxxot4ytGL0ZYPaTw-UkKJm7E_k6z-_5Tt_XQ38rG2CizEbn96l4J_XkJoDAyC56AXqNixOgJYC5etjY4GMa5Sh79qgGhv69dHHBdoqjFGkHmGPPAWhG0nP1gj7-FzrzSPfpSf-20fz6KVAjj-J2NVk4OsrdQtACyuUrOr-lIbMUgHAvQgAnrvsd5LMjo0DUCRhoFxOKo77yn4za6g-S1SDyTFgQaTyWHzmO6aGPP01UECPuR6c4u60EuLg",
+          "places/ChIJ1adZBmTlZzkRDqvq-navV5I/photos/AWCwydhc7MaSd8_cTar8XdH6WfX9n1O1dCBNo_Yv6tMhSS-NduukXkkd5wW70qcx3D-1rHjuxNZlw-UA5WvKm0LzMmi--qG9NnT-rOMElFroIhrDn9pZoY8EGEja0puMRTNK1Mtb7qqTI7sTxVepHP4PLZwhVrViX4oUDHOdYmaR_syDvXonZX4rw5r75AudGZB5_ur2waBqE3CEUNm1kiVmAFaQlWWMShsFHGpsswra5MHca4QcDcQSOstWRcJzVOP82SxK8llq__36eRkGtQU7IuMoOd9uYEKxj5fpIKzB2ozsUF_SbTuixbLS41aU1smbvKmadaB0R9y_reWLjjpRKHFhOieOzgR5iO8suxFyj7Uphjx2VO6kYwvI9m4GzkkUPpo5i2snSyZqsv5YaN3t9LzRIZ_Or7GMT7ZomPPhR4RKkrs_zT-cxoxPSZSzyFcG",
+          "places/ChIJ1adZBmTlZzkRDqvq-navV5I/photos/AWCwydgdH-4-DSOIVORfGWGel5WQN-s57cuK2bq4W4cbf8Ev7bTeibrRuDUiiyEUeIvNkCU3_KWYerO2sGxnyjgKlBE3a7kl12uCOzMA9aD-qf_RHAi1f_XiQaHWnCFuPsw47lbyPFpHmoGkhW2bg4svkTr7lno7afB4TLoPwphFqryroEyxz64OUookaDVrjqu2IKr2BTIqISJAMHBAwoBrsuodb2uka7aZaCuZauZ3AaMkP4l9tk1ACvJ-K9Vedn9KQG0Ye-wP4ChFtcdFrKAmR-XOpizshwzshRqLH3SjcN74W9qm5L3I1EM2wGg8JZPSHD1eKvcTQMYA9_1z4EWTgdgU-byoUPSvnWLhX2UjcQ_mfltO0Q9UYvJ7invwK8YuWbQg5GxQdir2ySgNINAHvAXXwsvhtWtp-gfDmLa8gxtbPA",
+          "places/ChIJ1adZBmTlZzkRDqvq-navV5I/photos/AWCwydi_MIAssxrM5sxh-YgpV0A4C9VEU29Uq_AoQOXs_5_GgfxBuBReeeEMs-NRllla88Y9pL9LkmXFDEKiSAc9FFQejMEzE62uX3f72MWNKJ4pNVQM6zs8mmUSN8C4V64ncFzM7PSwgtP9RqgfaMPBEKgoN7GZA5h8rVvggna3qWKfmSUWS7mn_2O0wxTU405jWLtrvGUHyuNs9qfqfP9oBxlyysbTL3zGxv8LgaFNBbPIvfrS9jYtu2QW5ahW6YsolEjnQj55u7zNTR4RqeYA2X8tu9ORsiXlllCYu6dRRzYoQGsMEz_IZqsun15BMz1uh6Skn__hcWWdyfsoqg1_BvLTE_AwkI1BAsGNBzAOZLpI03FvUIZqZdVlUhUJdFkW7mXZIysZEmeX2yvRfyVNZStsAHgLFUSmWKz2XWVZxZRloPU",
+          "places/ChIJ1adZBmTlZzkRDqvq-navV5I/photos/AWCwydiiMUwGM1RxHRNczeXe9mnICxHAQ04_2LVKyQMC3P1PZ8v699ojWR8CQPBlU81wkgYwz74PG3kZhEmwc0Rxs3B7mSCPOQ7MlU5gClE3X6DexvYUIZBxABBtoLuZkk6uSnO0S_ujquyA46lpI5_EPgO7CvSSNuVvxlY9IqnymuiOX9KOZN6ya2y496UnesQx0a28cmsp7j3WuQ4QP08vRJg7DFNCpq3WwfX2w8_Feot2FepHw1WmEqlC6NcaMLEPUPpofhYYxNUqnm5bs-zHMCYbljeiuo8juhh3CT0WOy0HTIEzJ1P4va89X5sGtIu9jdx7zFM2miAfjXgxTrQh_cFMFdk3aLpLNL9aT1IbTXTKrGRgARWe_fD_fw2tDhupatnS_EjPikVfhQCCrKHcx18E8FLZ9qS1CZ_3bVnSLYfbySauxKkifKcmI-xeXmRX",
+          "places/ChIJ1adZBmTlZzkRDqvq-navV5I/photos/AWCwydi_tphoX1BIf-slRB7-LDMvItlsd76X-CUlc3dug6DYOfaIgY31f3XAuKN3UjWddsm8QvO21vEKVg1ANal3alyiyWt-8JD_XalMILdsMT1M6sG2pkZbMJayM6s3olgaqGTOWp2Wj6_nO--LHmT3vCyruAb1efmpy7asqx_NVgpxvetR5zPbQdgqNmVrG94YHnN4VmarZP1DQh52QjPCOIdzbB5ly7LNZqJwNSJ7dEoJQxzW88mQDC9GcIwl9GnffhuczixARX8Z89vfdyfotVaet6RWNuSO6RJf8WDNriNpjIlExCMXMMj4Pg1ltbIuGjr4mZZCRiyuXbFShyFZ5dcN_aFfS2tjkOohQFAFW32THSG1IA7M4cy6FCvNMfJyMhnlqDIm9KdmWp8InOG-8-TIkP7Za9AXudW6_UjF4ALuSshPgZpJkQSl9Zt4CNly"
+        ],
+        "__at__": 1786802347.923703,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Visited City Palace for the museum and boat ride, and the total cost came to around ₹3,100 for 3 adults. While I did find it slightly overpriced, the overall experience was definitely worth it.\n\nThe palace itself is magnificent, with stunning architecture, beautiful courtyards, and amazing views of ",
+            "author": "Belo Abhigyan"
+          },
+          {
+            "rating": 5,
+            "text": "I had a wonderful stay at City Palace Jaipur. The palace is beautifully preserved and showcases the rich history, architecture, and royal heritage of Jaipur. Every section is meticulously maintained, with intricate artwork, elegant courtyards, and impressive museums that offer fascinating insights i",
+            "author": "KODCHAKORN SOMCHAT"
+          },
+          {
+            "rating": 5,
+            "text": "A wonderful experience at City Palace, Udaipur!\n\nI visited with my wife and daughter, and we had a great time exploring this magnificent palace. Every hall, courtyard, and wall beautifully showcases the rich history and heritage of the Mewar dynasty, making the visit both enjoyable and educational.\n",
+            "author": "Pankaj Mundhra"
+          },
+          {
+            "rating": 5,
+            "text": "For the absolute best perspective of the City Palace, skip the land view and take a boat ride on Lake Pichola. Seeing its massive, intricate facade towering over the water is breathtaking—making it a dream spot for photography enthusiasts, especially during the golden hour!\nImportant Booking & Timin",
+            "author": "Arsh"
+          },
+          {
+            "rating": 5,
+            "text": "City Palace Udaipur is a beautiful place with stunning architecture and amazing views of Lake Pichola. The palace is clean, well-maintained, and full of history. Every corner is perfect for photography. The staff was helpful, and the overall experience was unforgettable. If you’re visiting Udaipur, ",
+            "author": "Ajeet Singh Rathore"
+          }
+        ]
+      },
+      "jagdish temple|rajasthan": {
+        "place_id": "ChIJ44SA0mXlZzkROFPFp4ABD_A",
+        "name": "Jagdish Temple",
+        "address": "Near Jagdish Temple, Udaipur, Rajasthan 313001, India",
+        "rating": 4.7,
+        "review_count": 20135,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Landmark Hindu temple featuring detailed carvings on the facade, plus statues & other art.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 24.5796536,
+        "lng": 73.6836153,
+        "photo_refs": [
+          "places/ChIJ44SA0mXlZzkROFPFp4ABD_A/photos/AWCwydjLhrVgNqz2tezgqkdjhY3b3q9xpz04SnTfpNkO9zIyGDvTELf6a9xGk61UqtLlzDehsgqxUv7S-xV0TehLsPtUaW_ehHJRi_lZV1qD_wNa9D6dK5KveXNxUCuzf0U_jozMEjkdcGNFO3k13mU6SQw5QBchVtoLFfk-Xrxb2DTuzd79FLCf1TbMbrEx9Ttfd6lUVGJPVd3e0_oL-PKkdpmGP-ZmqlDO53sSW_upNJiroyqjjioL-BI4jnS06h4sj8hJ2TQPc_MNteyv0AO0BtHrWlRtrzQBR1PDl8Px6OoH0ZPwEB7Ej7VS0etjvovcLPwtgfRWyv8gKvJDrY-1t79UfnMuXYUjsir8eFPbJjtOBZbLfCKb-bwAsoz9qFNbcoEelBvbfM2g2ZcsqRLKnyiC0Q6DXIU9o4AXs7GcDipSYg",
+          "places/ChIJ44SA0mXlZzkROFPFp4ABD_A/photos/AWCwydiUwj_s1t-h105gASqd0JfffY6-URtrEOW0Yn3mj1rdTN9v51CuztEvZnvfuwVxUl7_OIOK9hZJH4wgkONaJh73Z9mYvYzivx58ByBuXnksut3deqEVZZW-nriXyvKMiScSTGSGUT_mGj2Gn9eavEGWsVM6tpw4ioXwCB47GbfxwKfNXvHr_nht_2eA4htWyCHygUYlZycWK5iSvKzqNNWOAyWVW6dzEAHSIFn7qLKJaGoB5BpasKM3KhqRgmd9FwiDvlyeyofMIJ7eCj601wJ4M0yQ2lMa3BwizHs18NSBphOcjms0W7_VNtGpQTK1a2Asmxd_eYME0lPItevRW9A4Hy5zwPely_JqWPxG1hHqOhWUf96Du5OZgxprOOl4zp9iAURo6hvPaDwEF-66MXxjkA2COmbhVa9ws7MBMfoA3SY",
+          "places/ChIJ44SA0mXlZzkROFPFp4ABD_A/photos/AWCwydiV9MAkYCLtqjpw2PVNdIL9PmN-AyUWpVRPmm_e5sgG_xfu95VCvDBhMkfZBnlrkJSDkhEzQg7U4pFjD1-gIAtDdlCRu56Bv8b-MRJNFE1XbuxUl04bEXZDYRa8o3A9PbaGHjP3vpvYdG57tiAX5T-4uEgqjBgmH8wnq4_mefcF70_53DE_seUA9FYs_uF3IOFFnAdpJMWN3xeLb9IEuCgIGwrzImZroGtyzmJd4HIXrKePP_N6IRfm4_vw2nEdDbPmzX-AodQWuzcd8RimMHhYVLJaUyH2RugwSqkyvHAkRji6BanaAQdBDyCaPE8cBWmfYG7dtro4nkf3SdYXCx-ViSk7lM8-_1jOgH7gZmQujlyxLONKZodQSsffmc4LiX079RFzrl2E6KR5Obe1puHc_E-uL8XSFflDxiOHzbrPV6c",
+          "places/ChIJ44SA0mXlZzkROFPFp4ABD_A/photos/AWCwydhbvl28oRMrTCVPTYs2wbxvCpXQHtI-9tmMV4OV3iNET3u5rm74bKP_QFYGzvbK4ZOE9lg4mJnnges0HnAyNX3B0C_W19YP08FApfbl7op7eZEScLCKE6iBUS21fkSHn3Sa_BNw0FsvHZ1x0hHp-sDJno7oAQ9NXB4miTRvPX9gDBpvN_hJrZHggi24rbbSotVskAIO5vYYe3cJzMN9kWASsDxkOzsQMWKHP6L08fY251Idx4-t1wroZl-LdTdPOMYBp5AbT1s17cfFiWsNGYBw5M5x4lQgyO1p3naZ-tKtYacANynkugujilVkbhXv0zaByqw5j0N6BUECjsqyG3SHbxYzMK97Lrl-6ZIlgS6flR-jD-xYJZbwcSTMniVrNs14U9pUyse-l8TAlzR5SqvOZ5R7C7lvOut6QH8fbTvxCppU",
+          "places/ChIJ44SA0mXlZzkROFPFp4ABD_A/photos/AWCwydj2R5C0jQG3lukGB_m9TU0fOrZ-zwtWiCR96RNCo8SEj1_oYQrEFpuhhX8fJ_83mG2YyPucUFRQPqzIg2K9dC6eKY6JkgUyv9gFWQavYoT8pdbzXGeikqkH8DVoyPRZC7WiUIQ_0Ob_PK3yh6huRRS6FhqJBer-Xl1BbfvnWgzQsIALd4IrzuYXIonuZugnnPPj6axltnrIUYJqmEOkvfFZXvQ5griKW7zzluWUATQoQ1hPmtsv12BHLou5gmLeSnBECSqJPz0dkDUQnKl7XCChVkT6HpteWnDo8RQfGPgUejPsXNabOQqT1oD60ltS-ppsN_35ymY2-MEsNC5Ems2652cFLD07EM30R4B6Bqit5gv0BGcliurqTITWTMkLjN_fY7tvOUoNFuaEB1P9PFrzk765vtf4BjgZnvTrsNx0WwP6zv8uVS_c3OIlrQ",
+          "places/ChIJ44SA0mXlZzkROFPFp4ABD_A/photos/AWCwydjPTV7fROq8qLiD3QXUn0V-LqremH-Nskb0ECU52L_dmWtubRxMMr4f5NxpqWQJ3pQ3hi7uEGYLPmGrldYfakodef_kdOUsU61HkO5dg_KDWHOL01a3AZNQXmR7Js21ZanczeXu1loVvhi38BbqwetZG55XAzKxFTq_m7IbjRmjoe5vtB0QrZFLAn9gUiFW-cfO30AqkRljoHLil4XkImkBAXMP-z70OhRUodowYuFtL14UPQTSvHu7Mb1iSmxPbRX_1NAaD_iIC2szIIMD4lHrQnkTRExCIK7EffhDuDfsxAt4Ocm3ONQlaY_-RFic9PwyK8S8jjdengxDaa2hyJDAw-49TzWJ-23HUUNEwzWQG2P022eR-p6RZpSSStFij-o6d5lfeOPGpheV6UOdl2Uf3muOM8DvUeF_1NayQII9ecpxvWR3HXlhCaQCDYRb",
+          "places/ChIJ44SA0mXlZzkROFPFp4ABD_A/photos/AWCwydhWi6Oupg9QoS_RGTrShuBzYAxw7tBzssUctNgT4TBYqetMcMBpkIc8OeEJUFBtp8kM45N4SvqyKnmM5pU2lkkWK3eWMXbCP_9tv1Ba2QCvNqxpsVcrHv_ZJJrqCgfsxGsR4K8NsH3VtyO3r9YcdYrbtMvf0Iyqh0dxArede9N-oEkntL_3B57fBZE_G2LGre0u-zpgPW0hsPTDA-lWopA5s-0RTdjXBe3YBRcqIz7vsQpSRvOFY9GdfWK76Dsj1yQC0rlb8froewlNLKRKY99cnXIozmcZ1htQrFv7MgL0S2QnISb__nbFrQEHpjXWDOa0GHXdEMt__t6A4vcrbcNhpbhlvJgiOXPNIR5eXmLlFTsC1A20VNRI-7ZslmGyf1OwcYeGIwo9Xve-w7cVAAd1Qxb1D969h2UaxiFz91bUMslney7gqWfZgceVBEu5",
+          "places/ChIJ44SA0mXlZzkROFPFp4ABD_A/photos/AWCwydi5Ti591EmuTu-nVk2PYRxtv4PYP2UEJjQ0asvDEvYyKYe6YzeeujFpKqzh4xWSAVbnskIG1mr2hHjMm-Khc7xv6ozAPkPVghAElNDmC4p1egK0FRc2dvs22Wc9jWz2hqC9lckUU_-VB9oXV5iC0jwEKZtEDlItpS4g2bLwxAIksSBcKVyLIGKHYOTTHti6MPDYdedh-NpQt3VqCGvUh7jtmJBBvxWYZy9n0VlZG0b-bYunlpj8xgWZFJTx6Fsj__TmByGPMPlSlWsA_DMDRVr3NETfT5bZpQprNQA4qYYFP-2neMlQEnstzpHXOGzKJS6MZK1Fv3Cjki_CGxCr94ARb_1-pCJ9pk3WJOiEz0eSx5b-_9Xk2bGMWF5a-TaByDrnfGv5OfMY-jAtJgwxrtA89uVwYkDnIoin2MbvBE-MRIyo",
+          "places/ChIJ44SA0mXlZzkROFPFp4ABD_A/photos/AWCwydh6phY4Aa5ccze6kA7Pa-k4fIsejshOwgJHM3wuI4I4-WhO7DOYH0YqzOjCfrzPHuX9xuDrqrK6nNVfrC_eJs7R74Au1H83bmiGU8XeeOEl9962EKl_v29XCO2FJxBDeAfca37GTkZ2vsB5vjOKkY_pfFh1uMGMhhYDCrlxQrlK38g6x8PLuPj1DVvSnjtKa5B8yN4qvTfCV7hXRGfS4DUAcRmbw9sHrZQcmpfiqBY9aDhu01C2gYcwDiJLhA51IEpdm1oPrc93Yg34YZHR2DAtrSI3PhuRrITWFYv1muOIGQWo3oDWs-Meq1PjSA5yqQkmiZvSkoNeIOMaG3cg0uOZF-N15H5uEj-ByvXp5h-U6Iql4ZUEM9aNGypL58wfEnNxi5IvcOx_rOAO0KYmQL5bYLUgxI76_8Le6QKyaumCtqQ8IBVT0LHCXkHMJnDc",
+          "places/ChIJ44SA0mXlZzkROFPFp4ABD_A/photos/AWCwydjFlqcEv7PHtiynoYOEXY7wwnCdntjmA1Jxs6CwBhCkUn_USXob0nSCJ3AXDElUsJrJCUJPkEaqd0H_e9z7Il8mBFbXgNdimJCTYSYOggvkgLlSYTm_OkSUnOdsmd7rjgURhzrc72UWVESjG5-0J5IU1WFISeWeoZ6cCj_2oSSgXbqUdhYAJ_ohFuvJnKH7HJF9iwXecQPK1LXVtqxdX83EXpDmdGZLxXcXBWMVxRouX6sgwsKdAZloBA5oZnRYXtBdI5wtltpdLBDl6zYMAeeIQnKs845GGwicDmhTg6kpn5ETxxfRj0yJW7Q20hnAggeYFwj1sX0yTBnrea7BCuOWTZPeVPpZFg2Y2b72sHlX_8exh5dG7q2cvTZQDu-CH6yEmi1BxAYzXR_nAFNYO3LnMjezZmyo_LTauBNuxmdrVA"
+        ],
+        "__at__": 1786802348.6313322,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Visiting Jagdish Temple in Udaipur was a truly peaceful and spiritually uplifting experience. The atmosphere is filled with devotion, and the temple's beautifully carved architecture is simply breathtaking. We visited for worship, and the serene surroundings made the experience even more special.\n\nB",
+            "author": "HARSH MEHTA Delight"
+          },
+          {
+            "rating": 5,
+            "text": "We visited Jagdish Temple during our Udaipur trip, and it was a wonderful experience. The temple is beautiful, peaceful, and well maintained. The architecture and carvings are amazing, and the atmosphere is very calm and spiritual.\nIt is a must-visit place in Udaipur. We really enjoyed our visit and",
+            "author": "Mahi Miles & Meals"
+          },
+          {
+            "rating": 5,
+            "text": "A peaceful and beautiful temple with stunning architecture and a divine atmosphere. The intricate carvings are remarkable, and the spiritual vibe is calming. A must-visit place in Udaipur for devotees and history lovers alike.",
+            "author": "Vaibhav Bhati"
+          },
+          {
+            "rating": 5,
+            "text": "Very cool and beautiful temple right in the heart of Udaipur old town, pretty much unmissable with its grand stairway entrance facing the main sqaure.\n\nThere's no entrance fee. The temple is pretty compact, but its architecture is certainly impressive. It's very fun to take some time to slowly appre",
+            "author": "Yuhng Yeap"
+          },
+          {
+            "rating": 5,
+            "text": "This temple near Jagdish Temple holds deep spiritual and historical significance, believed to be associated with the Kuldevi of Maharana Pratap’s royal lineage. The atmosphere here feels peaceful and sacred, offering a strong sense of devotion and tradition.\n\nThe architecture is simple yet meaningfu",
+            "author": "Tanmay Chaurasia"
+          }
+        ]
+      },
+      "lake pichola boat ride|rajasthan": {
+        "place_id": "ChIJ38JojonvZzkRE33svxO1jAk",
+        "name": "Lake Pichola Municipal Boat Ride Point",
+        "address": "Pichola, Udaipur, Rajasthan 313001, India",
+        "rating": 4.4,
+        "review_count": 13429,
+        "price_level": null,
+        "website": "https://udaipurboating.in/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 7:00 PM",
+          "Tuesday: 9:00 AM – 7:00 PM",
+          "Wednesday: 9:00 AM – 7:00 PM",
+          "Thursday: 9:00 AM – 7:00 PM",
+          "Friday: 9:00 AM – 7:00 PM",
+          "Saturday: 9:00 AM – 7:00 PM",
+          "Sunday: 9:00 AM – 7:00 PM"
+        ],
+        "lat": 24.568426199999998,
+        "lng": 73.6836515,
+        "photo_refs": [
+          "places/ChIJ38JojonvZzkRE33svxO1jAk/photos/AWCwydgXDLP8KIH7NaNopXGgDW-klDOG_P8YXLraWjRy5miMvJrMlEBzni1Y8pYe9ERvkSMgwII_L3DE5dCr70oP-cqm1pkrIAvAPaA17AHrU42geBqCjtj2WGOvSR-MKSoUT3cugpVMMEdp6kTzjS-eYdrI63uLY9nRAEyW1bVTKOseuKv1rs_5HctFAMurQ8MPZvjRSsHuoji8raT36e85HH9lVJLXQWdPlfKM6lOcOSv9b13_w99px7Xy6_wbgQhAj8Cbnb1aKMdZz5cKdrjwoZOiczpCGCG97r_ii2dOFfoB7AKHo9RzUcryW83GkUWi4o0J-cOb0ubUqUTbkxIfgHmPwIetgukYKD3gfVm9YVMskWSotXagr4-ST6T_yXu-cFYWeTlL-EjW1XhnCeeRnV6F3ZrjtTGyaQxOa14FgLW5zw",
+          "places/ChIJ38JojonvZzkRE33svxO1jAk/photos/AWCwydg4nZ6yRktqhFYVbso2umgrYZzixasEE1wheffMLtAAaGsYzyTc2AsnPtvdgrNPF8XxwLBulllbPFsz7OwS4mr4QVSqGE8VYIT0UA5hE3JUJxFYXRLHVq4HJQ0PK_n9-Fr32iY_GBQnuw1fGJvC1yj6YeCFPOC1bD6Nh-DkS2iPQ2OGnUNYwyNCVq8Tc9F72aYIfu8YlAfU_Vohvo3Zo1K4XX2EGC3F2zZKffvSDmYOwFf0K0sKO1i6hwsLWtpVTKh_JaYq8coH0PrzvqKNhfsT5PZxZKZa2NgB0h3Ilqpc_CfG0XKWrip_U1BWGQlwHKNVZBADAPM62NvRBbFHB6K33t8XwTol1gkqZNBm2mOW6NofPkiYzt-Ffh-SFcEQZMCZ4HQDzRDZluG7Beq_cgQeNcwXwSKcf8qW-Y2KiF_N8ksb",
+          "places/ChIJ38JojonvZzkRE33svxO1jAk/photos/AWCwydjsXWgzgyqU0Cn2UWVColJ3zIYvv4MLOg0Sx33YCb4IIy7YhNY_QWpZ4uaDi1bYRFQRNN28i83ifrbyLhu7EnSz9QvseIjj7ffll9yzdg5nYoLZuF5tCPF8eTk2wyVGQGAhNz0RbrPxzGvXBNDr_3r-kSGz0UwrcUedxXZXWTns2okrch_l58FZ68rUJoqK0810o579k4Io5zNmg2OAJd2JSF7Gpz2nJc_Hs0N-9RUAUIpc2pqSAAekKEeRzkxdeYa2XDf4reLc27qzcLbXrJsHuZoRFH-C7vedeoDeM9y4ovEyxkBUw5cnTcnobd9Br-y8EupbruJVHiYNPpRuh6t_wvxOgYbvGuceuBb-O0Pr5I5lKNMZ-9szkDnTA_o-F8r7gwcr-BwMm3VdQtJu7OR5z5ubCvoTiP5-TmM8A3ODSHuB",
+          "places/ChIJ38JojonvZzkRE33svxO1jAk/photos/AWCwydh_2K4Y64dN4D4Do_Q-5k2Eco6xayyJv2TkYW4htIlP2vQdw2xlkj7WVnHCPsGRudab5VEkDIO77vqvncZmiCEqP7S4jz5fzL6U7iikLzPjtOur1kMweYU84Ef5sJEMS18sVQUye_EgHH3wYWzQ3ejvGc_oZW2AeDG-jZ8p7YsEIYcp7n2xiwe4UtxUc9APL4yZ5f3RnhB3_Zu6jqfCoxFAgMSP9feLZykoCOoHhrL8gSrMiQdYwn7YR2rq_Phn5JrC1wIl0nLgZ58uvycI9Dgyhs9e8MBY6nuMIIB8isAkFQ6gs1birpdj3nEOGPVVOYDKc5vkx7N4IXqVIA5zIgbw0XedGxi5BtUWnwwSh-KQ_OGUOD3ga3VuiS9o1kb7Jmch4BDEFEl9r1FNklOuJhzO_CjEpBZlxNXiD7cPDpDnecXbRr_zn0AqRJEHIx1z",
+          "places/ChIJ38JojonvZzkRE33svxO1jAk/photos/AWCwydgsAI_0_kA7hz1D1F8xpBZDe91OiDsUkMBH28WJU8oZk9TXfllLEW_1F2EPbmkkgctKASkpPZ_86sks6ckQxL57fT3FFalrNRqAGcyH4h7No8PprVXrBGD9T-vBneTsTYKos-doheR9FofztBMGsvu9X7kRv6xHZzzRspgtgNJxdNiVLLgpAQYn6eqh-0k9MAoAsaaEQj72frTvdRIawVNCGi6UqWe9BaP4GhP3F0guNQ56IT43ZuMIZn2KeZKkj3wxWKgwzisxpAwrsocfg4zz88Cpsq2QkKfptKG2Z5joBZIlK1BlYZ-EwOrssITeEQgluc0J4SlsuXnY7VeYRjuDuXzk29AWeX-8OX9lWkVB6Z4-QGOikP1hkIw_VAtV6HlzRh-N5tnh5zopmnYaTxGJQFTxl4hDYE2H5rkRMfCiFw",
+          "places/ChIJ38JojonvZzkRE33svxO1jAk/photos/AWCwydgCn0c9V6gWDeAheVF0AV7ouqyy5fzUAS6h2iQx_KrN_T35WsbS6RiBdgMsyHr6DiQFnx18YHRqhEEVG4lM-u3pdMXYKDvsmVe7Ji6TRmPaqYpUaIWA2J5ZzlP3jFYN9qdF3gjmGTq8r19S5gcYTd6xByIyi3G8iz72DdtcvA9Cp5Y9GRUtqi6EkLg3yEzPxMTwa1t5PtzDJ1N1Y2kaQdWJ43cHqFubl4XEPKj3euvk3YZco5BhIhcgMIIzy25vlxaLGPwKzinCvUl_ZOTcGz74cEYSFrdCaNz7TSWwFUM79jwE1M7ZRyi8o1bh3mR70765HCf1rYRxYtxLZpDvufpUCH-wVSPe1Kz-AK2YAlo2704u-pSMW5FFlp_yBFUnnUnlOLv6TKTQKsuos3i4NTGhDa224Eho1PSfV1UcTSUvu24M",
+          "places/ChIJ38JojonvZzkRE33svxO1jAk/photos/AWCwydiv5IPvVgT_xXSO4kF_c93M_EmK-4-ONh51R90G9gSng6l2BDlWf7H0hrGKmFKyUzdL2IZ1Cuc9S8VQG0dvoa2KhExEW0qYQgVBGBeG9i6Ehbuc5mUayH3_0tnn6HCafagLZwv2cu5RgBdXgRxRykwEHqoWuS91le73JL3sXW1yavorLYhlQIEv_8YUNRuDiWSCBBPpROwxh_3jFX4b2JTYWUIoYrrYnZBJbxo1rvoEugpwnj-p-Xuy_PBJgQ2P0TaDyp-9LemNVuERsJPjiR6AODpcIbMF6zDFCMXe81_5wu-M8VF_CGk14qjHismu9V8N3sIDbINasEzrlIaN8j8PYD3TSRMGW3fbc7IUTA38RHg7HS7CUwjzj9Kf85L8zM2repU_2Xd7CFS23EVdWMlTOaFRYFdPnYtimx1gUkxPiRzO",
+          "places/ChIJ38JojonvZzkRE33svxO1jAk/photos/AWCwydiUvBDAo3R-M5s4YI8mRfXj9mtH6Z8npGXOCbGAZ0YJgmB2Tj7Gr4gBx3lJK2CtbzdVJORl3Gf4cw7q-DyQH5fHr-OdymgtXS1QRq88zoBckQFi67l72QZfLKGMaUvI6e0OHualKYn0Tk-Jgo4jVhAAutLdkvHXKlYJ-WSJfzZYBw8KWucnjbr-u2taQLVu8kRU9lm2Ix5Mr1hgWQdgGqFkz4a9k799Xnh_srrz7vmcaj5zR9eOa9CtHBGweyghqBBc4ssPbLz2FgfWP-Ol4v2mnWswUy7LrEic644jwvNDPDul-FANZm61KOtA_czJBTa1f5vgOB0bkCz2P8Jin1mXhDnEQRmSf-Jli3hu7jjp-Cv0qDnr81Jt9btI6_Poj9xn2VV4utncRe4523eTzll3fcd81SqtvJDa3XhJX5gFOQ",
+          "places/ChIJ38JojonvZzkRE33svxO1jAk/photos/AWCwydhQkYX7sVHZI39jEiJsxF3JmqEJEqSZt-xRZMIrTbktOiSTohB8X6dTMQXWpEF9CnHggrjPetFdbqzF9IwBD8XDIUa77nXZ1mMIc6qYRQ8DFY_ZbKbDPrZO8eNFNbp9bXSI-hIAtPRGMqTUb1Y_b0dSUBbOBdqhOyoj7PdjD7oc5D-uA9kEG0LdXojHU-ggPaor_xU5YDZLgYu2nZiC9roMaCOEOs1ixzCBQuT5_Z_UMCppn9vcK1bEd1TSGC42ypkjXruHFltzTPMJ7JjeOk4BypNQfQRp51YjXZ0g5nbqA4haKf5uYjnLRXR8l9gX2l8ZKDYVyyC8kpp_LtFJmB2AyUMtHAJEFROQZlk9Wn48s_kqjLS7YXYOSROh1BBteGahcJEzMNo9LKqQTnkYaLNn88NmL9QmWFyACTx98oCeTg",
+          "places/ChIJ38JojonvZzkRE33svxO1jAk/photos/AWCwydjy8g2ravGT_vLuh07WlgN6CVB8hCgP_bmb-Cqtox6tM74yjmBMmpp6ycsXjzgeJk4J3qla1Ehjp3RHbQLb4oTnFMwnmYLg8kqkjHc7eNgTEKIRbXFfdWdng0ndUp3AGXCIEkZx3X3SX8I7doJCtxw0SHDzJZMD5lH-YGPLJ7YWC-i_SCub7jrEvBgmffyjucuQjmApcYSoMxZy-RPPV6Pv_Eqy9JqKPlfmaOBe4SOqyCs1nciCAveKJXdYAHwDl9kUBoRZUdNDXwUOHdUza6K9DAmVwgo3pfcKj1-YHdqNQWeWXyayNCfDeHD4_AWaee2WemYnq7xPBMzngs1s8vwsi4VDNmnaJFPqLhV3T-SjjVDN9QQCopXjeL72s2cA1Ku5Msg2iZbQAAExji18M1QQ6JW45BZ67ptXgldyCjN5c6Kw"
+        ],
+        "__at__": 1786802349.1754858,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Lake Pichola is one of the most beautiful places in Udaipur. The views are absolutely stunning, especially during sunset. You can enjoy boating from two points—one from the City Palace and another from the Pichola Lake Boat Point, depending on your preference. The peaceful atmosphere and the breatht",
+            "author": "Dr Shreya Tiwaskar"
+          },
+          {
+            "rating": 5,
+            "text": "Boating on Lake Pichola isn't just a tourist activity; it’s the definitive Udaipur experience. If you’re planning a trip to the \"City of Lakes,\" here is a comprehensive review to help you navigate the waters.\nThe Experience: Royal & Serene\nLake Pichola is an artificial fresh water lake created in 13",
+            "author": "Parvej Hussain"
+          },
+          {
+            "rating": 5,
+            "text": "Perfect Sunday sunset experience! 🌅\nWe had no issues with booking availability for the Sunday evening slot. The boat ride offers stunning outer views of the City Palace, Taj Lake Palace, and Jag Mandir Palace—making it the absolute perfect spot to catch a breathtaking sunset.\nPricing & Details:\n-Sta",
+            "author": "Arsh"
+          },
+          {
+            "rating": 5,
+            "text": "We visited Lake Pichola for sunset, and it is truly a very beautiful place. Watching the sunset here is an amazing experience — as the sun goes down, the lake changes colors and looks absolutely magical. The cool breeze from the lake makes the atmosphere even more refreshing and peaceful.\n\nYou can a",
+            "author": "Sabri Avesh"
+          },
+          {
+            "rating": 5,
+            "text": "This is a truly peaceful place where you can feel complete calm and inner peace. At night, the city lights create a magical atmosphere, and the beautiful reflection of the Taj Lakefront Hotel lights on the water makes the view even more mesmerizing. The gentle breeze, the sparkling lake, and the ser",
+            "author": "Himanshu Yadav"
+          }
+        ]
+      },
+      "hotel (tbd)|dubai": {
+        "place_id": "ChIJ0ye2phNrXz4RtqqaQf7_XIk",
+        "name": "The Biltmore Hotel Villas",
+        "address": "24th St - Al Barsha First - Al Barsha - Dubai - United Arab Emirates",
+        "rating": 4.7,
+        "review_count": 228,
+        "price_level": null,
+        "website": "https://www.thebiltmorehotels.com/en/biltmore-hotel-villas-dubai/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 25.114189999999997,
+        "lng": 55.1988273,
+        "photo_refs": [
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydh1kfzaAFbnIGF_PPIUqwdZy9C-6rc3PG2D0we3-SrWtvDeMgbdrAmYE-4e243SMzNDekuneTBc6KwufF9c2kxv4JpxIKfZ-_1EECoLyaS9zoVoP4eKWKt9JB7sKiHrNy9tQukHAv0kcJGco7clE6KcO7p-ooKAefHP71wFTaI_5j_gBAH5dTxu0V_9ZIOFb82MprLRIH_KqzhTngam67zCbWnYk5gIlRgE6HD2FY4DgB99rllDhegkJQoWxGpZhSAWJXQ1EgOwAUEUjyCJWnmMJcYcAj7uAKNn7tQApQ8bdB-JetHbycJiqd5NsHaTxKs8lr8a0BbLP4eQmI0-pTRecrmGmqTgMO76ZGjq17fb6wKghpQFtPAJsReJVC6Ci9y5SS00OWk2WnWb-XG9_Jpxdf3QbRT9rYSwbzGIB8g",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhmnSLjYLraVxLm1pOH-8n2osuW62TvZyhuBHU5jReE7FHaIOgGEu3iimKptFtqa7BJoBEKvavhrrmik9IjTRbIhCFz8LOdVsyP4PLEAdOxoOUrz0NE3iwMDqXQCQCSKumxWPj5W1UqFgFGuHgtHY6NQBE20bX2vsZYvA7b-X5tbaT3pRUY3OnrvG_nFz499xwtfISdD4d2XsIjIcGi_jCgx9GFdiUtYnrx-hOfQKHp2WV-lpSVn2UVQNuIJYpCpachj1NU_pBR7qgmtnPuA3UDyXHNkAKUliSCVRPpCqks6wFzTamvyqF23r5-NzSQj5aHf8HY0_Os68Uf6S9pco-eq6Kj8ToJf0TUjsN627BAgkHRntznb61tUBfEBZrNecsm21CzZeVH6cOggMSxG2zlgAgWKwoQqG_RJNDc6qgIRNJL",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhXM2yZasO509o5rMhtv7A_QtjJ5qlUH7py4F9dzxrsoJWC6LIGTv1RTqTVqRPBu4NtUZEgYc_lENRDSo7RSreNmJuAJg0BtaQfyafxxgldVT9ih_ZU_JAArEvVFgF7jWbhsDxJWonU9abjZeY0rRspXYtd_WB1Rkr6sH6tZJNClv-92sB9yARXB0i8ZSE9DMVn1j7L15XuErONpNqjkLi6lfjiYFejHhiIJLPVAKVxYWLfCumNGsNQgaTnDKc8EUPhCGx7tvRw3s3j4kV5zwiXX1zLMJlCSA4iQG-F2xLunuFaRQVkfPAHGuoIcGdRKJYZNDivfqPbYHKGorc-h3H4oT7DoIIkhDt3Mg8Qrt2R4AcbmAOGYp3aY_JfDXzaklR-seGmdWBGCMQpOFf7iWRJNs_6WeNFg_HJXpqWyDJiJf58",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydiJ0XG2KWUEgJVZz2clYpFZy9cEzeJQgks1EmPCHNUDdLlstpqHJFFeZ5ObFr_0R4lyETdja9chBs2LnKdzLZ6Rs2QZnz9kFF2_GRwnt-zt8tDI6KvDEYGdIrqV3B3x6maPMxQLW-tEg0XmtaxbLEmD_QKkcYoXmG-Elc3geboxDIVD3tFukq5LJM2H5kG45BkcutlWv6nxagVSIouFWCg9FwPHj39WJcemTpnqyYUB_eXPDYZ7wJiD7k6v_tctXlMCVKc8vUjnK_c-6NsX5KDhPDBnxSVZSZC4mBEjMF0g34bLKWuyjpXPnLulbKGHbjj9tTcN1RK5esrr6HtFKQxrkGyJhEGqm8mgQkE7ZK2JXK7OLdfxB9sCu4YtGOTyUFQtP27DS723W44KfLFqBF7A4NcVQwO1JkT0qCXsFH5lnw",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydjA1EHyQWK9ntGQlDOHRs94Wcs9lgSkPeqWYd5M-WMbpyI8WVXYwRFhw2XettxzRTNmbiV2Qev04q2M8cUw4iLciFQSBwXVavfF-Cize8XySd11qoN3MHg-k-eBl8AO5ptHY7FS88Whf7THoBo8m_cVbl_WNn-HGllHZWmM-lXU2YDa4xDu2tez-egKMJ7WEEiZk9ZicurD-mhUabLLTzYt90e82va_C7f_EJxt-YaBG8tcZTBccsXFg7CrmpdVCHkbZ6_NvyMsHrH-ZbVstEnL449mMwcgqc1HGC7YuxkB5ouecOEqM1LpOSkanqnteKsWpsAEHd-ix5kUuNdUFH8mCZqOFxUEjw-e5fGP05ER_S3pjGXZ02k4d2eNmVlWITFjQjQ65WR-GxEQHODGarpMuM1pSsk4SkjOuckrFco",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhT-eWwISVm_TTVfVmulSxHRv0fzbdnwnkQqc1YyG8C_HlgkMSeINrjAD0nefmc5B4CtZWistnAag4qiuJr4FN-6EgOPZCbxeQchoqUN67e1k7Vfy26nbigIv60ZVS25h63STF_9D0xu6Usw6D8tX7PDvMoWEeBBFy05yW7E6iXsjscuYlg5zkJzfe8ASMyQrdXz6rWmysAlTwpyDMFRBbem5R42FruFl-MZdgVvI3fVUGJ23T8dXn0mWyiP_bPRwlmEnIDeSSukVTCGpSeT9y3VamplIImfgAiRxDza-vKumCviCRdvTWp38Y6Iz7j3WdGQZmcN1UdbxJuUnph8VZ2z4Z3t78koRoahngyvDRN8i9rg7YM0aVo5CRuked77ANhuvMidIZHdCmsdJDT71wwoHHZffRuD34_oAm-5Sk",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydgcFGsdfCYCqAJUNiN-UZbjwyiCty7bqDkKpb6uiGuye9xsrTFui1vhXWi7gY7ceqkUuEVHQ_oreKeHoGJ3D9nhiN6jn7-dUEAk7vfZlOrTUJsWimJi8pHPtMv4CeqR7L_vtH622GM2caPO2aFC-WOvSyfcitE6yNXIXb8BOrWHHFix7cJHSlhobrIuR9ch7aQxqeVUPX_FqWQ0NV3T5n5NmSRIoW_tGG65Gpb7_STlo1wzW0PoVb0W2mkaYZ_MQo_F5SDMwNmXhzp5kj2h3J0ObzLk73BU8fq8eXHZcEoLKVWMYTI6cHL3vdc_iN82aOpPYX65tqDnsRSvruHMfw0pgDdF19xb2FFWvBnsFM2FS5tHXBTHjtQsnimaeDq1xflj8DAdrFO7NHcnibZoiBxlFkzYf2RVfCxgy4E_nkRAxg",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhx9nynEmO16quTz-JxYz-BA1-CE3dpwPLeheJRBbbt_n-JhBOS2bEuU5Hdxsx_Ar_G0WDrHdXIEWWafi4cgn4Rg-YxRWtkylplG07qWmGPZzCk1Caev8iBkKJmORyLx5qwHfXOxvcWxHGlS-gIaKJqIiSZnc-8gJTDQYDIzElkj-kFwZw0uRJNx4DgbucXs2LPQ5rhueNoxnKhhXBufKy_3g7TSy89RnSTqRUMgg-7mR2DUKAyQsKJA-6rtw09lT-hm_O2cXTUHUZ88ORU4CNYc2csufxcsy5nYmKs8Nug8vBuk9D5TsccqsfXXfoYJCGQL2C4vZxBfI1CIMAtBhm6qHOhFBLLLY7mClmnm0yRDRrEZ149gtWN1UWVXxyStAjINJ6r12AaJMk7-aeZ5fKPPheWkbNEV77bKm_LXJQ",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydjuRZDw0QrHeRN94il15-2dMMO3mrNcFjzUH7K8w0d5SAUFeBbNKs2n4A4u0KpfiSgzr5sOkZABEguOHW2LG2MM8wdSZRJoFGfv3jy5lJscnwIy2MDoYVlg2TfqYQPlL-M5EO8lRIcMJlCxGcMBHmi1filpOEnZjlmB7IIZLzIsnvwh-fE4eWqqoY_ph5EWkOlqBN4jWAToRut4jV3VhG-_ynfqgBj0dNlMF-_aoOBX-JAjrrUaB-niT9dK31cM5EfF1CjYlMJ9YQobV-Mr8kEGbPEbhi1creCXqQqBo7DefXpeqLbd44e922Hfrb39E0LmFary8qoxDFNCfqckaWWQZNWvdgUyNQPaRKlV_XOcTs8K3NWv7dHIpqH2MYu5_UNwG48xLXQ8So_AAIfldLu3GhonEX7hHH4GSFXBrIAGY1U",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydiAD_EJRIVxDJCD9b2LYmnWay9sT0EX_imxHu_pBRQBgKQjWE7Gd413r10JJdSl9fUabEOPLihAjAFFihK95f6mlvJsUCy3_N8VY_53-aUlmj2wd5nhCKNwPpYu-DbmQ_0DGUNI5sST7vM3ZSP21QBaFgyNk_zdXmRFMku_goFcjWMiaT2FTfb-pAg4Z4v5ROunBe4m1ppKbAqLiJAA08OkAY6NPaNlA-RQ8G9CdnVmX8DNwgY-wF-DDLdquo2YA2qcIi7viHCIRdOnRhfsuNb0yIm5wFyeDWecf3QjqbiCfklzFjzH-lknpRRisu2ZLlEHmNvlVRmXG--pWqVXilfHm_7GUjtjuYEE2-75tEB9_szpTN8xY4nHEmL6NuZHJEci2lKXlO1byQWTPqtg9VH4DAfiemAdpCVkxeNAQe_ejfRp"
+        ],
+        "__at__": 1786803248.5911539,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A group of friends and I had a lovely afternoon at their afternoon tea. They offered an earlier time to accommodate our party. The service was great and the value was superb. The staff was very friendly and professional. They welcomed us and made sure we had everything we needed and more. We will be",
+            "author": "Tessa Johnson"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing experience at the Brasserie at Biltmore! The food was delicious, the atmosphere was elegant, and the service was outstanding. The warm hospitality and genuine care from the team made our visit truly memorable. Highly recommended!",
+            "author": "MOHAMED MORTADA"
+          },
+          {
+            "rating": 5,
+            "text": "What a wonderful stay at this hotel! From the moment of arrival, a warm welcome was given by the doorman Ali and the amazing front office team, especially Gucci, whose professionalism and kindness truly stood out.\n\nExceptional service was experienced throughout the entire stay. Special appreciation ",
+            "author": "Andrijana Nedeljkovic"
+          },
+          {
+            "rating": 5,
+            "text": "Our family stay at Biltmore Villas last weekend was way above our expectations. This is undoubtedly the most luxurious and serene villa resort in the country. Location was amazing too being right next to the Mall of Emirates (literally three minutes walk). Villa design was simply giving us the feeli",
+            "author": "husham osman"
+          },
+          {
+            "rating": 5,
+            "text": "You enter this place and don’t want to leave. I’m a type of a person that loves going out and discovering new places but every time I enter the Biltmore, I want to sit and chill and enjoy the beautiful place. You have a spacious living room with great lighting, private pool, jacuzzi, cinema, basemen",
+            "author": "Shamma"
+          }
+        ]
+      },
+      "hotel (tbd)|hampi": {
+        "place_id": "ChIJ9dwxr4_VuTsRyfCHxHrWVIM",
+        "name": "Tungabhadra Resort Hampi",
+        "address": "Naranayanapete Road, Village - Ayodhya D. Post - Shivapur Tq, Ayodhya, Karnataka 583234, India",
+        "rating": 4.9,
+        "review_count": 26,
+        "price_level": null,
+        "website": "http://tungabhadraresorthampi.com/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 15.3456898,
+        "lng": 76.4040287,
+        "photo_refs": [
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydiZ5Gu50Ulj1v0kOAAV-XfwvLdD9UBcOJ_xICsCkwQ4_zqu9F5hNJj5sjBiSCnO7B3twG89Z81Qa6HSACXIM08w5VJCdUyiWCUDgcFmwRKaMDqBtwrxK4YQENu-tNZsmAXOy03jhFGfdMTr2mu3QSvBT_1pAipwXN9rWW9IGetk6Sf4vFLzIU6VyAWUjrc9a4z3-PlGuOhwVi5BxtHy9wFH-ctfUbnC4Nrg8x81YAI_ktQ1HTC77dYdfTddrsFdZXH_8OIldAXVdoZsQS3EAPWdV0lvyul_LwPtj89Rd7oTa3TQlWMGbDngB_PEv9D-WkG4b8JFHgH8thmaQBz9fQtQOt6C_W5DvlzReyZJJm-gwHf9Xl2wlTTDo5Nazu0Uru2DQVL4YOY4fTLW6uIt0my4RRCwoV__TszDEku7UiMkWJxhJ8UXCTE0htHrVpao",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhl2iUaQ6cnyMaUmdR_-pHntYRou34X7-dxOSW-kSVmgyEvfezGo5sxRAd1gHydnwC5Dp0gB-5ZL-vqWVJv4FMDQ8RaF4MLvkBzjfeu4dLuQfd86ZB5rnL1v8PJfxYaKpFdU6DJjC1CgkdUOa_5EpREoFfdysFXuEihWNrMHpEPUKKAKPDY6Ank2pxExaSi3QLx-1gft0nxYNq0u0EERVcTKBciLVRSWXx54Kg15j9WAZUQ5bhC1R025KWplojVb4TnM2oqKHvY3CZk5QDPe51GIjcQL1Sq-q333WOhPE5TCfuYbW2XnRn0Y35cTm4enxgyt2e8hS2_rqeLZ4NNsFcJMLKBUPAXF3P7xnEnY7crA-jxcYs8FpEIEX-aHs77pLFlT7ph5xcdcTvSGpd6TefqmuNdH6nTaVShUabJdX5WGnbD0eiktuuykx767wf4",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhc62e5No1mFXPUa_-XfgipFNEVLjJE-JKUqMzTlhN-M3C46hXTMEExpc27wA_GwR7pRscHtiog-hiteDFGUwqO-3ui4foswyiXMlMEXgW-LklB58ar0uucSoebHr2qnFaNQMtaLRsaYn_FrPyIVLEfzxECi8e1jjrinFHNoH8CMpVXRwLnixKwFjGM_B8__znBXqFXDyeQNbnT74pkggQOAxiF2i1fFk40HPeNy4MDMRBHrql2vC4pXbq7r9kfIX-Cv2QYe-1eaZSv_uXW4EpZ9O7nZ_6XlclO0xzq44rRfMrXyMewOW36_otyCHrWiy5V1vaH2Ft748OvFtF8bV446X6HavPgTr1M7_TaAUpsKeOgqN7xtpp36kudS7ektjGrIiDYvyBumylr1wnoMb9hr2oCUfHLqu569ZrE7TNnhNPteNONs4il4AsIw27d",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydiy5DThEraTSbBeTCV5j_VseLgDvAqpnJRbaNmKq5wafXJ7bN0VrojxaXMhLp3VvYplIEg8YoGsuIrj-ZC1yEQJtiRt3x2RGqtQJSLlDiws6pdcYSfVQRluHr7kSE1xHk7g9yqfrTAkGvwWcynklLb393DxZNoGTgNAXDJta661BC9BloPLcesM9b7h-0d0TKF7a1L9fjzXo1MZIAtEoo8otzhtBlZEK8juivp9a5O_vv1T6lo-KmWFhubPQXrfqA5A-lfS3jXzhFeGCQ58-ZLFhQilorSTqtM_iyK770HSAVZS-f_ShBDXfSadLTmjapCJQY7pqSwsIULq3RqDv3uMLosh7iM0mEjqUXIUcqpyzonjeXUqAfK2XQW23VcxmzFt8gB2WrWqeiPY9F2Qu_wEHbqZqppSl7MEz21QySXcsaRYSANq0oI3q2am2A",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhUzwNkUNp9x0DEWNliGL4Dfo6l2ILG6vmNJbe4htwfe-XmtOqEzsXbQyP1n6ANRdBD2UbZ8un5xcNyxx_3fQXBpc5clhhq75SwjqgM_RdCixeed-F-6Hq__T8sifiUCjf3Ulpio60JCKjpDiLqKgpQc8-CwRjEu3F2MLpd8zxNCE_eJa1DJ3RTCwvqxQiq4o3p6mrQBpLB_S-OtZHWXxatZZz21-2wpvst3RBsrR1ntC_GNcnF4wTMw4kVniadSunBZPsg47Dkpcai8KAkyKhGJf4lGok102oFJAvhd2ewpaHYN1rxyH859gSLI2fWIIo3WtPkE4ZmCDD7FeM9ba0gx1-MY-wBtrIfdX41UExMWWjMWcvEKRr1zX4ctWoBmT7E1dY-G1FqjjLg_FFkuKhj5GR4Xk5Ao-ZqruWEAbd5cI4hunpdEpsegOPedQ",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhlr7VFpTZsAy464hyTPGmxItgJiEjuU5IW2lLvunidu4wdjzizT9Ac25vvWZrvoNxvf4iSacbu65Jq5FaMp7c2Q7cFa-duTBgJNJtNkgGCt0yrYeh1zvkfGvrZjR7G8yylzOM3qmsC1VZ62LsDZUbHUXZ9u8Pyf_DTTOff7_lNV15DG9mbz6bFKMu0NqVXYIQr-DpucnRl9Fomw-vv8Puh0DxTF5BsVXZ89uCxD8oReyCPNqQipIfSjmfaIS7Xx1YBYBxnMhH07yK_M6qaXt1zSROuVko6iOauvZjTLBNNzzmwlEtZQiM4z9EiguUDLF31fYS6Vu_6hwQ2sFbcnl7DsH0AmeVm6s07nVEuSriBAEUWuYT8wZiA2tNGKszh3irzBM3_h_RKWc4tvJfCcCdr6w8TRkiHJGOzepymF9aU1jyw55iFhE_YkbTkYQ",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydh4YxgDQjYvSBsrDkxrRl1v7gRts0uE4HgpcGFJ6FErsBb-dQcoTv-GVoCWym3BM6K4JYA6w-KSUICzuyd352rh0s8JtcqAKdg302dKW0-9z98kqan_GHKECYZK6AL_5v7mp88Sj5Pztxfgd8cNswOhFDfJRMWiz7kyr1xPm_v5DzrXbq0ne2QuEceJpkOfCY6H3LeBTDka2UHWEqL1dq-EPR2v1jiXR9PyBjEItwn6TD3qqtQb0aOON7fdD4PjQZqoc1s2GswJQKu1ALAeXzdPYCJ26d2SuYUJ5xKavdKN7qJVaIOv0_usnLLTZaqqi3mwsST8Zs3Vzyxv97t5q0vFsIoLyztATX8Ds816bDqUh-5gc2czKIH-02fc3dkdAwsNq_6D34vF4Cu8uM5rxvZUNXaYgyPc51oxWZGTWtQh0odIbrg1pwHMlutaNUUi",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhTuwNtbbxUmf19qhoGeJo3mxFMfjnsT_pl7KAYlLu9xqLtUNx-ASQVoiy_0Kv8s_WoXE9Hl0u1QW1eWNpSihN-6frn5bg_sNxc6iQX7ADuljD9qgioeQu-_rjNqp3NzLlzOdhFxwzp1GcV46oik4Dpa9ctKQf3M4A171y6y6nr8Sje6xnsFJ3amTD7BVMOWfK7p56f3vraMYFo7L8GztfbavVaz6dLWFqt5fw79eZD0i44tYre-BsVh0Q0vNzHHnm78lfUFrDtBeqo0NWc-tJsZuLmN9WzhqCGvFJF6uSxlhdGi9veNvwBnYSFm6zZAmnrkSj4ZlYyr8x7Kflr3sPGj08oyLgEKkZxXMQbRJ30uCYO3a2AAw0sZTD_QEvyC2Aolz1LU5wfx0raK_cGqaApbS7RozyT9B9-iggD1Tw9giIo-Ni2FSjwCNNBroc6",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydh2CSv0wOBofLsT_GYdWmxQKH2jaOyJeBIFZqFsf5_J8nZdk7kjPELTjjSlpK5wqhjA-HSv-eOXCIvlUZKAjGeb8bZf0aeMD5cbpzC84JswOiToZyEgT5ny_AC0fq6ziMIDKz3tcAhoghl8-zNCNlOG6iXdlVTgDper8ssiliTQ5ApUgqB2AmUDuGCVHKRvgkKASiagDH-zAH1KCXXCSOVHkkB56EW9ydABIMlcSp8Imh4PgpxAfk2Cmf-AMVNhGohKUME8IAA9HFHq8vaU7PwsWKz2p8jJUme2Q1aSQT_RKgra0pWH_liJv3aHs_HMmPTYnTVJEHGIQp-4oEEG2ZSnONt4LKNGcwXz-C1QhjRMg4DWsHbpZZfpfo0N6XiCkPI47jx6T8RuEGIAEWPD3zH6aGWRQsgPRkuxPUFQSEgtq-yQtlzaBnPJYl35qg",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhhZfXcgLHgLKdHCXYkTJ9CUDQo8MWkP3dBtDUAACfxSQoP7sJkZKFdNDhPbKduTcR9YP9W__r-hIm7ZSQJunIOywo_AIgbRqK82-MRaCHTxQuIxZRKRG26PriFMjofBd3NQTESkzaglcYFWzcJKtEnSaXQU-0cfa2Tc6UYWV1svdmd-9EUdZwNJnC8fG-PV9UVaEEP0eMc3Dg8RatIdl-W6N6MYLbhnVIDHGdCEboeNxvwH99pAajhlIqsZ1MgUVH5tz0A9tYjGpR2BiZB7BmLRd7VqIMm9AT0KXESiYl_g5L_mCY_lFCBvK2Bc6pgY8S0JfKi-Ne5Ob7_r29z0PSIB_fLodjSYk-OmZT4RvyK2LB6juAiLwV4GwRTvqYhyCznaRjVy1alyx0WjkMoApNf9NnjaHDBQtBhN3DIYt71YQFY5qfOSbA2011HBJCT"
+        ],
+        "__at__": 1786806564.660026,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Beautiful place. Clean and nice rooms. Friendly staff and good services.",
+            "author": "Tuhina Bagchi"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent place to stay away from city. Good response by staff and owner. Food is very testy with natural garden very refreshing. It would be nice if u have a swimming pool",
+            "author": "Vaishnavi Sagar"
+          },
+          {
+            "rating": 5,
+            "text": "Stunning views, friendly staff, luxurious rooms, unforgettable experience.",
+            "author": "Avishkar mane"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing staff and services, beautiful location, comfortable rooms, and good food",
+            "author": "Vinod Tamabavekar"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent place to stay. Away from city crowd. Nice place to spend time with family and friends. Clean room. Staff is very cooperative. Food is very fresh. Natural beauty with farms around the resort.",
+            "author": "Manju Bagchi"
+          }
+        ]
+      },
+      "hotel (tbd)|new york": {
+        "place_id": "ChIJYaVdffBYwokRnTOoCzCq9mE",
+        "name": "The Plaza",
+        "address": "768 5th Ave, New York, NY 10019, USA",
+        "rating": 4.5,
+        "review_count": 6759,
+        "price_level": null,
+        "website": "https://www.theplazany.com/?goto=fiche_hotel&code_hotel=A568&merchantid=seo-maps-US-A568&sourceid=aw-cen&utm_medium=seo+maps&utm_source=google+Maps&utm_campaign=seo+maps&y_source=1_MTIzNjE0MDYtNzE1LWxvY2F0aW9uLndlYnNpdGU=",
+        "editorial_summary": "Iconic 19th-century lodging offering fine dining & afternoon tea, plus a champagne bar & a spa.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 40.7646318,
+        "lng": -73.9743251,
+        "photo_refs": [
+          "places/ChIJYaVdffBYwokRnTOoCzCq9mE/photos/AWCwydj-RurhQtaTapmZ9_AtuZrmKOLmp1CjHUpVJZLqM6TnrTqcKF1eZbcNOPdyaejrLRgM5cPkDsxvuSt_-OiqtUlHbRxVSq6YYJtEgd-QmL1UMdJ6oS1p2CdczDpwOyOOu1LFwmlswei-FOHUW_h-LsOyLvDpVDcFWLGAIxFiVXaNPv2r6YZFb_YIMfo1OwiwoR90dSLdXRaQIvZQ2W06Pn9GiSnf9pO3LOcRLoxvwF6pW4ir5154-0Wq8ZSbD8wBpmDDBl7hpPJn_WqcJXJROPRqricxqzuVj4YTPyTRLriH1Oo4g4QNfDC4XkghwPQNP_enAzGa7li0Ey0SIitv3GbCzUsRgH8j4wWNDcTdE3pcS8M7-ZD7haj7W1O3GoyYXzZ7MNE8vRu7pzfDcDYIhWK-J2E2sQh39IkGq1mpG9oeVnxk",
+          "places/ChIJYaVdffBYwokRnTOoCzCq9mE/photos/AWCwydhiWEk6GV2IZTdX4EnMMYC-JtX5ozcis69M7a1SR5pMn390jXcbl045BUJbQ3sStTpXo5kSgO5Qe_GNWbocf2ZVwRfMrf2SjmtMMsNNXpay_76bEcR1g3Sx37ed0dT2DGekVx86amNUSIpeXiyFwagb-wvq3oKMQYkHyhHgVGrPZtfkYOvuPTUpDwvXp2IeEZ9uVA5qw5UDLX9jp3QHgYNI7Lrcf7b5fZ-saz2pHLi8ImmKvesQ4LA3GjBN5kRUJDdyZKv2KeZK3VsvrsASa_hsQTtpw42fCWRzHFulUFq5kKnxO9VqL1JwEYFdq2a4WwPPQPd7Do5Kidmidtg8M41cvZvJas0nyoPJhRViEI9R1H83GodZjK81wREGScmO0v7ULRAbuStXzDDgYMthatZUMubyirfwW5Zx86X4S6zGJPG5",
+          "places/ChIJYaVdffBYwokRnTOoCzCq9mE/photos/AWCwydgq6_AihknH10tv0hjTb7-nxY-V0gNZtPad0WcPr7Ege6EhMVpGi2DvsB4u5qLesMOSaj4-RubymlzVKs48CG9geO-ZPkeC0dZ2Jfz3kE-VWLm7vH2FHE8jA_JD0gqPUOab4e5YAgaELX_U6xYsh_Be57kj4ckgsZISuhOyC4QNsAvAkaR-5SFYuf3KgeZ4i6A2FcclFPNCDi23kz-fo10F4spA07fuiGuZdGH870-GAHFFx6o0cFhbMT2QVDO_D_OXWsrDtgjCagbEOF3CYZ7gACiSe7aevDIdgufvKTRqxcns6T8YgRzfjSmitNelV94I1lgSQWEzVMDtKrVcJUVZb28JhdOZTRwrsav7VTXmmaLCKcOt7_t0yKGAcj-3zjTjQEExi2Rx_VS1rvDsXcLCzbkbHAhymtbTSwecKWwTUzE",
+          "places/ChIJYaVdffBYwokRnTOoCzCq9mE/photos/AWCwydhFm-27MCAA71ciEzbflKhDBqT6M9Xy_tk8h42StlwNp0SZi_-30EgRcypTWNfVTuPUslz6O3qFJUoowD8ktdK2bakR813WGvFlUoREQP9BxGxjGoM66TOMl3ftoFu2lunszsPWVckMaWpjBf-q_YFooqXk-XaMMD9BR-SYZYfkZW-QAAV3R9iQjd1sWn0i_9T40iE3Axkioe1nbRET5OhpxDqqvUbV12Arc9Whch31AhfccYWLgCAm6qI35ysRrBUQPge715XRMV3RDBz4xwNp7qfdicojBCHXWMmexbdrlhk__QlxVx3xe9xEjSq0KvPZz_zJD77dEo7lD9VCKYgPPdJE1WNhq6Ahqyy1uCxfA_DWwFn94zAId89DCl4FeL-HSiaPocceNrB69_pAY_1grLE1RXxBR9NVUESioCXb5w",
+          "places/ChIJYaVdffBYwokRnTOoCzCq9mE/photos/AWCwydjs3rgN2gAaV-9YZIZfBXTBUsS6ZaRRQ1Vdq4sPkglvAzAL7zWZa8XYeIhyOcKqR7fYba6Oa-PJPsGaf_cw8dRoSO4XvPxzTB70l9YkgdvlYiJFLYOWUjhRhZvsq2FKq8Bhpm0sZKbOd9aQKT9TpBNAdBsY6JWmwWGHLtvR9KwaZMs5QiM_N-6tBBVlvu-v4QbCOws9DOVEYtQWnJnh6962GBP-23uvaMrKWMfyTqcDLDf4lcfDHdgcA5aCSfVdh7H_AzucTrMK79q3vEI_gMWV6GXzjWT2q25qddakKo06bmmuttZ8UTNzQjoJEFOxbXpju1hdOx3hXOVXJdHDmB2zTg6yYZHjD4eG45clCIJO_Xo2ElnUciRMOq4c1dtt4uERILxJ50Cb_gNKcC6WfaEBLtYJvjwSYzTvN2Vj6xMx3VDL",
+          "places/ChIJYaVdffBYwokRnTOoCzCq9mE/photos/AWCwydgncw1HG1i0LgD2c1YxNpxHY6M6roLw2cbY8Kw9hOl8VCm_Wg4OSudy9pfjQZpIsMYZc4ETfdTBsvRhCUEgOU61gDvCkvtXK76ybjCjMi-RGaIZoHIz4x8_yRXDiJYJhZl_OKzbw19IUuDPDZHYtcDgRbeZq8ECnolZNgYK6xt59sMUc-XkNZb8ghoil9n5BsoRV-uFesNEuJIhuKYgf-DPfGJS-YasGIzVrAdz0UcH65iIke3dWY0y0PA9P1Z_b7KTbXoIP42Fpr3Kr3YS_-BCCaCriSEciTbpugduoIwy02cOD8_l3s_46rjcLAyGJgrMtsquyIO2z5kuFZKtVIzH8VDAmsp-Xoo6M4vs5tZiXSJAFV9wcZu8kpmfpLYNqCcq5PrzImyNO1U37yR-N4HL-jPsX5oc4gsqCeWTC3JcOPZB5udAlfDy6jQJrnFo",
+          "places/ChIJYaVdffBYwokRnTOoCzCq9mE/photos/AWCwydh8ECtH2dfUf__YxUUAt7QgTk_03du7VZZEOSmrd7zI1fQUvRM6p68K-KOrzUd3km4W_X1j3KKiP8rzW6_fSLqZLcZPu97Gzt9UrVvlxRRa0lkM_FHcjUcaPBLijhjxXR6MKhxFFg6vJg1t87XUD68zA8Hjsq7EgVv_lvxvYFa0MhAP52AZT9Hva3Lh0RM1mjx9bL4GHCbrbivXLegPkGUbX71sUYabHMbA4aOz9Da-Db89oG-H43-Swuk_6OOhwligjgwQbaQhUZvp7mpM0fXxhGomr--BXQIiaf0XgN1ih20ncvYl7fu2BDue5j4uQW_gO1rcADrWtwQorYKhIDfZCNRfFQpCZ5RZ4V0HPhtkQ0JxMtScNKKMBjSsKatVH-hGP5Av1D5bV57IeHGjcKve_8I31TyXtOCLBBvcuOE29cRX",
+          "places/ChIJYaVdffBYwokRnTOoCzCq9mE/photos/AWCwydikXcBaOTHOPUo4ZD3vbe4u770o2lwnPBDW1AQ-lEcdAfikXPCHcMCccDi3wwxfyxDPUs-3xzAPeQRVLsy2bRsHm7UmRrEMBT0Psnj8br1fpkHxel0mODGCoyyhTrLqlSwzXYuH0gVmy8MEUs98O00VFpC4gnB-5BmRPWHVUEOl7uMKeeEXwNBjIrpGtAwPrBkcxXIG9J45wm74rSRPSXkwx9552ucnpWYfFPHVdSH8tey6Z_J8VJMjgBOCIQGp18C93QVrzeMbvphwQBCMSrfl3bQBXu3sr4YIhQEJRbIPmNXdNyTqsdxi1LI-EFlRtn64yprBMpfj7QPQwqDryBRO9YLllyCvlNb_D2uZxKnhf-6o-Gh7pRol8dDM5KpWdv5sIfIZtx2bN2VHMqV9VG1KdsU7-GBLkGbs1vANmJaXsQ",
+          "places/ChIJYaVdffBYwokRnTOoCzCq9mE/photos/AWCwydibOdgKCLdQb6x-R-En8T4AXZa3uJeFf3fZ0Je6sLB5xHVCku0t-LbK5S1SCq5muzEK6LROB2wIaHVqZrAmFhB_-BB3IUzv_kLJvfSCrag4SnELv-nSXS0CLkSScwKu4kivqe0MXgK11zsn1LKOeoxsXls4wikazhf9K9Ux92kLBgNmPS-LddFWo8hgCdey5LxpGQFFb0fCyiX6ILPJrwXaZd9ombZcw--wC9pyw-TwF8_iBZFKUyNVPdsrqPy-fZj-eQpftcOQh8k16MqlXvrrANfXxj8RELhYU2OvLYskNxqQTsuVqfn1fqvVuQSZN03k7_BcYTgXID0CsZPYBNI_6fS4u9Db0H5oqcdVZgEzSoCXBIuPKEGnSVfmX02EuNhZG6Q2fusJubPAzEpoIrS24AtEV1biUv2ACSRJZ9g",
+          "places/ChIJYaVdffBYwokRnTOoCzCq9mE/photos/AWCwydhHEr317twaiY1lg_abYE0XSoa6iXavzXp6JtYy6S_RTkNCH-o4q2FGzmJhRkU9Z4JPGfFk0PTrU8sne5LQn8UZc19CX8-uFKD3DiSpVMM3_LoY1-1FCpQ9u0TZagjYciUIZi_AH7EKni2Pwp3tZ3DuzvvwxQJSB9pjw0y1ge-dZooxM16Z5i0bSBRytraddAClpBU7KRw4Cx-QauabuvNmsN1bHY3n27qQEnQHulLwl2kVXIVEfkRu3y5jpRjL6dWvmhSDEHonmDH2clampld6mZDZ2uNh-Oz-ehfXS2wl6xzTFgBVfG9cFNd4c-AhWaaPXSGgtpaDaBXgu0odn8kRaL35bCALxsRHjg1lzgq-QPnbzqPdDdr0WzjRBHZ5vkFkMM1C5aZ_HrUGHjTPIEeil00KZnacQQboylXmADjOgHw"
+        ],
+        "__at__": 1786806790.129045,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Iconic place of New York, you can just visit it like a museum, there are two shops one for \"Home alone\" with Heroes clothes that you can buy, and another for all who adores books \"Éloïse at Plaza Hotel\" a great children's book, about a naugty girl who livde in this hotel, you can buy souvenirs, and ",
+            "author": "R S"
+          },
+          {
+            "rating": 5,
+            "text": "The staff and the hotel are superb! The staff are so helpful. Jose and Erica were the two that stood out to me. We did the Home Alone 2 experience. Wow. It included a 4 hour limo ride to all the hot spots, and our driver Mike was so kind he let us pick where we wanted to go. It came with a hot chees",
+            "author": "Jennifer Winthurst"
+          },
+          {
+            "rating": 5,
+            "text": "We had a lovely afternoon enjoying tea at The Palm Court located in The Plaza Hotel. The service was impeccable. One person in our party had some food allergies and the chef came out to talk with her. He made delicious alternative for her. The finger sandwiches, pastries and teas were delicious.It w",
+            "author": "Diane Capezza"
+          },
+          {
+            "rating": 5,
+            "text": "I recently had the pleasure of enjoying coffee here with my family, and it was an absolutely wonderful experience! The service was exceptional—every staff member we encountered was friendly and attentive, making us feel right at home. The ambiance of the place is stunning, filled with aesthetic deta",
+            "author": "The foodie’s meal"
+          },
+          {
+            "rating": 1,
+            "text": "We had the most awful experience here. When you go somewhere like this, paying prices like $36 - $38 for a turkey club, you expect good service and the fries that are served hot. The hotel included a service charge of 18% - we would have left nothing the service was so bad.\n\nAbsolutely abysmal servi",
+            "author": "Niamh Faller"
+          }
+        ]
+      }
+    }
   },
   "descriptor": {
     "destination": "Udaipur",
@@ -175,13 +896,32 @@
       "days": 0
     },
     "keywords": [
-      "Udaipur"
+      "Udaipur",
+      "Arrival & Lake Pichola",
+      "Hotel (TBD)",
+      "Lake Pichola Boat Ride",
+      "Jag Mandir",
+      "Upre by 1559 AD",
+      "Gangaur Ghat",
+      "City Palace & Old Town",
+      "City Palace Udaipur",
+      "Crystal Gallery",
+      "Jagdish Temple",
+      "Natraj Restaurant",
+      "Old City Walk",
+      "The Sunset Terrace",
+      "Saheliyon-ki-Bari & Monsoon Palace",
+      "Saheliyon-ki-Bari",
+      "Fateh Sagar Lake",
+      "Millets of Mewar",
+      "Monsoon Palace",
+      "Ambrai Restaurant"
     ],
     "auto_summary": "3-night Udaipur, Feb 2027",
     "label": "",
     "notes": []
   },
-  "last_seen_at": "2026-08-15T14:56:57Z",
+  "last_seen_at": "2026-08-16T05:24:34Z",
   "schema_version": 1,
   "seen_in": [
     {

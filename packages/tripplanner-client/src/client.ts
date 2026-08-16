@@ -128,6 +128,8 @@ export class TripplannerClient {
     private readonly baseUrl: string,
     private readonly getIdentity: IdentityProvider,
     private readonly getSessionToken?: SessionTokenProvider,
+    //: Extra headers for every request. Optional so native callers are unaffected.
+    private readonly getExtraHeaders?: () => Record<string, string>,
   ) {}
 
   private async userId(): Promise<string> {
@@ -143,6 +145,9 @@ export class TripplannerClient {
     const headers = new Headers(init.headers);
     const token = await this.getSessionToken?.();
     if (token) headers.set("Authorization", `Bearer ${token}`);
+    for (const [name, value] of Object.entries(this.getExtraHeaders?.() ?? {})) {
+      headers.set(name, value);
+    }
     return fetch(url, { ...init, credentials: "include", headers });
   }
 

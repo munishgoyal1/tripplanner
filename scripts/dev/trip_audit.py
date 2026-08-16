@@ -86,6 +86,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-mutate", action="store_true", help="skip metamorphic checks")
     parser.add_argument("--database", action="append", default=None, help="repeatable")
     parser.add_argument("--json", dest="as_json", action="store_true")
+    parser.add_argument(
+        "--report",
+        action="store_true",
+        help="also write corpus/audit-report.json for the inspector",
+    )
     parser.add_argument("--rules", action="store_true", help="list every rule and exit")
     parser.add_argument("--observe", action="store_true", help="describe the corpus too")
     args = parser.parse_args(argv)
@@ -133,6 +138,19 @@ def main(argv: list[str] | None = None) -> int:
             _print_observations(result)
 
     path = runner.baseline_path(REPO_ROOT)
+    if args.report:
+        from tripplanner.validation import report as report_module
+
+        payload = report_module.build_report(result, findings_module.load_baseline(path))
+        destination = runner.corpus_root(REPO_ROOT) / report_module.REPORT_FILE
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(
+            json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
+        if not args.as_json:
+            print(f"\nWrote {destination.name}: {len(payload['groups'])} group(s), "
+                  f"{len(payload['records'])} record(s).")
+
     if args.accept:
         baseline = findings_module.accept(result.groups, findings_module.load_baseline(path))
         findings_module.save_baseline(path, baseline)

@@ -381,7 +381,7 @@
         "weather": {},
         "visa": {},
         "trip_constraints": [],
-        "updated_at": "2026-08-15T18:37:59.205925",
+        "updated_at": "2026-08-16T11:44:46.923947",
         "price_checks": [
           {
             "kind": "lodging",
@@ -1045,7 +1045,7 @@
     "label": "",
     "notes": []
   },
-  "last_seen_at": "2026-08-15T13:07:59Z",
+  "last_seen_at": "2026-08-16T06:14:46Z",
   "schema_version": 1,
   "seen_in": [
     {

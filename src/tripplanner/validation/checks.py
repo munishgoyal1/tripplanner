@@ -36,15 +36,14 @@ def _place_lookup(places: dict[str, Any]):
 def place_facts(places: dict[str, Any]) -> Iterator[None]:
     """Answer place lookups from the record instead of a provider.
 
-    Without this the geography rules degrade to silence off-line, which would
-    make a clean audit indistinguishable from an audit that checked nothing.
+    Always patched, even when the record carries no facts: leaving the real
+    lookup in place sent the audit to the provider over the network, which is
+    slow, costs money, and is the opposite of an offline check. With no facts
+    the geography rules degrade to silence, which is what they are meant to do.
     """
     from tripplanner.tools import trip_common, trip_effort, trip_guard
 
     modules = (trip_common, trip_guard, trip_effort)
-    if not places:
-        yield
-        return
     lookup = _place_lookup(places)
     originals = [getattr(module, "_summary_for_place", None) for module in modules]
     for module in modules:
