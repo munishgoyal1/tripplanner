@@ -42,6 +42,19 @@ def signed_session(request: Request) -> dict[str, str] | None:
     return cookie_session
 
 
+#: Lets a local developer read another identity's trips without disturbing their
+#: own sign-in. Ignored outright when hosted, where the session is the only
+#: acceptable authority.
+INSPECT_HEADER = "x-inspect-user"
+
+
+def inspect_override(request: Request) -> str | None:
+    """The identity a local inspector asked to read, if any."""
+    if is_hosted():
+        return None
+    return (request.headers.get(INSPECT_HEADER) or "").strip() or None
+
+
 def resolve_user_id(request: Request, claimed_user_id: str = "local") -> str:
     """Return the signed principal, or a constrained anonymous/local identity.
 
@@ -50,6 +63,12 @@ def resolve_user_id(request: Request, claimed_user_id: str = "local") -> str:
     supplying a user_id parameter; anonymous ids remain unguessable capabilities
     for the login-less product path.
     """
+    # Deliberately ahead of the session: the whole point is to look at a trip
+    # that belongs to someone else while staying signed in as yourself.
+    override = inspect_override(request)
+    if override:
+        return override
+
     session = signed_session(request)
     if session:
         return str(session["user_id"])

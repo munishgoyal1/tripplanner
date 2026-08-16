@@ -48,14 +48,31 @@ export async function getApiSessionToken(): Promise<string | null> {
   return guestSessionRequest;
 }
 
+// While inspecting, the browser still carries the owner's session cookie, and a
+// session outranks any claimed user_id -- so without this header every request
+// would quietly return the owner's own workspace. Keys mirror debug/inspectSession;
+// read inline so an unset flag leaves no reference to that module in the bundle.
+function inspectHeaders(): Record<string, string> {
+  if (import.meta.env.VITE_DEBUG_TOOLS !== "1") return {};
+  if (localStorage.getItem("tripplanner_inspect_restore") === null) return {};
+  const inspected = localStorage.getItem("tripplanner_user_id");
+  return inspected ? { "X-Inspect-User": inspected } : {};
+}
+
 export async function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   const headers = new Headers(init.headers);
   const token = await getApiSessionToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
+  for (const [name, value] of Object.entries(inspectHeaders())) headers.set(name, value);
   return fetch(input, { ...init, credentials: "include", headers });
 }
 
-export const sharedClient = new TripplannerClient(BASE, getUserId, getApiSessionToken);
+export const sharedClient = new TripplannerClient(
+  BASE,
+  getUserId,
+  getApiSessionToken,
+  inspectHeaders,
+);
 
 // Whether the current identity is the anonymous, per-browser one (vs. a name
 // the user explicitly signed in with). Used to show "Sign in" vs the name.
