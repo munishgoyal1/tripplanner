@@ -399,7 +399,7 @@
           {
             "day": 1,
             "date": "2027-05-05",
-            "title": "Delhi to Shimla & Check-in",
+            "title": "Day 1",
             "summary": "Drive from Delhi to Shimla with accessible meal stops and check-in at a centrally located, accessible hotel.",
             "stops": [
               {
@@ -411,31 +411,31 @@
                 "note": "Private car with rest stops"
               },
               {
-                "name": "Haveli, Karnal",
-                "kind": "meal",
-                "time": "10:00",
-                "duration_min": 45,
-                "note": "Accessible meal stop"
-              },
-              {
-                "name": "Timber Trail, Parwanoo",
-                "kind": "meal",
-                "time": "13:30",
-                "duration_min": 60,
-                "note": "Accessible meal stop"
-              },
-              {
                 "name": "Hotel (Shimla, accessible)",
                 "kind": "hotel",
                 "time": "16:30",
                 "note": "Centrally located, accessible hotel"
+              },
+              {
+                "name": "Ashiana & Goofa, Shimla",
+                "kind": "meal",
+                "time": "17:40",
+                "duration_min": 60,
+                "note": "Accessible lunch"
+              },
+              {
+                "name": "Indian Coffee House, Shimla",
+                "kind": "meal",
+                "time": "19:00",
+                "duration_min": 60,
+                "note": "Accessible lunch"
               }
             ]
           },
           {
             "day": 2,
             "date": "2027-05-06",
-            "title": "Shimla Heritage & Mall Road",
+            "title": "Day 2 · The Ridge, Shimla & Christ Church, Shimla",
             "summary": "Explore Shimla's accessible heritage spots and Mall Road at a gentle pace.",
             "stops": [
               {
@@ -459,13 +459,6 @@
                 "note": "Minimal stairs, benches available"
               },
               {
-                "name": "Indian Coffee House, Shimla",
-                "kind": "meal",
-                "time": "12:45",
-                "duration_min": 60,
-                "note": "Accessible lunch"
-              },
-              {
                 "name": "Mall Road, Shimla",
                 "kind": "attraction",
                 "time": "14:15",
@@ -477,13 +470,20 @@
                 "kind": "hotel",
                 "time": "15:45",
                 "note": "Return to hotel for rest"
+              },
+              {
+                "name": "Timber Trail, Parwanoo",
+                "kind": "meal",
+                "time": "17:40",
+                "duration_min": 60,
+                "note": "Accessible meal stop"
               }
             ]
           },
           {
             "day": 3,
             "date": "2027-05-07",
-            "title": "Kufri Excursion (Scenic Drive)",
+            "title": "Day 3 · Annandale Army Heritage Museum & Himalayan Nature Park, Kufri",
             "summary": "Scenic drive to Kufri with accessible nature park and lunch, then return to Shimla.",
             "stops": [
               {
@@ -499,6 +499,13 @@
                 "kind": "hotel",
                 "time": "10:30",
                 "note": "Start from hotel"
+              },
+              {
+                "name": "Annandale Army Heritage Museum",
+                "kind": "attraction",
+                "time": "11:40",
+                "duration_min": 60,
+                "note": "Minimal walking, benches available"
               },
               {
                 "name": "Drive: Kufri to Shimla",
@@ -533,7 +540,7 @@
           {
             "day": 4,
             "date": "2027-05-08",
-            "title": "Viceregal Lodge & Relaxation",
+            "title": "Day 4 · Viceregal Lodge, Shimla",
             "summary": "Visit Viceregal Lodge and Annandale Army Heritage Museum, both accessible, with time for rest.",
             "stops": [
               {
@@ -550,24 +557,17 @@
                 "note": "Wheelchair access available"
               },
               {
-                "name": "Ashiana & Goofa, Shimla",
-                "kind": "meal",
-                "time": "12:30",
-                "duration_min": 60,
-                "note": "Accessible lunch"
-              },
-              {
-                "name": "Annandale Army Heritage Museum",
-                "kind": "attraction",
-                "time": "14:00",
-                "duration_min": 60,
-                "note": "Minimal walking, benches available"
-              },
-              {
                 "name": "Hotel (Shimla, accessible)",
                 "kind": "hotel",
                 "time": "15:00",
                 "note": "Return to hotel for rest"
+              },
+              {
+                "name": "Haveli, Karnal",
+                "kind": "meal",
+                "time": "19:40",
+                "duration_min": 45,
+                "note": "Accessible meal stop"
               }
             ]
           },
@@ -615,7 +615,7 @@
         "weather": {},
         "visa": {},
         "trip_constraints": [],
-        "updated_at": "2026-08-16T10:51:46.446877",
+        "updated_at": "2026-08-16T11:48:22.986440",
         "price_checks": [
           {
             "kind": "lodging",
@@ -1701,25 +1701,25 @@
     "keywords": [
       "Shimla",
       "Wing Ocean View",
-      "Delhi to Shimla & Check-in",
+      "Day 1",
       "Drive: Delhi to Shimla",
-      "Haveli, Karnal",
-      "Timber Trail, Parwanoo",
       "Hotel (Shimla, accessible)",
-      "Shimla Heritage & Mall Road",
+      "Ashiana & Goofa, Shimla",
+      "Indian Coffee House, Shimla",
+      "Day 2 · The Ridge, Shimla & Christ Church, Shimla",
       "The Ridge, Shimla",
       "Christ Church, Shimla",
-      "Indian Coffee House, Shimla",
       "Mall Road, Shimla",
-      "Kufri Excursion (Scenic Drive)",
+      "Timber Trail, Parwanoo",
+      "Day 3 · Annandale Army Heritage Museum & Himalayan Nature Park, Kufri",
       "Drive: Shimla to Kufri",
+      "Annandale Army Heritage Museum",
       "Drive: Kufri to Shimla",
       "Himalayan Nature Park, Kufri",
       "The Retreat, Kufri",
-      "Viceregal Lodge & Relaxation",
+      "Day 4 · Viceregal Lodge, Shimla",
       "Viceregal Lodge, Shimla",
-      "Ashiana & Goofa, Shimla",
-      "Annandale Army Heritage Museum",
+      "Haveli, Karnal",
       "Shimla to Delhi & Departure",
       "Drive: Shimla to Delhi"
     ],
@@ -1727,7 +1727,7 @@
     "label": "",
     "notes": []
   },
-  "last_seen_at": "2026-08-16T05:21:46Z",
+  "last_seen_at": "2026-08-16T06:18:23Z",
   "schema_version": 1,
   "seen_in": [
     {
