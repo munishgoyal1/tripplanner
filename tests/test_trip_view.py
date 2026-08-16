@@ -447,6 +447,36 @@ def test_family_pills_teen_bucket() -> None:
     assert not any("Kid-friendly" in p for p in pills)
 
 
+def test_family_pills_reads_a_traveller_field_stored_as_a_list() -> None:
+    """Chat learning writes lists here; the profile editor writes strings.
+
+    A list reached .strip() and took the whole trip view down with a 500, so
+    the itinerary, map and guide all went blank for anyone travelling with a
+    relative whose mobility had been noted.
+    """
+    prefs = {
+        "family_members": [
+            {"relationship": "parent", "age": 72, "mobility": ["uses walking stick"]},
+            {"relationship": "spouse", "age": 40, "dietary": ["vegetarian"]},
+        ]
+    }
+
+    joined = " | ".join(trip_view.family_pills(prefs))
+
+    assert "Senior-friendly (uses walking stick)" in joined
+    assert "Vegetarian" in joined
+
+
+def test_family_pills_joins_several_noted_needs() -> None:
+    prefs = {
+        "family_members": [
+            {"relationship": "parent", "age": 70, "mobility": ["walking stick", "no stairs"]}
+        ]
+    }
+
+    assert "walking stick, no stairs" in " | ".join(trip_view.family_pills(prefs))
+
+
 def test_family_pills_surfaced_in_view(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         trip_view.user_preferences,

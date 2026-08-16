@@ -147,6 +147,17 @@ def is_fallback(trip: dict[str, Any] | None, focus: dict[str, Any] | None) -> bo
     return bool(trip and trip.get("destination")) and not has_selections(trip)
 
 
+def _member_text(value: Any) -> str:
+    """One readable phrase from a per-traveller field.
+
+    Chat learning stores these as lists ("mobility": ["uses walking stick"]),
+    while the profile editor stores a plain string. Both reach this view.
+    """
+    if isinstance(value, (list, tuple, set)):
+        return ", ".join(str(v).strip() for v in value if str(v).strip())
+    return str(value or "").strip()
+
+
 def family_pills(prefs: dict[str, Any] | None) -> list[str]:
     """Short, render-ready chips summarising who's on the trip.
 
@@ -174,7 +185,9 @@ def family_pills(prefs: dict[str, Any] | None) -> list[str]:
     if teen_ages:
         out.append("\U0001f9d2 Teen-friendly (ages " + ",".join(str(a) for a in teen_ages) + ")")
     if senior_members:
-        mobility = next((str(m.get("mobility") or "").strip() for m in senior_members if (m.get("mobility") or "").strip()), "")
+        mobility = next(
+            (text for m in senior_members if (text := _member_text(m.get("mobility")))), ""
+        )
         label = "\U0001f475 Senior-friendly" + (f" ({mobility})" if mobility else "")
         out.append(label)
     if pet_members:
@@ -182,7 +195,7 @@ def family_pills(prefs: dict[str, Any] | None) -> list[str]:
 
     diets: set[str] = set()
     for m in members:
-        d = str(m.get("dietary") or "").strip()
+        d = _member_text(m.get("dietary"))
         if d:
             diets.add(d.title())
     for d in (prefs.get("food_preferences", {}) or {}).get("dietary") or []:
@@ -901,6 +914,8 @@ def build_view(
     ]
 
     title = f"\u2708\ufe0f {destination}" if destination else "Trip planner"
+    if trip.get("forked_from"):
+        title = f"{title} \u00b7 my copy"
     if focus and focus.get("name"):
         title = f"{title} \u2014 {focus['name']}"
 
@@ -909,6 +924,7 @@ def build_view(
         "updated_at": str(trip.get("updated_at") or "") or None,
         "has_trip": True,
         "title": title,
+        "forked_from": str(trip.get("forked_from") or "") or None,
         "destination": destination,
         "focus": focus,
         "is_fallback": fallback,

@@ -32,10 +32,11 @@ import os
 import re
 import time
 from collections.abc import AsyncIterator
+from datetime import datetime
 from typing import Any, Literal
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from fastapi import BackgroundTasks, FastAPI, Request
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
@@ -71,6 +72,8 @@ from tripplanner.chat_interactions import extract_input_request
 from tripplanner.decisions.receipts import ReceiptLog
 from tripplanner.observability import app_event, model_rate_limit_fields, setup_logging
 from tripplanner.request_identity import (
+    guard_inspection_write,
+    inspect_override,
     is_anonymous_id,
     is_hosted,
     require_guest_capability,
@@ -123,6 +126,7 @@ app.add_middleware(
 
 def _set_request_user(request: Request, claimed_user_id: str = "local") -> str:
     user_id = resolve_user_id(request, claimed_user_id)
+    guard_inspection_write(request)
     set_user_id(user_id)
     return user_id
 
@@ -951,6 +955,64 @@ async def trip_view_endpoint(
         # the gallery afterwards so the next focus stays a cache hit.
         background.add_task(trip_operations.warm_view_items)
     return view
+
+
+@app.post("/trip/fork")
+async def fork_inspected_trip(request: Request) -> dict:
+    """Copy the trip being inspected into the caller's own workspace.
+
+    The one write inspection allows. The corpus stays exactly as the audit found
+    it, and the caller gets something they may freely break.
+    """
+    inspected = inspect_override(request)
+    if not inspected:
+        raise HTTPException(status_code=404, detail="Not found.")
+
+    body = await request.json()
+    trip_id = str(body.get("trip_id") or "").strip()
+    # The browser only knows its previous identity when one was in localStorage;
+    # a cookie-only sign-in leaves it blank, and the session is the truth anyway.
+    session = signed_session(request)
+    owner_id = str(body.get("owner_id") or "").strip() or str(
+        (session or {}).get("user_id") or ""
+    ).strip()
+    if not owner_id or not trip_id:
+        raise HTTPException(status_code=400, detail="A trip id and an owner are required.")
+    if owner_id == inspected:
+        raise HTTPException(status_code=400, detail="A trip cannot be forked onto itself.")
+
+    def _fork() -> str:
+        from tripplanner import storage_cosmos
+        from tripplanner.tools import trip_planner
+
+        source = storage_cosmos.read_doc(trip_planner._COSMOS_TRIPS_CONTAINER, inspected, trip_id)
+        if source is None:
+            raise HTTPException(status_code=404, detail="That trip no longer exists.")
+
+        copy_id = f"{trip_id}__copy-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        plan = dict(source)
+        plan["trip_id"] = copy_id
+        plan["status"] = "draft"
+        plan["created_at"] = datetime.now().isoformat()
+        plan["updated_at"] = plan["created_at"]
+        # Says, in the data rather than only in the UI, that this is no longer
+        # corpus: the audit reads both and must be able to tell them apart.
+        plan["forked_from"] = f"{inspected}:{trip_id}"
+
+        storage_cosmos.upsert_doc(
+            trip_planner._COSMOS_TRIPS_CONTAINER, owner_id, copy_id, plan
+        )
+        storage_cosmos.upsert_doc(
+            trip_planner._COSMOS_USERS_CONTAINER,
+            owner_id,
+            trip_planner._ACTIVE_TRIP_DOC_ID,
+            plan,
+        )
+        return copy_id
+
+    copy_id = await asyncio.to_thread(_fork)
+    app_event("trip_forked_from_inspection", source=inspected)
+    return {"trip_id": copy_id, "owner_id": owner_id, "forked_from": f"{inspected}:{trip_id}"}
 
 
 @app.post("/trip/budget/what-if")
