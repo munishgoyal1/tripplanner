@@ -22,8 +22,10 @@ from pathlib import Path
 from typing import Any
 
 from tripplanner.validation import budget as budget_module
+from tripplanner.validation import matrix as matrix_module
+from tripplanner.validation.catalog import Catalog
 from tripplanner.validation.emulator import assert_sandbox_database, read_trips
-from tripplanner.validation.matrix import REQUESTS, TripRequest
+from tripplanner.validation.matrix import TripRequest
 
 MANIFEST_FILE = "manifest.json"
 TRIPS_DIR = "trips"
@@ -41,6 +43,10 @@ class Produced:
     spent_inr: float
     seconds: float
     user_id: str
+    destination: str = ""
+    emphasis: str = ""
+    party: str = ""
+    signature: str = ""
 
 
 def manifest_path(corpus_root: Path) -> Path:
@@ -66,6 +72,15 @@ def already_produced(corpus_root: Path) -> set[str]:
         for entry in load_manifest(corpus_root)["produced"]
         if entry.get("trip_id")
     }
+
+
+def catalog_for(corpus_root: Path) -> Catalog:
+    """What the corpus already covers, so the next request is something else."""
+    return Catalog(
+        entry
+        for entry in load_manifest(corpus_root)["produced"]
+        if entry.get("trip_id")
+    )
 
 
 def save_manifest(corpus_root: Path, manifest: dict[str, Any]) -> None:
@@ -130,26 +145,29 @@ def build(
     *,
     database: str,
     api: str,
-    target: int,
+    target: int = 0,
     requested_budget_inr: float | None = None,
-    requests: tuple[TripRequest, ...] = REQUESTS,
+    requests: tuple[TripRequest, ...] | None = None,
     on_progress: Any = None,
 ) -> dict[str, Any]:
-    """Generate trips until the target, the budget, or the matrix runs out."""
+    """Generate trips until the budget, the target, or the candidates run out."""
     assert_sandbox_database(database)
     allowed = budget_module.authorize(corpus_root, requested_budget_inr)
     manifest = load_manifest(corpus_root)
+    catalog = catalog_for(corpus_root)
     done = already_produced(corpus_root)
+    if requests is None:
+        requests = matrix_module.pending(catalog, limit=target if target > 0 else 0)
     trips_dir = corpus_root / TRIPS_DIR
     trips_dir.mkdir(parents=True, exist_ok=True)
 
     spent = 0.0
     produced: list[Produced] = []
-    stopped = "matrix"
+    stopped = "exhausted"
     model = ""
 
     for request in requests:
-        if len(produced) >= target:
+        if target > 0 and len(produced) >= target:
             stopped = "target"
             break
         if spent >= allowed.budget_inr:
@@ -196,11 +214,16 @@ def build(
             spent_inr=round(cost_inr, 2),
             seconds=round(seconds, 1),
             user_id=user_id,
+            destination=request.destination,
+            emphasis=request.emphasis,
+            party=request.party,
+            signature=request.signature.key,
         )
         (trips_dir / f"{request.slug}.json").write_text(
             json.dumps(trip, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
         produced.append(entry)
+        catalog.add(request.signature, request.slug)
         manifest["produced"].append({**asdict(entry), "at": datetime.now(UTC).isoformat()})
         save_manifest(corpus_root, manifest)
         if on_progress:
