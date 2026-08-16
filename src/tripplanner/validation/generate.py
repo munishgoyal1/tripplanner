@@ -15,14 +15,17 @@ import json
 import time
 import urllib.error
 import urllib.request
+import uuid
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from tripplanner.validation import budget as budget_module
+from tripplanner.validation import matrix as matrix_module
+from tripplanner.validation.catalog import Catalog
 from tripplanner.validation.emulator import assert_sandbox_database, read_trips
-from tripplanner.validation.matrix import REQUESTS, TripRequest
+from tripplanner.validation.matrix import TripRequest
 
 MANIFEST_FILE = "manifest.json"
 TRIPS_DIR = "trips"
@@ -40,6 +43,10 @@ class Produced:
     spent_inr: float
     seconds: float
     user_id: str
+    destination: str = ""
+    emphasis: str = ""
+    party: str = ""
+    signature: str = ""
 
 
 def manifest_path(corpus_root: Path) -> Path:
@@ -65,6 +72,15 @@ def already_produced(corpus_root: Path) -> set[str]:
         for entry in load_manifest(corpus_root)["produced"]
         if entry.get("trip_id")
     }
+
+
+def catalog_for(corpus_root: Path) -> Catalog:
+    """What the corpus already covers, so the next request is something else."""
+    return Catalog(
+        entry
+        for entry in load_manifest(corpus_root)["produced"]
+        if entry.get("trip_id")
+    )
 
 
 def save_manifest(corpus_root: Path, manifest: dict[str, Any]) -> None:
@@ -95,9 +111,14 @@ def _usage_for(database: str, user_id: str) -> dict[str, Any]:
     return rows[0] if rows else {}
 
 
-def _ask(api: str, message: str, user_id: str) -> None:
+def _spent_usd(database: str, user_id: str) -> float:
+    """Cumulative spend for this user, so a run can price its own attempt by difference."""
+    return float(_usage_for(database, user_id).get("cost_usd") or 0.0)
+
+
+def _ask(api: str, message: str, user_id: str, request_id: str) -> None:
     body = json.dumps(
-        {"message": message, "user_id": user_id, "request_id": f"{user_id}-1"}
+        {"message": message, "user_id": user_id, "request_id": request_id}
     ).encode()
     request = urllib.request.Request(
         f"{api.rstrip('/')}/chat", data=body, headers={"Content-Type": "application/json"}
@@ -124,26 +145,29 @@ def build(
     *,
     database: str,
     api: str,
-    target: int,
+    target: int = 0,
     requested_budget_inr: float | None = None,
-    requests: tuple[TripRequest, ...] = REQUESTS,
+    requests: tuple[TripRequest, ...] | None = None,
     on_progress: Any = None,
 ) -> dict[str, Any]:
-    """Generate trips until the target, the budget, or the matrix runs out."""
+    """Generate trips until the budget, the target, or the candidates run out."""
     assert_sandbox_database(database)
     allowed = budget_module.authorize(corpus_root, requested_budget_inr)
     manifest = load_manifest(corpus_root)
+    catalog = catalog_for(corpus_root)
     done = already_produced(corpus_root)
+    if requests is None:
+        requests = matrix_module.pending(catalog, limit=target if target > 0 else 0)
     trips_dir = corpus_root / TRIPS_DIR
     trips_dir.mkdir(parents=True, exist_ok=True)
 
     spent = 0.0
     produced: list[Produced] = []
-    stopped = "matrix"
+    stopped = "exhausted"
     model = ""
 
     for request in requests:
-        if len(produced) >= target:
+        if target > 0 and len(produced) >= target:
             stopped = "target"
             break
         if spent >= allowed.budget_inr:
@@ -153,9 +177,13 @@ def build(
             continue
 
         user_id = f"corpus-{request.slug}"
+        # A repeat attempt needs its own request id, or the API replays the earlier
+        # completed turn and the slug can never recover from a failed first run.
+        request_id = f"{user_id}-{uuid.uuid4().hex[:12]}"
+        before_usd = _spent_usd(database, user_id)
         started = time.monotonic()
         try:
-            _ask(api, request.message, user_id)
+            _ask(api, request.message, user_id, request_id)
         except (urllib.error.URLError, TimeoutError) as error:
             if on_progress:
                 on_progress(f"  {request.slug}: request failed ({error})")
@@ -163,7 +191,7 @@ def build(
         seconds = time.monotonic() - started
 
         usage = _usage_for(database, user_id)
-        cost_inr = float(usage.get("cost_usd") or 0.0) * allowed.usd_inr
+        cost_inr = max(0.0, float(usage.get("cost_usd") or 0.0) - before_usd) * allowed.usd_inr
         model = str(usage.get("model") or model)
         spent += cost_inr
 
@@ -186,11 +214,16 @@ def build(
             spent_inr=round(cost_inr, 2),
             seconds=round(seconds, 1),
             user_id=user_id,
+            destination=request.destination,
+            emphasis=request.emphasis,
+            party=request.party,
+            signature=request.signature.key,
         )
         (trips_dir / f"{request.slug}.json").write_text(
             json.dumps(trip, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
         produced.append(entry)
+        catalog.add(request.signature, request.slug)
         manifest["produced"].append({**asdict(entry), "at": datetime.now(UTC).isoformat()})
         save_manifest(corpus_root, manifest)
         if on_progress:

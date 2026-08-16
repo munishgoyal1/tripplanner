@@ -13,14 +13,18 @@ from tripplanner.validation import (
     budget,
     corpus,
     findings,
+    generate,
+    matrix,
     mutations,
     observations,
     registry,
     render,
     runner,
 )
+from tripplanner.validation.catalog import Catalog
 from tripplanner.validation.checks import check_record, plan_names
 from tripplanner.validation.emulator import assert_sandbox_database
+from tripplanner.validation.matrix import TripRequest
 
 _PLACES = {
     "kempegowda international airport|paris": {"lat": 13.1986, "lng": 77.7066},
@@ -410,3 +414,157 @@ def test_the_conversion_rate_is_recorded_with_every_run(tmp_path: Path) -> None:
 
     assert entry["usd_inr"] > 0
     assert entry["model"] == "gpt-4.1"
+
+
+_ONE_REQUEST = (TripRequest("corpus-slug", "a shape", "Plan a trip"),)
+
+
+def _stub_generate(monkeypatch: pytest.MonkeyPatch, usage: dict[str, Any]) -> None:
+    monkeypatch.setattr(generate, "assert_sandbox_database", lambda name: name)
+    monkeypatch.setattr(generate, "_saved_trip", lambda database, user_id: None)
+    monkeypatch.setattr(generate, "_usage_for", lambda database, user_id: dict(usage))
+
+
+def test_a_repeated_attempt_never_reuses_its_request_id(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Reusing one id lets the API replay the first turn, so a failed slug can never recover."""
+    seen: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(
+        generate,
+        "_ask",
+        lambda api, message, user_id, request_id: seen.append(request_id),
+    )
+
+    for _ in range(2):
+        generate.build(
+            tmp_path,
+            database="tripplanner-sbx-test",
+            api="http://127.0.0.1:0",
+            target=1,
+            requests=_ONE_REQUEST,
+        )
+
+    assert len(seen) == 2
+    assert seen[0] != seen[1]
+
+
+def test_a_run_is_charged_only_for_what_that_attempt_spent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    usage = {"cost_usd": 1.0}
+    _stub_generate(monkeypatch, usage)
+
+    def _spend(api: str, message: str, user_id: str, request_id: str) -> None:
+        usage["cost_usd"] = 1.25
+
+    monkeypatch.setattr(generate, "_ask", _spend)
+    monkeypatch.setattr(generate, "_usage_for", lambda database, user_id: dict(usage))
+
+    result = generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        target=1,
+        requests=_ONE_REQUEST,
+    )
+
+    assert result["spent_inr"] == pytest.approx(0.25 * budget.usd_inr())
+
+
+def _primary(phrase: str) -> str:
+    for word in phrase.split():
+        if word[:1].isupper():
+            return word.lower()
+    return phrase.lower()
+
+
+def test_a_generated_destination_is_never_one_a_seed_already_uses() -> None:
+    """The generated pool is disjoint from the seeds, so it cannot repeat one."""
+    for destination in matrix.DESTINATIONS:
+        name = _primary(destination.phrase)
+        for seed in matrix.REQUESTS:
+            assert name not in seed.message.lower()
+
+
+def test_every_generated_request_says_where_the_traveller_starts() -> None:
+    for request in matrix.candidates(Catalog(), limit=40):
+        assert " from " in request.message
+        assert request.days > 0
+        assert str(request.days) in request.message
+
+
+def test_a_request_the_corpus_already_holds_is_never_offered_again() -> None:
+    first = matrix.candidates(Catalog(), limit=1)[0]
+    catalog = Catalog(
+        [
+            {
+                "slug": first.slug,
+                "trip_id": "trip-1",
+                "signature": first.signature.key,
+                "destination": first.destination,
+                "emphasis": first.emphasis,
+            }
+        ]
+    )
+
+    again = matrix.candidates(catalog, limit=300)
+
+    assert first.slug not in {request.slug for request in again}
+    assert first.signature.key not in {request.signature.key for request in again}
+
+
+def test_a_destination_is_not_repeated_until_the_others_have_been_tried() -> None:
+    picked = matrix.candidates(Catalog(), limit=len(matrix.DESTINATIONS))
+
+    assert len({request.destination for request in picked}) == len(matrix.DESTINATIONS)
+
+
+def test_unused_seeds_are_offered_before_generated_requests() -> None:
+    queue = matrix.pending(Catalog(), limit=len(matrix.REQUESTS) + 6)
+
+    seeds = [request.slug for request in queue[: len(matrix.REQUESTS)]]
+    assert seeds == [request.slug for request in matrix.REQUESTS]
+    assert all(request.destination for request in queue[len(matrix.REQUESTS) :])
+
+
+def test_a_produced_seed_drops_out_of_the_queue() -> None:
+    produced = matrix.REQUESTS[0]
+    catalog = Catalog([{"slug": produced.slug, "trip_id": "trip-1"}])
+
+    queue = matrix.pending(catalog, limit=len(matrix.REQUESTS))
+
+    assert produced.slug not in {request.slug for request in queue}
+
+
+def test_a_run_keeps_asking_until_the_budget_is_spent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    usage = {"cost_usd": 0.0}
+    monkeypatch.setattr(generate, "assert_sandbox_database", lambda name: name)
+    monkeypatch.setattr(generate, "_usage_for", lambda database, user_id: dict(usage))
+    monkeypatch.setattr(
+        generate,
+        "_saved_trip",
+        lambda database, user_id: {
+            "id": user_id,
+            "day_wise_itinerary": [{"stops": [{"name": "a stop"}]}],
+        },
+    )
+
+    def _spend(api: str, message: str, user_id: str, request_id: str) -> None:
+        usage["cost_usd"] += 1.0
+
+    monkeypatch.setattr(generate, "_ask", _spend)
+
+    result = generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        requested_budget_inr=3.5 * budget.usd_inr(),
+    )
+
+    assert result["stopped_because"] == "budget"
+    assert len(result["produced"]) == 4
+    assert len({entry["slug"] for entry in result["produced"]}) == 4

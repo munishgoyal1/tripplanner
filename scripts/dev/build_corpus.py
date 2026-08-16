@@ -5,8 +5,9 @@
 
 Spends money. It refuses to run without headroom under the cumulative cap,
 measures each request's real cost from the app's own usage ledger, and stops at
-whichever of the target or the budget comes first. Re-running tops the corpus up
-and never pays for a request that already produced a trip.
+whichever of the budget or the target comes first. Requests are composed from
+what the corpus does not already cover, so re-running tops it up with new shapes
+and never pays twice for the same one.
 """
 
 from __future__ import annotations
@@ -19,18 +20,20 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from tripplanner.validation import budget as budget_module  # noqa: E402
-from tripplanner.validation import generate, runner  # noqa: E402
-from tripplanner.validation.matrix import REQUESTS  # noqa: E402
+from tripplanner.validation import generate, matrix, runner  # noqa: E402
 
 DEFAULT_DATABASE = "tripplanner-sbx-2-auto-validation"
 DEFAULT_API = "http://127.0.0.1:8110"
 _BAR = "-" * 78
+_PREVIEW = 12
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--budget", type=float, default=None, help="INR for this run")
-    parser.add_argument("--target", type=int, default=len(REQUESTS), help="trips to add")
+    parser.add_argument(
+        "--target", type=int, default=0, help="trips to add; 0 means as many as the budget allows"
+    )
     parser.add_argument("--database", default=DEFAULT_DATABASE)
     parser.add_argument("--api", default=DEFAULT_API)
     parser.add_argument("--dry-run", action="store_true", help="plan the run, spend nothing")
@@ -43,23 +46,27 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Refusing to run: {error}", file=sys.stderr)
         return 2
 
-    done = generate.already_produced(corpus_root)
-    pending = [request for request in REQUESTS if request.slug not in done][: args.target]
+    catalog = generate.catalog_for(corpus_root)
+    summary = catalog.summary()
+    queued = matrix.pending(catalog, limit=args.target if args.target > 0 else 0)
 
     print(f"Corpus at {corpus_root}")
-    print(f"  already produced   {len(done)} trip(s)")
+    print(f"  already produced   {summary['trips']} trip(s)")
+    print(f"  destinations       {summary['destinations']} covered")
     print(f"  spent so far       INR {allowed.spent_inr:.0f} of INR {allowed.cap_inr:.0f}")
     print(f"  this run may spend INR {allowed.budget_inr:.0f}  (USD {allowed.budget_usd:.2f})")
-    print(f"  requests queued    {len(pending)}")
+    print(f"  candidates ready   {len(queued)}")
     print(_BAR)
-    for request in pending:
-        print(f"  {request.slug:26s} {request.shape}")
+    for request in queued[:_PREVIEW]:
+        print(f"  {request.slug:34s} {request.shape}")
+    if len(queued) > _PREVIEW:
+        print(f"  ... and {len(queued) - _PREVIEW} more, asked for while the budget lasts")
     if args.dry_run:
         print(_BAR)
         print("Dry run: nothing was requested and nothing was spent.")
         return 0
-    if not pending:
-        print("Nothing left to generate; the matrix is exhausted.")
+    if not queued:
+        print("Nothing left to generate; every candidate is already in the corpus.")
         return 0
 
     print(_BAR)

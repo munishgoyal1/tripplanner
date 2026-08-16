@@ -5,6 +5,12 @@ They sit between broad intent and code: each brief states the user problem, scop
 non-goals, acceptance criteria, affected capability IDs, validation, and unresolved
 owner decisions.
 
+When every approved acceptance criterion is implemented, validated, and reflected in
+the canonical docs, move the complete brief to [`../implemented/`](../implemented/README.md)
+in the same completion commit and mark it `Shipped` or `Implemented`. Drafts,
+partial foundations, pending UX choices, and briefs with outstanding criteria remain
+in this backlog.
+
 ## Files
 
 - [`NEXT_INCREMENT.md`](NEXT_INCREMENT.md): reusable owner-editable intake for the
