@@ -33,8 +33,10 @@ MANIFEST_FILE = "manifest.json"
 TRIPS_DIR = "trips"
 #: A planning turn is slow; the probe on 2026-08-15 took over two minutes.
 REQUEST_TIMEOUT_SEC = 900
-#: Matches the API's own CHAT_MAX_CONCURRENT_GLOBAL default; more only earns 429s.
-DEFAULT_WORKERS = 4
+#: The API admits four at once, but four planning turns of ~30k prompt characters
+#: crossed the model deployment's tokens-per-minute quota on 2026-08-16 and every
+#: request came back throttled. The narrower limit is the provider's, not ours.
+DEFAULT_WORKERS = 2
 #: What to hold back for a request in flight before the run has priced one itself.
 ASSUMED_COST_INR = 45.0
 _RETRY_STATUS = frozenset({429, 503})
