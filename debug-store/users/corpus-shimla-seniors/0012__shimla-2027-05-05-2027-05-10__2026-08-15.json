@@ -6,7 +6,7 @@
   "first_captured_at": "2026-08-15T14:04:33Z",
   "revisions": [
     {
-      "at": "2026-08-15T14:04:33Z",
+      "at": "2026-08-16T05:21:43Z",
       "content_hash": "571868d161cb0216",
       "plan": {
         "status": "draft",
@@ -75,7 +75,219 @@
         "selected_flights": [],
         "selected_hotels": [],
         "selected_activities": [],
-        "day_wise_itinerary": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-05-05",
+            "title": "Delhi to Shimla & Check-in",
+            "summary": "Drive from Delhi to Shimla with accessible meal stops and check-in at a centrally located, accessible hotel.",
+            "stops": [
+              {
+                "name": "Drive: Delhi to Shimla",
+                "kind": "transport",
+                "time": "07:00",
+                "duration_min": 480,
+                "distance_km": 350,
+                "note": "Private car with rest stops"
+              },
+              {
+                "name": "Haveli, Karnal",
+                "kind": "meal",
+                "time": "10:00",
+                "duration_min": 45,
+                "note": "Accessible meal stop"
+              },
+              {
+                "name": "Timber Trail, Parwanoo",
+                "kind": "meal",
+                "time": "13:30",
+                "duration_min": 60,
+                "note": "Accessible meal stop"
+              },
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "16:30",
+                "note": "Centrally located, accessible hotel"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-05-06",
+            "title": "Shimla Heritage & Mall Road",
+            "summary": "Explore Shimla's accessible heritage spots and Mall Road at a gentle pace.",
+            "stops": [
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "09:00",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "The Ridge, Shimla",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 60,
+                "note": "Flat, accessible area"
+              },
+              {
+                "name": "Christ Church, Shimla",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 45,
+                "note": "Minimal stairs, benches available"
+              },
+              {
+                "name": "Indian Coffee House, Shimla",
+                "kind": "meal",
+                "time": "12:45",
+                "duration_min": 60,
+                "note": "Accessible lunch"
+              },
+              {
+                "name": "Mall Road, Shimla",
+                "kind": "attraction",
+                "time": "14:15",
+                "duration_min": 60,
+                "note": "Gentle stroll, benches for rest"
+              },
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "15:45",
+                "note": "Return to hotel for rest"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-05-07",
+            "title": "Kufri Excursion (Scenic Drive)",
+            "summary": "Scenic drive to Kufri with accessible nature park and lunch, then return to Shimla.",
+            "stops": [
+              {
+                "name": "Drive: Shimla to Kufri",
+                "kind": "transport",
+                "time": "09:15",
+                "duration_min": 45,
+                "distance_km": 16,
+                "note": "Private car"
+              },
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "10:30",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Himalayan Nature Park, Kufri",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 75,
+                "note": "Wheelchair-friendly, benches"
+              },
+              {
+                "name": "The Retreat, Kufri",
+                "kind": "meal",
+                "time": "14:15",
+                "duration_min": 60,
+                "note": "Accessible lunch"
+              },
+              {
+                "name": "Drive: Kufri to Shimla",
+                "kind": "transport",
+                "time": "13:30",
+                "duration_min": 45,
+                "distance_km": 16,
+                "note": "Private car"
+              },
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "14:45",
+                "note": "Return to hotel for rest"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-05-08",
+            "title": "Viceregal Lodge & Relaxation",
+            "summary": "Visit Viceregal Lodge and Annandale Army Heritage Museum, both accessible, with time for rest.",
+            "stops": [
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "09:00",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Viceregal Lodge, Shimla",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90,
+                "note": "Wheelchair access available"
+              },
+              {
+                "name": "Ashiana & Goofa, Shimla",
+                "kind": "meal",
+                "time": "12:30",
+                "duration_min": 60,
+                "note": "Accessible lunch"
+              },
+              {
+                "name": "Annandale Army Heritage Museum",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 60,
+                "note": "Minimal walking, benches available"
+              },
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "15:00",
+                "note": "Return to hotel for rest"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-05-09",
+            "title": "Shimla to Delhi & Departure",
+            "summary": "Drive back to Delhi with accessible meal stops.",
+            "stops": [
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Check out from hotel"
+              },
+              {
+                "name": "Timber Trail, Parwanoo",
+                "kind": "meal",
+                "time": "12:00",
+                "duration_min": 60,
+                "note": "Accessible meal stop"
+              },
+              {
+                "name": "Haveli, Karnal",
+                "kind": "meal",
+                "time": "15:30",
+                "duration_min": 45,
+                "note": "Accessible meal stop"
+              },
+              {
+                "name": "Drive: Shimla to Delhi",
+                "kind": "transport",
+                "time": "08:30",
+                "duration_min": 480,
+                "distance_km": 350,
+                "note": "Private car with rest stops"
+              }
+            ]
+          }
+        ],
         "cost_breakdown": {},
         "total_cost": 0,
         "budget": 0,
@@ -83,16 +295,384 @@
         "weather": {},
         "visa": {},
         "trip_constraints": [],
-        "updated_at": "2026-08-15T19:34:33.228503"
+        "updated_at": "2026-08-16T10:51:43.671928",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-16T10:51:43",
+            "expires_at": "2026-08-16T22:51:43"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-16T05:21:46Z",
+      "content_hash": "77333805c0584141",
+      "plan": {
+        "status": "draft",
+        "trip_id": "shimla_2027-05-05_2027-05-10",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:34:33.228465",
+        "destination": "Shimla",
+        "origin": "Delhi",
+        "departure_date": "2027-05-05",
+        "return_date": "2027-05-10",
+        "travelers": "2 adults and parents aged 72 and 68 (father uses walking stick, avoid long walks)",
+        "notes": "Father uses walking stick, avoid long walks. Moderate budget, balanced pace, prefer 3-star+ hotels.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Shimla",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 5-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 5,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "hotel_id": "lp63334",
+            "name": "Wing Ocean View",
+            "address": "Victory Tunnel, Shimla",
+            "rating": 4.1,
+            "price_per_night": 5200,
+            "currency": "INR",
+            "checkin": "2027-05-05",
+            "checkout": "2027-05-10",
+            "amenities": [
+              "Elevator",
+              "Wheelchair access",
+              "Restaurant",
+              "Breakfast",
+              "Central location"
+            ],
+            "note": "Accessible, centrally located, highly rated for elderly guests"
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-05-05",
+            "title": "Delhi to Shimla & Check-in",
+            "summary": "Drive from Delhi to Shimla with accessible meal stops and check-in at a centrally located, accessible hotel.",
+            "stops": [
+              {
+                "name": "Drive: Delhi to Shimla",
+                "kind": "transport",
+                "time": "07:00",
+                "duration_min": 480,
+                "distance_km": 350,
+                "note": "Private car with rest stops"
+              },
+              {
+                "name": "Haveli, Karnal",
+                "kind": "meal",
+                "time": "10:00",
+                "duration_min": 45,
+                "note": "Accessible meal stop"
+              },
+              {
+                "name": "Timber Trail, Parwanoo",
+                "kind": "meal",
+                "time": "13:30",
+                "duration_min": 60,
+                "note": "Accessible meal stop"
+              },
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "16:30",
+                "note": "Centrally located, accessible hotel"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-05-06",
+            "title": "Shimla Heritage & Mall Road",
+            "summary": "Explore Shimla's accessible heritage spots and Mall Road at a gentle pace.",
+            "stops": [
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "09:00",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "The Ridge, Shimla",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 60,
+                "note": "Flat, accessible area"
+              },
+              {
+                "name": "Christ Church, Shimla",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 45,
+                "note": "Minimal stairs, benches available"
+              },
+              {
+                "name": "Indian Coffee House, Shimla",
+                "kind": "meal",
+                "time": "12:45",
+                "duration_min": 60,
+                "note": "Accessible lunch"
+              },
+              {
+                "name": "Mall Road, Shimla",
+                "kind": "attraction",
+                "time": "14:15",
+                "duration_min": 60,
+                "note": "Gentle stroll, benches for rest"
+              },
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "15:45",
+                "note": "Return to hotel for rest"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-05-07",
+            "title": "Kufri Excursion (Scenic Drive)",
+            "summary": "Scenic drive to Kufri with accessible nature park and lunch, then return to Shimla.",
+            "stops": [
+              {
+                "name": "Drive: Shimla to Kufri",
+                "kind": "transport",
+                "time": "09:15",
+                "duration_min": 45,
+                "distance_km": 16,
+                "note": "Private car"
+              },
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "10:30",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Drive: Kufri to Shimla",
+                "kind": "transport",
+                "time": "13:30",
+                "duration_min": 45,
+                "distance_km": 16,
+                "note": "Private car"
+              },
+              {
+                "name": "Himalayan Nature Park, Kufri",
+                "kind": "attraction",
+                "time": "14:45",
+                "duration_min": 75,
+                "note": "Wheelchair-friendly, benches"
+              },
+              {
+                "name": "The Retreat, Kufri",
+                "kind": "meal",
+                "time": "16:30",
+                "duration_min": 60,
+                "note": "Accessible lunch"
+              },
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "18:00",
+                "note": "Return to hotel for rest"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-05-08",
+            "title": "Viceregal Lodge & Relaxation",
+            "summary": "Visit Viceregal Lodge and Annandale Army Heritage Museum, both accessible, with time for rest.",
+            "stops": [
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "09:00",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Viceregal Lodge, Shimla",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90,
+                "note": "Wheelchair access available"
+              },
+              {
+                "name": "Ashiana & Goofa, Shimla",
+                "kind": "meal",
+                "time": "12:30",
+                "duration_min": 60,
+                "note": "Accessible lunch"
+              },
+              {
+                "name": "Annandale Army Heritage Museum",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 60,
+                "note": "Minimal walking, benches available"
+              },
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "15:00",
+                "note": "Return to hotel for rest"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-05-09",
+            "title": "Shimla to Delhi & Departure",
+            "summary": "Drive back to Delhi with accessible meal stops.",
+            "stops": [
+              {
+                "name": "Hotel (Shimla, accessible)",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Check out from hotel"
+              },
+              {
+                "name": "Timber Trail, Parwanoo",
+                "kind": "meal",
+                "time": "12:00",
+                "duration_min": 60,
+                "note": "Accessible meal stop"
+              },
+              {
+                "name": "Haveli, Karnal",
+                "kind": "meal",
+                "time": "15:30",
+                "duration_min": 45,
+                "note": "Accessible meal stop"
+              },
+              {
+                "name": "Drive: Shimla to Delhi",
+                "kind": "transport",
+                "time": "08:30",
+                "duration_min": 480,
+                "distance_km": 350,
+                "note": "Private car with rest stops"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-16T10:51:46.446877",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-16T10:51:43",
+            "expires_at": "2026-08-16T22:51:43"
+          }
+        ]
       }
     }
   ],
   "bundle": {
-    "captured_at": "2026-08-15T14:04:33Z",
+    "captured_at": "2026-08-16T05:21:46Z",
     "user_id": "corpus-shimla-seniors",
     "chat": {
-      "buckets": {},
-      "operations": {}
+      "buckets": {
+        "shimla_2027-05-05_2027-05-10": {
+          "messages": [
+            {
+              "role": "user",
+              "text": "Plan a 5 day Shimla trip from Delhi for 2 adults and my parents aged 72 and 68, 5 to 10 May 2027. My father uses a walking stick, so avoid long walks.",
+              "ts": 1786802868911
+            },
+            {
+              "role": "assistant",
+              "text": "Here’s your draft Shimla itinerary for 5–10 May 2027, tailored for 2 adults and your parents (aged 72 and 68, father uses a walking stick). All sightseeing avoids long walks and prioritizes accessible stops.\n\n---\n\n**Day 1 · 5 May — Delhi to Shimla & Check-in**\n- 07:00: Drive from Delhi to Shimla (private car, 350 km, 8 hrs, with rest stops)\n- 10:00: Meal stop at Haveli, Karnal (accessible)\n- 13:30: Meal stop at Timber Trail, Parwanoo (accessible)\n- 16:30: Check-in at centrally located, accessible 3-star hotel\n- Evening: Leisure/rest\n\n**Day 2 · 6 May — Shimla Heritage & Mall Road**\n- 09:00: Start from hotel\n- 10:00: The Ridge, Shimla (flat, accessible area)\n- 11:30: Christ Church (minimal stairs, benches)\n- 12:45: Lunch at Indian Coffee House (accessible)\n- 14:15: Mall Road (window shopping, gentle stroll, benches)\n- 15:45: Return to hotel for rest\n\n**Day 3 · 7 May — Kufri Excursion (Scenic Drive)**\n- 09:00: Start from hotel\n- 09:15: Drive to Kufri (private car, 16 km, 45 min)\n- 10:15: Himalayan Nature Park, Kufri (wheelchair-friendly, benches)\n- 12:15: Lunch at The Retreat, Kufri (accessible)\n- 13:30: Drive back to Shimla\n- 14:30: Return to hotel for rest\n\n**Day 4 · 8 May — Viceregal Lodge & Relaxation**\n- 09:00: Start from hotel\n- 10:00: Viceregal Lodge (wheelchair access)\n- 12:30: Lunch at Ashiana & Goofa (accessible)\n- 14:00: Annandale Army Heritage Museum (optional, minimal walking, benches)\n- 15:00: Return to hotel for rest\n\n**Day 5 · 9 May — Shimla to Delhi & Departure**\n- 08:00: Check out from hotel\n- 08:30: Drive back to Delhi (private car, rest stops)\n- 12:00: Meal stop at Timber Trail, Parwanoo\n- 15:30: Meal stop at Haveli, Karnal\n\n---\n\n**Draft — I'll refine with real prices, hotel options, and restaurant reviews next.**\n\nAll stops are accessible and paced gently for your parents’ comfort. Let me know if you want to adjust any sightseeing or meal stops before I search for hotels and finalize costs.\n\nGot it — your father uses a walking stick, so I’ve ensured minimal walking and accessible venues throughout.",
+              "ts": 1786802868911,
+              "seconds": 271
+            }
+          ],
+          "recent_operations": [
+            {
+              "key": "8a7064da4b99f5ad29452a4040b2ed8abfadc2f5e97ec2d6bd99f84019901b14",
+              "status": "completed",
+              "reply": "Here’s your draft Shimla itinerary for 5–10 May 2027, tailored for 2 adults and your parents (aged 72 and 68, father uses a walking stick). All sightseeing avoids long walks and prioritizes accessible stops.\n\n---\n\n**Day 1 · 5 May — Delhi to Shimla & Check-in**\n- 07:00: Drive from Delhi to Shimla (private car, 350 km, 8 hrs, with rest stops)\n- 10:00: Meal stop at Haveli, Karnal (accessible)\n- 13:30: Meal stop at Timber Trail, Parwanoo (accessible)\n- 16:30: Check-in at centrally located, accessible 3-star hotel\n- Evening: Leisure/rest\n\n**Day 2 · 6 May — Shimla Heritage & Mall Road**\n- 09:00: Start from hotel\n- 10:00: The Ridge, Shimla (flat, accessible area)\n- 11:30: Christ Church (minimal stairs, benches)\n- 12:45: Lunch at Indian Coffee House (accessible)\n- 14:15: Mall Road (window shopping, gentle stroll, benches)\n- 15:45: Return to hotel for rest\n\n**Day 3 · 7 May — Kufri Excursion (Scenic Drive)**\n- 09:00: Start from hotel\n- 09:15: Drive to Kufri (private car, 16 km, 45 min)\n- 10:15: Himalayan Nature Park, Kufri (wheelchair-friendly, benches)\n- 12:15: Lunch at The Retreat, Kufri (accessible)\n- 13:30: Drive back to Shimla\n- 14:30: Return to hotel for rest\n\n**Day 4 · 8 May — Viceregal Lodge & Relaxation**\n- 09:00: Start from hotel\n- 10:00: Viceregal Lodge (wheelchair access)\n- 12:30: Lunch at Ashiana & Goofa (accessible)\n- 14:00: Annandale Army Heritage Museum (optional, minimal walking, benches)\n- 15:00: Return to hotel for rest\n\n**Day 5 · 9 May — Shimla to Delhi & Departure**\n- 08:00: Check out from hotel\n- 08:30: Drive back to Delhi (private car, rest stops)\n- 12:00: Meal stop at Timber Trail, Parwanoo\n- 15:30: Meal stop at Haveli, Karnal\n\n---\n\n**Draft — I'll refine with real prices, hotel options, and restaurant reviews next.**\n\nAll stops are accessible and paced gently for your parents’ comfort. Let me know if you want to adjust any sightseeing or meal stops before I search for hotels and finalize costs.\n\nGot it — your father uses a walking stick, so I’ve ensured minimal walking and accessible venues throughout.",
+              "agent": "trip",
+              "trip_id": "shimla_2027-05-05_2027-05-10",
+              "message": "Plan a 5 day Shimla trip from Delhi for 2 adults and my parents aged 72 and 68, 5 to 10 May 2027. My father uses a walking stick, so avoid long walks."
+            }
+          ],
+          "recent_writes": [
+            "8a7064da4b99f5ad29452a4040b2ed8abfadc2f5e97ec2d6bd99f84019901b14"
+          ]
+        }
+      },
+      "operations": {
+        "recent_operations": [
+          {
+            "key": "8a7064da4b99f5ad29452a4040b2ed8abfadc2f5e97ec2d6bd99f84019901b14",
+            "status": "completed",
+            "reply": "Here’s your draft Shimla itinerary for 5–10 May 2027, tailored for 2 adults and your parents (aged 72 and 68, father uses a walking stick). All sightseeing avoids long walks and prioritizes accessible stops.\n\n---\n\n**Day 1 · 5 May — Delhi to Shimla & Check-in**\n- 07:00: Drive from Delhi to Shimla (private car, 350 km, 8 hrs, with rest stops)\n- 10:00: Meal stop at Haveli, Karnal (accessible)\n- 13:30: Meal stop at Timber Trail, Parwanoo (accessible)\n- 16:30: Check-in at centrally located, accessible 3-star hotel\n- Evening: Leisure/rest\n\n**Day 2 · 6 May — Shimla Heritage & Mall Road**\n- 09:00: Start from hotel\n- 10:00: The Ridge, Shimla (flat, accessible area)\n- 11:30: Christ Church (minimal stairs, benches)\n- 12:45: Lunch at Indian Coffee House (accessible)\n- 14:15: Mall Road (window shopping, gentle stroll, benches)\n- 15:45: Return to hotel for rest\n\n**Day 3 · 7 May — Kufri Excursion (Scenic Drive)**\n- 09:00: Start from hotel\n- 09:15: Drive to Kufri (private car, 16 km, 45 min)\n- 10:15: Himalayan Nature Park, Kufri (wheelchair-friendly, benches)\n- 12:15: Lunch at The Retreat, Kufri (accessible)\n- 13:30: Drive back to Shimla\n- 14:30: Return to hotel for rest\n\n**Day 4 · 8 May — Viceregal Lodge & Relaxation**\n- 09:00: Start from hotel\n- 10:00: Viceregal Lodge (wheelchair access)\n- 12:30: Lunch at Ashiana & Goofa (accessible)\n- 14:00: Annandale Army Heritage Museum (optional, minimal walking, benches)\n- 15:00: Return to hotel for rest\n\n**Day 5 · 9 May — Shimla to Delhi & Departure**\n- 08:00: Check out from hotel\n- 08:30: Drive back to Delhi (private car, rest stops)\n- 12:00: Meal stop at Timber Trail, Parwanoo\n- 15:30: Meal stop at Haveli, Karnal\n\n---\n\n**Draft — I'll refine with real prices, hotel options, and restaurant reviews next.**\n\nAll stops are accessible and paced gently for your parents’ comfort. Let me know if you want to adjust any sightseeing or meal stops before I search for hotels and finalize costs.\n\nGot it — your father uses a walking stick, so I’ve ensured minimal walking and accessible venues throughout.",
+            "agent": "trip",
+            "trip_id": "shimla_2027-05-05_2027-05-10",
+            "message": "Plan a 5 day Shimla trip from Delhi for 2 adults and my parents aged 72 and 68, 5 to 10 May 2027. My father uses a walking stick, so avoid long walks."
+          }
+        ]
+      }
     },
     "preferences": {
       "profile": {
@@ -106,7 +686,25 @@
         "age_band": null,
         "occupation": null
       },
-      "family_members": [],
+      "family_members": [
+        {
+          "relationship": "self"
+        },
+        {
+          "relationship": "spouse"
+        },
+        {
+          "relationship": "parent",
+          "age": 72,
+          "mobility": [
+            "uses walking stick"
+          ]
+        },
+        {
+          "relationship": "parent",
+          "age": 68
+        }
+      ],
       "interests": [],
       "dislikes": [],
       "past_trip_mentions": [],
@@ -150,16 +748,942 @@
       },
       "accessibility_needs": [],
       "past_trips": [],
-      "learned_notes": [],
+      "learned_notes": [
+        {
+          "note": "father uses a walking stick, avoid long walks",
+          "source": "stated"
+        }
+      ],
       "behavior_signals": {},
       "about_me": "",
-      "profile_summary": "",
-      "profile_summary_updated_at": null,
+      "profile_summary": "Travels with spouse and elderly parents, one of whom uses a walking stick, so avoids long walks and prefers accessible options. Maintains a balanced trip style with moderate budget, typically choosing standard rooms in hotels rated three stars or higher. Prefers economy flights, direct routes, and is open to trains and rental cars, but not buses. No dietary restrictions or strong cuisine preferences are indicated. Has shown interest in planning a trip to Shimla.",
+      "profile_summary_updated_at": "2026-08-15T19:38:48.153307",
       "planning_mode": "direct",
       "display_currency": "USD",
-      "profile_summary_digest": ""
+      "profile_summary_digest": "334f37114937764c6c8b2c8629117cfc634bc4f78d93864f9eab8a5d8d92974a"
     },
-    "places": {}
+    "places": {
+      "haveli, karnal|shimla": {
+        "place_id": "ChIJnc2s4iFwDjkRvn8KL7eZ3Hw",
+        "name": "Karnal Haveli",
+        "address": "133.5 Mile Stone, NH 44, Karnal, Dadupur, Haryana 132116, India",
+        "rating": 4.1,
+        "review_count": 15696,
+        "price_level": null,
+        "website": "http://karnalhaveli.in/",
+        "editorial_summary": "Relaxed quarters in an unpretentious budget hotel offering a restaurant & complimentary breakfast.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 7:00 AM – 11:30 PM",
+          "Tuesday: 7:00 AM – 11:30 PM",
+          "Wednesday: 7:00 AM – 11:30 PM",
+          "Thursday: 7:00 AM – 11:30 PM",
+          "Friday: 7:00 AM – 11:30 PM",
+          "Saturday: 7:00 AM – 11:30 PM",
+          "Sunday: 7:00 AM – 11:30 PM"
+        ],
+        "lat": 29.756131399999997,
+        "lng": 76.9688559,
+        "photo_refs": [
+          "places/ChIJnc2s4iFwDjkRvn8KL7eZ3Hw/photos/AWCwydjpzPmns5Bv_8yHScUOlqeW4BFwxsalxjPsfhCfShHH2LV_OgGLF52j3-yNMXGH4UnCChW2Vv36dQNhqBoHi-mFsNKHAqPLY57BHYlVEqmzauprVSSSNbm5rSkSpHImTSEUyhlBs9DalD-ZS-nKZDz9KecRViLP0vkRa33yoHs2gKktKdvhpLOvVUzO8EUX1mkaQddnv2IFSdpdrdO-MyVJtX0e_83yRfEjzY2QVX7K8EIW2q8FwNSJKaPRV60Vnun7CdBeGJHXyFqJ4DGOQCr1mcPBQPAZ5_pOYKekcJYUTHLBm_3b4rqnkgGGJ77EHp3Joov9wGcpCDIlp-GUADuPP2Yd53V3l_txHKwAxbVsNdMhEJuCIslS1Pr8zEZdxlWH4bJr814iOtZ-s9eelAYPjugtZxabH5ifns_UKekX7Q",
+          "places/ChIJnc2s4iFwDjkRvn8KL7eZ3Hw/photos/AWCwydjh6ALzs9U-Anhra18tBYZYdU1P-uUsHAN6RYnKCBXIK1gJ55r5IGQvVeQA_GKOZnq_1qtBAYOlVhUFBZTxYKn-aG8YIl1drKidM3yXeLLZS05CpQJaB-K1SDJr0r1nyKJCtfkI4JW_NekQ3PMTJdsSlkNDbjdw-2KuGVrs42QoPDzrJyQEoH7i9OjSnsUF5nP7e7g7fmrpVEtN2lOt8QRIpUPR7MChMGRlRCI45F9iWXW67ZybY0HLZN3Vd9b_vSECu-xX_GAanVn3Jdi7pdbDTR_7_2mSHHUnV_jbwTXXORlKp15S-0rELtfy4qigfqj3YHjZ8lX3RhXYpNeB-B4I81TNbGUJTfc90nQ2MGIAmUDuu-0ipjokkfsiqhjgWwBqLkCBrmOG-U6nYY0dhUizBGtr58VDq7WW2SwD6UfWt-1Uyiq5F9IIVfHzlQ",
+          "places/ChIJnc2s4iFwDjkRvn8KL7eZ3Hw/photos/AWCwydijdy7FqVS1QbO8Q6kZGXVp4_bynZxSSuWAsirGkYdNKcPjixxRN7KxHSsFL2ZqaoV-eCrtl6tIFsD4VluWbS7QEYlGFQptu0Xy8sLeYZJaSZ_rc1LvnTRzdn4V2-cMyiO4faMGOnCMTjOgWMlT2YQFvASnABUcsJ5B-7oH3rMtQGFhAkldTXZiXtBZiKN2MI6m7gu5RPct-Oj7Qm9O_PLg-AgcZUy6LK_z-NYIztuMAtfEp99aqvNHv7kP3Q0Hdgt-N-7-Q7l-fyIzi4t6KZih4tsR5_fdleTqeXqAcSAyVAPR_GmAZL8iRCfWeBxyTGRZLP68wSA81nwMAIhn2XL_qH0eTIXJ0WK_MP6HcbGfIEEB0BFFKJx3nFT4tB_k_IcubNW0ZIoJWp_ceoRwshQskDi6Pc8YTfp_3issGZXMZM1FElij3PA-7qhNrw",
+          "places/ChIJnc2s4iFwDjkRvn8KL7eZ3Hw/photos/AWCwydhpKWCCaMK2pBkkXUS4RD3VU1BPK4CuEfets6qgQ1IB0tc_1wo2bf6PnXepnY3XrWgt8Sj99d_8BctmMyQlWKKYWhEQ2P8XQEEpjJkHP3IHEGcq15S_J61wS069Z-cBsSqFAaiD8l7VCt-MgIpxpZa_B_uBUsieMPyb6qQMCTag3Qeg6ccJ9tGWl11oDTb0wHwVOhyL54uBPEPZx_plpDg8kltgrQUYARSE7wWHT1yJvaSJxaPUgWhB_P0FVxa0JzENRvLkV-uuqXN5LitIx66xe8sGNCyQD9zksu3qkEVu3ZnhEeyiyV3q2phTzUGJtcXD3OnT812XZtKabts5cdi1R7jBFC3QFp50wLEuw8Y43lEhIZzJuEF9cILggk5Bqwd-j1-TE8bEthboHypR5eFb0oBdO5tKYfNEEUDiNaMgfTCVXxSeNOpjmufVbkth",
+          "places/ChIJnc2s4iFwDjkRvn8KL7eZ3Hw/photos/AWCwydj4a9n-yOKFBI3HZhnheHW7f1AYjjkcCvy6OdobTq0wvIKAW55rar52WGfEDvlcegu-v6NZfcEn1Ct5fcLzqpKDGMefwj2du6xJxvjI-bGnAseNwQW63klqwbYdHpZfRf33uZRjNM2RC4OT0ZfWclD5_Oncqh0P-ZclyK0iK9XWi9Xr2JU7jAWMRKrA2k8xQXxDbdlte2-xyODwfuRiuRX11lq7-gsfTpY3jsfWlBO2IcjO-vKBB0UpJHgBl4QTs4MjvuCqz7w_VqGmTGwRlWf-guroigOeC7NV5bMgskzQrwVa7hmFzTyza0YkyPpWGOvvJ5zipQUBrT5hm0M0K4Akwni9V3VwqRh-ruO5omDEYnpEs9DAvMIJ69hyUkLAv3ZE1M8TXAMHGC8iuz90yf-3wbBnkQqxyPkUf6Jo8d1SaZ8wXtZXu8O2bLnpggr_",
+          "places/ChIJnc2s4iFwDjkRvn8KL7eZ3Hw/photos/AWCwydgdM0YD8nciOPlmyv_4LpVlx-dTGE1TPQjMvUaqGrmdVjrWUEoz75dFxnaKBfK8VdGUun4IKAN-H7Tj4Nq_FZSGb5BlK3W_2abPssO0uHb7vP_X0WJ-VA3WNw4wG0JF_SS_qe9ObybfIArXd1myaUdBc_ktIYMaGqO6p3c81Nu0Pon1JwpEJ6mTZFQmsbcqa18ryyd6B-q9XYE5gMKDzvVzEJvcX7YEaHrYhhZ0LbaYmyFdVW9A4LpKgc-WAG2pd1vH_b-Fi383TFGduy0vaoaksUl4-tpOzuVpWRX1enKSgold57tu9bE131XV889yUrjHloQDRlF_ufZmWT1vEWuthm5dGrZ0bDNTVOdijXTTlsmrXoDjWUWhyYKgvJb9HHacc8CytpOvqQgdtnQ0LaOZ91GcsrXViFtlX6xkE1gPleks0Rc6DZL6pXNfz9ii",
+          "places/ChIJnc2s4iFwDjkRvn8KL7eZ3Hw/photos/AWCwydi0ooUIz3yURv3JBNUkmj20zSgB_5733c_vujVas3qeMFatqQsypBg-gIH-1JCBBefydTubKukYkRJRyXIZVotEwCii6I8JkSviW8i55gRWNC8nPIDPGwMcyei8lUl0Sh2K4Xx35rnq32s6Q11rBeWkKp2jdpVEZLlVbUwTzb7AeWuJqjGvRCuZ7z4sHICDKVrieChKWkN1yPGm5q6wZRcSIizzJp5in0ua_IcyInei-domg87iYQxXRvg_juuqXmZZY98_8Jmk7rdetOll2UIPRvuVnOfNVBgZ75nw1fmVFCcG4CP9Y_VvOiHjPAqdvwGqokMZT5jQuia0-xZg0E9mnSYx9oL_uNUR7i_Evy5VPv87ACpQ9rvKp6IvUohpyNK7iILdRyE3nn4EEu0ORXq8yY7GK1XnjPUvDqNU2zx4Qw",
+          "places/ChIJnc2s4iFwDjkRvn8KL7eZ3Hw/photos/AWCwydh2l8OjWSG_P2Rnp4XJFPdRldUGQPfx8oiNuFUOGr5QYdb9LD9qUj2JEM6lZeT-oWF744A6ugkrUObfWfc1P55Kf1N6erWyT_3T8FWPxbK_xc7a6xVWwwpdPRKl_kw1KreeJg6QTfl7l7rJlRBZwq6ICV1-JvywXgCe_3j4c2szRVQnBYF8OtN9bX1Mv-dQccipfiXIBEil3791LHYEJhUJgspv7Jq9VA2YH2WdhFYOjM2Syn2rV64fQdJSaiXEejkY0RAUqdop8fNHNzXUHhrtKSiYZsEJiIBth-WgR2X3IJrM-tjXgaGQT15QCsFdRZTF8_7YvHP5cz-QwuYn3u7NA3JBMwass5IdrxKFTWAhiejmK2ha_LFGaMOrOBJ6i2hrufs-SPlQIo5IKXF3-XEEIOaNqKjUEjeLnDnAqMM",
+          "places/ChIJnc2s4iFwDjkRvn8KL7eZ3Hw/photos/AWCwydhUMHMkbNyT7w3ntyoPw3y4wE5T7TSKGOz4O6kJqUhCsF78hmHlL1KyT3L1VcopA_syAbR7jhRGi02tqpp6GgnHLncODvMSwoDYVh6HnfnUwgLUms67Ha3195Bq8dTgRTNjTVudxdJLMgEAJh_UD3Z4MOBJ4qQcIjX2cvltN02XLj8O8AOU7Z8Uo5cT0QLj2ngWW7cv9-CFMDIBpdF-pNymYY-TJ42t_3OBMionGQt6p_-mlGfW24UjLF4hV8rzLB-H1H3F50gCb4OYu47yc8w-fOAxNX8kgN8_d_0AgZH3-0xTd-lKBXkKLddnqz-7oYgAg3QcJJF9Iz5IubGcnvQ1_gdAhb3E-O7QcRK37sHXW_LSDomY8jIqHeMqsFKNtQ0bjm_khqdkkTAi4iacDUfvQgc1OCIMp4NOjDtdE6dWWw",
+          "places/ChIJnc2s4iFwDjkRvn8KL7eZ3Hw/photos/AWCwydgAAqoCB6wKllNt0UoIAu245KcVLUkGyf5VPtKM_V8FPWpnFTHCJB7TsCW4MWK_We6e11AFb4YoOzpYVi-MsMtpb7SGE9mO-FMM9w7qU_cjoiN6VwpwcTdaisII9I9DrJMWLznoon0qbdJI036joPH8wdHZIKXF_UpTqJ_E3tf4piPOyboLniS4CdsRUkwJGs0yKq2OQC4SNDbQ9aAoAv4IL1ypIAMVbxrBHaMcWyKCzaDA2FNaf85OWd4sA49JaXymU1LExd0z2xqVfTCjGYO9Z16mEEWtTqZiofYnbtpuX4ayaEVnj0muErCkxLVoLJ_Cr0BcfpPzu9g61pb9Qi05GCUF34_ThfQo-OfEifn7QT9e7syaTwy_fM2c2WsF-xTxtrfl4YJ2PZgZQN3qdvJ-TD6b1gp8HmRFopAYHDiaWt0"
+        ],
+        "__at__": 1786857687.8374012,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Best place to stop on the highway while you are returning to Delhi. Food here is amazing. Service might be a little slow as the place is jam packed with people, you might also have to wait sometime due to a lot of rush. Kids are gonna love this place as there are a lot of recreational activities for",
+            "author": "Anuraag Shahi"
+          },
+          {
+            "rating": 4,
+            "text": "I have been to Karnal Haveli a lot of times.\n\nOn my recent visit, I explored the various food options that are available there.\n\nThe options for food, play, shopping etc.. everything is so good. Washrooms are clean and worth stopping on your way to Delhi or Gurgaon(just like I did).\n\nOne thing that ",
+            "author": "Tripta Negi"
+          },
+          {
+            "rating": 4,
+            "text": "This place has an old charm. I visited this place first time in 2008 from that time till now I think they are able to maintain the quality and taste of food. It's ambience has always been pleasant. So overall a goid place to take a halt on Delhi Chandigarh Shimla highway.",
+            "author": "Nidhi Samania"
+          },
+          {
+            "rating": 5,
+            "text": "Visited Karnal Haveli premises on 30th August 2026. An exceptionally well mained facility. The wash rooms were neat and clean. 💯.👍. Tucked in the left side of the main entrance is Chennai Maratha Counter. Believe me, we had a nearly authentic Mumbai Vada Pav. The  Mix Veg Utthapam was prepared as pe",
+            "author": "mukesh dangi"
+          },
+          {
+            "rating": 4,
+            "text": "⭐⭐⭐⭐ Massive Space, Clean Vibes, and Great Food!\nThe Good:\nI was blown away by the scale of this restaurant—the place is absolutely humongous! Despite its massive size, they manage to keep the entire venue clean enough and well-maintained, which is impressive for a space this large.\nAs for the food,",
+            "author": "Brijesh Patel"
+          }
+        ]
+      },
+      "timber trail, parwanoo|shimla": {
+        "place_id": "ChIJCVaB_QuPDzkRObx39i3g49Y",
+        "name": "Timber Trail Resort",
+        "address": "National Highway -22, Parwanoo, Himachal Pradesh 173220, India",
+        "rating": 4.3,
+        "review_count": 6217,
+        "price_level": null,
+        "website": "https://www.timbertrail.in/resort-parwanoo?utm_source=google&utm_medium=organic",
+        "editorial_summary": "Relaxed rooms in a casual hotel offering dining, an outdoor pool & a cable car station.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 30.835763699999998,
+        "lng": 76.9818961,
+        "photo_refs": [
+          "places/ChIJCVaB_QuPDzkRObx39i3g49Y/photos/AWCwydg7hHeyo_UlpSs8Jj82EXgHj_Nj73GizaeBaB8gS4eGs7DfPZO6G7UA7HFx1yDrvW9K3zM84mXUbTVBHmIfaroa5wW83j5yyZC7v1mKd_L7lB_zjH5V3UY2Q8Z3wLGrlgsQiafpGs4cJwKPzKbkzmRqZtK_VEfVtbTArVYb2y7LPcGyDgqjQ4pO_2RNWWWXdGaSr1lanbSLj93SqrOn58FgmnO2-Vn3oEkLivRChx8UpXy04McXKwqgwU9hZNw14SlgsGK0quU8NXgNRukpdB9WTThDC7JwZjnlFcmWJNJ9LwkPK807Wc3R1ysDD8oFOxXvLorw26bTsHbn9NcjjujnM27zBGEkKnuGrr6LXGhkKCRlHTBWwx8RBvOLwIS01tDRbko7c4JjLcyE9NXUsIT8kdnLKhCs9sjWI1H_ouo",
+          "places/ChIJCVaB_QuPDzkRObx39i3g49Y/photos/AWCwydjgNqP65feJi7rmEbUOhdgPiAWatnf1qSNYHJ2TyeIhp3T1EWa3FUVVDQIGHcMgnTSnRNAxyKtGiebVirnwpdafrkmIAJTBL0kkSz0QuaZ_VITZ2zgQ0VF1qfWbVah-CU30FqU4f6EKPH-brVzuKbMX82AnWQcaqkBDtVt81QEFlzS7pF4Q-ciQJHYTrr8MpFUE4PZit5qxdNRDKBM8NQn_Sek7b4sL5ZSHy8ldvoWEgvSIHNQ1ZfaGgOddQn3Wltk6VydLnrVk16wtipLNUHYGWmmBuGaNBwF2frX8gAzPzmyyOy2OgfrW63UJwqKZukeoosVbXnFp1XBvpOfiMsPH6hXnrJpb74iBx23knDNBWnIwFajUjXh-D1I2FVkwChzrFozd_g8xUCplSyk2suaV_fVmJXl-AnEUm7wE2NE89w",
+          "places/ChIJCVaB_QuPDzkRObx39i3g49Y/photos/AWCwydgMd3eoLdsqwKgpe33BBypDrGd0hI4I2iBg6LSbTIyTHhmZDrkAVsN8WwEvGc-MQtaytHZGbvmUVbaohNNNosXlj_HiXCx_G-g6Cf0A6vAEe7PpnqzyynFa2_r2EI7GJAz3XMfzZuILVidlgewf7vuuB2PBIN6aPE6DrnFwGi6wx_Vz3_xUcrM_D6VsXgRY9uxLErxLGyf7GrG1-r1KLc8WVJzwj-NPgh2dkB9sYibaKAO91WVb95MfJurG9_PEPMPbVUqt74gPvLC8oJdeS7hbXbtMmVuWF2rJwz0NJ6JeVZ2sEssU8vctC11v9dC79pPp3vuJN-BfJ4YG3xNkNp_2h_bzfAGqjQVoTAv60kFw27JzCeuyqFsHCbNxK6uw2bQEDL2eFQ-39jeuHTO8p1GvWGXc9pB4U-y-KDsxvi59L0NA",
+          "places/ChIJCVaB_QuPDzkRObx39i3g49Y/photos/AWCwydiGkz9FZt6OQIKiJF50QQFe6202Qh9ZIMlZSEAHA1Aar6ydIkJLYwEVX1ucUjcYAee-Q6GxxzQe7ev-oOC9W-8iK7_VwJuwLLxZ6XLoDxs0Zv7qfYbwkY7zPfmtLdeVIYsRYR7MdYr6vyPTLjJCFrB98VGGWmmemcfebIYd8j_BACoS_KHXX79-SC-uHLA4NSkKDQkBU-I-_5bFz0MU4dn_mezX0kK5x6lkj0JOnTeMshybs6luctSGU7vNydwGTu5RA4Ke3i8LvfmuZZJy69BAdTe12crNiziXOfLRURHomxyAGfFvt1bkACFWRsh3kXTYsK9WgE5fU95dKD3J_J1Trl0EfRFizFToYFvsXfac1QHmrRi88hrQ_r_uwVtwKMvWu0_i6zqXb36ebOALSFCL1vLalRdMftgqOWHHLTK8eg",
+          "places/ChIJCVaB_QuPDzkRObx39i3g49Y/photos/AWCwydiRQWtK0FVKK5VA7tcS63KAhWX5tz-LvpVnIVksJz-buE5b0vcar4KkeD0tkJWvp6ZjMhpB2GMH1yzHTcRZKxTKfuPS_ATYLZEWaGwng3SwtMtSKwhIogSAG7_wo3HE_7csTYvDEMG4xu5tyFHUuUXdzNoZZfAhxmcy3lJX33kXc1AaWgRFDQLWpjpJpT-mbGR6zsqFwwitOaaqYSYK9Eh66LPLDXIZxW1juOfi3z1LQAdfrPZRUqiqVx1-YmN5e8iflZEpXgBCzRLPbAYr5BsSc3ZwhVrZSE8GQP5c9YRGNBXpDjtkiYvHmPa3puqSkn9jaWN95sIgVfW6w7Wm6zcUIc12aG2gwKyX0kfBHEb8Vsvdg1BhIT77T_tJzRzFm8FvzOM7vMqiFReK9LHciGPlLmNs8rT6P8EnpER7OtrhhO2cQG76k82nzLcFEA",
+          "places/ChIJCVaB_QuPDzkRObx39i3g49Y/photos/AWCwydirz2PskMOMr4zduSQ6bJopiBCAhXAdob_fPwaerCSYZoJW1yPH8BVoGDy8-zMUsirnqSJ3Fr2f9KkJHnFVhx0q-j1be5WAEhDxOYCJ2PdMsR0iCRAH--0bpvwOwVrVpw5tJZo-ceiO-BiWTPII1k6wa_XET9g9KhHcoOjPcdwee2aIAh7i3YkvaCQG6a8rCfhVBw5raeXsd7Rd-ruUBdHisdqwveGVWli1_8n7pGjO7ZUl_NCGqbHaZW3kdHjuFPsk9X8Azh60jAfA3QeIuIoMLUmjIg2H6dsmMatfbY1xp7gnVmStPpyshj1VJiKx8gFy6cf9MZwlAwNnl0aMmXIlM-4zdXjVIexcqoTSyd8vFa_-N2mU-wD6103hkjQeBLsfTbz6nDLi7WGIwWgBE73AXWXM_plIAP_j8t5bxWDkx1dW",
+          "places/ChIJCVaB_QuPDzkRObx39i3g49Y/photos/AWCwydj2RryPEhxZzr0lYLKF209dfWfDVFKXHX7WnqhHkyJ5C27maS9UXxwTF-ksyMbsOjTkclpyH7U1pTMDt-ClN510kRy0cAgNNPE2F1eofCuGtLGnHAe6mGTrVURSN_b_8NaEKRgKsuwCdKWKp32qRqv55GqfRjmgaRysq-YhcmZrHqVJbsqNZMqZca6MzY2LO-md9Jm92toFPXdOpaVXPBmvB0YM991muocLnlDQHKjy5fPQuJGh8MIKO1dTsD6kxh6qNrLKB2LWPVMmr_xpj2F6edaNFyP5hjaPSbjWVHo42fZeTqvjJ4XWr7aoEJGBkfddWNGpGN7kP2Q6HQjnRf31LuFrF7cTkuTfAirXHDb1BU5EdroW2HG1Hwy7kVFwnyyHIeGaET76ANCP2Ye2qJztNt17IiKe7HGkOR2E6XZMkysliMPoJl-Aiq4p8w",
+          "places/ChIJCVaB_QuPDzkRObx39i3g49Y/photos/AWCwydg2h3vnd0hQbPyo-2FhaSWYrfHWoZRDa96giPnerY2SkWHoeoIdqbpVl3ajgeufq0XYjp-TgoZIxM8m0w95Zuhdi81CHsYVdZVEiHkeeOtdRIsMpgrI-OpFyktqLzeZbqPF9rjVchDO-jXevk0cjHq2zcuWJrmnvQJdp2RQjuAKsWz04BscoTVbddabTMSTrWbhlgiWamn1bx74yBcOkTcWti5WeZsMMluE_brt8OgnZDoKhIi9G111Fn7sfGuSWvSMHuOHTeZInxy7SKfNRKHcyXGDhVrz1lHUzXwbE9m2-WRhzD5Ln1lsqW8h806G8y9LmucTgc9GgaX8AN0VaT_rVsubyyH1GsxkWQXORJCt48N3OiwtamuYJnMHxaEGqYNc3RJvlCsuB2k_PuA5FDhzpXgqiQh8AFGLHHrX36US1cKk",
+          "places/ChIJCVaB_QuPDzkRObx39i3g49Y/photos/AWCwydhwCxo91tnKi1FZMObQNfu459DSfrkcnuQsKEi1cocUaXM-rWzYJWvd7vY5sbp8V8Hwxm_p1E2uarzrOIgxrB8yquiIlh4FKaixpzmihWa4S836stiXYq4ZIHLr4tYa1wRk7NiObK_PjqZnb7SHOvfHqHYqUYJqVsHggsZvPbShgTqgUf_-Is62t6_sO9IWxijm--fgwAskD_9-BMA4qG57s9gtI1x50EgG299nHi5Y-m5Auj4KHVS_jsWxBniI2724sTczWx-PnpxGKU5Soy1RDs7JIllDZ05XJZZiNZyamWWg7stYn29zm4i8bg15ZEiOMaFz3AkPV32nOmJ5kJ2LLOtDHSihGaqQTrkjjAv2r6SpGfAvt12LXCTjoMhuHxiEK23LDDoNTSbbBru2c45tEYfBdrMN51f8bkiM66wmnyY",
+          "places/ChIJCVaB_QuPDzkRObx39i3g49Y/photos/AWCwydjUiv9wgdr3v1mGcuzypMDrcFcsSi-46FYwAEVoKsTQQ7LLnJAuU6q_tqJ1ykY6ncYbbYjRGfXpB2J4zHPnw2bqthE_p1wE4ohN9jS8zQyIFfzmegVrP7x5Ox8hylxVAUiTf9nlRcp27vp8cq8-6AZxITffl7cQG3wuWCIOVxQ5gECT6ZMPZuap8Y2eJdzX6qMZxesrtxE9LqpgU9OsCdC5X_D0azcEGt7gJrXt72_wVBDnlovSP4ehgQOlOl5F7YW9bIKh1bl_rqdl12zH8l4Hk15Qn3v2MF-dl52MVNHoGoIS2AtrLfon7qBpgtO1MksUrKoURCK14oZZ6Rpp6rHGgrUGHacIK7YG73JCMLYiWCl4DY-HZ5_H4LYfyT4YH47WMSlup8qDihEgViQI9IKTdxR18std7cHCogWP4JuYh96m"
+        ],
+        "__at__": 1786857688.314038,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "Situated near the highway. Ample parking. Great staffs, friendly, rooms are okay. I felt, needs some maintainance, sometimes there is smell comes from the bathroom shafts, which was the mood killer. Valley view was great. There is ropeway over the valley. Great stay, this time. O am providing 3.5 st",
+            "author": "I B"
+          },
+          {
+            "rating": 5,
+            "text": "We had an amazing stay at Moksha Resort. The property is beautiful, peaceful, and very well maintained, offering the perfect escape from the hustle and bustle of daily life.\n\nA special thanks to Mr. Ravi Kumar, the General Manager, for his exceptional hospitality. He is a wonderful person who ensure",
+            "author": "jasdeep bindra"
+          },
+          {
+            "rating": 5,
+            "text": "We were a couple and visited on a Thursday morning to try the cable car to the top - the return ticket costs Rs1050 per person . For someone with acrophobia ( fear of heights ) it is better to avoid the ride as the incline is rather steep . The cable car is always manned by a security guard . Once y",
+            "author": "Amit Mehra"
+          },
+          {
+            "rating": 4,
+            "text": "This resort was quite good overall. The rooms offered a fantastic view, which I really appreciated. While the on-site dining was pricey, there were plenty of affordable food options conveniently located nearby. I'd recommend booking the base resort, as the upper sections didn't seem as appealing.",
+            "author": "Dev Yadav"
+          },
+          {
+            "rating": 4,
+            "text": "One of the very few places which never grow old. I have been visiting this place since my student days, but the quality of food is the same. Yummy😋. Excellent location and a must visit. This time we went just for the food🍲 and it was worth every second and every penny.",
+            "author": "Tita Garg"
+          }
+        ]
+      },
+      "the ridge, shimla|shimla": {
+        "place_id": "ChIJ3y2ed5N4BTkRBCcwg_1BYUI",
+        "name": "The Ridge",
+        "address": "The Ridge, Shimla, Himachal Pradesh 171001",
+        "rating": 4.7,
+        "review_count": 3440,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Bustling paved promenade with a no-cars policy lined with shops, cafes & historic architecture.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 31.104800100000002,
+        "lng": 77.1746678,
+        "photo_refs": [
+          "places/ChIJ3y2ed5N4BTkRBCcwg_1BYUI/photos/AWCwydi7RPLFpaXiyWtqv3EGQQe6pa5dxIOMtfrzYANof-pOP9XDFATqO3p273wIOtN2TtvpVK2BKKQtBnPTyl0uGqXBNJd0OgGXHL7S2-4D67GCc2TqByEZqcP8j4jB2BVR5neJx6im5cUql2ULf2bNSF-8FBsA8xk27_r2lC4W1Dlw5izHNIxMHWqjEzcT_sniB7Yk-hUTodz7-tMz-Z0JTJbcj9SePZoEPpIY9aYTLBpuCYBcubHGX1QBiBBHE3PbCn-aHbaQLVjHe_3zzwZ9IPdudr-zzaMcpn-NaIzCY2cs4o065HEwuAVpkBsUmUgToIbnu9cLhAIXyS2CUabcBgj28wKXgeQccRKxY_LyorEWxFC6z_L7cPb9Ywhl8tna-oM15zAFBCI1-kAMI-Q6zWKolhDRJE7FtSLKH4S_4ME7-7Qj",
+          "places/ChIJ3y2ed5N4BTkRBCcwg_1BYUI/photos/AWCwydi6NwYXrt9qAqfgSSdjJ4TQeL1C1YIlNKhSdt1m5dKUtE8Vm58GwLO5cXTokQbkVxJ9Ecs_YRehmI2cFlx2W12XcJEpZtbALhd0i0k2JhS8FTjQPwWOB2hikAYj5QnCXb1AAKDtbMjLwKA-xkHUiUo41MH_d7wilyS7ER8jBwVJHzytTx63i_xxzAdjrCfu8Joy1_RZido4I-ZrhXErGckWeXy5b7Dv3xBcvJpdHlfuuQiAcrGwDBP4lb7Cc6iePI_QtLcg_Jpa8PVvfnZREevPa4ysIdp7FO5XSc8-hWLns0sAffpmMtghaunnhMYrQBeMCOmC7GILu3VLpfG9mdIFDBDILjVNhnarSPJFBfAdmiXHufg1oRw3bW7DLRkYW5w_a1NcYn2qPNNFS-ALZoWJnzosQ1w3n5u3RZpzCr__sWc",
+          "places/ChIJ3y2ed5N4BTkRBCcwg_1BYUI/photos/AWCwydh9j9NfTnOM6m5PvW7trV5VADiKJw5cGjKPsuevXiw6PDKhaNlmcWRKlUKxwl1l-UPvZUO283tBFlK4b8p65W7__c6ai95iCmni69CsLfAQbxF8IIUrkn-b9l_vpGgJ1XKm9VO6TPk18WrET0-EJw3ggrcIulM9GLwEKAbleHoMixfDkXzMPymmWTab7FKc0f1K-nB3Ez9Wh-azQiOkUchGYqZ9Kr5kwK0eSiyi1wN8lCgw9ipA96cQC9ufd_p-7DvjXBL6sP--ARSxDgVw86h-8vZUWWfp2dAJMShcStlXrcqHgYG6JeUWWn71HqAMPSFZ_dO83BReiJNQhiVKa_S_rclaxPDSmvzg36W6mfErJ4A2RIfJWoLk2aDz4s_SpQPQnt6IAXCGRIBrYtIux_L-OGowzihwNUDRsl7UiWSR5m0",
+          "places/ChIJ3y2ed5N4BTkRBCcwg_1BYUI/photos/AWCwydh5qH1W0fNfy9_u0XQm11taL5acc4ipmLbBTe90QjF0OoM9v6arvLdfyp2MCUc0Q5RBtKtxs3dEUJOULblEs35IfukP-YPBlom1JN1C0gh195K-3AuABhNQL4wPmCfBHThAemejO5dh7wNS7LFDXC1_U8CZPu3Xbq7M08m_nqa_fVPDXFR9O0PAGfyccSCWMRh9WIp1HazUCiGMjkbWLdNabfkg-ELUn0wSrj7vCT2_PpijfdwAMGaY7JpInn2JCXuajfMp_418hlJiFzWPvnLSMM0cOMg-ah9O0hvHA-fSmwHDg2Bb6T4qgx0WiYomL2VDSczItqHBwLAl033lBMEDcyJm_ZAqH3DgplQlI07iYon_3NBjMeb54XL-1i0cMZKvxBoxxZbFv9JjZYwF5oXJkLE3N-dp7VfN92k",
+          "places/ChIJ3y2ed5N4BTkRBCcwg_1BYUI/photos/AWCwydg_HrkBxNrAUa07030Fp4VyhapDvEsCiYzP3VvcYqwoFWXoGM_zckTXNPu69EBwsKaTKNNWUxonTkFrYz12AxTURyYOuzf_WqdWm3OWCG83qgQ-WPp-FzijoY7aGlmbwNotC36NdEZrPa5cN2cKT7EMcngHBAfc3yq3_MFElIZ29OWq_XGpla1Q471aKodRGTMyjpsri9AKUAPudmr_nMXmABGukb1RVKYOCIKGOnzOy7582cW6c2s-OIZBB2RZ2FUCN8K0oZVaN_TCD56ERLCGCuukeMh-J6HKmspVd7dnMXlKhaTxjEVAV8oYN4lKlW_RlXEcMpIDlDsQ97YAlGu1495rN8NyV728Gzzhlsy1sgPyDvCbE3Ekp1rJm7GT5HXUV9a-NlBhX4g1-71j3rNVv3KaQSOkOvtpI9oKtxG2Jw",
+          "places/ChIJ3y2ed5N4BTkRBCcwg_1BYUI/photos/AWCwydgn3B5RzhCslTv5X-64FBlIlbWHqTlPGzD0tAHhb5w-p0LbNiCOYcePvuDtzwDnin-gW5mU1Z-TPZr-GY4ZrwI65huwBJBmlA_e14nQaicQrtk4W3-9Tb6riQl3F67S8YlKcuThUpgXB7oOEJz5TnCHZH_dVa6ekjLlFzUr4WJhuGUcvaPTRroV93VE4E4MpLthCjSoJ0P680QXDviz-AewenmuNhUDwbnUQZjgrzlwm2aOmHsOvrv5z9Bc5pz0epoyiKIkCgphD7o6XSllewHziASfaK4U99-KTK0euRtpOP4dJMjTCmPxVZGLjoY4hWEGhpL3D4JEuAOxmVqiVmaQ093TuyiDy3gzzfRW9MXEZV3tr0mGVQouVf9tluFiBeBJ8wJ1CVBbSkP6rmoV8zQr39jy6jqFzdehuiPGbJoumDf4",
+          "places/ChIJ3y2ed5N4BTkRBCcwg_1BYUI/photos/AWCwydi4xrGUwekFOFbMQiDMUdSEAz2yHgmIpLgI3_N1vV9y3jUN167flE9kZWPFPQWdAGfNwgX-Z3hYt5uCTrRNi8hQnWKRvCUOXPVy4b00z3uBfz9YtWXxA2L30T2LrsMji5D1mRTlBwF0CPgK-r1o_Qpu4spnYXAHXuVlul3DPw6MfrWi-564fxAQrghyvs1IC12jFDENYSjBwNMB7vx4Ho15VBVcV0lXCwTIynwxmIPycFej00zNNur0jutWCQegURVDIfmU9kjqEIB8uXJbYyjSigvGPouulpFfTlLmE6RMMh_igllXXuZ0j_N2hQbVpINzGsNOQH3sHSfM3FqcOeQbEmK0sWK-d2pJdqQpAEYxYJITYy5Xfd2yk0g5K_hbbep1gnD5PCYummmUcyBO86v3dhs6N-b--XPGQx9Our1VXTc2PdZCVnl774DGeeA6",
+          "places/ChIJ3y2ed5N4BTkRBCcwg_1BYUI/photos/AWCwydiKaRqh4LNI14xgGjrd2BDckqbd-udSBWZDFHduIB-hBXQn2FM4N_Oi1CFa1gh9qrqSv8z4alEzLED06UT2K-W93OHrFM3SZ1-8y5wix1JsHr3hE21YL8cLMzSy48UkwLh0A5iUDZgB1YQOovMLzH2eWTmLAXyDDqUv2awGm9lkasE08V1rgPYHmtdprsggr6GsT_yVJQeBRPbJ_u1oq3Kt8Lij6rOCbTQJawOA1PpPB9BVTnZ9WqIZ5MYG4JS-mTdWjIs69uEBcRcx5vMfPRIm0zvCmplIusDsQWbsF8musf-Zhpi-0kyCjIYO3e4y3P9jdq0tVg4d2YkKQOXWrmV8MWHwDnCUa3lxfJ8tHX3oJyvbuSNj5SBPMAp0yDyOz8x5l7m5PHrJyHQGjtbNgbw_LcTOPSwtk794CU5a8JJiIw",
+          "places/ChIJ3y2ed5N4BTkRBCcwg_1BYUI/photos/AWCwydixYFVBQ0f9wYL3-qx4phEvoUPH5ookyAJjfGJl9F6ztYYDOqCNgi-2f3JvT94wLCZlk9PF2UPnVP4YXvQKk7SFzLaGyZRa7Qh3_wBqiXSqUxty-aB2PNQuxS_8IZBu2O5aTbeXrsuSbc0wu0eZ2q5qk8ctmQbvMlQ7py47ZSzID4d6WDpiIbHMXMQJ27oijUXkQl2AgKpNRJ36Km0IPNySAqAa3dUlRCCc3ksEe9nrC200w7Y5A7Hroz2R9DBgZLem6ZyLbgiodwQc3XRfukydkBDdRH6VE84Z_ZkiZiEP3cqOxieLMBXlWwhQ3xJAaSdOzak0kczeQrjTIMIsm7pyc5htooH61LNI4L5wSmZgB9cYNWIeWeuqrWucJ1DIc7kcMEziYd6IxLLuum_Me7MYJ1ovJf-YxsL4w4lP5qI",
+          "places/ChIJ3y2ed5N4BTkRBCcwg_1BYUI/photos/AWCwydhkXBIrnTy3U055wliku3Wl4JVGpogXRHZyuTpGC3ki_RVomXNgY7ofxF-KQGM9cgZI3HyF3aXubt32uWoEovAOXeW1uItTjQQQXtAMv0wutYRF_PAt5ls7NrlqgJV0BE_TF7IsRNR4MQFBiOsmR9I5jYlZpwHrY6ZPtydG8zaKh41EofQMUpBROqnpyfaRB4iK_wY-paNkTR65LjW8Rejrj58nggOxgcVk5f4wTxskZRNLYy5KP0eP6mot-E_RvyTVxx9IosDgnXTRiqSR_zRvznn0z8bHZPMg-iC3kf9KyDe0uibSOHnPKrc8zk8BJ2SakIlxqmPIB9riOP7V5K0JHImn5-6JeHa6pFhyPnY-ky-kkfE2hP_EmMOoFjD1JGrZp5uObBzQbAmvaxDvOnics4lYgubnpbjbihuMgt0TNg"
+        ],
+        "__at__": 1786857688.703011,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The Ridge is undoubtedly one of the best places to visit in Shimla. The entire area is very well-maintained, clean, and well-managed despite attracting a large number of tourists every day. The open space, fresh mountain air, and stunning views of the surrounding hills make it a perfect spot to rela",
+            "author": "Sahil"
+          },
+          {
+            "rating": 4,
+            "text": "To be honest, there aren’t a ton of active things to do here, but the panoramic views alone make the visit completely worth it\n\nthey are easily some of the best you can get in the area. It’s a very laid-back spot where you can easily spend a few hours just café hunting, snapping great pictures, and ",
+            "author": "Yusof White"
+          },
+          {
+            "rating": 5,
+            "text": "Incredible public place with spectacular views of Himalayan ranges on both sides. No visit to Shimla is ever complete without a stroll here and clicking a few pictures. You can see some great sunrise and sunset too from here!",
+            "author": "Kapil Sood"
+          },
+          {
+            "rating": 5,
+            "text": "The Ridge in Shimla is a beautiful and lively open space that perfectly captures the charm of the hill station. Surrounded by colonial-era buildings and offering stunning views of snow-capped mountains, it’s an ideal place for a relaxed walk and photography. The iconic Christ Church adds a timeless ",
+            "author": "Shashi Prakash Yadav"
+          },
+          {
+            "rating": 5,
+            "text": "Shimla, The Ridge & Winter Carnival December 24, 2025-January 01, 2026. The Ridge and The Mall, Shimla is looking vibrant with inflow of great number of tourists. Only major issue is traffic snarls between Shimla Barrier and Victory Tunnel for minimum one hour to traverse about one kilometre distanc",
+            "author": "Raujif"
+          }
+        ]
+      },
+      "christ church, shimla|shimla": {
+        "place_id": "ChIJa17E9JN4BTkRkKypAmONZhA",
+        "name": "Christ Church, Shimla",
+        "address": "453G+P9F, Ridge To US Club, The Mall, Shimla, Himachal Pradesh 171001, India",
+        "rating": 4.6,
+        "review_count": 22681,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Neo-Gothic-style church in scenic, romantic surrounds with stained glass & a pipe organ.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 10:30 AM – 1:00 PM, 2:15 – 5:30 PM",
+          "Tuesday: 10:30 AM – 1:00 PM, 2:15 – 5:30 PM",
+          "Wednesday: 10:30 AM – 1:00 PM, 2:15 – 5:30 PM",
+          "Thursday: 10:30 AM – 1:00 PM, 2:15 – 5:30 PM",
+          "Friday: 10:30 AM – 1:00 PM, 2:15 – 5:30 PM",
+          "Saturday: 10:30 AM – 1:00 PM, 2:15 – 5:30 PM",
+          "Sunday: Closed"
+        ],
+        "lat": 31.104314499999997,
+        "lng": 77.1759177,
+        "photo_refs": [
+          "places/ChIJa17E9JN4BTkRkKypAmONZhA/photos/AWCwydhiFoPJWZyIdppj0Dis4EIJCZCs40lvPPK2g9S08GKDIqs3Tyc21R2zerhsmNxlNzBpedilEaGbDZxcIpqehqrkmSGZS62Waa-Hf9shUCN1W0p_MGFIS16LP-dcW6ClY_RiYD8oTQErKxXGjxPLSUT_1mDujBKBDQ9jx8A38RIMl4w3iMXWOsdzBEKmK3WcnSuUO0NoL9CVgsTBupF-qo3dDIdtn9scsOfJ6EPiHmbBryHYb_Nc-zIQQ8my9G4N1XD4USPMcp3yNya6o0_DMe1sdqIaG7nIYChc6ao6HRRzUwcnxcZHaizu3Cycsiu3JVnEBhBp3iyRPYFkijFyv-BCyq5SFuUnxwMcxBwlBH8VeWTJx6KRidUJyvGhxxqKOFbT5b4AMlD2xTZBGFWADf3rdSA24OeBGcxddlsrayQGTw",
+          "places/ChIJa17E9JN4BTkRkKypAmONZhA/photos/AWCwydiRIsIBW2zwC5u1ZCEtlS6Y6aaJupcuRvoVRLgWQ_2oEVWKIIZI2OiEe_s7BgFg5s3NIVR_lFrdpCOnGTIFTuSotHJ-n_-MgiyaXzqsYXzCvoB7p1eKCS9woAK4rW-0ZJ_KXlGNyI2scwZ0CugUxyQGbHOz4ZDGBDjbewocNBXe2y95pA9orhTItUg4Jezky0VVxUiqDl5z3scF-IWoC0_zuufgvW6PO0Dtzx4vEy8qO808A89tHPya4aOtjbAYv7Hpqmu8q6iDW2Ksp08rEEKR4g5CG0YA0BvQRiG19Q-gFwJ5RFJboEO9Za22aTQbbFJDIa0IBR6DdhQ_UDDuoX1mrqpj305hS26HayT8ELA77Lg9KN2WpDUz_VUNBGUYASUhzbN6PZum_p62WjLO3m706NkwAJiG3aKhXXhnV7WMqnjZA_z-pOrcQg18TX5u",
+          "places/ChIJa17E9JN4BTkRkKypAmONZhA/photos/AWCwydgcYwvvfCoa9TCDTXqi3Yr2N_r-HFohptHYkSozPaWyQXRbV2rEm9-lBCgt2zDVM35921P_p2iHhuMUWKx3XdVFYFvAHyQE-0Y4hxbbG0E28k6um2LDccKXPLNLa22ugeMfte3_ct1T2nNOj9vTF8ERgTfI5oFuFTtMhA_U41VkG0gDlMGFxRTgdqOO27hhCXFqtfPPa_H0Dl6YARVEsp9VIvBuuBSa6r-jaxnvW7uM5Xae9lMzj4hNrsG4r3WfYTvo5hodvJNWzyl9wR_p1uVyR8CiqO2QlupDZ8K1TOLpKiVMPjEjtzfUG5ijH0avTJr3s2_9cQqI2wcZpsmfDGtSiLf-IfwTg0nnGE_pCPD_-_mM50GQD8auWOTXDh18N9Zr7k3GbbGE_CQDI7lOeQk9bqUNVu_8R7DugQ3-CaU",
+          "places/ChIJa17E9JN4BTkRkKypAmONZhA/photos/AWCwydi4OIA6qfwtoRRp14G4PrH_Tlkn20DVTsljOgdHlfKtdKGs60t4BNxvI0UTjIKdxs-oUfpE4xEi07kGh5afJdkXcgjNM-GI9vUVf_l0qa0llpXTo8MvFR2K-EFolMXD6Uu-2eh73QL2r8U9xE7SXy7MeGuoSIQoLl4r6sWMi7zhgCM4cu1dYDSFDieReWaI_Q74Urx49wq34EK0VmLmCbcttZ7pCka45LqqvWGrALi0aZjJPx0TZUx6CxFnrX0v09wAAPnCyw9wI5VVdtPQkXy8BVmoqbvlKsWI309Ypo1m41djKhiRW2cFfVoK6kTnQfimJ9_6Adw6gkn7LPE3UOwYVcfWmsv_MxPuBpj22wBBtwYDVasV4w9daSNwsr6QUfzgMAJAorGNaCJkkSNA4jbhjg8_badetMoYOaIL0zsc7g",
+          "places/ChIJa17E9JN4BTkRkKypAmONZhA/photos/AWCwydjDWys9vDvCMntCbF7ohafeM96HVfVs0g97i8obRSdCO_1L-dI2efiLDieocmI3KVqp_M4yy3Q77ssDbwDWhNWo_Iu5tqZbAN42M6gFfq3-tM9jaDjVFvfQIej4K6p57yjb3RoY0IyJu4BeWHBtT4SE892mwG84maERlALOOPpMgg0cYkREsb_jy3PQ_oaUbfD0teZ8lDwTfOwigjPtq3c7XzD7zvENHbHZfLHiklJeYBrkYIT3FMNvb7PDUY1dZaKtvj-oBx8iaLggtZJXoGd8CkZLMmA7-j7lrr5KxkELohvGJHYuvuTFIOsfTVjZQ-EeWbeIsvbT42jN6L_Ut4yP08PO_FtMDZSfUgHS0wWerM1j7Kl4CD40lKyIOp27vbOdEfbfN6WkXFLjalG-VNQJWtLVGl-2HbSbZ1XV4kc",
+          "places/ChIJa17E9JN4BTkRkKypAmONZhA/photos/AWCwydgXYBw-fErd1OVi2ChFh2iKw48mSEDpVs9HNbuMFpS3o-tF-iQJCwhSLJ2MjQ4yxT9h9mt9oHFjjPdbHibPmluID-KjVawUZJH4kPV3MvtcsmknM8pX-pMb8lJSq2eU2qVrybnmDt99UiYU7paQ3K7Scy7-K8Kl2u84G6wcIvJk6J4GYOYsDAdSoKW4fmPHFacRordC-tBhIt1e_ysl5bFEvgRm6BwnVqQnRrXktXR-eg2g2KYkUBCB0mKQKLsPqEI5MDObWZMY_Nmq-b8fGybhOUvGwMqGovWwhcHpCerHlV6sY5wZaWXN5-ZtF7wqy-usA7hOC56smH623JkHP542Epjsf7qgIuoQwMuxcxxPxh_59FrlMQRDrnLqgKUkNytNRYB_MWMjm8-MyD1-RowpwplPo10_dL4xyS9Xr89lfA",
+          "places/ChIJa17E9JN4BTkRkKypAmONZhA/photos/AWCwydgV7cp3qeavz5kNA7iDyeO1Gpx9J_BPtyJ0ZGO_Xe5gyLbu3YMqB89MtAH6fadhtAnNYQjErGmh34QRdVHCu-zXmBpY9tLdPchnxrIlH2581jbDR1oNkjL6Av-UaTBEcwn9bGALO-GY5MheRNF2rNijQNPDBd5v7gIwGkVUgpyVxg-jvOqFOwAUnYlH8QEcetjrj2fwDyU0nAyd3gLbxrp-PZ7BL7AARKERwHqLW45m23U6z-Ydv67i7mf3BEmPuFpsU_vJFhkwlPVouedc2tu09VFrA9CgLuQs5nwhykTEpXs6_EOmIl8UENOgmRokEDkDyzhZ3Peb1vL-sPfDpnG2afK6K-_mX8feKeEEFnQHB6ZxSOOjn3TCO6kr21d2NqpSUx84ckNk7KtD8JUrHbxITLQtTAHcecquDYCw4d_0X403TRUhSAMUzwKbwQ",
+          "places/ChIJa17E9JN4BTkRkKypAmONZhA/photos/AWCwydhAUf8cqb_LInm1q-dqzJmHbHH8sZrf2UwemmaDBdo0VAOMhA1giprAxDOl1bCgDlBCfVUo25j-mBpQh9TXmHpWjTRicbIqCPVdFbvI1WMbfP2eXqvq7JsgQ4Hv808Pr9uTGqRaF0r8aucDaURrjzS-LvVxJJ9l5rTjT_cQsjdbwpuaNePtSoNGvjPVjRG5wRVsnwsuD_w8qo7iAcf0Cti1Tip63p2gXZa64NefeyHWTsdD7ttrzozRUTDB8bmZ16Zon2LoTwqCCJwvqLfgB5LIr2kkADXfvgmRtv5Rz2aogN74c-SR46Wd-SYekwHoDzwUmme6s1hKTrBM8l9JH_-fOFqKN2NggzXGf9u6GZI2jX-QSEujMCIx6QbRZvIaPupsbMvCDQNDB8oW_t4o9n-LSqUBDLN2G51oE1c6PQA1Fg",
+          "places/ChIJa17E9JN4BTkRkKypAmONZhA/photos/AWCwydi9pJ5IJRIyk_DHqs7SCTytCrHtEei9wdFi7c0sY9mfcHqFd19LBgKGaddtXdf2XAbvMU90RDJYmMiGMBGofi2O8FLPFDxlnmQlhYxJKeuPSHGPd_luJ4ZWM8_jCNq3nlupNMKM0Bvokk2U0NKKdmEBfQDK9ZrPpqWE2W8euwkRBGaZXeRPXbDa5h5_LfoAl_Hr-2AZizZEC6GMFBgtRdVZYddFTd-IYh_ilrcDxKh0x6Q8OnehBdrJ0I4yjQzTNosPo_guKmxZTaIhr8ufgbrIN6oGU0WhkONdXFCpQveT6rOsMnQIiqyEGrrJ11d7H2--OtabgdhJb_lmEMBho2Xf9ogqd1oRxzn95O3Q3HsQq_IQl6mgTbVcerpSV0Zmb9RBPwnBXdlhY6RXCdFmxWb_r68Pauphbm6q88NBhFVSlq8",
+          "places/ChIJa17E9JN4BTkRkKypAmONZhA/photos/AWCwydh2KNmkJBpk3lU8FtTvEj7lZv114Cl5cT4CPQT0V0-GCyn6W2vXLH3Sm4x2tb31zaBFnBTswZlqFvhlshDAqzKV8Zp2NKMh9IW-Oq3LgPdcBV8EkbxVcB2LuJ6cCnu7nmUCchSh7VnWugoGkrry1OaPsk962t2HVe72vhNddHo58Er4Kf1sjyfu2REb2Pc8pokAGtx8Ke6oyUikaaj7A-DLRInDfBKnozgQCeSTuvdlQdNdwu_esIGm0Ucr2Gf_EM73KLd9XoVxfupuQTKYMdTT7MUYAtQYraS896DgJgaBG_vCFBmtSM-_jyQoTWLJ9ETV2blLBgejVZ6srDCR9u2VGQA46aTms06XGh-e5kNTJiyclf5dXMHPsz0KjdwyCS7zC6JCJ3I-ldWCvTOP2JAAblfATybs5Doz2pbQcshmnfot"
+        ],
+        "__at__": 1786857689.1907232,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Christ Church, Shimla, is a beautiful and historic landmark that adds to the charm of the city. The church is known for its stunning architecture, peaceful atmosphere, and rich heritage. Located on The Ridge, it offers beautiful views of the surrounding hills and is a popular attraction for both tou",
+            "author": "Aditya"
+          },
+          {
+            "rating": 5,
+            "text": "Christ Church, Shimla is one of the most iconic and breathtaking landmarks in the heart of Shimla. Located on the famous Ridge, this historic church stands as a symbol of beauty, peace, and colonial heritage. Its stunning neo-Gothic architecture, tall spire, and elegant yellow façade make it one of ",
+            "author": "Akash Raj"
+          },
+          {
+            "rating": 5,
+            "text": "The beauty and peaceful atmosphere of Christ Church make it one of the most iconic and memorable places in Shimla. Located right on Mall Road, the church instantly catches attention with its stunning colonial architecture, tall structure, and beautiful yellow exterior that looks even more attractive",
+            "author": "Hrishik Lakhina"
+          },
+          {
+            "rating": 1,
+            "text": "Christ Church is a beautiful and historic landmark on Mall Road, and the architecture is definitely worth seeing. The church itself is well maintained and attracts many visitors because of its history and location.\n\nHowever, my experience with some of the staff and church personnel was disappointing",
+            "author": "Aman Solanki"
+          },
+          {
+            "rating": 5,
+            "text": "One of the best places on The Ridge in Shimla. It is a wonderful spot to watch the sunset with the beautiful Christ Church in the background. People of any religion are welcome to enter, sit peacefully, or light a candle. Inside, you’ll find copper plaques describing the church’s history, making the",
+            "author": "Gajanan Mundkar"
+          }
+        ]
+      },
+      "indian coffee house, shimla|shimla": {
+        "place_id": "ChIJZ3zeyOx4BTkRx0UE2PqEpMU",
+        "name": "Indian Coffee House",
+        "address": "1, The, Mall Rd, Lower Bazar, Shimla, Himachal Pradesh 171001, India",
+        "rating": 3.9,
+        "review_count": 8419,
+        "price_level": "PRICE_LEVEL_INEXPENSIVE",
+        "website": "https://www.indiancoffeehouse.com/",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 9:00 PM",
+          "Tuesday: 8:00 AM – 9:00 PM",
+          "Wednesday: 8:00 AM – 9:00 PM",
+          "Thursday: 8:00 AM – 9:00 PM",
+          "Friday: 8:00 AM – 9:00 PM",
+          "Saturday: 8:00 AM – 9:00 PM",
+          "Sunday: 8:00 AM – 9:00 PM"
+        ],
+        "lat": 31.1054052,
+        "lng": 77.1707071,
+        "photo_refs": [
+          "places/ChIJZ3zeyOx4BTkRx0UE2PqEpMU/photos/AWCwydgfXJa_88L0N29GKLGbOeo-jIl4yBttPedYWTIq2-CEDCThFtcoykwKqtMMXbAKtIgBS4KTFfLdR4jgshQv08PotHL9GYTP_9MELRcdfrlH5zeVUYLmYeenJToin28atDAztT7UCQ2RudVD_ft55OIVi6w6IkYJfGnQc9zCJSs68s-Nct_YAnrgJcyNFtZ_dnpfVbcwD-Bzvxa0cacx3TEu_XHvPSMLm0aul1DVem38oieVL4wTrTQaHP7B08I-HARJ8PpKJPOQ4gL6jtDzdmLgXnAT02mI9uDORI8mHU3HOHUDeovQLaD0Ia7NTmJFyiADvbbhhOkwASvPnLimSF4ugH6B4gv78vFBebhFJogZGu-QTbIcEXbiG8Ko3tx5CXycg-8nSN9J96rUuA6wbIOAko_oPXmZFo8fJpmQQgy6Y-kdhKnURLOGPm6NAmRc",
+          "places/ChIJZ3zeyOx4BTkRx0UE2PqEpMU/photos/AWCwydgG8ikd9zesU9RK9TQ0uMGvc46gTpLAP15ODHOaDv195_gzgzpTFAenfd6MFwitz34ZEJczg_BtrUcKwdprkXxMYwmyEsRR9wmTtJVxbCqC34Cbwz7ND5GQGmwP3qIzIEGpc17guTB8w42xjhQUBdJIf2MDKYDIO0KEPeY2F7K7CIqCAw4oqatU_NicZiR7l7k_-0jy8CgoD8GSW6uZBTAyd_CPBgQ5rm4jZ_0Lvj2AApcrbVasnWAW-4PAyBbMBXApxxlkHdT_an7vPojnZtwwfYYSWk-M5C46fKj2J9QO7zf-a86RMWBRIGr6iYKjmXgJ8cryjW1ADPZ3_oVMe3M3Ej0lU_NpZb1XV1wie4pQTJqi-MeWeATK-TYzyTVXdlOu-IRdPPDtJXskMt70koenWGO_Oq7WqrcRQ4Ep8rHfpSM",
+          "places/ChIJZ3zeyOx4BTkRx0UE2PqEpMU/photos/AWCwydglVTgyDu3zp9tTp5d0ED16cZz7wfG1pLtaaMk5HIi1gFr7yF470XZXz1_F8R3ZU8xSeWLPYk_PO18twEWRDvoRXuIMttKX4e4XIlS2B4ZbGWVjDK-yGLx54WL2GRYps3prmis7ILeYsD-RflNy0gujj--zYubj5WUJbBO9I7NrAx0R3-HPPnvZBC1h2XGTeZLF84hby2ZcETIFaCv4bR7raiCdKGjSS08WxPFEE8mJ0OOUxmAA7CLyM7uSV7oPNyBwAn9rcJSFYbRd-LSxjHSqwztB8SnhTC0bfkJvTtkRKdzJC4nTtEtYLseWYL-Z1oqEalKbC7-GIjTNYgw9bWD2zE_bo_EIKSuXCGYeKpUkuBC5IcjRdTyttn6ozEii_SREj7DdXWNRtet6f5eNNEV8xpymXAKqz6y-Z5ZLRioDrxJ0mUJ75M1qIJoW9Mna",
+          "places/ChIJZ3zeyOx4BTkRx0UE2PqEpMU/photos/AWCwydglj25JZ2DcyqvVFD4yDzq5eiKOU6RNH0P95CCy6imI3V2JeljSPqB1fxZ2XpRqFE-jGodUF5Uk1wjKeJgwDX5MNcEuqJZzPGuLa0-ppjrKGhEcdfxnKqUUx-HJPNN00DEWTA1XBzNQBSxvTGvIIRzP-EMGIspQ3TGJhNQbJqtH5hEml3lA6GZWYBVI2VZNFIFuPtvrrcXCMT8BzSg7fJHcfLIKEfZsWgUOZ6GnLb45FdK0k5oryJCipmOFvfHgTBa_GJmreJ4LWlMxSPU3QmAF4Q6l7NZB_2f184lc6vHe2eu26xHmml46kaQ_I0gpPGjFCXE3bftLchX0tIP6yx1FY0TccmTxYYTOhHzyvtf3_srrijFHzj0rcAGhrSB_syf-tXFNtbe9H9u3551kNCbvjEQglLrpH4n2fp2noZ-fRVidTi7YItNhVQ1GiJjd",
+          "places/ChIJZ3zeyOx4BTkRx0UE2PqEpMU/photos/AWCwydjouZalvBFNSIzjAI5MGhWtQd1UdFuSzKI6kZr-O--gH1EqAopZUEcE_loktVJYROLBSTJd0-_iYQMDxeIs2WYoIjFwiYBAVweSrS6f0ta5L0oOHpM85stPonAH_0uEcWIKNOHOfpDyPC3mEtkonjRu7SIVJ4PZfRhR42XMTbXZoWXqDEyhRUnS_xb3k4lvs4nbYVm0KgZI8K4KLJ5CqGyyzz9MN8Wv1UmFfpGyzxD5HAc0fgXSaWa4j5rjx7gAdRell0Ywj3dLfaJPNt2RwJCJTd6r7DIQg9vS7EmUjAL-sa7RvZAigDwbUqswbXcZ7yfHn0OuwVvaVUkO3Y-1ZPRJU5V9FGVJSVLqGh2YH11DHpKQpHUqu8DuqDf_CXe25rttVgYCWakyxhV4IDV30vCh8mnkbS-exJ-7fqT2nJolmEmEQkq5ntxpFAMF-hLO",
+          "places/ChIJZ3zeyOx4BTkRx0UE2PqEpMU/photos/AWCwydikm_ELr-Mif6RupbZuOWExEBYgboXuZtHsDt9n8-YsElKadZA5v5y1Suo66HE886HNB59rwuEjAOO_HjG30il28OZBcy8ctn_zkhZhQwQeC50lCGspjiuQwE71CHkJtdWJIJzVnW9t5Oq6ypRz7o-YItc-LZGdHpvNyonPjUKhclNfHqBVIKKMt4cVL4uUavp4IVmLpmEVwgO6TS6lxrOdqD_weSs7MYCfUFaeXebZAHneIN_gPa9V6JZUWhCvp-HWmGXfsVueS5cg7S6xFjquH1D6kGRKJMbPbjSAMmzJeNvqQuKU3G-Uh04az2Q3G03SBdw5TsD6KVpj0qAEVZnfRlaNXez7ieU-Hiko2RDetzis_K40UaHqwgzlMr7QxvdUGW4FbqC2urVN3Rt0I9kS4NCR1a6MST7pxAmheWR6O8l1EbkQrhKfJzDbhA",
+          "places/ChIJZ3zeyOx4BTkRx0UE2PqEpMU/photos/AWCwydhP43IEjIfWXc9LaieTboYja9fUnxeTSQrEien_De2CPxbghrNW4b8tO6mdMIg-u6kcFcOd9xQwza5X-MLYSUeR3SxhI5FVHZq0zJRENRFERziBa6qy_DfMyLnEhV1yNcSqfkdoSobi3glARdYUbUh_2QcgfUPb-4y3LFBhpLLaoXZmXYv7nuKPrQ24g99jaQ49BjVZgLVzRi64SbnmfTIISFnuTE2qvwQAEABHXT1xsxMwD2DttwH7zInpm50FUlATv6nSmCMOn4mWzVBBLtL6PlrBjUU4c7Z6jkW2o2PvxlZqSzRKqt70EIT4qzGss69BQGRitrqo9jL1AKbHSVJEtiHOoWRw7RhkqhPqgkizOg8bIA4I1Ti2CwOTqWWxMU_CEqqyANGQfWI1Kyak-5IIlRHe5i6mD2tv6tDTxN55O9WNT0ZSIwaL49_D1w",
+          "places/ChIJZ3zeyOx4BTkRx0UE2PqEpMU/photos/AWCwydi1ss60gXInvzhCIBpn4nAuMGU5fprvnO7FSBJmMPOU7XM4Qmbi5-sP5NpruGzj4nMWepgjXlZquVPt_0UwsnTHHWUREL0IV2_bakaF5ZCWysLogou9TcUEoHci1nlthMVDcczXI-2kjcahmX9Y5FKC_IkSWSYgHp94Rqyh2VsShfyWLMcrdx2XvwqcnSJDhyGEHpsK8XNkzBP9dutvhdry6UEWtmkeqT3n6XHWPbJZzGI1Yc1G77TRu4J9mXZ1PsKUbQ8nvU7HTaOUruJ9w4dmIOF8CoXOCPqzgpkeiKPXbV_fUjxulVtW94YruWqJZqW1y0AIBBrFg18eBGJMNvhETJoghNoSPKtfRD1n6ZpqQpR78guZcUmKFR-9JruH8WKhpInwSa30GPt4x_lqmYxtz1EPjQ8ZiBjBtx-o3-c",
+          "places/ChIJZ3zeyOx4BTkRx0UE2PqEpMU/photos/AWCwydjnF4-et9kk0rXFYqEpcrAp6AcP_nnszjU4CGybuaDjqaiV3sXZVnVPqNaPJePU3HIBoZx_902YGMxYW-wuqiwgf_Jz3T3Arw_l4agf6DPlZ0YtH6D3G7V9OLptk011Y00r1sf-lJurGJJp_O6Vw8thfqEFewL1FHF-K4yeLbmWbCJsqxNmcln3S9ZDZDvpoUASpU8hQqF2g-wqvBqw1pxmBoCOM8l61YS1W12P-3XBSuKFJAwEVPhwah1VBYjb0dUJ_8BML9VZMTJuDYMgrsykGmQr_Ybk4IXofIXNuB7t_n1p-c5zkEpwmx1_GDfVW8VbAb7uhCqI9TFUtD7cEb9ApGK_uvdxYhCCd9-yHcJutm1RAV_xfdtDkMui7ad8gApIvjioBi_DiM8_6x4WxbW2XiKMWRLqsvTQ7UTLfVZgXgyKuWWUU7fjv81YW4IO",
+          "places/ChIJZ3zeyOx4BTkRx0UE2PqEpMU/photos/AWCwydjiQwRR9NgVOspn6Swkgwu54Kd9HrE2rswepPIMznNf0FStfH6JZYDnJkAiRIWfj05x7sKPqmAUcbT-e0Am6xsdQpOK-jc-fSW8nQzxfg4Ddq4dzCfBWjOc2Q-ISWaBbAGUdhGNY_LaPmjOnCk3Jn5fpiOVUJsOkFHf5XIbJhgWJpPB5R0ehkNRQz5vYnHPLS1MXdHZ8Nht4XVGDQWgDQgQcnghEYJBVWsKF3CRhEM6BnhQ69RXnH-GY7eM2sgD5SsjocSCe2o7n8hxgj9l6R9uzSENkYssMpyrI3VQG0ksUAjbTcfkK_18Xw8f4Yry7_gFK4tE-DrhC0buanIqNVnibqmF3DSjZSVDLqXIof_KYGa32VwCEAY_mBcAXI1GWx0ICbzfKuKJ31TxVVBP98t2ViQANhmAvJLh5xEK97QbVoiC65-q27MCYllOa8Qk"
+        ],
+        "__at__": 1786857689.700581,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "My overall visit was wonderful. The food was okay; it wasn't bad, but it also didn't stand out much. However, the service was quite good, and the staff were generally helpful. The atmosphere really impressed me, it felt very welcoming and comfortable. ☕✨😊My visit was simply wonderful! The atmosphere",
+            "author": "Jatin Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "Indian Coffee House is one of the oldest places in Shimla. We enjoyed a lot here. The atmosphere was amazing. The staff was dressed in authentic retro style and was providing proper vintage vibes and most of all the coffee ☕ was fantastic.",
+            "author": "Prakash Chouhan"
+          },
+          {
+            "rating": 2,
+            "text": "Atmosphere inside feels like you’re drinking coffee in 1800’s time but coffee doesn’t taste good at all. We ordered extra cream coffee which was so watery . Egg sandwich and finger chips were just okay. Visit here for vibes but not for food or drinks",
+            "author": "Kiran Bovane"
+          },
+          {
+            "rating": 2,
+            "text": "I visited this place for dinner on my shimla trip with high hopes since i had heard a lot about it on social media youtube etc..but was highly dissapointed. I ordered Masala Dosa and hot Coffee. The coffee was good but the dosa  was so bad in taste also very oily . I wonder how come such a famous ou",
+            "author": "Akanksha Dubey"
+          },
+          {
+            "rating": 3,
+            "text": "The coffee and mutton cutlet were, regrettably, of average taste. While the coffee could benefit from improvement, the ambiance was the sole commendable aspect.",
+            "author": "Manob Das"
+          }
+        ]
+      },
+      "mall road, shimla|shimla": {
+        "place_id": "ChIJG1usnet4BTkRzQqb_Ys-JOg",
+        "name": "Mall Road",
+        "address": "Mall Rd, Shimla, Himachal Pradesh, India",
+        "rating": 4.6,
+        "review_count": 4463,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Scenic main road allowing pedestrian traffic only to visit its plentiful shops, eateries & hotels.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 31.1040341,
+        "lng": 77.1755249,
+        "photo_refs": [
+          "places/ChIJG1usnet4BTkRzQqb_Ys-JOg/photos/AWCwydiHLQY-j98Jb1TFwQz1UK-W8fQ6oyxTJ0zQk3Z6QwywV75ZX8qI7oHtjeKRPLRKMFpipsSpWLlOiGxudyMukfWE1YUYBjz1tz94TtPoXT2ApqAskcgY6SbaqexeWobzpvm5NeorHVLWqokLcUqeI9f7TkWpRHVcCtgdnPdgF7-4ZtJXdABOhPn5JL7BpCcBWdKvYJedgQGl_idpB5hwGv-tWCa1cnYx9i-fqSCEvVKMO09E0B94U3ZkxFeaDlujdUTSpvuUuHJ12xXmrISa9VKLTq9cQ-8K8l6ezmS71pFPHMDe33NpB1QaPr3_dxKhbI1hf4RlDpkY4OWLTi3_UGzth0YA3gb1EpSUdTTiWKAONszUipsk1QFDTdeuDSX4IE2c5loFDzlx7KjkGlU2x2_7WckGNNtPHkLMNJ0Zem7TlA",
+          "places/ChIJG1usnet4BTkRzQqb_Ys-JOg/photos/AWCwydgPn0yqNrrfVEPHHvO4VVFY003kAS053cxKLVeIk65KKPHA0dqSm0s-684Of7QaieOhq1Dnefcrxf7j7K269gxJSNLcf36J7QokXsC55kvVJSYfvKBa1qmHgHfuD-0W5_MLDRlxi3ZUd887DA7mfSf-K0Zfk7gUUxSM9GH9bgOTOW8nZoym4ZU8DnhU-uVFwbY42V9p-BELbhvyzNljIaUqX5kH-wtdYrWQH0WamRzGj63d7UMQlZjMY7mggJCPVhJnUydYxq-6vx32pIt-rmbJRNcq4t_TfQp0BT6b8vANI4qREarG9aNScIpz0uEmzMXFUry7AV9OjLgRN90dZfl9EXiYvQCqE2bHHsBVDIH0RWVa318LG2z9OX0Ex28eiwbFJY_HUD5PuVGK2kjlmDxBC9UbBAyal5bv1hQOjFfYGg",
+          "places/ChIJG1usnet4BTkRzQqb_Ys-JOg/photos/AWCwydifUpq8Q_0hHjMtZaPNshTMS4FzF4IM_7ky43TqX0r0iDUC3iAg9WDNyhz6f-1wYPQTo7FdY7F6rwF30NjFPLb4FaCbe0eouoOENa0tMBRE7F_AcI7lybACAIJnSThguCHWvMIB46dSHXQK9BrO5Qw_78vh_rTcz-WUAJZBBQD7nOJVOiKmWm6BmCz_TrmhPsFlc5_GSjnkvmiLzaHQAKEDrfDoC3YfM-ynuYfYedvJxdIeHJCFi7NoCQIKREap101E3ymrvdoSI_7hgauC27ALcfBPnI18t_gvqCkYrdmGpEGhsWdEadP5vXtWybRhGQEwLS_BUbc61uH0wQTdFqyMyC6wzAI01Wgalp_13jjkcwYUN5YcVhUm4UpA8z-7ZzvJC5GI23kC5XNwFnOUpLQ1uY215W8Zlkm2hj9QWy2KsrHi",
+          "places/ChIJG1usnet4BTkRzQqb_Ys-JOg/photos/AWCwydgmeuNsB99idQVEgY7IfaeaB9332QKaMF_MEgeCTMR-rY4rB5njKKDgpMSnD1c8yTcRyqOpcaNJ8LDU449rGSxDXcynkbEjoLbI8DWLV6ehj3n3UJf04PL3R24PQs2mWETtvI--SzZ_Xdc-S2tsB54oJ0vDQ7Z9cTSgrxo-EnC8Ed6tWK0WKoBvCgG-PUINrcTuI8FkxG7ne3ea4Xf5EbVEuzc5sfgA7981mNGDBc32_C4tLu_nOquSv7J04BxXWSifWUqsDQXWQQqaZCmFM4GqLlf3rYnEnyjjzXh4c80MFKmSRia5tq805x-98cmxRmqFM9dp70WcE1oIctFN78eJAnAmZk2H6HOoL2AIVRBdjmoD8KjjwGbnv8P3bbHoXkEY3eY-a5_uxeP0L4SQUK6MFc5f0LfSCZLma5LMA453onj1",
+          "places/ChIJG1usnet4BTkRzQqb_Ys-JOg/photos/AWCwydhpMqSh9FtCtuCZodXsG1322kTiY0_ju1rmMGCOwT2npbOZKx1nuXLRIAdHUCmC2iIQ1Iceyk7LvnSKL_KIybhl8XJ2giSrE3UvdlrQQs1maQSaeTkb2KMcp7ZcTo1wsT9p5MOYtkm_fZQ3RxtJCBj3QY3PKE27nZH9LODDrro33Xr7Im0T-1h82WiHT9G8y92BYudquGNc9kBjYmF4OqldsCQv7OWLYvWT0jLkP4q5cOddQxJOBcU4i-6ns8rGHpxtIJZ_1xXN94GOxjX37mv5tfj-k4U0kJ15S_MAludK-xfRo9BaiBZBHNvVz7BhsZmTEdWb8VZw22UdQMBTNvmg3Rj0eIRZ4oRhiFugwIgzKjsMlRdR1YlaigwoMsu014mfpbQ8grqOpv2AaioEDqKI7-x-THF0-nP3xzK_FOQ",
+          "places/ChIJG1usnet4BTkRzQqb_Ys-JOg/photos/AWCwydjGTBbnrErXynn7fGMQoXI42pfux6rAXf8nJSEzAiVlm82Stsx1uGUlZQYwR9NxV2VYF4ITJqjnLSqI7Mg4G4RDgd2Nqud7c3nQRS5clGlcwYjfWvO41VWcPW660hoVoLa2kDn1nAwTosfPbRESYipLbx28PPpPf8SsuyK1rFFZm6cG9SuvTv5J_gXOoLsoHxpUF1MlnAkWIgPCBxAs-JSSqhUaKLrZEGv27_2VpfNlB4svBR6cDpK0ZXcOc1upXbG-g7jsZSIlPWiFJdY3zLUr3h9Nhhjd2-6VWUTOcXm0Rx1UFeT0K8rv5Ly1ZTR3-eKHFxRzKfgk7WFqAtSeFq8Gc0OoquQ6xsRs3vOpJy0KXnaTLfVRjJ_b3-ZBp6ogqhNQ7zIZk5NDgxc1-gCZDvvrMEh9AjtwcFyHHrumxrH_WA",
+          "places/ChIJG1usnet4BTkRzQqb_Ys-JOg/photos/AWCwydgfP6PWpGntPUO5gIrD-2v0WdAjwdZcYdMFvjEoxnkaGbw_kX5epd5Cw-arcm-K5LHws3T2c-ei4Qr14eXCzTf9ol13SXTQpxY4IWwEMypMY3g0j8rc6xOxpVYKuCr7uZuQwkzcsL4Q2SpAwDGKTwjlsuPIw6Uu-59JRAahZaJ723KsEIaGH3upKlFVYFUNDITYz0MNyqk2r-tq8mESKdUH7xrIPJWS2wG7WywSBVQT9AQAnGIGGsVJkUp9DE9JldMZ_DjKoNrCVI2pEGI4ppGrPdXonXfMzc-U5V1WHuYX1o1S8NiuaD0zxUGlfxB41CCBQqrJ9IsNe5eeDfeXeawsEkZNyJ6be33dtKlkxCRxuvk4iDEgfNluCTzmyzaUiqWSCYMHBcKFSgAv0LJYVRaP5rZBzVKLPqtGo43w3sUfDz0L",
+          "places/ChIJG1usnet4BTkRzQqb_Ys-JOg/photos/AWCwydjbyrDpvCeRkQA6FhaPYeJVZqB8kbgK3Ddi_pTkS3gJlUdhCez7CTp3Zin37H7G3pvMctchSKCuX1MVEaaC9TVY7SLQFQDY2ra7IYYykx9UrTNhg680ARjwLnza51gy8J1tEn8rl8MKmik953cn8I37dqV5Bhq8A57Ak-3T3Nq4gwEFivLpRiSwcrQkQs7QkjrKiJg09XKnuWXIkRUvuRa2ZN13OrO1eLBb_XvnyYjzbUkqKDA3XcgXXpmQowGsk99jTbGrQellz3rFHX-kfs4sMUh9XtnD2pSittTKbxLtRf9Ipd88u5XZxB27tDG5Akw4m24FdUpFRL3I3VD3VPJrOotq4AlXOuM7nlfOWXr_4lgtMUGpGPWwbw3ZHhuXz9Zg1FooYY4TxKLKDYaopM0mSuBzGQ1LPA0ohqsrfkQxcyTNxaLWOOiWup6kXA",
+          "places/ChIJG1usnet4BTkRzQqb_Ys-JOg/photos/AWCwydiLCsZ3LCrj4N1HIyJt4xhAWgv9J-nbIiIaCdJk0L6elSvswyJdCXjx0a2A5ysGp4kgvTC3tfdjfsM4ZjzNvbzR5CuTC9ZqRAsBh3s1EQVgzOHK_KrAjpV6GmGNzvb6VSDXsspy786-xDoL4cYTkgF-p7yY0CIo1f5LEc88eR6gKGK0LXWBGWyLYc8aAl9LGwBZZzcjwPmfk_9X6LY0zmVZyDOYjITs9EmbxP85BSVqRiiGIshCEfxAnKvS8WTCS9ef91NQbcQrZfA2UbZoCgVnoRF1Sp16L-1ev5nh73MMXQwvD5ZGSRHP2whwiJqzNwcIB8OmyViTj0u48sYSDVKJT9DC_qlOvwrrGFncX_oDYy2_UmdSCUkB0wiRZ82j-6_vSp1t0Unbdalv7P1xk3Dwa-_mccunAfG4mi5JBYakxA",
+          "places/ChIJG1usnet4BTkRzQqb_Ys-JOg/photos/AWCwydhrPkSSHaE3tQoOqSKizUaIdMbTJ-VG1hW3ykRozFsDBH8HCv7ZirHZnQn6aGGwWLOz-tVhzAZ5IxrtLiVSNC5m2rhQzRj25aXIDYtXwDEsVLTnIESaxw-mmjO1pVf7k0qnh2P2uX2_I78_uxsXZV96z5jxgkAweWRtBdF8ZBgOl9JESEuDS_-mZb2LPxHV7b8UD_tpG8YdLrf5y6Rza6Au1ynA7yFv0U7S5M0QyMAECL7HXRhHTWE6V7dySnteX_-q5VDaf6v5j7zyCJ-fSu5K0Hi-90Nv1s8ro3nloihfY8LfmCmsh-Au3Af204hWRpZ29YYG1rEYPs9hyWmRI7QnjX78XwiOhkqSft0zRJq4Ty6540MUUHxVfvY9AtVjyheRO6KgN1Yk4-AOHAvSVccD1b6-2yOCfvQ8o2-GcQA"
+        ],
+        "__at__": 1786857690.141385,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "Good , not so great. But the view is amazing  and good place to walk at night and aa its in center to tgen temples and. Streets market its nice and also old church is there .. Over all good .  go for temples do some street shopping and eat in good place .",
+            "author": "Harshitha"
+          },
+          {
+            "rating": 4,
+            "text": "To reach mall road you need to take tickets for the lift to reach the top . Price ₹20/person, elderly ₹10, full ticket for kids above 5. You have to take separate tickets to up and come down..so ₹40 per person. It's very crowded there. You have a lot of uphill to walk. Many shops for clothes, jewell",
+            "author": "Flowery"
+          },
+          {
+            "rating": 4,
+            "text": "Lots of options for walking and shopping… street food and restaurants cafés…. Nice to walk 🚶🏻 there.",
+            "author": "Sanjeet Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "The place to be when you are in Shimla. It looks stunning, no matter what time of day you are here or during what weather conditions you visit the Mall, Shimla. It is beautiful to just take a stroll and enjoy the views, the weather and everything else that the Mall road, Shimla has to offer.",
+            "author": "Bobby Roy"
+          },
+          {
+            "rating": 5,
+            "text": "Mall road a famous tourist destination with old British architecture so many shops and cafe nice photogenic place but not good for shopping",
+            "author": "Shubham Rohilla (MAD NOMAD)"
+          }
+        ]
+      },
+      "himalayan nature park, kufri|shimla": {
+        "place_id": "ChIJraqq6uiDBTkR-jUF0i8m2Lo",
+        "name": "Himalayan Nature Park Kufri Zoo",
+        "address": "37W7+867, Kufri, Himachal Pradesh 171012, India",
+        "rating": 4.1,
+        "review_count": 9111,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Zoo housing Himalayan species such as snow leopards & brown bears in a forested setting.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 6:30 PM",
+          "Tuesday: Closed",
+          "Wednesday: 9:00 AM – 6:30 PM",
+          "Thursday: 9:00 AM – 6:30 PM",
+          "Friday: 9:00 AM – 6:30 PM",
+          "Saturday: 9:00 AM – 6:30 PM",
+          "Sunday: 9:00 AM – 6:30 PM"
+        ],
+        "lat": 31.095777299999998,
+        "lng": 77.2630594,
+        "photo_refs": [
+          "places/ChIJraqq6uiDBTkR-jUF0i8m2Lo/photos/AWCwydgLGW-GzGXv4MgJGIc6mQB36nm2cqX5JAfuqwJlJ7e1HelfRvQCeYSwCFgjZ_Be-XMJuf-o3kVmNDVeiLciWDAAvAQRzgXD08UVv1sssK4v3kNZUXRRxWDcPzAmuRnIO9KIgdv_jB8l128s7f7u_FnMTpLs7eLQ6i9cJN9nRgX-BCJwufCYT6NAtjaGaRgkTVzrEp_9nNYZcs3SeJERVOVzIFM5_qw47v7uddFKUUtvr0XJgMuHEYuDLVq6HyXLl-jCZVK4f7iY3db4VhHuqnC8l8ObG4Nx8GPk-KCFj91zJ37WSS4_WRcf0Ht5ppsYdfZ9X2j7ykeBE2cU212yTigZs5GOfDa5YgGKRvIApOsmoXHfOYw8JJzUO_fHGWtnQljeqjzLomDBMM0FNHcKNgRw0_uCxZXAMVP5wlqvpYY",
+          "places/ChIJraqq6uiDBTkR-jUF0i8m2Lo/photos/AWCwydhkG6Sj-maBf_519VF9RW1ji2-_RJ2Dfk1A58vdJVF7kRvhhezm0pAqGcKlTBT3b9-jDO3V5YVMHgh3iJX7jWr0VLvknSOoceVYH-36qMstaNTJBgoIgoNV0Fv4mb08WZaf0JZ1pd-8pqdSh-GywNQqWCj7vIVUceq11ax9dSSpQz5Wr1ZN9BqXSJKD5gukUTHcOAz0LUBUg0AIqNPGO0MQcaBLEDaidan5fC5YwfXRGis7eXTmskEnwpElMDhUR_iNWMYX5D51W9oIWdGc00WnpR098FpL2yyIuWR_IxiQOK_8BR6TCC_Q6MNxcgkjDqNNwZz0dZVpIoXSO3-4S-g5BK6XDfUy3yfvwTogmuwavdXiUf6VR5pMZ4NKjmxUkC9gDT7UNfVTyAGOcCCOA7fcDrS4uOMu21eMTXgRZnFjoxT9",
+          "places/ChIJraqq6uiDBTkR-jUF0i8m2Lo/photos/AWCwydirHKnMcX3WjuVRpMVEBwAGgGraeQALGL93WwHetHXqfJ9DkxcLv7eCsJcNH8rjq-HbdkaYDrMSbrYo8-pawhr8_a_Rn1MmgVuVnOwhyod9Qj4Y0uJgR9zTKm0ihlRmmUjiQqfDDJ_1NxkKPPV6KtgZuglLLV5qwNg5fDInXyYOCevew3aFAGXWB8lotjyVtfA08W8T9It6skI2oNwR-S2YxxWYvm1zsnwsU0u2ginP-vG-tqXd2HtlDQcwuCbALhjKsdtH5zGaJg35GKECIS8ZQtPeI7il5wO_wGa_nWaJGfQbweW0TKYFiBpztzr1C1c9L__i_hbgodXF0y5ORse6gxcg2QDaL0jaobdq4vXluiiyl01TwhFVoS_OVYQIgMGzYMPNqSjruxzN7Eb5ar_1VmMDwOC6CS6e-q3MMRvQUUrNef66YqcYojqY5-PC",
+          "places/ChIJraqq6uiDBTkR-jUF0i8m2Lo/photos/AWCwydiNzUaieWNeIGIpENxJV-K_ScAP2rlJ6c-aDRJ61W8Y5rltXwDG9ysQam5aHJ5wN5CwATJtiU1bJNQDlYMkC2iLx56Nt-mvsXykVpWC6BUVIcW3viV-vXpZlhXYowSA-vxk4sa4O3p_sRQQiPXl1WIE8vny02kXrRA3hLGzPXIDuSNZ627flv5RZx0kUwfY_iKk7llNA_RHdgGdYxGA4ia1zNdee89LB0LTxkfqmEweN3AdjK7AS2xi5BDiQc3FjGEBsiaCOzeRbyZ3uKGcH1hO8Ifabee-5JdwUCjXM6YHSgj_QlYJojL1gSvdzVi8vedbO-rE0-yiJcMvBmck2aCXtJoGP4JQU6n8fxpP3veW0kmT8AufNvHr5CchXt_pgOm48uIfGENAGVoqCinvCq_bLKaySl0wjX4sxloBu4s",
+          "places/ChIJraqq6uiDBTkR-jUF0i8m2Lo/photos/AWCwydgpvg_yBPUXpEeOzTgz0MmhPeo8s6jWPtzJqbWzyBvukX-PeFUsHoa2H0jL9Cxw4EOjgJxwDMAJQGj96FpYMV8VFTdIzMRU7YkDfHtjbVEWreen9lOBPGBIEKBHp0NfTQ3_ts3uCjwVHvuvXM8LmxJXPuvfKgn-hQB0GpqLXQpV-N5Q5sjJY5XmDeJVTjpLsq6m3ifs_KNyhR_FN_abaxlNLVx6zgLVN1ftmKHYJsY2W5sg4Zut3K_QbVX5vUiFOrpyFs8ok6LxZryobnQlhIPEYkzZKapNGWWawvzwLYopSPdIInFz93hBsiqx_8J_NjJobBiMguSIR188Aa_tGufhAHB_wi927SeO00GFU3jLOOcaeytolYzL6xAdVMOvYy3DuBMEzbkH6gN0Q8eaVNBVUCnkDSuoQ11rqMjBza4",
+          "places/ChIJraqq6uiDBTkR-jUF0i8m2Lo/photos/AWCwydi0HqMUqQzCqnUGejxoCM6lpQ-1cs44ijkP5ZiZDaaLYVb6cLhaHG_n5fEPJUsLor1_sY84UFqIwa3YhoKljIDvD8HVr7ByTLWonlkWNmLrL1-9lC1hw8GGJaFhV7w4S_YYmRAYcr-PGs3iWdztFrlWh9ysGUpheZjpHqTi7YbrmFfA54is0mYeYxzYrNbLRjIZdZP5knLztzOIz-2qM9dZ-tKjzwUeOgVLD9C4nufxXlRJgElt73O0JWeMqp_EpVfA08RYWuwjY1_uADs07lD6_qL7EyIvH_xfDghukZBVckm199e5eFfJToR0EeOg-cZhHZoKcbBCTFxSUmsiynnzjoyEhRGTdaXWsC_PWjB4VoZ_by7tOWJ2A-sMyUaBLkk7mQhSFy7ulh9DziLl1p0MiN5KAv1s8hJhJqLyX3yKoA",
+          "places/ChIJraqq6uiDBTkR-jUF0i8m2Lo/photos/AWCwydggtuotYA8KesddbU70mX5ak2W8jOA0LlCXdfcEHKq2SfD8Gs4pkIWky1UjLBESg0aDurpWKsuCe4wh-zg88rsSH38Fr4cPHY80c3yPZU2ZoMU6uURXikEmnNp9BJriz0skITvhaBGl6pDVctATdbjBEebRRFElg2_fMMCJBGyKJb49l27ck6ZfPJLfp8e9WBNgo_ZtkU2LAQBCSUuhHr0K29JQnrAxWGxCeF8kIAi8EKbj4uC1-jFfL5rbwBMtI5k33hNnxHhR-2YOF8VBq6kFgSCypzZM-Z9UtfNZvzYo0CmYpGAviakTH7e2_m2N7XBJEUluZsDYxJgpODV9_uRPvoKrSQtOBfhM7Z0lINBz5cTZs-ibaExG5iUDr0sP1QD0m4We9b9BvPsPJV_LXysVo2dD4RxXq3w6yL1uDNLx70E7",
+          "places/ChIJraqq6uiDBTkR-jUF0i8m2Lo/photos/AWCwydjdlNZiGLUri8yeI9XKzjzSfJwHxtyHqGEm5fAxcWpRUndykPnHbugpD0aScF4mzoFeqN5eYnCoaUFN_p8wccXCD5bWB9EZF_Q19WXCoUy5yviX-bdQADKC-lrYEPMfkKSdKy8G2ylAalDdgukMRtDqhcmqCZ95wF1qFReVfDjSEFQDPTy575mliVBPBwUda9cdU72KS16Qd340olEfolscAI9LE4Z9tPA-Y-YLMigB-6-KY7XezHnaNxJDb5E3yP6LO3EitaEem9zSZvHkLHGSgCbbmpeRRS6SxuwdylusmFr90ldhFh_5yg9xAGH7H1vSBnXPN-y51hHI0alXfJskPZ2WQxCXLkf5CCR1P0DZX6Dl0teWGOe-7-ed1KwLSkHodSF10s-6RJ-V120DrHh7SKBmmJCjdmPgywr18dkgaBfR",
+          "places/ChIJraqq6uiDBTkR-jUF0i8m2Lo/photos/AWCwydjYUoTRGLrBTdgCd7T5tcn2xhxEH7o3Xax3GCADaWI8xKnqEHo-BhtBSr0QutuhM3QG_8x4vtY-bSja6TRZ-kwQV04xrnhRgsx8kB3rBAIdyR0MYY5LvwIljhGG_Epxvmae95shP8ssPPocvlxg26KJ_zt3eqJ68RLUykcxAMHIiFOz-hEIEk_uKRignQANALRDCOEcW6ZFnaplhWZY5MHzLrnUx3nBZwn3RmgajRvmNZHw0-S3iAiu_IYgxPchaQqq2fX2z7ymL1OMcw8EHc9Ri0Yn6cnV8LBlezhyJvFaEtDNXRwi_yI6JEOEnBPzhflETmjlGXkc9bgbgcwJehiGFf59bB1pPPN6ZSZZmIZS-_KinmsWWuUaugQ0PGErIM2AwPou9JcDfi1fb3aN_DkAUUWN8F42qCKjZCDH5h4",
+          "places/ChIJraqq6uiDBTkR-jUF0i8m2Lo/photos/AWCwydinSDeF6hh-47BOG0VEX-h1nar7vNHAvtkIPtvH2JjJUj7IqNkIw2RM9QUUgYfjlWs_9iMU-4Caa0UlF1wDMhSEb4j_bCK0hgW3QIY62FdqhiHrT3TcV6qt-Wr7vbfItQ2FjoPraZFjpZ_EkCzii_XfDrxWEPlhM6ZYiqYMFlPFg3zedQ97johlnkU12VGFYemvnsoWWwVObqF1UDL1PPCaEp52o5TnlIdanOEp31iPx8eOjM4NKkvA5K7MXKSPLDhJXnF6Pm1cpa_ZMiA4Oon7lOX6OtDS3PPZSnme6o0injWDpW4OH-q8TZuyH4qQF-0Gx1jGUbg9zb0QleG3O3cyZl4ABYPydR0EujggWjQh-a0D1uFsL6AKPYcooZrW9zjHhfQXjj9F6P_9qJ7ilZ67VpKEtQXg-fQ4P6g9hUIRiTB1"
+        ],
+        "__at__": 1786857690.725745,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "I recently visited the Himalayan Nature Park in Kufri, and I have mixed feelings about the overall experience. The animal park was okay. While there were a few interesting animals to see, it felt a bit underwhelming. I was expecting more variety and perhaps some larger exhibits. The animals seemed w",
+            "author": "Johny Goyal"
+          },
+          {
+            "rating": 4,
+            "text": "Had an amazing time at Himalayan Nature Park Kufri. Unlike regular zoos, this place feels more like a peaceful forest walk in the middle of nature. The cool weather, tall deodar trees, and natural mountain surroundings make the experience very special. It was exciting to see Himalayan animals like y",
+            "author": "NISHANT SAURAV"
+          },
+          {
+            "rating": 5,
+            "text": "Our visit to the Himalayan Nature Park, Kufri was one of the highlights of our Himachal trip. Surrounded by beautiful forests and fresh mountain air, it felt like stepping into nature’s own home. We were delighted to see a wonderful variety of animals and birds, including black bears, brown bears, l",
+            "author": "Huda Syeda"
+          },
+          {
+            "rating": 5,
+            "text": "Surely one of the most beautiful zoos in Himachal Pradesh. I really liked the way the animals are cared for—they looked healthy, active, and happy compared to many other zoos that are smaller and less well managed. The entire place feels spacious, natural, and well maintained. Visitors can truly enj",
+            "author": "Rohit Sharma"
+          },
+          {
+            "rating": 5,
+            "text": "Himalayan Nature Park, popularly known as Kufri Zoo, is one of the best wildlife attractions near Shimla. Located about 17 km from Shimla amidst beautiful cedar and pine forests, this park is a paradise for nature and wildlife lovers. It is home to many rare Himalayan animals such as the Himalayan M",
+            "author": "AMIT SINGH"
+          }
+        ]
+      },
+      "the retreat, kufri|shimla": {
+        "place_id": "ChIJ3Xe6HpODBTkRzxHeSINqmnI",
+        "name": "The Prakriti Retreat Kufri, Shimla",
+        "address": "Village- Galu, New, Kufri, Shimla, Himachal Pradesh 171012, India",
+        "rating": 5,
+        "review_count": 12,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 31.097857399999995,
+        "lng": 77.26781629999999,
+        "photo_refs": [],
+        "__at__": 1786857691.166469,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Host are very nice person, very helpful. Food was delicious",
+            "author": "Hemant Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "Its very nice place aal staff ma member have cooperative nd helpful ..I enjoy so much",
+            "author": "Suraj Shahi"
+          },
+          {
+            "rating": 5,
+            "text": "Wonderful to be there, staff is extremely competitive.",
+            "author": "Manish Vashishth"
+          },
+          {
+            "rating": 5,
+            "text": "Absolutely Amazing Stay!",
+            "author": "Aditi Verma"
+          },
+          {
+            "rating": 5,
+            "text": "Absolutely Amazing Stay!\nWe had a wonderful stay at The Prakriti Retreat Kufri The rooms were clean, comfortable and beautifully maintained. The location was peaceful with a lovely view, and the staff was very polite, helpful and welcoming. Everything was well managed and made our stay truly memorab",
+            "author": "Dinesh Bhradwaj"
+          }
+        ]
+      },
+      "viceregal lodge, shimla|shimla": {
+        "place_id": "ChIJHUu5Cht5BTkRh5mXIGUXKsM",
+        "name": "Viceregal Lodge",
+        "address": "Rashtrapati Nivas Chaura Maidan Road, Near, Observatory Hill, Boileauganj, Shimla, Himachal Pradesh 171004, India",
+        "rating": 4.6,
+        "review_count": 10012,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "This palatial former summer home of British viceroys, now a government office, offers guided tours.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Closed",
+          "Tuesday: 10:30 AM – 5:00 PM",
+          "Wednesday: 10:30 AM – 5:00 PM",
+          "Thursday: 10:30 AM – 5:00 PM",
+          "Friday: 10:30 AM – 5:00 PM",
+          "Saturday: 10:30 AM – 5:00 PM",
+          "Sunday: 10:30 AM – 5:00 PM"
+        ],
+        "lat": 31.1036706,
+        "lng": 77.1421749,
+        "photo_refs": [
+          "places/ChIJHUu5Cht5BTkRh5mXIGUXKsM/photos/AWCwydj_q7SXLEs_O5zmOS0U2EvEZt54m05XpL0hlHTBoIVInGkZJ6uwgVucenFHTdmWBJVL_c5A3jkc-gUQZqpM5yhhBvz7YVjpG85f2owKBfgEyx8NZjQsN4KwcP9G9OHMJOusaFyyAEOyAxXHEQbHocE4V2rxQYDG966EJgbbn3xlGg6BYja1Ma-trPJ8JutiR-v05m509KpweEZbEdzmCH_Gzc2z2DXg3iHwnHc2Ng_A3PPkdCo0AC3LTc7X7eLkZXAznxzKpEYUqkJAB1T8f57iYmfhlMn4lfr7p873gTopKYNmmKhIHwlZCVGiGmmb1WZT1ZtPzg7iP-5LtS5zZc6kJgSj3CAPGpIK-6jpua3U1HxF51wKs4yuu3qCQGMHNPQHzYWYwVOIf1UETxIiqIlriPBuybjD_RYTZWCaq4Ryyg0",
+          "places/ChIJHUu5Cht5BTkRh5mXIGUXKsM/photos/AWCwydhyPn_XmOUisPH6NhJHo8GMV_QjMOAMEXLQpkHg67_Xa1XFp59e0-ishT92dCPq28vTrStXxrV8ZwBza3VTl1iWucWRNX12D2XX08dx3afie-Eg-ykOZwKSvFZpBic784SuotxSblvO-_e-Xc5E8FHMLK1uK6Ue0_ZZXHRZl7b5qMMZFeIJZpvbrf9VWypOts9i_cCj_MHzXqet7IN7jxV2Kmo2JJnBcHoNh2g0wFsl9K3IFs0p2RMLUfEBbUv-DOITigrqcgO4oABK96lOs8qRp5vvYa-k0BZnKJ1nGKl__LZDaZjJap06B56DdXiOLm6ofvkYNJ3YgTrlC5iN2qjxc4sHiGRQkz4S0N7F_TK0532o5GK59-Q1gD1yBlnE9zEVAomtP_2tdyjCcc6jAQFlt8HqNegJtfWOrPuyEEU",
+          "places/ChIJHUu5Cht5BTkRh5mXIGUXKsM/photos/AWCwydj3MGUsS3K0nfMERHED_DTWMALSYHwPVgWzN7BsBg0evGeLh_UiH1EfFX1oTLZeNzXeadnXqHLH-bllsKXhl0s1YDwa0EMunrFSdMMlpHnrCaXlPK4ui_af_ycNXgtzP21M1jhKXx0Y2NqK50pYF0Wvj8XsB05duzcVgLYM3sSXfAvXrwuijHfgCD1YqU7zTMJqCtdvmWgt6SZ7HIhoi71dhZMaeCkqCWVUZhJffmA7LdTS7Q7otGY01ig0d7FXhFk1pK4Md9-I5NGfgoU4SASynQSyO8aNwZ2gFcrTwO9JL99p5xvTbML_SKd5bkcPCTJh6d1OMk_ZvbiCR1cx7NTWDgFYXA__gi6L15ULbTs1dUTR3dRd3FGTFIwfkWz7qwA2QxILeAoVLk1bz5sKWUTW8glyD_QDmzmx8Ke3lXlFXLr87QmbBJtXuD8Zs3RM",
+          "places/ChIJHUu5Cht5BTkRh5mXIGUXKsM/photos/AWCwydg4_GWDal8nMz6qLjDNHGoDuw1VeF9kB4KS36avyB-ivuAIdurFiFpZVyeyll6WwatiE1u5voIu7axUnkjK7cFjUSJd6xYhobBhDxLV34dusy3FcDrtsEQG0-8aOmKhnZEJ9mwYzFkRC-SE0KB9P7TxKM7gFeUc_ZJmCxkAWQ3KgH0TIm1BDJKJhBehYKGP8FtJ3aV4PMYMDKA1y48OCRpMDcRHpjxR_kZclWRGOD92DfpPO_ARAfyYVq-9Yja9N-5UyTVScuvi3j1SCA3HP2Wa42tSNgLY8W8SK5s0npoUkm9S7HdgP4GP8DZUAE306MkYEhP_fhmd0g_T16z4CUtcr6bhH8T8LyqJsXg2s6TrM_vRga28crJVfYGSrisb9C53pEcYPPQV61hdBDQ1eFnAWLIqbI7svp5ls9egocfYuGO-",
+          "places/ChIJHUu5Cht5BTkRh5mXIGUXKsM/photos/AWCwydiYGIMg51bNQnkF8cRJQzuPdJ8XUBFTd3A3NTlKiYlXUkN_x-DcVUr07nv5U5w62V85It4nva8DXakrZZ4L6n3ThDSiFcws58-JL_OnrgK1c8JppnExFOJuKFxAs5LlPMyqBf6enxlKqtkjreyPC5372x8SVlKEEqK_gJL1WupWuQwNspRKXVxW0ymmpVmGaWKR-5qvgRkQvPfW9vJrfZtQG8_jhoBRnwLiFhrD5Uar6I_GRmNOL8pltG7tbppWvI13aMwc7hCRYmU1RyhWDuE2sfM56IQ1ddV7GETqQTvNZdff47mNMXkLypJKy29g7uSmjIQfey3bTuFz_q8LeoFo6ou92bxfmY-HWTPzEb3qLmSP3n136kvDiWMU_iA_gorvSTlQUo9JIPwem46ct41NZwU72lO2xmcYDmlsj5pUJA",
+          "places/ChIJHUu5Cht5BTkRh5mXIGUXKsM/photos/AWCwydjkeAhbkgHfaggtR-2zaYK4GN3aAopP3CDxFPE_9Ao272LkX4MGxp7dBTwBYB3qnTSF9GNHfRBwsKVFxGfag2EjC4UFUR12ztluH1YXS2TZFa1z5kJt8mhBw0FmcppfT1TB50AxTevV7Coh7IqcT4bw3hzF8JYgWgQmfe5tOsKmicifMqRhtAMzVJ39uv1Ymj4VGgqZx4XrGFwTxQ_nfQz-qCYkPrBZg-y_wGTde0wlZDpe-hgnmWG4V2cNtvj0We8HT_bkX76rM6Ul4p-b-9_I6ZhFxA1T-eFJGyleqdX-9YmeSG-RV8Hv-xv26UJdfcajFHXzyf4EhMJQ428MRkG6LhX0w4FCg2iNVHvug3de0BVJOiEDF5_UZyaN3HD11KkW4J-qf3hU-P0HCj8LySAWYnSTtC35F4WB7zLh2nU",
+          "places/ChIJHUu5Cht5BTkRh5mXIGUXKsM/photos/AWCwydjfoouyaQ6at6w59ngJwE0SQ121sTq8S584Q8XeA_8q9tYFJnUWmD4aCGo_ERBlMrBBGZlpgbYJFvcGmLc8e9tn9d3M62DQNojhcYSvCEQ_S_Bi-qC4AgRXoPzTbybZxK9MhtzUIHqsmie_OutbcTVySOzsOqVSZuGA0n-kW8zruBg_Cfd0sRmCUBdDowAMUs5FO2PcV_ykiWrz8UIHetA0_6CaAMSGgx5kEmabXOKnb1oz2BOe3Tu45PmmahrUP5dOyL__kg1kaPkTDl8av5OTbBhkEo7GX17lrksauxCCXXdU323s57hZYPG7_Sbo9E9E5_NdLknYpvgIS6TKc-vscBYKR_FNahQmPKAfMglGeYNPO8qQDv380l7udbSuGuiPCSbh7n8_wN-RrrxaQEgv3foqkzekx7TnzYJbJDf4X8q2L7vPvWkwyPA3_vJ_",
+          "places/ChIJHUu5Cht5BTkRh5mXIGUXKsM/photos/AWCwydhCZWhahQWzZgo2MD7JuNEGvN31EkP8tIztduwEvovG9NqsP56ZVC2mF6hAkjTTisR3KEPk2_ddHmQ5phpdHTf13UESDrQ_Vo10A8FZs-7Z-Ru8_l1evScB8Bn00cLVzNnhweSPu408SlWojR2tZ9Tjq36Z7vZfzZB2Os9y1Z3E9RdnaulnDSJez5A8wjmkZ43zWXPy410km-0I2VK0-Tn4OaP6mR5UGa7ZJ3Eck4bxye60lM5sQFuoGNm368YBDaM5wmyr9EQMCqxRFj9OjE5H8LE0wJD5iyjMHV_jte077HrCql7bwSaX_ybkT6A3rceGlFpr14jqfPfa_DiG3pER9UlJUGropdVjnRhLixuONmio7snn5Vr0w252t7ODqSxABk8o_lrnc6kOX53Lzf97aPiIovlbC4q6PoE7Gipv70I",
+          "places/ChIJHUu5Cht5BTkRh5mXIGUXKsM/photos/AWCwydg4GFQSMR5rUeZUq3ySUYKCnzAcA7pmtx_PoEmsaDs0mGzSXHMMU4rDp4gsMAHpPGfNh4fOI91qlQVaZUE5QWGJtnA9qrd6EImM2nFVE8qazknJp38GphYSLeZ0hbQYqTQgA81jlM8ipVcYfX0MkvHvjJlcNxLSgIloPzPBW9GUricK2rLDx8PmygOI30OvZZ-OHgLEMElju6icSkl0-3jJsOLLXEQajKzUxKZIzXiHZ1zL6MQpocO6mNUxg8O-F26PwqdOs5aViIfEyprAynDHMB-LVE-Jc7ckMNHpwydkJhCj115LwDIep_MuLk0K6NQsTDTWizQXrWD3hQU5p72TxN87hxEsSfIm5npFnUp7zd9oTLFUR6K8uuUFdGcL9g_5-5PmNLzgp1FdsW80uQhJYvvpXWluSXg7F4On14y2qodg",
+          "places/ChIJHUu5Cht5BTkRh5mXIGUXKsM/photos/AWCwydjPkG69zmJ85zBzTvqowKBMHOww-G6plu26HMOYkziqzF76rGRY0Iu2C207tkDegc3Q8GhEjQosbbmuXv9E0NQ7-0ICxmDAD7FgTD2zMjCoAbZKWfrXg4d7k7skcebSOp1zDqbpZvd_3ZyV9XyYnFyqalGNuz9Il9h55YnYFv25iqvM9JQ57B4PA9kR5Tm1bnaDXlHOjVx9YYBj5pq6V7lYCC7-HH2fx6UG48aiJdNnGUXn6Qz1JWLomnFdIbJJCCJIqdjzBt6f7lmdwSlq41OQBKQYeIAvLBUdmNfqOdTrOxZ0L8bYqqBY6rhBASnQDmf_RbDxQeSmgc9s-MTijctRH47aM9Z_VXGGRDp1UUSLRCGBwAir7rw7ChhcoquVYK69BmFKiNduEh2CBm6_3wQtfzrZ3yoDKZeRbqog1f89I-aV"
+        ],
+        "__at__": 1786857691.537055,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A magnificent heritage site with stunning architecture and beautifully maintained gardens. Tickets are required to enter both the building and garden area, and visitors are taken inside in small groups of around 20 people with a guide. The guided tour lasts about 10–15 minutes and offers fascinating",
+            "author": "Shashank Agarwal"
+          },
+          {
+            "rating": 5,
+            "text": "Viceregal Lodge is one of the most beautiful and historic landmarks in Shimla, known for its stunning British-era architecture, lush green surroundings, and peaceful atmosphere. Built during the British rule, it once served as the summer residence of the Viceroy of India and now houses the Indian In",
+            "author": "tarya"
+          },
+          {
+            "rating": 3,
+            "text": "This is a truly beautiful place—no doubt about that. The architecture, the history, the sheer presence of it is incredible. But sadly, you don’t really get to feel it.\nThis place holds immense historical value—major political decisions around India’s independence were made here. The antiques, the ro",
+            "author": "Varshita Srivastava"
+          },
+          {
+            "rating": 5,
+            "text": "I recently visited the Indian Institute of Advanced Study, and it was a wonderful experience. The historic architecture of the building is truly impressive, and the surrounding gardens and greenery make the place even more beautiful. The atmosphere is peaceful, and the views of Shimla from the premi",
+            "author": "Yash Verma"
+          },
+          {
+            "rating": 5,
+            "text": "Viceregal Lodge in Shimla is a beautiful and historic place that gives a glimpse into India’s colonial past. The grand stone building with its Victorian architecture, surrounded by lush green lawns and tall pine trees, looks absolutely stunning and is perfect for photography from the outside. The pl",
+            "author": "Lata Garg"
+          }
+        ]
+      },
+      "ashiana & goofa, shimla|shimla": {
+        "place_id": "ChIJqx3d33F5BTkRQ_hg5zPXuEk",
+        "name": "Goofa Ashiana Restaurant",
+        "address": "Ridge, Middle Bazar, The Mall, Shimla, Himachal Pradesh 171001, India",
+        "rating": 4.1,
+        "review_count": 2813,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 10:30 PM",
+          "Tuesday: 9:00 AM – 10:30 PM",
+          "Wednesday: 9:00 AM – 10:30 PM",
+          "Thursday: 9:00 AM – 10:30 PM",
+          "Friday: 9:00 AM – 10:30 PM",
+          "Saturday: 9:00 AM – 10:30 PM",
+          "Sunday: 9:00 AM – 10:30 PM"
+        ],
+        "lat": 31.1045697,
+        "lng": 77.17422619999999,
+        "photo_refs": [
+          "places/ChIJqx3d33F5BTkRQ_hg5zPXuEk/photos/AWCwydgkccoHbAuwFUZRxa0W6hEUDY3pnvT2sayeR_-fSOeupi411pOuJT8NKx12GexOl2U9FWOgbVal4c52Gs4v6DOXYxKmmImqSV6fHhz1srKrOk-OwIQBx7F0YdzRFsaXLMt2Robs4XC0wg9EjKrKJN_Kr2XJYdbmLxY_3QjfWhw308ItI6pIv6XIRKXkYlR_4Cd8TgtgRO6BrRFaidLwA5tX_JpIdwLlS9XTTCPisB170m8Sa69dL-SrLbPirwcnhjda4eE6THpmPGpZSQ1Jna_1XbFEXsHtek0H6mAo9vtFHmvAN5AlMaqjj0IE4NxbQNLHPH2FUoEODPPolQOsUIId5cS6LjFFwQk42AehT52xppttwGwNDkfBqv2xQpm9NENXoh0hvRM06usITrmNJTv6bzHDvMpM0M8MaVjrtznTew",
+          "places/ChIJqx3d33F5BTkRQ_hg5zPXuEk/photos/AWCwydgMKMGu0b0xDHy_Ocu_E0wKoCQqOyRX6ndfIGc-6VUWpkOV4YDVPRCtchuuAWDqnzFNU7SyVl5EXyAlSUWdj8zh04aT6pbLOd26iqWkxpUp-r3UPUO7XojSYUSMqMYVQcGgMelfEt1RzRbC9xLTu9U78iSHhlrf2AF_KY5R7V1z8rqyk_CU_0UvEzjoyAJ-lb5T0R1sKOz8YdI94dMDGBnO7b1P4FATkuyC6uge88jaQx97HOdrPO5dcIjg4FbFMya7jy-SnTCaKwHwVyrj02nFvtOlMIwn7IxuozQJv4jGZYP73TaSdEJRrUDrs5iBMtMCykA-xJ95e858Kv2o2JCqHLcJ0yjrg00NRxTPF9IKdxS2g0bu2AQ9wafaKwe7MQ5oc9FthPOpOOU1IFmQ6EPkMsQJgQRPvnDy-CmCUgg1tK6E",
+          "places/ChIJqx3d33F5BTkRQ_hg5zPXuEk/photos/AWCwydjP-wvlkl3z-XhJF7-EdUx_fjY1wxeWYd7Bf_La5o9Zr8nuN7LYfeqrEu8jl9gdK4fyqzBB1H1JWXlM_-qLhsGLunO1P_p39g0jd0fnoPMe9d00e4i68O0to3D-OKmC2eF_ewNptDjFT9-Oe8Z7ye6XHXR7OVnEOTsao36b4R5mIBJWi3FtISnWglhKRdaYxJ-32cw512rXbcmpwIvJ0GAaLouCxHj7q_K3m53yMcrAhXE-3ImJDh2oCCmjCiXBfeAxtw--ipgL8ISBJmjKYV6R5ealaLr1V1lCaIsSCJKOw3PNhYmulSHH2APXawT_cg_ZUL8gGQNe7q3WeuVs2cw7aT4UnEoT1GQ8Qady4zVoDY2XF-_QE6a34MTE6yT6m3FhxP2zvKEiSv9Jcxh8KcbCcME2Smot-AdMsecNSC6k4i3xiSG200ygB1VL2A",
+          "places/ChIJqx3d33F5BTkRQ_hg5zPXuEk/photos/AWCwydhJxKDcuvwIDaCwjkMRnODTnqHSgJGudBjKWUh4DbhHD5Ir8IAI4s0Wds0fhDZcOjF8Zh3Uh37IEP5kQ-l5Di0wvOhGdY3vJblAkuCK0__eHEIoXLEyDyf_olROw5iPWg2sGAYsUGx3tvI42Ha4QEDWOrTM4Oup5ULo1guVK8GJBnSXFVQHFgP7Y4Z7_dkvv_7SEL5bwfeMsAk5xn41S5XsI9lZZsyYQfmhZ7mlF-htnKp5dbx7ZswUOgwz1efuijnoOcWjCzwwrR1CbHgT9l-oTH5_NIAzy8zA7gdBWLKrWGg_J2RtrMV2wY_N6Crqvs0tozwEgmsFVHxRP77ENeOB5lQk0GswPMZUQ5SbGjQFOU7m8iWgwI-rLwMg3sreA2PU94Cq0g6-BQCJGPugrKr_L_qW6U3OSAO85iDNPpE-OQ",
+          "places/ChIJqx3d33F5BTkRQ_hg5zPXuEk/photos/AWCwydjXmx-sjzUk5YZrwduFut8se-wTOjiYGtRp36vXsOBRs_KDgDo34prdyExtLJ1PJd2jVOJ-ad7FSmx9cucSVVOE9U7heK3koc7swJ5vWaXnywFt_XvvgQwYkhaC7Z-DHPg1-vQzaiZD9xnQMdkxrBLKM5XJYux92dOnCQYL5yKdgprKmaMsj4PCAcJmMhpmITK27Mv0nnbSMYuYNMQk94cnWQnxYvgiRbYn3635oXYfAIQgdlKD1G2vTFqdCYMPinQugCuvNjoSBO2EOX8DQNVrlyDdM066Sy27w6cC8fdPz-bP-8QoNuRMt56_m9kwj72mRD1i-7lVfV5t4iDJ8glvLBz7nqJNyCrSl1LMc-tscdbGKqSSK2k5nx_kc4U2qxncTbElw7HuWtuM5BzfbY9agPsjPTodjf7C-U26aIrwh983R7q-_ppP4sx6F3SA",
+          "places/ChIJqx3d33F5BTkRQ_hg5zPXuEk/photos/AWCwydjSsRW_Wy8p2ho3-4ZF4joxqsJzp1yeXU2mlTeTPEoU6C6jFUSa7FdUAWGK41ryy_Krbpj2YfN76gKRBl0IZcFiuDfm2PHI1Q71XnAWTUGXYSGIwxjHHBYO2rkAKbuw81YKegheksiSZTgDdTOZfKCmNt8928NiilU6xhnDPzZl4lrgmNx5TyDkijCCwYE4_vxzQKi7cFAgv8GfudD0aamUhyMs82P7Xn4Go4Mani6KtXurunkZMEdY2l6-aLMQDzOtLbF4gZ23NyAf-baFna9sMP6T0ph9m0mR9E28lP5pFdC_lQad5F7iNRxSijciZ5vz7o9pENAdiuaiATnQjwM07uJvs_kanst8GjUL_l3xn9gUwaFzozxHOjqAmAM3jQ20K0ZMNdwAcfMD7NxrPIBEAapoQJs9FTZSlPTjGpJ3Uy25oUl8vzQVD7SmXA",
+          "places/ChIJqx3d33F5BTkRQ_hg5zPXuEk/photos/AWCwydhEtdgu0QqIkB7bwl10bOcZlwBmiw-AFrdmCJreXe_sV9Awo-heXHrEx79BKCG5jRwp8zXdGmr8E95K30I3GeiLcrErxScJqQOVpGlS45RtZyPacjGwTHBgRrEL8NbZjTYD0Sq8x_dgUOVmiw_u6B31MyRe3MV3m7U_MNje3C0tJZg7hvFkdZKkNRxIHbmY-2FLAuKxaLUYlNXmoNF56pMSCZU-Jy2qrlLBkNARYWRJVTkA_0UB3TfHHsfbwTLi7XAzIMBzm5bnYsmMCLYtD3LWaxQb4V8gs0ejQqPxTCOu6SsxRBDNeX55WirC62Nbj9VGn6Q1TO-UxM0eFJ7dm_QGDULNhqTWE0UXiZVaMnigZRJU9efwK4TvwP5D1Rb0CQG3zWDcM_YrKERwpO7J4bVH16Q1jh6ur3kUqjWCr26NNMDIzY4pSjs-5znHFg",
+          "places/ChIJqx3d33F5BTkRQ_hg5zPXuEk/photos/AWCwydgFPgR9Hjhs9p2-UmLR9t85KBB_NUSuhyerKsXvXIOzB2N2CLaidENGZQynCvT8p3JjfSqwpknbkbIphgKI-GNAstg9MVR9GNT7baPDXdaR_Ki0CAfVHhNLTRgJOQOD4EtUcZ6RI8UihGQB-jA2TtObfiSgu5jfZECMLu1lNbx4GB_5VTNIa89mk7JHB1eGAqQOsWwYVsc4mv3P7gUV19a7Gjm8TAgIF6Qcg0eg7o22pI07h7d4aAOfnk2NRTBD1dnJC6mCHGXf7gcGOY4ukLNl8m-tojeX9HnWNmdF3AclS7oly0CJQgbdwckSxqUxufOhkzwRTG-UD-xjTI2YgSOm2iG87nQU-9XOoscCMHUdTNAuiGk-eImAjL3jhosFgcgCFX-bFICUUDP9whV9jcXltkg_E_jAkqiOSrjyMAsIN1LwUw_h1VeRhzgVVA",
+          "places/ChIJqx3d33F5BTkRQ_hg5zPXuEk/photos/AWCwydgRjRYF36lm0mgaLlz3V2IEY4nlBXTPoVIglOSSaVbrtLnV9ew3oDcAV68MOCLIXM0pLbOPutWJtmDjRuWSORW3i8CsL4f8ecotZO5TjA7HYUHUvml0fC5eOOMkU0Yahkkh82_bp3KknEIoBBIwBATRTipDo0ucWNST30jWtPzzKLzmpE8gpFBazVRbY_mwOCVjGUGW9lFmMhkh5JoXWi0hVtuwgrgv5lZ5DjryvZNw-ofcoXIzCfN_YNYFsTrRYRJ96mvM23uSWL79vSpZm2jgnKtZUSYpZ9D4JFA2JWVBrcH4w3D0rg4eSsRUlN3fkR8M_C_1jXNM60garYDvy9Dkn1wpZEWgqxiC8La6B9NmPa0wSYXSRsHKCAsC9wkK37KzTpuFg3ah4g6-0R7Mrc6QfpWIOFpv5zpsAKTd3Xsk-I8",
+          "places/ChIJqx3d33F5BTkRQ_hg5zPXuEk/photos/AWCwydhkoZ_tngYp69sD4SPiwwxJ-ksBlYLONrC_PXH5Woqx8WDKHyyYkXvMI4lVuZKxY0dkreDk-cTFlTcpc8MgSi60yJy9JURyxp1sZtnYSO4Nsb16cmP1MEfUE_2AbZLhbNcBg8E_XGhmgz1d0j9ub1k3X3QMZuzkSwxQw0-GLbrYBetxVdyYt959BS3B02nxwJ61lWFFfjnVrlVjMuOHJzaGNR0oeiE2-yEcpxPXIVY_SA-r58CpcBq1sNH-34MxQXA7JSU4O2KAMcg8krzleNQnPV__l39EetGU-hQpdEwvBX6u9hX1M0jXRvub148U1G2XuWwqlLASfP2KodXgCsh3F6Bv270FYMwowgzeuIUJj0L-MugRav6HW5esLDQJRPT4u7yDfltVLxikmXElD5ZS_clafT7rtlCGH_bE3_-38WS_O-c8UrisiMMFrg2c"
+        ],
+        "__at__": 1786857691.9421,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "We just had our breakfast at Goofa Ashiana Restaurant. Overall great experience. Just re lived childhood memories. We had been visiting here since childhood times. Food is amazing. Service is excellent. Overall ambience is fantastic. Do visit in case you are on ridge Shimla. Must visit 👍",
+            "author": "Anshulika Chawla"
+          },
+          {
+            "rating": 5,
+            "text": "Very good place near ridge to eat. Easily accessible and has good view  The taste was also very good. We had chah meat and it was very tasty. The server for the outside open part also very polite.",
+            "author": "Pawan Yadav"
+          },
+          {
+            "rating": 1,
+            "text": "Our recent visit to Goofa Ashiana Restaurant in Shimla was disappointing.\n\nThe biggest issue was the rude and indifferent attitude of the staff. They appeared uninterested in assisting customers and showed very little concern for guests who were waiting for tables. There was absolutely no queue mana",
+            "author": "Surgeon"
+          },
+          {
+            "rating": 4,
+            "text": "A culinary delights in an iconic resturant located in the walk near to the church area ,having both indoor and outdoor seating arrangements..\n\nNice ambience and interior, staff are polite , hospitile and well behaved.\n\nWant to try the himachal dham thali, but was in buffet, so lazy to get up n comme",
+            "author": "HareesH"
+          },
+          {
+            "rating": 5,
+            "text": "The food, ambiance, and staff conduct were all exceptional, meriting a perfect 10/10 rating.",
+            "author": "Manob Das"
+          }
+        ]
+      },
+      "annandale army heritage museum|shimla": {
+        "place_id": "ChIJtaCtovp4BTkRvUs-8XKLZYU",
+        "name": "The Army Heritage Museum Annandale Shimla",
+        "address": "Annadale Rd, Annadale, Shimla, Himachal Pradesh 171003, India",
+        "rating": 4.8,
+        "review_count": 4246,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Cozy museum space offering educational displays on national army history, with weapons & uniforms.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Closed",
+          "Tuesday: 10:00 AM – 1:00 PM, 2:00 – 5:00 PM",
+          "Wednesday: 10:00 AM – 1:00 PM, 2:00 – 5:00 PM",
+          "Thursday: 10:00 AM – 1:00 PM, 2:00 – 5:00 PM",
+          "Friday: 10:00 AM – 1:00 PM, 2:00 – 5:00 PM",
+          "Saturday: 10:00 AM – 1:00 PM, 2:00 – 5:00 PM",
+          "Sunday: 10:00 AM – 1:00 PM, 2:00 – 5:00 PM"
+        ],
+        "lat": 31.1095453,
+        "lng": 77.1591736,
+        "photo_refs": [
+          "places/ChIJtaCtovp4BTkRvUs-8XKLZYU/photos/AWCwydgTb4VeRctZBFnZqJ5Gtpe1H_IfKa3Noc0nejCSVzXJUzznKKuKWiBOCd-3g8dz9gNupe13aNCUKA5TakhuGbW1PW4N9wnsD25hhKDf2KfLKESXAyc_U6VdECbkbNkC9EYWPu6I0pLLoQg3rmomCqhWfCeoOz5lT8Ce2VDhb1GRunESKKg7-pce6QUOAyG3SabqJFssRd8wOsz3MxZ3Sohll_iyTXJ7MPdl9sStbhoeR5W9MWGxj6Tg54DwIJInbxL_6UUrZvdEBqXCvxH2SNo5nVifMAXvD2wnGjeoTonWIyMQmbcMeYlDZ_RylwQwr4XUl9qJMuxxYQj65S5MI3xKFcn842tHYxi_Ekf3pqdVG7pLn1qj37KkKA1xlipybvh7dblz4GgCSJnN8C925G-pzkZkdkoLv_M8rPp4lOEdWT0",
+          "places/ChIJtaCtovp4BTkRvUs-8XKLZYU/photos/AWCwydiJRtzE5TpUA5digiKhaC2ikwbu4FPPoRsG98w_GzmuqkTxna5vWesuG3i7LrfdVyTsLEeYa9j6SBsYi-Gw82yqQJtroaZr-xndIUfbTeZZmUS_unNCIzK9HoYbQwaWppsbboc-esrFOcqTZhZCftFkCUXqfExtEMdJxe7bNgSujrWdqdamt0Yr4yfjzojPWsHtCnlbsiErKAaI6pza4naMFlZcYX10AMwr_ceQug1xIvnSDfWlyLxFV7nk2g4D_qyykBknmrgPiNPB83IuKpunNarXnDF1pTRwTppDOVLa32ZbIhrToaSebvfG5mQs68_Rt5c6OkfJOhIp5Es923mnJjRAQHfyIo0YHGJYX4NwHcBTY0YMSt2WhbuidrnjrG362HYDwZ0vtqkeAnUmEUwcOjlVAJT0RZmumuqrb3U3MA",
+          "places/ChIJtaCtovp4BTkRvUs-8XKLZYU/photos/AWCwydj8bok5G31fHZfPIuniTOBAVXZQRxxQLisowZ8w6byUFh-J9h1d0hulNLZI9CDP4b8grZBbYNTBewg3dePheQZvjKRhtgPXoR_e0dXs5Wx0y2-02OvdMRy9RlJr4OMQmrkDUyoirVJj8ele-Yo_8QQiuGkFDEUQzTXlwZj-hKWWjOK0OhkMsT65r-vsND_QBkZ_fDKxrMtL5rnVICpnrW-qmukFs5A5jOvOX9DSk-EQbnpLQoo1PQfP3b5OvoezcGvjJHPZerd5qJ7GKCbOdcr1f2GrAmyBT1B1HF0tNraase1NBB1lAmNwf9sqJYezZ8-R-7SULWuY2v9g5gniuRqyu0oXnjYlwMzGcaA2FqEjXJ3ZCe7bNsRCsa5CDj44Eyg_M6k7_eliGiXiEW29uCxfUkOymibNoUm-ara0YGshmXvCXih0kdSB7cM-1t2t",
+          "places/ChIJtaCtovp4BTkRvUs-8XKLZYU/photos/AWCwydhgFhcCyGBhJXUiCeJwx6pWGWzNz5P5_aMEEz0piwGb26pgzdoN95_629u7dGjOaji2NarymZbhLXxboTxaaw7L6Y7tY1SLVhCmk9nzTI4cjsu5C-NlkIyhBykWEeJBQycU8AnDXqBOhaOOqBPD0QrZ2dZIcs58qv5JM7cDhQ7iZ_qWzN5ZqfRZWCg33nOo439eWx_f2DOkJDQn9CchrgFl6Ckg0fYyzs5pIU0mjg7Nk6Gbqi6TE5FrYNK-OVrNraHg_MIm_u0ufrfnpUsbGkTJzVTP5Ud7aKWPsJh3t0kL5GiffiHYM34E0FBVX9W7Uudb5xJ2Syqa-EJEKtGPDoKrmXPu_DJ2ypohXFbEDpxMr9ufK8YV2DybYEisa1oFNkV40W_f72NTDcvgoN06OfQR8lk7zrsnDnrcwehA2bSLR_74",
+          "places/ChIJtaCtovp4BTkRvUs-8XKLZYU/photos/AWCwydjAgiq11udUXLE4HVM5wi41aKsPk6AtFERg2_PJY5_uW-ik02rS10hxK3FuJVI635KlAvWV14uzTNT4z1MMB8CsXCdeE0Ql-rjiux53IJePzgpqiO_xTtMYNWE8zRKEI6-1YKuK9naj9Ccq1T1Bv37z302J8IPdSxMA3XnjH_NM1Yiv2wvIgSfbnt0keBP9MO7JbEkPFaBooLcqsHER67uZbclKuQOBFczMCsErDaYF9NVwkhcMBWqJnePY6dHdyi0KQ5C5IBz8MyqCcP-xH_aOYMXJPxwX1SNRfUGbwbSaIN_YjONnoRpBWSU41eZ5ih9OsMmNzv0UdLG-DuVgEx3Sw23sopOLzZ-EmMyvJXngjBvEEYzxp-xlE5x8e1l7JURAqM-CQf1p3_-7oFA9Rt3EPpWgZSZNtCQEev9kfk_Kaek",
+          "places/ChIJtaCtovp4BTkRvUs-8XKLZYU/photos/AWCwydiW_9F1ctfxnB6Z8Lgf3y5QPu3YK97Zd1iVJVTLJiGzfzAxBrfhtqfwtysb4vNu2mwOe18p3EQ81nGVzAP2x5qF5MNaXj36oH98EKSGb14lrd8BlvPQfI8WfA1WI5er24py9iG9wCG0MIyMN81WEYpLYyWsiAm5mKYtgpnWvi4KS2_OOBX9A1ysrCoEnAY9FkZ9OoQzPM_QNW3tItLj41_TVU_fua5YZu12Y9-mLRcyBiNMKSzbmC54JZvXsKaEhywgXAZfjV0YXhlWVjPJHKmMl_gb-qlSA5hmB4teYbUnuIG1a0E6BS4qhXxkbcj_pqpeAhCIXDvSEt6pl9UYT-MlAB_s-9OrxRT9gsTEH3FBvEFPuSbrTGZ09p6tvjJXe1IZiO3fJkgsArL7jnwkg3Zvx6DuvtWosLfWO5f1DJ-ci44ZX6KEvSFe0B4l-g",
+          "places/ChIJtaCtovp4BTkRvUs-8XKLZYU/photos/AWCwydguK2FAZeTFPMPqHf2T6XbGKax7nuy9gHoJF0itsg97QW-2efZdLPwbXYPqZeoR64O2HEAl6HGmQuXo_yVqbP4YhDOkt0TQulBr_gfD1Z3oHJ__R-lzYAeZayLN_Q7f8Id450S5OQOepCnVVlqNkUoaknt5m-WmSiQpIsNM_5MNUUg_dqowrxFaU3N6oBeGrAB5S2JeR4K-HyR7AxNBrw-2pW05Vi3By8-CMUtWVFZ1Cyk1Ztx-B87ufQzlgAqv5UbxEtCyDpR6NrSmcM6DGrzJGgKBhR0mJ822RU69shxbLopVWJ421jVh49n9v3gT5aIDiOgKIeYYCaZPAnIPZ3vR54J14EI73jZ5LjhaKgZqalVqrPcxWWIhQebvlFAsXyEvq9j9FVuTzokMAZTRVkYdQlfirgpWTIXCLG-6XUS9nKuu",
+          "places/ChIJtaCtovp4BTkRvUs-8XKLZYU/photos/AWCwydgpvRWP33t5p8MwqpK41rY0xbRpUoum0uMlzCi-f2ZrcxL1HTrVrwt81Io25h-2tCVyyxglGoTzmYDQ_G9z-8N42_jWqBlPf9F_HzkQNT9hNMF0hSMx7F_U1QJ7wKpsg_hIQyEpc0lIfqtiR7lEiUtfeq3m4hDrz_UpMMEtigHQ77oCQ7cxRmCfAgmZDlFNaUzgPKsD9i-ht9kBUmB6Pv3W-wFMeC6FEqL3eq2Yga8vfNYcG5oFHXFIS14CboXJaeNwc7yQnsmqNOtcDIrbLi15jMq5ZzT_N1c5EdvAoui0UOHi-goDMowNyVbPmDKkX7Ws7jdcDgsz4bLxrxgMhkSWcOyF7Yua9MH64XNEDDAqV-7-_0Iz48aP9mRgU4FE3M-p5zXxjHo6eTH6S5tWd54b4C5k5r4KhaoArD7xNqkKsg",
+          "places/ChIJtaCtovp4BTkRvUs-8XKLZYU/photos/AWCwydhA5RUS7T3YdjiqYvi8yqVkN0QexuOdqCAzHEpz-TLIbaQ_qSSTO9iKAefWGwsY5DtxrMLC4K_fFu541ZIInNAjusuIQPRBDux6nDwlNy01n1pywGY29u31dPRqA-rCwtT0LI7sHGfSXdpIr-Ej7VtuVjue1SDm3HKykIzYIx5Ue9I2X_fQIFHmbyoIz7qOs6uR4N3wHTNA9PlFrAfRbRuIb72BEkBeuJtinURvf3wQeuKi1CDP0c-bomx54zdCSa-LLEDTYeHCZV1Xd8umSUtmaFP0rxiYCBxUNmPwLOsHg1Bz57hMXcgJIhYW-kZn4C8JnFQXBjjcBFpn15n0m5F0MSmvD_ifu54Yi6jmpGnwZkW-pcamUa3tD3pPV4kvk_srUZj_xN2_ye1HNJVaRuHPDKBH6cOzpn4yT3-iEdJpEA",
+          "places/ChIJtaCtovp4BTkRvUs-8XKLZYU/photos/AWCwydiMOf6MFiMQJAXVkyDeA4i7i4NK4ixL7fYYk6IQkOnJxIRowhlOTa9v0ETI5AiXlzS4VCowvgEPN2FVatIWaZEz1CLan9AA_Jq2EAmHTbfGpPiGWWGSsC09G-43o_-CF_5L6dcf3IVqZANz5ovwjw41m2ep4ZzkfofsU6mvfDQ1s3zCOuHlWY9TupnKRbLUJsAkXBK2DMk8pz3nmX8p9SEQV0IuL6NAH9HCSxrmC29et-7kOKHJrgfXeQeC9llhVrWxruwTpSQ8FvXUVOvkbNx7flF-H48uLW-gDHIkqfewYWXUgddw0N8SUFrFM3M0tvlCAxiDp1vD39BmdPZeuuYCAxqG1xnWo9M0wXzwcQrs3mMqVDek2Qq4lBKCwbzKa0GftZU4IKZLC4SrvN7ifpPxTBAWghTGxUpt0jkq8r9bOY40"
+        ],
+        "__at__": 1786857692.367597,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Visited The Army Heritage Museum at Annandale, Shimla and really enjoyed it. The place was clean, peaceful, and well maintained. The military staff were very friendly and helpful.\nThe museum is not very large, but if you enjoy reading about military history, you’ll like it. There are models of artil",
+            "author": "Rajdeep Jana"
+          },
+          {
+            "rating": 5,
+            "text": "The place fills you with pride, respect and admiration for Indian army. It provides so many details, fills your heart with pride in the real sense of the word. Every nook and corner of the place is so well-thought, and they take care of it with due diligence.\n\nThe rifle shooting experience they prov",
+            "author": "Ruksar Pathan"
+          },
+          {
+            "rating": 5,
+            "text": "Must visit if you are in shimla.. Great collection in the heritage museum. Very polite and cooperative staff, specially the Jawan's at duty. Golf course is in the neighborhood. Loved the place.. Recommended..",
+            "author": "MoHiT SaiNi"
+          },
+          {
+            "rating": 5,
+            "text": "Beautiful place Clean premises.History of Indian army described from pre independence era.Good display of arms.Ideal place to visit with family mainly kids.One small shop is available to purchase different items.Small restaurant supplies quality hot and cold drinks ,snacks with reasonable price",
+            "author": "Tarun sinha ray"
+          },
+          {
+            "rating": 5,
+            "text": "Annadale is one of the best place to visit in Shimla. Very peaceful and full of greenery place. If you love nature and army then this place is definitely a must visit place for you.",
+            "author": "Hodophile Pri"
+          }
+        ]
+      },
+      "drive: delhi to shimla|shimla": {
+        "place_id": "ChIJd1cqWPh5BTkRIi-xjowjH54",
+        "name": "Delhi Darbar",
+        "address": "Shop No. 1, Sanjauli Rd, Lakkar Bazar, Shimla, Himachal Pradesh 171001, India",
+        "rating": 3.9,
+        "review_count": 292,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 11:00 PM",
+          "Tuesday: 9:00 AM – 11:00 PM",
+          "Wednesday: 9:00 AM – 11:00 PM",
+          "Thursday: 9:00 AM – 11:00 PM",
+          "Friday: 9:00 AM – 11:00 PM",
+          "Saturday: 9:00 AM – 11:00 PM",
+          "Sunday: 9:00 AM – 11:00 PM"
+        ],
+        "lat": 31.1064255,
+        "lng": 77.1784589,
+        "photo_refs": [
+          "places/ChIJd1cqWPh5BTkRIi-xjowjH54/photos/AWCwydh0T3GMDQr1zkcBgm3BQ464gwS0z-8crTZ1AW95MvwbfCo3ui9tOZoaV4rJ19E_yD1twQhu7bfZ9H-OGLToRa1sBnxU1AAevW--OD9wIEi-8hwCzGy1_n-wWOtYcFVERrQ290H_NeUv5Lm-VH2y3NtsMgpfW0z_15OSrpiF0iOW6vhhjfN6irrcSgwBIzPKaebYbrvIg36FB2gpKYUGbjYvzdsfVwLUkRF_AXy8OaYLaVz_GzMPE01hNwt2OYkgY2W-5Sm6O-ix1Bjz9zUKwAfBKC66NRPuaVice59vWf5NtgJNgr-JCY4pvKg2WsuB5RFF3X1bA9uTfYArF6H3Ab3N6ZNJy8W02fMu8QUQZ7bUiR7tGVI1kMSvot50tLt4eoAdjWh1RpD2x3cMJ7TSEwp71lFUTg-28ih9pFCZXv5KR3d-",
+          "places/ChIJd1cqWPh5BTkRIi-xjowjH54/photos/AWCwydh9GSkRzXiTO2XaRSNX32OlOzkpy1kbqai7NB40pkoGlr6EFOsUay9u6h1gkzTmtggMIhk0ZKUyXj5zvnAnnvT1XVyEM02WW71c77WVP1PVmRgzepjs3Xc_qHoiRSn7l9UkqR50wfU_pAcVuftTQ-tdY4PwhNk-kkUb24EHd4rcLxN7PjSH69iNzdGUQ2-zjyulY83KQVgiIJzeDFFujaIaBZLSmXqfwtPVeiQALdM2RdAGE_T7iKwggrCHdf-lrcWoT4Nm6Wyl6G2i8Lh1_c-t9gMxsFNOXMUVHTgaNblgJ5YdI50tigF02Eq54qoan0oS-SSN4UGMmCf0tzXmYyB0Yw5s5K1PZ9h5q5GnVyHUybiroTKkp9WwZj8jiUiux5fC5YRrlk6SJ0Ek4MS1suxPTnZ3qrc2w_zYV8_dPW1xD62J",
+          "places/ChIJd1cqWPh5BTkRIi-xjowjH54/photos/AWCwydibt91U4O-48SP_1INbARr2FSiLLFHbifVf_g6p443pzHjTvqR_GTQGbCvuUZhuGLXAkQQ4p1DgshOiab2uad2njbrfQrIOF2hmZluU58ppzdpAF297ms8hVoQzq6gfDxRH5U1fK5CbzyERSocUtWngncngpLhDpNXhgUB3tPU8dC4NpcYe2W2k1Jvvau3aZxCLKqJFjWn3mGqHf9cYlOd27adts14WrOXc0FtYUEytjmbdrde4YL7rc-66EW5AE8bBufdVFzYezDXEtcCKDyGc0lHB0-sytpPolNPC4X30-2S_5Lz2pn0iuQHnEUEUoUbxlZhJ_5TIniMzU6rbXy_vVhbax6M9FrA7kb1XaKrfZEq9E_xJgYut76KYYa8YeVdMRm5WEb7xY8adXDmlU_UrC0lLVi_2pJfUpPt6D82hrBzXfXqKjKN4kiybjub6",
+          "places/ChIJd1cqWPh5BTkRIi-xjowjH54/photos/AWCwydhpO_08t2IrMUzEFIAcJxZ8-r5YFF6PjKof7AV6JxzNxdqVO1UtSmvVust3x502W8N7OgRzQAMiTtUGzK2angXaJTs0gVNWqB7d3e5aEYgieC0fL_KOMam2vAB_R5E1fVxXx2Whdb-1sye-32uxGjqAvDCMSk6P1Lup0G7ZElPcos2IMkFXfJbSLklRFg5JcOAM1AcKxO-DDawCoxqBygHw9Wn-6wqHyBN_pKm1qALrUJihqY5-Av2y1jjMHlDLBKv6pXcRKeTsatMKWEXbLhxNbva57dsH3-kYmBfk_z7wy27tJnrNkJ95s_A50vFK6nNYqfzJw_sIItOcretTqyZZzYz1e1LWmj_Ms1hwqp4_mlmTIfsTwsHRWjS6PwayCAk9Zs9BiBklpnxQmS_kJ8LNfS8W_1kX3POO7k0WO3Y5IGPx",
+          "places/ChIJd1cqWPh5BTkRIi-xjowjH54/photos/AWCwydiMCy0v9gBoOFVB5Gpk_At-QvbUGnOcbUSVMb3QxLxDbjuba9pVxRterMfXvQlOj5jVXyAu6chZ60cd57frGfR_tyN9CYxP8lzfUhk3I1qi2bLYKDJN0tJy3HhFUzgXzTzzUbJncKaqEJv10GrFYT_0nRPWcKvwsdDLgwc0uAH7Cio8QWsyuXcE65hSS4pRh7yYXYTj_5SQbk1KJ0ppXvUqZDuLNc2nTH_tOH4mh_yxV18_VLjrcQv-T-qZaHQi025mJ5Z5f2r9nsKx8RmxE4jgLntfl-K76IfX-9gUgkPHyKv-wOSoffoqB2rQtJKCJL2DkMXC-Gu6LD4dR5TiBMEnKMZe1qI5GwsqfSFgPKAnVuv7ecK4iUHINDcEr45OTB1KfusrugjUHCF5NAS6yMHYtbxgJ09_jScqRLp3cXc",
+          "places/ChIJd1cqWPh5BTkRIi-xjowjH54/photos/AWCwydhrckwQvduJ_W-jXeDmnSGAi3iczYFoY-wn96RrQ7gPTt_wMlfqTz0eRVnFKT14zgwEmcCPWBLzOfzwuI4EMcYz8snsswLxv_SIyon7P48gX21IBbHF4_nr4zbJpf0ChM23eSeBwOrntd2zqopBL81rxtp7oiMttG-UoxihYaMOd32Xj6iGYk7QhfTltHqT0xm-oTMS3Ijuq1QT3crlMw1MWlO9CWnkEpnLtNQWr5y_tOgPuCW-Nlch1VXVwHvdQYIbM0n0cJSFeoeoDs1Qd3JgxIblbmAVHJvp9gEGtsepk0wr0k2N8agSfFx1-_pn3gxcPHkDwtZSNJBzp0ip2_u5WpCfSypft0U9xRMVh3kKNlLh-A0_pHEpm3WMLNcTDxtRgakKIs4lr-uYb0Rzpck6dCOKasJ2mHozQfe-xHv4JA",
+          "places/ChIJd1cqWPh5BTkRIi-xjowjH54/photos/AWCwydiXfuCxzEj16KIuinSyZ10DalkkQvLJbPBk1Ywn7u96tJ-1gsO1BzrBaziwSgTsC_NCVo4Ya0OaCs3xvmeme5mI47UFak6wR0_opHOHAE-U9H_9zjOrKdvFwIgtpcoPpzUl_Jjz0jRyaAnBz0nOo3pCxrQZqeLdCEilpXV6uRtu0wTBpc5zCAbKcC6GuP38ZanFHu-9qSRW5Y5LuvB7_vTlShvjLs9-XtbS4-tACRPk8SmwU0js_O55NbTPVyaaakzqU1-XJwrib-NFXOyqOHc3-HnpmQubfiBYxIGZnnZkdhaxNGUr2KXDB1847NAvKTsMM481SeIDlSC5-0p7QGGxmgqPvHNLmOE_LemXMIi6C7ug9iN47uDQ-hBxEDKCv49zt40kgex2r4ZGWx65QcOZwMhd24Yz5V3U8m493oX836Hp",
+          "places/ChIJd1cqWPh5BTkRIi-xjowjH54/photos/AWCwydgELT-ENrE_Nj3zcho04EVzOiVs2XX_30w8pEPGg2KhBUQLYBkMbtNyBgdmzVpx45nSLxXTq1553SteZMqgB0Luhf9IbSwE9c4yS6oHmH--6lezSuLmaLCyPBJJtRVftqtGd0zSlFoDmVyd8mqo8qsiSF389bzhAMwuOqKyjgOosVY52XVAd5_rZQxv23Jb618zWiyFInzzLz0p92O6aZKONBaT9HatxQ4Bd3JAzqUQhmdjapI0FzSgbP8PIgmNoY0XdsjEMVNlTmovn7-xwfMPLl1jnHMbSLW2s4QopdXrqauguueBWH3H8831bWrJe-tnZdDM-vJ-pCwvaPOFrosXVTWh5NeO3e9Jbn0gE-sM6u1m_-41pF-taEEbWTwkIKOWPcBs499ZQmSEHYBVAjESTDoiQ_Ttrd4rrly1GJTH3Q",
+          "places/ChIJd1cqWPh5BTkRIi-xjowjH54/photos/AWCwydgLFtNdk7w9FzINcZHcYsH09o19DDE6n36y-9LBkxubHzDSuFC6cIxpUXfjdBq66_cPPDo7hzu6f_CIDobxfV6GxpIg9Y58vvxCa3nyJuTXlkysuWIHXLuRnTkUpY5HpGL1D_T9TZiil4p1Pr7cncNyVGQ5pWsIiGFcuQ0BiTTWEGNfPCVe96KFHGYzagjFdoBrBDXob6lJhDrSgaBw-I2EMEP7HHldiIRE4WGY4rB58VnAgYliXtX7sveshrQGWb0EMhPwbYRWJ87CcSxJoucQxVpONfhfKlm2PwqHy3Tbrj3aT-3BRBFtaDElLGEF7SiifVVZvHjPLQR0HZiewQSnMEo2XjF4TxCJvPht-yXckJsjPAErx_2R7HssSyYFmBRLseCQOW4PAey0Nd1NXddTf92kvymvFrtxkgwUQJQIBw",
+          "places/ChIJd1cqWPh5BTkRIi-xjowjH54/photos/AWCwydg3ANniZqKwvoJxPIGqHraXL5u7StyVLxaFVaSZ9GNAn8SDeYv8awTAa-ZowQVX1qBkSRj7PazPvX2uBxdXvR3jQiVMTtgU2kEVJegUjBjGnRBQYh0iwxSoZZkHtQ-Ntu_dnKJ7urh4OVFuWygRLwD8A9riqdCHJHtWIZK5x021PWXwKH3Lfg8nftx0Nr7DYbOf-XagWU_c1KjC9juxWA9T6exZ1q3SDIO0VLbQDISUmjIDcQJ7swF7z3vJHgnLtCxIJPln1jAJp5i3bNE9iHjdWltMnjI7X8RDY_E7GNlrZu2tjGcTB9gSYJUeIxfznkN4k28pIrYB973Z92zCuhAFq8Ssz-S7AjBOXnJDUFLVn8DdsSv_i91M6IJRS0nbRS_3oqjcuX9uYmaZC9BmlQqJMduEDwk0_53YVDtQT-o1xgA2"
+        ],
+        "__at__": 1786857692.826684,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "The food is ok.. Big portion also i ordered korma takes a while for it to be cook. I come very early in the morning. They serve halal chicken. Somehow they need to improve the cleanliness.\n\nThe portion of the chicken korma quite big can share up to 5 person. The taste is ok more to sour from the tom",
+            "author": "Yusof White"
+          },
+          {
+            "rating": 5,
+            "text": "This place is a well-known restaurant, praised for its authentic North Indian and Mughlai cuisine. It offers a rich menu featuring flavorful dishes like butter chicken, biryanis, kebabs, and aromatic curries that capture traditional Indian spices and cooking styles. The ambiance is warm and inviting",
+            "author": "De Maz"
+          },
+          {
+            "rating": 5,
+            "text": "Really Nice food although the interior is not very good.\nGood for Delhi people.\nValue for Money.",
+            "author": "Mohammad Nadeem"
+          },
+          {
+            "rating": 3,
+            "text": "If you are looking for a decent non veg taste with economical price, this place is made for u. We tried tandoori chicken, butter chicken and chicken changezi. I will definitely recommend tandoori chicken. Butter chicken was also good, chicken changezi was average.\nTandoori roti looks like they added",
+            "author": "Banjaara Ali"
+          },
+          {
+            "rating": 4,
+            "text": "It was very good food, but I didn't like eating vegetables.",
+            "author": "Abdul Hannan"
+          }
+        ]
+      },
+      "hotel (shimla, accessible)|shimla": {
+        "place_id": "ChIJvwahkyJ5BTkRwCFjHSvV4WU",
+        "name": "Snow Valley Resorts Shimla",
+        "address": "Ghora Chowki, Shimla, Himachal Pradesh 171004, India",
+        "rating": 4.3,
+        "review_count": 5663,
+        "price_level": null,
+        "website": "https://www.snowvalleyresorts.com/shimla/",
+        "editorial_summary": "Understated hotel offering some rooms with mountain views, plus a sleek restaurant.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 31.093681800000002,
+        "lng": 77.1388843,
+        "photo_refs": [
+          "places/ChIJvwahkyJ5BTkRwCFjHSvV4WU/photos/AWCwydg0TGNH0uGLDnW_8OiF5EFuxTSmE6SXXBQXSAbDpeUFaoZEEWxmm8HTgW92tQ15JaLwgtkku6utp-rdOOyqC3YXGR6Rp5ZUPb3Q8ofgRR4PV1CGM13JrFaRqk87M3fKuQ9210QkOqREp3HXqsrLtGbcp6r_Lvw8QDBksYnyOU3on_glsOhGcp4hrziNDKzvd9gclhB3l7VNoTncwYveEz8pyTuAELcx2NogvjUEasx9NFEq1TJ_JgQ325DBw4WVzE1xgIjqP6weiT3goFNadL3kPDUZhODXqZfmD5WOUToSrHZwuko_G05GP5WrL9rVnIo9ntcHcyZR2Gd4pXJV0GoXc9rCDyDANT51qgWuYbJaszFEKbzu_5h2o7ejEO58Z_UD-FxjAnHsIwNTWqvoaOwE0VsmdzuLgoGHzmN5YHBrk1mknd95g9idnVy5RCcG",
+          "places/ChIJvwahkyJ5BTkRwCFjHSvV4WU/photos/AWCwydhASODP38WGWLjd5dMPPZ2HPLBzTSAFJ54APwmAiCjFTSLzXeKuCm_bNKTfBJiBaxFPXq2Srxv4bo0rBWcu3WtUXhPRo-71ABT7HxMIho-LmaaKglBl8sUu8wEUM0ZJFfPHaOMztzn_W69KWl9IUy9MsDWynQ80EjSCNRzgtUmhuqBk6RTxeT7OFfEfDFZ3x8PxSobY4KGLTWTMXqlLnuXSWbaSohzWlUXad705eVbjFsIIb93vGuzW2-DDm8L7Sf39As77lTI2eezsRyzZtYVwP8RlTYqe4sgOXn9sqN1NoWo83XeW63PxjThDhBKhdSWgP5LK_KXM7OlOhUBHsxodnbachZvEF2u3SoGKVn8NWiAqKhgqcJbByu9h_6jQM1s1hTxEMfZdXzxEbvXXZY_7LOtT0j4LBJt9SUmbX1sQw4KUck7XT4z6tIvuAw",
+          "places/ChIJvwahkyJ5BTkRwCFjHSvV4WU/photos/AWCwydg9tQfx9JXceHH9JYEfXumsoE3TZ2qeTOwehUZDBHDN5kTIXYPL5ptVlcluoIMl7b-Gppx5ZVEFUMN0wo-wdXEztLpFqZkM-blfRqkMTdOPQClXhm5J4YMt8bVBlaPShPj8mfhxtM5NXKlybsogwRq2C9IN8N0GZijZLfndcXkaQl0lL4qE91GMialDqkQUgpCJs5BNITpdzSaIcr2HXrgyaWmzAnBGwd0R01WTP7GG6cyRcCWybGmq8ngqyrNURuYMhLj3aJ8QHTjJTk5fx7ppmCG0YJHMDAA2CU-qLLMbrCQquUuTlozGMRgMUm5-r9OuwtffHAtyUrcXrZ9099GhwHSAwyCVBJxsS0rgGdGrGPw9CKm8r-IO-4HPvfzsT0NKQ9KwUkTcTyOy_zsZRG3sSu9DKg80V9_OZ0XsI3g",
+          "places/ChIJvwahkyJ5BTkRwCFjHSvV4WU/photos/AWCwydhvEmtp1unX4ecBeP1ryq_95nY08ByLuKvd6IqVPDzNJ1vGlUAmEWPUGQdgPTl5KwrVr2AXmDhwbGoiciQfVOqnPbm7M2XxW89dHuukwr4E1LcofzN5DJJckafkYtUpuHBG_bc73-ntxrDnTUPvSIBzbwCrHHOk6DRGT8FPg9FL_qOuDpOK89GwePT1H0kQ1q3Snif7Nze-_W9AImYejkgObExLfHTuiQl4TzEyu3gu3HE_cYpjSSIJg5UI1G-SeyyqQDBMb2yyLUrbQMgT3Y4CpR365uf61dduE_A-51nDXD4mR4BAKGf_W6NZOmC6J9tJeCPWxD5Ci54RwNL6GeZRqx_w24WyytxlDMiLTnqP0NfgKCgggyaZQcV2Z9CVY6HAiEgYvJYCpQ3qtm2yhXEPtei_j1ynK203pJyZq26_AFJ2",
+          "places/ChIJvwahkyJ5BTkRwCFjHSvV4WU/photos/AWCwydiN6L0Eg4eYhO0W0QVqjk4ww2w_FJ-gHITrR9A5nSLVN0dmm-9Ie4TT1HgVPGPzTZd_7E8lzD0vI6fcZiBE2FVJymdLdzavBjPl2hurPzgwv8i6CPXQho1a3-jEJMgGitsCW2Fb3QS897lo0ZUYMTj3jKqWrmx4YD3_hwSzPB6uFHnv7n5NubcOw61HlBSbK4mzAacjmX2lsSodeeeoe5BBPziX-waUyZslwjsobJcUxPekFNFOXHI5g2yrz79ioB3GV2ZYOFAPaaT3YfznDIwcgurzjyd7_-sXXZVCapw76h1elwRWu6sBri4YP5dRbZH0USJdTBcyg-RE6_tuRcREY_l3Zm5WOkha4FSsyvPssFZoSSkVhpE0VYgUOehpNaWnA9UL_6KoYhl41bzgHfZ5W2jJ8dkaH4YsYGVDNQO4mNgAsggymGHQZhnQNg",
+          "places/ChIJvwahkyJ5BTkRwCFjHSvV4WU/photos/AWCwydiabbdvjEasdUzyv15pl5eh-ciLHYP3xo4FO8ujUviBAe__AWY4a3wPVgty06roGJ8AK-DTdRgRy-si691lis9OCg7eBLOlXsi_XaEOckSzeZ5ER2ZrBryBzwg1u2FqQMyKWlCIlVf16HIlUWtsrqwjI3CczOEU8rxQ1TRt6G6jNTdzNY0SKgxk6uHC-w4vXuvgxL2uyqlVLz_iDhObjzdKLBjkS49zZuZnXzXqOsuqkG1djRSDhYD5zplx_X4DKC7rRlXnPWfp3762ZIYp3GPq9_TokpzCs8OEGlmXcIyX-_1AV-_rB_hadBXN9mpAxwK2ptRNFagIQd0oHJzcddKwrxYVbVKhf3G6ftLonGjR9TPR2IjviYLkfnKWIEkx-k7HUmz_0wmyLLnvLVrhUDZCDbjcjIXtZOc5rXPGG-mg1hLD1pIHPM4oQtuou9gC",
+          "places/ChIJvwahkyJ5BTkRwCFjHSvV4WU/photos/AWCwydhujQwyJOwUZ3hYllOpjrfQ21p4wV2hQKlhuuch8A2CFGsQRquOHC3CCLjZufmp3ejurnm0Fn7Pg6Ap7JgptSXrx4COA18ZCgQz2cdAy7kzj818osSWcGghI_yk4LLDvVaTrWtbY-vIJT-sES4HUKlCZAvwza6phsLFTr8VnyOZ4YhsUG9KvWK4RNR-J1nyh4uGLa4ymoZbCpjd_k1eCDLhRuIwEWqFvTRN2nGVtXExDZTswb00kqPSQb7lxg2P5MGqQGutDIZ_ZfgWqmOptY9tBr9Sx01zZ6AQUgAJed9vg1rfjbkCnk8AGRvnxUxj78eVkV_OsiF_JDqPdDgHJNox0qbcK2EoOyo6pjYneBJBD1oF8Ua0THs9y2ly5muqUN5Dj4cz22I4QTLrGT5SH3rARvSYkxCeQSXHPL8oq9Gz3ukL",
+          "places/ChIJvwahkyJ5BTkRwCFjHSvV4WU/photos/AWCwydgC8Wcsz43Tsr0lQPF2CnsGOkakcRHdTBDyiK56dHKuDjijLMzWnvIg4GH3yFjrMYPOLHhiIiPMhUbTXI7ULBsELdv3J7LswdcwqLg6Z5zNU5hfV80MZO8Ql1_ISngRhWHL5x0l3DiOuu2b7fuQ_1AWeGOuefrCgQSJqQmZuF_tfIcr8aAdqdvVKDQ3bz0JoPmJ988hcJlEsEWu7n0PMil7PF851MV7ftWljYfZZiqSXNpK_WfQk_mExbJKzpCj7jnD44zOzseP4UWS9nmEHG0xFnpQnU4FgzkbNfnwMGs8T18PAeCtUwZ7ewFwzHDp8TEmoThih0UIVddtrgNQ7y82JnvCb7qtcwqhLuCiT5p2QMx05Pk065sBB6o1eukhaXY8Y_PVk425nmV7_OFieyLutoDjohF9mwQGWeYkqdg",
+          "places/ChIJvwahkyJ5BTkRwCFjHSvV4WU/photos/AWCwydhb_XQ6t7y511xFM3EAvAfkGfCiNHvLhrfIfjy7WW0WM-dcIz__qlzHS3uxkAAb1RFiYUYPBV2-M6y-oATRviPjCRbaZM7PzFwunLXkuGeYJ4hqT8NewaL5QwtzKDbGmqItbYgNPiHH24mIO1mb7WtB7lYLWryOHAxwmdUq9CTA2y4VaUkwhsyJY4PyYKKNCkESWrch9Byp0dKU3L0lcq8j_L7gtE3tImtG_mnk5plBK8uYCUddoEfogI6qD6HEjxQ4fFusigHWYiXYZAiyYPxo1QDnjvxWnEizI_Hp3SNXzZTVlCxngDPFFbfKFuQB6cHHZiefXmzl8j-MJ1qRG9idj98WMj6bToFqMgsWtkbeGRgBhx6oK5dsN90PwRDRYcjvBZwt7VSMEKxawjm2j84u6Jd7A8HNi7RnZRyG82NHWmNFYTpp0iPg0jz7URDJ",
+          "places/ChIJvwahkyJ5BTkRwCFjHSvV4WU/photos/AWCwydg7OsnAwArI5tapYah6DW7qHriYbQyhdDAXsAmw9ZCWV7q3Ajh20leVpTUfTZ_3RL6S_S7ijwA1XhpVzV97AN5Bu-2ftADIlNLtCgwqqRRSFV5SKCW1eL3wJrNsNOUUB3qMfGmndGMffKxd_XZ04VqbxxbbHr67Jvad8xaIIPnCYQ_HuaUM4Qloixt2-JZp-haLhrmIiCkgvo7sV-gY3ZcjCk6Bc8I8ZKDHsRLxAZKrlxwhad5cr4n2zSZkI5lHaxXmiNlA4PBGzRXwmYFFZKeJS36Nso8pd28mwIJCTnsbemMFviiqusgoNAsnb_SEnvhYYf7N2nfC68kWfx-l6b-_w3UHDHYtWgjDLY5_Q8cD3e6ITByzjkzmDGKQ4OiOSMATcmJ_cJYvY8ZSh3nD8Sg-m-T0b3dgHzMvE2d6NxaVWeg5tgAn0ksAiUPyMA"
+        ],
+        "__at__": 1786857693.4885042,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Excellent place to stay! The rooms are spacious, clean, well-maintained, and filled with natural light. The entire staff is extremely courteous and helpful, with special appreciation for the housekeeping team and food service staff for their outstanding hospitality. A special mention to Mr. Rajkumar",
+            "author": "Ruchika Mazumdar"
+          },
+          {
+            "rating": 4,
+            "text": "I Stayed with my family for two days. The resort offers exceptional service in all the departments. Check in was smooth at the reception, Food was delicious, and the staff provides an exceptional service in the restaurant as well as in the room service. We were served by Arzoo in the restaurant. She",
+            "author": "khushboo malik"
+          },
+          {
+            "rating": 5,
+            "text": "We had a wonderful stay at the resort in Shimla. The location was beautiful with amazing mountain views and a peaceful atmosphere. The rooms were clean, comfortable, and well maintained. The staff were very polite, caring, and always ready to help,  especially staff name Arzoo was so kind and lovabl",
+            "author": "Dhanya Lopez"
+          },
+          {
+            "rating": 5,
+            "text": "I recently stayed at Snow Valley Resorts Shimla with my family, and overall it was a wonderful experience.\n\nThe hotel has a very pleasant atmosphere with beautifully designed interiors. Both the rooms and the overall property are well-maintained, clean, and give a very comfortable and relaxing vibe.",
+            "author": "Rahul Sharma"
+          },
+          {
+            "rating": 4,
+            "text": "Hotel is over all quite good however, if you’re looking for sunset or sunrise view, then you lost it.\nReceptionist Ms Jyoti and Jitender promptly accommodated our request of giving top floor rooms instead of lower bottom floor. The restaurant staff Mr Raj kumar and one female staff member were very ",
+            "author": "Pradeep Mittal"
+          }
+        ]
+      },
+      "drive: shimla to kufri|shimla": {
+        "place_id": "ChIJkYkggAh5BTkRJL7fmTohJKk",
+        "name": "Self Drive Shimla",
+        "address": "Sarita kunj R/O sandal kachhighati, near District court, P.O, Tehsil, Shimla, Taradevi, Himachal Pradesh 171010, India",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 31.091274499999994,
+        "lng": 77.1391687,
+        "photo_refs": [],
+        "__at__": 1786857694.002573,
+        "reviews": []
+      },
+      "drive: kufri to shimla|shimla": {
+        "place_id": "ChIJeX6cqfuDBTkRrs3H5Dk2Tvc",
+        "name": "Kufri Fun World",
+        "address": "37VG+GXC, NH 22, Kufri, Himachal Pradesh 171012, India",
+        "rating": 3.7,
+        "review_count": 9946,
+        "price_level": null,
+        "website": "http://facebook.com/kufrifunworld",
+        "editorial_summary": "Large, year-round theme park offering rides, adventure sports & snow activities in winter.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 5:00 PM",
+          "Tuesday: 10:00 AM – 5:00 PM",
+          "Wednesday: 10:00 AM – 5:00 PM",
+          "Thursday: 10:00 AM – 5:00 PM",
+          "Friday: 10:00 AM – 5:00 PM",
+          "Saturday: 10:00 AM – 5:00 PM",
+          "Sunday: 10:00 AM – 5:00 PM"
+        ],
+        "lat": 31.094126099999997,
+        "lng": 77.278049,
+        "photo_refs": [
+          "places/ChIJeX6cqfuDBTkRrs3H5Dk2Tvc/photos/AWCwydiR3rFUFrmlA5sXEp81ynaioD3ZrzdIFxnLSxySQ5am9m-wpbSVGvr6P6JXIgf4Z9mvDCbOVHIqXQtRmWZ6bsDBHvsHJN0mzcGf2S0-dWiUm8SoKdqp6GzmWiZjP5PzKaLz-m--umh-w2HTRBLg8D2BPvDAd-u7YlasJrRPVSEEG9O68Sjsndq5RhPLLkAa-dmNV8T46h7ANQrkN_QvHpaOWMe-jT45B3ZOerGQJ3VgEQYEXMVXNhKzPlEGYTPy2JxbfNo9f0jqDETHvd7NtfSvt6muXbLYzXG_SPLTMCBkaocj_ULxZV8ygfEmFSyt-bLEt3RboSfab4hvmwD8ZwpoJJ4R7s2AgXAs2TSVMvPiNCzJXWEw46nG39LYXqddeQKLX3cQ__HdeXy8qHYUX-JhmAqSs9BZD-liJOKQh80",
+          "places/ChIJeX6cqfuDBTkRrs3H5Dk2Tvc/photos/AWCwydjgNBp-WSqhepll98r6M2Oqv2ftSMvq2cxydISEw7HBZi4-lprGAmQyMGp8W9uiSa6e8wCh7Li1p-RlWzuDIv9E2_kMFC9zIe2f8k_vd8Iqg8Dg_G7IxuUvLpxeEr7WP2jP7Mss7aFWXlhgxrcjx6WycnQJXESVfUSn4t17Vut38SEl_CoIECv7vXncuBUuE48RK0EDCt4ors0HNrSfqRdL5q1GtWk3AmmY5HnoTprIME0RwGA3lm6VGERX6OuCrAWJWfM16DD3K1dXiKvJpSHJdny8kAthf_MwPsyBV3j28ZvSlWyyfIABahka-yDJeIIM-OOdCoZZ9Ah_8omqWbd_ycjM5wB9lOg5nAEQexHM4ae5SDwdrSa-A0ijZzr1L-9Q0cjZcrq-OI64pTNSzHS4OiO4edGkMDix-awjkCx3y9ce",
+          "places/ChIJeX6cqfuDBTkRrs3H5Dk2Tvc/photos/AWCwydj-HcNBXeASSe3as3j1561TbQafFn-0aSmKRDa-1R2mdCKxr7YUipEnAX_VJMEDxacxE-SAHiNljmeaZwRjMaLmSxzIf4Vi2vQ7eVcVABZnt1u3TKII-R7DHmQD6xpaV8o3FFjoNdmHSD5_Zt9E5JuYPI53JWTfCge6bXaQlU3WwzItZJ0mU3qpezqU8cUAdnF9JOGZgxhUO1TXbqJLkc3Tsn7Lm17PJG134BP3KWMu0D_qCJ0nXCU8mPyOhX7-T_LFnH1rXL0gWfbwuJVV5F-HqSFSMF1NUFrExlTQ2Q4uqzopLZZB3Sg2cc0q0DwKpANohXJKkxaRRAIj4bIRzTSy6nLRkBAmpPgtCBL-i8fD8GHfICo1V4dAiuphduKuOAQWTl1oo_jVuu624lgPl2jvBmZZDi-PLkfh_EDcW-KIAg",
+          "places/ChIJeX6cqfuDBTkRrs3H5Dk2Tvc/photos/AWCwydi86ncAwZAIHIOJSy59zux9L_WfXgKK1Gs0L3iChcXMe-KPK5-lSJBLmf2p1EfHTwtnpBqHuxHNPh5goXnLtZ5bzWAhck-xM1uXZYnOPP5tG0STGyTo5cNLyFUsaH_C6YPOT7HLm_bgAGGYiEb7lNcGfmJ_u8XStChsFGyiO3CVcg5y2-jpC5WwCsJnrFmVeVf0YVDt-iCZ5T_o4qO21MGAJRnAGn2Ypxy31iDrArGt4gBCsYavXXmFi2UbiNW-e_yCFl1lb_Z6thnPv53sQtGGq1XZyMbwH9v5wRNaKy3vd7y0Ddj4cWnT7BpvkWc81oJ3d0bEyWjqYNCxj0jnHu11YTIZa2dumW0pOvMqIeWF4SQyBULp_RFBLB0Ba1yoEW4maFv3ocF99LDQ9KhExZE9hgAdHZGTsI_SgTThg_Y",
+          "places/ChIJeX6cqfuDBTkRrs3H5Dk2Tvc/photos/AWCwydhwY0UTrtguGQ4wlOCqITNxTBtVYacku9WO-zTHlABGg-qnNOeOUq9vJG-dw_DVi8QWWtjz14i_tdH3Y3fQ2dbTwUqMcKg0ayLT4O6XOxicUP625UFIc74T9HRQ7TUkr4r6LsI83J7d8zwJvUUdAtj2g22PublTReelqctDCU9_uvK-BKg_M-p2ajchoAWv6GtWJHoOTIJwBqhAPRfbkj1_jzdwjq3mcH70FGAAKIo9GTICOH4elFso5JCfIrTFxqP_ETbuqSBJnN6jN_og1qKptNWigzGFaTtErCbSKUxr1Rv5-9rfORXClFZcV7wiQbUuzJw4c_oZoCcmBbyaNL4XIDK_F17fraC8JoVbrhGo5wu0GKIEI44cGjcps_R1NAi1ihTSM7QgV8o9aozlCyOPdFVVy1nXwBXO1tmVa1mB4nQrcjWGIMe9zudfVtVf",
+          "places/ChIJeX6cqfuDBTkRrs3H5Dk2Tvc/photos/AWCwydggfDn-1hCSmkqg16i3WQ-A0ZW_HS4xzvV3oGyIanT6RPvu7T5-uJGj8fCaOe6MZLK_veZ8yCOa5GSa-mBWj69VFGdLPO8ykC9zsZ3S8u_QnQ850wOli6M2ks3wdpnI79Vu_RKb3JZ-h0iEDCJk_nWt2tFmKSVCiXUxPWgZDxHxgLZ6Xt_2hjXF4-_TMeyJDY4a84QPGm4fno-36oaYVLsD0FOnmLpA0Dd0tbm32wbab1qNRUA363dkFFvAbKtpcEBCLIFHr7dWMCYX2GFNvz-QT8gEgVRaqJi6dB1OtJp9-zT__SL78MMjSzACrvpfgv0qfifELE82jXTcjHiz-WgoJIeqggPQcIikbBGwcc9erHOlIcRnF3NGEerVgl0_wwVaUXFvsF214iz0e5QDnkKWU5zjnYE7Dyk6kvuU21zYqC5b",
+          "places/ChIJeX6cqfuDBTkRrs3H5Dk2Tvc/photos/AWCwydjJCZqBdfccyFIf1KQ30KzZt0AK_nImg3-taN7lGv6Wt6jy3l9OCB6GTwlIMajre5z78_60meu1bnMx0fYgvE1QgWoc_USqrdvcAgpRBwE5XzYSOOYjL1RPTtn8uH5Wl36kdYyK_bqqWG1myiTcqTLvHQMU7YPLdlFhytJ6FszZpKw8sZyzOxWmJG2h4XNDSoZix08oOZsLhBkiTwlxUxlEPf9LHWmpvs25XwPN9_zZmFfordiJ-pmTeLX2wBrPsWl81JG5OZk24e_7VA42nSe0iI8XK_MdDJgbIbiE-UEPYejhwDvVDI-9iibRo309kjo3ej6Nc7t_eA-QApdK53ish2OAGFgbb6cvkvJhuPGAR7E5rogPmgDeJat77UyIeq_uheR9Qdv4NWRvwerixq0jEiYssra5QrXA3JBEL08gIUaM",
+          "places/ChIJeX6cqfuDBTkRrs3H5Dk2Tvc/photos/AWCwydh_dAil9nRJTqxhETSr9YiktbnOtw4zn2eGp-BShn32xeMdITgtP_KXgsG6r1yuWzmoOuPAZM7hBpqWbmHh_TAVa8Ere6WwiUEfyRlVdgrHgfwnBgovWG3n5GsZ5kMRp1luSGoRgj5SYJdrNfk5dk55ZB7GJnUlhXu8jAGHzXcc0uwA-S6Kh9elMKmeqc6f3mJaz63gDBmmqD8sNyXV5KbEQZ-TbgU_Hvpd7RmNpUXZ5oNgiUDlTmjkMKB6NUBYxfmwXXmo7_CHbBrtyDNj_ELMgR_PEWzOvvThzjiTjX7lpOYH5uUkZIcehqc0ZzlLnhhKPyYYpamiQRvNh-NlIbzQiWJ507SVWMuuHw1TDPKodVG1PTJH0D5rNlkedjdLCnBKIIfyekVG_wOkupMgKHhkwPP9qMfuzRjU7FQAzYEMhkI",
+          "places/ChIJeX6cqfuDBTkRrs3H5Dk2Tvc/photos/AWCwyditsXSdwPa3HW8kUwWX2iBaucbkGSpoOpoM1fspzuXVy6wINX3iScqPE02IwaG1lxLEKn8_53i7IE03quQmA7_ydvotOY4rNDRLGpCIfjlhwTBDiUuOZ1Sri5dB-V-XspH_EZ_8Cl0sA60vKOF2Tp6ZmucfIj32CngJiXely61VhVZubhi50d5QaOHNmdU0_8HZw7h5Z7KAIKwhICrHoyGd4pewyIqHtSjw33zuquTpmuOKpga0VC0RKlQegxk1UQsuiE4v1tvT8hloqW0zk3BZoY2NyNQ9ShOerUnsmqR5_KBXgox4fT2tJGxRNcjHk94_QYQpuARFOMorJmpNbHCT2zUHQTI0DKPTqYfLt8ENYKXaRuYGgblqwXWDW4ztcUvDYU3YZYD9_v2Zn2o_isiGQ0Ru1JJjxwiHT74-9ro1PZuZ",
+          "places/ChIJeX6cqfuDBTkRrs3H5Dk2Tvc/photos/AWCwydhyxQ6xiFJeauvqbO_QLgs6gS02H7waxuTQQB6mWxH7bR3AvJlk7MnnUKRI8fqXg5_jZBOLrbiMd7TkiicIq1XkrbUyySwwpgPBTAOK_f-U5RvIeGHJlxSXSAcdHkcLXjIYD9vddtQBYLuDRrisjukcwNznTWGhPT5o3bpvuLdGOywjjHPrLTW1rkyT_985uWbRrMVvsn-mCVSY4priuL5DZor9WbcO3HxY1WzrhtKa0iGAH2v1oabFzzTs5uzGkIKwnXNI3JUty05cf6gyr_e1v0TLUtFSO9hplu7jeBKU9sE8zY0YX3Si5LMkSPziJXHLUWiB9xyY2mdMksr2117gupesLUOzcjo_1bMhXw0I3BqTRv6gS3A1kUL9WCMe8y_yzMJqDyXugJZ54oTz0M-hN39yZmVhFNSCD-LbUvjberig"
+        ],
+        "__at__": 1786857694.47697,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Kufri Fun World was such a fun experience during our Shimla trip. The views from the top are absolutely beautiful and the whole place has a very lively vibe. The rides, activities and cool weather make it even more enjoyable. What I loved the most was the scenic mountain backdrop everywhere it hones",
+            "author": "Khushbu Patel"
+          },
+          {
+            "rating": 5,
+            "text": "Had a fun and enjoyable time at Kufri Fun World 🎡❄️\nThe place offers beautiful mountain views along with fun adventure activities for both kids and adults. The scenic location itself makes the experience special, and the cool weather adds to the charm.\nThere are multiple rides and activities to enjo",
+            "author": "Poonam Koshti"
+          },
+          {
+            "rating": 5,
+            "text": "If you're visiting Shimla, Kufri is a place you simply can't miss. The weather is noticeably cooler, making it a perfect escape from the city.\n\nOne of the highlights of our trip was visiting Kufri Fun World. The ride up on the tiny pony horses was an experience in itself and easily one of the most m",
+            "author": "Tanejja Yaminii"
+          },
+          {
+            "rating": 4,
+            "text": "This is really good only for Horse ride fun, they take you for almost 1 km to top of the hill fun world, this is the only good there other than those all are waste… very small area for fun activities and that too you need to ho down from top the other side … not worth going there",
+            "author": "Sanjeet Kumar"
+          },
+          {
+            "rating": 2,
+            "text": "Not at all worth the visit and the value for the amount  spent. I had visited on 19th June with my family and had spent ₹5,000/- for 3 members which included to and from charges for a jeep ride from the parking lot to the tourist drop off location and included 6 rides at the Fun World. It was pricey",
+            "author": "K G Prasanna"
+          }
+        ]
+      },
+      "drive: shimla to delhi|shimla": {
+        "place_id": "ChIJc1rtwG55BTkRhog5qEca9TA",
+        "name": "Self Drive Car Rental",
+        "address": "Aanand villa lower, Dev Nagar, Vikasnagar, Shimla, Himachal Pradesh 171009, India",
+        "rating": 4.6,
+        "review_count": 106,
+        "price_level": null,
+        "website": "https://www.selfdriveshimla.com/",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 31.0779429,
+        "lng": 77.17904109999999,
+        "photo_refs": [
+          "places/ChIJc1rtwG55BTkRhog5qEca9TA/photos/AWCwydinIUcBgyFVMg20JsY_gosl6Eup8p_euKuvrY_8h8IzSgc7ksp5Rz9XtPT8YvtoHh27SsCZukdGYTL7AN_To7j0Y3_Y7b52TlNbsdlJ7YGujA3i6Z3i3idsBPZ-LQo_obTAvcyVAKhnc6qi6N96aE6uvBjhVnzsZuFQZsIC-ARecT5iVaV23Tkh0nOYJlrFW6T2sJDSOA6pwTE61HujChtMyXp6cJ2Nh1WF31z5Mm7MBZzJOBNA_TjKse0na0OX2p0vp1JsPqXO5b5Tw59entmKv0ZyH7EXrsk_cbn9zqvOAURO471Vb1tyKGSZErolG3-g8i8wB3mLXeRCFw2fyETt9NIeiTa341vZ874CG32xj-w0hk0kFhwDdYgC1hvzInuRI2s48DQS6BPXf5KZ6NLwo5AnWcmSU11GE7Tc9RzgCj4",
+          "places/ChIJc1rtwG55BTkRhog5qEca9TA/photos/AWCwydgC8LIaxEPCAI5vZ9IRc4Fqbq04JD8PpfVMkGAwWt1Md_4usfhlcwkqP_gCaEajoZ_1Rm4DayHW2Ez6ZIOSntkEBPrB4E_-SEnx5DwCD6GZRdjzh2jgpu1F3hGdTL08msOPx3NCXlB0DoxiUxTbiVTRITJqaoNzA0Rew3yO_6tV19ZNQQ5ve8BPomWMfWrrw7jmoPUJbPle5iGJsAX0z7EoAHA8KrX6OyekELzkxEU7i_wkM8yxdq4VUj18S2sYX0V6djx3nC_lYKGrMuQpn-WL1jSodOEcB0Fji0DyVfaKq5psQdOaxyy1CkDjZubMESX_FvXu24smji-c9AkhQVW3O01BzzuL_uDr6ifkcbEgw3-3-VecuYOBcGHWjCycyLAp20y2157nofcE_c3aMEVXIfbwjOWxGPLYcWDDEGayJw",
+          "places/ChIJc1rtwG55BTkRhog5qEca9TA/photos/AWCwydjKl_SEs3sOE-7ZC5-O9IQB2WGVnU0-HMJSUyUjEDyCxAbiXEH5203d3plQdKceCxG7M4mseilfr-PP8NXh1jFObS5Rfndc-e034V3dI3e9UH-PI_-06BX2Fg5bEdVkRL0ifqUWFrsTWU3OABlW7mwXJ93ojDBgg6sgB8eY5WHL2qOUvto306DRWUpfl_ziT7MNThPMjs1RZmmcqx1Gl2-SOcm0uCGnW29zblsPN4nI29dtC0USF4uPFzSoDPndGJj82fnz-W6ab9l2wz2cbLP4lb_t5Jz8kQX7DPNqYzbDIsI2uEZlE3sZLoVEctHmEc0P_pDzfOPjy4fLwgF9ZR0QXO5BXbMzcZgF5YcutE2Ef2fl8IF7jdJZFFS6x_u9eEKGI8Rr82xGDU4XNZMka0dJgBsvD-7mkvqBQkRBkvSjqqxl",
+          "places/ChIJc1rtwG55BTkRhog5qEca9TA/photos/AWCwydicBKQuje1HbNvx0TY6DVik55hLERnaFjil_UhgSmU-1QGWT8Tl4a3EBgaEXqyoYk1Ap5sc7MjE9kUsucLoKkdIw4MDdsOe0LnzCXU4kWgDLlInItl4NcjYQUgEBOyHSc9JbhN8nqzQ7qRKMX7B7nQ4kc2ldBlG9kwNjZUL4rFuWGXPtD7wGWyuyX5gKqukm8icDuePzPjU7uRYqCuBZqUMculJG_1r6MrcjZUqqCRjvz093wPX6HquCWSd8v-O8f1TZCnTGms8moN3dbQoh0r322veZgV3OljrrWheLXr19zuxKWJBauawlZK8DIJgOXWT6iQvM01a9r7cZkLcMeenigMqGIQjw2EE8uNTyb0a-zMmmqhPlFORbJLCwDisFxsDNsX-Fhvdru8W0pYHTbZYoqjyi4k187qYMPMdBzxQnQ",
+          "places/ChIJc1rtwG55BTkRhog5qEca9TA/photos/AWCwydgSBrqN2okRjhyBaD5P9nDDWQPNCas-Xt4ELGd00MRoBi6co_hK6BYObMjaWwbUbEdprvaxPVUNL4pkpMotuGIIqA_ULG3SErzsN6n25iKO_QmZKted1biSPal28J0Oo6FRqFz-tfuMdZvKU3vAZ_m9kQ5kxhyaV6F_hZUoSyRpbkz1Bu78SWThYN3uI-Z5_ON0-qItycFVfTl6cqLckprkDQOw8i2AvHEst1kX8aeOROkFo9KwQYiBxiw9uywQA27m685GxkHP61btDHJUSU2PAxamhh1n_r1EJ5ZVHcDsut8E5pQt2-UFzW-WtDkxX35RpeeuFWa0ARWEcMj_mBeXWdoRk6xm3u5N99XNSXV2mw-QJfsnLBYROSjmcBBylfm6KM1tY1_Z_rROSKkp4_La3whf1O7w88wFSXt3auY1bqs7",
+          "places/ChIJc1rtwG55BTkRhog5qEca9TA/photos/AWCwydhD__Zeba7gWkHoelEdRV2evMFGRr6t5gT3UlsxnP0PSjpbkyTMqTxDYqzX-O-CbDosnPnZCRKNWzIv_9JIcv_uC0xtfSBHnqvyxsuEx5rRetkOIdaO15jNqA-fflSzcnpWl6ACpAxGSoT4g6iK0gzoOxJ13fpJUlR94WGPxPUUYCs7FB2-7Iv9W5GBv3XCt1_mdDcw1uq22BKUMSziQNVkR2jSZKI1jCytm519IQ1HuKhhjE4z5K3na7OVcuC3zewci5hs4poHfHfAquMeQMIiLXWZOB9FmXofR6ANw4-E1OMBsAIwXYLUY8XJ0aCqllS47HL2tmmDkDj96lN-XLoPoPBnDA7hFo5wq8_X33T4_l9kIyyo7AxDKJRGcduuNGXj4-jyImoyVG5G98bFuKqxwEJfwzjpygDQqeUdnnfy4SId",
+          "places/ChIJc1rtwG55BTkRhog5qEca9TA/photos/AWCwydgXnikI6jR4UYubiskAi4ugpVfRc1jlbYFWrhc5bpmpULT513jvaCNp_7tU6gYoNfFsI7OLQ-G1_hf_B_QhMiIh-upSxLWNmxNeKqdh4R3r8ixJkzN7DjGF03sW-eembyR571ufwMiau_1V5CNNOCEfBJAuUe8sv1wWJNDmBxoHxaYA9-kpoiEUNygzPbnDSxSlLZpKv0DXJswGuAdwa8vjJw_sDJ_4wILWLCphMCillhRaeght-Fw7iIXNFijVBj19hFJReCcg_HQwnPu2affDq_LYG_him0puFWb5AWjkcQyuehZyWaKyTc7BKI5KxAzQRFjxPQgEhls-oT6N7Vf6FsBmrrGUAK4s0fR6B_9Z9xd-paHCJGl6MNNGLME5PC_B8sEd6SNXtj6RchY_-lBzhW_RXzXpmncIw080Z4t485KZ7tZwv4deW8P96fln",
+          "places/ChIJc1rtwG55BTkRhog5qEca9TA/photos/AWCwydh-XV0UshjIBRXUtMNprS8-an_QF2yvprecflRQJo1-YNSTbLWaqL0Trmf7Y3FLStfnGbQjTPBMepq6HGpJmDxs6pkTeN0dg9PQ3yH1DvxSc2FeiqdLWhpfhsWm0yZsBawGaRjzT5fUiTNharWBvQNbRGF2KCSt6g4KCuDkoLrQHzYqvpUlZHyJqkUK-iNP6EY6dddPdOj-5d_425JqY2X6gDeGte-FRFfe8cl7AmkHq3YLagrRM1UKJ5qAvDbDJ0ja5FSD0pUoRIs8X_XfDqlegTBDqbom3FeS0gyeUiloVSKY4vjjQe1sZFhyl4yBdJ0Ahzhp7gtDw7RLT2fYbkPAXUtNRrB0jv_T2oSIJnXF6tzdxqdBjtdGp-rTZ8EIKbeGW47UO4_Gr8I7hR1q9T8rQY1srQxJ2cTCef2tXZRGuQ",
+          "places/ChIJc1rtwG55BTkRhog5qEca9TA/photos/AWCwydi6O6QVMsiCs06O8w_28HC5wVrdJRscO3p_m2hlxS3-pMLhoYsHBR42laNwiIH--1n_08Zzs3ImJ1e1_N2B7kFO3gIntKlLiQdyYe7vhXfqFd5-IW2H66zrhUno3vsb9pgVFLWEvMeDeoV0OuA5plqr2EQQ5YR2-2o5uLQyMmUZ9IOnXcSThiWdeaikOZExYEjqkqgjPNjRQMwxStmzYHC7lL4vkLxu3xCVftE81kKd9skx3eZentfraREs7Z66rmmR0N1aYh9Ur3ad6vsyRavxaGw6iH0eVKgka_FpBMS6th1l8JTEC1_Cph-IA5IW2uerf7uIU1xRxfLCSzykIpaDLPN5xphcOYYvcj1P-Pu66XXU0ZefYPO6t-4m0sfiRJjmBNeBv3dxJakY2kIVBIgDgbetzLigV3RG4CWw6SCIhA",
+          "places/ChIJc1rtwG55BTkRhog5qEca9TA/photos/AWCwydg3ZuUidXGNsyq3AvFsK0odMz9U9yheRxIyynApaXPQFJCMFK-MgrMJYS5NaDrYg_ZcKZ5-ra_MQCXNfSjic4E07HF0ZPbP3TcC0O4CrPVMt7VtaTwc9NuLNQGhHXzgz4JC-yhf0lyOwhVrnW1B9TlMavhpNN83fvS_jm9IdF4-bJ_OAbiNgjlY6aQIEz-9vpWCZRg505C3DKQA_CvZNDcfl5DTj5QMBiCw0XP2cH4nJma2jk_GRqTqsb-IDRWW6YHS93MZRpj_bPJtkM_NDrDGwo2XskxYaI7KuaL6jpCOA6I-0VkIyFbsKpNaEtEUjxre0ZpnF9b_jLqhYrgvoVVY_xgv0HdNU6VKXHn_xxn3u9E5VwGT38ipSHnr7tJu6CTrOfxCCd4OKA81uB4q_LzWRw3IHdOHVDWiidnQHfssXQ"
+        ],
+        "__at__": 1786857694.892448,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Highly recommend Ajay Sharma! We booked a self-drive Alto and got a fantastic deal. Ajay is extremely humble and professional. The service was excellent and the price was very economical. A truly smooth rental experience.",
+            "author": "Yash Pathak"
+          },
+          {
+            "rating": 5,
+            "text": "We had a great time driving our selfs. We could stop wherever we want and enjoy the beautifull views on the way. The suzuki alto could handle everything: the mountains, the rivers we had to cross and the Indian drivers;). We would recommend everyone to rent a car here and enjoy India by yourself!",
+            "author": "Maxime Larooy"
+          },
+          {
+            "rating": 5,
+            "text": "Went to kalpa and chitkul, It was a great experience. Ajay was very supportive and cooperative.",
+            "author": "Aman Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "Nice car avilable here . We took gimmny for rent .",
+            "author": "Tarushi Verma"
+          },
+          {
+            "rating": 5,
+            "text": "Great service by ajay!! Very supportive and the car condition was good and economical!!!",
+            "author": "shashank sharma"
+          }
+        ]
+      }
+    }
   },
   "descriptor": {
     "destination": "Shimla",
@@ -170,18 +1694,40 @@
     "status": "draft",
     "counts": {
       "flights": 0,
-      "hotels": 0,
+      "hotels": 1,
       "activities": 0,
       "days": 0
     },
     "keywords": [
-      "Shimla"
+      "Shimla",
+      "Wing Ocean View",
+      "Delhi to Shimla & Check-in",
+      "Drive: Delhi to Shimla",
+      "Haveli, Karnal",
+      "Timber Trail, Parwanoo",
+      "Hotel (Shimla, accessible)",
+      "Shimla Heritage & Mall Road",
+      "The Ridge, Shimla",
+      "Christ Church, Shimla",
+      "Indian Coffee House, Shimla",
+      "Mall Road, Shimla",
+      "Kufri Excursion (Scenic Drive)",
+      "Drive: Shimla to Kufri",
+      "Drive: Kufri to Shimla",
+      "Himalayan Nature Park, Kufri",
+      "The Retreat, Kufri",
+      "Viceregal Lodge & Relaxation",
+      "Viceregal Lodge, Shimla",
+      "Ashiana & Goofa, Shimla",
+      "Annandale Army Heritage Museum",
+      "Shimla to Delhi & Departure",
+      "Drive: Shimla to Delhi"
     ],
-    "auto_summary": "5-night Shimla, May 2027",
+    "auto_summary": "5-night Shimla, May 2027, 1 hotels",
     "label": "",
     "notes": []
   },
-  "last_seen_at": "2026-08-15T14:04:33Z",
+  "last_seen_at": "2026-08-16T05:21:46Z",
   "schema_version": 1,
   "seen_in": [
     {
