@@ -47,16 +47,6 @@ const SHELF_GROUPS: readonly ShelfGroup[] = [
     ],
   },
   {
-    key: "planning_mode",
-    label: "Planning style",
-    hint: "How should the planner make decisions?",
-    mode: "single",
-    tags: [
-      { value: "direct", label: "Surprise me", detail: "Let the planner choose the strongest fit" },
-      { value: "interactive", label: "Show me options", detail: "Bring back a short list to compare" },
-    ],
-  },
-  {
     key: "budget_level",
     label: "Where you stay",
     hint: "What makes a base work?",
@@ -152,6 +142,21 @@ function PreferenceShelf({
           </div>
         ))}
       </div>
+      <label className="mt-3 flex items-start gap-2 rounded-lg bg-white p-3 text-left ring-1 ring-emerald-100">
+        <input
+          type="checkbox"
+          className="mt-0.5"
+          checked={prefs.planning_mode !== "interactive"}
+          onChange={(event) => choose("planning_mode", event.target.checked ? "direct" : "interactive")}
+        />
+        <span>
+          <span className="text-xs font-semibold text-ink">Let the agent decide with smart defaults</span>
+          <span className="mt-0.5 block text-[11px] leading-relaxed text-slate-500">
+            It uses your request, travel profile, and history without stopping to confirm defaults.
+            Turn this off to let it ask one quick question when an answer would meaningfully help.
+          </span>
+        </span>
+      </label>
       <aside className="mt-3 rounded-lg bg-ink p-3 text-white" aria-label="What Tripplanner understands">
         <p className="text-xs font-semibold">What Tripplanner understands</p>
         <p className="mt-1 text-[11px] leading-relaxed text-emerald-100">The words are human. Multiple food tags combine; the values stay precise and stable for the planner.</p>
@@ -250,6 +255,7 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
         updates.profile_summary_updated_at = prefs.profile_summary_updated_at ?? null;
       }
       const result = await savePreferences(updates);
+      window.dispatchEvent(new Event("tripplanner:preferences-changed"));
       if (result.summary_conflict) {
         const fresh = await fetchPreferences();
         setPrefs(fresh);
@@ -469,30 +475,6 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
               />
               <span>Prefer direct flights</span>
             </label>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-              <p className="mb-2 text-xs font-medium text-slate-500">
-                Planning style
-              </p>
-              <label className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  className="mt-0.5"
-                  checked={prefs.planning_mode !== "interactive"}
-                  onChange={(e) =>
-                    set("planning_mode", e.target.checked ? "direct" : "interactive")
-                  }
-                />
-                <span>
-                  <span className="font-medium text-ink">Use smart defaults after kickoff</span>
-                  <br />
-                  <span className="text-slate-500 text-[11px]">
-                    The agent first shows one prefilled review of saved preferences and
-                    trip choices, then builds without extra questions. Uncheck to include
-                    unresolved critical details in that same review.
-                  </span>
-                </span>
-              </label>
-            </div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Interests (comma-separated)">
                 <input

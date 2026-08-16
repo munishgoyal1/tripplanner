@@ -158,9 +158,7 @@ def test_explicit_destination_switch_preempts_old_trip_completion() -> None:
     assert decision.forced_reason == "trip_kickoff"
 
 
-def test_unphrased_planning_request_still_blocks_creation() -> None:
-    # No new/another wording and no "trip to X", so nothing forces the kickoff; the
-    # model must still not be able to create the trip unasked.
+def test_unphrased_planning_request_leaves_creation_to_the_model() -> None:
     decision = resolve_completion_policy(
         messages=[HumanMessage(content="plan a 6 day leh ladakh trip")],
         active_trip={
@@ -172,30 +170,10 @@ def test_unphrased_planning_request_still_blocks_creation() -> None:
     )
 
     assert decision.forced_tool is None
-    assert decision.block_trip_creation is True
+    assert decision.forced_reason == "model_choice"
 
 
-def test_emitted_kickoff_still_blocks_until_the_user_answers() -> None:
-    # The same turn must not ask and then answer itself: the card has been emitted
-    # but no reply has landed yet.
-    decision = resolve_completion_policy(
-        messages=[
-            HumanMessage(content="plan a chennai trip"),
-            _tool_call("request_trip_input", "kickoff"),
-            ToolMessage(content="ok", tool_call_id="kickoff"),
-        ],
-        active_trip={
-            "destination": "Dehradun",
-            "day_wise_itinerary": [{"day": 1, "stops": [{"name": "Clock Tower"}]}],
-        },
-        proposal_only=False,
-        has_planning_intent=True,
-    )
-
-    assert decision.block_trip_creation is True
-
-
-def test_answered_kickoff_unblocks_creation() -> None:
+def test_answered_optional_review_can_force_creation() -> None:
     decision = resolve_completion_policy(
         messages=[
             HumanMessage(content="plan a 6 day leh ladakh trip"),
@@ -208,29 +186,7 @@ def test_answered_kickoff_unblocks_creation() -> None:
         has_planning_intent=True,
     )
 
-    assert decision.block_trip_creation is False
-
-
-def test_non_planning_turn_does_not_block_creation() -> None:
-    decision = resolve_completion_policy(
-        messages=[HumanMessage(content="what is the weather like there")],
-        active_trip={"destination": "Dehradun", "day_wise_itinerary": []},
-        proposal_only=False,
-        has_planning_intent=False,
-    )
-
-    assert decision.block_trip_creation is False
-
-
-def test_proposal_only_does_not_block_creation() -> None:
-    decision = resolve_completion_policy(
-        messages=[HumanMessage(content="plan a 6 day leh ladakh trip")],
-        active_trip={"destination": "Dehradun", "day_wise_itinerary": []},
-        proposal_only=True,
-        has_planning_intent=True,
-    )
-
-    assert decision.block_trip_creation is False
+    assert decision.forced_tool == "create_trip_plan"
 
 
 def test_answered_kickoff_preempts_old_trip_completion() -> None:

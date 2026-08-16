@@ -30,6 +30,7 @@ from tripplanner.agents.trip_agent import (
 from tripplanner.config import get_settings
 from tripplanner.observability import app_event
 from tripplanner.tools.trip_planner import load_active_trip_dict
+from tripplanner.tools.user_preferences import load_preferences
 from tripplanner.tools_cache import wrap_tools_with_cache
 from tripplanner.usage import record_usage
 from tripplanner.user_context import get_user_id
@@ -324,6 +325,13 @@ def _active_trip_for_policy() -> dict[str, Any]:
         return {}
 
 
+def _interactive_trip_questions() -> bool:
+    try:
+        return str(load_preferences().get("planning_mode") or "direct") == "interactive"
+    except Exception:
+        return False
+
+
 def _trip_update_requirement(messages: list[BaseMessage]) -> str | None:
     return graph_policy.trip_update_requirement(
         messages,
@@ -374,6 +382,7 @@ def trip_agent(state: AgentState) -> AgentState:
     # select_tools() binds only the relevant subset (heavy search tools are
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
+    interactive_questions = _interactive_trip_questions()
     decision = graph_policy.resolve_completion_policy(
         messages=state["messages"],
         active_trip=_active_trip_for_policy(),
@@ -415,10 +424,10 @@ def trip_agent(state: AgentState) -> AgentState:
         message_count=len(state["messages"]),
     )
     tools = select_tools(state["messages"], proposal_only=proposal_only)
+    if not interactive_questions:
+        tools = [tool for tool in tools if tool.name != "request_trip_input"]
     if decision.forced_tool:
         tools = [tool for tool in tools if tool.name == decision.forced_tool]
-    elif decision.block_trip_creation:
-        tools = [tool for tool in tools if tool.name != "create_trip_plan"]
     llm = _get_llm().bind_tools(
         tools,
         parallel_tool_calls=True,
@@ -463,12 +472,6 @@ def trip_agent(state: AgentState) -> AgentState:
             "PROPOSAL-ONLY REVIEW: analyze the itinerary and offer concise numbered options. "
             "Do not create, update, finalize, book, resume, or otherwise mutate trip or user data. "
             "Ask the user to approve an option before any later mutation turn."
-        )))
-    if decision.block_trip_creation:
-        instructions.append(SystemMessage(content=(
-            "This trip has not been reviewed with the user yet, so create_trip_plan is "
-            "unavailable this round. Call request_trip_input first with prefilled choices, "
-            "including trip length when it is unresolved."
         )))
     response = llm.invoke(instructions + _messages_for_model(state["messages"]))
     return {"messages": [response], "current_agent": "trip"}

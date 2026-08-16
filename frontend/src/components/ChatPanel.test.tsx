@@ -4,7 +4,11 @@ import { fetchChatHistory, type StreamHandlers } from "../api";
 import { saveTurnMeta } from "../turnMetadata";
 import ChatPanel from "./ChatPanel";
 
-const { streamChatMock } = vi.hoisted(() => ({ streamChatMock: vi.fn() }));
+const { fetchPreferencesMock, savePreferencesMock, streamChatMock } = vi.hoisted(() => ({
+  fetchPreferencesMock: vi.fn().mockResolvedValue({ planning_mode: "direct" }),
+  savePreferencesMock: vi.fn().mockResolvedValue({ ok: true, about_me_extracted: [] }),
+  streamChatMock: vi.fn(),
+}));
 
 vi.mock("../api", () => ({
   streamChat: streamChatMock,
@@ -22,13 +26,18 @@ vi.mock("../api", () => ({
   fetchGuestDataSummary: vi.fn(),
   migrateGuestData: vi.fn(),
   fetchProfileSuggestions: vi.fn().mockResolvedValue([]),
+  fetchPreferences: fetchPreferencesMock,
   resolveProfileSuggestion: vi.fn().mockResolvedValue([]),
+  savePreferences: savePreferencesMock,
   getUserId: vi.fn(() => "web-test"),
 }));
 
 describe("ChatPanel progress", () => {
   beforeEach(() => {
     streamChatMock.mockReset();
+    fetchPreferencesMock.mockResolvedValue({ planning_mode: "direct" });
+    savePreferencesMock.mockReset();
+    savePreferencesMock.mockResolvedValue({ ok: true, about_me_extracted: [] });
     localStorage.clear();
     Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
       configurable: true,
@@ -41,6 +50,20 @@ describe("ChatPanel progress", () => {
     await waitFor(() => expect(composer).toBeEnabled());
     return composer as HTMLTextAreaElement;
   }
+
+  it("keeps smart defaults on by default and saves an opt-in interactive preference", async () => {
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    const toggle = await screen.findByRole("checkbox", {
+      name: "Let the agent decide with smart defaults",
+    });
+    expect(toggle).toBeChecked();
+
+    fireEvent.click(toggle);
+    await waitFor(() =>
+      expect(savePreferencesMock).toHaveBeenCalledWith({ planning_mode: "interactive" }),
+    );
+  });
 
   it("shows immediate and friendly progress while a turn is running", async () => {
     let handlers: StreamHandlers | undefined;

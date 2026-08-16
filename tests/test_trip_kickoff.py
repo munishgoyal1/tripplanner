@@ -31,14 +31,14 @@ def test_new_paris_trip_forces_prefilled_kickoff_after_preferences() -> None:
     assert _trip_kickoff_tool_choice(messages) == "recommend_trip_duration"
 
 
-def test_new_paris_trip_forces_prefilled_kickoff_after_duration_advice() -> None:
+def test_direct_mode_does_not_force_a_prefilled_review_after_duration_advice() -> None:
     messages = [
         HumanMessage(content="Plan Paris from Delhi for five days in October"),
         _tool_message("get_travel_preferences"),
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+    assert _trip_kickoff_tool_choice(messages) is None
 
 
 def test_kickoff_is_not_repeated_after_user_answers() -> None:
@@ -95,7 +95,7 @@ def test_destination_switch_asks_the_kickoff_before_creating(
     ) == "get_travel_preferences"
 
 
-def test_destination_switch_reaches_the_input_request(
+def test_duration_advice_leaves_the_optional_input_request_to_the_model(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
@@ -109,7 +109,7 @@ def test_destination_switch_reaches_the_input_request(
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+    assert _trip_kickoff_tool_choice(messages) is None
 
 
 def test_same_destination_follow_up_still_has_no_kickoff(
@@ -262,14 +262,14 @@ def test_new_trip_intent_preempts_incomplete_active_trip_gate(
                 _tool_message("get_travel_preferences"),
                 _tool_message("recommend_trip_duration"),
             ],
-            "request_trip_input",
+            None,
         ),
     ],
 )
 def test_trip_agent_forces_kickoff_tool(
     monkeypatch: pytest.MonkeyPatch,
     messages: list,
-    expected: str,
+    expected: str | None,
 ) -> None:
     bound_options: dict = {}
 
@@ -291,4 +291,35 @@ def test_trip_agent_forces_kickoff_tool(
         "proposal_only": False,
     })
 
-    assert bound_options["tool_choice"] == expected
+    if expected is None:
+        assert "tool_choice" not in bound_options
+    else:
+        assert bound_options["tool_choice"] == expected
+
+
+def test_direct_mode_hides_the_optional_input_tool(monkeypatch: pytest.MonkeyPatch) -> None:
+    bound_tools: list[str] = []
+
+    class FakeBoundModel:
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="")
+
+    class FakeModel:
+        def bind_tools(self, tools: list, **_options: object) -> FakeBoundModel:
+            bound_tools.extend(tool.name for tool in tools)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(graph_mod, "_interactive_trip_questions", lambda: False)
+
+    graph_mod.trip_agent({
+        "messages": [
+            HumanMessage(content="Plan a Paris trip"),
+            _tool_message("get_travel_preferences"),
+            _tool_message("recommend_trip_duration"),
+        ],
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert "request_trip_input" not in bound_tools
