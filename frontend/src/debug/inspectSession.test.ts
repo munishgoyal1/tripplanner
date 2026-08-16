@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+// Read as text through Vite rather than node:fs: this is a browser project, so
+// its tsconfig carries no Node types, and a path relative to the module beats
+// one relative to whatever directory the runner happened to start in.
+import mainSource from "../main.tsx?raw";
+
 const USER_KEY = "tripplanner_user_id";
 const GUEST_KEY = "tripplanner_guest_session";
 const RESTORE_KEY = "tripplanner_inspect_restore";
@@ -102,19 +107,16 @@ describe("inspecting a browser whose identity lives in a cookie", () => {
 });
 
 describe("the app's entry point", () => {
-  it("renders without waiting on the debug path", async () => {
+  it("renders without waiting on the debug path", () => {
     // An earlier version awaited inspection before rendering, so one rejected
     // dynamic import left the whole SPA blank.
-    const { readFileSync } = await import("node:fs");
-    const source = readFileSync("src/main.tsx", "utf8");
-
-    const renderLine = source
+    const renderLine = mainSource
       .split("\n")
-      .find((line) => line.includes("createRoot"));
+      .find((line: string) => line.includes("createRoot"));
 
     expect(renderLine).toBeDefined();
     // Top-level, so unindented and with nothing able to await it.
     expect(renderLine).toBe(renderLine!.trimStart());
-    expect(source).toMatch(/void runInspection\(\)/);
+    expect(mainSource).toMatch(/void runInspection\(\)/);
   });
 });
