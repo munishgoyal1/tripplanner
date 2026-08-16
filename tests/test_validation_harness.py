@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import http.client
 import json
 import threading
 from pathlib import Path
@@ -629,6 +630,65 @@ def test_planning_turns_are_asked_at_the_same_time(
     )
 
     assert not barrier.broken
+
+
+def test_a_dropped_connection_is_retried_with_the_same_request_id(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The server may have finished the turn, so the retry must be able to replay it."""
+    seen: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(generate, "_MAX_ATTEMPTS", 2)
+    monkeypatch.setattr(generate.time, "sleep", lambda seconds: None)
+
+    def _ask(api: str, message: str, user_id: str, request_id: str) -> None:
+        seen.append(request_id)
+        if len(seen) == 1:
+            raise http.client.RemoteDisconnected("closed without response")
+
+    monkeypatch.setattr(generate, "_ask", _ask)
+
+    generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        requests=_ONE_REQUEST,
+        requested_budget_inr=1000,
+        workers=1,
+    )
+
+    assert len(seen) == 2
+    assert seen[0] == seen[1]
+
+
+def test_a_turn_that_keeps_failing_is_reported_and_the_run_goes_on(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lines: list[str] = []
+    asked: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(generate, "_MAX_ATTEMPTS", 1)
+
+    def _ask(api: str, message: str, user_id: str, request_id: str) -> None:
+        asked.append(user_id)
+        if len(asked) == 1:
+            raise http.client.RemoteDisconnected("closed without response")
+
+    monkeypatch.setattr(generate, "_ask", _ask)
+
+    result = generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        requests=matrix.candidates(Catalog(), limit=3),
+        requested_budget_inr=1000,
+        workers=1,
+        on_progress=lines.append,
+    )
+
+    assert len(asked) == 3
+    assert result["stopped_because"] == "exhausted"
+    assert any("RemoteDisconnected" in line for line in lines)
 
 
 def test_a_request_is_announced_before_the_slow_call_not_after(
