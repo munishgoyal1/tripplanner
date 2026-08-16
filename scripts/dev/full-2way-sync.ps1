@@ -65,7 +65,8 @@ $resolverScript = Join-Path $PSScriptRoot "resolve-sandbox-conflicts.ps1"
 # Numbered at the end. Each entry is one thing a person still has to do.
 $remaining = [System.Collections.Generic.List[string]]::new()
 $did = [System.Collections.Generic.List[string]]::new()
-# Lane -> the stash this run created, so it can be handed back untouched.
+# Lane -> the stashes this run created, newest last. A lane can be dirtied more
+# than once in a run, because other sessions keep working while this one goes.
 $stashed = @{}
 
 function Add-Did {
@@ -116,7 +117,10 @@ function Push-LaneStash {
             -NextStep "Check 'git -C $WorkingDirectory stash list' before re-running."
         return $false
     }
-    $stashed[$Lane] = @{ WorkingDirectory = $WorkingDirectory; Commit = $stashCommit; Count = $dirty.Count }
+    if (-not $stashed.ContainsKey($Lane)) {
+        $stashed[$Lane] = [System.Collections.Generic.List[object]]::new()
+    }
+    $stashed[$Lane].Add(@{ WorkingDirectory = $WorkingDirectory; Commit = $stashCommit; Count = $dirty.Count })
     Write-Host "[hold]    $Lane - set aside $($dirty.Count) uncommitted path(s)" -ForegroundColor Yellow
     return $true
 }
@@ -307,6 +311,10 @@ if ($PullOnly) {
                 $lane = $item.Entry.slug
                 Write-Host ""
                 Write-Host "== merging $lane ==" -ForegroundColor Green
+                # Re-check right before merging rather than trusting the sweep
+                # above: validating and opening a pull request takes minutes, and
+                # another session working this lane will have dirtied it again.
+                if (-not (Push-LaneStash -WorkingDirectory $item.Entry.worktree -Lane $lane)) { continue }
                 try {
                     # One lane failing must not strand the rest, so unlike the
                     # gated two-way sync this keeps going and reports at the end.
@@ -315,8 +323,15 @@ if ($PullOnly) {
                     if ($LASTEXITCODE -ne 0) { throw "merge returned $LASTEXITCODE" }
                     Add-Did "$lane - merged $($item.Commits.Count) commit(s) into $BaseBranch"
                 } catch {
-                    Add-Remaining -Lane $lane -Problem "could not merge into $BaseBranch : $($_.Exception.Message)" `
-                        -NextStep "Run 'scripts/dev/sandbox.ps1 -Merge $lane' and read the error, then run this script again."
+                    # sandbox.ps1 speaks to someone merging one lane by hand, so
+                    # its advice to commit first contradicts this script's whole
+                    # promise. Say what actually happened instead.
+                    $reason = $_.Exception.Message
+                    if ($reason -match "uncommitted changes") {
+                        $reason = "someone changed the lane while this run was merging it"
+                    }
+                    Add-Remaining -Lane $lane -Problem "has $($item.Commits.Count) commit(s) still waiting for $BaseBranch : $reason" `
+                        -NextStep "Nothing was lost; run this script again when the lane is idle."
                 }
             }
         }
@@ -341,7 +356,11 @@ if ($stashed.Count -eq 0) {
     Write-Host "[none]    No lane had uncommitted work." -ForegroundColor DarkGray
 } else {
     foreach ($lane in @($stashed.Keys)) {
-        Restore-LaneStash -Lane $lane -Held $stashed[$lane]
+        # Newest first: they were taken in order, so they come back in reverse.
+        $held = @($stashed[$lane])
+        for ($i = $held.Count - 1; $i -ge 0; $i--) {
+            Restore-LaneStash -Lane $lane -Held $held[$i]
+        }
     }
 }
 
