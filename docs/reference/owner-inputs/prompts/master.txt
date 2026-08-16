@@ -1346,3 +1346,6 @@ I hope you will first get latest form master. And do this work in sbx 6. that si
 
 [2026-08-15 22:43] [master !] Corpus rerun replays stale run
 I am trying ot rerun the build corpus in lane2 for second time but it completed not moving ahead with generating additional trips, and looks like using stale old run instrcution or so. the corpus setup is new for us.
+
+[2026-08-16 09:42] [master !] Self-generating corpus requests within budget
+It should generate the trip requests on its own and should not send duplicate requests with existing corpus. There should be a catalog that can quickly help lookup if anything existing try different. With given budget it should be able to go upto that and get as many requests as possible within that budget.
