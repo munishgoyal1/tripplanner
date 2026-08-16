@@ -257,6 +257,21 @@
       "party": "",
       "signature": "|mobility-constrained travellers||0",
       "at": "2026-08-16T05:22:25.028274+00:00"
+    },
+    {
+      "slug": "destination-only-udaipur",
+      "shape": "traveller arranges their own arrival",
+      "trip_id": "udaipur_2027-02-14_2027-02-17",
+      "days": 3,
+      "stops": 18,
+      "spent_inr": 19.73,
+      "seconds": 154.2,
+      "user_id": "corpus-destination-only-udaipur",
+      "destination": "",
+      "emphasis": "",
+      "party": "",
+      "signature": "|traveller arranges their own arrival||0",
+      "at": "2026-08-16T10:18:04.035491+00:00"
     }
   ]
 }
