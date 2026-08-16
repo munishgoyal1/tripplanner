@@ -382,7 +382,7 @@
         "weather": {},
         "visa": {},
         "trip_constraints": [],
-        "updated_at": "2026-08-13T14:46:37.894924",
+        "updated_at": "2026-08-16T11:39:00.631104",
         "price_checks": [
           {
             "kind": "lodging",
@@ -731,7 +731,7 @@
     "label": "",
     "notes": []
   },
-  "last_seen_at": "2026-08-15T12:44:03Z",
+  "last_seen_at": "2026-08-16T06:09:00Z",
   "schema_version": 1,
   "seen_in": [
     {
@@ -751,6 +751,12 @@
       "branch": "master",
       "database": "tripplanner-local",
       "at": "2026-08-15T12:44:03Z"
+    },
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-16T06:09:00Z"
     }
   ]
 }

@@ -4,32 +4,42 @@ import AnalyticsConsent from "./components/AnalyticsConsent";
 import Root from "./publicEntry/Root";
 import "./index.css";
 
-// Every debug import sits inside this constant check, so an unset flag makes the
-// whole branch statically dead and none of it reaches a production bundle.
-async function inspectionBanner(): Promise<React.ReactNode> {
-  if (import.meta.env.VITE_DEBUG_TOOLS !== "1") return null;
+// Every debug reference sits behind this constant, so an unset flag makes the
+// branch statically dead and none of it reaches a production bundle.
+const debugTools = import.meta.env.VITE_DEBUG_TOOLS === "1";
+const InspectBanner = debugTools ? React.lazy(() => import("./debug/InspectBanner")) : null;
 
-  const { beginInspection } = await import("./debug/inspectSession");
-  const request = beginInspection(window.location.search);
-  if (request?.tripId) {
-    // Make the named trip active before the first render, so the workspace opens
-    // on the flagged trip rather than whichever one was last used.
-    const { switchTrip } = await import("./api");
-    await switchTrip(request.tripId).catch(() => null);
+// Adopts the inspected identity, then re-enters without the query so the whole
+// app loads under it. Deliberately not awaited before render: an earlier version
+// blocked rendering on this and any failure here left a blank page.
+async function runInspection(): Promise<void> {
+  if (!debugTools) return;
+  try {
+    const { beginInspection } = await import("./debug/inspectSession");
+    const request = beginInspection(window.location.search);
+    if (!request) return;
+    if (request.tripId) {
+      const { switchTrip } = await import("./api");
+      await switchTrip(request.tripId);
+    }
+    // The banner reads the flag from storage, so the query is no longer needed
+    // and dropping it stops a refresh from re-running this.
+    window.location.replace(window.location.pathname);
+  } catch {
+    // Inspection is a developer affordance; it must never keep the app down.
   }
-  const { default: InspectBanner } = await import("./debug/InspectBanner");
-  return <InspectBanner />;
 }
 
-async function start(): Promise<void> {
-  const banner = await inspectionBanner();
-  ReactDOM.createRoot(document.getElementById("root")!).render(
-    <React.StrictMode>
-      <Root />
-      <AnalyticsConsent />
-      {banner}
-    </React.StrictMode>
-  );
-}
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <Root />
+    <AnalyticsConsent />
+    {InspectBanner && (
+      <React.Suspense fallback={null}>
+        <InspectBanner />
+      </React.Suspense>
+    )}
+  </React.StrictMode>
+);
 
-void start();
+void runInspection();

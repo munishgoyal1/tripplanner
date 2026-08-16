@@ -100,3 +100,21 @@ describe("inspecting a browser whose identity lives in a cookie", () => {
     expect(session.inspectedUserId()).toBe("corpus-probe");
   });
 });
+
+describe("the app's entry point", () => {
+  it("renders without waiting on the debug path", async () => {
+    // An earlier version awaited inspection before rendering, so one rejected
+    // dynamic import left the whole SPA blank.
+    const { readFileSync } = await import("node:fs");
+    const source = readFileSync("src/main.tsx", "utf8");
+
+    const renderLine = source
+      .split("\n")
+      .find((line) => line.includes("createRoot"));
+
+    expect(renderLine).toBeDefined();
+    // Top-level, so unindented and with nothing able to await it.
+    expect(renderLine).toBe(renderLine!.trimStart());
+    expect(source).toMatch(/void runInspection\(\)/);
+  });
+});
