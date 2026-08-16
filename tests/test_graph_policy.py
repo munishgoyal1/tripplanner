@@ -375,8 +375,6 @@ def test_a_saved_turn_carries_its_tools_back(tmp_path, monkeypatch) -> None:  # 
     """chat_store is the only thing that can carry the marker across a turn."""
     from langchain_core.messages import AIMessage, HumanMessage
 
-    from tripplanner import graph_policy as gp
-
     from tripplanner.web import chat_store
 
     rows = chat_store._serialize(
