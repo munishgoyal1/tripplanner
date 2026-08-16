@@ -400,7 +400,7 @@ if (-not $BackendOnly) {
         $env:VITE_INSPECTOR_PORT = "$InspectorPort"
         $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
         # Where the inspector's "Open" links send the browser.
-        $env:VITE_APP_URL = "http://127.0.0.1:$FrontendPort"
+        $env:VITE_APP_URL = "http://localhost:$FrontendPort"
         $inspector = Start-Process -PassThru -NoNewWindow -WorkingDirectory $frontendRoot `
             -FilePath $npmCommand -ArgumentList @("run", "dev:inspector")
         Write-Host "  Inspector: http://127.0.0.1:$InspectorPort/" -ForegroundColor Green

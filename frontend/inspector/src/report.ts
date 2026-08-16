@@ -71,7 +71,9 @@ export async function loadReport(): Promise<Report | null> {
   return "error" in body ? null : body;
 }
 
-const APP_URL = (import.meta.env.VITE_APP_URL as string | undefined) || "http://127.0.0.1:5173";
+// localhost, not 127.0.0.1: the SPA dev server binds IPv6 only, so the IPv4
+// literal refuses the connection while the name resolves to either stack.
+const APP_URL = (import.meta.env.VITE_APP_URL as string | undefined) || "http://localhost:5173";
 
 /** The product UI, showing this trip under the identity that owns it. */
 export function openUrl(record: TripRecord): string {
