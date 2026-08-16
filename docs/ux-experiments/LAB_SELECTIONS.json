@@ -447,9 +447,9 @@
     "labId": "profile-workspace",
     "labTitle": "Room to edit your profile",
     "selection": "full-page",
-    "selectionLabel": "B · Full profile page",
+    "selectionLabel": "A · Full profile page",
     "comment": "Full profile, go with highest scoring most recommedned option.",
-    "disposition": "implemented-review",
+    "disposition": "completed",
     "handoffs": [
       {
         "version": 1,
@@ -460,19 +460,35 @@
         "recordedAt": "2026-08-15T15:38:29.906Z"
       },
       {
-        "version": 2.0,
+        "version": 2,
         "selection": "full-page",
         "selectionLabel": "B · Full profile page",
         "comment": "Full profile, go with highest scoring most recommedned option.",
         "disposition": "implemented-review",
         "summary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed.",
         "recordedAt": "2026-08-15T16:40:34.0723850Z"
+      },
+      {
+        "version": 3,
+        "selection": "full-page",
+        "selectionLabel": "A · Full profile page",
+        "comment": "Full profile, go with highest scoring most recommedned option.",
+        "disposition": "completed",
+        "recordedAt": "2026-08-16T13:03:58.374Z"
       }
     ],
+    "implementation": {
+      "selection": "full-page",
+      "selectionLabel": "B · Full profile page",
+      "comment": "Full profile, go with highest scoring most recommedned option.",
+      "summary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed.",
+      "handoffVersion": 2,
+      "recordedAt": "2026-08-15T16:40:34.0723850Z"
+    },
     "implementations": [
       {
         "version": 1,
-        "handoffVersion": 2.0,
+        "handoffVersion": 2,
         "selection": "full-page",
         "selectionLabel": "B · Full profile page",
         "comment": "Full profile, go with highest scoring most recommedned option.",
@@ -480,16 +496,7 @@
         "recordedAt": "2026-08-15T16:40:34.0723850Z"
       }
     ],
-    "stateChangedAt": "2026-08-15T16:40:34.0723850Z",
-    "updatedAt": "2026-08-15T16:40:34.0723850Z",
-    "implementation": {
-      "handoffVersion": 2.0,
-      "selection": "full-page",
-      "selectionLabel": "B · Full profile page",
-      "comment": "Full profile, go with highest scoring most recommedned option.",
-      "summary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed.",
-      "recordedAt": "2026-08-15T16:40:34.0723850Z"
-    },
-    "implementationSummary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed."
+    "stateChangedAt": "2026-08-16T13:03:58.374Z",
+    "updatedAt": "2026-08-16T13:03:58.374Z"
   }
 }
