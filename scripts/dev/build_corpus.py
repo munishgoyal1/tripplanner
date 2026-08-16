@@ -1,13 +1,13 @@
 """Generate corpus trips with the real planner, inside a budget.
 
     python scripts/dev/build_corpus.py --dry-run
-    python scripts/dev/build_corpus.py --budget 1000 --target 25
+    python scripts/dev/build_corpus.py --budget 1000 --workers 4
 
 Spends money. It refuses to run without headroom under the cumulative cap,
 measures each request's real cost from the app's own usage ledger, and stops at
 whichever of the budget or the target comes first. Requests are composed from
-what the corpus does not already cover, so re-running tops it up with new shapes
-and never pays twice for the same one.
+what the corpus does not already cover and run several at a time, so re-running
+tops it up with new shapes and never pays twice for the same one.
 """
 
 from __future__ import annotations
@@ -41,6 +41,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--database", default=DEFAULT_DATABASE)
     parser.add_argument("--api", default=DEFAULT_API)
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=generate.DEFAULT_WORKERS,
+        help="planning turns in flight at once; the API admits 4 by default",
+    )
     parser.add_argument("--dry-run", action="store_true", help="plan the run, spend nothing")
     args = parser.parse_args(argv)
 
@@ -61,6 +67,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  spent so far       INR {allowed.spent_inr:.0f} of INR {allowed.cap_inr:.0f}")
     print(f"  this run may spend INR {allowed.budget_inr:.0f}  (USD {allowed.budget_usd:.2f})")
     print(f"  candidates ready   {len(queued)}")
+    print(f"  in flight at once  {max(1, args.workers)}")
     print(_BAR)
     for request in queued[:_PREVIEW]:
         print(f"  {request.slug:34s} {request.shape}")
@@ -82,6 +89,7 @@ def main(argv: list[str] | None = None) -> int:
         target=args.target,
         requested_budget_inr=args.budget,
         on_progress=_log,
+        workers=args.workers,
     )
     print(_BAR)
     print(

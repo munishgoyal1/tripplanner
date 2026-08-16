@@ -1352,3 +1352,6 @@ It should generate the trip requests on its own and should not send duplicate re
 
 [2026-08-16 10:55] [master !] Corpus run shows no progress logs
 no logs beyond initial plan are coming from this script .. i have intiiated a run
+
+[2026-08-16 11:05] [master !] Parallelise corpus generation
+build parallelism to seepd up. i can reinitiate run once you are done
