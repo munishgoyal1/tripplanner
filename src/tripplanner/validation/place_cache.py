@@ -9,6 +9,9 @@ every other lane re-fetched the same places from Google at real cost.
 This module moves it into the repository alongside the trips, and back into any
 sandbox on demand. The file is the durable copy; a database is a warm cache of
 it.
+
+Unlike the cache containers, this file has no expiry: it is in git, so it is
+kept indefinitely. See docs/CODEMAP.md under "Cached external data".
 """
 
 from __future__ import annotations

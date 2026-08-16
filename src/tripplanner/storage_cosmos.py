@@ -104,6 +104,8 @@ def _client_singleton():
 #: accumulating forever. Everything else here is the user's own data and must
 #: never carry a TTL. Cosmos resets the clock on each write, so a place that
 #: keeps being looked up keeps living.
+#: Policy, and what is still unverified about this number, is in
+#: docs/CODEMAP.md under "Cached external data".
 _CACHE_TTL_SECONDS = 30 * 24 * 60 * 60
 _CACHE_CONTAINERS = frozenset({"places_cache", "tool_cache"})
 
