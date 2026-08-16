@@ -711,6 +711,80 @@ def upsert_family_member(
     return mutate_preferences(apply)
 
 
+def _family_member_key(relationship: str, name: str) -> tuple[str, str]:
+    return (relationship or "").strip().lower(), (name or "").strip().lower()
+
+
+def set_family_member(
+    *,
+    original_relationship: str | None,
+    original_name: str | None,
+    relationship: str,
+    name: str,
+    age: int | None,
+    dietary: list[str],
+    mobility: list[str],
+    interests: list[str],
+    notes: str,
+) -> dict[str, Any]:
+    """Add or fully replace one traveller's editable profile, keyed by (relationship, name).
+
+    Unlike ``upsert_family_member`` (additive chat learning), every field here
+    is set to exactly what the caller sent, since this backs a direct editing
+    UI where clearing a tag or renaming a person must take effect immediately.
+    """
+    rel = (relationship or "").strip().lower()
+    if rel not in _VALID_RELATIONSHIPS:
+        rel = "other"
+    original_key = (
+        _family_member_key(original_relationship, original_name or "")
+        if original_relationship
+        else None
+    )
+    member = {
+        "relationship": rel,
+        "name": (name or "").strip() or None,
+        "age": age,
+        "dietary": [t.strip() for t in dietary if t.strip()],
+        "mobility": [t.strip() for t in mobility if t.strip()],
+        "interests": [t.strip() for t in interests if t.strip()],
+        "notes": (notes or "").strip() or None,
+    }
+
+    def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+        members = list(prefs.get("family_members") or [])
+        target_index = None
+        if original_key is not None:
+            target_index = next(
+                (i for i, m in enumerate(members) if _family_member_key(m.get("relationship", ""), m.get("name") or "") == original_key),
+                None,
+            )
+        if target_index is not None:
+            members[target_index] = member
+        else:
+            members.append(member)
+        prefs["family_members"] = members
+        return prefs
+
+    return mutate_preferences(apply)
+
+
+def remove_family_member(relationship: str, name: str) -> dict[str, Any]:
+    """Remove one traveller, keyed by (relationship, name)."""
+    target_key = _family_member_key(relationship, name)
+
+    def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+        members = [
+            m for m in (prefs.get("family_members") or [])
+            if _family_member_key(m.get("relationship", ""), m.get("name") or "") != target_key
+        ]
+        prefs["family_members"] = members
+        return prefs
+
+    return mutate_preferences(apply)
+
+
+
 def _append_unique_str(field: str, item: str) -> dict[str, Any]:
     cleaned = (item or "").strip()
     if not cleaned:
