@@ -19,7 +19,9 @@
     person and reported.
 
   It is idempotent: run it, fix what it lists, run it again. A run with nothing
-  to do says so and changes nothing.
+  to do says so and changes nothing. It never stops to ask: only commits a lane
+  already had are published, so there is nothing to approve that the lane's own
+  author has not already approved by committing it.
 
   Validation is run where it can tell you something. A lane with no commits of
   its own is never merged, so it is never validated; a lane whose changes touch
@@ -29,14 +31,12 @@
 .EXAMPLE
   ./scripts/dev/full-2way-sync.ps1 -WhatIf
   ./scripts/dev/full-2way-sync.ps1
-  ./scripts/dev/full-2way-sync.ps1 -Yes
+  ./scripts/dev/full-2way-sync.ps1 -PullOnly
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [string]$BaseBranch = "master",
-    # Skip the confirmation. The point of this script is repeated runs.
-    [switch]$Yes,
     [switch]$AlwaysValidate,
     # Bring lanes up to the base without publishing any lane work to it.
     [switch]$PullOnly
@@ -298,41 +298,41 @@ if ($PullOnly) {
             $note = if ($item.Validate) { "with validation" } else { "no code changed, skipping validation" }
             Write-Host ("  {0} - {1} commit(s), {2}" -f $item.Entry.slug, $item.Commits.Count, $note)
         }
-        $approved = $Yes -or $WhatIfPreference
-        if (-not $approved) {
+        foreach ($item in $withWork) {
+            $lane = $item.Entry.slug
             Write-Host ""
-            $answer = Read-Host "Publish the lanes above to $BaseBranch? [y/N]"
-            $approved = $answer -in @("y", "Y", "yes", "Yes")
-        }
-        if (-not $approved) {
-            Write-Host "[skipped] Nothing was published; lanes were still brought up to date." -ForegroundColor Yellow
-        } else {
-            foreach ($item in $withWork) {
-                $lane = $item.Entry.slug
-                Write-Host ""
-                Write-Host "== merging $lane ==" -ForegroundColor Green
-                # Re-check right before merging rather than trusting the sweep
-                # above: validating and opening a pull request takes minutes, and
-                # another session working this lane will have dirtied it again.
-                if (-not (Push-LaneStash -WorkingDirectory $item.Entry.worktree -Lane $lane)) { continue }
-                try {
-                    # One lane failing must not strand the rest, so unlike the
-                    # gated two-way sync this keeps going and reports at the end.
-                    & $sandboxScript -Merge $lane -BaseBranch $BaseBranch `
-                        -SkipValidation:(-not $item.Validate) -Confirm:$false
-                    if ($LASTEXITCODE -ne 0) { throw "merge returned $LASTEXITCODE" }
-                    Add-Did "$lane - merged $($item.Commits.Count) commit(s) into $BaseBranch"
-                } catch {
-                    # sandbox.ps1 speaks to someone merging one lane by hand, so
-                    # its advice to commit first contradicts this script's whole
-                    # promise. Say what actually happened instead.
-                    $reason = $_.Exception.Message
-                    if ($reason -match "uncommitted changes") {
-                        $reason = "someone changed the lane while this run was merging it"
-                    }
-                    Add-Remaining -Lane $lane -Problem "has $($item.Commits.Count) commit(s) still waiting for $BaseBranch : $reason" `
-                        -NextStep "Nothing was lost; run this script again when the lane is idle."
+            Write-Host "== merging $lane ==" -ForegroundColor Green
+            if ($WhatIfPreference) {
+                # Merging for real is what clears the lane first, so attempting it
+                # here would report a blocker that a real run would not hit.
+                Write-Host "What if: would merge $($item.Commits.Count) commit(s) into $BaseBranch"
+                continue
+            }
+            # Re-check right before merging rather than trusting the sweep
+            # above: validating and opening a pull request takes minutes, and
+            # another session working this lane will have dirtied it again.
+            if (-not (Push-LaneStash -WorkingDirectory $item.Entry.worktree -Lane $lane)) { continue }
+            try {
+                # One lane failing must not strand the rest, so unlike the
+                # gated two-way sync this keeps going and reports at the end.
+                & $sandboxScript -Merge $lane -BaseBranch $BaseBranch `
+                    -SkipValidation:(-not $item.Validate) -Confirm:$false
+                if ($LASTEXITCODE -ne 0) { throw "merge returned $LASTEXITCODE" }
+                Add-Did "$lane - merged $($item.Commits.Count) commit(s) into $BaseBranch"
+            } catch {
+                # Say what is actually in the way. sandbox.ps1 reports only that
+                # the lane is dirty, and it is aimed at someone merging by hand,
+                # so its advice to commit contradicts this script's promise.
+                $reason = $_.Exception.Message
+                if ($reason -match "uncommitted changes") {
+                    $blocking = @(& git -C $item.Entry.worktree status --porcelain |
+                        ForEach-Object { ($_ -replace "^...", "").Trim() })
+                    $shown = ($blocking | Select-Object -First 3) -join ", "
+                    $more = if ($blocking.Count -gt 3) { " and $($blocking.Count - 3) more" } else { "" }
+                    $reason = "the lane was written to again while this run was merging it ($shown$more)"
                 }
+                Add-Remaining -Lane $lane -Problem "kept its $($item.Commits.Count) commit(s); $reason" `
+                    -NextStep "Nothing is broken and nothing was lost. Re-run when that lane is idle and the commits land."
             }
         }
     }
@@ -374,7 +374,8 @@ foreach ($entry in $registered) {
     & git -C $entry.worktree merge-base --is-ancestor $baseHead HEAD 2>$null
     if ($LASTEXITCODE -eq 0) {
         $level++
-    } elseif (-not ($remaining | Where-Object { $_.StartsWith("$($entry.slug)|") })) {
+    } elseif (-not $WhatIfPreference -and -not ($remaining | Where-Object { $_.StartsWith("$($entry.slug)|") })) {
+        # A dry run changed nothing, so a lane being behind is the plan, not a fault.
         Add-Remaining -Lane $entry.slug -Problem "does not contain $BaseBranch $($baseHead.Substring(0, 7))" `
             -NextStep "Run this script again; if it repeats, update the lane by hand."
     }
@@ -382,6 +383,11 @@ foreach ($entry in $registered) {
 
 Write-Host ""
 Write-Host "────────────────────────────────────────────────────────────"
+if ($WhatIfPreference) {
+    Write-Host "Dry run. Nothing was changed; the lines above are what a real run would do."
+    Stop-RunLog
+    return
+}
 Write-Host "$BaseBranch is at $($baseHead.Substring(0, 7)). $level of $($registered.Count) lane(s) contain it."
 if ($did.Count -gt 0) {
     Write-Host ""
@@ -396,7 +402,7 @@ if ($remaining.Count -eq 0) {
 }
 
 Write-Host ""
-Write-Host "Still to resolve ($($remaining.Count)):" -ForegroundColor Yellow
+Write-Host "Not finished ($($remaining.Count)):" -ForegroundColor Yellow
 $index = 0
 foreach ($item in $remaining) {
     $index++
@@ -405,6 +411,7 @@ foreach ($item in $remaining) {
     Write-Host ("     -> {0}" -f $parts[2]) -ForegroundColor DarkGray
 }
 Write-Host ""
-Write-Host "Fix any of the above, then run this script again; it resumes from wherever it is." -ForegroundColor DarkGray
+Write-Host "Each line says what to do. Some need you; some only need a re-run once" -ForegroundColor DarkGray
+Write-Host "that lane is idle. Running this again always resumes from where it is." -ForegroundColor DarkGray
 Stop-RunLog
 exit 1
