@@ -291,12 +291,12 @@ def test_proposal_only_ignores_tool_phase_budget_and_completion_gates() -> None:
     assert decision.forced_reason == "model_choice"
 
 
-def test_a_kickoff_asked_last_turn_is_still_asked_this_turn() -> None:
-    """Tool messages do not survive a turn, so the gate must read what was saved.
+def test_a_kickoff_asked_last_turn_is_recognised_this_turn() -> None:
+    """Tool messages do not survive a turn, so the answer must read what was saved.
 
-    Without this the block never clears: create_trip_plan is stripped from the
-    bound tools on every turn, and the agent can only narrate a plan it is not
-    allowed to make. Seventy corpus requests looped this way on 2026-08-16.
+    In interactive mode the kickoff is asked in one turn and answered in the
+    next. Without the saved marker the answer is never recognised and the agent
+    asks again forever.
     """
     from langchain_core.messages import AIMessage, HumanMessage
 
@@ -308,12 +308,11 @@ def test_a_kickoff_asked_last_turn_is_still_asked_this_turn() -> None:
     )
     messages = [HumanMessage(content="Plan a 3 day Goa trip"), asked, HumanMessage(content="Yes")]
 
-    assert not gp.trip_kickoff_owed(messages, has_planning_intent=True)
     assert gp.pending_trip_kickoff_answer(messages)
 
 
-def test_a_conversation_that_never_asked_still_owes_the_kickoff() -> None:
-    """The gate exists so a trip is never built without asking; keep that."""
+def test_a_conversation_that_never_asked_has_no_answer_pending() -> None:
+    """Only a real kickoff counts, or any second turn would look like an answer."""
     from langchain_core.messages import AIMessage, HumanMessage
 
     from tripplanner import graph_policy as gp
@@ -324,7 +323,7 @@ def test_a_conversation_that_never_asked_still_owes_the_kickoff() -> None:
         HumanMessage(content="Yes"),
     ]
 
-    assert gp.trip_kickoff_owed(messages, has_planning_intent=True)
+    assert not gp.pending_trip_kickoff_answer(messages)
 
 
 def test_a_saved_turn_carries_its_tools_back(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
