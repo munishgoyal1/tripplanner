@@ -1899,6 +1899,16 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
     $python = Get-VenvPython
     $seedScript = Join-Path $scriptRepoRoot "scripts\dev\sandbox_seed.py"
     if (Test-Path $seedScript -PathType Leaf) {
+        # Dropping the database is the moment this lane's audit evidence would be
+        # lost, so preserve it first. A failure here must not block the discard.
+        $cacheScript = Join-Path $scriptRepoRoot "scripts\dev\corpus_cache.py"
+        if (Test-Path $cacheScript -PathType Leaf) {
+            Write-Host "  Preserving trips and places from $($entry.database) ..."
+            & $python $cacheScript --save --database $entry.database
+            if ($LASTEXITCODE -ne 0) {
+                $cleanupIssues += "could not preserve corpus data from $($entry.database)"
+            }
+        }
         & $python $seedScript drop --database $entry.database
         if ($LASTEXITCODE -ne 0) {
             $cleanupIssues += "could not drop database $($entry.database)"

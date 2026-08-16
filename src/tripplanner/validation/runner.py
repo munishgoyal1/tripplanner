@@ -86,6 +86,11 @@ def collect(
             sources.append(f"fixtures ({len(found)})")
         records.extend(found)
 
+    saved = corpus_module.from_lane_snapshots(corpus_root(repo_root))
+    if saved:
+        sources.append(f"saved lanes ({len(saved)})")
+    records.extend(saved)
+
     return corpus_module.deduplicate(records), sources, skipped
 
 

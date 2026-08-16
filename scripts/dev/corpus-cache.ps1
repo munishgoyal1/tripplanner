@@ -1,20 +1,27 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Generate corpus trips with the real planner, inside a budget.
+  Keep the corpus's place grounding in the repository, not in one sandbox.
 
 .DESCRIPTION
-  Thin dispatcher over scripts/dev/build_corpus.py using the repository virtual
+  Thin dispatcher over scripts/dev/corpus_cache.py using the repository virtual
   environment when one is present.
 
-  This spends real money: it sends planning requests to a running sandbox API,
-  which calls the model and the place providers. Spend is capped per run and
-  cumulatively, and recorded in corpus/spend-ledger.json. A finished run also
-  saves the place grounding it warmed into corpus/places.json.
+  -Save    reads a sandbox emulator database and merges what it finds into
+           corpus/places.json, so the grounding survives the worktree.
+  -Restore writes corpus/places.json into a sandbox database, so a fresh lane
+           renders and checks trips without calling a provider.
+
+  With no switch it reports what is stored and what each sandbox still holds
+  that has not been saved.
 #>
 
 [CmdletBinding()]
 param(
+    [switch]$Save,
+    [switch]$Restore,
+    [string]$Database = "",
+    [switch]$All,
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$Rest
 )
@@ -49,7 +56,13 @@ if (-not $python) {
     throw "No Python interpreter found. Create the repository virtual environment first."
 }
 
-$cli = Join-Path $PSScriptRoot "build_corpus.py"
-# -u so a run that streams through this dispatcher for hours is never buffered.
-& $python -u $cli @Rest
+$argv = @()
+if ($Save) { $argv += "--save" }
+if ($Restore) { $argv += "--restore" }
+if ($All) { $argv += "--all" }
+if ($Database) { $argv += @("--database", $Database) }
+if ($Rest) { $argv += $Rest }
+
+$cli = Join-Path $PSScriptRoot "corpus_cache.py"
+& $python $cli @argv
 exit $LASTEXITCODE

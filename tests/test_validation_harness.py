@@ -832,3 +832,175 @@ def test_a_request_is_announced_before_the_slow_call_not_after(
 
     assert events[0].startswith("  -> corpus-slug")
     assert events[1] == "asked"
+
+
+# ---- place cache ----------------------------------------------------------
+
+
+def test_a_failed_lookup_is_not_worth_preserving() -> None:
+    """Re-trying a miss is cheap; storing it forever is not."""
+    from tripplanner.validation import place_cache
+
+    assert place_cache._worth_keeping({"lat": 12.9, "lng": 77.6})
+    assert not place_cache._worth_keeping({"name": "Nowhere"})
+    assert not place_cache._worth_keeping(None)
+
+
+def test_volatile_photo_urls_are_never_written_to_the_file() -> None:
+    """Signed URLs expire within the hour; the references outlive them."""
+    from tripplanner.validation import place_cache
+
+    portable = place_cache._portable(
+        {"lat": 1.0, "photo_urls": ["https://signed"], "__photos_at__": 1.0, "photo_refs": ["a"]}
+    )
+
+    assert "photo_urls" not in portable
+    assert "__photos_at__" not in portable
+    assert portable["photo_refs"] == ["a"]
+
+
+def test_only_the_photos_the_app_can_show_are_kept() -> None:
+    from tripplanner.validation import place_cache
+
+    portable = place_cache._portable({"lat": 1.0, "photo_refs": [str(n) for n in range(10)]})
+
+    assert portable["photo_refs"] == ["0", "1", "2"]
+
+
+def test_the_photo_cap_matches_what_the_app_renders() -> None:
+    """Trimming below what the product shows would lose images silently."""
+    from tripplanner.validation import place_cache
+    from tripplanner.web import places_cache as app_cache
+
+    assert place_cache._MAX_PHOTO_REFS == app_cache._MAX_PHOTOS_PER_PLACE
+
+
+def test_merging_prefers_the_more_recently_fetched_copy() -> None:
+    """Two lanes cache the same place; the newer fetch is the better one."""
+    from tripplanner.validation import place_cache
+
+    merged = place_cache.merge(
+        {"a|goa": {"lat": 1.0, "__at__": 100.0}, "b|goa": {"lat": 2.0, "__at__": 50.0}},
+        {"a|goa": {"lat": 9.9, "__at__": 200.0}, "c|goa": {"lat": 3.0, "__at__": 10.0}},
+    )
+
+    assert merged["a|goa"]["lat"] == 9.9
+    assert merged["b|goa"]["lat"] == 2.0
+    assert sorted(merged) == ["a|goa", "b|goa", "c|goa"]
+
+
+def test_a_saved_cache_round_trips(tmp_path: Path) -> None:
+    from tripplanner.validation import place_cache
+
+    path = place_cache.cache_path(tmp_path)
+    place_cache.save(path, {"eiffel tower|paris": {"lat": 48.8, "__at__": 1.0}})
+
+    assert place_cache.load(path)["eiffel tower|paris"]["lat"] == 48.8
+    assert place_cache.load(tmp_path / "absent.json") == {}
+
+
+def test_the_cache_file_is_stable_between_identical_saves(tmp_path: Path) -> None:
+    """An unchanged export must not produce a diff, or the file churns."""
+    from tripplanner.validation import place_cache
+
+    places = {"b|goa": {"lat": 2.0}, "a|goa": {"lat": 1.0}}
+    first = tmp_path / "one.json"
+    second = tmp_path / "two.json"
+    place_cache.save(first, places)
+    place_cache.save(second, dict(reversed(list(places.items()))))
+
+    strip = lambda text: [line for line in text.splitlines() if "saved_at" not in line]  # noqa: E731
+    assert strip(first.read_text()) == strip(second.read_text())
+
+
+def test_restoring_refuses_a_database_that_is_not_a_sandbox() -> None:
+    from tripplanner.validation import place_cache
+
+    with pytest.raises(ValueError):
+        place_cache.restore("tripplanner-prod", {"a|b": {"lat": 1.0}})
+
+
+def test_reviews_are_never_committed_to_the_cache_file() -> None:
+    """Third-party content stays in the cache database, which expires it."""
+    from tripplanner.validation import place_cache
+
+    portable = place_cache._portable(
+        {"lat": 1.0, "reviews": [{"text": "lovely"}], "weekday_descriptions": ["Mon: open"]}
+    )
+
+    assert "reviews" not in portable
+    assert portable["weekday_descriptions"] == ["Mon: open"]
+
+
+# ---- lane snapshots -------------------------------------------------------
+
+
+def test_a_saved_lane_keeps_its_trips_after_the_database_is_gone(tmp_path: Path) -> None:
+    """Discarding a sandbox drops its database; the audit still needs the trips."""
+    from tripplanner.validation import lane_trips
+
+    path = lane_trips.snapshot_path(tmp_path, "tripplanner-sbx-9-gone")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "database": "tripplanner-sbx-9-gone",
+                "trips": [{"trip_id": "goa_2027", "destination": "Goa"}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    restored = corpus.from_lane_snapshots(tmp_path)
+
+    assert [record.destination for record in restored] == ["Goa"]
+    assert restored[0].provenance == corpus.REAL
+    assert "saved" in restored[0].source
+
+
+def test_a_snapshot_of_a_living_lane_is_deduplicated_away(tmp_path: Path) -> None:
+    """A snapshot must not double-count a trip the database still holds."""
+    from tripplanner.validation import lane_trips
+
+    plan = {"trip_id": "goa_2027", "destination": "Goa"}
+    path = lane_trips.snapshot_path(tmp_path, "tripplanner-sbx-9-live")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"database": "tripplanner-sbx-9-live", "trips": [plan]}))
+
+    live = corpus.CorpusRecord(
+        id="tripplanner-sbx-9-live:goa_2027", provenance=corpus.REAL, source="db", plan=plan
+    )
+    merged = corpus.deduplicate([live, *corpus.from_lane_snapshots(tmp_path)])
+
+    assert len(merged) == 1
+
+
+def test_saving_refuses_a_database_that_is_not_a_sandbox(tmp_path: Path) -> None:
+    from tripplanner.validation import lane_trips
+
+    with pytest.raises(ValueError):
+        lane_trips.save(tmp_path, "tripplanner-prod")
+
+
+def test_the_cache_containers_expire_and_the_data_ones_never_do() -> None:
+    """A TTL on users or trips would delete the product's own records."""
+    from tripplanner import storage_cosmos
+
+    assert storage_cosmos._CACHE_TTL_SECONDS == 30 * 24 * 60 * 60
+    assert storage_cosmos._CACHE_CONTAINERS == {"places_cache", "tool_cache"}
+    for owned in ("users", "trips", "shared_trips", "documents"):
+        assert owned not in storage_cosmos._CACHE_CONTAINERS
+
+
+def test_the_primary_local_database_may_hold_cache_but_hosted_ones_may_not() -> None:
+    """Master is never discarded, so it only ever fills by hand -- but it is local."""
+    from tripplanner.validation import place_cache
+
+    assert place_cache.assert_cache_target("tripplanner-local") == "tripplanner-local"
+    assert place_cache.assert_cache_target("tripplanner-sbx-2-auto-validation")
+    for hosted in ("tripplanner-prod", "tripplanner-canary"):
+        with pytest.raises(ValueError):
+            place_cache.assert_cache_target(hosted)
+    with pytest.raises(ValueError):
+        place_cache.assert_cache_target("something-else")

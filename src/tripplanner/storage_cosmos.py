@@ -15,6 +15,7 @@ Designed for the Cosmos Free Tier (1000 RU/s, 25 GB free per subscription).
 from __future__ import annotations
 
 import copy
+import logging
 import warnings
 from dataclasses import dataclass
 from typing import Any
@@ -23,6 +24,8 @@ from urllib.parse import urlparse
 from urllib3.exceptions import InsecureRequestWarning
 
 from tripplanner.config import get_settings
+
+log = logging.getLogger(__name__)
 
 _COSMOS_SYSTEM_FIELDS = {"_rid", "_self", "_etag", "_attachments", "_ts"}
 
@@ -97,18 +100,51 @@ def _client_singleton():
     return _client
 
 
+#: Caches are rebuildable from their provider, so rows expire instead of
+#: accumulating forever. Everything else here is the user's own data and must
+#: never carry a TTL. Cosmos resets the clock on each write, so a place that
+#: keeps being looked up keeps living.
+_CACHE_TTL_SECONDS = 30 * 24 * 60 * 60
+_CACHE_CONTAINERS = frozenset({"places_cache", "tool_cache"})
+
+
 def _container(name: str):
     if name in _containers:
         return _containers[name]
     _client_singleton()
     from azure.cosmos import PartitionKey  # imported lazily
 
+    ttl = _CACHE_TTL_SECONDS if name in _CACHE_CONTAINERS else None
     container = _database.create_container_if_not_exists(
         id=name,
         partition_key=PartitionKey(path="/user_id"),
+        default_ttl=ttl,
     )
+    if ttl is not None:
+        _apply_cache_ttl(container, ttl)
     _containers[name] = container
     return container
+
+
+def _apply_cache_ttl(container, ttl: int) -> None:
+    """Set the expiry on a cache container that predates this policy.
+
+    ``create_container_if_not_exists`` returns an existing container untouched,
+    so without this an already-deployed cache would keep every row forever.
+    """
+    from azure.cosmos import PartitionKey
+
+    try:
+        properties = container.read()
+        if properties.get("defaultTtl") == ttl:
+            return
+        _database.replace_container(
+            container=container,
+            partition_key=PartitionKey(path="/user_id"),
+            default_ttl=ttl,
+        )
+    except Exception as exc:  # noqa: BLE001 - a cache that cannot expire still works
+        log.warning("could not set ttl on %s: %s", container.id, exc)
 
 
 def _strip_system_fields(doc: dict[str, Any]) -> dict[str, Any]:
