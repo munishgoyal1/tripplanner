@@ -55,6 +55,25 @@ def inspect_override(request: Request) -> str | None:
     return (request.headers.get(INSPECT_HEADER) or "").strip() or None
 
 
+#: Choosing which trip to look at, and taking a copy to edit, are the only
+#: writes inspection may perform. Everything else would make the corpus drift
+#: because somebody opened it.
+_INSPECT_WRITABLE_PATHS = frozenset({"/trips/switch", "/trip/fork"})
+
+
+def guard_inspection_write(request: Request) -> None:
+    if request.method in {"GET", "HEAD", "OPTIONS"}:
+        return
+    if not inspect_override(request):
+        return
+    if request.url.path.rstrip("/") in _INSPECT_WRITABLE_PATHS:
+        return
+    raise HTTPException(
+        status_code=409,
+        detail="This trip is being inspected and is read-only. Take a copy to edit it.",
+    )
+
+
 def resolve_user_id(request: Request, claimed_user_id: str = "local") -> str:
     """Return the signed principal, or a constrained anonymous/local identity.
 

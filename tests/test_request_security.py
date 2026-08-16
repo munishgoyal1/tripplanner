@@ -558,3 +558,43 @@ def test_a_hosted_caller_cannot_inspect_another_identity(monkeypatch) -> None:  
 
     assert response.status_code == 200
     assert response.json()["user_id"] == "google-owner"
+
+
+def test_inspecting_a_trip_cannot_change_it(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """The corpus cost real money to build; opening it must not edit it."""
+    from tripplanner.request_identity import INSPECT_HEADER
+
+    client = _local(monkeypatch)
+
+    response = client.post(
+        "/trip/repair",
+        json={"user_id": "corpus-probe"},
+        headers={INSPECT_HEADER: "corpus-probe"},
+    )
+
+    assert response.status_code == 409
+    assert "read-only" in response.json()["detail"]
+
+
+def test_inspection_may_still_choose_which_trip_to_look_at(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """Switching is how the inspector opens anything, so it cannot be blocked."""
+    from tripplanner.request_identity import INSPECT_HEADER
+
+    client = _local(monkeypatch)
+
+    response = client.post(
+        "/trips/switch",
+        json={"user_id": "corpus-probe", "trip_id": "nope"},
+        headers={INSPECT_HEADER: "corpus-probe"},
+    )
+
+    assert response.status_code != 409
+
+
+def test_a_normal_edit_is_untouched_by_the_guard(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """Without the header nothing changes, so the guard cannot affect the product."""
+    client = _local(monkeypatch)
+
+    response = client.post("/trip/repair", json={"user_id": "local"})
+
+    assert response.status_code != 409

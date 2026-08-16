@@ -914,6 +914,8 @@ def build_view(
     ]
 
     title = f"\u2708\ufe0f {destination}" if destination else "Trip planner"
+    if trip.get("forked_from"):
+        title = f"{title} \u00b7 my copy"
     if focus and focus.get("name"):
         title = f"{title} \u2014 {focus['name']}"
 
@@ -922,6 +924,7 @@ def build_view(
         "updated_at": str(trip.get("updated_at") or "") or None,
         "has_trip": True,
         "title": title,
+        "forked_from": str(trip.get("forked_from") or "") or None,
         "destination": destination,
         "focus": focus,
         "is_fallback": fallback,

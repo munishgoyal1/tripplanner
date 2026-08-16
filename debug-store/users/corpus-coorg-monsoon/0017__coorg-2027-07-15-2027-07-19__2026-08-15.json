@@ -615,7 +615,7 @@
         },
         "visa": {},
         "trip_constraints": [],
-        "updated_at": "2026-08-15T19:58:21.874244",
+        "updated_at": "2026-08-16T12:03:52.634896",
         "price_checks": [
           {
             "kind": "lodging",
@@ -1642,7 +1642,7 @@
     "label": "",
     "notes": []
   },
-  "last_seen_at": "2026-08-15T14:28:21Z",
+  "last_seen_at": "2026-08-16T06:33:52Z",
   "schema_version": 1,
   "seen_in": [
     {

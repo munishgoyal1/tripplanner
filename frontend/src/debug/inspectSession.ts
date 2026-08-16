@@ -61,3 +61,22 @@ export function endInspection(): void {
   localStorage.removeItem(RESTORE_KEY);
   localStorage.removeItem(GUEST_KEY);
 }
+
+/** Take an editable copy of the inspected trip, owned by whoever is signed in. */
+export async function forkInspectedTrip(): Promise<string> {
+  const { apiFetch, BASE } = await import("../auth/authSession");
+  const view = await (await apiFetch(`${BASE}/trip/view`)).json();
+  const response = await apiFetch(`${BASE}/trip/fork`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      trip_id: view?.trip_id ?? "",
+      owner_id: localStorage.getItem(RESTORE_KEY) || "",
+    }),
+  });
+  if (!response.ok) throw new Error(await response.text());
+  const forked = await response.json();
+  // Leave inspection first, so the copy opens as the owner's own trip.
+  endInspection();
+  return forked.trip_id as string;
+}
