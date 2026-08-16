@@ -2332,7 +2332,7 @@ class TestSystemPromptDateInjection:
         msg = build_trip_system_prompt(today=date(2026, 6, 2))
         assert "request_trip_input" in msg.content
         assert "pre-filled controls" in msg.content
-        assert "For every NEW trip" in msg.content
+        assert "In interactive mode" in msg.content
         assert "known_context_json" in msg.content
         assert "never ask again" in msg.content
 

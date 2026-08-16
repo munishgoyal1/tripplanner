@@ -20,7 +20,7 @@ const preferences: Preferences = {
   dislikes: [],
   about_me: "",
   profile_summary: "",
-  planning_mode: "interactive",
+  planning_mode: "direct",
 };
 
 const mocks = vi.hoisted(() => ({
@@ -44,7 +44,6 @@ describe("SettingsModal preference shelf", () => {
 
     expect(await screen.findByRole("heading", { name: "A better trip starts here" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Trip rhythm" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Planning style" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Where you stay" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Food and flavour" })).toBeInTheDocument();
     expect(screen.getByText("trip_pace: balanced")).toBeInTheDocument();
@@ -77,6 +76,22 @@ describe("SettingsModal preference shelf", () => {
 
     await waitFor(() =>
       expect(mocks.savePreferences).toHaveBeenCalledWith({ dietary: ["local favourites", "vegan"] }),
+    );
+  });
+
+  it("defaults to agent-led planning and lets the traveller opt into a useful question", async () => {
+    const { container } = render(<SettingsModal section="travel" embedded onClose={vi.fn()} />);
+
+    await screen.findByRole("heading", { name: "A better trip starts here" });
+    expect(screen.getByText("Let the agent decide with smart defaults")).toBeInTheDocument();
+    const toggle = container.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+    expect(toggle).toBeChecked();
+
+    fireEvent.click(toggle);
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(mocks.savePreferences).toHaveBeenCalledWith({ planning_mode: "interactive" }),
     );
   });
 });

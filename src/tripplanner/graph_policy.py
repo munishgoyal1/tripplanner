@@ -50,7 +50,6 @@ class CompletionPolicyDecision:
     kickoff_tool: str | None = None
     budget_exhausted: bool = False
     completion_gaps: tuple[str, ...] = ()
-    block_trip_creation: bool = False
 
 
 _NEW_TRIP_REQUEST_RE = re.compile(
@@ -307,42 +306,6 @@ def latest_user_requests_different_trip(
     return active_destination.lower() not in request.lower()
 
 
-def trip_kickoff_owed(
-    messages: Sequence[BaseMessage],
-    *,
-    has_planning_intent: bool,
-) -> bool:
-    """True while a trip may still be created without the user having been asked anything.
-
-    Wording-independent on purpose: the model creates trips on its own initiative, so
-    no phrase list can decide this. Emitting the request is not enough -- the block
-    holds until the user's reply lands, otherwise the same turn asks and then answers
-    itself.
-    """
-    if not has_planning_intent:
-        return False
-    positions = _tool_call_positions(messages)
-    latest_create = max(
-        (index for index, name in positions if name == "create_trip_plan"),
-        default=-1,
-    )
-    latest_kickoff = max(
-        (
-            index
-            for index, name in positions
-            if name == "request_trip_input" and index > latest_create
-        ),
-        default=-1,
-    )
-    if latest_kickoff < 0:
-        return True
-    latest_human = max(
-        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
-        default=-1,
-    )
-    return latest_human < latest_kickoff
-
-
 def pending_trip_kickoff_answer(messages: Sequence[BaseMessage]) -> bool:
     positions = _tool_call_positions(messages)
     latest_create = max(
@@ -402,7 +365,7 @@ def trip_kickoff_tool_choice(
         return "get_travel_preferences"
     if "recommend_trip_duration" not in turn_tools:
         return "recommend_trip_duration"
-    return "request_trip_input"
+    return None
 
 
 def trip_creation_tool_choice(
@@ -569,9 +532,4 @@ def resolve_completion_policy(
         forced_reason=forced_reason,
         requirement=requirement,
         kickoff_tool=kickoff_tool,
-        block_trip_creation=(
-            forced_tool is None
-            and not proposal_only
-            and trip_kickoff_owed(messages, has_planning_intent=has_planning_intent)
-        ),
     )

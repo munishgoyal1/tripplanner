@@ -16,25 +16,21 @@ update this file and its linked tests in the same commit.
 
 ### EB-PLAN-001 - Complete a bounded new-trip planning turn
 
-**Trigger:** Submit or skip the structured kickoff for a new trip and let the
-Assistant build its first proposal.
+**Trigger:** Start a new trip, with the travel-profile smart-defaults checkbox
+either enabled (the default) or disabled.
 
 **Expected:**
 
-- The structured kickoff asks only for unresolved, materially useful facts. Explicit
-  prompt values and configured preferences are not repeated; schema defaults are not
-  treated as user choices. Budget level, trip style, and pace are included when
-  unresolved, while destination-only travel never invents an origin. The inline
-  controls preserve prefilled values, skip/not-answered behavior, and existing
-  structured labels.
+- With smart defaults enabled, the Assistant builds from the request, saved
+  preferences, trip history, and sensible inferences without an up-front confirmation
+  gate. With it disabled, it may ask at most one structured inline review when an
+  unresolved fact would materially improve the trip. Explicit prompt values and
+  configured preferences are never repeated, while a destination-only trip never
+  invents an origin. Any review preserves prefilled values and a skip/default path.
 - Asking to plan a destination other than the active trip runs the kickoff before the
   replacement trip is created, without requiring the words "new" or "another". A
   follow-up naming the active destination, and a day trip elsewhere, still skip the
   kickoff and leave the active trip in place.
-- No planning turn can create a trip before the kickoff has been presented, whatever
-  the wording. `create_trip_plan` is withheld until the user submits or skips the
-  request, so a phrasing the deterministic gates do not recognise cannot produce a
-  silent trip. Proposal-only reviews and non-planning turns are unaffected.
 - The Assistant batches hotel research for every overnight city in one parallel
   tool phase and accepts usable results when another city-specific query fails.
 - While planning is active, the top command bar beside the trip selector shows
