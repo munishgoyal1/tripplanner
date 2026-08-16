@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Check, Clock3, MessageCircle, Sparkles, UsersRound, X } from "lucide-react";
+import { Check, Clock3, MessageCircle, Pencil, Plus, Sparkles, Trash2, UsersRound, X } from "lucide-react";
 import {
   fetchPreferences,
   savePreferences,
+  saveFamilyMember,
+  removeFamilyMember,
   fetchProfileSuggestions,
   resolveProfileSuggestion,
   type FamilyMember,
+  type FamilyMemberEdit,
   type Preferences,
   type ProfileSuggestion,
 } from "../api";
@@ -21,17 +24,83 @@ const RELATIONSHIP_LABEL: Record<FamilyMember["relationship"], string> = {
   other: "Traveller",
 };
 
+const RELATIONSHIP_OPTIONS = Object.keys(RELATIONSHIP_LABEL).filter((r) => r !== "self") as FamilyMember["relationship"][];
+
 function memberTags(member: FamilyMember): string[] {
   return [...(member.dietary ?? []), ...(member.mobility ?? []), ...(member.interests ?? [])];
 }
 
-function MemberCard({ member }: { member: FamilyMember }) {
+function memberKey(member: Pick<FamilyMember, "relationship" | "name">): string {
+  return `${member.relationship}|${(member.name || "").toLowerCase()}`;
+}
+
+interface MemberDraft {
+  relationship: FamilyMember["relationship"];
+  name: string;
+  age: string;
+  dietary: string;
+  mobility: string;
+  interests: string;
+  notes: string;
+}
+
+function toDraft(member?: FamilyMember): MemberDraft {
+  return {
+    relationship: member?.relationship ?? "other",
+    name: member?.name ?? "",
+    age: member?.age != null ? String(member.age) : "",
+    dietary: (member?.dietary ?? []).join(", "),
+    mobility: (member?.mobility ?? []).join(", "),
+    interests: (member?.interests ?? []).join(", "),
+    notes: member?.notes ?? "",
+  };
+}
+
+function parseCommaList(value: string): string[] {
+  return value.split(",").map((item) => item.trim()).filter(Boolean);
+}
+
+function MemberEditor({ draft, onChange, onSave, onCancel, saving }: {
+  draft: MemberDraft;
+  onChange: (next: MemberDraft) => void;
+  onSave: () => void;
+  onCancel: () => void;
+  saving: boolean;
+}) {
+  return (
+    <div className="space-y-2 rounded-lg bg-white p-3 ring-2 ring-brand/40">
+      <div className="flex gap-2">
+        <select className="input h-8 w-28 text-xs" value={draft.relationship} onChange={(e) => onChange({ ...draft, relationship: e.target.value as FamilyMember["relationship"] })}>
+          {RELATIONSHIP_OPTIONS.map((rel) => <option key={rel} value={rel}>{RELATIONSHIP_LABEL[rel]}</option>)}
+        </select>
+        <input className="input h-8 flex-1 text-xs" placeholder="Name" value={draft.name} onChange={(e) => onChange({ ...draft, name: e.target.value })} />
+        <input className="input h-8 w-16 text-xs" type="number" min={0} max={120} placeholder="Age" value={draft.age} onChange={(e) => onChange({ ...draft, age: e.target.value })} />
+      </div>
+      <input className="input h-8 w-full text-xs" placeholder="Dietary (comma-separated)" value={draft.dietary} onChange={(e) => onChange({ ...draft, dietary: e.target.value })} />
+      <input className="input h-8 w-full text-xs" placeholder="Mobility (comma-separated)" value={draft.mobility} onChange={(e) => onChange({ ...draft, mobility: e.target.value })} />
+      <input className="input h-8 w-full text-xs" placeholder="Interests (comma-separated)" value={draft.interests} onChange={(e) => onChange({ ...draft, interests: e.target.value })} />
+      <input className="input h-8 w-full text-xs" placeholder="Notes" value={draft.notes} onChange={(e) => onChange({ ...draft, notes: e.target.value })} />
+      <div className="flex justify-end gap-2 pt-1">
+        <button type="button" onClick={onCancel} disabled={saving} className="h-7 rounded-full px-3 text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200 disabled:opacity-50">Cancel</button>
+        <button type="button" onClick={onSave} disabled={saving || !draft.name.trim()} className="h-7 rounded-full bg-brand px-3 text-[11px] font-semibold text-white disabled:opacity-40">{saving ? "Saving…" : "Save"}</button>
+      </div>
+    </div>
+  );
+}
+
+function MemberCard({ member, onEdit, onRemove }: { member: FamilyMember; onEdit: () => void; onRemove: () => void }) {
   const tags = memberTags(member);
   return (
     <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
-      <div className="flex items-baseline gap-2">
-        <strong className="text-xs font-semibold text-ink">{member.name || RELATIONSHIP_LABEL[member.relationship]}</strong>
-        <span className="text-[11px] text-slate-400">{RELATIONSHIP_LABEL[member.relationship]}{member.age ? ` · ${member.age}` : ""}</span>
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-baseline gap-2">
+          <strong className="text-xs font-semibold text-ink">{member.name || RELATIONSHIP_LABEL[member.relationship]}</strong>
+          <span className="text-[11px] text-slate-400">{RELATIONSHIP_LABEL[member.relationship]}{member.age ? ` · ${member.age}` : ""}</span>
+        </div>
+        <div className="flex shrink-0 gap-1">
+          <button type="button" onClick={onEdit} aria-label={`Edit ${member.name || RELATIONSHIP_LABEL[member.relationship]}`} className="grid h-6 w-6 place-items-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-ink"><Pencil size={12} aria-hidden /></button>
+          <button type="button" onClick={onRemove} aria-label={`Remove ${member.name || RELATIONSHIP_LABEL[member.relationship]}`} className="grid h-6 w-6 place-items-center rounded-md text-slate-400 hover:bg-rose-50 hover:text-rose-600"><Trash2 size={12} aria-hidden /></button>
+        </div>
       </div>
       {tags.length > 0 && (
         <div className="mt-1.5 flex flex-wrap gap-1">
@@ -92,6 +161,9 @@ export default function TravellerProfile() {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [suggestions, setSuggestions] = useState<ProfileSuggestion[]>([]);
   const [familySuggestion, setFamilySuggestion] = useState<FamilySuggestionState>("new");
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [draft, setDraft] = useState<MemberDraft | null>(null);
+  const [savingMember, setSavingMember] = useState(false);
 
   useEffect(() => {
     fetchPreferences().then(setPrefs).catch(() => setPrefs(null));
@@ -107,6 +179,44 @@ export default function TravellerProfile() {
   function resolveFamilyMemberSuggestion(id: string, action: "save" | "dismiss") {
     setSuggestions((current) => current.filter((item) => item.id !== id));
     resolveProfileSuggestion(id, action).then(setSuggestions).catch(() => undefined);
+  }
+
+  function startEdit(member?: FamilyMember) {
+    setEditingKey(member ? memberKey(member) : "__new__");
+    setDraft(toDraft(member));
+  }
+
+  function cancelEdit() {
+    setEditingKey(null);
+    setDraft(null);
+  }
+
+  async function saveDraft(original?: FamilyMember) {
+    if (!draft || !draft.name.trim()) return;
+    setSavingMember(true);
+    try {
+      const edit: FamilyMemberEdit = {
+        original_relationship: original?.relationship,
+        original_name: original?.name,
+        relationship: draft.relationship,
+        name: draft.name.trim(),
+        age: draft.age.trim() ? Number(draft.age) : null,
+        dietary: parseCommaList(draft.dietary),
+        mobility: parseCommaList(draft.mobility),
+        interests: parseCommaList(draft.interests),
+        notes: draft.notes.trim(),
+      };
+      const family_members = await saveFamilyMember(edit);
+      setPrefs((current) => (current ? { ...current, family_members } : current));
+      cancelEdit();
+    } finally {
+      setSavingMember(false);
+    }
+  }
+
+  async function removeMember(member: FamilyMember) {
+    const family_members = await removeFamilyMember(member.relationship, member.name || "");
+    setPrefs((current) => (current ? { ...current, family_members } : current));
   }
 
   async function rememberFamilySuggestion() {
@@ -127,14 +237,25 @@ export default function TravellerProfile() {
   return (
     <div className="space-y-4 text-sm">
       {prefs && <SharedByEveryone prefs={prefs} />}
-      {members.length > 0 && (
-        <div>
-          <p className="mb-2 text-xs font-semibold text-slate-700">Each traveller</p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {members.map((member, index) => <MemberCard key={member.name || `${member.relationship}-${index}`} member={member} />)}
-          </div>
+      <div>
+        <p className="mb-2 text-xs font-semibold text-slate-700">Each traveller</p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {members.map((member, index) => {
+            const key = member.name ? memberKey(member) : `${member.relationship}-${index}`;
+            return editingKey === key && draft ? (
+              <MemberEditor key={key} draft={draft} onChange={setDraft} onSave={() => saveDraft(member)} onCancel={cancelEdit} saving={savingMember} />
+            ) : (
+              <MemberCard key={key} member={member} onEdit={() => startEdit(member)} onRemove={() => removeMember(member)} />
+            );
+          })}
+          {editingKey === "__new__" && draft && (
+            <MemberEditor draft={draft} onChange={setDraft} onSave={() => saveDraft()} onCancel={cancelEdit} saving={savingMember} />
+          )}
         </div>
-      )}
+        {editingKey === null && (
+          <button type="button" onClick={() => startEdit()} className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold text-brand ring-1 ring-brand/30 hover:bg-brand/5"><Plus size={13} aria-hidden /> Add traveller</button>
+        )}
+      </div>
       {familyMemberSuggestions.length > 0 && (
         <div className="rounded-xl bg-amber-50/70 p-3 ring-1 ring-amber-200">
           <p className="text-xs font-medium text-amber-800">Noticed in chat · not saved yet</p>

@@ -54,10 +54,12 @@ from tripplanner.api_contracts import (
     DocumentExtractRequest,
     DocumentSaveRequest,
     ExportEmailRequest,
+    FamilyMemberRequest,
     GuestMigrateRequest,
     PreferencesRequest,
     PrivacyActionRequest,
     ProfileSuggestionRequest,
+    RemoveFamilyMemberRequest,
     SelectRequest,
     StopBookedRequest,
     TripIdRequest,
@@ -1732,8 +1734,7 @@ async def get_preferences(request: Request, user_id: str = "local") -> dict:
 
 @app.post("/preferences")
 async def save_preferences_endpoint(req: PreferencesRequest, request: Request) -> dict:
-    """Merge the provided preference fields and persist them (additive — only
-    keys present in the request are written)."""
+    """Merge the provided preference fields and persist them (additive — only    keys present in the request are written)."""
     from tripplanner.tools import preferences_merge
     from tripplanner.tools import profile_summary as profile_summary_mod
     from tripplanner.tools import user_preferences as prefs_store
@@ -1888,6 +1889,39 @@ async def regenerate_profile_summary(req: SelectRequest, request: Request) -> di
         "profile_summary": prefs.get("profile_summary") or "",
         "profile_summary_updated_at": prefs.get("profile_summary_updated_at"),
     }
+
+
+@app.post("/profile/family")
+async def save_family_member(req: FamilyMemberRequest, request: Request) -> dict:
+    """Add or fully replace one traveller's editable profile."""
+    from tripplanner.tools import user_preferences as prefs_store
+
+    _set_request_user(request, req.user_id)
+    updated = await asyncio.to_thread(
+        prefs_store.set_family_member,
+        original_relationship=req.original_relationship,
+        original_name=req.original_name,
+        relationship=req.relationship,
+        name=req.name,
+        age=req.age,
+        dietary=req.dietary,
+        mobility=req.mobility,
+        interests=req.interests,
+        notes=req.notes,
+    )
+    app_event("api_family_member_saved")
+    return {"ok": True, "family_members": updated.get("family_members") or []}
+
+
+@app.post("/profile/family/remove")
+async def remove_family_member(req: RemoveFamilyMemberRequest, request: Request) -> dict:
+    """Remove one traveller from the durable profile."""
+    from tripplanner.tools import user_preferences as prefs_store
+
+    _set_request_user(request, req.user_id)
+    updated = await asyncio.to_thread(prefs_store.remove_family_member, req.relationship, req.name)
+    app_event("api_family_member_removed")
+    return {"ok": True, "family_members": updated.get("family_members") or []}
 
 def _document_user(request: Request, claimed_user_id: str) -> str:
     """Identity for the document vault.

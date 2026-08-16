@@ -30,6 +30,8 @@ const mocks = vi.hoisted(() => ({
   savePreferences: vi.fn(() => Promise.resolve({ ok: true, about_me_extracted: [] })),
   fetchProfileSuggestions: vi.fn(() => Promise.resolve([])),
   resolveProfileSuggestion: vi.fn(() => Promise.resolve([])),
+  saveFamilyMember: vi.fn(() => Promise.resolve(preferences.family_members)),
+  removeFamilyMember: vi.fn(() => Promise.resolve(preferences.family_members)),
 }));
 
 vi.mock("../api", async () => {
@@ -40,6 +42,8 @@ vi.mock("../api", async () => {
 describe("TravellerProfile", () => {
   beforeEach(() => {
     mocks.savePreferences.mockClear();
+    mocks.saveFamilyMember.mockClear();
+    mocks.removeFamilyMember.mockClear();
   });
 
   it("requires confirmation before remembering a family detail from chat", async () => {
@@ -73,5 +77,51 @@ describe("TravellerProfile", () => {
     expect(screen.getByText("shorter walks")).toBeInTheDocument();
     // The account holder's own "self" entry is already covered by Profile and Travel profile.
     expect(screen.queryByText("Munish")).not.toBeInTheDocument();
+  });
+
+  it("edits an existing traveller and saves the exact replaced fields", async () => {
+    render(<TravellerProfile />);
+
+    expect(await screen.findByText("Kabir")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Edit Kabir" }));
+    fireEvent.change(screen.getByPlaceholderText("Age"), { target: { value: "9" } });
+    fireEvent.change(screen.getByPlaceholderText("Interests (comma-separated)"), { target: { value: "pool time, dinosaurs" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(mocks.saveFamilyMember).toHaveBeenCalledWith({
+      original_relationship: "child",
+      original_name: "Kabir",
+      relationship: "child",
+      name: "Kabir",
+      age: 9,
+      dietary: [],
+      mobility: ["shorter walks"],
+      interests: ["pool time", "dinosaurs"],
+      notes: "",
+    }));
+  });
+
+  it("adds a new traveller through the add form", async () => {
+    render(<TravellerProfile />);
+
+    await screen.findByText("Kabir");
+    fireEvent.click(screen.getByRole("button", { name: /Add traveller/ }));
+    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "Priya" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(mocks.saveFamilyMember).toHaveBeenCalledWith(expect.objectContaining({
+      original_relationship: undefined,
+      original_name: undefined,
+      name: "Priya",
+    })));
+  });
+
+  it("removes a traveller", async () => {
+    render(<TravellerProfile />);
+
+    expect(await screen.findByText("Rhea")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Remove Rhea" }));
+
+    await waitFor(() => expect(mocks.removeFamilyMember).toHaveBeenCalledWith("partner", "Rhea"));
   });
 });

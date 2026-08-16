@@ -566,6 +566,40 @@ export async function resolveProfileSuggestion(
   return data.suggestions ?? [];
 }
 
+export interface FamilyMemberEdit {
+  original_relationship?: string;
+  original_name?: string;
+  relationship: FamilyMember["relationship"];
+  name: string;
+  age: number | null;
+  dietary: string[];
+  mobility: string[];
+  interests: string[];
+  notes: string;
+}
+
+export async function saveFamilyMember(edit: FamilyMemberEdit): Promise<FamilyMember[]> {
+  const res = await apiFetch(`${BASE}/profile/family`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...edit, user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not save that traveller");
+  const data = await res.json();
+  return data.family_members ?? [];
+}
+
+export async function removeFamilyMember(relationship: string, name: string): Promise<FamilyMember[]> {
+  const res = await apiFetch(`${BASE}/profile/family/remove`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ relationship, name, user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not remove that traveller");
+  const data = await res.json();
+  return data.family_members ?? [];
+}
+
 export interface SavePrefsResult {
   ok: boolean;
   about_me_extracted: string[];
