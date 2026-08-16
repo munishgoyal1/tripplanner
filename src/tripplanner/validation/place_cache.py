@@ -32,6 +32,10 @@ _CONTAINER = "places_cache"
 _PARTITION = "_shared"  # places are global, not per-user
 #: Signed photo URLs expire within the hour and are re-derived from photo_refs.
 _VOLATILE_FIELDS = frozenset({"photo_urls", "__photos_at__"})
+#: Google returns ten photo references per place and the app renders at most
+#: three, but each reference is ~500 characters -- four fifths of an unfiltered
+#: export. Mirrors places_cache._MAX_PHOTOS_PER_PLACE; a test keeps them equal.
+_MAX_PHOTO_REFS = 3
 
 
 def _doc_id(key: str) -> str:
@@ -46,7 +50,11 @@ def _worth_keeping(entry: Any) -> bool:
 
 
 def _portable(entry: dict[str, Any]) -> dict[str, Any]:
-    return {k: v for k, v in entry.items() if k not in _VOLATILE_FIELDS}
+    trimmed = {k: v for k, v in entry.items() if k not in _VOLATILE_FIELDS}
+    refs = trimmed.get("photo_refs")
+    if isinstance(refs, list) and len(refs) > _MAX_PHOTO_REFS:
+        trimmed["photo_refs"] = refs[:_MAX_PHOTO_REFS]
+    return trimmed
 
 
 def cache_path(corpus_root: Path) -> Path:
@@ -113,7 +121,13 @@ def restore(database: str, places: dict[str, Any]) -> int:
     now = time.time()
     written = 0
     try:
-        container = _client().get_database_client(name).get_container_client(_CONTAINER)
+        from azure.cosmos import PartitionKey
+
+        # A sandbox recreated after a discard has no containers yet, which is
+        # exactly when restoring matters most.
+        container = _client().get_database_client(name).create_container_if_not_exists(
+            id=_CONTAINER, partition_key=PartitionKey(path="/user_id")
+        )
         for key, entry in places.items():
             if not _worth_keeping(entry):
                 continue

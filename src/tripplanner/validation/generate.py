@@ -333,10 +333,26 @@ def build(
         stopped_because=stopped,
         usd_inr_rate=allowed.usd_inr,
     )
+    # The grounding a run warmed is worth more than the run: it lives in one
+    # sandbox database otherwise, and dies with the worktree.
+    saved_places = 0
+    if produced:
+        from tripplanner.validation import place_cache
+
+        try:
+            path = place_cache.cache_path(corpus_root)
+            merged = place_cache.merge(place_cache.load(path), place_cache.collect(database))
+            place_cache.save(path, merged)
+            saved_places = len(merged)
+        except Exception as error:  # noqa: BLE001 - the trips are already safe
+            if on_progress:
+                on_progress(f"  could not save place cache: {error}")
+
     return {
         "produced": [asdict(entry) for entry in produced],
         "spent_inr": round(spent, 2),
         "budget_inr": allowed.budget_inr,
         "stopped_because": stopped,
         "corpus_total": len(load_manifest(corpus_root)["produced"]),
+        "places_saved": saved_places,
     }
