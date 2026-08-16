@@ -46,5 +46,6 @@ if (-not $python) {
 }
 
 $cli = Join-Path $PSScriptRoot "build_corpus.py"
-& $python $cli @Rest
+# -u so a run that streams through this dispatcher for hours is never buffered.
+& $python -u $cli @Rest
 exit $LASTEXITCODE

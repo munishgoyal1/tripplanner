@@ -28,6 +28,11 @@ _BAR = "-" * 78
 _PREVIEW = 12
 
 
+def _log(message: str) -> None:
+    """A run lasts hours through a pipe, so nothing may wait in a buffer."""
+    print(message, flush=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--budget", type=float, default=None, help="INR for this run")
@@ -76,7 +81,7 @@ def main(argv: list[str] | None = None) -> int:
         api=args.api,
         target=args.target,
         requested_budget_inr=args.budget,
-        on_progress=print,
+        on_progress=_log,
     )
     print(_BAR)
     print(

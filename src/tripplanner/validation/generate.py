@@ -177,6 +177,13 @@ def build(
             continue
 
         user_id = f"corpus-{request.slug}"
+        # A planning turn runs for minutes, so say what is in flight before waiting.
+        if on_progress:
+            headroom = allowed.budget_inr - spent
+            on_progress(
+                f"  -> {request.slug} (asking; {len(produced)} produced, "
+                f"INR {headroom:.0f} left)"
+            )
         # A repeat attempt needs its own request id, or the API replays the earlier
         # completed turn and the slug can never recover from a failed first run.
         request_id = f"{user_id}-{uuid.uuid4().hex[:12]}"

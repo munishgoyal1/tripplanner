@@ -568,3 +568,27 @@ def test_a_run_keeps_asking_until_the_budget_is_spent(
     assert result["stopped_because"] == "budget"
     assert len(result["produced"]) == 4
     assert len({entry["slug"] for entry in result["produced"]}) == 4
+
+
+def test_a_request_is_announced_before_the_slow_call_not_after(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    events: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(
+        generate,
+        "_ask",
+        lambda api, message, user_id, request_id: events.append("asked"),
+    )
+
+    generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        target=1,
+        requests=_ONE_REQUEST,
+        on_progress=events.append,
+    )
+
+    assert events[0].startswith("  -> corpus-slug")
+    assert events[1] == "asked"
