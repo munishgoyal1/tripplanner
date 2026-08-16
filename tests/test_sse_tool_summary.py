@@ -134,3 +134,16 @@ def test_best_effort_plan_reply_reports_saved_plan_gaps(monkeypatch) -> None:
     assert "saved the best available Punjab itinerary" in reply
     assert "Day 1" in reply
     assert gap_count == 1
+
+
+def test_json_chat_also_rescues_a_narrated_itinerary() -> None:
+    """The agent sometimes writes the plan out instead of saving it.
+
+    The SSE path has recovered that for a while. Without the same net on /chat a
+    native or scripted caller keeps a trip with no days, which is what the corpus
+    builder produced on 2026-08-16.
+    """
+    source = inspect.getsource(api.chat)
+
+    assert "_should_auto_persist_itinerary" in source
+    assert "_auto_persist_itinerary" in source
