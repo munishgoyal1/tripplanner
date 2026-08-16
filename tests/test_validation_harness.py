@@ -991,3 +991,16 @@ def test_the_cache_containers_expire_and_the_data_ones_never_do() -> None:
     assert storage_cosmos._CACHE_CONTAINERS == {"places_cache", "tool_cache"}
     for owned in ("users", "trips", "shared_trips", "documents"):
         assert owned not in storage_cosmos._CACHE_CONTAINERS
+
+
+def test_the_primary_local_database_may_hold_cache_but_hosted_ones_may_not() -> None:
+    """Master is never discarded, so it only ever fills by hand -- but it is local."""
+    from tripplanner.validation import place_cache
+
+    assert place_cache.assert_cache_target("tripplanner-local") == "tripplanner-local"
+    assert place_cache.assert_cache_target("tripplanner-sbx-2-auto-validation")
+    for hosted in ("tripplanner-prod", "tripplanner-canary"):
+        with pytest.raises(ValueError):
+            place_cache.assert_cache_target(hosted)
+    with pytest.raises(ValueError):
+        place_cache.assert_cache_target("something-else")

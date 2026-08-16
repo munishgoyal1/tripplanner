@@ -20,16 +20,31 @@ from pathlib import Path
 from typing import Any
 
 from tripplanner.validation.emulator import (
+    LIVE_DATABASE_NAMES,
+    SANDBOX_PREFIX,
     EmulatorUnreachableError,
     _client,
-    assert_sandbox_database,
-    read_places,
 )
 
 CACHE_FILE = "places.json"
 CACHE_VERSION = 1
 _CONTAINER = "places_cache"
 _PARTITION = "_shared"  # places are global, not per-user
+#: The primary development database is a legitimate cache target even though it
+#: is not a sandbox: it is never discarded, so it only ever fills by hand.
+PRIMARY_DATABASE = "tripplanner-local"
+
+
+def assert_cache_target(name: str) -> str:
+    """Any local database may hold cache; a hosted one may not be touched."""
+    lowered = (name or "").strip().lower()
+    if lowered in LIVE_DATABASE_NAMES:
+        raise ValueError(f"refusing to touch live database '{name}'")
+    if lowered != PRIMARY_DATABASE and not lowered.startswith(SANDBOX_PREFIX):
+        raise ValueError(
+            f"database must be '{PRIMARY_DATABASE}' or start with '{SANDBOX_PREFIX}', got '{name}'"
+        )
+    return name.strip()
 #: Signed photo URLs expire within the hour and are re-derived from photo_refs.
 _VOLATILE_FIELDS = frozenset({"photo_urls", "__photos_at__"})
 #: Reviews are third-party content that no rule reads, and committing them keeps
@@ -90,12 +105,17 @@ def save(path: Path, places: dict[str, Any]) -> None:
 
 
 def collect(database: str) -> dict[str, Any]:
-    """Everything worth keeping from one sandbox database's place cache."""
-    return {
-        key: _portable(entry)
-        for key, entry in read_places(database).items()
-        if _worth_keeping(entry)
-    }
+    """Everything worth keeping from one local database's place cache."""
+    name = assert_cache_target(database)
+    try:
+        container = _client().get_database_client(name).get_container_client(_CONTAINER)
+        rows = container.query_items(
+            query="SELECT c.key, c.entry FROM c", enable_cross_partition_query=True
+        )
+        found = {str(row["key"]): row.get("entry") or {} for row in rows}
+    except Exception:  # noqa: BLE001 - a missing cache is empty, never an error
+        return {}
+    return {key: _portable(entry) for key, entry in found.items() if _worth_keeping(entry)}
 
 
 def merge(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
@@ -122,7 +142,7 @@ def restore(database: str, places: dict[str, Any]) -> int:
     import as already expired, and the point of restoring is to plan and render
     without calling a provider at all.
     """
-    name = assert_sandbox_database(database)
+    name = assert_cache_target(database)
     now = time.time()
     written = 0
     try:
