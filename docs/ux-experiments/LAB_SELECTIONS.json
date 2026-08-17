@@ -5,7 +5,7 @@
     "selection": "chips",
     "selectionLabel": "A · Inline chips",
     "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
-    "disposition": "implemented-review",
+    "disposition": "completed",
     "handoffs": [
       {
         "version": 1,
@@ -23,8 +23,24 @@
         "disposition": "implemented-review",
         "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
         "recordedAt": "2026-08-15T14:17:39.098407Z"
+      },
+      {
+        "version": 3,
+        "selection": "chips",
+        "selectionLabel": "A · Inline chips",
+        "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+        "disposition": "completed",
+        "recordedAt": "2026-08-16T13:28:58.850Z"
       }
     ],
+    "implementation": {
+      "selection": "chips",
+      "selectionLabel": "A · Inline chips",
+      "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+      "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
+      "handoffVersion": 2,
+      "recordedAt": "2026-08-15T14:17:39.098407Z"
+    },
     "implementations": [
       {
         "version": 1,
@@ -36,17 +52,8 @@
         "recordedAt": "2026-08-15T14:17:39.098407Z"
       }
     ],
-    "stateChangedAt": "2026-08-15T14:17:39.098407Z",
-    "updatedAt": "2026-08-15T14:17:39.098407Z",
-    "implementation": {
-      "handoffVersion": 2,
-      "selection": "chips",
-      "selectionLabel": "A · Inline chips",
-      "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
-      "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
-      "recordedAt": "2026-08-15T14:17:39.098407Z"
-    },
-    "implementationSummary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796."
+    "stateChangedAt": "2026-08-16T13:28:58.850Z",
+    "updatedAt": "2026-08-16T13:28:58.850Z"
   },
   "family-details": {
     "labId": "family-details",
