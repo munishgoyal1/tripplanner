@@ -9,6 +9,22 @@
       "spent_inr": 908.01,
       "usd_inr": 88.0,
       "stopped_because": "matrix"
+    },
+    {
+      "at": "2026-08-16T13:53:41+00:00",
+      "model": "unknown",
+      "trips": 2,
+      "spent_inr": 147.45,
+      "usd_inr": 88.0,
+      "stopped_because": "budget"
+    },
+    {
+      "at": "2026-08-16T15:25:21+00:00",
+      "model": "unknown",
+      "trips": 13,
+      "spent_inr": 502.85,
+      "usd_inr": 88.0,
+      "stopped_because": "budget"
     }
   ]
 }

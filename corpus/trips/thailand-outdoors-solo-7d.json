@@ -1,0 +1,295 @@
+{
+  "status": "draft",
+  "trip_id": "thailand_bangkok_krabi_2027-01-18_2027-01-25",
+  "trip_number": 1,
+  "created_at": "2026-08-16T20:41:41.120736",
+  "destination": "Thailand (Bangkok & Krabi)",
+  "origin": "Chennai",
+  "departure_date": "2027-01-18",
+  "return_date": "2027-01-25",
+  "travelers": "1 adult",
+  "notes": "Draft — I'll refine with real prices and availability next. Hotel and restaurant details will be updated once live search is available. The itinerary focuses on outdoors and nature as requested.",
+  "planning_recommendation": {
+    "confidence": "medium",
+    "destination": "Thailand",
+    "estimated_planned_minutes": 285,
+    "evidence_place_count": 4,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "4 preference-matched places account for about 285 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      1,
+      2
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-18",
+      "title": "Day 1 · Arrival in Bangkok",
+      "summary": "Arrive in Bangkok from Chennai, check in, explore local markets and riverside parks.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Bangkok",
+          "kind": "flight",
+          "time": "07:30",
+          "arrival_time": "13:00",
+          "duration_min": 330
+        },
+        {
+          "name": "Hotel (Bangkok)",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Lumphini Park",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "Relax and enjoy nature"
+        },
+        {
+          "name": "Asiatique The Riverfront",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 120,
+          "note": "Evening riverside walk and dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-19",
+      "title": "Day 2 · Bangkok Temples & Parks",
+      "summary": "Visit iconic temples and green spaces, focusing on outdoors.",
+      "stops": [
+        {
+          "name": "Hotel (Bangkok)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Wat Pho",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Outdoor temple grounds"
+        },
+        {
+          "name": "Wat Arun",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Riverside temple"
+        },
+        {
+          "name": "Benjakitti Park",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Lakeside walking and cycling"
+        },
+        {
+          "name": "Hotel (Bangkok)",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-20",
+      "title": "Day 3 · Bangkok Nature & Markets",
+      "summary": "Explore Chatuchak Park and the famous outdoor market, then evening at a rooftop bar.",
+      "stops": [
+        {
+          "name": "Hotel (Bangkok)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Chatuchak Park",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Chatuchak Weekend Market",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 120,
+          "note": "Outdoor shopping"
+        },
+        {
+          "name": "Hotel (Bangkok)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Octave Rooftop Lounge & Bar",
+          "kind": "attraction",
+          "time": "19:00",
+          "duration_min": 120,
+          "note": "Evening views"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-21",
+      "title": "Day 4 · Transfer to Krabi & Beach Exploration",
+      "summary": "Fly to Krabi, check in, visit Ao Nang Beach for sunset.",
+      "stops": [
+        {
+          "name": "Flight: Bangkok to Krabi",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "10:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Hotel (Bangkok)",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "11:00"
+        },
+        {
+          "name": "Hotel (Krabi)",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "13:00"
+        },
+        {
+          "name": "Ao Nang Beach",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Outdoor beach walk"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-01-22",
+      "title": "Day 5 · Krabi Islands & Nature",
+      "summary": "Island-hopping tour to Phi Phi Islands, snorkeling and beach time.",
+      "stops": [
+        {
+          "name": "Hotel (Krabi)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Phi Phi Islands",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 420,
+          "note": "Outdoor adventure, snorkeling"
+        },
+        {
+          "name": "Hotel (Krabi)",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-01-23",
+      "title": "Day 6 · Krabi National Parks",
+      "summary": "Explore Khao Phanom Bencha National Park, hiking and waterfalls.",
+      "stops": [
+        {
+          "name": "Hotel (Krabi)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Khao Phanom Bencha National Park",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 240,
+          "note": "Hiking, waterfalls"
+        },
+        {
+          "name": "Hotel (Krabi)",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-01-24",
+      "title": "Day 7 · Departure",
+      "summary": "Check out, return flight to Chennai.",
+      "stops": [
+        {
+          "name": "Hotel (Krabi)",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Flight: Krabi to Chennai",
+          "kind": "flight",
+          "time": "11:00",
+          "arrival_time": "16:00",
+          "duration_min": 300
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T20:43:14.538625",
+  "id": "thailand_bangkok_krabi_2027-01-18_2027-01-25",
+  "user_id": "corpus-thailand-outdoors-solo-7d"
+}
