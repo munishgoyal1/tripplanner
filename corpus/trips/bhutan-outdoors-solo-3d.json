@@ -1,0 +1,313 @@
+{
+  "status": "draft",
+  "trip_id": "bhutan_2027-10-16_2027-10-19",
+  "trip_number": 1,
+  "created_at": "2026-08-16T20:29:49.455785",
+  "destination": "Bhutan",
+  "origin": "Delhi",
+  "departure_date": "2027-10-16",
+  "return_date": "2027-10-19",
+  "travelers": "1 adult",
+  "notes": "No major festivals or holidays during your dates. All attractions and restaurants are open as scheduled.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Bhutan",
+    "estimated_planned_minutes": 1380,
+    "evidence_place_count": 7,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "7 preference-matched places account for about 1380 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Terma Linca Resort & Spa",
+      "city": "Thimphu",
+      "star_rating": 4,
+      "address": "Babesa-Thimphu Expressway, Thimphu 11001, Bhutan",
+      "rating": 4.7,
+      "review_count": 412,
+      "website": "http://www.termalinca.com.bt/"
+    },
+    {
+      "name": "Hotel Olathang",
+      "city": "Paro",
+      "star_rating": 3,
+      "address": "P.Box No. 1214, Paro 12008, Bhutan",
+      "rating": 4.2,
+      "review_count": 378,
+      "website": "https://bhutanhotels.com.bt/hotel-olathang/"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-16",
+      "title": "Day 1 · Arrival in Paro & Transfer to Thimphu",
+      "summary": "Arrive in Paro from Delhi, transfer to Thimphu via scenic drive through the mountains. Explore Thimphu's nature and city highlights.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Paro",
+          "kind": "flight",
+          "time": "06:30",
+          "arrival_time": "10:30",
+          "duration_min": 240,
+          "note": "Morning flight to Paro"
+        },
+        {
+          "name": "Drive: Paro to Thimphu",
+          "kind": "transport",
+          "time": "11:00",
+          "duration_min": 90,
+          "distance_km": 50,
+          "note": "Scenic drive with river and mountain views"
+        },
+        {
+          "name": "Terma Linca Resort & Spa",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Buddha Dordenma Statue",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Panoramic valley views"
+        },
+        {
+          "name": "Motithang Takin Preserve",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 60,
+          "note": "See Bhutan's national animal in a natural setting"
+        },
+        {
+          "name": "San Maru Restaurant",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 60,
+          "note": "Highly rated Korean restaurant in Thimphu"
+        },
+        {
+          "name": "Terma Linca Resort & Spa",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-17",
+      "title": "Day 2 · Dochula Pass & Thimphu Nature Trails",
+      "summary": "Morning excursion to Dochula Pass, then enjoy Thimphu's nature trails and local culture.",
+      "stops": [
+        {
+          "name": "Terma Linca Resort & Spa",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Dochula Pass",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 90,
+          "note": "Mountain pass with 108 chortens and Himalayan views"
+        },
+        {
+          "name": "Thimphu Nature Trail (Wangditse or Kuenselphodrang)",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120,
+          "note": "Hike through pine forests and enjoy nature"
+        },
+        {
+          "name": "Aroma Fine Dine & Bar",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Top-rated fine dining in Thimphu"
+        },
+        {
+          "name": "Terma Linca Resort & Spa",
+          "kind": "hotel",
+          "note": "Return and relax"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-18",
+      "title": "Day 3 · Paro & Tiger's Nest Monastery Hike",
+      "summary": "Transfer to Paro and hike to the iconic Tiger's Nest Monastery, followed by local exploration.",
+      "stops": [
+        {
+          "name": "Drive: Thimphu to Paro",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 90,
+          "distance_km": 50,
+          "note": "Early morning drive"
+        },
+        {
+          "name": "Terma Linca Resort & Spa",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "09:00"
+        },
+        {
+          "name": "Tiger's Nest Monastery (Paro Taktsang)",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 240,
+          "note": "Scenic hike and monastery visit"
+        },
+        {
+          "name": "Mountain Cafe - Pure Veg",
+          "kind": "meal",
+          "time": "15:30",
+          "duration_min": 60,
+          "note": "Popular vegetarian restaurant in Paro"
+        },
+        {
+          "name": "Kyichu Lhakhang",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 45,
+          "note": "One of Bhutan's oldest temples"
+        },
+        {
+          "name": "Hotel Olathang",
+          "kind": "hotel",
+          "note": "Check-in and rest",
+          "time": "18:15"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-19",
+      "title": "Day 4 · Departure from Paro",
+      "summary": "Morning at leisure in Paro, then fly back to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel Olathang",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Paro Town Walk",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 60,
+          "note": "Explore local shops and cafes"
+        },
+        {
+          "name": "Flight: Paro to Delhi",
+          "kind": "flight",
+          "time": "11:30",
+          "arrival_time": "14:30",
+          "duration_min": 240,
+          "note": "Return flight to Delhi"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {
+    "source": "agent_climate_estimate",
+    "note": "October in Bhutan is cool and dry, with daily highs 16-22°C, lows 6-10°C, little rainfall. Ideal for hiking.",
+    "days": [
+      {
+        "date": "2027-10-16",
+        "high_c": 20,
+        "low_c": 8,
+        "rain_mm": 0
+      },
+      {
+        "date": "2027-10-17",
+        "high_c": 21,
+        "low_c": 9,
+        "rain_mm": 0
+      },
+      {
+        "date": "2027-10-18",
+        "high_c": 22,
+        "low_c": 10,
+        "rain_mm": 0
+      },
+      {
+        "date": "2027-10-19",
+        "high_c": 16,
+        "low_c": 6,
+        "rain_mm": 0
+      }
+    ],
+    "packing_advice": [
+      "Light jacket for cool mornings/evenings",
+      "Comfortable hiking shoes",
+      "Sun protection",
+      "Quick-dry layers"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T20:32:25.859032",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-16T20:31:49",
+      "expires_at": "2026-08-16T21:01:49"
+    }
+  ],
+  "id": "bhutan_2027-10-16_2027-10-19",
+  "user_id": "corpus-bhutan-outdoors-solo-3d"
+}

@@ -1,0 +1,265 @@
+{
+  "status": "draft",
+  "trip_id": "amritsar_2027-11-02_2027-11-07",
+  "trip_number": 1,
+  "created_at": "2026-08-16T20:34:15.075898",
+  "destination": "Amritsar",
+  "origin": "Delhi",
+  "departure_date": "2027-11-02",
+  "return_date": "2027-11-07",
+  "travelers": "2 adults",
+  "notes": "Premium hotels throughout. Balanced sightseeing and leisure.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Amritsar",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Taj Swarna, Amritsar",
+      "address": "Plot No. C-3, Outer Circular Road, Opp. Basant Avenue, Amritsar, Punjab 143001, India",
+      "rating": 4.6,
+      "price_per_night": 12500,
+      "nights": 5,
+      "total_price": 62500,
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp31ba5"
+      }
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-02",
+      "title": "Day 1 · Arrival in Amritsar",
+      "summary": "Arrive from Delhi, check in to Taj Swarna, relax and enjoy the hotel amenities.",
+      "stops": [
+        {
+          "name": "Delhi to Amritsar (by train/flight)",
+          "kind": "transport",
+          "note": "Morning transfer"
+        },
+        {
+          "name": "Taj Swarna, Amritsar",
+          "kind": "hotel",
+          "note": "Check-in and unwind"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-03",
+      "title": "Golden Temple & Heritage Walk",
+      "summary": "Morning visit to the Golden Temple, explore Jallianwala Bagh, and take the Amritsar Heritage Walk. Enjoy local cuisine for lunch and dinner.",
+      "stops": [
+        {
+          "name": "Taj Swarna, Amritsar",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Golden Temple",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Jallianwala Bagh",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Bharawan Da Dhaba",
+          "kind": "meal",
+          "time": "13:00"
+        },
+        {
+          "name": "Amritsar Heritage Walk",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Kesar Da Dhaba",
+          "kind": "meal",
+          "time": "19:30"
+        },
+        {
+          "name": "Taj Swarna, Amritsar",
+          "kind": "hotel",
+          "time": "21:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-04",
+      "title": "Partition Museum & Wagah Border",
+      "summary": "Visit the Partition Museum, enjoy lunch, and witness the Wagah Border ceremony in the evening.",
+      "stops": [
+        {
+          "name": "Taj Swarna, Amritsar",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Partition Museum",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Crystal Restaurant",
+          "kind": "meal",
+          "time": "12:00"
+        },
+        {
+          "name": "Wagah Border",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Flag lowering ceremony"
+        },
+        {
+          "name": "Taj Swarna, Amritsar",
+          "kind": "hotel",
+          "time": "20:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-05",
+      "title": "Gobindgarh Fort & Shopping",
+      "summary": "Discover Gobindgarh Fort, shop at Hall Bazaar, and enjoy local cuisine.",
+      "stops": [
+        {
+          "name": "Taj Swarna, Amritsar",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Gobindgarh Fort",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Hall Bazaar",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Makhan Fish & Chicken Corner",
+          "kind": "meal",
+          "time": "15:00"
+        },
+        {
+          "name": "Taj Swarna, Amritsar",
+          "kind": "hotel",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-06",
+      "title": "Durgiana Temple & Departure",
+      "summary": "Visit Durgiana Temple, enjoy a farewell meal, and depart for Delhi.",
+      "stops": [
+        {
+          "name": "Taj Swarna, Amritsar",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Durgiana Temple",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Brothers' Dhaba",
+          "kind": "meal",
+          "time": "11:00"
+        },
+        {
+          "name": "Amritsar to Delhi (by train/flight)",
+          "kind": "transport",
+          "note": "Afternoon departure"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T20:40:01.687807",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-16T20:39:36",
+      "expires_at": "2026-08-17T08:39:36"
+    }
+  ],
+  "id": "amritsar_2027-11-02_2027-11-07",
+  "user_id": "corpus-amritsar-premium-couple-5d"
+}

@@ -1,0 +1,398 @@
+{
+  "status": "draft",
+  "trip_id": "kaziranga_2027-02-11_2027-02-18",
+  "trip_number": 1,
+  "created_at": "2026-08-16T20:26:27.293560",
+  "destination": "Kaziranga",
+  "origin": "Guwahati",
+  "departure_date": "2027-02-11",
+  "return_date": "2027-02-18",
+  "travelers": "4 adults",
+  "notes": "Local food is the top priority.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Kaziranga",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel in Kaziranga",
+      "kind": "hotel",
+      "address": "Kaziranga, Assam, India",
+      "rating": 3,
+      "note": "Best available, local cuisine focus",
+      "checkin": "2027-02-11",
+      "checkout": "2027-02-18",
+      "rooms": 2,
+      "guests": 4,
+      "price_per_night": 5000,
+      "total_price": 35000,
+      "currency": "INR"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-11",
+      "title": "Day 1 · Arrival in Kaziranga",
+      "summary": "Drive from Guwahati to Kaziranga, check in at hotel, sample Assamese cuisine for dinner.",
+      "stops": [
+        {
+          "name": "Drive: Guwahati to Kaziranga",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 300,
+          "distance_km": 220,
+          "note": "Private car transfer, scenic route"
+        },
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "14:00",
+          "note": "Check-in"
+        },
+        {
+          "name": "Maihang Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner with local Assamese dishes"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-12",
+      "title": "Day 2 · Kaziranga Jeep Safari & Food Trail",
+      "summary": "Morning safari in Kaziranga National Park, afternoon food trail exploring local eateries.",
+      "stops": [
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Breakfast"
+        },
+        {
+          "name": "Kaziranga National Park Jeep Safari",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 180,
+          "note": "Early morning safari"
+        },
+        {
+          "name": "Bamboo Hut Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch with bamboo shoot specialties"
+        },
+        {
+          "name": "Kaziranga Food Trail",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Guided local food tour"
+        },
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "18:00",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Jungle Cafe",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner with tribal cuisine"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-13",
+      "title": "Day 3 · Elephant Safari & Assamese Cooking Class",
+      "summary": "Elephant safari, visit tea gardens, hands-on Assamese cooking class.",
+      "stops": [
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "06:30",
+          "note": "Breakfast"
+        },
+        {
+          "name": "Kaziranga Elephant Safari",
+          "kind": "attraction",
+          "time": "07:30",
+          "duration_min": 120,
+          "note": "Elephant ride in the park"
+        },
+        {
+          "name": "Tea Garden Visit",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Explore local tea plantations"
+        },
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Assamese Cooking Class",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Learn to cook traditional dishes"
+        },
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "18:00",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Local Home Kitchen",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner with home-cooked Assamese food"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-14",
+      "title": "Day 4 · Tribal Village Visit & Food Experience",
+      "summary": "Visit a tribal village, enjoy traditional lunch, evening at leisure.",
+      "stops": [
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "07:30",
+          "note": "Breakfast"
+        },
+        {
+          "name": "Tribal Village Tour",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Interact with locals, see traditional homes"
+        },
+        {
+          "name": "Tribal Village Lunch",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Authentic tribal meal"
+        },
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "15:00",
+          "note": "Return to hotel, leisure time"
+        },
+        {
+          "name": "Dosa Plaza",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner with regional specialties"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-15",
+      "title": "Day 5 · Bird Watching & Local Market Tour",
+      "summary": "Morning bird watching, visit local market, evening food tasting.",
+      "stops": [
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "06:30",
+          "note": "Breakfast"
+        },
+        {
+          "name": "Kaziranga Bird Watching",
+          "kind": "attraction",
+          "time": "07:30",
+          "duration_min": 120,
+          "note": "Guided birding tour"
+        },
+        {
+          "name": "Kaziranga Local Market",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Explore local produce and crafts"
+        },
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Food Tasting at Market",
+          "kind": "meal",
+          "time": "15:00",
+          "note": "Sample street food"
+        },
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "17:00",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Neha Dhaba",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner with Assamese thali"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-02-16",
+      "title": "Day 6 · River Cruise & Fish Feast",
+      "summary": "Brahmaputra river cruise, fish feast, evening cultural show.",
+      "stops": [
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "07:30",
+          "note": "Breakfast"
+        },
+        {
+          "name": "Brahmaputra River Cruise",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Scenic cruise with wildlife spotting"
+        },
+        {
+          "name": "Fish Feast Lunch",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Assamese fish specialties"
+        },
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "15:00",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Kaziranga Cultural Show",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 90,
+          "note": "Traditional dance and music"
+        },
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "19:00",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-02-17",
+      "title": "Day 7 · Departure to Guwahati",
+      "summary": "Check out, drive back to Guwahati, farewell lunch en route.",
+      "stops": [
+        {
+          "name": "Hotel in Kaziranga",
+          "kind": "hotel",
+          "time": "07:30",
+          "note": "Breakfast, check out"
+        },
+        {
+          "name": "Highway Dhaba",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Farewell lunch with Assamese cuisine"
+        },
+        {
+          "name": "Guwahati",
+          "kind": "other",
+          "time": "15:00",
+          "note": "Trip ends"
+        },
+        {
+          "name": "Drive: Kaziranga to Guwahati",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 300,
+          "distance_km": 220,
+          "note": "Private car transfer"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 35000,
+    "activities": 24000,
+    "meals": 14000,
+    "transport": 18000
+  },
+  "total_cost": 91000,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T20:28:22.577572",
+  "id": "kaziranga_2027-02-11_2027-02-18",
+  "user_id": "corpus-kaziranga-food-friends-7d"
+}

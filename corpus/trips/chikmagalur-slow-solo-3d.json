@@ -1,0 +1,214 @@
+{
+  "status": "draft",
+  "trip_id": "chikmagalur_2027-12-15_2027-12-18",
+  "trip_number": 1,
+  "created_at": "2026-08-16T19:13:46.230660",
+  "destination": "Chikmagalur",
+  "origin": "Bangalore",
+  "departure_date": "2027-12-15",
+  "return_date": "2027-12-18",
+  "travelers": "1 adult",
+  "notes": "Hotel search did not return live rates, so placeholder hotels remain. For real-time prices and booking, try again closer to your travel dates or check major travel sites directly.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Chikmagalur",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "The Serai Chikmagalur",
+      "address": "Mugthihalli Post, KM Road, Chikmagalur, Karnataka 577133, India",
+      "checkin": "2027-12-15",
+      "checkout": "2027-12-18",
+      "star_rating": 5,
+      "price_per_night": 15000,
+      "currency": "INR",
+      "total_price": 45000,
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp3ee08"
+      }
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-15",
+      "title": "Day 1 · Arrival & Coffee Estate Walk",
+      "summary": "Depart from Bangalore in the morning, arrive in Chikmagalur by noon. Check in to The Serai Chikmagalur and enjoy a relaxing coffee estate walk. Lunch at Siri Cafe. Afternoon and evening at leisure.",
+      "stops": [
+        {
+          "name": "Drive: Bangalore to Chikmagalur",
+          "kind": "transport",
+          "time": "06:30",
+          "duration_min": 300,
+          "distance_km": 245,
+          "note": "Private car or taxi, 5 hours with a short break"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Siri Cafe",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Lunch with local cuisine"
+        },
+        {
+          "name": "Coffee Estate Walk",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Gentle guided walk through a local coffee plantation"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Return and relax"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-16",
+      "title": "Day 2 · Mullayanagiri Morning",
+      "summary": "Morning visit to Mullayanagiri Peak for scenic views and a light hike. Lunch at Town Canteen. Afternoon free for relaxation or exploring local cafes.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Mullayanagiri Peak",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 120,
+          "note": "Easy hike and panoramic views"
+        },
+        {
+          "name": "Town Canteen",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Famous for dosas and local breakfast"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Return by 13:30, free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-17",
+      "title": "Day 3 · Local Temples & Return",
+      "summary": "Morning visit to Sringeri Sharada Peetham. Return to hotel, check out, lunch at Hotel Mayura, and depart for Bangalore.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Check-out after breakfast"
+        },
+        {
+          "name": "Sringeri Sharada Peetham",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 90,
+          "note": "Morning temple visit"
+        },
+        {
+          "name": "Hotel Mayura",
+          "kind": "meal",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Lunch before departure"
+        },
+        {
+          "name": "Drive: Chikmagalur to Bangalore",
+          "kind": "transport",
+          "time": "12:30",
+          "duration_min": 300,
+          "distance_km": 245,
+          "note": "Private car or taxi, 5 hours with a short break"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "Hotel (2 nights)": 24000,
+    "Transport (round trip car)": 8000,
+    "Meals & activities": 4000
+  },
+  "total_cost": 36000,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T20:08:52.363759",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-16T20:08:23",
+      "expires_at": "2026-08-17T08:08:23"
+    }
+  ],
+  "id": "chikmagalur_2027-12-15_2027-12-18",
+  "user_id": "corpus-chikmagalur-slow-solo-3d"
+}

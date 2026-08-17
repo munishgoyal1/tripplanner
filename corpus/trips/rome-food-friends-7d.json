@@ -1,0 +1,335 @@
+{
+  "status": "draft",
+  "trip_id": "rome_and_florence_2027-09-07_2027-09-14",
+  "trip_number": 1,
+  "created_at": "2026-08-16T20:24:07.232668",
+  "destination": "Rome and Florence",
+  "origin": "Mumbai",
+  "departure_date": "2027-09-07",
+  "return_date": "2027-09-14",
+  "travelers": "4 adults",
+  "notes": "Top priority: local food experiences. Balanced sightseeing and downtime. Moderate budget, 3-star+ hotels, economy flights.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Rome and Florence",
+    "estimated_planned_minutes": 1354,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "8 preference-matched places account for about 1354 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-09-07",
+      "title": "Day 1 · Arrival in Rome",
+      "summary": "Arrive in Rome, check in to your hotel, and enjoy your first Italian dinner.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Rome",
+          "kind": "flight",
+          "time": "02:00",
+          "arrival_time": "13:00",
+          "duration_min": 510,
+          "note": "Overnight flight, direct or 1-stop"
+        },
+        {
+          "name": "Hotel in Rome",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Trattoria Pennestri",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Authentic Roman cuisine, highly rated for local food"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-09-08",
+      "title": "Day 2 · Ancient Rome & Food Tour",
+      "summary": "Explore the Colosseum, Roman Forum, and enjoy a guided food tour.",
+      "stops": [
+        {
+          "name": "Hotel in Rome",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Colosseum",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Pre-booked entry"
+        },
+        {
+          "name": "Roman Forum",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Roscioli Salumeria con Cucina",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Lunch at a classic Roman deli"
+        },
+        {
+          "name": "Rome Food Tour (Trastevere)",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 180,
+          "note": "Guided walking food tour"
+        },
+        {
+          "name": "Gelateria del Teatro",
+          "kind": "meal",
+          "time": "20:30",
+          "note": "Artisanal gelato after the food tour"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-09-09",
+      "title": "Day 3 · Vatican & Local Eats",
+      "summary": "Visit the Vatican Museums, St. Peter’s Basilica, and enjoy local trattorias.",
+      "stops": [
+        {
+          "name": "Hotel in Rome",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Vatican Museums & Sistine Chapel",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Pre-booked morning entry"
+        },
+        {
+          "name": "St. Peter’s Basilica",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Pizzarium Bonci",
+          "kind": "meal",
+          "time": "14:30",
+          "note": "Famous Roman pizza by the slice"
+        },
+        {
+          "name": "Campo de’ Fiori Market",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Local market stroll"
+        },
+        {
+          "name": "Da Enzo al 29",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner at a beloved trattoria"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-09-10",
+      "title": "Day 4 · Rome to Florence & Tuscan Dinner",
+      "summary": "Travel to Florence by train, check in, and enjoy a Tuscan dinner.",
+      "stops": [
+        {
+          "name": "Train: Rome to Florence",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "High-speed train, 1.5 hours"
+        },
+        {
+          "name": "Hotel in Rome",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "12:00"
+        },
+        {
+          "name": "Hotel in Florence",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "14:00"
+        },
+        {
+          "name": "Mercato Centrale Firenze",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Lunch at Florence’s famous food market"
+        },
+        {
+          "name": "Trattoria Mario",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Classic Florentine steak and Tuscan fare"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-09-11",
+      "title": "Day 5 · Florence Highlights & Food Walk",
+      "summary": "See Florence’s top sights and take a local food walk.",
+      "stops": [
+        {
+          "name": "Hotel in Florence",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Florence Cathedral (Duomo)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Uffizi Gallery",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 120,
+          "note": "Pre-booked entry"
+        },
+        {
+          "name": "All’Antico Vinaio",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Famous for Florentine sandwiches"
+        },
+        {
+          "name": "Florence Food Tour",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 180,
+          "note": "Guided walking food tour"
+        },
+        {
+          "name": "Gelateria dei Neri",
+          "kind": "meal",
+          "time": "20:30",
+          "note": "Top-rated gelato after the food tour"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-09-12",
+      "title": "Day 6 · Day Trip: Chianti & Wine Tasting",
+      "summary": "Take a day trip to the Chianti region for wine and local cuisine.",
+      "stops": [
+        {
+          "name": "Hotel in Florence",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Chianti Wine Tour",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 420,
+          "note": "Includes vineyard lunch and tastings"
+        },
+        {
+          "name": "Osteria Vini e Vecchi Sapori",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner back in Florence, local specialties"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-09-13",
+      "title": "Day 7 · Florence to Mumbai",
+      "summary": "Last stroll in Florence, then return to Mumbai.",
+      "stops": [
+        {
+          "name": "Hotel in Florence",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Piazza della Signoria",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Flight: Florence to Mumbai",
+          "kind": "flight",
+          "time": "13:00",
+          "arrival_time": "05:00",
+          "duration_min": 540,
+          "note": "Return flight, 1 stop"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "EUR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T20:35:00.913027",
+  "id": "rome_and_florence_2027-09-07_2027-09-14",
+  "user_id": "corpus-rome-food-friends-7d"
+}

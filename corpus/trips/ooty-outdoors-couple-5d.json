@@ -1,0 +1,284 @@
+{
+  "status": "draft",
+  "trip_id": "ooty_2027-04-18_2027-04-23",
+  "trip_number": 1,
+  "created_at": "2026-08-16T20:05:56.021370",
+  "destination": "Ooty",
+  "origin": "Coimbatore",
+  "departure_date": "2027-04-18",
+  "return_date": "2027-04-23",
+  "travelers": "2 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Ooty",
+    "estimated_planned_minutes": 1364,
+    "evidence_place_count": 9,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "9 preference-matched places account for about 1364 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Beverly villa ooty",
+      "address": "Beverly villa, near new era school, Pudumund, Ooty, Tamil Nadu 643001, India",
+      "rating": 4.8,
+      "review_count": 5799,
+      "website": "http://www.beverlyvilla.com/",
+      "phone": "+91 75985 25999"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-18",
+      "title": "Day 1 · Arrival & Ooty Lake",
+      "summary": "Arrive in Ooty from Coimbatore, check in to Beverly villa ooty, relax, and enjoy boating at Ooty Lake. Dinner at Kailash Parbat.",
+      "stops": [
+        {
+          "name": "Drive: Coimbatore to Ooty",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "distance_km": 85,
+          "note": "Scenic drive via Nilgiri hills"
+        },
+        {
+          "name": "Beverly villa ooty",
+          "kind": "hotel",
+          "note": "Check-in to 4.8★ hotel, 5.7k reviews"
+        },
+        {
+          "name": "Ooty Lake",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Boating and lakeside walk"
+        },
+        {
+          "name": "Kailash Parbat - Pure Vegetarian Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Vegetarian dinner, 4.5★, 8k+ reviews"
+        },
+        {
+          "name": "Beverly villa ooty",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-19",
+      "title": "Day 2 · Botanical Gardens & Doddabetta Peak",
+      "summary": "Explore the lush Government Botanical Gardens, lunch at Earl's Secret (open 12:30), then hike up to Doddabetta Peak for panoramic views.",
+      "stops": [
+        {
+          "name": "Beverly villa ooty",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Government Botanical Gardens",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Morning walk among rare plants"
+        },
+        {
+          "name": "Earl's Secret",
+          "kind": "meal",
+          "time": "12:45",
+          "note": "Lunch at a heritage restaurant, 4.4★, 6.5k reviews"
+        },
+        {
+          "name": "Doddabetta Peak",
+          "kind": "attraction",
+          "time": "14:15",
+          "duration_min": 120,
+          "note": "Hike and enjoy views"
+        },
+        {
+          "name": "Beverly villa ooty",
+          "kind": "hotel",
+          "note": "Return for evening"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-20",
+      "title": "Day 3 · Emerald Lake & Avalanche Forest Reserve",
+      "summary": "Visit Emerald Lake for birdwatching and picnic, lunch at Angaara Restaurant, then explore Avalanche Forest Reserve for nature trails.",
+      "stops": [
+        {
+          "name": "Beverly villa ooty",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Emerald Lake",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Birdwatching & picnic"
+        },
+        {
+          "name": "Angaara Restaurant Ooty",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch, North Indian cuisine, 4.3★, 5k+ reviews"
+        },
+        {
+          "name": "Avalanche Forest Reserve",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 180,
+          "note": "Nature trails and photography"
+        },
+        {
+          "name": "Beverly villa ooty",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-04-21",
+      "title": "Day 4 · Nilgiri Mountain Railway & Pine Forest",
+      "summary": "Ride the historic Nilgiri Mountain Railway, lunch at Le Cafe, and stroll through the Pine Forest.",
+      "stops": [
+        {
+          "name": "Beverly villa ooty",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Drive: Ooty to Coonoor",
+          "kind": "transport",
+          "note": "Scenic drive, 20 km, ~1 hour",
+          "duration_min": 60,
+          "distance_km": 20
+        },
+        {
+          "name": "Nilgiri Mountain Railway",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Toy train ride (Ooty to Coonoor)"
+        },
+        {
+          "name": "Le Cafe",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch, 4.3★, 2.5k reviews"
+        },
+        {
+          "name": "Pine Forest",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Nature walk"
+        },
+        {
+          "name": "Drive: Coonoor to Ooty",
+          "kind": "transport",
+          "note": "Return drive, 20 km, ~1 hour",
+          "duration_min": 60,
+          "distance_km": 20
+        },
+        {
+          "name": "Beverly villa ooty",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-04-22",
+      "title": "Day 5 · Rose Garden & Departure",
+      "summary": "Visit the Rose Garden, check out, and return to Coimbatore.",
+      "stops": [
+        {
+          "name": "Beverly villa ooty",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Rose Garden",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Morning stroll"
+        },
+        {
+          "name": "Drive: Ooty to Coimbatore",
+          "kind": "transport",
+          "time": "11:00",
+          "duration_min": 180,
+          "distance_km": 85,
+          "note": "Return drive"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T20:17:50.665418",
+  "id": "ooty_2027-04-18_2027-04-23",
+  "user_id": "corpus-ooty-outdoors-couple-5d"
+}
