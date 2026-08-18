@@ -31,14 +31,42 @@ def test_new_paris_trip_forces_prefilled_kickoff_after_preferences() -> None:
     assert _trip_kickoff_tool_choice(messages) == "recommend_trip_duration"
 
 
-def test_direct_mode_does_not_force_a_prefilled_review_after_duration_advice() -> None:
+def test_direct_mode_collects_missing_party_composition_after_duration_advice() -> None:
     messages = [
         HumanMessage(content="Plan Paris from Delhi for five days in October"),
         _tool_message("get_travel_preferences"),
         _tool_message("recommend_trip_duration"),
     ]
 
+    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+
+
+@pytest.mark.parametrize(
+    "trip_prompt",
+    [
+        "Plan Paris from Delhi for 2 adults and 1 child",
+        "Plan a solo Paris trip from Delhi",
+        "Plan a Paris trip for a couple from Delhi",
+    ],
+)
+def test_direct_mode_skips_review_when_party_is_explicit(trip_prompt: str) -> None:
+    messages = [
+        HumanMessage(content=trip_prompt),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
     assert _trip_kickoff_tool_choice(messages) is None
+
+
+def test_adult_count_alone_still_collects_the_trip_relationship() -> None:
+    messages = [
+        HumanMessage(content="Plan a Kashmir trip for 2 adults"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
 
 
 def test_interactive_mode_forces_the_prefilled_review_before_planning() -> None:
@@ -117,7 +145,7 @@ def test_destination_switch_asks_the_kickoff_before_creating(
     ) == "get_travel_preferences"
 
 
-def test_duration_advice_leaves_the_optional_input_request_to_the_model(
+def test_destination_switch_collects_missing_party_after_duration_advice(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
@@ -131,7 +159,7 @@ def test_duration_advice_leaves_the_optional_input_request_to_the_model(
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) is None
+    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
 
 
 def test_same_destination_follow_up_still_has_no_kickoff(
@@ -349,7 +377,7 @@ def test_new_trip_intent_preempts_incomplete_active_trip_gate(
                 _tool_message("get_travel_preferences"),
                 _tool_message("recommend_trip_duration"),
             ],
-            None,
+            "request_trip_input",
         ),
     ],
 )

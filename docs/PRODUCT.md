@@ -37,7 +37,7 @@ Price and offer work is background and time-boxed, and the product always shows
 the plan it already has rather than blocking on a better one.
 
 New-trip planning is automation-first. Once the user supplies an origin,
-destination, and rough timing, the agent owns the first complete proposal: it
+destination, rough timing, and who is travelling, the agent owns the first complete proposal: it
 chooses sensible defaults, researches and selects the strongest verified hotel,
 fills every day with concrete places and meals, and persists the enriched plan.
 The user refines a useful plan through chat instead of designing one from a blank
@@ -59,7 +59,10 @@ preferences and trip history, distinguishes durable defaults from one-trip
 exceptions, and asks at most one consolidated question when an unresolved fact
 would materially change the plan. Capable clients should render that question as
 prefilled structured controls with a skip/default path; typed data, not model-authored
-markup, owns those interactions. After the first complete plan, Details and Map
+markup, owns those interactions. Who joins is always a trip fact rather than a
+family-profile assumption: when omitted, the review collects adults age 13+, children
+age 0-12, and whether this is solo, couple, family, friends, or another group. Those
+facts drive total budget, occupancy, pace, transport, and experience fit. After the first complete plan, Details and Map
 support visual refinement while Assistant remains available for broader changes.
 
 ## 2) Non-goals (resist scope creep)

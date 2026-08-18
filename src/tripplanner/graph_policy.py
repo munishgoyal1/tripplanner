@@ -67,6 +67,12 @@ _ORIGIN_CORRECTION_RE = re.compile(
     r"\b(?:origin|departure city|departing from|flying from)\b",
     re.IGNORECASE,
 )
+_EXPLICIT_PARTY_RELATION_RE = re.compile(
+    r"\b(?:solo|travell?ing alone|couple)\b",
+    re.IGNORECASE,
+)
+_ADULT_COUNT_RE = re.compile(r"\b(\d+)\s*(?:adults?|grown[ -]?ups?)\b", re.IGNORECASE)
+_CHILD_COUNT_RE = re.compile(r"\b(\d+)\s*(?:children|child|kids?)\b", re.IGNORECASE)
 
 
 #: Tools a saved turn ran, restored by chat_store. The graph's tool messages do
@@ -296,6 +302,20 @@ def latest_user_starts_new_trip(messages: Sequence[BaseMessage]) -> bool:
     return False
 
 
+def latest_user_has_explicit_party(messages: Sequence[BaseMessage]) -> bool:
+    for message in reversed(messages):
+        if isinstance(message, HumanMessage):
+            text = str(message.content or "")
+            if _EXPLICIT_PARTY_RELATION_RE.search(text):
+                return True
+            adults = _ADULT_COUNT_RE.search(text)
+            children = _CHILD_COUNT_RE.search(text)
+            if adults and children:
+                return int(children.group(1)) > 0 or int(adults.group(1)) == 1
+            return False
+    return False
+
+
 def latest_user_requests_different_trip(
     messages: Sequence[BaseMessage],
     active_trip: dict[str, Any],
@@ -388,9 +408,10 @@ def trip_kickoff_tool_choice(
         return "get_travel_preferences"
     if "recommend_trip_duration" not in turn_tools:
         return "recommend_trip_duration"
-    # Interactive mode promised one prefilled review before planning. Leaving it to
-    # the model meant it was never asked, so the controls never reached the user.
-    if interactive:
+    # Party composition is trip-specific: a saved family roster does not establish
+    # who is joining this trip. Direct mode can skip the review only when the user
+    # already supplied a usable party; interactive mode still promises one review.
+    if interactive or not latest_user_has_explicit_party(messages):
         return "request_trip_input"
     return None
 
