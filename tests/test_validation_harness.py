@@ -230,6 +230,96 @@ def test_a_leg_drawn_as_ground_travel_across_a_continent_is_reported() -> None:
     assert any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
 
 
+def test_render_does_not_bind_an_unresolved_flight_to_the_next_local_pin() -> None:
+    plan = _plan(
+        destination="Goa",
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "city": "Goa",
+                "stops": [
+                    {"name": "Basilica of Bom Jesus", "kind": "attraction"},
+                    {"name": "Flight to an unresolved airport", "kind": "flight"},
+                    {"name": "Se Cathedral", "kind": "attraction"},
+                ],
+            }
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="partial-flight",
+        provenance=corpus.REAL,
+        source="test",
+        plan=plan,
+        places={
+            "basilica of bom jesus|goa": {"lat": 15.5009, "lng": 73.9116},
+            "se cathedral|goa": {"lat": 15.5036, "lng": 73.9122},
+        },
+    )
+
+    reported = render.check_render(record)
+
+    assert not any(finding.rule == render.RULE_EMPTY_LEG for finding in reported)
+
+
+def test_render_does_not_reuse_a_duplicate_brand_from_another_city() -> None:
+    plan = _plan(
+        destination="Kaziranga",
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "city": "Kaziranga",
+                "stops": [
+                    {"name": "Drive: Kaziranga to Kohora", "kind": "transport"},
+                    {"name": "Dosa Plaza", "kind": "restaurant"},
+                ],
+            }
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="duplicate-brand",
+        provenance=corpus.REAL,
+        source="test",
+        plan=plan,
+        places={
+            "kaziranga|": {"lat": 26.5775, "lng": 93.1711},
+            "dosa plaza|bengaluru": {
+                "place_id": "bengaluru-dosa-plaza",
+                "name": "Dosa Plaza",
+                "address": "Bengaluru, Karnataka",
+                "lat": 12.9716,
+                "lng": 77.5946,
+            },
+        },
+    )
+
+    reported = render.check_render(record)
+
+    assert not any(
+        finding.rule in {render.RULE_GROUND_LEG, render.RULE_LEG_DURATION}
+        for finding in reported
+    )
+
+
+def test_render_name_fallback_requires_destination_compatible_identity() -> None:
+    get_details = render._lookup(
+        {
+            "museum cafe|old goa": {
+                "place_id": "goa-cafe",
+                "name": "Museum Cafe",
+                "address": "Old Goa, Goa",
+            },
+            "dosa plaza|bengaluru": {
+                "place_id": "bengaluru-dosa-plaza",
+                "name": "Dosa Plaza",
+                "address": "Bengaluru, Karnataka",
+            },
+        }
+    )
+
+    assert get_details("Museum Cafe", "Goa")["place_id"] == "goa-cafe"
+    assert get_details("Dosa Plaza", "Kaziranga") is None
+
+
 def test_render_checks_stay_silent_without_the_facts_to_measure_with() -> None:
     blind = corpus.CorpusRecord(id="x", provenance=corpus.REAL, source="s", plan=_plan())
 

@@ -37,24 +37,57 @@ RENDER_RULES: tuple[tuple[str, str], ...] = (
 
 
 def _lookup(places: dict[str, Any]):
-    by_name: dict[str, Any] = {}
+    normalized_places: dict[str, Any] = {}
+    by_name: dict[str, list[tuple[str, Any]]] = {}
     for key, entry in places.items():
-        name, _, _city = str(key).partition("|")
+        name, _, city = str(key).partition("|")
         wanted = name.strip().lower()
-        previous = by_name.get(wanted)
-        # One name can be cached against several destinations, and they do not
-        # always agree. Prefer the entry the provider named the same thing, so
-        # the audit reads one place per name instead of inventing two.
-        if previous is None or (
-            str((entry or {}).get("name") or "").strip().lower() == wanted
-            and str(previous.get("name") or "").strip().lower() != wanted
-        ):
-            by_name[wanted] = entry or {}
+        cached_city = city.strip().lower()
+        normalized_places[f"{wanted}|{cached_city}"] = entry or {}
+        by_name.setdefault(wanted, []).append((cached_city, entry or {}))
+
+    def destination_matches(city: str, cached_city: str, entry: Any) -> bool:
+        wanted = city.strip().lower()
+        if not wanted:
+            return True
+        locations = [cached_city, str((entry or {}).get("address") or "").strip().lower()]
+        return any(
+            location
+            and (
+                wanted == location
+                or wanted in {part.strip() for part in location.split(",")}
+                or (cached_city and (cached_city in wanted or wanted in cached_city))
+            )
+            for location in locations
+        )
 
     def get_details(name: str, city: str = "", **_kwargs: Any) -> dict[str, Any] | None:
         wanted = str(name or "").strip().lower()
-        exact = places.get(f"{wanted}|{str(city or '').strip().lower()}")
-        return dict(exact or by_name.get(wanted) or {}) or None
+        destination = str(city or "").strip().lower()
+        exact_key = f"{wanted}|{destination}"
+        if exact_key in normalized_places:
+            return dict(normalized_places[exact_key]) or None
+        compatible = [
+            entry
+            for cached_city, entry in by_name.get(wanted, [])
+            if destination_matches(destination, cached_city, entry)
+        ]
+        identities = {
+            str(entry.get("place_id") or "").strip()
+            or f"{entry.get('lat')}|{entry.get('lng')}"
+            for entry in compatible
+        }
+        if len(identities) != 1:
+            return None
+        preferred = next(
+            (
+                entry
+                for entry in compatible
+                if str(entry.get("name") or "").strip().lower() == wanted
+            ),
+            compatible[0],
+        )
+        return dict(preferred) or None
 
     return get_details
 
