@@ -64,7 +64,58 @@ def _record(**extra: Any) -> corpus.CorpusRecord:
 
 def test_a_trip_seen_from_two_sources_is_counted_once() -> None:
     same = [_record(), _record()]
-    assert len(corpus.deduplicate(same)) == 1
+    [logical] = corpus.deduplicate(same)
+    assert len(logical.links) == 2
+    assert logical.cohorts == (corpus.OWNER_CURRENT, corpus.CLONE)
+
+
+def test_identity_and_lane_metadata_do_not_split_one_logical_trip() -> None:
+    first = _record(user_id="owner", trip_id="owner-trip", revision=1)
+    clone = dataclasses.replace(
+        _record(user_id="corpus-copy", trip_id="lane-copy", revision=99),
+        id="lane:copy",
+        source="another-lane",
+    )
+
+    [logical] = corpus.deduplicate([first, clone])
+
+    assert logical.logical_trip_id == first.logical_trip_id == clone.logical_trip_id
+    assert {link.id for link in logical.links} == {"test:1", "lane:copy"}
+    assert logical.cohorts == (corpus.GENERATED_FINAL, corpus.CLONE)
+
+
+def test_a_meaningful_itinerary_revision_is_a_distinct_logical_trip() -> None:
+    revised = _record(
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Kempegowda International Airport", "kind": "transport"},
+                    {"name": "Eiffel Tower", "kind": "attraction"},
+                ],
+            }
+        ]
+    )
+
+    assert len(corpus.deduplicate([_record(), revised])) == 2
+
+
+def test_a_plan_without_an_itinerary_is_partial_not_current() -> None:
+    partial = _record(day_wise_itinerary=[])
+
+    assert partial.cohorts == (corpus.PARTIAL,)
+    assert not partial.executive
+
+
+def test_committed_generated_plans_retain_their_shared_place_facts(tmp_path: Path) -> None:
+    directory = tmp_path / "trips"
+    directory.mkdir()
+    (directory / "paris.json").write_text(json.dumps(_plan()), encoding="utf-8")
+
+    [generated] = corpus.from_generated_finals(directory, places=_PLACES)
+
+    assert generated.cohorts == (corpus.GENERATED_FINAL,)
+    assert generated.places == _PLACES
 
 
 def test_provenance_is_tallied_for_the_report() -> None:
@@ -587,6 +638,37 @@ def test_a_rule_that_never_fired_is_still_listed(tmp_path: Path) -> None:
     listed = {item["code"] for item in payload["rules"]}
     assert listed == registry.codes()
     assert any(item["hits"] == 0 for item in payload["rules"])
+
+
+def test_rules_distinguish_failed_clean_and_absent_facts(tmp_path: Path) -> None:
+    from tripplanner.validation import report as report_module
+
+    grounded = _record()
+    absent = dataclasses.replace(
+        _record(user_id="other"),
+        id="test:without-facts",
+        plan=_plan(user_id="other", day_wise_itinerary=[
+            {"day": 1, "stops": [{"name": "Eiffel Tower", "kind": "attraction"}]}
+        ]),
+        places={},
+    )
+    partial = dataclasses.replace(
+        _record(day_wise_itinerary=[]),
+        id="test:partial",
+        plan=_plan(day_wise_itinerary=[]),
+    )
+    result = _audit_of(grounded, absent, partial, tmp_path=tmp_path)
+
+    payload = report_module.build_report(result, {"accepted": {}})
+    render_rule = next(item for item in payload["rules"] if item["code"] == "R1")
+
+    assert payload["corpus"]["executive_size"] == 2
+    assert payload["corpus"]["cohorts"][corpus.PARTIAL] == 1
+    assert render_rule["eligible"] == 2
+    assert render_rule["evaluated"] == 1
+    assert render_rule["unverified"] == 1
+    assert render_rule["failed"] <= render_rule["evaluated"]
+    assert render_rule["by_cohort"][corpus.PARTIAL]["eligible"] == 0
 
 
 def test_a_rule_counts_the_trips_it_touches_not_just_the_times_it_fired(
