@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import importlib.util
 import os
+import signal
 import subprocess
 import sys
+import time
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 
@@ -295,6 +297,16 @@ def test_every_worker_launch_pins_gpt_56_sol_medium(tmp_path, monkeypatch) -> No
     )
     assert "auto" not in (argument.lower() for argument in command)
     assert not any("claude" in argument.lower() for argument in command)
+    assert command[command.index("--name") + 1] == "Slot 1 | #42 t"
+
+
+def test_worker_session_name_is_concise() -> None:
+    named_issue = issue(72, core.READY, title="Make multiagent shutdown bounded and reliable")
+
+    name = runtime.worker_session_name(named_issue, "slot-2")
+
+    assert name.startswith("Slot 2 | #72 Make multiagent shutdown")
+    assert len(name) <= 59
 
 
 def test_preflight_finds_copilot_without_launching_it(tmp_path, monkeypatch) -> None:
@@ -328,6 +340,107 @@ def test_exited_worker_child_is_reaped_without_remaining_running() -> None:
     with pytest.raises(ChildProcessError):
         os.waitpid(process.pid, os.WNOHANG)
     process.returncode = 0
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX process groups only")
+def test_stop_owned_process_forces_the_complete_process_group(tmp_path) -> None:
+    child_pid_path = tmp_path / "child.pid"
+    marker = "multiagent-stop-test"
+    program = (
+        "import signal, subprocess, sys, time; "
+        "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+        "child = subprocess.Popen([sys.executable, '-c', "
+        "'import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(60)']); "
+        "open(sys.argv[1], 'w').write(str(child.pid)); time.sleep(60)"
+    )
+    process = subprocess.Popen(  # noqa: S603 - fixed interpreter and test program
+        [sys.executable, "-c", program, str(child_pid_path), marker],
+        start_new_session=True,
+    )
+    deadline = time.monotonic() + 2
+    while time.monotonic() < deadline and not child_pid_path.exists():
+        time.sleep(0.01)
+    child_pid = int(child_pid_path.read_text(encoding="utf-8"))
+
+    try:
+        assert runtime.stop_owned_process(process.pid, marker) == "forced"
+        assert not runtime.owned_process_running(process.pid, marker)
+        with pytest.raises(ProcessLookupError):
+            os.kill(child_pid, 0)
+    finally:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except (PermissionError, ProcessLookupError):
+            pass
+        process.wait(timeout=2)
+
+
+def test_stop_is_idempotent_and_reloads_state_after_controller_exit(tmp_path, monkeypatch) -> None:
+    assignment = core.Assignment(
+        issue=72,
+        slot="slot-1",
+        state="running",
+        pid=222,
+        session_id="worker-session",
+    )
+    initial = core.State(
+        lease=core.Lease(holder="controller", pid=111),
+        assignments=[assignment],
+    )
+    saved: list[core.State] = []
+    calls: list[tuple[int, str]] = []
+    space = SimpleNamespace(
+        controller_pid=tmp_path / "controller.pid",
+    )
+    space.controller_pid.write_text("333", encoding="utf-8")
+
+    monkeypatch.setattr(runtime, "load_state", lambda _space: initial)
+    monkeypatch.setattr(runtime, "save_state", lambda _space, state: saved.append(state))
+    monkeypatch.setattr(
+        runtime,
+        "stop_owned_process",
+        lambda pid, marker: calls.append((pid, marker)) or "absent-or-stale",
+    )
+
+    assert runtime.cmd_stop(space, SimpleNamespace()) == 0
+
+    assert calls == [
+        (111, "multiagent.py run"),
+        (333, "multiagent.py run"),
+        (222, "worker-session"),
+    ]
+    assert initial.assignments[0].state == "stopped"
+    assert initial.lease.pid == 0
+    assert len(saved) == 1
+    assert not space.controller_pid.exists()
+
+
+def test_stop_reports_a_process_tree_that_survives_escalation(tmp_path, monkeypatch) -> None:
+    initial = core.State(lease=core.Lease(holder="controller", pid=111))
+    space = SimpleNamespace(controller_pid=tmp_path / "missing.pid")
+    monkeypatch.setattr(runtime, "load_state", lambda _space: initial)
+    monkeypatch.setattr(runtime, "save_state", lambda *_args: None)
+    monkeypatch.setattr(runtime, "stop_owned_process", lambda *_args: "failed")
+
+    assert runtime.cmd_stop(space, SimpleNamespace()) == 2
+
+
+def test_coordinator_prompt_requests_the_coordinator_title(tmp_path, monkeypatch) -> None:
+    commands: list[list[str]] = []
+
+    def run(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        commands.append(command)
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(runtime, "run", run)
+    monkeypatch.setattr(runtime.time, "sleep", lambda _seconds: None)
+
+    space = SimpleNamespace(primary=tmp_path / "primary")
+    assert runtime.cmd_coordinator(space, SimpleNamespace()) == 0
+    assert commands[0] == ["code", "--new-window", str(space.primary)]
+    assert commands[1][:5] == ["code", "chat", "-m", "agent", "-r"]
+    assert "rename this chat to `Coordinator`" in commands[1][-1]
+    assert "Stay in the primary lane" in commands[1][-1]
 
 
 def test_restart_reconciles_a_stopped_assignment_from_its_transcript(

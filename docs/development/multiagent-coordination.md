@@ -169,6 +169,9 @@ never chooses what to work on.
 A worker never merges, never closes an issue, never pushes outside its own
 branch, and never picks up a second issue.
 
+Copilot CLI sessions are named `Slot N | #<issue> <concise title>`, so process
+and session lists show which slot owns each requirement without opening logs.
+
 Every implementation worker is explicitly launched with GPT-5.6 Sol at medium
 reasoning effort. The controller does not use Auto routing: Auto cannot guarantee
 the no-Claude constraint, so both the model and reasoning effort remain fixed
@@ -266,6 +269,11 @@ One shared implementation, thin launchers on both platforms.
 
 Windows launchers are in `scripts/win/user/multiagent/`, macOS in
 `scripts/mac/user/multiagent/`, and both forward to `scripts/dev/multiagent.ps1`.
+`Start-Multiagent` opens the primary checkout in a fresh VS Code window, then
+requests the title `Coordinator` for its chat. VS Code's `code chat` interface
+has no title argument, so the prompt asks the new chat to rename itself as its
+first action. This keeps an external-Terminal start from attaching Coordinator
+to whichever sandbox window was active most recently.
 Preflight resolves the Copilot executable from `PATH` without executing it.
 In particular, it never runs `copilot --version`: Copilot CLI 1.0.78 can leave
 hundreds of Electron helper processes behind after version probes on macOS.
@@ -278,6 +286,9 @@ base SHA, worker session id, pushed SHA, validation result, and last heartbeat.
 
 - One coordinator holds a lease with an expiry. A second `Start` refuses unless
   the lease has expired.
+- Stop terminates the controller first, waits only to a fixed deadline, and then
+  terminates each worker process tree. Processes that ignore the graceful signal
+  are force-stopped; stale or reused PIDs are ignored rather than killed.
 - Leases and heartbeats expire, and every remote-mutating step is idempotent or
   records its phase first.
 - On restart the controller reconciles four sources — issue labels, its own state

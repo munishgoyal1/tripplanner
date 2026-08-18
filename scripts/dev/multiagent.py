@@ -16,6 +16,7 @@ import argparse
 import json
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -36,6 +37,8 @@ INTEGRATION_BRANCH = "multiagent/integration"
 TEST_TIMEOUT_SECONDS = 3600
 WORKER_MODEL = "gpt-5.6-sol"
 WORKER_REASONING_EFFORT = "medium"
+STOP_GRACE_SECONDS = 2.0
+STOP_KILL_SECONDS = 1.0
 
 _BAR = "-" * 78
 
@@ -153,6 +156,65 @@ def worker_running(pid: int) -> bool:
     except OSError:
         return False
     return reaped == 0
+
+
+def process_info(pid: int) -> tuple[str, str]:
+    """Return process state and command without treating a stale PID as owned."""
+    if pid <= 0:
+        return "", ""
+    if os.name == "nt":
+        script = (
+            f"$p = Get-CimInstance Win32_Process -Filter 'ProcessId = {pid}'; "
+            "if ($p) { $p.CommandLine }"
+        )
+        result = run(["pwsh", "-NoProfile", "-Command", script], timeout=5)
+        return "", result.stdout.strip() if result.returncode == 0 else ""
+    result = run(["ps", "-p", str(pid), "-o", "stat=", "-o", "command="], timeout=5)
+    if result.returncode != 0 or not result.stdout.strip():
+        return "", ""
+    state, _, command = result.stdout.strip().partition(" ")
+    return state, command.strip()
+
+
+def owned_process_running(pid: int, marker: str) -> bool:
+    state, command = process_info(pid)
+    return bool(command and marker in command and not state.startswith("Z"))
+
+
+def stop_owned_process(pid: int, marker: str) -> str:
+    """Stop one owned process tree within a fixed deadline."""
+    if not owned_process_running(pid, marker):
+        return "absent-or-stale"
+
+    if os.name == "nt":
+        run(["taskkill", "/PID", str(pid), "/T"], timeout=5)
+    else:
+        try:
+            process_group = os.getpgid(pid)
+        except ProcessLookupError:
+            return "absent-or-stale"
+        if process_group != pid:
+            return "not-group-leader"
+        os.killpg(process_group, signal.SIGTERM)
+
+    deadline = time.monotonic() + STOP_GRACE_SECONDS
+    while time.monotonic() < deadline and owned_process_running(pid, marker):
+        time.sleep(0.05)
+    if not owned_process_running(pid, marker):
+        return "stopped"
+
+    if os.name == "nt":
+        run(["taskkill", "/PID", str(pid), "/T", "/F"], timeout=5)
+    else:
+        try:
+            os.killpg(pid, signal.SIGKILL)
+        except ProcessLookupError:
+            return "stopped"
+
+    deadline = time.monotonic() + STOP_KILL_SECONDS
+    while time.monotonic() < deadline and owned_process_running(pid, marker):
+        time.sleep(0.05)
+    return "forced" if not owned_process_running(pid, marker) else "failed"
 
 
 # ----------------------------------------------------------------------------
@@ -297,6 +359,14 @@ def transcript_path(space: Workspace, issue_number: int, attempt: int) -> Path:
     return space.transcripts / f"issue-{issue_number}-attempt-{attempt}.log"
 
 
+def worker_session_name(issue: core.Issue, slot: str) -> str:
+    slot_number = slot.rsplit("-", 1)[-1]
+    title = " ".join(issue.title.split())
+    if len(title) > 44:
+        title = title[:41].rstrip() + "..."
+    return f"Slot {slot_number} | #{issue.number} {title}"
+
+
 def launch_worker(
     space: Workspace,
     issue: core.Issue,
@@ -321,6 +391,7 @@ def launch_worker(
         "copilot",
         "--model", WORKER_MODEL,
         "--reasoning-effort", WORKER_REASONING_EFFORT,
+        "--name", worker_session_name(issue, slot),
         "--prompt", prompt,
         "--allow-all-tools",
         "--no-ask-user",
@@ -388,6 +459,7 @@ def dispatch(space: Workspace, state: core.State, repo: str) -> None:
         )
         if issue.number not in state.batch:
             state.batch.append(issue.number)
+        save_state(space, state)
         set_agent_state(repo, issue.number, core.IN_PROGRESS, lane=f"lane:mw-{slot[-1]}")
         log(f"dispatched #{issue.number} to {slot} on {branch} (pid {pid}, log {transcript.name})")
 
@@ -700,20 +772,48 @@ def cmd_start(space: Workspace, args: argparse.Namespace) -> int:
 
 def cmd_stop(space: Workspace, args: argparse.Namespace) -> int:
     state = load_state(space)
+    controller_pids = {state.lease.pid}
+    if space.controller_pid.exists():
+        try:
+            controller_pids.add(int(space.controller_pid.read_text(encoding="utf-8").strip()))
+        except ValueError:
+            pass
+    controller_results = {
+        pid: stop_owned_process(pid, "multiagent.py run")
+        for pid in sorted(controller_pids)
+        if pid > 0
+    }
+
+    # The controller is the only other state writer. Reload after it is gone so
+    # a final cycle cannot restore its lease or overwrite stopped assignments.
+    state = load_state(space)
     stopped = 0
+    forced = 0
+    failures = sum(
+        result in ("failed", "not-group-leader") for result in controller_results.values()
+    )
     for assignment in state.active():
-        if worker_running(assignment.pid):
-            os.kill(assignment.pid, 15)
+        result = stop_owned_process(assignment.pid, assignment.session_id)
+        if result in ("stopped", "forced"):
             stopped += 1
-        assignment.state = "stopped"
-    if pid_alive(state.lease.pid):
-        os.kill(state.lease.pid, 15)
+        if result == "forced":
+            forced += 1
+        if result in ("failed", "not-group-leader"):
+            failures += 1
+        else:
+            assignment.state = "stopped"
     state.lease = core.Lease()
     save_state(space, state)
     if space.controller_pid.exists():
         space.controller_pid.unlink()
-    log(f"Stopped the controller and {stopped} worker(s).")
+    controller_summary = ", ".join(
+        f"{pid}={result}" for pid, result in sorted(controller_results.items())
+    ) or "not running"
+    log(f"Controller: {controller_summary}. Workers stopped: {stopped} ({forced} forced).")
     log("Worktrees, branches, and transcripts were kept for inspection.")
+    if failures:
+        log(f"Shutdown incomplete: {failures} owned process tree(s) survived escalation.")
+        return 2
     return 0
 
 
@@ -737,19 +837,26 @@ def cmd_resume(space: Workspace, args: argparse.Namespace) -> int:
 
 def cmd_coordinator(space: Workspace, args: argparse.Namespace) -> int:
     prompt = (
-        "You are the multiagent coordinator for this repository. Read "
+        "First rename this chat to `Coordinator`. You are the multiagent coordinator for "
+        f"the primary repository at `{space.primary}`. Stay in the primary lane; do not adopt "
+        "a sandbox lane. Read "
         "docs/development/multiagent-coordination.md, then report: issues waiting on my "
         "decision (owner:decision-needed), what is authorised (owner:ready), and what the "
         "controller is doing (scripts/dev/multiagent.py status). Help me draft requirements "
         "and answer blocked issues. Never add owner:ready yourself."
     )
+    workspace = run(["code", "--new-window", str(space.primary)], timeout=60)
+    if workspace.returncode != 0:
+        log(f"Could not open the primary workspace at {space.primary}.")
+        return 1
+    time.sleep(1)
     opened = run(["code", "chat", "-m", "agent", "-r", prompt], timeout=60)
     if opened.returncode != 0:
         log("Could not open VS Code chat. Start it yourself and paste this prompt:")
         log("")
         log(prompt)
         return 1
-    log("Coordinator chat opened in VS Code.")
+    log("Coordinator chat opened in VS Code; its requested title is Coordinator.")
     return 0
 
 
