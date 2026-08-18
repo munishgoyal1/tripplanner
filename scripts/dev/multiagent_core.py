@@ -37,12 +37,12 @@ AGENT_STATES = (QUEUED, IN_PROGRESS, BLOCKED, INTEGRATING, NEEDS_VERIFY)
 # dispatch; the other four mean somebody already owns the issue.
 CLAIMED_STATES = (IN_PROGRESS, BLOCKED, INTEGRATING, NEEDS_VERIFY)
 
-BRANCH_PREFIX = "multiagent/issue-"
+BRANCH_PREFIX = "multiagent/"
 
 _PATH_RE = re.compile(
     r"\b((?:src|frontend|scripts|docs|tests|packages|mobile|infra)/[\w./@-]+)",
 )
-_BRANCH_RE = re.compile(rf"{re.escape(BRANCH_PREFIX)}(\d+)-attempt-(\d+)$")
+_BRANCH_RE = re.compile(rf"{re.escape(BRANCH_PREFIX)}(?:slot-\d+-)?issue-(\d+)-attempt-(\d+)$")
 _FINGERPRINT_RE = re.compile(r"audit-fingerprint:\s*([A-Za-z0-9_.-]+/[0-9a-f]{8})")
 
 # Files that are coupled through a contract rather than through their path.
@@ -269,8 +269,8 @@ def plan_dispatch(
     return Plan(dispatch=tuple(dispatch), deferred=tuple(deferred))
 
 
-def branch_name(issue_number: int, attempt: int) -> str:
-    return f"{BRANCH_PREFIX}{issue_number}-attempt-{attempt}"
+def branch_name(slot: str, issue_number: int, attempt: int) -> str:
+    return f"{BRANCH_PREFIX}{slot}-issue-{issue_number}-attempt-{attempt}"
 
 
 def next_attempt(existing_branches: list[str], issue_number: int) -> int:
