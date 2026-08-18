@@ -1218,3 +1218,17 @@ the outcome.
   checking which worktree is dirty. The old wrapper blamed concurrent sandbox
   writes when the merge gate was actually rejecting primary-checkout WIP, and
   the empty path list was the clue that the diagnosis came from the wrong lane.
+
+## 2026-08-18 - Reusable Worktrees Need An Explicit Freshness Boundary
+
+- Fetching remote refs does not update a worker's base. The controller fetched
+  before dispatch but still checked out its persisted integration SHA, so later
+  sandbox promotions on `master` remained absent until batch finalization.
+- A reusable idle slot does not need to display current `master`; changing it
+  continuously can disturb a live agent. Refresh the integration lane on each
+  idle controller cycle, then snapshot that validated baseline for every worker
+  in the next batch. Leave slot files alone until assignment, when their fresh
+  branch is created from that baseline.
+- A second reconciliation before opening the pull request remains necessary.
+  Master can advance while workers run, and a batch is not valid merely because
+  it started from a current base.

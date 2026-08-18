@@ -1,6 +1,37 @@
-import { describe, expect, it } from "vitest";
+import { execFileSync } from "node:child_process";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, resolve } from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
 import { buildHandoffHistory } from "./feedback-plugin";
-import { mergeSelections, migrateLegacyHandoffs, type LabSelection } from "./lab-selection-store";
+import {
+  commitSelectionStore,
+  mergeSelections,
+  migrateLegacyHandoffs,
+  type LabSelection,
+} from "./lab-selection-store";
+
+const temporaryRepositories: string[] = [];
+
+async function createRepository() {
+  const root = await mkdtemp(resolve(tmpdir(), "tripplanner-lab-store-"));
+  temporaryRepositories.push(root);
+  const storePath = resolve(root, "docs/ux-experiments/LAB_SELECTIONS.json");
+  await mkdir(dirname(storePath), { recursive: true });
+  await writeFile(storePath, "{}\n", "utf8");
+  await writeFile(resolve(root, "unrelated.txt"), "initial\n", "utf8");
+  execFileSync("git", ["init", "-q"], { cwd: root });
+  execFileSync("git", ["config", "user.name", "Lab Test"], { cwd: root });
+  execFileSync("git", ["config", "user.email", "lab-test@example.com"], { cwd: root });
+  execFileSync("git", ["config", "commit.gpgsign", "false"], { cwd: root });
+  execFileSync("git", ["add", "."], { cwd: root });
+  execFileSync("git", ["commit", "-q", "-m", "Initial"], { cwd: root });
+  return { root, storePath };
+}
+
+afterEach(async () => {
+  await Promise.all(temporaryRepositories.splice(0).map((path) => rm(path, { recursive: true, force: true })));
+});
 
 const baseSelection: LabSelection = {
   labId: "multi-city-itinerary",
@@ -60,6 +91,39 @@ describe("buildHandoffHistory", () => {
     };
 
     expect(buildHandoffHistory(previous, previous, "2026-08-02T00:00:00.000Z").at(-1)?.version).toBe(9);
+  });
+});
+
+describe("commitSelectionStore", () => {
+  it("commits only the Lab store and leaves unrelated changes untouched", async () => {
+    const { root, storePath } = await createRepository();
+    await writeFile(storePath, "{\"trip-feedback\": {}}\n", "utf8");
+    await writeFile(resolve(root, "unrelated.txt"), "owner work\n", "utf8");
+
+    expect(commitSelectionStore("trip-feedback", storePath, false)).toBe(true);
+    expect(execFileSync("git", ["log", "-1", "--pretty=%s"], { cwd: root, encoding: "utf8" }).trim())
+      .toBe("Record trip-feedback Lab handoff");
+    expect(await readFile(storePath, "utf8")).toBe("{\"trip-feedback\": {}}\n");
+    expect(execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).trim())
+      .toBe("M unrelated.txt");
+  });
+
+  it("does not create a commit when the Lab store is unchanged", async () => {
+    const { root, storePath } = await createRepository();
+    const previousHead = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+
+    expect(commitSelectionStore("trip-feedback", storePath, false)).toBe(false);
+    expect(execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim())
+      .toBe(previousHead);
+  });
+
+  it("reports a push failure after preserving the local Lab commit", async () => {
+    const { root, storePath } = await createRepository();
+    await writeFile(storePath, "{\"trip-feedback\": {}}\n", "utf8");
+
+    expect(() => commitSelectionStore("trip-feedback", storePath)).toThrow();
+    expect(execFileSync("git", ["log", "-1", "--pretty=%s"], { cwd: root, encoding: "utf8" }).trim())
+      .toBe("Record trip-feedback Lab handoff");
   });
 });
 

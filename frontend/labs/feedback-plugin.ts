@@ -1,5 +1,6 @@
 import type { Plugin } from "vite";
 import {
+  commitSelectionStore,
   readSelections,
   withSelectionStoreLock,
   writeSelections,
@@ -116,6 +117,7 @@ export function labFeedbackPlugin(): Plugin {
               updatedAt,
             };
             await writeSelections(selections);
+            commitSelectionStore(selection.labId);
             return selections[selection.labId];
           });
           sendJson(response, 200, savedSelection);

@@ -13,7 +13,7 @@ work; the multiagent lanes are deliberately invisible to them.
 | Role | Runtime | Owns |
 | --- | --- | --- |
 | Owner | You | What is worth building, and every ambiguous decision |
-| Coordinator chat | VS Code Copilot agent | The conversation: drafting requirements, answering blocked issues |
+| Coordinator chat | VS Code Copilot autopilot | Drafting requirements, answering blocked issues, owner-requested primary-lane fixes |
 | Controller | `scripts/dev/multiagent.py`, launched detached | Leases, dispatch, slots, integration, recovery |
 | Worker | Copilot CLI, non-interactive | One issue, one branch, one commit |
 | Producer | `scripts/dev/multiagent.py audit` | Finding bugs and proposing them as issues |
@@ -27,6 +27,29 @@ the system, and it can be closed and reopened at any time.
 There is one interactive agent. The producer never talks to you directly, and
 neither does a worker; everything reaches you through an issue and the
 coordinator chat reads it.
+
+Every fix you ask for in the coordinator chat belongs to that coordinator in the
+primary lane by default, regardless of size. It does not create an issue or enter
+the autonomous queue. A worker, sandbox, or issue-backed handoff happens only when
+you explicitly request it, or when the work is deferred rather than completed in
+the current chat. The coordinator never adds `owner:ready`; only you can move
+issue-backed work into the autonomous queue.
+
+The same no-issue default applies inside sandbox chats: work requested and fixed
+there stays in that sandbox conversation. A sandbox agent does not create an issue
+for work already in progress. Issues are reserved for owner-explicit intake,
+deterministic trip-audit findings, tracked audit runs, and work intentionally
+parked for later. Existing issue-backed work still follows the claiming protocol.
+
+### Coordinator lane freshness
+
+At the start of every owner request that may change files, the coordinator checks
+that primary `master` is clean, fetches `origin`, and fast-forwards to
+`origin/master` before reading the owning code. If master advanced, it re-reads
+the affected files before editing. It never stashes or rewrites unrelated work to
+force a sync; a dirty primary worktree is resolved or reported first. Completed
+coordinator work is committed and pushed before the chat reports completion, so
+local `master` and `origin/master` converge again at the end of the turn.
 
 ## How work enters the system
 
@@ -169,6 +192,20 @@ never chooses what to work on.
 A worker never merges, never closes an issue, never pushes outside its own
 branch, and never picks up a second issue.
 
+Copilot CLI sessions are named `Slot N | #<issue> <concise title>`, so process
+and session lists show which slot owns each requirement without opening logs.
+
+Every implementation worker is explicitly launched with GPT-5.6 Sol at medium
+reasoning effort. The controller does not use Auto routing: Auto cannot guarantee
+the no-Claude constraint, so both the model and reasoning effort remain fixed
+arguments owned by the controller.
+
+Workers start in Copilot CLI autopilot mode with all tool, path, and URL
+permissions enabled. They still remain bounded by the worker contract, branch,
+prompt, and controller supervision; autopilot removes routine approval waits, not
+scope or deployment gates. The coordinator opener likewise requests VS Code's
+`autopilot` chat mode.
+
 **The slot is released the moment the worker pushes.** Integration happens
 asynchronously on a single serialized lane, so a slot is never idle waiting for a
 queue it does not control. If integration later fails, the issue is re-dispatched
@@ -178,8 +215,16 @@ as the next attempt to whichever slot is free — slots are interchangeable.
 
 - Integration merges the **exact pushed SHA**, never a branch name that may have
   moved.
-- `multiagent/integration` is long-lived and reset to `origin/master` at the start
-  of each batch.
+- `multiagent/integration` is long-lived. On every idle controller cycle, the
+  controller fetches `origin/master`; when it has advanced, the controller merges
+  it, validates the combined tree, and records that exact HEAD as the baseline.
+  The same reconciliation therefore always happens before the first dispatch of
+  a new batch.
+- Every worker in a live batch uses that immutable baseline. The controller does
+  not move a running worker's files when another sandbox lands on `master`.
+- Reusable slot worktrees are refreshed when assigned, not continuously while
+  idle. Their visible checkout may therefore look old between assignments, but a
+  new branch is always created from the validated current batch baseline.
 - Focused validation runs after each merge. The baseline advances only on success.
 - Because you commit to `master` directly, the batch re-syncs with the current
   `origin/master` and re-runs aggregate validation before the PR opens. A batch
@@ -261,6 +306,15 @@ One shared implementation, thin launchers on both platforms.
 
 Windows launchers are in `scripts/win/user/multiagent/`, macOS in
 `scripts/mac/user/multiagent/`, and both forward to `scripts/dev/multiagent.ps1`.
+`Start-Multiagent` opens its chat in the most recently active VS Code window and
+requests autopilot mode and the title `Coordinator`. VS Code's `code chat`
+interface has no title argument, so the prompt asks the new chat to rename itself
+as its first action.
+The prompt also names the primary checkout and requires the chat to remain in
+that lane even when another workspace is visible in the active window.
+Preflight resolves the Copilot executable from `PATH` without executing it.
+In particular, it never runs `copilot --version`: Copilot CLI 1.0.78 can leave
+hundreds of Electron helper processes behind after version probes on macOS.
 
 ## State and recovery
 
@@ -270,11 +324,17 @@ base SHA, worker session id, pushed SHA, validation result, and last heartbeat.
 
 - One coordinator holds a lease with an expiry. A second `Start` refuses unless
   the lease has expired.
+- Stop terminates the controller first, waits only to a fixed deadline, and then
+  terminates each worker process tree. Processes that ignore the graceful signal
+  are force-stopped; stale or reused PIDs are ignored rather than killed.
 - Leases and heartbeats expire, and every remote-mutating step is idempotent or
   records its phase first.
 - On restart the controller reconciles four sources — issue labels, its own state
   file, the processes actually alive, and the branches actually on the remote —
   because labels alone cannot say whether a push happened.
+- On POSIX, the controller reaps exited worker children so zombies cannot keep a
+  slot falsely running. A restart also re-reads preserved stopped assignments from
+  their transcripts before deciding their outcome.
 - A timed-out worker keeps its worktree and branch for inspection. Evidence is not
   deleted to make room.
 

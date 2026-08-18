@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
+import { realpathSync } from "node:fs";
 import { copyFile, mkdir, open, readFile, rename, unlink, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import { dirname, relative, resolve } from "node:path";
 
 export interface ImplementationRecord {
   version: number;
@@ -251,4 +252,38 @@ export async function writeSelections(selections: LabSelections): Promise<void> 
   await writeFile(canonicalTemporaryPath, contents, "utf8");
   await writeLocalSelections(selections);
   await rename(canonicalTemporaryPath, canonicalPath);
+}
+
+export function commitSelectionStore(
+  labId: string,
+  storePath = canonicalPath,
+  push = true,
+): boolean {
+  const repoRoot = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+    cwd: dirname(storePath),
+    encoding: "utf8",
+    windowsHide: true,
+  }).trim();
+  const repoPath = relative(realpathSync(repoRoot), realpathSync(storePath)).replaceAll("\\", "/");
+  const changed = execFileSync("git", ["status", "--porcelain", "--", repoPath], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    windowsHide: true,
+  }).trim();
+  if (!changed) return false;
+
+  execFileSync("git", ["add", "--", repoPath], { cwd: repoRoot, windowsHide: true });
+  execFileSync(
+    "git",
+    ["commit", "-m", `Record ${labId} Lab handoff`, "--", repoPath],
+    { cwd: repoRoot, windowsHide: true },
+  );
+  if (push) {
+    execFileSync("git", ["push", "-q", "origin", "HEAD"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      windowsHide: true,
+    });
+  }
+  return true;
 }

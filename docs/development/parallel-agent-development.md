@@ -2,6 +2,12 @@
 
 Use the primary `tripplanner` checkout on `master` and a fresh, task-named sandbox for each isolated feature or UX Lab. A sandbox starts from `origin/master`, carries one coherent change, and returns only through its validated promotion flow.
 
+An in-chat sandbox fix stays in that sandbox and does not need a GitHub issue.
+Issue creation is reserved for work the owner explicitly puts on the issue board,
+deterministic trip-audit findings, specific tracked audit runs, and known work
+intentionally parked for later. If an issue already exists, claim and update it;
+do not manufacture one for work the current sandbox chat is already completing.
+
 Create a sandbox from the primary checkout:
 
 ```powershell

@@ -3,9 +3,15 @@
 from __future__ import annotations
 
 import importlib.util
+import os
+import signal
+import subprocess
 import sys
+import time
 from pathlib import Path
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
+
+import pytest
 
 ROOT = Path(__file__).parents[1]
 DEV = ROOT / "scripts" / "dev"
@@ -23,6 +29,18 @@ def _load_core() -> ModuleType:
 
 
 core = _load_core()
+
+
+def _load_runtime() -> ModuleType:
+    spec = importlib.util.spec_from_file_location("multiagent", DEV / "multiagent.py")
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+runtime = _load_runtime()
 
 
 def issue(number: int, *labels: str, body: str = "", title: str = "t") -> object:
@@ -239,6 +257,294 @@ def test_the_worker_prompt_fences_the_issue_and_bounds_the_branch() -> None:
     assert "Fixes #42" in assignment
     assert "Never edit labels" in assignment
     assert "PYTHONPATH=src" in assignment
+
+
+def test_every_worker_launch_pins_gpt_56_sol_medium(tmp_path, monkeypatch) -> None:
+    commands: list[list[str]] = []
+
+    class Process:
+        pid = 123
+
+    def popen(command: list[str], **_kwargs: object) -> Process:
+        commands.append(command)
+        return Process()
+
+    space = SimpleNamespace(
+        transcripts=tmp_path / "transcripts",
+        runtime=tmp_path / "runtime",
+        slot_path=lambda _slot: tmp_path,
+    )
+    space.transcripts.mkdir()
+    monkeypatch.setattr(runtime.subprocess, "Popen", popen)
+
+    runtime.launch_worker(
+        space,
+        issue(42, core.READY),
+        slot="slot-1",
+        branch="multiagent/issue-42-attempt-1",
+        attempt=1,
+        base_sha="a" * 40,
+        repo="owner/repo",
+        answer="",
+    )
+
+    command = commands[0]
+    assert command[command.index("--model") + 1] == runtime.WORKER_MODEL == "gpt-5.6-sol"
+    assert (
+        command[command.index("--reasoning-effort") + 1]
+        == runtime.WORKER_REASONING_EFFORT
+        == "medium"
+    )
+    assert "auto" not in (argument.lower() for argument in command)
+    assert not any("claude" in argument.lower() for argument in command)
+    assert command[command.index("--name") + 1] == "Slot 1 | #42 t"
+    assert "--autopilot" in command
+    assert "--allow-all" in command
+    assert "--allow-all-tools" not in command
+
+
+def test_worker_session_name_is_concise() -> None:
+    named_issue = issue(72, core.READY, title="Make multiagent shutdown bounded and reliable")
+
+    name = runtime.worker_session_name(named_issue, "slot-2")
+
+    assert name.startswith("Slot 2 | #72 Make multiagent shutdown")
+    assert len(name) <= 59
+
+
+def test_preflight_finds_copilot_without_launching_it(tmp_path, monkeypatch) -> None:
+    calls: list[list[str]] = []
+
+    def run(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    primary = tmp_path / "primary"
+    (primary / ".venv").mkdir(parents=True)
+    monkeypatch.setattr(runtime, "run", run)
+    monkeypatch.setattr(runtime.shutil, "which", lambda tool: f"/bin/{tool}")
+
+    assert runtime.preflight(SimpleNamespace(primary=primary)) == []
+    assert ["copilot", "--version"] not in calls
+    assert all(command[0] != "copilot" for command in calls)
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX child reaping only")
+def test_exited_worker_child_is_reaped_without_remaining_running() -> None:
+    process = subprocess.Popen(  # noqa: S603 - fixed interpreter and inline test program
+        [sys.executable, "-c", "print('finished')"],
+        stdout=subprocess.PIPE,
+        text=True,
+    )
+    assert process.stdout
+    assert process.stdout.read() == "finished\n"
+
+    assert not runtime.worker_running(process.pid)
+    with pytest.raises(ChildProcessError):
+        os.waitpid(process.pid, os.WNOHANG)
+    process.returncode = 0
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX process groups only")
+def test_stop_owned_process_forces_the_complete_process_group(tmp_path) -> None:
+    child_pid_path = tmp_path / "child.pid"
+    marker = "multiagent-stop-test"
+    program = (
+        "import signal, subprocess, sys, time; "
+        "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+        "child = subprocess.Popen([sys.executable, '-c', "
+        "'import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(60)']); "
+        "open(sys.argv[1], 'w').write(str(child.pid)); time.sleep(60)"
+    )
+    process = subprocess.Popen(  # noqa: S603 - fixed interpreter and test program
+        [sys.executable, "-c", program, str(child_pid_path), marker],
+        start_new_session=True,
+    )
+    deadline = time.monotonic() + 2
+    while time.monotonic() < deadline and not child_pid_path.exists():
+        time.sleep(0.01)
+    child_pid = int(child_pid_path.read_text(encoding="utf-8"))
+
+    try:
+        assert runtime.stop_owned_process(process.pid, marker) == "forced"
+        assert not runtime.owned_process_running(process.pid, marker)
+        with pytest.raises(ProcessLookupError):
+            os.kill(child_pid, 0)
+    finally:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except (PermissionError, ProcessLookupError):
+            pass
+        process.wait(timeout=2)
+
+
+def test_stop_is_idempotent_and_reloads_state_after_controller_exit(tmp_path, monkeypatch) -> None:
+    assignment = core.Assignment(
+        issue=72,
+        slot="slot-1",
+        state="running",
+        pid=222,
+        session_id="worker-session",
+    )
+    initial = core.State(
+        lease=core.Lease(holder="controller", pid=111),
+        assignments=[assignment],
+    )
+    saved: list[core.State] = []
+    calls: list[tuple[int, str]] = []
+    space = SimpleNamespace(
+        controller_pid=tmp_path / "controller.pid",
+    )
+    space.controller_pid.write_text("333", encoding="utf-8")
+
+    monkeypatch.setattr(runtime, "load_state", lambda _space: initial)
+    monkeypatch.setattr(runtime, "save_state", lambda _space, state: saved.append(state))
+    monkeypatch.setattr(
+        runtime,
+        "stop_owned_process",
+        lambda pid, marker: calls.append((pid, marker)) or "absent-or-stale",
+    )
+
+    assert runtime.cmd_stop(space, SimpleNamespace()) == 0
+
+    assert calls == [
+        (111, "multiagent.py run"),
+        (333, "multiagent.py run"),
+        (222, "worker-session"),
+    ]
+    assert initial.assignments[0].state == "stopped"
+    assert initial.lease.pid == 0
+    assert len(saved) == 1
+    assert not space.controller_pid.exists()
+
+
+def test_stop_reports_a_process_tree_that_survives_escalation(tmp_path, monkeypatch) -> None:
+    initial = core.State(lease=core.Lease(holder="controller", pid=111))
+    space = SimpleNamespace(controller_pid=tmp_path / "missing.pid")
+    monkeypatch.setattr(runtime, "load_state", lambda _space: initial)
+    monkeypatch.setattr(runtime, "save_state", lambda *_args: None)
+    monkeypatch.setattr(runtime, "stop_owned_process", lambda *_args: "failed")
+
+    assert runtime.cmd_stop(space, SimpleNamespace()) == 2
+
+
+def test_coordinator_opens_titled_chat_in_last_active_window(tmp_path, monkeypatch) -> None:
+    commands: list[list[str]] = []
+
+    def run(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        commands.append(command)
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(runtime, "run", run)
+
+    space = SimpleNamespace(primary=tmp_path / "primary")
+    assert runtime.cmd_coordinator(space, SimpleNamespace()) == 0
+    assert len(commands) == 1
+    assert commands[0][:5] == ["code", "chat", "-m", "autopilot", "--reuse-window"]
+    assert "rename this chat to `Coordinator`" in commands[0][-1]
+    assert "Stay in the primary lane" in commands[0][-1]
+    assert "Every fix I request in this chat is owned by this coordinator" in commands[0][-1]
+    assert "fast-forward master to origin/master" in commands[0][-1]
+
+
+def test_restart_reconciles_a_stopped_assignment_from_its_transcript(
+    tmp_path, monkeypatch
+) -> None:
+    space = SimpleNamespace(transcripts=tmp_path)
+    assignment = core.Assignment(
+        issue=42,
+        attempt=2,
+        slot="slot-1",
+        state="stopped",
+        pid=123,
+    )
+    state = core.State.from_dict(core.State(assignments=[assignment]).to_dict())
+    runtime.transcript_path(space, 42, 2).write_text(
+        "RESULT: done\nCOMMIT: abc123\nFILES: scripts/dev/multiagent.py\n"
+        "VALIDATION: pytest passed\n",
+        encoding="utf-8",
+    )
+    labels: list[tuple[int, str | None]] = []
+    monkeypatch.setattr(
+        runtime,
+        "set_agent_state",
+        lambda _repo, number, wanted: labels.append((number, wanted)),
+    )
+
+    runtime.collect(space, state, "owner/repo")
+
+    assert state.assignments[0].state == "pushed"
+    assert state.assignments[0].pushed_sha == "abc123"
+    assert labels == [(42, core.INTEGRATING)]
+
+
+def test_finalised_batch_persists_the_validated_integration_head(tmp_path, monkeypatch) -> None:
+    assignment = core.Assignment(issue=42, state="integrated", pushed_sha="abc123")
+    state = core.State(baseline_sha="pre-reconciliation", assignments=[assignment])
+    commands: list[list[str]] = []
+
+    def git(args: list[str], **_kwargs: object) -> str:
+        commands.append(args)
+        return "validated-head" if args == ["rev-parse", "HEAD"] else ""
+
+    def run(args: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    monkeypatch.setattr(runtime, "ensure_integration", lambda _space: tmp_path)
+    monkeypatch.setattr(runtime, "git", git)
+    monkeypatch.setattr(runtime, "run", run)
+    monkeypatch.setattr(runtime, "validate", lambda *_args, **_kwargs: (True, "passed"))
+    monkeypatch.setattr(runtime, "set_agent_state", lambda *_args, **_kwargs: None)
+
+    runtime.finalise_batch(SimpleNamespace(), state, "owner/repo")
+
+    assert state.baseline_sha == "validated-head"
+    assert ["rev-parse", "HEAD"] in commands
+    assert assignment.state == "in-pull-request"
+
+
+def test_idle_batch_refreshes_and_validates_current_master(tmp_path, monkeypatch) -> None:
+    state = core.State(baseline_sha="old-baseline")
+    commands: list[list[str]] = []
+    saved: list[str] = []
+
+    def git(args: list[str], **_kwargs: object) -> str:
+        commands.append(args)
+        if args == ["rev-parse", "HEAD"]:
+            merged = ["git", "merge", "--no-edit", "origin/master"] in commands
+            return "refreshed-head" if merged else "old-head"
+        if args == ["rev-parse", "origin/master"]:
+            return "new-master"
+        return ""
+
+    def run(args: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        commands.append(args)
+        return subprocess.CompletedProcess(args, 1 if "merge-base" in args else 0, "", "")
+
+    monkeypatch.setattr(runtime, "ensure_integration", lambda _space: tmp_path)
+    monkeypatch.setattr(runtime, "git", git)
+    monkeypatch.setattr(runtime, "run", run)
+    monkeypatch.setattr(runtime, "validate", lambda *_args, **_kwargs: (True, "passed"))
+    monkeypatch.setattr(
+        runtime,
+        "save_state",
+        lambda _space, current: saved.append(current.baseline_sha),
+    )
+
+    assert runtime.refresh_idle_baseline(SimpleNamespace(), state)
+    assert ["git", "merge", "--no-edit", "origin/master"] in commands
+    assert state.baseline_sha == "refreshed-head"
+    assert saved == ["refreshed-head"]
+
+
+def test_only_live_batch_states_freeze_the_baseline() -> None:
+    for assignment_state in ("dispatched", "running", "pushed", "integrated"):
+        state = core.State(assignments=[core.Assignment(state=assignment_state)])
+        assert runtime.batch_in_flight(state)
+
+    for assignment_state in ("in-pull-request", "failed", "blocked", "rejected"):
+        state = core.State(assignments=[core.Assignment(state=assignment_state)])
+        assert not runtime.batch_in_flight(state)
 
 
 def test_the_worker_report_is_read_from_its_trailing_block() -> None:
