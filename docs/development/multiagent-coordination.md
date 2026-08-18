@@ -164,8 +164,12 @@ every time; reusing a slot keeps `node_modules` and the linked packages warm. Wh
 is *not* reused is the branch or the agent context: every attempt gets a fresh
 branch and a fresh session, so one issue never inherits another's reasoning.
 
-Branches are `multiagent/issue-<n>-attempt-<k>`. The attempt number is derived
-from the branches that exist on the remote, so a wiped runtime directory cannot
+Active worker branches are
+`multiagent/slot-<s>-issue-<n>-attempt-<k>`, matching the slot and GitHub issue
+shown in the worker chat title. The controller publishes and attaches upstream
+tracking before the worker starts, so VS Code never presents a locally created
+attempt as an unpublished branch. The attempt number is derived from both legacy
+and current attempt branches on the remote, so a wiped runtime directory cannot
 reuse `attempt-1`.
 
 Lane labels are `lane:mw-1` and `lane:mw-2`, distinct from `lane:sbx-<n>`.
@@ -202,6 +206,10 @@ Before accepting a completed attempt, the controller fetches its remote branch,
 requires `origin/<attempt-branch>` to equal the reported SHA, and establishes
 upstream tracking in the reusable slot. Completed attempt branches remain frozen
 at that commit as evidence; they are not rebased or advanced to later master.
+After that verification, the reusable worktree switches to its tracked
+`multiagent/slot-<s>` parking branch at the current validated baseline. The
+historical attempt branch remains available locally and remotely without making
+the visible slot checkout look behind.
 
 Copilot CLI sessions are named `Slot N | #<issue> <concise title>`, so process
 and session lists show which slot owns each requirement without opening logs.
@@ -233,9 +241,10 @@ as the next attempt to whichever slot is free — slots are interchangeable.
   happens before the first dispatch of a new batch.
 - Every worker in a live batch uses that immutable baseline. The controller does
   not move a running worker's files when another sandbox lands on `master`.
-- Reusable slot worktrees are refreshed when assigned, not continuously while
-  idle. Their visible checkout may therefore look old between assignments, but a
-  new branch is always created from the validated current batch baseline.
+- Reusable slot worktrees are parked on tracked `multiagent/slot-<s>` branches
+  whenever a successful assignment releases them and whenever the idle baseline
+  refreshes. Failed or dirty attempts are left untouched for recovery. A new
+  attempt branch is always created from the validated current batch baseline.
 - Focused validation runs after each merge. The baseline advances only on success.
 - Because Coordinator and sandbox publication can advance `master`, the batch
   re-syncs with current `origin/master` and re-runs aggregate validation before

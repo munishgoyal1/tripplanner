@@ -169,19 +169,19 @@ def test_areas_already_held_by_a_running_worker_block_a_new_one() -> None:
 def test_attempt_number_comes_from_the_remote_not_local_state() -> None:
     branches = [
         "multiagent/issue-42-attempt-1",
-        "multiagent/issue-42-attempt-2",
-        "multiagent/issue-7-attempt-1",
+        "multiagent/slot-1-issue-42-attempt-2",
+        "multiagent/slot-2-issue-7-attempt-1",
     ]
 
     assert core.next_attempt(branches, 42) == 3
     assert core.next_attempt(branches, 7) == 2
     assert core.next_attempt(branches, 99) == 1
-    assert core.branch_name(42, 3) == "multiagent/issue-42-attempt-3"
+    assert core.branch_name("slot-2", 42, 3) == "multiagent/slot-2-issue-42-attempt-3"
 
 
 def test_branch_namespace_stays_clear_of_the_sandbox_detector() -> None:
     """sandbox.ps1 only flags refs/heads/sandbox and sbx-* worktrees."""
-    assert not core.branch_name(1, 1).startswith("sandbox/")
+    assert not core.branch_name("slot-1", 1, 1).startswith("sandbox/")
 
 
 # --- audit producer ----------------------------------------------------------
@@ -301,6 +301,53 @@ def test_every_worker_launch_pins_gpt_56_sol_medium(tmp_path, monkeypatch) -> No
     assert "--autopilot" in command
     assert "--allow-all" in command
     assert "--allow-all-tools" not in command
+
+
+def test_dispatch_publishes_the_named_attempt_branch_before_launch(tmp_path, monkeypatch) -> None:
+    events: list[tuple[str, list[str] | str]] = []
+    state = core.State(baseline_sha="a" * 40)
+    candidate = issue(42, core.READY)
+
+    monkeypatch.setattr(runtime, "gh_issues", lambda *_args, **_kwargs: [candidate])
+    monkeypatch.setattr(runtime, "remote_multiagent_branches", lambda _space: [])
+    monkeypatch.setattr(runtime, "ensure_slot", lambda *_args: tmp_path)
+    monkeypatch.setattr(runtime, "save_state", lambda *_args: None)
+    monkeypatch.setattr(runtime, "set_agent_state", lambda *_args, **_kwargs: None)
+
+    def git(args: list[str], **_kwargs: object) -> str:
+        events.append(("git", args))
+        return ""
+
+    def launch(*_args: object, branch: str, **_kwargs: object) -> tuple[int, str, Path]:
+        events.append(("launch", branch))
+        return 123, "session", tmp_path / "worker.log"
+
+    monkeypatch.setattr(runtime, "git", git)
+    monkeypatch.setattr(runtime, "launch_worker", launch)
+
+    runtime.dispatch(SimpleNamespace(), state, "owner/repo")
+
+    branch = "multiagent/slot-1-issue-42-attempt-1"
+    publish = events.index(("git", ["push", "-q", "-u", "origin", branch]))
+    launched = events.index(("launch", branch))
+    assert publish < launched
+    assert state.assignments[0].branch == branch
+
+
+def test_released_slot_parks_on_a_current_tracked_branch(tmp_path, monkeypatch) -> None:
+    commands: list[list[str]] = []
+    state = core.State(baseline_sha="a" * 40)
+    monkeypatch.setattr(runtime, "ensure_slot", lambda *_args: tmp_path)
+
+    def git(args: list[str], **_kwargs: object) -> str:
+        commands.append(args)
+        return ""
+
+    monkeypatch.setattr(runtime, "git", git)
+
+    assert runtime.park_slot(SimpleNamespace(), state, "slot-2")
+    assert ["checkout", "-B", "multiagent/slot-2", "a" * 40] in commands
+    assert ["push", "-q", "-u", "origin", "multiagent/slot-2"] in commands
 
 
 def test_worker_session_name_is_concise() -> None:
@@ -516,6 +563,7 @@ def test_restart_reconciles_a_stopped_assignment_from_its_transcript(
         lambda _repo, number, wanted: labels.append((number, wanted)),
     )
     monkeypatch.setattr(runtime, "confirm_worker_push", lambda *_args: True)
+    monkeypatch.setattr(runtime, "park_slot", lambda *_args: True)
 
     runtime.collect(space, state, "owner/repo")
 
@@ -598,6 +646,7 @@ def test_idle_batch_refreshes_and_validates_current_master(tmp_path, monkeypatch
     monkeypatch.setattr(runtime, "git", git)
     monkeypatch.setattr(runtime, "run", run)
     monkeypatch.setattr(runtime, "validate", lambda *_args, **_kwargs: (True, "passed"))
+    monkeypatch.setattr(runtime, "park_released_slots", lambda *_args: None)
     monkeypatch.setattr(
         runtime,
         "save_state",
