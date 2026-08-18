@@ -504,6 +504,7 @@ def test_finalised_batch_persists_the_validated_integration_head(tmp_path, monke
 def test_idle_batch_refreshes_and_validates_current_master(tmp_path, monkeypatch) -> None:
     state = core.State(baseline_sha="old-baseline")
     commands: list[list[str]] = []
+    saved: list[str] = []
 
     def git(args: list[str], **_kwargs: object) -> str:
         commands.append(args)
@@ -522,10 +523,16 @@ def test_idle_batch_refreshes_and_validates_current_master(tmp_path, monkeypatch
     monkeypatch.setattr(runtime, "git", git)
     monkeypatch.setattr(runtime, "run", run)
     monkeypatch.setattr(runtime, "validate", lambda *_args, **_kwargs: (True, "passed"))
+    monkeypatch.setattr(
+        runtime,
+        "save_state",
+        lambda _space, current: saved.append(current.baseline_sha),
+    )
 
     assert runtime.refresh_idle_baseline(SimpleNamespace(), state)
     assert ["git", "merge", "--no-edit", "origin/master"] in commands
     assert state.baseline_sha == "refreshed-head"
+    assert saved == ["refreshed-head"]
 
 
 def test_only_live_batch_states_freeze_the_baseline() -> None:

@@ -426,6 +426,7 @@ def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
     )
     if contains_master.returncode == 0:
         state.baseline_sha = current_head
+        save_state(space, state)
         return True
 
     merged = run(["git", "merge", "--no-edit", "origin/master"], cwd=worktree)
@@ -443,6 +444,7 @@ def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
         return False
 
     state.baseline_sha = git(["rev-parse", "HEAD"], cwd=worktree)
+    save_state(space, state)
     log(f"idle baseline refreshed from origin/master at {state.baseline_sha[:12]}")
     return True
 
