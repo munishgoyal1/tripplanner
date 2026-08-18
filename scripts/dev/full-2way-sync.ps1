@@ -5,7 +5,7 @@
 
 .DESCRIPTION
   The convergence tool for when the lanes have drifted and you want them all on
-  the same code again. It differs from twoway-sync-master-sbx.ps1 in what it
+    the same code again. It differs from sync-across-master-sbx.ps1 in what it
   tolerates rather than in what it does:
 
   * Uncommitted work does not stop it. Each lane's changes are set aside before

@@ -291,14 +291,15 @@ conversation or explicit edit
 | `docs/development/parallel-agent-development.md` | Sandbox lifecycle and promotion workflow |
 | `infra/` | Azure IaC and approval-gated operational scripts |
 | `scripts/README.md` | Developer workflow and utility script ownership |
-| `scripts/user/` | Owner-facing run and prompt-log launchers |
-| `scripts/user/sandbox/` | Owner-facing sandbox launchers (new, run, serve, stop, update, promote, discard, list) |
-| `scripts/canary/` | Owner-facing launcher for the canary deployment |
-| `scripts/prod/` | Owner-facing launchers for the approval-gated production deployment and rollback |
+| `scripts/win/user/` | Windows owner-facing run and prompt-log launchers |
+| `scripts/win/user/sandbox/` | Windows owner-facing sandbox launchers (new, run, serve, stop, update, promote, discard, list) |
+| `scripts/win/canary/` | Windows owner-facing launcher for the canary deployment |
+| `scripts/win/prod/` | Windows owner-facing launchers for the approval-gated production deployment and rollback |
+| `scripts/mac/` | macOS launcher equivalents with the same subfolder layout and base names |
 | `scripts/dev/` | Local stack, feature sandbox, prompt-log, and UI snapshot engines |
 | `scripts/` | Local setup, smoke, migration, and diagnostic helpers |
-| `Setup-Tripplanner-Dev.cmd` | One-click full Windows developer environment setup |
-| `Setup-Tripplanner-Dev.command` | One-click full macOS developer environment setup |
+| `scripts/win/Setup-Tripplanner-Dev.cmd` | One-click full Windows developer environment setup |
+| `scripts/mac/Setup-Tripplanner-Dev.command` | One-click full macOS developer environment setup |
 | `tests/` | Python unit and integration tests |
 | `docs/reference/` | Indexed owner inputs, decision history, and dated technical snapshots |
 

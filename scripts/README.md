@@ -33,43 +33,43 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/lib/run-log.ps1` | Shared last-run transcript logging for every entry-point script |
 | `dev/start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
-| `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
-| `user/Run-Latest-Master.cmd` | Owner-facing synchronize-and-run launcher for primary `master` |
-| `user/Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every sandbox or only the selected one |
-| `user/TwoWay-Sync-MasterSbx.cmd [sandbox]` | Rare, gated two-way sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
-| `user/Full-2Way-Sync.cmd` | Converge every lane onto one commit when things have drifted. Commits stray work on its own lane, auto-resolves what the resolver already knows, never stops on one bad lane, and ends with a numbered list of what is left. Re-runnable |
-| `user/debug/Show-DebugStore.cmd [query] [--days N]` | List or search archived local trips by number, destination, keyword, or label |
-| `user/debug/Maintain-DebugStore.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report store health |
-| `user/debug/Restore-DebugStore.cmd [sandbox] [days]` | Restore archived trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |
-| `user/debug/Clear-DebugStore.cmd --confirm CLEAR_DEBUG_STORE` | Delete the whole debug store and restart numbering |
-| `user/validation/Audit-Trips.cmd` | Audit every stored trip; exits non-zero on findings the baseline does not hold |
-| `user/validation/Audit-Trips.cmd --all` | Show every finding, not only new ones |
-| `user/validation/Audit-Trips.cmd --accept` | Record the current findings as known |
-| `user/multiagent/Start-Multiagent.cmd` | Start the coordinator detached and open the coordinator chat; dispatches only issues carrying `owner:ready` |
-| `user/multiagent/Multiagent-Status.cmd` | Controller, slots, assignments, issues waiting on an owner decision, and recovery commands |
-| `user/multiagent/Plan-Multiagent.cmd` | Dry run: what would be dispatched now, and why the rest is held |
-| `user/multiagent/Pause-Multiagent.cmd` | Stop dispatching; running workers finish |
-| `user/multiagent/Resume-Multiagent.cmd` | Resume dispatching |
-| `user/multiagent/Stop-Multiagent.cmd` | Stop the controller and its workers, keeping worktrees, branches, and transcripts |
-| `user/multiagent/Open-Coordinator.cmd` | Open the owner-facing coordinator chat in VS Code |
-| `user/multiagent/Run-Audit-Producer.cmd [--dry-run]` | Run the read-only trip audit and propose issues for what is new; never accepts the baseline |
-| `user/debug/Capture-Screens.cmd [-Sandbox n] [-Label name]` | Capture UI evidence for a bug: screenshots, `/trip/view` and map JSON, console errors, and DOM |
-| `user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
-| `user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
-| `user/sandbox/Run-All-Sandboxes.cmd` | Seed and run every registered sandbox in independent background processes |
-| `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` (stamped with the lane, commit, UTC time, and `-SessionTitle`) |
-| `user/sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
-| `user/sandbox/Update-Sandbox.cmd` | Merge the sandbox's remote head and current `origin/master` into its local branch, then push that sandbox branch; never promotes to `master` |
-| `user/sandbox/Rename-Sandbox.cmd <sandbox> <new-name>` | Rename a sandbox's name part; its branch, worktree, and database follow while the number keeps its ports |
-| `user/sandbox/Resolve-SandboxConflicts.cmd` | Finish a manually resolved sandbox merge and push the sandbox branch |
-| `user/sandbox/Merge-Sandbox.cmd` | Same gates as promotion, but keeps the sandbox: fetch latest `master`, auto-resolve conflicts, validate, push, open the PR, merge, verify it landed, then resynchronize the sandbox so work continues in the same lane |
-| `user/sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |
-| `user/sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, local and remote branches, and emulator database (refuses while work is not in `master`; pass `-DeleteRemoteBranch:$false` to retain the remote branch) |
-| `user/sandbox/List-Sandboxes.cmd` | List every sandbox with its number, purpose, promotion status, URLs, branch, worktree, database, and whether it is serving |
-| `canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
-| `prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
-| `prod/Rollback-Prod.cmd` | Launch `infra/rollback-prod.ps1` to activate the previous production revision |
-| `mac/` | macOS `.command` equivalents for every root, `user/`, `canary/`, and `prod/` Windows `.cmd` launcher |
+| `win/user/Start-Dev-Spa.cmd` | Windows launcher for the canonical local stack without synchronizing first |
+| `win/user/Run-Latest-Master.cmd` | Windows owner-facing synchronize-and-run launcher for primary `master` |
+| `win/user/Sync-Sbxs-FromMaster.cmd [sandbox]` | Windows launcher to fast-forward primary `master`, then update every sandbox or only the selected one |
+| `win/user/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
+| `win/user/Full-2Way-Sync.cmd` | Converge every lane onto one commit when things have drifted. Commits stray work on its own lane, auto-resolves what the resolver already knows, never stops on one bad lane, and ends with a numbered list of what is left. Re-runnable |
+| `win/user/debug/Show-DebugStore.cmd [query] [--days N]` | List or search archived local trips by number, destination, keyword, or label |
+| `win/user/debug/Maintain-DebugStore.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report store health |
+| `win/user/debug/Restore-DebugStore.cmd [sandbox] [days]` | Restore archived trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |
+| `win/user/debug/Clear-DebugStore.cmd --confirm CLEAR_DEBUG_STORE` | Delete the whole debug store and restart numbering |
+| `win/user/validation/Audit-Trips.cmd` | Audit every stored trip; exits non-zero on findings the baseline does not hold |
+| `win/user/validation/Audit-Trips.cmd --all` | Show every finding, not only new ones |
+| `win/user/validation/Audit-Trips.cmd --accept` | Record the current findings as known |
+| `win/user/multiagent/Start-Multiagent.cmd` | Start the coordinator detached and open the coordinator chat; dispatches only issues carrying `owner:ready` |
+| `win/user/multiagent/Multiagent-Status.cmd` | Controller, slots, assignments, issues waiting on an owner decision, and recovery commands |
+| `win/user/multiagent/Plan-Multiagent.cmd` | Dry run: what would be dispatched now, and why the rest is held |
+| `win/user/multiagent/Pause-Multiagent.cmd` | Stop dispatching; running workers finish |
+| `win/user/multiagent/Resume-Multiagent.cmd` | Resume dispatching |
+| `win/user/multiagent/Stop-Multiagent.cmd` | Stop the controller and its workers, keeping worktrees, branches, and transcripts |
+| `win/user/multiagent/Open-Coordinator.cmd` | Open the owner-facing coordinator chat in VS Code |
+| `win/user/multiagent/Run-Audit-Producer.cmd [--dry-run]` | Run the read-only trip audit and propose issues for what is new; never accepts the baseline |
+| `win/user/debug/Capture-Screens.cmd [-Sandbox n] [-Label name]` | Capture UI evidence for a bug: screenshots, `/trip/view` and map JSON, console errors, and DOM |
+| `win/user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
+| `win/user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
+| `win/user/sandbox/Run-All-Sandboxes.cmd` | Seed and run every registered sandbox in independent background processes |
+| `win/user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` (stamped with the lane, commit, UTC time, and `-SessionTitle`) |
+| `win/user/sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
+| `win/user/sandbox/Update-Sandbox.cmd` | Merge the sandbox's remote head and current `origin/master` into its local branch, then push that sandbox branch; never promotes to `master` |
+| `win/user/sandbox/Rename-Sandbox.cmd <sandbox> <new-name>` | Rename a sandbox's name part; its branch, worktree, and database follow while the number keeps its ports |
+| `win/user/sandbox/Resolve-SandboxConflicts.cmd` | Finish a manually resolved sandbox merge and push the sandbox branch |
+| `win/user/sandbox/Merge-Sandbox.cmd` | Same gates as promotion, but keeps the sandbox: fetch latest `master`, auto-resolve conflicts, validate, push, open the PR, merge, verify it landed, then resynchronize the sandbox so work continues in the same lane |
+| `win/user/sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |
+| `win/user/sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, local and remote branches, and emulator database (refuses while work is not in `master`; pass `-DeleteRemoteBranch:$false` to retain the remote branch) |
+| `win/user/sandbox/List-Sandboxes.cmd` | List every sandbox with its number, purpose, promotion status, URLs, branch, worktree, database, and whether it is serving |
+| `win/canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
+| `win/prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
+| `win/prod/Rollback-Prod.cmd` | Launch `infra/rollback-prod.ps1` to activate the previous production revision |
+| `mac/` | macOS `.command` equivalents for every `win/` Windows `.cmd` launcher |
 
 The macOS launchers preserve the Windows names with a `.command` extension and
 the same subfolder layout. For example, use
@@ -131,9 +131,9 @@ the sandbox registry, so rerunning discard safely retries only the remaining wor
 
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility
 entry points. Put implementation and source-control workflow under `dev/`,
-regular owner-facing launchers under `user/`, including sandbox launchers under
-`user/sandbox/`, and the hosted deployment launchers under `canary/` and `prod/`.
+regular Windows owner-facing launchers under `win/user/`, including sandbox launchers under
+`win/user/sandbox/`, and the hosted deployment launchers under `win/canary/` and `win/prod/`.
 Keep macOS launcher equivalents under the matching folder in `mac/`.
 Do not move cloud-mutating
 operations out of `infra/` merely because they are implemented in PowerShell;
-`canary/` and `prod/` hold only launchers for the gated scripts that live there.
+`win/canary/` and `win/prod/` hold only launchers for the gated scripts that live there.

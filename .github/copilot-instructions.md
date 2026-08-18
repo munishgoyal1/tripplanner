@@ -46,7 +46,7 @@ not override the canonical documents above, which govern current behavior.
 - The primary `master` workspace is the default development lane. Use a fresh,
   task-named sandbox only for an isolated feature or UX Lab. A sandbox returns to
   `master` only through its validated promotion flow.
-- Run `scripts/user/Run-Latest-Master.cmd` only from primary `master` to fast-forward it
+- Run `scripts/win/user/Run-Latest-Master.cmd` only from primary `master` to fast-forward it
   from `origin/master` before starting the local stack.
 - The primary workspace owns the canonical local stack. Sandboxes use their own
   port slots and server-free validation by default.

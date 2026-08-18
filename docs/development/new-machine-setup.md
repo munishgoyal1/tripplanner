@@ -10,7 +10,7 @@ feature development.
 1. Clone or populate the repository on the new machine. A short local path such
    as `C:\repos\tripplanner` is recommended because worktrees and Python virtual
    environments create deep paths.
-2. From the repository root, double-click `Setup-Tripplanner-Dev.cmd`.
+2. From the repository root, double-click `scripts/win/Setup-Tripplanner-Dev.cmd`.
 3. Accept any Windows package-install prompts. If a newly installed tool is not
    visible until the process restarts, close the setup window and run the same
    launcher again. The setup is idempotent.
@@ -35,7 +35,7 @@ The existing application-only setup remains available as
 2. From Terminal in the repository root, run:
 
    ```bash
-   ./Setup-Tripplanner-Dev.command
+   ./scripts/mac/Setup-Tripplanner-Dev.command
    ```
 
    The file is committed as executable and can also be opened from Finder.
@@ -152,7 +152,7 @@ npm --prefix mobile run typecheck
 
 `git worktree list` should show the primary `master` checkout and any currently
 active sandboxes. Master owns local stack startup. Start the application from the primary
-checkout with `scripts/user/Run-Latest-Master.cmd` on Windows. The macOS setup,
+checkout with `scripts/win/user/Run-Latest-Master.cmd` on Windows. The macOS setup,
 dependency, build/test, and sandbox paths are available, but the full local
 `dev-spa.ps1` lifecycle is not yet qualified because Windows-specific process
 and npm hooks remain. Use direct Python/npm commands or the hosted canary for
@@ -161,8 +161,8 @@ Sandboxes use server-free validation unless their isolated stack is needed.
 
 ## Recovery
 
-- Re-run `Setup-Tripplanner-Dev.cmd` on Windows or
-   `Setup-Tripplanner-Dev.command` on macOS after an interrupted install;
+- Re-run `scripts/win/Setup-Tripplanner-Dev.cmd` on Windows or
+   `scripts/mac/Setup-Tripplanner-Dev.command` on macOS after an interrupted install;
    completed steps are retained.
 - The macOS setup automatically removes the archived `powershell/tap` before
   installing the current Homebrew Core `powershell` formula. This migration can
@@ -178,6 +178,6 @@ Sandboxes use server-free validation unless their isolated stack is needed.
 - If a sandbox directory exists but is invalid, inspect `git worktree list`
    before removing anything. Do not delete a worktree containing uncommitted or
    unpushed work.
-- Run `scripts/user/Run-Latest-Master.cmd` from the primary checkout before starting
+- Run `scripts/win/user/Run-Latest-Master.cmd` from the primary checkout before starting
    the canonical local stack. Use `Update-Sandbox` to bring an in-flight sandbox
    forward from `origin/master`.

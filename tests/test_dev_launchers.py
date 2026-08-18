@@ -9,7 +9,7 @@ def test_primary_master_launchers_are_named_and_wired_consistently() -> None:
     mac_launcher = (root / "scripts" / "mac" / "user" / "Run-Latest-Master.command").read_text(
         encoding="utf-8"
     )
-    windows_launcher = (root / "scripts" / "user" / "Run-Latest-Master.cmd").read_text(
+    windows_launcher = (root / "scripts" / "win" / "user" / "Run-Latest-Master.cmd").read_text(
         encoding="utf-8"
     )
 
@@ -30,7 +30,7 @@ def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:
         root / "scripts" / "mac" / "user" / "Sync-Sbxs-FromMaster.command"
     ).read_text(encoding="utf-8")
     windows_launcher = (
-        root / "scripts" / "user" / "Sync-Sbxs-FromMaster.cmd"
+        root / "scripts" / "win" / "user" / "Sync-Sbxs-FromMaster.cmd"
     ).read_text(encoding="utf-8")
 
     assert '[string]$Sandbox = ""' in sync_script
@@ -133,7 +133,7 @@ def test_merge_recovers_conflicts_and_refreshes_the_base() -> None:
 def test_merge_launchers_exist_for_both_platforms() -> None:
     root = Path(__file__).parents[1]
     mac_launcher = root / "scripts" / "mac" / "user" / "sandbox" / "Merge-Sandbox.command"
-    windows_launcher = root / "scripts" / "user" / "sandbox" / "Merge-Sandbox.cmd"
+    windows_launcher = root / "scripts" / "win" / "user" / "sandbox" / "Merge-Sandbox.cmd"
 
     assert "sandbox.ps1" in mac_launcher.read_text(encoding="utf-8")
     assert "-Merge" in mac_launcher.read_text(encoding="utf-8")
@@ -184,7 +184,9 @@ def test_rename_launchers_exist_for_both_platforms() -> None:
     mac_launcher = (
         root / "scripts" / "mac" / "user" / "sandbox" / "Rename-Sandbox.command"
     ).read_text(encoding="utf-8")
-    windows_launcher = (root / "scripts" / "user" / "sandbox" / "Rename-Sandbox.cmd").read_text(
+    windows_launcher = (
+        root / "scripts" / "win" / "user" / "sandbox" / "Rename-Sandbox.cmd"
+    ).read_text(
         encoding="utf-8"
     )
 
@@ -207,9 +209,9 @@ def test_github_cli_is_resolved_instead_of_trusting_path() -> None:
     assert "Get-Command gh " not in sandbox_script
 
 
-def test_two_way_sync_is_gated_by_a_typed_approval() -> None:
+def test_sync_across_is_gated_by_a_typed_approval() -> None:
     root = Path(__file__).parents[1]
-    script = (root / "scripts" / "dev" / "twoway-sync-master-sbx.ps1").read_text(encoding="utf-8")
+    script = (root / "scripts" / "dev" / "sync-across-master-sbx.ps1").read_text(encoding="utf-8")
 
     assert '$approvalPhrase = "APPROVE_SANDBOX_TO_MASTER"' in script
     assert "Read-Host" in script
@@ -223,9 +225,9 @@ def test_two_way_sync_is_gated_by_a_typed_approval() -> None:
     assert script.index("commit(s) to merge") < approval
 
 
-def test_two_way_sync_refuses_half_baked_sandboxes() -> None:
+def test_sync_across_refuses_half_baked_sandboxes() -> None:
     root = Path(__file__).parents[1]
-    script = (root / "scripts" / "dev" / "twoway-sync-master-sbx.ps1").read_text(encoding="utf-8")
+    script = (root / "scripts" / "dev" / "sync-across-master-sbx.ps1").read_text(encoding="utf-8")
 
     assert "has uncommitted changes" in script
     assert "has unresolved conflicts" in script
@@ -235,9 +237,9 @@ def test_two_way_sync_refuses_half_baked_sandboxes() -> None:
     assert preflight < script.index("$approval = Read-Host")
 
 
-def test_two_way_sync_reuses_merge_gates_and_refreshes_sandboxes() -> None:
+def test_sync_across_reuses_merge_gates_and_refreshes_sandboxes() -> None:
     root = Path(__file__).parents[1]
-    script = (root / "scripts" / "dev" / "twoway-sync-master-sbx.ps1").read_text(encoding="utf-8")
+    script = (root / "scripts" / "dev" / "sync-across-master-sbx.ps1").read_text(encoding="utf-8")
 
     # Sandbox work reaches master only through the gated -Merge verb.
     assert "& $sandboxScript -Merge" in script
@@ -247,23 +249,23 @@ def test_two_way_sync_reuses_merge_gates_and_refreshes_sandboxes() -> None:
     assert "merge-base --is-ancestor $baseHead HEAD" in script
 
 
-def test_two_way_sync_launchers_exist_for_both_platforms() -> None:
+def test_sync_across_launchers_exist_for_both_platforms() -> None:
     root = Path(__file__).parents[1]
-    mac_launcher = (root / "scripts" / "mac" / "user" / "TwoWay-Sync-MasterSbx.command").read_text(
+    mac_launcher = (root / "scripts" / "mac" / "user" / "Sync-Across-MasterSbx.command").read_text(
         encoding="utf-8"
     )
-    windows_launcher = (root / "scripts" / "user" / "TwoWay-Sync-MasterSbx.cmd").read_text(
+    windows_launcher = (root / "scripts" / "win" / "user" / "Sync-Across-MasterSbx.cmd").read_text(
         encoding="utf-8"
     )
 
-    assert "twoway-sync-master-sbx.ps1" in mac_launcher
-    assert "twoway-sync-master-sbx.ps1" in windows_launcher
+    assert "sync-across-master-sbx.ps1" in mac_launcher
+    assert "sync-across-master-sbx.ps1" in windows_launcher
 
 
 def test_both_sync_commands_default_to_all_and_accept_one_sandbox() -> None:
     root = Path(__file__).parents[1]
     one_way = (root / "scripts" / "dev" / "sync-sbxs-from-master.ps1").read_text(encoding="utf-8")
-    two_way = (root / "scripts" / "dev" / "twoway-sync-master-sbx.ps1").read_text(encoding="utf-8")
+    two_way = (root / "scripts" / "dev" / "sync-across-master-sbx.ps1").read_text(encoding="utf-8")
 
     for script in (one_way, two_way):
         assert '[string]$Sandbox = ""' in script

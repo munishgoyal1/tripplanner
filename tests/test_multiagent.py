@@ -296,7 +296,9 @@ def test_every_launcher_pair_forwards_the_same_verb() -> None:
         "Run-Audit-Producer": "audit",
     }
     for name, verb in verbs.items():
-        windows = (ROOT / "scripts" / "user" / "multiagent" / f"{name}.cmd").read_text(
+        windows = (
+            ROOT / "scripts" / "win" / "user" / "multiagent" / f"{name}.cmd"
+        ).read_text(
             encoding="utf-8"
         )
         mac = (ROOT / "scripts" / "mac" / "user" / "multiagent" / f"{name}.command").read_text(

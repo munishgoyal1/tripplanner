@@ -197,7 +197,7 @@ must confirm before its checks are allowed to gate.
 ### Entry point and workflow
 
 - Entry: `scripts/mac/user/validation/Build-Corpus.command` and
-  `Audit-Trips.command`, with `.cmd` twins under `scripts/user/validation/`,
+  `Audit-Trips.command`, with `.cmd` twins under `scripts/win/user/validation/`,
   both dispatching to one PowerShell script over one Python implementation.
 - Shortest normal path: `Audit-Trips` with no arguments — audits everything,
   prints new findings only.

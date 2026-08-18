@@ -21,7 +21,7 @@ IDs, private keys, or machine-specific paths.
 
 For the full application, VS Code/Copilot, and four-agent environment, use the
 canonical [new-machine setup guide](../docs/development/new-machine-setup.md) or
-run `Setup-Tripplanner-Dev.cmd` on Windows or `Setup-Tripplanner-Dev.command` on
+run `scripts\win\Setup-Tripplanner-Dev.cmd` on Windows or `scripts/mac/Setup-Tripplanner-Dev.command` on
 macOS from the repository root.
 
 To apply only the portable user configuration, open PowerShell in the repository

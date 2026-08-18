@@ -259,7 +259,7 @@ One shared implementation, thin launchers on both platforms.
 | `Open-Coordinator` | Open the owner-facing coordinator chat in VS Code |
 | `Run-Audit-Producer` | One producer pass; `--dry-run` reports findings without opening issues |
 
-Windows launchers are in `scripts/user/multiagent/`, macOS in
+Windows launchers are in `scripts/win/user/multiagent/`, macOS in
 `scripts/mac/user/multiagent/`, and both forward to `scripts/dev/multiagent.ps1`.
 
 ## State and recovery
