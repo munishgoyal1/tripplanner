@@ -13,18 +13,27 @@ An issue holds one unit of work and its live state: what is wrong, who is on it,
 what was found, what changed, and whether the owner has confirmed it. It is
 deliberately short-lived. It is closed when the fix reaches `master`.
 
-Not every edit needs that handoff record. Every fix requested in the primary
-coordinator chat stays owned by that coordinator on `master` by default, regardless
-of size. Create an issue or move it to another lane only when the owner explicitly
-requests that handoff, or when the work is deferred rather than completed in the
-current chat. This keeps conversational context with the owner instead of
-converting it into an underspecified worker assignment.
+Immediate work does not need that handoff record. A fix requested and completed in
+the current chat stays in that chat, whether the lane is primary `master` or a
+sandbox and regardless of size. Do not create an issue merely because the chat
+found a bug or the fix became substantive; that discards useful conversational
+context and creates queue work for something already being handled.
+
+Create an issue only when one of these is true:
+
+- the owner explicitly creates it or asks an agent to create it;
+- the deterministic trip-audit producer files a finding;
+- a specific audit run needs a durable scheduled work item; or
+- the work cannot be handled now and is intentionally parked as backlog.
+
+If an immediate fix reveals a distinct deferred follow-up, only the deferred
+follow-up becomes an issue. The current fix remains chat-local.
 
 An issue is not a place to keep truth. Durable knowledge keeps its existing owner:
 
 | Kind of information | Where it belongs |
 | --- | --- |
-| One bug or one requested change, and its progress | GitHub issue |
+| Explicit, audited, scheduled, or intentionally deferred work and its progress | GitHub issue |
 | Product intent, scope, and design taste | `docs/PRODUCT.md` |
 | Current capability and status | `docs/REQUIREMENTS.md` |
 | Ownership, architecture, contracts, commands | `docs/CODEMAP.md` |
@@ -84,17 +93,18 @@ owner confirms              -> remove agent:needs-verify
 Parallel lanes make double-work and merge collisions the default failure, not the
 exception. Claiming is what prevents both.
 
-The rules below apply once work has an issue. They do not force the primary
-coordinator to manufacture an issue for a fix requested in its chat.
+The rules below apply only once work has an issue through the intake policy above.
+They do not force any primary or sandbox chat to manufacture an issue for work it
+is fixing immediately.
 
-Before starting anything, look at what other lanes already own:
+Before starting issue-backed work, look at what other lanes already own:
 
 ```bash
 gh issue list --state open --label "agent:in-progress"
 gh issue list --state open --label "agent:queued"
 ```
 
-Then claim, in one step, before editing any file:
+Then claim the existing issue, in one step, before editing:
 
 ```bash
 gh issue edit <n> --add-label "agent:in-progress" --add-label "lane:sbx-3" \
@@ -203,8 +213,9 @@ gh issue comment 42 --body "Stopping here: root cause found, fix not started."
 
 ## Practices that keep this working
 
-- **Read before you write.** Start a substantive session by listing open issues.
-  That single command is the whole cross-session handoff mechanism.
+- **Read issue-backed work before you write.** List open issues when selecting or
+  continuing issue-backed work; this is not an instruction to create an issue for
+  immediate in-chat work.
 - **Claim narrowly and land quickly.** A long-held claim blocks other lanes more
   than it helps; split a large issue rather than holding it for days.
 - **One issue, one outcome.** A bug that turns out to be three bugs becomes three

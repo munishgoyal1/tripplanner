@@ -35,6 +35,12 @@ you explicitly request it, or when the work is deferred rather than completed in
 the current chat. The coordinator never adds `owner:ready`; only you can move
 issue-backed work into the autonomous queue.
 
+The same no-issue default applies inside sandbox chats: work requested and fixed
+there stays in that sandbox conversation. A sandbox agent does not create an issue
+for work already in progress. Issues are reserved for owner-explicit intake,
+deterministic trip-audit findings, tracked audit runs, and work intentionally
+parked for later. Existing issue-backed work still follows the claiming protocol.
+
 ### Coordinator lane freshness
 
 At the start of every owner request that may change files, the coordinator checks

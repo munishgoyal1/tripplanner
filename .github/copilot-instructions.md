@@ -80,15 +80,25 @@ write the same record. See
 [issue-workflow.md](../docs/development/issue-workflow.md) for the full protocol
 and the comment templates.
 
-A fix that the owner asks the primary coordinator chat to complete does not
-require an issue and remains owned by that coordinator by default. Create an issue
-or hand it to another lane only when the owner explicitly requests that workflow,
-or when the work is being deferred rather than completed in the current chat.
-This exception never authorises the coordinator to add `owner:ready`.
+A fix requested and completed in the current chat does not need an issue, in
+`master` or any sandbox. Keep the full conversational context in that lane and
+finish the work there. Do not create an issue merely because a bug was found, the
+change spans several files, or the fix is substantive.
 
-- Before claiming work, see what other lanes already hold:
+Create issues only for these durable intake paths:
+
+- the owner explicitly creates an issue or asks an agent to create one;
+- the deterministic trip-audit producer files a finding;
+- a specific audit run is being requested or scheduled as tracked work; or
+- known work cannot be handled now and is intentionally parked as backlog.
+
+An immediate in-chat fix that happens to reveal a separate deferred item may
+create an issue for that deferred item only; the current fix remains chat-local.
+These rules never authorise any agent to add `owner:ready`.
+
+- When work already has an issue, see what other lanes hold before claiming it:
   `gh issue list --state open --label "agent:in-progress"`.
-- Claim before editing any file: add `agent:in-progress` and `lane:<lane>`, drop
+- For issue-backed work, claim before editing: add `agent:in-progress` and `lane:<lane>`, drop
   `agent:queued`, assign yourself, and post the Triage comment. Never take an
   issue another lane already claims; if that claim is over a day stale, post a
   takeover comment first.
@@ -180,7 +190,7 @@ Update the existing owner rather than creating another summary:
 | Change | Update |
 | --- | --- |
 | Cross-project preference | `/memories/preferences.md` |
-| One bug or task, and its live progress | GitHub issue |
+| Owner-explicit, audited, scheduled, or intentionally deferred work | GitHub issue |
 | Repository-specific fact or landmine | `/memories/repo/tripplanner.md` |
 | Product intent, scope, or design taste | `docs/PRODUCT.md` |
 | Current capability or status | `docs/REQUIREMENTS.md` |
