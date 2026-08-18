@@ -888,10 +888,12 @@ def cmd_coordinator(space: Workspace, args: argparse.Namespace) -> int:
         "docs/development/multiagent-coordination.md, then report: issues waiting on my "
         "decision (owner:decision-needed), what is authorised (owner:ready), and what the "
         "controller is doing (scripts/dev/multiagent.py status). Help me draft requirements "
-        "and answer blocked issues. Complete bounded synchronous fixes requested in this chat "
-        "directly in primary master without creating an issue; use an issue only when work needs "
-        "autonomous dispatch, another lane or session, deferral, or shared tracking. Never add "
-        "owner:ready yourself."
+        "and answer blocked issues. Every fix I request in this chat is owned by this coordinator "
+        "in primary master by default, regardless of size. Do not create an issue, dispatch a "
+        "worker, or move it to another lane unless I explicitly ask for that handoff. Before each "
+        "owner request that may edit files, require a clean primary worktree, fetch origin, and "
+        "fast-forward master to origin/master; after the fix, commit and push before reporting "
+        "completion. Never add owner:ready yourself."
     )
     opened = run(
         ["code", "chat", "-m", "autopilot", "--reuse-window", prompt],

@@ -13,7 +13,7 @@ work; the multiagent lanes are deliberately invisible to them.
 | Role | Runtime | Owns |
 | --- | --- | --- |
 | Owner | You | What is worth building, and every ambiguous decision |
-| Coordinator chat | VS Code Copilot autopilot | Drafting requirements, answering blocked issues, bounded synchronous primary-lane fixes |
+| Coordinator chat | VS Code Copilot autopilot | Drafting requirements, answering blocked issues, owner-requested primary-lane fixes |
 | Controller | `scripts/dev/multiagent.py`, launched detached | Leases, dispatch, slots, integration, recovery |
 | Worker | Copilot CLI, non-interactive | One issue, one branch, one commit |
 | Producer | `scripts/dev/multiagent.py audit` | Finding bugs and proposing them as issues |
@@ -28,12 +28,22 @@ There is one interactive agent. The producer never talks to you directly, and
 neither does a worker; everything reaches you through an issue and the
 coordinator chat reads it.
 
-The coordinator may complete a bounded fix synchronously in the primary lane when
-you ask for it in that chat and the full context is already there. That path does
-not create an issue and cannot enter the autonomous queue. Use an issue when work
-needs a worker, another lane or session, a deferred follow-up, or shared status.
-The coordinator never adds `owner:ready`; only you can move issue-backed work into
-the autonomous queue.
+Every fix you ask for in the coordinator chat belongs to that coordinator in the
+primary lane by default, regardless of size. It does not create an issue or enter
+the autonomous queue. A worker, sandbox, or issue-backed handoff happens only when
+you explicitly request it, or when the work is deferred rather than completed in
+the current chat. The coordinator never adds `owner:ready`; only you can move
+issue-backed work into the autonomous queue.
+
+### Coordinator lane freshness
+
+At the start of every owner request that may change files, the coordinator checks
+that primary `master` is clean, fetches `origin`, and fast-forwards to
+`origin/master` before reading the owning code. If master advanced, it re-reads
+the affected files before editing. It never stashes or rewrites unrelated work to
+force a sync; a dirty primary worktree is resolved or reported first. Completed
+coordinator work is committed and pushed before the chat reports completion, so
+local `master` and `origin/master` converge again at the end of the turn.
 
 ## How work enters the system
 

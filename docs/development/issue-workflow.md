@@ -13,12 +13,12 @@ An issue holds one unit of work and its live state: what is wrong, who is on it,
 what was found, what changed, and whether the owner has confirmed it. It is
 deliberately short-lived. It is closed when the fix reaches `master`.
 
-Not every edit needs that handoff record. A bounded fix requested and completed
-synchronously in the primary coordinator chat stays in that chat when it needs no
-autonomous dispatch, second lane or session, deferred follow-up, or shared status.
-Create an issue when any of those conditions appears. This keeps conversational
-context with the owner instead of converting it into an underspecified worker
-assignment, while preserving issues for work that must cross a session boundary.
+Not every edit needs that handoff record. Every fix requested in the primary
+coordinator chat stays owned by that coordinator on `master` by default, regardless
+of size. Create an issue or move it to another lane only when the owner explicitly
+requests that handoff, or when the work is deferred rather than completed in the
+current chat. This keeps conversational context with the owner instead of
+converting it into an underspecified worker assignment.
 
 An issue is not a place to keep truth. Durable knowledge keeps its existing owner:
 
@@ -85,7 +85,7 @@ Parallel lanes make double-work and merge collisions the default failure, not th
 exception. Claiming is what prevents both.
 
 The rules below apply once work has an issue. They do not force the primary
-coordinator to manufacture an issue for a synchronous chat-local fix.
+coordinator to manufacture an issue for a fix requested in its chat.
 
 Before starting anything, look at what other lanes already own:
 

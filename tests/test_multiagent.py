@@ -443,6 +443,8 @@ def test_coordinator_opens_titled_chat_in_last_active_window(tmp_path, monkeypat
     assert commands[0][:5] == ["code", "chat", "-m", "autopilot", "--reuse-window"]
     assert "rename this chat to `Coordinator`" in commands[0][-1]
     assert "Stay in the primary lane" in commands[0][-1]
+    assert "Every fix I request in this chat is owned by this coordinator" in commands[0][-1]
+    assert "fast-forward master to origin/master" in commands[0][-1]
 
 
 def test_restart_reconciles_a_stopped_assignment_from_its_transcript(
