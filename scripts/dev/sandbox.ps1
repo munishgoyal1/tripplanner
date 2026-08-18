@@ -430,6 +430,19 @@ function Save-SandboxPromotion {
     $saved = $entries | Where-Object { $_.slug -eq $Entry.slug } | Select-Object -First 1
     if (-not $saved) { throw "Sandbox '$($Entry.slug)' disappeared from the registry." }
     $commit = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("rev-parse", "HEAD")
+
+    # A promoted lane is usually a discarded lane soon after, and the places it
+    # warmed cost real money. Preserve them here rather than relying on the
+    # discard, which the owner may never run. A failure must not fail a promotion.
+    $cacheScript = Join-Path $Entry.worktree "scripts\dev\corpus_cache.py"
+    if (Test-Path $cacheScript -PathType Leaf) {
+        Write-Host "  Preserving places from $($Entry.database) ..."
+        & (Get-VenvPython) $cacheScript --save --database $Entry.database
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "  Could not preserve places from $($Entry.database)."
+        }
+    }
+
     $saved | Add-Member -NotePropertyName promotedUtc -NotePropertyValue `
         (Get-Date).ToUniversalTime().ToString("o") -Force
     $saved | Add-Member -NotePropertyName promotedBase -NotePropertyValue $Base -Force
@@ -1398,6 +1411,17 @@ if ($PSCmdlet.ParameterSetName -eq "Run") {
         & $python $seedScript seed --database $entry.database --if-empty
         if ($LASTEXITCODE -ne 0) {
             Write-Warning "Seeding reported an error; the sandbox will start with whatever data exists."
+        }
+    }
+
+    # A new lane would otherwise re-fetch from Google every place the other lanes
+    # already paid for. Restoring only into an empty cache keeps this a no-op on
+    # every later start.
+    $cacheScript = Join-Path $entry.worktree "scripts\dev\corpus_cache.py"
+    if (Test-Path $cacheScript -PathType Leaf) {
+        & $python $cacheScript --restore --database $entry.database --if-empty
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Could not warm the place cache; the sandbox will fetch places as it needs them."
         }
     }
 

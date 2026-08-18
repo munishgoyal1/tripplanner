@@ -32,12 +32,27 @@ from tripplanner.validation.emulator import (  # noqa: E402
 DEFAULT_DATABASE = "tripplanner-sbx-2-auto-validation"
 
 
+def _cache_databases() -> list[str]:
+    """Every local database allowed to hold cache, primary included.
+
+    ``list_sandbox_databases`` answers a deliberately narrower question, so the
+    primary development database -- which is never discarded, and therefore only
+    ever fills by hand -- would otherwise never be swept by --all.
+    """
+    return [place_cache.PRIMARY_DATABASE, *list_sandbox_databases()]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--save", action="store_true", help="database -> corpus/places.json")
     parser.add_argument("--restore", action="store_true", help="corpus/places.json -> database")
     parser.add_argument("--database", default="", help=f"defaults to {DEFAULT_DATABASE}")
     parser.add_argument("--all", action="store_true", help="with --save, read every sandbox")
+    parser.add_argument(
+        "--if-empty",
+        action="store_true",
+        help="with --restore, do nothing when the target already holds places",
+    )
     args = parser.parse_args(argv)
 
     path = place_cache.cache_path(runner.corpus_root(REPO_ROOT))
@@ -45,7 +60,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.save:
         try:
-            databases = list_sandbox_databases() if args.all else [
+            databases = _cache_databases() if args.all else [
                 args.database or DEFAULT_DATABASE
             ]
         except EmulatorUnreachableError as error:
@@ -58,11 +73,14 @@ def main(argv: list[str] | None = None) -> int:
             except (EmulatorUnreachableError, ValueError) as error:
                 print(f"  skipped {database}: {error}", file=sys.stderr)
                 continue
-            try:
-                trips = lane_trips.save(runner.corpus_root(REPO_ROOT), database)
-            except (EmulatorUnreachableError, ValueError, OSError) as error:
-                trips = 0
-                print(f"  could not save trips for {database}: {error}", file=sys.stderr)
+            # Lane snapshots are per-sandbox by definition; the primary checkout
+            # is not a lane and its trips are the owner's own.
+            trips = 0
+            if database != place_cache.PRIMARY_DATABASE:
+                try:
+                    trips = lane_trips.save(runner.corpus_root(REPO_ROOT), database)
+                except (EmulatorUnreachableError, ValueError, OSError) as error:
+                    print(f"  could not save trips for {database}: {error}", file=sys.stderr)
             print(f"  read {database}: {len(found)} place(s), {trips} trip(s)")
             merged = place_cache.merge(merged, found)
         added = len(merged) - len(stored)
@@ -75,6 +93,15 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Nothing stored in {path.name} yet; run --save first.", file=sys.stderr)
             return 2
         database = args.database or DEFAULT_DATABASE
+        if args.if_empty:
+            try:
+                already = place_cache.collect(database)
+            except (EmulatorUnreachableError, ValueError) as error:
+                print(f"Could not read {database}: {error}", file=sys.stderr)
+                return 2
+            if already:
+                print(f"{database} already holds {len(already)} place(s); leaving it alone.")
+                return 0
         try:
             written = place_cache.restore(database, stored)
         except (EmulatorUnreachableError, ValueError) as error:
@@ -86,7 +113,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"{path}")
     print(f"  stored: {len(stored)} place(s)")
     try:
-        for database in list_sandbox_databases():
+        for database in _cache_databases():
             live = place_cache.collect(database)
             missing = len(set(live) - set(stored))
             print(f"  {database}: {len(live)} cached, {missing} not yet saved")
