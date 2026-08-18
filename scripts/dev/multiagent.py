@@ -490,10 +490,28 @@ def confirm_worker_push(
     return True
 
 
+def reconcile_landed_assignments(state: core.State, worktree: Path) -> int:
+    landed = 0
+    for assignment in state.assignments:
+        if assignment.state != "in-pull-request" or not assignment.pushed_sha:
+            continue
+        contained = run(
+            ["git", "merge-base", "--is-ancestor", assignment.pushed_sha, "origin/master"],
+            cwd=worktree,
+        )
+        if contained.returncode == 0:
+            assignment.state = "landed"
+            landed += 1
+    if landed:
+        log(f"reconciled {landed} merged assignment(s) with origin/master")
+    return landed
+
+
 def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
     """Merge current master into an idle integration lane before a new batch starts."""
     worktree = ensure_integration(space)
     git(["fetch", "-q", "origin", "master"], cwd=worktree)
+    reconcile_landed_assignments(state, worktree)
     current_head = git(["rev-parse", "HEAD"], cwd=worktree)
     current_master = git(["rev-parse", "origin/master"], cwd=worktree)
 
@@ -852,6 +870,7 @@ def cmd_run(space: Workspace, args: argparse.Namespace) -> int:
                 log("another controller holds the lease; exiting")
                 return 0
             state.lease = core.Lease.issue_to("controller", minutes=LEASE_MINUTES, pid=os.getpid())
+            state.last_error = ""
             collect(space, state, repo)
             integrate(space, state, repo)
             baseline_ready = batch_in_flight(state) or refresh_idle_baseline(space, state)

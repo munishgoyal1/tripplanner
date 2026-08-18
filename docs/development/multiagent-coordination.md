@@ -240,6 +240,9 @@ as the next attempt to whichever slot is free — slots are interchangeable.
   whenever an assignment releases them and whenever the idle baseline refreshes.
   A dirty failed attempt is left untouched for recovery; otherwise the same slot
   branch is reset to the validated current baseline with force-with-lease.
+- After a batch merge reaches `origin/master`, the idle reconciliation marks each
+  contained `in-pull-request` assignment as `landed`. Historical assignment data
+  remains available for retry numbering without appearing as active work.
 - Focused validation runs after each merge. The baseline advances only on success.
 - Because Coordinator and sandbox publication can advance `master`, the batch
   re-syncs with current `origin/master` and re-runs aggregate validation before
