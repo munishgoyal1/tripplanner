@@ -1,0 +1,303 @@
+{
+  "status": "draft",
+  "trip_id": "vietnam_2027-11-06_2027-11-11",
+  "trip_number": 1,
+  "created_at": "2026-08-17T19:59:43.603147",
+  "destination": "Vietnam",
+  "origin": "Mumbai",
+  "departure_date": "2027-11-06",
+  "return_date": "2027-11-11",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Covering Hanoi and Ha Long Bay. Total budget INR 80000.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Vietnam",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Serenity Diamond Hotel",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp73cc9"
+      },
+      "address": "21 Hang Voi, Hoan Kiem, Hanoi, Vietnam",
+      "rating": 4,
+      "price_per_night": 3500,
+      "nights": 3,
+      "total_price": 10500,
+      "room_type": "2 Bedroom Apartment",
+      "amenities": [
+        "Free WiFi",
+        "Breakfast included",
+        "Elevator",
+        "Family rooms"
+      ],
+      "note": "Central location, good for families and elderly."
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-06",
+      "title": "Arrival in Hanoi",
+      "summary": "Arrive in Hanoi from Mumbai, check in, explore Old Quarter.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Hanoi",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "13:30",
+          "duration_min": 330,
+          "note": "Morning flight, direct or 1 stop."
+        },
+        {
+          "name": "Serenity Diamond Hotel",
+          "kind": "hotel",
+          "note": "Check-in and rest."
+        },
+        {
+          "name": "Hoan Kiem Lake",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Easy walk, scenic views."
+        },
+        {
+          "name": "Pho Gia Truyen",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Famous for Vietnamese pho, family-friendly."
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-07",
+      "title": "Hanoi City Highlights",
+      "summary": "Sightseeing in Hanoi: Temple of Literature, Ho Chi Minh Mausoleum, evening at Dong Xuan Market.",
+      "stops": [
+        {
+          "name": "Serenity Diamond Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel."
+        },
+        {
+          "name": "Temple of Literature",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Ho Chi Minh Mausoleum",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "KOTO Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Vietnamese cuisine, supports local youth."
+        },
+        {
+          "name": "Dong Xuan Market",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Serenity Diamond Hotel",
+          "kind": "hotel",
+          "note": "Return and rest."
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-08",
+      "title": "Ha Long Bay Overnight Cruise",
+      "summary": "Transfer to Ha Long Bay, board cruise, explore bay, overnight on boat.",
+      "stops": [
+        {
+          "name": "Drive: Hanoi to Ha Long Bay",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "distance_km": 160,
+          "note": "Private van, comfortable for elderly."
+        },
+        {
+          "name": "Serenity Diamond Hotel",
+          "kind": "hotel",
+          "note": "Check out.",
+          "time": "11:30"
+        },
+        {
+          "name": "La Regina Royal Cruise",
+          "kind": "hotel",
+          "note": "Check-in to cruise boat.",
+          "time": "13:30"
+        },
+        {
+          "name": "Onboard Lunch",
+          "kind": "meal",
+          "time": "15:30",
+          "note": "Seafood & vegetarian options."
+        },
+        {
+          "name": "Sung Sot Cave",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Evening activities on cruise",
+          "kind": "attraction",
+          "time": "19:30",
+          "duration_min": 120,
+          "note": "Cooking demo, squid fishing."
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-09",
+      "title": "Ha Long Bay to Hanoi",
+      "summary": "Morning cruise, visit Titov Island, return to Hanoi.",
+      "stops": [
+        {
+          "name": "Titov Island",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Onboard Brunch",
+          "kind": "meal",
+          "time": "11:00",
+          "note": "Buffet brunch."
+        },
+        {
+          "name": "Drive: Ha Long Bay to Hanoi",
+          "kind": "transport",
+          "time": "12:30",
+          "duration_min": 180,
+          "distance_km": 160
+        },
+        {
+          "name": "La Regina Royal Cruise",
+          "kind": "hotel",
+          "note": "Morning on boat.",
+          "time": "16:00"
+        },
+        {
+          "name": "Serenity Diamond Hotel",
+          "kind": "hotel",
+          "note": "Check-in, rest.",
+          "time": "18:00"
+        },
+        {
+          "name": "Quan An Ngon",
+          "kind": "meal",
+          "time": "20:00",
+          "note": "Vietnamese specialties, accessible."
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-10",
+      "title": "Departure from Hanoi",
+      "summary": "Morning at leisure, transfer to airport, fly back to Mumbai.",
+      "stops": [
+        {
+          "name": "Serenity Diamond Hotel",
+          "kind": "hotel",
+          "note": "Check-out."
+        },
+        {
+          "name": "Flight: Hanoi to Mumbai",
+          "kind": "flight",
+          "time": "13:00",
+          "arrival_time": "18:30",
+          "duration_min": 330,
+          "note": "Afternoon flight."
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-17T20:06:21.995571"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T20:06:21.996146",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T20:05:48",
+      "expires_at": "2026-08-18T08:05:48"
+    }
+  ],
+  "id": "vietnam_2027-11-06_2027-11-11",
+  "user_id": "corpus-vietnam-budget-three-generation-5d"
+}

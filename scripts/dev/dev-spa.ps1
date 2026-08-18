@@ -309,6 +309,23 @@ if (-not $FrontendOnly -and -not $UseCanaryData -and $configuredCosmosBackend -e
     $env:COSMOS_DATABASE = $emulatorDatabase
     $env:COSMOS_EMULATOR = "1"
     Write-Host "Using isolated local Cosmos DB Emulator (database $emulatorDatabase)." -ForegroundColor DarkGray
+
+    # Every emulator-backed start passes through here, primary and sandbox alike,
+    # so this is where the place cache meets the central dump: hand over whatever
+    # this database fetched since last time, and take the rest if it is empty.
+    # Nothing reads the dump at request time -- it is a copy, not a data source.
+    $cacheScript = Join-Path $repoRoot "scripts/dev/corpus_cache.py"
+    $cacheRelativePython = if ($IsWindows) { ".venv\Scripts\python.exe" } else { ".venv/bin/python" }
+    $cachePython = @(
+        (Join-Path $repoRoot $cacheRelativePython),
+        (Join-Path $sharedRepoRoot $cacheRelativePython)
+    ) | Where-Object { Test-Path $_ -PathType Leaf } | Select-Object -First 1
+    if ((Test-Path $cacheScript -PathType Leaf) -and $cachePython) {
+        & $cachePython $cacheScript --sync --database $emulatorDatabase
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Could not sync the place cache; places will be fetched as they are needed."
+        }
+    }
 }
 
 if (-not $FrontendOnly -and ($UseCanaryData -or $configuredCosmosBackend -eq "azure")) {

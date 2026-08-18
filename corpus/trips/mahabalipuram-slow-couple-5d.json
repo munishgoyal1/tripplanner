@@ -1,0 +1,269 @@
+{
+  "status": "draft",
+  "trip_id": "mahabalipuram_2027-12-10_2027-12-15",
+  "trip_number": 1,
+  "created_at": "2026-08-17T19:00:13.623911",
+  "destination": "Mahabalipuram",
+  "origin": "Chennai",
+  "departure_date": "2027-12-10",
+  "return_date": "2027-12-15",
+  "travelers": "2 adults",
+  "notes": "Slow pace, free afternoons. Leisure style.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Mahabalipuram",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Welcomhotel By ITC Hotels, Kences Palm Beach",
+      "address": "53, East Coast Road, Village, Devaneri, Mahabalipuram, Tamil Nadu 603104, India",
+      "rating": 4.7,
+      "review_count": 3996,
+      "website": "https://www.itchotels.in/hotels/mamallapuram/welcomhotelkencespalmbeach.html?utm_source=google&utm_medium=organic%20Search&utm_term=WelcomHotel-kences-palm-beach&utm_campaign=listing",
+      "place_id": "ChIJcXEW9WtTUjoR4D6dvddLAzQ"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-10",
+      "title": "Day 1 · Arrival & Beach Walk",
+      "summary": "Arrive from Chennai, check in at Welcomhotel By ITC Hotels, Kences Palm Beach, relax, and enjoy a gentle evening walk on Mahabalipuram Beach. Lunch at Arabian Garden Seafood Restaurant.",
+      "stops": [
+        {
+          "name": "Drive: Chennai to Mahabalipuram",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 90,
+          "distance_km": 55,
+          "note": "Private car or taxi"
+        },
+        {
+          "name": "Welcomhotel By ITC Hotels, Kences Palm Beach",
+          "kind": "hotel",
+          "time": "10:30",
+          "note": "Check-in and settle"
+        },
+        {
+          "name": "Arabian Garden Seafood Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Lunch, highly rated seafood"
+        },
+        {
+          "name": "Mahabalipuram Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Relaxed stroll, sunset views"
+        },
+        {
+          "name": "Welcomhotel By ITC Hotels, Kences Palm Beach",
+          "kind": "hotel",
+          "time": "18:00",
+          "note": "Return for evening rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-11",
+      "title": "Day 2 · Shore Temple & Free Afternoon",
+      "summary": "Morning visit to Shore Temple, lunch at Arabian Garden Multi Cuisine Restaurant, then free afternoon for leisure or spa.",
+      "stops": [
+        {
+          "name": "Welcomhotel By ITC Hotels, Kences Palm Beach",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Breakfast at hotel"
+        },
+        {
+          "name": "Shore Temple",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Iconic UNESCO monument"
+        },
+        {
+          "name": "Arabian Garden Multi Cuisine Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Lunch, popular local spot"
+        },
+        {
+          "name": "Welcomhotel By ITC Hotels, Kences Palm Beach",
+          "kind": "hotel",
+          "time": "13:30",
+          "note": "Return, free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-12",
+      "title": "Day 3 · Pancha Rathas & Art Walk",
+      "summary": "Visit Pancha Rathas in the morning, lunch at ARABIAN GARDEN SEAFOOD RESTAURANT, then explore local art shops. Free afternoon.",
+      "stops": [
+        {
+          "name": "Welcomhotel By ITC Hotels, Kences Palm Beach",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Breakfast at hotel"
+        },
+        {
+          "name": "Pancha Rathas",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Ancient rock-cut monuments"
+        },
+        {
+          "name": "ARABIAN GARDEN SEAFOOD RESTAURANT",
+          "kind": "meal",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Lunch, top-rated"
+        },
+        {
+          "name": "Mahabalipuram Art Shops",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Browse local crafts"
+        },
+        {
+          "name": "Welcomhotel By ITC Hotels, Kences Palm Beach",
+          "kind": "hotel",
+          "time": "14:30",
+          "note": "Return, free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-12-13",
+      "title": "Day 4 · Arjuna's Penance & Café Lunch",
+      "summary": "Morning at Arjuna's Penance, lunch at Arabian Garden Multi Cuisine Restaurant, then free afternoon.",
+      "stops": [
+        {
+          "name": "Welcomhotel By ITC Hotels, Kences Palm Beach",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Breakfast at hotel"
+        },
+        {
+          "name": "Arjuna's Penance",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Famous bas-relief"
+        },
+        {
+          "name": "Arabian Garden Multi Cuisine Restaurant",
+          "kind": "meal",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Lunch, recommended café"
+        },
+        {
+          "name": "Welcomhotel By ITC Hotels, Kences Palm Beach",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Return, free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-12-14",
+      "title": "Day 5 · Lighthouse & Departure",
+      "summary": "Visit Mahabalipuram Lighthouse, check out, and return to Chennai.",
+      "stops": [
+        {
+          "name": "Welcomhotel By ITC Hotels, Kences Palm Beach",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Breakfast, check-out"
+        },
+        {
+          "name": "Mahabalipuram Lighthouse",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60,
+          "note": "Panoramic views"
+        },
+        {
+          "name": "Drive: Mahabalipuram to Chennai",
+          "kind": "transport",
+          "time": "11:00",
+          "duration_min": 90,
+          "distance_km": 55,
+          "note": "Private car or taxi"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T19:02:43.294965",
+  "id": "mahabalipuram_2027-12-10_2027-12-15",
+  "user_id": "corpus-mahabalipuram-slow-couple-5d"
+}

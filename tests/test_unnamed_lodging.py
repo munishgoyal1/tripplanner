@@ -1,0 +1,102 @@
+"""A stay must name somewhere you can actually book.
+
+Every string here was taken from a corpus trip the planner shipped, so the
+examples are what the model really writes rather than what it might write.
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from tripplanner.tools.trip_common import unnamed_lodging
+from tripplanner.tools.trip_validation import _hotel_selection_warnings
+
+CITIES = {
+    "kochi", "kuala lumpur", "penang", "colombo", "galle", "shimla", "rome",
+    "florence", "cherrapunji", "shillong", "amritsar", "chikmagalur", "udaipur",
+}
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "Hotel in Kochi",
+        "Hotel Kuala Lumpur",
+        "Accessible Hotel Kuala Lumpur",
+        "Colombo Hotel",
+        "Galle Hotel",
+        "Hotel in Cherrapunji",
+        "Hotel in Rome",
+        "Accessible Hotel Rome",
+        "Premium Hotel",
+        "A comfortable hotel near Shimla",
+        "Budget accommodation in Udaipur",
+        "",
+    ],
+)
+def test_a_stay_that_names_no_property_is_unnamed(name: str) -> None:
+    assert unnamed_lodging(name, CITIES)
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "Hotel Olathang",
+        "Taj Swarna, Amritsar",
+        "Ramada by Wyndham Amritsar",
+        "The Serai Chikmagalur",
+        "One&Only Cape Town",
+        "Coorg Wilderness Resort",
+        "The Elgin, Darjeeling",
+        "SeaShell Port Blair",
+        "Fortune Select Grand Ridge",
+        "Alleppey Houseboat",
+    ],
+)
+def test_a_named_property_is_left_alone(name: str) -> None:
+    assert not unnamed_lodging(name, CITIES)
+
+
+def test_the_gap_names_the_days_whose_stay_cannot_be_booked() -> None:
+    plan = {
+        "destination": "Kochi, Kerala",
+        "selected_hotels": [{"name": "Brunton Boatyard"}],
+        "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Brunton Boatyard", "kind": "hotel"}]},
+            {"day": 2, "stops": [{"name": "Hotel in Kochi", "kind": "hotel"}]},
+            {"day": 3, "stops": [{"name": "Kochi Hotel", "kind": "hotel"}]},
+        ],
+    }
+
+    gaps = _hotel_selection_warnings(plan)
+
+    assert any("Day(s) 2, 3" in gap and "no bookable property" in gap for gap in gaps)
+    assert not any("Day(s) 1" in gap for gap in gaps)
+
+
+def test_a_named_stay_everywhere_raises_no_lodging_gap() -> None:
+    plan = {
+        "destination": "Amritsar",
+        "selected_hotels": [{"name": "Taj Swarna, Amritsar"}],
+        "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Taj Swarna, Amritsar", "kind": "hotel"}]},
+            {"day": 2, "stops": [{"name": "Ramada by Wyndham Amritsar", "kind": "hotel"}]},
+        ],
+    }
+
+    assert _hotel_selection_warnings(plan) == []
+
+
+def test_tbd_still_reports_as_a_placeholder_not_as_unnamed() -> None:
+    plan = {
+        "destination": "Udaipur",
+        "selected_hotels": [],
+        "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}]},
+        ],
+    }
+
+    gaps = _hotel_selection_warnings(plan)
+
+    assert any("placeholders remain on Day(s) 1" in gap for gap in gaps)
+    assert not any("no bookable property" in gap for gap in gaps)
