@@ -1,0 +1,260 @@
+{
+  "status": "draft",
+  "trip_id": "hanoi_ha_long_bay_vietnam_2027-11-12_2027-11-15",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:06:03.056755",
+  "destination": "Hanoi, Ha Long Bay, Vietnam",
+  "origin": "Mumbai",
+  "departure_date": "2027-11-12",
+  "return_date": "2027-11-15",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Packed sightseeing, early starts are fine, cover Hanoi and Ha Long Bay",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Hanoi, Ha Long Bay, Vietnam",
+    "estimated_planned_minutes": 1056,
+    "evidence_place_count": 7,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "7 preference-matched places account for about 1056 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Apricot Hotel",
+      "address": "136 Hang Trong, Hoan Kiem, Hanoi",
+      "rating": 4.5,
+      "price_per_night": 185,
+      "currency": "USD",
+      "nights": 3,
+      "rooms": 2,
+      "provider_ref": {
+        "hotel_id": "lp73cc9"
+      },
+      "amenities": [
+        "pool",
+        "spa",
+        "breakfast included",
+        "family rooms",
+        "accessible"
+      ],
+      "note": "Central location, well-rated for families and seniors"
+    }
+  ],
+  "selected_activities": [
+    {
+      "name": "Ha Long Bay Day Cruise",
+      "date": "2027-11-13",
+      "price": 65,
+      "currency": "USD",
+      "provider": "Viator",
+      "note": "Includes lunch, sightseeing, caves, and islands"
+    }
+  ],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-12",
+      "title": "Day 1 · Arrival & Hanoi Highlights",
+      "summary": "Arrive in Hanoi, check in, and explore the city's top sights including the Old Quarter, Hoan Kiem Lake, and the Temple of Literature. Enjoy a local Vietnamese dinner.",
+      "stops": [
+        {
+          "name": "Noi Bai International Airport",
+          "kind": "transport",
+          "note": "Arrive from Mumbai"
+        },
+        {
+          "name": "Apricot Hotel",
+          "kind": "hotel",
+          "note": "Check-in, centrally located, 5★, family-friendly"
+        },
+        {
+          "name": "Hanoi Old Quarter",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Historic streets, shopping, and cafes"
+        },
+        {
+          "name": "Hoan Kiem Lake",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Scenic walk, Ngoc Son Temple"
+        },
+        {
+          "name": "Temple of Literature",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Vietnam's first university, beautiful gardens"
+        },
+        {
+          "name": "Quan An Ngon",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Highly rated Vietnamese restaurant, suitable for families"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-13",
+      "title": "Day 2 · Ha Long Bay Cruise",
+      "summary": "Early transfer to Ha Long Bay for a scenic day cruise with lunch onboard. Explore limestone islands, caves, and fishing villages. Return to Hanoi in the evening.",
+      "stops": [
+        {
+          "name": "Drive: Hanoi to Ha Long Bay",
+          "kind": "transport",
+          "time": "06:30",
+          "duration_min": 180,
+          "distance_km": 160,
+          "note": "Private van, comfortable for seniors"
+        },
+        {
+          "name": "Ha Long Bay Day Cruise",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 360,
+          "note": "Cruise with sightseeing, lunch included"
+        },
+        {
+          "name": "Drive: Ha Long Bay to Hanoi",
+          "kind": "transport",
+          "time": "16:00",
+          "duration_min": 180,
+          "distance_km": 160,
+          "note": "Return by van"
+        },
+        {
+          "name": "Apricot Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "19:30"
+        },
+        {
+          "name": "Pho Ly Quoc Su",
+          "kind": "meal",
+          "time": "23:30",
+          "note": "Famous for authentic pho, family-friendly"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-14",
+      "title": "Day 3 · Hanoi Museums & Departure",
+      "summary": "Visit the Ho Chi Minh Mausoleum and Museum, then explore the Vietnam Museum of Ethnology before departure.",
+      "stops": [
+        {
+          "name": "Ho Chi Minh Mausoleum",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 60,
+          "note": "Arrive early, less crowded"
+        },
+        {
+          "name": "Ho Chi Minh Museum",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 60,
+          "note": "History and legacy of Ho Chi Minh"
+        },
+        {
+          "name": "Vietnam Museum of Ethnology",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Cultural exhibits, accessible for seniors"
+        },
+        {
+          "name": "Sen Tay Ho Buffet Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Buffet with Vietnamese specialties, good for groups"
+        },
+        {
+          "name": "Transfer to Hanoi Airport",
+          "kind": "transport",
+          "time": "15:00",
+          "duration_min": 45,
+          "distance_km": 30,
+          "note": "Private van"
+        },
+        {
+          "name": "Apricot Hotel",
+          "kind": "hotel",
+          "note": "Check-out",
+          "time": "16:15"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 555,
+    "cruise": 325,
+    "meals": 180,
+    "transfers": 240
+  },
+  "total_cost": 1300,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:14:24.832500",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:12:22",
+      "expires_at": "2026-08-19T08:12:22"
+    }
+  ],
+  "id": "hanoi_ha_long_bay_vietnam_2027-11-12_2027-11-15",
+  "user_id": "corpus-vietnam-packed-three-generation-3d"
+}

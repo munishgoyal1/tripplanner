@@ -1,0 +1,202 @@
+{
+  "status": "draft",
+  "trip_id": "kaziranga_2027-02-06_2027-02-09",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:17:22.332192",
+  "destination": "Kaziranga",
+  "origin": "Guwahati",
+  "departure_date": "2027-02-06",
+  "return_date": "2027-02-09",
+  "travelers": "4 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Kaziranga",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Borgos The Wild Haven, Kaziranga",
+      "address": "Kaziranga National Park, No.2 Sildubi, Kohora, Assam 785609, India",
+      "rating": 4.5,
+      "review_count": 6262,
+      "website": "http://www.kazirangaborgos.com/",
+      "place_id": "ChIJKXUR-LxHRDcR_P7bcMWxOmc"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-06",
+      "title": "Day 1 · Arrival & Check-in",
+      "summary": "Drive from Guwahati to Kaziranga, check in to Borgos The Wild Haven, relax, and enjoy a local Assamese dinner.",
+      "stops": [
+        {
+          "name": "Drive: Guwahati to Kaziranga",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 300,
+          "distance_km": 220,
+          "note": "Scenic drive, 5 hours"
+        },
+        {
+          "name": "Borgos The Wild Haven, Kaziranga",
+          "kind": "hotel",
+          "note": "Check-in and refresh"
+        },
+        {
+          "name": "John's Kitchen",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Local and Chinese cuisine, 4.2★, 1.3k reviews"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-07",
+      "title": "Day 2 · Jeep Safari & Wetlands",
+      "summary": "Early morning jeep safari in Kaziranga National Park, visit Kaziranga Wetlands for birdwatching, lunch at Baankahi, afternoon tea garden walk.",
+      "stops": [
+        {
+          "name": "Borgos The Wild Haven, Kaziranga",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kaziranga Wetlands",
+          "kind": "attraction",
+          "time": "07:00",
+          "duration_min": 90,
+          "note": "Birdwatching and photography"
+        },
+        {
+          "name": "Kaziranga Jeep Safari",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Spot rhinos, elephants, deer (open Monday)"
+        },
+        {
+          "name": "Baankahi",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Assamese cuisine, 4★, 579 reviews"
+        },
+        {
+          "name": "Tea Garden Walk",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Explore local tea gardens"
+        },
+        {
+          "name": "Borgos The Wild Haven, Kaziranga",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-08",
+      "title": "Day 3 · Elephant Safari & Departure",
+      "summary": "Morning elephant safari, visit local handicraft shops, lunch at IORA The Retreat, return drive to Guwahati.",
+      "stops": [
+        {
+          "name": "Borgos The Wild Haven, Kaziranga",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kaziranga Elephant Safari",
+          "kind": "attraction",
+          "time": "06:30",
+          "duration_min": 90,
+          "note": "Up close with wildlife"
+        },
+        {
+          "name": "Handicraft Shop Visit",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60,
+          "note": "Local crafts and souvenirs"
+        },
+        {
+          "name": "IORA The Retreat, Kaziranga",
+          "kind": "meal",
+          "time": "11:00",
+          "note": "Buffet and multi-cuisine, 4.4★, 4.9k reviews"
+        },
+        {
+          "name": "Drive: Kaziranga to Guwahati",
+          "kind": "transport",
+          "time": "13:00",
+          "duration_min": 300,
+          "distance_km": 220,
+          "note": "Return drive, 5 hours"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:20:13.023281",
+  "id": "kaziranga_2027-02-06_2027-02-09",
+  "user_id": "corpus-kaziranga-outdoors-friends-3d"
+}

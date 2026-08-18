@@ -1,0 +1,479 @@
+{
+  "status": "draft",
+  "trip_id": "bhutan_2027-10-18_2027-10-23",
+  "trip_number": 1,
+  "created_at": "2026-08-17T19:36:40.213816",
+  "destination": "Bhutan",
+  "origin": "Delhi",
+  "departure_date": "2027-10-18",
+  "return_date": "2027-10-23",
+  "travelers": "2 adults",
+  "notes": "Premium hotels throughout. Covering Thimphu and Paro.",
+  "planning_recommendation": {
+    "confidence": "medium",
+    "destination": "Bhutan",
+    "estimated_planned_minutes": 210,
+    "evidence_place_count": 2,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "2 preference-matched places account for about 210 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      1,
+      2
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [
+    {
+      "option": 1,
+      "airline": "Duffel Airways",
+      "price": 1206.54,
+      "currency": "USD",
+      "provider": "duffel",
+      "provider_ref": {
+        "offer_id": "ZZ4877"
+      },
+      "departure": "2027-10-18T13:09",
+      "arrival": "2027-10-18T15:51",
+      "return_departure": "2027-10-22T17:01",
+      "return_arrival": "2027-10-22T18:43",
+      "cabin_class": "business",
+      "stops": 0
+    }
+  ],
+  "selected_hotels": [
+    {
+      "name": "Le Meridien Paro, Riverfront",
+      "city": "Paro",
+      "checkin": "2027-10-20",
+      "checkout": "2027-10-23",
+      "rating": 5,
+      "address": "Shaba, Paro, Bhutan",
+      "price_per_night": 350,
+      "currency": "USD",
+      "total_price": 1050,
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp1beec",
+        "offer_id": "3gAWonJzkd4AEaRzcmlk2gEsR1laVE1PQldHRTNHSU5SU0c0WkRNTkpTR0EzREdOVERHWVlUT01aWEdNM0RTTlpSRzQyVE1OTDRHRVJURU1CU0c0WVRBTVJRUFFaREFNUlhHRVlERU0zNE1WWEY2VktUUFJFVTQ3Q1ZLTkNIWU1TQkdCQlhZTkJWR0k0WFkyS1FNNUtVUTdCUkc0NERNT0pYR1UzRFFOWlFHSTNWTzRDT0lJUlRDTUpVR1FZVEVJWlJHNDNUQ0xKUkdFMkRJTUpTUFJIRkVSU09QUVpEQU1KV0dBMlRFTVJSR0FZREE3QlJQUkpEQ01KVkdCQkRTTlpSSllZRktNRDRHRVpES01CUkdRUlZFVFpESlpKRU1UUkRHSVlEQ05STkdBMlMyTVJTRUFZVEFPUlFHQVJRo3B"
+      },
+      "note": "Premium riverfront hotel in Paro"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-18",
+      "title": "Arrival in Paro, transfer to Thimphu",
+      "summary": "Arrive in Paro, transfer by private car to Thimphu. Check into premium hotel and enjoy a relaxed evening exploring Thimphu's main street.",
+      "stops": [
+        {
+          "name": "Delhi Airport",
+          "kind": "transport",
+          "note": "Depart from Delhi"
+        },
+        {
+          "name": "Paro International Airport",
+          "kind": "transport",
+          "note": "Arrive in Bhutan"
+        },
+        {
+          "name": "Private car: Paro to Thimphu",
+          "kind": "transport",
+          "note": "Scenic drive (1.5 hr)"
+        },
+        {
+          "name": "Le Méridien Thimphu",
+          "kind": "hotel",
+          "note": "Premium stay, central location"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-19",
+      "title": "Thimphu Sightseeing",
+      "summary": "Explore Thimphu: Buddha Dordenma, Memorial Chorten, Tashichho Dzong, and local markets. Enjoy premium dining.",
+      "stops": [
+        {
+          "name": "Le Méridien Thimphu",
+          "kind": "hotel"
+        },
+        {
+          "name": "Buddha Dordenma",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Memorial Chorten",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "The Zone Restaurant & Bar",
+          "kind": "meal",
+          "time": "12:30"
+        },
+        {
+          "name": "Tashichho Dzong",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Thimphu Craft Market",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Le Méridien Thimphu",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-20",
+      "title": "Dochula Pass & Paro Transfer",
+      "summary": "Morning drive to Dochula Pass for Himalayan views, then transfer to Paro. Check into premium hotel.",
+      "stops": [
+        {
+          "name": "Le Méridien Thimphu",
+          "kind": "hotel"
+        },
+        {
+          "name": "Dochula Pass",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Private car: Thimphu to Paro",
+          "kind": "transport",
+          "note": "Scenic drive (1.5 hr)"
+        },
+        {
+          "name": "Le Méridien Paro, Riverfront",
+          "kind": "hotel",
+          "note": "Premium stay in Paro"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-21",
+      "title": "Paro Highlights & Tiger’s Nest Trek",
+      "summary": "Hike to Taktsang (Tiger’s Nest) Monastery, visit National Museum. Enjoy a premium dinner.",
+      "stops": [
+        {
+          "name": "Le Méridien Paro, Riverfront",
+          "kind": "hotel"
+        },
+        {
+          "name": "Taktsang Monastery (Tiger’s Nest)",
+          "kind": "attraction",
+          "time": "07:30",
+          "duration_min": 300,
+          "note": "Guided trek"
+        },
+        {
+          "name": "National Museum of Bhutan",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Sonam Trophel Restaurant",
+          "kind": "meal",
+          "time": "18:30"
+        },
+        {
+          "name": "Le Méridien Paro, Riverfront",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-10-22",
+      "title": "Paro Leisure & Departure",
+      "summary": "Relax in Paro, explore local shops, then transfer to airport for return flight to Delhi.",
+      "stops": [
+        {
+          "name": "Le Méridien Paro, Riverfront",
+          "kind": "hotel"
+        },
+        {
+          "name": "Paro Town",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Paro International Airport",
+          "kind": "transport",
+          "note": "Fly back to Delhi"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {
+    "source": "agent_climate_estimate",
+    "note": "October is cool and dry in Bhutan, highs 18–22°C, lows 7–12°C, little rain. Pack layers, light jacket, hiking shoes for Tiger's Nest.",
+    "days": [
+      {
+        "date": "2027-10-18",
+        "high_c": 22,
+        "low_c": 12,
+        "rain_mm": 2
+      },
+      {
+        "date": "2027-10-19",
+        "high_c": 21,
+        "low_c": 11,
+        "rain_mm": 2
+      },
+      {
+        "date": "2027-10-20",
+        "high_c": 20,
+        "low_c": 10,
+        "rain_mm": 1
+      },
+      {
+        "date": "2027-10-21",
+        "high_c": 19,
+        "low_c": 9,
+        "rain_mm": 1
+      },
+      {
+        "date": "2027-10-22",
+        "high_c": 18,
+        "low_c": 7,
+        "rain_mm": 1
+      }
+    ],
+    "packing_advice": [
+      "Light jacket",
+      "Warm layers",
+      "Hiking shoes",
+      "Sunscreen"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T16:41:46.536348",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-18T16:41:40",
+      "expires_at": "2026-08-18T17:11:40"
+    },
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T16:41:46",
+      "expires_at": "2026-08-19T04:41:46"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_transport_delhi_paro_2027_10_18",
+      "kind": "transport_mode",
+      "created_at": "2026-08-18T11:11:40.307674Z",
+      "scope": {
+        "day": 1,
+        "from_place": "Delhi",
+        "to_place": "Paro",
+        "date": "2027-10-18"
+      },
+      "subject": "Delhi → Paro",
+      "rule": {
+        "code": "door_to_door_time_unpriced",
+        "text": "Whole-journey time — no fare source covers this hop"
+      },
+      "chosen_option_id": "flight",
+      "options": [
+        {
+          "id": "road",
+          "mode": "road",
+          "label": "Drive",
+          "detail": "1745.2 km door to door",
+          "price": null,
+          "priced": false,
+          "unpriced_reason": "no_source",
+          "duration_min": 1892,
+          "door_to_door_min": 1912,
+          "duration_estimated": false,
+          "day_cost": 0.15,
+          "rejected_because": "Has no fare we can verify and takes 25h 17m longer door to door.",
+          "running_cost": null,
+          "lodging": null,
+          "flight": null,
+          "source": {
+            "provider": null,
+            "url": null,
+            "checked_at": null,
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "flight",
+          "mode": "flight",
+          "label": "Fly",
+          "detail": "Includes the airport run, security and the transfer in",
+          "price": null,
+          "priced": false,
+          "unpriced_reason": "source_failed",
+          "duration_min": 185,
+          "door_to_door_min": 395,
+          "duration_estimated": true,
+          "day_cost": 0.29,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": null,
+          "flight": null,
+          "source": {
+            "provider": null,
+            "url": null,
+            "checked_at": null,
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": null,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "none"
+    },
+    {
+      "id": "dec_transport_paro_delhi_2027_10_23",
+      "kind": "transport_mode",
+      "created_at": "2026-08-18T11:11:40.584098Z",
+      "scope": {
+        "day": 5,
+        "from_place": "Paro",
+        "to_place": "Delhi",
+        "date": "2027-10-23"
+      },
+      "subject": "Paro → Delhi",
+      "rule": {
+        "code": "door_to_door_time_unpriced",
+        "text": "Whole-journey time — no fare source covers this hop"
+      },
+      "chosen_option_id": "flight",
+      "options": [
+        {
+          "id": "road",
+          "mode": "road",
+          "label": "Drive",
+          "detail": "1740.9 km door to door",
+          "price": null,
+          "priced": false,
+          "unpriced_reason": "no_source",
+          "duration_min": 1811,
+          "door_to_door_min": 1831,
+          "duration_estimated": false,
+          "day_cost": 0.15,
+          "rejected_because": "Has no fare we can verify and takes 23h 57m longer door to door.",
+          "running_cost": null,
+          "lodging": null,
+          "flight": null,
+          "source": {
+            "provider": null,
+            "url": null,
+            "checked_at": null,
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "flight",
+          "mode": "flight",
+          "label": "Fly",
+          "detail": "Includes the airport run, security and the transfer in",
+          "price": null,
+          "priced": false,
+          "unpriced_reason": "source_failed",
+          "duration_min": 184,
+          "door_to_door_min": 394,
+          "duration_estimated": true,
+          "day_cost": 0.289,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": null,
+          "flight": null,
+          "source": {
+            "provider": null,
+            "url": null,
+            "checked_at": null,
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": null,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "none"
+    }
+  ],
+  "id": "bhutan_2027-10-18_2027-10-23",
+  "user_id": "corpus-bhutan-premium-couple-5d"
+}

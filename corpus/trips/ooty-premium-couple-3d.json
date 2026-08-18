@@ -1,0 +1,239 @@
+{
+  "status": "draft",
+  "trip_id": "ooty_2027-04-15_2027-04-18",
+  "trip_number": 1,
+  "created_at": "2026-08-18T22:22:29.324067",
+  "destination": "Ooty",
+  "origin": "Coimbatore",
+  "departure_date": "2027-04-15",
+  "return_date": "2027-04-18",
+  "travelers": "2 adults",
+  "notes": "Premium hotels requested throughout.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Ooty",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Fortune Resort Sullivan Court, Ooty - Member ITC Hotels’ Group",
+      "address": "123, Selbourne Road, near Rose Garden, Bombay Castel, Ooty, Tamil Nadu 643001, India",
+      "rating": 4.4,
+      "review_count": 2769,
+      "website": "https://www.itchotels.com/in/en/fortuneresortsullivancourt-ooty?utm_source=google&utm_medium=GMB",
+      "phone": "+91 423 244 1415"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-15",
+      "title": "Day 1 · Arrival & Ooty Town",
+      "summary": "Drive from Coimbatore to Ooty, check into Fortune Resort Sullivan Court, lunch at Kailash Parbat, explore Botanical Gardens, visit Ooty Lake, dinner at Earl's Secret.",
+      "stops": [
+        {
+          "name": "Drive: Coimbatore to Ooty",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "distance_km": 85,
+          "note": "Scenic drive via NH181"
+        },
+        {
+          "name": "Fortune Resort Sullivan Court, Ooty - Member ITC Hotels’ Group",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Kailash Parbat - Pure Vegetarian Restaurant",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch"
+        },
+        {
+          "name": "Government Botanical Gardens",
+          "kind": "attraction",
+          "time": "13:45",
+          "duration_min": 90,
+          "note": "Beautiful gardens, ideal for a stroll"
+        },
+        {
+          "name": "Ooty Lake",
+          "kind": "attraction",
+          "time": "15:45",
+          "duration_min": 90,
+          "note": "Boating and lakeside walk"
+        },
+        {
+          "name": "Earl's Secret",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        },
+        {
+          "name": "Fortune Resort Sullivan Court, Ooty - Member ITC Hotels’ Group",
+          "kind": "hotel",
+          "note": "Return for evening"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-16",
+      "title": "Day 2 · Coonoor Excursion",
+      "summary": "Day trip to Coonoor: Sim's Park, tea estates, lunch at The Culinarium, Lamb's Rock, return to Ooty.",
+      "stops": [
+        {
+          "name": "Drive: Ooty to Coonoor",
+          "kind": "transport",
+          "time": "08:30",
+          "duration_min": 45,
+          "distance_km": 20,
+          "note": "Short scenic drive"
+        },
+        {
+          "name": "Sim's Park",
+          "kind": "attraction",
+          "time": "09:45",
+          "duration_min": 60,
+          "note": "Botanical park with rare plants"
+        },
+        {
+          "name": "Highfield Tea Factory",
+          "kind": "attraction",
+          "time": "11:15",
+          "duration_min": 60,
+          "note": "Tea tour and tasting"
+        },
+        {
+          "name": "The Culinarium",
+          "kind": "meal",
+          "time": "12:45",
+          "note": "Lunch (French/Italian, highly rated)"
+        },
+        {
+          "name": "Lamb's Rock",
+          "kind": "attraction",
+          "time": "14:45",
+          "duration_min": 60,
+          "note": "Panoramic views"
+        },
+        {
+          "name": "Drive: Coonoor to Ooty",
+          "kind": "transport",
+          "time": "15:30",
+          "duration_min": 45,
+          "distance_km": 20,
+          "note": "Return drive"
+        },
+        {
+          "name": "Fortune Resort Sullivan Court, Ooty - Member ITC Hotels’ Group",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "16:45"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-17",
+      "title": "Day 3 · Ooty Highlights & Departure",
+      "summary": "Explore Doddabetta Peak, shopping at Charing Cross, lunch at Angaara Restaurant, and depart for Coimbatore.",
+      "stops": [
+        {
+          "name": "Fortune Resort Sullivan Court, Ooty - Member ITC Hotels’ Group",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Doddabetta Peak",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 90,
+          "note": "Highest peak in Nilgiris"
+        },
+        {
+          "name": "Charing Cross",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 60,
+          "note": "Local shopping and cafes"
+        },
+        {
+          "name": "Angaara Restaurant Ooty",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Lunch (multi-cuisine, highly rated)"
+        },
+        {
+          "name": "Drive: Ooty to Coimbatore",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 180,
+          "distance_km": 85,
+          "note": "Return drive"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T22:26:50.040256",
+  "id": "ooty_2027-04-15_2027-04-18",
+  "user_id": "corpus-ooty-premium-couple-3d"
+}

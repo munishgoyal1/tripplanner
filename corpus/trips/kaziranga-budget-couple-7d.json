@@ -1,0 +1,402 @@
+{
+  "status": "draft",
+  "trip_id": "kaziranga_2027-02-13_2027-02-20",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:13:05.741324",
+  "destination": "Kaziranga",
+  "origin": "Guwahati",
+  "departure_date": "2027-02-13",
+  "return_date": "2027-02-20",
+  "travelers": "2 adults",
+  "notes": "Hotel search returned no live rates. Will use a realistic 3-star Kaziranga resort as a placeholder with estimated pricing for planning.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Kaziranga",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Jupuri Ghar Kaziranga",
+      "kind": "hotel",
+      "star_rating": 3,
+      "address": "Kaziranga National Park, Kohora, Assam",
+      "price_per_night": 3500,
+      "nights": 6,
+      "total_price": 21000,
+      "currency": "INR",
+      "note": "Estimated price for 3-star resort, breakfast included"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-13",
+      "title": "Arrival in Kaziranga",
+      "summary": "Drive from Guwahati to Kaziranga, check in to Jupuri Ghar Resort, relax and explore the resort grounds. Dinner at John's Kitchen.",
+      "stops": [
+        {
+          "name": "Drive: Guwahati to Kaziranga",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 300,
+          "distance_km": 220,
+          "note": "Private car or shared cab"
+        },
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Check in and relax"
+        },
+        {
+          "name": "John's Kitchen",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner, rated 4.2★"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-14",
+      "title": "Kaziranga National Park Jeep Safari",
+      "summary": "Morning jeep safari in the park, lunch at resort, afternoon visit to local tea garden. Dinner at local restaurant.",
+      "stops": [
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "06:30"
+        },
+        {
+          "name": "Kaziranga National Park Jeep Safari",
+          "kind": "attraction",
+          "time": "07:00",
+          "duration_min": 180,
+          "note": "Early morning safari"
+        },
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "11:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Tea Garden Visit",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Tour a local tea estate"
+        },
+        {
+          "name": "Borgos The Wild Haven, Kaziranga",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner, rated 4.5★"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-15",
+      "title": "Elephant Safari & Orchid Park",
+      "summary": "Early morning elephant safari, lunch at resort, visit Kaziranga Orchid Park in the afternoon. Dinner at IORA The Retreat.",
+      "stops": [
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "05:30"
+        },
+        {
+          "name": "Kaziranga National Park Elephant Safari",
+          "kind": "attraction",
+          "time": "06:00",
+          "duration_min": 120,
+          "note": "Book in advance"
+        },
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "09:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Kaziranga Orchid Park",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "IORA The Retreat, Kaziranga",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner, rated 4.4★"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-16",
+      "title": "Ethnic Village & Local Culture",
+      "summary": "Explore Karbi Anglong village, enjoy local cuisine and folk performances. Dinner at resort.",
+      "stops": [
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Karbi Anglong Village",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Cultural immersion"
+        },
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Local Cultural Show",
+          "kind": "attraction",
+          "time": "19:00",
+          "duration_min": 120,
+          "note": "Evening folk dance and music"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-17",
+      "title": "Bird Watching & River Cruise",
+      "summary": "Morning bird watching, lunch at resort, afternoon Brahmaputra river cruise. Dinner at resort.",
+      "stops": [
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "06:00"
+        },
+        {
+          "name": "Bird Watching at Panbari Reserve Forest",
+          "kind": "attraction",
+          "time": "06:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "09:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Brahmaputra River Cruise",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 180,
+          "note": "Book in advance"
+        },
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-02-18",
+      "title": "Tea Estate & Leisure",
+      "summary": "Visit another tea estate, relax at the resort, optional cycling or spa. Dinner at resort.",
+      "stops": [
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Tea Estate Tour",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "12:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Resort Leisure/Optional Spa",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-02-19",
+      "title": "Return to Guwahati",
+      "summary": "Check out and drive back to Guwahati.",
+      "stops": [
+        {
+          "name": "Jupuri Ghar Resort, Kaziranga",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Drive: Kaziranga to Guwahati",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 300,
+          "distance_km": 220,
+          "note": "Private car or shared cab"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 21000,
+    "transport": 7000,
+    "safaris": 8000,
+    "activities": 4000,
+    "meals": 7000,
+    "misc": 3000
+  },
+  "total_cost": 80000,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-18T19:13:39.563248"
+  },
+  "currency": "INR",
+  "weather": {
+    "destination": "Kaziranga",
+    "country": "India",
+    "latitude": 26.58925,
+    "longitude": 93.40847,
+    "source": "seasonal_estimate",
+    "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+    "days": [
+      {
+        "date": "2027-02-13",
+        "summary": "Partly cloudy",
+        "high_c": 26.9,
+        "low_c": 12.6,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-02-14",
+        "summary": "Light drizzle",
+        "high_c": 27.2,
+        "low_c": 13.4,
+        "precip_mm": 0.2
+      },
+      {
+        "date": "2027-02-15",
+        "summary": "Partly cloudy",
+        "high_c": 25.6,
+        "low_c": 15.4,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-02-16",
+        "summary": "Mostly clear",
+        "high_c": 26.7,
+        "low_c": 14.2,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-02-17",
+        "summary": "Mostly clear",
+        "high_c": 27.2,
+        "low_c": 13.9,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-02-18",
+        "summary": "Mostly clear",
+        "high_c": 27.7,
+        "low_c": 14.0,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-02-19",
+        "summary": "Mostly clear",
+        "high_c": 28.1,
+        "low_c": 14.2,
+        "precip_mm": 0.0
+      }
+    ],
+    "packing_advice": [
+      "Light jacket for cool mornings",
+      "Quick-dry clothes for safaris",
+      "Comfortable walking shoes",
+      "Umbrella/raincoat for occasional drizzle"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T19:15:43.043194",
+  "id": "kaziranga_2027-02-13_2027-02-20",
+  "user_id": "corpus-kaziranga-budget-couple-7d"
+}

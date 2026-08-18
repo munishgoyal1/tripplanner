@@ -1,0 +1,410 @@
+{
+  "status": "draft",
+  "trip_id": "cape_town_2027-11-10_2027-11-17",
+  "trip_number": 1,
+  "created_at": "2026-08-18T21:00:32.698687",
+  "destination": "Cape Town",
+  "origin": "Mumbai",
+  "departure_date": "2027-11-10",
+  "return_date": "2027-11-17",
+  "travelers": "1 adult (mobility: cannot manage long walks or stairs)",
+  "notes": "One traveller cannot manage long walks or stairs. Accessibility needs: minimal walking, avoid stairs.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Cape Town",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [
+    {
+      "option": 1,
+      "airline": "Duffel Airways",
+      "price": 596.75,
+      "currency": "USD",
+      "outbound": {
+        "flight_number": "ZZ6292",
+        "departure_airport": "BOM",
+        "departure_time": "2027-11-10T06:58",
+        "arrival_airport": "CPT",
+        "arrival_time": "2027-11-10T15:01",
+        "duration_min": 693
+      },
+      "return": {
+        "flight_number": "ZZ6292",
+        "departure_airport": "CPT",
+        "departure_time": "2027-11-17T12:23",
+        "arrival_airport": "BOM",
+        "arrival_time": "2027-11-18T03:26",
+        "duration_min": 693
+      }
+    }
+  ],
+  "selected_hotels": [
+    {
+      "name": "Southern Sun Waterfront Cape Town",
+      "address": "1 Lower Buitengracht, Cape Town City Centre, Cape Town, 8001, South Africa",
+      "rating": 4.5,
+      "review_count": 4545,
+      "website": "https://www.southernsun.com/southern-sun-waterfront-cape-town?utm_source=google&utm_medium=businesslisting&utm_campaign=hotel_southern-sun-waterfront-cape-town",
+      "phone": "+27 21 409 4000",
+      "accessibility": "Wheelchair accessible rooms and facilities"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-10",
+      "title": "Arrival in Cape Town",
+      "summary": "Arrive in Cape Town from Mumbai, transfer to hotel, easy evening with accessible dinner nearby.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Cape Town",
+          "kind": "flight",
+          "time": "06:58",
+          "arrival_time": "15:01",
+          "duration_min": 693,
+          "note": "Direct flight, accessible assistance requested"
+        },
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Check-in, accessible room"
+        },
+        {
+          "name": "The Pot Luck Club",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Highly rated, wheelchair accessible"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-11",
+      "title": "Cape Town City Tour (Accessible)",
+      "summary": "Guided city tour with minimal walking: Company’s Garden, Greenmarket Square, accessible museum, easy lunch.",
+      "stops": [
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Company's Garden",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 60,
+          "note": "Accessible paths"
+        },
+        {
+          "name": "Iziko South African Museum",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Wheelchair accessible"
+        },
+        {
+          "name": "Greenmarket Square",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 45,
+          "note": "Flat, easy access"
+        },
+        {
+          "name": "Kloof Street House",
+          "kind": "meal",
+          "time": "15:15",
+          "note": "Accessible lunch, 4.4★"
+        },
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Return to hotel, rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-12",
+      "title": "Table Mountain & Camps Bay (Accessible)",
+      "summary": "Cable car to Table Mountain (wheelchair accessible), scenic drive to Camps Bay, accessible dinner.",
+      "stops": [
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Table Mountain Cableway",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Cable car, accessible"
+        },
+        {
+          "name": "Camps Bay Beachfront",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 120,
+          "note": "Flat, accessible promenade"
+        },
+        {
+          "name": "Paranga Restaurant",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Accessible dinner"
+        },
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-13",
+      "title": "Cape Peninsula Scenic Drive",
+      "summary": "Private accessible vehicle tour: Cape Point, Boulders Beach (penguins), scenic lunch stop.",
+      "stops": [
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Cape Point",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Accessible by vehicle"
+        },
+        {
+          "name": "Boulders Beach",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Penguins, accessible boardwalk"
+        },
+        {
+          "name": "Seaforth Restaurant",
+          "kind": "meal",
+          "time": "14:30",
+          "note": "Accessible lunch"
+        },
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-14",
+      "title": "Winelands Tour (Accessible)",
+      "summary": "Accessible wine estate visit, tasting, scenic drive, easy lunch.",
+      "stops": [
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Spier Wine Farm",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 120,
+          "note": "Accessible estate"
+        },
+        {
+          "name": "Eight Restaurant at Spier",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Accessible lunch"
+        },
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-11-15",
+      "title": "Robben Island & Easy Afternoon",
+      "summary": "Accessible ferry to Robben Island, museum tour, relaxed afternoon.",
+      "stops": [
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Robben Island Museum",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 180,
+          "note": "Accessible ferry and tour"
+        },
+        {
+          "name": "Den Anker",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Accessible lunch"
+        },
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-11-16",
+      "title": "Easy Day & Departure",
+      "summary": "Relaxed morning, accessible brunch, transfer to airport for flight home.",
+      "stops": [
+        {
+          "name": "Southern Sun Waterfront Cape Town",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Hemelhuijs",
+          "kind": "meal",
+          "time": "10:30",
+          "note": "Accessible brunch"
+        },
+        {
+          "name": "Flight: Cape Town to Mumbai",
+          "kind": "flight",
+          "time": "12:23",
+          "arrival_time": "03:26",
+          "duration_min": 693,
+          "note": "Accessible assistance requested"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {
+    "source": "agent_climate_estimate",
+    "note": "November is late spring in Cape Town: daily highs 20-25°C, lows 12-15°C, occasional showers. Packing: light layers, rain jacket, comfortable shoes.",
+    "days": [
+      {
+        "date": "2027-11-10",
+        "high_c": 23,
+        "low_c": 14,
+        "rain_mm": 2
+      },
+      {
+        "date": "2027-11-11",
+        "high_c": 22,
+        "low_c": 13,
+        "rain_mm": 1
+      },
+      {
+        "date": "2027-11-12",
+        "high_c": 24,
+        "low_c": 15,
+        "rain_mm": 0
+      },
+      {
+        "date": "2027-11-13",
+        "high_c": 25,
+        "low_c": 15,
+        "rain_mm": 0
+      },
+      {
+        "date": "2027-11-14",
+        "high_c": 23,
+        "low_c": 14,
+        "rain_mm": 1
+      },
+      {
+        "date": "2027-11-15",
+        "high_c": 21,
+        "low_c": 12,
+        "rain_mm": 2
+      },
+      {
+        "date": "2027-11-16",
+        "high_c": 22,
+        "low_c": 13,
+        "rain_mm": 1
+      }
+    ],
+    "packing_advice": [
+      "Light layers",
+      "Rain jacket",
+      "Comfortable shoes"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T21:05:05.824207",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-18T21:03:37",
+      "expires_at": "2026-08-18T21:33:37"
+    }
+  ],
+  "id": "cape_town_2027-11-10_2027-11-17",
+  "user_id": "corpus-capetown-accessible-solo-7d"
+}

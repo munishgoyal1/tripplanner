@@ -1,0 +1,257 @@
+{
+  "status": "draft",
+  "trip_id": "spiti_valley_2027-06-01_2027-06-08",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:41:34.521316",
+  "destination": "Spiti Valley",
+  "origin": "Delhi",
+  "departure_date": "2027-06-01",
+  "return_date": "2027-06-08",
+  "travelers": "4 adults",
+  "notes": "Focus on local food experiences.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Spiti Valley",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-06-01",
+      "title": "Day 1 · Delhi to Narkanda",
+      "summary": "Depart early from Delhi by road, enjoy scenic stops en route, and check in at Narkanda. Sample Himachali cuisine for dinner.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Narkanda",
+          "kind": "transport",
+          "time": "06:00",
+          "duration_min": 540,
+          "distance_km": 430,
+          "note": "Start early to maximize sightseeing."
+        },
+        {
+          "name": "Local Himachali Restaurant, Narkanda",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Try siddu and madra."
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-06-02",
+      "title": "Day 2 · Narkanda to Kalpa",
+      "summary": "Drive to Kalpa, visit apple orchards, and enjoy a local meal with views of Kinnaur Kailash.",
+      "stops": [
+        {
+          "name": "Drive: Narkanda to Kalpa",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 360,
+          "distance_km": 180
+        },
+        {
+          "name": "Apple Orchard Visit",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Local Restaurant, Kalpa",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Enjoy Kinnauri cuisine."
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-06-03",
+      "title": "Day 3 · Kalpa to Tabo",
+      "summary": "Drive to Tabo, visit Tabo Monastery, and dine at a local eatery.",
+      "stops": [
+        {
+          "name": "Drive: Kalpa to Tabo",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 420,
+          "distance_km": 150
+        },
+        {
+          "name": "Tabo Monastery",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Local Restaurant, Tabo",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Try Tibetan momos and thukpa."
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-06-04",
+      "title": "Day 4 · Tabo to Kaza",
+      "summary": "Drive to Kaza, explore Dhankar Monastery, and enjoy Spitian food.",
+      "stops": [
+        {
+          "name": "Drive: Tabo to Kaza",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "distance_km": 48
+        },
+        {
+          "name": "Dhankar Monastery",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Local Restaurant, Kaza",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Sample Spitian bread and chhurpi."
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-06-05",
+      "title": "Day 5 · Kaza & Around",
+      "summary": "Visit Key Monastery, Langza village, and enjoy local cuisine.",
+      "stops": [
+        {
+          "name": "Key Monastery",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Langza Village",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Local Restaurant, Kaza",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Try yak cheese dishes."
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-06-06",
+      "title": "Day 6 · Kaza to Nako",
+      "summary": "Drive to Nako, visit Nako Lake, and enjoy a lakeside meal.",
+      "stops": [
+        {
+          "name": "Drive: Kaza to Nako",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 240,
+          "distance_km": 110
+        },
+        {
+          "name": "Nako Lake",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Local Restaurant, Nako",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Enjoy Tibetan and Himachali fusion."
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-06-07",
+      "title": "Day 7 · Nako to Delhi",
+      "summary": "Return to Delhi, with a lunch stop en route.",
+      "stops": [
+        {
+          "name": "Local Restaurant, Rampur",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Final Himachali meal before heading home."
+        },
+        {
+          "name": "Drive: Nako to Delhi",
+          "kind": "transport",
+          "time": "06:00",
+          "duration_min": 900,
+          "distance_km": 650
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:46:26.120220",
+  "id": "spiti_valley_2027-06-01_2027-06-08",
+  "user_id": "corpus-spiti-food-friends-7d"
+}

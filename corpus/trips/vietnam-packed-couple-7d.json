@@ -1,0 +1,550 @@
+{
+  "status": "draft",
+  "trip_id": "vietnam_2027-11-17_2027-11-24",
+  "trip_number": 1,
+  "created_at": "2026-08-18T18:11:09.316568",
+  "destination": "Vietnam",
+  "origin": "Mumbai",
+  "departure_date": "2027-11-17",
+  "return_date": "2027-11-24",
+  "travelers": "2 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Vietnam",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-17",
+      "title": "Day 1 · Arrival in Hanoi",
+      "summary": "Arrive in Hanoi, check in to hotel, explore Old Quarter and enjoy local cuisine.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Hanoi",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "15:00",
+          "duration_min": 390
+        },
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Hanoi Old Quarter",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening stroll and street food"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-18",
+      "title": "Day 2 · Hanoi Highlights",
+      "summary": "Packed sightseeing: Hoan Kiem Lake, Temple of Literature, Ho Chi Minh Mausoleum, evening water puppet show.",
+      "stops": [
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Start"
+        },
+        {
+          "name": "Hoan Kiem Lake",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Temple of Literature",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Ho Chi Minh Mausoleum",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Lunch: Pho Gia Truyen",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Hanoi Opera House",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Water Puppet Show",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-19",
+      "title": "Day 3 · Ninh Binh Day Trip",
+      "summary": "Day trip to Ninh Binh: Tam Coc boat ride, Bich Dong Pagoda, countryside views.",
+      "stops": [
+        {
+          "name": "Drive: Hanoi to Ninh Binh",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 120,
+          "distance_km": 95
+        },
+        {
+          "name": "Tam Coc",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Bich Dong Pagoda",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Lunch: Chookie's Ninh Binh",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Drive: Ninh Binh to Hanoi",
+          "kind": "transport",
+          "time": "15:00",
+          "duration_min": 120,
+          "distance_km": 95
+        },
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Start",
+          "time": "17:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-20",
+      "title": "Day 4 · Hanoi to Ha Long Bay",
+      "summary": "Transfer to Ha Long Bay, board cruise, explore caves and islands.",
+      "stops": [
+        {
+          "name": "Drive: Hanoi to Ha Long Bay",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 180,
+          "distance_km": 155
+        },
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Start",
+          "time": "10:30"
+        },
+        {
+          "name": "Ha Long Bay Cruise",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 480,
+          "note": "Check-in, lunch, cruise activities"
+        },
+        {
+          "name": "Overnight on Cruise",
+          "kind": "hotel",
+          "note": "Stay on boat",
+          "time": "21:00"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-21",
+      "title": "Day 5 · Ha Long Bay Exploration",
+      "summary": "Morning kayaking, visit Sung Sot Cave, return to port, transfer back to Hanoi.",
+      "stops": [
+        {
+          "name": "Kayaking in Ha Long Bay",
+          "kind": "attraction",
+          "time": "07:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Sung Sot Cave",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Lunch on Cruise",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Return to Port",
+          "kind": "transport",
+          "time": "13:00",
+          "duration_min": 30
+        },
+        {
+          "name": "Drive: Ha Long Bay to Hanoi",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 180,
+          "distance_km": 155
+        },
+        {
+          "name": "Overnight on Cruise",
+          "kind": "hotel",
+          "note": "Start",
+          "time": "17:30"
+        },
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Return",
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-11-22",
+      "title": "Day 6 · Hanoi Culture & Shopping",
+      "summary": "Explore museums, local markets, and enjoy Vietnamese cuisine.",
+      "stops": [
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Start"
+        },
+        {
+          "name": "Vietnam Museum of Ethnology",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Dong Xuan Market",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Lunch: Bun Cha Huong Lien",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "St. Joseph's Cathedral",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-11-23",
+      "title": "Day 7 · Departure",
+      "summary": "Free morning in Hanoi, transfer to airport, flight back to Mumbai.",
+      "stops": [
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Start"
+        },
+        {
+          "name": "Free time in Hanoi",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Drive: Hotel to Hanoi Airport",
+          "kind": "transport",
+          "time": "10:30",
+          "duration_min": 45,
+          "distance_km": 30
+        },
+        {
+          "name": "Flight: Hanoi to Mumbai",
+          "kind": "flight",
+          "time": "13:00",
+          "arrival_time": "18:00",
+          "duration_min": 390
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-11-24",
+      "title": "Arrival in Mumbai",
+      "summary": "Arrive in Mumbai, trip ends.",
+      "stops": [
+        {
+          "name": "Arrival in Mumbai",
+          "kind": "other",
+          "time": "18:00",
+          "note": "End of trip"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T18:12:19.546382",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T18:12:19",
+      "expires_at": "2026-08-19T06:12:19"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_hanoi_2027_11_17_2027_11_20",
+      "kind": "lodging",
+      "created_at": "2026-08-18T12:42:19.539729Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Hanoi",
+        "date": "2027-11-17"
+      },
+      "subject": "Stay in Hanoi",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_fdb89d3710e6",
+      "options": [
+        {
+          "id": "opt_stay_fdb89d3710e6",
+          "mode": null,
+          "label": "Pan Pacific Hanoi",
+          "detail": "Deluxe Room",
+          "price": {
+            "amount": 393.9,
+            "currency": "USD",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-11-17",
+            "checkout": "2027-11-20",
+            "room_name": "Deluxe Room",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "1 Thanh Nien Road",
+            "rating": 8.8,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp30c41",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEHR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpSR0VZVE83QlNHQVpET01KUkdJWUhZWkxPTDVLVkc3Q0pKWjZGS1UyRVBRWkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzRZREtOUlpHTTJUT05CWktSQ0ZBNFpER0U0VFNOWlVHVVJUQ05KWEdRV1RDT0paRzQyREs3Q1NJWkhIWU1SUUdJM1RDTUpRSEVZVEFNQlFQUVlYWVVSUkdFMlRBN0JUSEVaVFNNQkRLSkhTR1VTR0pZUlRFTUJTRzRXVENNSk5HQTRTQU1KUUhJWURBSVmjcHJjy0B4nmZmZmZmpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTExLTE1IDEwOjAwOjAwonJ0o1JGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkoWhdLMyMDI3LTExLTA5IDEwOjAwOjAwoWHLQGBpmZmZmZqhY6NVU0SidHmmYW1vdW50onR6o0dNVIWhdLMyMDI3LTExLTE1IDEwOjAwOjAwoWHLQHieZmZmZmahY6NVU0SidHmmYW1vdW50onR6o0dNVKJydKNSRk6kc2hpZKYxOTk3NDWjc2lkAqNoaWSnbHAzMGM0MaNvY2ORgaFhAqNjdXKjVVNEomduoklOomNpqjIwMjctMTEtMTeiY2-qMjAyNy0xMS0yMKNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE0ZTRkMzJkS3V3WEQ2VGFOREo4WWJJM2dybTFWTk4yVG9iTKNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpw6Fkt1Byb3BlcnR5IHNlcnZpY2UgY2hhcmdloWHLQDOzMzMzMzOhY6NVU0SEoWnCoWSjVkFUoWHLQD-Cj1wo9cOhY6NVU0SibHDAo2JrdAM=",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHJEZUOTKOKRDUOWSTJBMU2SSEI5EVSRCFJZNFER2FLFKE6N2CKNDUCWSEJ5GUUUSHJFMUQWK2JRHUYNKLKZDTOQ2KJJNDMRSLKUZEKUCRLJCUGTKDIRIFCMSEJNGVEWSQKJKVMQK2GJLEUQRWIRBU4WSZI42FSRCLJZJFUR2NGJKE6TSCLJFVEQ2GIE2FURCHIU2FIU2OLJKUOVKSKRBU4SSYI5IVOVCDJ5FFURZUGJCEWN2DKNEVUSCILFGVEUKHJEZVIQ2NJJIUQRKZKRAU2QSRKBIVSWCZKVJFER2FGJKECN2CKREEKWSUKNGUERCLJJEFGR2VKNDUUWKSKRCU2QSTI42FOVCDJVFE4R2BGRJUCTKKKFEESWKEIFEVS7BTHEZS4OJQPQZDAMRXFUYTCLJRGUQDCMB2GAYDUMBQPRJE67D4PR6EIZLMOV4GKICSN5XW27BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T12:42:19.485948Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_1f1616ad2bc8",
+          "mode": null,
+          "label": "InterContinental Hanoi Westlake by IHG",
+          "detail": "Classic Room City View",
+          "price": {
+            "amount": 482.5,
+            "currency": "USD",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs $89 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-11-17",
+            "checkout": "2027-11-20",
+            "room_name": "Classic Room City View",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "5 Tu Hoa, Tay Ho Ward, Hanoi, 10000",
+            "rating": 8.8,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp40a51",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEqR1laVE1ZWldHRTNUR05aVEdZNFRNTVpTR0EzVEVOVEdHWlRETVpCU0dBM0RHTlJaRzQyRE9PSlNHQTNUTU5SWkdZMlRPTjM0R0VSVEVNQlNHNFlUQ01KWFBRWkRBTVJYR0VZVEVNRDRNVlhGNlZLVFBSRVU0N0NWS05DSFlNU0JHQkJYWU5CVkdJNFhZMktRTTVLVVE3QlJHNDRET01CVkdZNFRHTkpYR1E0VklSQ1FPTVJURU5SVUc0NERLSVpSR1UzVElMSlNHWTJET09CVlBSSkVNVFQ0R0lZREVOWlJHRVlUR01KUUdBWUhZTUw0S0lZVENOSlFQUTJEUU1SVkdBUlZFVFpES0pERTRJWlNHQVpET0xKUkdFV1RDTVpBR0VZRFVNQlFFTaNwcmPLQH4oAAAAAAClb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkszIwMjctMTEtMTUgMTA6MDA6MDCicnSjUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm62Q2xhc3NpYyBSb29tIENpdHkgVmlld6NvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJKFoXSzMjAyNy0xMS0xMyAxMDowMDowMKFhy0BkGo9cKPXDoWOjVVNEonR5pmFtb3VudKJ0eqNHTVSFoXSzMjAyNy0xMS0xNSAxMDowMDowMKFhy0B-KAAAAAAAoWOjVVNEonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmMjY0Nzg1o3NpZAKjaGlkp2xwNDBhNTGjb2NjkYGhYQKjY3Vyo1VTRKJnbqJJTqJjaaoyMDI3LTExLTE3omNvqjIwMjctMTEtMjCjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNGU0ZDMyZEt1d1hENlRhTkRKOFliSTNncm0xVk5OMlRvYkyjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0A4HrhR64UfoWOjVVNEhKFpwqFko1ZBVKFhy0BDTMzMzMzNoWOjVVNEomxwwKNia3QA",
+              "rate_id": "I5MVUVCNLFNFOR2FGNKEOTS2KRDVSNCUJVGVUU2HIEZVIRKOKRDUOWSUIRGVUQSTI5ATGRCHJZJFURZUGJCE6T2KKNDUCM2UJVHFEWSHLEZFIT2OGM2EORKSKRCU2QSTI42FSVCDJVFFQUCRLJCECTKSLBDUKWKUIVGUINCNKZMEMNSWJNKFAUSFKU2DOQ2WJNHEGSCZJVJUER2CIJMFSTSCKZDUSNCYLEZEWUKNGVFVKUJXIJJEONBUIRHU2QSWI5MTIVCHJZFFQR2RGRLESUSDKFHU2USUIVHFEVKHGQ2EIS2JLJJEOVJTKREUYSSTI5MTERCPJ5BFMUCSJJCU2VCUGRDUSWKEIVHFUUSHIVMVIR2NJJIUOQKZJBMU2TBUJNEVSVCDJZFFCUCRGJCFCTKSKZDUCUSWIVKFURCLJJCEKNCJLJJUOQK2IRHUYSSSI5CVOVCDJVNECR2FLFCFKTKCKFCU27BUHAZC4NJQPQZDAMRXFUYTCLJRGUQDCMB2GAYDUMBQPRJE67D4PR6EG3DBONZWSYZAKJXW63JAINUXI6JAKZUWK534GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T12:42:19.485948Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_11b5975b29f4",
+          "mode": null,
+          "label": "Elegant Suites Westlake",
+          "detail": "ROOM",
+          "price": {
+            "amount": 673.98,
+            "currency": "USD",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs $280 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-11-17",
+            "checkout": "2027-11-20",
+            "room_name": "ROOM",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "10B Dang Thai Mai Street",
+            "rating": 9.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp73cc9",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2f1HNFpETVpSV01ZM0dJN0JSRU1aREFNUlhHRVlUQ04zNEdJWURFTlpSR0VaREE3REZOWlBWS1UzNEpGSEhZVktUSVI2REVRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5KV0hFWlRLTlpVSEZLRUlVRFRFTTJET05CVEdFWlNHTUpYRzRZUzJOQlhHUVpUQ00zNEtKREU0N0JTR0FaRE9NSlJHRVpEQ01CUUdCNkRDN0NTR0VZVEtNQ0NIRTJURVRSUUtVWUhZTlJYR000VFFJMkNJSVJWRVJTT0VNWkRBTVJYRlVZVENMSlJHSVFEQ01CMkdBWUNHo3ByY8tAhQ_XCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0xMS0xMiAxMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqRST09No29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkYWhdLMyMDI3LTExLTEyIDEwOjAwOjAwoWHLQGykzMzMzM2hY6NVU0SidHmmYW1vdW50onR6o0dNVKJydKNSRk6kc2hpZKY0NzQzMTOjc2lkAqNoaWSnbHA3M2NjOaNvY2ORgaFhAqNjdXKjVVNEomduoklOomNpqjIwMjctMTEtMTeiY2-qMjAyNy0xMS0yMKNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE0ZTRkMzJkS3V3WEQ2VGFOREo4WWJJM2dybTFWTk4yVG9iTKNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpw6Fkt1Byb3BlcnR5IHNlcnZpY2UgY2hhcmdloWHLQEDZmZmZmZqhY6NVU0SEoWnCoWSjVkFUoWHLQEr1wo9cKPahY6NVU0SibHDAo2JrdAg=",
+              "rate_id": "I42FURCNLJJFOTKZGNDUSN2CKJCU2WSEIFGVEWCHIVMVIQ2OGM2EOSKZIRCU4WSSI5CVURCBG5CEMTS2KBLEWVJTGRFEMSCILFLEWVCJKI3EIRKRJJIUSTRWIREU4SSTJBDDMR2TKVCEQS2WIVEFSTKKLBEECM2UIFHEUV2IIVNFIS2OLJKUQRSLIVEVKRCUIVGTERCPJZBFIR2FLJJUOTKKLBDTIWKTGJHEEWCHKFNFIQ2NGM2EWSSEIU2DOQSTI5AVURCPJVFFER2FLJCEGTKCKFDUENSEIM3UGU2HIVMVIS2NINBUQRJSKRCVIUSRJNKVSSCZJZJFQR2NGRKFCSJSINEUSUSWIVJFGT2FJVNEIQKNKJMEMVKZKRBUYSSSI5EVCRCDJVBDER2BLFBUO7BWG4ZS4OJYPQZDAMRXFUYTCLJRGIQDCMB2GAYDUMBQPRBES7D4PR6FET2PJV6DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T12:42:19.485948Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 393.9,
+        "delta": null,
+        "currency": "USD"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "vietnam_2027-11-17_2027-11-24",
+  "user_id": "corpus-vietnam-packed-couple-7d"
+}

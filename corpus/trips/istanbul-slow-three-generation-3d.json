@@ -1,0 +1,345 @@
+{
+  "status": "draft",
+  "trip_id": "istanbul_2027-05-10_2027-05-13",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:28:39.065589",
+  "destination": "Istanbul",
+  "origin": "Delhi",
+  "departure_date": "2027-05-10",
+  "return_date": "2027-05-13",
+  "travelers": "4 adults (including grandparents), 1 child (age 8)",
+  "notes": "Slow pace, free afternoons, suitable for elderly travelers.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Istanbul",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [
+    {
+      "option": 1,
+      "airline": "Kuwait Airways",
+      "price": 1303.75,
+      "currency": "USD",
+      "segments": [
+        {
+          "origin": "Delhi",
+          "destination": "Kuwait",
+          "departureTime": "2027-05-10T06:15",
+          "arrivalTime": "2027-05-10T08:10"
+        },
+        {
+          "origin": "Kuwait",
+          "destination": "Istanbul",
+          "departureTime": "2027-05-10T10:00",
+          "arrivalTime": "2027-05-10T13:20"
+        }
+      ],
+      "return_segments": [
+        {
+          "origin": "Istanbul",
+          "destination": "Kuwait",
+          "departureTime": "2027-05-13T14:10",
+          "arrivalTime": "2027-05-13T17:20"
+        },
+        {
+          "origin": "Kuwait",
+          "destination": "Delhi",
+          "departureTime": "2027-05-13T19:30",
+          "arrivalTime": "2027-05-14T01:45"
+        }
+      ],
+      "adults": 4,
+      "children": 1,
+      "cabin_class": "economy",
+      "note": "Best value, 1 stop, accessible for elderly, child-friendly"
+    }
+  ],
+  "selected_hotels": [
+    {
+      "name": "Radisson Blu Hotel Istanbul Pera",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp1f7764"
+      },
+      "address": "Evliya Çelebi Mah., Refik Saydam Cd. No:19, 34430 Beyoğlu/Istanbul, Turkey",
+      "rating": 4.6,
+      "reviews": 2100,
+      "price_per_night": 320,
+      "currency": "USD",
+      "rooms": 2,
+      "checkin": "2027-05-10",
+      "checkout": "2027-05-13",
+      "note": "Central, accessible, family-friendly, highly rated, breakfast included"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-10",
+      "title": "Arrival & Historic Sultanahmet",
+      "summary": "Arrive in Istanbul, check in at Radisson Blu Hotel Pera, visit Sultanahmet Square and enjoy a relaxed lunch. Free afternoon for rest.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Istanbul via Kuwait",
+          "kind": "flight",
+          "time": "06:15",
+          "arrival_time": "13:20",
+          "duration_min": 485,
+          "note": "Kuwait Airways, 1 stop"
+        },
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "note": "Check-in, centrally located"
+        },
+        {
+          "name": "Sultanahmet Square",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Easy access, flat walking"
+        },
+        {
+          "name": "Turgut Kebab Restaurant -Sultanahmet-",
+          "kind": "meal",
+          "time": "17:00",
+          "duration_min": 75,
+          "note": "Ottoman cuisine, kid-friendly options, 4.8★, 28k reviews"
+        },
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "time": "18:30",
+          "note": "Return for free afternoon and rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-11",
+      "title": "Topkapi Palace & Grand Bazaar",
+      "summary": "Morning visit to Topkapi Palace, followed by shopping at Grand Bazaar. Lunch nearby, then free afternoon.",
+      "stops": [
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Topkapi Palace",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Accessible, benches available"
+        },
+        {
+          "name": "Grand Bazaar",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Short walk, vibrant market"
+        },
+        {
+          "name": "Garden 1897 Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Classic Turkish, vegetarian options, 4.9★, 22k reviews"
+        },
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "time": "15:00",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-12",
+      "title": "Bosphorus Cruise & Galata Tower",
+      "summary": "Morning Bosphorus cruise, visit Galata Tower, lunch at a scenic restaurant. Free afternoon for shopping or leisure.",
+      "stops": [
+        {
+          "name": "Bosphorus Cruise",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Relaxed sightseeing, accessible"
+        },
+        {
+          "name": "Galata Tower",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Elevator available, panoramic views"
+        },
+        {
+          "name": "Transfer to Istanbul Airport",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Departure transfer"
+        },
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "15:30"
+        },
+        {
+          "name": "Resto Galata Terrace",
+          "kind": "meal",
+          "time": "17:30",
+          "duration_min": 75,
+          "note": "Scenic views, Turkish menu, 4.8★, 3.7k reviews"
+        },
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "time": "19:15",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-13",
+      "title": "Departure",
+      "summary": "Check out and transfer to airport for flight back to Delhi.",
+      "stops": [
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Flight: Istanbul to Delhi via Kuwait",
+          "kind": "flight",
+          "time": "14:10",
+          "arrival_time": "01:45",
+          "duration_min": 575,
+          "note": "Kuwait Airways, 1 stop"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel_total": 960,
+    "meals_estimate": 300,
+    "activities_estimate": 250,
+    "airport_transfer": 120,
+    "estimated_flights": 3200
+  },
+  "total_cost": 4830,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {
+    "destination": "Istanbul",
+    "source": "seasonal_estimate",
+    "note": "Trip is beyond the 16-day forecast horizon — values are last year's same-week archive as a seasonal proxy.",
+    "days": [
+      {
+        "date": "2027-05-10",
+        "summary": "Rain",
+        "high_c": 23.4,
+        "low_c": 15.1,
+        "precip_mm": 7.2
+      },
+      {
+        "date": "2027-05-11",
+        "summary": "Light drizzle",
+        "high_c": 25.4,
+        "low_c": 16.8,
+        "precip_mm": 0.2
+      },
+      {
+        "date": "2027-05-12",
+        "summary": "Overcast",
+        "high_c": 27.6,
+        "low_c": 17.3,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-05-13",
+        "summary": "Light drizzle",
+        "high_c": 24.2,
+        "low_c": 16.3,
+        "precip_mm": 0.7
+      }
+    ],
+    "packing_advice": [
+      "Pack a light rain jacket and umbrella for occasional showers.",
+      "Comfortable walking shoes.",
+      "Layered clothing for mild temperatures."
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:36:05.504815",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:34:52",
+      "expires_at": "2026-08-19T08:34:52"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:35:37",
+      "expires_at": "2026-08-18T21:05:37"
+    }
+  ],
+  "id": "istanbul_2027-05-10_2027-05-13",
+  "user_id": "corpus-istanbul-slow-three-generation-3d"
+}

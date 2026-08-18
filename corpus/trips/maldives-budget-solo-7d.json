@@ -1,0 +1,320 @@
+{
+  "status": "draft",
+  "trip_id": "maldives_2027-02-10_2027-02-17",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:11:33.474537",
+  "destination": "Maldives",
+  "origin": "Bangalore",
+  "departure_date": "2027-02-10",
+  "return_date": "2027-02-17",
+  "travelers": "1 adult",
+  "notes": "Unable to fetch live hotel rates for Malé for these dates. Will recommend a realistic 3-star hotel option based on typical availability and pricing for the Maldives within the set budget. Hotel: Somerset Inn Malé (3-star, central, breakfast included, ~INR 5,000/night).",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Maldives",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "The Somerset Hotel",
+      "address": "Near national Museum, M. Melaa, Keneree Magu, Malé 20191, Maldives",
+      "rating": 4.3,
+      "review_count": 441,
+      "website": "http://thesomerset.com.mv/",
+      "phone": "+960 300-9090",
+      "checkin": "2027-02-10",
+      "checkout": "2027-02-17",
+      "price_per_night": 5000,
+      "currency": "INR"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-10",
+      "title": "Day 1 · Arrival in Maldives",
+      "summary": "Fly from Bangalore to Maldives, transfer to hotel, relax at the beach.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Malé",
+          "kind": "flight",
+          "time": "09:00",
+          "duration_min": 240,
+          "note": "Morning flight"
+        },
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Check-in and unwind"
+        },
+        {
+          "name": "Malé Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Relax and enjoy sunset"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-11",
+      "title": "Day 2 · Island Hopping",
+      "summary": "Explore nearby islands, snorkeling and sightseeing.",
+      "stops": [
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Island Hopping Tour",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 300,
+          "note": "Snorkeling and sightseeing"
+        },
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-12",
+      "title": "Day 3 · Water Sports & Local Cuisine",
+      "summary": "Try water sports and sample Maldivian cuisine.",
+      "stops": [
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Water Sports Centre",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 180,
+          "note": "Kayaking, paddle boarding"
+        },
+        {
+          "name": "Manhattan Fish Market Malé",
+          "kind": "meal",
+          "time": "13:45",
+          "duration_min": 60,
+          "note": "Maldivian lunch"
+        },
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-13",
+      "title": "Day 4 · Marine Life & Relaxation",
+      "summary": "Visit marine center, relax at spa or beach.",
+      "stops": [
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Marine Discovery Centre",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Learn about marine life"
+        },
+        {
+          "name": "Thoum Arabic Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Spa (TBD)",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Relaxing spa session"
+        },
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-14",
+      "title": "Day 5 · Cultural Exploration",
+      "summary": "Explore Malé city, visit local markets and mosque.",
+      "stops": [
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Malé City Tour",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 180,
+          "note": "Markets, mosque, local sights"
+        },
+        {
+          "name": "Lazeez Gourmet",
+          "kind": "meal",
+          "time": "13:15",
+          "duration_min": 60,
+          "note": "Lunch in Malé"
+        },
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-02-15",
+      "title": "Day 6 · Leisure & Sunset Cruise",
+      "summary": "Free morning, sunset cruise in the evening.",
+      "stops": [
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Free Time",
+          "kind": "other",
+          "time": "10:00",
+          "duration_min": 180,
+          "note": "Relax or explore"
+        },
+        {
+          "name": "Seahouse Maldives",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Sunset Cruise",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Scenic boat ride"
+        },
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-02-16",
+      "title": "Day 7 · Departure",
+      "summary": "Check out, transfer to airport, fly back to Bangalore.",
+      "stops": [
+        {
+          "name": "The Somerset Hotel",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Flight: Malé to Bangalore",
+          "kind": "flight",
+          "time": "12:00",
+          "duration_min": 240,
+          "note": "Afternoon flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-18T20:12:05.243777"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:16:26.903060",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:16:26",
+      "expires_at": "2026-08-18T20:46:26"
+    }
+  ],
+  "id": "maldives_2027-02-10_2027-02-17",
+  "user_id": "corpus-maldives-budget-solo-7d"
+}

@@ -1,0 +1,345 @@
+{
+  "status": "draft",
+  "trip_id": "gokarna_2027-01-10_2027-01-13",
+  "trip_number": 1,
+  "created_at": "2026-08-18T21:21:00.518735",
+  "destination": "Gokarna",
+  "origin": "Bangalore",
+  "departure_date": "2027-01-10",
+  "return_date": "2027-01-13",
+  "travelers": "2 adults (one with limited mobility, cannot manage long walks or stairs)",
+  "notes": "One traveller cannot manage long walks or stairs. Accessibility needs: minimal walking, avoid stairs.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Gokarna",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Kahani Paradise",
+      "address": "Belekan, Gokarna, Karnataka 581326, India",
+      "star_rating": 5,
+      "amenities": [
+        "Accessible rooms",
+        "Wheelchair access",
+        "Restaurant",
+        "Pool",
+        "WiFi"
+      ],
+      "price_per_night": 18500,
+      "currency": "INR",
+      "checkin": "2027-01-10",
+      "checkout": "2027-01-12",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp78f8c"
+      },
+      "google_rating": 4.7,
+      "google_reviews": 612
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-10",
+      "title": "Day 1 · Arrival & Beach Relaxation",
+      "summary": "Drive from Bangalore to Gokarna, check in to Kahani Paradise, relax at the accessible Kudle Beach, dinner at Mantra Cafe.",
+      "stops": [
+        {
+          "name": "Drive: Bangalore to Gokarna",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 420,
+          "distance_km": 485,
+          "note": "Private car with comfort breaks, accessible vehicle arranged"
+        },
+        {
+          "name": "Kahani Paradise",
+          "kind": "hotel",
+          "time": "14:15",
+          "note": "Check-in; accessible room requested"
+        },
+        {
+          "name": "Kudle Beach (Accessible section)",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 90,
+          "note": "Easy access, minimal walking"
+        },
+        {
+          "name": "Mantra Cafe",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Dinner, wheelchair accessible, 4★, 3.2k reviews"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-11",
+      "title": "Day 2 · Accessible Sightseeing",
+      "summary": "Visit Mahabaleshwar Temple (with accessible entrance), lunch at Halfway Home Gokarna, relax at Gokarna Beach, dinner at Sunset Cafe Beach Stay.",
+      "stops": [
+        {
+          "name": "Kahani Paradise",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Mahabaleshwar Temple (Accessible entrance)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60,
+          "note": "Accessible entrance, minimal stairs"
+        },
+        {
+          "name": "Halfway Home Gokarna",
+          "kind": "meal",
+          "time": "11:00",
+          "note": "Lunch, 4.6★, vegetarian, accessible"
+        },
+        {
+          "name": "Gokarna Beach (Accessible section)",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Easy access, shaded seating"
+        },
+        {
+          "name": "Kahani Paradise",
+          "kind": "hotel",
+          "time": "15:30",
+          "note": "Return for rest"
+        },
+        {
+          "name": "Sunset Cafe Beach Stay",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Dinner, 4.5★, beachside, accessible"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-12",
+      "title": "Day 3 · Leisure & Return",
+      "summary": "Relax at hotel, enjoy the grounds, check out, drive back to Bangalore.",
+      "stops": [
+        {
+          "name": "Kahani Paradise",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Drive: Gokarna to Bangalore",
+          "kind": "transport",
+          "time": "11:15",
+          "duration_min": 420,
+          "distance_km": 485,
+          "note": "Private accessible vehicle, comfort breaks"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-13",
+      "title": "Arrival Back in Bangalore",
+      "summary": "Arrive in Bangalore, trip ends.",
+      "stops": [
+        {
+          "name": "Bangalore",
+          "kind": "other",
+          "time": "18:00",
+          "note": "Trip ends"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T21:23:02.672952",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T21:21:48",
+      "expires_at": "2026-08-19T09:21:48"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_gokarna_2027_01_10_2027_01_12",
+      "kind": "lodging",
+      "created_at": "2026-08-18T15:51:48.932618Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Gokarna",
+        "date": "2027-01-10"
+      },
+      "subject": "Stay in Gokarna",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_ec8849003755",
+      "options": [
+        {
+          "id": "opt_stay_ec8849003755",
+          "mode": null,
+          "label": "Quality Inn Guthrie",
+          "detail": "ROOM, KING BED",
+          "price": {
+            "amount": 16772.68,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-10",
+            "checkout": "2027-01-12",
+            "room_name": "ROOM, KING BED",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "2323 Territorial Trl",
+            "rating": 7.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp78f8c",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEgRzRaRE1aUldNWTNHSU1UREdJWURNWVJXSEUzR0tOUlhHSVlETU1SV0dVM0RJN0JSRU1aREFNUlhHQVlUQ01ENEdJWURFTlpRR0VZVEU3REZOWlBWS1UzNEpGSEhZU0tPS0o2REVRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5SWUdNWURLTlpaRzVSWFU2Q1FFTTJEU05KVkdBWUNHTUpTR1EzUzJOQlpHVTJUQU1ENEtKREU0N0JTR0FaRE9NQlJHQTREQU5KUUdCNkRDN0NTR0VZVEtNQ0NIRTRUS1RSUUtVWUhZTUpXRzQzVEVOUlpFTkJFRUkyU0laSENHTVJRR0kzUzJNQlJGVVlEUUlCUUdVNURBTUJEo3ByY8tA0GErhR64UqVvcl9wcssAAAAAAAAAAKVvcl9jbcu_hHrhR64Ue6Jjbcu_hHrhR64Ue6NwY2SzMjAyNy0wMS0wOCAwNTowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybq5ST09NLCBLSU5HIEJFRKNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJGFoXSzMjAyNy0wMS0wOCAwNTowMDowMKFhy0DQYSuFHrhSoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmNDk1NTAwo3NpZAKjaGlkp2xwNzhmOGOjb2NjkYGhYQKjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTAxLTEwomNvqjIwMjctMDEtMTKjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNTkyNTE2M2MyTkxnUGl2UWlCaDBIQXpsS1M4ZHR3ZjV2NDGjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4kYShacOhZKChYctAoOU9cKPXCqFjo0lOUqJscMCjYmt0Bw==",
+              "rate_id": "I42FURCNLJJFOTKZGNDUSTKUIRDUSWKEJVMVEV2IIUZUOS2OKJMEOSKZIRGU2USXI5KTGRCJG5BFERKNLJCECTKSLBDUCWKUINGUINCHJFMUIRKOLJIUORKZKRCTORCGJZNFAVSLKUZTISSGJBEFSU2LJ5FUUNSEIVIUUUKJJY3EISKOJJJUQRRWI5JVKRCIJNLEKSCZJVFFQSCBGNKECTSSLFDU2WKEJNHFUWSHGVJFQVJWINIUKTJSIRJU4SSWI5AVSQ2HJVFFGR2RGNJTETSCLJDVKMSUIFGUINCLJJCEKNBXIJJUOQK2IRHU2QSSI5ATIRCBJZFFCR2CGZCEGN2DKNDUKWKUJNGUGQ2IIU2FIS2UKJIUWVKZJBMU2SSXI42DGVCFJZJFURKOIJCUKSJSKNEVUSCDI5GVEUKHJEZVGMSNIJJEMVKZIRIUSQSRI5KTKRCBJVBEI7BRGY3TOMROGY4HYMRQGI3S2MBRFUYDQIBQGU5DAMB2GAYHYQSJPR6HY7CSJ5HU2LBAJNEU4RZAIJCUI7BQFYYDA7BNGAXDAML4PQWTALRQGF6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T15:51:48.854561Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_088dd8f964fd",
+          "mode": null,
+          "label": "La Quinta by Wyndham Guthrie",
+          "detail": "1 King Bed",
+          "price": {
+            "amount": 16985.37,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹213 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-10",
+            "checkout": "2027-01-12",
+            "room_name": "1 King Bed",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "406 Heather Rd",
+            "rating": 8,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp85d7c",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEHR01ZVEVNQldNSTNEU05URkdZM1RFTUJXR0kzREtOUlVQUVlTR01SUUdJM1RBTUpSR0I2REVNQlNHNFlEQ01KU1BSU1c0WDJWS042RVNUVDRKRkhGRTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlpRR1k0REdNQlZHNDRUT1kzMlBCSUNHTkpVSEFaREVNQkRHRVpEUU1aTkdVMkRRTVJTR0I2RkVSU09QUVpEQU1SWEdBWVRBT0pRR0UyVFM3QlJQUkpEQ01KVkdCNkRDTlJaSEEyVEdOWkRJSkJDR1VTR0pZUlRFTUJTRzRXVEFNSk5HQTRTQU1CUkhJMlRTSVmjcHJjy0DQlleuFHrhpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTAxLTA5IDAxOjU5OjAwonJ0o1JGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JuqjEgS2luZyBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCRhaF0szIwMjctMDEtMDkgMDE6NTk6MDChYctAwJZXCj1wpKFjo0lOUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjU0ODIyMKNzaWQCo2hpZKdscDg1ZDdjo29jY5GBoWECo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0xMKJjb6oyMDI3LTAxLTEyo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTU5MjUxNjNjMk5MZ1BpdlFpQmgwSEF6bEtTOGR0d2Y1djQxo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnCoWSjVEFYoWHLQKU7UeuFHrihY6NJTlKibHDAo2JrdAU=",
+              "rate_id": "I5GVSVCFJVBFOTKJGNCFGTSUIZDVSM2UIVGUEV2HJEZUIS2OKJKVAUKZKNDU2USRI5ETGVCBJVFFER2CGZCEKTKCKNDTIWKEINGUUU2QKJJVONCYGJLEWTRWIVJVIVBUJJDEQRSFG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4WSRI5MTIRCHJVBFMRZUGRKE6WJTGJIEESKDI5HEUVKIIFNEIRKNIJCEORK2IRIU2WSOI5KTERCRJVJFGR2CGZDEKUSTJ5IFCWSEIFGVEWCHIFMVIQKPJJIUORJSKRJTOQSSKBJEURCDJVFFMR2CGZCEGTSSLJEECMSUI5HFURCJJJBEGR2VKNDUUWKSKRCU2QSTI42FOVCBJVFE4R2BGRJUCTKCKJEESMSUKNEVS7BRGY4TQNJOGM3XYMRQGI3S2MBRFUYDSIBQGE5DKOJ2GAYHYQSJPR6HY7BREBFWS3THEBBGKZD4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T15:51:48.854561Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 16772.68,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "gokarna_2027-01-10_2027-01-13",
+  "user_id": "corpus-gokarna-accessible-couple-3d"
+}

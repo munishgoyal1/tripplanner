@@ -1,0 +1,317 @@
+{
+  "status": "draft",
+  "trip_id": "gangtok_and_north_sikkim_2027-10-02_2027-10-05",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:34:28.303720",
+  "destination": "Gangtok and North Sikkim",
+  "origin": "Kolkata",
+  "departure_date": "2027-10-02",
+  "return_date": "2027-10-05",
+  "travelers": "2 adults",
+  "notes": "Outdoor and nature-focused itinerary.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Gangtok and North Sikkim",
+    "estimated_planned_minutes": 792,
+    "evidence_place_count": 5,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "5 preference-matched places account for about 792 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Summit Namnang Courtyard & Spa",
+      "address": "Nam Nang Road, Gangtok, Sikkim 737101",
+      "checkin": "2027-10-02",
+      "checkout": "2027-10-03",
+      "price_per_night": 5400,
+      "total_price": 5400,
+      "star_rating": 4,
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp655d6a1b"
+      },
+      "google_rating": 4.3,
+      "reviews_count": 1200
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-02",
+      "title": "Arrival in Gangtok & Local Nature Walks",
+      "summary": "Arrive in Gangtok from Kolkata. Check in, then explore MG Marg and take a nature walk at the Flower Exhibition Centre and Ridge Park.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Bagdogra",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "09:30",
+          "duration_min": 90,
+          "note": "Morning flight"
+        },
+        {
+          "name": "Drive: Bagdogra to Gangtok",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 240,
+          "distance_km": 125,
+          "note": "Scenic drive through foothills"
+        },
+        {
+          "name": "Summit Namnang Courtyard & Spa",
+          "kind": "hotel",
+          "note": "Check in and freshen up"
+        },
+        {
+          "name": "MG Marg",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Stroll and acclimatize"
+        },
+        {
+          "name": "Flower Exhibition Centre",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Beautiful local flora"
+        },
+        {
+          "name": "Ridge Park",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Great views and peaceful gardens"
+        },
+        {
+          "name": "Baker's Cafe",
+          "kind": "meal",
+          "time": "17:00",
+          "note": "Coffee and snacks with a view"
+        },
+        {
+          "name": "Summit Namnang Courtyard & Spa",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-03",
+      "title": "North Sikkim: Lachen & Gurudongmar Lake Excursion",
+      "summary": "Early morning drive to Lachen, then continue to Gurudongmar Lake. Enjoy breathtaking mountain scenery and high-altitude landscapes.",
+      "stops": [
+        {
+          "name": "Drive: Gangtok to Lachen",
+          "kind": "transport",
+          "time": "06:00",
+          "duration_min": 300,
+          "distance_km": 120,
+          "note": "Scenic drive with breakfast stop at Tashi View Point"
+        },
+        {
+          "name": "Tashi View Point",
+          "kind": "meal",
+          "time": "11:30",
+          "note": "Breakfast with a view"
+        },
+        {
+          "name": "Lachen",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 30,
+          "note": "Mountain village stop"
+        },
+        {
+          "name": "Gurudongmar Lake",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 90,
+          "note": "High-altitude lake, pristine scenery"
+        },
+        {
+          "name": "Drive: Lachen to Gangtok",
+          "kind": "transport",
+          "time": "17:00",
+          "duration_min": 300,
+          "distance_km": 120,
+          "note": "Return to Gangtok"
+        },
+        {
+          "name": "Summit Namnang Courtyard & Spa",
+          "kind": "hotel",
+          "note": "Early checkout",
+          "time": "22:30"
+        },
+        {
+          "name": "Lachen",
+          "kind": "meal",
+          "time": "23:59",
+          "note": "Lunch at a local homestay"
+        },
+        {
+          "name": "Summit Namnang Courtyard & Spa",
+          "kind": "hotel",
+          "note": "Overnight in Gangtok",
+          "time": "23:59"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-04",
+      "title": "Tsomgo Lake & Departure",
+      "summary": "Morning excursion to Tsomgo Lake and Baba Mandir, then return to Gangtok for lunch and departure.",
+      "stops": [
+        {
+          "name": "Drive: Gangtok to Tsomgo Lake",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 90,
+          "distance_km": 38,
+          "note": "Scenic mountain drive"
+        },
+        {
+          "name": "Tsomgo Lake",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Glacial lake, yak rides available"
+        },
+        {
+          "name": "Baba Mandir",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 45,
+          "note": "Sacred site with mountain views"
+        },
+        {
+          "name": "Return to Gangtok",
+          "kind": "transport",
+          "time": "12:00",
+          "duration_min": 90,
+          "distance_km": 38,
+          "note": "Drive back"
+        },
+        {
+          "name": "Summit Namnang Courtyard & Spa",
+          "kind": "hotel",
+          "note": "Check out and leave bags",
+          "time": "14:00"
+        },
+        {
+          "name": "Taste of Tibet",
+          "kind": "meal",
+          "time": "16:00",
+          "note": "Lunch before departure"
+        },
+        {
+          "name": "Gangtok",
+          "kind": "other",
+          "note": "Trip ends, depart for Kolkata",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-05",
+      "title": "Day 4 · Departure",
+      "summary": "Check out, transfer to Bagdogra, fly back to Kolkata.",
+      "stops": [
+        {
+          "name": "Gangtok Hotel",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Drive: Gangtok to Bagdogra",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 240,
+          "distance_km": 125,
+          "note": "Morning drive"
+        },
+        {
+          "name": "Flight: Bagdogra to Kolkata",
+          "kind": "flight",
+          "time": "13:30",
+          "arrival_time": "15:00",
+          "duration_min": 90,
+          "note": "Afternoon flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 5400,
+    "meals": 3000,
+    "local_transport": 18000,
+    "activities": 0
+  },
+  "total_cost": 26400,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T19:42:44.996566",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T19:42:29",
+      "expires_at": "2026-08-19T07:42:29"
+    }
+  ],
+  "id": "gangtok_and_north_sikkim_2027-10-02_2027-10-05",
+  "user_id": "corpus-gangtok-outdoors-couple-3d"
+}

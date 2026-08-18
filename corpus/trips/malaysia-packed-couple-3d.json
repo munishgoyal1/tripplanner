@@ -1,0 +1,637 @@
+{
+  "status": "draft",
+  "trip_id": "malaysia_kuala_lumpur_penang_2027-07-17_2027-07-20",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:12:52.366947",
+  "destination": "Malaysia (Kuala Lumpur & Penang)",
+  "origin": "Chennai",
+  "departure_date": "2027-07-17",
+  "return_date": "2027-07-20",
+  "travelers": "2 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Malaysia",
+    "estimated_planned_minutes": 345,
+    "evidence_place_count": 6,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "6 preference-matched places account for about 345 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      1,
+      2
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hilton Kuala Lumpur",
+      "kind": "hotel",
+      "address": "3 Jalan Stesen Sentral, Kuala Lumpur Sentral, 50470 Kuala Lumpur, Malaysia",
+      "rating": 4.6,
+      "price_per_night": 480,
+      "checkin": "2027-07-17",
+      "checkout": "2027-07-18"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-07-17",
+      "title": "Day 1 · Arrival in Kuala Lumpur & City Highlights",
+      "summary": "Arrive in Kuala Lumpur, check in to hotel, and explore top city sights including Petronas Towers, Batu Caves, and Bukit Bintang.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Kuala Lumpur",
+          "kind": "flight",
+          "time": "06:30",
+          "arrival_time": "13:00",
+          "duration_min": 270,
+          "note": "Morning flight, direct"
+        },
+        {
+          "name": "Hilton Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Check-in and drop bags"
+        },
+        {
+          "name": "Petronas Twin Towers",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Iconic city landmark"
+        },
+        {
+          "name": "Batu Caves",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120,
+          "note": "Early visit to avoid crowds"
+        },
+        {
+          "name": "Bukit Bintang",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Shopping & street food"
+        },
+        {
+          "name": "Jalan Alor Food Street",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Dinner at famous food street"
+        },
+        {
+          "name": "Hilton Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-07-18",
+      "title": "Day 2 · Penang Exploration",
+      "summary": "Morning transfer to Penang, check in, and explore George Town heritage, Penang Hill, and local cuisine.",
+      "stops": [
+        {
+          "name": "Flight: Kuala Lumpur to Penang",
+          "kind": "flight",
+          "time": "07:30",
+          "arrival_time": "08:30",
+          "duration_min": 60,
+          "note": "Morning flight to Penang"
+        },
+        {
+          "name": "Hilton Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Early checkout",
+          "time": "09:00"
+        },
+        {
+          "name": "Eastern & Oriental Hotel Penang",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "11:00"
+        },
+        {
+          "name": "George Town UNESCO Heritage Zone",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 120,
+          "note": "Street art & heritage walk"
+        },
+        {
+          "name": "Penang Hill",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "Panoramic views"
+        },
+        {
+          "name": "Gurney Drive Hawker Centre",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Local dinner"
+        },
+        {
+          "name": "Eastern & Oriental Hotel Penang",
+          "kind": "hotel",
+          "note": "Return for rest",
+          "time": "20:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-07-19",
+      "title": "Day 3 · Penang Culture & Departure",
+      "summary": "Explore Kek Lok Si Temple, local markets, and depart for Chennai.",
+      "stops": [
+        {
+          "name": "Eastern & Oriental Hotel Penang",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Kek Lok Si Temple",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Largest Buddhist temple in Malaysia"
+        },
+        {
+          "name": "Penang Street Market",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Local shopping"
+        },
+        {
+          "name": "Lunch at China House Penang",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Popular café"
+        },
+        {
+          "name": "Flight: Penang to Chennai",
+          "kind": "flight",
+          "time": "16:00",
+          "arrival_time": "18:30",
+          "duration_min": 150,
+          "note": "Return to Chennai"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "MYR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:21:56.282095",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T17:21:21",
+      "expires_at": "2026-08-19T05:21:21"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_penang_2027_07_18_2027_07_19",
+      "kind": "lodging",
+      "created_at": "2026-08-18T11:45:20.105117Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Penang",
+        "date": "2027-07-18"
+      },
+      "subject": "Stay in Penang",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_0c8bfd1f84a4",
+      "options": [
+        {
+          "id": "opt_stay_0c8bfd1f84a4",
+          "mode": null,
+          "label": "Shangri-La Golden Sands, Penang",
+          "detail": "Superior Room Twin",
+          "price": {
+            "amount": 439.01,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-18",
+            "checkout": "2027-07-19",
+            "room_name": "Superior Room Twin",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Jalan Batu Feringgi",
+            "rating": 8.3,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1b888",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEdRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laREFOWlNHWlRETVpSV01RWkRBTlpVRzQzVE1PSldNVjZEQ0laU0dBWkRPTUJYR0U0SFlNUlFHSTNUQU5aUkhGNkdLM1M3S1ZKWFlTS09QUkdWU1VUNEdKQVRBUTM0R1EyVEVPTDRORklHT1ZLSVBRWVRPT0JYR0EyVEdOSlJHWVlUR09ESEpaTVcySVpSR0VaRE9OWldFTVlUUU1KWEZVWVRDTVJYRzQzSFlVU0dKWjZERU1CU0c0WURPTUpUR0VZREFNRDRHRjZGRU1KUkdVWUhZTkJUSEVZRENJMlNKNFJWRVJTT0VNWkRBTVJYRlVZRE9MSlJHTVFEQ01CMkdBWUNHo3ByY8tAe3Ao9cKPXKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNy0xNyAxMDowMDowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrJTdXBlcmlvciBSb29tIFR3aW6jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDctMTMgMTA6MDA6MDChYctAe3Ao9cKPXKFjo01ZUqJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDctMTcgMTA6MDA6MDChYctAe3Ao9cKPXKFjo01ZUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjExMjc3NqNzaWQCo2hpZKdscDFiODg4o29jY5GBoWECo2N1cqNNWVKiZ26iSU6iY2mqMjAyNy0wNy0xOKJjb6oyMDI3LTA3LTE5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTRiMGE1NDdyRmRzWlhlRWM5ZElqekhWcjlSWDRrTUZpM1FWo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJSEoWnDoWS3UHJvcGVydHkgc2VydmljZSBjaGFyZ2WhYctARfMzMzMzM6Fjo01ZUoShacKhZK9IZXJpdGFnZSBjaGFyZ2WhYctAB9cKPXCj16Fjo01ZUoShacKhZKtUb3VyaXNtIGZlZaFhy0AkBR64UeuFoWOjTVlShKFpwqFko1ZBVKFhy0BBj1wo9cKPoWOjTVlSomxwwKNia3QH",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEIQKOLJJUOWSUIRGVUUSXJVIVURCBJZNFKRZUGNKE2T2KK5GVMNSEINEVUU2HIFNEIT2NIJMEORJUJBMU2USRI5ETGVCBJZNFESCGGZDUWM2TG5FVMSSYLFJUWT2QKJDVMU2VKQ2EOSSBKRAVCMZUI5ITEVCFJ5GDITSGJFDU6VSLJFIFCWKUJ5HUEWCHIEZFIR2OJJJEOWKZKRDU6RCIJJNE2VZSJFNFER2FLJCE6TS2K5CU2WKUKFGUUWCGKVMVIQ2NKJMEONBTJBMVKU2HJJNDMRCFJVBFGRZULFCE6TKKKRDUKWKEIFGUINCHIY3EMRKNJJJEOVKZJBMU4QSUJBCVSRCDJEZFGSRUKJLEKUSTJ5CU2WSEIFGVEWCGKVMUIT2MJJJEOTKRIRBU2QRSI5AVSQ2HPQ2DGOJOGAYXYMRQGI3S2MBXFUYTOIBRGA5DAMB2GAYHYUSPPR6HY7CTOVYGK4TJN5ZCAUTPN5WSAVDXNFXHYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T11:45:20.033358Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_07d157d9b48d",
+          "mode": null,
+          "label": "PARKROYAL Penang Resort",
+          "detail": "Superior  Twin",
+          "price": {
+            "amount": 477.34,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs 38 myr more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-18",
+            "checkout": "2027-07-19",
+            "room_name": "Superior  Twin",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Batu Ferringhi Beach",
+            "rating": 9,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp2157f",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEQRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laREFNUlFHNDJET05aV0hFM0dLN0JSRU1aREFNUlhHQTNUQ09ENEdJWURFTlpRRzRZVFM3REZOWlBWS1UzNEpGSEhZVEtaS0o2REVRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5KVEdVWVRNTUpUSEJUVTRXTE5FTVlUR05SVkc0MlNHTUpTR1VZQzJNSlRHWTJUT05MNEtKREU0N0JTR0FaRE9NQlhHRTJUQU5SUUdCNkRDN0NTR0VZVEtNRDRHUTNUT01aVUVOQkVFSTJTSVpIQ0dNUlFHSTNTMk1CWEZVWVRLSUJRR1k1REFNQkSjcHJjy0B91XCj1wo9pW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTA3LTE1IDA2OjAwOjAwonJ0o1JGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JurlN1cGVyaW9yICBUd2luo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkYWhdLMyMDI3LTA3LTE1IDA2OjAwOjAwoWHLQH3VcKPXCj2hY6NNWVKidHmmYW1vdW50onR6o0dNVKJydKNSRk6kc2hpZKYxMzY1NzWjc2lkAqNoaWSnbHAyMTU3ZqNvY2ORgaFhAqNjdXKjTVlSomduoklOomNpqjIwMjctMDctMTiiY2-qMjAyNy0wNy0xOaNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE0YjBhNTQ3ckZkc1pYZUVjOWRJanpIVnI5Ulg0a01GaTNRVqNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpwqFkqENpdHkgVGF4oWHLQCQo9cKPXCmhY6NNWVKEoWnCoWSuVGF4ZXMgYW5kIEZlZXOhYctACCj1wo9cKaFjo01ZUqJscMCjYmt0AQ==",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEIQKNKJIUONBSIRHU4WSXJBCTGR2LG5BFERKNLJCECTKSLBDUCM2UINHUINCHJFMUIRKOLJIUONCZKRJTORCGJZNFAVSLKUZTISSGJBEFSVCLLJFUUNSEIVIUUUKJJY3EISKOJJJUQRRWI5JVKRCIJNLEKSCZJVFFQSCBGNKECTSKKRDVKWKUJVGUUVCIIJKFKNCXJRHEKTKZKRDU4USWI42DEU2HJVFFGR2VLFBTETKKKRDVSMSUJ5HEYNCLJJCEKNBXIJJUOQK2IRHU2QSYI5CTEVCBJZJFCR2CGZCEGN2DKNDUKWKUJNGUINCHKEZVIT2NLJKUKTSCIVCUSMSTJFNEQQ2HJVJFCR2JGNJTETKCLBDFKWKUJNEUEUKHLE2UIQKNIJCHYNBXG4XDGND4GIYDENZNGA3S2MJVEAYDMORQGA5DAMD4IJEXY7D4PRJXK4DFOJUW64RAEBKHO2LOPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T11:45:20.033358Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 439.01,
+        "delta": null,
+        "currency": "MYR"
+      },
+      "priced": "full"
+    },
+    {
+      "id": "dec_lodging_penang_2027_07_19_2027_07_20",
+      "kind": "lodging",
+      "created_at": "2026-08-18T11:45:20.412314Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Penang",
+        "date": "2027-07-19"
+      },
+      "subject": "Stay in Penang",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_bf7712a3054c",
+      "options": [
+        {
+          "id": "opt_stay_bf7712a3054c",
+          "mode": null,
+          "label": "Shangri-La Golden Sands, Penang",
+          "detail": "Superior Room Twin",
+          "price": {
+            "amount": 439.01,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-19",
+            "checkout": "2027-07-20",
+            "room_name": "Superior Room Twin",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Jalan Batu Feringgi",
+            "rating": 8.3,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1b888",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEdRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laREFOWlNHWlRETVpSV01RWkRBTlpVRzQzVE1PSldNVjZEQ0laU0dBWkRPTUJYR0U0WFlNUlFHSTNUQU5aU0dCNkdLM1M3S1ZKWFlTS09QUkdWU1VUNEdKQVRBUTM0R1EyVEVPTDRORklHT1ZLSVBRWVRPT0JYR0EyVEdOSlJHWVlUR04zV0tGWVU2SVpSR0VaRE9OWldFTVlUUU1KWEZVWVRDTVJYRzQzSFlVU0dKWjZERU1CU0c0WURPTUpVR0VZREFNRDRHRjZGRU1KUkdVWUhZTkJUSEVZRENJMlNKNFJWRVJTT0VNWkRBTVJYRlVZRE9MSlJHUVFEQ01CMkdBWUNHo3ByY8tAe3Ao9cKPXKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNy0xOCAxMDowMDowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrJTdXBlcmlvciBSb29tIFR3aW6jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDctMTQgMTA6MDA6MDChYctAe3Ao9cKPXKFjo01ZUqJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDctMTggMTA6MDA6MDChYctAe3Ao9cKPXKFjo01ZUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjExMjc3NqNzaWQCo2hpZKdscDFiODg4o29jY5GBoWECo2N1cqNNWVKiZ26iSU6iY2mqMjAyNy0wNy0xOaJjb6oyMDI3LTA3LTIwo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTRiMGE1NDZFTU9abTBqSGI1cGdQUFBvWEdUTVVtZGV5NlJDo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJSEoWnDoWS3UHJvcGVydHkgc2VydmljZSBjaGFyZ2WhYctARfMzMzMzM6Fjo01ZUoShacKhZK9IZXJpdGFnZSBjaGFyZ2WhYctAB9cKPXCj16Fjo01ZUoShacKhZKtUb3VyaXNtIGZlZaFhy0AkBR64UeuFoWOjTVlShKFpwqFko1ZBVKFhy0BBj1wo9cKPoWOjTVlSomxwwKNia3QA",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEIQKOLJJUOWSUIRGVUUSXJVIVURCBJZNFKRZUGNKE2T2KK5GVMNSEINEVUU2HIFNEIT2NIJMEORJULBMU2USRI5ETGVCBJZNFGR2CGZDUWM2TG5FVMSSYLFJUWT2QKJDVMU2VKQ2EOSSBKRAVCMZUI5ITEVCFJ5GDITSGJFDU6VSLJFIFCWKUJ5HUEWCHIEZFIR2OJJJEOWKZKRDU4M2XJNDFSVJWJFNFER2FLJCE6TS2K5CU2WKUKFGUUWCGKVMVIQ2NKJMEONBTJBMVKU2HJJNDMRCFJVBFGRZULFCE6TKKKVDUKWKEIFGUINCHIY3EMRKNJJJEOVKZJBMU4QSUJBCVSRCDJEZFGSRUKJLEKUSTJ5CU2WSEIFGVEWCGKVMUIT2MJJJEOUKRIRBU2QRSI5AVSQ2HPQ2DGOJOGAYXYMRQGI3S2MBXFUYTQIBRGA5DAMB2GAYHYUSPPR6HY7CTOVYGK4TJN5ZCAUTPN5WSAVDXNFXHYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T11:45:20.219153Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_6dc766186e66",
+          "mode": null,
+          "label": "PARKROYAL Penang Resort",
+          "detail": "Superior  Twin",
+          "price": {
+            "amount": 451.31,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs 12 myr more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-19",
+            "checkout": "2027-07-20",
+            "room_name": "Superior  Twin",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Batu Ferringhi Beach",
+            "rating": 9,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp2157f",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEQRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laREFNUlFHNDJET05aV0hFM0dLN0JSRU1aREFNUlhHQTNUQ09MNEdJWURFTlpRRzRaREE3REZOWlBWS1UzNEpGSEhZVEtaS0o2REVRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5KVEdVWVRNTUpURzUzRkM0S1BFTVlUR05SVkc0MlNHTUpTR1VZQzJNSlRHWTJUT05MNEtKREU0N0JTR0FaRE9NQlhHRTNEQU5SUUdCNkRDN0NTR0VZVEtNRDRHUTJUQ01aUkVOQkVFSTJTSVpIQ0dNUlFHSTNTMk1CWEZVWVRNSUJRR1k1REFNQkSjcHJjy0B8NPXCj1wppW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTA3LTE2IDA2OjAwOjAwonJ0o1JGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JurlN1cGVyaW9yICBUd2luo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkYWhdLMyMDI3LTA3LTE2IDA2OjAwOjAwoWHLQHw09cKPXCmhY6NNWVKidHmmYW1vdW50onR6o0dNVKJydKNSRk6kc2hpZKYxMzY1NzWjc2lkAqNoaWSnbHAyMTU3ZqNvY2ORgaFhAqNjdXKjTVlSomduoklOomNpqjIwMjctMDctMTmiY2-qMjAyNy0wNy0yMKNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE0YjBhNTQ2RU1PWm0wakhiNXBnUFBQb1hHVE1VbWRleTZSQ6Npc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpwqFkqENpdHkgVGF4oWHLQCQo9cKPXCmhY6NNWVKEoWnCoWSuVGF4ZXMgYW5kIEZlZXOhYctACCj1wo9cKaFjo01ZUqJscMCjYmt0Aw==",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEIQKNKJIUONBSIRHU4WSXJBCTGR2LG5BFERKNLJCECTKSLBDUCM2UINHUYNCHJFMUIRKOLJIUONC2IRATORCGJZNFAVSLKUZTISSGJBEFSVCLLJFUUNSEIVIUUUKJJY3EISKOJJJUQRRWI5JVKRCIJNLEKSCZJVFFQSCBGNKECTSKKRDVKWKUJVGUUVCHGUZUMQZUJNIEKTKZKRDU4USWI42DEU2HJVFFGR2VLFBTETKKKRDVSMSUJ5HEYNCLJJCEKNBXIJJUOQK2IRHU2QSYI5CTGRCBJZJFCR2CGZCEGN2DKNDUKWKUJNGUINCHKEZFIQ2NLJJEKTSCIVCUSMSTJFNEQQ2HJVJFCR2JGNJTETKCLBDFKWKUJVEUEUKHLE2UIQKNIJCHYNBVGEXDGML4GIYDENZNGA3S2MJWEAYDMORQGA5DAMD4IJEXY7D4PRJXK4DFOJUW64RAEBKHO2LOPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T11:45:20.219153Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 439.01,
+        "delta": null,
+        "currency": "MYR"
+      },
+      "priced": "full"
+    },
+    {
+      "id": "dec_lodging_kuala_lumpur_2027_07_17_2027_07_18",
+      "kind": "lodging",
+      "created_at": "2026-08-18T11:51:21.442273Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Kuala Lumpur",
+        "date": "2027-07-17"
+      },
+      "subject": "Stay in Kuala Lumpur",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_21a300fb10bc",
+      "options": [
+        {
+          "id": "opt_stay_21a300fb10bc",
+          "mode": null,
+          "label": "Shahzan Hotel Kuantan, Trademark Collection by Wyndham",
+          "detail": "1 Standard Queen, Non-Smoking",
+          "price": {
+            "amount": 159.83,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-17",
+            "checkout": "2027-07-18",
+            "room_name": "1 Standard Queen, Non-Smoking",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Lot Pt 240, Jalan Bukit Ubi/Jalan Masjid, Kuantan, Pahang, 25000",
+            "rating": 0,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp7331d",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFAR01ZVEVNQlhHTTNUSU5SUkdaU1RNTkJXR0UzVEVOUlVHSVlET01KWEdVM0RLTlJWR1pTVEVZWlNHQTNHS05UR0daU1RFWkJYR00zR0lOVEdHWlJETU9KV01VM0RPN0JSRU1aREFNUlhHQTNUQ04zNEdJWURFTlpRRzRZVFE3REZOWlBWS1UzNEpGSEhZVEtaS0o2REVRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5KVEc0WURNTUJVR1JMSEVUVFRFTTJET01KWUdNM1NHTUpZR01aUzJOQlhHRTRER04zNEtKREU0N0JTR0FaRE9NQlhHRTNEQ01CUUdCNkRDN0NTR0VZVEtNRDRHRTJUU09CVEVOSkU2STJTSVpIQ0dNUlFHSTNTMk1CWEZVWVRNSUJSR0E1REFNQkSjcHJjy0Bj-o9cKPXDpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTA3LTE2IDEwOjAwOjAwonJ0o1JGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JuvTEgU3RhbmRhcmQgUXVlZW4sIE5vbi1TbW9raW5no29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkYWhdLMyMDI3LTA3LTE2IDEwOjAwOjAwoWHLQGP6j1wo9cOhY6NNWVKidHmmYW1vdW50onR6o0dNVKJydKNSRk6kc2hpZKY0NzE4Mzejc2lkAqNoaWSnbHA3MzMxZKNvY2ORgaFhAqNjdXKjTVlSomduoklOomNpqjIwMjctMDctMTeiY2-qMjAyNy0wNy0xOKNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE0YjM4YjIxcTM4QmRYOGREeWhCYTNIUGVMcXA2Yk5lN2JlVKNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiThKFpwqFkslN1c3RhaW5hYmlsaXR5IGZlZaFhy0AH1wo9cKPXoWOjTVlShKFpwqFko1RBWKFhy0AplHrhR64UoWOjTVlShKFpwqFkq1RvdXJpc20gZmVloWHLQCQFHrhR64WhY6NNWVKibHDAo2JrdAI=",
+              "rate_id": "I5GVSVCFJVBFQR2NGNKESTSSKJDVUU2UJVHEEV2HIUZVIRKOKJKUOSKZIRHU2SSYI5KTGRCLJZJFMR22KNKEKWK2KNDUCM2HJNHFIR2HLJJVIRK2IJMEOTJTI5EU4VCHI5NFERCNJ5FFOTKVGNCE6N2CKJCU2WSEIFGVEWCHIEZVIQ2OGM2EOSKZIRCU4WSRI42FSVCRG5CEMTS2KBLEWVJTGRFEMSCILFKEWWSLJI3EIRKRJJIUSTRWIREU4SSTJBDDMR2TKVCEQS2WIVEFSTKKLBEECM2UIFHEUVCHGRMUITKNIJKUOUSMJBCVIVCUIVGTERCPJVFFSR2NGNJUOTKKLFDU2WSTGJHEEWCHIU2EIR2OGM2EWSSEIU2DOQSTI5AVURCPJVBFQR2FGNCEGTKCKFDUENSEIM3UGU2HIVMVIS2NIQ2EORJSKRJU6QSUIVHEURJWJEZFGSK2JBBUOTKSKFDUSM2TGJGUEWCGKVMVITKJIJJEOQJVIRAU2QSEPQYTKOJOHAZXYMRQGI3S2MBXFUYTMIBRGA5DAMB2GAYHYUSPPR6HY7BREBJXIYLOMRQXEZBAKF2WKZLOFQQE433OFVJW233LNFXGO7BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T11:48:27.521757Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        },
+        {
+          "id": "opt_stay_9862026e2e1e",
+          "mode": null,
+          "label": "Zenith Hotel Kuantan",
+          "detail": "TWIN DELUXE SUPERIOR",
+          "price": {
+            "amount": 521.32,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs 361 myr more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-17",
+            "checkout": "2027-07-18",
+            "room_name": "TWIN DELUXE SUPERIOR",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Jalan Putra Square 6, Putra Square",
+            "rating": 8.3,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp866ba",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEkRzQyRE9OWldIRTNHS01SUUdZMkRNTkpXTU0zVEtOWllHWTJURU1CWEdNM1RLTlpRR1kyVE9NUldIRTNHTU5aU1BRWVNHTVJRR0kzVEFOWlJHNTZERU1CU0c0WURPTUpZUFJTVzRYMlZLTjZFU1RUNEpWTVZFN0JTSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOWlFHVVpUT01CV0dBMkRJVlRTSlpaU0dOSlZHQTJUUU5SREdFWURNTlJOR1UyVEFOSllHWjZGRVJTT1BRWkRBTVJYR0EzVENNUlJHVVlEQTdCUlBSSkRDTUpWR0I2REtNUlJHTVpDR1VTUEVOSkVNVFJER0lZREVOWk5HQTNTMk1KU0VBWVRLT1JRR0FSUaNwcmPLQIBKj1wo9cOlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkszIwMjctMDctMTIgMTU6MDA6MDCicnSjUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm60VFdJTiBERUxVWEUgU1VQRVJJT1Kjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCRhaF0szIwMjctMDctMTIgMTU6MDA6MDChYctAgEqPXCj1w6Fjo01ZUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjU1MDU4NqNzaWQCo2hpZKdscDg2NmJho29jY5GBoWECo2N1cqNNWVKiZ26iSU6iY2mqMjAyNy0wNy0xN6Jjb6oyMDI3LTA3LTE4o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTRiMzhiMjFxMzhCZFg4ZER5aEJhM0hQZUxxcDZiTmU3YmVUo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnCoWSrVG91cmlzbSBmZWWhYctAJAUeuFHrhaFjo01ZUoShacKhZKNWQVShYctARNrhR64Ue6Fjo01ZUqJscMCjYmt0AQ==",
+              "rate_id": "I42DERCPJZNFOSCFGNDUWTKSKFDVSMSEJVHEUV2NJUZVIS2OLJMUOWJSKRCU2QSYI5GTGVCLJZNFCR2ZGJKE6TKSK5EEKM2HJVHFUU2QKFMVGR2NKJIUOSJTKRAU4WSSI42TMRCFJVBFGRZULFCE6TKKLFIFEU2XGRMDEVSLJY3EKU2UKQ2EUVSNKZCTOQSTJFCVSRKHG5BFKR2VLJCFGN2EJJFUEVCWJNJUINCHIUZVIUKOLJIUOVK2KRHU2QSXI5ATERCJKZKFGSS2LJJUOTSKKZDUCMSUKFHFERCHIVMUITKOKJHEOVJSKRAU4SSZI5NDMRSFKJJU6UCRLJCECTKSLBDUCM2UINGVEUSHKVMUIQJXIJJFAUSKIRBU2SSWI5BDMRCLJVJFER2NLJBUOVKTKBCU4SSFJVKFERCHJFMUIRKOLJHEOQJTKMZE2SSTIVAVSVCLJ5JFCR2BKJIXYNJSGEXDGMT4GIYDENZNGA3S2MJSEAYTKORQGA5DAMD4KJHXY7D4PRKFOSKOEBCEKTCVLBCSAU2VKBCVESKPKJ6DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T11:48:27.521757Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        },
+        {
+          "id": "opt_stay_2b6a5b63b560",
+          "mode": null,
+          "label": "Hyatt Regency Kuantan Resort",
+          "detail": "2 Twin Beds, Garden View",
+          "price": {
+            "amount": 550.32,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs 390 myr more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-17",
+            "checkout": "2027-07-18",
+            "room_name": "2 Twin Beds, Garden View",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Telok Chempedak",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1b3e9",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEyR01aREVNQlhHUTNUT05SWkdaU1RFTUJXR0kzREtOUlVHNFpURVlaU0dBM0RPTlJSRzRaRE1OQldHVTNHS01SUUc0M0RNT0pXR1UzVE83QlJFTVpEQU1SWEdBM1RDTjM0R0lZREVOWlFHNFlUUTdERk5aUFZLVTM0SkZISFlUS1pLSjZERVFKUUlONkRJTkpTSEY2R1NVREhLVkVIWU1KWEhBM1RBTkpURzRZRE1NQlVHUkxIRVRUVEVNWVRDTUpWSEVaU0dOWlVIQVdUQ01KUkdVNFRHN0NPS0pERTQ3QlNHQVpETU1CWUdFM0RDTUJRR0I2REM3Q1NHRVlUS01ENEdVMlRBTVpTRU5KRTZJMk9LSkRFNElaU0dBWkRNTEpRSEFXVENOUkFHRVlEVU1CUUVNo3ByY8tAgTKPXCj1w6Vvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrgyIFR3aW4gQmVkcywgR2FyZGVuIFZpZXejb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMTE1OTOjc2lkAqNoaWSnbHAxYjNlOaNvY2ORgaFhAqNjdXKjTVlSomduoklOomNpqjIwMjctMDctMTeiY2-qMjAyNy0wNy0xOKNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE0YjM4YjIxcTM4QmRYOGREeWhCYTNIUGVMcXA2Yk5lN2JlVKNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpw6Fkpk9USEVSU6Fhy0BFJR64UeuFoWOjTVlSomxwwKNia3QB",
+              "rate_id": "I5GVURCFJVBFQR2RGNKE6TSSLJDVUU2UIVGUEV2HJEZUIS2OKJKUONC2KRCVSWSTI5ATGRCPJZJFERZULJCE2TSCK5DVKM2HJNGVEUKHGQZUITKPJJLUOVJTKRHTOQSSIVGVURCBJVJFQR2BGNKEGTRTGRDUSWKEIVHFUUKHGRMVIUJXIRDE4WSQKZFVKMZUJJDEQSCZKRFVUS2KGZCEKUKKKFEU4NSEJFHEUU2IIY3EOU2VIREEWVSFJBMU2SSYJBATGVCBJZFFIRZULFCE2TKCKVDVETCIIVKFIVCFJVMVIQ2NJJLEQRK2KNDU4WSVJBAVOVCDJVFFER2VGRKEON2DJ5FUURCFGQ3UEU2HIFNEITKNIJMUORJTIRBU2QSRI5BDMRCDG5BVGR2FLFKEWTKEGRDVKMSUIFGVUU2FJZFEKNSJGJHUWSSEIU2ESWSTI5AVURCNJRFFCSCBK5KEGTSSIFDUKWKEKVGUEUKFJV6DKNJQFYZTE7D4KJHXY7D4PQZCAVDXNFXCAQTFMRZSYICHMFZGIZLOEBLGSZLXPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T11:48:27.521757Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 159.83,
+        "delta": null,
+        "currency": "MYR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "malaysia_kuala_lumpur_penang_2027-07-17_2027-07-20",
+  "user_id": "corpus-malaysia-packed-couple-3d"
+}

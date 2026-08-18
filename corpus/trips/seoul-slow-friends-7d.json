@@ -1,0 +1,290 @@
+{
+  "status": "draft",
+  "trip_id": "seoul_2027-04-15_2027-04-22",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:51:31.664573",
+  "destination": "Seoul",
+  "origin": "Delhi",
+  "departure_date": "2027-04-15",
+  "return_date": "2027-04-22",
+  "travelers": "4 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Seoul",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-15",
+      "title": "Arrival in Seoul",
+      "summary": "Arrive in Seoul from Delhi, transfer to hotel, settle in, and enjoy a relaxed evening nearby.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Seoul",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "18:00",
+          "duration_min": 480
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Myeongdong Walking Street",
+          "kind": "attraction",
+          "time": "19:30",
+          "duration_min": 60,
+          "note": "Easy stroll and dinner options"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-16",
+      "title": "Palaces & Bukchon Hanok Village",
+      "summary": "Morning visit to Gyeongbokgung Palace and Bukchon Hanok Village. Free afternoon for leisure.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Gyeongbokgung Palace",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Historic palace tour"
+        },
+        {
+          "name": "Bukchon Hanok Village",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Traditional neighborhood"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-17",
+      "title": "Insadong & Jogyesa Temple",
+      "summary": "Explore Insadong cultural street and Jogyesa Temple in the morning. Free afternoon.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Insadong",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Art, tea shops, souvenirs"
+        },
+        {
+          "name": "Jogyesa Temple",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Peaceful Buddhist temple"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-04-18",
+      "title": "N Seoul Tower & Namsan Park",
+      "summary": "Morning at Namsan Park and N Seoul Tower. Afternoon free for shopping or rest.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Namsan Park",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Scenic walk"
+        },
+        {
+          "name": "N Seoul Tower",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Panoramic city views"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-04-19",
+      "title": "Changdeokgung & Secret Garden",
+      "summary": "Visit Changdeokgung Palace and Secret Garden in the morning. Free afternoon.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Changdeokgung Palace",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "UNESCO palace"
+        },
+        {
+          "name": "Secret Garden",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Guided garden tour"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-04-20",
+      "title": "Day Trip: DMZ or Free Day",
+      "summary": "Optional morning DMZ tour or free day for personal exploration.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "DMZ Tour (TBD)",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 240,
+          "note": "Guided tour (optional)"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-04-21",
+      "title": "Markets & Departure",
+      "summary": "Morning visit to Namdaemun Market, then transfer to airport for flight back to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Namdaemun Market",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Shopping and local snacks"
+        },
+        {
+          "name": "Flight: Seoul to Delhi",
+          "kind": "flight",
+          "time": "14:00",
+          "arrival_time": "19:00",
+          "duration_min": 330
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T19:55:21.886057",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T19:55:21",
+      "expires_at": "2026-08-18T20:25:21"
+    }
+  ],
+  "id": "seoul_2027-04-15_2027-04-22",
+  "user_id": "corpus-seoul-slow-friends-7d"
+}

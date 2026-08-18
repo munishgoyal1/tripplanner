@@ -1,0 +1,192 @@
+{
+  "status": "draft",
+  "trip_id": "spiti_valley_2027-06-12_2027-06-15",
+  "trip_number": 1,
+  "created_at": "2026-08-18T21:17:27.141533",
+  "destination": "Spiti Valley",
+  "origin": "Delhi",
+  "departure_date": "2027-06-12",
+  "return_date": "2027-06-15",
+  "travelers": "2 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Spiti Valley",
+    "estimated_planned_minutes": 549,
+    "evidence_place_count": 5,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "5 preference-matched places account for about 549 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-06-12",
+      "title": "Arrival & Key Monastery",
+      "summary": "Depart early from Delhi, drive to Kaza (Spiti Valley), check in, and visit Key Monastery for an introduction to Spiti's heritage.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Kaza",
+          "kind": "transport",
+          "time": "05:00",
+          "duration_min": 720,
+          "distance_km": 750,
+          "note": "Scenic drive via Shimla/Rampur, with meal and rest stops"
+        },
+        {
+          "name": "Hotel in Kaza",
+          "kind": "hotel",
+          "note": "Check in and freshen up"
+        },
+        {
+          "name": "Key Monastery",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 120,
+          "note": "Historic 11th-century monastery with panoramic views"
+        },
+        {
+          "name": "Dinner at Kaza",
+          "kind": "meal",
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-06-13",
+      "title": "Tabo & Dhankar Monasteries",
+      "summary": "Explore the ancient Tabo Monastery and cliffside Dhankar Monastery, with a heritage walk in Kaza.",
+      "stops": [
+        {
+          "name": "Hotel in Kaza",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Breakfast at hotel"
+        },
+        {
+          "name": "Tabo Monastery",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 120,
+          "note": "UNESCO World Heritage Site, murals & history"
+        },
+        {
+          "name": "Lunch at Tabo",
+          "kind": "meal",
+          "time": "13:00"
+        },
+        {
+          "name": "Dhankar Monastery",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Historic monastery perched on a cliff"
+        },
+        {
+          "name": "Kaza Heritage Walk",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Explore old Kaza, local culture"
+        },
+        {
+          "name": "Dinner at Kaza",
+          "kind": "meal",
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-06-14",
+      "title": "Gue Mummy & Departure",
+      "summary": "Visit Gue Mummy Monastery and return to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel in Kaza",
+          "kind": "hotel",
+          "time": "07:30",
+          "note": "Check out after breakfast"
+        },
+        {
+          "name": "Gue Mummy Monastery",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60,
+          "note": "Ancient mummy & monastery"
+        },
+        {
+          "name": "Lunch en route",
+          "kind": "meal",
+          "time": "12:30"
+        },
+        {
+          "name": "Drive: Kaza to Delhi",
+          "kind": "transport",
+          "time": "13:30",
+          "duration_min": 720,
+          "distance_km": 750,
+          "note": "Return journey"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T21:18:01.508068",
+  "id": "spiti_valley_2027-06-12_2027-06-15",
+  "user_id": "corpus-spiti-heritage-couple-3d"
+}

@@ -1,0 +1,358 @@
+{
+  "status": "draft",
+  "trip_id": "mysore_2027-09-03_2027-09-08",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:21:55.101086",
+  "destination": "Mysore",
+  "origin": "Bangalore",
+  "departure_date": "2027-09-03",
+  "return_date": "2027-09-08",
+  "travelers": "2 adults",
+  "notes": "Mysore Dasara festival overlaps your trip — expect vibrant celebrations, cultural events, and some crowds. Major attractions remain open, but book hotels early.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Mysore",
+    "estimated_planned_minutes": 1353,
+    "evidence_place_count": 8,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "8 preference-matched places account for about 1353 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Radisson Blu Plaza Hotel Mysore",
+      "address": "1 MG Road, Nazarbad, Mysore",
+      "rating": 4.5,
+      "price_per_night": 8200,
+      "currency": "INR",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp31ba5",
+        "offer_id": "3gAWonJzkd4AEaRzcmlk2gE0R1pSRE1OQlhHTVpEQU1URUdJWURNT0pYR00zR0dOUlJHWlNUTU5CU0dBM1RNTlJaR1kyVE9OWlNHQTNUR05aVUc0MlRNTkJXSEUzR003QlJFTVpEQU1SWEdBNFRBTTM0R0lZREVOWlFIRVlEUTdERk5aUFZLVTM0SkZISFlTS09LSjZERVFKUUlONkRJTkpTSEY2R1NVREhLVkVIWU1KWEhBM1RBTlJVRzQzRElNSllHSkNFTVlMWkVNWkRBTVpXSEEyU0dNSlNHVVlDMk1SUUdNM0RRTkw0S0pERTQ3QlNHQVpET01CWUdNWVRDT0pRR0I2REU3Q1NHRVlUS01ENEhBWURRTVpaR0U0U0dVU1BFTkpFTVRSREdJWURFTlpOR0E0QzJNWlJFQVlUU09SUUdBUlGjcHJjy0DzvHMKPXCkpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTA4LTMxIDE5OjAwOjAwonJ0o1JGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JuuEtEUyAtIElzbGFuZCBWaWV3IFN0dWRpb6NvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJGFoXSzMjAyNy0wOC0zMSAxOTowMDowMKFhy0DzvHMKPXCkoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmMjAzNjg1o3NpZAKjaGlkp2xwMzFiYTWjb2NjkYGhYQKjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA5LTAzomNvqjIwMjctMDktMDijZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNTVjNDZiY1BFbUVzM2VYMjZ5T2ZQdG9scXkxeUpzVlBxNmujaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4kYShacOhZKChYctAwGuj1wo9caFjo0lOUqJscMCjYmt0Bg=="
+      }
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-09-03",
+      "title": "Day 1 · Arrival & Chamundi Hill",
+      "summary": "Drive from Bangalore to Mysore, check in at Radisson Blu Plaza Hotel Mysore, visit Chamundi Hill for panoramic views and temple. Evening stroll in Lalitha Mahal Palace Grounds. Dinner at Gufha Restaurant.",
+      "stops": [
+        {
+          "name": "Drive: Bangalore to Mysore",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 210,
+          "distance_km": 150,
+          "note": "Private car or train"
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "10:30",
+          "note": "Check-in"
+        },
+        {
+          "name": "Chamundi Hill",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 180,
+          "note": "Great views, temple visit"
+        },
+        {
+          "name": "Lalitha Mahal Palace Grounds",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 90,
+          "note": "Evening stroll"
+        },
+        {
+          "name": "Gufha Restaurant, Mysuru",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner (4.1★, 10.4k reviews)"
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "21:00",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-09-04",
+      "title": "Day 2 · Ranganathittu Bird Sanctuary & Karanji Lake",
+      "summary": "Morning at Ranganathittu Bird Sanctuary for boating and birdwatching, lunch at The Old House, afternoon at Karanji Lake for nature walk and butterfly park.",
+      "stops": [
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Ranganathittu Bird Sanctuary",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Boating, birdwatching"
+        },
+        {
+          "name": "The Old House",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch (4.3★, 10.7k reviews)"
+        },
+        {
+          "name": "Karanji Lake",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 120,
+          "note": "Nature walk, butterfly park"
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "16:30",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-09-05",
+      "title": "Day 3 · Brindavan Gardens & Kukkarahalli Lake",
+      "summary": "Morning at Brindavan Gardens for fountains and outdoor stroll, lunch at Oyster Bay, afternoon at Kukkarahalli Lake for birdwatching and lakeside walk.",
+      "stops": [
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Brindavan Gardens",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 150,
+          "note": "Fountains, outdoor stroll"
+        },
+        {
+          "name": "Oyster Bay",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch (4.2★, 7.1k reviews)"
+        },
+        {
+          "name": "Kukkarahalli Lake",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Birdwatching, lakeside walk"
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "16:00",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-09-06",
+      "title": "Day 4 · Shivanasamudra Falls Excursion",
+      "summary": "Day trip to Shivanasamudra Falls for hiking, scenic views, and picnic. Return to Mysore in the evening. Dinner at By The Way Restaurant.",
+      "stops": [
+        {
+          "name": "Drive: Mysore to Shivanasamudra Falls",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 90,
+          "distance_km": 70,
+          "note": "Private car"
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "10:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Shivanasamudra Falls",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 360,
+          "note": "Hiking, scenic views, picnic"
+        },
+        {
+          "name": "Drive: Shivanasamudra Falls to Mysore",
+          "kind": "transport",
+          "time": "15:30",
+          "duration_min": 90,
+          "distance_km": 70,
+          "note": "Return drive"
+        },
+        {
+          "name": "By The Way Restaurant",
+          "kind": "meal",
+          "time": "17:30",
+          "note": "Dinner (4.2★, 6.5k reviews)"
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "19:30",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-09-07",
+      "title": "Day 5 · GRS Fantasy Park & Departure",
+      "summary": "Morning at GRS Fantasy Park for outdoor water fun, lunch at Spring Restaurant, check out, return to Bangalore.",
+      "stops": [
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "GRS Fantasy Park",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 180,
+          "note": "Outdoor water park"
+        },
+        {
+          "name": "Spring Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch (4.3★, 8.2k reviews)"
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "14:00",
+          "note": "Check out"
+        },
+        {
+          "name": "Drive: Mysore to Bangalore",
+          "kind": "transport",
+          "time": "14:30",
+          "duration_min": 210,
+          "distance_km": 150,
+          "note": "Private car or train"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {
+    "source": "agent_climate_estimate",
+    "note": "September in Mysore is warm (highs 28-32°C), some rain likely due to monsoon. Outdoor activities are feasible, but pack a light rain jacket and quick-dry clothing.",
+    "days": [
+      {
+        "date": "2027-09-03",
+        "high_c": 30,
+        "low_c": 22,
+        "rain_mm": 6
+      },
+      {
+        "date": "2027-09-04",
+        "high_c": 31,
+        "low_c": 22,
+        "rain_mm": 7
+      },
+      {
+        "date": "2027-09-05",
+        "high_c": 31,
+        "low_c": 22,
+        "rain_mm": 6
+      },
+      {
+        "date": "2027-09-06",
+        "high_c": 32,
+        "low_c": 23,
+        "rain_mm": 8
+      },
+      {
+        "date": "2027-09-07",
+        "high_c": 30,
+        "low_c": 22,
+        "rain_mm": 5
+      }
+    ],
+    "packing_advice": [
+      "Quick-dry clothes",
+      "Light rain jacket",
+      "Sandals or waterproof shoes",
+      "Hat & sunscreen"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:25:03.480883",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:22:46",
+      "expires_at": "2026-08-19T08:22:46"
+    }
+  ],
+  "id": "mysore_2027-09-03_2027-09-08",
+  "user_id": "corpus-mysore-outdoors-couple-5d"
+}

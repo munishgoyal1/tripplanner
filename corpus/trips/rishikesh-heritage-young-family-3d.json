@@ -1,0 +1,203 @@
+{
+  "status": "draft",
+  "trip_id": "rishikesh_2027-03-12_2027-03-15",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:18:37.301391",
+  "destination": "Rishikesh",
+  "origin": "Delhi",
+  "departure_date": "2027-03-12",
+  "return_date": "2027-03-15",
+  "travelers": "2 adults, 2 children (ages 6 and 9)",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Rishikesh",
+    "estimated_planned_minutes": 684,
+    "evidence_place_count": 7,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "7 preference-matched places account for about 684 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-12",
+      "title": "Day 1 · Arrival & Riverside Heritage",
+      "summary": "Arrive in Rishikesh from Delhi, check in, explore Triveni Ghat and nearby heritage spots.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Rishikesh",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 360,
+          "distance_km": 240,
+          "note": "Private car, approx. 6 hours with a snack break"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "13:30",
+          "note": "Check in and freshen up"
+        },
+        {
+          "name": "Triveni Ghat",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Historic riverside ghat, evening aarti"
+        },
+        {
+          "name": "Chotiwala Restaurant",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Local heritage restaurant"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-13",
+      "title": "Day 2 · Temples & Heritage Walk",
+      "summary": "Visit iconic temples and heritage sites, guided walk through old Rishikesh.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Bharat Mandir",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60,
+          "note": "Oldest temple in Rishikesh, rich history"
+        },
+        {
+          "name": "Rishikesh Heritage Walk",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 120,
+          "note": "Guided walk covering historic sites and stories"
+        },
+        {
+          "name": "Shri Ram Jhula",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Historic suspension bridge"
+        },
+        {
+          "name": "The Sitting Elephant Restaurant",
+          "kind": "meal",
+          "time": "14:30",
+          "note": "Lunch with river views"
+        },
+        {
+          "name": "Parmarth Niketan Ashram",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Heritage ashram, evening rituals"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-14",
+      "title": "Day 3 · Rajaji National Park & Departure",
+      "summary": "Morning visit to Rajaji National Park for heritage and nature, return to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Check out"
+        },
+        {
+          "name": "Rajaji National Park",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 180,
+          "note": "Heritage and wildlife, guided tour"
+        },
+        {
+          "name": "Tip Top Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Lunch before departure"
+        },
+        {
+          "name": "Drive: Rishikesh to Delhi",
+          "kind": "transport",
+          "time": "13:30",
+          "duration_min": 360,
+          "distance_km": 240,
+          "note": "Private car, approx. 6 hours with a snack break"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "transport": 12000,
+    "meals": 4500,
+    "activities": 3000,
+    "hotel_estimate": 9000
+  },
+  "total_cost": 28500,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:24:18.938467",
+  "id": "rishikesh_2027-03-12_2027-03-15",
+  "user_id": "corpus-rishikesh-heritage-young-family-3d"
+}

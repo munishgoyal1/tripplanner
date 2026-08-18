@@ -1,0 +1,237 @@
+{
+  "status": "draft",
+  "trip_id": "tirupati_2027-08-17_2027-08-20",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:33:32.813657",
+  "destination": "Tirupati",
+  "origin": "Hyderabad",
+  "departure_date": "2027-08-17",
+  "return_date": "2027-08-20",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Hotel search returned no live rates; using knowledge to recommend top 3-star+ hotels in Tirupati for accessibility and family comfort. Will update with real rates when available.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Tirupati",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Fortune Select Grand Ridge",
+      "address": "Tiruchanoor Road, Tirupati",
+      "star_rating": 4,
+      "amenities": [
+        "restaurant",
+        "pool",
+        "accessible rooms",
+        "family rooms"
+      ],
+      "note": "Known for accessibility and family comfort"
+    }
+  ],
+  "selected_activities": [
+    {
+      "name": "Sri Padmavathi Ammavari Temple",
+      "date": "2027-08-17"
+    },
+    {
+      "name": "Tirumala Venkateswara Temple",
+      "date": "2027-08-18"
+    },
+    {
+      "name": "Silathoranam",
+      "date": "2027-08-18"
+    },
+    {
+      "name": "Sri Venkateswara Zoological Park",
+      "date": "2027-08-18"
+    },
+    {
+      "name": "Kapila Theertham Temple",
+      "date": "2027-08-19"
+    }
+  ],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-08-17",
+      "title": "Day 1 · Arrival & Local Sightseeing",
+      "summary": "Arrive in Tirupati from Hyderabad, check in to Fortune Select Grand Ridge, visit Sri Padmavathi Ammavari Temple and relax.",
+      "stops": [
+        {
+          "name": "Train: Hyderabad to Tirupati",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 480,
+          "note": "Morning train, comfortable for elderly"
+        },
+        {
+          "name": "Fortune Select Grand Ridge",
+          "kind": "hotel",
+          "time": "15:30",
+          "note": "Check-in"
+        },
+        {
+          "name": "Sri Padmavathi Ammavari Temple",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Short visit, accessible"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-08-18",
+      "title": "Day 2 · Tirumala Darshan",
+      "summary": "Morning visit to Tirumala for darshan, local sightseeing, lunch at Rainbow Restaurant, evening at leisure.",
+      "stops": [
+        {
+          "name": "Fortune Select Grand Ridge",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Tirumala Venkateswara Temple",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 180,
+          "note": "Darshan, priority for elderly"
+        },
+        {
+          "name": "Silathoranam",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Natural arch, easy walk"
+        },
+        {
+          "name": "Rainbow Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Family-friendly, vegetarian options"
+        },
+        {
+          "name": "Fortune Select Grand Ridge",
+          "kind": "hotel",
+          "time": "15:00",
+          "note": "Return to hotel, rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-08-19",
+      "title": "Day 3 · Local Temples & Departure",
+      "summary": "Visit Kapila Theertham, shopping, lunch at Minerva Coffee Shop, depart for Hyderabad.",
+      "stops": [
+        {
+          "name": "Fortune Select Grand Ridge",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kapila Theertham",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 90,
+          "note": "Accessible temple"
+        },
+        {
+          "name": "Local shopping",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Souvenirs"
+        },
+        {
+          "name": "Minerva Coffee Shop",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Popular South Indian restaurant"
+        },
+        {
+          "name": "Train: Tirupati to Hyderabad",
+          "kind": "transport",
+          "time": "15:00",
+          "duration_min": 480,
+          "note": "Evening train, comfortable return"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 13500,
+    "transport": 22000,
+    "meals": 6000,
+    "activities": 2000,
+    "misc": 5000
+  },
+  "total_cost": 48500,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-18T20:43:21.393612"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:44:37.914997",
+  "travel_scope": "round_trip",
+  "id": "tirupati_2027-08-17_2027-08-20",
+  "user_id": "corpus-tirupati-budget-three-generation-3d"
+}
