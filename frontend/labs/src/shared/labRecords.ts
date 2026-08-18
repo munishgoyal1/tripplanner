@@ -1,4 +1,4 @@
-import { BookOpen, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, UsersRound, Workflow } from "lucide-react";
+import { BookOpen, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, Star, UsersRound, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 28;
+export const LAST_ASSIGNED_LAB_NUMBER = 29;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -53,6 +53,19 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // Committed defaults are the fallback only. The tracked canonical selection store
 // in docs/ux-experiments overrides them at runtime and merges any newer local draft.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 29,
+    id: "trip-feedback",
+    title: "Say how the trip reads",
+    category: "Trip feedback capture",
+    description: "Compare five homes for always-available itinerary feedback: a thumbs pair that submits in one tap, an optional star rating, and an optional comment, recorded against the trip without taking workspace real estate before anyone asks for it.",
+    createdAt: "2026-08-18",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-18",
+    decision: "Open · Recommended starting point: A · Toolbar rating pill",
+    href: "./lab-29-trip-feedback.html",
+    icon: Star,
+  },
   {
     labNumber: 28,
     id: "profile-workspace",
