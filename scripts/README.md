@@ -24,6 +24,9 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/debug-store.ps1` | Dispatcher the debug-store launchers call |
 | `dev/trip_audit.py` | Run every trip rule over the local corpus and report what is new |
 | `dev/trip-audit.ps1` | Dispatcher the Audit-Trips launchers call |
+| `dev/multiagent.py` | Multiagent controller: dispatch owner-approved issues to bounded workers, integrate, and open one batch PR |
+| `dev/multiagent_core.py` | Pure selection, collision, fingerprint, and lease logic behind the controller |
+| `dev/multiagent.ps1` | Dispatcher the multiagent launchers call |
 | `dev/capture-screens.ps1` | Capture screenshots, API view-models, console output, and DOM from a running local stack |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
 | `dev/record-lab-implementation.ps1` | Append an agent Lab state version; defaults to implementation evidence and owner review, with `-State` for park, discard, completion, or reopen |
@@ -42,6 +45,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/validation/Audit-Trips.cmd` | Audit every stored trip; exits non-zero on findings the baseline does not hold |
 | `user/validation/Audit-Trips.cmd --all` | Show every finding, not only new ones |
 | `user/validation/Audit-Trips.cmd --accept` | Record the current findings as known |
+| `user/multiagent/Start-Multiagent.cmd` | Start the coordinator detached and open the coordinator chat; dispatches only issues carrying `owner:ready` |
+| `user/multiagent/Multiagent-Status.cmd` | Controller, slots, assignments, issues waiting on an owner decision, and recovery commands |
+| `user/multiagent/Plan-Multiagent.cmd` | Dry run: what would be dispatched now, and why the rest is held |
+| `user/multiagent/Pause-Multiagent.cmd` | Stop dispatching; running workers finish |
+| `user/multiagent/Resume-Multiagent.cmd` | Resume dispatching |
+| `user/multiagent/Stop-Multiagent.cmd` | Stop the controller and its workers, keeping worktrees, branches, and transcripts |
+| `user/multiagent/Open-Coordinator.cmd` | Open the owner-facing coordinator chat in VS Code |
+| `user/multiagent/Run-Audit-Producer.cmd [--dry-run]` | Run the read-only trip audit and propose issues for what is new; never accepts the baseline |
 | `user/debug/Capture-Screens.cmd [-Sandbox n] [-Label name]` | Capture UI evidence for a bug: screenshots, `/trip/view` and map JSON, console errors, and DOM |
 | `user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |

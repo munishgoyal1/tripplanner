@@ -78,6 +78,8 @@ trip through shared API contracts.
 | `src/tripplanner/providers/` | Normalized travel provider clients, capability registry, TTL/fallback runtime, and non-secret readiness status |
 | `src/tripplanner/tools/` | LangChain tools and stable agent/provider boundaries |
 | `scripts/mac/` | macOS `.command` launchers mirroring Windows root, user, sandbox, canary, and production entry points |
+| `scripts/dev/multiagent_core.py` | Pure multiagent coordination logic: `owner:ready` eligibility, footprint collisions, attempt numbering, audit fingerprints, leases |
+| `scripts/dev/multiagent.py` | Multiagent controller runtime: slots, worker supervision, exact-SHA integration, batch pull request, audit producer |
 
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
 boundary. Configuration comes from `Settings`, not scattered environment reads.

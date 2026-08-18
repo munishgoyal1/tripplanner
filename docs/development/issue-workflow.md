@@ -49,6 +49,18 @@ which session owns the work; the lane label is what makes that visible in a list
 
 Type labels reuse the GitHub defaults: `bug`, `enhancement`, `documentation`.
 
+### Owner labels, and the multiagent queue
+
+`owner:*` labels are additive facts, not states. `owner:proposed` records that
+something entered as a candidate and is kept forever; `owner:ready` records that
+you authorised implementation. Adding `owner:ready` never removes
+`owner:proposed`.
+
+`owner:ready` is what the autonomous coordinator selects on, so a manual lane
+should leave it alone. `agent:queued` stays with the manual lanes described here,
+and the coordinator ignores it. The full pipeline is in
+[multiagent-coordination.md](multiagent-coordination.md).
+
 ## Lifecycle
 
 ```text
