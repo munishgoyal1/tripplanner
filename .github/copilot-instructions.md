@@ -73,6 +73,13 @@ write the same record. See
 [issue-workflow.md](../docs/development/issue-workflow.md) for the full protocol
 and the comment templates.
 
+A bounded fix that the owner asks the primary coordinator chat to complete
+synchronously does not require an issue. Keep it in that chat when no autonomous
+dispatch, second lane or session, deferred follow-up, or shared handoff is needed.
+If the work grows beyond that boundary, create the issue before handing it off or
+continuing asynchronously. This exception never authorises the coordinator to add
+`owner:ready`.
+
 - Before claiming work, see what other lanes already hold:
   `gh issue list --state open --label "agent:in-progress"`.
 - Claim before editing any file: add `agent:in-progress` and `lane:<lane>`, drop

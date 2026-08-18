@@ -393,7 +393,8 @@ def launch_worker(
         "--reasoning-effort", WORKER_REASONING_EFFORT,
         "--name", worker_session_name(issue, slot),
         "--prompt", prompt,
-        "--allow-all-tools",
+        "--autopilot",
+        "--allow-all",
         "--no-ask-user",
         "--no-color",
         "--silent",
@@ -412,6 +413,40 @@ def launch_worker(
     return process.pid, session_id, transcript
 
 
+def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
+    """Merge current master into an idle integration lane before a new batch starts."""
+    worktree = ensure_integration(space)
+    git(["fetch", "-q", "origin", "master"], cwd=worktree)
+    current_head = git(["rev-parse", "HEAD"], cwd=worktree)
+    current_master = git(["rev-parse", "origin/master"], cwd=worktree)
+
+    contains_master = run(
+        ["git", "merge-base", "--is-ancestor", current_master, current_head],
+        cwd=worktree,
+    )
+    if contains_master.returncode == 0:
+        state.baseline_sha = current_head
+        return True
+
+    merged = run(["git", "merge", "--no-edit", "origin/master"], cwd=worktree)
+    if merged.returncode != 0:
+        git(["merge", "--abort"], cwd=worktree, check=False)
+        state.last_error = "idle baseline conflicts with origin/master"
+        log("new batch cannot start: integration baseline conflicts with origin/master")
+        return False
+
+    passed, summary = validate(space, worktree, frontend=True)
+    if not passed:
+        git(["reset", "--hard", current_head], cwd=worktree, check=False)
+        state.last_error = f"idle baseline validation failed: {summary}"
+        log(state.last_error)
+        return False
+
+    state.baseline_sha = git(["rev-parse", "HEAD"], cwd=worktree)
+    log(f"idle baseline refreshed from origin/master at {state.baseline_sha[:12]}")
+    return True
+
+
 def dispatch(space: Workspace, state: core.State, repo: str) -> None:
     free = [f"slot-{index}" for index in range(1, SLOT_COUNT + 1)]
     busy = state.busy_slots()
@@ -427,6 +462,12 @@ def dispatch(space: Workspace, state: core.State, repo: str) -> None:
             busy.append(core.issue_footprint(issue))
 
     plan = core.plan_dispatch(issues, capacity=len(free), busy=tuple(busy))
+    batch_in_flight = any(
+        item.state in ("dispatched", "running", "pushed", "integrated")
+        for item in state.assignments
+    )
+    if plan.dispatch and not batch_in_flight and not refresh_idle_baseline(space, state):
+        return
     branches = remote_multiagent_branches(space)
 
     for issue, slot in zip(plan.dispatch, free, strict=False):
@@ -843,10 +884,13 @@ def cmd_coordinator(space: Workspace, args: argparse.Namespace) -> int:
         "docs/development/multiagent-coordination.md, then report: issues waiting on my "
         "decision (owner:decision-needed), what is authorised (owner:ready), and what the "
         "controller is doing (scripts/dev/multiagent.py status). Help me draft requirements "
-        "and answer blocked issues. Never add owner:ready yourself."
+        "and answer blocked issues. Complete bounded synchronous fixes requested in this chat "
+        "directly in primary master without creating an issue; use an issue only when work needs "
+        "autonomous dispatch, another lane or session, deferral, or shared tracking. Never add "
+        "owner:ready yourself."
     )
     opened = run(
-        ["code", "chat", "-m", "agent", "--reuse-window", prompt],
+        ["code", "chat", "-m", "autopilot", "--reuse-window", prompt],
         timeout=60,
     )
     if opened.returncode != 0:

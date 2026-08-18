@@ -13,7 +13,7 @@ work; the multiagent lanes are deliberately invisible to them.
 | Role | Runtime | Owns |
 | --- | --- | --- |
 | Owner | You | What is worth building, and every ambiguous decision |
-| Coordinator chat | VS Code Copilot agent | The conversation: drafting requirements, answering blocked issues |
+| Coordinator chat | VS Code Copilot autopilot | Drafting requirements, answering blocked issues, bounded synchronous primary-lane fixes |
 | Controller | `scripts/dev/multiagent.py`, launched detached | Leases, dispatch, slots, integration, recovery |
 | Worker | Copilot CLI, non-interactive | One issue, one branch, one commit |
 | Producer | `scripts/dev/multiagent.py audit` | Finding bugs and proposing them as issues |
@@ -27,6 +27,13 @@ the system, and it can be closed and reopened at any time.
 There is one interactive agent. The producer never talks to you directly, and
 neither does a worker; everything reaches you through an issue and the
 coordinator chat reads it.
+
+The coordinator may complete a bounded fix synchronously in the primary lane when
+you ask for it in that chat and the full context is already there. That path does
+not create an issue and cannot enter the autonomous queue. Use an issue when work
+needs a worker, another lane or session, a deferred follow-up, or shared status.
+The coordinator never adds `owner:ready`; only you can move issue-backed work into
+the autonomous queue.
 
 ## How work enters the system
 
@@ -177,6 +184,12 @@ reasoning effort. The controller does not use Auto routing: Auto cannot guarante
 the no-Claude constraint, so both the model and reasoning effort remain fixed
 arguments owned by the controller.
 
+Workers start in Copilot CLI autopilot mode with all tool, path, and URL
+permissions enabled. They still remain bounded by the worker contract, branch,
+prompt, and controller supervision; autopilot removes routine approval waits, not
+scope or deployment gates. The coordinator opener likewise requests VS Code's
+`autopilot` chat mode.
+
 **The slot is released the moment the worker pushes.** Integration happens
 asynchronously on a single serialized lane, so a slot is never idle waiting for a
 queue it does not control. If integration later fails, the issue is re-dispatched
@@ -186,8 +199,14 @@ as the next attempt to whichever slot is free — slots are interchangeable.
 
 - Integration merges the **exact pushed SHA**, never a branch name that may have
   moved.
-- `multiagent/integration` is long-lived and reset to `origin/master` at the start
-  of each batch.
+- `multiagent/integration` is long-lived. Immediately before the first dispatch
+  of an idle batch, the controller fetches and merges current `origin/master`,
+  validates the combined tree, and records that exact HEAD as the batch baseline.
+- Every worker in a live batch uses that immutable baseline. The controller does
+  not move a running worker's files when another sandbox lands on `master`.
+- Reusable slot worktrees are refreshed when assigned, not continuously while
+  idle. Their visible checkout may therefore look old between assignments, but a
+  new branch is always created from the validated current batch baseline.
 - Focused validation runs after each merge. The baseline advances only on success.
 - Because you commit to `master` directly, the batch re-syncs with the current
   `origin/master` and re-runs aggregate validation before the PR opens. A batch
@@ -270,8 +289,9 @@ One shared implementation, thin launchers on both platforms.
 Windows launchers are in `scripts/win/user/multiagent/`, macOS in
 `scripts/mac/user/multiagent/`, and both forward to `scripts/dev/multiagent.ps1`.
 `Start-Multiagent` opens its chat in the most recently active VS Code window and
-requests the title `Coordinator`. VS Code's `code chat` interface has no title
-argument, so the prompt asks the new chat to rename itself as its first action.
+requests autopilot mode and the title `Coordinator`. VS Code's `code chat`
+interface has no title argument, so the prompt asks the new chat to rename itself
+as its first action.
 The prompt also names the primary checkout and requires the chat to remain in
 that lane even when another workspace is visible in the active window.
 Preflight resolves the Copilot executable from `PATH` without executing it.

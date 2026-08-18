@@ -298,6 +298,9 @@ def test_every_worker_launch_pins_gpt_56_sol_medium(tmp_path, monkeypatch) -> No
     assert "auto" not in (argument.lower() for argument in command)
     assert not any("claude" in argument.lower() for argument in command)
     assert command[command.index("--name") + 1] == "Slot 1 | #42 t"
+    assert "--autopilot" in command
+    assert "--allow-all" in command
+    assert "--allow-all-tools" not in command
 
 
 def test_worker_session_name_is_concise() -> None:
@@ -437,7 +440,7 @@ def test_coordinator_opens_titled_chat_in_last_active_window(tmp_path, monkeypat
     space = SimpleNamespace(primary=tmp_path / "primary")
     assert runtime.cmd_coordinator(space, SimpleNamespace()) == 0
     assert len(commands) == 1
-    assert commands[0][:5] == ["code", "chat", "-m", "agent", "--reuse-window"]
+    assert commands[0][:5] == ["code", "chat", "-m", "autopilot", "--reuse-window"]
     assert "rename this chat to `Coordinator`" in commands[0][-1]
     assert "Stay in the primary lane" in commands[0][-1]
 
@@ -496,6 +499,33 @@ def test_finalised_batch_persists_the_validated_integration_head(tmp_path, monke
     assert state.baseline_sha == "validated-head"
     assert ["rev-parse", "HEAD"] in commands
     assert assignment.state == "in-pull-request"
+
+
+def test_idle_batch_refreshes_and_validates_current_master(tmp_path, monkeypatch) -> None:
+    state = core.State(baseline_sha="old-baseline")
+    commands: list[list[str]] = []
+
+    def git(args: list[str], **_kwargs: object) -> str:
+        commands.append(args)
+        if args == ["rev-parse", "HEAD"]:
+            merged = ["git", "merge", "--no-edit", "origin/master"] in commands
+            return "refreshed-head" if merged else "old-head"
+        if args == ["rev-parse", "origin/master"]:
+            return "new-master"
+        return ""
+
+    def run(args: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        commands.append(args)
+        return subprocess.CompletedProcess(args, 1 if "merge-base" in args else 0, "", "")
+
+    monkeypatch.setattr(runtime, "ensure_integration", lambda _space: tmp_path)
+    monkeypatch.setattr(runtime, "git", git)
+    monkeypatch.setattr(runtime, "run", run)
+    monkeypatch.setattr(runtime, "validate", lambda *_args, **_kwargs: (True, "passed"))
+
+    assert runtime.refresh_idle_baseline(SimpleNamespace(), state)
+    assert ["git", "merge", "--no-edit", "origin/master"] in commands
+    assert state.baseline_sha == "refreshed-head"
 
 
 def test_the_worker_report_is_read_from_its_trailing_block() -> None:
