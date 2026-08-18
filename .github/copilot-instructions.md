@@ -43,13 +43,16 @@ not override the canonical documents above, which govern current behavior.
 - Before every new code change, require a clean worktree, fetch `origin`, and
   synchronize the active branch with latest `origin/master`. Resolve conflicts
   and re-read affected files before editing.
-- In the primary Coordinator chat, every fix the owner asks for belongs to that
-  coordinator on `master` by default. Do not create an issue, dispatch a worker,
+- In the primary Coordinator chat, every fix the owner asks for belongs to the
+  dedicated `multiagent/coordinator` worktree and branch by default. Do not create
+  an issue, dispatch a worker,
   or move the fix to a sandbox because it is large or touches several files; only
   do so when the owner explicitly requests that handoff. At the start of every
-  owner request that may edit files, verify the primary worktree is clean, fetch
-  `origin`, and fast-forward `master` to `origin/master`. Commit and push the
-  completed fix before reporting it done.
+  owner request that may edit files, verify the Coordinator worktree is clean,
+  fetch `origin`, and merge current `origin/master` into the Coordinator branch.
+  Commit the completed fix, then use `Publish-Coordinator` to merge it through a
+  pull request, fast-forward primary `master`, and synchronize all registered
+  sandboxes before reporting it done.
 - The primary `master` workspace is the default development lane. Use a fresh,
   task-named sandbox only for an isolated feature or UX Lab. A sandbox returns to
   `master` only through its validated promotion flow.

@@ -79,7 +79,7 @@ trip through shared API contracts.
 | `src/tripplanner/tools/` | LangChain tools and stable agent/provider boundaries |
 | `scripts/mac/` | macOS `.command` launchers mirroring Windows root, user, sandbox, canary, and production entry points |
 | `scripts/dev/multiagent_core.py` | Pure multiagent coordination logic: `owner:ready` eligibility, footprint collisions, attempt numbering, audit fingerprints, leases |
-| `scripts/dev/multiagent.py` | Multiagent controller runtime: autopilot workers, validated `origin/master` batch baselines, slots, supervision, exact-SHA integration, batch pull request, audit producer |
+| `scripts/dev/multiagent.py` | Multiagent runtime: dedicated Coordinator publication, post-publish sandbox sync, autopilot workers, remote-verified attempt SHAs, validated `origin/master` baselines, slots, supervision, batch integration, audit producer |
 
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
 boundary. Configuration comes from `Settings`, not scattered environment reads.
