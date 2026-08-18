@@ -5,6 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
+        Only the issue title is required. Every box below is optional.
+
         This is the owner's entry point into the multiagent queue. Filing it does
         **not** start any work: nothing is dispatched until you add the
         `owner:ready` label yourself.
@@ -19,9 +21,6 @@ body:
       label: Outcome you want
       description: The result in product terms, not the implementation.
       placeholder: The trip list should show which trips someone left feedback on.
-    validations:
-      required: true
-
   - type: textarea
     id: done
     attributes:
@@ -32,9 +31,6 @@ body:
       placeholder: |
         Opening the trip list shows a marker on every trip with feedback, and no
         marker on the rest.
-    validations:
-      required: true
-
   - type: textarea
     id: boundary
     attributes:
@@ -44,9 +40,6 @@ body:
         approved change does not quietly become a redesign.
       placeholder: |
         Do not change the itinerary layout, and do not touch the assistant.
-    validations:
-      required: true
-
   - type: textarea
     id: areas
     attributes:

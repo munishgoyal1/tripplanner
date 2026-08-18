@@ -5,8 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Only the first box is required. Everything else makes triage faster but
-        an issue with one sentence is still worth logging.
+        Only the issue title is required. Every box below is optional; add
+        whatever context is useful and create the issue whenever you are ready.
 
         Do not paste secrets, API keys, connection strings, or `.env` contents.
         Trip ids, user ids, and chat ids are fine; this repository is private.
@@ -19,9 +19,6 @@ body:
       placeholder: |
         Asked the assistant to move Pena Palace to Day 2 and it silently dropped
         the return transfer.
-    validations:
-      required: true
-
   - type: textarea
     id: expected
     attributes:
