@@ -431,6 +431,40 @@ class TestPartialItineraryMerge:
 
 
 class TestTripPlanState:
+    @staticmethod
+    def _save_booking_ready_trip(**updates):
+        plan = {
+            "status": "draft",
+            "destination": "Goa",
+            "origin": "",
+            "travel_scope": "destination_only",
+            "departure_date": "2026-07-06",
+            "return_date": "2026-07-06",
+            "travelers": "1 adult",
+            "selected_flights": [],
+            "selected_hotels": [{"name": "Taj Goa", "city": "Goa", "price": 15000}],
+            "selected_activities": [],
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Taj Goa", "kind": "hotel", "time": "09:00"},
+                        {
+                            "name": "Riverside Walk",
+                            "kind": "attraction",
+                            "time": "11:00",
+                            "duration_min": 60,
+                        },
+                    ],
+                }
+            ],
+            "cost_breakdown": {},
+            "total_cost": 15000,
+            "currency": "INR",
+        }
+        plan.update(updates)
+        trip_planner._save_active_trip(plan)
+
     def test_save_normalizes_duplicate_return_stay_and_departure_checkout(self):
         plan = {
             "destination": "Ayodhya",
@@ -1665,17 +1699,14 @@ class TestTripPlanState:
         assert "Hotel One" in day1_names
         assert "Hotel Two" in day2_names
 
-    def test_finalize_trip(self):
-        create_trip_plan.invoke({
-            "destination": "Goa",
-            "departure_date": "2026-07-01",
-            "return_date": "2026-07-05",
-        })
-        update_trip_plan.invoke({"updates_json": json.dumps({
-            "selected_flights": [{"airline": "IndiGo", "price": 8500}],
-            "selected_hotels": [{"name": "Taj Goa", "price": 15000}],
-        })})
+    def test_finalize_trip(self, monkeypatch):
+        monkeypatch.setattr("tripplanner.tools.trip_guard._summary_for_place", lambda *_: {})
+        self._save_booking_ready_trip(
+            selected_flights=[{"airline": "IndiGo", "price": 8500}]
+        )
+
         result = finalize_trip.invoke({})
+
         assert "FINALIZED" in result
         assert "IndiGo" in result
 
@@ -1688,16 +1719,152 @@ class TestTripPlanState:
         result = finalize_trip.invoke({})
         assert "Cannot finalize" in result
 
-    def test_execute_bookings(self):
-        create_trip_plan.invoke({
-            "destination": "Goa",
-            "departure_date": "2026-07-01",
-            "return_date": "2026-07-05",
-        })
-        update_trip_plan.invoke({"updates_json": json.dumps({
-            "selected_flights": [{"airline": "IndiGo", "price": 8500}],
-            "selected_hotels": [{"name": "Taj Goa", "price": 15000}],
-        })})
+    def test_finalize_blocks_missing_return_coverage(self, monkeypatch):
+        monkeypatch.setattr("tripplanner.tools.trip_guard._summary_for_place", lambda *_: {})
+        self._save_booking_ready_trip(
+            origin="Delhi",
+            travel_scope="round_trip",
+            return_date="2026-07-07",
+            selected_flights=[{"airline": "IndiGo", "price": 8500}],
+            day_wise_itinerary=[
+                {
+                    "day": 1,
+                    "stops": [
+                        {
+                            "name": "Flight Delhi to Goa",
+                            "kind": "flight",
+                            "time": "08:00",
+                            "duration_min": 120,
+                        },
+                        {"name": "Taj Goa", "kind": "hotel", "time": "11:00"},
+                        {"name": "Riverside Walk", "kind": "attraction", "time": "13:00"},
+                    ],
+                },
+                {
+                    "day": 2,
+                    "stops": [
+                        {"name": "Taj Goa", "kind": "hotel", "time": "09:00"},
+                        {"name": "Old Goa Walk", "kind": "attraction", "time": "11:00"},
+                    ],
+                },
+            ],
+        )
+
+        result = finalize_trip.invoke({})
+
+        assert "Cannot finalize" in result
+        assert "Goa back to Delhi" in result
+        assert json.loads(get_trip_plan.invoke({}))["status"] == "draft"
+
+    def test_finalize_blocks_activity_after_departure(self, monkeypatch):
+        monkeypatch.setattr("tripplanner.tools.trip_guard._summary_for_place", lambda *_: {})
+        self._save_booking_ready_trip(
+            origin="Delhi",
+            travel_scope="round_trip",
+            return_date="2026-07-07",
+            selected_flights=[{"airline": "IndiGo", "price": 8500}],
+            day_wise_itinerary=[
+                {
+                    "day": 1,
+                    "stops": [
+                        {
+                            "name": "Flight Delhi to Goa",
+                            "kind": "flight",
+                            "time": "08:00",
+                            "duration_min": 120,
+                        },
+                        {"name": "Taj Goa", "kind": "hotel", "time": "11:00"},
+                        {"name": "Riverside Walk", "kind": "attraction", "time": "13:00"},
+                    ],
+                },
+                {
+                    "day": 2,
+                    "stops": [
+                        {"name": "Taj Goa", "kind": "hotel", "time": "08:00"},
+                        {
+                            "name": "Flight Goa to Delhi",
+                            "kind": "flight",
+                            "time": "14:00",
+                            "duration_min": 120,
+                        },
+                        {"name": "Old Goa Walk", "kind": "attraction", "time": "17:00"},
+                    ],
+                },
+            ],
+        )
+
+        result = finalize_trip.invoke({})
+
+        assert "Cannot finalize" in result
+        assert "Old Goa Walk" in result
+        assert "after Flight Goa to Delhi" in result
+
+    def test_finalize_blocks_known_closed_day(self, monkeypatch):
+        def closed_monday(name, _destination):
+            if name == "Closed Museum":
+                return {
+                    "name": name,
+                    "weekday_descriptions": ["Monday: Closed"],
+                }
+            return {}
+
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_guard._summary_for_place",
+            closed_monday,
+        )
+        self._save_booking_ready_trip(
+            day_wise_itinerary=[
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Taj Goa", "kind": "hotel", "time": "09:00"},
+                        {"name": "Closed Museum", "kind": "attraction", "time": "11:00"},
+                    ],
+                }
+            ]
+        )
+
+        result = finalize_trip.invoke({})
+
+        assert "Cannot finalize" in result
+        assert "Closed Museum is closed on Mondays" in result
+
+    def test_finalize_blocks_placeholder_lodging(self, monkeypatch):
+        monkeypatch.setattr("tripplanner.tools.trip_guard._summary_for_place", lambda *_: {})
+        self._save_booking_ready_trip(
+            day_wise_itinerary=[
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Hotel option", "kind": "hotel", "time": "09:00"},
+                        {
+                            "name": "Riverside Walk",
+                            "kind": "attraction",
+                            "time": "11:00",
+                        },
+                    ],
+                }
+            ]
+        )
+
+        result = finalize_trip.invoke({})
+
+        assert "Cannot finalize" in result
+        assert "Hotel placeholders remain on Day(s) 1" in result
+
+    def test_finalize_keeps_unknown_place_facts_silent(self, monkeypatch):
+        monkeypatch.setattr("tripplanner.tools.trip_guard._summary_for_place", lambda *_: {})
+        self._save_booking_ready_trip()
+
+        result = finalize_trip.invoke({})
+
+        assert "FINALIZED" in result
+
+    def test_execute_bookings(self, monkeypatch):
+        monkeypatch.setattr("tripplanner.tools.trip_guard._summary_for_place", lambda *_: {})
+        self._save_booking_ready_trip(
+            selected_flights=[{"airline": "IndiGo", "price": 8500}]
+        )
         finalize_trip.invoke({})
         result = execute_bookings.invoke({})
         assert "All bookings executed" in result
@@ -1716,27 +1883,25 @@ class TestTripPlanState:
         result = list_past_trips.invoke({})
         assert "No past trips" in result
 
-    def test_full_lifecycle(self):
+    def test_full_lifecycle(self, monkeypatch):
         """Test the complete plan → finalize → execute → history cycle."""
-        # Create
-        create_trip_plan.invoke({
-            "destination": "Manali",
-            "departure_date": "2026-08-01",
-            "return_date": "2026-08-06",
-            "origin": "Delhi",
-        })
-        # Add selections
-        update_trip_plan.invoke({"updates_json": json.dumps({
-            "selected_flights": [{"airline": "Air India", "price": 7000}],
-            "selected_hotels": [{
-                "name": "Snow Valley",
-                "city": "Manali",
-                "price": 12000,
-            }],
-            "selected_activities": [{"name": "Rohtang Pass", "price": 2000}],
-            "cost_breakdown": {"flights": 7000, "hotel": 12000, "activities": 2000},
-            "total_cost": 21000,
-        })})
+        monkeypatch.setattr("tripplanner.tools.trip_guard._summary_for_place", lambda *_: {})
+        self._save_booking_ready_trip(
+            destination="Manali",
+            selected_hotels=[{"name": "Snow Valley", "city": "Manali", "price": 12000}],
+            selected_activities=[{"name": "Rohtang Pass", "price": 2000}],
+            day_wise_itinerary=[
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Snow Valley", "kind": "hotel", "time": "09:00"},
+                        {"name": "Rohtang Pass", "kind": "attraction", "time": "11:00"},
+                    ],
+                }
+            ],
+            cost_breakdown={"hotel": 12000, "activities": 2000},
+            total_cost=14000,
+        )
         # Finalize
         result = finalize_trip.invoke({})
         assert "FINALIZED" in result
@@ -2792,4 +2957,3 @@ class TestSavedTrips:
     def test_resume_trip_no_saved_trips(self):
         result = resume_trip.invoke({"destination": "Mumbai"})
         assert "no saved trips" in result.lower()
-

@@ -25,7 +25,12 @@ from tripplanner.tools.trip_common import (
     _style_caps,
     unnamed_lodging,
 )
-from tripplanner.tools.trip_guard import leg_touches_home, plans_own_arrival, validate_plan
+from tripplanner.tools.trip_guard import (
+    KNOWN_FACT_CODES,
+    leg_touches_home,
+    plans_own_arrival,
+    validate_plan,
+)
 
 #: Invariants that mean the itinerary contradicts itself about time or place.
 #: Temporal feasibility is left out on purpose: it degrades with missing cached
@@ -348,6 +353,16 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *coherence_gaps,
         *density_warnings,
     ]
+
+
+def finalization_gaps(plan: dict[str, Any]) -> list[str]:
+    """Return every known reason this trip cannot yet be called booking-ready."""
+    known_fact_gaps = [
+        violation.message
+        for violation in validate_plan(plan)
+        if violation.code in KNOWN_FACT_CODES
+    ]
+    return [*planning_completion_gaps(plan), *known_fact_gaps]
 
 
 def _itinerary_time_errors(itinerary: Any) -> list[str]:

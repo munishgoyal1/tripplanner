@@ -65,6 +65,7 @@ from tripplanner.tools.trip_validation import (  # noqa: F401
     _restaurant_itinerary_warnings,
     _round_trip_transport_warnings,
     assess_itinerary_change,
+    finalization_gaps,
     planning_completion_gaps,
 )
 from tripplanner.tools.user_preferences import add_past_trip, load_preferences
@@ -2286,6 +2287,15 @@ def finalize_trip() -> str:
             "Search and select options first."
         )
 
+    gaps = finalization_gaps(plan)
+    if gaps:
+        reasons = "\n".join(f"- {gap}" for gap in gaps)
+        return (
+            "Cannot finalize: this trip is not ready for booking.\n"
+            f"{reasons}\n"
+            "Resolve these gaps and try finalizing again."
+        )
+
     plan["status"] = "finalized"
     plan["finalized_at"] = datetime.now().isoformat()
     _save_active_trip(plan)
@@ -2499,4 +2509,3 @@ def resume_trip(destination: str = "", trip_id: str = "") -> str:
         f"{c['hotels']} hotel(s), {c['activities']} activity(ies). "
         f"Continuing where you left off."
     )
-
