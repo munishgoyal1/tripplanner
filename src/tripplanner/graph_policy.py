@@ -340,6 +340,7 @@ def trip_kickoff_tool_choice(
     active_trip: dict[str, Any],
     *,
     has_planning_intent: bool,
+    interactive: bool = False,
 ) -> str | None:
     # A turn that will create a different trip must still run the kickoff; otherwise the
     # creation policy silently replaces the workspace without asking anything.
@@ -373,6 +374,10 @@ def trip_kickoff_tool_choice(
         return "get_travel_preferences"
     if "recommend_trip_duration" not in turn_tools:
         return "recommend_trip_duration"
+    # Interactive mode promised one prefilled review before planning. Leaving it to
+    # the model meant it was never asked, so the controls never reached the user.
+    if interactive:
+        return "request_trip_input"
     return None
 
 
@@ -407,6 +412,7 @@ def resolve_completion_policy(
     active_trip: dict[str, Any],
     proposal_only: bool,
     has_planning_intent: bool,
+    interactive_questions: bool = False,
 ) -> CompletionPolicyDecision:
     tool_phases = current_turn_tool_phases(messages)
     if not proposal_only and tool_phases >= MAX_TOOL_PHASES_PER_TURN:
@@ -489,6 +495,7 @@ def resolve_completion_policy(
             messages,
             active_trip,
             has_planning_intent=has_planning_intent,
+            interactive=interactive_questions,
         )
     )
     kickoff_answered = pending_trip_kickoff_answer(messages)

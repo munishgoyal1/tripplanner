@@ -49,6 +49,44 @@ def test_request_trip_input_emits_valid_prefilled_contract() -> None:
     assert payload["fields"][1]["value"] == 2
 
 
+def test_kickoff_can_ask_for_dates_length_and_origin() -> None:
+    fields = [
+        {"id": "start_date", "label": "Start date", "kind": "date", "value": "2026-11-12"},
+        {"id": "days", "label": "Days", "kind": "number", "value": 4, "min": 2, "max": 10},
+        {
+            "id": "origin",
+            "label": "Travelling from",
+            "kind": "text",
+            "value": "",
+            "placeholder": "Your city",
+        },
+    ]
+
+    payload = extract_input_request(
+        request_trip_input.invoke(
+            {"question": "Confirm a few details", "fields_json": json.dumps(fields)}
+        )
+    )
+
+    assert payload is not None
+    assert [field["kind"] for field in payload["fields"]] == ["date", "number", "text"]
+    assert payload["fields"][0]["value"] == "2026-11-12"
+    # An unknown origin stays empty rather than being invented for the traveller.
+    assert payload["fields"][2]["value"] == ""
+    assert payload["fields"][2]["placeholder"] == "Your city"
+
+
+def test_kickoff_rejects_a_malformed_date() -> None:
+    fields = [{"id": "start_date", "label": "Start date", "kind": "date", "value": "12 Nov"}]
+
+    result = request_trip_input.invoke(
+        {"question": "Confirm a few details", "fields_json": json.dumps(fields)}
+    )
+
+    assert "Invalid trip input request" in result
+    assert extract_input_request(result) is None
+
+
 def test_request_id_is_stable_for_replay() -> None:
     arguments = {
         "question": "Anything different for this trip?",

@@ -11,7 +11,8 @@ from langchain_core.tools import tool
 
 _INPUT_REQUEST_PREFIX = "TRIP_INPUT_REQUEST:"
 _FIELD_ID = re.compile(r"^[a-z][a-z0-9_]{0,39}$")
-_FIELD_KINDS = {"single", "multi", "boolean", "number"}
+_ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_FIELD_KINDS = {"single", "multi", "boolean", "number", "text", "date"}
 
 
 def _short_text(value: Any, *, name: str, limit: int) -> str:
@@ -74,6 +75,23 @@ def _validate_field(raw: Any) -> dict[str, Any]:
     elif kind == "boolean":
         if not isinstance(raw["value"], bool):
             raise ValueError(f"{field_id} must use a boolean value")
+    elif kind in {"text", "date"}:
+        value = raw["value"]
+        if not isinstance(value, str):
+            raise ValueError(f"{field_id} must use a string value")
+        # An empty string is how a prefilled field says "not answered yet", so a
+        # missing origin or an undecided date stays askable without inventing one.
+        text = value.strip()
+        if len(text) > 80:
+            raise ValueError(f"{field_id} must be at most 80 characters")
+        if kind == "date" and text and not _ISO_DATE.fullmatch(text):
+            raise ValueError(f"{field_id} must use an ISO YYYY-MM-DD date")
+        field["value"] = text
+        placeholder = raw.get("placeholder")
+        if placeholder:
+            field["placeholder"] = _short_text(
+                placeholder, name=f"{field_id} placeholder", limit=60
+            )
     else:
         value = raw["value"]
         minimum = raw.get("min", 1)
@@ -139,9 +157,11 @@ def request_trip_input(
     """Present one compact, prefilled input request when critical trip facts are unresolved.
 
     Use only in interactive planning mode. ``fields_json`` is a JSON array of 1-4
-    fields. Supported kinds are ``single``, ``multi``, ``boolean``, and ``number``.
-    Every field must include a sensible prefilled ``value``. Choice fields also
-    include 2-6 ``options`` with ``value``, ``label``, and optional ``detail``.
+    fields. Supported kinds are ``single``, ``multi``, ``boolean``, ``number``,
+    ``text``, and ``date``. Every field must include a sensible prefilled ``value``.
+    Choice fields also include 2-6 ``options`` with ``value``, ``label``, and optional
+    ``detail``. Use ``date`` (ISO ``YYYY-MM-DD``) for a start date, ``number`` for trip
+    length, and ``text`` for an origin city, leaving its value empty when none is known.
     ``known_context_json`` lists saved preferences or inferred facts already applied.
     """
     try:

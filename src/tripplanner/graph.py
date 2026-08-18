@@ -360,12 +360,15 @@ def _pending_trip_kickoff_answer(messages: list[BaseMessage]) -> bool:
     return graph_policy.pending_trip_kickoff_answer(messages)
 
 
-def _trip_kickoff_tool_choice(messages: list[BaseMessage]) -> str | None:
+def _trip_kickoff_tool_choice(
+    messages: list[BaseMessage], *, interactive: bool = False
+) -> str | None:
     """Choose the required preference-aware step before creating a new trip."""
     return graph_policy.trip_kickoff_tool_choice(
         messages,
         _active_trip_for_policy(),
         has_planning_intent=latest_user_has_planning_intent(messages),
+        interactive=interactive,
     )
 
 
@@ -388,6 +391,7 @@ def trip_agent(state: AgentState) -> AgentState:
         active_trip=_active_trip_for_policy(),
         proposal_only=proposal_only,
         has_planning_intent=latest_user_has_planning_intent(state["messages"]),
+        interactive_questions=interactive_questions,
     )
     if decision.budget_exhausted:
         gaps = list(decision.completion_gaps)
