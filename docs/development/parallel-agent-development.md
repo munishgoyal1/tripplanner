@@ -48,6 +48,12 @@ After a successful `Sync-Sbxs-FromMaster`, each registered sandbox may be ahead 
 exact current `master` commit. The sync commands verify this ancestry invariant
 before reporting success.
 
+`Publish-Coordinator` runs that synchronization automatically after Coordinator
+work merges to `master`. The trigger is publication rather than a timer, so active
+sandboxes learn about every Coordinator landing without periodic background
+mutations. A lane that cannot merge cleanly is reported and left for explicit
+resolution; its uncommitted files are never stashed or rewritten.
+
 `Full-2Way-Sync` keeps active work visible. It never stashes a dirty worktree:
 incoming committed history is preflighted without changing files, then merged
 only when it does not overlap the lane's uncommitted paths. An overlap leaves the

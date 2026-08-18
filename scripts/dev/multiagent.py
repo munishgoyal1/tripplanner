@@ -34,6 +34,7 @@ CYCLE_SECONDS = 20
 WORKER_TIMEOUT_MINUTES = 60
 AUDIT_ISSUE_CAP = 3
 INTEGRATION_BRANCH = "multiagent/integration"
+COORDINATOR_BRANCH = "multiagent/coordinator"
 TEST_TIMEOUT_SECONDS = 3600
 WORKER_MODEL = "gpt-5.6-sol"
 WORKER_REASONING_EFFORT = "medium"
@@ -92,6 +93,7 @@ class Workspace:
         self.primary = primary_root()
         self.root = Path(f"{self.primary}.worktrees") / "multiagent"
         self.runtime = self.root / "runtime"
+        self.coordinator = self.root / "coordinator"
         self.integration = self.root / "integration"
         self.transcripts = self.runtime / "transcripts"
         self.state_path = self.runtime / "state.json"
@@ -283,6 +285,44 @@ def ensure_integration(space: Workspace) -> Path:
     return space.integration
 
 
+def ensure_coordinator(space: Workspace) -> Path:
+    if worktree_exists(space, space.coordinator):
+        return space.coordinator
+    space.root.mkdir(parents=True, exist_ok=True)
+    git(["fetch", "-q", "origin", "master", COORDINATOR_BRANCH], cwd=space.primary)
+    local = run(
+        ["git", "show-ref", "--verify", "--quiet", f"refs/heads/{COORDINATOR_BRANCH}"],
+        cwd=space.primary,
+    )
+    if local.returncode == 0:
+        git(["worktree", "add", str(space.coordinator), COORDINATOR_BRANCH], cwd=space.primary)
+    else:
+        git(
+            [
+                "worktree", "add", "-b", COORDINATOR_BRANCH, str(space.coordinator),
+                f"origin/{COORDINATOR_BRANCH}",
+            ],
+            cwd=space.primary,
+        )
+    return space.coordinator
+
+
+def sync_coordinator(space: Workspace) -> Path:
+    worktree = ensure_coordinator(space)
+    if git(["status", "--porcelain"], cwd=worktree):
+        raise RuntimeError("coordinator worktree has uncommitted changes")
+    branch = git(["branch", "--show-current"], cwd=worktree)
+    if branch != COORDINATOR_BRANCH:
+        raise RuntimeError(f"coordinator worktree is on {branch or 'detached HEAD'}")
+    git(["fetch", "-q", "origin", "master"], cwd=worktree)
+    merged = run(["git", "merge", "--no-edit", "origin/master"], cwd=worktree)
+    if merged.returncode != 0:
+        git(["merge", "--abort"], cwd=worktree, check=False)
+        raise RuntimeError("coordinator branch conflicts with origin/master")
+    git(["push", "-q", "-u", "origin", COORDINATOR_BRANCH], cwd=worktree)
+    return worktree
+
+
 def ensure_slot(space: Workspace, slot: str) -> Path:
     path = space.slot_path(slot)
     if worktree_exists(space, path):
@@ -413,6 +453,32 @@ def launch_worker(
     return process.pid, session_id, transcript
 
 
+def confirm_worker_push(
+    space: Workspace,
+    assignment: core.Assignment,
+    pushed_sha: str,
+) -> bool:
+    worktree = space.slot_path(assignment.slot)
+    fetched = run(
+        [
+            "git", "fetch", "-q", "origin",
+            f"{assignment.branch}:refs/remotes/origin/{assignment.branch}",
+        ],
+        cwd=worktree,
+    )
+    if fetched.returncode != 0:
+        return False
+    remote_sha = git(["rev-parse", f"origin/{assignment.branch}"], cwd=worktree)
+    if remote_sha != pushed_sha:
+        return False
+    git(
+        ["branch", "--set-upstream-to", f"origin/{assignment.branch}", assignment.branch],
+        cwd=worktree,
+        check=False,
+    )
+    return True
+
+
 def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
     """Merge current master into an idle integration lane before a new batch starts."""
     worktree = ensure_integration(space)
@@ -427,6 +493,7 @@ def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
     if contains_master.returncode == 0:
         state.baseline_sha = current_head
         save_state(space, state)
+        git(["push", "-q", "-u", "origin", INTEGRATION_BRANCH], cwd=worktree)
         return True
 
     merged = run(["git", "merge", "--no-edit", "origin/master"], cwd=worktree)
@@ -445,6 +512,7 @@ def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
 
     state.baseline_sha = git(["rev-parse", "HEAD"], cwd=worktree)
     save_state(space, state)
+    git(["push", "-q", "-u", "origin", INTEGRATION_BRANCH], cwd=worktree)
     log(f"idle baseline refreshed from origin/master at {state.baseline_sha[:12]}")
     return True
 
@@ -542,8 +610,21 @@ def collect(space: Workspace, state: core.State, repo: str) -> None:
         assignment.finished = core.format_time(core.utcnow())
         assignment.validation = report.get("VALIDATION", "")
 
-        if outcome == "done" and report.get("COMMIT", "none") not in ("", "none"):
-            assignment.pushed_sha = report["COMMIT"]
+        pushed_sha = report.get("COMMIT", "none")
+        if outcome == "done" and pushed_sha not in ("", "none"):
+            if not confirm_worker_push(space, assignment, pushed_sha):
+                assignment.state = "failed"
+                set_agent_state(repo, assignment.issue, core.BLOCKED)
+                gh_relabel(repo, assignment.issue, add=[core.DECISION_NEEDED])
+                gh_comment(
+                    repo,
+                    assignment.issue,
+                    f"Attempt {assignment.attempt} reported `{pushed_sha[:12]}`, but"
+                    f" `origin/{assignment.branch}` does not contain that exact commit.",
+                )
+                log(f"#{assignment.issue} did not publish its reported commit")
+                continue
+            assignment.pushed_sha = pushed_sha
             assignment.state = "pushed"
             set_agent_state(repo, assignment.issue, core.INTEGRATING)
             log(f"#{assignment.issue} reported done at {assignment.pushed_sha[:12]}")
@@ -881,19 +962,26 @@ def cmd_resume(space: Workspace, args: argparse.Namespace) -> int:
 
 
 def cmd_coordinator(space: Workspace, args: argparse.Namespace) -> int:
+    try:
+        worktree = sync_coordinator(space)
+    except RuntimeError as error:
+        log(f"Could not prepare the Coordinator lane: {error}")
+        return 1
     prompt = (
         "First rename this chat to `Coordinator`. You are the multiagent coordinator for "
-        f"the primary repository at `{space.primary}`. Stay in the primary lane; do not adopt "
-        "a sandbox lane. Read "
+        f"the dedicated worktree at `{worktree}` on `{COORDINATOR_BRANCH}`. Make every fix I "
+        "request in that Coordinator lane, never directly in primary master, the integration "
+        "lane, a worker slot, or a sandbox. Read "
         "docs/development/multiagent-coordination.md, then report: issues waiting on my "
         "decision (owner:decision-needed), what is authorised (owner:ready), and what the "
         "controller is doing (scripts/dev/multiagent.py status). Help me draft requirements "
         "and answer blocked issues. Every fix I request in this chat is owned by this coordinator "
-        "in primary master by default, regardless of size. Do not create an issue, dispatch a "
+        "by default, regardless of size. Do not create an issue, dispatch a "
         "worker, or move it to another lane unless I explicitly ask for that handoff. Before each "
-        "owner request that may edit files, require a clean primary worktree, fetch origin, and "
-        "fast-forward master to origin/master; after the fix, commit and push before reporting "
-        "completion. Never add owner:ready yourself."
+        "owner request that may edit files, require a clean Coordinator worktree and merge current "
+        "origin/master. After the fix, validate and commit, then run Publish-Coordinator to merge "
+        "through a PR and synchronize primary master plus every registered sandbox. Never add "
+        "owner:ready yourself."
     )
     opened = run(
         ["code", "chat", "-m", "autopilot", "--reuse-window", prompt],
@@ -908,6 +996,107 @@ def cmd_coordinator(space: Workspace, args: argparse.Namespace) -> int:
         "Coordinator chat opened in the last active VS Code window; "
         "its requested title is Coordinator."
     )
+    return 0
+
+
+def cmd_publish_coordinator(space: Workspace, args: argparse.Namespace) -> int:
+    if git(["branch", "--show-current"], cwd=space.primary) != "master":
+        log("Primary checkout must be on master before publishing Coordinator work.")
+        return 1
+    if git(["status", "--porcelain"], cwd=space.primary):
+        log("Primary master has uncommitted changes; publish cannot safely continue.")
+        return 1
+    git(["fetch", "-q", "origin", "master"], cwd=space.primary)
+    primary_sync = run(["git", "merge", "--ff-only", "origin/master"], cwd=space.primary)
+    if primary_sync.returncode != 0:
+        log("Primary master cannot fast-forward to origin/master.")
+        return 1
+
+    try:
+        worktree = sync_coordinator(space)
+    except RuntimeError as error:
+        log(f"Coordinator publish blocked: {error}")
+        return 1
+    publish_sha = git(["rev-parse", "HEAD"], cwd=worktree)
+    ahead = int(git(["rev-list", "--count", "origin/master..HEAD"], cwd=worktree) or "0")
+    if ahead == 0:
+        log("Coordinator branch has no work beyond origin/master.")
+        return 0
+
+    repo = space.repo()
+    listed = run(
+        [
+            "gh", "pr", "list", "--repo", repo, "--head", COORDINATOR_BRANCH,
+            "--base", "master", "--state", "open", "--json", "number", "--jq",
+            ".[0].number",
+        ],
+        cwd=worktree,
+    )
+    if listed.returncode != 0:
+        log(f"Could not query Coordinator pull requests: {listed.stderr.strip()}")
+        return 1
+    pr_number = listed.stdout.strip()
+    if not pr_number:
+        created = run(
+            [
+                "gh", "pr", "create", "--repo", repo, "--base", "master", "--head",
+                COORDINATOR_BRANCH, "--fill",
+            ],
+            cwd=worktree,
+        )
+        if created.returncode != 0:
+            log(f"Could not create Coordinator pull request: {created.stderr.strip()}")
+            return 1
+        listed = run(
+            [
+                "gh", "pr", "list", "--repo", repo, "--head", COORDINATOR_BRANCH,
+                "--base", "master", "--state", "open", "--json", "number", "--jq",
+                ".[0].number",
+            ],
+            cwd=worktree,
+        )
+        pr_number = listed.stdout.strip()
+    if not pr_number:
+        log("Could not determine the Coordinator pull request number.")
+        return 1
+
+    merged = run(["gh", "pr", "merge", pr_number, "--repo", repo, "--merge"], cwd=worktree)
+    if merged.returncode != 0:
+        log(f"Could not merge Coordinator PR #{pr_number}: {merged.stderr.strip()}")
+        return 1
+
+    git(["fetch", "-q", "origin", "master"], cwd=space.primary)
+    git(["merge", "--ff-only", "origin/master"], cwd=space.primary)
+    contained = run(
+        ["git", "merge-base", "--is-ancestor", publish_sha, "origin/master"],
+        cwd=space.primary,
+    )
+    if contained.returncode != 0:
+        log(f"PR #{pr_number} merged, but origin/master does not contain {publish_sha[:12]}.")
+        return 2
+
+    git(["fetch", "-q", "origin", "master"], cwd=worktree)
+    git(["merge", "--ff-only", "origin/master"], cwd=worktree)
+    git(["push", "-q", "-u", "origin", COORDINATOR_BRANCH], cwd=worktree)
+
+    pwsh = shutil.which("pwsh")
+    if not pwsh:
+        log("Coordinator work reached master, but pwsh is unavailable for sandbox sync.")
+        return 2
+    synced = run(
+        [
+            pwsh, "-NoProfile", "-File",
+            str(space.primary / "scripts" / "dev" / "sync-sbxs-from-master.ps1"),
+        ],
+        cwd=space.primary,
+        timeout=TEST_TIMEOUT_SECONDS,
+    )
+    if synced.stdout.strip():
+        log(synced.stdout.strip())
+    if synced.returncode != 0:
+        log(f"Coordinator work reached master, but sandbox sync failed: {synced.stderr.strip()}")
+        return 2
+    log(f"Coordinator PR #{pr_number} published at {publish_sha[:12]}; all sandboxes synced.")
     return 0
 
 
@@ -993,6 +1182,10 @@ def build_parser() -> argparse.ArgumentParser:
     pause.add_argument("--reason", default="")
     sub.add_parser("resume", help="resume dispatching")
     sub.add_parser("coordinator", help="open the owner-facing coordinator chat")
+    sub.add_parser(
+        "publish-coordinator",
+        help="merge Coordinator work to master and synchronize registered sandboxes",
+    )
 
     audit = sub.add_parser("audit", help="run the read-only trip audit and propose issues")
     audit.add_argument("--dry-run", action="store_true")
@@ -1012,6 +1205,7 @@ def main(argv: list[str] | None = None) -> int:
         "pause": cmd_pause,
         "resume": cmd_resume,
         "coordinator": cmd_coordinator,
+        "publish-coordinator": cmd_publish_coordinator,
         "audit": cmd_audit,
     }
     return handlers[args.command](space, args)
