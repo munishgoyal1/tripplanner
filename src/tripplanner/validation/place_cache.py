@@ -36,6 +36,10 @@ _PARTITION = "_shared"  # places are global, not per-user
 #: The primary development database is a legitimate cache target even though it
 #: is not a sandbox: it is never discarded, so it only ever fills by hand.
 PRIMARY_DATABASE = "tripplanner-local"
+#: A dump nothing reads at request time. Lanes keep using their own database for
+#: live work; this one exists only so a discarded lane's places outlive it
+#: without needing a git commit at the moment of the discard.
+CENTRAL_DATABASE = "tripplanner-cache"
 
 
 def assert_cache_target(name: str) -> str:
@@ -43,9 +47,11 @@ def assert_cache_target(name: str) -> str:
     lowered = (name or "").strip().lower()
     if lowered in LIVE_DATABASE_NAMES:
         raise ValueError(f"refusing to touch live database '{name}'")
-    if lowered != PRIMARY_DATABASE and not lowered.startswith(SANDBOX_PREFIX):
+    allowed = {PRIMARY_DATABASE, CENTRAL_DATABASE}
+    if lowered not in allowed and not lowered.startswith(SANDBOX_PREFIX):
         raise ValueError(
-            f"database must be '{PRIMARY_DATABASE}' or start with '{SANDBOX_PREFIX}', got '{name}'"
+            f"database must be one of {sorted(allowed)} or start with "
+            f"'{SANDBOX_PREFIX}', got '{name}'"
         )
     return name.strip()
 #: Signed photo URLs expire within the hour and are re-derived from photo_refs.
@@ -129,6 +135,19 @@ def merge(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
     return merged
 
 
+def delta(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
+    """Only what ``merge`` would actually change, so a sync writes no no-ops."""
+    changed: dict[str, Any] = {}
+    for key, entry in incoming.items():
+        current = existing.get(key)
+        if not isinstance(current, dict):
+            changed[key] = entry
+            continue
+        if float(entry.get("__at__") or 0) > float(current.get("__at__") or 0):
+            changed[key] = entry
+    return changed
+
+
 def restore(database: str, places: dict[str, Any]) -> int:
     """Seed a sandbox database's place cache from the saved file.
 
@@ -146,11 +165,13 @@ def restore(database: str, places: dict[str, Any]) -> int:
     try:
         from azure.cosmos import PartitionKey
 
-        # A sandbox recreated after a discard has no containers yet, which is
-        # exactly when restoring matters most.
-        container = _client().get_database_client(name).create_container_if_not_exists(
-            id=_CONTAINER, partition_key=PartitionKey(path="/user_id")
-        )
+        # A sandbox recreated after a discard has no containers yet, and the
+        # central dump has no database until the first sync -- which is exactly
+        # when restoring matters most. assert_cache_target has already ruled out
+        # anything hosted.
+        container = _client().create_database_if_not_exists(
+            name
+        ).create_container_if_not_exists(id=_CONTAINER, partition_key=PartitionKey(path="/user_id"))
         for key, entry in places.items():
             if not _worth_keeping(entry):
                 continue

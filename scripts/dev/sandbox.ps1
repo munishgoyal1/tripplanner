@@ -437,7 +437,7 @@ function Save-SandboxPromotion {
     $cacheScript = Join-Path $Entry.worktree "scripts\dev\corpus_cache.py"
     if (Test-Path $cacheScript -PathType Leaf) {
         Write-Host "  Preserving places from $($Entry.database) ..."
-        & (Get-VenvPython) $cacheScript --save --database $Entry.database
+        & (Get-VenvPython) $cacheScript --sync --database $Entry.database
         if ($LASTEXITCODE -ne 0) {
             Write-Warning "  Could not preserve places from $($Entry.database)."
         }
@@ -1414,16 +1414,8 @@ if ($PSCmdlet.ParameterSetName -eq "Run") {
         }
     }
 
-    # A new lane would otherwise re-fetch from Google every place the other lanes
-    # already paid for. Restoring only into an empty cache keeps this a no-op on
-    # every later start.
-    $cacheScript = Join-Path $entry.worktree "scripts\dev\corpus_cache.py"
-    if (Test-Path $cacheScript -PathType Leaf) {
-        & $python $cacheScript --restore --database $entry.database --if-empty
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "Could not warm the place cache; the sandbox will fetch places as it needs them."
-        }
-    }
+    # The place cache is synced with the central dump inside dev-spa.ps1, which is
+    # the one path every emulator-backed start goes through.
 
     Write-Host "Sandbox '$slug' -> http://localhost:$($entry.frontendPort)" -ForegroundColor Green
     $devSpa = Join-Path $entry.worktree "scripts\dev\dev-spa.ps1"
@@ -1925,9 +1917,13 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
     if (Test-Path $seedScript -PathType Leaf) {
         # Dropping the database is the moment this lane's audit evidence would be
         # lost, so preserve it first. A failure here must not block the discard.
+        # This is the one hook that also writes the tracked git file: it is the
+        # last chance for this lane's data, and a dirty places.json is a useful
+        # prompt to commit it.
         $cacheScript = Join-Path $scriptRepoRoot "scripts\dev\corpus_cache.py"
         if (Test-Path $cacheScript -PathType Leaf) {
             Write-Host "  Preserving trips and places from $($entry.database) ..."
+            & $python $cacheScript --sync --database $entry.database
             & $python $cacheScript --save --database $entry.database
             if ($LASTEXITCODE -ne 0) {
                 $cleanupIssues += "could not preserve corpus data from $($entry.database)"

@@ -201,6 +201,23 @@ Two things follow that are easy to miss:
   not our convenience, is the real ceiling. Revisit both points before the
   product carries real traffic.
 
+#### The two durable copies
+
+A lane's `places_cache` dies with its database, so places it paid Google for are
+kept in two places outside it. Neither is ever read at request time; a lane in
+live use only ever reads its own `places_cache`.
+
+| Copy | Where | Written by | Holds |
+| --- | --- | --- | --- |
+| Reviewable | `corpus/places.json`, in git | `corpus_cache.py --save`, and the sandbox discard | Coordinates, hours, ratings, reviews, up to three photo references. Never signed photo URLs, never a failed lookup, no expiry |
+| Working | `tripplanner-cache` on the emulator | `corpus_cache.py --sync`, on every emulator-backed stack start, sandbox promotion and sandbox discard | The same shape, plus whatever no one has exported to git yet |
+
+The split exists because the git file is 5 MB of tracked content and the sandbox
+flows require a clean worktree — writing it on every stack start would leave the
+primary checkout dirty. The emulator database can be written as often as we like.
+`corpus_cache.py` with no arguments prints how many places the working copy holds
+that the reviewable one does not, which is when `--save` is worth running.
+
 ## Tool and Provider Boundaries
 
 | Area | Primary paths | Contract |
