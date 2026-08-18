@@ -13,6 +13,16 @@ _INPUT_REQUEST_PREFIX = "TRIP_INPUT_REQUEST:"
 _FIELD_ID = re.compile(r"^[a-z][a-z0-9_]{0,39}$")
 _ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _FIELD_KINDS = {"single", "multi", "boolean", "number", "text", "date"}
+_ADULT_FIELD_IDS = {"adults", "adult_travelers", "adult_travellers", "travelers", "travellers"}
+_CHILD_FIELD_IDS = {"children", "child_travelers", "child_travellers", "kids"}
+_PARTY_TYPE_FIELD_IDS = {"party_type", "group_type", "travel_party", "trip_group"}
+_PARTY_TYPE_OPTIONS = [
+    {"value": "solo", "label": "Solo"},
+    {"value": "couple", "label": "Couple"},
+    {"value": "family", "label": "Family"},
+    {"value": "friends", "label": "Friends"},
+    {"value": "group", "label": "Other group"},
+]
 
 
 def _short_text(value: Any, *, name: str, limit: int) -> str:
@@ -136,6 +146,59 @@ def _context_line(value: Any) -> str:
     return text[:120].strip()
 
 
+def _with_party_fields(fields: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Reserve canonical trip-party controls without trusting model field selection."""
+    adults = next(
+        (
+            field for field in fields
+            if field["id"] in _ADULT_FIELD_IDS and field["kind"] == "number"
+        ),
+        None,
+    )
+    children = next(
+        (
+            field for field in fields
+            if field["id"] in _CHILD_FIELD_IDS and field["kind"] == "number"
+        ),
+        None,
+    )
+    party_type = next(
+        (
+            field for field in fields
+            if field["id"] in _PARTY_TYPE_FIELD_IDS and field["kind"] == "single"
+        ),
+        None,
+    )
+    adult_field = {
+        **(adults or {"kind": "number", "value": 1, "min": 1, "max": 12, "step": 1}),
+        "id": "adults",
+        "label": "Adults (13+)",
+        "min": 1,
+    }
+    child_field = {
+        **(children or {"kind": "number", "value": 0, "min": 0, "max": 8, "step": 1}),
+        "id": "children",
+        "label": "Children (0-12)",
+        "min": 0,
+    }
+    adult_count = int(adult_field["value"])
+    child_count = int(child_field["value"])
+    inferred_party = "family" if child_count else "solo" if adult_count == 1 else "group"
+    party_value = party_type.get("value") if party_type else inferred_party
+    if party_value not in {option["value"] for option in _PARTY_TYPE_OPTIONS}:
+        party_value = inferred_party
+    party_field = {
+        "id": "party_type",
+        "label": "Trip group",
+        "kind": "single",
+        "value": party_value,
+        "options": _PARTY_TYPE_OPTIONS,
+    }
+    party_ids = _ADULT_FIELD_IDS | _CHILD_FIELD_IDS | _PARTY_TYPE_FIELD_IDS
+    remaining = [field for field in fields if field["id"] not in party_ids]
+    return [adult_field, child_field, party_field, *remaining][:6]
+
+
 def build_input_request(
     question: str,
     known_context: Any,
@@ -169,6 +232,7 @@ def build_input_request(
         clean_fields.append(clean)
     if not clean_fields:
         raise ValueError("input requests must contain at least one usable field")
+    clean_fields = _with_party_fields(clean_fields)
     identity = json.dumps(
         {"question": clean_question, "fields": clean_fields},
         ensure_ascii=True,
@@ -196,12 +260,16 @@ def request_trip_input(
 ) -> str:
     """Present one compact, prefilled input request when critical trip facts are unresolved.
 
-    Use only in interactive planning mode. ``fields_json`` is a JSON array of 1-6
+    Use for the one new-trip review. ``fields_json`` is a JSON array of 1-6
     fields. Supported kinds are ``single``, ``multi``, ``boolean``, ``number``,
     ``text``, and ``date``. Every field must include a sensible prefilled ``value``.
     Choice fields also include 2-6 ``options`` with ``value``, ``label``, and optional
     ``detail``. Use ``date`` (ISO ``YYYY-MM-DD``) for a start date, ``number`` for trip
     length, and ``text`` for an origin city, leaving its value empty when none is known.
+    Always provide ``adults`` (ages 13+) and ``children`` (ages 0-12) number fields
+    plus a ``party_type`` single choice (solo/couple/family/friends/group), prefilling
+    explicit trip facts first and the user's usual party second. The validator supplies
+    safe 1/0 and neutral group defaults when fields are omitted.
     ``known_context_json`` lists the saved preferences or inferred facts already
     applied, as short strings such as ``["Balanced pace", "Moderate budget"]``.
     """

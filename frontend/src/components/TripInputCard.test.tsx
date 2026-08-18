@@ -9,6 +9,18 @@ const request: TripInputRequest = {
   question: "Confirm a few details for Chennai",
   known_context: ["Vegetarian-friendly"],
   fields: [
+    { id: "adults", label: "Adults (13+)", kind: "number", value: 1, min: 1, max: 12 },
+    { id: "children", label: "Children (0-12)", kind: "number", value: 0, min: 0, max: 8 },
+    {
+      id: "party_type",
+      label: "Trip group",
+      kind: "single",
+      value: "solo",
+      options: [
+        { value: "solo", label: "Solo" },
+        { value: "family", label: "Family" },
+      ],
+    },
     { id: "start_date", label: "Start date", kind: "date", value: "2026-11-12" },
     { id: "days", label: "Days", kind: "number", value: 4, min: 2, max: 10 },
     { id: "origin", label: "Travelling from", kind: "text", value: "", placeholder: "Your city" },
@@ -29,10 +41,16 @@ describe("TripInputCard trip facts", () => {
 
     fireEvent.change(startDate, { target: { value: "2026-11-20" } });
     fireEvent.change(origin, { target: { value: "Bengaluru" } });
+    fireEvent.click(screen.getByRole("button", { name: /Increase Adults/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Increase Children/ }));
+    fireEvent.click(screen.getByRole("radio", { name: "Family" }));
     fireEvent.click(screen.getByRole("button", { name: /Increase Days/ }));
     fireEvent.click(screen.getByRole("button", { name: /Use these and continue/ }));
 
     expect(onSubmit).toHaveBeenCalledWith({
+      adults: 2,
+      children: 1,
+      party_type: "family",
       start_date: "2026-11-20",
       days: 5,
       origin: "Bengaluru",
@@ -41,11 +59,17 @@ describe("TripInputCard trip facts", () => {
 
   it("reports an unanswered origin instead of inventing one", () => {
     const answer = formatTripInputResponse(request, {
+      adults: 1,
+      children: 0,
+      party_type: "solo",
       start_date: "2026-11-12",
       days: 4,
       origin: "",
     });
 
+    expect(answer).toContain("Adults (13+): 1");
+    expect(answer).toContain("Children (0-12): 0");
+    expect(answer).toContain("Trip group: Solo");
     expect(answer).toContain("Start date: 2026-11-12");
     expect(answer).toContain("Travelling from: not specified");
   });

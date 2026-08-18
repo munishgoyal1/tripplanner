@@ -116,8 +116,10 @@ re-describing the whole product.
 ### CHAT-01 - Structured minimal-input Assistant interactions
 
 - Every new trip loads durable preferences before planning. Smart defaults are on by
-  default, so the agent proceeds autonomously from the request and known context;
-  a traveller can opt into at most one bounded `request_trip_input` review when an
+  default, so the agent proceeds autonomously when the request establishes its party.
+  Otherwise one bounded `request_trip_input` review collects Adults (13+), Children
+  (0-12), and Trip group; saved family details only prefill these trip-specific facts.
+  A traveller can opt to include other material fields in that same review when an
   answer would materially improve the trip. Every field carries a sensible prefilled
   value; known context enumerates the relevant saved preferences and past-trip signals
   already applied.
@@ -140,8 +142,9 @@ re-describing the whole product.
   bar. New-trip completion is announced only after every trip pane reloads; existing
   itinerary changes use the refreshed authoritative mutation summary, and proposal-only
   reviews explicitly say that the itinerary remains unchanged.
-- The inline chip/control surface is available only when the traveller opts into
-  a useful review; default autonomous planning does not create a confirmation gate.
+- The inline chip/control surface appears when party composition is missing or the
+  traveller opts into a useful review. Explicit party details preserve autonomous
+  planning without another confirmation gate.
   A new hosted deployment remains pending explicit approval.
 
 ### PLAN-01 - Preference-aware planning flow

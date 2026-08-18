@@ -23,10 +23,18 @@ either enabled (the default) or disabled.
 
 - With smart defaults enabled, the Assistant builds from the request, saved
   preferences, trip history, and sensible inferences without an up-front confirmation
-  gate. With it disabled, it may ask at most one structured inline review when an
+  gate except when the new-trip request omits who is travelling. Party composition
+  is trip-specific, so that one compact review always includes editable Adults (13+),
+  Children (0-12), and Trip group controls; saved family data may prefill but never
+  silently enrolls everyone. Solo and family may be derived only when counts make
+  them unambiguous; two adults are not assumed to be a couple. With smart defaults
+  disabled, the same review may include other facts when an
   unresolved fact would materially improve the trip. Explicit prompt values and
-  configured preferences are never repeated, while a destination-only trip never
+  configured preferences are not asked again, while a destination-only trip never
   invents an origin. Any review preserves prefilled values and a skip/default path.
+- Submitted party counts and relationship are persisted with the trip, used for
+  whole-party budgets and provider occupancy, and shape lodging, pace, transport,
+  meal timing, accessibility, and age-appropriate experiences.
 - Asking to plan a destination other than the active trip runs the kickoff before the
   replacement trip is created, without requiring the words "new" or "another". A
   follow-up naming the active destination, and a day trip elsewhere, still skip the
