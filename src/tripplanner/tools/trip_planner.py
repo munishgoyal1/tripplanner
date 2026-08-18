@@ -66,6 +66,7 @@ from tripplanner.tools.trip_validation import (  # noqa: F401
     _round_trip_transport_warnings,
     assess_itinerary_change,
     finalization_gaps,
+    persistence_sanity_errors,
     planning_completion_gaps,
 )
 from tripplanner.tools.user_preferences import add_past_trip, load_preferences
@@ -2112,15 +2113,6 @@ def update_trip_plan(updates_json: str) -> str:
             + " Search again using the active trip destination and resubmit the full update."
         )
 
-    if "day_wise_itinerary" in updates:
-        time_errors = _itinerary_time_errors(updates.get("day_wise_itinerary"))
-        if time_errors:
-            return (
-                "Error: itinerary times must increase in circuit order. "
-                + " ".join(time_errors)
-                + " Resubmit the full corrected day_wise_itinerary."
-            )
-
     allowed_keys = {
         "selected_flights", "selected_hotels", "selected_activities",
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
@@ -2163,6 +2155,15 @@ def update_trip_plan(updates_json: str) -> str:
                 )
             plan[key] = val
 
+    if "day_wise_itinerary" in updates:
+        time_errors = _itinerary_time_errors(plan.get("day_wise_itinerary"))
+        if time_errors:
+            return (
+                "Error: itinerary times must increase in circuit order. "
+                + " ".join(time_errors)
+                + " Resubmit the full corrected day_wise_itinerary."
+            )
+
     if "selected_hotels" in updates and _sync_replaced_hotel_anchors(
         plan,
         before.get("selected_hotels"),
@@ -2196,6 +2197,13 @@ def update_trip_plan(updates_json: str) -> str:
     restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
 
     resettled_days = _settle_plan_legs(plan)
+    sanity_errors = persistence_sanity_errors(plan)
+    if sanity_errors:
+        return (
+            "Error: itinerary sanity validation rejected this update before persistence. "
+            + " ".join(sanity_errors[:5])
+            + " Replan the affected journey or day as a whole and resubmit it."
+        )
     _save_active_trip(plan)
     broken_invariants = _newly_broken(before, plan)
     restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))

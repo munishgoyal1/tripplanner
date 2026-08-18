@@ -576,7 +576,11 @@ class TestTripPlanState:
             "origin": "Bangalore",
         })
         save_result = update_trip_plan.invoke({"updates_json": json.dumps(base)})
-        assert "Round-trip transport planning incomplete" in save_result
+        assert save_result.startswith(
+            "Error: itinerary sanity validation rejected this update before persistence."
+        )
+        assert "Bangalore to Mysore" in save_result
+        assert "Mysore back to Bangalore" in save_result
 
         complete = {
             **base,

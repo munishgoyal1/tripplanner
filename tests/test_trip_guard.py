@@ -372,6 +372,81 @@ def test_a_traveller_arranging_their_own_arrival_is_not_asked_again() -> None:
         for gap in trip_validation.planning_completion_gaps(own_arrival)
         if "starts from" in gap
     ]
+    assert trip_validation.persistence_sanity_errors(own_arrival) == []
+
+
+def test_timeline_includes_hotel_and_transport_duration() -> None:
+    broken = plan(
+        [
+            [
+                stop("Hotel Sayaji checkout", "08:00", "hotel", 45),
+                stop("Rajwada Palace", "10:00"),
+                stop("Drive Indore → Ujjain", "08:30", "transport", 120),
+            ]
+        ]
+    )
+
+    errors = trip_validation._itinerary_time_errors(broken["day_wise_itinerary"])
+
+    assert any("Drive Indore" in error and "not chronological" in error for error in errors)
+
+
+def test_intentional_overnight_journey_remains_chronological() -> None:
+    overnight = plan(
+        [
+            [
+                stop("Night train Indore → Mumbai", "22:00", "transport", 480),
+                stop("Mumbai hotel arrival", "06:00", "hotel", 30),
+            ]
+        ]
+    )
+
+    assert trip_validation._itinerary_time_errors(overnight["day_wise_itinerary"]) == []
+
+
+@pytest.mark.parametrize("mode", ["Train", "Ferry", "Drive"])
+def test_complete_ground_round_trip_needs_no_selected_flight_inventory(mode: str) -> None:
+    complete = plan(
+        [
+            [
+                stop(f"{mode} Bengaluru → Indore", "08:00", "transport", 240),
+                stop("Hotel Sayaji", "13:00", "hotel", 30),
+            ],
+            [
+                stop("Hotel Sayaji checkout", "08:00", "hotel", 30),
+                stop(f"{mode} Ujjain → Bengaluru", "16:00", "transport", 240),
+            ],
+        ]
+    )
+
+    assert trip_validation._round_trip_transport_warnings(complete) == []
+    assert trip_validation._journey_inventory_errors(complete) == []
+
+
+def test_open_jaw_edges_are_complete_when_both_touch_home() -> None:
+    open_jaw = plan(
+        [
+            [
+                stop("Flight Bengaluru → Jaipur", "08:00", "flight", 150),
+                stop("Jaipur Hotel", "12:00", "hotel", 30),
+            ],
+            [
+                stop("Udaipur Hotel checkout", "08:00", "hotel", 30),
+                stop("Flight Udaipur → Bengaluru", "18:00", "flight", 150),
+            ],
+        ],
+        destination="Rajasthan",
+        selected_flights=[{"airline": "Air India"}],
+    )
+
+    assert trip_validation._round_trip_transport_warnings(open_jaw) == []
+    assert trip_validation._journey_inventory_errors(open_jaw) == []
+
+
+def test_narrated_flight_requires_selected_offer() -> None:
+    assert trip_validation._journey_inventory_errors(ROUND_TRIP) == [
+        "The itinerary narrates flight travel but no selected flight offer supports it."
+    ]
 
 
 def test_a_plan_that_names_its_origin_reports_no_coverage_gap(located: None) -> None:
@@ -616,8 +691,6 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
-
-
 
 
 

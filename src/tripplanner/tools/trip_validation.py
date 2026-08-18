@@ -89,11 +89,8 @@ def _empty_itinerary_day_warnings(itinerary: Any) -> list[str]:
     return warnings
 
 
-_INTERCITY_GROUND_MODE_RE = re.compile(r"\b(?:drive|road|car|bus|train|rail)\b", re.I)
-_CITY_NAME_ALIASES = {"bengaluru": "bangalore", "mysuru": "mysore"}
-
-
 def _round_trip_transport_warnings(plan: dict[str, Any]) -> list[str]:
+    """Missing explicit journey edges, without requiring provider inventory."""
     origin = str(plan.get("origin") or "").strip()
     destination = str(plan.get("destination") or "").strip()
     itinerary = plan.get("day_wise_itinerary")
@@ -101,8 +98,6 @@ def _round_trip_transport_warnings(plan: dict[str, Any]) -> list[str]:
         return []
     if not isinstance(itinerary, list) or not itinerary:
         return []
-    # A traveller who is getting there on their own owes no outbound leg, and a
-    # trip that has simply never been asked is a question, not a fault.
     if plans_own_arrival(plan):
         return []
     if not origin:
@@ -119,58 +114,91 @@ def _round_trip_transport_warnings(plan: dict[str, Any]) -> list[str]:
         return []
     first_stops = days[0].get("stops") if isinstance(days[0].get("stops"), list) else []
     last_stops = days[-1].get("stops") if isinstance(days[-1].get("stops"), list) else []
-
-    def normalized_text(value: str, *, city_only: bool = False) -> str:
-        text = re.split(r"[,;/]", value, maxsplit=1)[0] if city_only else value
-        text = re.sub(r"[^a-z0-9]+", " ", text.casefold()).strip()
-        for alias, canonical in _CITY_NAME_ALIASES.items():
-            text = re.sub(rf"\b{re.escape(alias)}\b", canonical, text)
-        return text
-
-    def has_direction(stop: Any, source: str, target: str) -> bool:
-        kind = _stop_kind(stop)
-        name = normalized_text(_stop_name(stop))
-        source_name = normalized_text(source, city_only=True)
-        target_name = normalized_text(target, city_only=True)
-        source_index = name.find(source_name)
-        target_index = name.find(target_name, source_index + len(source_name))
-        has_mode = kind == "flight" or (
-            kind == "transport" and bool(_INTERCITY_GROUND_MODE_RE.search(_stop_name(stop)))
-        )
-        return has_mode and source_index >= 0 and target_index > source_index
-
     first_hotel = next(
         (index for index, stop in enumerate(first_stops) if _stop_kind(stop) == "hotel"),
-        len(first_stops),
+        None,
     )
     last_hotel = next(
-        (index for index in range(len(last_stops) - 1, -1, -1)
-         if _stop_kind(last_stops[index]) == "hotel"),
-        -1,
+        (
+            index
+            for index in range(len(last_stops) - 1, -1, -1)
+            if _stop_kind(last_stops[index]) == "hotel"
+        ),
+        None,
     )
-    # A regional destination names its real cities, so a leg that simply leaves
-    # or returns home counts even when it never spells the destination out.
-    has_outbound = first_hotel < len(first_stops) and any(
-        has_direction(stop, origin, destination) or leg_touches_home(stop, origin)[0]
-        for stop in first_stops[:first_hotel]
+    has_outbound = first_hotel is not None and any(
+        leg_touches_home(stop, origin)[0] for stop in first_stops[:first_hotel]
     )
-    has_return = last_hotel >= 0 and any(
-        has_direction(stop, destination, origin) or leg_touches_home(stop, origin)[1]
-        for stop in last_stops[last_hotel + 1:]
+    has_return = last_hotel is not None and any(
+        leg_touches_home(stop, origin)[1] for stop in last_stops[last_hotel + 1:]
     )
 
     warnings: list[str] = []
     if not has_outbound:
         warnings.append(
-            f"Arrival day has no flight or named road, bus, or train journey from "
-            f"{origin} to {destination} before destination check-in."
+            f"Arrival day has no explicit flight, rail, ferry, road, or other journey "
+            f"from {origin} to {destination} before destination check-in."
         )
     if not has_return:
         warnings.append(
-            f"Departure day has no flight or named road, bus, or train journey from "
-            f"{destination} back to {origin} after checkout."
+            f"Departure day has no explicit flight, rail, ferry, road, or other journey "
+            f"from {destination} back to {origin} after checkout."
         )
     return warnings
+
+
+def _journey_inventory_errors(plan: dict[str, Any]) -> list[str]:
+    """Selected flight inventory and narrated flight edges must agree."""
+    if plans_own_arrival(plan):
+        return []
+    itinerary = plan.get("day_wise_itinerary")
+    if not isinstance(itinerary, list) or not itinerary:
+        return []
+    flight_edges = [
+        stop
+        for day in itinerary
+        if isinstance(day, dict)
+        for stop in (day.get("stops") if isinstance(day.get("stops"), list) else [])
+        if _stop_kind(stop) == "flight"
+    ]
+    selected = plan.get("selected_flights")
+    selected_flights = selected if isinstance(selected, list) else []
+    if flight_edges and not selected_flights:
+        return [
+            "The itinerary narrates flight travel but no selected flight offer supports it."
+        ]
+    if selected_flights and not flight_edges:
+        return [
+            "Selected flight offers have no explicit outbound or return flight edge "
+            "in the itinerary."
+        ]
+    return []
+
+
+def _journey_persistence_errors(plan: dict[str, Any]) -> list[str]:
+    """Journey completeness once a plan claims or selects travel."""
+    if plans_own_arrival(plan):
+        return []
+    itinerary = plan.get("day_wise_itinerary")
+    if not isinstance(itinerary, list) or not itinerary:
+        return []
+    journey_stops = [
+        stop
+        for day in itinerary
+        if isinstance(day, dict)
+        for stop in (day.get("stops") if isinstance(day.get("stops"), list) else [])
+        if _stop_kind(stop) in {"flight", "transport"}
+    ]
+    selected = plan.get("selected_flights")
+    has_selected_flights = isinstance(selected, list) and bool(selected)
+    if not journey_stops and not has_selected_flights:
+        return []
+    if not str(plan.get("origin") or "").strip():
+        return []
+    return [
+        *_round_trip_transport_warnings(plan),
+        *_journey_inventory_errors(plan),
+    ]
 
 
 def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
@@ -366,19 +394,22 @@ def finalization_gaps(plan: dict[str, Any]) -> list[str]:
 
 
 def _itinerary_time_errors(itinerary: Any) -> list[str]:
+    """Chronology and duration conflicts across every timed itinerary row."""
     errors: list[str] = []
     if not isinstance(itinerary, list):
         return errors
+    previous_start: int | None = None
+    previous_end: int | None = None
+    previous_name = ""
+    previous_day: int | None = None
+    previous_kind = ""
     for day_index, entry in enumerate(itinerary):
         if not isinstance(entry, dict):
             continue
         day = entry.get("day") if isinstance(entry.get("day"), int) else day_index + 1
         stops = entry.get("stops") if isinstance(entry.get("stops"), list) else []
-        previous_time: int | None = None
-        previous_duration: int | None = None
-        previous_name = ""
         for stop in stops:
-            if _stop_kind(stop) in {"hotel", "flight", "transport"} or not isinstance(stop, dict):
+            if not isinstance(stop, dict):
                 continue
             value = str(stop.get("time") or "").strip()
             if not value:
@@ -388,26 +419,45 @@ def _itinerary_time_errors(itinerary: Any) -> list[str]:
             if current_time is None:
                 errors.append(f"Day {day} has an invalid time '{value}' for {name}; use HH:MM.")
                 continue
-            minimum_time = previous_time
-            if minimum_time is not None and previous_duration is not None:
-                minimum_time += previous_duration + 30
-            if minimum_time is not None and current_time < minimum_time:
+            current_start = (day - 1) * 1440 + current_time
+            if (
+                previous_day == day
+                and previous_end is not None
+                and previous_end > day * 1440
+                and current_start < previous_start
+            ):
+                current_start += 1440
+            turnaround = 0 if previous_kind in {"hotel", "flight", "transport"} else 30
+            minimum_start = previous_end + turnaround if previous_end is not None else None
+            if minimum_start is not None and current_start < minimum_start:
                 errors.append(
                     f"Day {day} is not chronological: {name} at {value} must be after "
-                    f"{previous_name} at {_fmt_hhmm(previous_time)}"
-                    + (
-                        f" and its visit/transfer time (not before {_fmt_hhmm(minimum_time)})."
-                        if previous_duration is not None
-                        else "."
-                    )
+                    f"{previous_name} and its visit or journey duration "
+                    f"(not before {_fmt_hhmm(minimum_start % 1440)})."
                 )
-            previous_time = current_time
-            duration = stop.get("duration_min")
-            previous_duration = (
-                max(15, int(duration)) if isinstance(duration, (int, float)) else None
-            )
+            previous_start = current_start
+            previous_end = current_start + validate_guard._duration_of(stop)
             previous_name = name
+            previous_day = day
+            previous_kind = _stop_kind(stop)
     return errors
+
+
+_PERSISTENCE_SANITY_CODES = frozenset({"I1", "I2", "I3", "I4", "I5", "I7", "I9", "I11"})
+
+
+def persistence_sanity_errors(plan: dict[str, Any]) -> list[str]:
+    """Authoritative contradictions that must not cross the persistence boundary."""
+    errors = [
+        *_itinerary_time_errors(plan.get("day_wise_itinerary")),
+        *(
+            violation.message
+            for violation in validate_plan(plan)
+            if violation.code in _PERSISTENCE_SANITY_CODES
+        ),
+        *_journey_persistence_errors(plan),
+    ]
+    return list(dict.fromkeys(errors))
 
 
 def assess_itinerary_change(
