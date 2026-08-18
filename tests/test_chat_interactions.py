@@ -164,17 +164,9 @@ def test_request_rejects_choice_without_prefilled_value() -> None:
     assert extract_input_request(result) is None
 
 
-def test_request_rejects_oversized_questionnaire() -> None:
-    field = {
-        "id": "choice",
-        "label": "Choice",
-        "kind": "boolean",
-        "value": True,
-    }
-    fields = [{**field, "id": f"choice_{index}"} for index in range(5)]
-
+def test_request_rejects_an_empty_questionnaire() -> None:
     result = request_trip_input.invoke(
-        {"question": "Too many questions", "fields_json": json.dumps(fields)}
+        {"question": "Nothing to ask", "fields_json": json.dumps([])}
     )
 
-    assert "between 1 and 4 fields" in result
+    assert "at least one field" in result
