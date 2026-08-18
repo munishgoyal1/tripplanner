@@ -108,6 +108,21 @@ def test_known_context_survives_object_shaped_facts() -> None:
     ]
 
 
+def test_known_context_overflow_trims_instead_of_losing_the_card() -> None:
+    payload = extract_input_request(
+        request_trip_input.invoke(
+            {
+                "question": "Confirm a few details",
+                "known_context_json": json.dumps([f"fact {index}" for index in range(9)]),
+                "fields_json": json.dumps(_fields()),
+            }
+        )
+    )
+
+    assert payload is not None
+    assert payload["known_context"] == [f"fact {index}" for index in range(6)]
+
+
 def test_request_id_is_stable_for_replay() -> None:
     arguments = {
         "question": "Anything different for this trip?",

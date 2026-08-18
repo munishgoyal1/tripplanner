@@ -139,9 +139,11 @@ def build_input_request(
     """Validate and normalize one compact assistant input request."""
     clean_question = _short_text(question, name="question", limit=240)
     clean_submit = _short_text(submit_label, name="submit label", limit=60)
-    if not isinstance(known_context, list) or len(known_context) > 6:
-        raise ValueError("known context must be a list of at most 6 items")
-    clean_context = [line for line in map(_context_line, known_context) if line]
+    if not isinstance(known_context, list):
+        raise ValueError("known context must be a list")
+    # Context is cosmetic, so an over-long list is trimmed rather than costing
+    # the traveller the whole card.
+    clean_context = [line for line in map(_context_line, known_context) if line][:6]
     if not isinstance(fields, list) or not 1 <= len(fields) <= 4:
         raise ValueError("input requests must contain between 1 and 4 fields")
     clean_fields = [_validate_field(field) for field in fields]
