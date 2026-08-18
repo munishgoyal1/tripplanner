@@ -39,10 +39,18 @@ def _validate_option(raw: Any, field_id: str) -> dict[str, str]:
     return option
 
 
+def _slug(value: Any) -> str:
+    text = re.sub(r"[^a-z0-9]+", "_", str(value or "").strip().lower()).strip("_")
+    if text and not text[0].isalpha():
+        text = f"field_{text}"
+    return text[:40].strip("_")
+
+
 def _validate_field(raw: Any) -> dict[str, Any]:
     if not isinstance(raw, dict):
         raise ValueError("Each input field must be an object")
-    field_id = _short_text(raw.get("id"), name="field id", limit=40)
+    # The id is a machine key the model often omits; the label already carries it.
+    field_id = _slug(raw.get("id")) or _slug(raw.get("label"))
     if not _FIELD_ID.fullmatch(field_id):
         raise ValueError("Field ids must use lower-case letters, digits, and underscores")
     kind = raw.get("kind")
@@ -146,13 +154,21 @@ def build_input_request(
     clean_context = [line for line in map(_context_line, known_context) if line][:6]
     if not isinstance(fields, list) or not fields:
         raise ValueError("input requests must contain at least one field")
-    # Six keeps the card compact; extras are trimmed because losing one field is
-    # far better than losing the whole review.
-    clean_fields = [_validate_field(field) for field in fields[:6]]
-    ids = [field["id"] for field in clean_fields]
-    if len(ids) != len(set(ids)):
-        raise ValueError("input field ids must be unique")
-
+    # Six keeps the card compact. One malformed field is skipped rather than
+    # costing the traveller the whole review, which is how it went missing before.
+    clean_fields: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for field in fields[:6]:
+        try:
+            clean = _validate_field(field)
+        except ValueError:
+            continue
+        while clean["id"] in seen_ids:
+            clean["id"] = f"{clean['id'][:37]}_{len(seen_ids)}"
+        seen_ids.add(clean["id"])
+        clean_fields.append(clean)
+    if not clean_fields:
+        raise ValueError("input requests must contain at least one usable field")
     identity = json.dumps(
         {"question": clean_question, "fields": clean_fields},
         ensure_ascii=True,
