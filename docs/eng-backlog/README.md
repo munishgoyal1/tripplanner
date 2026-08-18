@@ -17,7 +17,7 @@ since an entry was recorded.
 
 | Entry | Area | Status |
 | --- | --- | --- |
-| [Autonomous agents](autonomous-agent-coordination.md) | Coordination | Deferred |
+| [Autonomous agents](autonomous-agent-coordination.md) | Coordination | Approved |
 | [Daily script reliability and friction](daily-script-reliability.md) | Owner-facing local workflow, runtimes, processes, logs, and portability | Deferred |
 | [Sandbox promotion reliability](sandbox-promotion-reliability.md) | Developer scripts and parallel-agent workflow | Deferred |
 | [Lane 3 script audit shortlist](lane-3-script-audit-shortlist.md) | Owner review shortlist derived from the script reliability entries | Awaiting signoff |

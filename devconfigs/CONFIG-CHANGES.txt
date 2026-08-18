@@ -58,7 +58,7 @@ The same MasterAgent plus three-worker environment must be reproducible on a Mac
 not only on Windows.
 
 How to apply:
-Run ./Setup-Tripplanner-Dev.command from a macOS repository clone.
+Run ./scripts/mac/Setup-Tripplanner-Dev.command from a macOS repository clone.
 
 Recovery:
 Re-run the launcher after an interrupted Homebrew install. Existing VS Code
@@ -77,7 +77,7 @@ A new machine should reproduce the four-agent VS Code environment from declared,
 secret-free repository state instead of requiring several independent scripts.
 
 How to apply:
-Run Setup-Tripplanner-Dev.cmd from the repository root. Use
+Run scripts\win\Setup-Tripplanner-Dev.cmd from the repository root. Use
 devconfigs\Apply-DevConfigs.ps1 -InstallExtensions for configuration-only setup.
 
 Recovery:

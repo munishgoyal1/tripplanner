@@ -29,7 +29,7 @@ pwsh -File scripts/dev/show-prompts.ps1 -Important   # only ! entries
 pwsh -File scripts/dev/show-prompts.ps1 -Search hotel -Last 10
 ```
 
-`scripts/user/Show-Prompts.cmd` is the double-click wrapper.
+`scripts/win/user/Show-Prompts.cmd` is the double-click wrapper.
 
 ## History before 5-Aug-2026
 

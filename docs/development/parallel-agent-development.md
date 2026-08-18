@@ -29,7 +29,7 @@ syncs, so a conflict git can already settle never stalls the merge. Use it when 
 sandbox has more work ahead of it; use `Promote-Sandbox` when the lane is
 finished.
 
-The primary checkout owns the canonical local app stack. Before starting it, run `scripts/user/Run-Latest-Master.cmd` on Windows or `scripts/mac/user/Run-Latest-Master.command` on macOS. Sandboxes use their own ports and server-free validation by default.
+The primary checkout owns the canonical local app stack. Before starting it, run `scripts/win/user/Run-Latest-Master.cmd` on Windows or `scripts/mac/user/Run-Latest-Master.command` on macOS. Sandboxes use their own ports and server-free validation by default.
 
 Promotion requires the primary `master` checkout to be clean and exactly equal
 to `origin/master` before the pull request is merged. After GitHub merges the
@@ -42,7 +42,14 @@ After a successful `Sync-Sbxs-FromMaster`, each registered sandbox may be ahead 
 exact current `master` commit. The sync commands verify this ancestry invariant
 before reporting success.
 
-`TwoWay-Sync-MasterSbx` is the rare counterpart that also sends work the other
+`Full-2Way-Sync` keeps active work visible. It never stashes a dirty worktree:
+incoming committed history is preflighted without changing files, then merged
+only when it does not overlap the lane's uncommitted paths. An overlap leaves the
+worktree untouched and names the paths. A dirty lane can take and push current
+`master`, but its own commits are not published to `master` until its active
+iteration is committed or finished.
+
+`Sync-Across-MasterSbx` is the rare counterpart that also sends work the other
 way: it merges each sandbox into `master` through the same `-Merge` gates, then
 brings all sandboxes back up to the resulting `master`. Both commands default to
 every registered sandbox and accept a sandbox number, slug, or short name to
