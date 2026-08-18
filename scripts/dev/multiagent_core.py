@@ -37,12 +37,9 @@ AGENT_STATES = (QUEUED, IN_PROGRESS, BLOCKED, INTEGRATING, NEEDS_VERIFY)
 # dispatch; the other four mean somebody already owns the issue.
 CLAIMED_STATES = (IN_PROGRESS, BLOCKED, INTEGRATING, NEEDS_VERIFY)
 
-BRANCH_PREFIX = "multiagent/"
-
 _PATH_RE = re.compile(
     r"\b((?:src|frontend|scripts|docs|tests|packages|mobile|infra)/[\w./@-]+)",
 )
-_BRANCH_RE = re.compile(rf"{re.escape(BRANCH_PREFIX)}(?:slot-\d+-)?issue-(\d+)-attempt-(\d+)$")
 _FINGERPRINT_RE = re.compile(r"audit-fingerprint:\s*([A-Za-z0-9_.-]+/[0-9a-f]{8})")
 
 # Files that are coupled through a contract rather than through their path.
@@ -269,22 +266,8 @@ def plan_dispatch(
     return Plan(dispatch=tuple(dispatch), deferred=tuple(deferred))
 
 
-def branch_name(slot: str, issue_number: int, attempt: int) -> str:
-    return f"{BRANCH_PREFIX}{slot}-issue-{issue_number}-attempt-{attempt}"
-
-
-def next_attempt(existing_branches: list[str], issue_number: int) -> int:
-    """Derive the attempt from branches that exist, never from local state.
-
-    A wiped runtime directory must not be able to reuse ``attempt-1`` and
-    overwrite the evidence of the attempt before it.
-    """
-    highest = 0
-    for branch in existing_branches:
-        match = _BRANCH_RE.search(branch.strip())
-        if match and int(match.group(1)) == issue_number:
-            highest = max(highest, int(match.group(2)))
-    return highest + 1
+def branch_name(slot: str) -> str:
+    return f"multiagent/{slot}"
 
 
 def fingerprint(rule: str, message: str) -> str:

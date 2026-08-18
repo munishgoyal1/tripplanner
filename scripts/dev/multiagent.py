@@ -338,31 +338,19 @@ def park_slot(space: Workspace, state: core.State, slot: str) -> bool:
     if git(["status", "--porcelain"], cwd=path):
         log(f"{slot} not parked: its worktree has uncommitted changes")
         return False
-    branch = f"multiagent/{slot}"
+    branch = core.branch_name(slot)
     git(["checkout", "-B", branch, state.baseline_sha], cwd=path)
-    git(["push", "-q", "-u", "origin", branch], cwd=path)
+    git(["push", "-q", "--force-with-lease", "-u", "origin", branch], cwd=path)
     return True
 
 
 def park_released_slots(space: Workspace, state: core.State) -> None:
-    latest = {assignment.slot: assignment for assignment in state.assignments}
     busy = state.busy_slots()
-    safe_states = {"pushed", "integrated", "in-pull-request"}
     for index in range(1, SLOT_COUNT + 1):
         slot = f"slot-{index}"
-        assignment = latest.get(slot)
-        if slot in busy or (assignment and assignment.state not in safe_states):
+        if slot in busy:
             continue
         park_slot(space, state, slot)
-
-
-def remote_multiagent_branches(space: Workspace) -> list[str]:
-    listed = git(
-        ["ls-remote", "--heads", "origin", f"{core.BRANCH_PREFIX}*"],
-        cwd=space.primary,
-        check=False,
-    )
-    return [line.split("refs/heads/")[-1] for line in listed.splitlines() if "refs/heads/" in line]
 
 
 # ----------------------------------------------------------------------------
@@ -564,17 +552,16 @@ def dispatch(space: Workspace, state: core.State, repo: str) -> None:
             busy.append(core.issue_footprint(issue))
 
     plan = core.plan_dispatch(issues, capacity=len(free), busy=tuple(busy))
-    branches = remote_multiagent_branches(space)
-
     for issue, slot in zip(plan.dispatch, free, strict=False):
-        attempt = core.next_attempt(branches, issue.number)
-        branch = core.branch_name(slot, issue.number, attempt)
+        prior = state.for_issue(issue.number)
+        attempt = prior.attempt + 1 if prior else 1
+        branch = core.branch_name(slot)
         path = ensure_slot(space, slot)
         git(["fetch", "-q", "origin"], cwd=path)
         git(["reset", "--hard"], cwd=path, check=False)
         git(["clean", "-fd"], cwd=path, check=False)
         git(["checkout", "-B", branch, state.baseline_sha], cwd=path)
-        git(["push", "-q", "-u", "origin", branch], cwd=path)
+        git(["push", "-q", "--force-with-lease", "-u", "origin", branch], cwd=path)
 
         answer = ""
         pid, session_id, transcript = launch_worker(
@@ -652,7 +639,6 @@ def collect(space: Workspace, state: core.State, repo: str) -> None:
                 continue
             assignment.pushed_sha = pushed_sha
             assignment.state = "pushed"
-            park_slot(space, state, assignment.slot)
             set_agent_state(repo, assignment.issue, core.INTEGRATING)
             log(f"#{assignment.issue} reported done at {assignment.pushed_sha[:12]}")
         elif outcome == "blocked":
@@ -667,8 +653,8 @@ def collect(space: Workspace, state: core.State, repo: str) -> None:
             gh_relabel(repo, assignment.issue, add=[core.DECISION_NEEDED])
             gh_comment(
                 repo, assignment.issue,
-                f"Attempt {assignment.attempt} in `{assignment.slot}` did not finish. Its branch"
-                f" `{assignment.branch}` and transcript are kept for inspection.",
+                    f"Attempt {assignment.attempt} in `{assignment.slot}` did not finish. The"
+                    f" `{assignment.branch}` worktree and transcript remain for inspection.",
             )
             log(f"#{assignment.issue} failed; see {transcript.name}")
 
@@ -716,6 +702,7 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
         state.baseline_sha = git(["rev-parse", "HEAD"], cwd=worktree)
         assignment.state = "integrated"
         assignment.validation = summary
+        park_slot(space, state, assignment.slot)
         log(f"#{assignment.issue} integrated; baseline now {state.baseline_sha[:12]}")
 
 
