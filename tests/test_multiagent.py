@@ -437,14 +437,59 @@ def test_coordinator_opens_titled_chat_in_last_active_window(tmp_path, monkeypat
 
     monkeypatch.setattr(runtime, "run", run)
 
+    coordinator = tmp_path / "coordinator"
+    monkeypatch.setattr(runtime, "sync_coordinator", lambda _space: coordinator)
     space = SimpleNamespace(primary=tmp_path / "primary")
     assert runtime.cmd_coordinator(space, SimpleNamespace()) == 0
     assert len(commands) == 1
     assert commands[0][:5] == ["code", "chat", "-m", "autopilot", "--reuse-window"]
     assert "rename this chat to `Coordinator`" in commands[0][-1]
-    assert "Stay in the primary lane" in commands[0][-1]
+    assert str(coordinator) in commands[0][-1]
+    assert runtime.COORDINATOR_BRANCH in commands[0][-1]
+    assert "never directly in primary master" in commands[0][-1]
     assert "Every fix I request in this chat is owned by this coordinator" in commands[0][-1]
-    assert "fast-forward master to origin/master" in commands[0][-1]
+    assert "run Publish-Coordinator" in commands[0][-1]
+
+
+def test_publish_coordinator_merges_and_synchronizes_sandboxes(tmp_path, monkeypatch) -> None:
+    primary = tmp_path / "primary"
+    coordinator = tmp_path / "coordinator"
+    primary.mkdir()
+    coordinator.mkdir()
+    sync_script = primary / "scripts" / "dev" / "sync-sbxs-from-master.ps1"
+    sync_script.parent.mkdir(parents=True)
+    sync_script.write_text("", encoding="utf-8")
+    commands: list[list[str]] = []
+
+    def git(args: list[str], **_kwargs: object) -> str:
+        if args == ["branch", "--show-current"]:
+            return "master"
+        if args == ["status", "--porcelain"]:
+            return ""
+        if args == ["rev-parse", "HEAD"]:
+            return "abc123"
+        if args == ["rev-list", "--count", "origin/master..HEAD"]:
+            return "1"
+        return ""
+
+    def run(args: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        commands.append(args)
+        if args[:3] == ["gh", "pr", "list"]:
+            return subprocess.CompletedProcess(args, 0, "77\n", "")
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    space = SimpleNamespace(
+        primary=primary,
+        repo=lambda: "owner/repo",
+    )
+    monkeypatch.setattr(runtime, "git", git)
+    monkeypatch.setattr(runtime, "run", run)
+    monkeypatch.setattr(runtime, "sync_coordinator", lambda _space: coordinator)
+    monkeypatch.setattr(runtime.shutil, "which", lambda _name: "/usr/bin/pwsh")
+
+    assert runtime.cmd_publish_coordinator(space, SimpleNamespace()) == 0
+    assert ["gh", "pr", "merge", "77", "--repo", "owner/repo", "--merge"] in commands
+    assert ["/usr/bin/pwsh", "-NoProfile", "-File", str(sync_script)] in commands
 
 
 def test_restart_reconciles_a_stopped_assignment_from_its_transcript(
@@ -470,12 +515,40 @@ def test_restart_reconciles_a_stopped_assignment_from_its_transcript(
         "set_agent_state",
         lambda _repo, number, wanted: labels.append((number, wanted)),
     )
+    monkeypatch.setattr(runtime, "confirm_worker_push", lambda *_args: True)
 
     runtime.collect(space, state, "owner/repo")
 
     assert state.assignments[0].state == "pushed"
     assert state.assignments[0].pushed_sha == "abc123"
     assert labels == [(42, core.INTEGRATING)]
+
+
+def test_worker_push_is_verified_and_given_remote_tracking(tmp_path, monkeypatch) -> None:
+    commands: list[list[str]] = []
+    assignment = core.Assignment(
+        slot="slot-2",
+        branch="multiagent/issue-66-attempt-1",
+    )
+    space = SimpleNamespace(slot_path=lambda _slot: tmp_path)
+
+    monkeypatch.setattr(
+        runtime,
+        "run",
+        lambda args, **_kwargs: subprocess.CompletedProcess(args, 0, "", ""),
+    )
+
+    def git(args: list[str], **_kwargs: object) -> str:
+        commands.append(args)
+        return "abc123" if args[0] == "rev-parse" else ""
+
+    monkeypatch.setattr(runtime, "git", git)
+
+    assert runtime.confirm_worker_push(space, assignment, "abc123")
+    assert [
+        "branch", "--set-upstream-to", "origin/multiagent/issue-66-attempt-1",
+        "multiagent/issue-66-attempt-1",
+    ] in commands
 
 
 def test_finalised_batch_persists_the_validated_integration_head(tmp_path, monkeypatch) -> None:
@@ -599,6 +672,7 @@ def test_every_launcher_pair_forwards_the_same_verb() -> None:
         "Multiagent-Status": "status",
         "Plan-Multiagent": "plan",
         "Open-Coordinator": "coordinator",
+        "Publish-Coordinator": "publish-coordinator",
         "Run-Audit-Producer": "audit",
     }
     for name, verb in verbs.items():

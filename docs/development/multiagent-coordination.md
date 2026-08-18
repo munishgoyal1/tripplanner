@@ -13,7 +13,7 @@ work; the multiagent lanes are deliberately invisible to them.
 | Role | Runtime | Owns |
 | --- | --- | --- |
 | Owner | You | What is worth building, and every ambiguous decision |
-| Coordinator chat | VS Code Copilot autopilot | Drafting requirements, answering blocked issues, owner-requested primary-lane fixes |
+| Coordinator chat | VS Code Copilot autopilot | Drafting requirements, answering blocked issues, owner-requested Coordinator-lane fixes |
 | Controller | `scripts/dev/multiagent.py`, launched detached | Leases, dispatch, slots, integration, recovery |
 | Worker | Copilot CLI, non-interactive | One issue, one branch, one commit |
 | Producer | `scripts/dev/multiagent.py audit` | Finding bugs and proposing them as issues |
@@ -28,12 +28,12 @@ There is one interactive agent. The producer never talks to you directly, and
 neither does a worker; everything reaches you through an issue and the
 coordinator chat reads it.
 
-Every fix you ask for in the coordinator chat belongs to that coordinator in the
-primary lane by default, regardless of size. It does not create an issue or enter
-the autonomous queue. A worker, sandbox, or issue-backed handoff happens only when
-you explicitly request it, or when the work is deferred rather than completed in
-the current chat. The coordinator never adds `owner:ready`; only you can move
-issue-backed work into the autonomous queue.
+Every fix you ask for in the coordinator chat belongs to the persistent
+`multiagent/coordinator` lane by default, regardless of size. It does not create
+an issue or enter the autonomous queue. A worker, sandbox, or issue-backed handoff
+happens only when you explicitly request it, or when the work is deferred rather
+than completed in the current chat. The coordinator never adds `owner:ready`;
+only you can move issue-backed work into the autonomous queue.
 
 The same no-issue default applies inside sandbox chats: work requested and fixed
 there stays in that sandbox conversation. A sandbox agent does not create an issue
@@ -44,12 +44,17 @@ parked for later. Existing issue-backed work still follows the claiming protocol
 ### Coordinator lane freshness
 
 At the start of every owner request that may change files, the coordinator checks
-that primary `master` is clean, fetches `origin`, and fast-forwards to
-`origin/master` before reading the owning code. If master advanced, it re-reads
-the affected files before editing. It never stashes or rewrites unrelated work to
-force a sync; a dirty primary worktree is resolved or reported first. Completed
-coordinator work is committed and pushed before the chat reports completion, so
-local `master` and `origin/master` converge again at the end of the turn.
+that its worktree is clean, fetches `origin`, and merges current `origin/master`
+into `multiagent/coordinator` before reading the owning code. If master advanced,
+it re-reads the affected files before editing. It never stashes or rewrites
+unrelated work to force a sync; a dirty or conflicting Coordinator worktree is
+reported first.
+
+Completed Coordinator work is committed and published through a pull request by
+`Publish-Coordinator`. Publication fast-forwards primary `master`, advances the
+Coordinator branch to the merged commit, then runs `Sync-Sbxs-FromMaster` for all
+registered sandboxes. This event-driven sync keeps sandboxes current at each
+Coordinator landing without periodically rewriting active lanes.
 
 ## How work enters the system
 
@@ -146,6 +151,7 @@ and naming the budget, target, database, and API. The producer may run
 
 ```text
 tripplanner.worktrees/multiagent/
+  coordinator/      persistent interactive Coordinator worktree
   integration/      long-lived, reset to origin/master each batch
   slot-1/           reusable worker worktree
   slot-2/           reusable worker worktree
@@ -192,6 +198,11 @@ never chooses what to work on.
 A worker never merges, never closes an issue, never pushes outside its own
 branch, and never picks up a second issue.
 
+Before accepting a completed attempt, the controller fetches its remote branch,
+requires `origin/<attempt-branch>` to equal the reported SHA, and establishes
+upstream tracking in the reusable slot. Completed attempt branches remain frozen
+at that commit as evidence; they are not rebased or advanced to later master.
+
 Copilot CLI sessions are named `Slot N | #<issue> <concise title>`, so process
 and session lists show which slot owns each requirement without opening logs.
 
@@ -217,17 +228,18 @@ as the next attempt to whichever slot is free — slots are interchangeable.
   moved.
 - `multiagent/integration` is long-lived. On every idle controller cycle, the
   controller fetches `origin/master`; when it has advanced, the controller merges
-  it, validates the combined tree, and records that exact HEAD as the baseline.
-  The same reconciliation therefore always happens before the first dispatch of
-  a new batch.
+  it, validates the combined tree, records that exact HEAD as the baseline, and
+  pushes the integration branch. The same reconciliation therefore always
+  happens before the first dispatch of a new batch.
 - Every worker in a live batch uses that immutable baseline. The controller does
   not move a running worker's files when another sandbox lands on `master`.
 - Reusable slot worktrees are refreshed when assigned, not continuously while
   idle. Their visible checkout may therefore look old between assignments, but a
   new branch is always created from the validated current batch baseline.
 - Focused validation runs after each merge. The baseline advances only on success.
-- Because you commit to `master` directly, the batch re-syncs with the current
-  `origin/master` and re-runs aggregate validation before the PR opens. A batch
+- Because Coordinator and sandbox publication can advance `master`, the batch
+  re-syncs with current `origin/master` and re-runs aggregate validation before
+  the PR opens. A batch
   validated against a stale base is not validated.
 - The PR is **merged, not squashed**, so each worker commit keeps its `Fixes #<n>`
   trailer. The PR body repeats every `Fixes #<n>` as a second guarantee.
@@ -302,6 +314,7 @@ One shared implementation, thin launchers on both platforms.
 | `Multiagent-Status` | Slots, assignments, decisions waiting, last validation, recovery commands |
 | `Plan-Multiagent` | Dry run: what it *would* dispatch, and why it excluded the rest |
 | `Open-Coordinator` | Open the owner-facing coordinator chat in VS Code |
+| `Publish-Coordinator` | Merge Coordinator work through a PR, update primary and Coordinator lanes, then synchronize all sandboxes |
 | `Run-Audit-Producer` | One producer pass; `--dry-run` reports findings without opening issues |
 
 Windows launchers are in `scripts/win/user/multiagent/`, macOS in
@@ -310,8 +323,8 @@ Windows launchers are in `scripts/win/user/multiagent/`, macOS in
 requests autopilot mode and the title `Coordinator`. VS Code's `code chat`
 interface has no title argument, so the prompt asks the new chat to rename itself
 as its first action.
-The prompt also names the primary checkout and requires the chat to remain in
-that lane even when another workspace is visible in the active window.
+The prompt names the dedicated Coordinator worktree and requires the chat to
+remain in that lane even when another workspace is visible in the active window.
 Preflight resolves the Copilot executable from `PATH` without executing it.
 In particular, it never runs `copilot --version`: Copilot CLI 1.0.78 can leave
 hundreds of Electron helper processes behind after version probes on macOS.
