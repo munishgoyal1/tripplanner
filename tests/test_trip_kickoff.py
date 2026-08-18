@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from langchain_core.messages import AIMessage, HumanMessage
 import pytest
+from langchain_core.messages import AIMessage, HumanMessage
 
 from tripplanner import graph as graph_mod
 from tripplanner.graph import _trip_creation_tool_choice, _trip_kickoff_tool_choice
@@ -231,6 +231,38 @@ def test_trip_agent_forces_the_prefilled_kickoff_in_interactive_mode(
 
     assert bound_options["tool_choice"] == "request_trip_input"
     assert bound_options["tools"] == ["request_trip_input"]
+
+
+def test_trip_agent_waits_for_the_kickoff_answer_before_planning(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    messages = [
+        HumanMessage(content="Plan a Chennai trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+        _tool_message("request_trip_input"),
+    ]
+    bound = {"called": False}
+
+    class FakeModel:
+        def bind_tools(self, *_args: object, **_options: object) -> object:
+            bound["called"] = True
+            raise AssertionError("no tool may be bound while the review is unanswered")
+
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="Which city are you travelling from?")
+
+    monkeypatch.setattr(graph_mod, "_interactive_trip_questions", lambda: True)
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+
+    result = graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound["called"] is False
+    assert "travelling from" in result["messages"][0].content
 
 
 def test_trip_agent_forces_creation_after_kickoff_answer(

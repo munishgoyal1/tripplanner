@@ -393,6 +393,28 @@ def trip_agent(state: AgentState) -> AgentState:
         has_planning_intent=latest_user_has_planning_intent(state["messages"]),
         interactive_questions=interactive_questions,
     )
+    if decision.awaiting_kickoff_answer:
+        app_event(
+            "agent_model_round",
+            tool_phase=decision.tool_phases,
+            forced_reason=decision.forced_reason,
+            message_count=len(state["messages"]),
+        )
+        instructions = [
+            build_trip_system_prompt(),
+            SystemMessage(content=(
+                "You have just asked the traveller one prefilled review and their answer "
+                "has not arrived yet. Do not call any tool and do not create or update a "
+                "trip now. Reply with one short natural-language version of the same "
+                "question, naming the choices you prefilled, and say they can submit the "
+                "card or skip it to use the saved defaults."
+            )),
+        ]
+        response = _get_llm().invoke(
+            instructions + _messages_for_model(state["messages"])
+        )
+        return {"messages": [response], "current_agent": "trip"}
+
     if decision.budget_exhausted:
         gaps = list(decision.completion_gaps)
         app_event(

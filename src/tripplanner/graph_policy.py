@@ -36,6 +36,7 @@ ForcedReason: TypeAlias = Literal[
     "persist_or_repair_plan",
     "missing_concrete_hotel",
     "kickoff_answered",
+    "awaiting_kickoff_answer",
     "trip_kickoff",
     "model_choice",
 ]
@@ -50,6 +51,7 @@ class CompletionPolicyDecision:
     kickoff_tool: str | None = None
     budget_exhausted: bool = False
     completion_gaps: tuple[str, ...] = ()
+    awaiting_kickoff_answer: bool = False
 
 
 _NEW_TRIP_REQUEST_RE = re.compile(
@@ -335,6 +337,18 @@ def pending_trip_kickoff_answer(messages: Sequence[BaseMessage]) -> bool:
     return latest_kickoff >= 0 and latest_human > latest_kickoff
 
 
+def awaiting_trip_kickoff_answer(messages: Sequence[BaseMessage]) -> bool:
+    """True while the prefilled review has been asked and the traveller has not replied."""
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    return any(
+        name == "request_trip_input" and index > latest_human
+        for index, name in _tool_call_positions(messages)
+    )
+
+
 def trip_kickoff_tool_choice(
     messages: Sequence[BaseMessage],
     active_trip: dict[str, Any],
@@ -415,6 +429,15 @@ def resolve_completion_policy(
     interactive_questions: bool = False,
 ) -> CompletionPolicyDecision:
     tool_phases = current_turn_tool_phases(messages)
+    # Asking the review and then planning anyway would make it decoration, so the
+    # turn stops at the question until the traveller answers or skips it.
+    if not proposal_only and awaiting_trip_kickoff_answer(messages):
+        return CompletionPolicyDecision(
+            tool_phases=tool_phases,
+            forced_tool=None,
+            forced_reason="awaiting_kickoff_answer",
+            awaiting_kickoff_answer=True,
+        )
     if not proposal_only and tool_phases >= MAX_TOOL_PHASES_PER_TURN:
         # A broad multi-city research turn (e.g. two destinations plus "nearby
         # sites") can spend the whole budget on search before ever calling
