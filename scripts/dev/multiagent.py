@@ -333,6 +333,29 @@ def ensure_slot(space: Workspace, slot: str) -> Path:
     return path
 
 
+def park_slot(space: Workspace, state: core.State, slot: str) -> bool:
+    path = ensure_slot(space, slot)
+    if git(["status", "--porcelain"], cwd=path):
+        log(f"{slot} not parked: its worktree has uncommitted changes")
+        return False
+    branch = f"multiagent/{slot}"
+    git(["checkout", "-B", branch, state.baseline_sha], cwd=path)
+    git(["push", "-q", "-u", "origin", branch], cwd=path)
+    return True
+
+
+def park_released_slots(space: Workspace, state: core.State) -> None:
+    latest = {assignment.slot: assignment for assignment in state.assignments}
+    busy = state.busy_slots()
+    safe_states = {"pushed", "integrated", "in-pull-request"}
+    for index in range(1, SLOT_COUNT + 1):
+        slot = f"slot-{index}"
+        assignment = latest.get(slot)
+        if slot in busy or (assignment and assignment.state not in safe_states):
+            continue
+        park_slot(space, state, slot)
+
+
 def remote_multiagent_branches(space: Workspace) -> list[str]:
     listed = git(
         ["ls-remote", "--heads", "origin", f"{core.BRANCH_PREFIX}*"],
@@ -494,6 +517,7 @@ def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
         state.baseline_sha = current_head
         save_state(space, state)
         git(["push", "-q", "-u", "origin", INTEGRATION_BRANCH], cwd=worktree)
+        park_released_slots(space, state)
         return True
 
     merged = run(["git", "merge", "--no-edit", "origin/master"], cwd=worktree)
@@ -513,6 +537,7 @@ def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
     state.baseline_sha = git(["rev-parse", "HEAD"], cwd=worktree)
     save_state(space, state)
     git(["push", "-q", "-u", "origin", INTEGRATION_BRANCH], cwd=worktree)
+    park_released_slots(space, state)
     log(f"idle baseline refreshed from origin/master at {state.baseline_sha[:12]}")
     return True
 
@@ -543,12 +568,13 @@ def dispatch(space: Workspace, state: core.State, repo: str) -> None:
 
     for issue, slot in zip(plan.dispatch, free, strict=False):
         attempt = core.next_attempt(branches, issue.number)
-        branch = core.branch_name(issue.number, attempt)
+        branch = core.branch_name(slot, issue.number, attempt)
         path = ensure_slot(space, slot)
         git(["fetch", "-q", "origin"], cwd=path)
         git(["reset", "--hard"], cwd=path, check=False)
         git(["clean", "-fd"], cwd=path, check=False)
         git(["checkout", "-B", branch, state.baseline_sha], cwd=path)
+        git(["push", "-q", "-u", "origin", branch], cwd=path)
 
         answer = ""
         pid, session_id, transcript = launch_worker(
@@ -626,6 +652,7 @@ def collect(space: Workspace, state: core.State, repo: str) -> None:
                 continue
             assignment.pushed_sha = pushed_sha
             assignment.state = "pushed"
+            park_slot(space, state, assignment.slot)
             set_agent_state(repo, assignment.issue, core.INTEGRATING)
             log(f"#{assignment.issue} reported done at {assignment.pushed_sha[:12]}")
         elif outcome == "blocked":
