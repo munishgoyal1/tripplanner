@@ -361,6 +361,31 @@ def test_restart_reconciles_a_stopped_assignment_from_its_transcript(
     assert labels == [(42, core.INTEGRATING)]
 
 
+def test_finalised_batch_persists_the_validated_integration_head(tmp_path, monkeypatch) -> None:
+    assignment = core.Assignment(issue=42, state="integrated", pushed_sha="abc123")
+    state = core.State(baseline_sha="pre-reconciliation", assignments=[assignment])
+    commands: list[list[str]] = []
+
+    def git(args: list[str], **_kwargs: object) -> str:
+        commands.append(args)
+        return "validated-head" if args == ["rev-parse", "HEAD"] else ""
+
+    def run(args: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    monkeypatch.setattr(runtime, "ensure_integration", lambda _space: tmp_path)
+    monkeypatch.setattr(runtime, "git", git)
+    monkeypatch.setattr(runtime, "run", run)
+    monkeypatch.setattr(runtime, "validate", lambda *_args, **_kwargs: (True, "passed"))
+    monkeypatch.setattr(runtime, "set_agent_state", lambda *_args, **_kwargs: None)
+
+    runtime.finalise_batch(SimpleNamespace(), state, "owner/repo")
+
+    assert state.baseline_sha == "validated-head"
+    assert ["rev-parse", "HEAD"] in commands
+    assert assignment.state == "in-pull-request"
+
+
 def test_the_worker_report_is_read_from_its_trailing_block() -> None:
     report = core.parse_worker_report(
         "chatter\n```\nRESULT: done\nCOMMIT: abc123\nFILES: src/a.py\nVALIDATION: pytest ok\n```"

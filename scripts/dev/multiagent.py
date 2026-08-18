@@ -516,6 +516,7 @@ def finalise_batch(space: Workspace, state: core.State, repo: str) -> None:
         log(state.last_error)
         return
 
+    state.baseline_sha = git(["rev-parse", "HEAD"], cwd=worktree)
     git(["push", "-q", "-u", "origin", INTEGRATION_BRANCH], cwd=worktree)
     closes = "\n".join(f"Fixes #{item.issue}" for item in integrated)
     body = (
