@@ -65,6 +65,34 @@ not override the canonical documents above, which govern current behavior.
 See [parallel-agent-development.md](../docs/development/parallel-agent-development.md)
 for sandbox lifecycle and promotion.
 
+## Issue-tracked work
+
+GitHub issues are the shared task board across chat sessions. Sessions cannot see
+each other, so an issue is the only place several lanes and the owner read and
+write the same record. See
+[issue-workflow.md](../docs/development/issue-workflow.md) for the full protocol
+and the comment templates.
+
+- Before claiming work, see what other lanes already hold:
+  `gh issue list --state open --label "agent:in-progress"`.
+- Claim before editing any file: add `agent:in-progress` and `lane:<lane>`, drop
+  `agent:queued`, assign yourself, and post the Triage comment. Never take an
+  issue another lane already claims; if that claim is over a day stale, post a
+  takeover comment first.
+- One issue is worked in exactly one lane, and it is the lane this session
+  already owns. Bugs default to the bugfix lane, new Labs to the Lab factory
+  lane, Lab implementation to the implement-labs lane.
+- Post exactly two comments, `## Triage` before editing and `## Implementation`
+  after validating. Edit them instead of appending commentary.
+- Stop and add `agent:blocked` with the question in the issue when scope is
+  genuinely ambiguous, rather than guessing or widening it.
+- Put `Fixes #N` in the commit body so the issue closes when the fix reaches
+  `master`, not when a sandbox branch moves. Add `agent:needs-verify` on landing.
+- Release an issue you did not finish: remove `agent:in-progress` and comment
+  where it stopped.
+- A durable lesson goes to `docs/ENGINEERING_LEARNINGS.md` and is linked from the
+  issue; the issue never becomes the record.
+
 ## Product and engineering boundaries
 
 - This is a one-person, preference-aware trip planner. Optimize for the owner's
@@ -139,6 +167,7 @@ Update the existing owner rather than creating another summary:
 | Change | Update |
 | --- | --- |
 | Cross-project preference | `/memories/preferences.md` |
+| One bug or task, and its live progress | GitHub issue |
 | Repository-specific fact or landmine | `/memories/repo/tripplanner.md` |
 | Product intent, scope, or design taste | `docs/PRODUCT.md` |
 | Current capability or status | `docs/REQUIREMENTS.md` |

@@ -11,6 +11,9 @@ or deployment policy.
   architecture, ownership map, data flows, invariants, and first-week reading plan.
 - [`parallel-agent-development.md`](parallel-agent-development.md): sandbox
   worktrees, promotion, and cleanup.
+- [`issue-workflow.md`](issue-workflow.md): GitHub issues as the shared task board
+  across chat sessions, including claiming, triage and implementation comments,
+  and closing.
 - [`setup-oauth.md`](setup-oauth.md): local Google OAuth setup.
 
 Update these guides when the development workflow or commands change. Product

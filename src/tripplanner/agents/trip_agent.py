@@ -381,13 +381,17 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
   missing and a home city is available; destination-only travel is valid, so
   never invent an origin.
 
-  In interactive mode, call request_trip_input only when that one review would
-  materially change the trip. Include the relevant saved or inferred facts already
-  applied in known_context_json, plus only useful trip-specific fields with sensible
-  defaults. Capable clients render this as pre-filled controls. Do not ask merely to
-  confirm a sensible inference. After the tool call, ask one short natural-language
-  question for clients that do not support structured inputs. Never repeat the choices
-  as a long numbered list and never ask again after the user submits or skips the review.
+  In interactive mode you are asked to call request_trip_input for exactly one
+  prefilled review before the trip is created. Include the relevant saved or inferred
+  facts already applied in known_context_json, plus the trip-shaping fields that are
+  still unresolved, each with a sensible default. Prefer start date ("date"), trip
+  length ("number"), and origin city ("text", left empty when no home city is known)
+  alongside the budget/style choices, so the traveller can correct the facts that
+  change the plan most. Capable clients render this as pre-filled controls. Do not ask
+  merely to confirm a sensible inference. After the tool call, ask one short
+  natural-language question for clients that do not support structured inputs. Never
+  repeat the choices as a long numbered list and never ask again after the user
+  submits or skips the review.
   Save durable preference answers/extractions immediately via the appropriate
   tool. Treat choices that are explicitly limited to this trip as trip inputs,
   not permanent defaults.

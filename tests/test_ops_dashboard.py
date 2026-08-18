@@ -107,6 +107,17 @@ def test_ops_overview_is_owner_only_and_hidden_from_openapi(monkeypatch) -> None
     assert _client(monkeypatch).get("/ops/overview").status_code == 404
 
 
+def test_ops_overview_is_reachable_on_a_local_run(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    monkeypatch.setenv("WEB_SESSION_SECRET", _SECRET)
+    monkeypatch.setenv("OPS_DASHBOARD_OWNER_EMAIL", "owner@example.com")
+
+    response = TestClient(api.app).get("/ops/overview")
+
+    assert response.status_code == 200
+    assert {"business", "requests", "models"} <= response.json().keys()
+
+
 def test_analytics_event_records_only_allowlisted_content_free_fields(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     reset()
     client = _client(monkeypatch, "owner@example.com")

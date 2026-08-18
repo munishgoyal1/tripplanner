@@ -360,12 +360,15 @@ def _pending_trip_kickoff_answer(messages: list[BaseMessage]) -> bool:
     return graph_policy.pending_trip_kickoff_answer(messages)
 
 
-def _trip_kickoff_tool_choice(messages: list[BaseMessage]) -> str | None:
+def _trip_kickoff_tool_choice(
+    messages: list[BaseMessage], *, interactive: bool = False
+) -> str | None:
     """Choose the required preference-aware step before creating a new trip."""
     return graph_policy.trip_kickoff_tool_choice(
         messages,
         _active_trip_for_policy(),
         has_planning_intent=latest_user_has_planning_intent(messages),
+        interactive=interactive,
     )
 
 
@@ -388,7 +391,30 @@ def trip_agent(state: AgentState) -> AgentState:
         active_trip=_active_trip_for_policy(),
         proposal_only=proposal_only,
         has_planning_intent=latest_user_has_planning_intent(state["messages"]),
+        interactive_questions=interactive_questions,
     )
+    if decision.awaiting_kickoff_answer:
+        app_event(
+            "agent_model_round",
+            tool_phase=decision.tool_phases,
+            forced_reason=decision.forced_reason,
+            message_count=len(state["messages"]),
+        )
+        instructions = [
+            build_trip_system_prompt(),
+            SystemMessage(content=(
+                "You have just asked the traveller one prefilled review and their answer "
+                "has not arrived yet. Do not call any tool and do not create or update a "
+                "trip now. Reply with one short natural-language version of the same "
+                "question, naming the choices you prefilled, and say they can submit the "
+                "card or skip it to use the saved defaults."
+            )),
+        ]
+        response = _get_llm().invoke(
+            instructions + _messages_for_model(state["messages"])
+        )
+        return {"messages": [response], "current_agent": "trip"}
+
     if decision.budget_exhausted:
         gaps = list(decision.completion_gaps)
         app_event(

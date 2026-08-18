@@ -669,12 +669,13 @@ export interface TripInputOption {
 export interface TripInputField {
   id: string;
   label: string;
-  kind: "single" | "multi" | "boolean" | "number";
+  kind: "single" | "multi" | "boolean" | "number" | "text" | "date";
   value: string | string[] | boolean | number;
   options?: TripInputOption[];
   min?: number;
   max?: number;
   step?: number;
+  placeholder?: string;
 }
 
 export interface TripInputRequest {
