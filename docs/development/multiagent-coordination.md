@@ -160,17 +160,14 @@ tripplanner.worktrees/multiagent/
 
 Slots are reusable worktrees, not per-issue creations. Creating a worktree per
 small issue would re-install frontend dependencies and re-link the client package
-every time; reusing a slot keeps `node_modules` and the linked packages warm. What
-is *not* reused is the branch or the agent context: every attempt gets a fresh
-branch and a fresh session, so one issue never inherits another's reasoning.
-
-Active worker branches are
-`multiagent/slot-<s>-issue-<n>-attempt-<k>`, matching the slot and GitHub issue
-shown in the worker chat title. The controller publishes and attaches upstream
-tracking before the worker starts, so VS Code never presents a locally created
-attempt as an unpublished branch. The attempt number is derived from both legacy
-and current attempt branches on the remote, so a wiped runtime directory cannot
-reuse `attempt-1`.
+every time; reusing a slot keeps `node_modules` and the linked packages warm.
+Each slot also owns exactly one reusable branch, `multiagent/slot-1` or
+`multiagent/slot-2`. The controller resets that branch to the validated baseline
+with `--force-with-lease` before each assignment and attaches upstream tracking
+before the worker starts. Issue and attempt identity belongs to controller state,
+the worker chat title, transcript, commit message, and GitHub issue rather than
+accumulating Git refs. Every attempt still gets a fresh agent session, so one
+issue never inherits another's reasoning.
 
 Lane labels are `lane:mw-1` and `lane:mw-2`, distinct from `lane:sbx-<n>`.
 
@@ -191,7 +188,7 @@ Lane labels are `lane:mw-1` and `lane:mw-2`, distinct from `lane:sbx-<n>`.
 A worker receives a complete, immutable assignment. It never watches GitHub and
 never chooses what to work on.
 
-1. Start from the integration baseline SHA in its slot, on a fresh branch.
+1. Start from the integration baseline SHA on its reset slot branch.
 2. Read the issue, the canonical docs that own the area, and the nearby tests.
 3. Post `## Triage` before editing anything.
 4. Change only the assigned outcome, and commit with `Fixes #<n>` in the body.
@@ -203,13 +200,11 @@ A worker never merges, never closes an issue, never pushes outside its own
 branch, and never picks up a second issue.
 
 Before accepting a completed attempt, the controller fetches its remote branch,
-requires `origin/<attempt-branch>` to equal the reported SHA, and establishes
-upstream tracking in the reusable slot. Completed attempt branches remain frozen
-at that commit as evidence; they are not rebased or advanced to later master.
-After that verification, the reusable worktree switches to its tracked
-`multiagent/slot-<s>` parking branch at the current validated baseline. The
-historical attempt branch remains available locally and remotely without making
-the visible slot checkout look behind.
+requires `origin/multiagent/slot-<s>` to equal the reported SHA, and integrates
+that exact immutable commit. Once accepted, the controller advances the reusable
+slot branch to the validated integration baseline. The integration commit,
+controller state, transcript, and GitHub issue preserve the attempt; no
+per-attempt branch remains to become stale.
 
 Copilot CLI sessions are named `Slot N | #<issue> <concise title>`, so process
 and session lists show which slot owns each requirement without opening logs.
@@ -242,9 +237,9 @@ as the next attempt to whichever slot is free — slots are interchangeable.
 - Every worker in a live batch uses that immutable baseline. The controller does
   not move a running worker's files when another sandbox lands on `master`.
 - Reusable slot worktrees are parked on tracked `multiagent/slot-<s>` branches
-  whenever a successful assignment releases them and whenever the idle baseline
-  refreshes. Failed or dirty attempts are left untouched for recovery. A new
-  attempt branch is always created from the validated current batch baseline.
+  whenever an assignment releases them and whenever the idle baseline refreshes.
+  A dirty failed attempt is left untouched for recovery; otherwise the same slot
+  branch is reset to the validated current baseline with force-with-lease.
 - Focused validation runs after each merge. The baseline advances only on success.
 - Because Coordinator and sandbox publication can advance `master`, the batch
   re-syncs with current `origin/master` and re-runs aggregate validation before
