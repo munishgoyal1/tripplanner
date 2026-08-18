@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Deferred engineering backlog
+    url: https://github.com/munishgoyal1/tripplanner/blob/master/docs/eng-backlog/README.md
+    about: Cross-cutting reliability work already recorded and intentionally deferred.
+  - name: Future features and roadmap
+    url: https://github.com/munishgoyal1/tripplanner/blob/master/docs/roadmap/README.md
+    about: An idea you have not selected yet belongs here, not in an issue.
