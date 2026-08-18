@@ -1,0 +1,429 @@
+{
+  "status": "draft",
+  "trip_id": "istanbul_2027-05-07_2027-05-12",
+  "trip_number": 1,
+  "created_at": "2026-08-17T19:14:44.587757",
+  "destination": "Istanbul",
+  "origin": "Delhi",
+  "departure_date": "2027-05-07",
+  "return_date": "2027-05-12",
+  "travelers": "2 adults, 2 children (ages 6 and 9)",
+  "notes": "Budget cap INR 80,000 for all-inclusive trip. Balanced sightseeing and leisure. Minimum 3-star hotel. Economy flights. Prefer direct flights.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Istanbul",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-07",
+      "title": "Day 1 · Arrival in Istanbul",
+      "summary": "Arrive from Delhi, transfer to hotel, settle in, and enjoy a relaxing evening walk near Sultanahmet Square.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Istanbul",
+          "kind": "flight",
+          "time": "06:00",
+          "arrival_time": "13:00",
+          "duration_min": 390,
+          "note": "Direct flight, economy class"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Sultanahmet Square",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Evening stroll"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-08",
+      "title": "Day 2 · Historic Istanbul",
+      "summary": "Explore Istanbul’s historic heart: Hagia Sophia, Blue Mosque, and Topkapi Palace. Lunch at a family-friendly restaurant.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Hagia Sophia",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Blue Mosque",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Family Lunch (TBD)",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Topkapi Palace",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-09",
+      "title": "Day 3 · Bosphorus & Spice Bazaar",
+      "summary": "Morning Bosphorus cruise, visit Spice Bazaar, and enjoy Turkish delights. Evening at leisure.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Bosphorus Cruise",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Spice Bazaar",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Lunch (TBD)",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-10",
+      "title": "Day 4 · Kid-Friendly Istanbul",
+      "summary": "Visit Istanbul Aquarium, explore Miniaturk, and enjoy a family dinner.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Istanbul Aquarium",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Miniaturk",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Family Lunch (TBD)",
+          "kind": "meal",
+          "time": "14:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-05-11",
+      "title": "Day 5 · Grand Bazaar & Departure",
+      "summary": "Morning shopping at Grand Bazaar, transfer to airport for flight back to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Grand Bazaar",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Lunch (TBD)",
+          "kind": "meal",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Flight: Istanbul to Delhi",
+          "kind": "flight",
+          "time": "15:00",
+          "arrival_time": "23:00",
+          "duration_min": 480,
+          "note": "Return flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-17T19:15:55.571717"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T19:16:35.730447",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T19:16:35",
+      "expires_at": "2026-08-18T07:16:35"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_istanbul_2027_05_07_2027_05_12",
+      "kind": "lodging",
+      "created_at": "2026-08-17T13:46:35.724935Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Istanbul",
+        "date": "2027-05-07"
+      },
+      "subject": "Stay in Istanbul",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_162a1fe3f027",
+      "options": [
+        {
+          "id": "opt_stay_162a1fe3f027",
+          "mode": null,
+          "label": "Radisson Residences Vadistanbul",
+          "detail": "Apartment - One Bedroom",
+          "price": {
+            "amount": 97204.42,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-07",
+            "checkout": "2027-05-12",
+            "room_name": "Apartment - One Bedroom",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Ayazağa Mahallesi Kemerburgaz Caddesi 6A No:7V/101 Sarıyer",
+            "rating": 9.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1f7764",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gE6R1lZVE9NQldHRTNURU5aVUdaU0RNTkpXTVUzVElNUlFHSlNERU1CV01ZM0dLTlJWR0lZRE1NUldHVTNESU5aU0daVERNWlJXTVI2RENJWlNHQVpET01CVkdBM1hZTVJRR0kzVEFOSlJHSjZHSzNTN0tWSlhZU0tPUFJFVTRVVDRHSkFURVFaV0ZVNFhZTkJWR0k0WFkyS1FNNUtVUTdCUkc0NERNT0pYR1FaVFNNQlpIRTRVVVVTVE9JUlRFTUJXR0lZVFFNQkRHNDJEQ0xKU0dBM0RFTUpZR0I2RTRVU0dKWjZERU1CU0dZWURRTUpWR0VZREFNRDRHRjZGRU1KVkdZMkhZT0pYR0lZRElOQlNFTkpFNkkyT0tKREU0SVpTR0FaRE1MSlFIQVdUQ05KQUdFWURVTUJRRU2jcHJjy0D3u0a4UeuFpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jut0FwYXJ0bWVudCAtIE9uZSBCZWRyb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMjA2MjE4MKNzaWQCo2hpZKhscDFmNzc2NKNvY2ORgqFhAqFjkgYJo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNS0wN6Jjb6oyMDI3LTA1LTEyo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMGZmOTRhYTFlNlM5R2xac1REbjdKbHJLbXNlSm1GTWlmdFEyo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZKNWQVShYctAwPkGZmZmZqFjo0lOUoShacOhZLFBY2NvbW1vZGF0aW9uIFRheKFhy0Ca7HCj1wo9oWOjSU5SomxwwKNia3QG",
+              "rate_id": "I5MVSVCPJVBFOR2FGNKEKTS2KVDVUU2EJVHEUV2NKUZVISKNKJIUOSSTIRCU2QSXJVMTGR2LJZJFMR2JLFCE2TKSK5DVKM2EJFHFUU2HLJKEITK2KJLU2URWIRBUSWSTI5AVURCPJVBFMR2BGNMFSTKSKFDUSM2UIFHEUUSHJI3EOSZTKM3UWVSKLBMVGS2PKBJEKVJUKVKDIR2KIFKEKUK2K5DFKNCYLFHEEVSHJE2FQWJSJNIU2NKLKVITOQSSI42DIRCNJ5FFQR2RLJKFGTKCLJEEKNCVKVKVGVCPJFJFIRKNIJLUOSKZKRIU2QSEI42DERCDJRFFGR2BGNCEKTKKLFDUENSFGRKVGR2KLI3EIRKNIJJUOWKZIRIU2SSWI5CVSRCBJVCDIR2GGZDEKTKKKZDVSMSILFHUUWCHJFMUISKOIJJUKTSKIU3ESMSPJNFEIRJUJFNFGR2BLJCE2TCKKFEECV2UINHEUQKHIVMUIVKNIJIUKTL4HE3TEMBUFY2DE7D4KJHXY7D4PRAXAYLSORWWK3TUEAWSAT3OMUQEEZLEOJXW63L4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T13:46:35.686205Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_0e0147d7ffab",
+          "mode": null,
+          "label": "Hampton By Hilton Istanbul Airport, Arnavutkoy",
+          "detail": "TWIN ROOM",
+          "price": {
+            "amount": 116436.27,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs ₹19,232 more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-07",
+            "checkout": "2027-05-12",
+            "room_name": "TWIN ROOM",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Mehmet Akif Ersoy Mah. Gorele Sk.",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp655855b7",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEaRzQyRE9OWldIRTNHS01SUUc0WkRNWlJXTVkzR0k3QlJFTVpEQU1SWEdBMlRBTjM0R0lZREVOWlFHVVlURTdERk5aUFZLVTM0SkZISFlTS09LSjZERVFKU0lNM0MyT0w0R1EyVEVPTDRORklHT1ZLSVBRWVRPT0JXSEUzVElNWlpHQTRUU09LS0tKSlhFSVpSRzRZREFNUllHNDRURU5aREdFM1RLTUJOR0UzVEFNQlNIQTNUU01SWFBSSEZFUlNPUFFaREFNUldHQTREQ05CUkdBWURBN0JSUFJKRENNSlZHQjZEQ01KV0dRWlRNTVJYRU5CRUVJMk9LSkRFNElaU0dBWkRNTEpRSEFXVENOQkFHRVlEVU1CUUVNo3ByY8tA_G1EUeuFH6Vvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqlUV0lOIFJPT02jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKoxNzAwMjg3OTI3o3NpZAKjaGlkqmxwNjU1ODU1Yjejb2NjkYKhYQKhY5IGCaNjdXKjSU5SomduoklOomNpqjIwMjctMDUtMDeiY2-qMjAyNy0wNS0xMqNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDBmZjk0YWExZTZTOUdsWnNURG43SmxyS21zZUptRk1pZnRRMqNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpwqFko1ZBVKFhy0DGvdCj1wo9oWOjSU5ShKFpwqFkrmdvdmVybm1lbnQgdGF4oWHLQJIxcKPXCj2hY6NJTlKibHDAo2JrdAM=",
+              "rate_id": "I42DERCPJZNFOSCFGNDUWTKSKFDTIWSEJVNFEV2NLEZUOSJXIJJEKTK2IRAU2USYI5ATEVCBJYZTIR2JLFCEKTS2KFDVKWKUIU3UIRSOLJIFMS2VGM2EURSIJBMVGS2PJNFDMRCFKFFFGSKNGNBTET2MGRDVCMSUIVHUYNCOIZEUOT2WJNEVAUKZKRHU6QSXJBCTGVCJJVNFUR2BGRKFGT2LJNFUUSSYIVEVUUSHGRMUIQKNKJMUONBUKRCU4WSEI5CTGVCLJVBE4R2FGNKECTKCKNEECM2UKNGVEWCQKJEEMRKSKNHVAUK2IRAU2USXI5ATIRCDJZBFER2BLFCECN2CKJIFESSEINGUUVSHII3EIQ2NJJLUOUK2KRGU2USYIVHEERKFJEZE6S2KIRCTISK2KNDUCWSEJVGEUUKIIFLVIQ2OIJAUORKZIRKU2QSRIVGXYMJRGY2DGNROGI3XY7CCJF6HY7D4KRLUSTRAKJHU6TL4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T13:46:35.686205Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_f83bc12b42dc",
+          "mode": null,
+          "label": "Radisson Collection Hotel, Vadistanbul",
+          "detail": "Collection Room City View",
+          "price": {
+            "amount": 135581.25,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs ₹38,377 more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-07",
+            "checkout": "2027-05-12",
+            "room_name": "Collection Room City View",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Ayazaga Mahallesi, Azerbaycan Cad. Sariyer, No.109/A, Sariyer, Istanbul, 34485",
+            "rating": 0.0,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1b8387",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFER1laVE1aUldNTTNHR05SVkdZWlRPTkJXSEUzR01OVEZHSVlET01SV01ZM0dNTlRFR0lZRE1NWldIRTNUSU5aWkdJWURPTlJXSEUzREtOWlhQUVlTR01SUUdJM1RBTkpRRzU2REVNQlNHNFlES01KU1BSU1c0WDJWS042RVNUVDRKRkhGRTdCU0lFWkVHTlJOSEY2RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFNOWlVHTTRUQU9KWkhGRkZFVTNTRU1ZVFFNQlRHRTJER0laUkc0MlRBTEpSSEFZREdNSlVHTjZFNFVTR0paNkRFTUJTR1lZRFFNSlVHRVlEQU1ENEdGNkZFTkpXR1U0WFlNSlRHVTJUUU1KU0dVUlZFVFpESlpKRU1UUkRHSVlERU5STkdBNEMyTUpVRUFZVEFPUlFHQVJRo3ByY8tBAIzqAAAAAKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrlDb2xsZWN0aW9uIFJvb20gQ2l0eSBWaWV3o29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTgwMzE0M6NzaWQCo2hpZKhscDFiODM4N6NvY2ORgqFhAqFjkgYJo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNS0wN6Jjb6oyMDI3LTA1LTEyo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMGZmOTRhYTFlNlM5R2xac1REbjdKbHJLbXNlSm1GTWlmdFEyo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacKhZKNWQVShYctAynsPXCj1w6Fjo0lOUoShacKhZK5nb3Zlcm5tZW50IHRheKFhy0CVLz1wo9cKoWOjSU5SomxwwKNia3QH",
+              "rate_id": "I5MVUVCNLJJFOTKNGNDUOTSSKZDVSWSUJ5HEEV2IIUZUOTKOKRDEOSKZIRHU2USXJVMTGR2NJZKEKR2JLFCE2TK2K5EEKM2UJFHFUWSHJFMUIT2OKJLUQRJTIRFU4WSYKBIVSU2HJVJFCR2JGNKECTSKKFDTKNSEIVGUEU2HGRMUIS2NJJJVAUSTK42FQMSWJNHDMRKTKRKDISSGJBDEKN2CKNEUKWSFI5HFETSIIY3EISKOJJJUQRRWI5JVKRCIJNLEKSCZJVFFQSCBGNCFGTS2KVDU2NCUIFHUUWSIIZDEMRKVGNJUKTKZKRIU2QSUI5CTERCHJFNFERZUGJKECTCKKJEECWKEI5GUUVKHJY3EKNCVKNDUUWRWIRCU2QSTI5MVSRCRJVFFKR2FLFCECTKEGRDUMNSGIVHEUV2HKU2FQWKNJJKEOVJSKRIU2SSTI5KVEVSFKRNEISS2JJCU2VCSIRDUSWKEIVHFETSHIE2EGMSNJJKUKQKZKRAU6USRI5AVEUL4GEZTKNJYGEXDENL4PRJE67D4PR6EG33MNRSWG5DJN5XCAUTPN5WSAQ3JOR4SAVTJMV3XYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T13:46:35.686205Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 97204.42,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "istanbul_2027-05-07_2027-05-12",
+  "user_id": "corpus-istanbul-budget-young-family-5d"
+}

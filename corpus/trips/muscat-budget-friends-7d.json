@@ -1,0 +1,315 @@
+{
+  "status": "draft",
+  "trip_id": "muscat_2027-12-18_2027-12-25",
+  "trip_number": 1,
+  "created_at": "2026-08-17T18:49:20.571777",
+  "destination": "Muscat",
+  "origin": "Hyderabad",
+  "departure_date": "2027-12-18",
+  "return_date": "2027-12-25",
+  "travelers": "4 adults",
+  "notes": "Total budget INR 80,000. Balanced trip style. Minimum 3-star hotel. Economy flights.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Muscat",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [
+    {
+      "option": 1,
+      "airline": "Duffel Airways",
+      "price": 736.32,
+      "currency": "USD",
+      "origin": "Hyderabad",
+      "destination": "Muscat",
+      "departure_time": "2027-12-18T13:09",
+      "arrival_time": "2027-12-18T15:11",
+      "return_time": "2027-12-25T18:34",
+      "return_arrival_time": "2027-12-25T23:36",
+      "duration_min": 212,
+      "direct": true
+    }
+  ],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-18",
+      "title": "Day 1 · Arrival in Muscat",
+      "summary": "Arrive in Muscat from Hyderabad, check in to hotel, evening stroll along the Corniche.",
+      "stops": [
+        {
+          "name": "Flight: Hyderabad to Muscat",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "12:00",
+          "duration_min": 210,
+          "note": "Direct flight, economy class"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Mutrah Corniche",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening stroll"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-19",
+      "title": "Day 2 · Old Muscat & Souq",
+      "summary": "Explore Old Muscat, visit Sultan's Palace, Al Jalali Fort, Mutrah Souq.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Sultan's Palace",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Al Jalali Fort",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Mutrah Souq",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-20",
+      "title": "Day 3 · Grand Mosque & Opera House",
+      "summary": "Visit Sultan Qaboos Grand Mosque, Royal Opera House, local shopping.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Sultan Qaboos Grand Mosque",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Royal Opera House Muscat",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-12-21",
+      "title": "Day 4 · Day Trip to Nizwa",
+      "summary": "Day trip to Nizwa Fort & Souq, explore the old town.",
+      "stops": [
+        {
+          "name": "Drive: Muscat to Nizwa",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 90,
+          "distance_km": 160
+        },
+        {
+          "name": "Nizwa Fort",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Nizwa Souq",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Drive: Nizwa to Muscat",
+          "kind": "transport",
+          "time": "13:15",
+          "duration_min": 90,
+          "distance_km": 160
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "15:15",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-12-22",
+      "title": "Day 5 · Beach & Relaxation",
+      "summary": "Relax at Qurum Beach, try local seafood, evening at leisure.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Qurum Beach",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 180
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-12-23",
+      "title": "Day 6 · Wadi Day Trip",
+      "summary": "Day trip to Wadi Shab or Wadi Bani Khalid for hiking and swimming.",
+      "stops": [
+        {
+          "name": "Drive: Muscat to Wadi Shab",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 90,
+          "distance_km": 140
+        },
+        {
+          "name": "Wadi Shab",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 180
+        },
+        {
+          "name": "Drive: Wadi Shab to Muscat",
+          "kind": "transport",
+          "time": "13:45",
+          "duration_min": 90,
+          "distance_km": 140
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "15:45",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-12-24",
+      "title": "Day 7 · Departure",
+      "summary": "Check out, last-minute shopping, flight back to Hyderabad.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Flight: Muscat to Hyderabad",
+          "kind": "flight",
+          "time": "14:00",
+          "arrival_time": "17:00",
+          "duration_min": 210,
+          "note": "Direct flight, economy class"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-17T18:56:05.359684"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T18:57:05.966458",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-17T18:57:05",
+      "expires_at": "2026-08-17T19:27:05"
+    }
+  ],
+  "id": "muscat_2027-12-18_2027-12-25",
+  "user_id": "corpus-muscat-budget-friends-7d"
+}

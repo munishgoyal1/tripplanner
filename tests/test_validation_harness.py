@@ -499,6 +499,60 @@ def test_a_rule_that_never_fired_is_still_listed(tmp_path: Path) -> None:
     assert any(item["hits"] == 0 for item in payload["rules"])
 
 
+def test_a_rule_counts_the_trips_it_touches_not_just_the_times_it_fired(
+    tmp_path: Path,
+) -> None:
+    """One trip repeating a mistake daily is not every trip making it once."""
+    from tripplanner.validation import report as report_module
+
+    result = _audit_of(_record(), tmp_path=tmp_path)
+    payload = report_module.build_report(result, {"accepted": {}})
+
+    fired = [item for item in payload["rules"] if item["hits"]]
+    assert fired, "the fixture is expected to trip at least one rule"
+    for item in fired:
+        assert 1 <= item["trips"] <= payload["corpus"]["size"]
+        assert item["trips"] <= item["hits"]
+
+
+def test_a_rule_reports_how_far_it_moved_since_the_previous_audit(
+    tmp_path: Path,
+) -> None:
+    """A count with nothing to compare against cannot show whether work helped."""
+    from tripplanner.validation import report as report_module
+
+    result = _audit_of(_record(), tmp_path=tmp_path)
+    first = report_module.build_report(result, {"accepted": {}})
+    assert all(item["first_seen"] for item in first["rules"])
+    assert first["compared_with"] == ""
+
+    second = report_module.build_report(result, {"accepted": {}}, first)
+
+    assert second["compared_with"] == first["generated_at"]
+    by_code = {item["code"]: item for item in first["rules"]}
+    for item in second["rules"]:
+        assert not item["first_seen"]
+        assert item["was_trips"] == by_code[item["code"]]["trips"]
+        assert item["was_hits"] == by_code[item["code"]]["hits"]
+
+
+def test_a_rule_added_after_the_last_audit_reads_as_new_not_as_a_regression(
+    tmp_path: Path,
+) -> None:
+    """Without this, every new rule would look like quality suddenly got worse."""
+    from tripplanner.validation import report as report_module
+
+    result = _audit_of(_record(), tmp_path=tmp_path)
+    previous = report_module.build_report(result, {"accepted": {}})
+    previous["rules"] = [item for item in previous["rules"] if item["code"] != "R1"]
+
+    payload = report_module.build_report(result, {"accepted": {}}, previous)
+
+    fresh = next(item for item in payload["rules"] if item["code"] == "R1")
+    assert fresh["first_seen"]
+    assert fresh["was_trips"] == 0
+
+
 def test_a_record_without_a_stored_identity_is_not_offered_as_openable(
     tmp_path: Path,
 ) -> None:
@@ -993,6 +1047,40 @@ def test_the_primary_local_database_may_hold_cache_but_hosted_ones_may_not() -> 
             place_cache.assert_cache_target(hosted)
     with pytest.raises(ValueError):
         place_cache.assert_cache_target("something-else")
+
+
+def test_the_central_dump_is_a_cache_target_and_no_lane_reads_it_at_request_time() -> None:
+    """It is a copy kept for the hooks, not a database the app is ever pointed at."""
+    from tripplanner.validation import place_cache
+
+    assert place_cache.assert_cache_target(place_cache.CENTRAL_DATABASE)
+    assert place_cache.CENTRAL_DATABASE != place_cache.PRIMARY_DATABASE
+
+    source_root = Path(place_cache.__file__).resolve().parents[1]
+    naming_it = {
+        path.relative_to(source_root).as_posix()
+        for path in source_root.rglob("*.py")
+        if place_cache.CENTRAL_DATABASE in path.read_text(encoding="utf-8")
+    }
+    assert naming_it == {"validation/place_cache.py"}
+
+
+def test_a_sync_writes_only_what_the_other_side_does_not_already_have() -> None:
+    """Every stack start runs this, so a warm cache must cost no writes at all."""
+    from tripplanner.validation import place_cache
+
+    central = {
+        "eiffel tower|paris": {"lat": 48.8, "__at__": 100.0},
+        "louvre|paris": {"lat": 48.86, "__at__": 100.0},
+    }
+    live = {
+        "eiffel tower|paris": {"lat": 48.8, "__at__": 50.0},  # older, keep central's
+        "louvre|paris": {"lat": 48.861, "__at__": 200.0},  # newer, hand it over
+        "orsay|paris": {"lat": 48.85, "__at__": 60.0},  # unseen, hand it over
+    }
+    changed = place_cache.delta(central, live)
+    assert set(changed) == {"louvre|paris", "orsay|paris"}
+    assert place_cache.delta(central, central) == {}
 
 
 def test_a_throttled_run_waits_as_long_as_the_server_asked() -> None:
