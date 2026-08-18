@@ -11,6 +11,7 @@ never paid for twice.
 
 from __future__ import annotations
 
+import errno
 import http.client
 import json
 import time
@@ -48,6 +49,24 @@ _MAX_RETRY_WAIT_SEC = 180.0
 MIN_ATTEMPTS_BEFORE_GIVING_UP = 10
 MAX_BARREN_SHARE = 0.25
 _MAX_ATTEMPTS = 4
+
+
+def api_health_error(api: str, timeout: float = 3.0) -> str | None:
+    """Return why the planner API cannot accept corpus work, or None when ready."""
+    request = urllib.request.Request(f"{api.rstrip('/')}/health")
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            response.read()
+    except (OSError, http.client.HTTPException) as error:
+        return f"{type(error).__name__}: {error}"
+    return None
+
+
+def _is_connection_refused(error: BaseException) -> bool:
+    reason = error.reason if isinstance(error, urllib.error.URLError) else error
+    return isinstance(reason, ConnectionRefusedError) or (
+        isinstance(reason, OSError) and reason.errno == errno.ECONNREFUSED
+    )
 
 
 @dataclass
@@ -197,7 +216,10 @@ def _send_with_retry(api: str, message: str, user_id: str, request_id: str) -> s
             # A dropped connection may still have completed the turn, so the retry keeps
             # the request id: a finished turn replays instead of being paid for twice.
             if attempt == _MAX_ATTEMPTS:
-                return f"{type(error).__name__}: {error}"
+                category = (
+                    "API unavailable" if _is_connection_refused(error) else type(error).__name__
+                )
+                return f"{category}: {error}"
             time.sleep(min(30.0, 2.0 * attempt))
     return "exhausted attempts"
 
@@ -266,6 +288,7 @@ def build(
     exhausted = False
     barren = 0
     giving_up = False
+    api_unavailable = False
 
     def _estimate() -> float:
         return max(1.0, spent / len(produced)) if produced else ASSUMED_COST_INR
@@ -275,12 +298,14 @@ def build(
         return barren / attempts if attempts else 0.0
 
     def _record(result: _Attempt) -> None:
-        nonlocal spent, model, barren
+        nonlocal spent, model, barren, api_unavailable
         request = result.request
         spent += result.cost_inr
         model = result.model or model
         if result.error:
             barren += 1
+            if result.error.startswith("API unavailable:"):
+                api_unavailable = True
             if on_progress:
                 on_progress(f"  {request.slug}: request failed ({result.error})")
             return
@@ -324,7 +349,12 @@ def build(
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         while True:
-            while not exhausted and not giving_up and len(in_flight) < workers:
+            while (
+                not exhausted
+                and not giving_up
+                and not api_unavailable
+                and len(in_flight) < workers
+            ):
                 if target > 0 and len(produced) + len(in_flight) >= target:
                     break
                 hold = _estimate()
@@ -371,7 +401,9 @@ def build(
                         " request by hand before spending more."
                     )
 
-    if giving_up:
+    if api_unavailable:
+        stopped = "api-unavailable"
+    elif giving_up:
         stopped = "barren"
     elif target > 0 and len(produced) >= target:
         stopped = "target"
