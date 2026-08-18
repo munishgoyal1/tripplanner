@@ -18,7 +18,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `smoke_test.py` | Local provider credential and connectivity smoke |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
 | `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes; linked Lab sandboxes version successful iterations and promotion |
-| `dev/full-2way-sync.ps1` | Convergence sync the launcher above calls; tolerates dirty lanes and reports what it could not finish |
+| `dev/full-2way-sync.ps1` | Convergence sync that keeps active WIP visible, publishes clean committed lanes, and reports overlaps or deferred publication |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/debug_store_cli.py` | Show, maintain, restore, or tear down the local debug trip store |
 | `dev/debug-store.ps1` | Dispatcher the debug-store launchers call |
@@ -37,7 +37,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/Run-Latest-Master.cmd` | Windows owner-facing synchronize-and-run launcher for primary `master` |
 | `win/user/Sync-Sbxs-FromMaster.cmd [sandbox]` | Windows launcher to fast-forward primary `master`, then update every sandbox or only the selected one |
 | `win/user/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
-| `win/user/Full-2Way-Sync.cmd` | Converge every lane onto one commit when things have drifted. Commits stray work on its own lane, auto-resolves what the resolver already knows, never stops on one bad lane, and ends with a numbered list of what is left. Re-runnable |
+| `win/user/Full-2Way-Sync.cmd` | Converge committed lane history without hiding active edits. Clean committed lanes publish to `master`; dirty lanes take non-overlapping updates and defer publication. Re-runnable |
 | `win/user/debug/Show-DebugStore.cmd [query] [--days N]` | List or search archived local trips by number, destination, keyword, or label |
 | `win/user/debug/Maintain-DebugStore.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report store health |
 | `win/user/debug/Restore-DebugStore.cmd [sandbox] [days]` | Restore archived trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |

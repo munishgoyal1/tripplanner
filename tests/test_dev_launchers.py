@@ -279,3 +279,25 @@ def test_both_sync_commands_default_to_all_and_accept_one_sandbox() -> None:
     assert "foreach ($entry in $registered)" in two_way
     assert not (root / "scripts" / "dev" / "sync-latest-from-remote-master.ps1").exists()
     assert not (root / "scripts" / "dev" / "sync-two-way.ps1").exists()
+
+
+def test_full_sync_keeps_active_worktrees_visible() -> None:
+    root = Path(__file__).parents[1]
+    full_sync = (root / "scripts" / "dev" / "full-2way-sync.ps1").read_text(encoding="utf-8")
+    sandbox = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
+    update = sandbox[
+        sandbox.index('if ($PSCmdlet.ParameterSetName -eq "Update")') : sandbox.index(
+            'if ($PSCmdlet.ParameterSetName -eq "Rename")'
+        )
+    ]
+
+    assert "Push-LaneStash" not in full_sync
+    assert "stash push" not in full_sync
+    assert "publication deferred" in full_sync
+    assert "-AllowDirtyPrimary" in full_sync
+    assert "local work in progress overlaps the new origin/$BaseBranch" in full_sync
+    assert "Merge-IntoVisibleWorktree" in update
+    assert "stash" not in update.lower()
+    assert "merge-tree --write-tree --quiet" in sandbox
+    assert "SANDBOX_WIP_OVERLAP" in sandbox
+    assert "its worktree was left untouched" in sandbox
