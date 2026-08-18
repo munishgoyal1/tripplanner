@@ -1225,10 +1225,10 @@ the outcome.
   before dispatch but still checked out its persisted integration SHA, so later
   sandbox promotions on `master` remained absent until batch finalization.
 - A reusable idle slot does not need to display current `master`; changing it
-  continuously only creates churn and can disturb a live agent. Freshness belongs
-  at the first dispatch of an idle batch: merge current `origin/master` into the
-  integration lane, validate it, then snapshot one immutable baseline for every
-  worker in that batch.
+  continuously can disturb a live agent. Refresh the integration lane on each
+  idle controller cycle, then snapshot that validated baseline for every worker
+  in the next batch. Leave slot files alone until assignment, when their fresh
+  branch is created from that baseline.
 - A second reconciliation before opening the pull request remains necessary.
   Master can advance while workers run, and a batch is not valid merely because
   it started from a current base.

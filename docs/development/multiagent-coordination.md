@@ -199,9 +199,11 @@ as the next attempt to whichever slot is free — slots are interchangeable.
 
 - Integration merges the **exact pushed SHA**, never a branch name that may have
   moved.
-- `multiagent/integration` is long-lived. Immediately before the first dispatch
-  of an idle batch, the controller fetches and merges current `origin/master`,
-  validates the combined tree, and records that exact HEAD as the batch baseline.
+- `multiagent/integration` is long-lived. On every idle controller cycle, the
+  controller fetches `origin/master`; when it has advanced, the controller merges
+  it, validates the combined tree, and records that exact HEAD as the baseline.
+  The same reconciliation therefore always happens before the first dispatch of
+  a new batch.
 - Every worker in a live batch uses that immutable baseline. The controller does
   not move a running worker's files when another sandbox lands on `master`.
 - Reusable slot worktrees are refreshed when assigned, not continuously while

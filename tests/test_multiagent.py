@@ -528,6 +528,16 @@ def test_idle_batch_refreshes_and_validates_current_master(tmp_path, monkeypatch
     assert state.baseline_sha == "refreshed-head"
 
 
+def test_only_live_batch_states_freeze_the_baseline() -> None:
+    for assignment_state in ("dispatched", "running", "pushed", "integrated"):
+        state = core.State(assignments=[core.Assignment(state=assignment_state)])
+        assert runtime.batch_in_flight(state)
+
+    for assignment_state in ("in-pull-request", "failed", "blocked", "rejected"):
+        state = core.State(assignments=[core.Assignment(state=assignment_state)])
+        assert not runtime.batch_in_flight(state)
+
+
 def test_the_worker_report_is_read_from_its_trailing_block() -> None:
     report = core.parse_worker_report(
         "chatter\n```\nRESULT: done\nCOMMIT: abc123\nFILES: src/a.py\nVALIDATION: pytest ok\n```"

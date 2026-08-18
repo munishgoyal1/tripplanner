@@ -447,6 +447,13 @@ def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
     return True
 
 
+def batch_in_flight(state: core.State) -> bool:
+    return any(
+        item.state in ("dispatched", "running", "pushed", "integrated")
+        for item in state.assignments
+    )
+
+
 def dispatch(space: Workspace, state: core.State, repo: str) -> None:
     free = [f"slot-{index}" for index in range(1, SLOT_COUNT + 1)]
     busy = state.busy_slots()
@@ -462,12 +469,6 @@ def dispatch(space: Workspace, state: core.State, repo: str) -> None:
             busy.append(core.issue_footprint(issue))
 
     plan = core.plan_dispatch(issues, capacity=len(free), busy=tuple(busy))
-    batch_in_flight = any(
-        item.state in ("dispatched", "running", "pushed", "integrated")
-        for item in state.assignments
-    )
-    if plan.dispatch and not batch_in_flight and not refresh_idle_baseline(space, state):
-        return
     branches = remote_multiagent_branches(space)
 
     for issue, slot in zip(plan.dispatch, free, strict=False):
@@ -756,7 +757,8 @@ def cmd_run(space: Workspace, args: argparse.Namespace) -> int:
             state.lease = core.Lease.issue_to("controller", minutes=LEASE_MINUTES, pid=os.getpid())
             collect(space, state, repo)
             integrate(space, state, repo)
-            if not state.paused:
+            baseline_ready = batch_in_flight(state) or refresh_idle_baseline(space, state)
+            if not state.paused and baseline_ready:
                 dispatch(space, state, repo)
             finalise_batch(space, state, repo)
             state.last_cycle = core.format_time(core.utcnow())
