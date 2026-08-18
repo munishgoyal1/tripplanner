@@ -144,9 +144,11 @@ def build_input_request(
     # Context is cosmetic, so an over-long list is trimmed rather than costing
     # the traveller the whole card.
     clean_context = [line for line in map(_context_line, known_context) if line][:6]
-    if not isinstance(fields, list) or not 1 <= len(fields) <= 4:
-        raise ValueError("input requests must contain between 1 and 4 fields")
-    clean_fields = [_validate_field(field) for field in fields]
+    if not isinstance(fields, list) or not fields:
+        raise ValueError("input requests must contain at least one field")
+    # Six keeps the card compact; extras are trimmed because losing one field is
+    # far better than losing the whole review.
+    clean_fields = [_validate_field(field) for field in fields[:6]]
     ids = [field["id"] for field in clean_fields]
     if len(ids) != len(set(ids)):
         raise ValueError("input field ids must be unique")
@@ -178,7 +180,7 @@ def request_trip_input(
 ) -> str:
     """Present one compact, prefilled input request when critical trip facts are unresolved.
 
-    Use only in interactive planning mode. ``fields_json`` is a JSON array of 1-4
+    Use only in interactive planning mode. ``fields_json`` is a JSON array of 1-6
     fields. Supported kinds are ``single``, ``multi``, ``boolean``, ``number``,
     ``text``, and ``date``. Every field must include a sensible prefilled ``value``.
     Choice fields also include 2-6 ``options`` with ``value``, ``label``, and optional

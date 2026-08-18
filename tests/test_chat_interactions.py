@@ -123,6 +123,22 @@ def test_known_context_overflow_trims_instead_of_losing_the_card() -> None:
     assert payload["known_context"] == [f"fact {index}" for index in range(6)]
 
 
+def test_extra_fields_are_trimmed_instead_of_losing_the_card() -> None:
+    extra = [
+        {"id": f"choice_{index}", "label": f"Choice {index}", "kind": "boolean", "value": True}
+        for index in range(7)
+    ]
+
+    payload = extract_input_request(
+        request_trip_input.invoke(
+            {"question": "Confirm a few details", "fields_json": json.dumps(extra)}
+        )
+    )
+
+    assert payload is not None
+    assert len(payload["fields"]) == 6
+
+
 def test_request_id_is_stable_for_replay() -> None:
     arguments = {
         "question": "Anything different for this trip?",
