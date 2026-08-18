@@ -818,6 +818,12 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                     input_request = extract_input_request(output)
                     if input_request is not None:
                         yield _sse("input_request", input_request)
+                    elif name == "request_trip_input":
+                        # Without this the card simply never appears and nothing says why.
+                        app_event(
+                            "api_chat_input_request_rejected",
+                            detail=str(getattr(output, "content", output))[:200],
+                        )
                     if output is not None:
                         # ToolNode wraps the result in a ToolMessage; the raw
                         # @tool may also surface a plain string.

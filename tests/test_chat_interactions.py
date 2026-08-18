@@ -87,6 +87,27 @@ def test_kickoff_rejects_a_malformed_date() -> None:
     assert extract_input_request(result) is None
 
 
+def test_known_context_survives_object_shaped_facts() -> None:
+    payload = extract_input_request(
+        request_trip_input.invoke(
+            {
+                "question": "Confirm a few details",
+                "known_context_json": json.dumps(
+                    [{"trip_style": "balanced"}, {"budget_level": "moderate"}, "Vegetarian"]
+                ),
+                "fields_json": json.dumps(_fields()),
+            }
+        )
+    )
+
+    assert payload is not None
+    assert payload["known_context"] == [
+        "trip_style: balanced",
+        "budget_level: moderate",
+        "Vegetarian",
+    ]
+
+
 def test_request_id_is_stable_for_replay() -> None:
     arguments = {
         "question": "Anything different for this trip?",

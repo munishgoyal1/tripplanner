@@ -105,6 +105,29 @@ def _validate_field(raw: Any) -> dict[str, Any]:
     return field
 
 
+def _context_line(value: Any) -> str:
+    """Render one already-applied fact as a short line.
+
+    The model reasonably emits ``{"trip_style": "balanced"}`` as often as a plain
+    string, and rejecting that shape used to discard the entire card.
+    """
+    if isinstance(value, str):
+        text = value.strip()
+    elif isinstance(value, dict):
+        text = ", ".join(
+            f"{key}: {item}"
+            for key, item in value.items()
+            if item not in (None, "", [], {})
+        )
+    elif isinstance(value, (list, tuple)):
+        text = ", ".join(_context_line(item) for item in value)
+    elif isinstance(value, bool) or value is None:
+        text = ""
+    else:
+        text = str(value).strip()
+    return text[:120].strip()
+
+
 def build_input_request(
     question: str,
     known_context: Any,
@@ -118,10 +141,7 @@ def build_input_request(
     clean_submit = _short_text(submit_label, name="submit label", limit=60)
     if not isinstance(known_context, list) or len(known_context) > 6:
         raise ValueError("known context must be a list of at most 6 items")
-    clean_context = [
-        _short_text(item, name="known context item", limit=120)
-        for item in known_context
-    ]
+    clean_context = [line for line in map(_context_line, known_context) if line]
     if not isinstance(fields, list) or not 1 <= len(fields) <= 4:
         raise ValueError("input requests must contain between 1 and 4 fields")
     clean_fields = [_validate_field(field) for field in fields]
@@ -162,7 +182,8 @@ def request_trip_input(
     Choice fields also include 2-6 ``options`` with ``value``, ``label``, and optional
     ``detail``. Use ``date`` (ISO ``YYYY-MM-DD``) for a start date, ``number`` for trip
     length, and ``text`` for an origin city, leaving its value empty when none is known.
-    ``known_context_json`` lists saved preferences or inferred facts already applied.
+    ``known_context_json`` lists the saved preferences or inferred facts already
+    applied, as short strings such as ``["Balanced pace", "Moderate budget"]``.
     """
     try:
         fields = json.loads(fields_json)
