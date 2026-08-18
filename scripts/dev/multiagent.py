@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -33,6 +34,8 @@ WORKER_TIMEOUT_MINUTES = 60
 AUDIT_ISSUE_CAP = 3
 INTEGRATION_BRANCH = "multiagent/integration"
 TEST_TIMEOUT_SECONDS = 3600
+WORKER_MODEL = "gpt-5.6-sol"
+WORKER_REASONING_EFFORT = "medium"
 
 _BAR = "-" * 78
 
@@ -137,6 +140,19 @@ def pid_alive(pid: int) -> bool:
     except (OSError, ProcessLookupError, PermissionError):
         return False
     return True
+
+
+def worker_running(pid: int) -> bool:
+    """Return whether a worker is running, reaping owned POSIX children that exited."""
+    if os.name == "nt":
+        return pid_alive(pid)
+    try:
+        reaped, _status = os.waitpid(pid, os.WNOHANG)
+    except ChildProcessError:
+        return pid_alive(pid)
+    except OSError:
+        return False
+    return reaped == 0
 
 
 # ----------------------------------------------------------------------------
@@ -303,6 +319,8 @@ def launch_worker(
 
     command = [
         "copilot",
+        "--model", WORKER_MODEL,
+        "--reasoning-effort", WORKER_REASONING_EFFORT,
         "--prompt", prompt,
         "--allow-all-tools",
         "--no-ask-user",
@@ -380,8 +398,9 @@ def dispatch(space: Workspace, state: core.State, repo: str) -> None:
 
 
 def collect(space: Workspace, state: core.State, repo: str) -> None:
-    for assignment in state.active():
-        if pid_alive(assignment.pid):
+    stopped = [item for item in state.assignments if item.state == "stopped"]
+    for assignment in [*state.active(), *stopped]:
+        if assignment.state != "stopped" and worker_running(assignment.pid):
             started = core.parse_time(assignment.started) or core.utcnow()
             if core.utcnow() - started > timedelta(minutes=WORKER_TIMEOUT_MINUTES):
                 os.kill(assignment.pid, 15)
@@ -528,9 +547,11 @@ def finalise_batch(space: Workspace, state: core.State, repo: str) -> None:
 
 def preflight(space: Workspace) -> list[str]:
     problems: list[str] = []
-    for tool in ("git", "gh", "copilot"):
+    for tool in ("git", "gh"):
         if run([tool, "--version"], timeout=60).returncode != 0:
             problems.append(f"{tool} is not available on PATH")
+    if shutil.which("copilot") is None:
+        problems.append("copilot is not available on PATH")
     if run(["gh", "auth", "status"], timeout=60).returncode != 0:
         problems.append("gh is not authenticated; run: gh auth login")
     if not (space.primary / ".venv").exists():
@@ -680,10 +701,10 @@ def cmd_stop(space: Workspace, args: argparse.Namespace) -> int:
     state = load_state(space)
     stopped = 0
     for assignment in state.active():
-        if pid_alive(assignment.pid):
+        if worker_running(assignment.pid):
             os.kill(assignment.pid, 15)
-            assignment.state = "stopped"
             stopped += 1
+        assignment.state = "stopped"
     if pid_alive(state.lease.pid):
         os.kill(state.lease.pid, 15)
     state.lease = core.Lease()

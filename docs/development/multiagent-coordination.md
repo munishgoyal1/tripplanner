@@ -169,6 +169,11 @@ never chooses what to work on.
 A worker never merges, never closes an issue, never pushes outside its own
 branch, and never picks up a second issue.
 
+Every implementation worker is explicitly launched with GPT-5.6 Sol at medium
+reasoning effort. The controller does not use Auto routing: Auto cannot guarantee
+the no-Claude constraint, so both the model and reasoning effort remain fixed
+arguments owned by the controller.
+
 **The slot is released the moment the worker pushes.** Integration happens
 asynchronously on a single serialized lane, so a slot is never idle waiting for a
 queue it does not control. If integration later fails, the issue is re-dispatched
@@ -261,6 +266,9 @@ One shared implementation, thin launchers on both platforms.
 
 Windows launchers are in `scripts/win/user/multiagent/`, macOS in
 `scripts/mac/user/multiagent/`, and both forward to `scripts/dev/multiagent.ps1`.
+Preflight resolves the Copilot executable from `PATH` without executing it.
+In particular, it never runs `copilot --version`: Copilot CLI 1.0.78 can leave
+hundreds of Electron helper processes behind after version probes on macOS.
 
 ## State and recovery
 
@@ -275,6 +283,9 @@ base SHA, worker session id, pushed SHA, validation result, and last heartbeat.
 - On restart the controller reconciles four sources — issue labels, its own state
   file, the processes actually alive, and the branches actually on the remote —
   because labels alone cannot say whether a push happened.
+- On POSIX, the controller reaps exited worker children so zombies cannot keep a
+  slot falsely running. A restart also re-reads preserved stopped assignments from
+  their transcripts before deciding their outcome.
 - A timed-out worker keeps its worktree and branch for inspection. Evidence is not
   deleted to make room.
 

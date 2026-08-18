@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import importlib.util
+import os
+import subprocess
 import sys
 from pathlib import Path
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
+
+import pytest
 
 ROOT = Path(__file__).parents[1]
 DEV = ROOT / "scripts" / "dev"
@@ -23,6 +27,18 @@ def _load_core() -> ModuleType:
 
 
 core = _load_core()
+
+
+def _load_runtime() -> ModuleType:
+    spec = importlib.util.spec_from_file_location("multiagent", DEV / "multiagent.py")
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+runtime = _load_runtime()
 
 
 def issue(number: int, *labels: str, body: str = "", title: str = "t") -> object:
@@ -239,6 +255,110 @@ def test_the_worker_prompt_fences_the_issue_and_bounds_the_branch() -> None:
     assert "Fixes #42" in assignment
     assert "Never edit labels" in assignment
     assert "PYTHONPATH=src" in assignment
+
+
+def test_every_worker_launch_pins_gpt_56_sol_medium(tmp_path, monkeypatch) -> None:
+    commands: list[list[str]] = []
+
+    class Process:
+        pid = 123
+
+    def popen(command: list[str], **_kwargs: object) -> Process:
+        commands.append(command)
+        return Process()
+
+    space = SimpleNamespace(
+        transcripts=tmp_path / "transcripts",
+        runtime=tmp_path / "runtime",
+        slot_path=lambda _slot: tmp_path,
+    )
+    space.transcripts.mkdir()
+    monkeypatch.setattr(runtime.subprocess, "Popen", popen)
+
+    runtime.launch_worker(
+        space,
+        issue(42, core.READY),
+        slot="slot-1",
+        branch="multiagent/issue-42-attempt-1",
+        attempt=1,
+        base_sha="a" * 40,
+        repo="owner/repo",
+        answer="",
+    )
+
+    command = commands[0]
+    assert command[command.index("--model") + 1] == runtime.WORKER_MODEL == "gpt-5.6-sol"
+    assert (
+        command[command.index("--reasoning-effort") + 1]
+        == runtime.WORKER_REASONING_EFFORT
+        == "medium"
+    )
+    assert "auto" not in (argument.lower() for argument in command)
+    assert not any("claude" in argument.lower() for argument in command)
+
+
+def test_preflight_finds_copilot_without_launching_it(tmp_path, monkeypatch) -> None:
+    calls: list[list[str]] = []
+
+    def run(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    primary = tmp_path / "primary"
+    (primary / ".venv").mkdir(parents=True)
+    monkeypatch.setattr(runtime, "run", run)
+    monkeypatch.setattr(runtime.shutil, "which", lambda tool: f"/bin/{tool}")
+
+    assert runtime.preflight(SimpleNamespace(primary=primary)) == []
+    assert ["copilot", "--version"] not in calls
+    assert all(command[0] != "copilot" for command in calls)
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX child reaping only")
+def test_exited_worker_child_is_reaped_without_remaining_running() -> None:
+    process = subprocess.Popen(  # noqa: S603 - fixed interpreter and inline test program
+        [sys.executable, "-c", "print('finished')"],
+        stdout=subprocess.PIPE,
+        text=True,
+    )
+    assert process.stdout
+    assert process.stdout.read() == "finished\n"
+
+    assert not runtime.worker_running(process.pid)
+    with pytest.raises(ChildProcessError):
+        os.waitpid(process.pid, os.WNOHANG)
+    process.returncode = 0
+
+
+def test_restart_reconciles_a_stopped_assignment_from_its_transcript(
+    tmp_path, monkeypatch
+) -> None:
+    space = SimpleNamespace(transcripts=tmp_path)
+    assignment = core.Assignment(
+        issue=42,
+        attempt=2,
+        slot="slot-1",
+        state="stopped",
+        pid=123,
+    )
+    state = core.State.from_dict(core.State(assignments=[assignment]).to_dict())
+    runtime.transcript_path(space, 42, 2).write_text(
+        "RESULT: done\nCOMMIT: abc123\nFILES: scripts/dev/multiagent.py\n"
+        "VALIDATION: pytest passed\n",
+        encoding="utf-8",
+    )
+    labels: list[tuple[int, str | None]] = []
+    monkeypatch.setattr(
+        runtime,
+        "set_agent_state",
+        lambda _repo, number, wanted: labels.append((number, wanted)),
+    )
+
+    runtime.collect(space, state, "owner/repo")
+
+    assert state.assignments[0].state == "pushed"
+    assert state.assignments[0].pushed_sha == "abc123"
+    assert labels == [(42, core.INTEGRATING)]
 
 
 def test_the_worker_report_is_read_from_its_trailing_block() -> None:
