@@ -269,11 +269,11 @@ One shared implementation, thin launchers on both platforms.
 
 Windows launchers are in `scripts/win/user/multiagent/`, macOS in
 `scripts/mac/user/multiagent/`, and both forward to `scripts/dev/multiagent.ps1`.
-`Start-Multiagent` opens the primary checkout in a fresh VS Code window, then
-requests the title `Coordinator` for its chat. VS Code's `code chat` interface
-has no title argument, so the prompt asks the new chat to rename itself as its
-first action. This keeps an external-Terminal start from attaching Coordinator
-to whichever sandbox window was active most recently.
+`Start-Multiagent` opens its chat in the most recently active VS Code window and
+requests the title `Coordinator`. VS Code's `code chat` interface has no title
+argument, so the prompt asks the new chat to rename itself as its first action.
+The prompt also names the primary checkout and requires the chat to remain in
+that lane even when another workspace is visible in the active window.
 Preflight resolves the Copilot executable from `PATH` without executing it.
 In particular, it never runs `copilot --version`: Copilot CLI 1.0.78 can leave
 hundreds of Electron helper processes behind after version probes on macOS.

@@ -845,18 +845,19 @@ def cmd_coordinator(space: Workspace, args: argparse.Namespace) -> int:
         "controller is doing (scripts/dev/multiagent.py status). Help me draft requirements "
         "and answer blocked issues. Never add owner:ready yourself."
     )
-    workspace = run(["code", "--new-window", str(space.primary)], timeout=60)
-    if workspace.returncode != 0:
-        log(f"Could not open the primary workspace at {space.primary}.")
-        return 1
-    time.sleep(1)
-    opened = run(["code", "chat", "-m", "agent", "-r", prompt], timeout=60)
+    opened = run(
+        ["code", "chat", "-m", "agent", "--reuse-window", prompt],
+        timeout=60,
+    )
     if opened.returncode != 0:
         log("Could not open VS Code chat. Start it yourself and paste this prompt:")
         log("")
         log(prompt)
         return 1
-    log("Coordinator chat opened in VS Code; its requested title is Coordinator.")
+    log(
+        "Coordinator chat opened in the last active VS Code window; "
+        "its requested title is Coordinator."
+    )
     return 0
 
 

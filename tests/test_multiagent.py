@@ -425,7 +425,7 @@ def test_stop_reports_a_process_tree_that_survives_escalation(tmp_path, monkeypa
     assert runtime.cmd_stop(space, SimpleNamespace()) == 2
 
 
-def test_coordinator_prompt_requests_the_coordinator_title(tmp_path, monkeypatch) -> None:
+def test_coordinator_opens_titled_chat_in_last_active_window(tmp_path, monkeypatch) -> None:
     commands: list[list[str]] = []
 
     def run(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
@@ -433,14 +433,13 @@ def test_coordinator_prompt_requests_the_coordinator_title(tmp_path, monkeypatch
         return subprocess.CompletedProcess(command, 0, "", "")
 
     monkeypatch.setattr(runtime, "run", run)
-    monkeypatch.setattr(runtime.time, "sleep", lambda _seconds: None)
 
     space = SimpleNamespace(primary=tmp_path / "primary")
     assert runtime.cmd_coordinator(space, SimpleNamespace()) == 0
-    assert commands[0] == ["code", "--new-window", str(space.primary)]
-    assert commands[1][:5] == ["code", "chat", "-m", "agent", "-r"]
-    assert "rename this chat to `Coordinator`" in commands[1][-1]
-    assert "Stay in the primary lane" in commands[1][-1]
+    assert len(commands) == 1
+    assert commands[0][:5] == ["code", "chat", "-m", "agent", "--reuse-window"]
+    assert "rename this chat to `Coordinator`" in commands[0][-1]
+    assert "Stay in the primary lane" in commands[0][-1]
 
 
 def test_restart_reconciles_a_stopped_assignment_from_its_transcript(
