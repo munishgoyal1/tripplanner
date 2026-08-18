@@ -10,6 +10,22 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "trip-feedback": {
+    changes: [
+      "Where the feedback control rests in the workspace: the toolbar, the end of the itinerary, the conversation, each day header, or a floating tab",
+      "How much room the control occupies before anyone uses it, and how it expands once they do",
+      "The order the three inputs are asked for, and how a single thumb tap can be a complete submission on its own",
+      "How an already-submitted trip signals that feedback exists, and how the traveller starts another submission",
+      "How the same surface behaves on a phone, where the toolbar and the itinerary compete for the same width",
+    ],
+    context: [
+      "The three inputs themselves: a five-star rating, a thumbs up/down pair, and an optional free-text comment. Every option collects exactly these",
+      "The itinerary content, map, day structure, and totals; the trip fixture is identical in every option",
+      "The proposed feedback storage contract, which is shown on this page as the same target for all five options",
+      "Moderation, analytics dashboards, replying to feedback, and any change to how the planner reacts to a rating",
+      "Authentication itself; this Lab records whichever principal already exists and never asks anyone to sign in to comment",
+    ],
+  },
   "profile-workspace": {
     changes: [
       "How much width the profile gets and whether it stays a right-side drawer, becomes a page, a centered workspace, a two-pane surface, or a drawer that expands on demand",
