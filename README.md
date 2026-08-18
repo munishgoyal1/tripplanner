@@ -141,8 +141,8 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 | Persistence | JSON files (local) / Cosmos DB (hosted) | Auto-dispatch via env var |
 | Hosting target | Azure Container Apps (FastAPI serves the React SPA) | Serverless, scales to zero |
 
-> **Developing locally?** Run `.\Setup-Tripplanner-Dev.cmd` on Windows or
-> `./Setup-Tripplanner-Dev.command` on macOS to reproduce the full toolchain
+> **Developing locally?** Run `scripts\win\Setup-Tripplanner-Dev.cmd` on Windows or
+> `./scripts/mac/Setup-Tripplanner-Dev.command` on macOS to reproduce the full toolchain
 > and VS Code/Copilot configuration. See
 > [`docs/development/new-machine-setup.md`](docs/development/new-machine-setup.md)
 > for manual sign-ins and non-portable state, then see
@@ -154,13 +154,13 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 
 ### One-click Windows setup
 ```powershell
-.\Setup-Tripplanner-Dev.cmd
+.\scripts\win\Setup-Tripplanner-Dev.cmd
 .\scripts\dev\dev-spa.ps1
 ```
 
 ### One-click macOS setup
 ```bash
-./Setup-Tripplanner-Dev.command
+./scripts/mac/Setup-Tripplanner-Dev.command
 pwsh -File scripts/dev/dev-spa.ps1
 ```
 

@@ -166,6 +166,9 @@ param(
     [Parameter(ParameterSetName = "Merge")]
     [switch]$SkipValidation,
 
+    [Parameter(ParameterSetName = "Merge")]
+    [switch]$AllowDirtyPrimary,
+
     [Parameter(ParameterSetName = "Discard")]
     [switch]$Force,
 
@@ -932,17 +935,21 @@ function Sync-PrimaryCheckout {
     )
 
     $changes = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("status", "--porcelain")
-    if ($changes) {
+    if ($changes -and -not $AllowDirtyPrimary) {
         throw "Primary checkout has uncommitted changes. Commit or stash them before promotion."
     }
     Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "-q", "origin", $Base) | Out-Null
     $localHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "HEAD")
     $remoteHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "origin/$Base")
-    if ($RequireExact -and $localHead -ne $remoteHead) {
+    if ($RequireExact -and $localHead -ne $remoteHead -and -not ($changes -and $AllowDirtyPrimary)) {
         throw "Primary checkout must match origin/$Base before promotion (local $localHead, remote $remoteHead)."
     }
     & git -C $primaryRoot merge --ff-only "origin/$Base"
     if ($LASTEXITCODE -ne 0) {
+        if ($changes -and $AllowDirtyPrimary) {
+            Write-Warning "Primary work in progress overlaps the new origin/$Base; its files were left untouched and its local branch remains behind."
+            return
+        }
         throw "Primary checkout is not a clean fast-forward from origin/$Base. Reconcile it before promotion."
     }
 }
@@ -977,6 +984,71 @@ function Complete-SandboxMergeConflict {
 function Get-SandboxUnmergedFiles {
     param([Parameter(Mandatory = $true)][string]$WorkingDirectory)
     return @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
+}
+
+function Get-WorktreeDirtyPaths {
+    param([Parameter(Mandatory = $true)][string]$WorkingDirectory)
+
+    return @(
+        & git -C $WorkingDirectory diff --name-only
+        & git -C $WorkingDirectory diff --cached --name-only
+        & git -C $WorkingDirectory ls-files --others --exclude-standard
+    ) | Sort-Object -Unique
+}
+
+function Get-IncomingPaths {
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string]$RemoteRef
+    )
+
+    $mergeBase = (& git -C $WorkingDirectory merge-base HEAD $RemoteRef).Trim()
+    if ($LASTEXITCODE -ne 0 -or -not $mergeBase) {
+        throw "Could not find the merge base between HEAD and $RemoteRef."
+    }
+    return @(& git -C $WorkingDirectory diff --name-only $mergeBase $RemoteRef)
+}
+
+function Merge-IntoVisibleWorktree {
+    <#
+      Keep an active agent's files visible. Committed-history conflicts and
+      incoming paths that overlap local WIP are reported before git changes the
+      worktree; non-overlapping WIP stays in place while the branch advances.
+    #>
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string]$Label,
+        [Parameter(Mandatory = $true)][string]$RemoteRef
+    )
+
+    & git -C $WorkingDirectory merge-base --is-ancestor $RemoteRef HEAD
+    if ($LASTEXITCODE -eq 0) { return }
+
+    $dirtyPaths = @(Get-WorktreeDirtyPaths -WorkingDirectory $WorkingDirectory)
+    if ($dirtyPaths.Count -gt 0) {
+        & git -C $WorkingDirectory merge-tree --write-tree --quiet HEAD $RemoteRef
+        if ($LASTEXITCODE -eq 1) {
+            throw "SANDBOX_UPDATE_DEFERRED: $Label committed history conflicts with $RemoteRef; its worktree was left untouched."
+        }
+        if ($LASTEXITCODE -ne 0) {
+            throw "Could not preflight merging $RemoteRef into $Label."
+        }
+
+        $incomingPaths = @(Get-IncomingPaths -WorkingDirectory $WorkingDirectory -RemoteRef $RemoteRef)
+        $overlap = @($dirtyPaths | Where-Object { $incomingPaths -contains $_ })
+        if ($overlap.Count -gt 0) {
+            throw "SANDBOX_WIP_OVERLAP: $Label has active edits also changed by ${RemoteRef}: $($overlap -join ', '). Its worktree was left untouched."
+        }
+    }
+
+    & git -C $WorkingDirectory merge --no-edit $RemoteRef
+    if ($LASTEXITCODE -ne 0) {
+        & git -C $WorkingDirectory rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "Could not merge $RemoteRef into $Label; inspect the worktree before retrying."
+        }
+        Complete-SandboxMergeConflict -WorkingDirectory $WorkingDirectory -Label $Label
+    }
 }
 
 function Invoke-SandboxUpdateWithRecovery {
@@ -1479,54 +1551,15 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
         Sync-MasterBaseline -Reason "update sandbox '$slug'"
         Invoke-Git -WorkingDirectory $wd -Arguments @("fetch", "-q", "origin") | Out-Null
 
-        # rerere and the zdiff3 conflict style are configured repo-wide by
-        # scripts/setup-dev-machine.ps1, which every worktree inherits.
-        # Preserve any uncommitted sandbox edits behind a safety stash, restored
-        # (or retained on conflict) after the merge.
-        $stashCommit = ""
-        $changes = Invoke-Git -WorkingDirectory $wd -Arguments @("status", "--porcelain")
-        if ($changes) {
-            Write-Host "Preserving uncommitted $label changes..." -ForegroundColor Cyan
-            Invoke-Git -WorkingDirectory $wd -Arguments @(
-                "stash", "push", "--include-untracked", "--message", "sandbox-update temporary $slug changes"
-            ) | Out-Null
-            $stashCommit = Invoke-Git -WorkingDirectory $wd -Arguments @("rev-parse", "refs/stash")
+        $sandboxRemoteRef = "origin/$($entry.branch)"
+        & git -C $wd rev-parse --verify --quiet $sandboxRemoteRef | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            Merge-IntoVisibleWorktree -WorkingDirectory $wd -Label $label -RemoteRef $sandboxRemoteRef
+        } elseif ($LASTEXITCODE -ne 1) {
+            throw "Could not inspect $sandboxRemoteRef."
         }
 
-        try {
-            $sandboxRemoteRef = "origin/$($entry.branch)"
-            & git -C $wd rev-parse --verify --quiet $sandboxRemoteRef | Out-Null
-            if ($LASTEXITCODE -eq 0) {
-                & git -C $wd merge --no-edit $sandboxRemoteRef
-                if ($LASTEXITCODE -ne 0) {
-                    & git -C $wd rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
-                    if ($LASTEXITCODE -ne 0) {
-                        throw "Could not merge $sandboxRemoteRef into $label."
-                    }
-                    Complete-SandboxMergeConflict -WorkingDirectory $wd -Label $label -StashCommit $stashCommit
-                }
-            } elseif ($LASTEXITCODE -ne 1) {
-                throw "Could not inspect $sandboxRemoteRef."
-            }
-
-            & git -C $wd merge --no-edit $remoteRef
-            if ($LASTEXITCODE -ne 0) {
-                & git -C $wd rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Could not merge $remoteRef into $label."
-                }
-                Complete-SandboxMergeConflict -WorkingDirectory $wd -Label $label -StashCommit $stashCommit
-            }
-        } finally {
-            if ($stashCommit) {
-                & git -C $wd rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Warning "$label local changes remain in the safety stash until the merge conflict is resolved."
-                } else {
-                    Restore-SandboxStash -WorkingDirectory $wd -Label $label -StashCommit $stashCommit
-                }
-            }
-        }
+        Merge-IntoVisibleWorktree -WorkingDirectory $wd -Label $label -RemoteRef $remoteRef
 
         Invoke-Git -WorkingDirectory $wd -Arguments @(
             "push", "-q", "-u", "origin", "HEAD:refs/heads/$($entry.branch)"

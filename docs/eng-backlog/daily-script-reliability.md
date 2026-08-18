@@ -2,7 +2,7 @@
 
 Status: Deferred  
 Recorded: 2026-08-15  
-Owner surface: `scripts/mac/user/`, `scripts/user/`, `scripts/dev/`, and shared script libraries
+Owner surface: `scripts/mac/user/`, `scripts/win/user/`, `scripts/dev/`, and shared script libraries
 
 ## Scope
 

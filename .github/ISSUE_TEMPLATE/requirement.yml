@@ -1,0 +1,59 @@
+name: Requirement
+description: Something you want built. It waits until you add owner:ready.
+labels: ["enhancement", "owner:proposed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Only the issue title is required. Every box below is optional.
+
+        This is the owner's entry point into the multiagent queue. Filing it does
+        **not** start any work: nothing is dispatched until you add the
+        `owner:ready` label yourself.
+
+        An idea you have not settled on belongs in `docs/roadmap/`. A large
+        capability belongs in an owner-authored brief under `docs/feature-briefs/`,
+        with this issue pointing at it.
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome you want
+      description: The result in product terms, not the implementation.
+      placeholder: The trip list should show which trips someone left feedback on.
+  - type: textarea
+    id: done
+    attributes:
+      label: How we know it is done
+      description: >
+        The acceptance check. An agent cannot validate "better"; it can validate
+        something observable.
+      placeholder: |
+        Opening the trip list shows a marker on every trip with feedback, and no
+        marker on the rest.
+  - type: textarea
+    id: boundary
+    attributes:
+      label: What must not change
+      description: >
+        The scope boundary. Name anything nearby that should be left alone so an
+        approved change does not quietly become a redesign.
+      placeholder: |
+        Do not change the itinerary layout, and do not touch the assistant.
+  - type: textarea
+    id: areas
+    attributes:
+      label: Files or areas you expect this to touch
+      description: >
+        Optional, and a hint rather than a rule. The coordinator uses these paths
+        to avoid dispatching two issues that would collide, so a rough guess still
+        helps. Leave blank if you do not know.
+      placeholder: |
+        frontend/src/components/ItineraryPanel.tsx
+        src/tripplanner/web/trip_view.py
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why now
+      placeholder: I keep opening trips one by one to find the ones with comments.

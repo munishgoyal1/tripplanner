@@ -1199,3 +1199,22 @@ the outcome.
   to the graph call, not to whichever caller someone remembered.
 - It took a paid corpus to surface this. No test failed, no user complained, and
   the failure was a trip that merely looked unfinished.
+
+## 2026-08-18 - A Recoverable Stash Can Still Break A Live Agent
+
+- Full synchronization temporarily stashed every dirty worktree, updated its
+  branch, then restored the files. Git preserved the bytes, but an active agent
+  saw its edits disappear in the middle of its reasoning and could continue
+  against a source tree that was temporarily not its own.
+- A live worktree is an interface, not just storage. Fetch remote refs freely,
+  but preflight committed conflicts and incoming-path overlap before changing a
+  dirty tree. Merge around non-overlapping work in place; on overlap, leave the
+  files visible and name the paths.
+- Publication and freshness are different outcomes. A dirty lane may safely
+  ingest and push the current base while its own commits wait for a coherent
+  boundary. Reporting that deferral is more honest than hiding WIP to satisfy a
+  stronger convergence claim.
+- Do not rewrite a generic lower-level error into a specific diagnosis without
+  checking which worktree is dirty. The old wrapper blamed concurrent sandbox
+  writes when the merge gate was actually rejecting primary-checkout WIP, and
+  the empty path list was the clue that the diagnosis came from the wrong lane.

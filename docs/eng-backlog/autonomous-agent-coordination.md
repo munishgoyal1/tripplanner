@@ -1,6 +1,6 @@
 # Autonomous Agent Coordination
 
-Status: Deferred  
+Status: Approved; built, first live batch not yet run  
 Recorded: 2026-08-18  
 Owner surface: GitHub Issues, agent workers, worktrees, integration, and developer scripts
 
@@ -9,13 +9,12 @@ Owner surface: GitHub Issues, agent workers, worktrees, integration, and develop
 This backlog records a proposed way to let several bounded agent sessions process
 GitHub issues with minimal owner coordination while preserving one controlled path
 back to `master`. It extends the manual protocol in
-[Issue Workflow](../development/issue-workflow.md); it does not replace that protocol
-until an implementation is separately approved and validated.
+[Issue Workflow](../development/issue-workflow.md).
 
-This is not approval to build or run an autonomous coordinator. Start with the
-dry-run selector below, re-read the current issue and sandbox workflows, and obtain
-owner approval before introducing scripts, labels, long-running processes, or branch
-automation.
+The owner approved this, and the operational contract now lives in
+[Multiagent Coordination](../development/multiagent-coordination.md), which
+supersedes the open questions below. That brief is the current truth; this entry
+remains as the reasoning that produced it.
 
 ## Problem
 

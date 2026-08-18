@@ -5,6 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
+        Only the issue title is required. Every box below is optional.
+
         Use this for work you already want done. An idea you have not decided on
         belongs in `docs/roadmap/`, and a coherent new capability belongs in an
         owner-authored brief under `docs/feature-briefs/`.
@@ -15,9 +17,6 @@ body:
       label: Outcome you want
       description: The result in product terms, not the implementation.
       placeholder: Feedback on a trip should be visible to me without opening the database.
-    validations:
-      required: true
-
   - type: textarea
     id: why
     attributes:
