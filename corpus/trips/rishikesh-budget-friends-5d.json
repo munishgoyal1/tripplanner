@@ -1,0 +1,271 @@
+{
+  "status": "draft",
+  "trip_id": "rishikesh_2027-03-17_2027-03-22",
+  "trip_number": 1,
+  "created_at": "2026-08-17T20:26:23.538599",
+  "destination": "Rishikesh",
+  "origin": "Delhi",
+  "departure_date": "2027-03-17",
+  "return_date": "2027-03-22",
+  "travelers": "4 adults",
+  "notes": "Budget limit INR 80,000 for 4 adults. Balanced trip style.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Rishikesh",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-17",
+      "title": "Day 1 · Arrival & Local Exploration",
+      "summary": "Depart from Delhi, arrive in Rishikesh, check in, explore Triveni Ghat and local markets.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Rishikesh",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 360,
+          "distance_km": 240,
+          "note": "Private car or taxi, approx. 6 hours"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Triveni Ghat",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Evening Aarti"
+        },
+        {
+          "name": "Chotiwala Restaurant",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Dinner at local favorite"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-18",
+      "title": "Day 2 · Adventure & Spirituality",
+      "summary": "Morning yoga, river rafting, visit Parmarth Niketan, evening at Beatles Ashram.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Yoga Session",
+          "kind": "activity",
+          "time": "07:30",
+          "duration_min": 60,
+          "note": "Morning yoga at local studio"
+        },
+        {
+          "name": "River Rafting",
+          "kind": "activity",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "White water rafting (Shivpuri to Rishikesh)"
+        },
+        {
+          "name": "Parmarth Niketan",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Visit ashram and gardens"
+        },
+        {
+          "name": "Beatles Ashram",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Explore the famous ashram"
+        },
+        {
+          "name": "Little Buddha Café",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner overlooking the Ganges"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-19",
+      "title": "Day 3 · Temples & Nature",
+      "summary": "Visit Neelkanth Mahadev Temple, explore Rajaji National Park, lunch at a riverside café.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Neelkanth Mahadev Temple",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 120,
+          "note": "Scenic drive and temple visit"
+        },
+        {
+          "name": "Rajaji National Park",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 180,
+          "note": "Wildlife safari"
+        },
+        {
+          "name": "The Sitting Elephant Café",
+          "kind": "meal",
+          "time": "15:30",
+          "note": "Lunch with river view"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-03-20",
+      "title": "Day 4 · Wellness & Shopping",
+      "summary": "Spa session, visit Lakshman Jhula, shopping at local bazaars, dinner at Pure Soul Café.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Spa Session",
+          "kind": "activity",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Relaxing Ayurvedic spa"
+        },
+        {
+          "name": "Lakshman Jhula",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Iconic suspension bridge"
+        },
+        {
+          "name": "Rishikesh Bazaar",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Local shopping"
+        },
+        {
+          "name": "Pure Soul Café",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Healthy dinner"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-03-21",
+      "title": "Day 5 · Departure",
+      "summary": "Breakfast, check out, drive back to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Breakfast at hotel",
+          "kind": "meal",
+          "time": "08:00",
+          "note": "Final meal in Rishikesh"
+        },
+        {
+          "name": "Drive: Rishikesh to Delhi",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 360,
+          "distance_km": 240,
+          "note": "Private car or taxi, approx. 6 hours"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-17T20:31:40.912649"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T20:31:40.912846",
+  "id": "rishikesh_2027-03-17_2027-03-22",
+  "user_id": "corpus-rishikesh-budget-friends-5d"
+}

@@ -1,0 +1,347 @@
+{
+  "status": "draft",
+  "trip_id": "gokarna_2027-01-17_2027-01-22",
+  "trip_number": 1,
+  "created_at": "2026-08-17T20:15:30.864346",
+  "destination": "Gokarna",
+  "origin": "Bangalore",
+  "departure_date": "2027-01-17",
+  "return_date": "2027-01-22",
+  "travelers": "4 adults",
+  "notes": "Focus on history and heritage sites. Balanced style, moderate budget.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Gokarna",
+    "estimated_planned_minutes": 756,
+    "evidence_place_count": 7,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "7 preference-matched places account for about 756 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-17",
+      "title": "Day 1 · Arrival & Heritage Walk",
+      "summary": "Arrive in Gokarna from Bangalore, check in, and enjoy a guided Gokarna Heritage Walk through the old town.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Gokarna Heritage Walk",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 120,
+          "note": "Guided walk through historical sites"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-18",
+      "title": "Day 2 · Temples & Koti Tirtha",
+      "summary": "Explore Mahabaleshwar Temple, visit Koti Tirtha, and discover local history.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Mahabaleshwar Temple",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Ancient Shiva temple"
+        },
+        {
+          "name": "Koti Tirtha",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Sacred pond"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-19",
+      "title": "Day 3 · Mirjan Fort & Town",
+      "summary": "Visit Mirjan Fort and stroll through Gokarna Town for heritage architecture.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Mirjan Fort",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Historic fort"
+        },
+        {
+          "name": "Gokarna Town",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 120,
+          "note": "Heritage buildings"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-20",
+      "title": "Day 4 · Bhagwan Shiva Statue & Leisure",
+      "summary": "See the Bhagwan Shiva Statue and enjoy leisure time or optional heritage village visit.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Bhagwan Shiva Statue",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60,
+          "note": "Impressive statue"
+        },
+        {
+          "name": "Ramnagar Heritage Village",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120,
+          "note": "Optional visit"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-01-21",
+      "title": "Day 5 · Local Culture & Departure",
+      "summary": "Explore local culture, shop for handicrafts, and depart for Bangalore.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Gokarna Local Markets",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Handicrafts & souvenirs"
+        },
+        {
+          "name": "Drive: Gokarna to Bangalore",
+          "kind": "transport",
+          "time": "12:00",
+          "note": "Return journey"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T20:21:04.381498",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T20:21:04",
+      "expires_at": "2026-08-18T08:21:04"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_gokarna_2027_01_17_2027_01_22",
+      "kind": "lodging",
+      "created_at": "2026-08-17T14:51:04.375128Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Gokarna",
+        "date": "2027-01-17"
+      },
+      "subject": "Stay in Gokarna",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_458c60fe09c5",
+      "options": [
+        {
+          "id": "opt_stay_458c60fe09c5",
+          "mode": null,
+          "label": "Holiday Inn Express & Suites Guthrie North Edmond by IHG",
+          "detail": "2 Queen Beds Standard",
+          "price": {
+            "amount": 81471.42,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-17",
+            "checkout": "2027-01-22",
+            "room_name": "2 Queen Beds Standard",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "2227 E Oklahoma Ave, Guthrie, Oklahoma, 73044",
+            "rating": 8.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp4f8cd",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gE1R01aREVNQlhHRTNUS05SVkdZMlRNWkpTR0EzREVOUlZHWTJET01aU0dBM1RHTlpVR1lZVE1aSldHUTNEQ05aU0dZMkhZTUpER0lZREVOWlFHRVlUTzdCU0dBWkRPTUJSR0laSFlaTE9MNUtWRzdDSkpaNkVTVFNTUFEyRUNNQ0RGNDJFQ01DRFBRMkRLTVJaUFJVVkFaMlZKQjZEQ05aWUdZNFRPTlpaRzQyREdNSlVPNUpYRTZSREdNWkRLT0JURzRSVEVNSlhIQVdUR01SVkhBWlRPN0NPS0pERTQ3QlNHQVpETU1CWUdFMlRDTUJRR0I2REM3Q1NHRVlUS01ENEhBWVRJTlpSR1FaQ0dRU0NFTkhGRVJTT0VNWkRBTVJXRlVZRFFMSlJHVVFEQ01CMkdBWUNHo3ByY8tA4-P2uFHrhaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrUyIFF1ZWVuIEJlZHMgU3RhbmRhcmSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk7eABGkc3JpZNoBNUdNWkRFTUJYR0UzVEtOUlZHWTJUTVpKU0dBM0RFTlJWR1kyRE9NWlNHQTNUR05aVUdZWVRNWkpXR1EzRENOWlNHWTJIWU1SREdJWURFTlpRR0VZVE83QlNHQVpET01CUkdJWkhZWkxPTDVLVkc3Q0pKWjZFU1RTU1BRMkVDTUNERjQyRUNNQ0RQUTJES01SWlBSVVZBWjJWSkI2RENOWllHWTRUT05aWkc0MkRHTUpVTzVKWEU2UkRHTVpES09CVEc0UlRFTUpYSEFXVEdNUlZIQVpUTzdDT0tKREU0N0JTR0FaRE1NQllHRTJUQ01CUUdCNkRDN0NTR0VZVEtNRDRIQVlUSU5aUkdRWkNHUVNDRU5IRkVSU09FTVpEQU1SV0ZVWURRTEpSR1VRRENNQjJHQVlDR6NwcmPLQOPj9rhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJCSaRtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm61MiBRdWVlbiBCZWRzIFN0YW5kYXJko29jbgKkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmMzI1ODM3o3NpZAKjaGlkp2xwNGY4Y2Sjb2NjkoGhYQSBoWEEo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0xN6Jjb6oyMDI3LTAxLTIyo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTAyZmY4MTZodXlGbDVVb0NDZU9FOVVwVkIybjdSb1plRWpwo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJOEoWnDoWSjRmVloWHLQCgPXCj1wo-hY6NJTlKEoWnDoWSnTE9ER0lOR6Fhy0CSzB64UeuFoWOjSU5ShKFpw6FkqFNBTEVTVEFYoWHLQJgpmZmZmZqhY6NJTlKibHDAo2JrdAI=",
+              "rate_id": "I5GVURCFJVBFQR2FGNKEWTSSKZDVSMSUJVNEUU2HIEZUIRKOKJLEOWJSIRHU2WSTI5ATGVCHJZNFKR2ZLFKE2WSKK5DVCM2EINHFUU2HLEZEQWKNJJCEOSKZIRCU4WSRI5CVSVCPG5BFGR2BLJCE6TKCKJDUSWSILFNEYT2MGVFVMRZXINFEUWRWIVJVIU2TKBITERKDJVBUIRRUGJCUGTKDIRIFCMSEJNGVEWSQKJKVMQK2GJLEUQRWIRBU4WSZI5MTIVCPJZNFURZUGJCEOTKKKVHTKSSYIU3FERCHJVNEIS2PIJKEONCSKRCU2SSYJBAVOVCHJVJFMSCBLJKE6N2DJ5FUURCFGQ3UEU2HIFNEITKNIJMUORJSKRBU2QSRI5BDMRCDG5BVGR2FLFKEWTKEGREECWKUJFHFUUSHKFNEGR2RKNBUKTSIIZCVEU2PIVGVURCBJVJFORSVLFCFCTCKKJDVKUKEINGUEMSHIFMUGR34GQYDOMZVFY3TC7D4IJEXY7D4PQZCAULVMVSW4ICCMVSHGICTORQW4ZDBOJSHYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:46:20.221815Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        },
+        {
+          "id": "opt_stay_c9ff45a8201e",
+          "mode": null,
+          "label": "Hampton Inn & Suites Guthrie, OK",
+          "detail": "2 QUEENS NONSMOKING,HDTV/FREE WI-FI/HOT BREAKFAST INCLUDED,WORK AREA,",
+          "price": {
+            "amount": 115067.5,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs ₹33,596 more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-17",
+            "checkout": "2027-01-22",
+            "room_name": "2 QUEENS NONSMOKING,HDTV/FREE WI-FI/HOT BREAKFAST INCLUDED,WORK AREA,",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "401 Cimmaron Rd",
+            "rating": 7.7,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp9588c",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gHQR01aREVNQlhHRTNUS05SVkdZMlRNWkpYR01aREFOVEZHWlRETVpKWEdNM0dJTlRHR1pSRE1PSldNVTNET01UREdZNERNTkJYR1EzVE1NVEdHWTNET01SV0dVM0RLTVJRRzQzVE1PSlNNUTNETU5SWkdKVERNT0JXTVkzVElNUlFHWVpET01SV0dVM0RDTlRDR1kzRE1NSlhHTTNUSU1SUUdZNFRNWkpXR00zR0dOWlZHWTJETU5KV0dRWkdHTlpYR1pURE9NUldNSVpEQU5SUkc0WkRNTkpXR0VaR0c3QlJFTVpEQU1SWEdBWVRDTjM0R0lZREVOWlFHRVpERTdERk5aUFZLVTM0SkZISFlTS09LSjZESVFKUUlNWFRJUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFNOWlhIRTNUSU1aUkdSM1ZHNFQyRU0zRENNUlVIRVpDR01KU0hFWUMyTlJSR0kyRFNNVDRKWkpFTVRUNEdJWURFTlJRSEFZVEtNSlFHQVlIWU1MNEtJWVRDTkpRUFFZVENOSlFHWTNUS01CRElKQkNHVFNTSVpIQ0dNUlFHSTNDMk1CWUZVWVRLSUJSR0E1REFNQkSjcHJjy0DsF7gAAAAApW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Ju2UUyIFFVRUVOUyBOT05TTU9LSU5HLEhEVFYvRlJFRSBXSS1GSS9IT1QgQlJFQUtGQVNUIElOQ0xVREVELFdPUksgQVJFQSyjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk7eABGkc3JpZNoB0EdNWkRFTUJYR0UzVEtOUlZHWTJUTVpKWEdNWkRBTlRGR1pURE1aSlhHTTNHSU5UR0daUkRNT0pXTVUzRE9NVERHWTRETU5CWEdRM1RNTVRHR1kzRE9NUldHVTNES01SUUc0M1RNT0pTTVEzRE1OUlpHSlRETU9CV01ZM1RJTVJRR1laRE9NUldHVTNEQ05UQ0dZM0RNTUpYR00zVElNUlFHWTRUTVpKV0dNM0dHTlpWR1kyRE1OSldHUVpHR05aWEdaVERPTVJXTUlaREFOUlJHNFpETU5KV0dFWkdHN0JTRU1aREFNUlhHQVlUQ04zNEdJWURFTlpRR0VaREU3REZOWlBWS1UzNEpGSEhZU0tPS0o2RElRSlFJTVhUSVFKUUlONkRJTkpTSEY2R1NVREhLVkVIWU1KWEhBM0RTTlpYSEUzVElNWlJHUjNWRzRUMkVNM0RDTVJVSEVaQ0dNSlNIRVlDMk5SUkdJMkRTTVQ0SlpKRU1UVDRHSVlERU5SUUhBWVRLTUpRR0FZSFlNTDRLSVlUQ05KUVBRWVRDTkpRR1kzVEtNQkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlUS0lCUkdBNURBTUJEo3ByY8tA7Be4AAAAAKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtlFMiBRVUVFTlMgTk9OU01PS0lORyxIRFRWL0ZSRUUgV0ktRkkvSE9UIEJSRUFLRkFTVCBJTkNMVURFRCxXT1JLIEFSRUEso29jbgKkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjEyNDkyo3NpZAKjaGlkp2xwOTU4OGOjb2NjkoGhYQSBoWEEo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0xN6Jjb6oyMDI3LTAxLTIyo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTAyZmY4MTZodXlGbDVVb0NDZU9FOVVwVkIybjdSb1plRWpwo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWSgoWHLQK6-a4UeuFKhY6NJTlKEoWnDoWSgoWHLQK6-a4UeuFKhY6NJTlKibHDAo2JrdAc=",
+              "rate_id": "I5GVURCFJVBFQR2FGNKEWTSSKZDVSMSUJVNEUWCHJVNEIQKOKRDEOWSUIRGVUSSYI5GTGR2JJZKEOR22KJCE2T2KK5GVKM2EJ5GVIRCHLE2EITKOIJMEOUJTKRGU2VCHI5MTGRCPJVJFOR2VGNCEWTKSKFDTIM2UJVHUUU2NKEZUITKOKJNEOSSUIRGU6QSXJVMTGVCJJVJFCR2ZLJCE6TKSK5DVKM2EINHFIQ2HLEZUITKNJJMEOTJTKREU2USRI5MTIVCNLJFFOR2NGNDUOTS2KZDVSMSEJVHEUV2HKFNEOR2OLJMEOWSUIRHU2USXJVEVURCBJZJFERZULJCE2TSKK5DUKWSHI43UEUSFJVNEIQKNKJMEOQKZKRBU4MZUI5EVSRCFJZNFCR2FLJCEKN2EIZHFUUCWJNKTGNCKIZEEQWKTJNHUWSRWIREVCSSRJFGVQVCJKFFFCSKOGZCESTSKKNEEMNSHKNKUISCLKZCUQWKNJJMEQQJTIRJU4WSYJBCTGVCJJVNFER2SGNLEONCUGJCU2M2EINGVEVKIIVNEGR2NJJJUQRKZIMZE4USSI5ETERCTJVKDISS2JJCU2VCUGRDUSWKEIVHFEUKIIFMVIS2NJJIUOQKZJBMU2TBUJNEVSVCDJZFFCUCRLFKEGTSKKFDVSM2UJNGUERCJJJBEGR2UKNJUSWSIINDU2USRI5ETGQZSJVBFSRSVLFKEWSKCKJDUCNKEIFGUERD4GU3TKMZTFY3TK7D4IJEXY7D4PQZCAUKVIVCU4UZAJZHU4U2NJ5FUSTSHFREEIVCWF5DFERKFEBLUSLKGJEXUQT2UEBBFERKBJNDECU2UEBEU4Q2MKVCEKRBMK5HVESZAIFJEKQJMPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:46:20.221815Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 81471.42,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "gokarna_2027-01-17_2027-01-22",
+  "user_id": "corpus-gokarna-heritage-friends-5d"
+}
