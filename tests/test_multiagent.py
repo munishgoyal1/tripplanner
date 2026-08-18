@@ -596,6 +596,21 @@ def test_worker_push_is_verified_and_given_remote_tracking(tmp_path, monkeypatch
     ] in commands
 
 
+def test_merged_assignments_are_reconciled_as_landed(tmp_path, monkeypatch) -> None:
+    landed = core.Assignment(state="in-pull-request", pushed_sha="merged-sha")
+    pending = core.Assignment(state="in-pull-request", pushed_sha="pending-sha")
+    state = core.State(assignments=[landed, pending])
+
+    def run(args: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(args, 0 if "merged-sha" in args else 1, "", "")
+
+    monkeypatch.setattr(runtime, "run", run)
+
+    assert runtime.reconcile_landed_assignments(state, tmp_path) == 1
+    assert landed.state == "landed"
+    assert pending.state == "in-pull-request"
+
+
 def test_finalised_batch_persists_the_validated_integration_head(tmp_path, monkeypatch) -> None:
     assignment = core.Assignment(issue=42, state="integrated", pushed_sha="abc123")
     state = core.State(baseline_sha="pre-reconciliation", assignments=[assignment])
