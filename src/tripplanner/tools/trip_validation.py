@@ -23,6 +23,7 @@ from tripplanner.tools.trip_common import (
     _stop_kind,
     _stop_name,
     _style_caps,
+    unnamed_lodging,
 )
 from tripplanner.tools.trip_guard import leg_touches_home, plans_own_arrival, validate_plan
 
@@ -176,22 +177,34 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
     itinerary = plan.get("day_wise_itinerary")
     if not isinstance(itinerary, list):
         return warnings
+    cities = _itinerary_hotel_locations(plan)
+    destination = str(plan.get("destination") or "").strip().lower()
+    if destination:
+        cities = cities | {destination} | {
+            part.strip() for part in re.split(r"[,&/()]| and ", destination) if part.strip()
+        }
     placeholder_days: list[str] = []
+    unnamed_days: list[str] = []
     for index, day in enumerate(itinerary):
         if not isinstance(day, dict):
             continue
         raw_stops = day.get("stops")
         stops = raw_stops if isinstance(raw_stops, list) else []
-        if any(
-            _stop_kind(stop) == "hotel"
-            and _HOTEL_PLACEHOLDER_RE.search(_stop_name(stop))
-            for stop in stops
-        ):
-            day_num = day.get("day") if isinstance(day.get("day"), int) else index + 1
-            placeholder_days.append(str(day_num))
+        stays = [stop for stop in stops if _stop_kind(stop) == "hotel"]
+        day_num = str(day.get("day") if isinstance(day.get("day"), int) else index + 1)
+        if any(_HOTEL_PLACEHOLDER_RE.search(_stop_name(stop)) for stop in stays):
+            placeholder_days.append(day_num)
+        elif any(unnamed_lodging(_stop_name(stop), cities) for stop in stays):
+            unnamed_days.append(day_num)
     if placeholder_days:
         warnings.append(
             f"Hotel placeholders remain on Day(s) {', '.join(placeholder_days)}."
+        )
+    if unnamed_days:
+        warnings.append(
+            f"Day(s) {', '.join(unnamed_days)} name no bookable property -- a stay "
+            "described only as a hotel in a city cannot be booked, reached, or priced. "
+            "Choose a real property, or offer two or three named candidates."
         )
     return warnings
 

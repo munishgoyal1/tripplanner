@@ -1,0 +1,426 @@
+{
+  "status": "draft",
+  "trip_id": "darjeeling_2027-04-05_2027-04-08",
+  "trip_number": 1,
+  "created_at": "2026-08-17T19:54:45.053503",
+  "destination": "Darjeeling",
+  "origin": "Kolkata",
+  "departure_date": "2027-04-05",
+  "return_date": "2027-04-08",
+  "travelers": "1 adult",
+  "notes": "Focus on history and heritage sites. Balanced, moderate budget.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Darjeeling",
+    "estimated_planned_minutes": 489,
+    "evidence_place_count": 6,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "6 preference-matched places account for about 489 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [
+    {
+      "option": 1,
+      "airline": "Duffel Airways",
+      "flight_number": "ZZ4877",
+      "departure": "2027-04-05T03:05",
+      "arrival": "2027-04-05T04:15",
+      "return_departure": "2027-04-07T17:25",
+      "return_arrival": "2027-04-07T18:35",
+      "price": 5200,
+      "currency": "INR"
+    }
+  ],
+  "selected_hotels": [
+    {
+      "name": "The Elgin, Darjeeling",
+      "address": "18 H.D. Lama Road, Darjeeling",
+      "rating": 4.5,
+      "price_per_night": 8500,
+      "currency": "INR",
+      "checkin": "2027-04-05",
+      "checkout": "2027-04-08"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-05",
+      "title": "Day 1 · Arrival & Colonial Heritage",
+      "summary": "Arrive in Darjeeling from Kolkata. Check in to hotel. Explore the historic Chowrasta and visit the Darjeeling Himalayan Railway Museum.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Bagdogra (Duffel Airways ZZ4877)",
+          "kind": "flight",
+          "time": "03:05",
+          "arrival_time": "04:15",
+          "duration_min": 70,
+          "note": "Direct flight, 1h 10m"
+        },
+        {
+          "name": "Drive: Bagdogra to Darjeeling",
+          "kind": "transport",
+          "duration_min": 180,
+          "distance_km": 70,
+          "note": "Scenic drive via Siliguri"
+        },
+        {
+          "name": "Flight: Kolkata to Darjeeling",
+          "kind": "flight"
+        },
+        {
+          "name": "The Elgin, Darjeeling",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Chowrasta",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Historic promenade"
+        },
+        {
+          "name": "Darjeeling Himalayan Railway Museum",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "UNESCO heritage site"
+        },
+        {
+          "name": "Glenary's— Bakery, Restaurant & Pub",
+          "kind": "meal",
+          "time": "17:30",
+          "note": "Colonial-era cafe, 4.3★, 21k reviews"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-06",
+      "title": "Day 2 · Tea & British Legacy",
+      "summary": "Visit the iconic Happy Valley Tea Estate, explore the Raj Bhavan, and stroll through the Lloyd Botanical Garden.",
+      "stops": [
+        {
+          "name": "The Elgin, Darjeeling",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Happy Valley Tea Estate",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Guided heritage tour"
+        },
+        {
+          "name": "Raj Bhavan",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "British colonial architecture"
+        },
+        {
+          "name": "Lloyd Botanical Garden",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Victorian-era garden"
+        },
+        {
+          "name": "Keventer's",
+          "kind": "meal",
+          "time": "16:00",
+          "note": "Historic rooftop cafe, 4.4★, 10k reviews"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-07",
+      "title": "Day 3 · Monuments & Departure",
+      "summary": "Visit the War Memorial at Batasia Loop and the Himalayan Mountaineering Institute before departing.",
+      "stops": [
+        {
+          "name": "Batasia Loop & War Memorial",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60,
+          "note": "WWII memorial"
+        },
+        {
+          "name": "Himalayan Mountaineering Institute & Museum",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Heritage museum"
+        },
+        {
+          "name": "Santa Banta Dhaba (Restaurant)",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Top-rated, 4.8★, 11k reviews"
+        },
+        {
+          "name": "Flight: Bagdogra to Kolkata (Duffel Airways ZZ4877)",
+          "kind": "flight",
+          "time": "17:25",
+          "arrival_time": "18:35",
+          "duration_min": 70,
+          "note": "Direct flight, 1h 10m"
+        },
+        {
+          "name": "The Elgin, Darjeeling",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "19:05"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-04-08",
+      "title": "Day 4 · Departure",
+      "summary": "Trip ends. No activities planned.",
+      "stops": [
+        {
+          "name": "The Elgin, Darjeeling",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Flight: Darjeeling to Kolkata",
+          "kind": "flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T20:02:17.515937",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T20:00:47",
+      "expires_at": "2026-08-18T08:00:47"
+    },
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-17T20:01:44",
+      "expires_at": "2026-08-17T20:31:44"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_darjeeling_2027_04_05_2027_04_08",
+      "kind": "lodging",
+      "created_at": "2026-08-17T14:30:47.715749Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Darjeeling",
+        "date": "2027-04-05"
+      },
+      "subject": "Stay in Darjeeling",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_e71ce9a187e6",
+      "options": [
+        {
+          "id": "opt_stay_e71ce9a187e6",
+          "mode": null,
+          "label": "Onomo Hotel Dar es Salaam",
+          "detail": "Standard Twin Room, City View",
+          "price": {
+            "amount": 26659.33,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-04-05",
+            "checkout": "2027-04-08",
+            "room_name": "Standard Twin Room, City View",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Ghana Avenue",
+            "rating": 8.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp76f13",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFQRzRaVE9OQldHRTNHS05SVUdZWVRPTVJXR1FaREFOWlVHNDNUTU9KV01VWkRBTlpTR1pURE1aUldNUVpHR01SUUdZWlRNT0pYR1EzVFNNUlFHNDNETU9KV0dVM1RPN0JSRU1aREFNUlhHQTJEQU5MNEdJWURFTlpRR1FZRFE3REZOWlBWS1UzNEpGSEhZU0tPS0o2RENRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNEU05aV0c0M0RDTVJZSEZUSFMzTE5FTTJEUU5aUkhBM1NHTVJSR0laQzJOQllHNFlUUU4zNEtKREU0N0JTR0FaRE9NQlVHQVpUQ01CUUdCNkRDN0NTR0VaVEtNMkNIRTRUS1RSUUtVWUhZTVJXR1kyVFNNWlRFTkpFNkkyU0laSENHTVJRR0kzUzJNQlVGVVlER0lCUkdBNURBTUJEo3ByY8tA2gjVHrhR7KVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNC0wMyAxMDowMDowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybr1TdGFuZGFyZCBUd2luIFJvb20sIENpdHkgVmlld6NvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJGFoXSzMjAyNy0wNC0wMyAxMDowMDowMKFhy0DaCNUeuFHsoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmNDg3MTg3o3NpZAKjaGlkp2xwNzZmMTOjb2NjkYGhYQGjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA0LTA1omNvqjIwMjctMDQtMDijZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxMDFkNzUxYm5CMzAzb1pEU0xYZUt2UTl3bEtuRWJHdm9JNTOjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpw6FkpVRheGVzoWHLQLHrwo9cKPahY6NJTlKibHDAo2JrdAE=",
+              "rate_id": "I42FUVCPJZBFOR2FGNDUWTSSKVDVSWKUJ5GVEV2HKFNEIQKOLJKUONBTKRGU6SSXJVKVURCBJZNFGR22KRCE2WSSK5GVCWSHI5GVEUKHLFNFITKPJJMEOUJTKRJU2USRI42DGRCNJ5FFOR2VGNKE6N2CKJCU2WSEIFGVEWCHIEZEIQKOJQ2EOSKZIRCU4WSRI5IVSRCRG5CEMTS2KBLEWVJTGRFEMSCILFJUWT2LJI3EIQ2RJJIUSTRWIREU4SSTJBDDMR2TKVCEQS2WIVEFSTKKLBEECM2EKNHFUV2HGQZUIQ2NKJMUQRSUJBJTGTCOIVGTERCRJZNFESCBGNJUOTKSKJDUSWSDGJHEEWKHGRMVIUKOGM2EWSSEIU2DOQSTI5AVURCPJVBFKR2BLJKEGTKCKFDUENSEIM3UGU2HIVNFIS2NGJBUQRJUKRFVIUSRJNKVSSCZJVJFOR2ZGJKFGTK2KRCU4SSFGZETEU2JLJEEGR2NKJIUOSJTKMZE2QSVIZKVSRCHJFBFER2BGVCECTKCIR6DENRWGU4S4MZTPQZDAMRXFUYDILJQGMQDCMB2GAYDUMBQPRJE67D4PR6FG5DBNZSGC4TEEBKHO2LOEBJG633NFQQEG2LUPEQFM2LFO56DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:26:08.210125Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        },
+        {
+          "id": "opt_stay_28a2b11b0f6f",
+          "mode": null,
+          "label": "Colosseum Boutique Hotel & Spa",
+          "detail": "Deluxe Room, 1 Queen Bed",
+          "price": {
+            "amount": 26765.39,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹106 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-04-05",
+            "checkout": "2027-04-08",
+            "room_name": "Deluxe Room, 1 Queen Bed",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "79 Haile Sealassie Road, Oysterbay",
+            "rating": 8.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp53d9f",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFER1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNERVlaU0dBWlRDTVJRRzRZVE9OSldHVTNES05URkdJWURNTVJXR1UzREk3QlJFTVpEQU1SWEdBMkRBTkw0R0lZREVOWlFHUVlEUTdERk5aUFZLVTM0SkZISFlTS09LSjZEQ1FKUUlONkRJTkpTSEY2R1NVREhLVkVIWU1KWEhBM0RTTlpXRzQzRENNUllIRlRIUzNMTkVNWlRJTVpVR1UyU0dNUlJHSVpDMk1aVUdNMkRLTkw0SlpKRU1UVDRHSVlEQ05KUkdFWURNTUpRR0FZSFlNTDRLSVlUQU5CUUlJNFRTTktPR0JLVEE3QlNHWTNUTU5KVEhFUlVFUVJESlpKRU1UUkRHSVlEQ05KTkdFWVMyTUJXRUFZVEFPUlFHQVJRo3ByY8tA2iNY9cKPXKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrhEZWx1eGUgUm9vbSwgMSBRdWVlbiBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYzNDM0NTWjc2lkAqNoaWSnbHA1M2Q5ZqNvY2ORgaFhAaNjdXKjSU5SomduoklOomNpqjIwMjctMDQtMDWiY2-qMjAyNy0wNC0wOKNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDEwMWQ3NTFibkIzMDNvWkRTTFhlS3ZROXdsS25FYkd2b0k1M6Npc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnDoWSlVGF4ZXOhYctAsf2wo9cKPaFjo0lOUqJscMCjYmt0CA==",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHJEZUOTKOKRDUOWSTIRCVSWSTI5AVUVCDJVJFCRZULFKE6TSKK5DVKM2EJNHFIRSHJFMUITKNKJLUOVJTIRETOQSSIVGVURCBJVJFQR2BGJCECTSMGRDUSWKEIVHFUUKHKFMUIUJXIRDE4WSQKZFVKMZUJJDEQSCZKNFU6S2KGZCEGUKKKFEU4NSEJFHEUU2IIY3EOU2VIREEWVSFJBMU2SSYJBATGRCTJZNFORZUGNCEGTKSLFEEMVCIKMZUYTSFJVNFISKNLJKUOVJSKNDU2USSI5EVUQZSJVNFKR2NGJCEWTSMGRFFUSSFJVKFINCHJFMUIQ2OJJJEORKZIRGU2SSRI5AVSSCZJVGDIS2JLFKECTSCKFEUSNCUKNHEWT2HIJFVIQJXIJJUOWJTKRGU4SSUJBCVEVKFKFJEISS2JJCU2VCSIRDUSWKEINHEUTSHIVMVGMSNIJLUKQKZKRAU6USRI5AVEUL4GI3DONRVFYZTS7D4IJEXY7D4PRCGK3DVPBSSAUTPN5WSYIBREBIXKZLFNYQEEZLEPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:26:08.210125Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        },
+        {
+          "id": "opt_stay_0a75b8e98553",
+          "mode": null,
+          "label": "Four Points by Sheraton Dar es Salaam New Africa",
+          "detail": "Deluxe Room, 2 Twin Beds, City View",
+          "price": {
+            "amount": 41526.23,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹14,867 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-04-05",
+            "checkout": "2027-04-08",
+            "room_name": "Deluxe Room, 2 Twin Beds, City View",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Azikiwe Street / Sokoine Drive",
+            "rating": 8.4,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp31fa9",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFYR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNERVlaU0dBWlRFTVJRRzQyRE9OWldIRTNHS01SUUdZWkRNTkpXR1EzVEdNVERHSVlETU1aV0hFM1RJTlpaR0lZRE9OUldIRTNES05aWFBRWVNHTVJRR0kzVEFOQlFHVjZERU1CU0c0WURJTUJZUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUlpHNDNET05SUkdJNERTWlRaTlZXU0dNUlFHUTNUQ01aREc0MkRRTEpTR0EyRE9NSlRQUkhGRVJTT1BRWkRBTVJXR0E0RENOSlJHQVlEQTdCUlBSSkRDTUJZR1Y2RElNSlZHSTNERU1aREtKSFNHVFNTSVpIQ0dNUlFHSTNDMk1CWUZVWVRLSUJSR0E1REFNQkSjcHJjy0DkRsdcKPXDpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Ju2SNEZWx1eGUgUm9vbSwgMiBUd2luIEJlZHMsIENpdHkgVmlld6NvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJCicnSkTlJGTqRzaGlkpjIwNDcxM6NzaWQCo2hpZKdscDMxZmE5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNC0wNaJjb6oyMDI3LTA0LTA4o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTAxZDc1MWJuQjMwM29aRFNMWGVLdlE5d2xLbkViR3ZvSTUzo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4kYShacOhZKZPVEhFUlOhYctAuL8ZmZmZmqFjo0lOUqJscMCjYmt0AQ==",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHJEZUOTKOKRDUOWSTIRCVSWSTI5AVUVCFJVJFCRZUGJCE6TS2K5EEKM2HJNGVEUKHLFNEITKOJJLUOUJTKRDU2VCEI5EVSRCNJVNFOSCFGNKESTS2LJDUSWKEJ5HFEV2IIUZUIS2OLJMFAUKZKNDU2USRI5ETGVCBJZBFCR2WGZCEKTKCKNDTIWKEJFGUEWKQKJJVONCYGJLEWTRWIVJVIVBUJJDEQRSFG5BFESKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4US2I42DGRCPJZJFER2JGRCFGWSULJHFMV2TI5GVEUKHKEZVIQ2NLJCEONBSIRIUYSSTI5ATERCPJVFFIUCSJBDEKUSTJ5IFCWSEIFGVEV2HIE2EIQ2OJJJEOQKZIRATOQSSKBJEURCDJVBFSR2WGZCESTKKKZDUSM2EIVGVURCLJJEFGR2UKNJUSWSIINDU2USRI5ETGQZSJVBFSRSVLFKEWSKCKJDUCNKEIFGUERD4GQYTKMRWFYZDG7D4KJHXY7D4PRCGK3DVPBSSAUTPN5WSYIBSEBKHO2LOEBBGKZDTFQQEG2LUPEQFM2LFO56DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:26:08.210125Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 26659.33,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "darjeeling_2027-04-05_2027-04-08",
+  "user_id": "corpus-darjeeling-heritage-solo-3d"
+}

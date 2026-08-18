@@ -433,6 +433,19 @@ function Save-SandboxPromotion {
     $saved = $entries | Where-Object { $_.slug -eq $Entry.slug } | Select-Object -First 1
     if (-not $saved) { throw "Sandbox '$($Entry.slug)' disappeared from the registry." }
     $commit = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("rev-parse", "HEAD")
+
+    # A promoted lane is usually a discarded lane soon after, and the places it
+    # warmed cost real money. Preserve them here rather than relying on the
+    # discard, which the owner may never run. A failure must not fail a promotion.
+    $cacheScript = Join-Path $Entry.worktree "scripts\dev\corpus_cache.py"
+    if (Test-Path $cacheScript -PathType Leaf) {
+        Write-Host "  Preserving places from $($Entry.database) ..."
+        & (Get-VenvPython) $cacheScript --sync --database $Entry.database
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "  Could not preserve places from $($Entry.database)."
+        }
+    }
+
     $saved | Add-Member -NotePropertyName promotedUtc -NotePropertyValue `
         (Get-Date).ToUniversalTime().ToString("o") -Force
     $saved | Add-Member -NotePropertyName promotedBase -NotePropertyValue $Base -Force
@@ -1473,6 +1486,9 @@ if ($PSCmdlet.ParameterSetName -eq "Run") {
         }
     }
 
+    # The place cache is synced with the central dump inside dev-spa.ps1, which is
+    # the one path every emulator-backed start goes through.
+
     Write-Host "Sandbox '$slug' -> http://localhost:$($entry.frontendPort)" -ForegroundColor Green
     $devSpa = Join-Path $entry.worktree "scripts\dev\dev-spa.ps1"
     & $devSpa `
@@ -1934,9 +1950,13 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
     if (Test-Path $seedScript -PathType Leaf) {
         # Dropping the database is the moment this lane's audit evidence would be
         # lost, so preserve it first. A failure here must not block the discard.
+        # This is the one hook that also writes the tracked git file: it is the
+        # last chance for this lane's data, and a dirty places.json is a useful
+        # prompt to commit it.
         $cacheScript = Join-Path $scriptRepoRoot "scripts\dev\corpus_cache.py"
         if (Test-Path $cacheScript -PathType Leaf) {
             Write-Host "  Preserving trips and places from $($entry.database) ..."
+            & $python $cacheScript --sync --database $entry.database
             & $python $cacheScript --save --database $entry.database
             if ($LASTEXITCODE -ne 0) {
                 $cleanupIssues += "could not preserve corpus data from $($entry.database)"

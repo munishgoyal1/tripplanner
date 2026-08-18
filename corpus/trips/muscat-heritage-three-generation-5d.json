@@ -1,0 +1,215 @@
+{
+  "status": "draft",
+  "trip_id": "muscat_2027-12-11_2027-12-16",
+  "trip_number": 1,
+  "created_at": "2026-08-17T20:21:57.493811",
+  "destination": "Muscat",
+  "origin": "Hyderabad",
+  "departure_date": "2027-12-11",
+  "return_date": "2027-12-16",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Draft — I'll refine with real prices and availability next. Flights, hotels, and restaurants will be added once search completes. Currency for this trip: USD ($).",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Muscat",
+    "estimated_planned_minutes": 796,
+    "evidence_place_count": 7,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "7 preference-matched places account for about 796 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-11",
+      "title": "Arrival & Mutrah Souq",
+      "summary": "Arrive in Muscat, check in to hotel, explore Mutrah Souq for a historical introduction and local shopping.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Mutrah Souq",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Explore the historic market"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-12",
+      "title": "Grand Mosque & Bait Al Zubair Museum",
+      "summary": "Visit Sultan Qaboos Grand Mosque in the morning, followed by Bait Al Zubair Museum for Omani heritage.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Sultan Qaboos Grand Mosque",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Bait Al Zubair Museum",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-13",
+      "title": "Royal Opera House & Old Muscat",
+      "summary": "Tour the Royal Opera House Muscat and explore Old Muscat, including Al Jalali and Al Mirani Forts.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Royal Opera House Muscat",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Old Muscat",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Al Jalali and Al Mirani Forts",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-12-14",
+      "title": "Qurum Natural Park & Heritage Walk",
+      "summary": "Enjoy Qurum Natural Park in the morning, followed by a guided heritage walk in Muscat.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Qurum Natural Park",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Muscat Heritage Walk",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-12-15",
+      "title": "Leisure & Departure",
+      "summary": "Leisure morning, optional visit to local museums or souqs, then depart for Hyderabad.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Optional: Ghalya's Museum of Modern Art",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Flight: Muscat to Hyderabad",
+          "kind": "flight",
+          "time": "15:00",
+          "duration_min": 180,
+          "note": "Return journey"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T20:24:39.900294",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-17T20:24:39",
+      "expires_at": "2026-08-17T20:54:39"
+    }
+  ],
+  "id": "muscat_2027-12-11_2027-12-16",
+  "user_id": "corpus-muscat-heritage-three-generation-5d"
+}

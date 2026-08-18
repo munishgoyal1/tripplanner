@@ -27,6 +27,50 @@ _HOTEL_PLACEHOLDER_RE = re.compile(
     r"accommodation option|accommodation recommendation)\b",
     re.I,
 )
+#: The lodging word itself, plus the adjectives a plan uses to describe a stay it
+#: has not actually chosen. "Premium", "accessible" and "budget" restate the
+#: brief; none of them identifies a property anyone can book.
+_LODGING_NOUN_RE = re.compile(
+    r"\b(hotels?|resorts?|homestays?|guest\s?houses?|accommodations?|"
+    r"lodges?|stays?|inns?|apartments?)\b",
+    re.I,
+)
+_LODGING_QUALIFIER_RE = re.compile(
+    r"\b(a|an|the|in|at|near|premium|luxury|budget|accessible|boutique|"
+    r"comfortable|central|recommended|suitable|family|friendly|pet)\b",
+    re.I,
+)
+#: A preposition straight after the lodging word means what follows is where the
+#: stay is, not which stay it is -- no gazetteer needed to know it names nobody.
+_LODGING_PREPOSITION_RE = re.compile(
+    r"\b(hotels?|resorts?|homestays?|guest\s?houses?|accommodations?|"
+    r"lodges?|stays?|inns?|apartments?)\s+(in|at|near|around|close to)\b",
+    re.I,
+)
+
+
+def unnamed_lodging(name: str, cities: set[str]) -> bool:
+    """True when a stay names no property -- only a lodging word and a place.
+
+    ``Hotel in Kochi`` and ``Colombo Hotel`` read like plans but cannot be
+    booked, reached, or priced, while ``Hotel Olathang`` and ``Taj Swarna,
+    Amritsar`` are real. The difference is whether anything survives once the
+    lodging word, the describing adjectives and the city are removed.
+    """
+    text = str(name or "").strip()
+    if not text:
+        return True
+    if not _LODGING_NOUN_RE.search(text):
+        return False
+    if _LODGING_PREPOSITION_RE.search(text):
+        return True
+    rest = _LODGING_NOUN_RE.sub(" ", text)
+    for city in sorted(cities, key=len, reverse=True):
+        city = city.strip()
+        if city:
+            rest = re.sub(rf"\b{re.escape(city)}\b", " ", rest, flags=re.I)
+    rest = _LODGING_QUALIFIER_RE.sub(" ", rest)
+    return not re.sub(r"[^A-Za-z0-9]+", "", rest)
 
 
 def _is_place_kind(kind: str) -> bool:
