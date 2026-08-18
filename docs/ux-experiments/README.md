@@ -28,8 +28,10 @@ Every owner save and agent-side state action appends a choice, exact notes, stat
 version number, and timestamp to the tracked `LAB_SELECTIONS.json` store. The Labs
 server also merges the former machine-local store, preferring newer top-level state
 without dropping older handoff or implementation history, then writes the merged
-record back to Git and the local cache. Commit that tracked change with the Lab work
-so another machine receives the same lifecycle and notes. Histories display newest first. Agent implementations
+record back to Git and the local cache. Browser saves commit only that tracked file
+and push the current branch before reporting success, so another machine receives
+the same lifecycle and notes without collecting unrelated worktree changes. A Git
+failure leaves the save visibly unsuccessful. Histories display newest first. Agent implementations
 also append evidence linked to the Implemented review state version; the owner can
 then complete, park, discard, or save another In progress handoff.
 Implementation sandboxes are linked with `-LabId`. The sandbox resolves
