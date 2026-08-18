@@ -24,6 +24,7 @@ from tripplanner.tools.trip_common import (
     _stop_name,
     _style_caps,
     unnamed_lodging,
+    unnamed_meal,
 )
 from tripplanner.tools.trip_guard import (
     KNOWN_FACT_CODES,
@@ -47,10 +48,68 @@ def itinerary_coherence_gaps(plan: dict[str, Any]) -> list[str]:
     ]
 
 
-def _restaurant_itinerary_warnings(itinerary: Any) -> list[str]:
+_MEAL_OPEN_RE = re.compile(
+    r"\b(meals? (?:are )?open|open meal|meal at leisure|choose (?:your|their) own "
+    r"(?:meal|restaurant)|self-guided dining)\b",
+    re.I,
+)
+_WHOLE_DAY_LEISURE_RE = re.compile(
+    r"\b(day at leisure|leisure day|free day|rest day|open day|unplanned day)\b",
+    re.I,
+)
+_INTERCITY_TRANSFER_RE = re.compile(
+    r"\b(?:flight|train|bus|drive|ferry)\b.*(?:→|\bto\b)|\b(?:overnight|sleeper)\b",
+    re.I,
+)
+
+
+def _day_allows_open_meals(day: dict[str, Any], stops: list[Any]) -> bool:
+    day_text = " ".join(str(day.get(key) or "") for key in ("title", "summary", "note", "notes"))
+    if _MEAL_OPEN_RE.search(day_text) or _WHOLE_DAY_LEISURE_RE.search(day_text):
+        return True
+    return any(
+        _stop_kind(stop) in {"flight", "transport"}
+        and _INTERCITY_TRANSFER_RE.search(_stop_name(stop))
+        for stop in stops
+    )
+
+
+def _dietary_preferences(plan: dict[str, Any]) -> list[str]:
+    preferences = plan.get("preferences_snapshot")
+    preferences = preferences if isinstance(preferences, dict) else {}
+    diets: list[str] = []
+    food = preferences.get("food_preferences")
+    if isinstance(food, dict):
+        raw = food.get("dietary")
+        diets.extend([raw] if isinstance(raw, str) else (raw or []))
+    for member in preferences.get("family_members") or []:
+        if not isinstance(member, dict):
+            continue
+        raw = member.get("dietary")
+        diets.extend([raw] if isinstance(raw, str) else (raw or []))
+    return [
+        str(diet).strip().lower()
+        for diet in diets
+        if str(diet).strip().lower() not in {"", "none", "no", "any"}
+    ]
+
+
+def _restaurant_itinerary_warnings(
+    itinerary: Any,
+    *,
+    cities: set[str] | None = None,
+    dietary: list[str] | None = None,
+) -> list[str]:
     warnings: list[str] = []
     if not isinstance(itinerary, list):
         return warnings
+    known_cities = cities or set()
+    diet_tokens = {
+        token
+        for diet in (dietary or [])
+        for token in re.split(r"[\s,;/]+", diet)
+        if len(token) >= 4
+    }
     for index, day in enumerate(itinerary):
         if not isinstance(day, dict):
             continue
@@ -62,12 +121,25 @@ def _restaurant_itinerary_warnings(itinerary: Any) -> list[str]:
         placeholders = [
             _stop_name(stop)
             for stop in meal_stops
-            if not _stop_name(stop) or _MEAL_PLACEHOLDER_RE.search(_stop_name(stop))
+            if _MEAL_PLACEHOLDER_RE.search(_stop_name(stop))
+            or unnamed_meal(_stop_name(stop), known_cities)
         ]
         if placeholders:
             warnings.append(f"Day {day_num} has a meal placeholder instead of a named restaurant.")
-        elif place_count >= 2 and not meal_stops:
+        elif place_count >= 2 and not meal_stops and not _day_allows_open_meals(day, stops):
             warnings.append(f"Day {day_num} has multiple activities but no named restaurant stop.")
+        elif meal_stops and diet_tokens:
+            meal_text = " ".join(
+                str(value)
+                for stop in meal_stops
+                if isinstance(stop, dict)
+                for value in stop.values()
+            ).lower()
+            if not any(token in meal_text for token in diet_tokens):
+                warnings.append(
+                    f"Day {day_num}'s named meal does not confirm the saved dietary "
+                    f"preference ({', '.join(sorted(set(dietary or [])))})."
+                )
     return warnings
 
 
@@ -239,6 +311,16 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
             "described only as a hotel in a city cannot be booked, reached, or priced. "
             "Choose a real property, or offer two or three named candidates."
         )
+    missing_days = [
+        violation.day
+        for violation in validate_plan(plan)
+        if violation.code == "I6" and violation.stop is None and violation.day is not None
+    ]
+    if missing_days:
+        warnings.append(
+            f"Day(s) {', '.join(str(day) for day in missing_days)} have no concrete "
+            "lodging anchor for the night."
+        )
     return warnings
 
 
@@ -374,7 +456,11 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         ]
     return [
         *missing_itinerary,
-        *_restaurant_itinerary_warnings(plan.get("day_wise_itinerary")),
+        *_restaurant_itinerary_warnings(
+            plan.get("day_wise_itinerary"),
+            cities=_itinerary_hotel_locations(plan),
+            dietary=_dietary_preferences(plan),
+        ),
         *_empty_itinerary_day_warnings(plan.get("day_wise_itinerary")),
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),

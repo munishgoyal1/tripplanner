@@ -57,6 +57,7 @@ from tripplanner.tools.trip_guard import (
     validate_plan,
 )
 from tripplanner.tools.trip_validation import (  # noqa: F401
+    _dietary_preferences,
     _empty_itinerary_day_warnings,
     _hotel_destination_errors,
     _hotel_selection_warnings,
@@ -2206,7 +2207,11 @@ def update_trip_plan(updates_json: str) -> str:
         )
     _save_active_trip(plan)
     broken_invariants = _newly_broken(before, plan)
-    restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))
+    restaurant_warnings = _restaurant_itinerary_warnings(
+        plan.get("day_wise_itinerary"),
+        cities=_itinerary_hotel_locations(plan),
+        dietary=_dietary_preferences(plan),
+    )
     empty_day_warnings = _empty_itinerary_day_warnings(plan.get("day_wise_itinerary"))
     transport_warnings = _round_trip_transport_warnings(plan)
     hotel_warnings = _hotel_selection_warnings(plan)
