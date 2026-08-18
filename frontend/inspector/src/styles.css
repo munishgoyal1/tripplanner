@@ -94,6 +94,10 @@ th, td {
 }
 th { color: var(--muted); font-weight: 600; font-size: 12px; }
 tr.silent td { color: var(--muted); }
+.move { font-size: 12px; white-space: nowrap; }
+.move.better { color: #1a7f45; }
+.move.worse { color: #b3261e; }
+.move.flat, .move.new { color: var(--muted); }
 
 .empty {
   background: var(--card); border: 1px dashed var(--line); border-radius: 8px;

@@ -141,8 +141,16 @@ def main(argv: list[str] | None = None) -> int:
     if args.report:
         from tripplanner.validation import report as report_module
 
-        payload = report_module.build_report(result, findings_module.load_baseline(path))
         destination = runner.corpus_root(REPO_ROOT) / report_module.REPORT_FILE
+        # Read before writing: the report it replaces is what "since last time"
+        # is measured against.
+        try:
+            previous = json.loads(destination.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            previous = {}
+        payload = report_module.build_report(
+            result, findings_module.load_baseline(path), previous
+        )
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(
             json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"

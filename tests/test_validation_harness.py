@@ -499,6 +499,60 @@ def test_a_rule_that_never_fired_is_still_listed(tmp_path: Path) -> None:
     assert any(item["hits"] == 0 for item in payload["rules"])
 
 
+def test_a_rule_counts_the_trips_it_touches_not_just_the_times_it_fired(
+    tmp_path: Path,
+) -> None:
+    """One trip repeating a mistake daily is not every trip making it once."""
+    from tripplanner.validation import report as report_module
+
+    result = _audit_of(_record(), tmp_path=tmp_path)
+    payload = report_module.build_report(result, {"accepted": {}})
+
+    fired = [item for item in payload["rules"] if item["hits"]]
+    assert fired, "the fixture is expected to trip at least one rule"
+    for item in fired:
+        assert 1 <= item["trips"] <= payload["corpus"]["size"]
+        assert item["trips"] <= item["hits"]
+
+
+def test_a_rule_reports_how_far_it_moved_since_the_previous_audit(
+    tmp_path: Path,
+) -> None:
+    """A count with nothing to compare against cannot show whether work helped."""
+    from tripplanner.validation import report as report_module
+
+    result = _audit_of(_record(), tmp_path=tmp_path)
+    first = report_module.build_report(result, {"accepted": {}})
+    assert all(item["first_seen"] for item in first["rules"])
+    assert first["compared_with"] == ""
+
+    second = report_module.build_report(result, {"accepted": {}}, first)
+
+    assert second["compared_with"] == first["generated_at"]
+    by_code = {item["code"]: item for item in first["rules"]}
+    for item in second["rules"]:
+        assert not item["first_seen"]
+        assert item["was_trips"] == by_code[item["code"]]["trips"]
+        assert item["was_hits"] == by_code[item["code"]]["hits"]
+
+
+def test_a_rule_added_after_the_last_audit_reads_as_new_not_as_a_regression(
+    tmp_path: Path,
+) -> None:
+    """Without this, every new rule would look like quality suddenly got worse."""
+    from tripplanner.validation import report as report_module
+
+    result = _audit_of(_record(), tmp_path=tmp_path)
+    previous = report_module.build_report(result, {"accepted": {}})
+    previous["rules"] = [item for item in previous["rules"] if item["code"] != "R1"]
+
+    payload = report_module.build_report(result, {"accepted": {}}, previous)
+
+    fresh = next(item for item in payload["rules"] if item["code"] == "R1")
+    assert fresh["first_seen"]
+    assert fresh["was_trips"] == 0
+
+
 def test_a_record_without_a_stored_identity_is_not_offered_as_openable(
     tmp_path: Path,
 ) -> None:

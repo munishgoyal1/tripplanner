@@ -9,6 +9,10 @@ export type Rule = {
   severity: "gate" | "report" | "observe";
   evaluated_in: string;
   hits: number;
+  trips: number;
+  was_hits: number;
+  was_trips: number;
+  first_seen: boolean;
 };
 
 export type Finding = {
@@ -49,6 +53,7 @@ export type Observation = { label: string; value: string; detail: string };
 export type Report = {
   version: number;
   generated_at: string;
+  compared_with: string;
   corpus: {
     size: number;
     provenance: Record<string, number>;

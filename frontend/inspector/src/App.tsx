@@ -3,6 +3,7 @@ import {
   AUDIT_COMMAND,
   type Group,
   type Report,
+  type Rule,
   type TripRecord,
   howLongAgo,
   loadReport,
@@ -130,36 +131,70 @@ function Findings({ report }: { report: Report }) {
   );
 }
 
+function Movement({ rule }: { rule: Rule }) {
+  if (rule.first_seen) {
+    return <span className="move new">new rule</span>;
+  }
+  const delta = rule.trips - rule.was_trips;
+  if (delta === 0) {
+    return <span className="move flat">no change</span>;
+  }
+  return (
+    <span className={`move ${delta < 0 ? "better" : "worse"}`}>
+      {delta < 0 ? "\u2193" : "\u2191"} {Math.abs(delta)} trip
+      {Math.abs(delta) === 1 ? "" : "s"}
+      <span className="meta"> (was {rule.was_trips})</span>
+    </span>
+  );
+}
+
 function Rules({ report }: { report: Report }) {
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Rule</th>
-          <th>What it asserts</th>
-          <th>Severity</th>
-          <th>Hits</th>
-        </tr>
-      </thead>
-      <tbody>
-        {report.rules.map((rule) => (
-          <tr key={rule.code} className={rule.hits ? "" : "silent"}>
-            <td className="mono">{rule.code}</td>
-            <td>{rule.title}</td>
-            <td>
-              {rule.statement}
-              <br />
-              <span className="meta mono">{rule.evaluated_in}</span>
-            </td>
-            <td>
-              <span className={`chip ${rule.severity}`}>{rule.severity}</span>
-            </td>
-            <td>{rule.hits || "never fired"}</td>
+    <>
+      {report.compared_with ? (
+        <p className="meta">
+          Movement is against the audit of {report.compared_with}.
+        </p>
+      ) : (
+        <p className="meta">
+          No earlier report was on disk, so nothing can be compared yet.
+        </p>
+      )}
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Rule</th>
+            <th>What it asserts</th>
+            <th>Severity</th>
+            <th>Trips</th>
+            <th>Hits</th>
+            <th>Since last audit</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {report.rules.map((rule) => (
+            <tr key={rule.code} className={rule.hits ? "" : "silent"}>
+              <td className="mono">{rule.code}</td>
+              <td>{rule.title}</td>
+              <td>
+                {rule.statement}
+                <br />
+                <span className="meta mono">{rule.evaluated_in}</span>
+              </td>
+              <td>
+                <span className={`chip ${rule.severity}`}>{rule.severity}</span>
+              </td>
+              <td>{rule.trips || "\u2014"}</td>
+              <td>{rule.hits || "never fired"}</td>
+              <td>
+                <Movement rule={rule} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
 

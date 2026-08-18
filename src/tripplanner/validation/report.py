@@ -71,7 +71,23 @@ def _group_entry(item: Group, new_keys: set[str], accepted: dict[str, Any]) -> d
     }
 
 
-def build_report(result: AuditResult, baseline: dict[str, Any]) -> dict[str, Any]:
+def _previous_rule_counts(previous: dict[str, Any]) -> dict[str, dict[str, int]]:
+    """Hits and affected trips per rule, as the last audit recorded them."""
+    out: dict[str, dict[str, int]] = {}
+    for entry in previous.get("rules") or []:
+        if isinstance(entry, dict) and entry.get("code"):
+            out[str(entry["code"])] = {
+                "hits": int(entry.get("hits") or 0),
+                "trips": int(entry.get("trips") or 0),
+            }
+    return out
+
+
+def build_report(
+    result: AuditResult,
+    baseline: dict[str, Any],
+    previous: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Everything the inspector needs, resolved and self-contained."""
     accepted = dict(baseline.get("accepted") or {})
     new_keys = {item.key for item in result.new}
@@ -84,9 +100,19 @@ def build_report(result: AuditResult, baseline: dict[str, Any]) -> dict[str, Any
     for item in result.groups:
         hits[item.rule] = hits.get(item.rule, 0) + item.count
 
+    # How many trips a rule touches says more than how often it fired: one trip
+    # repeating a mistake on every day is not the same problem as every trip
+    # making it once.
+    affected: dict[str, set[str]] = {}
+    for finding in result.findings:
+        affected.setdefault(finding.rule, set()).add(finding.record_id)
+
+    was = _previous_rule_counts(previous or {})
+
     return {
         "version": REPORT_VERSION,
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "compared_with": str((previous or {}).get("generated_at") or ""),
         "corpus": {
             "size": result.corpus_size,
             "provenance": result.provenance_mix,
@@ -101,6 +127,10 @@ def build_report(result: AuditResult, baseline: dict[str, Any]) -> dict[str, Any
                 "severity": rule.severity,
                 "evaluated_in": rule.evaluated_in,
                 "hits": hits.get(rule.code, 0),
+                "trips": len(affected.get(rule.code, ())),
+                "was_hits": was.get(rule.code, {}).get("hits", 0),
+                "was_trips": was.get(rule.code, {}).get("trips", 0),
+                "first_seen": rule.code not in was,
             }
             for rule in registry()
         ],
