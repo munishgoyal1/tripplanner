@@ -1,0 +1,72 @@
+name: Bug
+description: Something is broken. Log it fast; an agent will triage it in the issue.
+labels: ["bug", "agent:queued"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Only the first box is required. Everything else makes triage faster but
+        an issue with one sentence is still worth logging.
+
+        Do not paste secrets, API keys, connection strings, or `.env` contents.
+        Trip ids, user ids, and chat ids are fine; this repository is private.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, and what the product did instead.
+      placeholder: |
+        Asked the assistant to move Pena Palace to Day 2 and it silently dropped
+        the return transfer.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      placeholder: The transfer should have moved with it, or the edit refused.
+
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where you saw it
+      options:
+        - Local primary master stack
+        - Local sandbox stack
+        - Canary
+        - Production
+        - Mobile
+        - Not sure
+      default: 0
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context to reproduce
+      description: >
+        Trip id, user id, chat id, sandbox number, ports, or the run log under
+        `logs/last-run/`. Screenshots and pasted errors help.
+      placeholder: |
+        trip: lisbon-2027-03-12
+        user: google-1018...
+        lane: sbx-2, api 8110
+        log: logs/last-run/dev-spa-8110.log
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How much it hurts
+      options:
+        - Blocking me right now
+        - Annoying but I can work around it
+        - Cosmetic or minor
+      default: 1
+
+  - type: input
+    id: lane
+    attributes:
+      label: Lane you want it fixed in
+      description: Leave blank to let the agent choose. Bugs default to the bugfix lane.
+      placeholder: sbx-3

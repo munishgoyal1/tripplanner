@@ -49,6 +49,7 @@ choose." Canonical documents answer "what is true now."
 | [`development/dev.md`](development/dev.md) | Local development guidance |
 | [`development/new-machine-setup.md`](development/new-machine-setup.md) | Reproduce the Windows/macOS toolchain, VS Code/Copilot settings, and four-agent layout |
 | [`development/parallel-agent-development.md`](development/parallel-agent-development.md) | Parallel coding-agent worktrees, merge checkpoints, and VS Code voice input |
+| [`development/issue-workflow.md`](development/issue-workflow.md) | GitHub issues as the shared task board across agent sessions: claiming, triage, implementation, and closing |
 | [`development/setup-oauth.md`](development/setup-oauth.md) | Google OAuth setup |
 | [`eng-backlog/`](eng-backlog/README.md) | Deferred developer-tooling and engineering-reliability work; not active implementation scope |
 

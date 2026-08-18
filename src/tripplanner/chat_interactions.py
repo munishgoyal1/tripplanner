@@ -11,7 +11,8 @@ from langchain_core.tools import tool
 
 _INPUT_REQUEST_PREFIX = "TRIP_INPUT_REQUEST:"
 _FIELD_ID = re.compile(r"^[a-z][a-z0-9_]{0,39}$")
-_FIELD_KINDS = {"single", "multi", "boolean", "number"}
+_ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_FIELD_KINDS = {"single", "multi", "boolean", "number", "text", "date"}
 
 
 def _short_text(value: Any, *, name: str, limit: int) -> str:
@@ -38,10 +39,18 @@ def _validate_option(raw: Any, field_id: str) -> dict[str, str]:
     return option
 
 
+def _slug(value: Any) -> str:
+    text = re.sub(r"[^a-z0-9]+", "_", str(value or "").strip().lower()).strip("_")
+    if text and not text[0].isalpha():
+        text = f"field_{text}"
+    return text[:40].strip("_")
+
+
 def _validate_field(raw: Any) -> dict[str, Any]:
     if not isinstance(raw, dict):
         raise ValueError("Each input field must be an object")
-    field_id = _short_text(raw.get("id"), name="field id", limit=40)
+    # The id is a machine key the model often omits; the label already carries it.
+    field_id = _slug(raw.get("id")) or _slug(raw.get("label"))
     if not _FIELD_ID.fullmatch(field_id):
         raise ValueError("Field ids must use lower-case letters, digits, and underscores")
     kind = raw.get("kind")
@@ -74,6 +83,23 @@ def _validate_field(raw: Any) -> dict[str, Any]:
     elif kind == "boolean":
         if not isinstance(raw["value"], bool):
             raise ValueError(f"{field_id} must use a boolean value")
+    elif kind in {"text", "date"}:
+        value = raw["value"]
+        if not isinstance(value, str):
+            raise ValueError(f"{field_id} must use a string value")
+        # An empty string is how a prefilled field says "not answered yet", so a
+        # missing origin or an undecided date stays askable without inventing one.
+        text = value.strip()
+        if len(text) > 80:
+            raise ValueError(f"{field_id} must be at most 80 characters")
+        if kind == "date" and text and not _ISO_DATE.fullmatch(text):
+            raise ValueError(f"{field_id} must use an ISO YYYY-MM-DD date")
+        field["value"] = text
+        placeholder = raw.get("placeholder")
+        if placeholder:
+            field["placeholder"] = _short_text(
+                placeholder, name=f"{field_id} placeholder", limit=60
+            )
     else:
         value = raw["value"]
         minimum = raw.get("min", 1)
@@ -87,6 +113,29 @@ def _validate_field(raw: Any) -> dict[str, Any]:
     return field
 
 
+def _context_line(value: Any) -> str:
+    """Render one already-applied fact as a short line.
+
+    The model reasonably emits ``{"trip_style": "balanced"}`` as often as a plain
+    string, and rejecting that shape used to discard the entire card.
+    """
+    if isinstance(value, str):
+        text = value.strip()
+    elif isinstance(value, dict):
+        text = ", ".join(
+            f"{key}: {item}"
+            for key, item in value.items()
+            if item not in (None, "", [], {})
+        )
+    elif isinstance(value, (list, tuple)):
+        text = ", ".join(_context_line(item) for item in value)
+    elif isinstance(value, bool) or value is None:
+        text = ""
+    else:
+        text = str(value).strip()
+    return text[:120].strip()
+
+
 def build_input_request(
     question: str,
     known_context: Any,
@@ -98,19 +147,28 @@ def build_input_request(
     """Validate and normalize one compact assistant input request."""
     clean_question = _short_text(question, name="question", limit=240)
     clean_submit = _short_text(submit_label, name="submit label", limit=60)
-    if not isinstance(known_context, list) or len(known_context) > 6:
-        raise ValueError("known context must be a list of at most 6 items")
-    clean_context = [
-        _short_text(item, name="known context item", limit=120)
-        for item in known_context
-    ]
-    if not isinstance(fields, list) or not 1 <= len(fields) <= 4:
-        raise ValueError("input requests must contain between 1 and 4 fields")
-    clean_fields = [_validate_field(field) for field in fields]
-    ids = [field["id"] for field in clean_fields]
-    if len(ids) != len(set(ids)):
-        raise ValueError("input field ids must be unique")
-
+    if not isinstance(known_context, list):
+        raise ValueError("known context must be a list")
+    # Context is cosmetic, so an over-long list is trimmed rather than costing
+    # the traveller the whole card.
+    clean_context = [line for line in map(_context_line, known_context) if line][:6]
+    if not isinstance(fields, list) or not fields:
+        raise ValueError("input requests must contain at least one field")
+    # Six keeps the card compact. One malformed field is skipped rather than
+    # costing the traveller the whole review, which is how it went missing before.
+    clean_fields: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for field in fields[:6]:
+        try:
+            clean = _validate_field(field)
+        except ValueError:
+            continue
+        while clean["id"] in seen_ids:
+            clean["id"] = f"{clean['id'][:37]}_{len(seen_ids)}"
+        seen_ids.add(clean["id"])
+        clean_fields.append(clean)
+    if not clean_fields:
+        raise ValueError("input requests must contain at least one usable field")
     identity = json.dumps(
         {"question": clean_question, "fields": clean_fields},
         ensure_ascii=True,
@@ -138,11 +196,14 @@ def request_trip_input(
 ) -> str:
     """Present one compact, prefilled input request when critical trip facts are unresolved.
 
-    Use only in interactive planning mode. ``fields_json`` is a JSON array of 1-4
-    fields. Supported kinds are ``single``, ``multi``, ``boolean``, and ``number``.
-    Every field must include a sensible prefilled ``value``. Choice fields also
-    include 2-6 ``options`` with ``value``, ``label``, and optional ``detail``.
-    ``known_context_json`` lists saved preferences or inferred facts already applied.
+    Use only in interactive planning mode. ``fields_json`` is a JSON array of 1-6
+    fields. Supported kinds are ``single``, ``multi``, ``boolean``, ``number``,
+    ``text``, and ``date``. Every field must include a sensible prefilled ``value``.
+    Choice fields also include 2-6 ``options`` with ``value``, ``label``, and optional
+    ``detail``. Use ``date`` (ISO ``YYYY-MM-DD``) for a start date, ``number`` for trip
+    length, and ``text`` for an origin city, leaving its value empty when none is known.
+    ``known_context_json`` lists the saved preferences or inferred facts already
+    applied, as short strings such as ``["Balanced pace", "Moderate budget"]``.
     """
     try:
         fields = json.loads(fields_json)

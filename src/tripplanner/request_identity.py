@@ -111,13 +111,17 @@ def require_owner(request: Request) -> dict[str, str]:
     session = signed_session(request)
     owner_email = os.getenv("OPS_DASHBOARD_OWNER_EMAIL", "munishgoyal1@gmail.com")
     if (
-        not session
-        or session.get("session_kind") == "guest"
-        or str(session.get("email") or "").strip().casefold()
-        != owner_email.strip().casefold()
+        session
+        and session.get("session_kind") != "guest"
+        and str(session.get("email") or "").strip().casefold()
+        == owner_email.strip().casefold()
     ):
-        raise HTTPException(status_code=404, detail="Not found.")
-    return session
+        return session
+    # A local run has no Google-signed email to match and nobody to hide the
+    # console from, so requiring one only locks the owner out of their own machine.
+    if not is_hosted():
+        return session or {"user_id": "local", "email": owner_email}
+    raise HTTPException(status_code=404, detail="Not found.")
 
 
 def require_guest_capability(request: Request, guest_id: str) -> None:

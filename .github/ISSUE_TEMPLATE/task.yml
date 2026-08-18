@@ -1,0 +1,49 @@
+name: Task
+description: A change you want made. Scope it enough that an agent cannot guess wrong.
+labels: ["agent:queued"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for work you already want done. An idea you have not decided on
+        belongs in `docs/roadmap/`, and a coherent new capability belongs in an
+        owner-authored brief under `docs/feature-briefs/`.
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome you want
+      description: The result in product terms, not the implementation.
+      placeholder: Feedback on a trip should be visible to me without opening the database.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why now
+      placeholder: I keep losing track of which trips people complained about.
+
+  - type: textarea
+    id: boundary
+    attributes:
+      label: What must not change
+      description: >
+        The scope boundary. Name anything nearby the agent should leave alone,
+        so an approved change does not quietly become a redesign.
+      placeholder: |
+        Do not change the itinerary layout or the assistant's behavior.
+
+  - type: textarea
+    id: done
+    attributes:
+      label: How we know it is done
+      placeholder: |
+        I can see rating, comment, and trip for the last 20 submissions.
+
+  - type: input
+    id: lane
+    attributes:
+      label: Lane you want it done in
+      description: Leave blank to let the agent choose.
+      placeholder: sbx-3

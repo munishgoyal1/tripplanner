@@ -11,6 +11,9 @@ function initialValues(request: TripInputRequest): TripInputValues {
 function selectedLabel(field: TripInputField, value: TripInputField["value"]): string {
   if (field.kind === "boolean") return value ? "Yes" : "No";
   if (field.kind === "number") return String(value);
+  if (field.kind === "text" || field.kind === "date") {
+    return String(value ?? "").trim() || "not specified";
+  }
   const selected = Array.isArray(value) ? value : [value];
   return selected
     .map((item) => field.options?.find((option) => option.value === item)?.label ?? item)
@@ -101,6 +104,21 @@ export default function TripInputCard({ request, disabled = false, onSubmit, onS
                   <button type="button" onClick={() => update(field, Math.min(field.max ?? 12, number + step))} disabled={disabled || number >= (field.max ?? 12)} className="grid h-7 w-7 place-items-center rounded-full bg-white text-slate-600 ring-1 ring-slate-200 disabled:opacity-40" aria-label={`Increase ${field.label}`}><Plus size={13} /></button>
                 </div>
               </div>
+            );
+          }
+          if (field.kind === "text" || field.kind === "date") {
+            return (
+              <label key={field.id} className="flex flex-col gap-1.5">
+                <span className="text-xs font-semibold text-slate-700">{field.label}</span>
+                <input
+                  type={field.kind === "date" ? "date" : "text"}
+                  value={String(value ?? "")}
+                  placeholder={field.placeholder}
+                  onChange={(event) => update(field, event.target.value)}
+                  disabled={disabled}
+                  className="h-9 rounded-full bg-slate-50 px-3 text-sm text-ink ring-1 ring-inset ring-slate-200 focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:opacity-50"
+                />
+              </label>
             );
           }
           return (
