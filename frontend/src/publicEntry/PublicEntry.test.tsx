@@ -8,7 +8,6 @@ import {
   demoDecisionsForLocale,
   demoTripForLocale,
 } from "./demoRun";
-import { hasSkippedPublicEntry, markPublicEntrySkipped, shouldShowPublicEntry } from "./publicEntryState";
 import { Masthead } from "./stagePieces";
 
 // The run animates one receipt at a time; the tests jump to the finished plan instead of
@@ -20,20 +19,6 @@ function renderFinished(props: { onPlan?: (request: string) => void; onSkip?: ()
   fireEvent.click(screen.getByRole("button", { name: /show the finished plan/i }));
   return result;
 }
-
-describe("publicEntryState", () => {
-  beforeEach(() => {
-    window.localStorage.clear();
-  });
-
-  it("shows the entry only to anonymous visitors who have not skipped", () => {
-    expect(shouldShowPublicEntry(true)).toBe(true);
-    expect(shouldShowPublicEntry(false)).toBe(false);
-    markPublicEntrySkipped();
-    expect(hasSkippedPublicEntry()).toBe(true);
-    expect(shouldShowPublicEntry(true)).toBe(false);
-  });
-});
 
 describe("PublicEntry", () => {
   beforeEach(() => {

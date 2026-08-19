@@ -93,7 +93,7 @@ re-describing the whole product.
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
 | OPS-03 | Owner-only Business and System Health operations dashboard | Implemented; hidden route, server-side verified-email guard, consented funnel/activity aggregates, chat/tool/provider/cache health, and explicit data-window labels |
-| PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Implemented; permanent `/welcome`, privacy-safe analytics, and regional last-known-good demo pipeline |
+| PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Implemented; `/` public entry, `/planner` workspace, privacy-safe analytics, and regional last-known-good demo pipeline |
 | DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Proposed |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |

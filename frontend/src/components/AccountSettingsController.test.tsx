@@ -22,7 +22,7 @@ vi.mock("../api", async (importOriginal) => {
 
 describe("AccountSettingsController", () => {
   beforeEach(() => {
-    window.history.replaceState({}, "", "/welcome");
+    window.history.replaceState({}, "", "/");
   });
 
   it("opens the complete shared settings experience without leaving the current page", async () => {
@@ -36,7 +36,7 @@ describe("AccountSettingsController", () => {
     expect(screen.getByRole("button", { name: /Travel documents/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Analytics preferences/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Privacy and data/ })).toBeInTheDocument();
-    expect(window.location.pathname).toBe("/welcome");
+    expect(window.location.pathname).toBe("/");
   });
 
   it("opens the settings menu when used directly as a React click handler", async () => {
