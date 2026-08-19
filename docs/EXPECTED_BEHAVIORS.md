@@ -115,16 +115,15 @@ either enabled (the default) or disabled.
 
 ## Public entry
 
-### EB-PUBLIC-001 - Reopen the landing page directly
+### EB-PUBLIC-001 - Open the public landing route
 
-**Trigger:** Navigate directly to `/welcome`, including after previously skipping
-the public entry or entering the planner workspace.
+**Trigger:** Navigate directly to `/`, including after entering the planner workspace.
 
 **Expected:** The public landing experience opens regardless of authentication or
-the saved first-visit skip flag. Choosing Plan mine or Skip to the app changes the
-address to `/` before opening the workspace while preserving `/welcome` in
-browser history. Back returns to the landing experience, and Plan mine carries
-its request into the Assistant as before. `/welcome/` behaves the same as `/welcome`.
+prior visits. Choosing Plan mine or Skip to the app changes the address to
+`/planner` while preserving `/` in browser history. Back returns to the landing
+experience, and Plan mine carries its request into the Assistant as before. The
+legacy `/welcome` and `/welcome/` addresses replace themselves with `/`.
 
 **Executable proof:**
 
@@ -158,8 +157,8 @@ receipts.
 **Trigger:** Select the profile chip in the public-entry masthead.
 
 **Expected:** The profile chip opens the complete shared Account settings hub
-without leaving `/welcome`. Choosing any settings destination, including Travel
-Profile, stays on `/welcome`. Entering the planner happens only through Plan mine
+without leaving `/`. Choosing any settings destination, including Travel
+Profile, stays on `/`. Entering the planner happens only through Plan mine
 or the separate Skip to the app action.
 
 **Executable proof:**
@@ -172,13 +171,9 @@ or the separate Skip to the app action.
 **Trigger:** Navigate directly to `/planner`, the permanent address of the main
 app workspace.
 
-**Expected:** The workspace opens immediately for a signed-in visitor, without
-consulting the saved-trip list. A guest is held until the saved-trip list answers:
-a guest with at least one trip opens the workspace, and a guest with no trip yet
-sees the public landing experience first. If the lookup fails the workspace opens
-rather than blocking the visitor. Plan mine and Skip to the app keep the address
-on `/planner` instead of rewriting it to `/`. `/planner/` behaves the same as
-`/planner`.
+**Expected:** The workspace opens immediately for every visitor without consulting
+the saved-trip list. Plan mine and Skip to the app navigate to `/planner`, and
+`/planner/` behaves the same as `/planner`.
 
 **Executable proof:**
 
