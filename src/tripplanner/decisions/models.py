@@ -71,6 +71,12 @@ class Price(BaseModel):
     amount: float
     currency: str
     basis: FareBasis = FareBasis.PER_TRAVELLER
+    taxes: float | None = None
+    fees: float | None = None
+    due_at_property: float | None = None
+    all_in: bool | None = None
+    mandatory_costs_complete: bool | None = None
+    excluded: list[dict[str, Any]] = Field(default_factory=list)
     # Aggregators such as Rome2rio publish ranges, not points. A range must never
     # be rendered as a fixed price, so it stays distinguishable to the pixel.
     amount_max: float | None = None

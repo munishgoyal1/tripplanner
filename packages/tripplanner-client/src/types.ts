@@ -70,6 +70,9 @@ export interface Budget {
   estimated: boolean;
   evidence_coverage_pct: number;
   verified_spent: number | null;
+  all_in_spent?: number | null;
+  all_in_coverage_pct?: number;
+  required_unknown?: string[];
 }
 
 export interface BudgetWhatIfProposal {
@@ -141,6 +144,16 @@ export interface CostEvidenceLine {
   checked_at?: string;
   expires_at?: string;
   reason?: string;
+  components?: Array<{
+    kind: string;
+    label: string;
+    amount: number;
+    currency: string;
+    inclusion: "reported" | "excluded" | "included" | "unknown" | string;
+  }>;
+  required_unknown?: string[];
+  all_in_complete?: boolean;
+  all_in_amount?: number;
   fx?: {
     from_currency: string;
     to_currency: string;
@@ -156,12 +169,16 @@ export interface CostEvidence {
   currency: string;
   lines: CostEvidenceLine[];
   priced_total: number | null;
+  all_in_total?: number | null;
   priced_count: number;
   stale_count: number;
   unverified_count: number;
   unpriced_count: number;
   complete: boolean;
   coverage_pct: number;
+  all_in_count?: number;
+  all_in_coverage_pct?: number;
+  required_unknown?: string[];
   summary: string;
 }
 
@@ -573,6 +590,33 @@ export interface VerificationDay {
   holiday: string;
 }
 
+export interface PlaceFactRefreshItem {
+  name: string;
+  days: number[];
+  changed?: string[];
+}
+
+export interface ClosureAdvisory extends PlaceFactRefreshItem {
+  title: string;
+  url: string;
+  snippet: string;
+}
+
+export interface ClosureWatch {
+  status: "checked" | "failed" | "unavailable";
+  advisories: ClosureAdvisory[];
+}
+
+export interface PlaceFactFreshness {
+  checked_at: string;
+  checked: number;
+  total: number;
+  comparison_available?: boolean;
+  changes: PlaceFactRefreshItem[];
+  failed: PlaceFactRefreshItem[];
+  closure_watch?: ClosureWatch;
+}
+
 /** "unverified" at trip level means there was nothing to check yet. */
 export interface TripVerification {
   verdict: "clear" | "partial" | "advisories" | "issues" | "unverified";
@@ -580,6 +624,14 @@ export interface TripVerification {
   checks: VerificationCheck[];
   days: VerificationDay[];
   unverified_stops: VerificationGap[];
+  freshness?: PlaceFactFreshness | null;
+}
+
+export interface TripFreshnessResult extends PlaceFactFreshness {
+  ok: boolean;
+  stale: boolean;
+  message: string;
+  verification: TripVerification;
 }
 
 export interface RepairMove {

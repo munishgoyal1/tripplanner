@@ -635,6 +635,28 @@ def get_details(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
     return _ensure(name, city, refresh=refresh) or None
 
 
+def refresh_details(name: str, city: str) -> tuple[dict[str, Any] | None, bool]:
+    """Refresh place facts without discarding a usable cached entry on failure."""
+    cache = _cache()
+    lookup_city = _lookup_city(name, city)
+    key = _key(name, lookup_city)
+    with _key_lock(key):
+        with _CACHE_LOCK:
+            previous = cache.get(key)
+        if previous is None:
+            previous = _durable_read(key)
+        info = _lookup_place(name, lookup_city)
+        if info is None:
+            known = previous if previous and not _is_miss(previous) else None
+            return known, False
+        info["__at__"] = time.time()
+        with _CACHE_LOCK:
+            cache[key] = info
+            _evict_if_needed()
+        _persist_entry(key)
+        return info, True
+
+
 def place_coords(name: str, city: str = "") -> tuple[float, float] | None:
     """Return cached (lat, lng) for a place, or None if not found or not configured."""
     if not is_configured():

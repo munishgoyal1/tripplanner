@@ -186,6 +186,35 @@ the saved-trip list. Plan mine and Skip to the app navigate to `/planner`, and
 
 ## Planner workspace
 
+### EB-VERIFY-001 - Recheck itinerary place facts
+
+**Trigger:** Expand Plan checks and select Recheck place facts.
+
+**Expected:**
+
+- The planner force-refreshes each unique hotel, attraction, and meal through the
+  configured structured place provider, with bounded parallelism, and rebuilds
+  the verification certificate from the refreshed cache.
+- A successful check stores only stable place identity, operating status, and
+  regular weekly hours. It reports material differences from the prior check;
+  ratings, reviews, photos, and transient open-now state never appear as changes.
+- One unavailable place does not abort the trip check or erase previously known
+  facts. The certificate names places it could not refresh and says the last
+  known facts were retained.
+- When fresh web search is configured, the same explicit action performs one
+  bounded search for seasonal, renovation, rehabilitation, or unusual closure
+  notices. A result is shown only when it names an itinerary place and includes
+  closure language. It remains a source-linked advisory and never becomes a
+  deterministic contradiction or silently changes the itinerary.
+- No provider refresh runs merely because the certificate rendered. Older trips
+  without freshness snapshots remain readable and show no fabricated checked time.
+
+**Executable proof:**
+
+- [`tests/test_trip_freshness.py`](../tests/test_trip_freshness.py)
+- [`tests/test_places_cache.py`](../tests/test_places_cache.py) - `test_refresh_details_preserves_known_facts_when_lookup_fails`
+- [`frontend/src/components/TripVerificationCard.test.tsx`](../frontend/src/components/TripVerificationCard.test.tsx)
+
 ### EB-FEEDBACK-001 - Record lightweight trip feedback
 
 **Trigger:** With an active trip, select the toolbar thumbs-up or thumbs-down action,

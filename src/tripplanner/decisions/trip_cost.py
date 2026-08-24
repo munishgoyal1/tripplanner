@@ -30,6 +30,11 @@ _BUCKETS: tuple[tuple[str, str, str], ...] = (
 _PRICE_KEYS = ("total_price", "price", "total", "cost", "amount", "fare")
 _NAME_KEYS = ("name", "hotel_name", "title", "label", "airline", "description")
 _CURRENCY_KEYS = ("currency", "currency_code")
+_REQUIRED_COMPONENTS = {
+    "flights": ("taxes and mandatory carrier fees", "baggage charges"),
+    "lodging": ("taxes and mandatory property fees",),
+    "activities": ("taxes and mandatory booking fees",),
+}
 
 LIVE = "live"
 STALE = "stale"
@@ -51,6 +56,13 @@ class CostLine:
     expires_at: str = ""
     reason: str = ""
     fx: dict[str, Any] | None = None
+    components: tuple[dict[str, Any], ...] = ()
+    required_unknown: tuple[str, ...] = ()
+    all_in_amount: float | None = None
+
+    @property
+    def all_in_complete(self) -> bool:
+        return self.status == LIVE and not self.required_unknown
 
     def as_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -71,6 +83,11 @@ class CostLine:
                 payload[key] = value
         if self.fx:
             payload["fx"] = self.fx
+        payload["components"] = list(self.components)
+        payload["required_unknown"] = list(self.required_unknown)
+        payload["all_in_complete"] = self.all_in_complete
+        if self.all_in_amount is not None:
+            payload["all_in_amount"] = round(self.all_in_amount, 2)
         return payload
 
 
@@ -83,24 +100,36 @@ class CostLedger:
     stale_count: int = 0
     unverified_count: int = 0
     unpriced_count: int = 0
+    all_in_total: float | None = None
+    required_unknown: tuple[str, ...] = ()
 
     @property
     def complete(self) -> bool:
-        """True only when every line carries a check that has not expired."""
-        return bool(self.lines) and self.priced_count == len(self.lines)
+        """True only when every mandatory cost is known from a live quote."""
+        return (
+            bool(self.lines)
+            and self.priced_count == len(self.lines)
+            and not self.required_unknown
+        )
 
     def as_dict(self) -> dict[str, Any]:
         coverage_pct = round(self.priced_count / len(self.lines) * 100) if self.lines else 0
+        all_in_count = sum(1 for line in self.lines if line.all_in_complete)
+        all_in_coverage_pct = round(all_in_count / len(self.lines) * 100) if self.lines else 0
         return {
             "currency": self.currency,
             "lines": [line.as_dict() for line in self.lines],
             "priced_total": None if self.priced_total is None else round(self.priced_total, 2),
+            "all_in_total": None if self.all_in_total is None else round(self.all_in_total, 2),
             "priced_count": self.priced_count,
             "stale_count": self.stale_count,
             "unverified_count": self.unverified_count,
             "unpriced_count": self.unpriced_count,
             "complete": self.complete,
             "coverage_pct": coverage_pct,
+            "all_in_count": all_in_count,
+            "all_in_coverage_pct": all_in_coverage_pct,
+            "required_unknown": list(self.required_unknown),
             "summary": self.summary,
         }
 
@@ -110,8 +139,16 @@ class CostLedger:
         if not self.lines:
             return ""
         unbacked = self.stale_count + self.unverified_count + self.unpriced_count
+        if not unbacked and not self.required_unknown:
+            noun = "item" if self.priced_count == 1 else "items"
+            return f"All-in total confirmed for {self.priced_count} {noun}."
         if not unbacked:
-            return f"All {self.priced_count} items priced from live provider quotes."
+            count = len(self.required_unknown)
+            return (
+                f"{self.priced_count} live quote{'s' if self.priced_count != 1 else ''}"
+                f" · final total not confirmed ({count} unknown cost "
+                f"categor{'ies' if count != 1 else 'y'})"
+            )
         parts = []
         if self.priced_count:
             parts.append(f"{self.priced_count} priced")
@@ -165,16 +202,78 @@ def _label_of(item: dict[str, Any], default: str) -> str:
     return default
 
 
-def _latest_check(plan: dict[str, Any], kind: str) -> dict[str, Any] | None:
+def _latest_check(
+    plan: dict[str, Any], kind: str, provider: str = ""
+) -> dict[str, Any] | None:
     """The most recent recorded look at this kind of source."""
     checks = [
         row
         for row in plan.get("price_checks") or []
-        if isinstance(row, dict) and row.get("kind") == kind and row.get("provider")
+        if (
+            isinstance(row, dict)
+            and row.get("kind") == kind
+            and row.get("provider")
+            and (not provider or row.get("provider") == provider)
+        )
     ]
     if not checks:
         return None
     return max(checks, key=lambda row: str(row.get("checked_at") or ""))
+
+
+def _price_composition(
+    item: dict[str, Any], kind: str, amount: float, currency: str, *, trusted: bool
+) -> tuple[tuple[dict[str, Any], ...], tuple[str, ...], float]:
+    raw = item.get("price_composition")
+    composition = raw if isinstance(raw, dict) else {}
+    complete = (
+        trusted
+        and (
+            composition.get("all_in") is True
+            or composition.get("mandatory_costs_complete") is True
+        )
+    )
+    components: list[dict[str, Any]] = []
+    for key, label in (
+        ("taxes", "Taxes"),
+        ("fees", "Fees"),
+        ("due_at_property", "Due at property"),
+    ):
+        value = _number(composition.get(key))
+        if value is not None:
+            components.append(
+                {
+                    "kind": key,
+                    "label": label,
+                    "amount": round(value, 2),
+                    "currency": currency,
+                    "inclusion": "included" if complete else "unknown",
+                }
+            )
+
+    excluded_total = 0.0
+    excluded = composition.get("excluded")
+    if isinstance(excluded, list):
+        for component in excluded:
+            if not isinstance(component, dict):
+                continue
+            value = _number(component.get("amount"))
+            label = str(component.get("label") or component.get("kind") or "Mandatory charge")
+            if value is None:
+                continue
+            excluded_total += value
+            components.append(
+                {
+                    "kind": str(component.get("kind") or "mandatory_charge"),
+                    "label": label,
+                    "amount": round(value, 2),
+                    "currency": currency,
+                    "inclusion": "excluded",
+                }
+            )
+
+    required_unknown = () if complete else _REQUIRED_COMPONENTS.get(kind, ())
+    return tuple(components), tuple(required_unknown), amount + excluded_total
 
 
 def build_cost_ledger(
@@ -191,12 +290,14 @@ def build_cost_ledger(
         items = plan.get(bucket)
         if not isinstance(items, list):
             continue
-        check = _latest_check(plan, check_kind)
-        expired = is_expired(check, now=now) if check else True
         for index, item in enumerate(items, 1):
             if not isinstance(item, dict):
                 continue
             label = _label_of(item, f"{default_label} {index}")
+            source = item.get("source") if isinstance(item.get("source"), dict) else {}
+            item_provider = str(source.get("provider") or "")
+            check = _latest_check(plan, check_kind, item_provider)
+            expired = is_expired(check, now=now) if check else True
             amount = _amount_of(item)
             if amount is None:
                 lines.append(
@@ -231,6 +332,15 @@ def build_cost_ledger(
             else:
                 status, reason = LIVE, ""
 
+            components, required_unknown, item_all_in = _price_composition(
+                item,
+                check_kind,
+                amount,
+                item_currency,
+                trusted=bool(item_provider and check and check.get("provider") == item_provider),
+            )
+            all_in_conversion = convert_with_provenance(item_all_in, item_currency, currency)
+
             lines.append(
                 CostLine(
                     kind=check_kind,
@@ -247,10 +357,21 @@ def build_cost_ledger(
                         if conversion.from_currency != conversion.to_currency
                         else None
                     ),
+                    components=components,
+                    required_unknown=required_unknown,
+                    all_in_amount=(
+                        all_in_conversion.amount
+                        if status == LIVE and not required_unknown and all_in_conversion
+                        else None
+                    ),
                 )
             )
 
     priced = [line for line in lines if line.status == LIVE and line.amount is not None]
+    required_unknown = tuple(
+        dict.fromkeys(component for line in lines for component in line.required_unknown)
+    )
+    all_in = [line for line in lines if line.all_in_amount is not None]
     return CostLedger(
         currency=currency,
         lines=lines,
@@ -259,4 +380,10 @@ def build_cost_ledger(
         stale_count=sum(1 for line in lines if line.status == STALE),
         unverified_count=sum(1 for line in lines if line.status == UNVERIFIED),
         unpriced_count=sum(1 for line in lines if line.status == UNPRICED),
+        all_in_total=(
+            round(sum(line.all_in_amount or 0.0 for line in all_in), 2)
+            if lines and len(all_in) == len(lines)
+            else None
+        ),
+        required_unknown=required_unknown,
     )

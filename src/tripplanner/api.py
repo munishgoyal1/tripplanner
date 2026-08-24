@@ -1256,6 +1256,25 @@ async def trip_verification_endpoint(request: Request, user_id: str = "local") -
     return await asyncio.to_thread(trip_operations.build_verification)
 
 
+@app.post("/trip/verification/refresh")
+async def trip_verification_refresh_endpoint(req: TripRepairRequest, request: Request) -> dict:
+    """Refresh itinerary place facts and report changes since the last check."""
+    from tripplanner.web import trip_operations
+
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        payload = await asyncio.to_thread(
+            trip_operations.refresh_facts, expected_updated_at=req.updated_at
+        )
+        payload["verification"] = await asyncio.to_thread(
+            trip_operations.build_verification
+        )
+        return payload
+    finally:
+        await release_workspace_exclusive(workspace)
+
+
 @app.post("/trip/repair")
 async def trip_repair_endpoint(req: TripRepairRequest, request: Request) -> dict:
     """Rearrange the planner's own stops until the saved trip reads correctly."""

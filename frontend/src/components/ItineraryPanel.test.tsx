@@ -218,6 +218,9 @@ describe("ItineraryPanel", () => {
             estimated: true,
             evidence_coverage_pct: 50,
             verified_spent: 20000,
+            all_in_spent: null,
+            all_in_coverage_pct: 0,
+            required_unknown: ["baggage charges"],
           },
         }}
       />,
@@ -228,6 +231,8 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("5 days")).toBeInTheDocument();
     expect(screen.getByLabelText("4 places")).toBeInTheDocument();
     expect(snapshot).toHaveTextContent("$45,000");
+    expect(snapshot).toHaveTextContent("Final total not confirmed · 0% all-in coverage");
+    expect(snapshot).toHaveTextContent("Check: baggage charges");
     expect(snapshot).toHaveTextContent("From Delhi · 12 Sept 2026 - 16 Sept 2026 · 2 travelers");
     expect(snapshot).toHaveTextContent("0 of 2 ready");
     expect(snapshot).toHaveTextContent("2 need booking");
@@ -238,7 +243,7 @@ describe("ItineraryPanel", () => {
     expect(snapshot).toHaveTextContent("Live forecast");
     expect(snapshot).toHaveTextContent("D1");
     expect(snapshot).toHaveTextContent("Compact umbrella and light rain jacket");
-    expect(snapshot).toHaveTextContent("Estimate · 50% live price coverage");
+    expect(snapshot).not.toHaveTextContent("Estimate · 50% live price coverage");
   });
 
   it("keeps summary and weather visible when an older trip has no forecast", async () => {

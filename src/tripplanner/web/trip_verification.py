@@ -185,6 +185,7 @@ def build_verification(plan: dict[str, Any] | None) -> dict[str, Any]:
             "checks": [],
             "days": [],
             "unverified_stops": [],
+            "freshness": None,
         }
 
     violations = trip_guard.validate_plan(plan)
@@ -266,6 +267,11 @@ def build_verification(plan: dict[str, Any] | None) -> dict[str, Any]:
                 unverified_stops.items(), key=lambda item: (item[0][1] or 0, item[0][0])
             )
         ],
+        "freshness": (
+            dict(plan["place_facts_refresh"])
+            if isinstance(plan.get("place_facts_refresh"), dict)
+            else None
+        ),
     }
 
 

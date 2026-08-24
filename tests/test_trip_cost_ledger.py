@@ -36,7 +36,7 @@ def test_an_empty_plan_has_nothing_to_claim():
     assert ledger.summary == ""
 
 
-def test_a_current_check_makes_its_items_priced():
+def test_a_current_check_proves_the_quote_but_not_unknown_mandatory_costs():
     plan = {
         "currency": "EUR",
         "price_checks": [check("lodging", "liteapi")],
@@ -46,8 +46,98 @@ def test_a_current_check_makes_its_items_priced():
     assert [line.status for line in ledger.lines] == [LIVE]
     assert ledger.priced_total == 420.0
     assert ledger.priced_count == 1
-    assert ledger.complete is True
+    assert ledger.complete is False
+    assert ledger.all_in_total is None
+    assert ledger.required_unknown == ("taxes and mandatory property fees",)
     assert ledger.lines[0].provider == "liteapi"
+    assert ledger.summary == "1 live quote · final total not confirmed (1 unknown cost category)"
+
+
+def test_an_explicit_all_in_quote_confirms_the_true_total():
+    plan = {
+        "currency": "EUR",
+        "price_checks": [check("lodging", "liteapi")],
+        "selected_hotels": [
+            {
+                "name": "LX Boutique",
+                "price": 420,
+                "source": {"provider": "liteapi"},
+                "price_composition": {"all_in": True, "taxes": 40, "fees": 10},
+            }
+        ],
+    }
+    ledger = build_cost_ledger(plan)
+    assert ledger.complete is True
+    assert ledger.all_in_total == 420.0
+    assert ledger.lines[0].components == (
+        {
+            "kind": "taxes",
+            "label": "Taxes",
+            "amount": 40.0,
+            "currency": "EUR",
+            "inclusion": "included",
+        },
+        {
+            "kind": "fees",
+            "label": "Fees",
+            "amount": 10.0,
+            "currency": "EUR",
+            "inclusion": "included",
+        },
+    )
+    assert ledger.summary == "All-in total confirmed for 1 item."
+
+
+def test_known_excluded_mandatory_cost_is_added_without_estimating():
+    plan = {
+        "currency": "EUR",
+        "price_checks": [check("lodging", "liteapi")],
+        "selected_hotels": [
+            {
+                "name": "LX Boutique",
+                "price": 420,
+                "source": {"provider": "liteapi"},
+                "price_composition": {
+                    "mandatory_costs_complete": True,
+                    "excluded": [{"kind": "city_tax", "label": "City tax", "amount": 25}],
+                },
+            }
+        ],
+    }
+    ledger = build_cost_ledger(plan)
+    assert ledger.priced_total == 420.0
+    assert ledger.all_in_total == 445.0
+    assert ledger.lines[0].components == (
+        {
+            "kind": "city_tax",
+            "label": "City tax",
+            "amount": 25.0,
+            "currency": "EUR",
+            "inclusion": "excluded",
+        },
+    )
+
+
+def test_an_all_in_claim_requires_a_matching_item_provider_check():
+    plan = {
+        "currency": "EUR",
+        "price_checks": [check("lodging", "other-provider")],
+        "selected_hotels": [
+            {
+                "name": "LX Boutique",
+                "price": 420,
+                "source": {"provider": "liteapi"},
+                "price_composition": {"all_in": True},
+            }
+        ],
+    }
+
+    ledger = build_cost_ledger(plan)
+
+    assert ledger.lines[0].status == UNVERIFIED
+    assert ledger.complete is False
+    assert ledger.all_in_total is None
+    assert ledger.required_unknown == ("taxes and mandatory property fees",)
 
 
 def test_an_expired_check_makes_its_items_stale_and_unpriced_in_the_total():

@@ -14,6 +14,7 @@ import type {
   StreamHandlers,
   StreamOptions,
   TripInputRequest,
+  TripFreshnessResult,
   TripView,
   TripRepairResult,
   TripVerification,
@@ -215,6 +216,16 @@ export class TripplannerClient {
     );
     ensureOk(response, "Could not load the verification report");
     return response.json() as Promise<TripVerification>;
+  }
+
+  async refreshVerification(updatedAt = ""): Promise<TripFreshnessResult> {
+    const response = await this.request(this.url("/trip/verification/refresh"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: await this.userId(), updated_at: updatedAt }),
+    });
+    ensureOk(response, "Could not recheck the itinerary");
+    return response.json() as Promise<TripFreshnessResult>;
   }
 
   async repairTrip(updatedAt = ""): Promise<TripRepairResult> {

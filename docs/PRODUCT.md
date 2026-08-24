@@ -122,6 +122,11 @@ support visual refinement while Assistant remains available for broader changes.
   persisted TTL cache appropriate to the data type. Cache reads first, then
   query the preferred source, then fallbacks. Explicit refresh remains possible.
   Cache age must be visible whenever it materially affects price or availability.
+- **Freshness claims keep their evidence level.** An explicit pre-trip check may
+  replace structured opening hours and operating status and report what changed.
+  Web mentions of seasonal, renovation, or rehabilitation closures remain linked
+  advisories until a structured or directly verified source establishes the fact;
+  they never silently mutate the trip.
 - **MVP does not require exact real-time data.** The product should remain
   practically accurate and useful with recently checked, cached, indicative, or
   provider-deep-linked data when exact live verification is unavailable. Every

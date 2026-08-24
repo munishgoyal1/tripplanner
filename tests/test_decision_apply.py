@@ -314,6 +314,31 @@ def test_lodging_override_replaces_selection_and_every_stay_anchor() -> None:
     )
 
 
+def test_lodging_override_preserves_provider_price_composition() -> None:
+    plan = lodging_plan()
+    decision = find_decision(plan, "dec_lodging_lisbon")
+    assert decision is not None
+    chosen = decision.option("mundial")
+    assert chosen is not None and chosen.price is not None
+    chosen.price.taxes = 35
+    chosen.price.fees = 9
+    chosen.price.due_at_property = 14
+    chosen.price.mandatory_costs_complete = True
+    chosen.price.excluded = [{"kind": "city_tax", "label": "City tax", "amount": 12}]
+    upsert_decision(plan, decision)
+
+    result = apply_override(plan, "dec_lodging_lisbon", "mundial")
+
+    assert result.ok
+    assert plan["selected_hotels"][0]["price_composition"] == {
+        "taxes": 35,
+        "fees": 9,
+        "due_at_property": 14,
+        "mandatory_costs_complete": True,
+        "excluded": [{"kind": "city_tax", "label": "City tax", "amount": 12}],
+    }
+
+
 def test_lodging_restore_returns_the_exact_original_stay() -> None:
     plan = lodging_plan()
 

@@ -182,6 +182,32 @@ def test_lodging_decision_keeps_the_exact_candidates_and_verified_rule():
     assert decision.option(decision.chosen_option_id).source.provider == "liteapi"
 
 
+def test_lodging_decision_preserves_provider_price_composition():
+    offer = hotel("Hotel Mundial", 520, rating=4.5, refundable=True)
+    offer.total = Money(
+        amount=520,
+        currency="EUR",
+        taxes=40,
+        fees=12,
+        due_at_property=18,
+    )
+
+    decision = build_lodging_decision(
+        [offer, hotel("Memmo Alfama", 640, rating=4.7, refundable=True)],
+        destination="Lisbon",
+        checkin="2026-10-02",
+        checkout="2026-10-05",
+        cached=False,
+    )
+
+    assert decision is not None
+    mundial = next(option for option in decision.options if option.label == "Hotel Mundial")
+    assert mundial.price is not None
+    assert mundial.price.taxes == 40
+    assert mundial.price.fees == 12
+    assert mundial.price.due_at_property == 18
+
+
 def test_lodging_decision_follows_the_property_the_agent_persisted():
     decision = build_lodging_decision(
         [

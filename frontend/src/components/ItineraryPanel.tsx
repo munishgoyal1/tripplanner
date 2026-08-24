@@ -44,6 +44,8 @@ interface Props {
   jumpTo?: { day: number; name?: string; token: number } | { summary: true; token: number } | null;
   /** Remove a stop from the itinerary / trip. */
   onStopRemove?: (kind: string, name: string, day: number, stop: number) => void | Promise<void>;
+  /** Refresh authoritative workspace state after this panel persists trip metadata. */
+  onTripChanged?: () => void | Promise<void>;
 }
 
 function dayDateLabel(date: string): string {
@@ -300,6 +302,7 @@ export default function ItineraryPanel({
   focusToken = 0,
   jumpTo,
   onStopRemove,
+  onTripChanged,
 }: Props) {
   const [it, setIt] = useState<Itinerary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -508,7 +511,7 @@ export default function ItineraryPanel({
           )}
         </header>
         <div className="mb-3">
-          <TripVerificationCard revision={retryToken} />
+          <TripVerificationCard revision={retryToken} onTripChanged={onTripChanged} />
         </div>
         <div className="space-y-3 pb-6">
         {visibleDays.length === 0 && (
