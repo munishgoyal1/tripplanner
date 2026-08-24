@@ -13,6 +13,8 @@ tops it up with new shapes and never pays twice for the same one.
 from __future__ import annotations
 
 import argparse
+import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -29,8 +31,8 @@ from tripplanner.validation import (  # noqa: E402
 )
 from tripplanner.validation.catalog import Catalog  # noqa: E402
 
-DEFAULT_DATABASE = "tripplanner-sbx-2-auto-validation"
-DEFAULT_API = "http://127.0.0.1:8110"
+PRIMARY_DATABASE = "tripplanner-local"
+PRIMARY_API = "http://127.0.0.1:8000"
 _BAR = "-" * 78
 _PREVIEW = 12
 
@@ -38,6 +40,30 @@ _PREVIEW = 12
 def _log(message: str) -> None:
     """A run lasts hours through a pipe, so nothing may wait in a buffer."""
     print(message, flush=True)
+
+
+def _runtime_defaults(repo_root: Path = REPO_ROOT) -> tuple[str, str]:
+    common = subprocess.run(
+        ["git", "-C", str(repo_root), "rev-parse", "--path-format=absolute", "--git-common-dir"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if common.returncode != 0:
+        raise ValueError(f"cannot resolve the Git checkout at {repo_root}")
+    primary_root = Path(common.stdout.strip()).resolve().parent
+    if repo_root.resolve() == primary_root:
+        return PRIMARY_API, PRIMARY_DATABASE
+
+    registry_path = Path(f"{primary_root}.worktrees") / "sandboxes.json"
+    try:
+        registered = json.loads(registry_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"cannot read sandbox registry {registry_path}: {error}") from error
+    for entry in registered:
+        if Path(str(entry.get("worktree") or "")).resolve() == repo_root.resolve():
+            return f"http://127.0.0.1:{int(entry['apiPort'])}", str(entry["database"])
+    return PRIMARY_API, PRIMARY_DATABASE
 
 
 def _selected_scope(market: str | None, country: str | None) -> tuple[str, str]:
@@ -87,8 +113,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--target", type=int, default=0, help="trips to add; 0 means as many as the budget allows"
     )
-    parser.add_argument("--database", default=DEFAULT_DATABASE)
-    parser.add_argument("--api", default=DEFAULT_API)
+    parser.add_argument("--database", default=None)
+    parser.add_argument("--api", default=None)
     scope = parser.add_mutually_exclusive_group()
     scope.add_argument(
         "--market",
@@ -112,6 +138,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--dry-run", action="store_true", help="plan the run, spend nothing")
     args = parser.parse_args(argv)
+    if args.api is None or args.database is None:
+        try:
+            default_api, default_database = _runtime_defaults()
+        except ValueError as error:
+            parser.error(str(error))
+        args.api = args.api or default_api
+        args.database = args.database or default_database
     try:
         selected_scope = _selected_scope(args.market, args.country)
     except ValueError as error:
@@ -154,7 +187,7 @@ def main(argv: list[str] | None = None) -> int:
     if health_error:
         print(
             f"Refusing to run: planner API is unavailable at {args.api} ({health_error}).\n"
-            "Start sandbox 2, wait for its backend to report ready, then retry.",
+            "Start the stack for this checkout, wait for its backend to report ready, then retry.",
             file=sys.stderr,
         )
         return 3
@@ -182,7 +215,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     if result["stopped_because"] == "api-unavailable":
         print(
-            f"Planner API at {args.api} became unavailable; start sandbox 2 and retry.",
+            f"Planner API at {args.api} became unavailable; "
+            "restart this checkout's stack and retry.",
             file=sys.stderr,
         )
         return 3

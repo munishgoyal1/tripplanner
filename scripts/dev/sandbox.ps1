@@ -456,6 +456,29 @@ function Save-SandboxPromotion {
     Save-Registry -Entries $entries
 }
 
+function Publish-RetainedSandboxCorpus {
+    param(
+        [Parameter(Mandatory = $true)][object]$Entry,
+        [Parameter(Mandatory = $true)][string]$Base
+    )
+
+    $paths = @(
+        "corpus/lane-trips/$($Entry.database).json",
+        "corpus/places.json"
+    )
+    $changed = @(& git -C $scriptRepoRoot status --porcelain -- @paths)
+    if ($LASTEXITCODE -ne 0) { throw "Could not inspect retained corpus files." }
+    if ($changed.Count -eq 0) { return }
+
+    & git -C $scriptRepoRoot add -- @paths
+    if ($LASTEXITCODE -ne 0) { throw "Could not stage retained corpus files." }
+    & git -C $scriptRepoRoot commit -m "Preserve discarded $($Entry.slug) corpus" -- @paths
+    if ($LASTEXITCODE -ne 0) { throw "Could not commit retained corpus files." }
+    & git -C $scriptRepoRoot push origin $Base
+    if ($LASTEXITCODE -ne 0) { throw "Could not push retained corpus commit to origin/$Base." }
+    Write-Host "  Published retained corpus from $($Entry.database)." -ForegroundColor Green
+}
+
 function Save-SandboxLabId {
     param(
         [Parameter(Mandatory = $true)][object]$Entry,
@@ -1957,9 +1980,17 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
         if (Test-Path $cacheScript -PathType Leaf) {
             Write-Host "  Preserving trips and places from $($entry.database) ..."
             & $python $cacheScript --sync --database $entry.database
+            $syncExit = $LASTEXITCODE
             & $python $cacheScript --save --database $entry.database
-            if ($LASTEXITCODE -ne 0) {
+            $saveExit = $LASTEXITCODE
+            if ($syncExit -ne 0 -or $saveExit -ne 0) {
                 $cleanupIssues += "could not preserve corpus data from $($entry.database)"
+            } else {
+                try {
+                    Publish-RetainedSandboxCorpus -Entry $entry -Base $BaseBranch
+                } catch {
+                    $cleanupIssues += $_.Exception.Message
+                }
             }
         }
         & $python $seedScript drop --database $entry.database

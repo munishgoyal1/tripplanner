@@ -78,4 +78,7 @@ If a retained safety stash restore conflicts, resolve the marked files first;
 the same resolver preserves the applied local changes and clears only the stale
 stash record before the next sync.
 
-Discard a sandbox after verified promotion.
+Discard a sandbox after verified promotion. Before dropping its emulator database,
+discard saves the lane's trips and newly warmed places into the global corpus and
+publishes a scoped corpus commit on `master`; successful discard must not leave
+those retained files as unexplained local changes.

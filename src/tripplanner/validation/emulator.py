@@ -14,6 +14,7 @@ EMULATOR_KEY = (
     "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
 )
 SANDBOX_PREFIX = "tripplanner-sbx-"
+PRIMARY_LOCAL_DATABASE = "tripplanner-local"
 LIVE_DATABASE_NAMES = frozenset({"tripplanner-canary", "tripplanner-prod"})
 _SYSTEM_FIELDS = frozenset({"_rid", "_self", "_etag", "_attachments", "_ts"})
 
@@ -28,6 +29,18 @@ def assert_sandbox_database(name: str) -> str:
         raise ValueError(f"refusing to read live database '{name}'")
     if not lowered.startswith(SANDBOX_PREFIX):
         raise ValueError(f"database must start with '{SANDBOX_PREFIX}', got '{name}'")
+    return name.strip()
+
+
+def assert_generation_database(name: str) -> str:
+    lowered = (name or "").strip().lower()
+    if lowered in LIVE_DATABASE_NAMES:
+        raise ValueError(f"refusing to read live database '{name}'")
+    if lowered != PRIMARY_LOCAL_DATABASE and not lowered.startswith(SANDBOX_PREFIX):
+        raise ValueError(
+            f"generation database must be '{PRIMARY_LOCAL_DATABASE}' or start with "
+            f"'{SANDBOX_PREFIX}', got '{name}'"
+        )
     return name.strip()
 
 
@@ -63,6 +76,26 @@ def list_sandbox_databases() -> list[str]:
 
 def read_trips(database: str, *, user_id: str = "") -> list[dict[str, Any]]:
     name = assert_sandbox_database(database)
+    query = "SELECT * FROM c"
+    parameters: list[dict[str, Any]] = []
+    if user_id:
+        query += " WHERE c.user_id=@u"
+        parameters = [{"name": "@u", "value": user_id}]
+    try:
+        container = _client().get_database_client(name).get_container_client("trips")
+        return [
+            _strip(dict(item))
+            for item in container.query_items(
+                query=query, parameters=parameters, enable_cross_partition_query=True
+            )
+        ]
+    except Exception as error:  # noqa: BLE001
+        raise EmulatorUnreachableError(str(error)) from error
+
+
+def read_generation_trips(database: str, *, user_id: str = "") -> list[dict[str, Any]]:
+    """Read trips from an isolated database approved for paid generation."""
+    name = assert_generation_database(database)
     query = "SELECT * FROM c"
     parameters: list[dict[str, Any]] = []
     if user_id:

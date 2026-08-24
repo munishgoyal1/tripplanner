@@ -77,6 +77,19 @@ def test_sandbox_scripts_share_one_reference_resolver() -> None:
     assert "was not uniquely found" not in resolver
 
 
+def test_discard_publishes_only_retained_corpus_files() -> None:
+    root = Path(__file__).parents[1]
+    sandbox = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
+
+    assert "function Publish-RetainedSandboxCorpus" in sandbox
+    assert '"corpus/lane-trips/$($Entry.database).json"' in sandbox
+    assert '"corpus/places.json"' in sandbox
+    assert "git -C $scriptRepoRoot add -- @paths" in sandbox
+    assert 'commit -m "Preserve discarded $($Entry.slug) corpus" -- @paths' in sandbox
+    assert "push origin $Base" in sandbox
+    assert "Publish-RetainedSandboxCorpus -Entry $entry -Base $BaseBranch" in sandbox
+
+
 def _merge_block(sandbox_script: str) -> str:
     start = sandbox_script.index('if ($PSCmdlet.ParameterSetName -eq "Merge")')
     end = sandbox_script.index('if ($PSCmdlet.ParameterSetName -eq "Promote")', start)
