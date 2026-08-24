@@ -64,6 +64,7 @@ from tripplanner.api_contracts import (
     RemoveFamilyMemberRequest,
     SelectRequest,
     StopBookedRequest,
+    TripFeedbackRequest,
     TripIdRequest,
     TripRepairRequest,
     UserRequest,
@@ -1435,6 +1436,32 @@ async def trips_delete(req: TripIdRequest, request: Request) -> dict:
     finally:
         if workspace:
             await release_workspace_exclusive(workspace)
+
+
+@app.post("/trip/feedback")
+async def trip_feedback(req: TripFeedbackRequest, request: Request) -> dict:
+    """Append optional feedback for the active trip without gating later submissions."""
+    from tripplanner.tools import trip_planner
+
+    if req.sentiment is None and req.rating is None and not (req.comment or "").strip():
+        raise HTTPException(status_code=422, detail="Feedback cannot be empty")
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        rollup = await asyncio.to_thread(
+            trip_planner.record_trip_feedback,
+            feedback_id=req.feedback_id,
+            sentiment=req.sentiment,
+            rating=req.rating,
+            comment=req.comment,
+            surface=req.surface,
+            client=req.client,
+        )
+    finally:
+        await release_workspace_exclusive(workspace)
+    if rollup is None:
+        raise HTTPException(status_code=404, detail="No active trip")
+    return {"ok": True, "feedback": rollup}
 
 
 @app.post("/trip/new")

@@ -1690,6 +1690,8 @@ def switch_active_trip(trip_id: str) -> dict[str, Any] | None:
 @_serialized_mutation
 def delete_saved_trip(trip_id: str) -> bool:
     """Delete a saved trip; clears the active pointer if it was active."""
+    from tripplanner.web import trip_feedback
+
     if not trip_id:
         return False
     active = _load_active_trip()
@@ -1697,6 +1699,7 @@ def delete_saved_trip(trip_id: str) -> bool:
         storage_cosmos.delete_doc(_COSMOS_TRIPS_CONTAINER, get_user_id(), trip_id)
     else:
         (_resolve_trip_history_dir() / f"{trip_id}.json").unlink(missing_ok=True)
+    trip_feedback.delete_for_trip(trip_id)
     if active and active.get("trip_id") == trip_id:
         _delete_active_trip()
     return True
@@ -1705,8 +1708,11 @@ def delete_saved_trip(trip_id: str) -> bool:
 @_serialized_mutation
 def clear_all_trip_history() -> int:
     """Delete all saved trips for the current user and clear active trip."""
+    from tripplanner.web import trip_feedback
+
     if storage_cosmos.is_enabled():
         deleted = storage_cosmos.delete_docs(_COSMOS_TRIPS_CONTAINER, get_user_id())
+        trip_feedback.clear()
         _delete_active_trip()
         return deleted
 
@@ -1719,8 +1725,62 @@ def clear_all_trip_history() -> int:
             deleted += 1
         except OSError:
             continue
+    trip_feedback.clear()
     _delete_active_trip()
     return deleted
+
+
+@_serialized_mutation
+def record_trip_feedback(
+    *,
+    feedback_id: str | None,
+    sentiment: str | None,
+    rating: int | None,
+    comment: str | None,
+    surface: str,
+    client: str,
+) -> dict[str, Any] | None:
+    """Append feedback for the active trip and update its lightweight rollup."""
+    from tripplanner.web import trip_feedback
+
+    plan = _load_active_trip()
+    if not plan or not plan.get("trip_id"):
+        return None
+    current_rollup = plan.get("feedback")
+    rollup = dict(current_rollup) if isinstance(current_rollup, dict) else {}
+    submission = (
+        trip_feedback.amend(
+            feedback_id,
+            trip_id=str(plan["trip_id"]),
+            rating=rating,
+            comment=comment,
+        )
+        if feedback_id
+        else trip_feedback.append(
+            trip_id=str(plan["trip_id"]),
+            trip_revision=str(plan.get("updated_at") or ""),
+            sentiment=sentiment,
+            rating=rating,
+            comment=comment,
+            surface=surface,
+            client=client,
+            identified=get_user_id() != "local" and not get_user_id().startswith("guest-"),
+        )
+    )
+    if submission is None:
+        return None
+    count = int(rollup.get("count") or 0) + (0 if feedback_id else 1)
+    rollup.update(
+        {
+            "count": count,
+            "last_at": submission["created_at"],
+            "last_rating": submission.get("rating"),
+            "last_sentiment": submission.get("sentiment"),
+        }
+    )
+    plan["feedback"] = rollup
+    _save_active_trip(plan)
+    return {**rollup, "feedback_id": submission["feedback_id"]}
 
 
 @_serialized_mutation
