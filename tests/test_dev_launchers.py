@@ -90,6 +90,24 @@ def test_discard_publishes_only_retained_corpus_files() -> None:
     assert "Publish-RetainedSandboxCorpus -Entry $entry -Base $BaseBranch" in sandbox
 
 
+def test_corpus_build_publishes_all_generated_artifacts() -> None:
+    root = Path(__file__).parents[1]
+    builder = (root / "scripts" / "dev" / "build-corpus.ps1").read_text(encoding="utf-8")
+
+    assert "function Publish-GeneratedCorpus" in builder
+    for path in (
+        '"corpus/manifest.json"',
+        '"corpus/spend-ledger.json"',
+        '"corpus/places.json"',
+        '"corpus/trips"',
+    ):
+        assert path in builder
+    assert "git -C $repoRoot commit -m \"Preserve generated corpus\" -- @paths" in builder
+    assert 'git -C $repoRoot push origin "HEAD:$branch"' in builder
+    assert "if (-not $dryRun)" in builder
+    assert "Publish-GeneratedCorpus" in builder
+
+
 def _merge_block(sandbox_script: str) -> str:
     start = sandbox_script.index('if ($PSCmdlet.ParameterSetName -eq "Merge")')
     end = sandbox_script.index('if ($PSCmdlet.ParameterSetName -eq "Promote")', start)
