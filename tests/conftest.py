@@ -19,8 +19,11 @@ import pytest
 @pytest.fixture(autouse=True)
 def _force_local_storage(monkeypatch: pytest.MonkeyPatch) -> None:
     from tripplanner import storage_cosmos
+    from tripplanner.web import places_cache
 
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
+    yield
+    assert places_cache.flush_writes(), "places cache writes did not drain before test teardown"
 
 
 @pytest.fixture(autouse=True)

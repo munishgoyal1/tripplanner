@@ -282,6 +282,7 @@ export function commitSelectionStore(
     execFileSync("git", ["push", "-q", "origin", "HEAD"], {
       cwd: repoRoot,
       encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
       windowsHide: true,
     });
   }

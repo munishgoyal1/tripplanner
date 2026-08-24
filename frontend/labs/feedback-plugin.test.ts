@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -15,7 +15,8 @@ const temporaryRepositories: string[] = [];
 
 async function createRepository() {
   const root = await mkdtemp(resolve(tmpdir(), "tripplanner-lab-store-"));
-  temporaryRepositories.push(root);
+  const remote = await mkdtemp(resolve(tmpdir(), "tripplanner-lab-remote-"));
+  temporaryRepositories.push(root, remote);
   const storePath = resolve(root, "docs/ux-experiments/LAB_SELECTIONS.json");
   await mkdir(dirname(storePath), { recursive: true });
   await writeFile(storePath, "{}\n", "utf8");
@@ -26,7 +27,9 @@ async function createRepository() {
   execFileSync("git", ["config", "commit.gpgsign", "false"], { cwd: root });
   execFileSync("git", ["add", "."], { cwd: root });
   execFileSync("git", ["commit", "-q", "-m", "Initial"], { cwd: root });
-  return { root, storePath };
+  execFileSync("git", ["init", "-q", "--bare", remote]);
+  execFileSync("git", ["remote", "add", "origin", remote], { cwd: root });
+  return { root, remote, storePath };
 }
 
 afterEach(async () => {
@@ -118,8 +121,11 @@ describe("commitSelectionStore", () => {
   });
 
   it("reports a push failure after preserving the local Lab commit", async () => {
-    const { root, storePath } = await createRepository();
+    const { root, remote, storePath } = await createRepository();
     await writeFile(storePath, "{\"trip-feedback\": {}}\n", "utf8");
+    const hook = resolve(remote, "hooks/pre-receive");
+    await writeFile(hook, "#!/bin/sh\nexit 1\n", "utf8");
+    await chmod(hook, 0o755);
 
     expect(() => commitSelectionStore("trip-feedback", storePath)).toThrow();
     expect(execFileSync("git", ["log", "-1", "--pretty=%s"], { cwd: root, encoding: "utf8" }).trim())

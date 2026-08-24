@@ -230,8 +230,10 @@ def flush_writes(timeout: float = 10.0) -> bool:
     Used by tests (which assert on the durable store right after a lookup) and
     at interpreter exit so a pending write isn't lost on shutdown.
     """
-    deadline = time.time() + timeout
     with _WRITE_CV:
+        if not _queued_writes:
+            return True
+        deadline = time.time() + timeout
         while _queued_writes:
             remaining = deadline - time.time()
             if remaining <= 0:
