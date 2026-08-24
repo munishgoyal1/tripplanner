@@ -181,6 +181,22 @@ the saved-trip list. Plan mine and Skip to the app navigate to `/planner`, and
 
 ## Planner workspace
 
+### EB-FEEDBACK-001 - Record lightweight trip feedback
+
+**Trigger:** With an active trip, select the toolbar thumbs-up or thumbs-down action,
+or open Rate and add optional stars or a comment.
+
+**Expected:** One thumb tap is a complete saved submission. Stars and a comment may
+amend that submission while its popover remains open. A later thumb tap creates another
+append-only submission, and the quiet sent count never blocks repeat feedback. Desktop
+keeps the compact control in the workspace toolbar; mobile keeps the thumbs pair directly
+reachable without covering trip content. Deleting a trip deletes its feedback.
+
+**Executable proof:**
+
+- [`tests/test_trip_feedback.py`](../tests/test_trip_feedback.py)
+- [`frontend/src/components/TripFeedbackControl.test.tsx`](../frontend/src/components/TripFeedbackControl.test.tsx)
+
 ### EB-WORKSPACE-001 - Arrange visible desktop panes freely
 
 **Trigger:** Toggle Itinerary, Map, Details, or Assistant from the desktop

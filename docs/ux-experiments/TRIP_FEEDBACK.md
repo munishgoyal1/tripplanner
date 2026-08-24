@@ -7,8 +7,8 @@
 - Branch: `sandbox/6-lab-factory`
 - Owner: `munish`
 - Date started: `2026-08-18`
-- Date ended: `pending`
-- Status: `testing`
+- Date ended: `2026-08-24`
+- Status: `implemented`
 
 ## Hypothesis
 
@@ -148,6 +148,8 @@ Rules this Lab assumes:
 
 ## Decision
 
-- Decision: `pending`
-- Rationale:
-- Next action: owner selects an option in the Lab's decision capture.
+- Decision: Option A, `toolbar-pill`.
+- Rationale: It remains equally reachable from every desktop pane while adding only a
+  compact toolbar control; mobile retains the direct thumbs pair.
+- Next action: Observe real use before adding another placement or changing how planning
+  intelligence consumes feedback.

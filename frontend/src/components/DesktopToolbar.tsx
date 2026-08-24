@@ -2,6 +2,7 @@ import { AlertTriangle, House, List, Map, MessageCircle, PanelRight, Plus, Rotat
 import type { TripWorkspaceView } from "../types";
 import StatusBar from "./StatusBar";
 import TripActionsMenu from "./TripActionsMenu";
+import TripFeedbackControl from "./TripFeedbackControl";
 import TripSwitcher from "./TripSwitcher";
 
 type Pane = "itinerary" | "map" | "details" | "assistant";
@@ -32,6 +33,7 @@ interface Props {
   documentBadgeTone: "blocker" | "warning";
   onOpenDocuments: () => void;
   onOpenWelcome: () => void;
+  feedback: { count: number; last_rating?: number | null; last_sentiment?: "up" | "down" | null };
 }
 
 export default function DesktopToolbar({
@@ -53,6 +55,7 @@ export default function DesktopToolbar({
   documentBadgeTone,
   onOpenDocuments,
   onOpenWelcome,
+  feedback,
 }: Props) {
   return (
     <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-[#dce2df] bg-[#fbfcfb]/95 px-3 shadow-[0_1px_4px_rgba(23,36,51,.06)] backdrop-blur">
@@ -127,6 +130,7 @@ export default function DesktopToolbar({
             </button>
           ))}
         </div>
+        <TripFeedbackControl disabled={tripActionsDisabled} initial={feedback} />
         <TripActionsMenu disabled={tripActionsDisabled} onExport={onExport} compactTrigger />
         <button
           type="button"

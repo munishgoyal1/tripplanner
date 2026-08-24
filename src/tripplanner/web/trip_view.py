@@ -879,6 +879,7 @@ def build_view(
             "available_days": [],
             "items": [],
             "decisions": [],
+            "feedback": {"count": 0},
         }
 
     destination = str(trip.get("destination") or "")
@@ -929,6 +930,7 @@ def build_view(
         "focus": focus,
         "is_fallback": fallback,
         "empty_message": None,
+        "feedback": dict(trip.get("feedback") or {"count": 0}),
         "overview": _build_overview(trip),
         "available_days": [
             int(day.get("day") or index + 1)

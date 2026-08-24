@@ -334,6 +334,12 @@ export interface TripView {
   items: TripItem[];
   decisions?: Decision[];
   alerts?: string[];
+  feedback?: {
+    count: number;
+    last_at?: string | null;
+    last_rating?: number | null;
+    last_sentiment?: "up" | "down" | null;
+  };
 }
 
 export type ChatRole = "user" | "assistant";

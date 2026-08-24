@@ -1040,6 +1040,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           documentBadgeTone={documentBadgeTone}
           onOpenDocuments={() => openAccountSettings("documents")}
           onOpenWelcome={() => window.dispatchEvent(new Event("tripplanner:open-welcome"))}
+          feedback={view?.feedback ?? { count: 0 }}
         />
 
         <main
@@ -1127,6 +1128,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           onOpenTrip={() => setMobileTripOpen(true)}
           onCloseTrip={() => setMobileTripOpen(false)}
           onOpenWelcome={() => window.dispatchEvent(new Event("tripplanner:open-welcome"))}
+          feedback={view?.feedback ?? { count: 0 }}
           tripDetails={(
             <RightRail {...railProps} photos={<TripPanel {...tripPanelProps} hideSwitcher />} />
           )}

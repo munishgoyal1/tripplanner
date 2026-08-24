@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import TripFeedbackControl from "./TripFeedbackControl";
 
 interface Props {
   chat: ReactNode;
@@ -8,6 +9,7 @@ interface Props {
   onCloseTrip: () => void;
   tripDetails: ReactNode;
   onOpenWelcome: () => void;
+  feedback: { count: number; last_rating?: number | null; last_sentiment?: "up" | "down" | null };
 }
 
 export default function MobileWorkspaceShell({
@@ -18,6 +20,7 @@ export default function MobileWorkspaceShell({
   onCloseTrip,
   tripDetails,
   onOpenWelcome,
+  feedback,
 }: Props) {
   return (
     <section className="flex h-screen flex-col">
@@ -29,6 +32,11 @@ export default function MobileWorkspaceShell({
       >
         <span aria-hidden>⌂</span> Home
       </button>
+      {hasTrip && (
+        <div className="fixed left-3 top-3 z-30 rounded-md bg-white/90 shadow-sm ring-1 ring-slate-200 backdrop-blur">
+          <TripFeedbackControl initial={feedback} mobile />
+        </div>
+      )}
       {chat}
 
       {hasTrip && !tripOpen && (
