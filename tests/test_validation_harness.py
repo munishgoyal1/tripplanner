@@ -1428,18 +1428,24 @@ def test_a_saved_cache_round_trips(tmp_path: Path) -> None:
     assert place_cache.load(tmp_path / "absent.json") == {}
 
 
-def test_the_cache_file_is_stable_between_identical_saves(tmp_path: Path) -> None:
-    """An unchanged export must not produce a diff, or the file churns."""
+def test_the_cache_file_is_not_rewritten_by_an_identical_save(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An unchanged export must preserve bytes and mtime during discard."""
     from tripplanner.validation import place_cache
 
     places = {"b|goa": {"lat": 2.0}, "a|goa": {"lat": 1.0}}
-    first = tmp_path / "one.json"
-    second = tmp_path / "two.json"
-    place_cache.save(first, places)
-    place_cache.save(second, dict(reversed(list(places.items()))))
+    path = tmp_path / "places.json"
+    timestamps = iter(["2026-08-18T01:00:00Z", "2026-08-18T02:00:00Z"])
+    monkeypatch.setattr(place_cache.time, "strftime", lambda *_: next(timestamps))
+    place_cache.save(path, places)
+    original = path.read_bytes()
+    original_mtime = path.stat().st_mtime_ns
 
-    strip = lambda text: [line for line in text.splitlines() if "saved_at" not in line]  # noqa: E731
-    assert strip(first.read_text()) == strip(second.read_text())
+    place_cache.save(path, dict(reversed(list(places.items()))))
+
+    assert path.read_bytes() == original
+    assert path.stat().st_mtime_ns == original_mtime
 
 
 def test_restoring_refuses_a_database_that_is_not_a_sandbox() -> None:
@@ -1498,6 +1504,26 @@ def test_saving_refuses_a_database_that_is_not_a_sandbox(tmp_path: Path) -> None
 
     with pytest.raises(ValueError):
         lane_trips.save(tmp_path, "tripplanner-prod")
+
+
+def test_an_unchanged_lane_snapshot_is_not_rewritten(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from tripplanner.validation import lane_trips
+
+    trip = {"trip_id": "goa_2027", "destination": "Goa"}
+    timestamps = iter(["2026-08-18T01:00:00Z", "2026-08-18T02:00:00Z"])
+    monkeypatch.setattr(lane_trips, "read_trips", lambda _: [trip])
+    monkeypatch.setattr(lane_trips.time, "strftime", lambda *_: next(timestamps))
+    lane_trips.save(tmp_path, "tripplanner-sbx-6-lab-factory")
+    path = lane_trips.snapshot_path(tmp_path, "tripplanner-sbx-6-lab-factory")
+    original = path.read_bytes()
+    original_mtime = path.stat().st_mtime_ns
+
+    lane_trips.save(tmp_path, "tripplanner-sbx-6-lab-factory")
+
+    assert path.read_bytes() == original
+    assert path.stat().st_mtime_ns == original_mtime
 
 
 def test_the_cache_containers_expire_and_the_data_ones_never_do() -> None:
