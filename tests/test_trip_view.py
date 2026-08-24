@@ -494,6 +494,7 @@ def test_family_pills_surfaced_in_view(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.fixture
 def _map_geo(monkeypatch: pytest.MonkeyPatch) -> None:
     """Geocoded place lookups for the map view (lat/lng per known name)."""
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
     coords = {
         "Taj Exotica Resort": (15.04, 73.92),
         "Dudhsagar Falls Trek": (15.31, 74.31),
@@ -1297,6 +1298,8 @@ _LONG_HAUL_COORDS = {
 
 @pytest.fixture
 def _long_haul_geo(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+
     def fake_summary(name: str, city: str) -> dict[str, Any] | None:
         lat, lng = _LONG_HAUL_COORDS.get(name, (None, None))
         return {"place_id": f"pid-{name}", "name": name, "lat": lat, "lng": lng}
@@ -1420,6 +1423,7 @@ def test_connecting_terminals_filed_as_transport_fly_on_both_surfaces(
         lat, lng = coords.get(name, (None, None))
         return {"place_id": f"pid-{name}", "name": name, "lat": lat, "lng": lng}
 
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
     monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
     monkeypatch.setattr(trip_view.places_cache, "get_details", fake_summary)
     monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
@@ -1921,7 +1925,8 @@ def test_itinerary_empty_when_no_days() -> None:
     assert it["stats"] == {"days": 0, "stops": 0, "booked": 0}
 
 
-def test_itinerary_falls_back_to_selections() -> None:
+def test_itinerary_falls_back_to_selections(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
     # No structured day_wise_itinerary, but the trip has selections — the panel
     # should still render an intelligent first-draft itinerary from selections.
     it = trip_view.build_itinerary({**SAMPLE_TRIP, "day_wise_itinerary": []})
@@ -2490,6 +2495,7 @@ def test_connecting_round_trip_keeps_itinerary_and_map_terminals_in_sync(
 def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
     coords = {
         "Bagdogra": (26.699, 88.311),
         "Gangtok Hotel": (27.331, 88.613),
