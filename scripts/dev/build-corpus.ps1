@@ -27,6 +27,33 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
+function Publish-GeneratedCorpus {
+    $paths = @(
+        "corpus/manifest.json",
+        "corpus/spend-ledger.json",
+        "corpus/places.json",
+        "corpus/trips"
+    )
+    $changed = @(& git -C $repoRoot status --porcelain -- @paths)
+    if ($LASTEXITCODE -ne 0) { throw "Could not inspect generated corpus files." }
+    if ($changed.Count -eq 0) {
+        Write-Host "Corpus artifacts are already committed."
+        return
+    }
+
+    $branch = (& git -C $repoRoot branch --show-current).Trim()
+    if ($LASTEXITCODE -ne 0 -or -not $branch) {
+        throw "Cannot publish generated corpus from a detached HEAD."
+    }
+    & git -C $repoRoot add -- @paths
+    if ($LASTEXITCODE -ne 0) { throw "Could not stage generated corpus files." }
+    & git -C $repoRoot commit -m "Preserve generated corpus" -- @paths
+    if ($LASTEXITCODE -ne 0) { throw "Could not commit generated corpus files." }
+    & git -C $repoRoot push origin "HEAD:$branch"
+    if ($LASTEXITCODE -ne 0) { throw "Could not push generated corpus commit to origin/$branch." }
+    Write-Host "Published generated corpus to origin/$branch." -ForegroundColor Green
+}
+
 # A sandbox worktree has no virtual environment of its own; the shared one lives
 # in the primary checkout, which the git common directory points at.
 $primaryRoot = $repoRoot
@@ -57,4 +84,9 @@ if (-not $python) {
 $cli = Join-Path $PSScriptRoot "build_corpus.py"
 # -u so a run that streams through this dispatcher for hours is never buffered.
 & $python -u $cli @Rest
-exit $LASTEXITCODE
+$buildExit = $LASTEXITCODE
+$dryRun = @($Rest | Where-Object { $_ -eq "--dry-run" }).Count -gt 0
+if (-not $dryRun) {
+    Publish-GeneratedCorpus
+}
+exit $buildExit

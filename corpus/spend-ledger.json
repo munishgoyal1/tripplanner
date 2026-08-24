@@ -41,6 +41,14 @@
       "spent_inr": 3427.86,
       "usd_inr": 88.0,
       "stopped_because": "budget"
+    },
+    {
+      "at": "2026-08-24T16:14:53+00:00",
+      "model": "unknown",
+      "trips": 0,
+      "spent_inr": 160.03,
+      "usd_inr": 88.0,
+      "stopped_because": "budget"
     }
   ]
 }
