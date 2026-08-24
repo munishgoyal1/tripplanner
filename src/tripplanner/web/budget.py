@@ -172,6 +172,11 @@ def build_budget(
         "estimated": not bool((cost_evidence or {}).get("complete")),
         "evidence_coverage_pct": int((cost_evidence or {}).get("coverage_pct") or 0),
         "verified_spent": (cost_evidence or {}).get("priced_total"),
+        "all_in_spent": (cost_evidence or {}).get("all_in_total"),
+        "all_in_coverage_pct": int(
+            (cost_evidence or {}).get("all_in_coverage_pct") or 0
+        ),
+        "required_unknown": list((cost_evidence or {}).get("required_unknown") or []),
     }
 
     if target > 0:

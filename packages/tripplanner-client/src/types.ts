@@ -70,6 +70,9 @@ export interface Budget {
   estimated: boolean;
   evidence_coverage_pct: number;
   verified_spent: number | null;
+  all_in_spent?: number | null;
+  all_in_coverage_pct?: number;
+  required_unknown?: string[];
 }
 
 export interface BudgetWhatIfProposal {
@@ -141,6 +144,16 @@ export interface CostEvidenceLine {
   checked_at?: string;
   expires_at?: string;
   reason?: string;
+  components?: Array<{
+    kind: string;
+    label: string;
+    amount: number;
+    currency: string;
+    inclusion: "reported" | "excluded" | "included" | "unknown" | string;
+  }>;
+  required_unknown?: string[];
+  all_in_complete?: boolean;
+  all_in_amount?: number;
   fx?: {
     from_currency: string;
     to_currency: string;
@@ -156,12 +169,16 @@ export interface CostEvidence {
   currency: string;
   lines: CostEvidenceLine[];
   priced_total: number | null;
+  all_in_total?: number | null;
   priced_count: number;
   stale_count: number;
   unverified_count: number;
   unpriced_count: number;
   complete: boolean;
   coverage_pct: number;
+  all_in_count?: number;
+  all_in_coverage_pct?: number;
+  required_unknown?: string[];
   summary: string;
 }
 

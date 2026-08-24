@@ -368,7 +368,14 @@ def test_overview_includes_budget() -> None:
 
 
 def test_budget_headroom_is_verified_only_with_complete_live_evidence() -> None:
-    evidence = {"complete": True, "coverage_pct": 100, "priced_total": 8000}
+    evidence = {
+        "complete": True,
+        "coverage_pct": 100,
+        "priced_total": 8000,
+        "all_in_total": 8200,
+        "all_in_coverage_pct": 100,
+        "required_unknown": [],
+    }
     budget = trip_view.build_budget(
         {"currency": "USD", "total_cost": 8000, "budget": 10000},
         cost_evidence=evidence,
@@ -378,6 +385,32 @@ def test_budget_headroom_is_verified_only_with_complete_live_evidence() -> None:
     assert budget["estimated"] is False
     assert budget["evidence_coverage_pct"] == 100
     assert budget["verified_spent"] == 8000
+    assert budget["all_in_spent"] == 8200
+    assert budget["all_in_coverage_pct"] == 100
+    assert budget["required_unknown"] == []
+
+
+def test_budget_names_unknown_mandatory_costs() -> None:
+    budget = trip_view.build_budget(
+        {"currency": "USD", "total_cost": 8000},
+        cost_evidence={
+            "complete": False,
+            "coverage_pct": 100,
+            "priced_total": 8000,
+            "all_in_total": None,
+            "all_in_coverage_pct": 0,
+            "required_unknown": ["baggage charges", "taxes and mandatory carrier fees"],
+        },
+    )
+
+    assert budget is not None
+    assert budget["estimated"] is True
+    assert budget["verified_spent"] == 8000
+    assert budget["all_in_spent"] is None
+    assert budget["required_unknown"] == [
+        "baggage charges",
+        "taxes and mandatory carrier fees",
+    ]
 
 
 def test_structured_target_uses_published_fx_provenance(monkeypatch) -> None:

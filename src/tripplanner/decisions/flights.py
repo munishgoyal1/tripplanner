@@ -79,6 +79,11 @@ def options_from_offers(
                     amount=offer.total.amount,
                     currency=offer.total.currency,
                     basis=FareBasis.PER_PARTY,
+                    taxes=offer.total.taxes,
+                    fees=offer.total.fees,
+                    all_in=offer.total.all_in,
+                    mandatory_costs_complete=offer.total.mandatory_costs_complete,
+                    excluded=[dict(component) for component in offer.total.excluded],
                 ),
                 flight=FlightFacts(
                     origin=origin,

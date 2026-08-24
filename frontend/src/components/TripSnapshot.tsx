@@ -22,9 +22,16 @@ function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCur
         <div>
           <p className="text-[10px] font-semibold uppercase text-slate-400">Trip spend</p>
           {budget.estimated && (
-            <p className="text-[10px] text-amber-700">
-              Estimate · {budget.evidence_coverage_pct}% live price coverage
-            </p>
+            <>
+              <p className="text-[10px] text-amber-700">
+                Final total not confirmed · {budget.all_in_coverage_pct ?? 0}% all-in coverage
+              </p>
+              {!!budget.required_unknown?.length && (
+                <p className="mt-0.5 max-w-64 text-[10px] leading-snug text-slate-500">
+                  Check: {budget.required_unknown.join("; ")}
+                </p>
+              )}
+            </>
           )}
           <p className="mt-0.5 text-base font-semibold text-ink">
             {formatSourceAmount(budget.spent, budget.currency, displayCurrency)}
@@ -47,6 +54,11 @@ function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCur
             <span>{pct}% used</span>
           </div>
         </>
+      )}
+      {budget.all_in_spent != null && (
+        <p className="mt-1.5 text-[11px] font-medium text-emerald-700">
+          Confirmed all-in: {formatSourceAmount(budget.all_in_spent, budget.currency, displayCurrency)}
+        </p>
       )}
     </div>
   );

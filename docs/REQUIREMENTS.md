@@ -96,7 +96,7 @@ re-describing the whole product.
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Implemented; `/` public entry, `/planner` workspace, privacy-safe analytics, and regional last-known-good demo pipeline |
 | FEEDBACK-01 | Lightweight repeatable trip feedback | Implemented; toolbar thumbs, optional stars/comment, append-only submissions, and trip-level sent rollup |
 | QUALITY-01 | Offline scenario-fidelity and experiential-quality audit | Implemented; every audit writes an immutable dated JSON report, readable summary, compact history index, comparable-run movement, scenario/preference and budget hard gates, and six non-gating experiential dimensions; integrated fixes automatically record deterministic post-fix replay evidence, while fresh generation remains an explicit paid corpus refresh |
-| DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Proposed |
+| DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Partially implemented; exact alternatives and budget what-if are joined by a strict all-in cost ledger that separates live quoted subtotal, confirmed mandatory total, reported components, and unresolved fee categories without estimating missing amounts |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
 
@@ -693,7 +693,11 @@ implemented capability baseline.
   comparisons support deterministic selection and reversal. User-owned budget
   targets, evidence-labeled headroom, published FX provenance, explicitly
   requested exact-alternative savings proposals, and atomic coordinated proposal
-  acceptance are implemented. Cross-source comparison, finalized-but-unbooked
+  acceptance are implemented. Provider-reported taxes, fees, and property-due
+  amounts now survive exact-option selection; the strict ledger keeps a live
+  quoted subtotal distinct from a confirmed all-in total and names unresolved
+  mandatory taxes, fees, and baggage rather than inventing them. Provider-specific
+  inclusion/exclusion semantics, cross-source comparison, finalized-but-unbooked
   re-checks, loyalty, card-benefit, and portal-offer modeling remain gaps.
 - No server-rendered public edge. One FastAPI process serves the API and the
   client-rendered SPA, so landing, destination-content, and shared-trip URLs are

@@ -61,6 +61,9 @@ class Money(BaseModel):
     taxes: float | None = None
     fees: float | None = None
     due_at_property: float | None = None
+    all_in: bool | None = None
+    mandatory_costs_complete: bool | None = None
+    excluded: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class HotelSearchQuery(BaseModel):

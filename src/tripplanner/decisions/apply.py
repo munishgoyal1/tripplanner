@@ -199,6 +199,18 @@ def _lodging_item(option: Option, decision: Decision) -> dict[str, Any]:
     }
     if option.price is not None:
         item.update({"total": option.price.amount, "currency": option.price.currency})
+        item["price_composition"] = {
+            key: value
+            for key, value in (
+                ("taxes", option.price.taxes),
+                ("fees", option.price.fees),
+                ("due_at_property", option.price.due_at_property),
+                ("all_in", option.price.all_in),
+                ("mandatory_costs_complete", option.price.mandatory_costs_complete),
+                ("excluded", [dict(component) for component in option.price.excluded]),
+            )
+            if value not in (None, [])
+        }
     if lodging is not None:
         for key, value in (
             ("checkin", lodging.checkin),
@@ -276,6 +288,17 @@ def _flight_item(option: Option, decision: Decision) -> dict[str, Any]:
     }
     if option.price is not None:
         item.update({"price": option.price.amount, "currency": option.price.currency})
+        item["price_composition"] = {
+            key: value
+            for key, value in (
+                ("taxes", option.price.taxes),
+                ("fees", option.price.fees),
+                ("all_in", option.price.all_in),
+                ("mandatory_costs_complete", option.price.mandatory_costs_complete),
+                ("excluded", [dict(component) for component in option.price.excluded]),
+            )
+            if value not in (None, [])
+        }
     if flight is not None:
         item.update(
             {

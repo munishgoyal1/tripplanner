@@ -35,6 +35,7 @@ def plan_with_flight_decision() -> dict:
                 "airline": "Air India",
                 "price": 900,
                 "currency": "USD",
+                "source": {"provider": "duffel"},
                 "price_composition": {"mandatory_costs_complete": True},
             }
         ],
