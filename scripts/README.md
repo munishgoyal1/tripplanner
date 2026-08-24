@@ -43,9 +43,10 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/debug/Maintain-DebugStore.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report store health |
 | `win/user/debug/Restore-DebugStore.cmd [sandbox] [days]` | Restore archived trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |
 | `win/user/debug/Clear-DebugStore.cmd --confirm CLEAR_DEBUG_STORE` | Delete the whole debug store and restart numbering |
-| `win/user/validation/Audit-Trips.cmd` | Audit every stored trip; exits non-zero on findings the baseline does not hold |
+| `win/user/validation/Audit-Trips.cmd` | Audit every stored trip, always write dated JSON/Markdown evidence under `audit/reports/`, and exit non-zero on findings the baseline does not hold |
 | `win/user/validation/Audit-Trips.cmd --all` | Show every finding, not only new ones |
 | `win/user/validation/Audit-Trips.cmd --accept` | Record the current findings as known |
+| `win/user/validation/Refresh-Audit-Corpus.cmd` | Spend the configured corpus budget on fresh planner trips, retain them globally, then write the normal dated audit report |
 | `win/user/multiagent/Start-Multiagent.cmd` | Start the coordinator detached and open the coordinator chat; dispatches only issues carrying `owner:ready` |
 | `win/user/multiagent/Multiagent-Status.cmd` | Controller, slots, assignments, issues waiting on an owner decision, and recovery commands |
 | `win/user/multiagent/Plan-Multiagent.cmd` | Dry run: what would be dispatched now, and why the rest is held |

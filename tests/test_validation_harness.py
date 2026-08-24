@@ -775,6 +775,59 @@ def test_a_rule_reports_how_far_it_moved_since_the_previous_audit(
         assert item["was_hits"] == by_code[item["code"]]["hits"]
 
 
+def test_reports_with_the_same_corpus_and_rules_are_comparable(tmp_path: Path) -> None:
+    from tripplanner.validation import report as report_module
+
+    result = _audit_of(_record(), tmp_path=tmp_path)
+    first = report_module.build_report(result, {"accepted": {}})
+    second = report_module.build_report(result, {"accepted": {}}, first)
+
+    assert first["comparison"]["status"] == "not_comparable"
+    assert second["comparison"]["status"] == "comparable"
+    assert second["comparison"]["new_groups"] == []
+    assert second["comparison"]["resolved_groups"] == []
+    assert second["comparison"]["worsened_rules"] == []
+
+
+def test_saving_a_report_keeps_immutable_history_and_latest_pointer(tmp_path: Path) -> None:
+    from tripplanner.validation import report as report_module
+
+    payload = report_module.build_report(_audit_of(_record(), tmp_path=tmp_path), {"accepted": {}})
+    history_path = report_module.save_report(tmp_path, payload)
+
+    assert history_path.parent.name == payload["run_id"]
+    assert history_path.name == "report.json"
+    assert json.loads(history_path.read_text(encoding="utf-8"))["run_id"] == payload["run_id"]
+    assert (history_path.parent / "summary.md").exists()
+    latest = json.loads((tmp_path / "audit" / "latest.json").read_text())
+    assert latest["run_id"] == payload["run_id"]
+    [indexed] = json.loads((tmp_path / "audit" / "index.json").read_text())["runs"]
+    assert indexed["run_id"] == payload["run_id"]
+    assert payload["version"] == 4
+    assert payload["evidence"]["fresh_generation"]["status"] == "not_run"
+
+
+def test_generation_evidence_separates_old_trips_from_commit_attributed_runs() -> None:
+    from tripplanner.validation import report as report_module
+
+    evidence = report_module.generation_evidence(
+        {
+            "produced": [
+                {"slug": "old"},
+                {"slug": "new-a", "generated_by_commit": "abc", "generation_run_id": "run-1"},
+                {"slug": "new-b", "generated_by_commit": "abc", "generation_run_id": "run-1"},
+            ]
+        }
+    )
+
+    assert evidence == {
+        "trips": 3,
+        "by_commit": {"abc": 2},
+        "by_run": {"run-1": 2},
+        "unattributed_pre_provenance": 1,
+    }
+
+
 def test_a_rule_added_after_the_last_audit_reads_as_new_not_as_a_regression(
     tmp_path: Path,
 ) -> None:
@@ -1163,6 +1216,9 @@ def test_a_run_keeps_asking_until_the_budget_is_spent(
     assert result["stopped_because"] == "budget"
     assert len(result["produced"]) == 3
     assert result["spent_inr"] <= budget_inr
+    manifest = generate.load_manifest(tmp_path)
+    assert manifest["produced"][0]["generation_run_id"] == result["generation_run_id"]
+    assert "generated_by_commit" in manifest["produced"][0]
 
 
 def test_turns_in_flight_together_still_cannot_overshoot_the_budget(

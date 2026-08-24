@@ -768,6 +768,21 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
         state.baseline_sha = git(["rev-parse", "HEAD"], cwd=worktree)
         assignment.state = "integrated"
         assignment.validation = summary
+        audit = run(
+            [space.python(), str(worktree / "scripts" / "dev" / "trip_audit.py"), "--json"],
+            cwd=worktree,
+            env={**os.environ, "TRIPPLANNER_AUDIT_REPORT_ROOT": str(space.primary)},
+            timeout=TEST_TIMEOUT_SECONDS,
+        )
+        if audit.returncode not in (0, 1):
+            assignment.validation += f"; post-fix audit unavailable (exit {audit.returncode})"
+        else:
+            try:
+                audit_payload = json.loads(audit.stdout or "{}")
+                groups = len(audit_payload.get("groups") or [])
+                assignment.validation += f"; post-fix audit recorded ({groups} finding groups)"
+            except json.JSONDecodeError:
+                assignment.validation += "; post-fix audit report recorded"
         park_slot(space, state, assignment.slot)
         log(f"#{assignment.issue} integrated; baseline now {state.baseline_sha[:12]}")
 

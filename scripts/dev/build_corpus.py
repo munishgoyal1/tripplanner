@@ -174,6 +174,10 @@ def main(argv: list[str] | None = None) -> int:
         f"stopped on {result['stopped_because']}."
     )
     print(f"Corpus now holds {result['corpus_total']} generated trip(s).")
+    print(
+        f"Generation evidence: run {result['generation_run_id']} at "
+        f"{result['generated_by_commit'][:12] or 'unknown commit'}."
+    )
     if result["stopped_because"] == "api-unavailable":
         print(
             f"Planner API at {args.api} became unavailable; start sandbox 2 and retry.",

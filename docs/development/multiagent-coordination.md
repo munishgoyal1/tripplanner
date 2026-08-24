@@ -119,6 +119,12 @@ The producer is deterministic. It runs the existing read-only trip audit, which
 reads stored trips and fixtures and calls no model and no provider, then turns
 new finding groups into proposed issues.
 
+Every audit, whether owner-run or automatic after an integrated fix, writes a
+dated immutable report and readable summary under `audit/reports/`, updates the
+compact local history index, and refreshes `audit/latest.json` for the Inspector.
+The automatic post-fix run replays the current stored corpus through the
+integrated code. Finding exit code `1` is evidence, not an integration failure.
+
 Three rules exist because breaking them would quietly defeat the purpose:
 
 1. **It never runs `--accept`.** That writes the findings baseline and marks
@@ -143,9 +149,11 @@ marker. A finding that recurs after being closed reopens the original issue with
 comment instead of opening a duplicate.
 
 Corpus generation spends real money and needs a running API, so it is never part
-of the automatic loop. A paid run requires its own issue carrying `owner:ready`
-and naming the budget, target, database, and API. The producer may run
-`--dry-run` freely.
+of the automatic loop. The owner runs `Refresh-Audit-Corpus.command` when fresh
+planner evidence is needed; it uses the configured resumable corpus budget,
+retains successful trips in the global corpus, then writes the normal dated
+audit report. Routine fixes rely on regression tests and automatic historical
+replay unless they change planner generation behavior.
 
 ## Lanes, slots, and worktrees
 

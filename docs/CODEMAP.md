@@ -72,7 +72,7 @@ trip through shared API contracts.
 | `src/tripplanner/export.py` | Export composition |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics |
 | `src/tripplanner/debug_store.py` | Local-only archive of real trips for debugging and emulator restore; never active in hosted mode |
-| `src/tripplanner/validation/` | Offline validation harness: corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline (brief 004) |
+| `src/tripplanner/validation/` | Offline validation harness: corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, and comparable-run summaries (brief 004) |
 | `src/tripplanner/validation/market_catalog.py`, `india_heuristic_matrix.py`, `india_outbound_matrix.py` | Deterministic weighted India-domestic and India-outbound corpus scenarios; exact dedupe, destination-aware durations, audience priors, and evidence posture from `docs/research/india-*-2026-08.md` |
 | `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
 | `src/tripplanner/error_analysis.py` | Local and canary failure classification and reports |

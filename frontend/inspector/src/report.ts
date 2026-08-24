@@ -1,4 +1,4 @@
-// The shape `trip_audit.py --report` writes. A hand-written mirror rather than
+// The shape every `trip_audit.py` run writes. A hand-written mirror rather than
 // something generated: it is small, and a mismatch shows up immediately as an
 // empty column instead of a build step nobody remembers to run.
 
@@ -54,6 +54,16 @@ export type Report = {
   version: number;
   generated_at: string;
   compared_with: string;
+  run_id: string;
+  code: { sha: string; short_sha: string; dirty: boolean };
+  evidence: {
+    deterministic_rules: string;
+    historical_corpus_replay: string;
+    fresh_generation: {
+      status: string;
+      trips_for_audited_commit: number;
+    };
+  };
   corpus: {
     size: number;
     provenance: Record<string, number>;
@@ -67,7 +77,7 @@ export type Report = {
   records: TripRecord[];
 };
 
-export const AUDIT_COMMAND = "./scripts/mac/user/validation/Audit-Trips.command --report";
+export const AUDIT_COMMAND = "./scripts/mac/user/validation/Audit-Trips.command";
 
 export async function loadReport(): Promise<Report | null> {
   const response = await fetch("/audit-report.json", { cache: "no-store" });
