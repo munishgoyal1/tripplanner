@@ -9,7 +9,10 @@ from typing import Any, Literal, TypeAlias
 
 from langchain_core.messages import BaseMessage, HumanMessage
 
-from tripplanner.tools.trip_planner import planning_completion_gaps
+from tripplanner.tools.trip_planner import (
+    core_planning_completion_gaps,
+    planning_completion_gaps,
+)
 
 COMPLETION_RESEARCH_TOOLS = frozenset({
     "search_flights_duffel",
@@ -450,6 +453,18 @@ def resolve_completion_policy(
     interactive_questions: bool = False,
 ) -> CompletionPolicyDecision:
     tool_phases = current_turn_tool_phases(messages)
+    positions = _tool_call_positions(messages)
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    current_turn_names = {name for index, name in positions if index > latest_human}
+    created_this_turn = "create_trip_plan" in current_turn_names
+    core_gaps_for_first_turn = (
+        tuple(core_planning_completion_gaps(active_trip))
+        if created_this_turn and not proposal_only
+        else ()
+    )
     # Asking the review and then planning anyway would make it decoration, so the
     # turn stops at the question until the traveller answers or skips it.
     if not proposal_only and awaiting_trip_kickoff_answer(messages):
@@ -465,12 +480,6 @@ def resolve_completion_policy(
         # update_trip_plan. Trapping the turn here left the trip with no
         # itinerary at all, narrated in chat but absent from every other pane.
         # Let the still-owed first save through before honoring the cap.
-        positions = _tool_call_positions(messages)
-        latest_human = max(
-            (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
-            default=-1,
-        )
-        current_turn_names = {name for index, name in positions if index > latest_human}
         current_updates = [
             index for index, name in positions
             if name == "update_trip_plan" and index > latest_human
@@ -480,7 +489,7 @@ def resolve_completion_policy(
             and not active_trip.get("day_wise_itinerary")
             and len(current_updates) < MAX_INITIAL_ITINERARY_UPDATES
         )
-        if not still_owes_first_save:
+        if not still_owes_first_save and not core_gaps_for_first_turn:
             try:
                 gaps = tuple(planning_completion_gaps(active_trip))
             except Exception:
@@ -496,7 +505,7 @@ def resolve_completion_policy(
     creation_tool = (
         None if proposal_only else trip_creation_tool_choice(messages, active_trip)
     )
-    new_trip_flow = (
+    new_trip_flow = not created_this_turn and (
         latest_user_starts_new_trip(messages)
         or latest_user_requests_different_trip(messages, active_trip)
         or pending_trip_kickoff_answer(messages)
@@ -532,6 +541,21 @@ def resolve_completion_policy(
             has_planning_intent=has_planning_intent,
         )
     )
+    if (
+        core_gaps_for_first_turn
+        and not hotel_fallback_requirement
+        and not origin_requirement
+        and not update_requirement
+        and not hotel_search_requirement
+    ):
+        update_requirement = (
+            "The first planning turn cannot end because the saved trip still has core "
+            "completion gaps: "
+            + " ".join(core_gaps_for_first_turn)
+            + " Continue planning and call update_trip_plan with a complete corrected "
+            "plan. Do not give a final response until these core gaps are resolved. "
+            "Weather and other enrichment may remain deferred."
+        )
     kickoff_tool = (
         None
         if proposal_only or update_requirement or hotel_search_requirement

@@ -189,8 +189,10 @@ re-describing the whole product.
   an enriched persistence pass with the strongest concrete hotel and a full
   best-effort itinerary. Research is batched across overnight cities and is
   followed by one full-plan persistence pass. A ten-tool-phase semantic budget
-  returns the best persisted plan with honest remaining gaps instead of trapping
-  the turn when providers fail or deterministic completion checks remain unmet.
+  remains binding for later turns and optional enrichment. A first planning turn
+  continues past it until concrete lodging, complete journey edges, named meal
+  coverage on substantial days, and positive cost evidence for an explicit trip
+  budget are persisted. Weather may remain deferred enrichment.
 
 ### PLAN-02 - Grounded providers and enrichment
 

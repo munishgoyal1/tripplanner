@@ -66,6 +66,7 @@ from tripplanner.tools.trip_validation import (  # noqa: F401
     _restaurant_itinerary_warnings,
     _round_trip_transport_warnings,
     assess_itinerary_change,
+    core_planning_completion_gaps,
     finalization_gaps,
     persistence_sanity_errors,
     planning_completion_gaps,

@@ -48,9 +48,12 @@ either enabled (the default) or disabled.
   unmount, and active-trip changes clear in-flight status.
 - Research is followed by one enriched full-plan persistence pass rather than
   repeated full-itinerary rewrites.
-- A planning turn uses at most ten tool phases. Reaching that semantic budget
-  disables further tools and produces an honest summary of the best persisted
-  itinerary and any unresolved details.
+- A planning turn normally uses at most ten tool phases. A first planning turn
+  that reaches that semantic budget continues until it has concrete lodging,
+  complete journey edges, named meal coverage on substantial days, and positive
+  cost evidence when the traveller requested a budget. Weather and other
+  enrichment may remain deferred. Later turns stop at the budget and summarize
+  the best persisted itinerary and any unresolved details honestly.
 - Unexpected graph recursion exhaustion returns the persisted best-effort plan
   instead of discarding useful side effects behind a generic retry error.
 - If a failed turn also cannot persist its interrupted transcript, the client
@@ -64,6 +67,8 @@ either enabled (the default) or disabled.
 - [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `keeps progress visible while answer text streams`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_new_trip_does_not_rewrite_incomplete_researched_plan_twice`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_ends_with_summary_at_tool_phase_budget`
+- [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_first_turn_cannot_end_incomplete_before_phase_budget`
+- [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_weather_can_remain_deferred_when_first_turn_core_plan_is_complete`
 - [`tests/test_sse_tool_summary.py`](../tests/test_sse_tool_summary.py) - `test_best_effort_plan_reply_reports_saved_plan_gaps`
 - [`tests/test_usage.py`](../tests/test_usage.py) - `test_stream_surfaces_partial_turn_save_failure`
 
