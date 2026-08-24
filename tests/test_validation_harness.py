@@ -1100,19 +1100,36 @@ def test_outbound_matrix_deduplicates_only_the_exact_scenario() -> None:
     assert any(request.party != first.party or request.days != first.days for request in matching)
 
 
-def test_build_corpus_market_selector_preserves_country_alias() -> None:
+def test_build_corpus_scope_distinguishes_country_from_market(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     script = Path(__file__).parents[1] / "scripts" / "dev" / "build_corpus.py"
     spec = importlib.util.spec_from_file_location("build_corpus", script)
     assert spec and spec.loader
     build_corpus = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(build_corpus)
 
-    assert build_corpus._selected_market(None, None) == "global"
-    assert build_corpus._selected_market(None, "global") == "global"
-    assert build_corpus._selected_market(None, "india") == "india-domestic"
-    assert build_corpus._selected_market("india-outbound", None) == "india-outbound"
+    assert build_corpus._selected_scope(None, None) == ("matrix", "global")
+    assert build_corpus._selected_scope(None, "india") == ("country", "india")
+    assert build_corpus._selected_scope("india", None) == ("market", "india")
     with pytest.raises(ValueError, match="not both"):
-        build_corpus._selected_market("india-domestic", "india")
+        build_corpus._selected_scope("india", "india")
+
+    country = build_corpus._requests_for_scope(("country", "india"), Catalog(), limit=4)
+    market = build_corpus._requests_for_scope(("market", "india"), Catalog(), limit=4)
+
+    assert all(request.destination.startswith("india:") for request in country)
+    assert [request.destination.startswith("india-outbound:") for request in market] == [
+        False,
+        True,
+        False,
+        True,
+    ]
+
+    with pytest.raises(SystemExit) as error:
+        build_corpus.main(["--country", "india", "--market", "india", "--dry-run"])
+    assert error.value.code == 2
+    assert "not allowed with argument" in capsys.readouterr().err
 
 
 def test_a_run_keeps_asking_until_the_budget_is_spent(

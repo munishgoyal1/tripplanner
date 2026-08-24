@@ -12,10 +12,10 @@
   cumulatively, and recorded in corpus/spend-ledger.json. A finished run also
   saves the place grounding it warmed into corpus/places.json.
 
-    Pass --market india-domestic or --market india-outbound to build an India-origin
-    market catalog. Their reviewable heuristics prioritize destination-specific
-    durations and likely visitor profiles, then add lower-frequency combinations
-    for edge coverage. The older --country india option remains a domestic alias.
+    Pass --country india to cover trips within India. Pass --market india to cover
+    Indian travelers, alternating domestic and outbound scenarios even in a small
+    run. Choose only one of --country or --market per run. Both use reviewable
+    destination-specific durations and visitor profiles.
 #>
 
 [CmdletBinding()]

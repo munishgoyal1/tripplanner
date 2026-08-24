@@ -82,7 +82,7 @@ trip through shared API contracts.
 | `scripts/mac/` | macOS `.command` launchers mirroring Windows root, user, sandbox, canary, and production entry points |
 | `scripts/dev/multiagent_core.py` | Pure multiagent coordination logic: `owner:ready` eligibility, footprint collisions, attempt numbering, audit fingerprints, leases |
 | `scripts/dev/multiagent.py` | Multiagent runtime: dedicated Coordinator publication, post-publish sandbox sync, autopilot workers, remote-verified attempt SHAs, validated `origin/master` baselines, slots, supervision, batch integration, audit producer |
-| `scripts/dev/build_corpus.py`, `scripts/dev/build-corpus.ps1` | Budgeted paid corpus generation; selects `global`, `india-domestic`, or `india-outbound` with dry-run support and a legacy `--country india` alias |
+| `scripts/dev/build_corpus.py`, `scripts/dev/build-corpus.ps1` | Budgeted paid corpus generation; `--country india` covers domestic destinations, while `--market india` alternates domestic and outbound Indian-traveler scenarios |
 
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
 boundary. Configuration comes from `Settings`, not scattered environment reads.
