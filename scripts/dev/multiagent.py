@@ -277,21 +277,29 @@ def prune_worker_sessions(
     copilot_home: Path,
     dry_run: bool,
 ) -> list[core.Assignment]:
-    candidates = [item for item in assignments if item.issue not in open_issues]
-    if dry_run or not candidates:
-        return candidates
-
     session_root = copilot_home / "session-state"
     cache_path = copilot_home / "vscode.session.metadata.cache.json"
-    session_ids = {item.session_id for item in candidates if item.session_id}
-    for session_id in session_ids:
-        shutil.rmtree(session_root / session_id, ignore_errors=True)
-
+    cache: dict[str, object] = {}
     if cache_path.exists():
         try:
             cache = json.loads(cache_path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError) as exc:
             raise RuntimeError(f"could not read Copilot session metadata: {exc}") from exc
+    candidates = [
+        item
+        for item in assignments
+        if item.issue not in open_issues
+        and item.session_id
+        and (item.session_id in cache or (session_root / item.session_id).exists())
+    ]
+    if dry_run or not candidates:
+        return candidates
+
+    session_ids = {item.session_id for item in candidates if item.session_id}
+    for session_id in session_ids:
+        shutil.rmtree(session_root / session_id, ignore_errors=True)
+
+    if cache_path.exists():
         for session_id in session_ids:
             cache.pop(session_id, None)
         temp = cache_path.with_suffix(".tmp")
