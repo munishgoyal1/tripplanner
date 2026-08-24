@@ -100,10 +100,23 @@ def save(path: Path, places: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "version": CACHE_VERSION,
-        "saved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "count": len(places),
         # Sorted so a re-export of unchanged data produces no diff.
         "places": dict(sorted(places.items())),
+    }
+    try:
+        existing = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        existing = None
+    if isinstance(existing, dict):
+        existing = {key: value for key, value in existing.items() if key != "saved_at"}
+    if existing == payload:
+        return
+    payload = {
+        "version": payload["version"],
+        "saved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "count": payload["count"],
+        "places": payload["places"],
     }
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 

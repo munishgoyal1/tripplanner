@@ -22,6 +22,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/debug_store_cli.py` | Show, maintain, restore, or tear down the local debug trip store |
 | `dev/debug-store.ps1` | Dispatcher the debug-store launchers call |
+| `dev/build-corpus.ps1` | Generate paid planner corpus trips; choose one scope per run: `--country india` for trips within India or `--market india` for both domestic and outbound Indian-traveler scenarios |
 | `dev/trip_audit.py` | Run every trip rule over the local corpus and report what is new |
 | `dev/trip-audit.ps1` | Dispatcher the Audit-Trips launchers call |
 | `dev/multiagent.py` | Multiagent controller: dispatch owner-approved issues to bounded workers, integrate, and open one batch PR |

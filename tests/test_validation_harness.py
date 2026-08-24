@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 import http.client
+import importlib.util
 import json
 import threading
 from pathlib import Path
@@ -16,6 +17,8 @@ from tripplanner.validation import (
     corpus,
     findings,
     generate,
+    india_heuristic_matrix,
+    india_outbound_matrix,
     matrix,
     mutations,
     observations,
@@ -44,8 +47,11 @@ def _plan(**extra: Any) -> dict[str, Any]:
             {
                 "day": 1,
                 "stops": [
-                    {"name": "Kempegowda International Airport", "kind": "transport",
-                     "time": "05:00"},
+                    {
+                        "name": "Kempegowda International Airport",
+                        "kind": "transport",
+                        "time": "05:00",
+                    },
                     {"name": "Hotel Lutetia", "kind": "hotel", "time": "23:59"},
                 ],
             }
@@ -193,12 +199,18 @@ def test_plan_names_gathers_every_proper_noun_the_symptom_must_lose() -> None:
 def test_the_same_shape_from_different_trips_is_one_group() -> None:
     names = ["Mandu Fort", "Rajwada Palace"]
     first = findings.Finding(
-        "I9", findings.symptom_of("Mandu Fort is far from X on Day 3.", names),
-        "m", "trip-a", corpus.REAL,
+        "I9",
+        findings.symptom_of("Mandu Fort is far from X on Day 3.", names),
+        "m",
+        "trip-a",
+        corpus.REAL,
     )
     second = findings.Finding(
-        "I9", findings.symptom_of("Rajwada Palace is far from X on Day 7.", names),
-        "m", "trip-b", corpus.REAL,
+        "I9",
+        findings.symptom_of("Rajwada Palace is far from X on Day 7.", names),
+        "m",
+        "trip-b",
+        corpus.REAL,
     )
 
     grouped = findings.group([first, second])
@@ -262,8 +274,7 @@ def test_a_leg_drawn_as_ground_travel_across_a_continent_is_reported() -> None:
             "day": 1,
             "stops": [
                 {"name": "Charles de Gaulle Airport", "kind": "transport", "time": "09:55"},
-                {"name": "Kempegowda International Airport", "kind": "transport",
-                 "time": "23:20"},
+                {"name": "Kempegowda International Airport", "kind": "transport", "time": "23:20"},
                 {"name": "Hotel Lutetia", "kind": "hotel", "time": "23:59"},
             ],
         }
@@ -347,8 +358,7 @@ def test_render_does_not_reuse_a_duplicate_brand_from_another_city() -> None:
     reported = render.check_render(record)
 
     assert not any(
-        finding.rule in {render.RULE_GROUND_LEG, render.RULE_LEG_DURATION}
-        for finding in reported
+        finding.rule in {render.RULE_GROUND_LEG, render.RULE_LEG_DURATION} for finding in reported
     )
 
 
@@ -445,10 +455,7 @@ def test_a_guard_that_stops_running_is_caught_by_the_relations(
     monkeypatch.setattr(trip_validation, "_round_trip_transport_warnings", lambda plan: [])
 
     blinded = mutations.check_metamorphic(record)
-    assert [f.rule for f in blinded if "blank-origin" in f.message] == [
-        mutations.RULE_UNNOTICED
-    ]
-
+    assert [f.rule for f in blinded if "blank-origin" in f.message] == [mutations.RULE_UNNOTICED]
 
 
 # ---- registry -------------------------------------------------------------
@@ -597,7 +604,11 @@ def test_what_was_already_spent_is_remembered_between_runs(tmp_path: Path) -> No
 
 def test_a_run_is_clamped_to_the_headroom_the_cap_leaves(tmp_path: Path) -> None:
     budget.record(
-        tmp_path, spent_inr_amount=4700, trips=60, model="gpt-4.1", stopped_because="budget"
+        tmp_path,
+        spent_inr_amount=budget.CUMULATIVE_CAP_INR - 300,
+        trips=60,
+        model="gpt-4.1",
+        stopped_because="budget",
     )
 
     assert budget.authorize(tmp_path).budget_inr == 300.0
@@ -605,7 +616,11 @@ def test_a_run_is_clamped_to_the_headroom_the_cap_leaves(tmp_path: Path) -> None
 
 def test_the_cumulative_cap_refuses_a_further_run(tmp_path: Path) -> None:
     budget.record(
-        tmp_path, spent_inr_amount=5000, trips=64, model="gpt-4.1", stopped_because="budget"
+        tmp_path,
+        spent_inr_amount=budget.CUMULATIVE_CAP_INR,
+        trips=64,
+        model="gpt-4.1",
+        stopped_because="budget",
     )
 
     with pytest.raises(budget.BudgetExhaustedError):
@@ -696,9 +711,12 @@ def test_rules_distinguish_failed_clean_and_absent_facts(tmp_path: Path) -> None
     absent = dataclasses.replace(
         _record(user_id="other"),
         id="test:without-facts",
-        plan=_plan(user_id="other", day_wise_itinerary=[
-            {"day": 1, "stops": [{"name": "Eiffel Tower", "kind": "attraction"}]}
-        ]),
+        plan=_plan(
+            user_id="other",
+            day_wise_itinerary=[
+                {"day": 1, "stops": [{"name": "Eiffel Tower", "kind": "attraction"}]}
+            ],
+        ),
         places={},
     )
     partial = dataclasses.replace(
@@ -856,9 +874,9 @@ def test_an_accepted_group_carries_the_date_it_was_accepted(tmp_path: Path) -> N
     key = result.groups[0].key
     baseline = {"accepted": {key: {"accepted_on": "2026-08-01"}}}
 
-    payload = report_module.build_report(runner.audit(
-        tmp_path, records=result.records, baseline=baseline
-    ), baseline)
+    payload = report_module.build_report(
+        runner.audit(tmp_path, records=result.records, baseline=baseline), baseline
+    )
 
     accepted = {item["key"]: item for item in payload["groups"]}[key]
     assert accepted["new"] is False
@@ -1001,6 +1019,170 @@ def test_a_produced_seed_drops_out_of_the_queue() -> None:
     queue = matrix.pending(catalog, limit=len(matrix.REQUESTS))
 
     assert produced.slug not in {request.slug for request in queue}
+
+
+def test_india_matrix_balances_destinations_before_adding_depth() -> None:
+    queue = india_heuristic_matrix.candidates(
+        Catalog(), limit=len(india_heuristic_matrix.DESTINATIONS)
+    )
+
+    assert len({request.destination for request in queue}) == len(
+        india_heuristic_matrix.DESTINATIONS
+    )
+    assert all(request.destination.startswith("india:") for request in queue)
+    assert all("within India" in request.message for request in queue)
+
+
+def test_india_matrix_uses_destination_specific_duration_guidance() -> None:
+    all_requests = india_heuristic_matrix.candidates(Catalog(), limit=0)
+    goa = [request for request in all_requests if request.destination == "india:goa"]
+    ladakh = [request for request in all_requests if request.destination == "india:ladakh"]
+
+    assert {request.days for request in goa} == {3, 4, 5, 7}
+    assert {request.days for request in ladakh} == {7, 8, 9, 10}
+
+
+def test_india_matrix_prioritizes_likely_destination_audiences() -> None:
+    queue = india_heuristic_matrix.candidates(
+        Catalog(), limit=len(india_heuristic_matrix.DESTINATIONS)
+    )
+    tamil_nadu = next(request for request in queue if request.destination == "india:tamil-nadu")
+    goa = next(request for request in queue if request.destination == "india:goa")
+
+    assert tamil_nadu.emphasis == "pilgrimage"
+    assert tamil_nadu.party in {"three-generation", "senior-couple"}
+    assert tamil_nadu.days in {4, 5}
+    assert goa.emphasis in {"celebration", "relaxation"}
+    assert any("Heuristic audience rationale" in item for item in tamil_nadu.scenario_expectations)
+
+
+def test_india_matrix_deduplicates_only_the_exact_scenario() -> None:
+    first = next(
+        request
+        for request in india_heuristic_matrix.candidates(Catalog(), limit=0)
+        if request.destination == "india:goa" and request.emphasis == "relaxation"
+    )
+    catalog = Catalog(
+        [
+            {
+                "slug": first.slug,
+                "signature": first.signature.key,
+                "destination": first.destination,
+                "emphasis": first.emphasis,
+            }
+        ]
+    )
+
+    remaining = india_heuristic_matrix.candidates(catalog, limit=0)
+    matching = [
+        request
+        for request in remaining
+        if request.destination == first.destination and request.emphasis == first.emphasis
+    ]
+
+    assert first.slug not in {request.slug for request in remaining}
+    assert matching
+    assert any(request.party != first.party or request.days != first.days for request in matching)
+
+
+def test_outbound_matrix_balances_destinations_and_prioritizes_mainstream() -> None:
+    queue = india_outbound_matrix.candidates(
+        Catalog(), limit=len(india_outbound_matrix.DESTINATIONS)
+    )
+
+    assert len({request.destination for request in queue}) == len(
+        india_outbound_matrix.DESTINATIONS
+    )
+    assert all(request.destination.startswith("india-outbound:") for request in queue)
+    assert {request.destination for request in queue[:8]} == {
+        "india-outbound:uae",
+        "india-outbound:thailand",
+        "india-outbound:singapore",
+        "india-outbound:bali",
+        "india-outbound:vietnam",
+        "india-outbound:maldives",
+        "india-outbound:malaysia",
+        "india-outbound:schengen-classic",
+    }
+
+
+def test_outbound_matrix_uses_destination_specific_durations_and_evidence() -> None:
+    all_requests = india_outbound_matrix.candidates(Catalog(), limit=0)
+    uae = [request for request in all_requests if request.destination == "india-outbound:uae"]
+    europe = [
+        request
+        for request in all_requests
+        if request.destination == "india-outbound:schengen-classic"
+    ]
+
+    assert {request.days for request in uae} == {4, 5, 6}
+    assert {request.days for request in europe} == {9, 11, 14}
+    assert all("Indian passport" in request.message for request in all_requests)
+    assert all(
+        any("Evidence posture" in item for item in request.scenario_expectations)
+        for request in all_requests
+    )
+
+
+def test_outbound_matrix_deduplicates_only_the_exact_scenario() -> None:
+    first = next(
+        request
+        for request in india_outbound_matrix.candidates(Catalog(), limit=0)
+        if request.destination == "india-outbound:uae" and request.emphasis == "family"
+    )
+    catalog = Catalog(
+        [
+            {
+                "slug": first.slug,
+                "signature": first.signature.key,
+                "destination": first.destination,
+                "emphasis": first.emphasis,
+            }
+        ]
+    )
+
+    remaining = india_outbound_matrix.candidates(catalog, limit=0)
+    matching = [
+        request
+        for request in remaining
+        if request.destination == first.destination and request.emphasis == first.emphasis
+    ]
+
+    assert first.slug not in {request.slug for request in remaining}
+    assert matching
+    assert any(request.party != first.party or request.days != first.days for request in matching)
+
+
+def test_build_corpus_scope_distinguishes_country_from_market(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    script = Path(__file__).parents[1] / "scripts" / "dev" / "build_corpus.py"
+    spec = importlib.util.spec_from_file_location("build_corpus", script)
+    assert spec and spec.loader
+    build_corpus = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(build_corpus)
+
+    assert build_corpus._selected_scope(None, None) == ("matrix", "global")
+    assert build_corpus._selected_scope(None, "india") == ("country", "india")
+    assert build_corpus._selected_scope("india", None) == ("market", "india")
+    with pytest.raises(ValueError, match="not both"):
+        build_corpus._selected_scope("india", "india")
+
+    country = build_corpus._requests_for_scope(("country", "india"), Catalog(), limit=4)
+    market = build_corpus._requests_for_scope(("market", "india"), Catalog(), limit=4)
+
+    assert all(request.destination.startswith("india:") for request in country)
+    assert [request.destination.startswith("india-outbound:") for request in market] == [
+        False,
+        True,
+        False,
+        True,
+    ]
+
+    with pytest.raises(SystemExit) as error:
+        build_corpus.main(["--country", "india", "--market", "india", "--dry-run"])
+    assert error.value.code == 2
+    assert "not allowed with argument" in capsys.readouterr().err
 
 
 def test_a_run_keeps_asking_until_the_budget_is_spent(
@@ -1246,18 +1428,24 @@ def test_a_saved_cache_round_trips(tmp_path: Path) -> None:
     assert place_cache.load(tmp_path / "absent.json") == {}
 
 
-def test_the_cache_file_is_stable_between_identical_saves(tmp_path: Path) -> None:
-    """An unchanged export must not produce a diff, or the file churns."""
+def test_the_cache_file_is_not_rewritten_by_an_identical_save(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An unchanged export must preserve bytes and mtime during discard."""
     from tripplanner.validation import place_cache
 
     places = {"b|goa": {"lat": 2.0}, "a|goa": {"lat": 1.0}}
-    first = tmp_path / "one.json"
-    second = tmp_path / "two.json"
-    place_cache.save(first, places)
-    place_cache.save(second, dict(reversed(list(places.items()))))
+    path = tmp_path / "places.json"
+    timestamps = iter(["2026-08-18T01:00:00Z", "2026-08-18T02:00:00Z"])
+    monkeypatch.setattr(place_cache.time, "strftime", lambda *_: next(timestamps))
+    place_cache.save(path, places)
+    original = path.read_bytes()
+    original_mtime = path.stat().st_mtime_ns
 
-    strip = lambda text: [line for line in text.splitlines() if "saved_at" not in line]  # noqa: E731
-    assert strip(first.read_text()) == strip(second.read_text())
+    place_cache.save(path, dict(reversed(list(places.items()))))
+
+    assert path.read_bytes() == original
+    assert path.stat().st_mtime_ns == original_mtime
 
 
 def test_restoring_refuses_a_database_that_is_not_a_sandbox() -> None:
@@ -1265,8 +1453,6 @@ def test_restoring_refuses_a_database_that_is_not_a_sandbox() -> None:
 
     with pytest.raises(ValueError):
         place_cache.restore("tripplanner-prod", {"a|b": {"lat": 1.0}})
-
-
 
 
 # ---- lane snapshots -------------------------------------------------------
@@ -1318,6 +1504,26 @@ def test_saving_refuses_a_database_that_is_not_a_sandbox(tmp_path: Path) -> None
 
     with pytest.raises(ValueError):
         lane_trips.save(tmp_path, "tripplanner-prod")
+
+
+def test_an_unchanged_lane_snapshot_is_not_rewritten(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from tripplanner.validation import lane_trips
+
+    trip = {"trip_id": "goa_2027", "destination": "Goa"}
+    timestamps = iter(["2026-08-18T01:00:00Z", "2026-08-18T02:00:00Z"])
+    monkeypatch.setattr(lane_trips, "read_trips", lambda _: [trip])
+    monkeypatch.setattr(lane_trips.time, "strftime", lambda *_: next(timestamps))
+    lane_trips.save(tmp_path, "tripplanner-sbx-6-lab-factory")
+    path = lane_trips.snapshot_path(tmp_path, "tripplanner-sbx-6-lab-factory")
+    original = path.read_bytes()
+    original_mtime = path.stat().st_mtime_ns
+
+    lane_trips.save(tmp_path, "tripplanner-sbx-6-lab-factory")
+
+    assert path.read_bytes() == original
+    assert path.stat().st_mtime_ns == original_mtime
 
 
 def test_the_cache_containers_expire_and_the_data_ones_never_do() -> None:

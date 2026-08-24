@@ -11,6 +11,11 @@
   which calls the model and the place providers. Spend is capped per run and
   cumulatively, and recorded in corpus/spend-ledger.json. A finished run also
   saves the place grounding it warmed into corpus/places.json.
+
+    Pass --country india to cover trips within India. Pass --market india to cover
+    Indian travelers, alternating domestic and outbound scenarios even in a small
+    run. Choose only one of --country or --market per run. Both use reviewable
+    destination-specific durations and visitor profiles.
 #>
 
 [CmdletBinding()]

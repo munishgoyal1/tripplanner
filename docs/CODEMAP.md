@@ -73,6 +73,7 @@ trip through shared API contracts.
 | `src/tripplanner/observability.py` | Structured events and request diagnostics |
 | `src/tripplanner/debug_store.py` | Local-only archive of real trips for debugging and emulator restore; never active in hosted mode |
 | `src/tripplanner/validation/` | Offline validation harness: corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, and comparable-run summaries (brief 004) |
+| `src/tripplanner/validation/market_catalog.py`, `india_heuristic_matrix.py`, `india_outbound_matrix.py` | Deterministic weighted India-domestic and India-outbound corpus scenarios; exact dedupe, destination-aware durations, audience priors, and evidence posture from `docs/research/india-*-2026-08.md` |
 | `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
 | `src/tripplanner/error_analysis.py` | Local and canary failure classification and reports |
 | `src/tripplanner/critics.py` | Deterministic quality checks |
@@ -81,6 +82,7 @@ trip through shared API contracts.
 | `scripts/mac/` | macOS `.command` launchers mirroring Windows root, user, sandbox, canary, and production entry points |
 | `scripts/dev/multiagent_core.py` | Pure multiagent coordination logic: `owner:ready` eligibility, footprint collisions, attempt numbering, audit fingerprints, leases |
 | `scripts/dev/multiagent.py` | Multiagent runtime: dedicated Coordinator publication, post-publish sandbox sync, autopilot workers, remote-verified attempt SHAs, validated `origin/master` baselines, slots, supervision, batch integration, audit producer |
+| `scripts/dev/build_corpus.py`, `scripts/dev/build-corpus.ps1` | Budgeted paid corpus generation; `--country india` covers domestic destinations, while `--market india` alternates domestic and outbound Indian-traveler scenarios |
 
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
 boundary. Configuration comes from `Settings`, not scattered environment reads.

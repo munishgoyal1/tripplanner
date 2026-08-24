@@ -46,10 +46,24 @@ def save(corpus_root: Path, database: str) -> int:
     payload = {
         "version": SNAPSHOT_VERSION,
         "database": name,
-        "saved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "count": len(trips),
         # Ordered so re-saving unchanged trips produces no diff.
         "trips": sorted(trips, key=lambda trip: str(trip.get("id") or trip.get("trip_id") or "")),
+    }
+    try:
+        existing = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        existing = None
+    if isinstance(existing, dict):
+        existing = {key: value for key, value in existing.items() if key != "saved_at"}
+    if existing == payload:
+        return len(trips)
+    payload = {
+        "version": payload["version"],
+        "database": payload["database"],
+        "saved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "count": payload["count"],
+        "trips": payload["trips"],
     }
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return len(trips)

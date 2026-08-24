@@ -22,7 +22,7 @@ from typing import Any
 
 LEDGER_VERSION = 1
 DEFAULT_RUN_BUDGET_INR = 1000.0
-CUMULATIVE_CAP_INR = 5000.0
+CUMULATIVE_CAP_INR = 15000.0
 #: Only an assumption, so each run stores the rate it actually used.
 DEFAULT_USD_INR = 88.0
 
