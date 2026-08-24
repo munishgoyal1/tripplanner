@@ -209,6 +209,12 @@ per-attempt branch remains to become stale.
 Copilot CLI sessions are named `Slot N | #<issue> <concise title>`, so process
 and session lists show which slot owns each requirement without opening logs.
 
+`Multiagent-Prune` keeps the visible session list bounded by querying open issue
+numbers once and retaining only controller-owned worker sessions for that set.
+Its default action removes every worker session whose issue is no longer open;
+`-DryRun` previews the same selection. It never enumerates closed issues and
+never touches Coordinator or sandbox chats, which the controller does not own.
+
 Every implementation worker is explicitly launched with GPT-5.6 Sol at medium
 reasoning effort. The controller does not use Auto routing: Auto cannot guarantee
 the no-Claude constraint, so both the model and reasoning effort remain fixed

@@ -260,6 +260,46 @@ def set_agent_state(repo: str, number: int, wanted: str | None, *, lane: str = "
     gh_relabel(repo, number, add=add, remove=remove)
 
 
+def open_issue_numbers(repo: str) -> set[int]:
+    result = run([
+        "gh", "issue", "list", "--repo", repo, "--state", "open",
+        "--json", "number", "--limit", "1000",
+    ])
+    if result.returncode != 0:
+        raise RuntimeError(f"gh issue list failed: {result.stderr.strip()}")
+    return {int(item["number"]) for item in json.loads(result.stdout or "[]")}
+
+
+def prune_worker_sessions(
+    assignments: list[core.Assignment],
+    open_issues: set[int],
+    *,
+    copilot_home: Path,
+    dry_run: bool,
+) -> list[core.Assignment]:
+    candidates = [item for item in assignments if item.issue not in open_issues]
+    if dry_run or not candidates:
+        return candidates
+
+    session_root = copilot_home / "session-state"
+    cache_path = copilot_home / "vscode.session.metadata.cache.json"
+    session_ids = {item.session_id for item in candidates if item.session_id}
+    for session_id in session_ids:
+        shutil.rmtree(session_root / session_id, ignore_errors=True)
+
+    if cache_path.exists():
+        try:
+            cache = json.loads(cache_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as exc:
+            raise RuntimeError(f"could not read Copilot session metadata: {exc}") from exc
+        for session_id in session_ids:
+            cache.pop(session_id, None)
+        temp = cache_path.with_suffix(".tmp")
+        temp.write_text(json.dumps(cache, indent=2) + "\n", encoding="utf-8")
+        temp.replace(cache_path)
+    return candidates
+
+
 # ----------------------------------------------------------------------------
 # Worktrees
 # ----------------------------------------------------------------------------
@@ -1195,6 +1235,29 @@ def cmd_audit(space: Workspace, args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_prune(space: Workspace, args: argparse.Namespace) -> int:
+    state = load_state(space)
+    open_issues = open_issue_numbers(space.repo())
+    candidates = prune_worker_sessions(
+        state.assignments,
+        open_issues,
+        copilot_home=Path.home() / ".copilot",
+        dry_run=args.dry_run,
+    )
+    action = "Would prune" if args.dry_run else "Pruned"
+    if not candidates:
+        log("No closed-issue worker sessions to prune.")
+        return 0
+    grouped: dict[int, int] = {}
+    for assignment in candidates:
+        grouped[assignment.issue] = grouped.get(assignment.issue, 0) + 1
+    for number, attempts in sorted(grouped.items()):
+        log(f"  #{number}: {attempts} worker session(s)")
+    log(f"{action} {len(candidates)} worker session(s) for {len(grouped)} closed issue(s).")
+    log(f"Retained sessions for {len(open_issues)} open issue(s).")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -1214,6 +1277,11 @@ def build_parser() -> argparse.ArgumentParser:
     pause = sub.add_parser("pause", help="stop dispatching; let running workers finish")
     pause.add_argument("--reason", default="")
     sub.add_parser("resume", help="resume dispatching")
+    prune = sub.add_parser(
+        "prune",
+        help="remove controller-owned worker sessions for every issue that is no longer open",
+    )
+    prune.add_argument("--dry-run", action="store_true")
     sub.add_parser("coordinator", help="open the owner-facing coordinator chat")
     sub.add_parser(
         "publish-coordinator",
@@ -1237,6 +1305,7 @@ def main(argv: list[str] | None = None) -> int:
         "stop": cmd_stop,
         "pause": cmd_pause,
         "resume": cmd_resume,
+        "prune": cmd_prune,
         "coordinator": cmd_coordinator,
         "publish-coordinator": cmd_publish_coordinator,
         "audit": cmd_audit,
