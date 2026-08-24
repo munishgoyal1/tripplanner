@@ -351,6 +351,7 @@ class TestPreferenceTools:
 # Trip planner state management tools
 # ---------------------------------------------------------------------------
 from tripplanner.tools.trip_planner import (
+    _merge_itinerary_days,
     add_hotel_stay,
     add_selection,
     create_trip_plan,
@@ -363,7 +364,6 @@ from tripplanner.tools.trip_planner import (
     set_stop_booked,
     update_trip_plan,
 )
-from tripplanner.tools.trip_planner import _merge_itinerary_days
 
 
 class TestPartialItineraryMerge:
