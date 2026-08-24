@@ -28,6 +28,7 @@ for _variable in ("COSMOS_ENDPOINT", "COSMOS_KEY", "COSMOS_CONNECTION_STRING"):
 
 from tripplanner.validation import findings as findings_module  # noqa: E402
 from tripplanner.validation import observations as observations_module  # noqa: E402
+from tripplanner.validation import quality as quality_module  # noqa: E402
 from tripplanner.validation import registry as registry_module  # noqa: E402
 from tripplanner.validation import runner  # noqa: E402
 
@@ -149,7 +150,10 @@ def main(argv: list[str] | None = None) -> int:
         except (OSError, json.JSONDecodeError):
             previous = {}
         payload = report_module.build_report(
-            result, findings_module.load_baseline(path), previous
+            result,
+            findings_module.load_baseline(path),
+            previous,
+            quality_ratings=quality_module.load(runner.corpus_root(REPO_ROOT)),
         )
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(

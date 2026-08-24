@@ -448,7 +448,8 @@ STEP 2 — UNDERSTAND THE REQUEST
   If the user states a total budget for THIS trip ("keep it under 1.5 lakh",
   "$3000 max"), persist it immediately:
   update_trip_plan('{{"budget": 150000}}') so the live budget meter in the UI
-  can track spend against it. Keep total_cost updated as selections firm up.
+  can track spend against it. Keep total_cost updated as selections firm up;
+  a first plan with a requested budget is not complete while total_cost is zero.
 
 STEP 2.5 — SHARE A FIRST-CUT ITINERARY IMMEDIATELY (don't wait for searches)
   The moment you know the destination and rough dates, you MUST do BOTH:
@@ -463,6 +464,10 @@ STEP 2.5 — SHARE A FIRST-CUT ITINERARY IMMEDIATELY (don't wait for searches)
   Take ownership of the draft: choose sensible defaults for every day instead
   of asking the user to assemble the itinerary. The user can refine any choice
   conversationally after seeing a complete plan.
+  The first planning turn must not end until concrete lodging, explicit journey
+  edges, named meal coverage on substantial days, and requested-budget cost
+  evidence are saved. Continue past the normal planning-tool budget when needed
+  for those core gates. Weather may remain deferred enrichment.
   Do NOT wait for flight/hotel/activity searches before persisting. The user
   must see something in the panel immediately.
 
@@ -1000,4 +1005,3 @@ def select_tools(messages: list, *, proposal_only: bool = False) -> list:
     """
     tools = _CORE_TOOLS + _SEARCH_TOOLS if _planning_active(messages) else list(_CORE_TOOLS)
     return proposal_tools(tools) if proposal_only else tools
-

@@ -122,18 +122,24 @@ def audit(
     baseline: dict[str, Any] | None = None,
     render: bool = True,
     mutate: bool = True,
+    quality_ratings: dict[str, Any] | None = None,
     **collect_kwargs: Any,
 ) -> AuditResult:
     from tripplanner.validation.mutations import check_metamorphic
+    from tripplanner.validation.quality import gate_findings
+    from tripplanner.validation.quality import load as load_quality_ratings
     from tripplanner.validation.render import check_render
 
     sources: list[str] = []
     skipped: list[str] = []
     if records is None:
         records, sources, skipped = collect(repo_root, **collect_kwargs)
+    if quality_ratings is None:
+        quality_ratings = load_quality_ratings(corpus_root(repo_root))
     findings: list[Finding] = []
     for record in records:
         findings.extend(check_record(record))
+        findings.extend(gate_findings(record, quality_ratings))
         if render:
             findings.extend(check_render(record))
         if mutate:

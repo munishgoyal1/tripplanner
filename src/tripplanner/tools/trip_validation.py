@@ -416,6 +416,49 @@ def _hotel_destination_errors(
     return errors
 
 
+def _requested_budget_without_cost_evidence(plan: dict[str, Any]) -> list[str]:
+    budget = plan.get("budget")
+    amount = budget.get("amount") if isinstance(budget, dict) else budget
+    if not isinstance(amount, (int, float)) or isinstance(amount, bool) or amount <= 0:
+        return []
+    total_cost = plan.get("total_cost")
+    if (
+        isinstance(total_cost, (int, float))
+        and not isinstance(total_cost, bool)
+        and total_cost > 0
+    ):
+        return []
+    return [
+        "The traveller requested a budget, but total_cost has no positive cost evidence. "
+        "Save a grounded whole-trip estimate before presenting the plan as complete."
+    ]
+
+
+def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
+    """Gaps that a first planning turn must resolve even after its normal tool budget."""
+    itinerary = plan.get("day_wise_itinerary")
+    if plan.get("destination") and not (isinstance(itinerary, list) and itinerary):
+        return [
+            "No day-by-day itinerary is saved. Save the full structured "
+            "day_wise_itinerary before presenting the trip as planned."
+        ]
+
+    journey_continuity = [
+        violation.message for violation in validate_plan(plan) if violation.code in {"I7", "I9"}
+    ]
+    return [
+        *_restaurant_itinerary_warnings(
+            itinerary,
+            cities=_itinerary_hotel_locations(plan),
+            dietary=_dietary_preferences(plan),
+        ),
+        *_round_trip_transport_warnings(plan),
+        *_hotel_selection_warnings(plan),
+        *journey_continuity,
+        *_requested_budget_without_cost_evidence(plan),
+    ]
+
+
 def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
     """Return actionable gaps that keep a new plan from feeling complete."""
     density_warnings: list[str] = []

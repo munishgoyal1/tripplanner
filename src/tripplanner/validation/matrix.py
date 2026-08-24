@@ -35,6 +35,10 @@ class TripRequest:
     emphasis: str = ""
     party: str = ""
     days: int = 0
+    #: Human-readable contract used to judge scenario and preference fidelity.
+    scenario_expectations: tuple[str, ...] = ()
+    #: Budget evidence is a gate only when the request explicitly asks for it.
+    budget_evidence_required: bool = False
 
     @property
     def signature(self) -> Signature:
@@ -124,6 +128,8 @@ REQUESTS: tuple[TripRequest, ...] = (
         "tight budget, international",
         "Plan a 5 day Singapore trip from Chennai for 2 adults, 4 to 9 June 2027, "
         "on a tight budget of INR 90000 total.",
+        scenario_expectations=("Stay within the INR 90,000 whole-trip ceiling.",),
+        budget_evidence_required=True,
     ),
     TripRequest(
         "swiss-luxury",
@@ -312,6 +318,13 @@ def _compose(
         emphasis=emphasis.key,
         party=party.key,
         days=days,
+        scenario_expectations=(
+            f"Use {destination.phrase} as the destination scope.",
+            f"Plan for {party.phrase}.",
+            emphasis.clause,
+            f"Keep the requested {days}-day duration.",
+        ),
+        budget_evidence_required=emphasis.key == "budget",
     )
 
 

@@ -40,6 +40,10 @@ New-trip planning is automation-first. Once the user supplies an origin,
 destination, rough timing, and who is travelling, the agent owns the first complete proposal: it
 chooses sensible defaults, researches and selects the strongest verified hotel,
 fills every day with concrete places and meals, and persists the enriched plan.
+The first planning turn continues past its normal tool budget when necessary to
+finish concrete lodging, journey edges, substantial-day meals, and requested-
+budget cost evidence. Weather may remain deferred enrichment; those core plan
+categories may not.
 The user refines a useful plan through chat instead of designing one from a blank
 canvas or resolving avoidable `TBD` decisions.
 

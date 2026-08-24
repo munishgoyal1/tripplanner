@@ -352,6 +352,34 @@ def test_explicit_open_meal_exceptions_preserve_substantial_days(
     assert trip_validation._restaurant_itinerary_warnings(itinerary) == []
 
 
+def test_core_completion_requires_cost_evidence_only_for_requested_budget() -> None:
+    complete = {
+        "destination": "Ahmedabad",
+        "origin": "Ahmedabad",
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "House of MG", "kind": "hotel"},
+                stop("Sabarmati Ashram", "09:00"),
+                stop("Adalaj Stepwell", "12:00"),
+                {"name": "Agashiye", "kind": "meal"},
+            ],
+        }],
+        "selected_hotels": [{"name": "House of MG"}],
+        "total_cost": 0,
+    }
+
+    assert trip_validation.core_planning_completion_gaps(complete) == []
+
+    complete["budget"] = {"amount": 50_000, "currency": "INR", "owner": "user"}
+    gaps = trip_validation.core_planning_completion_gaps(complete)
+    assert len(gaps) == 1
+    assert "positive cost evidence" in gaps[0]
+
+    complete["total_cost"] = 42_000
+    assert trip_validation.core_planning_completion_gaps(complete) == []
+
+
 def test_a_day_cannot_begin_where_the_trip_never_travelled(located: None) -> None:
     stranded = plan(
         [
@@ -831,7 +859,6 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
-
 
 
 

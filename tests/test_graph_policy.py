@@ -110,7 +110,7 @@ def test_a_broad_new_trip_must_still_save_before_the_phase_budget_traps_it() -> 
     assert "no itinerary" in decision.requirement
 
 
-def test_the_phase_budget_still_traps_a_turn_once_the_first_save_was_attempted() -> None:
+def test_the_phase_budget_does_not_end_an_incomplete_first_planning_turn() -> None:
     current_turn: list[BaseMessage] = [
         HumanMessage(content="plan a varanasi and ayodhya circuit trip"),
         _tool_call("create_trip_plan", "create-1"),
@@ -128,8 +128,9 @@ def test_the_phase_budget_still_traps_a_turn_once_the_first_save_was_attempted()
         has_planning_intent=True,
     )
 
-    assert decision.budget_exhausted is True
-    assert decision.forced_tool is None
+    assert decision.budget_exhausted is False
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
 
 
 def test_new_trip_kickoff_preempts_incomplete_active_trip() -> None:
@@ -244,6 +245,130 @@ def test_tool_phase_budget_preempts_every_completion_gate() -> None:
     assert decision.budget_exhausted
     assert decision.forced_tool is None
     assert decision.forced_reason == "tool_phase_budget"
+
+
+def test_first_turn_continues_for_requested_budget_cost_evidence() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a one-day Paris stay under EUR 500"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "origin": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel Le Six", "kind": "hotel"},
+                    {"name": "Louvre Museum", "kind": "attraction"},
+                    {"name": "Musee de l'Orangerie", "kind": "attraction"},
+                    {"name": "Bouillon Chartier", "kind": "meal"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Hotel Le Six"}],
+            "budget": {"amount": 500, "currency": "EUR", "owner": "user"},
+            "total_cost": 0,
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "update_trip_plan"
+    assert "positive cost evidence" in (decision.requirement or "")
+
+
+def test_first_turn_provider_failure_uses_hotel_fallback_after_phase_budget() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Create a separate new Paris trip"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            _tool_call("search_hotels", "hotel-1"),
+            ToolMessage(content="No hotels found for Paris.", tool_call_id="hotel-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 2),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "origin": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+            }],
+            "selected_hotels": [],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "search_places_with_reviews"
+    assert decision.forced_reason == "hotel_provider_fallback"
+
+
+def test_first_turn_cannot_end_incomplete_before_phase_budget() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a Paris stay"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "origin": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel Le Six", "kind": "hotel"},
+                    {"name": "Louvre Museum", "kind": "attraction"},
+                    {"name": "Musee de l'Orangerie", "kind": "attraction"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Hotel Le Six"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "update_trip_plan"
+    assert "multiple activities but no named restaurant" in (decision.requirement or "")
+
+
+def test_weather_can_remain_deferred_when_first_turn_core_plan_is_complete() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a one-day Paris stay"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "origin": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel Le Six", "kind": "hotel"},
+                    {"name": "Louvre Museum", "kind": "attraction"},
+                    {"name": "Musee de l'Orangerie", "kind": "attraction"},
+                    {"name": "Bouillon Chartier", "kind": "meal"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Hotel Le Six"}],
+            "total_cost": 420,
+            "weather": {},
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.budget_exhausted
+    assert decision.forced_tool is None
 
 
 def test_one_remaining_tool_phase_still_allows_completion_repair() -> None:
