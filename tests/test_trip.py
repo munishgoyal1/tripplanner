@@ -1030,8 +1030,8 @@ class TestTripPlanState:
         original = [{
             "day": 1,
             "stops": [
-                {"name": "Fort Aguada", "kind": "attraction", "time": "09:00"},
-                {"name": "Anjuna Beach", "kind": "attraction", "time": "11:00"},
+                {"name": "Morning Gallery", "kind": "attraction", "time": "09:00"},
+                {"name": "Coastal Walk", "kind": "attraction", "time": "11:00"},
             ],
         }]
         update_trip_plan.invoke({"updates_json": json.dumps({"day_wise_itinerary": original})})

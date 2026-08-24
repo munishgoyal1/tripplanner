@@ -30,7 +30,14 @@ def plan_with_flight_decision() -> dict:
     now = datetime.now(UTC)
     plan = {
         "currency": "USD",
-        "selected_flights": [{"airline": "Air India", "price": 900, "currency": "USD"}],
+        "selected_flights": [
+            {
+                "airline": "Air India",
+                "price": 900,
+                "currency": "USD",
+                "price_composition": {"mandatory_costs_complete": True},
+            }
+        ],
         "price_checks": [
             {
                 "kind": "flights",
