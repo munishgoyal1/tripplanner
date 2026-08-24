@@ -1,0 +1,290 @@
+{
+  "status": "draft",
+  "trip_id": "gangtok_and_north_sikkim_2027-10-13_2027-10-18",
+  "trip_number": 1,
+  "created_at": "2026-08-18T21:10:06.448715",
+  "destination": "Gangtok and North Sikkim",
+  "origin": "Kolkata",
+  "departure_date": "2027-10-13",
+  "return_date": "2027-10-18",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Slow pace, free afternoons, accessible for elderly, child-friendly.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Gangtok and North Sikkim",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel in Gangtok",
+      "city": "Gangtok",
+      "star_rating": 3,
+      "note": "Preference for accessible rooms, family-friendly"
+    },
+    {
+      "name": "Hotel in Lachen",
+      "city": "Lachen",
+      "star_rating": 3,
+      "note": "Simple, clean, accessible"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-13",
+      "title": "Day 1 · Arrival in Gangtok",
+      "summary": "Arrive from Kolkata, transfer to Gangtok, check in, rest and gentle local stroll.",
+      "stops": [
+        {
+          "name": "Drive: Kolkata to Gangtok",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 600,
+          "distance_km": 700,
+          "note": "Private car with scenic stops"
+        },
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "MG Marg",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Gentle walk, shops and cafes"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-14",
+      "title": "Day 2 · Gangtok Sightseeing",
+      "summary": "Morning sightseeing, free afternoon for rest or optional stroll.",
+      "stops": [
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Rumtek Monastery",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Accessible, peaceful"
+        },
+        {
+          "name": "Cafe Live & Loud",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Lunch, family-friendly"
+        },
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "time": "13:30",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-15",
+      "title": "Day 3 · Transfer to North Sikkim (Lachen)",
+      "summary": "Scenic drive to Lachen, check in, gentle evening stroll.",
+      "stops": [
+        {
+          "name": "Drive: Gangtok to Lachen",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 300,
+          "distance_km": 120,
+          "note": "Private car, scenic stops"
+        },
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "13:30"
+        },
+        {
+          "name": "Hotel in Lachen",
+          "kind": "hotel",
+          "note": "Check-in and rest",
+          "time": "15:30"
+        },
+        {
+          "name": "Lachen Village Walk",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 60,
+          "note": "Gentle stroll"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-16",
+      "title": "Day 4 · Gurudongmar Lake Excursion",
+      "summary": "Morning visit to Gurudongmar Lake, free afternoon in Lachen.",
+      "stops": [
+        {
+          "name": "Drive: Lachen to Gurudongmar Lake",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 120,
+          "distance_km": 65,
+          "note": "Early start, scenic drive"
+        },
+        {
+          "name": "Gurudongmar Lake",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60,
+          "note": "Stunning views, accessible"
+        },
+        {
+          "name": "Drive: Gurudongmar Lake to Lachen",
+          "kind": "transport",
+          "time": "10:30",
+          "duration_min": 120,
+          "distance_km": 65,
+          "note": "Return to Lachen"
+        },
+        {
+          "name": "Hotel in Lachen",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "13:00"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-10-17",
+      "title": "Day 5 · Return to Gangtok & Departure",
+      "summary": "Drive back to Gangtok, lunch, depart for Kolkata.",
+      "stops": [
+        {
+          "name": "Drive: Lachen to Gangtok",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 300,
+          "distance_km": 120,
+          "note": "Private car"
+        },
+        {
+          "name": "Drive: Gangtok to Kolkata",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 600,
+          "distance_km": 700,
+          "note": "Return journey"
+        },
+        {
+          "name": "Hotel in Lachen",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "23:59"
+        },
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Lunch break",
+          "time": "23:59"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-10-18",
+      "title": "Departure",
+      "summary": "Check out and transfer to Bagdogra for return flight to Kolkata.",
+      "stops": [
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Drive: Gangtok to Bagdogra",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 300,
+          "distance_km": 125,
+          "note": "Morning drive"
+        },
+        {
+          "name": "Flight: Bagdogra to Kolkata",
+          "kind": "flight",
+          "time": "14:00",
+          "duration_min": 75,
+          "note": "Afternoon flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T21:15:22.873687",
+  "id": "gangtok_and_north_sikkim_2027-10-13_2027-10-18",
+  "user_id": "corpus-gangtok-slow-three-generation-5d"
+}

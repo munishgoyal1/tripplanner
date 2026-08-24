@@ -1,0 +1,231 @@
+{
+  "status": "draft",
+  "trip_id": "chikmagalur_2027-12-13_2027-12-16",
+  "trip_number": 1,
+  "created_at": "2026-08-17T20:36:53.994594",
+  "destination": "Chikmagalur",
+  "origin": "Bangalore",
+  "departure_date": "2027-12-13",
+  "return_date": "2027-12-16",
+  "travelers": "2 adults, 2 children (ages 6 and 9)",
+  "notes": "Focus on history and heritage sites. Balanced, moderate budget, 3-star hotel.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Chikmagalur",
+    "estimated_planned_minutes": 814,
+    "evidence_place_count": 5,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "5 preference-matched places account for about 814 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-13",
+      "title": "Day 1 · Arrival & Local Heritage",
+      "summary": "Arrive in Chikmagalur from Bangalore, check in, and explore local heritage sites including the Chikmagalur Heritage Centre.",
+      "stops": [
+        {
+          "name": "Drive: Bangalore to Chikmagalur",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 300,
+          "distance_km": 245,
+          "note": "Private car or taxi recommended"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "12:00",
+          "note": "Check-in"
+        },
+        {
+          "name": "Chikmagalur Heritage Centre",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Learn about the region's history"
+        },
+        {
+          "name": "Town Canteen",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Local cuisine dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-14",
+      "title": "Day 2 · Belur & Halebidu Temples",
+      "summary": "Day trip to Belur and Halebidu to visit the famous Hoysala temples, renowned for their architecture and heritage.",
+      "stops": [
+        {
+          "name": "Drive: Chikmagalur to Belur",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 45,
+          "distance_km": 25
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "09:15",
+          "note": "Breakfast at hotel"
+        },
+        {
+          "name": "Chennakesava Temple, Belur",
+          "kind": "attraction",
+          "time": "11:15",
+          "duration_min": 90,
+          "note": "Hoysala architecture"
+        },
+        {
+          "name": "Drive: Belur to Halebidu",
+          "kind": "transport",
+          "time": "12:30",
+          "duration_min": 30,
+          "distance_km": 17
+        },
+        {
+          "name": "Lunch at Vishnu Regency, Belur",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Family-friendly restaurant"
+        },
+        {
+          "name": "Hoysaleswara Temple, Halebidu",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "Heritage site"
+        },
+        {
+          "name": "Drive: Halebidu to Chikmagalur",
+          "kind": "transport",
+          "time": "15:00",
+          "duration_min": 60,
+          "distance_km": 42
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "16:30",
+          "note": "Rest"
+        },
+        {
+          "name": "Maharaja Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-15",
+      "title": "Day 3 · Coffee Museum & Departure",
+      "summary": "Visit the Coffee Museum to learn about Chikmagalur's coffee heritage, then return to Bangalore.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Breakfast and checkout"
+        },
+        {
+          "name": "Coffee Museum",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Interactive exhibits for kids"
+        },
+        {
+          "name": "Lunch at Siri Cafe",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Local specialties"
+        },
+        {
+          "name": "Drive: Chikmagalur to Bangalore",
+          "kind": "transport",
+          "time": "13:00",
+          "duration_min": 300,
+          "distance_km": 245,
+          "note": "Private car or taxi"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-12-16",
+      "title": "Day 4 · Arrival in Bangalore",
+      "summary": "Arrive back in Bangalore and end the trip.",
+      "stops": [
+        {
+          "name": "Arrival in Bangalore",
+          "kind": "other",
+          "time": "08:00",
+          "note": "Trip ends"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T16:58:01.791114",
+  "id": "chikmagalur_2027-12-13_2027-12-16",
+  "user_id": "corpus-chikmagalur-heritage-young-family-3d"
+}

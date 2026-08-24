@@ -1,0 +1,338 @@
+{
+  "status": "draft",
+  "trip_id": "chikmagalur_2027-12-05_2027-12-12",
+  "trip_number": 1,
+  "created_at": "2026-08-18T22:01:49.064539",
+  "destination": "Chikmagalur",
+  "origin": "Bangalore",
+  "departure_date": "2027-12-05",
+  "return_date": "2027-12-12",
+  "travelers": "4 adults and 1 child (age 8), including grandparents; one traveller cannot manage long walks or stairs",
+  "notes": "Accessibility: one traveller cannot manage long walks or stairs. Family includes grandparents. Moderate budget, balanced style.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Chikmagalur",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Deluxe City View One Bedroom Suite - Belur City View",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp3ee08",
+        "offer_id": "3gAWonJzkt4AEaRzcmlk2gFvRzQyRE1NUldNWVpHSU5SVUdZMlRNWVpYR1UzVFFOUlZHSVlETU1aV0hFM1RJTlpaR0lZRE9OUldIRTNES05aWEdJWURNWlJXTVUzREtNUlFHWVpETU5KV0dRM1RFTlRHR1pURE1aQlNHQTNUR05aVkdZNFRPTkJXR1Y2RENJWlNHQVpET01KU0dBMlhZTVJRR0kzVENNUlJHSjZHSzNTN0tWSlhZU0tPUFJFVTRVVDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzRZRE9NQlhHVVpUR01SVU5WQlVXM1JER0kyVE9OSlVHUVJUQ05CU0c0V1RFTkpYR1UyREk3Q09LSkRFNDdCU0dBWkRNTUJZR0U0REFNQlFHQjZEQzdDU0dFWVRLTUQ0SEEzRE9NSlpHRVlEUUkyU0o0UlU0VVNHSllSVEVNQlNHWVdUQU9CTkdFNENBTUJRSElZREFJWaNwcmPLQRp27ij1wo-lb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZZlRCTy1EZWx1eGUgQ2l0eSBWaWV3IE9uZSBCZWRyb29tIFN1aXRlo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZO3gARpHNyaWTaAW9HNDJETU1SV01ZWkdJTlJVR1kyVE1ZWlhHVTNUUU5SVkdJWURNTVpXSEUzVElOWlpHSVlET05SV0hFM0RLTlpYR0lZRE1aUldNVTNES01SUUdZWkRNTkpXR1EzVEVOVEdHWlRETVpCU0dBM1RHTlpWR1k0VE9OQldHVjZERUlaU0dBWkRPTUpTR0EyWFlNUlFHSTNUQ01SUkdKNkdLM1M3S1ZKWFlTS09QUkVVNFVUNEdSQVRDUVpZRjQyRUNNQ0RQUTJES01SWlBSVVZBWjJWSkI2RENOWllHNFlET01CWEdVWlRHTVJVTlZCVVczUkRHSTJUT05KVUdRUlRDTkJTRzRXVEVOSlhHVTJESTd"
+      },
+      "price": 24500,
+      "currency": "INR",
+      "rating": 4.5,
+      "address": "Deluxe City View One Bedroom Suite, Belur City View, Chikmagalur"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-05",
+      "title": "Day 1 · Arrival & Check-in",
+      "summary": "Drive from Bangalore to Chikmagalur, check in to hotel, relax and enjoy the property.",
+      "stops": [
+        {
+          "name": "Drive: Bangalore to Chikmagalur",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 330,
+          "distance_km": 250,
+          "note": "Private car with comfort stops for accessibility"
+        },
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-06",
+      "title": "Day 2 · Coffee Estate Tour & Relaxation",
+      "summary": "Guided coffee estate tour (accessible paths), leisure time at hotel, evening at Kailash Parbat (pure veg).",
+      "stops": [
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Coffee Estate Tour",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Accessible tour, minimal walking"
+        },
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Return for lunch/rest"
+        },
+        {
+          "name": "KAILASH PARBAT - Chikkamagaluru - a pure vegetarian restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner with local cuisine"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-07",
+      "title": "Day 3 · Mullayanagiri Scenic Drive & Sightseeing",
+      "summary": "Scenic drive to Mullayanagiri viewpoint (no hiking), visit accessible spots, lunch at hotel, dinner at Town Canteen.",
+      "stops": [
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Mullayanagiri Viewpoint",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Accessible viewpoint, no stairs"
+        },
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Return for lunch/rest"
+        },
+        {
+          "name": "Town Canteen",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-12-08",
+      "title": "Day 4 · Belur & Halebidu Temples (Accessible)",
+      "summary": "Day trip to Belur and Halebidu, focus on accessible areas, lunch at Anagha Grand, dinner at Itihakala Restaurant.",
+      "stops": [
+        {
+          "name": "Drive: Chikmagalur to Belur",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 45,
+          "distance_km": 25,
+          "note": "Private car"
+        },
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "10:15",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Belur Temple (Accessible Areas)",
+          "kind": "attraction",
+          "time": "12:15",
+          "duration_min": 60,
+          "note": "Accessible areas only"
+        },
+        {
+          "name": "Halebidu Temple (Accessible Areas)",
+          "kind": "attraction",
+          "time": "13:45",
+          "duration_min": 60,
+          "note": "Accessible areas only"
+        },
+        {
+          "name": "Anagha Grand",
+          "kind": "meal",
+          "time": "15:15",
+          "note": "Lunch"
+        },
+        {
+          "name": "Drive: Belur to Chikmagalur",
+          "kind": "transport",
+          "time": "15:00",
+          "duration_min": 45,
+          "distance_km": 25,
+          "note": "Return drive"
+        },
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "16:15",
+          "note": "Rest"
+        },
+        {
+          "name": "ITIHAKALA RESTAURANT (Pure Veg) HALEBIDU / BELUR",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-12-09",
+      "title": "Day 5 · Local Sightseeing & Leisure",
+      "summary": "Visit Chikmagalur Park (accessible), leisure time at hotel, dinner at Biryani Katte.",
+      "stops": [
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Chikmagalur Park (Accessible)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Accessible park"
+        },
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Return for lunch/rest"
+        },
+        {
+          "name": "Biryani Katte",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-12-10",
+      "title": "Day 6 · Bhadra Wildlife Sanctuary (Accessible Safari) & Relaxation",
+      "summary": "Accessible jeep safari in Bhadra Wildlife Sanctuary, leisure time at hotel, dinner at Kailash Parbat.",
+      "stops": [
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Bhadra Wildlife Sanctuary Safari (Accessible)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Jeep safari, minimal walking"
+        },
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Return for lunch/rest"
+        },
+        {
+          "name": "KAILASH PARBAT - Chikkamagaluru - a pure vegetarian restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-12-11",
+      "title": "Day 7 · Leisure & Departure",
+      "summary": "Relax at hotel, check out, drive back to Bangalore.",
+      "stops": [
+        {
+          "name": "Deluxe City View One Bedroom Suite - Belur City View",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Leisure morning"
+        },
+        {
+          "name": "Drive: Chikmagalur to Bangalore",
+          "kind": "transport",
+          "time": "11:00",
+          "duration_min": 330,
+          "distance_km": 250,
+          "note": "Private car with comfort stops"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T22:03:57.358497",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T22:02:37",
+      "expires_at": "2026-08-19T10:02:37"
+    }
+  ],
+  "id": "chikmagalur_2027-12-05_2027-12-12",
+  "user_id": "corpus-chikmagalur-accessible-three-generation-7d"
+}

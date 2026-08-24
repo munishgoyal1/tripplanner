@@ -1,0 +1,333 @@
+{
+  "status": "draft",
+  "trip_id": "chikmagalur_2027-12-06_2027-12-13",
+  "trip_number": 1,
+  "created_at": "2026-08-18T18:38:24.619740",
+  "destination": "Chikmagalur",
+  "origin": "Bangalore",
+  "departure_date": "2027-12-06",
+  "return_date": "2027-12-13",
+  "travelers": "1 adult",
+  "notes": "Outdoor and nature-focused itinerary. Balanced pace, moderate budget, minimum 3-star hotel.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Chikmagalur",
+    "estimated_planned_minutes": 1456,
+    "evidence_place_count": 8,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "8 preference-matched places account for about 1456 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      5,
+      7
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "The Serai Chikmagalur",
+      "address": "KM Road, Chikmagalur",
+      "rating": 4.6,
+      "price_per_night": 12000,
+      "nights": 7,
+      "total_price": 84000,
+      "currency": "INR"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-06",
+      "title": "Day 1 · Arrival & Coffee Estate Walk",
+      "summary": "Arrive in Chikmagalur from Bangalore, check in to hotel, relax and explore the coffee estate surroundings.",
+      "stops": [
+        {
+          "name": "Drive: Bangalore to Chikmagalur",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 300,
+          "distance_km": 250,
+          "note": "Private car, scenic route"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Check-in and base for the trip"
+        },
+        {
+          "name": "Coffee Estate Walk",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Guided walk through coffee plantations"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-07",
+      "title": "Day 2 · Mullayanagiri Trek",
+      "summary": "Morning trek to Mullayanagiri, the highest peak in Karnataka, followed by lunch and leisure.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Mullayanagiri Peak",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 180,
+          "note": "Trek and panoramic views"
+        },
+        {
+          "name": "Town Canteen",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Local lunch"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-08",
+      "title": "Day 3 · Baba Budangiri & Waterfalls",
+      "summary": "Visit Baba Budangiri hills and nearby waterfalls, enjoy nature and scenic drives.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Baba Budangiri",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Hill views and caves"
+        },
+        {
+          "name": "Manikyadhara Falls",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Waterfall visit"
+        },
+        {
+          "name": "Cafe Agape",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch with a view"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-12-09",
+      "title": "Day 4 · Bhadra Wildlife Sanctuary",
+      "summary": "Safari and birdwatching at Bhadra Wildlife Sanctuary, followed by riverside lunch.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Bhadra Wildlife Sanctuary",
+          "kind": "attraction",
+          "time": "07:30",
+          "duration_min": 240,
+          "note": "Safari and nature walk"
+        },
+        {
+          "name": "River Tern Lodge Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Lunch by the river"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-12-10",
+      "title": "Day 5 · Hirekolale Lake & Cycling",
+      "summary": "Morning cycling around Hirekolale Lake, picnic lunch and relaxation.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Hirekolale Lake",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 120,
+          "note": "Cycling and lakeside picnic"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Return to hotel for leisure"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-12-11",
+      "title": "Day 6 · Kemmanagundi & Hebbe Falls",
+      "summary": "Day trip to Kemmanagundi hill station and Hebbe Falls, with packed lunch.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kemmanagundi",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Hill station visit"
+        },
+        {
+          "name": "Hebbe Falls",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 120,
+          "note": "Waterfall trek"
+        },
+        {
+          "name": "Packed Lunch",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Picnic at Hebbe Falls"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-12-12",
+      "title": "Day 7 · Coffee Museum & Departure",
+      "summary": "Visit Coffee Museum, shopping for local produce, return to Bangalore.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Coffee Museum",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60,
+          "note": "Learn about coffee history"
+        },
+        {
+          "name": "Shopping Local Produce",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Souvenirs and coffee"
+        },
+        {
+          "name": "Drive: Chikmagalur to Bangalore",
+          "kind": "transport",
+          "time": "13:00",
+          "duration_min": 300,
+          "distance_km": 250,
+          "note": "Return journey"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-12-13",
+      "title": "Day 8 · Arrival in Bangalore",
+      "summary": "Arrive in Bangalore and end of trip.",
+      "stops": [
+        {
+          "name": "Bangalore",
+          "kind": "other",
+          "time": "08:00",
+          "note": "Trip ends"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 84000,
+    "meals": 7000,
+    "activities": 6000,
+    "transport": 5000
+  },
+  "total_cost": 102000,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T18:42:15.666782",
+  "id": "chikmagalur_2027-12-06_2027-12-13",
+  "user_id": "corpus-chikmagalur-outdoors-solo-7d"
+}

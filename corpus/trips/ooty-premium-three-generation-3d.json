@@ -1,0 +1,300 @@
+{
+  "status": "draft",
+  "trip_id": "ooty_2027-04-17_2027-04-20",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:38:00.280374",
+  "destination": "Ooty",
+  "origin": "Coimbatore",
+  "departure_date": "2027-04-17",
+  "return_date": "2027-04-20",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Major festivals during the trip: Easter, Hanuman Jayanthi, Chaitra Purnima, Ming Festival. Expect festive atmosphere and possible crowds at attractions.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Ooty",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Savoy - IHCL SeleQtions",
+      "address": "77, Sylks Road, Ooty, Tamil Nadu 643001, India",
+      "star_rating": 5,
+      "google_rating": 4.6,
+      "review_count": 4200,
+      "price_per_night": 18000,
+      "currency": "INR",
+      "nights": 3,
+      "total_price": 54000,
+      "room_type": "Premium Room",
+      "amenities": [
+        "Heritage property",
+        "Family-friendly",
+        "Restaurant",
+        "Bar",
+        "Spa",
+        "Garden",
+        "Free WiFi",
+        "Accessible"
+      ],
+      "note": "Best premium option in Ooty for families and seniors"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-17",
+      "title": "Day 1 · Arrival & Ooty Town",
+      "summary": "Arrive from Coimbatore, check into Savoy - IHCL SeleQtions (4.3★, 2,230 reviews), relax, and explore Ooty town with a gentle walk. Dinner at Earl's Secret (4.4★, 6,580 reviews). Easter, Hanuman Jayanthi, and Chaitra Purnima festivals are on this day.",
+      "stops": [
+        {
+          "name": "Drive: Coimbatore to Ooty",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "distance_km": 85,
+          "note": "Private car transfer with scenic stops"
+        },
+        {
+          "name": "Savoy - IHCL SeleQtions",
+          "kind": "hotel",
+          "note": "Check-in to premium hotel"
+        },
+        {
+          "name": "Ooty Botanical Gardens",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Gentle walk, wheelchair accessible"
+        },
+        {
+          "name": "Earl's Secret Restaurant",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Dinner at a top-rated restaurant (4.4★)"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-18",
+      "title": "Day 2 · Lakes & Tea Estates",
+      "summary": "Visit Ooty Lake, enjoy a boat ride, explore tea estates, and relax with premium meals. Weather: Overcast, 22°C/14°C.",
+      "stops": [
+        {
+          "name": "Savoy - IHCL SeleQtions",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Ooty Lake",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Boat ride, family-friendly"
+        },
+        {
+          "name": "Kailash Parbat - Pure Vegetarian Restaurant",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch at a premium spot (4.5★, 8,239 reviews)"
+        },
+        {
+          "name": "Doddabetta Tea Factory",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Tea tasting, accessible"
+        },
+        {
+          "name": "Savoy - IHCL SeleQtions",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Angaara Restaurant Ooty",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner (4.3★, 2,500 reviews)"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-19",
+      "title": "Day 3 · Coonoor Excursion",
+      "summary": "Day trip to Coonoor: Sim's Park, Lamb's Rock, and lunch at La Belle Vie. Return to Ooty for a relaxed evening. Weather: Partly cloudy, 22.5°C/13.6°C.",
+      "stops": [
+        {
+          "name": "Drive: Ooty to Coonoor",
+          "kind": "transport",
+          "time": "08:30",
+          "duration_min": 45,
+          "distance_km": 20,
+          "note": "Private car"
+        },
+        {
+          "name": "Sim's Park",
+          "kind": "attraction",
+          "time": "09:45",
+          "duration_min": 60,
+          "note": "Accessible gardens"
+        },
+        {
+          "name": "Lamb's Rock",
+          "kind": "attraction",
+          "time": "11:15",
+          "duration_min": 60,
+          "note": "Scenic viewpoint"
+        },
+        {
+          "name": "La Belle Vie Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch in Coonoor (4.4★, 1,200 reviews)"
+        },
+        {
+          "name": "Drive: Coonoor to Ooty",
+          "kind": "transport",
+          "time": "15:00",
+          "duration_min": 45,
+          "distance_km": 20,
+          "note": "Return by car"
+        },
+        {
+          "name": "Savoy - IHCL SeleQtions",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "16:15"
+        },
+        {
+          "name": "Earl's Secret Restaurant",
+          "kind": "meal",
+          "time": "20:15",
+          "note": "Farewell dinner (4.4★)"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-04-20",
+      "title": "Day 4 · Departure",
+      "summary": "Check out and return to Coimbatore. Option for a short walk or shopping before departure. Weather: Mostly clear, 22°C/14°C.",
+      "stops": [
+        {
+          "name": "Savoy - IHCL SeleQtions",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Drive: Ooty to Coimbatore",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 180,
+          "distance_km": 85,
+          "note": "Private car transfer"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 54000,
+    "meals": 12000,
+    "activities": 6000,
+    "transport": 12000
+  },
+  "total_cost": 84000,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {
+    "destination": "Udhagamandalam",
+    "country": "India",
+    "source": "seasonal_estimate",
+    "note": "Trip is beyond the 16-day forecast horizon — values are last year's same-week archive as a seasonal proxy.",
+    "days": [
+      {
+        "date": "2027-04-17",
+        "summary": "Overcast",
+        "high_c": 21.9,
+        "low_c": 13.8
+      },
+      {
+        "date": "2027-04-18",
+        "summary": "Overcast",
+        "high_c": 22.0,
+        "low_c": 14.1
+      },
+      {
+        "date": "2027-04-19",
+        "summary": "Partly cloudy",
+        "high_c": 22.5,
+        "low_c": 13.6
+      },
+      {
+        "date": "2027-04-20",
+        "summary": "Mostly clear",
+        "high_c": 22.1,
+        "low_c": 13.8
+      }
+    ],
+    "packing_advice": [
+      "Light jacket for cool evenings",
+      "Comfortable walking shoes",
+      "Umbrella (in case of showers)"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:40:27.138873",
+  "id": "ooty_2027-04-17_2027-04-20",
+  "user_id": "corpus-ooty-premium-three-generation-3d"
+}

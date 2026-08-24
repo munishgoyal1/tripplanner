@@ -1,0 +1,457 @@
+{
+  "status": "draft",
+  "trip_id": "malaysia_2027-07-14_2027-07-19",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:02:57.738891",
+  "destination": "Malaysia",
+  "origin": "Chennai",
+  "departure_date": "2027-07-14",
+  "return_date": "2027-07-19",
+  "travelers": "2 adults",
+  "notes": "Packed sightseeing, early starts are fine. Cover Kuala Lumpur and Penang.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Malaysia",
+    "estimated_planned_minutes": 1682,
+    "evidence_place_count": 7,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "7 preference-matched places account for about 1682 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      5,
+      7
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-07-14",
+      "title": "Day 1 · Arrival in Kuala Lumpur",
+      "summary": "Arrive in Kuala Lumpur from Chennai, check in to hotel, explore city center and Petronas Towers.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Kuala Lumpur",
+          "kind": "flight",
+          "time": "07:00",
+          "arrival_time": "13:00",
+          "duration_min": 330,
+          "note": "Morning flight, direct if possible"
+        },
+        {
+          "name": "Hotel Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Petronas Towers",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Iconic city landmark"
+        },
+        {
+          "name": "Suria KLCC Mall",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Shopping and dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-07-15",
+      "title": "Day 2 · Kuala Lumpur Highlights",
+      "summary": "Early start for Batu Caves, city sightseeing, local food tour.",
+      "stops": [
+        {
+          "name": "Hotel Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Batu Caves",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 120,
+          "note": "Go early to avoid crowds"
+        },
+        {
+          "name": "Merdeka Square",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Central Market",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90,
+          "note": "Lunch and shopping"
+        },
+        {
+          "name": "Jalan Alor Food Street",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Dinner at famous food street"
+        },
+        {
+          "name": "Hotel Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-07-16",
+      "title": "Day 3 · Transfer to Penang & George Town",
+      "summary": "Morning transfer to Penang, explore George Town, street art tour.",
+      "stops": [
+        {
+          "name": "Flight: Kuala Lumpur to Penang",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "10:00",
+          "duration_min": 60,
+          "note": "Morning flight"
+        },
+        {
+          "name": "Hotel Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "10:30"
+        },
+        {
+          "name": "Hotel Penang",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "12:30"
+        },
+        {
+          "name": "George Town",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 120,
+          "note": "Explore UNESCO heritage area"
+        },
+        {
+          "name": "Penang Street Art Tour",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Famous murals"
+        },
+        {
+          "name": "Hotel Penang",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "19:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-07-17",
+      "title": "Day 4 · Penang Hill & Local Food",
+      "summary": "Visit Penang Hill, Kek Lok Si Temple, local food tour.",
+      "stops": [
+        {
+          "name": "Hotel Penang",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Penang Hill",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 120,
+          "note": "Panoramic views"
+        },
+        {
+          "name": "Kek Lok Si Temple",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Largest Buddhist temple in Malaysia"
+        },
+        {
+          "name": "Gurney Drive Hawker Centre",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Dinner at famous hawker centre"
+        },
+        {
+          "name": "Hotel Penang",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-07-18",
+      "title": "Day 5 · Departure",
+      "summary": "Morning at leisure, transfer to airport, flight back to Chennai.",
+      "stops": [
+        {
+          "name": "Hotel Penang",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Penang Airport",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 30,
+          "note": "Transfer to airport"
+        },
+        {
+          "name": "Flight: Penang to Chennai",
+          "kind": "flight",
+          "time": "12:00",
+          "arrival_time": "15:30",
+          "duration_min": 210,
+          "note": "Afternoon flight"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-07-19",
+      "title": "Day 6 · Arrive Chennai",
+      "summary": "Arrive back in Chennai, trip ends.",
+      "stops": [
+        {
+          "name": "Chennai",
+          "kind": "other",
+          "note": "Arrival"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "MYR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T19:04:18.657876",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T19:04:18",
+      "expires_at": "2026-08-19T07:04:18"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_kuala_lumpur_2027_07_14_2027_07_16",
+      "kind": "lodging",
+      "created_at": "2026-08-18T13:34:18.653031Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Kuala Lumpur",
+        "date": "2027-07-14"
+      },
+      "subject": "Stay in Kuala Lumpur",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_e436589b84fd",
+      "options": [
+        {
+          "id": "opt_stay_e436589b84fd",
+          "mode": null,
+          "label": "Shahzan Hotel Kuantan, Trademark Collection by Wyndham",
+          "detail": "1 Standard Queen, Non-Smoking",
+          "price": {
+            "amount": 319.66,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-14",
+            "checkout": "2027-07-16",
+            "room_name": "1 Standard Queen, Non-Smoking",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Lot Pt 240, Jalan Bukit Ubi/Jalan Masjid, Kuantan, Pahang, 25000",
+            "rating": 0.0,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp7331d",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFAR01ZVEVNQlhHTTNUSU5SUkdaU1RNTkJXR0UzVEVOUlVHSVlET01KWEdVM0RLTlJWR1pTVEVZWlNHQTNHS05UR0daU1RFWkJYR00zR0lOVEdHWlJETU9KV01VM0RPN0JSRU1aREFNUlhHQTNUQ05ENEdJWURFTlpRRzRZVE03REZOWlBWS1UzNEpGSEhZVEtaS0o2REVRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5SUUdBMlRJTUJZR1ZERkEzQ1NFTTJET01KWUdNM1NHTUpZR01aUzJOQlhHRTRER04zNEtKREU0N0JTR0FaRE9NQlhHRVpUQ01CUUdCNkRDN0NTR0VZVEtNRDRHTVlUU05SV0VOSkU2STJTSVpIQ0dNUlFHSTNTMk1CWEZVWVRHSUJSR0E1REFNQkSjcHJjy0Bz-o9cKPXDpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTA3LTEzIDEwOjAwOjAwonJ0o1JGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JuvTEgU3RhbmRhcmQgUXVlZW4sIE5vbi1TbW9raW5no29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkYWhdLMyMDI3LTA3LTEzIDEwOjAwOjAwoWHLQHP6j1wo9cOhY6NNWVKidHmmYW1vdW50onR6o0dNVKJydKNSRk6kc2hpZKY0NzE4Mzejc2lkAqNoaWSnbHA3MzMxZKNvY2ORgaFhAqNjdXKjTVlSomduoklOomNpqjIwMjctMDctMTSiY2-qMjAyNy0wNy0xNqNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE1MTQ2ODMwd1dFUk5jaXdyZU9mSndodTk4dTkxWnh6UWVHaaNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiThKFpwqFkslN1c3RhaW5hYmlsaXR5IGZlZaFhy0AX4UeuFHrhoWOjTVlShKFpwqFko1RBWKFhy0A5keuFHrhSoWOjTVlShKFpwqFkq1RvdXJpc20gZmVloWHLQDQFHrhR64WhY6NNWVKibHDAo2JrdAY=",
+              "rate_id": "I5GVSVCFJVBFQR2NGNKESTSSKJDVUU2UJVHEEV2HIUZVIRKOKJKUOSKZIRHU2SSYI5KTGRCLJZJFMR22KNKEKWK2KNDUCM2HJNHFIR2HLJJVIRK2IJMEOTJTI5EU4VCHI5NFERCNJ5FFOTKVGNCE6N2CKJCU2WSEIFGVEWCHIEZVIQ2OIQ2EOSKZIRCU4WSRI42FSVCNG5CEMTS2KBLEWVJTGRFEMSCILFKEWWSLJI3EIRKRJJIUSTRWIREU4SSTJBDDMR2TKVCEQS2WIVEFSTKKLBEECM2UIFHFEUKHIEZFISKNIJMUOVSEIZATGQ2TIVGTERCPJVFFSR2NGNJUOTKKLFDU2WSTGJHEEWCHIU2EIR2OGM2EWSSEIU2DOQSTI5AVURCPJVBFQR2FLJKEGTKCKFDUENSEIM3UGU2HIVMVIS2NIQ2EOTKZKRJU4USXIVHEURJWJEZFGSK2JBBUOTKSKFDUSM2TGJGUEWCGKVMVIR2JIJJEOQJVIRAU2QSEPQZTCOJOGY3HYMRQGI3S2MBXFUYTGIBRGA5DAMB2GAYHYUSPPR6HY7BREBJXIYLOMRQXEZBAKF2WKZLOFQQE433OFVJW233LNFXGO7BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T13:34:18.564145Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_09a9c37ee557",
+          "mode": null,
+          "label": "Hyatt Regency Kuantan Resort",
+          "detail": "2 Twin Beds, Garden View",
+          "price": {
+            "amount": 936.32,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs 617 myr more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-14",
+            "checkout": "2027-07-16",
+            "room_name": "2 Twin Beds, Garden View",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Telok Chempedak",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1b3e9",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEyR01aREVNQlhHUTNUT05SWkdaU1RFTUJXR0kzREtOUlVHNFpURVlaU0dBM0RPTlJSRzRaRE1OQldHVTNHS01SUUc0M0RNT0pXR1UzVE83QlJFTVpEQU1SWEdBM1RDTkQ0R0lZREVOWlFHNFlUTTdERk5aUFZLVTM0SkZISFlUS1pLSjZERVFKUUlONkRJTkpTSEY2R1NVREhLVkVIWU1KWEhBM1RBTlJRR0EyVElNQllHVkRGQTNDU0VNWVRDTUpWSEVaU0dOWlVIQVdUQ01KUkdVNFRHN0NPS0pERTQ3QlNHQVpETU1CWUdFM0RDTUJRR0I2REM3Q1NHRVlUS01ENEhFWlRNTVpTRU5KRTZJMk9LSkRFNElaU0dBWkRNTEpRSEFXVENOUkFHRVlEVU1CUUVNo3ByY8tAjUKPXCj1w6Vvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrgyIFR3aW4gQmVkcywgR2FyZGVuIFZpZXejb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMTE1OTOjc2lkAqNoaWSnbHAxYjNlOaNvY2ORgaFhAqNjdXKjTVlSomduoklOomNpqjIwMjctMDctMTSiY2-qMjAyNy0wNy0xNqNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE1MTQ2ODMwd1dFUk5jaXdyZU9mSndodTk4dTkxWnh6UWVHaaNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpw6Fkpk9USEVSU6Fhy0BSNR64UeuFoWOjTVlSomxwwKNia3QF",
+              "rate_id": "I5GVURCFJVBFQR2RGNKE6TSSLJDVUU2UIVGUEV2HJEZUIS2OKJKUONC2KRCVSWSTI5ATGRCPJZJFERZULJCE2TSCK5DVKM2HJNGVEUKHGQZUITKPJJLUOVJTKRHTOQSSIVGVURCBJVJFQR2BGNKEGTSEGRDUSWKEIVHFUUKHGRMVITJXIRDE4WSQKZFVKMZUJJDEQSCZKRFVUS2KGZCEKUKKKFEU4NSEJFHEUU2IIY3EOU2VIREEWVSFJBMU2SSYJBATGVCBJZJFCR2BGJKESTKCLFDVMRCGIEZUGU2FJVMVIQ2NJJLEQRK2KNDU4WSVJBAVOVCDJVFFER2VGRKEON2DJ5FUURCFGQ3UEU2HIFNEITKNIJMUORJTIRBU2QSRI5BDMRCDG5BVGR2FLFKEWTKEGREEKWSUJVGVUU2FJZFEKNSJGJHUWSSEIU2ESWSTI5AVURCNJRFFCSCBK5KEGTSSIFDUKWKEKVGUEUKFJV6DSMZWFYZTE7D4KJHXY7D4PQZCAVDXNFXCAQTFMRZSYICHMFZGIZLOEBLGSZLXPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T13:34:18.564145Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_8868146ad418",
+          "mode": null,
+          "label": "Zenith Hotel Kuantan",
+          "detail": "Deluxe Twin",
+          "price": {
+            "amount": 1285.73,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs 966 myr more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-14",
+            "checkout": "2027-07-16",
+            "room_name": "Deluxe Twin",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Jalan Putra Square 6, Putra Square",
+            "rating": 8.3,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp866ba",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEMR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OUlpHWlNYWU1KREdJWURFTlpRRzRZVEk3QlNHQVpET01CWEdFM0hZWkxPTDVLVkc3Q0pKWjZFMldLU1BRWkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzRZRE1NQlFHVTJEQU9CVklaSUdZVVJER1UyVEFOSllHWVJURU1KWEhBV1RLTkpRR1U0RE03Q09LSkRFNDdCU0dBWkRNTUJZR0UzRENNQlFHQjZEQzdDU0dFWVRLTUQ0R0VaRFFOSlhHTVJWRVRaREpaSkVNVFJER0lZREVOUk5HQTRDMk1KV0VBWVRBT1JRR0FSUaNwcmPLQJQW64UeuFKlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm6rRGVsdXhlIFR3aW6jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKY1NTA1ODajc2lkAqNoaWSnbHA4NjZiYaNvY2ORgaFhAqNjdXKjTVlSomduoklOomNpqjIwMjctMDctMTSiY2-qMjAyNy0wNy0xNqNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE1MTQ2ODMwd1dFUk5jaXdyZU9mSndodTk4dTkxWnh6UWVHaaNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpw6FktFNhbGVzICYgU2VydmljZXMgdGF4oWHLQFfRR64UeuGhY6NNWVKibHDAo2JrdAU=",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHKEZVIT2OKJNEOWSTLBMU2SSEI5EVSRCFJZNFCRZULFKESN2CKNDUCWSEJ5GUEWCHIUZUQWK2JRHUYNKLKZDTOQ2KJJNDMRJSK5FVGUCRLJCUGTKDIRIFCMSEJNGVEWSQKJKVMQK2GJLEUQRWIRBU4WSZI42FSRCNJVBFCR2VGJCECT2CKZEVUSKHLFKVERCHKUZFIQKOJJMUOWKSKRCU2SSYJBAVOVCLJZFFCR2VGRCE2N2DJ5FUURCFGQ3UEU2HIFNEITKNIJMUORJTIRBU2QSRI5BDMRCDG5BVGR2FLFKEWTKEGRDUKWSEKFHEUWCHJVJFMRKULJCEUWSKIVGVIUSEI5EVSRCFJZJE4R2BGRBTETKKK5CUCWKUIFHVEUKHIFJFC7BRGI4DKLRXGN6HYUSPPR6HY7CEMVWHK6DFEBKHO2LOPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T13:34:18.564145Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 319.66,
+        "delta": null,
+        "currency": "MYR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "malaysia_2027-07-14_2027-07-19",
+  "user_id": "corpus-malaysia-packed-couple-5d"
+}

@@ -1,0 +1,238 @@
+{
+  "status": "draft",
+  "trip_id": "cape_town_2027-11-01_2027-11-06",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:24:40.918677",
+  "destination": "Cape Town",
+  "origin": "Mumbai",
+  "departure_date": "2027-11-01",
+  "return_date": "2027-11-06",
+  "travelers": "2 adults, 2 children (ages 6 and 9)",
+  "notes": "Slow pace with free afternoons. Preference for moderate budget, 3-star+ hotels, economy flights, direct flights if possible. No dietary restrictions stated.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Cape Town",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-01",
+      "title": "Arrival in Cape Town",
+      "summary": "Arrive in Cape Town from Mumbai, transfer to hotel, settle in and enjoy a relaxing afternoon at the V&A Waterfront.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Cape Town",
+          "kind": "flight",
+          "time": "09:00",
+          "note": "Overnight or early morning flight, actual time TBC"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "V&A Waterfront",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Leisurely stroll, family-friendly shops and cafes"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-02",
+      "title": "Table Mountain & Company’s Garden",
+      "summary": "Morning cable car ride up Table Mountain, light walk at the top, then visit Company’s Garden. Free afternoon.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Table Mountain Aerial Cableway",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Go early to avoid queues"
+        },
+        {
+          "name": "Company’s Garden",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Family-friendly gardens, squirrels, and playground"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "14:00",
+          "note": "Return for a free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-03",
+      "title": "Boulders Beach & Simon’s Town",
+      "summary": "Morning trip to see the penguins at Boulders Beach, explore Simon’s Town, relaxed return.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Boulders Beach Penguin Colony",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "See African penguins"
+        },
+        {
+          "name": "Simon’s Town",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Historic naval town, family-friendly cafes"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "14:00",
+          "note": "Return for a free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-04",
+      "title": "Cape Point & Scenic Drive",
+      "summary": "Scenic drive to Cape Point, visit Cape of Good Hope, stop at Kalk Bay for lunch. Free afternoon.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Cape Point",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Funicular ride, lighthouse views"
+        },
+        {
+          "name": "Cape of Good Hope",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Photo stop"
+        },
+        {
+          "name": "Kalk Bay",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Seaside lunch, family-friendly cafes"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "15:00",
+          "note": "Return for a free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-05",
+      "title": "Kirstenbosch Gardens & Departure",
+      "summary": "Morning at Kirstenbosch National Botanical Garden, relax before transfer to airport for return flight.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Kirstenbosch National Botanical Garden",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Beautiful gardens, children’s play areas"
+        },
+        {
+          "name": "Flight: Cape Town to Mumbai",
+          "kind": "flight",
+          "time": "13:00",
+          "note": "Return flight, actual time TBC"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:25:15.330577",
+  "id": "cape_town_2027-11-01_2027-11-06",
+  "user_id": "corpus-capetown-slow-young-family-5d"
+}

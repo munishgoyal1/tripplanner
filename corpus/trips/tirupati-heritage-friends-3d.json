@@ -1,0 +1,254 @@
+{
+  "status": "draft",
+  "trip_id": "tirupati_2027-08-13_2027-08-16",
+  "trip_number": 1,
+  "created_at": "2026-08-18T22:15:32.986286",
+  "destination": "Tirupati",
+  "origin": "Hyderabad",
+  "departure_date": "2027-08-13",
+  "return_date": "2027-08-16",
+  "travelers": "4 adults",
+  "notes": "Draft itinerary focused on history and heritage. Real hotel and transport options will be added next.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Tirupati",
+    "estimated_planned_minutes": 711,
+    "evidence_place_count": 6,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "6 preference-matched places account for about 711 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Marasa Sarovar Premiere",
+      "address": "Upadhyaya Nagar, Karakambadi Road, Tirupati, Andhra Pradesh 517507, India",
+      "rating": 4.2,
+      "nights": 3,
+      "room_type": "Deluxe Double Room",
+      "price_per_night": 5000,
+      "currency": "INR"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-08-13",
+      "title": "Day 1 · Arrival & Local Heritage",
+      "summary": "Arrive in Tirupati from Hyderabad, check in, visit Sri Govindaraja Swamy Temple and explore Tirupati town.",
+      "stops": [
+        {
+          "name": "Arrival in Tirupati",
+          "kind": "transport",
+          "time": "08:00",
+          "note": "Train from Hyderabad (overnight or early morning)"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "09:00",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Sri Govindaraja Swamy Temple",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Historic temple, rich heritage"
+        },
+        {
+          "name": "Tirupati Town Heritage Walk",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 120,
+          "note": "Explore local markets and heritage spots"
+        },
+        {
+          "name": "Lunch at Andhra Spice Restaurant",
+          "kind": "meal",
+          "time": "15:00",
+          "note": "Authentic Andhra cuisine"
+        },
+        {
+          "name": "Chandragiri Fort",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 120,
+          "note": "Medieval fort, history museum"
+        },
+        {
+          "name": "Dinner at Minerva Grand Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Popular local restaurant"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "21:00",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-08-14",
+      "title": "Day 2 · Tirumala & Heritage Sites",
+      "summary": "Visit Tirumala, Sri Venkateswara Temple, and heritage museums.",
+      "stops": [
+        {
+          "name": "Tirumala Hill Drive",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 60,
+          "note": "Scenic drive to Tirumala"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "09:30",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Breakfast at hotel",
+          "kind": "meal",
+          "time": "11:30",
+          "note": "Included"
+        },
+        {
+          "name": "Sri Venkateswara Temple",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 120,
+          "note": "World-famous temple, heritage architecture"
+        },
+        {
+          "name": "Lunch at Mayura Restaurant Tirumala",
+          "kind": "meal",
+          "time": "16:00",
+          "note": "Vegetarian South Indian lunch"
+        },
+        {
+          "name": "Sri Venkateswara Museum",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Artifacts and temple history"
+        },
+        {
+          "name": "Papavinasam Theertham",
+          "kind": "attraction",
+          "time": "20:00",
+          "duration_min": 60,
+          "note": "Sacred waterfall, scenic spot"
+        },
+        {
+          "name": "Dinner at Bhimas Restaurant Tirupati",
+          "kind": "meal",
+          "time": "21:30",
+          "note": "Local favorites"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "23:30",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-08-15",
+      "title": "Day 3 · Departure & Final Heritage Stops",
+      "summary": "Visit Kapila Theertham and local heritage before departing for Hyderabad.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Check out"
+        },
+        {
+          "name": "Breakfast at hotel",
+          "kind": "meal",
+          "time": "07:30",
+          "note": "Included"
+        },
+        {
+          "name": "Kapila Theertham",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 60,
+          "note": "Ancient temple and waterfall"
+        },
+        {
+          "name": "Lunch at Hotel Bliss Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Final meal in Tirupati"
+        },
+        {
+          "name": "Departure to Hyderabad",
+          "kind": "transport",
+          "time": "14:00",
+          "note": "Train or bus to Hyderabad"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T22:20:44.170165",
+  "id": "tirupati_2027-08-13_2027-08-16",
+  "user_id": "corpus-tirupati-heritage-friends-3d"
+}

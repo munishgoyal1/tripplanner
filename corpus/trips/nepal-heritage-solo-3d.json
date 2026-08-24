@@ -1,0 +1,399 @@
+{
+  "status": "draft",
+  "trip_id": "nepal_kathmandu_pokhara_2027-03-14_2027-03-17",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:44:56.157096",
+  "destination": "Nepal (Kathmandu & Pokhara)",
+  "origin": "Delhi",
+  "departure_date": "2027-03-14",
+  "return_date": "2027-03-17",
+  "travelers": "1 adult",
+  "notes": "Focus on history and heritage sites in Kathmandu and Pokhara.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Nepal",
+    "estimated_planned_minutes": 906,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "8 preference-matched places account for about 906 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel Shanker Kathmandu",
+      "city": "Kathmandu",
+      "checkin": "2027-03-14",
+      "checkout": "2027-03-15",
+      "star_rating": 4,
+      "price_per_night": 5200,
+      "currency": "INR",
+      "address": "Lazimpat, Kathmandu 44600, Nepal",
+      "provider": "liteapi",
+      "google_rating": 4.3
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-14",
+      "title": "Day 1 · Arrival in Kathmandu",
+      "summary": "Fly from Delhi to Kathmandu, check in, and explore Kathmandu Durbar Square and Swayambhunath. Adjusted for realistic flight and visit times.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Kathmandu",
+          "kind": "flight",
+          "time": "06:30",
+          "arrival_time": "08:30",
+          "duration_min": 120,
+          "note": "Early morning direct flight"
+        },
+        {
+          "name": "Hotel Shanker Kathmandu",
+          "kind": "hotel",
+          "note": "Check-in at 4★ heritage hotel"
+        },
+        {
+          "name": "Kathmandu Durbar Square",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Historic palace complex"
+        },
+        {
+          "name": "Lunch at Bhanchha Ghar",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Traditional Nepali cuisine"
+        },
+        {
+          "name": "Swayambhunath (Monkey Temple)",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Iconic Buddhist stupa with city views"
+        },
+        {
+          "name": "Dinner at OR2K Kathmandu",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Popular heritage restaurant"
+        },
+        {
+          "name": "Hotel Shanker Kathmandu",
+          "kind": "hotel",
+          "note": "Return for overnight"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-15",
+      "title": "Day 2 · Kathmandu Heritage & Transfer to Pokhara",
+      "summary": "Morning at Pashupatinath Temple, then Patan Durbar Square. Afternoon flight to Pokhara, check in, evening at Pokhara Old Bazaar.",
+      "stops": [
+        {
+          "name": "Pashupatinath Temple",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Sacred Hindu temple"
+        },
+        {
+          "name": "Patan Durbar Square",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Historic square"
+        },
+        {
+          "name": "Lunch at Café Swotha",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Local cuisine in Patan"
+        },
+        {
+          "name": "Flight: Kathmandu to Pokhara",
+          "kind": "flight",
+          "time": "15:30",
+          "arrival_time": "16:00",
+          "duration_min": 30,
+          "note": "Afternoon flight"
+        },
+        {
+          "name": "Hotel Shanker Kathmandu",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "16:30"
+        },
+        {
+          "name": "Temple Tree Resort & Spa Pokhara",
+          "kind": "hotel",
+          "note": "Check-in at 4★ hotel",
+          "time": "18:30"
+        },
+        {
+          "name": "Pokhara Old Bazaar",
+          "kind": "attraction",
+          "time": "20:30",
+          "duration_min": 60,
+          "note": "Heritage market area"
+        },
+        {
+          "name": "Dinner at Moondance Restaurant",
+          "kind": "meal",
+          "time": "22:00",
+          "note": "Nepali & international cuisine"
+        },
+        {
+          "name": "Temple Tree Resort & Spa Pokhara",
+          "kind": "hotel",
+          "note": "Return for overnight",
+          "time": "23:59"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-16",
+      "title": "Day 3 · Pokhara Heritage & Return to Delhi",
+      "summary": "Morning at Bindhyabasini Temple and International Mountain Museum. Lunch, then flights back to Delhi via Kathmandu.",
+      "stops": [
+        {
+          "name": "Temple Tree Resort & Spa Pokhara",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Bindhyabasini Temple",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 60,
+          "note": "Historic Hindu temple"
+        },
+        {
+          "name": "International Mountain Museum",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Himalayan heritage museum"
+        },
+        {
+          "name": "Lunch at Fresh Elements",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Local & continental cuisine"
+        },
+        {
+          "name": "Flight: Pokhara to Kathmandu",
+          "kind": "flight",
+          "time": "14:00",
+          "arrival_time": "14:30",
+          "duration_min": 30,
+          "note": "Afternoon flight"
+        },
+        {
+          "name": "Flight: Kathmandu to Delhi",
+          "kind": "flight",
+          "time": "16:30",
+          "arrival_time": "18:30",
+          "duration_min": 120,
+          "note": "Evening direct flight"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-03-17",
+      "title": "Day 4 · Buffer Day / Departure",
+      "summary": "Buffer day for flight connections or last-minute sightseeing. End of trip.",
+      "stops": [
+        {
+          "name": "Hotel in Delhi",
+          "kind": "hotel",
+          "note": "Return home"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:47:29.879067",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:45:43",
+      "expires_at": "2026-08-19T08:45:43"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_kathmandu_2027_03_14_2027_03_15",
+      "kind": "lodging",
+      "created_at": "2026-08-18T15:15:43.247237Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Kathmandu",
+        "date": "2027-03-14"
+      },
+      "subject": "Stay in Kathmandu",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_6d72e18489d2",
+      "options": [
+        {
+          "id": "opt_stay_6d72e18489d2",
+          "mode": null,
+          "label": "Wayfarer Motel",
+          "detail": "Standard Studio",
+          "price": {
+            "amount": 11666.59,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-03-14",
+            "checkout": "2027-03-15",
+            "room_name": "Standard Studio",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "231 Commerce Street",
+            "rating": 7.5,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp96eff",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEXRzRaVE9OQldHRTNHS05SVUdZWVRPTVJXR1FaREFOWlRHNDJET05KV0dRM0RTTlRHUFFZU0dNUlFHSTNUQU1aUkdSNkRFTUJTRzRZREdNSlZQUlNXNFgyVktONkVTVFQ0SkZIRkU3QlJJRVlFRzdCVUdVWkRTN0RKS0JUVktTRDRHRTNUUU5aUUdZM0RDTkJSR0lZVEMzM1ZOUlRDR05SUkhBWkRHT0pER0VaVElOSk5HWVlUUU1SVEhGNkZFUlNPUFFaREFNUlhHQVpUQU9KU0dBMlRTN0JSUFJKRENNQlRHWjZEQ01KV0dZM0RLT0pES0pIU0dVU0dKWVJURU1CU0c0V1RBTVpOR0E0U0FNUlFISTJUU0lZo3ByY8tAxslLhR64UqVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wMy0wOSAyMDo1OTowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybq9TdGFuZGFyZCBTdHVkaW-jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCRhaF0szIwMjctMDMtMDkgMjA6NTk6MDChYctAxslLhR64UqFjo0lOUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjYxODIzOaNzaWQCo2hpZKdscDk2ZWZmo29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMy0xNKJjb6oyMDI3LTAzLTE1o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTU3MTRhMGJRRXhqc3BwU1czV3RxeXJHRUZid3hHNFhkY3Nho2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4kYShacOhZKNWQVShYctAl8bCj1wo9qFjo0lOUqJscMCjYmt0Aw==",
+              "rate_id": "I42FUVCPJZBFOR2FGNDUWTSSKVDVSWKUJ5GVEV2HKFNEIQKOLJKEONBSIRHU4SSXI5ITGRCTJZKEOUCRLFJUOTKSKFDUSM2UIFGVUUSHKI3EIRKNIJJUONCZIRDU2SSWKBJFGVZULAZFMS2OGZCVGVCUGRFEMSCGIU3UEUSJIVMUKRZXIJKUOVK2IRJTORCKJNBFIVSLKNCDIR2FGNKFCTS2KFDVSM2EINHEEUSHJFMVIQZTGNLE4USUINDU4USSJBAVURCHJ5FEIR2FLJKESTSKJZDVSWKUKFGVEVCIIY3EMRKSKNHVAUK2IRAU2USYI5AVUVCBJ5FFGR2BGJKFGN2CKJIFESSEINGUEVCHLI3EIQ2NJJLUOWJTIRFU6SSEJNFEQU2HKVJUOSSZKJKEKTKCKNDTIV2UIFGVUTSHIE2FGQKNKJIUQSJSKRJUSWL4GEYTMNRWFY2TS7BSGAZDOLJQGMWTAOJAGIYDUNJZHIYDA7CSJ56HY7D4KN2GC3TEMFZGIICTOR2WI2LPPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T15:15:43.185164Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_7fa75c21b2e7",
+          "mode": null,
+          "label": "Taipa Beach Resort",
+          "detail": "SUPERIOR, STUDIO, BEACH FRONT",
+          "price": {
+            "amount": 12367.28,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹701 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-03-14",
+            "checkout": "2027-03-15",
+            "room_name": "SUPERIOR, STUDIO, BEACH FRONT",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "22 Taipa Point Road",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp58ad0",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFVRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laR0dNUlFHNFpUT05CWEdVM0RJTlJaR1pUREVZWlNHQTNERU5SVkdZWVRNTVpXSEFaREFOUldHNFpETVpSV01VM1RJN0JSRU1aREFNUlhHQVpUQ05ENEdJWURFTlpRR01ZVEs3REZOWlBWS1UzNEpGSEhZU0tPS0o2RENRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5SV0dFMkRDTVJSR0ZYWEszREdFTVpUTU1aU0dFM0NHTUpTR1EzUzJNWldHTVpEQ05UNEpaSkVNVFQ0R0lZREVOUlFIQVlUTU1SVEdBWUhZTUpXUFJKRENNWlFHVkJEU09KVkpZWUZLTUQ0R0VaREdOUlhHSTRDR1VTUEVOSEZFUlNPRU1aREFNUldGVVlEUUxKUkdZUURFTVoyR0FZQ0ejcHJjy0DIJ6PXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JuvVNVUEVSSU9SLCBTVFVESU8sIEJFQUNIIEZST05Uo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmMzYzMjE2o3NpZAKjaGlkp2xwNThhZDCjb2NjkYGhYQGjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTAzLTE0omNvqjIwMjctMDMtMTWjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNTcxNGEwYlFFeGpzcHBTVzNXdHF5ckdFRmJ3eEc0WGRjc2GjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpw6FkoKFhy0CWyq4UeuFIoWOjSU5SomxwwKNia3QE",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEOR2NKJIUONC2KRHU4QSYI5KTGRCJJZJFUR22KRCEKWK2KNDUCM2EIVHFEVSHLFMVITKNLJLUQQK2IRAU4USXI42FURCNLJJFOTKVGNKESN2CKJCU2WSEIFGVEWCHIFNFIQ2OIQ2EOSKZIRCU4WSRI5GVSVCLG5CEMTS2KBLEWVJTGRFEMSCILFJUWT2LJI3EIQ2RJJIUSTRWIREU4SSTJBDDMR2TKVCEQS2WIVEFSTKKLBEECM2UIFHFEV2HIUZEIQ2NKJJEORSYLBFTGRCHIVGVUVCNJVNFGR2FGNBUOTKKKNDVCM2TGJGVUV2HJVNEIQ2OKQ2EUWSKIVGVIVBUI5EVSRCFJZJFCSCBLFKE2TKSKRDUCWKILFGUUV2QKJFEIQ2NLJIUOVSCIRJU6SSWJJMVSRSLJVCDIR2FLJCEOTSSLBDUSNCDI5KVGUCFJZEEMRKSKNHUKTK2IRAU2USXIZKVSRCRJRFFER2ZKFCEKTK2GJDUCWKDI56DCMRTGY3S4MRYPR6FET34PR6HYU2VKBCVESKPKIWCAU2UKVCESTZMEBBEKQKDJAQEMUSPJZKHYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T15:15:43.185164Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 11666.59,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "nepal_kathmandu_pokhara_2027-03-14_2027-03-17",
+  "user_id": "corpus-nepal-heritage-solo-3d"
+}

@@ -1,0 +1,354 @@
+{
+  "status": "draft",
+  "trip_id": "rome_and_florence_2027-09-16_2027-09-23",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:07:33.473370",
+  "destination": "Rome and Florence",
+  "origin": "Mumbai",
+  "departure_date": "2027-09-16",
+  "return_date": "2027-09-23",
+  "travelers": "1 adult",
+  "notes": "Hotel and activity pricing will be updated once provider access is restored. All restaurant stops are named and highly rated. Train from Rome to Florence is scheduled but pricing unavailable. Weather forecast unavailable; expect mild, pleasant September weather in both cities. No major events or festivals during your dates.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Rome and Florence",
+    "estimated_planned_minutes": 934,
+    "evidence_place_count": 6,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "6 preference-matched places account for about 934 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [
+    {
+      "option": 1,
+      "airline": "British Airways",
+      "price": 448.99,
+      "currency": "USD",
+      "details": "BA0105 | BOM 11:36 → FCO 16:56 | Direct, 8h 50m"
+    }
+  ],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-09-16",
+      "title": "Day 1 · Arrival in Rome",
+      "summary": "Arrive in Rome, check in to hotel, evening stroll in Villa Borghese Gardens. Dinner at Osteria da Fortunata.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Rome and Florence",
+          "kind": "flight"
+        },
+        {
+          "name": "Rome Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check in"
+        },
+        {
+          "name": "Villa Borghese Gardens",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Relax and explore the gardens"
+        },
+        {
+          "name": "Osteria da Fortunata",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner at a top-rated Roman restaurant"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-09-17",
+      "title": "Day 2 · Ancient Rome Outdoors",
+      "summary": "Morning walk along the Tiber River, afternoon at Appian Way Regional Park. Lunch at Achille Al Pantheon di Habana.",
+      "stops": [
+        {
+          "name": "Rome Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Tiber River Walk",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Scenic riverside walk"
+        },
+        {
+          "name": "Achille Al Pantheon di Habana",
+          "kind": "meal",
+          "time": "11:00",
+          "note": "Lunch at a highly rated spot"
+        },
+        {
+          "name": "Appian Way Regional Park",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 180,
+          "note": "Explore the historic park and nature trails"
+        },
+        {
+          "name": "Rome Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-09-18",
+      "title": "Day 3 · Rome Parks & Nature",
+      "summary": "Visit Parco Savello and Janiculum Hill for panoramic views and greenery. Lunch at Trattoria Pennestri.",
+      "stops": [
+        {
+          "name": "Rome Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Parco Savello (Orange Garden)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60,
+          "note": "Enjoy the gardens and city views"
+        },
+        {
+          "name": "Trattoria Pennestri",
+          "kind": "meal",
+          "time": "11:00",
+          "note": "Lunch at a well-reviewed restaurant"
+        },
+        {
+          "name": "Janiculum Hill",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Walk and relax in nature"
+        },
+        {
+          "name": "Rome Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-09-19",
+      "title": "Day 4 · Rome to Florence",
+      "summary": "Morning train to Florence, check in, afternoon at Boboli Gardens. Dinner at Rooster Cafe Firenze.",
+      "stops": [
+        {
+          "name": "Train: Rome to Florence",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "High-speed train"
+        },
+        {
+          "name": "Rome Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "11:30"
+        },
+        {
+          "name": "Florence Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check in",
+          "time": "13:30"
+        },
+        {
+          "name": "Boboli Gardens",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 120,
+          "note": "Explore the gardens"
+        },
+        {
+          "name": "Rooster Cafe Firenze",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Dinner at a top-rated Florence cafe"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-09-20",
+      "title": "Day 5 · Florence Outdoors",
+      "summary": "Morning walk at Cascine Park, afternoon hike in Fiesole Hills. Lunch at Trattoria Giovanni.",
+      "stops": [
+        {
+          "name": "Florence Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Cascine Park",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Largest public park in Florence"
+        },
+        {
+          "name": "Trattoria Giovanni",
+          "kind": "meal",
+          "time": "11:00",
+          "note": "Lunch at a highly rated trattoria"
+        },
+        {
+          "name": "Fiesole Hill Walk",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 120,
+          "note": "Nature walk with views of Florence"
+        },
+        {
+          "name": "Florence Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-09-21",
+      "title": "Day 6 · Tuscan Countryside",
+      "summary": "Day trip hiking in the Tuscan countryside, visit local villages. Lunch at Trattoria Mario.",
+      "stops": [
+        {
+          "name": "Florence Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Tuscan countryside hike",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 240,
+          "note": "Guided hike through scenic landscapes"
+        },
+        {
+          "name": "Trattoria Mario",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch at a classic Tuscan restaurant"
+        },
+        {
+          "name": "Florence Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-09-22",
+      "title": "Day 7 · Florence Leisure & Departure",
+      "summary": "Leisure morning in Florence, visit Giardino delle Rose, depart for Mumbai. Lunch at Trattoria ZaZa before departure.",
+      "stops": [
+        {
+          "name": "Florence Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "09:00"
+        },
+        {
+          "name": "Giardino delle Rose",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Relax in the rose garden"
+        },
+        {
+          "name": "Trattoria ZaZa",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch at a popular Florence restaurant"
+        },
+        {
+          "name": "Flight: Rome and Florence to Mumbai",
+          "kind": "flight",
+          "time": "14:30"
+        },
+        {
+          "name": "Flight: Florence to Mumbai",
+          "kind": "flight",
+          "time": "15:00",
+          "note": "Depart for Mumbai"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "flights": 448.99,
+    "hotels": "TBD",
+    "activities": "TBD",
+    "meals": "TBD"
+  },
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "EUR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T19:10:25.615560",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-18T19:09:55",
+      "expires_at": "2026-08-18T19:39:55"
+    }
+  ],
+  "id": "rome_and_florence_2027-09-16_2027-09-23",
+  "user_id": "corpus-rome-outdoors-solo-7d"
+}

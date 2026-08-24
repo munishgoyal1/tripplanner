@@ -1,0 +1,366 @@
+{
+  "status": "draft",
+  "trip_id": "amritsar_2027-11-06_2027-11-13",
+  "trip_number": 1,
+  "created_at": "2026-08-18T21:02:48.999231",
+  "destination": "Amritsar",
+  "origin": "Delhi",
+  "departure_date": "2027-11-06",
+  "return_date": "2027-11-13",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Focus on outdoors and nature. Family includes elderly (grandparents) and child.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Amritsar",
+    "estimated_planned_minutes": 1166,
+    "evidence_place_count": 8,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "8 preference-matched places account for about 1166 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "hotel_id": "lp31ba5",
+      "name": "Ramada by Wyndham Amritsar",
+      "address": "Hall Bazaar, Amritsar",
+      "rating": 4.4,
+      "reviews": 4200,
+      "price_per_night": 6500,
+      "currency": "INR",
+      "checkin": "2027-11-06",
+      "checkout": "2027-11-13",
+      "rooms": 2,
+      "provider": "liteapi"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-06",
+      "title": "Arrival in Amritsar",
+      "summary": "Arrive from Delhi, check in to hotel, relax and explore Hall Bazaar.",
+      "stops": [
+        {
+          "name": "Train: Delhi to Amritsar",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 360,
+          "note": "Morning Shatabdi Express, comfortable for all ages."
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Check-in and settle in"
+        },
+        {
+          "name": "Hall Bazaar",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Explore local markets"
+        },
+        {
+          "name": "Bharawan Da Dhaba",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner at a famous Punjabi restaurant"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-07",
+      "title": "Golden Temple & Jallianwala Bagh",
+      "summary": "Visit the iconic Golden Temple, then Jallianwala Bagh, enjoy outdoor gardens.",
+      "stops": [
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Golden Temple",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 120,
+          "note": "Early morning visit"
+        },
+        {
+          "name": "Jallianwala Bagh",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Walk in the historic gardens"
+        },
+        {
+          "name": "Brother's Dhaba",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Company Bagh",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Nature walk in the park"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Crystal Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-08",
+      "title": "Rural Punjab & Farm Experience",
+      "summary": "Outdoor day at a Punjab farm, tractor rides, nature activities, lunch in the fields.",
+      "stops": [
+        {
+          "name": "Drive: Amritsar to Harike Wetland",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 90,
+          "distance_km": 60,
+          "note": "Private car for comfort."
+        },
+        {
+          "name": "Punjabiyat Farm Stay",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 270,
+          "note": "Farm experience, tractor rides, nature activities, traditional Punjabi lunch"
+        },
+        {
+          "name": "Drive: Harike Wetland to Amritsar",
+          "kind": "transport",
+          "time": "14:30",
+          "duration_min": 90,
+          "distance_km": 60
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "16:30"
+        },
+        {
+          "name": "Surjit Food Plaza",
+          "kind": "meal",
+          "time": "20:30",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-09",
+      "title": "Wetlands & Birdwatching",
+      "summary": "Visit Harike Wetland for birdwatching and nature walks.",
+      "stops": [
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Harike Wetland",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 240,
+          "note": "Birdwatching and nature walk, picnic lunch"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Beera Chicken House",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-10",
+      "title": "Ram Tirath & Nature Park",
+      "summary": "Visit Ram Tirath Temple and nearby nature park for outdoor activities.",
+      "stops": [
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Ram Tirath Temple",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Temple visit"
+        },
+        {
+          "name": "Ram Tirath Nature Park",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 120,
+          "note": "Nature walk and outdoor activities"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Makhan Fish & Chicken Corner",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-11-11",
+      "title": "Wagah Border & Outdoor Picnic",
+      "summary": "Visit Wagah Border for the ceremony, picnic at nearby park.",
+      "stops": [
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Wagah Border",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 150,
+          "note": "Flag lowering ceremony and park picnic"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-11-12",
+      "title": "Outdoor Leisure & Departure",
+      "summary": "Relax at hotel, visit nearby parks, depart for Delhi.",
+      "stops": [
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Company Bagh",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Leisure walk"
+        },
+        {
+          "name": "Lunch at hotel",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Lunch before departure"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-11-13",
+      "title": "Return to Delhi",
+      "summary": "Travel back to Delhi by train.",
+      "stops": [
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Train: Amritsar to Delhi",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 360,
+          "note": "Shatabdi Express"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T21:08:44.748682",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T21:07:47",
+      "expires_at": "2026-08-19T09:07:47"
+    }
+  ],
+  "id": "amritsar_2027-11-06_2027-11-13",
+  "user_id": "corpus-amritsar-outdoors-three-generation-7d"
+}

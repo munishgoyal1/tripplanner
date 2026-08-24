@@ -25,6 +25,22 @@
       "spent_inr": 502.85,
       "usd_inr": 88.0,
       "stopped_because": "budget"
+    },
+    {
+      "at": "2026-08-18T10:24:29+00:00",
+      "model": "unknown",
+      "trips": 0,
+      "spent_inr": 0.0,
+      "usd_inr": 88.0,
+      "stopped_because": "barren"
+    },
+    {
+      "at": "2026-08-18T16:59:08+00:00",
+      "model": "unknown",
+      "trips": 76,
+      "spent_inr": 3427.86,
+      "usd_inr": 88.0,
+      "stopped_because": "budget"
     }
   ]
 }

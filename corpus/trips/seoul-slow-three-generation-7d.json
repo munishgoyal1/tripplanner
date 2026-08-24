@@ -1,0 +1,295 @@
+{
+  "status": "draft",
+  "trip_id": "seoul_2027-04-18_2027-04-25",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:51:26.026307",
+  "destination": "Seoul",
+  "origin": "Delhi",
+  "departure_date": "2027-04-18",
+  "return_date": "2027-04-25",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Slow pace, free afternoons, suitable for elderly travelers.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Seoul",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-18",
+      "title": "Day 1 · Arrival in Seoul",
+      "summary": "Arrive in Seoul from Delhi, transfer to hotel, settle in, and enjoy a relaxing evening nearby.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Seoul",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "18:00",
+          "duration_min": 480,
+          "note": "Direct flight, economy class"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Myeongdong Shopping Street",
+          "kind": "attraction",
+          "time": "19:30",
+          "duration_min": 60,
+          "note": "Easy stroll, food options nearby"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-19",
+      "title": "Day 2 · Historic Seoul",
+      "summary": "Morning visit to Gyeongbokgung Palace, free afternoon for rest or local strolls.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Gyeongbokgung Palace",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Guided tour, wheelchair accessible"
+        },
+        {
+          "name": "Bukchon Hanok Village",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Traditional houses, easy walk"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "13:30",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-20",
+      "title": "Day 3 · Nature & Views",
+      "summary": "Morning at Namsan Park and Seoul Tower, free afternoon for relaxation.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Namsan Park",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Gentle walk, scenic views"
+        },
+        {
+          "name": "N Seoul Tower",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Elevator access, panoramic city views"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "13:30",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-04-21",
+      "title": "Day 4 · Culture & Markets",
+      "summary": "Morning at Insadong cultural street and Jogyesa Temple, free afternoon.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Insadong",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Art shops, tea houses"
+        },
+        {
+          "name": "Jogyesa Temple",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Buddhist temple, peaceful"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-04-22",
+      "title": "Day 5 · Family Fun",
+      "summary": "Morning at Seoul Children's Museum, free afternoon for leisure.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Seoul Children's Museum",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Interactive exhibits for kids"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "12:00",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-04-23",
+      "title": "Day 6 · Han River & Parks",
+      "summary": "Morning Han River cruise and Yeouido Park, free afternoon.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Han River Cruise",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Relaxing boat ride"
+        },
+        {
+          "name": "Yeouido Park",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Easy walk, picnic spots"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "12:30",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-04-24",
+      "title": "Day 7 · Departure",
+      "summary": "Check out, transfer to airport, fly back to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Flight: Seoul to Delhi",
+          "kind": "flight",
+          "time": "11:00",
+          "arrival_time": "16:00",
+          "duration_min": 420,
+          "note": "Direct flight, economy class"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:53:17.926340",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T17:53:17",
+      "expires_at": "2026-08-18T18:23:17"
+    }
+  ],
+  "id": "seoul_2027-04-18_2027-04-25",
+  "user_id": "corpus-seoul-slow-three-generation-7d"
+}

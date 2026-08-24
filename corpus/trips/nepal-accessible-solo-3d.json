@@ -1,0 +1,422 @@
+{
+  "status": "draft",
+  "trip_id": "nepal_2027-03-16_2027-03-19",
+  "trip_number": 1,
+  "created_at": "2026-08-18T18:56:20.573848",
+  "destination": "Nepal",
+  "origin": "Delhi",
+  "departure_date": "2027-03-16",
+  "return_date": "2027-03-19",
+  "travelers": "1 adult (mobility: cannot manage long walks or stairs)",
+  "notes": "International Ethnic Folklore Festival in Kathmandu March 16-23, 2027. No major events in Pokhara during your dates.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Nepal",
+    "estimated_planned_minutes": 544,
+    "evidence_place_count": 6,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "6 preference-matched places account for about 544 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel Yak & Yeti",
+      "city": "Kathmandu",
+      "address": "Durbar Marg, Kathmandu 44600, Nepal",
+      "star_rating": 5,
+      "amenities": [
+        "Accessible rooms",
+        "Elevator",
+        "Breakfast included"
+      ],
+      "price_per_night": 11000,
+      "currency": "INR",
+      "nights": 1
+    },
+    {
+      "name": "Temple Tree Resort & Spa",
+      "city": "Pokhara",
+      "address": "Gaurighat, Lakeside, Pokhara 33700, Nepal",
+      "star_rating": 4,
+      "amenities": [
+        "Accessible rooms",
+        "Pool",
+        "Spa",
+        "Breakfast included"
+      ],
+      "price_per_night": 9500,
+      "currency": "INR",
+      "nights": 2
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-16",
+      "title": "Arrival in Kathmandu",
+      "summary": "Fly from Delhi to Kathmandu. Check in to Hotel Yak & Yeti (accessible). Easy sightseeing in Kathmandu Durbar Square (wheelchair accessible areas). Relaxed dinner nearby.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Kathmandu",
+          "kind": "flight",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Morning direct flight"
+        },
+        {
+          "name": "Hotel Yak & Yeti",
+          "kind": "hotel",
+          "note": "Central, accessible hotel"
+        },
+        {
+          "name": "Kathmandu Durbar Square",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Focus on accessible paths"
+        },
+        {
+          "name": "Mezze by Roadhouse",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Dinner with easy access, 4.4★"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-17",
+      "title": "Kathmandu to Pokhara",
+      "summary": "Fly to Pokhara. Check in to Temple Tree Resort & Spa (accessible). Explore Pokhara Lakeside (mostly flat, accessible). Relax by the lake and enjoy dinner nearby.",
+      "stops": [
+        {
+          "name": "Flight: Kathmandu to Pokhara",
+          "kind": "flight",
+          "time": "09:00",
+          "duration_min": 45,
+          "note": "Short morning flight"
+        },
+        {
+          "name": "Temple Tree Resort & Spa",
+          "kind": "hotel",
+          "note": "Accessible room, lakeside location"
+        },
+        {
+          "name": "Pokhara Lakeside",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Flat lakeside promenade"
+        },
+        {
+          "name": "Moondance Restaurant",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Dinner with lake view, step-free access, 4.5★"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-18",
+      "title": "Pokhara Sightseeing & Return",
+      "summary": "Morning visit to Davis Falls (viewpoint area, minimal walking). Return flight to Kathmandu, then onward to Delhi.",
+      "stops": [
+        {
+          "name": "Temple Tree Resort & Spa",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Davis Falls (Pokhara)",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 45,
+          "note": "Accessible viewpoint"
+        },
+        {
+          "name": "Flight: Pokhara to Kathmandu",
+          "kind": "flight",
+          "time": "10:00",
+          "duration_min": 45,
+          "note": "Return to Kathmandu"
+        },
+        {
+          "name": "Flight: Kathmandu to Delhi",
+          "kind": "flight",
+          "time": "14:00",
+          "duration_min": 120,
+          "note": "Afternoon direct flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {
+    "Kathmandu": {
+      "source": "seasonal_estimate",
+      "note": "Trip is beyond the 16-day forecast horizon — values are last year's same-week archive as a seasonal proxy.",
+      "days": [
+        {
+          "date": "2027-03-16",
+          "summary": "Overcast",
+          "high_c": 21.6,
+          "low_c": 10.0,
+          "precip_mm": 0.0
+        }
+      ]
+    },
+    "Pokhara": {
+      "source": "seasonal_estimate",
+      "note": "Trip is beyond the 16-day forecast horizon — values are last year's same-week archive as a seasonal proxy.",
+      "days": [
+        {
+          "date": "2027-03-17",
+          "summary": "Overcast",
+          "high_c": 22.9,
+          "low_c": 7.0,
+          "precip_mm": 0.0
+        },
+        {
+          "date": "2027-03-18",
+          "summary": "Overcast",
+          "high_c": 23.1,
+          "low_c": 7.2,
+          "precip_mm": 0.0
+        }
+      ]
+    },
+    "packing_advice": [
+      "Light jacket for cool mornings/evenings",
+      "Comfortable shoes (minimal walking)",
+      "Umbrella not needed (no rain expected)"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T18:59:50.220139",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T18:57:30",
+      "expires_at": "2026-08-19T06:57:30"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T18:58:42",
+      "expires_at": "2026-08-18T19:28:42"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_kathmandu_2027_03_16_2027_03_17",
+      "kind": "lodging",
+      "created_at": "2026-08-18T13:27:30.100480Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Kathmandu",
+        "date": "2027-03-16"
+      },
+      "subject": "Stay in Kathmandu",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_3864f6c961b7",
+      "options": [
+        {
+          "id": "opt_stay_3864f6c961b7",
+          "mode": null,
+          "label": "Kauri Lodge Motel",
+          "detail": "Large Studio",
+          "price": {
+            "amount": 8314.6,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-03-16",
+            "checkout": "2027-03-17",
+            "room_name": "Large Studio",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "15 South Road",
+            "rating": 8.5,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp7a7aa",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEMR1pSVE1NSlhHSTNET05SVkdJWURPTVpYR1EzVEtOUlVHWTRUTVpUNEdFUlRFTUJTRzRZREdNSldQUVpEQU1SWEdBWlRDTjM0TVZYRjZWS1RQUkVVNDdDSkpaSkhZTUtCR0JCWFlOQlZHSTRYWTJLUU01S1VRN0JSRzQ0RE9NQlZIRTNESU9CUUdVWkdTWktQS0lSVEtNQlJHWTNUSUlaU0dFWURPTEpWR0FZVE1OWlVQUkpFTVRUNEdJWURFTlpRR01ZVEVNUlFHVTRYWU5ENEtJWVRBTUpZUFE0REdNSlVHWVlDR1VTUEVOSkVNVFJER0lZREVOWk5HQVpTMk1KU0VBWkRBT1JWSEVSUaNwcmPLQMA9TMzMzM2lb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkszIwMjctMDMtMTIgMjA6NTk6MDCicnSjUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm6sTGFyZ2UgU3R1ZGlvo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkYWhdLMyMDI3LTAzLTEyIDIwOjU5OjAwoWHLQMA9TMzMzM2hY6NJTlKidHmmYW1vdW50onR6o0dNVKJydKNSRk6kc2hpZKY1MDE2NzSjc2lkAqNoaWSnbHA3YTdhYaNvY2ORgaFhAaNjdXKjSU5SomduoklOomNpqjIwMjctMDMtMTaiY2-qMjAyNy0wMy0xN6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE1MGUzNWM0RUxRMjAzTXFLbTE1dVh6dW9haXZObE54TEdJRaNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWSjVkFUoWHLQJDxPXCj1wqhY6NJTlKEoWnDoWSrc2VydmljZSBmZWWhYctAZgj1wo9cKaFjo0lOUqJscMCjYmt0AQ==",
+              "rate_id": "I5NFEVCNJVFFQR2JGNCE6TSSKZDUSWKEJ5GVUWCHKEZVIS2OKJKUOWJUKRGVUVBUI5CVEVCFJVBFGRZULFCEOTKKK5IFCWSEIFGVEWCHIFNFIQ2OGM2E2VSYIY3FMS2UKBJEKVJUG5BUUSS2JJEFSTKLIJDUEQSYLFHEEVSHJE2FQWJSJNIU2NKLKVITOQSSI42DIRCPJVBFMSCFGNCEST2CKFDVKWSHKNNEWUCLJFJFIS2NIJJEOWJTKREUSWSTI5CVSRCPJRFFMR2BLFKE2TS2KVIFESSFJVKFINCHJFMUIRKOLJIUOTKZKRCU2USRI5KTIWCZJZCDIS2JLFKECTKKLFIFCNCEI5GUUVKHLFMUGR2VKNIEKTSKIVGVIUSEI5EVSRCFJZNE4R2BLJJTETKKKNCUCWSEIFHVEVSIIVJFC7BYGMYTILRWGB6DEMBSG4WTAMZNGEZCAMRQHI2TSORQGB6FET34PR6HYTDBOJTWKICTOR2WI2LPPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T13:27:30.046600Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_4aa1f0634e46",
+          "mode": null,
+          "label": "Wayfarer Motel",
+          "detail": "Standard Studio",
+          "price": {
+            "amount": 11176.26,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹2,862 more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-03-16",
+            "checkout": "2027-03-17",
+            "room_name": "Standard Studio",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "231 Commerce Street",
+            "rating": 7.5,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp96eff",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEXRzRaVE9OQldHRTNHS05SVUdZWVRPTVJXR1FaREFOWlRHNDJET05KV0dRM0RTTlRHUFFZU0dNUlFHSTNUQU1aUkdaNkRFTUJTRzRZREdNSlhQUlNXNFgyVktONkVTVFQ0SkZIRkU3QlJJRVlFRzdCVUdVWkRTN0RKS0JUVktTRDRHRTNUUU5aUUdVNFRNTkJZR0EyVEUyTEZKNUpDR05SUkhBWkRHT0pER0VaVElOSk5HWVlUUU1SVEhGNkZFUlNPUFFaREFNUlhHQVpUQ01KU0dBMlRTN0JSUFJKRENNQlRHWjZEQ01KUkc0M0RFTlJES0pIU0dVU0dKWVJURU1CU0c0V1RBTVpOR0VZU0FNUlFISTJUU0lZo3ByY8tAxdQhR64Ue6Vvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wMy0xMSAyMDo1OTowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybq9TdGFuZGFyZCBTdHVkaW-jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCRhaF0szIwMjctMDMtMTEgMjA6NTk6MDChYctAxdQhR64Ue6Fjo0lOUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjYxODIzOaNzaWQCo2hpZKdscDk2ZWZmo29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMy0xNqJjb6oyMDI3LTAzLTE3o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTUwZTM1YzRFTFEyMDNNcUttMTV1WHp1b2Fpdk5sTnhMR0lFo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4kYShacOhZKNWQVShYctAlshcKPXCj6Fjo0lOUqJscMCjYmt0Bw==",
+              "rate_id": "I42FUVCPJZBFOR2FGNDUWTSSKVDVSWKUJ5GVEV2HKFNEIQKOLJKEONBSIRHU4SSXI5ITGRCTJZKEOUCRLFJUOTKSKFDUSM2UIFGVUUSHLI3EIRKNIJJUONCZIRDU2SSYKBJFGVZULAZFMS2OGZCVGVCUGRFEMSCGIU3UEUSJIVMUKRZXIJKUOVK2IRJTORCKJNBFIVSLKNCDIR2FGNKFCTS2KFDVKNCUJVHEEWKHIEZFIRJSJRDEUNKKINDU4USSJBAVURCHJ5FEIR2FLJKESTSKJZDVSWKUKFGVEVCIIY3EMRKSKNHVAUK2IRAU2USYI5AVUVCDJVFFGR2BGJKFGN2CKJIFESSEINGUEVCHLI3EIQ2NJJJEONBTIRCU4USEJNFEQU2HKVJUOSSZKJKEKTKCKNDTIV2UIFGVUTSHIVMVGQKNKJIUQSJSKRJUSWL4GEYTCNZWFYZDM7BSGAZDOLJQGMWTCMJAGIYDUNJZHIYDA7CSJ56HY7D4KN2GC3TEMFZGIICTOR2WI2LPPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T13:27:30.046600Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_606bd04cfcc3",
+          "mode": null,
+          "label": "Taipa Beach Resort",
+          "detail": "SUPERIOR, STUDIO, BEACH FRONT",
+          "price": {
+            "amount": 12470.12,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹4,156 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-03-16",
+            "checkout": "2027-03-17",
+            "room_name": "SUPERIOR, STUDIO, BEACH FRONT",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "22 Taipa Point Road",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp58ad0",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFIRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laR0dNUlFHNFpUT05CWEdVM0RJTlJaR1pUREVZWlNHQTNERU5SVkdZWVRNTVpXSEFaREFOUldHNFpETVpSV01VM1RJN0JSRU1aREFNUlhHQVpUQ05UNEdJWURFTlpRR01ZVE83REZOWlBWS1UzNEpGSEhZU0tPS0o2RENRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5KWkdZMkRRTUJWR0pVV0tUMlNFTVpUTU1aU0dFM0NHTUpTR1EzUzJNWldHTVpEQ05UNEpaSkVNVFQ0R0lZREVOUlFIQVlUTU1SVEdBWUhZTUpXUFJKRENNWlFHRjZEQ01SVUc0WURDTVJES0pIU0dUU1NJWkhDR01SUUdJM0MyTUJZRlVZVE1JQlNHTTVEQU1CRKNwcmPLQMhbD1wo9cOlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm69U1VQRVJJT1IsIFNUVURJTywgQkVBQ0ggRlJPTlSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYzNjMyMTajc2lkAqNoaWSnbHA1OGFkMKNvY2ORgaFhAaNjdXKjSU5SomduoklOomNpqjIwMjctMDMtMTaiY2-qMjAyNy0wMy0xN6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE1MGUzNWM0RUxRMjAzTXFLbTE1dVh6dW9haXZObE54TEdJRaNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnDoWSgoWHLQJbSo9cKPXGhY6NJTlKibHDAo2JrdAg=",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEOR2NKJIUONC2KRHU4QSYI5KTGRCJJZJFUR22KRCEKWK2KNDUCM2EIVHFEVSHLFMVITKNLJLUQQK2IRAU4USXI42FURCNLJJFOTKVGNKESN2CKJCU2WSEIFGVEWCHIFNFIQ2OKQ2EOSKZIRCU4WSRI5GVSVCPG5CEMTS2KBLEWVJTGRFEMSCILFJUWT2LJI3EIQ2RJJIUSTRWIREU4SSTJBDDMR2TKVCEQS2WIVEFSTKKLBEECM2UIFHEUWSHLEZEIUKNIJLEOSSVK5FVIMSTIVGVUVCNJVNFGR2FGNBUOTKKKNDVCM2TGJGVUV2HJVNEIQ2OKQ2EUWSKIVGVIVBUI5EVSRCFJZJFCSCBLFKE2TKSKRDUCWKILFGUUV2QKJFEIQ2NLJIUORRWIRBU2USVI42FSRCDJVJEIS2KJBJUOVCTKNEVUSCDI5GVEUKHJEZUGMSNIJMUMVKZKRGUSQSTI5GTKRCBJVBEI7BRGI2DOMBOGEZHY7CSJ56HY7D4KNKVARKSJFHVELBAKNKFKRCJJ4WCAQSFIFBUQICGKJHU4VD4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T13:27:30.046600Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 8314.6,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "nepal_2027-03-16_2027-03-19",
+  "user_id": "corpus-nepal-accessible-solo-3d"
+}

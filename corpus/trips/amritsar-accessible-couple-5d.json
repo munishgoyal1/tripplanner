@@ -1,0 +1,272 @@
+{
+  "status": "draft",
+  "trip_id": "amritsar_2027-11-13_2027-11-18",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:23:12.923476",
+  "destination": "Amritsar",
+  "origin": "Delhi",
+  "departure_date": "2027-11-13",
+  "return_date": "2027-11-18",
+  "travelers": "2 adults (one requires minimal walking/stairs)",
+  "notes": "One traveller cannot manage long walks or stairs. Prioritize accessible hotels and activities.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Amritsar",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Fairfield by Marriott Amritsar",
+      "address": "Albert Road, Amritsar",
+      "star_rating": 4,
+      "amenities": [
+        "wheelchair accessible",
+        "elevator",
+        "restaurant",
+        "breakfast included"
+      ],
+      "price_per_night": 6500,
+      "currency": "INR",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp31ba5",
+        "offer_id": "3gAWonJzkd4AEaRzcmlk2gFtR1k0VE9NWldNTTNEQ05URkdZMkRFTUJYR1kzRFNOUlZHNDNURU1CWEdNM1RJTlpWR1kyRE1PSldNWVpEQU1SWUdaVERNTlJXR1laREFOWlVHWTRETU5KU0dBM0dJTlJSR1k0VE1aSlNHQTNUQU5aU0daVERPTUJXR1UzVEVOWlVHNDRURU9MNEdFUlRFTUJTRzRZVENNSlRQUVpEQU1SWEdFWVRDT0Q0TVZYRjZWS1RQUkVVNDdDSkpaSkhZTVNCR0JCWFlOQlZHSTRYWTJLUU01S1VRN0JSRzQ0RE9NQlZHUVlER09KVUhBMkdRM0NGTUVSVEVNQlRHWTRES0laUkdJWlRPTEpTR0FaVE1PQlZQUkpFTVRUNEdJWURFTlpSR0FaRFNNQldHQVlIWU1MNEtJWVRDTkpRUFEzVE9NUlhHSVpUU0kyU0o0UlZFUlNPRU1aREFNUlhGVVlUQUxKU0hFUURBTlIyR0FZQ0ejcHJjy0Dy3YY9cKPXpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTEwLTI5IDA2OjAwOjAwonJ0o1JGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Ju2SpJc2xhbmQgVmlldyBTdHVkaW8gKE9mZiB0aGUgTWFpbiBQcm9wZXJ0eSmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCRhaF0szIwMjctMTAtMjkgMDY6MDA6MDChYctA8t2GPXCj16Fjo0lOUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjIwMzY4NaNzaWQCo2hpZKdscDMxYmE1o29jY5GBoWECo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0xMS0xM6Jjb6oyMDI3LTExLTE4o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTRiOGExYTVyV3F3WXNycTJyNTBDWkZXellkNlBONVFxdlR3o2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGl"
+      }
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-13",
+      "title": "Day 1 · Arrival in Amritsar",
+      "summary": "Arrive from Delhi, check into Fairfield by Marriott Amritsar (wheelchair accessible), easy local exploration.",
+      "stops": [
+        {
+          "name": "Delhi to Amritsar (Train/Flight)",
+          "kind": "transport",
+          "time": "08:00",
+          "note": "Choose accessible mode"
+        },
+        {
+          "name": "Fairfield by Marriott Amritsar",
+          "kind": "hotel",
+          "note": "Check-in; wheelchair accessible"
+        },
+        {
+          "name": "Durgiana Temple",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Minimal walking required"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-14",
+      "title": "Day 2 · Golden Temple & Local Sightseeing",
+      "summary": "Visit the Golden Temple with accessibility support, explore nearby Jallianwala Bagh.",
+      "stops": [
+        {
+          "name": "Fairfield by Marriott Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Golden Temple",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Wheelchair access available"
+        },
+        {
+          "name": "Jallianwala Bagh",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Flat paths, benches available"
+        },
+        {
+          "name": "Kesar Da Dhaba",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch; step-free entry"
+        },
+        {
+          "name": "Fairfield by Marriott Amritsar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-15",
+      "title": "Day 3 · Wagah Border Ceremony",
+      "summary": "Visit Wagah Border for the ceremony (accessible viewing area).",
+      "stops": [
+        {
+          "name": "Fairfield by Marriott Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Wagah Border",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Accessible viewing stands"
+        },
+        {
+          "name": "Makhan Fish & Chicken",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Dinner; step-free entry"
+        },
+        {
+          "name": "Fairfield by Marriott Amritsar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-16",
+      "title": "Day 4 · Partition Museum & Shopping",
+      "summary": "Explore Partition Museum (accessible), light shopping at Hall Bazaar.",
+      "stops": [
+        {
+          "name": "Fairfield by Marriott Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Partition Museum",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Wheelchair accessible"
+        },
+        {
+          "name": "Hall Bazaar",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Flat market area, minimal walking"
+        },
+        {
+          "name": "Bharawan Da Dhaba",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch; step-free entry"
+        },
+        {
+          "name": "Fairfield by Marriott Amritsar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-17",
+      "title": "Day 5 · Relax & Departure",
+      "summary": "Relax at hotel, light local sightseeing, depart for Delhi.",
+      "stops": [
+        {
+          "name": "Fairfield by Marriott Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Gobindgarh Fort",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Accessible areas available"
+        },
+        {
+          "name": "Amritsar to Delhi (Train/Flight)",
+          "kind": "transport",
+          "time": "16:00",
+          "note": "Accessible mode"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:32:50.752428",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-18T17:26:09",
+      "expires_at": "2026-08-18T17:56:09"
+    },
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T17:32:50",
+      "expires_at": "2026-08-19T05:32:50"
+    }
+  ],
+  "id": "amritsar_2027-11-13_2027-11-18",
+  "user_id": "corpus-amritsar-accessible-couple-5d"
+}

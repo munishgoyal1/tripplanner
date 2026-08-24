@@ -1,0 +1,410 @@
+{
+  "status": "draft",
+  "trip_id": "spiti_valley_2027-06-11_2027-06-16",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:40:32.667026",
+  "destination": "Spiti Valley",
+  "origin": "Delhi",
+  "departure_date": "2027-06-11",
+  "return_date": "2027-06-16",
+  "travelers": "4 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Spiti Valley",
+    "estimated_planned_minutes": 747,
+    "evidence_place_count": 7,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "7 preference-matched places account for about 747 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel Deyzor",
+      "city": "Kaza",
+      "address": "Kaza, Spiti Valley, Himachal Pradesh",
+      "rating": 4.5,
+      "price_per_night": 4500,
+      "nights": 5,
+      "total_price": 22500,
+      "currency": "INR",
+      "room_type": "Deluxe Double",
+      "amenities": [
+        "WiFi",
+        "Restaurant",
+        "Heritage décor"
+      ],
+      "note": "Best heritage hotel in Kaza"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-06-11",
+      "title": "Day 1 · Delhi to Spiti Valley (Kaza)",
+      "summary": "Depart early morning from Delhi by private vehicle. Scenic drive via Shimla, Rampur, and Nako. Arrive in Kaza by evening, check in, and relax.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Kaza",
+          "kind": "transport",
+          "time": "06:00",
+          "duration_min": 900,
+          "distance_km": 750,
+          "note": "Scenic route via Shimla, Rampur, Nako"
+        },
+        {
+          "name": "Hotel in Kaza (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-06-12",
+      "title": "Day 2 · Kaza Heritage Walk & Monasteries",
+      "summary": "Explore Kaza town's heritage sites and visit historic monasteries.",
+      "stops": [
+        {
+          "name": "Hotel in Kaza (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kaza Heritage Walk",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Guided walk through old town"
+        },
+        {
+          "name": "Sakya Tangyud Monastery",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Historic monastery with Tibetan architecture"
+        },
+        {
+          "name": "Lunch: Himalayan Cafe",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Local cuisine"
+        },
+        {
+          "name": "Key Monastery",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Iconic 1000-year-old monastery"
+        },
+        {
+          "name": "Hotel in Kaza (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-06-13",
+      "title": "Day 3 · Tabo Monastery & Dhankar Fort",
+      "summary": "Visit ancient Tabo Monastery and Dhankar Fort, both rich in history.",
+      "stops": [
+        {
+          "name": "Hotel in Kaza (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Tabo Monastery",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 120,
+          "note": "UNESCO site, murals and heritage"
+        },
+        {
+          "name": "Lunch: Norbu Restaurant, Tabo",
+          "kind": "meal",
+          "time": "11:30",
+          "note": "Local Tibetan food"
+        },
+        {
+          "name": "Dhankar Fort & Monastery",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 120,
+          "note": "Historic fort perched on cliff"
+        },
+        {
+          "name": "Hotel in Kaza (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-06-14",
+      "title": "Day 4 · Langza, Hikkim & Komic Heritage Circuit",
+      "summary": "Explore heritage villages and ancient sites around Kaza.",
+      "stops": [
+        {
+          "name": "Hotel in Kaza (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Langza Village",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Heritage village, fossil hunting"
+        },
+        {
+          "name": "Lunch: Spiti Organic Kitchen, Langza",
+          "kind": "meal",
+          "time": "11:30",
+          "note": "Local organic cuisine"
+        },
+        {
+          "name": "Hikkim Post Office",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "World's highest post office"
+        },
+        {
+          "name": "Komic Monastery",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "One of the world's highest monasteries"
+        },
+        {
+          "name": "Hotel in Kaza (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-06-15",
+      "title": "Day 5 · Kaza to Delhi",
+      "summary": "Check out and drive back to Delhi. Scenic stops en route.",
+      "stops": [
+        {
+          "name": "Hotel in Kaza (TBD)",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Drive: Kaza to Delhi",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 900,
+          "distance_km": 750,
+          "note": "Return via same scenic route"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-06-16",
+      "title": "Day 6 · Arrival in Delhi",
+      "summary": "Arrive in Delhi and end the trip.",
+      "stops": [
+        {
+          "name": "Delhi",
+          "kind": "other",
+          "time": "06:00",
+          "note": "Trip ends"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 22500,
+    "transport": 16000,
+    "meals": 6000,
+    "activities": 2000
+  },
+  "total_cost": 46500,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T19:52:31.363693",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T19:47:54",
+      "expires_at": "2026-08-19T07:47:54"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_spiti_valley_2027_06_11_2027_06_16",
+      "kind": "lodging",
+      "created_at": "2026-08-18T14:17:54.340706Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Spiti Valley",
+        "date": "2027-06-11"
+      },
+      "subject": "Stay in Spiti Valley",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_daf9c379fd3a",
+      "options": [
+        {
+          "id": "opt_stay_daf9c379fd3a",
+          "mode": null,
+          "label": "President Abraham Lincoln Springfield - DoubleTree by Hilton",
+          "detail": "2 DOUBLE BEDS-NONSMOKING,32 INCH HD TV - COMPLIMENTARY BASIC WI-FI,SWEET DREAMS EXPERIENCE BED - 342 SQ.FT.,",
+          "price": {
+            "amount": 132248.94,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-06-11",
+            "checkout": "2027-06-16",
+            "room_name": "2 DOUBLE BEDS-NONSMOKING,32 INCH HD TV - COMPLIMENTARY BASIC WI-FI,SWEET DREAMS EXPERIENCE BED - 342 SQ.FT.,",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "701 E Adams St, Springfield, Illinois, 62701",
+            "rating": 8.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1a133",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gJXR01aREVNQldHUTNHTU5aVkdZWkRNWVpXR1VaREFOUlNHWTJUTU5CWEdNWkdJTlRGR1pURE1aSlhHTTNHSU5UR0daUkRNT0pXTVUzRE9NVERHTVpUR01SU0dBM0RTTlRGR1laVE1PQlNHQTNEUU5SVUdJWURPTkJYR1laREFNVEVHSVlETU1aV01ZM0dJTlpRR1pSVE1PSldNUTNES05URkc0MkRNTUpYR0kzVFNNUlFHWVpETU1KWEdNM0RTTlJUR0lZRE9OWldIRVpHSU5SV0dZNFRFWVpYR00zVE9OUlZHWTJUT05CU0dBM0RJTlpTR1kyVE1NSldNUTNUR01SUUdZMlRPT0JYR0EzREtOWlNHWTRUTU5KV01VM0RHTlJWR0lZRE1NUldHVTNESU1SUUdKU0RFTUJUR01aVElNWlNHSVlET01aWEdFWkdLTlJXRzQyREVaSlNNTjZEQ0laU0dBWkRPTUJXR0VZWFlNUlFHSTNUQU5SUkdaNkdLM1M3S1ZKWFlTS09QUkVVNFVUNEdSQVRBUVpQR1JBVEFRMzRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHQTNERU5SV0dVM0RPTUtUSkpCR0tJWlJHQTNEUU1CVEVNWVRFT0pRRlVZVEFOUllHQVpYWVVTR0paNkRFTUJTRzRZRE1NQlpHRVlEQU1ENEdGNkZFTUpSR1VZRUVPSllIRkhEQVZKUVBRWVRHTVJTR1E0RFNOSkRLSkhTR1VTR0pZUlRFTUJTRzRXVEFOUk5HQTRTQU1KUUhJWURBSVmjcHJjy0DwJMeFHrhSpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTA2LTA5IDEwOjAwOjAwonJ0o1JGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Ju2WwyIERPVUJMRSBCRURTLU5PTlNNT0tJTkcsMzIgSU5DSCBIRCBUViAtIENPTVBMSU1FTlRBUlkgQkFTSUMgV0ktRkksU1dFRVQgRFJFQU1TIEVYUEVSSUVOQ0UgQkVEIC0gMzQyIFNRLkZULiyjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCRhaF0szIwMjctMDYtMDkgMTA6MDA6MDChYctA8CTHhR64UqFjo0lOUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gJXR01aREVNQldHUTNHTU5aVkdZWkRNWVpXR1VaREFOUlNHWTJUTU5CWEdNWkdJTlRGR1pURE1aSlhHTTNHSU5UR0daUkRNT0pXTVUzRE9NVERHTVpUR01SU0dBM0RTTlRGR1laVE1PQlNHQTNEUU5SVUdJWURPTkJYR1laREFNVEVHSVlETU1aV01ZM0dJTlpRR1pSVE1PSldNUTNES05URkc0MkRNTUpYR0kzVFNNUlFHWVpETU1KWEdNM0RTTlJUR0lZRE9OWldIRVpHSU5SV0dZNFRFWVpYR00zVE9OUlZHWTJUT05CU0dBM0RJTlpTR1kyVE1NSldNUTNUR01SUUdZMlRPT0JYR0EzREtOWlNHWTRUTU5KV01VM0RHTlJWR0lZRE1NUldHVTNESU1SUUdKU0RFTUJUR01aVElNWlNHSVlET01aWEdFWkdLTlJXRzQyREVaSlNNTjZERUlaU0dBWkRPTUJXR0VZWFlNUlFHSTNUQU5SUkdaNkdLM1M3S1ZKWFlTS09QUkVVNFVUNEdSQVRBUVpQR1JBVEFRMzRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHQTNERU5SV0dVM0RPTUtUSkpCR0tJWlJHQTNEUU1CVEVNWVRFT0pRRlVZVEFOUllHQVpYWVVTR0paNkRFTUJTRzRZRE1NQlpHRVlEQU1ENEdGNkZFTUpSR1VZRUVPSllIRkhEQVZKUVBRWVRHTVJTR1E0RFNOSkRLSkhTR1VTR0pZUlRFTUJTRzRXVEFOUk5HQTRTQU1KUUhJWURBSVmjcHJjy0DwJMeFHrhSpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTA2LTA5IDEwOjAwOjAwonJ0o1JGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Ju2WwyIERPVUJMRSBCRURTLU5PTlNNT0tJTkcsMzIgSU5DSCBIRCBUViAtIENPTVBMSU1FTlRBUlkgQkFTSUMgV0ktRkksU1dFRVQgRFJFQU1TIEVYUEVSSUVOQ0UgQkVEIC0gMzQyIFNRLkZULiyjb2NuAqRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCRhaF0szIwMjctMDYtMDkgMTA6MDA6MDChYctA8CTHhR64UqFjo0lOUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjEwNjgwM6NzaWQCo2hpZKdscDFhMTMzo29jY5KBoWEEgaFhBKNjdXKjSU5SomduoklOomNpqjIwMjctMDYtMTGiY2-qMjAyNy0wNi0xNqNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE1M2M0MTg3VTNjbkJDWHk0RExpUnlGd05VSmM5ZkhESE53aqNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpw6FkoKFhy0CvsseuFHrhoWOjSU5ShKFpw6FkoKFhy0CvsseuFHrhoWOjSU5SomxwwKNia3QD",
+              "rate_id": "I5GVURCFJVBFOR2RGNDU2TS2KZDVSWSEJVMVUV2HKVNEIQKOKJJUOWJSKRGU4QSYI5GVUR2JJZKEMR22KRCE2WSKLBDU2M2HJFHFIR2HLJJEITKPJJLU2VJTIRHU2VCEI5GVUVCHJVJFGR2BGNCFGTSUIZDVSWSUJVHUEU2HIEZUIUKOKJKUOSKZIRHU4QSYI5MVURCBJVKEKR2JLFCE2TK2K5GVSM2HJFHFUUKHLJJFITKPJJLU2UJTIRFU4VCGI42DERCNJVFFQR2JGNKFGTKSKFDVSWSEJVGUUWCHJUZUIU2OKJKEOSKZIRHU4WSXJBCVUR2JJZJFOR2ZGRKEKWK2LBDU2M2UJ5HFEVSHLEZFIT2OIJJUOQJTIREU4WSTI5MTEVCNJVFFOTKRGNKEOTKSKFDVSMSUJ5HUEWCHIEZUIS2OLJJUOWJUKRGU4SSXJVKTGRCHJZJFMR2JLFCE2TKSK5DVKM2EJFGVEUKHJJJUIRKNIJKEOTK2KREU2WSTI5EVSRCPJVNFQR2FLJDUWTSSK5DTIMSEIVNEUU2NJY3EIQ2JLJJUOQK2IRHU2QSXI5CVSWCZJVJFCR2JGNKECTSSKJDVUNSHJMZVGN2LKZFFQWKTJNHVAUSFKU2FKVBUI5JECVCBKFNFAR2SIFKECUJTGRDVCMSUIVHUYNCOIZEUOT2WJNEVAUKZKRHU6QSYI5ATGRCFJZJFOR2VGNCE6TKLKRFEUQSHJNEVUUSHIEZUIUKNIJKEKTKZKRCU6SSRIZKVSVCBJZJFSR2BLJMFSVKTI5FFUNSEIVGUEU2HGRMUITKNIJNEORKZIRAU2RBUI5DDMRSFJVFFER2VLFCUKT2KLFEEMSCEIFLEUUKQKFMVIR2NKJJUOUJUIRJU4SSEJNFEQU2HKVJUOSSZKJKEKTKCKNDTIV2UIFHFETSHIE2FGQKNJJIUQSKZIRAUSWL4GY3DCMRUFY2DO7BSGAZDOLJQGYWTAOJAGEYDUMBQHIYDA7CSJ56HY7D4GIQEIT2VIJGEKICCIVCFGLKOJ5HFGTKPJNEU4RZMGMZCASKOINECASCEEBKFMIBNEBBU6TKQJREU2RKOKRAVEWJAIJAVGSKDEBLUSLKGJEWFGV2FIVKCARCSIVAU2UZAIVMFARKSJFCU4Q2FEBBEKRBAFUQDGNBSEBJVCLSGKQXCY7BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T14:17:54.235115Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_dbd2267f8083",
+          "mode": null,
+          "label": "Hampton Inn & Suites Springfield-Southwest",
+          "detail": "2 QUEEN BEDS NONSMOKING,HDTV/FRIDGE/MICROWV/FREE WI-FI,HOT BREAKFAST INCLUDED/,",
+          "price": {
+            "amount": 151642.12,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹19,393 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-06-11",
+            "checkout": "2027-06-16",
+            "room_name": "2 QUEEN BEDS NONSMOKING,HDTV/FRIDGE/MICROWV/FREE WI-FI,HOT BREAKFAST INCLUDED/,",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "2300 Chuckwagon Dr, Springfield, Illinois, 62707",
+            "rating": 9,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp3288d",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gHwR01aREVNQlhHRTNUS05SVkdZMlRNWkpTR0EzREVOUlZHWTJET01aU0dBM0dLTlRHR1pTVE9NWldNUTNHTU5UQ0dZNFRNWkpXRzRaR0dOUllHWTJET05CWEdZWkdNTlJXRzRaRE1PSldHUTNET05SVkdKVERNWkJXSEUzREdOWlNHWlRET05aWEdZWkdNTlJXRzRaRE1OSldHVVpEQU5aWEdZNFRFWkJXR1kzRFNNVERHWTRETVpSWEdRWkRBTlJTRzRaRE1OSldHRTNHRU5SV0dZWVRPTVpYR1FaREFOUlpHWlNUTU1aV01NM1RLTlJVR1kyVE1OQlNNWVpHRzdCUkVNWkRBTVJYR0EzRENNTDRHSVlERU5aUUdZWVRNN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRJUUpRSU1YVElRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5SU0dZM0RLTlJYR0ZKVVVRVEZFTVpEQU5SWkhBNFNHTUpTSEVZQzJNUlFHWTRUUU9MNEpaSkVNVFQ0R0lZREVOUlFIQVlUTU1KUUdBWUhZTUw0S0lZVENOSlFQUVlUS01KV0dRWkRDTUpESUpCQ0dUU1NJWkhDR01SUUdJM0MyTUJZRlVZVE1JQlJHQTVEQU1CRKNwcmPLQPKC0PXCj1ylb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJCSaRtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZTzIgUVVFRU4gQkVEUyBOT05TTU9LSU5HLEhEVFYvRlJJREdFL01JQ1JPV1YvRlJFRSBXSS1GSSxIT1QgQlJFQUtGQVNUIElOQ0xVREVELyyjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk7eABGkc3JpZNoB8EdNWkRFTUJYR0UzVEtOUlZHWTJUTVpKU0dBM0RFTlJWR1kyRE9NWlNHQTNHS05UR0daU1RPTVpXTVEzR01OVENHWTRUTVpKV0c0WkdHTlJZR1kyRE9OQlhHWVpHTU5SV0c0WkRNT0pXR1EzRE9OUlZHSlRETVpCV0hFM0RHTlpTR1pURE9OWlhHWVpHTU5SV0c0WkRNTkpXR1VaREFOWlhHWTRURVpCV0dZM0RTTVRER1k0RE1aUlhHUVpEQU5SU0c0WkRNTkpXR0UzR0VOUldHWVlUT01aWEdRWkRBTlJaR1pTVE1NWldNTTNUS05SVUdZMlRNTkJTTVlaR0c3QlNFTVpEQU1SWEdBM0RDTUw0R0lZREVOWlFHWVlUTTdERk5aUFZLVTM0SkZISFlTS09LSjZESVFKUUlNWFRJUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzVEFOUlNHWTNES05SWEdGSlVVUVRGRU1aREFOUlpIQTRTR01KU0hFWUMyTVJRR1k0VFFPTDRKWkpFTVRUNEdJWURFTlJRSEFZVE1NSlFHQVlIWU1MNEtJWVRDTkpRUFFZVEtNSldHUVpEQ01KRElKQkNHVFNTSVpIQ0dNUlFHSTNDMk1CWUZVWVRNSUJSR0E1REFNQkSjcHJjy0DygtD1wo9cpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Ju2U8yIFFVRUVOIEJFRFMgTk9OU01PS0lORyxIRFRWL0ZSSURHRS9NSUNST1dWL0ZSRUUgV0ktRkksSE9UIEJSRUFLRkFTVCBJTkNMVURFRC8so29jbgKkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmMjA2OTg5o3NpZAKjaGlkp2xwMzI4OGSjb2NjkoGhYQSBoWEEo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNi0xMaJjb6oyMDI3LTA2LTE2o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTUzYzQxODdVM2NuQkNYeTRETGlSeUZ3TlVKYzlmSERITndqo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWSgoWHLQLHkIUeuFHuhY6NJTlKEoWnDoWSgoWHLQLHkIUeuFHuhY6NJTlKibHDAo2JrdAE=",
+              "rate_id": "I5GVURCFJVBFQR2FGNKEWTSSKZDVSMSUJVNEUU2HIEZUIRKOKJLEOWJSIRHU2WSTI5ATGR2LJZKEOR22KNKE6TK2K5GVCM2HJVHFIQ2HLE2FITK2JJLUONC2I5DU4USZI5MTERCPJZBFQR2ZLJDU2TSSK5DTIWSEJVHUUV2HKEZUIT2OKJLEOSSUIRGVUQSXJBCTGRCHJZNFGR22KRCE6TS2LBDVSWSHJVHFEV2HGRNEITKOJJLUOVK2IRAU4WSYI5MTIVCFLJBFOR2ZGNCFGTKUIRDVSNCEJVNFEWCHKFNEIQKOKJJUONC2IRGU4SSXI5CTGR2FJZJFOR2ZLFKE6TK2LBDVCWSEIFHFEWSHLJJVITKNLJLU2TJTKRFU4USVI5MTEVCNJZBFGTKZLJDUON2CKJCU2WSEIFGVEWCHIEZUIQ2NJQ2EOSKZIRCU4WSRI5MVSVCNG5CEMTS2KBLEWVJTGRFEMSCILFJUWT2LJI3EISKRJJIUSTKYKREVCSSRJFHDMRCJJZFFGSCGGZDVGVKEJBFVMRKILFGUUWCIIEZVIQKOKJJUOWJTIRFU4USYI5DEUVKVKFKEMRKNLJCECTSSLJEECNCTI5GUUU2IIVMUGMSNKJIUOWJUKRIU6TBUJJNEURKNKRKDIR2JLFCEKTSSKFEECWKUJVGUUUKHIFMUQWKNJQ2EWSKZKRBU4SSRKBIVSVCLJVFFOR2RLJCEGTKKIREUUQSDI5KFGU2JLJEEGR2NKJIUOSJTIMZE2QSZIZKVSVCNJFBFER2BGVCECTKCIR6DONJYGIYS4MBWPR6EESL4PR6HYMRAKFKUKRKOEBBEKRCTEBHE6TSTJVHUWSKOI4WEQRCUKYXUMUSJIRDUKL2NJFBVET2XKYXUMUSFIUQFOSJNIZESYSCPKQQEEUSFIFFUMQKTKQQESTSDJRKUIRKEF4WHYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T14:17:54.235115Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 132248.94,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "spiti_valley_2027-06-11_2027-06-16",
+  "user_id": "corpus-spiti-heritage-friends-5d"
+}

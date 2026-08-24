@@ -1,0 +1,362 @@
+{
+  "status": "draft",
+  "trip_id": "istanbul_2027-05-01_2027-05-08",
+  "trip_number": 1,
+  "created_at": "2026-08-17T20:38:32.908747",
+  "destination": "Istanbul",
+  "origin": "Delhi",
+  "departure_date": "2027-05-01",
+  "return_date": "2027-05-08",
+  "travelers": "4 adults (including grandparents), 1 child (age 8)",
+  "notes": "Focus on history and heritage sites. Group includes elderly and a child.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Istanbul",
+    "estimated_planned_minutes": 1050,
+    "evidence_place_count": 9,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "9 preference-matched places account for about 1050 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Radisson Blu Hotel Istanbul Pera",
+      "provider_ref": {
+        "hotel_id": "lp1f7764"
+      },
+      "address": "Evliya Çelebi Mah., Refik Saydam Cd. No:19, 34430 Beyoğlu/Istanbul, Turkey",
+      "rating": 4.5,
+      "price_per_night": 220,
+      "total_price": 1540,
+      "rooms": 2,
+      "checkin": "2027-05-01",
+      "checkout": "2027-05-08",
+      "amenities": [
+        "Free WiFi",
+        "Breakfast included",
+        "Elevator",
+        "Family rooms",
+        "Accessible rooms"
+      ]
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-01",
+      "title": "Arrival & Galata Tower",
+      "summary": "Arrive in Istanbul, check in at hotel. Explore Galata Tower and nearby heritage streets.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Istanbul",
+          "kind": "flight",
+          "time": "07:00",
+          "arrival_time": "12:00",
+          "note": "International flight, direct if possible"
+        },
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Galata Tower",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "Historic tower with panoramic views."
+        },
+        {
+          "name": "Karaköy Güllüoğlu",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Famous baklava shop, family-friendly."
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-02",
+      "title": "Sultanahmet Classics",
+      "summary": "Visit Hagia Sophia, Blue Mosque, and Topkapi Palace. Lunch at a traditional Ottoman restaurant.",
+      "stops": [
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Hagia Sophia",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Blue Mosque",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Matbah Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Ottoman cuisine, accessible."
+        },
+        {
+          "name": "Topkapi Palace",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-03",
+      "title": "Bosphorus Cruise & Dolmabahçe Palace",
+      "summary": "Morning Bosphorus cruise, visit Dolmabahçe Palace, dinner at a waterfront restaurant.",
+      "stops": [
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel"
+        },
+        {
+          "name": "Bosphorus Cruise",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Scenic cruise, accessible."
+        },
+        {
+          "name": "Dolmabahçe Palace",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Tugra Restaurant",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Waterfront dining, Turkish cuisine."
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-04",
+      "title": "Grand Bazaar & Suleymaniye Mosque",
+      "summary": "Explore Grand Bazaar, visit Suleymaniye Mosque, lunch at a local eatery.",
+      "stops": [
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel"
+        },
+        {
+          "name": "Grand Bazaar",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Suleymaniye Mosque",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Ali Baba Kanaat Lokantası",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Traditional Turkish food."
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-05-05",
+      "title": "Chora Church & Fener-Balat Heritage Walk",
+      "summary": "Visit Chora Church, heritage walk in Fener-Balat, lunch at a local café.",
+      "stops": [
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel"
+        },
+        {
+          "name": "Chora Church (Kariye Museum)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Fener-Balat Heritage Walk",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Forno Balat",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Family-friendly café."
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-05-06",
+      "title": "Museum Day: Archaeology & Turkish & Islamic Arts",
+      "summary": "Visit Istanbul Archaeological Museum and Museum of Turkish & Islamic Arts. Lunch at a museum café.",
+      "stops": [
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel"
+        },
+        {
+          "name": "Istanbul Archaeological Museums",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Museum of Turkish and Islamic Arts",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Museum Café",
+          "kind": "meal",
+          "time": "14:30",
+          "note": "Easy access for all ages."
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-05-07",
+      "title": "Spice Bazaar & Departure",
+      "summary": "Visit Spice Bazaar, enjoy last Turkish meal, transfer to airport for flight home.",
+      "stops": [
+        {
+          "name": "Spice Bazaar",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Pandeli Restaurant",
+          "kind": "meal",
+          "time": "11:30",
+          "note": "Historic restaurant inside Spice Bazaar."
+        },
+        {
+          "name": "Flight: Istanbul to Delhi",
+          "kind": "flight",
+          "time": "15:00",
+          "duration_min": 360,
+          "note": "Return flight"
+        },
+        {
+          "name": "Radisson Blu Hotel Istanbul Pera",
+          "kind": "hotel",
+          "time": "21:30",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-05-08",
+      "title": "Departure from Istanbul",
+      "summary": "Check out and transfer to the airport for your return flight to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel in Sultanahmet",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Flight: Istanbul to Delhi",
+          "kind": "flight",
+          "time": "13:00",
+          "arrival_time": "23:00",
+          "note": "Return flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 1540,
+    "meals": 420,
+    "activities": 250,
+    "local_transport": 140,
+    "estimated_flights": 3200
+  },
+  "total_cost": 5550,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:00:43.825978",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T16:59:15",
+      "expires_at": "2026-08-19T04:59:15"
+    }
+  ],
+  "id": "istanbul_2027-05-01_2027-05-08",
+  "user_id": "corpus-istanbul-heritage-three-generation-7d"
+}

@@ -1,0 +1,276 @@
+{
+  "status": "draft",
+  "trip_id": "muscat_2027-12-08_2027-12-13",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:58:50.858431",
+  "destination": "Muscat",
+  "origin": "Hyderabad",
+  "departure_date": "2027-12-08",
+  "return_date": "2027-12-13",
+  "travelers": "4 adults (including grandparents), 1 child (age 8)",
+  "notes": "One traveller cannot manage long walks or stairs. Accessibility required for hotels and activities.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Muscat",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Crowne Plaza Muscat",
+      "address": "Qurum Heights, Muscat, Oman",
+      "star_rating": 4,
+      "amenities": [
+        "pool",
+        "accessible rooms",
+        "breakfast",
+        "sea view"
+      ],
+      "price_per_night": 180,
+      "currency": "USD",
+      "google_rating": 4.5,
+      "review_count": 2100,
+      "accessible": true
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-08",
+      "title": "Day 1 · Arrival in Muscat",
+      "summary": "Fly from Hyderabad to Muscat, transfer to accessible hotel, settle in, and enjoy a relaxed evening nearby.",
+      "stops": [
+        {
+          "name": "Flight: Hyderabad to Muscat",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "12:00",
+          "duration_min": 210,
+          "note": "Direct flight, accessible assistance requested"
+        },
+        {
+          "name": "Crowne Plaza Muscat",
+          "kind": "hotel",
+          "note": "Check-in, accessible room requested"
+        },
+        {
+          "name": "Al Qurum Beach",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Easy access, short walk from parking"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-09",
+      "title": "Day 2 · Muscat City Tour",
+      "summary": "Explore Muscat's highlights with accessible transport and minimal walking. Visit Sultan Qaboos Grand Mosque, Royal Opera House, and enjoy local cuisine.",
+      "stops": [
+        {
+          "name": "Crowne Plaza Muscat",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Sultan Qaboos Grand Mosque",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Wheelchair accessible"
+        },
+        {
+          "name": "Royal Opera House Muscat",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Accessible entrance"
+        },
+        {
+          "name": "Kargeen Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Accessible, Omani cuisine"
+        },
+        {
+          "name": "Mutrah Corniche",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Flat promenade, easy access"
+        },
+        {
+          "name": "Crowne Plaza Muscat",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-10",
+      "title": "Day 3 · Museums & Souks",
+      "summary": "Visit Mutrah Souk and enjoy a leisurely lunch. Bait Al Zubair Museum moved to Day 5 due to Friday closure.",
+      "stops": [
+        {
+          "name": "Crowne Plaza Muscat",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Mutrah Souk",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Accessible areas, avoid stairs"
+        },
+        {
+          "name": "Bait Al Luban Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Accessible, Omani cuisine"
+        },
+        {
+          "name": "Crowne Plaza Muscat",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-12-11",
+      "title": "Day 4 · Day Trip to Nizwa",
+      "summary": "Guided accessible tour to Nizwa Fort and Souk. Minimal walking, accessible transport arranged.",
+      "stops": [
+        {
+          "name": "Crowne Plaza Muscat",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Nizwa Fort",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Accessible areas only"
+        },
+        {
+          "name": "Nizwa Souk",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Accessible, minimal walking"
+        },
+        {
+          "name": "Al Mandi Al Dhahabi Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Accessible, local cuisine"
+        },
+        {
+          "name": "Crowne Plaza Muscat",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-12-12",
+      "title": "Day 5 · Museum & Departure",
+      "summary": "Visit Bait Al Zubair Museum (open Sunday), relax at hotel or nearby accessible attraction before departure. Transfer to airport.",
+      "stops": [
+        {
+          "name": "Crowne Plaza Muscat",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Bait Al Zubair Museum",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Wheelchair accessible"
+        },
+        {
+          "name": "Muscat International Airport",
+          "kind": "transport",
+          "time": "14:00",
+          "note": "Transfer to airport for departure"
+        },
+        {
+          "name": "Flight: Muscat to Hyderabad",
+          "kind": "flight",
+          "time": "16:00",
+          "arrival_time": "19:00",
+          "duration_min": 180,
+          "note": "Direct flight, accessible assistance requested"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T18:08:36.691047",
+  "id": "muscat_2027-12-08_2027-12-13",
+  "user_id": "corpus-muscat-accessible-three-generation-5d"
+}

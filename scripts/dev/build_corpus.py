@@ -81,6 +81,15 @@ def main(argv: list[str] | None = None) -> int:
         print("Nothing left to generate; every candidate is already in the corpus.")
         return 0
 
+    health_error = generate.api_health_error(args.api)
+    if health_error:
+        print(
+            f"Refusing to run: planner API is unavailable at {args.api} ({health_error}).\n"
+            "Start sandbox 2, wait for its backend to report ready, then retry.",
+            file=sys.stderr,
+        )
+        return 3
+
     print(_BAR)
     result = generate.build(
         corpus_root,
@@ -97,6 +106,12 @@ def main(argv: list[str] | None = None) -> int:
         f"stopped on {result['stopped_because']}."
     )
     print(f"Corpus now holds {result['corpus_total']} generated trip(s).")
+    if result["stopped_because"] == "api-unavailable":
+        print(
+            f"Planner API at {args.api} became unavailable; start sandbox 2 and retry.",
+            file=sys.stderr,
+        )
+        return 3
     return 0
 
 

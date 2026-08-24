@@ -1,0 +1,382 @@
+{
+  "status": "draft",
+  "trip_id": "rome_and_florence_2027-09-04_2027-09-11",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:49:11.444359",
+  "destination": "Rome and Florence",
+  "origin": "Mumbai",
+  "departure_date": "2027-09-04",
+  "return_date": "2027-09-11",
+  "travelers": "2 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Rome and Florence",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the road_trip scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      6,
+      8
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Rome: Hotel Impero",
+      "city": "Rome",
+      "star_rating": 3,
+      "address": "Via del Viminale, 19, 00184 Roma RM, Italy",
+      "price_per_night": 5500,
+      "nights": 3,
+      "total_price": 16500,
+      "currency": "INR",
+      "note": "Central, 3-star, breakfast included, walkable to Termini"
+    },
+    {
+      "name": "Florence: Hotel Delle Nazioni",
+      "city": "Florence",
+      "star_rating": 3,
+      "address": "Via Luigi Alamanni, 15, 50123 Firenze FI, Italy",
+      "price_per_night": 5500,
+      "nights": 3,
+      "total_price": 16500,
+      "currency": "INR",
+      "note": "Central, 3-star, breakfast included, near train station"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-09-04",
+      "title": "Day 1 · Arrival in Rome",
+      "summary": "Arrive in Rome from Mumbai, check in to Hotel Impero, explore Piazza Navona, and enjoy dinner at Cantina e Cucina.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Rome",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "15:00",
+          "duration_min": 540
+        },
+        {
+          "name": "Hotel Impero",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Piazza Navona",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Cantina e Cucina",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner, 4.6★, 17k reviews"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-09-05",
+      "title": "Day 2 · Ancient Rome",
+      "summary": "Visit the Colosseum, Roman Forum, Palatine Hill, and lunch at Osteria da Fortunata.",
+      "stops": [
+        {
+          "name": "Hotel Impero",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Colosseum",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Roman Forum",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Osteria da Fortunata",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch, 4.4★, 32k reviews"
+        },
+        {
+          "name": "Palatine Hill",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel Impero",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-09-06",
+      "title": "Day 3 · Vatican City",
+      "summary": "Explore Vatican Museums, St. Peter's Basilica, and Castel Sant'Angelo (open Tuesday), lunch at Roscioli.",
+      "stops": [
+        {
+          "name": "Hotel Impero",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Vatican Museums",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "St. Peter's Basilica",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Roscioli",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Lunch, 4.5★, 10k reviews"
+        },
+        {
+          "name": "Castel Sant'Angelo",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel Impero",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-09-07",
+      "title": "Day 4 · Rome to Florence",
+      "summary": "Check out, take morning train to Florence, check in to Hotel Delle Nazioni, explore Piazza del Duomo, lunch at La Fettunta.",
+      "stops": [
+        {
+          "name": "Train: Rome to Florence",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 120,
+          "distance_km": 275
+        },
+        {
+          "name": "Hotel Impero",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "11:30"
+        },
+        {
+          "name": "Hotel Delle Nazioni",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "13:30"
+        },
+        {
+          "name": "Piazza del Duomo",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 60
+        },
+        {
+          "name": "La Fettunta",
+          "kind": "meal",
+          "time": "17:00",
+          "note": "Lunch, 4.7★, 6k reviews"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-09-08",
+      "title": "Day 5 · Florence Art & Culture",
+      "summary": "Visit Uffizi Gallery, Ponte Vecchio, and lunch at Rooster Cafe Firenze.",
+      "stops": [
+        {
+          "name": "Hotel Delle Nazioni",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Uffizi Gallery",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Ponte Vecchio",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Rooster Cafe Firenze",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch, 4.8★, 9.6k reviews"
+        },
+        {
+          "name": "Hotel Delle Nazioni",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-09-09",
+      "title": "Day 6 · Florence Museums & Gardens",
+      "summary": "Explore Accademia Gallery, Boboli Gardens, lunch at Trattoria Mario.",
+      "stops": [
+        {
+          "name": "Hotel Delle Nazioni",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Accademia Gallery",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Boboli Gardens",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Trattoria Mario",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch, 4.5★, 8k reviews"
+        },
+        {
+          "name": "Hotel Delle Nazioni",
+          "kind": "hotel",
+          "note": "Return"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-09-10",
+      "title": "Day 7 · Departure from Florence",
+      "summary": "Check out, return to Rome by train, fly back to Mumbai.",
+      "stops": [
+        {
+          "name": "Hotel Delle Nazioni",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Train: Florence to Rome",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 120,
+          "distance_km": 275
+        },
+        {
+          "name": "Flight: Rome to Mumbai",
+          "kind": "flight",
+          "time": "15:00",
+          "arrival_time": "05:00",
+          "duration_min": 540
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "flights_round_trip": 32000,
+    "hotels": 33000,
+    "trains": 6000,
+    "activities": 4000,
+    "meals": 7000
+  },
+  "total_cost": 80000,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-18T20:49:46.138707"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:53:44.597041",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-18T20:51:37",
+      "expires_at": "2026-08-18T21:21:37"
+    },
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:51:47",
+      "expires_at": "2026-08-19T08:51:47"
+    }
+  ],
+  "id": "rome_and_florence_2027-09-04_2027-09-11",
+  "user_id": "corpus-rome-budget-couple-7d"
+}

@@ -1,0 +1,266 @@
+{
+  "status": "draft",
+  "trip_id": "rishikesh_2027-03-02_2027-03-07",
+  "trip_number": 1,
+  "created_at": "2026-08-18T21:56:48.726768",
+  "destination": "Rishikesh",
+  "origin": "Delhi",
+  "departure_date": "2027-03-02",
+  "return_date": "2027-03-07",
+  "travelers": "2 adults and 2 children (ages 6 and 9)",
+  "notes": "Premium hotels throughout. Balanced trip style. Preference for suite rooms and 4-star+ properties.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Rishikesh",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "premium",
+    "hotel_preferences": {
+      "star_rating_min": 4,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "suite"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel EllBee Ganga View",
+      "address": "355, Haridwar Rd, Palika Nagar, Rishikesh, Uttarakhand 249201, India",
+      "rating": 4.5,
+      "review_count": 5424,
+      "website": "https://ellbeehotels.com/ganga-view",
+      "place_id": "ChIJM4Mzl_g9CTkR86BqGxiUewc"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-02",
+      "title": "Day 1 · Arrival & Check-in",
+      "summary": "Drive from Delhi to Rishikesh, check into premium hotel, relax and explore hotel amenities.",
+      "stops": [
+        {
+          "name": "Delhi",
+          "kind": "transport",
+          "time": "07:00",
+          "note": "Start from Delhi"
+        },
+        {
+          "name": "Drive: Delhi to Rishikesh",
+          "kind": "transport",
+          "time": "07:30",
+          "duration_min": 360,
+          "distance_km": 240,
+          "note": "Private car transfer"
+        },
+        {
+          "name": "Premium Hotel (TBD)",
+          "kind": "hotel",
+          "time": "14:00",
+          "note": "Check-in and relax"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-03",
+      "title": "Day 2 · Adventure & River Activities",
+      "summary": "Morning yoga, river rafting, visit Triveni Ghat, evening at hotel.",
+      "stops": [
+        {
+          "name": "Premium Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Yoga Session",
+          "kind": "activity",
+          "time": "08:30",
+          "duration_min": 60
+        },
+        {
+          "name": "River Rafting",
+          "kind": "activity",
+          "time": "10:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Triveni Ghat",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Premium Hotel (TBD)",
+          "kind": "hotel",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-04",
+      "title": "Day 3 · Sightseeing & Family Fun",
+      "summary": "Visit Neelkanth Mahadev Temple, Beatles Ashram, family activities at hotel.",
+      "stops": [
+        {
+          "name": "Premium Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Neelkanth Mahadev Temple",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Beatles Ashram",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Premium Hotel (TBD)",
+          "kind": "hotel",
+          "time": "17:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-03-05",
+      "title": "Day 4 · Nature & Relaxation",
+      "summary": "Visit Rajaji National Park, picnic lunch, evening spa at hotel.",
+      "stops": [
+        {
+          "name": "Premium Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Rajaji National Park",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 180
+        },
+        {
+          "name": "Picnic Lunch (TBD)",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Premium Hotel (TBD)",
+          "kind": "hotel",
+          "time": "16:00"
+        },
+        {
+          "name": "Spa Session",
+          "kind": "activity",
+          "time": "17:00",
+          "duration_min": 60
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-03-06",
+      "title": "Day 5 · Local Culture & Departure",
+      "summary": "Explore local markets, visit Parmarth Niketan, drive back to Delhi.",
+      "stops": [
+        {
+          "name": "Premium Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Local Markets",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Parmarth Niketan",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Drive: Rishikesh to Delhi",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 360,
+          "distance_km": 240,
+          "note": "Private car transfer"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-03-07",
+      "title": "Day 6 · Arrival in Delhi",
+      "summary": "Arrive in Delhi, trip ends.",
+      "stops": [
+        {
+          "name": "Delhi",
+          "kind": "transport",
+          "time": "08:00",
+          "note": "Trip ends in Delhi"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T22:12:37.571844",
+  "id": "rishikesh_2027-03-02_2027-03-07",
+  "user_id": "corpus-rishikesh-premium-young-family-5d"
+}

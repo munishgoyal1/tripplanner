@@ -1285,6 +1285,44 @@ def test_a_throttle_never_waits_without_bound() -> None:
     assert generate._retry_delay(forever, attempt=1) == generate._MAX_RETRY_WAIT_SEC
 
 
+def test_api_health_check_explains_a_refused_local_connection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import urllib.error
+    import urllib.request
+
+    from tripplanner.validation import generate
+
+    def refused(*_args: object, **_kwargs: object) -> object:
+        raise urllib.error.URLError(ConnectionRefusedError(61, "Connection refused"))
+
+    monkeypatch.setattr(urllib.request, "urlopen", refused)
+
+    error = generate.api_health_error("http://127.0.0.1:8110")
+
+    assert error is not None
+    assert "Connection refused" in error
+
+
+def test_exhausted_connection_refusals_are_an_api_outage(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import urllib.error
+
+    from tripplanner.validation import generate
+
+    def refused(*_args: object, **_kwargs: object) -> None:
+        raise urllib.error.URLError(ConnectionRefusedError(61, "Connection refused"))
+
+    monkeypatch.setattr(generate, "_ask", refused)
+    monkeypatch.setattr(generate.time, "sleep", lambda _seconds: None)
+
+    error = generate._send_with_retry("http://127.0.0.1:8110", "plan", "user", "request")
+
+    assert error is not None
+    assert error.startswith("API unavailable:")
+
+
 def test_reviews_are_kept_in_the_cache_file() -> None:
     """Owner decision: keep the grounding whole while the product is small."""
     from tripplanner.validation import place_cache

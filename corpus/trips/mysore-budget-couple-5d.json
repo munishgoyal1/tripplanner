@@ -1,0 +1,328 @@
+{
+  "status": "draft",
+  "trip_id": "mysore_2027-09-10_2027-09-15",
+  "trip_number": 1,
+  "created_at": "2026-08-18T18:33:00.771661",
+  "destination": "Mysore",
+  "origin": "Bangalore",
+  "departure_date": "2027-09-10",
+  "return_date": "2027-09-15",
+  "travelers": "2 adults",
+  "notes": "Total budget INR 80,000 for the trip. Balanced pace. 3-star or better hotels. Prefer train or car for Bangalore-Mysore.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Mysore",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Radisson Blu Plaza Hotel Mysore",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp31ba5"
+      },
+      "address": "1 MG Road, Mysore 570001, India",
+      "rating": 4.5,
+      "price_per_night": 6500,
+      "total_price": 32500,
+      "checkin": "2027-09-10",
+      "checkout": "2027-09-15",
+      "nights": 5
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-09-10",
+      "title": "Day 1 · Arrival & Mysore Palace",
+      "summary": "Arrive in Mysore, check in at Radisson Blu Plaza Hotel, visit Mysore Palace, and enjoy dinner at a local restaurant.",
+      "stops": [
+        {
+          "name": "Drive: Bangalore to Mysore",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 210,
+          "distance_km": 145,
+          "note": "Morning transfer by train or car"
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Mysore Palace",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Hotel Pai Vista Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-09-11",
+      "title": "Day 2 · Chamundi Hill & Zoo",
+      "summary": "Morning visit to Chamundi Hill, afternoon at Mysore Zoo, lunch at Oyster Bay, dinner at hotel.",
+      "stops": [
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Chamundi Hill",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Oyster Bay",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Mysore Zoo",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "note": "Return"
+        },
+        {
+          "name": "Hotel Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-09-12",
+      "title": "Day 3 · Srirangapatna & Brindavan Gardens",
+      "summary": "Explore Srirangapatna in the morning, lunch at The Old House, evening at Brindavan Gardens with musical fountain show.",
+      "stops": [
+        {
+          "name": "Drive: Mysore to Srirangapatna",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 30,
+          "distance_km": 15,
+          "note": "Short drive"
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Srirangapatna",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 180
+        },
+        {
+          "name": "The Old House",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Brindavan Gardens",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "note": "Return"
+        },
+        {
+          "name": "Hotel Restaurant",
+          "kind": "meal",
+          "time": "20:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-09-13",
+      "title": "Day 4 · St. Philomena’s Church & Shopping",
+      "summary": "Visit St. Philomena’s Church, shop at Devaraja Market, lunch at Gufha Restaurant, evening leisure.",
+      "stops": [
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "St. Philomena’s Church",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Devaraja Market",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Gufha Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "note": "Return"
+        },
+        {
+          "name": "Hotel Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-09-14",
+      "title": "Day 5 · Departure",
+      "summary": "Check out, visit Railway Museum, lunch at Mosaic Restaurant, return to Bangalore.",
+      "stops": [
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Railway Museum Mysore",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Mosaic Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Drive: Mysore to Bangalore",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 210,
+          "distance_km": 150,
+          "note": "Private cab"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-09-15",
+      "title": "Day 6 · Buffer/Return",
+      "summary": "Buffer day for travel or relaxation, trip ends.",
+      "stops": [
+        {
+          "name": "Radisson Blu Plaza Hotel Mysore",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Relax or check-out"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 32500,
+    "meals": 9000,
+    "activities": 4000,
+    "transport": 12000,
+    "misc": 5000
+  },
+  "total_cost": 62500,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-18T18:40:10.326683"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T18:40:10.327389",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T18:39:50",
+      "expires_at": "2026-08-19T06:39:50"
+    }
+  ],
+  "id": "mysore_2027-09-10_2027-09-15",
+  "user_id": "corpus-mysore-budget-couple-5d"
+}

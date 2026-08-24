@@ -1,0 +1,258 @@
+{
+  "status": "draft",
+  "trip_id": "cape_town_2027-11-12_2027-11-17",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:19:38.074919",
+  "destination": "Cape Town",
+  "origin": "Mumbai",
+  "departure_date": "2027-11-12",
+  "return_date": "2027-11-17",
+  "travelers": "4 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Cape Town",
+    "estimated_planned_minutes": 1144,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "8 preference-matched places account for about 1144 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-12",
+      "title": "Arrival in Cape Town",
+      "summary": "Arrive in Cape Town from Mumbai, transfer to hotel, relax and explore the V&A Waterfront in the evening.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Cape Town",
+          "kind": "flight",
+          "time": "06:00",
+          "note": "Overnight or early morning arrival depending on flight schedule"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "V&A Waterfront",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Evening stroll and dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-13",
+      "title": "Robben Island & District Six",
+      "summary": "Morning ferry to Robben Island, afternoon at District Six Museum, explore local cuisine.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Robben Island",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 240,
+          "note": "Book ferry in advance"
+        },
+        {
+          "name": "District Six Museum",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 90,
+          "note": "Heritage and history"
+        },
+        {
+          "name": "Biesmiellah Restaurant",
+          "kind": "meal",
+          "time": "15:30",
+          "note": "Cape Malay cuisine, highly rated"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-14",
+      "title": "Castle of Good Hope & Bo-Kaap",
+      "summary": "Explore the Castle of Good Hope, walk through Bo-Kaap, and visit the Bo-Kaap Museum.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Castle of Good Hope",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Guided tour recommended"
+        },
+        {
+          "name": "Bo-Kaap Museum",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Heritage walk in colorful district"
+        },
+        {
+          "name": "Bo-Kaap Deli",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Lunch in Bo-Kaap, local specialties"
+        },
+        {
+          "name": "Company's Garden",
+          "kind": "attraction",
+          "time": "15:45",
+          "duration_min": 90,
+          "note": "Relax and enjoy the gardens"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-15",
+      "title": "Iziko Museums & Groot Constantia",
+      "summary": "Visit Iziko Slave Lodge and South African Museum, then tour Groot Constantia Wine Estate.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Iziko Slave Lodge",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "History of slavery in South Africa"
+        },
+        {
+          "name": "Iziko South African Museum",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Natural and cultural history"
+        },
+        {
+          "name": "The Company's Garden Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch in historic garden setting"
+        },
+        {
+          "name": "Groot Constantia Wine Estate",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 150,
+          "note": "Heritage wine estate tour"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-16",
+      "title": "St. George's Cathedral & Departure",
+      "summary": "Visit St. George's Cathedral, walk Adderley Street, last-minute shopping, and depart for Mumbai.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "St. George's Cathedral",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60,
+          "note": "Historic Anglican cathedral"
+        },
+        {
+          "name": "Adderley Street",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Heritage walk and shopping"
+        },
+        {
+          "name": "Truth Coffee Roasting",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Award-winning coffee and lunch"
+        },
+        {
+          "name": "Flight: Cape Town to Mumbai",
+          "kind": "flight",
+          "time": "18:00",
+          "note": "Evening departure"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "ZAR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T19:22:15.196967",
+  "id": "cape_town_2027-11-12_2027-11-17",
+  "user_id": "corpus-capetown-heritage-friends-5d"
+}

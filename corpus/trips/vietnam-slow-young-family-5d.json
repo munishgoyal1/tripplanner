@@ -1,0 +1,399 @@
+{
+  "status": "draft",
+  "trip_id": "vietnam_hanoi_ha_long_bay_2027-11-01_2027-11-06",
+  "trip_number": 1,
+  "created_at": "2026-08-18T21:41:31.730833",
+  "destination": "Vietnam (Hanoi & Ha Long Bay)",
+  "origin": "Mumbai",
+  "departure_date": "2027-11-01",
+  "return_date": "2027-11-06",
+  "travelers": "2 adults, 2 children (ages 6 and 9)",
+  "notes": "Slow pace, free afternoons, family-friendly.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Vietnam",
+    "estimated_planned_minutes": 984,
+    "evidence_place_count": 6,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "6 preference-matched places account for about 984 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Deluxe Room at Lotte Hotel Hanoi",
+      "kind": "hotel",
+      "city": "Hanoi",
+      "address": "54 Lieu Giai St, Ba Dinh, Hanoi",
+      "checkin": "2027-11-01",
+      "checkout": "2027-11-03",
+      "price_per_night": 145,
+      "currency": "USD",
+      "total_price": 290,
+      "provider": "liteapi",
+      "google_rating": 4.7,
+      "reviews_count": 3200,
+      "amenities": [
+        "pool",
+        "kids club",
+        "breakfast included",
+        "family rooms"
+      ],
+      "note": "Top-rated family hotel with pool and kids club"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-01",
+      "title": "Arrival in Hanoi",
+      "summary": "Arrive in Hanoi, check in to hotel, explore the Old Quarter and Hoan Kiem Lake. Free afternoon for rest or light stroll.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Hanoi",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "14:00",
+          "duration_min": 360,
+          "note": "Morning flight, direct if possible"
+        },
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Hanoi Old Quarter",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "Family-friendly walk"
+        },
+        {
+          "name": "Hoan Kiem Lake",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 60,
+          "note": "Relax by the lake"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-02",
+      "title": "Hanoi Sightseeing",
+      "summary": "Morning visit to Temple of Literature, followed by Thang Long Water Puppet Theatre. Free afternoon.",
+      "stops": [
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Temple of Literature",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Thang Long Water Puppet Theatre",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-03",
+      "title": "Transfer to Ha Long Bay",
+      "summary": "Morning transfer to Ha Long Bay, check in, free afternoon at leisure.",
+      "stops": [
+        {
+          "name": "Drive: Hanoi to Ha Long Bay",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "distance_km": 160,
+          "note": "Private car or shuttle"
+        },
+        {
+          "name": "Hotel in Hanoi",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "11:30"
+        },
+        {
+          "name": "Hotel in Ha Long Bay",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "13:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-04",
+      "title": "Ha Long Bay Day Cruise",
+      "summary": "Morning cruise on Ha Long Bay, free afternoon for beach or pool time.",
+      "stops": [
+        {
+          "name": "Hotel in Ha Long Bay",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Ha Long Bay Day Cruise",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 360,
+          "note": "Family-friendly cruise"
+        },
+        {
+          "name": "Hotel in Ha Long Bay",
+          "kind": "hotel",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-05",
+      "title": "Ha Long Bay Leisure",
+      "summary": "Relaxing morning at Ha Long Bay, optional Vietnamese cooking class. Free afternoon.",
+      "stops": [
+        {
+          "name": "Hotel in Ha Long Bay",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Vietnamese Cooking Class",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Fun for kids"
+        },
+        {
+          "name": "Hotel in Ha Long Bay",
+          "kind": "hotel",
+          "note": "Return for free afternoon"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-11-06",
+      "title": "Return to Mumbai",
+      "summary": "Checkout, transfer to Hanoi, flight back to Mumbai.",
+      "stops": [
+        {
+          "name": "Hotel in Ha Long Bay",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Drive: Ha Long Bay to Hanoi",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "distance_km": 160,
+          "note": "Private car or shuttle"
+        },
+        {
+          "name": "Flight: Hanoi to Mumbai",
+          "kind": "flight",
+          "time": "15:00",
+          "arrival_time": "21:00",
+          "duration_min": 360,
+          "note": "Evening flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T21:46:20.664032",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T21:46:20",
+      "expires_at": "2026-08-19T09:46:20"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_hanoi_2027_11_01_2027_11_03",
+      "kind": "lodging",
+      "created_at": "2026-08-18T16:13:53.984193Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Hanoi",
+        "date": "2027-11-01"
+      },
+      "subject": "Stay in Hanoi",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_f90d23a3d64c",
+      "options": [
+        {
+          "id": "opt_stay_f90d23a3d64c",
+          "mode": null,
+          "label": "Pan Pacific Hanoi",
+          "detail": "Deluxe Room",
+          "price": {
+            "amount": 339.83,
+            "currency": "USD",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-11-01",
+            "checkout": "2027-11-03",
+            "room_name": "Deluxe Room",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "1 Thanh Nien Road",
+            "rating": 8.8,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp30c41",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEMR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpSR0VZREM3QlNHQVpET01KUkdBWlhZWkxPTDVLVkc3Q0pKWjZGS1UyRVBRWkVDTVNER1lXVFM3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOWlFHWTRUTU1aU0dBM1RLWUtXS1ozQ0dNSlpIRTNUSU5KREdFMlRPTkJOR0U0VFNOWlVHVjZGRVJTT1BRWkRBTVJYR0VZREVOQlJHQVlEQTdCUlBSSkRDTUpWR0I2REdNWlpIQVpTR1VTUEVOSkVNVFJER0lZREVOWk5HRVlDMk1SVUVBWVRBT1JRR0FSUaNwcmPLQHU9R64UeuGlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkszIwMjctMTAtMzAgMTA6MDA6MDCicnSjUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm6rRGVsdXhlIFJvb22jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMTAtMjQgMTA6MDA6MDChYctAZT1wo9cKPaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMTAtMzAgMTA6MDA6MDChYctAdT1HrhR64aFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjE5OTc0NaNzaWQCo2hpZKdscDMwYzQxo29jY5GCoWECoWOSBgmjY3Vyo1VTRKJnbqJJTqJjaaoyMDI3LTExLTAxomNvqjIwMjctMTEtMDOjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNWE2OGUyY3AxS1JQM2J1QUVVOE9uNlJ3VjFpNTY5MFNralOjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0Aw_XCj1wo9oWOjVVNEhKFpwqFko1ZBVKFhy0A7MKPXCj1xoWOjVVNEomxwwKNia3QG",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHJEZUOTKOKRDUOWSTJBMU2SSEI5EVSRCFJZNFER2FLFCEGN2CKNDUCWSEJ5GUUUSHIFNFQWK2JRHUYNKLKZDTOQ2KJJNDMRSLKUZEKUCRLJCUGTKTIRDVSV2UKM3UEVKHKVNEIUZXIRFEWQSUKZFVGRBUI5CTGVCRJZNFCR2ZGRKE2TK2KNDUCM2UJNMUWV2LLIZUGR2NJJNEQRJTKREU4SSEI5CTEVCPJZBE4R2FGRKFGTS2KVDVMNSGIVJFGT2QKFNEIQKNKJMEORKZIRCU4QSSI5AVSRCBG5BFEUCSJJCEGTKKKZDUENSEI5GVUWSIIFNFGR2VKNIEKTSKIVGVIUSEI5EVSRCFJZNE4R2FLFBTETKSKVCUCWKUIFHVEUKHIFJFC7BTGM4S4OBTPQZDAMRXFUYTALJTGAQDCMB2GAYDUMBQPRJE67D4PR6EIZLMOV4GKICSN5XW27BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T16:13:53.938198Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_b5306971ccec",
+          "mode": null,
+          "label": "Hanoi Le Jardin Hotel & Spa",
+          "detail": "Family Suite",
+          "price": {
+            "amount": 6831.54,
+            "currency": "USD",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs $6,492 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-11-01",
+            "checkout": "2027-11-03",
+            "room_name": "Family Suite",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "46A Nguyen Truong To",
+            "rating": 10,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1d463b",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kzRE1NSldNUTNEU05UREc0NFRFTUJYR00zVEtOUlpHNDJETU5MNEdFUlRFTUJTRzRZVENNQlJQUVpEQU1SWEdFWVRBTTM0TVZYRjZWS1RQUkVVNDdDVktOQ0hZTVNCR0pCVE1MSlpQUTJES01SWlBSVVZBWjJWSkI2RENOWllHNFlETU9KV0dNWkRBTlpWTUZMRk01UkRHRTRUQ09CVkdJWlNHT0JWR1lXVENPSlJIQTJURU0zNEtKREU0N0JTR0FaRE9NSlFHSTNUQ01CUUdCNkRDN0NTR0VZVEtNQ0NIRTNUU1RSUUtVWUhZTlJZR01ZVEtOQkRJSkJDR1VTR0pZUlRFTUJTRzRXVENNQk5HSTNTQU1KUUhJWURBSVmjcHJjy0C6r4o9cKPXpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTEwLTI3IDEwOjAwOjAwonJ0o1JGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JurEZhbWlseSBTdWl0ZaNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJGFoXSzMjAyNy0xMC0yNyAxMDowMDowMKFhy0Cqr4o9cKPXoWOjVVNEonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSnMTkxODUyM6NzaWQCo2hpZKhscDFkNDYzYqNvY2ORgqFhAqFjkgYJo2N1cqNVU0SiZ26iSU6iY2mqMjAyNy0xMS0wMaJjb6oyMDI3LTExLTAzo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTVhNjhlMmNwMUtSUDNidUFFVThPbjZSd1YxaTU2OTBTa2pTo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWS3UHJvcGVydHkgc2VydmljZSBjaGFyZ2WhYctAdVlHrhR64aFjo1VTRIShacKhZKNWQVShYctAgRQo9cKPXKFjo1VTRKJscMCjYmt0AA==",
+              "rate_id": "I5MTGRCNJVFFOTKRGNCFGTSUIRDTINCUIVGUEWCHJUZVIS2OKJNEONBSIRGU4TBUI5CVEVCFJVBFGRZULFKEGTKCKJIFCWSEIFGVEWCHIVMVIQKNGM2E2VSYIY3FMS2UKBJEKVJUG5BVMS2OINEFSTKTIJDUUQSUJVGEUWSQKEZEIS2NKJNFAUSVKZAVUMSWJJBDMRCDJZNFSRZULFCE2T2KK5DU2WSEIFHFUVSNIZGEMTJVKJCEORJUKRBU6QSWI5EVUU2HJ5BFMR2ZK5KEGT2KKJEECMSUIVGTGNCLJJCEKNBXIJJUOQK2IRHU2SSRI5ETGVCDJVBFCR2CGZCEGN2DKNDUKWKUJNGUGQ2IIUZVIU2UKJIUWVKZJBMU4USZI5GVSVCLJZBEISKKIJBUOVKTI5FFSUSUIVGUEU2HGRLVIQ2NIJHEOSJTKNAU2SSRJBEVSRCBJFMXYNRYGMYS4NJUPQZDAMRXFUYTALJSG4QDCMB2GAYDUMBQPRBES7D4PR6EMYLNNFWHSICTOVUXIZL4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T16:13:53.938198Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 339.83,
+        "delta": null,
+        "currency": "USD"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "vietnam_hanoi_ha_long_bay_2027-11-01_2027-11-06",
+  "user_id": "corpus-vietnam-slow-young-family-5d"
+}
