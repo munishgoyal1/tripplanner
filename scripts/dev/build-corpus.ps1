@@ -11,6 +11,9 @@
   which calls the model and the place providers. Spend is capped per run and
   cumulatively, and recorded in corpus/spend-ledger.json. A finished run also
   saves the place grounding it warmed into corpus/places.json.
+
+    Pass --country india to build a domestic India corpus with deeper variations
+    of destination, duration, party composition, pace, interests and constraints.
 #>
 
 [CmdletBinding()]

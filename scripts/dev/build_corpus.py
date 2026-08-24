@@ -20,7 +20,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from tripplanner.validation import budget as budget_module  # noqa: E402
-from tripplanner.validation import generate, matrix, runner  # noqa: E402
+from tripplanner.validation import generate, india_matrix, matrix, runner  # noqa: E402
 
 DEFAULT_DATABASE = "tripplanner-sbx-2-auto-validation"
 DEFAULT_API = "http://127.0.0.1:8110"
@@ -42,6 +42,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--database", default=DEFAULT_DATABASE)
     parser.add_argument("--api", default=DEFAULT_API)
     parser.add_argument(
+        "--country",
+        choices=("global", "india"),
+        default="global",
+        help="request matrix to use; defaults to the existing global matrix",
+    )
+    parser.add_argument(
         "--workers",
         type=int,
         default=generate.DEFAULT_WORKERS,
@@ -59,9 +65,15 @@ def main(argv: list[str] | None = None) -> int:
 
     catalog = generate.catalog_for(corpus_root)
     summary = catalog.summary()
-    queued = matrix.pending(catalog, limit=args.target if args.target > 0 else 0)
+    limit = args.target if args.target > 0 else 0
+    queued = (
+        india_matrix.candidates(catalog, limit=limit)
+        if args.country == "india"
+        else matrix.pending(catalog, limit=limit)
+    )
 
     print(f"Corpus at {corpus_root}")
+    print(f"  request matrix     {args.country}")
     print(f"  already produced   {summary['trips']} trip(s)")
     print(f"  destinations       {summary['destinations']} covered")
     print(f"  spent so far       INR {allowed.spent_inr:.0f} of INR {allowed.cap_inr:.0f}")
@@ -97,6 +109,7 @@ def main(argv: list[str] | None = None) -> int:
         api=args.api,
         target=args.target,
         requested_budget_inr=args.budget,
+        requests=queued,
         on_progress=_log,
         workers=args.workers,
     )

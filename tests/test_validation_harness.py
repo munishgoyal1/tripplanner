@@ -16,6 +16,7 @@ from tripplanner.validation import (
     corpus,
     findings,
     generate,
+    india_matrix,
     matrix,
     mutations,
     observations,
@@ -948,6 +949,57 @@ def test_a_produced_seed_drops_out_of_the_queue() -> None:
     queue = matrix.pending(catalog, limit=len(matrix.REQUESTS))
 
     assert produced.slug not in {request.slug for request in queue}
+
+
+def test_india_matrix_balances_destinations_before_adding_depth() -> None:
+    queue = india_matrix.candidates(Catalog(), limit=len(india_matrix.DESTINATIONS))
+
+    assert len({request.destination for request in queue}) == len(india_matrix.DESTINATIONS)
+    assert all(request.destination.startswith("india:") for request in queue)
+    assert all("within India" in request.message for request in queue)
+
+
+def test_india_matrix_keeps_party_and_duration_variations_for_same_emphasis() -> None:
+    all_requests = india_matrix.candidates(Catalog(), limit=0)
+    goa_relaxation = [
+        request
+        for request in all_requests
+        if request.destination == "india:goa" and request.emphasis == "relaxation"
+    ]
+
+    assert {request.days for request in goa_relaxation} == {3, 4, 5, 7}
+    assert {request.party for request in goa_relaxation} == {
+        party.key for party in india_matrix.PARTIES
+    }
+
+
+def test_india_matrix_deduplicates_only_the_exact_scenario() -> None:
+    first = next(
+        request
+        for request in india_matrix.candidates(Catalog(), limit=0)
+        if request.destination == "india:goa" and request.emphasis == "relaxation"
+    )
+    catalog = Catalog(
+        [{
+            "slug": first.slug,
+            "signature": first.signature.key,
+            "destination": first.destination,
+            "emphasis": first.emphasis,
+        }]
+    )
+
+    remaining = india_matrix.candidates(catalog, limit=0)
+    matching = [
+        request
+        for request in remaining
+        if request.destination == first.destination and request.emphasis == first.emphasis
+    ]
+
+    assert first.slug not in {request.slug for request in remaining}
+    assert matching
+    assert any(
+        request.party != first.party or request.days != first.days for request in matching
+    )
 
 
 def test_a_run_keeps_asking_until_the_budget_is_spent(
