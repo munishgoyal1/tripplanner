@@ -30,6 +30,7 @@ class Rule:
     statement: str
     severity: str
     evaluated_in: str
+    requires_places: bool = False
 
 
 def _gate_codes() -> frozenset[str]:
@@ -45,6 +46,7 @@ def registry() -> tuple[Rule, ...]:
     from tripplanner.validation.render import RENDER_RULES
 
     gates = _gate_codes()
+    place_rules = frozenset({"I3", "I4", "I9", "I11"})
     rules: list[Rule] = [
         Rule(
             code=code,
@@ -52,6 +54,7 @@ def registry() -> tuple[Rule, ...]:
             statement=statement,
             severity=GATE if code in gates else REPORT,
             evaluated_in="tripplanner.tools.trip_guard",
+            requires_places=code in place_rules,
         )
         for code, title, statement in INVARIANTS
     ]
@@ -71,6 +74,7 @@ def registry() -> tuple[Rule, ...]:
             statement=statement,
             severity=REPORT,
             evaluated_in="tripplanner.validation.render",
+            requires_places=True,
         )
         for code, statement in RENDER_RULES
     )

@@ -29,8 +29,16 @@ class AuditResult:
         return len(self.records)
 
     @property
+    def raw_corpus_size(self) -> int:
+        return sum(len(record.links) for record in self.records)
+
+    @property
     def provenance_mix(self) -> dict[str, int]:
         return corpus_module.counts_by_provenance(self.records)
+
+    @property
+    def cohort_mix(self) -> dict[str, int]:
+        return corpus_module.counts_by_cohort(self.records)
 
 
 def corpus_root(repo_root: Path) -> Path:
@@ -48,6 +56,7 @@ def collect(
     revisions: bool = True,
     databases: list[str] | None = None,
     fixtures: bool = True,
+    generated_finals: bool = True,
 ) -> tuple[list[CorpusRecord], list[str], list[str]]:
     """Gather every trip the harness can see, saying what it read and skipped."""
     from tripplanner.validation.emulator import EmulatorUnreachableError, list_sandbox_databases
@@ -84,6 +93,18 @@ def collect(
         found = corpus_module.from_fixtures(directory)
         if found:
             sources.append(f"fixtures ({len(found)})")
+        records.extend(found)
+
+    if generated_finals:
+        from tripplanner.validation import place_cache
+
+        root = corpus_root(repo_root)
+        found = corpus_module.from_generated_finals(
+            root / "trips",
+            places=place_cache.load(place_cache.cache_path(root)),
+        )
+        if found:
+            sources.append(f"generated finals ({len(found)})")
         records.extend(found)
 
     saved = corpus_module.from_lane_snapshots(corpus_root(repo_root))

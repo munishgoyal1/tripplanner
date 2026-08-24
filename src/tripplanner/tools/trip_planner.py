@@ -57,6 +57,7 @@ from tripplanner.tools.trip_guard import (
     validate_plan,
 )
 from tripplanner.tools.trip_validation import (  # noqa: F401
+    _dietary_preferences,
     _empty_itinerary_day_warnings,
     _hotel_destination_errors,
     _hotel_selection_warnings,
@@ -65,6 +66,8 @@ from tripplanner.tools.trip_validation import (  # noqa: F401
     _restaurant_itinerary_warnings,
     _round_trip_transport_warnings,
     assess_itinerary_change,
+    finalization_gaps,
+    persistence_sanity_errors,
     planning_completion_gaps,
 )
 from tripplanner.tools.user_preferences import add_past_trip, load_preferences
@@ -2111,15 +2114,6 @@ def update_trip_plan(updates_json: str) -> str:
             + " Search again using the active trip destination and resubmit the full update."
         )
 
-    if "day_wise_itinerary" in updates:
-        time_errors = _itinerary_time_errors(updates.get("day_wise_itinerary"))
-        if time_errors:
-            return (
-                "Error: itinerary times must increase in circuit order. "
-                + " ".join(time_errors)
-                + " Resubmit the full corrected day_wise_itinerary."
-            )
-
     allowed_keys = {
         "selected_flights", "selected_hotels", "selected_activities",
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
@@ -2162,6 +2156,15 @@ def update_trip_plan(updates_json: str) -> str:
                 )
             plan[key] = val
 
+    if "day_wise_itinerary" in updates:
+        time_errors = _itinerary_time_errors(plan.get("day_wise_itinerary"))
+        if time_errors:
+            return (
+                "Error: itinerary times must increase in circuit order. "
+                + " ".join(time_errors)
+                + " Resubmit the full corrected day_wise_itinerary."
+            )
+
     if "selected_hotels" in updates and _sync_replaced_hotel_anchors(
         plan,
         before.get("selected_hotels"),
@@ -2195,9 +2198,20 @@ def update_trip_plan(updates_json: str) -> str:
     restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
 
     resettled_days = _settle_plan_legs(plan)
+    sanity_errors = persistence_sanity_errors(plan)
+    if sanity_errors:
+        return (
+            "Error: itinerary sanity validation rejected this update before persistence. "
+            + " ".join(sanity_errors[:5])
+            + " Replan the affected journey or day as a whole and resubmit it."
+        )
     _save_active_trip(plan)
     broken_invariants = _newly_broken(before, plan)
-    restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))
+    restaurant_warnings = _restaurant_itinerary_warnings(
+        plan.get("day_wise_itinerary"),
+        cities=_itinerary_hotel_locations(plan),
+        dietary=_dietary_preferences(plan),
+    )
     empty_day_warnings = _empty_itinerary_day_warnings(plan.get("day_wise_itinerary"))
     transport_warnings = _round_trip_transport_warnings(plan)
     hotel_warnings = _hotel_selection_warnings(plan)
@@ -2284,6 +2298,15 @@ def finalize_trip() -> str:
         return (
             "Cannot finalize: no flights or hotels selected yet. "
             "Search and select options first."
+        )
+
+    gaps = finalization_gaps(plan)
+    if gaps:
+        reasons = "\n".join(f"- {gap}" for gap in gaps)
+        return (
+            "Cannot finalize: this trip is not ready for booking.\n"
+            f"{reasons}\n"
+            "Resolve these gaps and try finalizing again."
         )
 
     plan["status"] = "finalized"
@@ -2499,4 +2522,3 @@ def resume_trip(destination: str = "", trip_id: str = "") -> str:
         f"{c['hotels']} hotel(s), {c['activities']} activity(ies). "
         f"Continuing where you left off."
     )
-

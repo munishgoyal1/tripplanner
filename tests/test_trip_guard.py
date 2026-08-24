@@ -212,6 +212,146 @@ def test_a_coherent_itinerary_reports_no_coherence_gap(located: None) -> None:
     assert trip_validation.itinerary_coherence_gaps(ROUND_TRIP) == []
 
 
+def test_zero_stay_coverage_fails_for_every_round_trip_night() -> None:
+    no_stay = plan(
+        [
+            [stop("Flight Bengaluru → Indore", "09:00", "flight", 120)],
+            [stop("Rajwada Palace", "10:00")],
+            [stop("Flight Indore → Bengaluru", "18:00", "flight", 120)],
+        ]
+    )
+
+    violations = [item for item in trip_guard.validate_plan(no_stay) if item.code == "I6"]
+
+    assert [item.day for item in violations] == [1, 2]
+    assert all("concrete lodging anchor" in item.message for item in violations)
+
+
+def test_destination_only_trip_requires_stays_before_its_final_day() -> None:
+    destination_only = plan(
+        [
+            [stop("Hotel Sayaji", "13:00", "hotel", 45)],
+            [stop("Rajwada Palace", "10:00")],
+            [stop("Lal Bagh Palace", "10:00")],
+        ],
+        origin="",
+        travel_scope="destination_only",
+    )
+
+    violations = [item for item in trip_guard.validate_plan(destination_only) if item.code == "I6"]
+
+    assert [item.day for item in violations] == [2]
+
+
+def test_multi_city_trip_requires_a_lodging_anchor_for_each_overnight_city() -> None:
+    regional = plan(
+        [
+            [
+                stop("Flight Bengaluru → Jaipur", "09:00", "flight", 120),
+                stop("Rambagh Palace", "13:00", "hotel", 45),
+            ],
+            [
+                stop("Drive Jaipur to Udaipur", "09:00", "transport", 360),
+                stop("City Palace Udaipur", "16:00"),
+            ],
+            [stop("Flight Udaipur → Bengaluru", "18:00", "flight", 120)],
+        ],
+        destination="Rajasthan",
+    )
+
+    violations = [item for item in trip_guard.validate_plan(regional) if item.code == "I6"]
+
+    assert [item.day for item in violations] == [2]
+
+
+def test_overnight_transfer_covers_the_night_without_a_hotel() -> None:
+    transfer = plan(
+        [
+            [
+                stop("Flight Bengaluru → Indore", "09:00", "flight", 120),
+                stop("Hotel Sayaji", "13:00", "hotel", 45),
+            ],
+            [stop("Overnight sleeper train Indore to Jaipur", "21:00", "transport", 600)],
+            [
+                stop("Hotel Rambagh Palace", "08:00", "hotel", 45),
+                stop("Flight Jaipur → Bengaluru", "18:00", "flight", 120),
+            ],
+        ]
+    )
+
+    assert not any(item.code == "I6" for item in trip_guard.validate_plan(transfer))
+
+
+def test_generic_stay_anchor_does_not_cover_a_night() -> None:
+    generic = plan(
+        [
+            [
+                stop("Flight Bengaluru → Indore", "09:00", "flight", 120),
+                stop("Premium Hotel in Indore", "13:00", "hotel", 45),
+            ],
+            [stop("Flight Indore → Bengaluru", "18:00", "flight", 120)],
+        ]
+    )
+
+    violations = [item for item in trip_guard.validate_plan(generic) if item.code == "I6"]
+
+    assert len(violations) == 1
+    assert "bookable stay" in violations[0].message
+
+
+def test_substantial_day_requires_specific_preference_matched_meal() -> None:
+    itinerary = [
+        {
+            "day": 1,
+            "stops": [
+                stop("Sabarmati Ashram", "09:00"),
+                stop("Adalaj Stepwell", "12:00"),
+                {
+                    "name": "Jain Restaurant (Ahmedabad)",
+                    "kind": "meal",
+                    "note": "Jain food",
+                },
+            ],
+        }
+    ]
+    warnings = trip_validation._restaurant_itinerary_warnings(
+        itinerary,
+        cities={"ahmedabad"},
+        dietary=["jain"],
+    )
+    assert any("meal placeholder" in warning for warning in warnings)
+
+    itinerary[0]["stops"][-1] = {
+        "name": "Agashiye - The House of MG",
+        "kind": "meal",
+        "note": "Confirmed Jain thali available",
+    }
+    assert trip_validation._restaurant_itinerary_warnings(
+        itinerary,
+        cities={"ahmedabad"},
+        dietary=["jain"],
+    ) == []
+
+
+@pytest.mark.parametrize(
+    ("day", "stop_name"),
+    [
+        ({"title": "Free day", "summary": "Day at leisure"}, ""),
+        ({"title": "Old City", "summary": "Meals are open for the traveller to choose"}, ""),
+        ({"title": "Transfer to Jaipur", "summary": ""}, "Train Indore to Jaipur"),
+    ],
+)
+def test_explicit_open_meal_exceptions_preserve_substantial_days(
+    day: dict[str, object], stop_name: str
+) -> None:
+    stops = [stop("Rajwada Palace", "09:00"), stop("Lal Bagh Palace", "12:00")]
+    if stop_name:
+        stops.append(stop(stop_name, "16:00", "transport", 180))
+    itinerary = [{"day": 1, **day, "stops": stops}]
+
+    assert trip_validation._restaurant_itinerary_warnings(itinerary) == []
+
+
 def test_a_day_cannot_begin_where_the_trip_never_travelled(located: None) -> None:
     stranded = plan(
         [
@@ -371,6 +511,81 @@ def test_a_traveller_arranging_their_own_arrival_is_not_asked_again() -> None:
         gap
         for gap in trip_validation.planning_completion_gaps(own_arrival)
         if "starts from" in gap
+    ]
+    assert trip_validation.persistence_sanity_errors(own_arrival) == []
+
+
+def test_timeline_includes_hotel_and_transport_duration() -> None:
+    broken = plan(
+        [
+            [
+                stop("Hotel Sayaji checkout", "08:00", "hotel", 45),
+                stop("Rajwada Palace", "10:00"),
+                stop("Drive Indore → Ujjain", "08:30", "transport", 120),
+            ]
+        ]
+    )
+
+    errors = trip_validation._itinerary_time_errors(broken["day_wise_itinerary"])
+
+    assert any("Drive Indore" in error and "not chronological" in error for error in errors)
+
+
+def test_intentional_overnight_journey_remains_chronological() -> None:
+    overnight = plan(
+        [
+            [
+                stop("Night train Indore → Mumbai", "22:00", "transport", 480),
+                stop("Mumbai hotel arrival", "06:00", "hotel", 30),
+            ]
+        ]
+    )
+
+    assert trip_validation._itinerary_time_errors(overnight["day_wise_itinerary"]) == []
+
+
+@pytest.mark.parametrize("mode", ["Train", "Ferry", "Drive"])
+def test_complete_ground_round_trip_needs_no_selected_flight_inventory(mode: str) -> None:
+    complete = plan(
+        [
+            [
+                stop(f"{mode} Bengaluru → Indore", "08:00", "transport", 240),
+                stop("Hotel Sayaji", "13:00", "hotel", 30),
+            ],
+            [
+                stop("Hotel Sayaji checkout", "08:00", "hotel", 30),
+                stop(f"{mode} Ujjain → Bengaluru", "16:00", "transport", 240),
+            ],
+        ]
+    )
+
+    assert trip_validation._round_trip_transport_warnings(complete) == []
+    assert trip_validation._journey_inventory_errors(complete) == []
+
+
+def test_open_jaw_edges_are_complete_when_both_touch_home() -> None:
+    open_jaw = plan(
+        [
+            [
+                stop("Flight Bengaluru → Jaipur", "08:00", "flight", 150),
+                stop("Jaipur Hotel", "12:00", "hotel", 30),
+            ],
+            [
+                stop("Udaipur Hotel checkout", "08:00", "hotel", 30),
+                stop("Flight Udaipur → Bengaluru", "18:00", "flight", 150),
+            ],
+        ],
+        destination="Rajasthan",
+        selected_flights=[{"airline": "Air India"}],
+    )
+
+    assert trip_validation._round_trip_transport_warnings(open_jaw) == []
+    assert trip_validation._journey_inventory_errors(open_jaw) == []
+
+
+def test_narrated_flight_requires_selected_offer() -> None:
+    assert trip_validation._journey_inventory_errors(ROUND_TRIP) == [
+        "The itinerary narrates flight travel but no selected flight offer supports it."
     ]
 
 
@@ -616,8 +831,6 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
-
-
 
 
 
