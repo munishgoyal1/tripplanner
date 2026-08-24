@@ -1179,6 +1179,9 @@ def test_build_corpus_scope_distinguishes_country_from_market(
         True,
     ]
 
+    assert build_corpus.main(["--market", "India", "--dry-run"]) == 0
+    assert "request scope      market:india" in capsys.readouterr().out
+
     with pytest.raises(SystemExit) as error:
         build_corpus.main(["--country", "india", "--market", "india", "--dry-run"])
     assert error.value.code == 2
