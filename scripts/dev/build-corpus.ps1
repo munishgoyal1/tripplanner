@@ -12,8 +12,9 @@
   cumulatively, and recorded in corpus/spend-ledger.json. A finished run also
   saves the place grounding it warmed into corpus/places.json.
 
-    Pass --country india to build a domestic India corpus with deeper variations
-    of destination, duration, party composition, pace, interests and constraints.
+    Pass --country india to build a domestic India corpus. Its reviewable planning
+    heuristics prioritize destination-specific popular durations and likely visitor
+    profiles, then add lower-frequency combinations for edge coverage.
 #>
 
 [CmdletBinding()]

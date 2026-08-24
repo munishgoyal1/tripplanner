@@ -20,7 +20,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from tripplanner.validation import budget as budget_module  # noqa: E402
-from tripplanner.validation import generate, india_matrix, matrix, runner  # noqa: E402
+from tripplanner.validation import (  # noqa: E402
+    generate,
+    india_heuristic_matrix,
+    matrix,
+    runner,
+)
 
 DEFAULT_DATABASE = "tripplanner-sbx-2-auto-validation"
 DEFAULT_API = "http://127.0.0.1:8110"
@@ -67,7 +72,7 @@ def main(argv: list[str] | None = None) -> int:
     summary = catalog.summary()
     limit = args.target if args.target > 0 else 0
     queued = (
-        india_matrix.candidates(catalog, limit=limit)
+        india_heuristic_matrix.candidates(catalog, limit=limit)
         if args.country == "india"
         else matrix.pending(catalog, limit=limit)
     )

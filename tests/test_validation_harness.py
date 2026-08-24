@@ -16,7 +16,7 @@ from tripplanner.validation import (
     corpus,
     findings,
     generate,
-    india_matrix,
+    india_heuristic_matrix,
     matrix,
     mutations,
     observations,
@@ -952,31 +952,49 @@ def test_a_produced_seed_drops_out_of_the_queue() -> None:
 
 
 def test_india_matrix_balances_destinations_before_adding_depth() -> None:
-    queue = india_matrix.candidates(Catalog(), limit=len(india_matrix.DESTINATIONS))
+    queue = india_heuristic_matrix.candidates(
+        Catalog(), limit=len(india_heuristic_matrix.DESTINATIONS)
+    )
 
-    assert len({request.destination for request in queue}) == len(india_matrix.DESTINATIONS)
+    assert len({request.destination for request in queue}) == len(
+        india_heuristic_matrix.DESTINATIONS
+    )
     assert all(request.destination.startswith("india:") for request in queue)
     assert all("within India" in request.message for request in queue)
 
 
-def test_india_matrix_keeps_party_and_duration_variations_for_same_emphasis() -> None:
-    all_requests = india_matrix.candidates(Catalog(), limit=0)
-    goa_relaxation = [
-        request
-        for request in all_requests
-        if request.destination == "india:goa" and request.emphasis == "relaxation"
-    ]
+def test_india_matrix_uses_destination_specific_duration_guidance() -> None:
+    all_requests = india_heuristic_matrix.candidates(Catalog(), limit=0)
+    goa = [request for request in all_requests if request.destination == "india:goa"]
+    ladakh = [request for request in all_requests if request.destination == "india:ladakh"]
 
-    assert {request.days for request in goa_relaxation} == {3, 4, 5, 7}
-    assert {request.party for request in goa_relaxation} == {
-        party.key for party in india_matrix.PARTIES
-    }
+    assert {request.days for request in goa} == {3, 4, 5, 7}
+    assert {request.days for request in ladakh} == {7, 8, 9, 10}
+
+
+def test_india_matrix_prioritizes_likely_destination_audiences() -> None:
+    queue = india_heuristic_matrix.candidates(
+        Catalog(), limit=len(india_heuristic_matrix.DESTINATIONS)
+    )
+    tamil_nadu = next(
+        request for request in queue if request.destination == "india:tamil-nadu"
+    )
+    goa = next(request for request in queue if request.destination == "india:goa")
+
+    assert tamil_nadu.emphasis == "pilgrimage"
+    assert tamil_nadu.party in {"three-generation", "senior-couple"}
+    assert tamil_nadu.days in {4, 5}
+    assert goa.emphasis in {"celebration", "relaxation"}
+    assert any(
+        "Heuristic audience rationale" in item
+        for item in tamil_nadu.scenario_expectations
+    )
 
 
 def test_india_matrix_deduplicates_only_the_exact_scenario() -> None:
     first = next(
         request
-        for request in india_matrix.candidates(Catalog(), limit=0)
+        for request in india_heuristic_matrix.candidates(Catalog(), limit=0)
         if request.destination == "india:goa" and request.emphasis == "relaxation"
     )
     catalog = Catalog(
@@ -988,7 +1006,7 @@ def test_india_matrix_deduplicates_only_the_exact_scenario() -> None:
         }]
     )
 
-    remaining = india_matrix.candidates(catalog, limit=0)
+    remaining = india_heuristic_matrix.candidates(catalog, limit=0)
     matching = [
         request
         for request in remaining
