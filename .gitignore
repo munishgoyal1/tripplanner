@@ -46,6 +46,11 @@ htmlcov/
 # Dev server logs
 logs/
 
+# Generated audit history; reports are durable local evidence, not source code.
+audit/reports/
+audit/latest.json
+audit/index.json
+
 # Temporary Microsoft Office lock files
 ~$*
 

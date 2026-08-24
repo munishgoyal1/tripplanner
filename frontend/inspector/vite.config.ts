@@ -5,7 +5,7 @@ import { defineConfig, type Plugin } from "vite";
 
 const repoRoot = resolve(__dirname, "..", "..");
 
-// The report is generated into the repo's corpus/ directory, outside this app's
+// The report is generated into the repo's audit/ directory, outside this app's
 // root. Serving it live rather than copying keeps the inspector honest: it can
 // never show a report older than the last audit run.
 function auditReportPlugin(): Plugin {
@@ -13,7 +13,7 @@ function auditReportPlugin(): Plugin {
     server.middlewares.use((req, res, next) => {
       if ((req.url ?? "").split("?")[0] !== "/audit-report.json") return next();
       try {
-        const body = readFileSync(resolve(repoRoot, "corpus", "audit-report.json"));
+        const body = readFileSync(resolve(repoRoot, "audit", "latest.json"));
         res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-cache" });
         res.end(body);
       } catch {
