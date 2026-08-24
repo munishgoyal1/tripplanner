@@ -23,6 +23,7 @@ from tripplanner.validation import budget as budget_module  # noqa: E402
 from tripplanner.validation import (  # noqa: E402
     generate,
     india_heuristic_matrix,
+    india_outbound_matrix,
     matrix,
     runner,
 )
@@ -38,6 +39,14 @@ def _log(message: str) -> None:
     print(message, flush=True)
 
 
+def _selected_market(market: str | None, country: str | None) -> str:
+    if market and country:
+        raise ValueError("use --market or the compatibility --country option, not both")
+    if country == "india":
+        return "india-domestic"
+    return market or country or "global"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--budget", type=float, default=None, help="INR for this run")
@@ -47,10 +56,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--database", default=DEFAULT_DATABASE)
     parser.add_argument("--api", default=DEFAULT_API)
     parser.add_argument(
+        "--market",
+        choices=("global", "india-domestic", "india-outbound"),
+        default=None,
+        help="weighted travel market to build; defaults to the existing global matrix",
+    )
+    parser.add_argument(
         "--country",
         choices=("global", "india"),
-        default="global",
-        help="request matrix to use; defaults to the existing global matrix",
+        default=None,
+        help="compatibility alias: --country india selects --market india-domestic",
     )
     parser.add_argument(
         "--workers",
@@ -60,6 +75,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--dry-run", action="store_true", help="plan the run, spend nothing")
     args = parser.parse_args(argv)
+    try:
+        selected_market = _selected_market(args.market, args.country)
+    except ValueError as error:
+        parser.error(str(error))
 
     corpus_root = runner.corpus_root(REPO_ROOT)
     try:
@@ -71,14 +90,15 @@ def main(argv: list[str] | None = None) -> int:
     catalog = generate.catalog_for(corpus_root)
     summary = catalog.summary()
     limit = args.target if args.target > 0 else 0
-    queued = (
-        india_heuristic_matrix.candidates(catalog, limit=limit)
-        if args.country == "india"
-        else matrix.pending(catalog, limit=limit)
-    )
+    if selected_market == "india-domestic":
+        queued = india_heuristic_matrix.candidates(catalog, limit=limit)
+    elif selected_market == "india-outbound":
+        queued = india_outbound_matrix.candidates(catalog, limit=limit)
+    else:
+        queued = matrix.pending(catalog, limit=limit)
 
     print(f"Corpus at {corpus_root}")
-    print(f"  request matrix     {args.country}")
+    print(f"  request market     {selected_market}")
     print(f"  already produced   {summary['trips']} trip(s)")
     print(f"  destinations       {summary['destinations']} covered")
     print(f"  spent so far       INR {allowed.spent_inr:.0f} of INR {allowed.cap_inr:.0f}")
