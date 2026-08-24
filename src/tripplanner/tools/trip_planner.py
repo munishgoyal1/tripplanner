@@ -1556,6 +1556,30 @@ def repair_active_trip(*, expected_updated_at: str = "") -> dict[str, Any]:
     }
 
 
+@_serialized_mutation
+def refresh_active_trip_facts(*, expected_updated_at: str = "") -> dict[str, Any]:
+    """Recheck itinerary place facts and persist the resulting observation."""
+    from tripplanner.web import trip_freshness
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+        }
+    outcome = trip_freshness.refresh(plan)
+    _save_active_trip(outcome["plan"])
+    return {
+        "ok": True,
+        "stale": False,
+        "message": "Rechecked the itinerary's place facts.",
+        **{key: value for key, value in outcome.items() if key != "plan"},
+    }
+
+
 def _mirror_to_history(plan: dict[str, Any]) -> None:
     """Persist the plan into the per-user trips collection under its trip_id."""
     tid = plan.get("trip_id")

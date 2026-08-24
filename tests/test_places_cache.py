@@ -121,6 +121,39 @@ def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
     assert calls["count"] == 2
 
 
+def test_refresh_details_preserves_known_facts_when_lookup_fails(_isolate, monkeypatch):
+    known = pc.get_details("Taj", "Goa")
+    monkeypatch.setattr(pc, "_lookup_place", lambda _name, _city: None)
+
+    refreshed, succeeded = pc.refresh_details("Taj", "Goa")
+
+    assert succeeded is False
+    assert refreshed and refreshed["place_id"] == known["place_id"]
+    assert pc.get_details("Taj", "Goa")["place_id"] == known["place_id"]
+
+
+def test_refresh_details_replaces_known_facts(_isolate, monkeypatch):
+    pc.get_details("Taj", "Goa")
+    monkeypatch.setattr(
+        pc,
+        "_lookup_place",
+        lambda name, _city: {
+            "place_id": "new-id",
+            "name": name,
+            "business_status": "CLOSED_TEMPORARILY",
+            "lat": 15.49,
+            "lng": 73.77,
+            "photo_refs": [],
+        },
+    )
+
+    refreshed, succeeded = pc.refresh_details("Taj", "Goa")
+
+    assert succeeded is True
+    assert refreshed and refreshed["place_id"] == "new-id"
+    assert pc.get_details("Taj", "Goa")["business_status"] == "CLOSED_TEMPORARILY"
+
+
 def test_persist_then_reload_restores_details(_isolate, tmp_path):
     pc.get_summary("Taj", "Goa")
     # File written under the tmp TRIPPLANNER_HOME.

@@ -573,6 +573,33 @@ export interface VerificationDay {
   holiday: string;
 }
 
+export interface PlaceFactRefreshItem {
+  name: string;
+  days: number[];
+  changed?: string[];
+}
+
+export interface ClosureAdvisory extends PlaceFactRefreshItem {
+  title: string;
+  url: string;
+  snippet: string;
+}
+
+export interface ClosureWatch {
+  status: "checked" | "failed" | "unavailable";
+  advisories: ClosureAdvisory[];
+}
+
+export interface PlaceFactFreshness {
+  checked_at: string;
+  checked: number;
+  total: number;
+  comparison_available?: boolean;
+  changes: PlaceFactRefreshItem[];
+  failed: PlaceFactRefreshItem[];
+  closure_watch?: ClosureWatch;
+}
+
 /** "unverified" at trip level means there was nothing to check yet. */
 export interface TripVerification {
   verdict: "clear" | "partial" | "advisories" | "issues" | "unverified";
@@ -580,6 +607,14 @@ export interface TripVerification {
   checks: VerificationCheck[];
   days: VerificationDay[];
   unverified_stops: VerificationGap[];
+  freshness?: PlaceFactFreshness | null;
+}
+
+export interface TripFreshnessResult extends PlaceFactFreshness {
+  ok: boolean;
+  stale: boolean;
+  message: string;
+  verification: TripVerification;
 }
 
 export interface RepairMove {

@@ -862,6 +862,9 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           onDayMap={handleDayFocus}
           onAllDaysMap={handleMapAllDaysFocus}
           onStopRemove={handleStopRemove}
+          onTripChanged={async () => {
+            await refresh(null, { silent: true });
+          }}
         />
       );
     }

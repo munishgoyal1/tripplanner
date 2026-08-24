@@ -220,3 +220,31 @@ def facts_from_summary(summary: Any) -> PlaceFacts:
         open_now=open_now if isinstance(open_now, bool) else None,
         weekly_hours=parse_weekly_hours(summary.get("weekday_descriptions")),
     )
+
+
+def snapshot_from_summary(summary: Any) -> dict[str, Any]:
+    """Return the stable provider facts that may be compared across checks."""
+    if not isinstance(summary, dict):
+        return {}
+    return {
+        "place_id": str(summary.get("place_id") or ""),
+        "name": str(summary.get("name") or ""),
+        "business_status": str(summary.get("business_status") or ""),
+        "weekday_descriptions": [
+            str(line) for line in (summary.get("weekday_descriptions") or []) if line
+        ],
+    }
+
+
+def changed_facts(before: Any, after: Any) -> list[str]:
+    """Name material changes between two canonical fact snapshots."""
+    old = snapshot_from_summary(before)
+    new = snapshot_from_summary(after)
+    changed: list[str] = []
+    if old.get("place_id") and new.get("place_id") and old["place_id"] != new["place_id"]:
+        changed.append("place identity")
+    if old.get("business_status") != new.get("business_status"):
+        changed.append("business status")
+    if old.get("weekday_descriptions") != new.get("weekday_descriptions"):
+        changed.append("opening hours")
+    return changed

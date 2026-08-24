@@ -49,6 +49,33 @@ def test_the_cache_emits_every_key_the_fact_reader_needs() -> None:
     assert place_facts.REQUIRED_SUMMARY_KEYS <= set(summary)
 
 
+def test_fact_snapshot_excludes_cache_and_display_fields() -> None:
+    summary = places_cache.normalize_place(GOOGLE_PLACE)
+    summary.update({"__at__": 123.0, "reviews": [{"text": "Lovely"}], "rating": 4.8})
+
+    assert place_facts.snapshot_from_summary(summary) == {
+        "place_id": "abc123",
+        "name": "Louvre Museum",
+        "business_status": "OPERATIONAL",
+        "weekday_descriptions": summary["weekday_descriptions"],
+    }
+
+
+def test_fact_comparison_names_only_material_changes() -> None:
+    before = places_cache.normalize_place(GOOGLE_PLACE)
+    after = {
+        **before,
+        "business_status": "CLOSED_TEMPORARILY",
+        "weekday_descriptions": ["Tuesday: Closed"],
+        "rating": 1.0,
+    }
+
+    assert place_facts.changed_facts(before, after) == [
+        "business status",
+        "opening hours",
+    ]
+
+
 def test_a_closed_weekday_is_known_to_be_closed(louvre: place_facts.PlaceFacts) -> None:
     assert louvre.closed_on(TUESDAY) is True
     assert louvre.closed_on(WEDNESDAY) is False

@@ -42,6 +42,7 @@ trip through shared API contracts.
 | `src/tripplanner/authorship.py` | Per-stop ownership: which stops the traveller chose and a rebalance may not move |
 | `src/tripplanner/web/holidays.py` | Public-holiday calendar per country and year; an unreadable calendar stays unknown |
 | `src/tripplanner/web/trip_verification.py` | The certificate: which checks ran, which failed, and which could not be evaluated |
+| `src/tripplanner/web/trip_freshness.py` | Explicit itinerary place-fact recheck, stable before/after snapshots, and source-linked seasonal or renovation closure advisories |
 | `src/tripplanner/tools/trip_rebalance.py` | Whole-trip arrangement search over legal slots, priced in minutes of regret |
 | `src/tripplanner/web/trip_repair.py` | Repair pass: clears the planner's own contradictions, reports the ones it may not touch |
 | `src/tripplanner/platform_planning_insights.py` | Privacy boundary for versioned cross-user aggregate planning priors |
