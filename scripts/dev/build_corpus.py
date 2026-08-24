@@ -92,12 +92,14 @@ def main(argv: list[str] | None = None) -> int:
     scope = parser.add_mutually_exclusive_group()
     scope.add_argument(
         "--market",
+        type=str.casefold,
         choices=("india",),
         default=None,
         help="traveler market to cover; india includes domestic and outbound trips",
     )
     scope.add_argument(
         "--country",
+        type=str.casefold,
         choices=("india",),
         default=None,
         help="destination country to cover; india includes domestic trips within India",
