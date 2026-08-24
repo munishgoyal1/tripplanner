@@ -14,4 +14,7 @@ for arg in "$@"; do
         args+=("$arg")
     fi
 done
-exec "$PWSH_BIN" -NoProfile -File "$repo_root/scripts/dev/multiagent.ps1" prune "${args[@]}"
+if ((${#args[@]})); then
+    exec "$PWSH_BIN" -NoProfile -File "$repo_root/scripts/dev/multiagent.ps1" prune "${args[@]}"
+fi
+exec "$PWSH_BIN" -NoProfile -File "$repo_root/scripts/dev/multiagent.ps1" prune
