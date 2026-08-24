@@ -43,6 +43,7 @@ def registry() -> tuple[Rule, ...]:
     """The full rule set, ordered as a person would read it."""
     from tripplanner.tools.trip_guard import INVARIANTS
     from tripplanner.validation.mutations import METAMORPHIC_RULES
+    from tripplanner.validation.quality import rules as quality_rules
     from tripplanner.validation.render import RENDER_RULES
 
     gates = _gate_codes()
@@ -66,6 +67,16 @@ def registry() -> tuple[Rule, ...]:
             severity=GATE,
             evaluated_in="tripplanner.tools.trip_validation",
         )
+    )
+    rules.extend(
+        Rule(
+            code=code,
+            title=dimension.title,
+            statement=f"{dimension.prompt.rstrip('?')}.",
+            severity=GATE,
+            evaluated_in="tripplanner.validation.quality",
+        )
+        for code, dimension in quality_rules()
     )
     rules.extend(
         Rule(

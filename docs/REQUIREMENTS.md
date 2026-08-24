@@ -95,6 +95,7 @@ re-describing the whole product.
 | OPS-03 | Owner-only Business and System Health operations dashboard | Implemented; hidden route, server-side verified-email guard, consented funnel/activity aggregates, chat/tool/provider/cache health, and explicit data-window labels |
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Implemented; `/` public entry, `/planner` workspace, privacy-safe analytics, and regional last-known-good demo pipeline |
 | FEEDBACK-01 | Lightweight repeatable trip feedback | Implemented; toolbar thumbs, optional stars/comment, append-only submissions, and trip-level sent rollup |
+| QUALITY-01 | Offline scenario-fidelity and experiential-quality audit | Implemented; scenario/preference fidelity and requested budget evidence are explicitly assessed hard gates, while six experiential taste dimensions remain informational until a separate owner approval follows a rated reference cohort |
 | DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Proposed |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |

@@ -83,6 +83,8 @@ class Produced:
     emphasis: str = ""
     party: str = ""
     signature: str = ""
+    scenario_expectations: tuple[str, ...] = ()
+    budget_evidence_required: bool = False
 
 
 def manifest_path(corpus_root: Path) -> Path:
@@ -333,6 +335,8 @@ def build(
             emphasis=request.emphasis,
             party=request.party,
             signature=request.signature.key,
+            scenario_expectations=request.scenario_expectations or (request.shape,),
+            budget_evidence_required=request.budget_evidence_required,
         )
         (trips_dir / f"{request.slug}.json").write_text(
             json.dumps(result.trip, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"

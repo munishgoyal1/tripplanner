@@ -19,6 +19,7 @@ from tripplanner.validation import (
     matrix,
     mutations,
     observations,
+    quality,
     registry,
     render,
     runner,
@@ -504,6 +505,36 @@ def test_the_gate_severity_follows_the_completion_gate_itself() -> None:
     assert set(_COHERENCE_CODES) <= gated
 
 
+def test_fidelity_and_requested_budget_evidence_are_registered_as_gates() -> None:
+    rules = {rule.code: rule for rule in registry.registry()}
+
+    assert rules["QG1"].severity == registry.GATE
+    assert rules["QG2"].severity == registry.GATE
+
+
+def test_an_explicit_quality_gate_failure_is_an_audit_finding(tmp_path: Path) -> None:
+    ratings = quality.empty_ratings()
+    ratings["ratings"]["test:1"] = {
+        "hard_gates": {
+            "scenario_preference_fidelity": {
+                "outcome": "fail",
+                "evidence": "The Jain request was not carried into meal choices.",
+            }
+        }
+    }
+
+    result = runner.audit(
+        tmp_path,
+        records=[_record()],
+        baseline={"accepted": {}},
+        render=False,
+        mutate=False,
+        quality_ratings=ratings,
+    )
+
+    assert any(finding.rule == "QG1" for finding in result.findings)
+
+
 # ---- observations ---------------------------------------------------------
 
 
@@ -521,6 +552,24 @@ def test_an_empty_corpus_describes_itself_without_dividing_by_zero() -> None:
     described = observations.observe([])
 
     assert any(item.label == "Trips" and item.value == "0" for item in described)
+
+
+def test_taste_scores_stay_informational_even_with_a_reference_rating() -> None:
+    ratings = quality.empty_ratings()
+    ratings["ratings"]["test:1"] = {
+        "reference": True,
+        "taste": {
+            dimension.key: {"score": 4, "evidence": "Owner review"}
+            for dimension in quality.TASTE_DIMENSIONS
+        },
+    }
+
+    summary = quality.report([_record()], ratings)
+
+    assert summary["reference_cohort"]["size"] == 1
+    assert summary["reference_cohort"]["owner_approved"] is False
+    assert summary["subjective_regression_gates_enabled"] is False
+    assert all(item["regression_gate"] is False for item in summary["taste_dimensions"])
 
 
 # ---- budget ---------------------------------------------------------------
@@ -839,6 +888,23 @@ def test_every_generated_request_says_where_the_traveller_starts() -> None:
         assert " from " in request.message
         assert request.days > 0
         assert str(request.days) in request.message
+        assert request.scenario_expectations
+
+
+def test_only_an_explicit_budget_scenario_requires_budget_evidence() -> None:
+    budget_request = next(
+        request
+        for request in matrix.candidates(Catalog(), limit=500)
+        if request.emphasis == "budget"
+    )
+    non_budget_request = next(
+        request
+        for request in matrix.candidates(Catalog(), limit=500)
+        if request.emphasis == "heritage"
+    )
+
+    assert budget_request.budget_evidence_required
+    assert not non_budget_request.budget_evidence_required
 
 
 def test_a_request_the_corpus_already_holds_is_never_offered_again() -> None:

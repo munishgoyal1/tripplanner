@@ -19,10 +19,12 @@ from typing import Any
 from tripplanner.validation.corpus import COHORTS, CorpusRecord
 from tripplanner.validation.findings import Group, group, new_groups, stale_keys
 from tripplanner.validation.observations import observe
+from tripplanner.validation.quality import empty_ratings
+from tripplanner.validation.quality import report as quality_report
 from tripplanner.validation.registry import registry
 from tripplanner.validation.runner import AuditResult
 
-REPORT_VERSION = 2
+REPORT_VERSION = 3
 REPORT_FILE = "audit-report.json"
 
 
@@ -99,6 +101,7 @@ def build_report(
     result: AuditResult,
     baseline: dict[str, Any],
     previous: dict[str, Any] | None = None,
+    quality_ratings: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Everything the inspector needs, resolved and self-contained."""
     accepted = dict(baseline.get("accepted") or {})
@@ -191,5 +194,6 @@ def build_report(
             {"label": item.label, "value": item.value, "detail": item.detail}
             for item in observe(executive_records)
         ],
+        "quality": quality_report(executive_records, quality_ratings or empty_ratings()),
         "records": [_record_entry(record, finding_counts) for record in result.records],
     }
