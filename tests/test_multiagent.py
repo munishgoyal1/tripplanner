@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import signal
 import subprocess
@@ -47,6 +48,19 @@ def issue(number: int, *labels: str, body: str = "", title: str = "t") -> object
     return core.Issue(number=number, title=title, body=body, labels=tuple(labels))
 
 
+def assignment(issue_number: int, session_id: str) -> object:
+    return core.Assignment(
+        issue=issue_number,
+        attempt=1,
+        slot="slot-1",
+        branch="multiagent/slot-1",
+        base_sha="a" * 40,
+        session_id=session_id,
+        pid=0,
+        state="landed",
+    )
+
+
 # --- authorisation -----------------------------------------------------------
 
 
@@ -66,6 +80,53 @@ def test_owner_labels_are_additive_so_provenance_survives_approval() -> None:
 
     assert core.eligible(approved)
     assert core.PROPOSED in approved.labels
+
+
+def test_prune_worker_sessions_keeps_only_open_issue_sessions(tmp_path: Path) -> None:
+    copilot_home = tmp_path / ".copilot"
+    session_root = copilot_home / "session-state"
+    cache_path = copilot_home / "vscode.session.metadata.cache.json"
+    for session_id in ("open-session", "closed-session", "unowned-session"):
+        (session_root / session_id).mkdir(parents=True)
+    cache_path.write_text(json.dumps({
+        "open-session": {"origin": "other"},
+        "closed-session": {"origin": "other"},
+        "unowned-session": {"origin": "other"},
+    }), encoding="utf-8")
+
+    candidates = runtime.prune_worker_sessions(
+        [assignment(86, "open-session"), assignment(65, "closed-session")],
+        {86},
+        copilot_home=copilot_home,
+        dry_run=False,
+    )
+
+    assert [item.issue for item in candidates] == [65]
+    assert (session_root / "open-session").exists()
+    assert not (session_root / "closed-session").exists()
+    assert (session_root / "unowned-session").exists()
+    assert set(json.loads(cache_path.read_text(encoding="utf-8"))) == {
+        "open-session", "unowned-session",
+    }
+
+
+def test_prune_worker_sessions_dry_run_changes_nothing(tmp_path: Path) -> None:
+    copilot_home = tmp_path / ".copilot"
+    session_path = copilot_home / "session-state" / "closed-session"
+    session_path.mkdir(parents=True)
+    cache_path = copilot_home / "vscode.session.metadata.cache.json"
+    cache_path.write_text('{"closed-session": {}}\n', encoding="utf-8")
+
+    candidates = runtime.prune_worker_sessions(
+        [assignment(65, "closed-session")],
+        set(),
+        copilot_home=copilot_home,
+        dry_run=True,
+    )
+
+    assert [item.issue for item in candidates] == [65]
+    assert session_path.exists()
+    assert "closed-session" in json.loads(cache_path.read_text(encoding="utf-8"))
 
 
 def test_withdrawing_authorisation_stops_further_dispatch() -> None:
@@ -730,6 +791,7 @@ def test_every_launcher_pair_forwards_the_same_verb() -> None:
         "Stop-Multiagent": "stop",
         "Pause-Multiagent": "pause",
         "Resume-Multiagent": "resume",
+        "Multiagent-Prune": "prune",
         "Multiagent-Status": "status",
         "Plan-Multiagent": "plan",
         "Open-Coordinator": "coordinator",
