@@ -125,7 +125,7 @@ compact local history index, and refreshes `audit/latest.json` for the Inspector
 The automatic post-fix run replays the current stored corpus through the
 integrated code. Finding exit code `1` is evidence, not an integration failure.
 
-Three rules exist because breaking them would quietly defeat the purpose:
+The producer follows these rules because breaking them would quietly defeat the purpose:
 
 1. **It never runs `--accept`.** That writes the findings baseline and marks
    current findings as known forever. An auto-accepting producer would suppress
@@ -133,9 +133,9 @@ Three rules exist because breaking them would quietly defeat the purpose:
 2. **Exit code `2` is an infrastructure failure, not a clean run.** It means the
    corpus was empty and nothing was checked. Exit `1` means new findings; exit
    `0` means genuinely clean.
-3. **It caps how many issues one run may open** (three by default, worst severity
-   first). A run with more findings than the cap opens one summary issue asking
-   how to proceed rather than filing forty.
+3. **It proposes every new deduplicated finding group.** Proposed issues are inert
+  until the owner adds `owner:ready`, so completeness here does not authorize or
+  dispatch work. Existing fingerprints are skipped or reopened rather than duplicated.
 
 Deduplication survives a wiped runtime directory because the fingerprint lives in
 the issue body, not on disk:

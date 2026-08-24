@@ -55,7 +55,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/multiagent/Resume-Multiagent.cmd` | Resume dispatching |
 | `win/user/multiagent/Stop-Multiagent.cmd` | Stop the controller and its workers, keeping worktrees, branches, and transcripts |
 | `win/user/multiagent/Open-Coordinator.cmd` | Open the owner-facing coordinator chat in VS Code |
-| `win/user/multiagent/Run-Audit-Producer.cmd [--dry-run]` | Run the read-only trip audit and propose issues for what is new; never accepts the baseline |
+| `win/user/multiagent/Run-Audit-Producer.cmd [--dry-run]` | Run the read-only trip audit and propose every new deduplicated finding group as an inert `owner:proposed` issue; never accepts the baseline |
 | `win/user/debug/Capture-Screens.cmd [-Sandbox n] [-Label name]` | Capture UI evidence for a bug: screenshots, `/trip/view` and map JSON, console errors, and DOM |
 | `win/user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `win/user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |

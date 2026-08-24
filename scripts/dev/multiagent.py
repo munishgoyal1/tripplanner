@@ -32,7 +32,6 @@ SLOT_COUNT = 2
 LEASE_MINUTES = 15
 CYCLE_SECONDS = 20
 WORKER_TIMEOUT_MINUTES = 60
-AUDIT_ISSUE_CAP = 3
 INTEGRATION_BRANCH = "multiagent/integration"
 COORDINATOR_BRANCH = "multiagent/coordinator"
 TEST_TIMEOUT_SECONDS = 3600
@@ -1223,8 +1222,7 @@ def cmd_audit(space: Workspace, args: argparse.Namespace) -> int:
         log("Nothing new to propose.")
         return 0
 
-    kept, dropped = core.rank_findings(groups, args.cap)
-    for group in kept:
+    for group in core.order_findings(groups):
         mark = core.fingerprint(str(group.get("rule", "?")), str(group.get("example", "")))
         title = f"[audit {group.get('rule', '?')}] {str(group.get('symptom', ''))[:70]}"
         body = core.audit_issue_body(group, corpus_size=corpus, sources=sources)
@@ -1251,9 +1249,6 @@ def cmd_audit(space: Workspace, args: argparse.Namespace) -> int:
         ])
         log(f"  proposed       {mark}  {created.stdout.strip() or created.stderr.strip()}")
 
-    if dropped:
-        log(f"{dropped} further group(s) exceeded the cap of {args.cap} and were not filed.")
-        log("Raise --cap or triage the filed ones first.")
     log("Nothing is authorised. Add owner:ready to whichever should be built.")
     return 0
 
@@ -1313,7 +1308,6 @@ def build_parser() -> argparse.ArgumentParser:
 
     audit = sub.add_parser("audit", help="run the read-only trip audit and propose issues")
     audit.add_argument("--dry-run", action="store_true")
-    audit.add_argument("--cap", type=int, default=AUDIT_ISSUE_CAP)
     return parser
 
 
