@@ -14,6 +14,7 @@ from __future__ import annotations
 import errno
 import http.client
 import json
+import subprocess
 import time
 import urllib.error
 import urllib.request
@@ -291,6 +292,15 @@ def build(
     barren = 0
     giving_up = False
     api_unavailable = False
+    generated_at = datetime.now(UTC)
+    run_id = generated_at.strftime("%Y-%m-%dT%H%M%S.%fZ")
+    git_result = subprocess.run(
+        ["git", "-C", str(corpus_root.parent), "rev-parse", "HEAD"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    generated_by_commit = git_result.stdout.strip() if git_result.returncode == 0 else ""
 
     def _estimate() -> float:
         return max(1.0, spent / len(produced)) if produced else ASSUMED_COST_INR
@@ -343,7 +353,14 @@ def build(
         )
         produced.append(entry)
         catalog.add(request.signature, request.slug)
-        manifest["produced"].append({**asdict(entry), "at": datetime.now(UTC).isoformat()})
+        manifest["produced"].append(
+            {
+                **asdict(entry),
+                "at": datetime.now(UTC).isoformat(),
+                "generation_run_id": run_id,
+                "generated_by_commit": generated_by_commit,
+            }
+        )
         save_manifest(corpus_root, manifest)
         if on_progress:
             on_progress(
@@ -446,4 +463,6 @@ def build(
         "stopped_because": stopped,
         "corpus_total": len(load_manifest(corpus_root)["produced"]),
         "places_saved": saved_places,
+        "generation_run_id": run_id,
+        "generated_by_commit": generated_by_commit,
     }

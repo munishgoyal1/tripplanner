@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+REPORT_ROOT = Path(os.environ.get("TRIPPLANNER_AUDIT_REPORT_ROOT") or REPO_ROOT).resolve()
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 # The audit reads stored facts only. Cutting the shared caches off before the
@@ -27,6 +28,7 @@ for _variable in ("COSMOS_ENDPOINT", "COSMOS_KEY", "COSMOS_CONNECTION_STRING"):
     os.environ[_variable] = ""
 
 from tripplanner.validation import findings as findings_module  # noqa: E402
+from tripplanner.validation import generate as generate_module  # noqa: E402
 from tripplanner.validation import observations as observations_module  # noqa: E402
 from tripplanner.validation import quality as quality_module  # noqa: E402
 from tripplanner.validation import registry as registry_module  # noqa: E402
@@ -87,11 +89,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-mutate", action="store_true", help="skip metamorphic checks")
     parser.add_argument("--database", action="append", default=None, help="repeatable")
     parser.add_argument("--json", dest="as_json", action="store_true")
-    parser.add_argument(
-        "--report",
-        action="store_true",
-        help="also write corpus/audit-report.json for the inspector",
-    )
     parser.add_argument("--rules", action="store_true", help="list every rule and exit")
     parser.add_argument("--observe", action="store_true", help="describe the corpus too")
     args = parser.parse_args(argv)
@@ -139,29 +136,30 @@ def main(argv: list[str] | None = None) -> int:
             _print_observations(result)
 
     path = runner.baseline_path(REPO_ROOT)
-    if args.report:
-        from tripplanner.validation import report as report_module
+    from tripplanner.validation import report as report_module
 
-        destination = runner.corpus_root(REPO_ROOT) / report_module.REPORT_FILE
-        # Read before writing: the report it replaces is what "since last time"
-        # is measured against.
-        try:
-            previous = json.loads(destination.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            previous = {}
-        payload = report_module.build_report(
-            result,
-            findings_module.load_baseline(path),
-            previous,
-            quality_ratings=quality_module.load(runner.corpus_root(REPO_ROOT)),
+    destination = REPORT_ROOT / report_module.LATEST_FILE
+    # Read before writing: the report it replaces is what "since last time"
+    # is measured against.
+    try:
+        previous = json.loads(destination.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        previous = {}
+    payload = report_module.build_report(
+        result,
+        findings_module.load_baseline(path),
+        previous,
+        quality_ratings=quality_module.load(runner.corpus_root(REPO_ROOT)),
+    )
+    payload["generation"] = report_module.generation_evidence(
+        generate_module.load_manifest(runner.corpus_root(REPO_ROOT))
+    )
+    report_path = report_module.save_report(REPORT_ROOT, payload, code_root=REPO_ROOT)
+    if not args.as_json:
+        print(
+            f"\nWrote {report_path.relative_to(REPORT_ROOT)}: "
+            f"{len(payload['groups'])} group(s), {len(payload['records'])} record(s)."
         )
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(
-            json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
-        if not args.as_json:
-            print(f"\nWrote {destination.name}: {len(payload['groups'])} group(s), "
-                  f"{len(payload['records'])} record(s).")
 
     if args.accept:
         baseline = findings_module.accept(result.groups, findings_module.load_baseline(path))

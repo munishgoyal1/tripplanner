@@ -290,6 +290,29 @@ def test_the_producer_never_accepts_the_baseline() -> None:
     assert "trip_audit.py" in source
 
 
+def test_integration_records_a_post_fix_audit_without_treating_findings_as_failure() -> None:
+    source = (DEV / "multiagent.py").read_text(encoding="utf-8")
+
+    assert "TRIPPLANNER_AUDIT_REPORT_ROOT" in source
+    assert "audit.returncode not in (0, 1)" in source
+    assert "post-fix audit recorded" in source
+
+
+def test_corpus_refresh_launchers_build_then_audit() -> None:
+    powershell = (DEV / "refresh-audit-corpus.ps1").read_text(encoding="utf-8")
+    mac = (
+        ROOT / "scripts" / "mac" / "user" / "validation" / "Refresh-Audit-Corpus.command"
+    ).read_text(encoding="utf-8")
+    windows = (
+        ROOT / "scripts" / "win" / "user" / "validation" / "Refresh-Audit-Corpus.cmd"
+    ).read_text(encoding="utf-8")
+
+    assert "build-corpus.ps1" in powershell
+    assert "trip-audit.ps1" in powershell
+    assert "refresh-audit-corpus.ps1" in mac
+    assert "refresh-audit-corpus.ps1" in windows
+
+
 def test_an_empty_corpus_is_reported_as_a_failure_not_a_clean_run() -> None:
     source = (DEV / "multiagent.py").read_text(encoding="utf-8")
 
