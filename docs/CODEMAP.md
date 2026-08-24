@@ -59,6 +59,7 @@ trip through shared API contracts.
 | `src/tripplanner/web/map_view.py` | Interactive-map view-model assembly from resolved pins |
 | `src/tripplanner/web/day_journey.py` | Transfer-day journey model: path, terminals, inter-city edges, map framing |
 | `src/tripplanner/web/chat_store.py` | Conversation and replay persistence |
+| `src/tripplanner/web/trip_feedback.py` | Append-only trip feedback persistence and trip-scoped deletion |
 | `src/tripplanner/web/travel_documents.py` | Traveller document field vault: allowlist, identity-number masking, and persistence. Never stores a file |
 | `src/tripplanner/web/document_readiness.py` | Deterministic passport, visa, insurance, and permit checks against the active trip; silent unless the trip is known to cross a border |
 | `src/tripplanner/web/place_country.py` | Resolves a free-text place to its country via Open-Meteo geocoding, cached per string |
@@ -96,6 +97,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | `frontend/src/workspaceState.ts` | Canonical web trip revision, identity, and focus reducer |
 | `frontend/src/components/CanvasPaneFrame.tsx`, `DetailsPaneShell.tsx`, `AssistantModalShell.tsx` | Render-only desktop pane frames and controls |
 | `frontend/src/components/DesktopToolbar.tsx`, `MobileWorkspaceShell.tsx` | Render-only responsive workspace chrome |
+| `frontend/src/components/TripFeedbackControl.tsx` | Toolbar thumbs, optional rating/comment popover, and sent-count presentation |
 | `frontend/src/lib/notices.ts` | Global notice channel: id-keyed upsert, tone priority, and success auto-expiry |
 | `frontend/src/components/StatusBar.tsx` | Render-only toolbar and mobile presentation of the single active notice |
 | `frontend/src/lib/displayPreferences.ts` | Display country, language, and currency storage; fixed standard option sets, legacy-value migration, locale derivation, and money/unit formatting |
@@ -159,6 +161,7 @@ Cosmos containers have explicit ownership:
 | `trips` | Persisted trip documents and revisions |
 | `conversations` | Assistant conversation state |
 | `events` | Durable trip events and delivery metadata |
+| `trip_feedback` | Append-only trip feedback submissions; one document per submission |
 | `about_me` | Preference profiles |
 | `email_exports` | Idempotent export records |
 | `guest_credentials` | Guest capability records |

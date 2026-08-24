@@ -63,6 +63,16 @@ class TripIdRequest(BaseModel):
     user_id: str = "local"
 
 
+class TripFeedbackRequest(BaseModel):
+    feedback_id: str | None = Field(default=None, pattern=r"^fb_[a-f0-9]{32}$")
+    sentiment: Literal["up", "down"] | None = None
+    rating: int | None = Field(default=None, ge=1, le=5)
+    comment: str | None = Field(default=None, max_length=1_000)
+    surface: Literal["toolbar-pill"] = "toolbar-pill"
+    client: Literal["web", "mobile"] = "web"
+    user_id: str = "local"
+
+
 class UserRequest(BaseModel):
     user_id: str = "local"
 

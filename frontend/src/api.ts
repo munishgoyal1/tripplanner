@@ -348,6 +348,31 @@ export async function deleteTrip(tripId: string): Promise<SavedTrip[]> {
   return (json.trips ?? []) as SavedTrip[];
 }
 
+export interface TripFeedbackRollup {
+  count: number;
+  feedback_id?: string;
+  last_at?: string | null;
+  last_rating?: number | null;
+  last_sentiment?: "up" | "down" | null;
+}
+
+export async function submitTripFeedback(feedback: {
+  feedback_id?: string;
+  sentiment?: "up" | "down";
+  rating?: number;
+  comment?: string;
+  client?: "web" | "mobile";
+}): Promise<TripFeedbackRollup> {
+  const res = await apiFetch(`${BASE}/trip/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...feedback, user_id: getUserId(), surface: "toolbar-pill" }),
+  });
+  ensureOk(res, "Could not save feedback");
+  const json = await res.json();
+  return json.feedback as TripFeedbackRollup;
+}
+
 /** Start a fresh planning chat: clear the active trip + general chat bucket. */
 export async function startNewTrip(): Promise<void> {
   return sharedClient.startNewTrip();
