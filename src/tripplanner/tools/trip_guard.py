@@ -24,6 +24,7 @@ from typing import Any
 
 from tripplanner import place_facts
 from tripplanner.tools.trip_common import (
+    _HOTEL_PLACEHOLDER_RE,
     _coords_from_summary,
     _fmt_hhmm,
     _haversine_km,
@@ -31,6 +32,7 @@ from tripplanner.tools.trip_common import (
     _stop_kind,
     _stop_name,
     _summary_for_place,
+    unnamed_lodging,
 )
 
 DAY_START_MIN = 8 * 60 + 30
@@ -52,6 +54,7 @@ _CITY_ALIASES = {"bengaluru": "bangalore", "mysuru": "mysore", "mumbai": "bombay
 _TERMINAL_RE = re.compile(
     r"\bairports?\b|\brailway station\b|\btrain station\b|\bbus (?:stand|station)\b", re.I
 )
+_OVERNIGHT_RE = re.compile(r"\b(?:overnight|night train|night bus|sleeper)\b", re.I)
 
 INVARIANTS: tuple[tuple[str, str, str], ...] = (
     (
@@ -382,7 +385,7 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
     out.extend(_availability_violations(structured, destination))
     out.extend(_repeat_visit_violations(structured))
     out.extend(_feasibility_violations(structured, destination))
-    out.extend(_stay_violations(structured, env))
+    out.extend(_stay_violations(plan, structured, env))
     out.extend(_return_violations(plan, env))
     out.extend(_continuity_violations(structured, destination))
     out.extend(_coverage_violations(plan))
@@ -657,25 +660,99 @@ def _feasibility_violations(
     return out
 
 
-def _stay_violations(
-    structured: list[tuple[int, dict[str, Any], list[Any]]], env: Envelope
-) -> list[Violation]:
-    if env.arrival_day is None or env.departure_day is None:
+def _overnight_journey(stop: Any) -> bool:
+    if _stop_kind(stop) not in _TRANSPORT_KINDS:
+        return False
+    if _OVERNIGHT_RE.search(_stop_name(stop)):
+        return True
+    start = _time_of(stop)
+    return start is not None and start + _duration_of(stop) >= 24 * 60
+
+
+def _stay_locations(plan: dict[str, Any]) -> set[str]:
+    locations: set[str] = set()
+    destination = str(plan.get("destination") or "").strip()
+    if destination:
+        locations.add(destination.lower())
+        locations.update(
+            part.strip().lower()
+            for part in re.split(r"[,&/()]| and ", destination)
+            if part.strip()
+        )
+    for _day, entry, stops in days_of(plan):
+        for source in [entry, *[stop for stop in stops if isinstance(stop, dict)]]:
+            for key in ("destination", "city", "location"):
+                value = str(source.get(key) or "").strip().lower()
+                if value:
+                    locations.add(value)
+    return locations
+
+
+def _required_stay_days(
+    plan: dict[str, Any],
+    structured: list[tuple[int, dict[str, Any], list[Any]]],
+    env: Envelope,
+) -> list[int]:
+    if not structured:
         return []
-    covered = {
-        day for day, _entry, stops in structured if any(_stop_kind(s) == "hotel" for s in stops)
+    if env.arrival_day is not None and env.departure_day is not None:
+        candidates = [
+            day for day, _entry, _stops in structured
+            if env.arrival_day <= day < env.departure_day
+        ]
+    elif plans_own_arrival(plan):
+        candidates = [day for day, _entry, _stops in structured[:-1]]
+    else:
+        return []
+    overnight_days = {
+        day for day, _entry, stops in structured if any(_overnight_journey(stop) for stop in stops)
     }
-    if not covered:
+    return [day for day in candidates if day not in overnight_days]
+
+
+def _stay_violations(
+    plan: dict[str, Any],
+    structured: list[tuple[int, dict[str, Any], list[Any]]],
+    env: Envelope,
+) -> list[Violation]:
+    required = set(_required_stay_days(plan, structured, env))
+    if not required:
         return []
-    missing = [
-        day
-        for day, _entry, _stops in structured
-        if env.arrival_day <= day < env.departure_day and day not in covered
-    ]
-    return [
-        Violation("I6", "Stay coverage", f"Day {day} has no stay for the night.", day)
-        for day in missing
-    ]
+    cities = _stay_locations(plan)
+    out: list[Violation] = []
+    for day, _entry, stops in structured:
+        if day not in required:
+            continue
+        stays = [stop for stop in stops if _stop_kind(stop) == "hotel"]
+        concrete = [
+            stop
+            for stop in stays
+            if not _HOTEL_PLACEHOLDER_RE.search(_stop_name(stop))
+            and not unnamed_lodging(_stop_name(stop), cities)
+        ]
+        if concrete:
+            continue
+        if stays:
+            name = _stop_name(stays[0]) or "unnamed hotel"
+            out.append(
+                Violation(
+                    "I6",
+                    "Stay coverage",
+                    f"Day {day} has no concrete, bookable stay for the night; replace {name}.",
+                    day,
+                    name,
+                )
+            )
+        else:
+            out.append(
+                Violation(
+                    "I6",
+                    "Stay coverage",
+                    f"Day {day} has no concrete lodging anchor for the night.",
+                    day,
+                )
+            )
+    return out
 
 
 def _continuity_violations(

@@ -16,13 +16,13 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
-from tripplanner.validation.corpus import CorpusRecord
-from tripplanner.validation.findings import Group, stale_keys
+from tripplanner.validation.corpus import COHORTS, CorpusRecord
+from tripplanner.validation.findings import Group, group, new_groups, stale_keys
 from tripplanner.validation.observations import observe
 from tripplanner.validation.registry import registry
 from tripplanner.validation.runner import AuditResult
 
-REPORT_VERSION = 1
+REPORT_VERSION = 2
 REPORT_FILE = "audit-report.json"
 
 
@@ -35,7 +35,9 @@ def _record_entry(record: CorpusRecord, finding_counts: dict[str, int]) -> dict[
     trip_id = str(plan.get("trip_id") or "")
     return {
         "id": record.id,
+        "logical_trip_id": record.logical_trip_id,
         "provenance": record.provenance,
+        "cohorts": record.cohorts,
         "source": record.source,
         "destination": record.destination,
         "days": len(itinerary) if isinstance(itinerary, list) else 0,
@@ -45,6 +47,16 @@ def _record_entry(record: CorpusRecord, finding_counts: dict[str, int]) -> dict[
         "trip_id": trip_id,
         "openable": bool(user_id and trip_id),
         "findings": finding_counts.get(record.id, 0),
+        "provenance_links": [
+            {
+                "id": link.id,
+                "provenance": link.provenance,
+                "source": link.source,
+                "user_id": link.user_id,
+                "trip_id": link.trip_id,
+            }
+            for link in record.links
+        ],
     }
 
 
@@ -90,24 +102,50 @@ def build_report(
 ) -> dict[str, Any]:
     """Everything the inspector needs, resolved and self-contained."""
     accepted = dict(baseline.get("accepted") or {})
-    new_keys = {item.key for item in result.new}
+    executive_records = [record for record in result.records if record.executive]
+    executive_ids = {record.id for record in executive_records}
+    executive_findings = [
+        finding for finding in result.findings if finding.record_id in executive_ids
+    ]
+    executive_groups = group(executive_findings)
+    new_keys = {item.key for item in new_groups(executive_groups, baseline)}
 
     finding_counts: dict[str, int] = {}
     for finding in result.findings:
         finding_counts[finding.record_id] = finding_counts.get(finding.record_id, 0) + 1
 
-    hits: dict[str, int] = {}
-    for item in result.groups:
-        hits[item.rule] = hits.get(item.rule, 0) + item.count
+    def _hits(findings: list[Any]) -> dict[str, int]:
+        tally: dict[str, int] = {}
+        for finding in findings:
+            tally[finding.rule] = tally.get(finding.rule, 0) + 1
+        return tally
 
-    # How many trips a rule touches says more than how often it fired: one trip
-    # repeating a mistake on every day is not the same problem as every trip
-    # making it once.
-    affected: dict[str, set[str]] = {}
-    for finding in result.findings:
-        affected.setdefault(finding.rule, set()).add(finding.record_id)
+    def _affected(findings: list[Any]) -> dict[str, set[str]]:
+        affected: dict[str, set[str]] = {}
+        for finding in findings:
+            affected.setdefault(finding.rule, set()).add(finding.record_id)
+        return affected
+
+    hits = _hits(executive_findings)
+    affected = _affected(executive_findings)
+    raw_hits = _hits(result.findings)
+    raw_affected = _affected(result.findings)
 
     was = _previous_rule_counts(previous or {})
+    rules = registry()
+
+    def _denominators(rule: Any, records: list[CorpusRecord]) -> dict[str, int]:
+        eligible = [record for record in records if record.executive]
+        evaluated = [
+            record for record in eligible if not rule.requires_places or bool(record.places)
+        ]
+        evaluated_ids = {record.id for record in evaluated}
+        return {
+            "eligible": len(eligible),
+            "evaluated": len(evaluated),
+            "failed": len(affected.get(rule.code, set()).intersection(evaluated_ids)),
+            "unverified": len(eligible) - len(evaluated),
+        }
 
     return {
         "version": REPORT_VERSION,
@@ -115,7 +153,10 @@ def build_report(
         "compared_with": str((previous or {}).get("generated_at") or ""),
         "corpus": {
             "size": result.corpus_size,
+            "raw_size": result.raw_corpus_size,
+            "executive_size": len(executive_records),
             "provenance": result.provenance_mix,
+            "cohorts": result.cohort_mix,
             "sources": result.sources,
             "skipped": result.skipped,
         },
@@ -126,19 +167,29 @@ def build_report(
                 "statement": rule.statement,
                 "severity": rule.severity,
                 "evaluated_in": rule.evaluated_in,
+                **_denominators(rule, executive_records),
                 "hits": hits.get(rule.code, 0),
                 "trips": len(affected.get(rule.code, ())),
+                "raw_hits": raw_hits.get(rule.code, 0),
+                "raw_trips": len(raw_affected.get(rule.code, ())),
+                "by_cohort": {
+                    cohort: _denominators(
+                        rule,
+                        [record for record in result.records if cohort in record.cohorts],
+                    )
+                    for cohort in COHORTS
+                },
                 "was_hits": was.get(rule.code, {}).get("hits", 0),
                 "was_trips": was.get(rule.code, {}).get("trips", 0),
                 "first_seen": rule.code not in was,
             }
-            for rule in registry()
+            for rule in rules
         ],
-        "groups": [_group_entry(item, new_keys, accepted) for item in result.groups],
-        "retired": stale_keys(result.groups, baseline),
+        "groups": [_group_entry(item, new_keys, accepted) for item in executive_groups],
+        "retired": stale_keys(executive_groups, baseline),
         "observations": [
             {"label": item.label, "value": item.value, "detail": item.detail}
-            for item in observe(result.records)
+            for item in observe(executive_records)
         ],
         "records": [_record_entry(record, finding_counts) for record in result.records],
     }

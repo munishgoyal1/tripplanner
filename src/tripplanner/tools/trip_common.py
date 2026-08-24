@@ -22,6 +22,22 @@ _MEAL_PLACEHOLDER_RE = re.compile(
     r"lunch stop|dinner stop|breakfast stop|meal stop)\b",
     re.I,
 )
+_MEAL_NOUN_RE = re.compile(
+    r"\b(restaurants?|caf[eé]s?|eater(?:y|ies)|dhaba|bistros?|food courts?|"
+    r"dining options?|meal options?)\b",
+    re.I,
+)
+_MEAL_QUALIFIER_RE = re.compile(
+    r"\b(a|an|the|in|at|near|local|recommended|popular|traditional|authentic|"
+    r"vegetarian|vegan|jain|halal|kosher|gluten[ -]?free|breakfast|brunch|"
+    r"lunch|dinner|food|cuisine)\b",
+    re.I,
+)
+_MEAL_PREPOSITION_RE = re.compile(
+    r"\b(restaurants?|caf[eé]s?|eater(?:y|ies)|dhaba|bistros?|food courts?)\s+"
+    r"(in|at|near|around|close to)\b",
+    re.I,
+)
 _HOTEL_PLACEHOLDER_RE = re.compile(
     r"\b(tbd|to be decided|hotel option|hotel recommendation|"
     r"accommodation option|accommodation recommendation)\b",
@@ -70,6 +86,24 @@ def unnamed_lodging(name: str, cities: set[str]) -> bool:
         if city:
             rest = re.sub(rf"\b{re.escape(city)}\b", " ", rest, flags=re.I)
     rest = _LODGING_QUALIFIER_RE.sub(" ", rest)
+    return not re.sub(r"[^A-Za-z0-9]+", "", rest)
+
+
+def unnamed_meal(name: str, cities: set[str]) -> bool:
+    """True when a meal stop describes a preference or place but names no venue."""
+    text = str(name or "").strip()
+    if not text:
+        return True
+    if _MEAL_PLACEHOLDER_RE.search(text) or _MEAL_PREPOSITION_RE.search(text):
+        return True
+    if not _MEAL_NOUN_RE.search(text):
+        return False
+    rest = _MEAL_NOUN_RE.sub(" ", text)
+    for city in sorted(cities, key=len, reverse=True):
+        city = city.strip()
+        if city:
+            rest = re.sub(rf"\b{re.escape(city)}\b", " ", rest, flags=re.I)
+    rest = _MEAL_QUALIFIER_RE.sub(" ", rest)
     return not re.sub(r"[^A-Za-z0-9]+", "", rest)
 
 

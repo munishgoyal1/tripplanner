@@ -32,6 +32,12 @@ TERMINAL_KINDS = frozenset({"airport", "station", "bus_station"})
 # the arrival that closes the inter-city leg.
 _ENROUTE_KINDS = frozenset({"attraction", "meal", "restaurant"})
 _GROUND_MODES = frozenset({"Drive", "Bus"})
+_TRANSFER_DESTINATION_KINDS = {
+    "Flight": "airport",
+    "Train": "station",
+    "Bus": "bus_station",
+    "Drive": "hotel",
+}
 
 #: The journey a pair of terminals implies when the plan never named the leg.
 _TERMINAL_MODES = {"airport": "Flight", "station": "Train", "bus_station": "Bus"}
@@ -79,6 +85,8 @@ class _OpenTransfer:
     circuit_id: str
     #: A known arrival terminal that must follow any en-route waypoints.
     arrival_id: str | None = None
+    #: Ground edges are committed only after a compatible destination is found.
+    pending_edges: list[Edge] = field(default_factory=list)
 
 
 class _JourneyWalk:
@@ -109,6 +117,14 @@ class _JourneyWalk:
         edge = (self.journey.route_ids[-1], to_id)
         self.journey.intercity_edges[edge] = transfer.mode
         self.journey.circuit_edges[edge] = transfer.circuit_id
+
+    def _commit_pending(self, to_id: str, transfer: _OpenTransfer) -> None:
+        if not self.journey.route_ids:
+            return
+        edges = [*transfer.pending_edges, (self.journey.route_ids[-1], to_id)]
+        for edge in edges:
+            self.journey.intercity_edges[edge] = transfer.mode
+            self.journey.circuit_edges[edge] = transfer.circuit_id
 
     def _close_pending_arrival(self) -> None:
         """Place a deferred arrival terminal once its en-route stops are on the path."""
@@ -147,14 +163,12 @@ class _JourneyWalk:
             self.saved_metrics[circuit_id] = metrics
 
         refs = _transport_terminal_refs(name, kind)
-        terminal_ids = [
-            self._remember(pin)
-            for pin in (
-                self._resolve_pin(terminal_name, terminal_kind)
-                for terminal_kind, terminal_name in refs
-            )
-            if pin
+        resolved_terminals = [
+            (index, self._remember(pin))
+            for index, (terminal_kind, terminal_name) in enumerate(refs)
+            if (pin := self._resolve_pin(terminal_name, terminal_kind))
         ]
+        terminal_ids = [pin_id for _, pin_id in resolved_terminals]
         if len(terminal_ids) == len(refs) and len(terminal_ids) >= 2:
             self._place(terminal_ids[0])
             # A connection is a place the traveller actually passes through, so
@@ -177,13 +191,18 @@ class _JourneyWalk:
                 self._place(terminal_ids[-1])
             return
 
-        # Only one endpoint is mappable (a drive, or a half-geocoded flight):
-        # start the path there and let the next real stop close the leg.
-        if not self.journey.route_ids and refs:
-            origin_pin = self._resolve_pin(refs[0][1], refs[0][0])
-            if origin_pin:
-                self._place(self._remember(origin_pin))
-        self._open = transfer
+        # A partial transfer may only remain open from a known departure. Without
+        # that identity, the next local map pin is not evidence of an arrival.
+        origin_id = next(
+            (pin_id for index, pin_id in resolved_terminals if index == 0),
+            None,
+        )
+        if origin_id and (mode != "Drive" or not self.journey.route_ids):
+            self._place(origin_id)
+        if origin_id or (mode == "Drive" and self.journey.route_ids):
+            self._open = transfer
+        elif terminal_ids:
+            self._place(terminal_ids[-1])
 
     def _visit_place(self, name: str, kind: str) -> None:
         if self._open and self._open.arrival_id and kind not in _ENROUTE_KINDS:
@@ -197,10 +216,21 @@ class _JourneyWalk:
 
         transfer = self._open
         if transfer and self.journey.route_ids:
-            if pin_kind not in TERMINAL_KINDS:
-                self._connect(pin_id, transfer)
-            # A ground transfer stays open through its waypoints until the stay.
-            if transfer.mode not in _GROUND_MODES or pin_kind == "hotel":
+            expected_kind = _TRANSFER_DESTINATION_KINDS.get(transfer.mode)
+            if transfer.arrival_id:
+                if pin_kind not in TERMINAL_KINDS:
+                    self._connect(pin_id, transfer)
+                # A known ground arrival stays open through its waypoints.
+                if transfer.mode not in _GROUND_MODES or pin_kind == "hotel":
+                    self._open = None
+            elif pin_kind == expected_kind:
+                self._commit_pending(pin_id, transfer)
+                self._open = None
+            elif transfer.mode in _GROUND_MODES and pin_kind in _ENROUTE_KINDS:
+                transfer.pending_edges.append((self.journey.route_ids[-1], pin_id))
+            else:
+                # An unresolved transfer cannot borrow a local pin as its
+                # destination; keep the pin and leave the transfer unverified.
                 self._open = None
         elif not transfer:
             self._imply_terminal_hop(pin, pin_id, pin_kind)
@@ -290,11 +320,13 @@ def start_journey_from_stay(
     journey.route_ids = [stay_id, *(pin_id for pin_id in route_ids if pin_id != stay_id)]
     if returns_to_stay and len(journey.route_ids) > 1:
         journey.route_ids.append(stay_id)
-    # Only claim the opening edge is the transfer when the walk found no other one.
-    if len(journey.route_ids) >= 2 and journey.transfer_mode and not journey.intercity_edges:
-        journey.intercity_edges[(journey.route_ids[0], journey.route_ids[1])] = (
-            journey.transfer_mode
-        )
+    if (
+        len(journey.route_ids) >= 2
+        and journey.transfer_mode == "Drive"
+        and not journey.intercity_edges
+        and kind_of(journey.route_ids[1]) == "hotel"
+    ):
+        journey.intercity_edges[(journey.route_ids[0], journey.route_ids[1])] = "Drive"
     for extra_id in extra_stay_ids or []:
         if extra_id not in journey.route_ids:
             journey.route_ids.append(extra_id)

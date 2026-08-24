@@ -68,6 +68,7 @@ def _round_trip() -> dict:
         {
             "updates_json": json.dumps(
                 {
+                    "selected_flights": [{"airline": "Test Air"}],
                     "day_wise_itinerary": [
                         {
                             "day": 1,
@@ -100,6 +101,12 @@ def _round_trip() -> dict:
                         {
                             "day": 3,
                             "stops": [
+                                {
+                                    "name": "Hotel Sayaji checkout",
+                                    "kind": "hotel",
+                                    "time": "08:00",
+                                    "duration_min": 45,
+                                },
                                 {
                                     "name": "Flight Indore to Bangalore",
                                     "kind": "flight",
@@ -211,6 +218,12 @@ def test_an_update_that_declares_a_flight_change_is_allowed_to_change_it() -> No
                             "day": 3,
                             "stops": [
                                 {
+                                    "name": "Hotel Sayaji checkout",
+                                    "kind": "hotel",
+                                    "time": "08:00",
+                                    "duration_min": 45,
+                                },
+                                {
                                     "name": "Flight Indore to Bangalore 6E 456",
                                     "kind": "flight",
                                     "time": "17:00",
@@ -259,6 +272,102 @@ def test_origin_correction_restores_missing_selected_flight_legs() -> None:
     assert _stops_on(plan, 1)[0]["name"] == "Flight: Bangalore to Goa"
     assert _stops_on(plan, 3)[-1]["name"] == "Flight: Goa to Bangalore"
     assert "Added missing trip legs" in result
+
+
+def test_backwards_transport_timeline_is_rejected_without_persistence() -> None:
+    _round_trip()
+    before = json.loads(get_trip_plan.invoke({}))
+
+    result = update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "day_wise_itinerary": [
+                        {
+                            "day": 2,
+                            "stops": [
+                                {
+                                    "name": "Hotel Sayaji checkout",
+                                    "kind": "hotel",
+                                    "time": "08:00",
+                                    "duration_min": 45,
+                                },
+                                {
+                                    "name": "Old Indore walk",
+                                    "kind": "attraction",
+                                    "time": "10:00",
+                                    "duration_min": 90,
+                                },
+                                {
+                                    "name": "Drive Indore to Ujjain",
+                                    "kind": "transport",
+                                    "time": "08:30",
+                                    "duration_min": 120,
+                                },
+                            ],
+                        }
+                    ]
+                }
+            )
+        }
+    )
+
+    assert result.startswith("Error: itinerary times must increase")
+    assert json.loads(get_trip_plan.invoke({})) == before
+
+
+def test_authoritative_closed_day_is_rejected_without_persistence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    create_trip_plan.invoke(
+        {
+            "destination": "Paris",
+            "departure_date": "2026-08-18",
+            "return_date": "2026-08-18",
+            "travel_scope": "destination_only",
+        }
+    )
+    before = json.loads(get_trip_plan.invoke({}))
+    monkeypatch.setattr(
+        places_cache,
+        "get_summary",
+        lambda *_args, **_kwargs: {
+            "name": "Louvre",
+            "business_status": "OPERATIONAL",
+            "weekday_descriptions": [
+                "Monday: 9:00 AM - 6:00 PM",
+                "Tuesday: Closed",
+            ],
+        },
+    )
+
+    result = update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "day_wise_itinerary": [
+                        {
+                            "day": 1,
+                            "stops": [
+                                {
+                                    "name": "Louvre",
+                                    "kind": "attraction",
+                                    "time": "10:00",
+                                    "duration_min": 120,
+                                }
+                            ],
+                        }
+                    ]
+                }
+            )
+        }
+    )
+
+    assert result.startswith(
+        "Error: itinerary sanity validation rejected this update before persistence."
+    )
+    assert "Louvre is closed on Tuesdays" in result
+    assert json.loads(get_trip_plan.invoke({})) == before
 
 
 def test_no_tool_result_ever_shows_the_traveller_a_number_for_the_trip() -> None:
@@ -469,9 +578,7 @@ def test_a_return_leg_added_later_still_closes_a_regional_trip() -> None:
     assert [stop["name"] for stop in _stops_on(plan, 3)][-1] == "Flight Udaipur to Bangalore"
 
 
-def test_flights_added_later_are_reseated_through_the_real_update_tool() -> None:
-    """The reported defect, driven through the tool the agent actually calls:
-    a return flight added after planning sat in the middle of the last day."""
+def test_flights_added_later_must_be_submitted_in_chronological_order() -> None:
     create_trip_plan.invoke(
         {
             "destination": "Rajasthan",
@@ -538,12 +645,20 @@ def test_flights_added_later_are_reseated_through_the_real_update_tool() -> None
             "duration_min": 150,
         },
     )
-    update_trip_plan.invoke({"updates_json": json.dumps({"day_wise_itinerary": with_flights})})
+    result = update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "selected_flights": [{"airline": "Test Air"}],
+                    "day_wise_itinerary": with_flights,
+                }
+            )
+        }
+    )
 
     plan = json.loads(get_trip_plan.invoke({}))
-    last_day = [str(stop.get("name")) for stop in _stops_on(plan, 3)]
-    assert last_day[-1] == "Flight Udaipur to Bangalore"
-    assert last_day[0] != "Flight Udaipur to Bangalore"
+    assert result.startswith("Error: itinerary times must increase")
+    assert _stops_on(plan, 3) == planned_days[2]["stops"]
 
 
 def test_a_place_is_never_scheduled_on_top_of_a_drive() -> None:

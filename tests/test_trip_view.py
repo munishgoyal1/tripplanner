@@ -1719,7 +1719,7 @@ def test_map_view_keeps_local_taxi_day_as_closed_hotel_circuit(_map_geo: None) -
     assert all("intercity" not in leg for leg in day["legs"])
 
 
-def test_map_view_falls_back_to_stays_when_one_flight_terminal_is_unmapped(
+def test_map_view_leaves_partial_flight_between_stays_unverified(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1758,13 +1758,14 @@ def test_map_view_falls_back_to_stays_when_one_flight_terminal_is_unmapped(
     names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
     assert [names_by_id[pin_id] for pin_id in day["pin_ids"]] == [
         "Origin Hotel",
+        "Bangalore Airport",
         "Destination Hotel",
     ]
-    assert day["legs"][0]["mode"] == "Flight"
-    assert day["legs"][0]["intercity"] is True
+    assert all(leg["mode"] == "Taxi" for leg in day["legs"])
+    assert all("intercity" not in leg for leg in day["legs"])
 
 
-def test_map_view_uses_origin_terminal_when_partial_flight_is_first_stop(
+def test_map_view_does_not_bind_partial_flight_to_destination_hotel(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1803,9 +1804,9 @@ def test_map_view_uses_origin_terminal_when_partial_flight_is_first_stop(
         "Bangalore Airport",
         "Destination Hotel",
     ]
-    assert day["route"]["mode"] == "Flight"
-    assert day["legs"][0]["mode"] == "Flight"
-    assert day["legs"][0]["intercity"] is True
+    assert day["route"]["mode"] == "Taxi"
+    assert day["legs"][0]["mode"] == "Taxi"
+    assert "intercity" not in day["legs"][0]
 
 
 def test_map_view_pins_flight_stops_named_as_single_airports(
