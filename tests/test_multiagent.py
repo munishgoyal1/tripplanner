@@ -95,7 +95,11 @@ def test_prune_worker_sessions_keeps_only_open_issue_sessions(tmp_path: Path) ->
     }), encoding="utf-8")
 
     candidates = runtime.prune_worker_sessions(
-        [assignment(86, "open-session"), assignment(65, "closed-session")],
+        [
+            assignment(86, "open-session"),
+            assignment(65, "closed-session"),
+            assignment(66, "already-absent"),
+        ],
         {86},
         copilot_home=copilot_home,
         dry_run=False,
