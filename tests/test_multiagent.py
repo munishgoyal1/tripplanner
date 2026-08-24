@@ -269,17 +269,17 @@ def test_audit_content_is_fenced_as_data_not_instructions() -> None:
     assert "```text" in body
 
 
-def test_findings_are_ranked_worst_first_and_capped() -> None:
+def test_the_producer_does_not_cap_new_finding_groups() -> None:
     groups = [
         {"rule": "A", "severity": "info", "count": 99},
         {"rule": "B", "severity": "error", "count": 1},
         {"rule": "C", "severity": "warn", "count": 5},
     ]
 
-    kept, dropped = core.rank_findings(groups, 2)
+    ordered = core.order_findings(groups)
 
-    assert [group["rule"] for group in kept] == ["B", "C"]
-    assert dropped == 1
+    assert [group["rule"] for group in ordered] == ["B", "C", "A"]
+    assert len(ordered) == len(groups)
 
 
 def test_the_producer_never_accepts_the_baseline() -> None:

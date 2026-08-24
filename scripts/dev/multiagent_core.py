@@ -294,17 +294,14 @@ def redact(text: str, secrets: list[str] | None = None) -> str:
     return cleaned
 
 
-def rank_findings(groups: list[dict], cap: int) -> tuple[list[dict], int]:
-    """Worst first, capped. Returns the kept groups and how many were dropped."""
+def order_findings(groups: list[dict]) -> list[dict]:
     order = {"error": 0, "high": 0, "warn": 1, "warning": 1, "medium": 1, "info": 2, "low": 2}
 
     def key(group: dict) -> tuple[int, int, str]:
         severity = order.get(str(group.get("severity", "")).lower(), 1)
         return (severity, -int(group.get("count", 0)), str(group.get("rule", "")))
 
-    ordered = sorted(groups, key=key)
-    kept = ordered[: max(0, cap)]
-    return kept, max(0, len(ordered) - len(kept))
+    return sorted(groups, key=key)
 
 
 def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> str:
