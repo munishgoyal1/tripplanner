@@ -46,6 +46,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/validation/Audit-Trips.cmd` | Audit every stored trip, always write dated JSON/Markdown evidence under `audit/reports/`, and exit non-zero on findings the baseline does not hold |
 | `win/user/validation/Audit-Trips.cmd --all` | Show every finding, not only new ones |
 | `win/user/validation/Audit-Trips.cmd --accept` | Record the current findings as known |
+| `win/user/validation/Build-Corpus.cmd` | Spend a bounded budget on planner-generated trips using the running stack for the checkout where the launcher is invoked; retained trips remain in the global corpus |
 | `win/user/validation/Refresh-Audit-Corpus.cmd` | Spend the configured corpus budget on fresh planner trips, retain them globally, then write the normal dated audit report |
 | `win/user/multiagent/Start-Multiagent.cmd` | Start the coordinator detached and open the coordinator chat; dispatches only issues carrying `owner:ready` |
 | `win/user/multiagent/Multiagent-Status.cmd` | Controller, slots, assignments, issues waiting on an owner decision, and recovery commands |
@@ -66,7 +67,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/sandbox/Resolve-SandboxConflicts.cmd` | Finish a manually resolved sandbox merge and push the sandbox branch |
 | `win/user/sandbox/Merge-Sandbox.cmd` | Same gates as promotion, but keeps the sandbox: fetch latest `master`, auto-resolve conflicts, validate, push, open the PR, merge, verify it landed, then resynchronize the sandbox so work continues in the same lane |
 | `win/user/sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |
-| `win/user/sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, local and remote branches, and emulator database (refuses while work is not in `master`; pass `-DeleteRemoteBranch:$false` to retain the remote branch) |
+| `win/user/sandbox/Discard-Sandbox.cmd` | Preserve and publish the lane's trip snapshot and warmed place cache, then remove its worktree, branches, and emulator database (refuses while work is not in `master`; pass `-DeleteRemoteBranch:$false` to retain the remote branch) |
 | `win/user/sandbox/List-Sandboxes.cmd` | List every sandbox with its number, purpose, promotion status, URLs, branch, worktree, database, and whether it is serving |
 | `win/canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
 | `win/prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |

@@ -29,7 +29,7 @@ from tripplanner.validation import (
 )
 from tripplanner.validation.catalog import Catalog
 from tripplanner.validation.checks import check_record, plan_names
-from tripplanner.validation.emulator import assert_sandbox_database
+from tripplanner.validation.emulator import assert_generation_database, assert_sandbox_database
 from tripplanner.validation.matrix import TripRequest
 
 _PLACES = {
@@ -167,6 +167,14 @@ def test_debug_store_records_contribute_their_intermediate_states(
 def test_the_audit_cannot_read_a_database_that_is_not_a_sandbox(name: str) -> None:
     with pytest.raises(ValueError):
         assert_sandbox_database(name)
+
+
+def test_generation_accepts_isolated_primary_and_sandbox_databases_only() -> None:
+    assert assert_generation_database("tripplanner-local") == "tripplanner-local"
+    assert assert_generation_database("tripplanner-sbx-4-test") == "tripplanner-sbx-4-test"
+    for name in ("tripplanner-canary", "tripplanner-prod", "unscoped"):
+        with pytest.raises(ValueError):
+            assert_generation_database(name)
 
 
 # ---- checks ---------------------------------------------------------------
@@ -887,7 +895,7 @@ _ONE_REQUEST = (TripRequest("corpus-slug", "a shape", "Plan a trip"),)
 
 
 def _stub_generate(monkeypatch: pytest.MonkeyPatch, usage: dict[str, Any]) -> None:
-    monkeypatch.setattr(generate, "assert_sandbox_database", lambda name: name)
+    monkeypatch.setattr(generate, "assert_generation_database", lambda name: name)
     monkeypatch.setattr(generate, "_saved_trip", lambda database, user_id: None)
     monkeypatch.setattr(generate, "_usage_for", lambda database, user_id: dict(usage))
 
@@ -1186,6 +1194,47 @@ def test_build_corpus_scope_distinguishes_country_from_market(
         build_corpus.main(["--country", "india", "--market", "india", "--dry-run"])
     assert error.value.code == 2
     assert "not allowed with argument" in capsys.readouterr().err
+
+
+def test_build_corpus_runtime_defaults_follow_the_current_checkout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    script = Path(__file__).parents[1] / "scripts" / "dev" / "build_corpus.py"
+    spec = importlib.util.spec_from_file_location("build_corpus_runtime", script)
+    assert spec and spec.loader
+    build_corpus = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(build_corpus)
+
+    primary = tmp_path / "tripplanner"
+    sandbox = tmp_path / "tripplanner.worktrees" / "sbx-4-test"
+    registry = tmp_path / "tripplanner.worktrees" / "sandboxes.json"
+    registry.parent.mkdir(parents=True)
+    registry.write_text(
+        json.dumps(
+            [
+                {
+                    "worktree": str(sandbox),
+                    "apiPort": 8130,
+                    "database": "tripplanner-sbx-4-test",
+                }
+            ]
+        )
+    )
+
+    class Result:
+        returncode = 0
+        stdout = str(primary / ".git")
+
+    monkeypatch.setattr(build_corpus.subprocess, "run", lambda *args, **kwargs: Result())
+
+    assert build_corpus._runtime_defaults(primary) == (
+        "http://127.0.0.1:8000",
+        "tripplanner-local",
+    )
+    assert build_corpus._runtime_defaults(sandbox) == (
+        "http://127.0.0.1:8130",
+        "tripplanner-sbx-4-test",
+    )
 
 
 def test_a_run_keeps_asking_until_the_budget_is_spent(

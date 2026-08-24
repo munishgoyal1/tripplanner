@@ -28,7 +28,7 @@ from typing import Any
 from tripplanner.validation import budget as budget_module
 from tripplanner.validation import matrix as matrix_module
 from tripplanner.validation.catalog import Catalog
-from tripplanner.validation.emulator import assert_sandbox_database, read_trips
+from tripplanner.validation.emulator import assert_generation_database, read_generation_trips
 from tripplanner.validation.matrix import TripRequest
 
 MANIFEST_FILE = "manifest.json"
@@ -131,9 +131,9 @@ def save_manifest(corpus_root: Path, manifest: dict[str, Any]) -> None:
 
 def _usage_for(database: str, user_id: str) -> dict[str, Any]:
     """What this user has cost so far, straight from the app's own ledger."""
-    from tripplanner.validation.emulator import _client, assert_sandbox_database
+    from tripplanner.validation.emulator import _client
 
-    name = assert_sandbox_database(database)
+    name = assert_generation_database(database)
     try:
         rows = list(
             _client()
@@ -172,7 +172,7 @@ def _saved_trip(database: str, user_id: str) -> dict[str, Any] | None:
     A request that only asked a clarifying question still costs money, so the
     caller must be able to tell the difference.
     """
-    for trip in read_trips(database, user_id=user_id):
+    for trip in read_generation_trips(database, user_id=user_id):
         days = [day for day in (trip.get("day_wise_itinerary") or []) if isinstance(day, dict)]
         if days and any(day.get("stops") for day in days):
             return trip
@@ -271,7 +271,7 @@ def build(
     budget is reserved before a request is sent rather than charged after it
     returns, so several turns in flight can never overshoot the cap between them.
     """
-    assert_sandbox_database(database)
+    assert_generation_database(database)
     allowed = budget_module.authorize(corpus_root, requested_budget_inr)
     manifest = load_manifest(corpus_root)
     catalog = catalog_for(corpus_root)
