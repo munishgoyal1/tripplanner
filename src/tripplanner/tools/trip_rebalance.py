@@ -424,6 +424,7 @@ def rebalance(
     plan: dict[str, Any],
     *,
     pinned: set[tuple[int, str]] | frozenset[tuple[int, str]] = frozenset(),
+    priority_codes: set[str] | frozenset[str] = frozenset(),
     max_rounds: int = 8,
     budget_ms: int = 400,
 ) -> Rebalance:
@@ -431,6 +432,12 @@ def rebalance(
     current = deepcopy(plan)
     before = score(current)
     best_score = before
+    best_priority = (
+        sum(violation.code in priority_codes for violation in trip_guard.validate_plan(current))
+        if priority_codes
+        else 0
+    )
+    baseline_other = before.contradictions - best_priority
     moves: list[Move] = []
     deadline = time.perf_counter() + budget_ms / 1000
     rounds = 0
@@ -438,18 +445,35 @@ def rebalance(
 
     while rounds < max_rounds:
         rounds += 1
-        best: tuple[float, dict[str, Any], tuple[Move, ...]] | None = None
+        best: tuple[tuple[int, float], dict[str, Any], tuple[Move, ...]] | None = None
 
         for candidate, candidate_moves in _candidates(current, set(pinned), deadline):
             candidate_score = score(candidate)
-            if candidate_score.contradictions > before.contradictions:
+            candidate_priority = (
+                sum(
+                    violation.code in priority_codes
+                    for violation in trip_guard.validate_plan(candidate)
+                )
+                if priority_codes
+                else 0
+            )
+            candidate_other = candidate_score.contradictions - candidate_priority
+            if candidate_other > baseline_other:
                 continue
-            if candidate_score.total >= best_score.total:
+            candidate_rank = (
+                candidate_priority if priority_codes else 0,
+                candidate_score.total,
+            )
+            current_rank = (
+                best_priority if priority_codes else 0,
+                best_score.total,
+            )
+            if candidate_rank >= current_rank:
                 continue
-            if best is None or candidate_score.total < best[0]:
+            if best is None or candidate_rank < best[0]:
                 saved = best_score.travel_min - candidate_score.travel_min
                 best = (
-                    candidate_score.total,
+                    candidate_rank,
                     candidate,
                     tuple(
                         Move(move.name, move.from_day, move.to_day, move.time, saved)
@@ -461,8 +485,16 @@ def rebalance(
             exhausted = True
         if best is None:
             break
-        _total, current, accepted = best
+        _rank, current, accepted = best
         best_score = score(current)
+        best_priority = (
+            sum(
+                violation.code in priority_codes
+                for violation in trip_guard.validate_plan(current)
+            )
+            if priority_codes
+            else 0
+        )
         moves.extend(accepted)
         if exhausted:
             break
