@@ -76,6 +76,10 @@ _EXPLICIT_PARTY_RELATION_RE = re.compile(
 )
 _ADULT_COUNT_RE = re.compile(r"\b(\d+)\s*(?:adults?|grown[ -]?ups?)\b", re.IGNORECASE)
 _CHILD_COUNT_RE = re.compile(r"\b(\d+)\s*(?:children|child|kids?)\b", re.IGNORECASE)
+_LODGING_GAP_RE = re.compile(
+    r"\b(?:hotel|lodging|bookable (?:property|stay))\b",
+    re.IGNORECASE,
+)
 
 
 #: Tools a saved turn ran, restored by chat_store. The graph's tool messages do
@@ -247,7 +251,14 @@ def trip_hotel_search_requirement(
     has_planning_intent: bool,
 ) -> str | None:
     positions = _tool_call_positions(messages)
-    if any(name == "search_hotels" for _, name in positions):
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    if any(
+        index > latest_human and name == "search_hotels"
+        for index, name in positions
+    ):
         return None
     if not active_trip.get("destination") or not active_trip.get("day_wise_itinerary"):
         return None
@@ -255,7 +266,7 @@ def trip_hotel_search_requirement(
     if not created_this_turn and not has_planning_intent:
         return None
     hotel_gaps = [
-        gap for gap in planning_completion_gaps(active_trip) if "hotel" in gap.lower()
+        gap for gap in planning_completion_gaps(active_trip) if _LODGING_GAP_RE.search(gap)
     ]
     if not hotel_gaps:
         return None
@@ -271,12 +282,17 @@ def trip_hotel_search_requirement(
 def trip_hotel_fallback_requirement(
     messages: Sequence[BaseMessage],
 ) -> str | None:
-    positions = _tool_call_positions(messages)
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    turn_messages = messages[latest_human + 1:]
+    positions = _tool_call_positions(turn_messages)
     if not any(name == "search_hotels" for _, name in positions):
         return None
     if any(name == "search_places_with_reviews" for _, name in positions):
         return None
-    results = _tool_result_texts(messages, "search_hotels")
+    results = _tool_result_texts(turn_messages, "search_hotels")
     if not results:
         return None
     failure_markers = (

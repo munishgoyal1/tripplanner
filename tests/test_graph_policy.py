@@ -230,6 +230,64 @@ def test_hotel_provider_fallback_preempts_enrichment_persistence() -> None:
     assert decision.forced_reason == "hotel_provider_fallback"
 
 
+def test_missing_lodging_anchor_forces_hotel_research() -> None:
+    decision = resolve_completion_policy(
+        messages=[HumanMessage(content="Finish planning my Udaipur trip")],
+        active_trip={
+            "destination": "Udaipur",
+            "travel_scope": "destination_only",
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [{"name": "City Palace", "kind": "attraction"}],
+                },
+                {
+                    "day": 2,
+                    "stops": [{"name": "Jag Mandir", "kind": "attraction"}],
+                },
+            ],
+            "selected_hotels": [{"name": "Trident Udaipur"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"
+    assert "lodging anchor" in (decision.requirement or "")
+
+
+def test_prior_turn_hotel_search_does_not_retire_stay_repair() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan my Udaipur trip"),
+            _tool_call("search_hotels", "hotel-old"),
+            ToolMessage(content="No hotels found for Udaipur.", tool_call_id="hotel-old"),
+            HumanMessage(content="Finish the stay planning"),
+        ],
+        active_trip={
+            "destination": "Udaipur",
+            "travel_scope": "destination_only",
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+                },
+                {
+                    "day": 2,
+                    "stops": [{"name": "City Palace", "kind": "attraction"}],
+                },
+            ],
+            "selected_hotels": [],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"
+
+
 def test_tool_phase_budget_preempts_every_completion_gate() -> None:
     decision = resolve_completion_policy(
         messages=[
