@@ -19,13 +19,13 @@ async function runInspection(): Promise<void> {
     const request = beginInspection(window.location.search);
     if (!request) return;
     let opened = false;
-    if (request.tripId) {
-      const { switchTrip } = await import("./api");
-      opened = Boolean(await switchTrip(request.tripId));
-    }
-    if (!opened && request.recordId) {
+    if (request.recordId) {
       const { openAuditRecord } = await import("./api");
       opened = Boolean(await openAuditRecord(request.recordId));
+    }
+    if (!opened && request.tripId) {
+      const { switchTrip } = await import("./api");
+      opened = Boolean(await switchTrip(request.tripId));
     }
     if (!opened) throw new Error("The audited trip could not be opened.");
     // The banner reads the flag from storage, so the query is no longer needed

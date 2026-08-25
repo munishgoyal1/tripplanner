@@ -13,8 +13,10 @@ collision, and fingerprint logic lives in ``multiagent_core.py``.
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -57,12 +59,14 @@ def run(
     *,
     cwd: Path | None = None,
     env: dict[str, str] | None = None,
+    input_text: str | None = None,
     timeout: int | None = 600,
 ) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         args,
         cwd=str(cwd) if cwd else None,
         env=env,
+        input=input_text,
         capture_output=True,
         text=True,
         timeout=timeout,
@@ -1232,6 +1236,10 @@ def cmd_audit(space: Workspace, args: argparse.Namespace) -> int:
     for group in core.order_findings(groups):
         mark = core.fingerprint(str(group.get("rule", "?")), str(group.get("example", "")))
         title = f"[audit {group.get('rule', '?')}] {str(group.get('symptom', ''))[:70]}"
+        if args.screenshots and not args.dry_run:
+            screenshot_links = capture_audit_screenshots(space, repo, group, mark)
+            if screenshot_links:
+                group["screenshot_links"] = screenshot_links
         body = core.audit_issue_body(group, corpus_size=corpus, sources=sources)
         if args.dry_run:
             log(f"  would propose  {mark}  {title}")
@@ -1264,6 +1272,118 @@ def cmd_audit(space: Workspace, args: argparse.Namespace) -> int:
 
     log("Nothing is authorised. Add owner:ready to whichever should be built.")
     return 0
+
+
+def capture_audit_screenshots(
+    space: Workspace,
+    repo: str,
+    group: dict,
+    mark: str,
+) -> list[str]:
+    """Capture and publish exact audit points, returning durable GitHub links."""
+    representative = group.get("representative") or {}
+    if not representative.get("openable"):
+        return []
+    node = shutil.which("node")
+    if not node:
+        log(f"  screenshot skipped {mark}: Node.js is unavailable")
+        return []
+
+    query = core.audit_review_query(representative)
+    url = f"http://localhost:5173/planner?{query}"
+    master_sha = git(["rev-parse", "origin/master"], cwd=space.primary)
+    if not ensure_evidence_branch(space, repo, master_sha):
+        return []
+
+    days = audit_screenshot_days(representative, str(group.get("example") or ""))
+    links: list[str] = []
+    for day in days or [None]:
+        suffix = f"-day-{day}" if day is not None else "-itinerary"
+        safe_mark = re.sub(r"[^a-zA-Z0-9._-]+", "-", mark).strip("-") + suffix
+        relative_path = f"evidence/{master_sha}/{safe_mark}.png"
+        output = space.primary / "logs" / "audit-evidence" / master_sha / f"{safe_mark}.png"
+        capture = run(
+            [
+                node,
+                str(space.primary / "frontend" / "scripts" / "capture-audit-point.mjs"),
+                f"--url={url}",
+                f"--output={output}",
+                f"--day={day or ''}",
+            ],
+            cwd=space.primary / "frontend",
+            timeout=90,
+        )
+        if capture.returncode != 0 or not output.exists():
+            detail = (capture.stderr or capture.stdout or "capture produced no file").strip()[:240]
+            log(f"  screenshot skipped {mark}{suffix}: {detail}")
+            continue
+        uploaded = upload_audit_evidence(space, repo, relative_path, output, mark)
+        if uploaded:
+            links.append(uploaded)
+    return links
+
+
+def audit_screenshot_days(representative: dict, example: str) -> list[int]:
+    explicit = representative.get("day")
+    if explicit is not None:
+        return [int(explicit)]
+    match = re.search(r"\bDay(?:\(s\)|s)?\s+([0-9][0-9, and-]*)", example, re.IGNORECASE)
+    if not match:
+        return []
+    return list(dict.fromkeys(int(value) for value in re.findall(r"\d+", match.group(1))))
+
+
+def upload_audit_evidence(
+    space: Workspace,
+    repo: str,
+    relative_path: str,
+    output: Path,
+    mark: str,
+) -> str:
+    link = f"https://github.com/{repo}/blob/audit-evidence/{relative_path}?raw=1"
+    existing = run(
+        ["gh", "api", f"repos/{repo}/contents/{relative_path}?ref=audit-evidence"],
+        cwd=space.primary,
+    )
+    if existing.returncode == 0:
+        return link
+    encoded = base64.b64encode(output.read_bytes()).decode("ascii")
+    uploaded = run(
+        [
+            "gh", "api", "--method", "PUT", f"repos/{repo}/contents/{relative_path}",
+            "--input", "-",
+        ],
+        cwd=space.primary,
+        input_text=json.dumps(
+            {
+                "message": f"Add audit evidence {mark}",
+                "content": encoded,
+                "branch": "audit-evidence",
+            }
+        ),
+        timeout=120,
+    )
+    if uploaded.returncode != 0:
+        log(f"  screenshot upload failed {mark}: {uploaded.stderr.strip()[:240]}")
+        return ""
+    return link
+
+
+def ensure_evidence_branch(space: Workspace, repo: str, master_sha: str) -> bool:
+    found = run(["gh", "api", f"repos/{repo}/git/ref/heads/audit-evidence"], cwd=space.primary)
+    if found.returncode == 0:
+        return True
+    created = run(
+        [
+            "gh", "api", "--method", "POST", f"repos/{repo}/git/refs",
+            "-f", "ref=refs/heads/audit-evidence", "-f", f"sha={master_sha}",
+        ],
+        cwd=space.primary,
+    )
+    if created.returncode != 0:
+        log(f"  audit evidence branch unavailable: {created.stderr.strip()[:240]}")
+        return False
+    return True
 
 
 def cmd_prune(space: Workspace, args: argparse.Namespace) -> int:
@@ -1321,6 +1441,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     audit = sub.add_parser("audit", help="run the read-only trip audit and propose issues")
     audit.add_argument("--dry-run", action="store_true")
+    audit.add_argument(
+        "--screenshots",
+        action="store_true",
+        help="capture affected itinerary days and publish them on audit-evidence",
+    )
     return parser
 
 

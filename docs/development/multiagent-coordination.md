@@ -154,11 +154,13 @@ Audit proposals are owner-triage records, not terse machine alerts. Each issue
 includes the rule's expected traveller experience, the observed UX symptom,
 severity and evaluator, a representative destination/date/day/provenance/record,
 and a direct local product link when the persisted trip is still openable. The
-example remains fenced as untrusted trip data. A screenshot is embedded when the
-audit input supplies a durable HTTPS `screenshot_url`; otherwise the issue says
-explicitly that no static image was published and points to the authoritative
-local trip or Inspector record. The read-only producer never fabricates a visual,
-starts a stack, or commits screenshot files merely to decorate an issue.
+example remains fenced as untrusted trip data. Pass `--screenshots` to capture
+each explicit or message-named affected day (or the itinerary pane when no day is
+known), publish immutable PNGs on the repository's `audit-evidence` branch, and
+link them from the issue. Capture is opt-in because it requires the primary stack,
+Node.js, Chrome, and GitHub write access. A failed capture never blocks issue
+production or fabricates evidence; the issue falls back to its authoritative
+local trip or Inspector record.
 
 Corpus generation spends real money and needs a running API, so it is never part
 of the automatic loop. The owner runs `Refresh-Audit-Corpus.command` when fresh
@@ -348,7 +350,7 @@ One shared implementation, thin launchers on both platforms.
 | `Plan-Multiagent` | Dry run: what it *would* dispatch, and why it excluded the rest |
 | `Open-Coordinator` | Open the owner-facing coordinator chat in VS Code |
 | `Publish-Coordinator` | Merge Coordinator work through a PR, update primary and Coordinator lanes, then synchronize all sandboxes |
-| `Run-Audit-Producer` | One producer pass; `--dry-run` reports findings without opening issues |
+| `Run-Audit-Producer` | One producer pass; `--dry-run` reports findings without opening issues, while `--screenshots` captures and publishes exact affected-day evidence |
 
 Windows launchers are in `scripts/win/user/multiagent/`, macOS in
 `scripts/mac/user/multiagent/`, and both forward to `scripts/dev/multiagent.ps1`.

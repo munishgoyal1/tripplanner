@@ -1252,3 +1252,15 @@ the outcome.
   principal before discarding the attempt. Conversely, do not repeat a full
   15-minute request timeout four times: shorter connection failures remain
   idempotently retryable, but the full timeout is the retry budget.
+
+## 2026-08-25 - Audit Evidence Must Outrank Mutable Local State
+
+- A deep link carrying both a saved trip ID and an immutable corpus record opened
+  the saved copy first. Any stale or blank local document could therefore win even
+  though the exact artifact that produced the finding remained healthy.
+- When durable evidence and mutable convenience state are both available, restore
+  the evidence first and use mutable state only as fallback. Canonicalize the URL
+  only after that restore succeeds.
+- Screenshots are useful only when they identify the finding point. Capture the
+  explicit affected day, derive named days from deterministic finding text when
+  necessary, and fall back to the itinerary pane only when no precise day exists.

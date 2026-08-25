@@ -136,4 +136,12 @@ describe("the app's entry point", () => {
     expect(renderLine).toBe(renderLine!.trimStart());
     expect(mainSource).toMatch(/void runInspection\(\)/);
   });
+
+  it("restores the immutable audit record before trying a saved trip", () => {
+    const restoreIndex = mainSource.indexOf("openAuditRecord(request.recordId)");
+    const switchIndex = mainSource.indexOf("switchTrip(request.tripId)");
+
+    expect(restoreIndex).toBeGreaterThan(-1);
+    expect(switchIndex).toBeGreaterThan(restoreIndex);
+  });
 });
