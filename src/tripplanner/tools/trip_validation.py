@@ -434,6 +434,26 @@ def _requested_budget_without_cost_evidence(plan: dict[str, Any]) -> list[str]:
     ]
 
 
+def _itinerary_density_warnings(plan: dict[str, Any]) -> list[str]:
+    recommendation = plan.get("planning_recommendation")
+    if not isinstance(recommendation, dict):
+        return []
+    preferences = dict(plan.get("preferences_snapshot") or {})
+    planning_preferences = dict(preferences.get("planning_preferences") or {})
+    target_minutes = recommendation.get("target_active_minutes_per_full_day")
+    if isinstance(target_minutes, (int, float)):
+        planning_preferences["target_active_minutes_per_full_day"] = target_minutes
+    preferences["planning_preferences"] = planning_preferences
+    assessment = assess_itinerary_density(plan.get("day_wise_itinerary") or [], preferences)
+    if not assessment.sparse_days:
+        return []
+    reasons = "; ".join(day.reason for day in assessment.sparse_days[:3])
+    return [
+        "Sparse itinerary: " + reasons + ". Rebalance meaningful nearby stops "
+        "or explicitly label intentional leisure; do not add filler."
+    ]
+
+
 def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
     """Gaps that a first planning turn must resolve even after its normal tool budget."""
     itinerary = plan.get("day_wise_itinerary")
@@ -462,29 +482,12 @@ def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *journey_continuity,
         *departure_buffers,
         *_requested_budget_without_cost_evidence(plan),
+        *_itinerary_density_warnings(plan),
     ]
 
 
 def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
     """Return actionable gaps that keep a new plan from feeling complete."""
-    density_warnings: list[str] = []
-    recommendation = plan.get("planning_recommendation")
-    if isinstance(recommendation, dict):
-        preferences = dict(plan.get("preferences_snapshot") or {})
-        planning_preferences = dict(preferences.get("planning_preferences") or {})
-        target_minutes = recommendation.get("target_active_minutes_per_full_day")
-        if isinstance(target_minutes, (int, float)):
-            planning_preferences["target_active_minutes_per_full_day"] = target_minutes
-        preferences["planning_preferences"] = planning_preferences
-        assessment = assess_itinerary_density(
-            plan.get("day_wise_itinerary") or [], preferences
-        )
-        if assessment.sparse_days:
-            reasons = "; ".join(day.reason for day in assessment.sparse_days[:3])
-            density_warnings.append(
-                "Sparse itinerary: " + reasons + ". Rebalance meaningful nearby stops "
-                "or explicitly label intentional leisure; do not add filler."
-            )
     itinerary = plan.get("day_wise_itinerary")
     # Every other check walks the days, so a trip with none of them reported
     # nothing at all and could be narrated as planned while holding no plan.
@@ -514,7 +517,7 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
         *coherence_gaps,
-        *density_warnings,
+        *_itinerary_density_warnings(plan),
     ]
 
 
