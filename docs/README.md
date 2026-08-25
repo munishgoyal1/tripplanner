@@ -69,6 +69,7 @@ acceptance criteria stay in their active backlog folder.
 | [`operations/product-analytics.md`](operations/product-analytics.md) | GA4 setup, privacy boundary, events, and activation funnel |
 | [`operations/performance-cost.md`](operations/performance-cost.md) | Performance and cost evidence layers and regression baseline |
 | [`operations/backup-recovery.md`](operations/backup-recovery.md) | Guarded backup, validation, restore, and recovery-drill procedure |
+| [`operations/gcp-billing-guardrails.md`](operations/gcp-billing-guardrails.md) | Google Cloud budgets, Maps API quotas, billing shutoff, and per-trip cost model |
 
 ## Mobile
 

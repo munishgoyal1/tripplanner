@@ -311,6 +311,8 @@ conversation or explicit edit
 | `docs/ux-experiments/` | UX Lab decisions and lifecycle records; `LAB_SELECTIONS.json` is the tracked canonical handoff and implementation history |
 | `docs/operations/deployment-flow.md` | Canonical canary, production, monitoring, and rollback runbook |
 | `docs/operations/backup-recovery.md` | Guarded backup and restore drill |
+| `docs/operations/gcp-billing-guardrails.md` | Reproducible Google Cloud budget, quota, and billing-shutoff setup |
+| `infra/gcp/billing-shutoff/` | Cloud Function that detaches billing when the global GCP budget breaks |
 | `docs/development/new-machine-setup.md` | Canonical one-click Windows/macOS environment recreation and manual sign-in steps |
 | `docs/development/parallel-agent-development.md` | Sandbox lifecycle and promotion workflow |
 | `infra/` | Azure IaC and approval-gated operational scripts |
