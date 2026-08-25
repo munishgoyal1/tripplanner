@@ -445,6 +445,15 @@ def touched_frontend(files: str) -> bool:
     return "frontend/" in files or "packages/" in files
 
 
+def changed_paths(worktree: Path, base_sha: str, pushed_sha: str) -> tuple[str, ...]:
+    output = git(
+        ["diff", "--name-only", f"{base_sha}..{pushed_sha}"],
+        cwd=worktree,
+        check=False,
+    )
+    return tuple(line.strip() for line in output.splitlines() if line.strip())
+
+
 def validate(space: Workspace, worktree: Path, *, frontend: bool) -> tuple[bool, str]:
     env = dict(os.environ)
     env["PYTHONPATH"] = str(worktree / "src")
@@ -710,6 +719,8 @@ def dispatch(space: Workspace, state: core.State, repo: str) -> None:
                 state="running",
                 started=core.format_time(core.utcnow()),
                 heartbeat=core.format_time(core.utcnow()),
+                audit_source=core.AUDIT_SOURCE in issue.labels,
+                evidence_class=core.audit_evidence_class(issue),
             )
         )
         if issue.number not in state.batch:
@@ -813,6 +824,23 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
     git(["fetch", "-q", "origin"], cwd=worktree)
 
     for assignment in ready:
+        paths = changed_paths(worktree, assignment.base_sha, assignment.pushed_sha)
+        rejection = core.audit_fix_rejection(
+            audit_source=assignment.audit_source,
+            evidence_class=assignment.evidence_class,
+            changed_paths=paths,
+        )
+        if rejection:
+            assignment.state = "rejected"
+            assignment.validation = rejection
+            set_agent_state(repo, assignment.issue, None)
+            gh_comment(
+                repo,
+                assignment.issue,
+                "Integration rejected before merge: " + rejection + ".",
+            )
+            log(f"#{assignment.issue} rejected: {rejection}")
+            continue
         merged = run(
             ["git", "merge", "--no-ff", "-m",
              f"Integrate #{assignment.issue} attempt {assignment.attempt}", assignment.pushed_sha],
