@@ -83,7 +83,7 @@
           "note": "Arrive and clear immigration"
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Crowne Plaza Muscat",
           "kind": "hotel",
           "note": "Check-in and unwind"
         },
@@ -103,7 +103,7 @@
       "summary": "Morning visit to Sultan Qaboos Grand Mosque, Mutrah Corniche, and Mutrah Souq. Free afternoon.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Crowne Plaza Muscat",
           "kind": "hotel",
           "note": "Start from hotel"
         },
@@ -128,7 +128,7 @@
           "note": "Explore the traditional market"
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Crowne Plaza Muscat",
           "kind": "hotel",
           "time": "14:00",
           "note": "Return for free afternoon"
@@ -142,7 +142,7 @@
       "summary": "Morning at Royal Opera House and National Museum. Free afternoon for leisure or spa.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Crowne Plaza Muscat",
           "kind": "hotel"
         },
         {
@@ -158,7 +158,7 @@
           "duration_min": 90
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Crowne Plaza Muscat",
           "kind": "hotel",
           "time": "14:00",
           "note": "Return for free afternoon"
@@ -179,7 +179,7 @@
           "distance_km": 140
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Crowne Plaza Muscat",
           "kind": "hotel",
           "time": "09:45"
         },
@@ -204,7 +204,7 @@
           "distance_km": 140
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Crowne Plaza Muscat",
           "kind": "hotel",
           "time": "15:15",
           "note": "Free afternoon"
@@ -218,7 +218,7 @@
       "summary": "Relaxed morning at Al Mouj Marina, check out, and depart for Hyderabad.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Crowne Plaza Muscat",
           "kind": "hotel",
           "note": "Check out"
         },
