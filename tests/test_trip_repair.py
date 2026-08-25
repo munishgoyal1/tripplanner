@@ -115,6 +115,27 @@ def test_a_closed_day_only_repair_leaves_unrelated_stops_in_place() -> None:
     ]
 
 
+def test_a_closed_day_only_repair_prioritizes_the_violation_over_travel_cost(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(_PLACES, "Distant Gallery", {
+        "lat": 50.2100,
+        "lng": 2.3376,
+        "weekday_descriptions": _OPEN,
+    })
+    broken = _plan(
+        [_stop("Distant Gallery", "08:00")],
+        [_stop("Louvre Museum", "10:00")],
+    )
+
+    outcome = trip_repair.repair(broken, only_codes={"I11"})
+
+    assert outcome["changed"]
+    assert _closed_day_codes(outcome["plan"]) == []
+    assert outcome["moves"][0]["name"] == "Louvre Museum"
+    assert outcome["moves"][0]["to_day"] == 1
+
+
 def test_it_reschedules_a_planner_owned_visit_that_ends_after_closing() -> None:
     broken = _plan(
         [_stop("Al Fahidi Historical Neighbourhood", "19:30")],

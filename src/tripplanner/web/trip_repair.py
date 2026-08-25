@@ -113,7 +113,10 @@ def repair(
             if (day, trip_guard._stop_name(stop)) not in movable
         )
     result = trip_rebalance.rebalance(
-        plan, pinned=rebalance_pins, budget_ms=budget_ms
+        plan,
+        pinned=rebalance_pins,
+        priority_codes=only_codes or frozenset(),
+        budget_ms=budget_ms,
     )
     blocked = blocked_findings(result.plan, pinned)
     return {
