@@ -91,11 +91,29 @@ def blocked_findings(
     return out
 
 
-def repair(plan: dict[str, Any], *, budget_ms: int = 400) -> dict[str, Any]:
+def repair(
+    plan: dict[str, Any],
+    *,
+    budget_ms: int = 400,
+    only_codes: set[str] | frozenset[str] | None = None,
+) -> dict[str, Any]:
     """Rearrange what the planner owns; report what it may not touch."""
     pinned = pinned_for(plan)
+    rebalance_pins = set(pinned)
+    if only_codes is not None:
+        movable = {
+            (violation.day, violation.stop or "")
+            for violation in trip_guard.validate_plan(plan)
+            if violation.day is not None and violation.code in only_codes
+        }
+        rebalance_pins.update(
+            (day, trip_guard._stop_name(stop))
+            for day, _entry, stops in trip_guard.days_of(plan)
+            for stop in stops
+            if (day, trip_guard._stop_name(stop)) not in movable
+        )
     result = trip_rebalance.rebalance(
-        plan, pinned=set(pinned), budget_ms=budget_ms
+        plan, pinned=rebalance_pins, budget_ms=budget_ms
     )
     blocked = blocked_findings(result.plan, pinned)
     return {
