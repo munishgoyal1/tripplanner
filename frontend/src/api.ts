@@ -1,4 +1,4 @@
-import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, Receipt, SavedTrip, Itinerary, PlaceGuidePage, TripFreshnessResult, TripRepairResult, TripVerification, TripWorkspaceView } from "./types";
+import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, Receipt, SavedTrip, Itinerary, PlaceGuidePage, TripFreshnessResult, TripPriceRecheckResult, TripRepairResult, TripVerification, TripWorkspaceView } from "./types";
 import {
   type DeselectItemOptions,
   type SelectItemOptions,
@@ -796,6 +796,11 @@ export async function fetchVerification(signal?: AbortSignal): Promise<TripVerif
 /** Refresh place facts and report material changes since the last check. */
 export async function refreshVerification(updatedAt = ""): Promise<TripFreshnessResult> {
   return sharedClient.refreshVerification(updatedAt);
+}
+
+/** Explicitly refresh stale finalized-trip quotes without changing selections. */
+export async function recheckPrices(updatedAt = ""): Promise<TripPriceRecheckResult> {
+  return sharedClient.recheckPrices(updatedAt);
 }
 
 /** Rearrange the planner's own stops until the saved trip reads correctly. */

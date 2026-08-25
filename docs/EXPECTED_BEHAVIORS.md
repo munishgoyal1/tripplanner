@@ -193,6 +193,35 @@ the evidence that produced the finding.
 
 ## Planner workspace
 
+### EB-DEAL-001 - Compare and recheck exact finalized-trip offers
+
+**Trigger:** Open a trip whose persisted decisions contain equivalent provider
+offers, or a finalized unbooked trip whose recorded quote has expired.
+
+**Expected:**
+
+- Offers compare only when provider-neutral room/rate or flight-itinerary identity
+  matches and all mandatory costs are known. Unknown fees suppress savings claims.
+- A consented portal benefit applies only from numeric public terms and returns
+  program/card labels plus the terms link; card numbers are never consumed or shown.
+- Expired quotes for finalized unbooked items appear as explicit recheck work.
+  Rendering performs no provider request. Selecting Recheck prices verifies an
+  exact flight offer or re-searches a stay only with its original occupancy,
+  nationality, dates, property, room, board, and refundability context.
+- Recheck results report movement or unavailability, refresh quote provenance,
+  and never replace the selected item. A stale client revision is rejected.
+- Grounded forecast heat/rain and structured place or activity-provider duration
+  evidence may add advisory effort notes. Missing evidence remains silent and
+  effort never blocks.
+
+**Executable proof:**
+
+- [`tests/test_trip_cost_ledger.py`](../tests/test_trip_cost_ledger.py)
+- [`tests/test_price_recheck.py`](../tests/test_price_recheck.py)
+- [`tests/test_trip_guard.py`](../tests/test_trip_guard.py)
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py)
+- [`frontend/src/components/TripSnapshot.test.tsx`](../frontend/src/components/TripSnapshot.test.tsx)
+
 ### EB-VERIFY-001 - Recheck itinerary place facts
 
 **Trigger:** Expand Plan checks and select Recheck place facts.

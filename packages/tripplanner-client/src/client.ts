@@ -15,6 +15,7 @@ import type {
   StreamOptions,
   TripInputRequest,
   TripFreshnessResult,
+  TripPriceRecheckResult,
   TripView,
   TripRepairResult,
   TripVerification,
@@ -226,6 +227,16 @@ export class TripplannerClient {
     });
     ensureOk(response, "Could not recheck the itinerary");
     return response.json() as Promise<TripFreshnessResult>;
+  }
+
+  async recheckPrices(updatedAt = ""): Promise<TripPriceRecheckResult> {
+    const response = await this.request(this.url("/trip/prices/recheck"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: await this.userId(), updated_at: updatedAt }),
+    });
+    ensureOk(response, "Could not recheck trip prices");
+    return response.json() as Promise<TripPriceRecheckResult>;
   }
 
   async repairTrip(updatedAt = ""): Promise<TripRepairResult> {

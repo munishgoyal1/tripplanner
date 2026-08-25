@@ -156,7 +156,7 @@ def search_flights(
         )
         offers = result.value
         if offers:
-            note_price_check("flight", result.provider)
+            note_price_check("flights", result.provider)
             decision = build_flight_decision(
                 offers,
                 origin=origin,

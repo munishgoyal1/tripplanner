@@ -226,6 +226,8 @@ def _lodging_item(option: Option, decision: Decision) -> dict[str, Any]:
                 item[key] = value
         if lodging.provider_ref:
             item["provider_ref"] = dict(lodging.provider_ref)
+        if lodging.search_context:
+            item["search_context"] = dict(lodging.search_context)
     source = option.source
     item["source"] = source.model_dump(mode="json", exclude_none=True)
     return item

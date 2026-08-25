@@ -72,6 +72,7 @@ _DEFAULT_PREFS: dict[str, Any] = {
         "preferred_day_start": None,
         "preferred_day_end": None,
     },
+    "offer_benefits": [],
     "budget_level": "moderate",  # budget | moderate | premium | luxury
     "hotel_preferences": {
         "star_rating_min": 3,

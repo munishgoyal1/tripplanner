@@ -103,6 +103,10 @@ def refresh_facts(*, expected_updated_at: str = "") -> dict[str, Any]:
     return trip_planner.refresh_active_trip_facts(expected_updated_at=expected_updated_at)
 
 
+def recheck_prices(*, expected_updated_at: str = "") -> dict[str, Any]:
+    return trip_planner.recheck_active_trip_prices(expected_updated_at=expected_updated_at)
+
+
 def repair_trip(*, expected_updated_at: str = "") -> dict[str, Any]:
     return trip_planner.repair_active_trip(expected_updated_at=expected_updated_at)
 
