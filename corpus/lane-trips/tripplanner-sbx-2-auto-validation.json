@@ -49905,13 +49905,6 @@
               "note": "Authentic Andhra cuisine"
             },
             {
-              "name": "Chandragiri Fort",
-              "kind": "attraction",
-              "time": "16:30",
-              "duration_min": 120,
-              "note": "Medieval fort, history museum"
-            },
-            {
               "name": "Dinner at Minerva Grand Restaurant",
               "kind": "meal",
               "time": "19:30",
@@ -49994,8 +49987,8 @@
         {
           "day": 3,
           "date": "2027-08-15",
-          "title": "Day 3 · Departure & Final Heritage Stops",
-          "summary": "Visit Kapila Theertham and local heritage before departing for Hyderabad.",
+          "title": "Day 3 · Chandragiri Fort & Departure",
+          "summary": "Visit Kapila Theertham and Chandragiri Fort before departing for Hyderabad.",
           "stops": [
             {
               "name": "Hotel (TBD)",
@@ -50015,6 +50008,13 @@
               "time": "08:30",
               "duration_min": 60,
               "note": "Ancient temple and waterfall"
+            },
+            {
+              "name": "Chandragiri Fort",
+              "kind": "attraction",
+              "time": "10:00",
+              "duration_min": 120,
+              "note": "Medieval fort, history museum"
             },
             {
               "name": "Lunch at Hotel Bliss Restaurant",
@@ -50477,8 +50477,8 @@
         {
           "day": 4,
           "date": "2027-08-20",
-          "title": "Day 4 · Nature & Leisure",
-          "summary": "Morning visit to Chandragiri Fort, lunch at Southern Spice, free afternoon for leisure.",
+          "title": "Day 4 · Spiritual & Leisure",
+          "summary": "Morning visit to ISKCON Tirupati, lunch at Southern Spice, free afternoon for leisure.",
           "stops": [
             {
               "name": "Marasa Sarovar Premiere, Tirupati",
@@ -50487,11 +50487,11 @@
               "note": "Start from hotel"
             },
             {
-              "name": "Chandragiri Fort",
+              "name": "ISKCON Tirupati",
               "kind": "attraction",
               "time": "09:00",
-              "duration_min": 120,
-              "note": "Explore the fort and gardens"
+              "duration_min": 90,
+              "note": "Morning visit"
             },
             {
               "name": "Southern Spice",
@@ -50511,8 +50511,8 @@
         {
           "day": 5,
           "date": "2027-08-21",
-          "title": "Day 5 · Spiritual & Cultural",
-          "summary": "Visit ISKCON Temple and local museums, lunch at Minerva Coffee Shop, free afternoon.",
+          "title": "Day 5 · Fort & Cultural",
+          "summary": "Visit Chandragiri Fort and local museums, lunch at Minerva Coffee Shop, free afternoon.",
           "stops": [
             {
               "name": "Marasa Sarovar Premiere, Tirupati",
@@ -50521,11 +50521,11 @@
               "note": "Start from hotel"
             },
             {
-              "name": "ISKCON Tirupati",
+              "name": "Chandragiri Fort",
               "kind": "attraction",
               "time": "09:00",
-              "duration_min": 90,
-              "note": "Morning visit"
+              "duration_min": 120,
+              "note": "Explore the fort and gardens"
             },
             {
               "name": "Sri Venkateswara Museum",
