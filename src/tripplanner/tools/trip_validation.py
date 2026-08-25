@@ -581,7 +581,9 @@ def _itinerary_time_errors(itinerary: Any) -> list[str]:
     return errors
 
 
-_PERSISTENCE_SANITY_CODES = frozenset({"I1", "I2", "I3", "I4", "I5", "I7", "I9", "I11"})
+_PERSISTENCE_SANITY_CODES = frozenset(
+    {"I1", "I2", "I3", "I4", "I5", "I7", "I9", "I11", "I12"}
+)
 
 
 def persistence_sanity_errors(plan: dict[str, Any]) -> list[str]:

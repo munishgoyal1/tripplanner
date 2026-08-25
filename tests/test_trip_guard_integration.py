@@ -370,6 +370,77 @@ def test_authoritative_closed_day_is_rejected_without_persistence(
     assert json.loads(get_trip_plan.invoke({})) == before
 
 
+def test_permanently_closed_place_update_is_rejected_without_persistence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    create_trip_plan.invoke(
+        {
+            "destination": "Cape Town",
+            "departure_date": "2027-11-15",
+            "return_date": "2027-11-15",
+            "travel_scope": "destination_only",
+        }
+    )
+    before = json.loads(get_trip_plan.invoke({}))
+    monkeypatch.setattr(
+        places_cache,
+        "get_summary",
+        lambda *_args, **_kwargs: {
+            "name": "The Company's Garden Restaurant",
+            "business_status": "CLOSED_PERMANENTLY",
+        },
+    )
+
+    result = update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "day_wise_itinerary": [
+                        {
+                            "day": 1,
+                            "stops": [
+                                {
+                                    "name": "The Company's Garden Restaurant",
+                                    "kind": "meal",
+                                    "time": "12:00",
+                                    "duration_min": 60,
+                                }
+                            ],
+                        }
+                    ]
+                }
+            )
+        }
+    )
+
+    assert result.startswith(
+        "Error: itinerary sanity validation rejected this update before persistence."
+    )
+    assert "reported closed for business" in result
+    assert json.loads(get_trip_plan.invoke({})) == before
+
+
+def test_permanently_closed_place_selection_is_not_added(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _round_trip()
+    before = json.loads(get_trip_plan.invoke({}))
+    monkeypatch.setattr(
+        places_cache,
+        "get_summary",
+        lambda *_args, **_kwargs: {
+            "name": "Closed Museum",
+            "business_status": "CLOSED_PERMANENTLY",
+        },
+    )
+
+    result = add_selection("attraction", {"name": "Closed Museum"})
+
+    assert result["ok"] is False
+    assert "reported closed for business" in result["alerts"][0]
+    assert json.loads(get_trip_plan.invoke({})) == before
+
+
 def test_no_tool_result_ever_shows_the_traveller_a_number_for_the_trip() -> None:
     _round_trip()
     result = add_selection("attraction", {"name": "Patalpani Falls"})

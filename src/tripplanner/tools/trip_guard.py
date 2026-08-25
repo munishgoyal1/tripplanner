@@ -981,6 +981,13 @@ def choose_placement(
         else _default_duration(kind)
     )
 
+    if kind in _PLACE_KINDS and facts.unavailable:
+        return None, [
+            Rejection(day, "all day", "I12", "reported closed for business")
+            for day, _entry, _stops in days_of(plan)
+            if preferred_day is None or day == preferred_day
+        ]
+
     best: tuple[float, Placement] | None = None
     rejections: list[Rejection] = []
 
