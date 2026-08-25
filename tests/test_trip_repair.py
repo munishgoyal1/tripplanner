@@ -172,6 +172,61 @@ def test_it_reschedules_a_planner_owned_hotel_around_a_ferry() -> None:
     ]
 
 
+def test_it_reschedules_a_planner_owned_hotel_before_an_onward_drive() -> None:
+    hotel = {
+        "name": "Hotel Snow Valley Resort, Manali",
+        "kind": "hotel",
+        "time": "10:00",
+        "duration_min": 195,
+    }
+    drive = {
+        "name": "Drive: Manali to Chandigarh",
+        "kind": "transport",
+        "time": "13:00",
+        "duration_min": 480,
+    }
+    broken = _plan([hotel, drive])
+    violations = [item for item in trip_guard.validate_plan(broken) if item.code == "I5"]
+    assert len(violations) == 1
+    assert "leaves only -15 minutes" in violations[0].message
+
+    outcome = trip_repair.repair(broken)
+
+    assert outcome["changed"]
+    assert not [item for item in trip_guard.validate_plan(outcome["plan"]) if item.code == "I5"]
+    assert outcome["moves"] == [
+        {
+            "name": "Hotel Snow Valley Resort, Manali",
+            "from_day": 1,
+            "to_day": 1,
+            "time": outcome["moves"][0]["time"],
+        }
+    ]
+
+
+def test_it_reports_a_booked_hotel_that_cannot_move_before_an_onward_drive() -> None:
+    hotel = {
+        "name": "Hotel Snow Valley Resort, Manali",
+        "kind": "hotel",
+        "time": "10:00",
+        "duration_min": 195,
+        "booked": True,
+    }
+    drive = {
+        "name": "Drive: Manali to Chandigarh",
+        "kind": "transport",
+        "time": "13:00",
+        "duration_min": 480,
+    }
+
+    outcome = trip_repair.repair(_plan([hotel, drive]))
+
+    assert not outcome["changed"]
+    assert [item["code"] for item in outcome["blocked"]] == ["I5"]
+    assert outcome["blocked"][0]["stop"] == "Hotel Snow Valley Resort, Manali"
+    assert outcome["blocked"][0]["reason"] == "you booked it"
+
+
 def test_it_reports_temporal_infeasibility_between_authored_stops() -> None:
     booked = _plan(
         [
