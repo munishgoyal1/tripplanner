@@ -17,6 +17,7 @@ from tripplanner.tools.trip_validation import (
 CITIES = {
     "kochi", "kuala lumpur", "penang", "colombo", "galle", "shimla", "rome",
     "florence", "cherrapunji", "shillong", "amritsar", "chikmagalur", "udaipur",
+    "nubra valley", "pangong lake",
 }
 
 
@@ -34,6 +35,8 @@ CITIES = {
         "Premium Hotel",
         "A comfortable hotel near Shimla",
         "Budget accommodation in Udaipur",
+        "Hotel/Camp in Nubra Valley",
+        "Camp/Hotel at Pangong Lake",
         "",
     ],
 )
@@ -54,6 +57,8 @@ def test_a_stay_that_names_no_property_is_unnamed(name: str) -> None:
         "SeaShell Port Blair",
         "Fortune Select Grand Ridge",
         "Alleppey Houseboat",
+        "Nubra Delight Camp And Resort",
+        "Pangong Retreat Camp",
     ],
 )
 def test_a_named_property_is_left_alone(name: str) -> None:
@@ -75,6 +80,32 @@ def test_the_gap_names_the_days_whose_stay_cannot_be_booked() -> None:
 
     assert any("Day(s) 2, 3" in gap and "no bookable property" in gap for gap in gaps)
     assert not any("Day(s) 1" in gap for gap in gaps)
+
+
+def test_the_gap_catches_slash_separated_generic_ladakh_stays() -> None:
+    plan = {
+        "destination": "Leh Ladakh",
+        "selected_hotels": [{"name": "The Grand Dragon Ladakh"}],
+        "day_wise_itinerary": [
+            {
+                "day": 4,
+                "stops": [{"name": "Hotel/Camp in Nubra Valley", "kind": "hotel"}],
+            },
+            {
+                "day": 5,
+                "stops": [{"name": "Camp/Hotel at Pangong Lake", "kind": "hotel"}],
+            },
+            {
+                "day": 6,
+                "stops": [{"name": "The Grand Dragon Ladakh", "kind": "hotel"}],
+            },
+        ],
+    }
+
+    gaps = _hotel_selection_warnings(plan)
+
+    assert any("Day(s) 4, 5" in gap and "no bookable property" in gap for gap in gaps)
+    assert not any("Day(s) 6" in gap for gap in gaps)
 
 
 def test_an_unnamed_stay_cannot_cross_persistence_without_an_origin() -> None:
