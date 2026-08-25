@@ -220,6 +220,10 @@ class _JourneyWalk:
                 self._place(terminal_ids[-1])
             return
 
+        if refs and not terminal_ids and mode not in _GROUND_MODES:
+            self._reset_route()
+            return
+
         # A partial transfer may only remain open from a known departure. Without
         # that identity, the next local map pin is not evidence of an arrival.
         origin_id = next(
