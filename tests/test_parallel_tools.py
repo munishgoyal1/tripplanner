@@ -126,7 +126,9 @@ def test_llm_allows_token_bucket_recovery(monkeypatch) -> None:
 
     graph_mod._get_llm()
 
-    assert captured["max_retries"] == 5
+    assert captured["max_retries"] == 3
+    # A stalled call must fail fast instead of holding the SDK's 600s default.
+    assert captured["timeout"] == 90.0
     # One uncapped turn emitted the whole 32k output window and starved the quota.
     assert captured["max_tokens"] == 8192
 
