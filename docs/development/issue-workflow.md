@@ -13,6 +13,19 @@ An issue holds one unit of work and its live state: what is wrong, who is on it,
 what was found, what changed, and whether the owner has confirmed it. It is
 deliberately short-lived. It is closed when the fix reaches `master`.
 
+The issue body and its complete chronological comment thread form the handoff.
+Owner comments are cumulative scope and context, like saved UX Lab handoff notes:
+they may add a related observation, acceptance condition, or implementation
+pointer after the issue was opened. A newer explicit owner statement supersedes
+conflicting older text. Comments from other participants are supporting context,
+not owner authorisation. Autonomous workers receive this whole thread and must
+account for every owner ask in Triage before editing.
+
+If an owner comment describes a genuinely separate outcome rather than a related
+part of the same fix, or conflicts with existing scope in a way that cannot be
+resolved from the thread, the worker blocks with the exact question. It does not
+silently omit the comment or widen the issue by guessing.
+
 Immediate work does not need that handoff record. A fix requested and completed in
 the current chat stays in that chat, whether the lane is primary `master` or a
 sandbox and regardless of size. Do not create an issue merely because the chat
@@ -213,9 +226,9 @@ gh issue comment 42 --body "Stopping here: root cause found, fix not started."
 
 ## Practices that keep this working
 
-- **Read issue-backed work before you write.** List open issues when selecting or
-  continuing issue-backed work; this is not an instruction to create an issue for
-  immediate in-chat work.
+- **Read the body and every comment before you write.** List open issues when
+  selecting or continuing issue-backed work, then read the complete thread; this
+  is not an instruction to create an issue for immediate in-chat work.
 - **Claim narrowly and land quickly.** A long-held claim blocks other lanes more
   than it helps; split a large issue rather than holding it for days.
 - **One issue, one outcome.** A bug that turns out to be three bugs becomes three
