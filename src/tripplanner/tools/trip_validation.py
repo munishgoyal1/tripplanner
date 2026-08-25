@@ -443,8 +443,12 @@ def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
             "day_wise_itinerary before presenting the trip as planned."
         ]
 
+    violations = validate_plan(plan)
     journey_continuity = [
-        violation.message for violation in validate_plan(plan) if violation.code in {"I7", "I9"}
+        violation.message for violation in violations if violation.code in {"I7", "I9"}
+    ]
+    departure_buffers = [
+        violation.message for violation in violations if violation.code == "I5"
     ]
     return [
         *_restaurant_itinerary_warnings(
@@ -455,6 +459,7 @@ def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
         *journey_continuity,
+        *departure_buffers,
         *_requested_budget_without_cost_evidence(plan),
     ]
 
