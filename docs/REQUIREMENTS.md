@@ -96,7 +96,7 @@ re-describing the whole product.
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Implemented; `/` public entry, `/planner` workspace, privacy-safe analytics, and regional last-known-good demo pipeline |
 | FEEDBACK-01 | Lightweight repeatable trip feedback | Implemented; toolbar thumbs, optional stars/comment, append-only submissions, and trip-level sent rollup |
 | QUALITY-01 | Offline scenario-fidelity and experiential-quality audit | Implemented; every audit writes an immutable dated JSON report, readable summary, compact history index, comparable-run movement, scenario/preference and budget hard gates, and six non-gating experiential dimensions; integrated fixes automatically record deterministic post-fix replay evidence, while fresh generation remains an explicit paid corpus refresh |
-| DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Partially implemented; exact alternatives and budget what-if are joined by a strict all-in cost ledger that separates live quoted subtotal, confirmed mandatory total, reported components, and unresolved fee categories without estimating missing amounts |
+| DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Partially implemented; persisted exact-product offers compare across providers only with complete mandatory costs and published FX, consented public benefit terms can adjust the result without storing card numbers, and finalized unbooked expired quotes surface explicit recheck work without provider I/O or plan mutation |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
 
@@ -108,6 +108,10 @@ re-describing the whole product.
   part of the current product.
 - Tool schemas are selected by conversation phase so greetings and preference
   turns do not pay the context cost of every search provider.
+- Daily effort and whole-trip reserve account for grounded forecast heat and rain
+  as advisory exposure only. Coherence notes name source-backed weather pressure
+  and structured visit-duration mismatches without inventing evidence or blocking
+  itinerary completion.
 - The agent presents progress as friendly thinking, search, review, and save
   phases while keeping internal tool names and raw arguments out of the UI. The
   chat and common command bar show one overall elapsed clock, a typical 2–4 minute
@@ -696,9 +700,13 @@ implemented capability baseline.
   acceptance are implemented. Provider-reported taxes, fees, and property-due
   amounts now survive exact-option selection; the strict ledger keeps a live
   quoted subtotal distinct from a confirmed all-in total and names unresolved
-  mandatory taxes, fees, and baggage rather than inventing them. Provider-specific
-  inclusion/exclusion semantics, cross-source comparison, finalized-but-unbooked
-  re-checks, loyalty, card-benefit, and portal-offer modeling remain gaps.
+  mandatory taxes, fees, and baggage rather than inventing them. Persisted offers
+  for the same provider-neutral room/rate or flight itinerary now compare across
+  sources only when mandatory costs are complete. Consented program/card identity
+  and published portal discount terms may be applied without storing payment data.
+  Finalized unbooked expired quotes surface deterministic recheck work items.
+  Executing those provider refreshes, provider-specific inclusion semantics, and
+  broader loyalty/portal terms ingestion remain gaps.
 - No server-rendered public edge. One FastAPI process serves the API and the
   client-rendered SPA, so landing, destination-content, and shared-trip URLs are
   not indexable and not first-paint-fast for anonymous visitors.

@@ -193,6 +193,28 @@ the evidence that produced the finding.
 
 ## Planner workspace
 
+### EB-DEAL-001 - Compare exact offers and identify stale finalized-trip quotes
+
+**Trigger:** Open a trip whose persisted decisions contain equivalent provider
+offers, or a finalized unbooked trip whose recorded quote has expired.
+
+**Expected:**
+
+- Offers compare only when provider-neutral room/rate or flight-itinerary identity
+  matches and all mandatory costs are known. Unknown fees suppress savings claims.
+- A consented portal benefit applies only from numeric public terms and returns
+  program/card labels plus the terms link; card numbers are never consumed or shown.
+- Expired quotes for finalized unbooked items appear as explicit recheck work.
+  Rendering performs no provider request and never mutates the selected plan.
+- Grounded forecast heat/rain and structured visit-duration evidence may add
+  advisory effort notes. Missing evidence remains silent and effort never blocks.
+
+**Executable proof:**
+
+- [`tests/test_trip_cost_ledger.py`](../tests/test_trip_cost_ledger.py)
+- [`tests/test_trip_guard.py`](../tests/test_trip_guard.py)
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py)
+
 ### EB-VERIFY-001 - Recheck itinerary place facts
 
 **Trigger:** Expand Plan checks and select Recheck place facts.

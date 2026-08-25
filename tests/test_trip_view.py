@@ -94,6 +94,63 @@ def test_build_view_overview_and_items() -> None:
     assert hotel["reviews"]
 
 
+def test_overview_exposes_effort_and_price_recheck_intelligence() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "status": "finalized",
+        "selected_hotels": [
+            {
+                "name": "Taj Exotica Resort",
+                "price": 12000,
+                "booking_status": "planned",
+            }
+        ],
+        "price_checks": [
+            {
+                "kind": "lodging",
+                "provider": "liteapi",
+                "checked_at": "2026-01-01T00:00:00+00:00",
+                "expires_at": "2026-01-01T00:00:00+00:00",
+            }
+        ],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "date": "2026-01-10",
+                "stops": [
+                    {
+                        "name": "Fort Aguada",
+                        "kind": "attraction",
+                        "time": "12:00",
+                        "duration_min": 180,
+                    }
+                ],
+            }
+        ],
+        "weather": {
+            "source": "forecast",
+            "days": [
+                {
+                    "date": "2026-01-10",
+                    "high_c": 36,
+                    "precip_probability_pct": 80,
+                }
+            ],
+        },
+    }
+
+    overview = trip_view.build_view(trip, None)["overview"]
+
+    assert any("36°C" in note for note in overview["effort_notes"])
+    assert overview["price_rechecks"] == [
+        {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "reason": "finalized but unbooked quote expired",
+        }
+    ]
+
+
 def test_build_weather_normalizes_forecast_and_packing() -> None:
     weather = trip_view.build_weather(
         {

@@ -795,6 +795,48 @@ def test_a_late_night_into_an_early_start_is_worth_mentioning(located: None) -> 
     assert any("07:00" in note for note in notes)
 
 
+def test_grounded_weather_exposure_names_heat_and_rain_without_a_score() -> None:
+    exposed = plan(
+        [[stop("Rajwada Palace", "12:00", "attraction", 180)]],
+        weather={
+            "source": "forecast",
+            "days": [
+                {
+                    "date": "2026-08-25",
+                    "high_c": 36,
+                    "precip_probability_pct": 80,
+                }
+            ]
+        },
+    )
+    exposed["day_wise_itinerary"][0]["date"] = "2026-08-25"
+
+    notes = trip_effort.coherence_notes(exposed)
+
+    assert any("36°C" in note and "Open-Meteo" in note for note in notes)
+    assert any("80%" in note and "rain" in note.lower() for note in notes)
+    assert not any("score" in note.lower() for note in notes)
+
+
+def test_review_duration_only_speaks_from_structured_place_evidence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    under_timed = plan([[stop("Rajwada Palace", "10:00", "attraction", 45)]])
+    monkeypatch.setattr(
+        trip_effort,
+        "_summary_for_place",
+        lambda _name, _destination="": {
+            "typical_visit_duration_min": 120,
+            "visit_duration_source": "Google visitor summaries",
+        },
+    )
+
+    notes = trip_effort.coherence_notes(under_timed)
+
+    assert any("45 minutes" in note and "2 hours" in note for note in notes)
+    assert any("Google visitor summaries" in note for note in notes)
+
+
 def test_the_effort_model_cannot_refuse_anything() -> None:
     public = {
         name

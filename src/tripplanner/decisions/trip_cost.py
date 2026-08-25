@@ -19,6 +19,7 @@ from datetime import datetime
 from typing import Any
 
 from tripplanner.decisions.provenance import is_expired
+from tripplanner.decisions.store import list_decisions
 from tripplanner.providers.fx import convert_with_provenance
 
 # Kinds map to the price-check kinds recorded by the search tools.
@@ -387,3 +388,246 @@ def build_cost_ledger(
         ),
         required_unknown=required_unknown,
     )
+
+
+def _offer_all_in(
+    offer: dict[str, Any], target_currency: str
+) -> tuple[float | None, str]:
+    amount = _number(offer.get("amount"))
+    if amount is None:
+        return None, "no price recorded"
+    currency = _currency_of(offer, target_currency)
+    _components, required_unknown, all_in = _price_composition(
+        offer,
+        str(offer.get("kind") or "lodging"),
+        amount,
+        currency,
+        trusted=bool(str(offer.get("provider") or "").strip()),
+    )
+    if required_unknown:
+        return None, "mandatory costs are unresolved"
+    conversion = convert_with_provenance(all_in, currency, target_currency)
+    if conversion is None:
+        return None, f"no published {currency}->{target_currency} rate"
+    return round(conversion.amount, 2), ""
+
+
+def _applicable_benefit(
+    offer: dict[str, Any], benefits: list[dict[str, Any]]
+) -> dict[str, Any] | None:
+    provider = str(offer.get("provider") or "").strip().casefold()
+    candidates = [
+        benefit
+        for benefit in benefits
+        if isinstance(benefit, dict)
+        and benefit.get("consent") is True
+        and str(benefit.get("portal") or "").strip().casefold() == provider
+        and str(benefit.get("terms_url") or "").strip()
+        and _number(benefit.get("discount_percent")) is not None
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda benefit: _number(benefit["discount_percent"]) or 0)
+
+
+def compare_equivalent_offers(
+    offers: list[dict[str, Any]],
+    *,
+    target_currency: str,
+    benefits: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    """Compare like-for-like offers only when every claimed cost is known.
+
+    ``subject_key`` is supplied by the provider adapter and must encode the exact
+    product, dates, party and fare/rate class. Offers without that shared key are
+    not comparable. Benefits are opt-in and must carry explicit numeric terms;
+    payment credentials are neither read nor returned.
+    """
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for offer in offers:
+        if not isinstance(offer, dict):
+            continue
+        subject_key = str(offer.get("subject_key") or "").strip()
+        provider = str(offer.get("provider") or "").strip()
+        if subject_key and provider:
+            groups.setdefault(subject_key, []).append(offer)
+
+    comparisons: list[dict[str, Any]] = []
+    for subject_key, group in groups.items():
+        eligible: list[tuple[dict[str, Any], float, dict[str, Any] | None]] = []
+        excluded: dict[str, str] = {}
+        for offer in group:
+            provider = str(offer.get("provider") or "")
+            all_in, reason = _offer_all_in(offer, target_currency)
+            if all_in is None:
+                excluded[provider] = reason
+                continue
+            benefit = _applicable_benefit(offer, benefits or [])
+            if benefit:
+                percent = _number(benefit.get("discount_percent")) or 0
+                all_in = round(all_in * (1 - percent / 100), 2)
+            eligible.append((offer, all_in, benefit))
+        if not eligible:
+            continue
+
+        eligible.sort(key=lambda row: (row[1], str(row[0].get("provider") or "")))
+        winner, winner_total, benefit = eligible[0]
+        if len(eligible) < 2 and benefit is None and not excluded:
+            continue
+        compared = sorted(str(offer.get("provider") or "") for offer, _total, _ in eligible)
+        next_total = eligible[1][1] if len(eligible) > 1 else None
+        applied_benefit = None
+        if benefit:
+            original, _reason = _offer_all_in(winner, target_currency)
+            applied_benefit = {
+                "program": str(benefit.get("program") or ""),
+                "card_label": str(benefit.get("card_label") or ""),
+                "discount": round((original or winner_total) - winner_total, 2),
+                "currency": target_currency,
+                "terms_url": str(benefit.get("terms_url") or ""),
+            }
+        comparisons.append(
+            {
+                "subject_key": subject_key,
+                "recommended_provider": str(winner.get("provider") or ""),
+                "recommended_label": str(winner.get("label") or ""),
+                "recommended_all_in_total": winner_total,
+                "currency": target_currency,
+                "savings": (
+                    round(next_total - winner_total, 2)
+                    if next_total is not None and not excluded
+                    else None
+                ),
+                "compared_providers": compared,
+                "excluded_providers": excluded,
+                "applied_benefit": applied_benefit,
+            }
+        )
+    return comparisons
+
+
+def compare_trip_decisions(
+    plan: dict[str, Any] | None,
+    *,
+    benefits: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    """Compare exact persisted alternatives grouped by decision identity."""
+    if not plan:
+        return []
+    offers: list[dict[str, Any]] = []
+    for decision in list_decisions(plan):
+        for option in decision.options:
+            if option.price is None or not option.source.provider:
+                continue
+            identity: tuple[Any, ...] | None = None
+            if option.lodging:
+                identity = (
+                    "lodging",
+                    option.label.strip().casefold(),
+                    option.lodging.checkin,
+                    option.lodging.checkout,
+                    option.lodging.room_name.strip().casefold(),
+                    str(option.lodging.board_name or "").strip().casefold(),
+                    option.lodging.refundable,
+                )
+            elif option.flight:
+                segments = tuple(
+                    (
+                        str(segment.get("origin") or "").casefold(),
+                        str(segment.get("destination") or "").casefold(),
+                        str(segment.get("departure") or ""),
+                        str(segment.get("arrival") or ""),
+                        str(
+                            segment.get("flight_number")
+                            or segment.get("flightNumber")
+                            or ""
+                        ).casefold(),
+                    )
+                    for segment in option.flight.segments
+                )
+                identity = (
+                    "flight",
+                    option.flight.origin.strip().casefold(),
+                    option.flight.destination.strip().casefold(),
+                    option.flight.departure_date,
+                    option.flight.return_date,
+                    option.flight.cabin_class.strip().casefold(),
+                    segments,
+                )
+            if identity is None:
+                continue
+            price = option.price
+            offers.append(
+                {
+                    "provider": option.source.provider,
+                    "subject_key": repr(identity),
+                    "label": option.label,
+                    "amount": price.amount,
+                    "currency": price.currency,
+                    "kind": (
+                        "flights" if decision.kind.value == "flight" else "lodging"
+                    ),
+                    "price_composition": {
+                        "taxes": price.taxes,
+                        "fees": price.fees,
+                        "due_at_property": price.due_at_property,
+                        "all_in": price.all_in,
+                        "mandatory_costs_complete": price.mandatory_costs_complete,
+                        "excluded": price.excluded,
+                    },
+                    "checked_at": (
+                        option.source.checked_at.isoformat()
+                        if option.source.checked_at
+                        else ""
+                    ),
+                }
+            )
+    currency = str(plan.get("currency") or "INR").strip().upper()
+    return compare_equivalent_offers(
+        offers,
+        target_currency=currency,
+        benefits=benefits,
+    )
+
+
+def _is_booked(item: Any) -> bool:
+    return isinstance(item, dict) and str(
+        item.get("booking_status") or item.get("status") or ""
+    ).strip().casefold() in {"booked", "confirmed", "confirmed_externally"}
+
+
+def plan_price_rechecks(
+    plan: dict[str, Any] | None, *, now: datetime | None = None
+) -> list[dict[str, str]]:
+    """Name stale quote checks for a finalized trip without performing I/O."""
+    if not plan or str(plan.get("status") or "").strip().casefold() != "finalized":
+        return []
+    kinds_with_unbooked_items = {
+        kind
+        for bucket, kind, _label in _BUCKETS
+        if any(not _is_booked(item) for item in (plan.get(bucket) or []))
+    }
+    tasks: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for check in plan.get("price_checks") or []:
+        if not isinstance(check, dict):
+            continue
+        kind = str(check.get("kind") or "")
+        provider = str(check.get("provider") or "")
+        key = kind, provider
+        if (
+            kind not in kinds_with_unbooked_items
+            or not provider
+            or key in seen
+            or not is_expired(check, now=now)
+        ):
+            continue
+        seen.add(key)
+        tasks.append(
+            {
+                "kind": kind,
+                "provider": provider,
+                "reason": "finalized but unbooked quote expired",
+            }
+        )
+    return tasks

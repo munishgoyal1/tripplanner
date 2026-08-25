@@ -194,10 +194,35 @@ export interface TripOverview {
   total_cost: number | null;
   total_cost_display: string;
   cost_evidence?: CostEvidence | null;
+  offer_comparisons?: Array<{
+    subject_key: string;
+    recommended_provider: string;
+    recommended_label: string;
+    recommended_all_in_total: number;
+    currency: string;
+    savings: number | null;
+    compared_providers: string[];
+    excluded_providers: Record<string, string>;
+    applied_benefit?: {
+      program: string;
+      card_label: string;
+      discount: number;
+      currency: string;
+      terms_url: string;
+    } | null;
+  }>;
+  price_rechecks?: Array<{ kind: string; provider: string; reason: string }>;
   cost_baseline?: CostBaseline | null;
   provenance?: ProvenanceRow[];
   budget?: Budget | null;
   weather?: TripWeather | null;
+  effort_notes?: string[];
+  pacing_statement?: {
+    day: number;
+    remedy_day: number;
+    statement: string;
+    remedy: string;
+  } | null;
   family_pills?: string[];
   constraints?: string[];
 }
