@@ -3453,6 +3453,30 @@ def test_train_arrival_estimates_destination_hotel_check_in(
     assert hotel["time_estimated"] is True
 
 
+def test_train_without_duration_keeps_arrival_unknown() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [{
+                "name": "Train: Delhi to Amritsar",
+                "kind": "transport",
+                "time": "09:00",
+            }],
+        }],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    stops = itinerary["days"][0]["stops"]
+    train = next(stop for stop in stops if stop["kind"] == "transport")
+    arrival_station = next(stop for stop in stops if stop.get("terminal_role") == "arrival")
+    assert train["arrival_time"] == ""
+    assert "arrival_time_estimated" not in train
+    assert arrival_station["time"] == ""
+    assert arrival_station["time_estimated"] is False
+
+
 def test_timed_road_transfer_estimates_destination_hotel_check_in() -> None:
     trip = {
         **SAMPLE_TRIP,
