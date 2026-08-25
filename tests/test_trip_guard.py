@@ -821,6 +821,51 @@ def test_placement_waits_until_an_evening_place_opens(
     assert not [rejection for rejection in rejections if rejection.code == "I3"]
 
 
+def test_a_meal_without_duration_uses_the_meal_default_for_split_hours(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    split_hours = [
+        f"{day}: 11:30 AM - 2:30 PM, 7:00 - 11:00 PM"
+        for day in (
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        )
+    ]
+    monkeypatch.setattr(
+        trip_guard,
+        "_summary_for_place",
+        lambda name, _destination="": {
+            "name": name,
+            "weekday_descriptions": split_hours,
+        },
+    )
+    itinerary = plan(
+        [[{"name": "La Petite Venise", "kind": "meal", "time": "13:15"}]],
+        departure_date="2027-04-08",
+        destination="Paris",
+        origin="",
+        travel_scope="destination_only",
+    )
+
+    assert trip_guard._duration_of(itinerary["day_wise_itinerary"][0]["stops"][0]) == 60
+    assert not [
+        violation for violation in trip_guard.validate_plan(itinerary) if violation.code == "I3"
+    ]
+
+    itinerary["day_wise_itinerary"][0]["stops"][0]["kind"] = "attraction"
+    assert trip_guard._duration_of(itinerary["day_wise_itinerary"][0]["stops"][0]) == 90
+    assert [
+        violation
+        for violation in trip_guard.validate_plan(itinerary)
+        if violation.code == "I3"
+    ]
+
+
 # --------------------------------------------------------------------------- #
 # blast radius                                                                  #
 # --------------------------------------------------------------------------- #
