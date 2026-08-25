@@ -24,6 +24,16 @@ _PLACES = {
     "Louvre Museum": {"lat": 48.8606, "lng": 2.3376, "weekday_descriptions": _SHUT_TUESDAY},
     "Musee d'Orsay": {"lat": 48.8600, "lng": 2.3266, "weekday_descriptions": _OPEN},
     "Le Marais": {"lat": 48.8612, "lng": 2.3581, "weekday_descriptions": _OPEN},
+    "Port Blair Ferry Terminal": {
+        "lat": 11.6732,
+        "lng": 92.7470,
+        "weekday_descriptions": _OPEN,
+    },
+    "Havelock Island Beach Resort": {
+        "lat": 12.0250,
+        "lng": 92.9750,
+        "weekday_descriptions": _OPEN,
+    },
 }
 
 
@@ -113,3 +123,66 @@ def test_a_confirmed_place_is_also_the_travellers() -> None:
     outcome = trip_repair.repair(plan)
     assert not any(move["name"] == "Louvre Museum" for move in outcome["moves"])
     assert outcome["blocked"][0]["reason"] == "you confirmed which place this is"
+
+
+def test_it_reschedules_a_planner_owned_stop_to_clear_temporal_infeasibility() -> None:
+    broken = _plan(
+        [
+            _stop("Musee d'Orsay", "10:00"),
+            _stop("Le Marais", "11:20"),
+        ],
+    )
+    assert [item for item in trip_guard.validate_plan(broken) if item.code == "I4"]
+
+    outcome = trip_repair.repair(broken)
+
+    assert outcome["changed"]
+    assert not [item for item in trip_guard.validate_plan(outcome["plan"]) if item.code == "I4"]
+    assert any(move["from_day"] == move["to_day"] == 1 for move in outcome["moves"])
+    assert any(line.startswith("Rescheduled ") for line in outcome["sentences"])
+
+
+def test_it_reschedules_a_planner_owned_hotel_around_a_ferry() -> None:
+    ferry = {
+        "name": "Port Blair Ferry Terminal",
+        "kind": "transport",
+        "time": "14:00",
+        "duration_min": 120,
+    }
+    hotel = {
+        "name": "Havelock Island Beach Resort",
+        "kind": "hotel",
+        "time": "15:10",
+        "duration_min": 45,
+    }
+    broken = _plan([ferry, hotel])
+    assert [item for item in trip_guard.validate_plan(broken) if item.code == "I4"]
+
+    outcome = trip_repair.repair(broken)
+
+    assert outcome["changed"]
+    assert not [item for item in trip_guard.validate_plan(outcome["plan"]) if item.code == "I4"]
+    assert outcome["moves"] == [
+        {
+            "name": "Havelock Island Beach Resort",
+            "from_day": 1,
+            "to_day": 1,
+            "time": outcome["moves"][0]["time"],
+        }
+    ]
+
+
+def test_it_reports_temporal_infeasibility_between_authored_stops() -> None:
+    booked = _plan(
+        [
+            _stop("Musee d'Orsay", "10:00", booked=True),
+            _stop("Le Marais", "11:20", booked=True),
+        ],
+    )
+
+    outcome = trip_repair.repair(booked)
+
+    assert not outcome["changed"]
+    assert [item["code"] for item in outcome["blocked"]] == ["I4"]
+    assert outcome["blocked"][0]["stop"] == "Le Marais"
+    assert outcome["blocked"][0]["reason"] == "you booked it"
