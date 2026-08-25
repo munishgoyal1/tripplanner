@@ -303,6 +303,56 @@ def test_a_leg_drawn_as_ground_travel_across_a_continent_is_reported() -> None:
     assert any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
 
 
+def test_unresolved_shinkansen_does_not_draw_kyoto_meal_to_tokyo_airport_as_taxi() -> None:
+    from tripplanner.web import trip_view
+
+    plan = _plan(
+        destination="Japan (Tokyo & Kyoto)",
+        day_wise_itinerary=[
+            {
+                "day": 6,
+                "stops": [
+                    {
+                        "name": "GYUKATSU Kyoto Katsugyu Teramachi Kyogoku",
+                        "kind": "meal",
+                    },
+                    {"name": "Shinkansen: Kyoto to Tokyo", "kind": "transport"},
+                    {"name": "Flight: Tokyo to Delhi", "kind": "flight"},
+                ],
+            }
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="tokyo-departure",
+        provenance=corpus.REAL,
+        source="test",
+        plan=plan,
+        places={
+            "gyukatsu kyoto katsugyu teramachi kyogoku|japan (tokyo & kyoto)": {
+                "place_id": "kyoto-meal",
+                "name": "GYUKATSU Kyoto Katsugyu Teramachi Kyogoku",
+                "lat": 35.005,
+                "lng": 135.768,
+            },
+            "tokyo airport|": {
+                "place_id": "tokyo-airport",
+                "name": "Tokyo Airport",
+                "lat": 35.549,
+                "lng": 139.779,
+            },
+        },
+    )
+
+    reported = render.check_render(record)
+    with render.render_facts(record.places):
+        view = trip_view.build_map_view(record.plan)
+    pins = {str(pin["id"]): pin for pin in view["pins"]}
+    circuit_names = [pins[pin_id]["name"] for pin_id in view["days"][0]["circuit_pin_ids"]]
+
+    assert not any(finding.rule == render.RULE_GROUND_LEG for finding in reported)
+    assert circuit_names == ["Tokyo Airport"]
+
+
 def test_an_unresolved_flight_endpoint_is_not_drawn_as_ground_travel() -> None:
     plan = _plan(
         day_wise_itinerary=[
