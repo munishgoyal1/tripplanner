@@ -46,6 +46,12 @@ _PATH_RE = re.compile(
 _FENCED_BLOCK_RE = re.compile(r"```.*?```", re.DOTALL)
 _AUDIT_OWNER_RE = re.compile(r"\*\*Evaluated in:\*\* `(?P<module>tripplanner(?:\.[\w]+)+)`")
 _FINGERPRINT_RE = re.compile(r"audit-fingerprint:\s*([A-Za-z0-9_.-]+/[0-9a-f]{8})")
+_AUDIT_EVIDENCE_RE = re.compile(r"audit-evidence-class:\s*([A-Za-z0-9_.-]+)")
+_AUDIT_SOURCE_RE = re.compile(r"\*\*Evidence source:\*\*\s*([^\n]+)", re.IGNORECASE)
+
+CORPUS_ARTIFACT_PREFIXES = ("audit/", "corpus/")
+PREVENTIVE_CODE_PREFIXES = ("frontend/src/", "mobile/", "packages/", "scripts/", "src/")
+REGRESSION_TEST_PREFIXES = ("frontend/", "mobile/", "tests/")
 
 # Files that are coupled through a contract rather than through their path.
 # Two issues touching the same surface are serialised even when no file
@@ -353,6 +359,9 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
     example = redact(str(group.get("example", "")).strip())
     provenance = ", ".join(sorted(sources)) or "unknown"
     representative = group.get("representative") or {}
+    evidence_class = audit_evidence_class_from_provenance(
+        str(representative.get("provenance") or "unknown")
+    )
     day = representative.get("day")
     dates = " to ".join(
         value
@@ -450,8 +459,53 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
             "```",
             "",
             f"audit-fingerprint: {mark}",
+            f"audit-evidence-class: {evidence_class}",
         ]
     )
+
+
+def audit_evidence_class_from_provenance(provenance: str) -> str:
+    """Reduce detailed corpus provenance to the integration policy classes."""
+    normalized = provenance.strip().lower()
+    if normalized in {"synthetic", "generated", "generated-final", "generated_final"}:
+        return "generated"
+    if normalized in {"golden", "fixture", "fixtures"}:
+        return "fixture"
+    if normalized in {"real", "database", "debug-store", "debug_store"}:
+        return "persisted"
+    return "unknown"
+
+
+def audit_evidence_class(issue: Issue) -> str:
+    """Read producer metadata, with compatibility for already-open audit issues."""
+    marker = _AUDIT_EVIDENCE_RE.search(issue.body)
+    if marker:
+        return marker.group(1).lower()
+    source = _AUDIT_SOURCE_RE.search(issue.body)
+    return audit_evidence_class_from_provenance(source.group(1) if source else "")
+
+
+def audit_fix_rejection(
+    *, audit_source: bool, evidence_class: str, changed_paths: tuple[str, ...]
+) -> str | None:
+    """Reject edits that cure generated planner evidence without curing its producer."""
+    if not audit_source or evidence_class not in {"generated", "persisted"}:
+        return None
+    paths = tuple(path.strip() for path in changed_paths if path.strip())
+    if any(path.startswith(CORPUS_ARTIFACT_PREFIXES) for path in paths):
+        return (
+            f"{evidence_class} planner evidence under audit/ or corpus/ was modified. Preserve "
+            "the failing artifact and fix the producer or audit rule instead"
+        )
+    if not any(path.startswith(PREVENTIVE_CODE_PREFIXES) for path in paths):
+        return "the audit fix has no executable production or audit implementation change"
+    if not any(
+        path.startswith("tests/")
+        or (path.startswith(REGRESSION_TEST_PREFIXES) and ".test." in path)
+        for path in paths
+    ):
+        return "the audit fix has no focused regression test proving recurrence is prevented"
+    return None
 
 
 def audit_review_query(representative: dict) -> str:
@@ -513,6 +567,27 @@ def worker_prompt(
             ]
     if answer:
         lines += ["## The owner answered a blocking question", "", answer.strip(), ""]
+    if AUDIT_SOURCE in issue.labels:
+        evidence_class = audit_evidence_class(issue)
+        lines += [
+            "## Audit root-cause contract",
+            "",
+            f"This issue audits `{evidence_class}` evidence.",
+            "",
+            "Classify the finding before editing: producer defect, audit-rule defect, or",
+            "genuine evidence defect. Generated and persisted trip records are observations,",
+            "not expected answers. Preserve a failing observation and prevent recurrence in",
+            "planner code, policy, validation, normalization, or completion gates, with a",
+            "focused regression test. Do not edit corpus/, lane snapshots, manifests, or audit",
+            "reports merely to make the finding disappear.",
+            "",
+            "A corpus-only change is allowed only for a genuine evidence defect such as corrupt",
+            "serialization, a schema migration, duplicate drift, or an incorrect hand-authored",
+            "golden fixture. In that case, explain why the planner did not produce the defect",
+            "and add executable validation of that evidence contract. If you cannot establish",
+            "which class applies, report `blocked` with the exact question.",
+            "",
+        ]
     lines += [
         "## Rules you may not break",
         "",
@@ -615,6 +690,8 @@ class Assignment:
     heartbeat: str = ""
     started: str = ""
     finished: str = ""
+    audit_source: bool = False
+    evidence_class: str = ""
 
     def to_dict(self) -> dict:
         return dict(self.__dict__)
