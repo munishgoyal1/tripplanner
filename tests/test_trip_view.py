@@ -1460,6 +1460,85 @@ def test_map_view_flies_between_terminals_the_plan_never_connected(
     assert day["legs"][0]["intercity"] is True
 
 
+def test_map_view_does_not_draw_ground_legs_across_unresolved_flights(
+    _long_haul_geo: None,
+) -> None:
+    trip = {
+        **_long_haul_trip([]),
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Flight: Bengaluru to Bali", "kind": "flight"},
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                    {"name": "Flight: Bali to Bengaluru", "kind": "flight"},
+                ],
+            },
+            {
+                "day": 3,
+                "stops": [
+                    {"name": "Flight: Bali to Bengaluru", "kind": "flight"},
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 4,
+                "stops": [
+                    {"name": "Flight: Paris to Bengaluru", "kind": "flight"},
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 5,
+                "stops": [
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                    {"name": "Flight: Bengaluru to Paris", "kind": "flight"},
+                ],
+            },
+        ],
+    }
+
+    view = trip_view.build_map_view(trip)
+    pins_by_id = {pin["id"]: pin for pin in view["pins"]}
+    days = view["days"]
+
+    assert [
+        [pins_by_id[pin_id]["name"] for pin_id in day["pin_ids"]]
+        for day in days
+    ] == [
+        ["Bengaluru Airport", "Hotel Lutetia"],
+        ["Hotel Lutetia", "Bengaluru Airport"],
+        ["Bengaluru Airport", "Hotel Lutetia"],
+        ["Paris Airport", "Bengaluru Airport", "Hotel Lutetia"],
+        ["Hotel Lutetia", "Bengaluru Airport", "Paris Airport"],
+    ]
+    assert [day["legs"] for day in days[:3]] == [[], [], []]
+    assert [leg["mode"] for leg in days[3]["legs"]] == ["Taxi", "Flight"]
+    assert [leg["mode"] for leg in days[4]["legs"]] == ["Flight"]
+
+
+def test_unresolved_flight_origin_does_not_become_following_drive_origin(
+    _long_haul_geo: None,
+) -> None:
+    trip = _long_haul_trip(
+        [
+            {"name": "Flight: Bengaluru to Bali", "kind": "flight"},
+            {"name": "Drive: Bali to Paris", "kind": "transport"},
+            {"name": "Hotel Lutetia", "kind": "hotel"},
+        ]
+    )
+
+    day = trip_view.build_map_view(trip)["days"][0]
+
+    assert day["legs"] == []
+
+
 def test_itinerary_does_not_bookend_a_long_haul_day_with_the_destination_stay(
     _long_haul_geo: None,
 ) -> None:
@@ -1955,9 +2034,7 @@ def test_map_view_does_not_bind_partial_flight_to_destination_hotel(
         "Bangalore Airport",
         "Destination Hotel",
     ]
-    assert day["route"]["mode"] == "Taxi"
-    assert day["legs"][0]["mode"] == "Taxi"
-    assert "intercity" not in day["legs"][0]
+    assert day["legs"] == []
 
 
 def test_map_view_pins_flight_stops_named_as_single_airports(

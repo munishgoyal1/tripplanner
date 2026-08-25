@@ -275,30 +275,60 @@ def test_the_audit_reports_the_corpus_it_actually_read(tmp_path: Path) -> None:
 
 
 def test_a_leg_drawn_as_ground_travel_across_a_continent_is_reported() -> None:
-    """The reported defect: a taxi from Bengaluru to a Paris hotel."""
-    return_day = _plan()
-    return_day["day_wise_itinerary"] = [
-        {
-            "day": 1,
-            "stops": [
-                {"name": "Charles de Gaulle Airport", "kind": "transport", "time": "09:55"},
-                {"name": "Kempegowda International Airport", "kind": "transport", "time": "23:20"},
-                {"name": "Hotel Lutetia", "kind": "hotel", "time": "23:59"},
-            ],
-        }
-    ]
+    record = _record()
+    view = {
+        "pins": [
+            {"id": "airport", "name": "Kempegowda International Airport"},
+            {"id": "hotel", "name": "Hotel Lutetia"},
+        ],
+        "days": [
+            {
+                "day": 1,
+                "legs": [
+                    {
+                        "from_pin_id": "airport",
+                        "to_pin_id": "hotel",
+                        "mode": "Taxi",
+                        "distance_km": 7700,
+                        "duration_min": 16 * 60 + 1,
+                    }
+                ],
+            }
+        ],
+    }
+
+    reported = render._leg_findings(record, view, [])
+
+    assert any(finding.rule == render.RULE_GROUND_LEG for finding in reported)
+    assert any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
+
+
+def test_an_unresolved_flight_endpoint_is_not_drawn_as_ground_travel() -> None:
+    plan = _plan(
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Flight: Bangalore to Paris", "kind": "flight"},
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                ],
+            }
+        ]
+    )
     record = corpus.CorpusRecord(
-        id="return-day",
+        id="unresolved-flight",
         provenance=corpus.REAL,
         source="test",
-        plan=return_day,
-        places={**_PLACES, "charles de gaulle airport|paris": {"lat": 49.0097, "lng": 2.5479}},
+        plan=plan,
+        places={
+            **_PLACES,
+            "bangalore airport|": {"lat": 13.1986, "lng": 77.7066},
+        },
     )
 
     reported = render.check_render(record)
 
-    assert any(finding.rule == render.RULE_GROUND_LEG for finding in reported)
-    assert any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
+    assert not any(finding.rule == render.RULE_GROUND_LEG for finding in reported)
 
 
 def test_render_does_not_bind_an_unresolved_flight_to_the_next_local_pin() -> None:

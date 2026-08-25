@@ -238,7 +238,7 @@ def _build_days(
                     extra_stay_ids=resolved_stay_ids[1:],
                 )
             route_ids = journey.route_ids
-            ids = route_ids
+            ids = journey.map_pin_ids if journey.detached_pin_ids else route_ids
         else:
             ids = _local_day_pin_ids(ids, pin_by_id, resolved_stay_ids, stay_ids)
             route_ids = [pid for pid in ids if pin_by_id[pid]["kind"] not in TERMINAL_KINDS]
