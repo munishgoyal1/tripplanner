@@ -2342,13 +2342,9 @@ def update_trip_plan(updates_json: str) -> str:
     restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
 
     resettled_days = _settle_plan_legs(plan)
+    # Rejecting here discarded the turn's only copy of the itinerary, so a plan that
+    # was merely incomplete ended up saved as no plan at all.
     sanity_errors = persistence_sanity_errors(plan)
-    if sanity_errors:
-        return (
-            "Error: itinerary sanity validation rejected this update before persistence. "
-            + " ".join(sanity_errors[:5])
-            + " Replan the affected journey or day as a whole and resubmit it."
-        )
     _save_active_trip(plan)
     broken_invariants = _newly_broken(before, plan)
     restaurant_warnings = _restaurant_itinerary_warnings(
@@ -2360,6 +2356,13 @@ def update_trip_plan(updates_json: str) -> str:
     transport_warnings = _round_trip_transport_warnings(plan)
     hotel_warnings = _hotel_selection_warnings(plan)
     warning_text = ""
+    if sanity_errors:
+        warning_text += (
+            "\nThe itinerary was saved but is not yet consistent: "
+            + " ".join(sanity_errors[:5])
+            + " Replan the affected journey or day as a whole and resubmit the full "
+            "day_wise_itinerary. Do not report the trip as planned while this stands."
+        )
     if restored_legs:
         warning_text += (
             "\nKept "

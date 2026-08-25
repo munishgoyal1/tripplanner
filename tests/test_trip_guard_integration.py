@@ -316,7 +316,7 @@ def test_backwards_transport_timeline_is_rejected_without_persistence() -> None:
     assert json.loads(get_trip_plan.invoke({})) == before
 
 
-def test_authoritative_closed_day_is_rejected_without_persistence(
+def test_authoritative_closed_day_is_saved_with_a_repair_warning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     create_trip_plan.invoke(
@@ -363,11 +363,12 @@ def test_authoritative_closed_day_is_rejected_without_persistence(
         }
     )
 
-    assert result.startswith(
-        "Error: itinerary sanity validation rejected this update before persistence."
-    )
+    # Losing the itinerary is worse than saving one that still needs a repair.
+    assert "The itinerary was saved but is not yet consistent:" in result
     assert "Louvre is closed on Tuesdays" in result
-    assert json.loads(get_trip_plan.invoke({})) == before
+    saved = json.loads(get_trip_plan.invoke({}))
+    assert saved != before
+    assert saved["day_wise_itinerary"][0]["stops"][0]["name"] == "Louvre"
 
 
 def test_no_tool_result_ever_shows_the_traveller_a_number_for_the_trip() -> None:
