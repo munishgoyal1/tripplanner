@@ -460,9 +460,13 @@ def resolve_completion_policy(
     )
     current_turn_names = {name for index, name in positions if index > latest_human}
     created_this_turn = "create_trip_plan" in current_turn_names
-    core_gaps_for_first_turn = (
+    updated_this_turn = "update_trip_plan" in current_turn_names
+    core_gaps_for_planning_turn = (
         tuple(core_planning_completion_gaps(active_trip))
-        if created_this_turn and not proposal_only
+        if (
+            not proposal_only
+            and (created_this_turn or (has_planning_intent and updated_this_turn))
+        )
         else ()
     )
     # Asking the review and then planning anyway would make it decoration, so the
@@ -489,7 +493,9 @@ def resolve_completion_policy(
             and not active_trip.get("day_wise_itinerary")
             and len(current_updates) < MAX_INITIAL_ITINERARY_UPDATES
         )
-        if not still_owes_first_save and not core_gaps_for_first_turn:
+        if not still_owes_first_save and not (
+            created_this_turn and core_gaps_for_planning_turn
+        ):
             try:
                 gaps = tuple(planning_completion_gaps(active_trip))
             except Exception:
@@ -542,16 +548,16 @@ def resolve_completion_policy(
         )
     )
     if (
-        core_gaps_for_first_turn
+        core_gaps_for_planning_turn
         and not hotel_fallback_requirement
         and not origin_requirement
         and not update_requirement
         and not hotel_search_requirement
     ):
         update_requirement = (
-            "The first planning turn cannot end because the saved trip still has core "
+            "The planning turn cannot end because the saved trip still has core "
             "completion gaps: "
-            + " ".join(core_gaps_for_first_turn)
+            + " ".join(core_gaps_for_planning_turn)
             + " Continue planning and call update_trip_plan with a complete corrected "
             "plan. Do not give a final response until these core gaps are resolved. "
             "Weather and other enrichment may remain deferred."
