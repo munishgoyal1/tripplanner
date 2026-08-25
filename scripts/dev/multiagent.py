@@ -30,7 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import multiagent_core as core  # noqa: E402
 
-SLOT_COUNT = 2
+SLOT_COUNT = 3
 LEASE_MINUTES = 15
 CYCLE_SECONDS = 20
 WORKER_TIMEOUT_MINUTES = 60
@@ -504,6 +504,7 @@ def launch_worker(
         "--prompt", prompt,
         "--autopilot",
         "--allow-all",
+        "--remote-export",
         "--no-ask-user",
         "--no-color",
         "--silent",

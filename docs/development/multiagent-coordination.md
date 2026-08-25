@@ -28,6 +28,11 @@ There is one interactive agent. The producer never talks to you directly, and
 neither does a worker; everything reaches you through an issue and the
 coordinator chat reads it.
 
+Workers export their named Copilot CLI sessions for read-only visibility in VS Code's
+Chat Sessions list. VS Code indexes those sessions asynchronously, so controller status
+and the runtime transcript remain authoritative while a session is still appearing.
+Opening an exported session must not start a second worker in the same slot.
+
 Every fix you ask for in the coordinator chat belongs to the persistent
 `multiagent/coordinator` lane by default, regardless of size. It does not create
 an issue or enter the autonomous queue. A worker, sandbox, or issue-backed handoff
@@ -177,21 +182,24 @@ tripplanner.worktrees/multiagent/
   integration/      long-lived, reset to origin/master each batch
   slot-1/           reusable worker worktree
   slot-2/           reusable worker worktree
+  slot-3/           reusable worker worktree
   runtime/          state, leases, pids, transcripts (outside the repo, untracked)
 ```
 
 Slots are reusable worktrees, not per-issue creations. Creating a worktree per
 small issue would re-install frontend dependencies and re-link the client package
 every time; reusing a slot keeps `node_modules` and the linked packages warm.
-Each slot also owns exactly one reusable branch, `multiagent/slot-1` or
-`multiagent/slot-2`. The controller resets that branch to the validated baseline
+Each slot also owns exactly one reusable branch, `multiagent/slot-1`,
+`multiagent/slot-2`, or `multiagent/slot-3`. The controller resets that branch
+to the validated baseline
 with `--force-with-lease` before each assignment and attaches upstream tracking
 before the worker starts. Issue and attempt identity belongs to controller state,
 the worker chat title, transcript, commit message, and GitHub issue rather than
 accumulating Git refs. Every attempt still gets a fresh agent session, so one
 issue never inherits another's reasoning.
 
-Lane labels are `lane:mw-1` and `lane:mw-2`, distinct from `lane:sbx-<n>`.
+Lane labels are `lane:mw-1`, `lane:mw-2`, and `lane:mw-3`, distinct from
+`lane:sbx-<n>`.
 
 ### Why this cannot disturb sandboxes
 
