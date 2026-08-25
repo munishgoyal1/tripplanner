@@ -524,7 +524,7 @@ def test_inspecting_reads_another_identity_without_dropping_the_sign_in(
 ) -> None:  # type: ignore[no-untyped-def]
     """A session outranks a claimed user_id, so localStorage alone did nothing.
 
-    The audit inspector needs to read a corpus trip while the owner stays signed
+    The Quality Inspector needs to read a corpus trip while the owner stays signed
     in as themselves, which is what the header is for.
     """
     from tripplanner.request_identity import INSPECT_HEADER

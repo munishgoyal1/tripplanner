@@ -342,7 +342,7 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
     else:
         review_lines.append(
             "This exemplar is a historical or file-backed record and cannot be opened directly "
-            "in the product UI. Use its record ID in the Audit Inspector."
+            "in the product UI. Use its record ID in the Quality Inspector."
         )
     screenshot_url = redact(str(group.get("screenshot_url") or "").strip())
     screenshot_links = [
@@ -364,7 +364,7 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
         ]
     return "\n".join(
         [
-            f"The trip audit found {group.get('count', 0)} occurrence(s) of rule "
+            f"The Trip Quality Audit found {group.get('count', 0)} occurrence(s) of rule "
             f"`{group.get('rule', '?')}` across {corpus_size} stored trip(s).",
             "",
             "This was produced by a deterministic read-only audit. Nothing has been",
@@ -403,7 +403,8 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
             "### Reproduce",
             "",
             "```bash",
-            f"scripts/mac/user/validation/Audit-Trips.command --all --rule {group.get('rule', '')}",
+            "scripts/mac/user/quality/Run-Quality-Audit.command "
+            f"--all --rule {group.get('rule', '')}",
             "```",
             "",
             f"audit-fingerprint: {mark}",

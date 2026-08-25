@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Inspect, maintain, restore, or tear down the local debug trip store.
+    Inspect, maintain, restore, or tear down the local Trip Flight Recorder.
 
 .DESCRIPTION
   Thin dispatcher over scripts/dev/debug_store_cli.py using the repository

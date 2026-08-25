@@ -77,7 +77,7 @@ export type Report = {
   records: TripRecord[];
 };
 
-export const AUDIT_COMMAND = "./scripts/mac/user/validation/Audit-Trips.command";
+export const AUDIT_COMMAND = "./scripts/mac/user/quality/Run-Quality-Audit.command";
 
 export async function loadReport(): Promise<Report | null> {
   const response = await fetch("/audit-report.json", { cache: "no-store" });
