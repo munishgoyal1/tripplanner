@@ -492,6 +492,24 @@ def test_continuity_stays_silent_when_a_place_has_no_coordinates() -> None:
     assert "I9" not in codes
 
 
+def test_an_unlocated_stop_breaks_the_continuity_chain_across_days(located: None) -> None:
+    partially_located = plan(
+        [
+            [
+                stop("Rajwada Palace", "10:00"),
+                stop("Somewhere Unknown", "18:00", "hotel"),
+            ],
+            [
+                stop("Another Unknown", "09:00", "hotel"),
+                stop("Gateway of India", "10:00"),
+            ],
+        ]
+    )
+
+    codes = {violation.code for violation in trip_guard.validate_plan(partially_located)}
+    assert "I9" not in codes
+
+
 def test_continuity_ignores_coordinates_from_a_different_provider_entity(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -798,6 +798,7 @@ def _continuity_violations(
                 continue
             here = _coords(stop, destination)
             if not here:
+                previous = None
                 continue
             if previous is not None:
                 previous_name, previous_day, previous_coords, previous_terminal = previous
