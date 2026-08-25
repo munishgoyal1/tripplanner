@@ -134,6 +134,24 @@ def test_a_sound_plan_reports_no_envelope_violation(located: None) -> None:
     assert "I2" not in codes
 
 
+def test_a_permanently_closed_place_has_no_legal_placement(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        trip_guard,
+        "_summary_for_place",
+        lambda *_args: {"business_status": "CLOSED_PERMANENTLY"},
+    )
+
+    placement, rejections = trip_guard.choose_placement(
+        ROUND_TRIP, "Closed Museum", "attraction"
+    )
+
+    assert placement is None
+    assert rejections
+    assert {rejection.code for rejection in rejections} == {"I12"}
+
+
 def test_a_stop_after_the_flight_home_breaks_the_envelope(located: None) -> None:
     broken = plan(
         [

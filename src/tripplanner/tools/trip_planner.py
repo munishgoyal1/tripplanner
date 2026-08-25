@@ -21,7 +21,7 @@ from typing import Any
 
 from langchain_core.tools import tool
 
-from tripplanner import debug_store, storage_cosmos
+from tripplanner import debug_store, place_facts, storage_cosmos
 from tripplanner.decisions.provenance import make_check, record_check
 from tripplanner.decisions.rules import money
 from tripplanner.decisions.store import upsert_decision
@@ -510,6 +510,16 @@ def _place_selected_stop(
 ) -> tuple[list[str], dict[str, Any] | None, bool]:
     alerts: list[str] = []
     destination = str(plan.get("destination") or "")
+    summary = _summary_for_place(name, destination)
+    if place_facts.facts_from_summary(summary).unavailable:
+        return (
+            [
+                f"{name} is reported closed for business, so I did not add it. "
+                "Choose somewhere still operating."
+            ],
+            None,
+            False,
+        )
     itinerary = plan.get("day_wise_itinerary") or []
     if not itinerary:
         if preferred_day is not None:
@@ -525,7 +535,6 @@ def _place_selected_stop(
         )
         return alerts, None, True
 
-    summary = _summary_for_place(name, destination)
     stop_kind = _canonical_place_kind(kind)
     stop = _make_stop(name, stop_kind, summary)
     requested_idx: int | None = None
