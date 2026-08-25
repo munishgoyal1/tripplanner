@@ -50,6 +50,7 @@ _TITLE_NOISE = frozenset({
 })
 
 _MOVABLE_KINDS = frozenset({"attraction", "meal"})
+_RESCHEDULABLE_KINDS = frozenset({"attraction", "hotel", "meal"})
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 
@@ -107,10 +108,13 @@ class Rebalance:
                 if move.saved_travel_min > 0
                 else ""
             )
-            out.append(
-                f"Moved {move.name} from Day {move.from_day} to Day {move.to_day} "
-                f"at {move.time}{saved}."
-            )
+            if move.from_day == move.to_day:
+                out.append(f"Rescheduled {move.name} on Day {move.to_day} at {move.time}{saved}.")
+            else:
+                out.append(
+                    f"Moved {move.name} from Day {move.from_day} to Day {move.to_day} "
+                    f"at {move.time}{saved}."
+                )
         return out
 
 
@@ -260,6 +264,42 @@ def _movable(
     return sorted(out, key=lambda pair: (pair[0], _stop_name(pair[1])))
 
 
+def _reschedulable(
+    plan: dict[str, Any], pinned: set[tuple[int, str]]
+) -> list[tuple[int, dict[str, Any]]]:
+    fault_stops: set[tuple[int, str]] = set()
+    fault_targets = {
+        (violation.day, violation.stop)
+        for violation in trip_guard.validate_plan(plan)
+        if violation.code == "I4"
+    }
+    for day, _entry, stops in trip_guard.days_of(plan):
+        timed = sorted(
+            (stop for stop in stops if trip_guard._time_of(stop) is not None),
+            key=lambda stop: trip_guard._time_of(stop) or 0,
+        )
+        for current, following in zip(timed, timed[1:]):
+            if (day, _stop_name(following)) not in fault_targets:
+                continue
+            fault_stops.add((day, _stop_name(current)))
+            fault_stops.add((day, _stop_name(following)))
+
+    out: list[tuple[int, dict[str, Any]]] = []
+    for day, _entry, stops in trip_guard.days_of(plan):
+        for stop in stops:
+            name = _stop_name(stop)
+            if not name or not isinstance(stop, dict):
+                continue
+            if (day, name) not in fault_stops:
+                continue
+            if _stop_kind(stop) not in _RESCHEDULABLE_KINDS:
+                continue
+            if (day, name) in pinned or trip_guard._has_a_time_of_its_own(stop):
+                continue
+            out.append((day, stop))
+    return sorted(out, key=lambda pair: (pair[0], _stop_name(pair[1])))
+
+
 def _place(
     plan: dict[str, Any], stop: dict[str, Any], from_day: int, to_day: int
 ) -> tuple[dict[str, Any], Move] | None:
@@ -324,6 +364,13 @@ def _candidates(
     current: dict[str, Any], pinned: set[tuple[int, str]], deadline: float
 ) -> Any:
     """Every arrangement one step away, cheapest neighbourhood first."""
+    for day, stop in _reschedulable(current, pinned):
+        if time.perf_counter() > deadline:
+            break
+        rescheduled = _relocated(current, day, stop, day)
+        if rescheduled is not None:
+            yield rescheduled[0], (rescheduled[1],)
+
     movable = _movable(current, pinned)
     for from_day, stop in movable:
         for to_day, _entry, _stops in trip_guard.days_of(current):

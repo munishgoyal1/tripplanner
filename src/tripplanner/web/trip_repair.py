@@ -20,6 +20,8 @@ from tripplanner.decisions.store import list_decisions
 from tripplanner.tools import trip_guard, trip_rebalance
 from tripplanner.web.place_confidence import confirmed_bindings
 
+_BLOCKABLE_CODES = trip_guard.KNOWN_FACT_CODES | {"I4"}
+
 
 def _overridden_decisions(plan: dict[str, Any]) -> set[str]:
     return {
@@ -42,7 +44,7 @@ def blocked_findings(
     """Contradictions the planner is not allowed to repair on its own."""
     out: list[dict[str, Any]] = []
     for violation in trip_guard.validate_plan(plan):
-        if violation.code not in trip_guard.KNOWN_FACT_CODES:
+        if violation.code not in _BLOCKABLE_CODES:
             continue
         key = (violation.day, violation.stop or "")
         owned = pinned.get(key)  # type: ignore[arg-type]
