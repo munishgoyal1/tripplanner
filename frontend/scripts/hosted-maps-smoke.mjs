@@ -76,8 +76,16 @@ try {
   }
   console.log(`[PASS] Maps JavaScript authorized for ${baseUrl}`);
 
+  const smokeUser = "web-00000000-0000-4000-8000-000000000030";
+  const guestResponse = await context.request.post(`${baseUrl}/api/auth/guest/session`, {
+    data: { user_id: smokeUser },
+  });
+  if (!guestResponse.ok()) throw new Error(`guest session HTTP ${guestResponse.status()}`);
+  const guestToken = (await guestResponse.json()).token;
+  if (!guestToken) throw new Error("guest session token missing");
   const overviewResponse = await context.request.get(
-    `${baseUrl}/api/destination/overview?destination=Paris&news=false`,
+    `${baseUrl}/api/destination/overview?destination=Paris&news=false&user_id=${encodeURIComponent(smokeUser)}`,
+    { headers: { Authorization: `Bearer ${guestToken}` } },
   );
   if (!overviewResponse.ok()) throw new Error(`destination overview HTTP ${overviewResponse.status()}`);
   const overview = await overviewResponse.json();
