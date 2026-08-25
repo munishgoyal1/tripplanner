@@ -38,6 +38,9 @@ WORKER_TIMEOUT_MINUTES = 60
 INTEGRATION_BRANCH = "multiagent/integration"
 COORDINATOR_BRANCH = "multiagent/coordinator"
 TEST_TIMEOUT_SECONDS = 3600
+# The post-fix corpus audit only annotates the record, so it may never hold the loop for long.
+AUDIT_TIMEOUT_SECONDS = 300
+TIMEOUT_RETURNCODE = 124
 WORKER_MODEL = "gpt-5.6-sol"
 WORKER_REASONING_EFFORT = "medium"
 STOP_GRACE_SECONDS = 2.0
@@ -63,16 +66,21 @@ def run(
     input_text: str | None = None,
     timeout: int | None = 600,
 ) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        args,
-        cwd=str(cwd) if cwd else None,
-        env=env,
-        input=input_text,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        check=False,
-    )
+    try:
+        return subprocess.run(
+            args,
+            cwd=str(cwd) if cwd else None,
+            env=env,
+            input=input_text,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        # A slow command must degrade into a failed result; raising here kills the controller.
+        message = f"timed out after {timeout}s"
+        return subprocess.CompletedProcess(args, TIMEOUT_RETURNCODE, "", message)
 
 
 def git(args: list[str], *, cwd: Path, check: bool = True) -> str:
@@ -139,6 +147,12 @@ def save_state(space: Workspace, state: core.State) -> None:
     temp = space.state_path.with_suffix(".tmp")
     temp.write_text(payload, encoding="utf-8")
     temp.replace(space.state_path)
+
+
+def heartbeat(space: Workspace, state: core.State) -> None:
+    """Publish progress and renew the lease inside a cycle, not only at its end."""
+    state.lease = core.Lease.issue_to("controller", minutes=LEASE_MINUTES, pid=os.getpid())
+    save_state(space, state)
 
 
 def pid_alive(pid: int) -> bool:
@@ -807,6 +821,7 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
             log(f"#{assignment.issue} conflicted during integration; re-queued")
             continue
 
+        log(f"#{assignment.issue} integrating {assignment.pushed_sha[:12]}; validating")
         passed, summary = validate(
             space, worktree, frontend=touched_frontend(assignment.validation)
         )
@@ -829,7 +844,7 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
             [space.python(), str(worktree / "scripts" / "dev" / "trip_audit.py"), "--json"],
             cwd=worktree,
             env={**os.environ, "TRIPPLANNER_AUDIT_REPORT_ROOT": str(space.primary)},
-            timeout=TEST_TIMEOUT_SECONDS,
+            timeout=AUDIT_TIMEOUT_SECONDS,
         )
         if audit.returncode not in (0, 1):
             assignment.validation += f"; post-fix audit unavailable (exit {audit.returncode})"
@@ -841,6 +856,7 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
             except json.JSONDecodeError:
                 assignment.validation += "; post-fix audit report recorded"
         park_slot(space, state, assignment.slot)
+        heartbeat(space, state)
         log(f"#{assignment.issue} integrated; baseline now {state.baseline_sha[:12]}")
 
 
@@ -998,10 +1014,13 @@ def cmd_run(space: Workspace, args: argparse.Namespace) -> int:
             state.lease = core.Lease.issue_to("controller", minutes=LEASE_MINUTES, pid=os.getpid())
             state.last_error = ""
             collect(space, state, repo)
-            integrate(space, state, repo)
+            heartbeat(space, state)
             baseline_ready = batch_in_flight(state) or refresh_idle_baseline(space, state)
+            # Free slots are filled before integration, which can validate for minutes.
             if not state.paused and baseline_ready:
                 dispatch(space, state, repo)
+                heartbeat(space, state)
+            integrate(space, state, repo)
             finalise_batch(space, state, repo)
             state.last_cycle = core.format_time(core.utcnow())
             save_state(space, state)

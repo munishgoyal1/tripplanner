@@ -937,6 +937,31 @@ def test_reportless_push_requires_matching_issue_trailer(tmp_path, monkeypatch) 
     assert runtime.recover_reportless_push(space, assignment) == ""
 
 
+def test_a_slow_command_fails_instead_of_killing_the_controller(monkeypatch) -> None:
+    """TimeoutExpired escapes the cycle's except clause, so run() must absorb it."""
+
+    def explode(*_args: object, **_kwargs: object) -> None:
+        raise subprocess.TimeoutExpired(cmd="slow", timeout=1)
+
+    monkeypatch.setattr(runtime.subprocess, "run", explode)
+
+    result = runtime.run(["slow"], timeout=1)
+
+    assert result.returncode == runtime.TIMEOUT_RETURNCODE
+    assert "timed out" in result.stderr
+
+
+def test_heartbeat_publishes_progress_before_the_cycle_ends(tmp_path) -> None:
+    space = SimpleNamespace(state_path=tmp_path / "state.json", ensure_dirs=lambda: None)
+    state = core.State(assignments=[core.Assignment(issue=42, state="running")])
+
+    runtime.heartbeat(space, state)
+
+    published = core.State.from_dict(json.loads(space.state_path.read_text(encoding="utf-8")))
+    assert [item.issue for item in published.assignments] == [42]
+    assert published.lease.valid()
+
+
 def test_worker_push_is_verified_and_given_remote_tracking(tmp_path, monkeypatch) -> None:
     commands: list[list[str]] = []
     assignment = core.Assignment(
