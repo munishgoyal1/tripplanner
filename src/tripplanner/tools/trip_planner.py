@@ -1909,6 +1909,7 @@ _RESET_KEEPS = frozenset(
         "created_at",
         "destination",
         "origin",
+        "travel_scope",
         "departure_date",
         "return_date",
         "travelers",
