@@ -39,10 +39,10 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/Sync-Sbxs-FromMaster.cmd [sandbox]` | Windows launcher to fast-forward primary `master`, then update every sandbox or only the selected one |
 | `win/user/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
 | `win/user/Full-2Way-Sync.cmd` | Converge committed lane history without hiding active edits. Clean committed lanes publish to `master`; dirty lanes take non-overlapping updates and defer publication. Re-runnable |
-| `win/user/debug/Show-TripRecorder.cmd [query] [--days N]` | List or search Trip Flight Recorder entries by number, destination, keyword, or label |
-| `win/user/debug/Maintain-TripRecorder.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report recorder health |
-| `win/user/debug/Restore-TripRecorder.cmd [sandbox] [days]` | Restore recorded trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |
-| `win/user/debug/Clear-TripRecorder.cmd --confirm CLEAR_DEBUG_STORE` | Delete the whole Trip Flight Recorder and restart numbering |
+| `win/user/quality/Show-TripRecorder.cmd [query] [--days N]` | List or search Trip Flight Recorder entries by number, destination, keyword, or label |
+| `win/user/quality/Maintain-TripRecorder.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report recorder health |
+| `win/user/quality/Restore-TripRecorder.cmd [sandbox] [days]` | Restore recorded trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |
+| `win/user/quality/Clear-TripRecorder.cmd --confirm CLEAR_DEBUG_STORE` | Delete the whole Trip Flight Recorder and restart numbering |
 | `win/user/quality/Run-Quality-Audit.cmd` | Run the Trip Quality Audit, always write dated JSON/Markdown evidence under `audit/reports/`, and exit non-zero on findings the baseline does not hold |
 | `win/user/quality/Run-Quality-Audit.cmd --all` | Show every finding, not only new ones |
 | `win/user/quality/Run-Quality-Audit.cmd --accept` | Record the current findings as known |
@@ -57,7 +57,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/multiagent/Stop-Multiagent.cmd` | Stop the controller and its workers, keeping worktrees, branches, and transcripts |
 | `win/user/multiagent/Open-Coordinator.cmd` | Open the owner-facing coordinator chat in VS Code |
 | `win/user/multiagent/Run-Quality-Issue-Producer.cmd [--dry-run]` | Run the read-only Trip Quality Audit and propose every new deduplicated finding group as an inert `owner:proposed` issue; never accepts the baseline |
-| `win/user/debug/Capture-Screens.cmd [-Sandbox n] [-Label name]` | Capture UI evidence for a bug: screenshots, `/trip/view` and map JSON, console errors, and DOM |
+| `win/user/quality/Capture-Screens.cmd [-Sandbox n] [-Label name]` | Capture UI evidence for a quality finding: screenshots, `/trip/view` and map JSON, console errors, and DOM |
 | `win/user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `win/user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `win/user/sandbox/Run-All-Sandboxes.cmd` | Seed and run every registered sandbox in independent background processes |
