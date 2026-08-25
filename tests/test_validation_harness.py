@@ -433,6 +433,67 @@ def test_blanking_an_origin_that_is_already_missing_is_not_a_mutation() -> None:
     assert mutations.blank_origin(_plan(origin="")) is None
 
 
+def test_drop_last_leg_skips_terminal_markers_and_removes_the_journey() -> None:
+    record = _record(
+        origin="Guwahati",
+        destination="Meghalaya",
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Drive: Guwahati to Shillong", "kind": "transport"},
+                    {"name": "Hotel in Shillong", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hotel in Cherrapunji", "kind": "hotel"},
+                    {"name": "Drive: Cherrapunji to Guwahati", "kind": "transport"},
+                    {"name": "Guwahati Airport", "kind": "transport"},
+                ],
+            },
+        ],
+    )
+
+    mutation = mutations.drop_last_leg(record.plan)
+
+    assert mutation is not None
+    assert [stop["name"] for stop in mutation.plan["day_wise_itinerary"][-1]["stops"]] == [
+        "Hotel in Cherrapunji",
+        "Guwahati Airport",
+    ]
+    assert not [
+        finding
+        for finding in mutations.check_metamorphic(record)
+        if finding.rule == mutations.RULE_UNNOTICED and "drop-last-leg" in finding.message
+    ]
+
+
+def test_drop_last_leg_skips_redundant_homebound_routes() -> None:
+    plan = _plan(
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Flight: Bangalore to Paris", "kind": "flight"},
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                    {"name": "Flight: Paris to Bangalore", "kind": "flight"},
+                    {"name": "Flight: CDG to Bangalore", "kind": "flight"},
+                ],
+            },
+        ]
+    )
+
+    assert mutations.drop_last_leg(plan) is None
+
+
 def test_an_edit_that_changes_nothing_must_change_no_finding() -> None:
     record = _record()
     for mutation in mutations.mutations_of(record.plan):
