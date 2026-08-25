@@ -463,6 +463,36 @@ def test_blanking_an_origin_that_is_already_missing_is_not_a_mutation() -> None:
     assert mutations.blank_origin(_plan(origin="")) is None
 
 
+def test_break_time_order_introduces_a_new_chronology_defect() -> None:
+    plan = _plan(
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Origin station", "kind": "transport", "time": "07:00"},
+                    {"name": "Outbound train", "kind": "transport", "time": "07:30"},
+                    {"name": "Destination station", "kind": "transport", "time": "17:30"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hotel", "kind": "hotel", "time": "07:00"},
+                    {"name": "Museum", "kind": "attraction", "time": "08:00"},
+                    {"name": "Market", "kind": "attraction", "time": "12:00"},
+                    {"name": "Hotel", "kind": "hotel", "time": "15:00"},
+                ],
+            },
+        ]
+    )
+
+    mutation = mutations.break_time_order(plan)
+
+    assert mutation is not None
+    assert mutation.plan["day_wise_itinerary"][0] == plan["day_wise_itinerary"][0]
+    assert mutation.plan["day_wise_itinerary"][1]["stops"][-1]["time"] == "00:05"
+
+
 def test_drop_first_leg_is_not_unnoticed_without_hotel_rows() -> None:
     record = _record(
         destination="Spiti Valley",
