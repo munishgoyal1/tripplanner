@@ -115,9 +115,13 @@ def current_turn_tool_phases(messages: Sequence[BaseMessage]) -> int:
 def _tool_result_texts(
     messages: Sequence[BaseMessage],
     tool_name: str,
+    *,
+    after_index: int = -1,
 ) -> list[str]:
     call_ids: set[str] = set()
-    for message in messages:
+    for index, message in enumerate(messages):
+        if index <= after_index:
+            continue
         for tool_call in getattr(message, "tool_calls", None) or []:
             name = (
                 tool_call.get("name")
@@ -247,11 +251,18 @@ def trip_hotel_search_requirement(
     has_planning_intent: bool,
 ) -> str | None:
     positions = _tool_call_positions(messages)
-    if any(name == "search_hotels" for _, name in positions):
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    current_turn_names = {
+        name for index, name in positions if index > latest_human
+    }
+    if "search_hotels" in current_turn_names:
         return None
     if not active_trip.get("destination") or not active_trip.get("day_wise_itinerary"):
         return None
-    created_this_turn = any(name == "create_trip_plan" for _, name in positions)
+    created_this_turn = "create_trip_plan" in current_turn_names
     if not created_this_turn and not has_planning_intent:
         return None
     hotel_gaps = [
@@ -272,11 +283,18 @@ def trip_hotel_fallback_requirement(
     messages: Sequence[BaseMessage],
 ) -> str | None:
     positions = _tool_call_positions(messages)
-    if not any(name == "search_hotels" for _, name in positions):
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    current_turn_names = {
+        name for index, name in positions if index > latest_human
+    }
+    if "search_hotels" not in current_turn_names:
         return None
-    if any(name == "search_places_with_reviews" for _, name in positions):
+    if "search_places_with_reviews" in current_turn_names:
         return None
-    results = _tool_result_texts(messages, "search_hotels")
+    results = _tool_result_texts(messages, "search_hotels", after_index=latest_human)
     if not results:
         return None
     failure_markers = (
