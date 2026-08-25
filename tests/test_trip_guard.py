@@ -743,6 +743,49 @@ def test_a_preferred_day_restricts_the_search_to_that_day(located: None) -> None
     assert placement is not None and placement.day == 2
 
 
+def test_placement_waits_until_an_evening_place_opens(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    evening_hours = [
+        f"{day}: 6:00 PM - 11:00 PM"
+        for day in (
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        )
+    ]
+    monkeypatch.setattr(
+        trip_guard,
+        "_summary_for_place",
+        lambda name, _destination="": {
+            "name": name,
+            "weekday_descriptions": evening_hours,
+        },
+    )
+    itinerary = plan(
+        [[]],
+        departure_date="2026-09-07",
+        origin="",
+        travel_scope="destination_only",
+    )
+
+    placement, rejections = trip_guard.choose_placement(
+        itinerary,
+        "Sarafa Bazaar",
+        "meal",
+        duration_min=90,
+        preferred_day=1,
+    )
+
+    assert placement is not None
+    assert placement.time == "18:00"
+    assert not [rejection for rejection in rejections if rejection.code == "I3"]
+
+
 # --------------------------------------------------------------------------- #
 # blast radius                                                                  #
 # --------------------------------------------------------------------------- #

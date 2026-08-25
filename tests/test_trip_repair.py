@@ -21,6 +21,22 @@ _OPEN = [
 _SHUT_TUESDAY = ["Tuesday: Closed" if line.startswith("Tuesday") else line for line in _OPEN]
 
 _PLACES = {
+    "Al Fahidi Historical Neighbourhood": {
+        "lat": 25.2634,
+        "lng": 55.2972,
+        "weekday_descriptions": [
+            f"{day}: 7:00 AM - 8:00 PM"
+            for day in (
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            )
+        ],
+    },
     "Louvre Museum": {"lat": 48.8606, "lng": 2.3376, "weekday_descriptions": _SHUT_TUESDAY},
     "Musee d'Orsay": {"lat": 48.8600, "lng": 2.3266, "weekday_descriptions": _OPEN},
     "Le Marais": {"lat": 48.8612, "lng": 2.3581, "weekday_descriptions": _OPEN},
@@ -79,6 +95,38 @@ def test_it_clears_a_closed_day_it_owns() -> None:
     assert _closed_day_codes(outcome["plan"]) == []
     assert outcome["blocked"] == []
     assert any("Louvre Museum" in line for line in outcome["sentences"])
+
+
+def test_it_reschedules_a_planner_owned_visit_that_ends_after_closing() -> None:
+    broken = _plan(
+        [_stop("Al Fahidi Historical Neighbourhood", "19:30")],
+    )
+    assert [item for item in trip_guard.validate_plan(broken) if item.code == "I3"]
+
+    outcome = trip_repair.repair(broken)
+
+    assert outcome["changed"]
+    assert not [item for item in trip_guard.validate_plan(outcome["plan"]) if item.code == "I3"]
+    assert outcome["moves"] == [
+        {
+            "name": "Al Fahidi Historical Neighbourhood",
+            "from_day": 1,
+            "to_day": 1,
+            "time": outcome["moves"][0]["time"],
+        }
+    ]
+
+
+def test_it_reports_an_after_hours_visit_the_traveller_chose() -> None:
+    booked = _plan(
+        [_stop("Al Fahidi Historical Neighbourhood", "19:30", booked=True)],
+    )
+
+    outcome = trip_repair.repair(booked)
+
+    assert not outcome["changed"]
+    assert [item["code"] for item in outcome["blocked"]] == ["I3"]
+    assert outcome["blocked"][0]["reason"] == "you booked it"
 
 
 def test_it_will_not_move_a_booking_to_clear_one() -> None:
