@@ -508,6 +508,42 @@ def test_first_turn_provider_failure_uses_hotel_fallback_after_phase_budget() ->
     assert decision.forced_reason == "hotel_provider_fallback"
 
 
+def test_first_turn_persists_six_day_hotel_fallback_after_phase_budget() -> None:
+    messages: list[BaseMessage] = [
+        HumanMessage(content="Plan a six-day New York trip"),
+        _tool_call("create_trip_plan", "create-1"),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+        _tool_call("search_hotels", "hotel-1"),
+        ToolMessage(content="No hotels found for New York.", tool_call_id="hotel-1"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 3),
+        _tool_call("search_places_with_reviews", "places-1"),
+        ToolMessage(content="The Wallace Hotel", tool_call_id="places-1"),
+    ]
+    decision = resolve_completion_policy(
+        messages=messages,
+        active_trip={
+            "destination": "New York",
+            "origin": "Delhi",
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+                }
+                for day in range(1, 7)
+            ],
+            "selected_hotels": [],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.tool_phases == MAX_TOOL_PHASES_PER_TURN
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "Research is complete but has not been persisted" in (decision.requirement or "")
+
+
 def test_phase_budget_cannot_end_first_turn_with_generic_city_hotel() -> None:
     decision = resolve_completion_policy(
         messages=[

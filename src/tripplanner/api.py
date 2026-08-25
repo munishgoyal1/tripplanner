@@ -104,9 +104,13 @@ app = FastAPI(title="Personal Assistant API", version="0.1.0")
 # where the policy forces the still-owed first itinerary save, leaving a created
 # trip with no days. Keep the graceful policy budget the binding limit and this
 # a backstop: each phase costs an agent node plus a tool node, plus a final
-# reply node and one step of slack.
+# reply node and enough completion headroom for a hotel-provider fallback followed
+# by the required post-research persistence pass.
 _CHAT_GRAPH_RECURSION_LIMIT = 2 * (
-    graph_policy.MAX_TOOL_PHASES_PER_TURN + graph_policy.MAX_INITIAL_ITINERARY_UPDATES + 1
+    graph_policy.MAX_TOOL_PHASES_PER_TURN
+    + graph_policy.MAX_INITIAL_ITINERARY_UPDATES
+    + graph_policy.MAX_POST_RESEARCH_UPDATES
+    + 2
 ) + 2
 
 # CORS — the SPA runs on a different origin in dev (Vite :5173). Override the
@@ -2912,4 +2916,3 @@ if (_SPA_DIST / "index.html").is_file():
         if target.is_file():
             return FileResponse(str(target))
         return FileResponse(str(_SPA_DIST / "index.html"))
-
