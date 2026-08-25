@@ -894,6 +894,10 @@ def test_an_accepted_group_carries_the_date_it_was_accepted(tmp_path: Path) -> N
 _ONE_REQUEST = (TripRequest("corpus-slug", "a shape", "Plan a trip"),)
 
 
+def test_paid_corpus_generation_defaults_to_one_turn_at_a_time() -> None:
+    assert generate.DEFAULT_WORKERS == 1
+
+
 def _stub_generate(monkeypatch: pytest.MonkeyPatch, usage: dict[str, Any]) -> None:
     monkeypatch.setattr(generate, "assert_generation_database", lambda name: name)
     monkeypatch.setattr(generate, "_saved_trip", lambda database, user_id: None)
@@ -922,6 +926,32 @@ def test_a_repeated_attempt_never_reuses_its_request_id(
         )
 
     assert len(seen) == len(set(seen))
+
+
+def test_a_repeated_attempt_never_reuses_failed_principal_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A failed slug's empty trip and interrupted chat must not poison its next run."""
+    seen: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(
+        generate,
+        "_ask",
+        lambda api, message, user_id, request_id: seen.append(user_id),
+    )
+
+    for _ in range(2):
+        generate.build(
+            tmp_path,
+            database="tripplanner-sbx-test",
+            api="http://127.0.0.1:0",
+            target=1,
+            requests=_ONE_REQUEST,
+        )
+
+    assert len(seen) == 2
+    assert len(set(seen)) == 2
+    assert all(user_id.startswith("corpus-corpus-slug-") for user_id in seen)
 
 
 def test_a_run_is_charged_only_for_what_that_attempt_spent(
@@ -1336,13 +1366,13 @@ def test_a_dropped_connection_is_retried_with_the_same_request_id(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """The server may have finished the turn, so the retry must be able to replay it."""
-    seen: list[str] = []
+    seen: list[tuple[str, str]] = []
     _stub_generate(monkeypatch, {"cost_usd": 0.0})
     monkeypatch.setattr(generate, "_MAX_ATTEMPTS", 2)
     monkeypatch.setattr(generate.time, "sleep", lambda seconds: None)
 
     def _ask(api: str, message: str, user_id: str, request_id: str) -> None:
-        seen.append(request_id)
+        seen.append((user_id, request_id))
         if len(seen) == 1:
             raise http.client.RemoteDisconnected("closed without response")
 
@@ -1359,6 +1389,68 @@ def test_a_dropped_connection_is_retried_with_the_same_request_id(
 
     assert len(seen) == 2
     assert seen[0] == seen[1]
+
+
+def test_a_full_request_timeout_is_not_repeated(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """One 15-minute allowance is enough; repeating it can stall a request for an hour."""
+    seen: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(generate, "_MAX_ATTEMPTS", 4)
+
+    def _ask(api: str, message: str, user_id: str, request_id: str) -> None:
+        seen.append(request_id)
+        raise TimeoutError("timed out")
+
+    monkeypatch.setattr(generate, "_ask", _ask)
+
+    result = generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        requests=_ONE_REQUEST,
+        requested_budget_inr=1000,
+        workers=1,
+    )
+
+    assert len(seen) == 1
+    assert result["stopped_because"] == "exhausted"
+
+
+def test_a_complete_persisted_trip_survives_a_dropped_response(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The response can fail after the server has already completed and saved the turn."""
+    _stub_generate(monkeypatch, {"cost_usd": 0.25})
+    monkeypatch.setattr(generate, "_MAX_ATTEMPTS", 1)
+    monkeypatch.setattr(
+        generate,
+        "_ask",
+        lambda api, message, user_id, request_id: (_ for _ in ()).throw(
+            http.client.RemoteDisconnected("closed without response")
+        ),
+    )
+    monkeypatch.setattr(
+        generate,
+        "_saved_trip",
+        lambda database, user_id: {
+            "id": "saved-after-disconnect",
+            "day_wise_itinerary": [{"day": 1, "stops": [{"name": "Fort"}]}],
+        },
+    )
+
+    result = generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        requests=_ONE_REQUEST,
+        requested_budget_inr=1000,
+        workers=1,
+    )
+
+    assert len(result["produced"]) == 1
+    assert result["produced"][0]["trip_id"] == "saved-after-disconnect"
 
 
 def test_a_turn_that_keeps_failing_is_reported_and_the_run_goes_on(

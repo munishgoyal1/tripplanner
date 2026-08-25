@@ -1,12 +1,12 @@
 """Generate corpus trips with the real planner, inside a budget.
 
     python scripts/dev/build_corpus.py --dry-run
-    python scripts/dev/build_corpus.py --budget 1000 --workers 2
+    python scripts/dev/build_corpus.py --budget 1000
 
 Spends money. It refuses to run without headroom under the cumulative cap,
 measures each request's real cost from the app's own usage ledger, and stops at
 whichever of the budget or the target comes first. Requests are composed from
-what the corpus does not already cover and run several at a time, so re-running
+what the corpus does not already cover and run serially by default, so re-running
 tops it up with new shapes and never pays twice for the same one.
 """
 
@@ -134,7 +134,7 @@ def main(argv: list[str] | None = None) -> int:
         "--workers",
         type=int,
         default=generate.DEFAULT_WORKERS,
-        help="planning turns in flight at once; the API admits 4 by default",
+        help="planning turns in flight at once; defaults to 1 for model-quota reliability",
     )
     parser.add_argument("--dry-run", action="store_true", help="plan the run, spend nothing")
     args = parser.parse_args(argv)

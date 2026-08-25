@@ -1232,3 +1232,23 @@ the outcome.
 - A second reconciliation before opening the pull request remains necessary.
   Master can advance while workers run, and a batch is not valid merely because
   it started from a current base.
+
+## 2026-08-25 - Retry Isolation Must Include Persisted State
+
+- Corpus retries changed request IDs but kept the same synthetic user. The API
+  therefore began each nominally fresh attempt with that user's interrupted chat
+  and empty active trip, so a failed paid turn could poison every later run of the
+  same scenario even though idempotent request replay was no longer involved.
+- The durable dedupe identity is the scenario slug in the manifest, not the API
+  principal. Give each logical generation attempt a fresh principal and keep the
+  same principal and request ID only for transport retries within that attempt.
+  This also makes usage deltas exact without depending on historical ledgers.
+- Concurrency is not free capacity. Two long planning turns share the same model
+  quota and made throttling and barren output correlated, so paid generation now
+  defaults to serial execution while retaining explicit bounded concurrency for
+  deployments whose capacity has been verified independently.
+- A failed response is not proof that generation failed. The server may have
+  persisted a complete trip before the connection dropped; inspect that isolated
+  principal before discarding the attempt. Conversely, do not repeat a full
+  15-minute request timeout four times: shorter connection failures remain
+  idempotently retryable, but the full timeout is the retry budget.

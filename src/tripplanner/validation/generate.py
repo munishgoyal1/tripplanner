@@ -35,10 +35,10 @@ MANIFEST_FILE = "manifest.json"
 TRIPS_DIR = "trips"
 #: A planning turn is slow; the probe on 2026-08-15 took over two minutes.
 REQUEST_TIMEOUT_SEC = 900
-#: The API admits four at once, but four planning turns of ~30k prompt characters
-#: crossed the model deployment's tokens-per-minute quota on 2026-08-16 and every
-#: request came back throttled. The narrower limit is the provider's, not ours.
-DEFAULT_WORKERS = 2
+#: Paid generation defaults to one turn at a time. Parallel turns compete for the
+#: same model quota and made failures correlated; callers may still opt in when the
+#: deployment has independently verified capacity.
+DEFAULT_WORKERS = 1
 #: What to hold back for a request in flight before the run has priced one itself.
 ASSUMED_COST_INR = 45.0
 _RETRY_STATUS = frozenset({429, 503})
@@ -68,6 +68,11 @@ def _is_connection_refused(error: BaseException) -> bool:
     return isinstance(reason, ConnectionRefusedError) or (
         isinstance(reason, OSError) and reason.errno == errno.ECONNREFUSED
     )
+
+
+def _is_timeout(error: BaseException) -> bool:
+    reason = error.reason if isinstance(error, urllib.error.URLError) else error
+    return isinstance(reason, TimeoutError)
 
 
 @dataclass
@@ -218,7 +223,7 @@ def _send_with_retry(api: str, message: str, user_id: str, request_id: str) -> s
         except (OSError, http.client.HTTPException) as error:
             # A dropped connection may still have completed the turn, so the retry keeps
             # the request id: a finished turn replays instead of being paid for twice.
-            if attempt == _MAX_ATTEMPTS:
+            if _is_timeout(error) or attempt == _MAX_ATTEMPTS:
                 category = (
                     "API unavailable" if _is_connection_refused(error) else type(error).__name__
                 )
@@ -228,13 +233,10 @@ def _send_with_retry(api: str, message: str, user_id: str, request_id: str) -> s
 
 
 def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -> _Attempt:
-    """One planning turn, priced by what this user's ledger moved by."""
-    user_id = f"corpus-{request.slug}"
-    # Built before the ledger is read, so nothing sits between that read and the
-    # send: a concurrent attempt's spend would otherwise land in this one's cost.
-    # A repeat attempt needs its own id, or the API replays the earlier completed
-    # turn and the slug can never recover from a failed first run.
-    request_id = f"{user_id}-{uuid.uuid4().hex[:12]}"
+    """One isolated planning turn, priced by what its fresh ledger moved by."""
+    attempt_id = uuid.uuid4().hex[:12]
+    user_id = f"corpus-{request.slug}-{attempt_id}"
+    request_id = f"{user_id}-turn"
     before_usd = _spent_usd(database, user_id)
     started = time.monotonic()
 
@@ -243,6 +245,16 @@ def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -
     usage = _usage_for(database, user_id)
     cost_inr = max(0.0, float(usage.get("cost_usd") or 0.0) - before_usd) * usd_inr
     if error:
+        trip = _saved_trip(database, user_id)
+        if trip is not None:
+            return _Attempt(
+                request,
+                cost_inr=cost_inr,
+                seconds=seconds,
+                trip=trip,
+                model=str(usage.get("model") or ""),
+                user_id=user_id,
+            )
         return _Attempt(request, cost_inr=cost_inr, seconds=seconds, error=error, user_id=user_id)
     return _Attempt(
         request,
@@ -267,9 +279,9 @@ def build(
 ) -> dict[str, Any]:
     """Generate trips until the budget, the target, or the candidates run out.
 
-    Requests run concurrently because a planning turn is nearly all waiting. The
-    budget is reserved before a request is sent rather than charged after it
-    returns, so several turns in flight can never overshoot the cap between them.
+    The default is deliberately serial because planning turns share model quota.
+    When callers explicitly request concurrency, budget is reserved before a
+    request is sent so turns in flight cannot overshoot the cap between them.
     """
     assert_generation_database(database)
     allowed = budget_module.authorize(corpus_root, requested_budget_inr)
