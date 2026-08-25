@@ -302,12 +302,12 @@ def trip_restaurant_search_requirement(
     restaurant_gaps = [
         gap
         for gap in core_planning_completion_gaps(active_trip)
-        if "no named restaurant stop" in gap.lower()
+        if "named restaurant" in gap.lower()
     ]
     if not restaurant_gaps:
         return None
     return (
-        "The saved itinerary still has substantial days without named restaurants: "
+        "The saved itinerary still has days without concrete named restaurants: "
         + " ".join(restaurant_gaps)
         + " Search nearby restaurants for the affected day locations now, then choose "
         "concrete preference-matched venues and save them as meal stops."
