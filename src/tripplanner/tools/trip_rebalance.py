@@ -271,7 +271,7 @@ def _reschedulable(
     fault_targets = {
         (violation.day, violation.stop)
         for violation in trip_guard.validate_plan(plan)
-        if violation.code == "I4"
+        if violation.code in {"I4", "I5"}
     }
     for day, _entry, stops in trip_guard.days_of(plan):
         timed = sorted(
