@@ -18,13 +18,19 @@ async function runInspection(): Promise<void> {
     const { beginInspection } = await import("./debug/inspectSession");
     const request = beginInspection(window.location.search);
     if (!request) return;
+    let opened = false;
     if (request.tripId) {
       const { switchTrip } = await import("./api");
-      await switchTrip(request.tripId);
+      opened = Boolean(await switchTrip(request.tripId));
     }
+    if (!opened && request.recordId) {
+      const { openAuditRecord } = await import("./api");
+      opened = Boolean(await openAuditRecord(request.recordId));
+    }
+    if (!opened) throw new Error("The audited trip could not be opened.");
     // The banner reads the flag from storage, so the query is no longer needed
     // and dropping it stops a refresh from re-running this.
-    window.location.replace(window.location.pathname);
+    window.location.replace("/planner");
   } catch {
     // Inspection is a developer affordance; it must never keep the app down.
   }

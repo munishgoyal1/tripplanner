@@ -63,6 +63,11 @@ class TripIdRequest(BaseModel):
     user_id: str = "local"
 
 
+class AuditInspectRequest(BaseModel):
+    record_id: str
+    user_id: str = "local"
+
+
 class TripFeedbackRequest(BaseModel):
     feedback_id: str | None = Field(default=None, pattern=r"^fb_[a-f0-9]{32}$")
     sentiment: Literal["up", "down"] | None = None

@@ -92,9 +92,9 @@ const APP_URL = (import.meta.env.VITE_APP_URL as string | undefined) || "http://
 
 /** The product UI, showing this trip under the identity that owns it. */
 export function openUrl(record: TripRecord): string {
-  const params = new URLSearchParams({ inspect: record.user_id });
+  const params = new URLSearchParams({ inspect: record.user_id, record: record.id });
   if (record.trip_id) params.set("trip", record.trip_id);
-  return `${APP_URL}/?${params.toString()}`;
+  return `${APP_URL}/planner?${params.toString()}`;
 }
 
 export function howLongAgo(iso: string): string {

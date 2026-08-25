@@ -46,6 +46,7 @@ from starlette.background import BackgroundTask
 from tripplanner import config as _config  # noqa: F401  -- import triggers load_dotenv()
 from tripplanner import graph_policy
 from tripplanner.api_contracts import (
+    AuditInspectRequest,
     ChatRequest,
     ChatResponse,
     ConfirmPlaceRequest,
@@ -1430,6 +1431,38 @@ async def trips_switch(req: TripIdRequest, request: Request) -> dict:
     # Building the three panel view-models is pure work on an already-loaded
     # plan, so it happens after the lock is released; holding it that long made
     # concurrent requests collide with a 409.
+    return await asyncio.to_thread(trip_operations.workspace_payload, plan)
+
+
+@app.post("/debug/audit/open")
+async def debug_audit_open(req: AuditInspectRequest, request: Request) -> dict:
+    """Restore one immutable audit artifact into its local inspection identity."""
+    if is_hosted():
+        raise HTTPException(status_code=404, detail="Not found.")
+
+    from pathlib import Path
+
+    from tripplanner.tools import trip_planner
+    from tripplanner.validation import runner as audit_runner
+    from tripplanner.web import trip_operations
+
+    user_id = _set_request_user(request, req.user_id)
+    records, _, _ = await asyncio.to_thread(
+        audit_runner.collect,
+        Path(__file__).resolve().parents[2],
+        databases=[],
+    )
+    record = next(
+        (
+            item
+            for item in records
+            if item.id == req.record_id or any(link.id == req.record_id for link in item.links)
+        ),
+        None,
+    )
+    if record is None:
+        raise HTTPException(status_code=404, detail="Audit record not found.")
+    plan = await asyncio.to_thread(trip_planner.restore_inspection_trip, record.plan, user_id)
     return await asyncio.to_thread(trip_operations.workspace_payload, plan)
 
 

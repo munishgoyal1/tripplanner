@@ -178,11 +178,16 @@ app workspace.
 
 **Expected:** The workspace opens immediately for every visitor without consulting
 the saved-trip list. Plan mine and Skip to the app navigate to `/planner`, and
-`/planner/` behaves the same as `/planner`.
+`/planner/` behaves the same as `/planner`. A local audit inspection link also
+targets `/planner` and opens its exact record-backed representative trip. If the
+record cannot be resolved, the link remains intact for diagnosis instead of
+canonicalizing to an empty workspace.
 
 **Executable proof:**
 
 - [`frontend/src/publicEntry/Root.test.tsx`](../frontend/src/publicEntry/Root.test.tsx)
+- [`frontend/inspector/src/report.test.ts`](../frontend/inspector/src/report.test.ts)
+- [`tests/test_request_security.py`](../tests/test_request_security.py)
 
 ## Planner workspace
 

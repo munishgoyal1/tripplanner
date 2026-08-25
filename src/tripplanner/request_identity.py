@@ -58,7 +58,7 @@ def inspect_override(request: Request) -> str | None:
 #: Choosing which trip to look at, and taking a copy to edit, are the only
 #: writes inspection may perform. Everything else would make the corpus drift
 #: because somebody opened it.
-_INSPECT_WRITABLE_PATHS = frozenset({"/trips/switch", "/trip/fork"})
+_INSPECT_WRITABLE_PATHS = frozenset({"/trips/switch", "/trip/fork", "/debug/audit/open"})
 
 
 def guard_inspection_write(request: Request) -> None:

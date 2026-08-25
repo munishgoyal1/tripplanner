@@ -336,6 +336,19 @@ export async function switchTrip(tripId: string): Promise<TripWorkspaceView | nu
   return sharedClient.switchTrip(tripId);
 }
 
+/** Restore an immutable audit artifact into its local read-only inspection workspace. */
+export async function openAuditRecord(recordId: string): Promise<TripWorkspaceView | null> {
+  const res = await apiFetch(`${BASE}/debug/audit/open`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ record_id: recordId, user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not open the audited trip");
+  const json = await res.json();
+  if (!json.ok || !json.view) return null;
+  return { view: json.view, map: json.map ?? null, itinerary: json.itinerary ?? null };
+}
+
 /** Delete a saved trip; returns the refreshed saved-trips list. */
 export async function deleteTrip(tripId: string): Promise<SavedTrip[]> {
   const res = await apiFetch(`${BASE}/trips/delete`, {

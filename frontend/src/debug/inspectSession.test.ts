@@ -26,7 +26,11 @@ describe("inspect deep link", () => {
 
     const request = session.beginInspection("?inspect=corpus-hampi&trip=hampi_2027-01-05");
 
-    expect(request).toEqual({ userId: "corpus-hampi", tripId: "hampi_2027-01-05" });
+    expect(request).toEqual({
+      userId: "corpus-hampi",
+      tripId: "hampi_2027-01-05",
+      recordId: null,
+    });
     expect(localStorage.getItem(USER_KEY)).toBe("corpus-hampi");
     expect(localStorage.getItem(GUEST_KEY)).toBeNull();
   });
@@ -70,6 +74,19 @@ describe("inspect deep link", () => {
     expect(session.readInspectRequest("?inspect=corpus-hampi")).toEqual({
       userId: "corpus-hampi",
       tripId: null,
+      recordId: null,
+    });
+  });
+
+  it("retains the immutable audit record needed when the trip is not in the database", async () => {
+    const session = await load(true);
+
+    expect(session.readInspectRequest(
+      "?inspect=corpus-spiti&trip=spiti-7d&record=generated%3Aspiti-food-friends-7d",
+    )).toEqual({
+      userId: "corpus-spiti",
+      tripId: "spiti-7d",
+      recordId: "generated:spiti-food-friends-7d",
     });
   });
 });
