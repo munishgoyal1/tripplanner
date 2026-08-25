@@ -85,11 +85,14 @@ def test_sandbox_scripts_share_one_reference_resolver() -> None:
     )
     sandbox = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
 
+    assert "function Get-PrimaryRepositoryRoot" in lib
+    assert "rev-parse --path-format=absolute --git-common-dir" in lib
     assert "function Select-SandboxEntry" in lib
     assert '$Reference -match "^\\d+$"' in lib
     for script in (resolver, sandbox):
         assert "lib/sandbox-registry.ps1" in script
         assert "Select-SandboxEntry" in script
+    assert "Get-PrimaryRepositoryRoot -RepositoryRoot $checkoutRoot" in resolver
     # The duplicated registry lookup the resolver used to carry is gone.
     assert "([int]$_.slot + 1)" not in resolver
     assert "was not uniquely found" not in resolver

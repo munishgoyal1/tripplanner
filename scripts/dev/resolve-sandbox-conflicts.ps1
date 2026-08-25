@@ -20,8 +20,9 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$checkoutRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 . "$PSScriptRoot/lib/sandbox-registry.ps1"
+$repoRoot = Get-PrimaryRepositoryRoot -RepositoryRoot $checkoutRoot
 
 $registryPath = Get-SandboxRegistryPath -PrimaryRoot $repoRoot
 if (-not (Test-Path $registryPath)) { throw "Sandbox registry not found: $registryPath" }
