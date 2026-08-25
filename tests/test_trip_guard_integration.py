@@ -91,6 +91,12 @@ def _round_trip() -> dict:
                             "day": 2,
                             "stops": [
                                 {
+                                    "name": "Hotel Sayaji",
+                                    "kind": "hotel",
+                                    "time": "08:00",
+                                    "duration_min": 45,
+                                },
+                                {
                                     "name": "Rajwada Palace",
                                     "kind": "attraction",
                                     "time": "10:00",
@@ -136,6 +142,53 @@ def _names(plan: dict) -> list[str]:
         for entry in plan["day_wise_itinerary"]
         for stop in entry.get("stops", [])
     ]
+
+
+def test_an_update_without_a_required_nightly_stay_is_rejected_atomically() -> None:
+    create_trip_plan.invoke(
+        {
+            "destination": "Spiti Valley",
+            "departure_date": "2027-06-01",
+            "return_date": "2027-06-03",
+            "travel_scope": "destination_only",
+        }
+    )
+    before = json.loads(get_trip_plan.invoke({}))
+
+    result = update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "selected_hotels": [
+                        {"name": "Spiti Valley Lodge", "city": "Spiti Valley"}
+                    ],
+                    "day_wise_itinerary": [
+                        {
+                            "day": 1,
+                            "stops": [
+                                {"name": "Drive to Narkanda", "kind": "transport"},
+                                {"name": "Hatu Peak", "kind": "attraction"},
+                            ],
+                        },
+                        {
+                            "day": 2,
+                            "stops": [{"name": "Tabo Monastery", "kind": "attraction"}],
+                        },
+                        {
+                            "day": 3,
+                            "stops": [{"name": "Return drive", "kind": "transport"}],
+                        },
+                    ],
+                }
+            )
+        }
+    )
+
+    assert result.startswith(
+        "Error: itinerary sanity validation rejected this update before persistence."
+    )
+    assert "Day 1 has no concrete lodging anchor for the night" in result
+    assert json.loads(get_trip_plan.invoke({})) == before
 
 
 def test_a_new_place_is_never_scheduled_after_the_flight_home() -> None:
@@ -256,9 +309,24 @@ def test_origin_correction_restores_missing_selected_flight_legs() -> None:
                 {
                     "selected_flights": [{"airline": "IndiGo"}],
                     "day_wise_itinerary": [
-                        {"day": 1, "stops": [{"name": "Goa Hotel", "kind": "hotel"}]},
-                        {"day": 2, "stops": [{"name": "Goa Hotel", "kind": "hotel"}]},
-                        {"day": 3, "stops": [{"name": "Goa Hotel", "kind": "hotel"}]},
+                        {
+                            "day": 1,
+                            "stops": [
+                                {"name": "Holiday Inn Resort Goa", "kind": "hotel"}
+                            ],
+                        },
+                        {
+                            "day": 2,
+                            "stops": [
+                                {"name": "Holiday Inn Resort Goa", "kind": "hotel"}
+                            ],
+                        },
+                        {
+                            "day": 3,
+                            "stops": [
+                                {"name": "Holiday Inn Resort Goa", "kind": "hotel"}
+                            ],
+                        },
                     ],
                 }
             )
@@ -760,6 +828,7 @@ def test_a_place_the_user_chose_is_moved_not_deleted_when_the_day_fills() -> Non
                         {
                             "day": 2,
                             "stops": [
+                                {"name": "Hotel Sayaji", "kind": "hotel"},
                                 {"name": "Rajwada Palace", "kind": "attraction",
                                  "time": "09:00", "duration_min": 120},
                                 {"name": "Lal Bagh Palace", "kind": "attraction",
@@ -784,7 +853,7 @@ def test_a_place_the_user_chose_is_moved_not_deleted_when_the_day_fills() -> Non
     assert "removed" not in " ".join(alerts)
     assert "Shree Bada Ganpati Mandir" in _names(plan)
     assert "Kaanch Mandir" in _names(plan)
-    assert len(_stops_on(plan, 2)) == 4
+    assert len(_stops_on(plan, 2)) == 5
 
 
 def test_resetting_keeps_the_brief_and_drops_the_plan() -> None:
