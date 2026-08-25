@@ -25,7 +25,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/build-corpus.ps1` | Generate paid Trip Quality Corpus records; choose one scope per run: `--country india` for trips within India or `--market india` for both domestic and outbound Indian-traveler scenarios |
 | `dev/trip_audit.py` | Run every quality rule over the available trip evidence and report what is new |
 | `dev/trip-audit.ps1` | Dispatcher the Run-Quality-Audit launchers call |
-| `dev/multiagent.py` | Multiagent controller: dispatch owner-approved issues to bounded workers, integrate, and open one batch PR |
+| `dev/multiagent.py` | Multiagent controller: dispatch routine and explicitly approved issues to bounded workers, integrate, and open one batch PR |
 | `dev/multiagent_core.py` | Pure selection, collision, fingerprint, and lease logic behind the controller |
 | `dev/multiagent.ps1` | Dispatcher the multiagent launchers call |
 | `dev/capture-screens.ps1` | Capture screenshots, API view-models, console output, and DOM from a running local stack |
@@ -49,7 +49,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/quality/Build-Quality-Corpus.cmd` | Spend a bounded budget on planner-generated trips using the running stack for the checkout where the launcher is invoked; retained trips remain in the Trip Quality Corpus |
 | `win/user/quality/Quality-Corpus-Cache.cmd` | Inspect, save, restore, or synchronize the Places grounding behind the Trip Quality Corpus |
 | `win/user/quality/Refresh-Quality-Corpus.cmd` | Spend the configured corpus budget on fresh planner trips, retain them globally, then write the normal dated quality report |
-| `win/user/multiagent/Start-Multiagent.cmd` | Start the coordinator detached and open the coordinator chat; dispatches only issues carrying `owner:ready` |
+| `win/user/multiagent/Start-Multiagent.cmd` | Start the coordinator detached and open the coordinator chat; dispatches routine queued work, audit bugs, and approved gated work |
 | `win/user/multiagent/Multiagent-Status.cmd` | Controller, slots, assignments, issues waiting on an owner decision, and recovery commands |
 | `win/user/multiagent/Plan-Multiagent.cmd` | Dry run: what would be dispatched now, and why the rest is held |
 | `win/user/multiagent/Pause-Multiagent.cmd` | Stop dispatching; running workers finish |

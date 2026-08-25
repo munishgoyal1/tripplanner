@@ -14,8 +14,8 @@ or deployment policy.
 - [`issue-workflow.md`](issue-workflow.md): GitHub issues as the shared task board
   across chat sessions, including claiming, triage and implementation comments,
   and closing.
-- [`multiagent-coordination.md`](multiagent-coordination.md): the owner-approved
-  autonomous pipeline — `owner:ready` as the only entry to execution, the
+- [`multiagent-coordination.md`](multiagent-coordination.md): the owner-controlled
+  autonomous pipeline — routine issue intake plus explicit approval gates, the
   controller, reusable worker slots, the audit producer, and integration.
 - [`setup-oauth.md`](setup-oauth.md): local Google OAuth setup.
 

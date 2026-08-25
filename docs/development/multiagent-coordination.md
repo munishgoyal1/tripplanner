@@ -37,8 +37,9 @@ Every fix you ask for in the coordinator chat belongs to the persistent
 `multiagent/coordinator` lane by default, regardless of size. It does not create
 an issue or enter the autonomous queue. A worker, sandbox, or issue-backed handoff
 happens only when you explicitly request it, or when the work is deferred rather
-than completed in the current chat. The coordinator never adds `owner:ready`;
-only you can move issue-backed work into the autonomous queue.
+than completed in the current chat. The coordinator never adds `owner:ready` or
+`owner:approval-required`. Routine bugs and bounded tasks are ready when queued;
+only you can release explicitly approval-gated work.
 
 The same no-issue default applies inside sandbox chats: work requested and fixed
 there stays in that sandbox conversation. A sandbox agent does not create an issue
@@ -64,17 +65,20 @@ Coordinator landing without periodically rewriting active lanes.
 ## How work enters the system
 
 ```text
-you file a Requirement issue        -> owner:proposed
+you file a Requirement issue        -> owner:proposed + owner:approval-required
+you file a routine Bug or Task       -> agent:queued
 the producer finds a bug            -> owner:proposed + source:audit + bug
-you decide it should be built       -> owner:proposed + owner:ready
+you approve a gated feature          -> + owner:ready
 the controller dispatches it        -> + agent:in-progress + lane:mw-<slot>
 a worker pushes its commit          -> + agent:integrating
 integration and validation pass     -> + agent:needs-verify, in the batch PR
 you merge the PR                    -> issue closes on master
 ```
 
-Nothing is ever dispatched because an agent thought it was a good idea. The only
-entry to execution is you adding `owner:ready`.
+Routine bugs, bounded tasks, and audit bugs are ready for pickup when you ask the
+multiagent controller to work the issue queue. Large or impactful owner-created
+features are explicitly held by `owner:approval-required` until you add
+`owner:ready`. Agents do not infer approval from prose or add either label.
 
 ### Labels
 
@@ -84,7 +88,8 @@ removed as work progresses.
 | Label | Fact it records |
 | --- | --- |
 | `owner:proposed` | Entered as a candidate; kept forever as provenance |
-| `owner:ready` | You authorised implementation |
+| `owner:approval-required` | Large or impactful feature must wait for your approval |
+| `owner:ready` | You approved explicitly gated implementation |
 | `owner:withdrawn` | You revoked authorisation after dispatch |
 | `owner:decision-needed` | Something is waiting on your answer |
 | `source:audit` | The producer created this from an audit finding |
@@ -94,18 +99,20 @@ at a time, and the controller removes the previous one on every transition:
 `agent:queued`, `agent:in-progress`, `agent:blocked`, `agent:integrating`,
 `agent:needs-verify`.
 
-Selection is by containment, never by absence of `owner:proposed`:
+Selection admits routine queued work, audit bugs, and approved gated work:
 
 ```text
-is:issue is:open label:owner:ready
+(agent:queued) OR (bug + source:audit) OR (owner:ready)
 ```
 
 filtered further to exclude `owner:withdrawn` and any issue already holding an
-active `agent:*` state.
+active `agent:*` state. An issue carrying `owner:approval-required` is excluded
+unless it also carries `owner:ready`.
 
-The Requirement and audit issues do **not** get `agent:queued`. `owner:ready` is
-the multiagent queue; `agent:queued` stays with the manual lanes so the two
-systems cannot fight over the same issue.
+Requirement issues do **not** get `agent:queued`; their explicit approval gate is
+their intake state. Audit bugs need no separate owner approval. Dispatch changes
+`agent:queued` to `agent:in-progress`, so manual and multiagent lanes still cannot
+claim the same issue.
 
 ### Withdrawing authorisation
 
@@ -138,9 +145,10 @@ The producer follows these rules because breaking them would quietly defeat the 
 2. **Exit code `2` is an infrastructure failure, not a clean run.** It means the
    corpus was empty and nothing was checked. Exit `1` means new findings; exit
    `0` means genuinely clean.
-3. **It proposes every new deduplicated finding group.** Proposed issues are inert
-  until the owner adds `owner:ready`, so completeness here does not authorize or
-  dispatch work. Existing fingerprints are skipped or reopened rather than duplicated.
+3. **It proposes every new deduplicated finding group.** Audit bugs are eligible
+  for routine multiagent pickup, but the controller still runs only when the owner
+  starts or resumes it. Existing fingerprints are skipped or reopened rather than
+  duplicated.
 
 Deduplication survives a wiped runtime directory because the fingerprint lives in
 the issue body, not on disk:

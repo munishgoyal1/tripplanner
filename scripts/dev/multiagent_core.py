@@ -21,10 +21,12 @@ SCHEMA_VERSION = 1
 # Owner labels are additive facts. None of them is ever removed to record
 # progress; they say what was decided, not where the work has reached.
 READY = "owner:ready"
+APPROVAL_REQUIRED = "owner:approval-required"
 PROPOSED = "owner:proposed"
 WITHDRAWN = "owner:withdrawn"
 DECISION_NEEDED = "owner:decision-needed"
 AUDIT_SOURCE = "source:audit"
+BUG = "bug"
 
 # Agent labels are mutually exclusive states: exactly one at a time.
 QUEUED = "agent:queued"
@@ -176,8 +178,6 @@ def exclusion_reason(issue: Issue) -> str | None:
     """Why this issue may not be dispatched, or None when it may."""
     if issue.state not in ("open", "OPEN".lower()):
         return "closed"
-    if READY not in issue.labels:
-        return f"no {READY}"
     if WITHDRAWN in issue.labels:
         return f"{WITHDRAWN} revoked authorisation"
     if DECISION_NEEDED in issue.labels:
@@ -185,6 +185,11 @@ def exclusion_reason(issue: Issue) -> str | None:
     claimed = next((label for label in CLAIMED_STATES if label in issue.labels), None)
     if claimed:
         return f"already {claimed}"
+    if APPROVAL_REQUIRED in issue.labels and READY not in issue.labels:
+        return f"waiting for {READY}"
+    routine_work = QUEUED in issue.labels or (BUG in issue.labels and AUDIT_SOURCE in issue.labels)
+    if READY not in issue.labels and not routine_work:
+        return "not queued for multiagent work"
     return None
 
 

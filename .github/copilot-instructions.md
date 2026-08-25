@@ -97,7 +97,8 @@ Create issues only for these durable intake paths:
 
 An immediate in-chat fix that happens to reveal a separate deferred item may
 create an issue for that deferred item only; the current fix remains chat-local.
-These rules never authorise any agent to add `owner:ready`.
+These rules never authorise any agent to add `owner:ready` or
+`owner:approval-required`.
 
 - When work already has an issue, see what other lanes hold before claiming it:
   `gh issue list --state open --label "agent:in-progress"`.

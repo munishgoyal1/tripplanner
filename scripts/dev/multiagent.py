@@ -1,13 +1,14 @@
-"""Coordinate bounded agent workers over owner-approved GitHub issues.
+"""Coordinate bounded agent workers over ready GitHub issues.
 
     python scripts/dev/multiagent.py status
     python scripts/dev/multiagent.py plan
     python scripts/dev/multiagent.py start
     python scripts/dev/multiagent.py audit --dry-run
 
-Nothing here dispatches work the owner did not authorise: an issue is only
-eligible while it carries the ``owner:ready`` label. The pure selection,
-collision, and fingerprint logic lives in ``multiagent_core.py``.
+Routine queued work and audit bugs are eligible by default. Work carrying
+``owner:approval-required`` stays held until the owner adds ``owner:ready``.
+The pure selection, collision, and fingerprint logic lives in
+``multiagent_core.py``.
 """
 
 from __future__ import annotations
@@ -238,6 +239,16 @@ def gh_issues(repo: str, labels: list[str], *, state: str = "open") -> list[core
     if result.returncode != 0:
         raise RuntimeError(f"gh issue list failed: {result.stderr.strip()}")
     return [core.Issue.from_api(item) for item in json.loads(result.stdout or "[]")]
+
+
+def dispatchable_issues(repo: str) -> list[core.Issue]:
+    """Return open issues that the multiagent intake policy permits."""
+    candidates = {
+        issue.number: issue
+        for label in (core.QUEUED, core.AUDIT_SOURCE, core.READY)
+        for issue in gh_issues(repo, [label])
+    }
+    return [issue for issue in candidates.values() if core.eligible(issue)]
 
 
 def gh_relabel(repo: str, number: int, *, add: list[str] = (), remove: list[str] = ()) -> None:
@@ -649,7 +660,7 @@ def dispatch(space: Workspace, state: core.State, repo: str) -> None:
     if not free:
         return
 
-    issues = gh_issues(repo, [core.READY])
+    issues = dispatchable_issues(repo)
     busy: list[core.Footprint] = []
     for assignment in state.active():
         issue = next((item for item in issues if item.number == assignment.issue), None)
@@ -922,14 +933,14 @@ def cmd_status(space: Workspace, args: argparse.Namespace) -> int:
     log(_BAR)
     try:
         waiting = gh_issues(repo, [core.DECISION_NEEDED])
-        ready = gh_issues(repo, [core.READY])
+        ready = dispatchable_issues(repo)
     except RuntimeError as error:
         log(f"GitHub unavailable: {error}")
         return 1
     log(f"Waiting on you: {len(waiting)} issue(s)")
     for issue in waiting:
         log(f"  #{issue.number} {issue.title[:60]}")
-    log(f"Authorised and open: {len(ready)} issue(s)")
+    log(f"Ready for multiagent: {len(ready)} issue(s)")
     log(_BAR)
     log("Recovery: Stop-Multiagent, then Start-Multiagent. Worktrees and branches are kept.")
     return 0
@@ -938,9 +949,9 @@ def cmd_status(space: Workspace, args: argparse.Namespace) -> int:
 def cmd_plan(space: Workspace, args: argparse.Namespace) -> int:
     state = load_state(space)
     repo = space.repo()
-    issues = gh_issues(repo, [core.READY])
+    issues = dispatchable_issues(repo)
     if not issues:
-        log(f"Nothing carries {core.READY}. Add it to an issue to authorise implementation.")
+        log("No routine queued, audit bug, or owner-approved issue is ready.")
         return 0
     capacity = SLOT_COUNT - len(state.busy_slots())
     busy = tuple(
@@ -950,7 +961,7 @@ def cmd_plan(space: Workspace, args: argparse.Namespace) -> int:
         if issue.number == assignment.issue
     )
     plan = core.plan_dispatch(issues, capacity=capacity, busy=busy)
-    log(f"{len(issues)} authorised issue(s); {capacity} free slot(s).")
+    log(f"{len(issues)} ready issue(s); {capacity} free slot(s).")
     log(_BAR)
     for issue in plan.dispatch:
         paths = ", ".join(core.declared_paths(issue.body)[:3]) or "no declared paths"
@@ -1038,7 +1049,7 @@ def cmd_start(space: Workspace, args: argparse.Namespace) -> int:
     log(f"Controller started (pid {process.pid}).")
     log(f"  worktrees  {space.root}")
     log(f"  log        {space.runtime / 'controller.log'}")
-    log("  dispatch   only issues carrying owner:ready")
+    log("  dispatch   routine queued work, audit bugs, and owner-approved gated work")
     if not args.no_chat:
         cmd_coordinator(space, args)
     return 0
@@ -1121,7 +1132,8 @@ def cmd_coordinator(space: Workspace, args: argparse.Namespace) -> int:
         "request in that Coordinator lane, never directly in primary master, the integration "
         "lane, a worker slot, or a sandbox. Read "
         "docs/development/multiagent-coordination.md, then report: issues waiting on my "
-        "decision (owner:decision-needed), what is authorised (owner:ready), and what the "
+        "decision (owner:decision-needed), what is explicitly approval-gated "
+        "(owner:approval-required without owner:ready), what is ready for pickup, and what the "
         "controller is doing (scripts/dev/multiagent.py status). Help me draft requirements "
         "and answer blocked issues. Every fix I request in this chat is owned by this coordinator "
         "by default, regardless of size. Do not create an issue, dispatch a "
@@ -1129,7 +1141,7 @@ def cmd_coordinator(space: Workspace, args: argparse.Namespace) -> int:
         "owner request that may edit files, require a clean Coordinator worktree and merge current "
         "origin/master. After the fix, validate and commit, then run Publish-Coordinator to merge "
         "through a PR and synchronize primary master plus every registered sandbox. Never add "
-        "owner:ready yourself."
+        "owner:ready or owner:approval-required yourself."
     )
     opened = run(
         ["code", "chat", "-m", "autopilot", "--reuse-window", prompt],
@@ -1312,7 +1324,7 @@ def cmd_audit(space: Workspace, args: argparse.Namespace) -> int:
         ])
         log(f"  proposed       {mark}  {created.stdout.strip() or created.stderr.strip()}")
 
-    log("Nothing is authorised. Add owner:ready to whichever should be built.")
+    log("Audit bugs are ready for multiagent pickup unless explicitly blocked.")
     return 0
 
 

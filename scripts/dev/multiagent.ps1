@@ -7,9 +7,10 @@
   Thin dispatcher over scripts/dev/multiagent.py using the repository virtual
   environment when one is present.
 
-  The coordinator only ever dispatches issues carrying the owner:ready label,
-  works in its own worktrees under <primary>.worktrees/multiagent, and never
-  touches a sandbox, a port, or a deployment.
+    The coordinator dispatches routine queued work, audit bugs, and explicitly
+    approved gated work. It works in its own worktrees under
+    <primary>.worktrees/multiagent and never touches a sandbox, a port, or a
+    deployment.
 #>
 
 [CmdletBinding()]

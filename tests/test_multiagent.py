@@ -61,16 +61,31 @@ def assignment(issue_number: int, session_id: str) -> object:
     )
 
 
-# --- authorisation -----------------------------------------------------------
+# --- intake and authorisation ------------------------------------------------
 
 
-def test_only_owner_ready_authorises_dispatch() -> None:
-    """Proposing work is not approving it."""
+def test_unqueued_proposal_is_not_dispatched() -> None:
     proposed = issue(1, core.PROPOSED)
-    approved = issue(2, core.PROPOSED, core.READY)
 
     assert not core.eligible(proposed)
-    assert core.exclusion_reason(proposed) == f"no {core.READY}"
+    assert core.exclusion_reason(proposed) == "not queued for multiagent work"
+
+
+def test_routine_bug_or_task_is_ready_for_multiagent_pickup() -> None:
+    assert core.eligible(issue(1, core.BUG, core.QUEUED))
+    assert core.eligible(issue(2, core.QUEUED))
+
+
+def test_audit_bug_is_ready_without_owner_approval() -> None:
+    assert core.eligible(issue(1, core.BUG, core.PROPOSED, core.AUDIT_SOURCE))
+
+
+def test_approval_gate_requires_owner_ready() -> None:
+    gated = issue(1, core.PROPOSED, core.APPROVAL_REQUIRED)
+    approved = issue(2, core.PROPOSED, core.APPROVAL_REQUIRED, core.READY)
+
+    assert not core.eligible(gated)
+    assert core.exclusion_reason(gated) == f"waiting for {core.READY}"
     assert core.eligible(approved)
 
 
@@ -147,8 +162,7 @@ def test_a_claim_by_any_lane_excludes_the_issue() -> None:
 
 
 def test_the_manual_queue_label_does_not_block_the_multiagent_queue() -> None:
-    """agent:queued belongs to the manual lanes; owner:ready is this queue."""
-    assert core.eligible(issue(1, core.READY, core.QUEUED))
+    assert core.eligible(issue(1, core.QUEUED))
 
 
 # --- collisions --------------------------------------------------------------
