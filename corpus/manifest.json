@@ -2099,6 +2099,32 @@
       "at": "2026-08-24T16:36:30.735932+00:00",
       "generation_run_id": "2026-08-24T162247.964552Z",
       "generated_by_commit": "ffc3e13c50bca19d989261f9354183b390d7affe"
+    },
+    {
+      "slug": "india-golden-triangle-heritage-young-family-5d",
+      "shape": "India: Delhi, Agra and Jaipur, history and culture, young-family, 5 days",
+      "trip_id": "delhi_agra_jaipur_2027-02-05_2027-02-10",
+      "days": 6,
+      "stops": 29,
+      "spent_inr": 58.45,
+      "seconds": 599.4,
+      "user_id": "corpus-india-golden-triangle-heritage-young-family-5d-aa6d1857b973",
+      "destination": "india:golden-triangle",
+      "emphasis": "heritage",
+      "party": "young-family",
+      "signature": "india:golden-triangle|heritage|young-family|5",
+      "scenario_expectations": [
+        "Keep the trip within Delhi, Agra and Jaipur.",
+        "Plan appropriately for 2 adults and 2 children aged 4 and 8.",
+        "Focus on history, architecture, museums and local culture.",
+        "Keep the requested 5-day duration.",
+        "Heuristic audience rationale: A first-time family circuit needs paced transfers.",
+        "Evidence posture (high inclusion; medium shape): Official UP district data records 11,138,316 domestic and 970,901 foreign tourist visits to Agra in 2023; circuit shape is an inference."
+      ],
+      "budget_evidence_required": false,
+      "at": "2026-08-25T12:52:15.807456+00:00",
+      "generation_run_id": "2026-08-25T124215.727244Z",
+      "generated_by_commit": "97b572dcf8cad104d6e9b216e5d78529c52b997e"
     }
   ]
 }
