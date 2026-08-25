@@ -146,7 +146,19 @@ audit-fingerprint: I9/3f2a1c8b
 
 Before creating anything the producer searches open **and closed** issues for that
 marker. A finding that recurs after being closed reopens the original issue with a
-comment instead of opening a duplicate.
+comment instead of opening a duplicate. On either match, the producer refreshes
+the issue body from current audit evidence, so older terse proposals gain the
+same triage context without creating replacement issues.
+
+Audit proposals are owner-triage records, not terse machine alerts. Each issue
+includes the rule's expected traveller experience, the observed UX symptom,
+severity and evaluator, a representative destination/date/day/provenance/record,
+and a direct local product link when the persisted trip is still openable. The
+example remains fenced as untrusted trip data. A screenshot is embedded when the
+audit input supplies a durable HTTPS `screenshot_url`; otherwise the issue says
+explicitly that no static image was published and points to the authoritative
+local trip or Inspector record. The read-only producer never fabricates a visual,
+starts a stack, or commits screenshot files merely to decorate an issue.
 
 Corpus generation spends real money and needs a running API, so it is never part
 of the automatic loop. The owner runs `Refresh-Audit-Corpus.command` when fresh

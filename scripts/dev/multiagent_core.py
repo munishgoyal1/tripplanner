@@ -14,6 +14,7 @@ import hashlib
 import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
+from urllib.parse import urlencode
 
 SCHEMA_VERSION = 1
 
@@ -309,17 +310,83 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
     mark = fingerprint(str(group.get("rule", "?")), str(group.get("example", "")))
     example = redact(str(group.get("example", "")).strip())
     provenance = ", ".join(sorted(sources)) or "unknown"
+    representative = group.get("representative") or {}
+    day = representative.get("day")
+    dates = " to ".join(
+        value
+        for value in (
+            str(representative.get("departure_date") or ""),
+            str(representative.get("return_date") or ""),
+        )
+        if value
+    )
+    details = [
+        f"- **Destination:** {redact(str(representative.get('destination') or 'unknown'))}",
+        f"- **Trip dates:** {dates or 'not recorded'}",
+        f"- **Affected day:** {day if day is not None else 'whole trip or not day-specific'}",
+        f"- **Evidence source:** {redact(str(representative.get('provenance') or 'unknown'))}",
+        f"- **Record:** `{redact(str(representative.get('record_id') or 'unknown'))}`",
+    ]
+    review_lines: list[str] = []
+    if representative.get("openable"):
+        query = urlencode(
+            {
+                "inspect": str(representative.get("user_id") or ""),
+                "trip": str(representative.get("trip_id") or ""),
+            }
+        )
+        review_lines.extend(
+            (
+                f"[Open the representative trip locally](http://localhost:5173/?{query})",
+                "",
+                "Start the primary stack first if it is not already running. The link opens the",
+                "persisted trip under its owning local identity; inspect Itinerary, Map, Details,",
+                "and Assistant wherever the observed symptom is visible.",
+            )
+        )
+    else:
+        review_lines.append(
+            "This exemplar is a historical or file-backed record and cannot be opened directly "
+            "in the product UI. Use its record ID in the Audit Inspector."
+        )
+    screenshot_url = redact(str(group.get("screenshot_url") or "").strip())
+    screenshot_lines = (
+        [f"![Representative audit screenshot]({screenshot_url})"]
+        if screenshot_url
+        else [
+            "No static screenshot was published for this read-only audit finding. The local trip",
+            "link above is the authoritative visual evidence when available.",
+        ]
+    )
     return "\n".join(
-        (
+        [
             f"The trip audit found {group.get('count', 0)} occurrence(s) of rule "
             f"`{group.get('rule', '?')}` across {corpus_size} stored trip(s).",
             "",
             "This was produced by a deterministic read-only audit. Nothing has been",
             "authorised: add `owner:ready` if it should be fixed.",
             "",
-            "**Rule:** " + str(group.get("symptom") or group.get("rule", "?")),
+            f"**Rule:** {group.get('rule', '?')} - "
+            + str(group.get("title") or group.get("symptom") or "Unnamed rule"),
+            "**Expected traveller experience:** "
+            + str(group.get("statement") or "The audited rule should pass."),
+            "**Observed UX symptom:** " + str(group.get("symptom") or "Unknown"),
+            f"**Severity:** {group.get('severity') or 'not classified'}",
+            f"**Evaluated in:** `{group.get('evaluated_in') or 'unknown'}`",
             f"**Occurrences:** {group.get('count', 0)}",
             f"**Read from:** {provenance}",
+            "",
+            "### Representative trip",
+            "",
+            *details,
+            "",
+            "### UX review",
+            "",
+            *review_lines,
+            "",
+            "### Screenshot",
+            "",
+            *screenshot_lines,
             "",
             "### Example, as recorded",
             "",
@@ -336,7 +403,7 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
             "```",
             "",
             f"audit-fingerprint: {mark}",
-        )
+        ]
     )
 
 

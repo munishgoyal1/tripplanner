@@ -77,6 +77,41 @@ def _print_report(result: runner.AuditResult, *, show_all: bool, rule: str) -> N
         print(f"    first seen in {item.exemplar.record_id}")
 
 
+def _issue_group(item: findings_module.Group, result: runner.AuditResult) -> dict[str, object]:
+    """Project one finding into the owner-facing evidence needed for triage."""
+    exemplar = item.exemplar
+    rule = registry_module.rule_for(item.rule)
+    record = next(
+        (candidate for candidate in result.records if candidate.id == exemplar.record_id),
+        None,
+    )
+    plan = record.plan if record else {}
+    user_id = str(plan.get("user_id") or "")
+    trip_id = str(plan.get("trip_id") or "")
+    return {
+        "rule": item.rule,
+        "title": rule.title if rule else item.rule,
+        "statement": rule.statement if rule else "",
+        "severity": rule.severity if rule else "",
+        "evaluated_in": rule.evaluated_in if rule else "",
+        "symptom": item.symptom,
+        "count": item.count,
+        "example": exemplar.message,
+        "new": item in result.new,
+        "representative": {
+            "record_id": exemplar.record_id,
+            "day": exemplar.day,
+            "provenance": exemplar.provenance,
+            "destination": record.destination if record else "",
+            "departure_date": str(plan.get("departure_date") or ""),
+            "return_date": str(plan.get("return_date") or ""),
+            "user_id": user_id,
+            "trip_id": trip_id,
+            "openable": bool(user_id and trip_id),
+        },
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--all", action="store_true", help="show every finding, not just new ones")
@@ -115,16 +150,7 @@ def main(argv: list[str] | None = None) -> int:
                     "provenance": result.provenance_mix,
                     "sources": result.sources,
                     "skipped": result.skipped,
-                    "groups": [
-                        {
-                            "rule": item.rule,
-                            "symptom": item.symptom,
-                            "count": item.count,
-                            "example": item.exemplar.message,
-                            "new": item in result.new,
-                        }
-                        for item in result.groups
-                    ],
+                    "groups": [_issue_group(item, result) for item in result.groups],
                 },
                 indent=2,
                 ensure_ascii=False,
