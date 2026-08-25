@@ -35,6 +35,7 @@ from tripplanner.web.place_confidence import (
 )
 from tripplanner.web.schedule import (
     _INTERCITY_SPEED_KMH,
+    MAX_GROUND_LEG_KM,
     _apply_saved_transfer_metrics,
     _haversine_km,
     _route_duration_display,
@@ -50,6 +51,7 @@ from tripplanner.web.transport import (
 )
 
 _MAX_OVERVIEW_ATTRACTIONS = 6
+_LOCAL_MODES = frozenset({"Walk", "Taxi"})
 
 
 def build_map_url(destination: str, highlights: list[str] | None = None) -> str:
@@ -555,6 +557,8 @@ def _route_legs_for_day(
                 from_name=str(start.get("name") or ""),
                 to_name=str(end.get("name") or ""),
             )
+        if metrics["mode"] in _LOCAL_MODES and distance > MAX_GROUND_LEG_KM:
+            continue
         circuit_id = (route_circuit_ids or {}).get((from_id, to_id))
         legs.append({
             "from_pin_id": from_id,

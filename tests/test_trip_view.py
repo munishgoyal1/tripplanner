@@ -1868,6 +1868,101 @@ def test_map_view_connects_train_stations_between_stays(
     assert day["legs"][1]["intercity"] is True
 
 
+def test_map_view_renders_shinkansen_between_tokyo_and_kyoto(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Tokyo Railway Station": (35.6812, 139.7671),
+        "Kyoto Railway Station": (34.9858, 135.7588),
+        "Sunroute Plaza Shinjuku": (35.6877, 139.7004),
+        "Hotel Granvia Kyoto": (34.9859, 135.7585),
+        "Gion District": (35.0037, 135.7788),
+    }
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", trip_view.places_cache.get_details)
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "top_places", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Japan (Tokyo & Kyoto)",
+        "selected_hotels": [
+            {"name": "Sunroute Plaza Shinjuku"},
+            {"name": "Hotel Granvia Kyoto"},
+        ],
+        "day_wise_itinerary": [
+            {
+                "day": 4,
+                "stops": [
+                    {"name": "Shinkansen: Tokyo to Kyoto", "kind": "transport"},
+                    {"name": "Sunroute Plaza Shinjuku", "kind": "hotel"},
+                    {"name": "Hotel Granvia Kyoto", "kind": "hotel"},
+                    {"name": "Gion District", "kind": "attraction"},
+                ],
+            }
+        ],
+    }
+
+    day = trip_view.build_map_view(trip)["days"][0]
+
+    assert any(leg["mode"] == "Train" and leg["intercity"] for leg in day["legs"])
+    assert all(
+        leg["distance_km"] <= 300 or leg["mode"] not in {"Walk", "Taxi"}
+        for leg in day["legs"]
+    )
+
+
+def test_map_view_omits_implausibly_long_ground_leg(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Tokyo Hotel": (35.6764, 139.6500),
+        "Kyoto Hotel": (35.0116, 135.7681),
+    }
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", trip_view.places_cache.get_details)
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "top_places", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+    trip = {
+        **SAMPLE_TRIP,
+        "selected_hotels": [{"name": "Tokyo Hotel"}, {"name": "Kyoto Hotel"}],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Tokyo Hotel", "kind": "hotel"},
+                    {"name": "Kyoto Hotel", "kind": "hotel"},
+                ],
+            }
+        ],
+    }
+
+    assert trip_view.build_map_view(trip)["days"][0]["legs"] == []
+
+
 def test_map_view_connects_bus_stands_between_stays(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
