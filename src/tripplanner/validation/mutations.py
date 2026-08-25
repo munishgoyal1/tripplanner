@@ -107,15 +107,16 @@ def drop_last_leg(plan: dict[str, Any]) -> Mutation | None:
 
 
 def reverse_days(plan: dict[str, Any]) -> Mutation | None:
-    """Keep every day, run the trip backwards: the same content, incoherent."""
-    days = _days(plan)
-    if len(days) < 3:
+    """Run the itinerary backwards without detaching a day's evidence from it."""
+    itinerary = plan.get("day_wise_itinerary")
+    if (
+        not isinstance(itinerary, list)
+        or len(itinerary) < 3
+        or any(not isinstance(day, dict) for day in itinerary)
+    ):
         return None
     mutated = copy.deepcopy(plan)
-    entries = _days(mutated)
-    stops = [day.get("stops") for day in entries]
-    for day, reversed_stops in zip(entries, reversed(stops)):
-        day["stops"] = reversed_stops
+    mutated["day_wise_itinerary"].reverse()
     return Mutation("reverse-days", DEGRADING, mutated)
 
 

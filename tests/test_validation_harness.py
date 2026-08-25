@@ -595,6 +595,74 @@ def test_break_time_order_introduces_a_new_chronology_defect() -> None:
     assert mutation.plan["day_wise_itinerary"][1]["stops"][-1]["time"] == "00:05"
 
 
+def test_reverse_days_keeps_each_days_findings_attached_to_its_evidence() -> None:
+    plan = _plan(
+        destination="New York",
+        departure_date="2027-10-11",
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "date": "2027-10-11",
+                "title": "Arrival",
+                "stops": [{"name": "Hotel", "kind": "hotel"}],
+            },
+            {
+                "day": 2,
+                "date": "2027-10-12",
+                "title": "Museum day",
+                "stops": [
+                    {"name": "Closed Museum", "kind": "attraction", "time": "10:00"},
+                    {"name": "Central Park", "kind": "attraction", "time": "14:00"},
+                ],
+            },
+            {
+                "day": 3,
+                "date": "2027-10-13",
+                "title": "Market day",
+                "stops": [{"name": "Market", "kind": "attraction", "time": "10:00"}],
+            },
+            {
+                "day": 4,
+                "date": "2027-10-14",
+                "title": "Departure",
+                "stops": [{"name": "Hotel", "kind": "hotel"}],
+            },
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="new-york",
+        provenance=corpus.REAL,
+        source="test",
+        plan=plan,
+        places={
+            "closed museum|new york": {
+                "name": "Closed Museum",
+                "lat": 40.0,
+                "lng": -74.0,
+                "weekday_descriptions": ["Tuesday: Closed"],
+            }
+        },
+    )
+
+    mutation = mutations.reverse_days(plan)
+
+    assert mutation is not None
+    assert [day["day"] for day in mutation.plan["day_wise_itinerary"]] == [4, 3, 2, 1]
+    assert mutation.plan["day_wise_itinerary"][2] == plan["day_wise_itinerary"][1]
+    before = {finding.key for finding in check_record(record)}
+    after = {
+        finding.key
+        for finding in check_record(dataclasses.replace(record, plan=mutation.plan))
+    }
+    assert any(key.startswith("I11|") for key in before)
+    assert before <= after
+    assert not [
+        finding
+        for finding in mutations.check_metamorphic(record)
+        if finding.rule == mutations.RULE_QUIETER and "reverse-days" in finding.message
+    ]
+
+
 def test_drop_first_leg_is_not_unnoticed_without_hotel_rows() -> None:
     record = _record(
         destination="Spiti Valley",
