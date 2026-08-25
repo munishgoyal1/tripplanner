@@ -306,33 +306,36 @@ as the next attempt to whichever slot is free — slots are interchangeable.
 
 - Integration merges the **exact pushed SHA**, never a branch name that may have
   moved.
-- `multiagent/integration` is long-lived. On every idle controller cycle, the
-  controller fetches `origin/master`; when it has advanced, the controller merges
-  it, validates the combined tree, records that exact HEAD as the baseline, and
-  pushes the integration branch. The same reconciliation therefore always
-  happens before the first dispatch of a new batch.
-- Every worker in a live batch uses that immutable baseline. The controller does
+- `multiagent/integration` is long-lived. Before assigning any newly free slot,
+  the controller fetches `origin/master`; when it has advanced, the controller
+  merges it, validates the combined tree, records that exact HEAD as the baseline,
+  and pushes the integration branch.
+- Every assignment records and keeps its own immutable baseline. A later dispatch
+  round may start from a newer master-containing baseline, but the controller does
   not move a running worker's files when another sandbox lands on `master`.
 - Reusable slot worktrees are parked on tracked `multiagent/slot-<s>` branches
-  whenever an assignment releases them and whenever the idle baseline refreshes.
+  whenever an assignment releases them and whenever the integration baseline refreshes.
   A dirty failed attempt is left untouched for recovery; otherwise the same slot
   branch is reset to the validated current baseline with force-with-lease.
-- After a batch merge reaches `origin/master`, the idle reconciliation marks each
+- After a batch merge reaches `origin/master`, reconciliation marks each
   contained `in-pull-request` assignment as `landed`. Historical assignment data
   remains available for retry numbering without appearing as active work.
 - Focused validation runs after each merge. The baseline advances only on success.
 - Because Coordinator and sandbox publication can advance `master`, the batch
   re-syncs with current `origin/master` and re-runs aggregate validation before
-  the PR opens. A batch
-  validated against a stale base is not validated.
+  publication. A batch validated against a stale base is not validated.
 - The PR is **merged, not squashed**, so each worker commit keeps its `Fixes #<n>`
   trailer. The PR body repeats every `Fixes #<n>` as a second guarantee.
+- After aggregate validation, the controller opens and merges the batch PR itself.
+  A failed or pending publication blocks new dispatch rather than allowing more
+  accepted work to accumulate behind it.
 - Issues close when the PR reaches `master`. An accepted integration commit is not
   a closed issue.
 - **Publication cannot wait for an idle controller.** A continuously refilled
   queue is never idle, so accepted work would accumulate on the integration
-  branch forever. The batch publishes when the controller goes idle, or once
-  three fixes are waiting, or once accepted work has waited thirty minutes.
+  branch forever. One publication round is at most the three worker slots: the
+  batch publishes when the controller goes idle, once three fixes are waiting,
+  or once accepted work has waited ten minutes.
 
 ### Validation
 
