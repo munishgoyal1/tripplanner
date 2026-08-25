@@ -257,6 +257,25 @@ def test_liteapi_maps_204_to_no_hotel_availability(monkeypatch):
     )
 
 
+def test_liteapi_does_not_invent_hotel_code_for_unsupported_destination(monkeypatch):
+    def unexpected_request(*args, **kwargs):
+        raise AssertionError("unsupported destinations must fall through to another provider")
+
+    monkeypatch.setattr(http_client, "post", unexpected_request)
+    provider = LiteAPIProvider("secret", "https://api.liteapi.travel/v3.0")
+
+    assert (
+        provider.search_hotels(
+            HotelSearchQuery(
+                destination="Gokarna",
+                checkin="2027-01-14",
+                checkout="2027-01-21",
+            )
+        )
+        == []
+    )
+
+
 def test_hotel_search_records_the_exact_compared_candidates(monkeypatch):
     class Hotels:
         name = "stub-hotels"
@@ -318,6 +337,29 @@ def test_hotel_search_records_the_exact_compared_candidates(monkeypatch):
     }
     refs = {option.lodging.provider_ref["offer_id"] for option in saved["decision"].options}
     assert refs == {"offer-1", "offer-2"}
+
+
+def test_hotel_search_exposes_empty_provider_result_to_completion_fallback(monkeypatch):
+    class EmptyHotels:
+        name = "empty-hotels"
+
+        def search_hotels(self, query):
+            return []
+
+    hotel_search._HOTEL_RESULT_CACHE.clear()
+    monkeypatch.setattr(hotel_search, "get_hotel_providers", lambda: [EmptyHotels()])
+
+    result = hotel_search.search_hotels.invoke(
+        {
+            "city": "Gokarna",
+            "checkin": "2027-01-14",
+            "checkout": "2027-01-21",
+        }
+    )
+
+    assert result == (
+        "No hotels found for Gokarna. Provider details: empty-hotels: no availability"
+    )
 
 
 def test_liteapi_normalizes_flight_search_and_verify(monkeypatch):
