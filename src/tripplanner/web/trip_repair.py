@@ -20,6 +20,8 @@ from tripplanner.decisions.store import list_decisions
 from tripplanner.tools import trip_guard, trip_rebalance
 from tripplanner.web.place_confidence import confirmed_bindings
 
+_BLOCKABLE_CODES = trip_guard.KNOWN_FACT_CODES | {"I4", "I5"}
+
 
 def _overridden_decisions(plan: dict[str, Any]) -> set[str]:
     return {
@@ -36,23 +38,52 @@ def pinned_for(plan: dict[str, Any]) -> dict[tuple[int, str], authorship.Ownersh
     )
 
 
+def _owned_stop_for(
+    plan: dict[str, Any],
+    violation: trip_guard.Violation,
+    pinned: dict[tuple[int, str], authorship.Ownership],
+) -> tuple[tuple[int, str], authorship.Ownership] | None:
+    if violation.day is None:
+        return None
+    key = (violation.day, violation.stop or "")
+    owned = pinned.get(key)
+    if owned is not None:
+        return key, owned
+    if violation.code != "I5":
+        return None
+    for day, _entry, stops in trip_guard.days_of(plan):
+        if day != violation.day:
+            continue
+        timed = sorted(
+            (stop for stop in stops if trip_guard._time_of(stop) is not None),
+            key=lambda stop: trip_guard._time_of(stop) or 0,
+        )
+        for current, following in zip(timed, timed[1:]):
+            if trip_guard._stop_name(following) != violation.stop:
+                continue
+            preceding = (day, trip_guard._stop_name(current))
+            if preceding in pinned:
+                return preceding, pinned[preceding]
+    return None
+
+
 def blocked_findings(
     plan: dict[str, Any], pinned: dict[tuple[int, str], authorship.Ownership]
 ) -> list[dict[str, Any]]:
     """Contradictions the planner is not allowed to repair on its own."""
     out: list[dict[str, Any]] = []
     for violation in trip_guard.validate_plan(plan):
-        if violation.code not in trip_guard.KNOWN_FACT_CODES:
+        if violation.code not in _BLOCKABLE_CODES:
             continue
-        key = (violation.day, violation.stop or "")
-        owned = pinned.get(key)  # type: ignore[arg-type]
-        if owned is None:
+        blocked = _owned_stop_for(plan, violation, pinned)
+        if blocked is None:
             continue
+        key, owned = blocked
         out.append(
             {
                 "code": violation.code,
-                "day": violation.day,
-                "stop": violation.stop,
+                "day": key[0],
+                "stop": key[1],
                 "message": violation.message,
                 "reason": owned.reason,
             }
@@ -60,11 +91,32 @@ def blocked_findings(
     return out
 
 
-def repair(plan: dict[str, Any], *, budget_ms: int = 400) -> dict[str, Any]:
+def repair(
+    plan: dict[str, Any],
+    *,
+    budget_ms: int = 400,
+    only_codes: set[str] | frozenset[str] | None = None,
+) -> dict[str, Any]:
     """Rearrange what the planner owns; report what it may not touch."""
     pinned = pinned_for(plan)
+    rebalance_pins = set(pinned)
+    if only_codes is not None:
+        movable = {
+            (violation.day, violation.stop or "")
+            for violation in trip_guard.validate_plan(plan)
+            if violation.day is not None and violation.code in only_codes
+        }
+        rebalance_pins.update(
+            (day, trip_guard._stop_name(stop))
+            for day, _entry, stops in trip_guard.days_of(plan)
+            for stop in stops
+            if (day, trip_guard._stop_name(stop)) not in movable
+        )
     result = trip_rebalance.rebalance(
-        plan, pinned=set(pinned), budget_ms=budget_ms
+        plan,
+        pinned=rebalance_pins,
+        priority_codes=only_codes or frozenset(),
+        budget_ms=budget_ms,
     )
     blocked = blocked_findings(result.plan, pinned)
     return {

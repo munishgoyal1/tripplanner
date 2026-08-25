@@ -81,7 +81,7 @@
           "note": "Private car or train, comfortable morning journey"
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Radisson Blu Plaza Hotel Mysore",
           "kind": "hotel",
           "time": "11:30",
           "note": "Check-in and settle"
@@ -102,7 +102,7 @@
       "summary": "Visit the iconic Mysore Palace in the morning, free afternoon for leisure or hotel amenities.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Radisson Blu Plaza Hotel Mysore",
           "kind": "hotel",
           "time": "08:00",
           "note": "Start from hotel"
@@ -115,7 +115,7 @@
           "note": "Guided tour"
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Radisson Blu Plaza Hotel Mysore",
           "kind": "hotel",
           "time": "12:00",
           "note": "Return for free afternoon"
@@ -129,7 +129,7 @@
       "summary": "Morning visit to Chamundi Hill and temple, afternoon free for rest or spa.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Radisson Blu Plaza Hotel Mysore",
           "kind": "hotel",
           "time": "08:00",
           "note": "Start from hotel"
@@ -142,7 +142,7 @@
           "note": "Temple visit and scenic views"
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Radisson Blu Plaza Hotel Mysore",
           "kind": "hotel",
           "time": "11:30",
           "note": "Return for free afternoon"
@@ -156,7 +156,7 @@
       "summary": "Visit Mysore Zoo and Jaganmohan Palace Art Gallery in the morning, afternoon free.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Radisson Blu Plaza Hotel Mysore",
           "kind": "hotel",
           "time": "08:00",
           "note": "Start from hotel"
@@ -176,7 +176,7 @@
           "note": "Art and history"
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Radisson Blu Plaza Hotel Mysore",
           "kind": "hotel",
           "time": "12:30",
           "note": "Return for free afternoon"
@@ -190,7 +190,7 @@
       "summary": "Visit St. Philomena’s Church, check out, return to Bangalore.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Radisson Blu Plaza Hotel Mysore",
           "kind": "hotel",
           "time": "08:00",
           "note": "Check out"

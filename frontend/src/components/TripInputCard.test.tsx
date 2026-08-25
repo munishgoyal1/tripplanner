@@ -73,4 +73,37 @@ describe("TripInputCard trip facts", () => {
     expect(answer).toContain("Start date: 2026-11-12");
     expect(answer).toContain("Travelling from: not specified");
   });
+
+  it("requires a city unless the traveller arranges their own arrival", () => {
+    const onSubmit = vi.fn();
+    const travelRequest: TripInputRequest = {
+      ...request,
+      fields: [
+        ...request.fields.slice(0, 3),
+        {
+          id: "travel_scope",
+          label: "Journey to the destination",
+          kind: "single",
+          value: "round_trip",
+          options: [
+            { value: "round_trip", label: "Plan it from my city" },
+            { value: "destination_only", label: "I'll arrange my own way there" },
+          ],
+        },
+        request.fields[5],
+      ],
+      allow_skip: false,
+    };
+    render(<TripInputCard request={travelRequest} onSubmit={onSubmit} onSkip={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: /Use these and continue/ })).toBeDisabled();
+    fireEvent.click(screen.getByRole("radio", { name: "I'll arrange my own way there" }));
+    expect(screen.queryByLabelText("Travelling from")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Use these and continue/ }));
+
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({
+      travel_scope: "destination_only",
+      origin: "",
+    }));
+  });
 });

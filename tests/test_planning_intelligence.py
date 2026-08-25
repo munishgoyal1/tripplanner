@@ -8,7 +8,10 @@ from tripplanner.planning_intelligence import (
     recommend_trip_shape,
 )
 from tripplanner.tools import trip_shape
-from tripplanner.tools.trip_planner import planning_completion_gaps
+from tripplanner.tools.trip_planner import (
+    core_planning_completion_gaps,
+    planning_completion_gaps,
+)
 
 
 def _balanced_preferences() -> dict:
@@ -219,9 +222,13 @@ def test_advisor_enabled_plan_flags_sparse_days_without_affecting_legacy() -> No
     }
 
     assert any("Sparse itinerary" in gap for gap in planning_completion_gaps(plan))
+    assert any("Sparse itinerary" in gap for gap in core_planning_completion_gaps(plan))
 
     legacy_plan = dict(plan)
     legacy_plan.pop("planning_recommendation")
     assert not any(
         "Sparse itinerary" in gap for gap in planning_completion_gaps(legacy_plan)
+    )
+    assert not any(
+        "Sparse itinerary" in gap for gap in core_planning_completion_gaps(legacy_plan)
     )

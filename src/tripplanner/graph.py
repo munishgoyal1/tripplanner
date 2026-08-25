@@ -450,7 +450,7 @@ def trip_agent(state: AgentState) -> AgentState:
         message_count=len(state["messages"]),
     )
     tools = select_tools(state["messages"], proposal_only=proposal_only)
-    if not interactive_questions:
+    if not interactive_questions and decision.forced_tool != "request_trip_input":
         tools = [tool for tool in tools if tool.name != "request_trip_input"]
     if decision.forced_tool:
         tools = [tool for tool in tools if tool.name == decision.forced_tool]
@@ -485,7 +485,10 @@ def trip_agent(state: AgentState) -> AgentState:
             "Start this new trip with one compact preference review. Call "
             "request_trip_input now. Enumerate the relevant saved preferences and "
             "past-trip signals already applied in known_context_json, and prefill "
-            "useful trip-specific choices. Do not call create_trip_plan yet."
+            "useful trip-specific choices. If no origin or saved home is known, ask "
+            "which city the traveller is coming from or whether they will arrange "
+            "their own way there, using origin and travel_scope fields with no skip. "
+            "Do not call create_trip_plan yet."
         )))
     elif decision.kickoff_tool == "recommend_trip_duration":
         instructions.append(SystemMessage(content=(

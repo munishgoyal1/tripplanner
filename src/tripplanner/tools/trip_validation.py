@@ -282,6 +282,27 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
     itinerary = plan.get("day_wise_itinerary")
     if not isinstance(itinerary, list):
         return warnings
+    warnings.extend(_lodging_name_warnings(plan))
+    missing_days = [
+        violation.day
+        for violation in validate_plan(plan)
+        if violation.code == "I6" and violation.stop is None and violation.day is not None
+    ]
+    if missing_days:
+        warnings.append(
+            f"Day(s) {', '.join(str(day) for day in missing_days)} have no concrete "
+            "lodging anchor for the night."
+        )
+    return warnings
+
+
+def _lodging_name_warnings(
+    plan: dict[str, Any], *, include_placeholders: bool = True
+) -> list[str]:
+    itinerary = plan.get("day_wise_itinerary")
+    if not isinstance(itinerary, list):
+        return []
+    warnings: list[str] = []
     cities = _itinerary_hotel_locations(plan)
     destination = str(plan.get("destination") or "").strip().lower()
     if destination:
@@ -301,7 +322,7 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
             placeholder_days.append(day_num)
         elif any(unnamed_lodging(_stop_name(stop), cities) for stop in stays):
             unnamed_days.append(day_num)
-    if placeholder_days:
+    if include_placeholders and placeholder_days:
         warnings.append(
             f"Hotel placeholders remain on Day(s) {', '.join(placeholder_days)}."
         )
@@ -310,16 +331,6 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
             f"Day(s) {', '.join(unnamed_days)} name no bookable property -- a stay "
             "described only as a hotel in a city cannot be booked, reached, or priced. "
             "Choose a real property, or offer two or three named candidates."
-        )
-    missing_days = [
-        violation.day
-        for violation in validate_plan(plan)
-        if violation.code == "I6" and violation.stop is None and violation.day is not None
-    ]
-    if missing_days:
-        warnings.append(
-            f"Day(s) {', '.join(str(day) for day in missing_days)} have no concrete "
-            "lodging anchor for the night."
         )
     return warnings
 
@@ -434,6 +445,26 @@ def _requested_budget_without_cost_evidence(plan: dict[str, Any]) -> list[str]:
     ]
 
 
+def _itinerary_density_warnings(plan: dict[str, Any]) -> list[str]:
+    recommendation = plan.get("planning_recommendation")
+    if not isinstance(recommendation, dict):
+        return []
+    preferences = dict(plan.get("preferences_snapshot") or {})
+    planning_preferences = dict(preferences.get("planning_preferences") or {})
+    target_minutes = recommendation.get("target_active_minutes_per_full_day")
+    if isinstance(target_minutes, (int, float)):
+        planning_preferences["target_active_minutes_per_full_day"] = target_minutes
+    preferences["planning_preferences"] = planning_preferences
+    assessment = assess_itinerary_density(plan.get("day_wise_itinerary") or [], preferences)
+    if not assessment.sparse_days:
+        return []
+    reasons = "; ".join(day.reason for day in assessment.sparse_days[:3])
+    return [
+        "Sparse itinerary: " + reasons + ". Rebalance meaningful nearby stops "
+        "or explicitly label intentional leisure; do not add filler."
+    ]
+
+
 def has_structured_itinerary(plan: dict[str, Any]) -> bool:
     itinerary = plan.get("day_wise_itinerary")
     return (
@@ -455,8 +486,12 @@ def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
             "day_wise_itinerary before presenting the trip as planned."
         ]
 
+    violations = validate_plan(plan)
     journey_continuity = [
-        violation.message for violation in validate_plan(plan) if violation.code in {"I7", "I9"}
+        violation.message for violation in violations if violation.code in {"I7", "I9"}
+    ]
+    departure_buffers = [
+        violation.message for violation in violations if violation.code == "I5"
     ]
     return [
         *_restaurant_itinerary_warnings(
@@ -464,33 +499,18 @@ def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
             cities=_itinerary_hotel_locations(plan),
             dietary=_dietary_preferences(plan),
         ),
+        *_empty_itinerary_day_warnings(itinerary),
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
         *journey_continuity,
+        *departure_buffers,
         *_requested_budget_without_cost_evidence(plan),
+        *_itinerary_density_warnings(plan),
     ]
 
 
 def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
     """Return actionable gaps that keep a new plan from feeling complete."""
-    density_warnings: list[str] = []
-    recommendation = plan.get("planning_recommendation")
-    if isinstance(recommendation, dict):
-        preferences = dict(plan.get("preferences_snapshot") or {})
-        planning_preferences = dict(preferences.get("planning_preferences") or {})
-        target_minutes = recommendation.get("target_active_minutes_per_full_day")
-        if isinstance(target_minutes, (int, float)):
-            planning_preferences["target_active_minutes_per_full_day"] = target_minutes
-        preferences["planning_preferences"] = planning_preferences
-        assessment = assess_itinerary_density(
-            plan.get("day_wise_itinerary") or [], preferences
-        )
-        if assessment.sparse_days:
-            reasons = "; ".join(day.reason for day in assessment.sparse_days[:3])
-            density_warnings.append(
-                "Sparse itinerary: " + reasons + ". Rebalance meaningful nearby stops "
-                "or explicitly label intentional leisure; do not add filler."
-            )
     # Every other check walks the days, so a trip with none of them reported
     # nothing at all and could be narrated as planned while holding no plan.
     missing_itinerary = (
@@ -519,7 +539,7 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
         *coherence_gaps,
-        *density_warnings,
+        *_itinerary_density_warnings(plan),
     ]
 
 
@@ -583,13 +603,18 @@ def _itinerary_time_errors(itinerary: Any) -> list[str]:
     return errors
 
 
-_PERSISTENCE_SANITY_CODES = frozenset({"I1", "I2", "I3", "I4", "I5", "I7", "I9", "I11"})
+_PERSISTENCE_SANITY_CODES = frozenset(
+    {"I1", "I2", "I3", "I4", "I5", "I6", "I7", "I9", "I11", "I12"}
+)
 
 
 def persistence_sanity_errors(plan: dict[str, Any]) -> list[str]:
     """Authoritative contradictions that must not cross the persistence boundary."""
+    selected_hotels = plan.get("selected_hotels")
+    has_selected_hotel = isinstance(selected_hotels, list) and bool(selected_hotels)
     errors = [
         *_itinerary_time_errors(plan.get("day_wise_itinerary")),
+        *_lodging_name_warnings(plan, include_placeholders=has_selected_hotel),
         *(
             violation.message
             for violation in validate_plan(plan)

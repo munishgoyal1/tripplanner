@@ -170,15 +170,10 @@ def search_hotels(
                 default=str,
             )
         if result.errors:
-            return json.dumps(
-                {
-                    "quote_status": result.quote_status,
-                    "provider": result.provider,
-                    "errors": result.errors,
-                },
-                ensure_ascii=False,
-                default=str,
-            )
+            details = "; ".join(result.errors)
+            if all(error.endswith(": no availability") for error in result.errors):
+                return f"No hotels found for {city}. Provider details: {details}"
+            return f"Hotel search error: {details}"
 
     if not amadeus_client.is_configured():
         places = search_places_with_reviews.invoke(
@@ -231,4 +226,3 @@ def search_hotels(
         return result
     except Exception as e:
         return f"Hotel search error: {e}"
-

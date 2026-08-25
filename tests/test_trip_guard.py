@@ -81,10 +81,75 @@ def test_envelope_reads_both_legs_from_stop_names() -> None:
     assert env.bounded_start and env.bounded_end
 
 
+def test_envelope_prefers_explicit_local_arrival_time() -> None:
+    malaysia = plan(
+        [
+            [
+                {
+                    "name": "Flight: Chennai to Kuala Lumpur",
+                    "kind": "flight",
+                    "time": "06:30",
+                    "arrival_time": "13:00",
+                    "duration_min": 270,
+                },
+                stop("Petronas Twin Towers", "12:00"),
+            ]
+        ],
+        origin="Chennai",
+        destination="Malaysia (Kuala Lumpur & Penang)",
+    )
+
+    env = trip_guard.envelope(malaysia)
+    violations = trip_guard.validate_plan(malaysia)
+
+    assert env.arrival_end == 13 * 60
+    assert any(violation.code == "I1" for violation in violations)
+
+
+def test_envelope_supports_an_overnight_explicit_arrival_time() -> None:
+    overnight = plan(
+        [
+            [
+                {
+                    "name": "Flight: Bengaluru to Indore",
+                    "kind": "flight",
+                    "time": "23:00",
+                    "arrival_time": "01:00",
+                    "duration_min": 120,
+                }
+            ],
+            [stop("Rajwada Palace", "00:30")],
+        ]
+    )
+
+    env = trip_guard.envelope(overnight)
+
+    assert env.arrival_end == 25 * 60
+    assert any(violation.code == "I1" for violation in trip_guard.validate_plan(overnight))
+
+
 def test_a_sound_plan_reports_no_envelope_violation(located: None) -> None:
     codes = {violation.code for violation in trip_guard.validate_plan(ROUND_TRIP)}
     assert "I1" not in codes
     assert "I2" not in codes
+
+
+def test_a_permanently_closed_place_has_no_legal_placement(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        trip_guard,
+        "_summary_for_place",
+        lambda *_args: {"business_status": "CLOSED_PERMANENTLY"},
+    )
+
+    placement, rejections = trip_guard.choose_placement(
+        ROUND_TRIP, "Closed Museum", "attraction"
+    )
+
+    assert placement is None
+    assert rejections
+    assert {rejection.code for rejection in rejections} == {"I12"}
 
 
 def test_a_stop_after_the_flight_home_breaks_the_envelope(located: None) -> None:
@@ -101,6 +166,27 @@ def test_a_stop_after_the_flight_home_breaks_the_envelope(located: None) -> None
     violations = trip_guard.validate_plan(broken)
     assert {violation.code for violation in violations} >= {"I1", "I2"}
     assert any("Mandu Fort" in violation.message for violation in violations)
+
+
+def test_a_home_arrival_endpoint_is_not_destination_activity_after_departure() -> None:
+    returned = plan(
+        [
+            [stop("Drive: Bengaluru to Indore", "08:00", "transport", 600)],
+            [
+                stop("Rajwada Palace", "09:00"),
+                stop("Drive: Indore to Bengaluru", "12:00", "transport", 600),
+                stop("Bengaluru", "22:00", "other"),
+            ],
+        ]
+    )
+
+    violations = trip_guard.validate_plan(returned)
+
+    assert not [
+        violation
+        for violation in violations
+        if violation.code == "I1" and violation.stop == "Bengaluru"
+    ]
 
 
 def test_an_outbound_leg_without_a_return_is_reported() -> None:
@@ -139,6 +225,15 @@ def test_a_regional_outbound_without_a_return_is_reported() -> None:
         destination="Rajasthan",
     )
     assert any(violation.code == "I7" for violation in trip_guard.validate_plan(one_way))
+
+
+def test_a_regional_return_without_an_outbound_is_reported() -> None:
+    return_only = plan(
+        [[stop("Flight Udaipur → Bengaluru", "18:00", "flight", 150)]],
+        destination="Rajasthan",
+    )
+
+    assert any(violation.code == "I7" for violation in trip_guard.validate_plan(return_only))
 
 
 def test_a_leg_between_two_destination_cities_never_bounds_the_trip() -> None:
@@ -186,6 +281,25 @@ def test_a_regional_trip_missing_its_return_is_still_reported() -> None:
     warnings = trip_validation._round_trip_transport_warnings(one_way)
     assert len(warnings) == 1
     assert "back to Bengaluru" in warnings[0]
+
+
+def test_missing_departure_journey_is_a_core_completion_gap() -> None:
+    missing_return = plan(
+        [
+            [
+                stop("Flight Bengaluru -> Indore", "09:00", "flight", 120),
+                stop("Hotel Sayaji", "14:00", "hotel", 45),
+            ],
+            [
+                stop("Hotel Sayaji", "08:00", "hotel", 30),
+                stop("Rajwada Palace", "10:00"),
+            ],
+        ]
+    )
+
+    gaps = trip_validation.core_planning_completion_gaps(missing_return)
+
+    assert any("Departure day has no explicit" in gap for gap in gaps)
 
 
 def test_a_stop_stranded_after_the_flight_home_blocks_completion(located: None) -> None:
@@ -380,6 +494,22 @@ def test_core_completion_requires_cost_evidence_only_for_requested_budget() -> N
     assert trip_validation.core_planning_completion_gaps(complete) == []
 
 
+def test_core_completion_rejects_a_hotel_only_day() -> None:
+    plan = {
+        "destination": "Bali",
+        "origin": "Bali",
+        "day_wise_itinerary": [{
+            "day": 7,
+            "stops": [{"name": "Maya Sanur Resort", "kind": "hotel"}],
+        }],
+        "selected_hotels": [{"name": "Maya Sanur Resort"}],
+    }
+
+    assert trip_validation.core_planning_completion_gaps(plan) == [
+        "Day 7 has no planned places beyond the hotel."
+    ]
+
+
 def test_a_day_cannot_begin_where_the_trip_never_travelled(located: None) -> None:
     stranded = plan(
         [
@@ -425,6 +555,57 @@ def test_continuity_stays_silent_when_a_place_has_no_coordinates() -> None:
     )
     codes = {violation.code for violation in trip_guard.validate_plan(unlocated)}
     assert "I9" not in codes
+
+
+def test_an_unlocated_stop_breaks_the_continuity_chain_across_days(located: None) -> None:
+    partially_located = plan(
+        [
+            [
+                stop("Rajwada Palace", "10:00"),
+                stop("Somewhere Unknown", "18:00", "hotel"),
+            ],
+            [
+                stop("Another Unknown", "09:00", "hotel"),
+                stop("Gateway of India", "10:00"),
+            ],
+        ]
+    )
+
+    codes = {violation.code for violation in trip_guard.validate_plan(partially_located)}
+    assert "I9" not in codes
+
+
+def test_continuity_ignores_coordinates_from_a_different_provider_entity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    summaries = {
+        "Coorg Wilderness Resort": {
+            "name": "Coorg Wilderness Resort",
+            "lat": 12.3375,
+            "lng": 75.8069,
+        },
+        "Dubare Elephant Camp": {
+            "name": "Booking Office of Coorg Dubare Elephant camp",
+            "lat": 12.9710,
+            "lng": 77.6004,
+        },
+    }
+
+    def summary(name: str, _destination: str = "") -> dict[str, object]:
+        return summaries.get(name, {})
+
+    for module in (trip_common, trip_guard):
+        monkeypatch.setattr(module, "_summary_for_place", summary, raising=False)
+
+    coorg_day = plan(
+        [[
+            stop("Coorg Wilderness Resort", "07:30", "hotel"),
+            stop("Dubare Elephant Camp", "09:00"),
+        ]],
+        destination="Coorg",
+    )
+
+    assert not [v for v in trip_guard.validate_plan(coorg_day) if v.code == "I9"]
 
 
 def test_a_stop_far_from_the_one_before_it_is_a_gap_within_the_day(located: None) -> None:
@@ -680,6 +861,94 @@ def test_a_preferred_day_restricts_the_search_to_that_day(located: None) -> None
     assert placement is not None and placement.day == 2
 
 
+def test_placement_waits_until_an_evening_place_opens(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    evening_hours = [
+        f"{day}: 6:00 PM - 11:00 PM"
+        for day in (
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        )
+    ]
+    monkeypatch.setattr(
+        trip_guard,
+        "_summary_for_place",
+        lambda name, _destination="": {
+            "name": name,
+            "weekday_descriptions": evening_hours,
+        },
+    )
+    itinerary = plan(
+        [[]],
+        departure_date="2026-09-07",
+        origin="",
+        travel_scope="destination_only",
+    )
+
+    placement, rejections = trip_guard.choose_placement(
+        itinerary,
+        "Sarafa Bazaar",
+        "meal",
+        duration_min=90,
+        preferred_day=1,
+    )
+
+    assert placement is not None
+    assert placement.time == "18:00"
+    assert not [rejection for rejection in rejections if rejection.code == "I3"]
+
+
+def test_a_meal_without_duration_uses_the_meal_default_for_split_hours(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    split_hours = [
+        f"{day}: 11:30 AM - 2:30 PM, 7:00 - 11:00 PM"
+        for day in (
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        )
+    ]
+    monkeypatch.setattr(
+        trip_guard,
+        "_summary_for_place",
+        lambda name, _destination="": {
+            "name": name,
+            "weekday_descriptions": split_hours,
+        },
+    )
+    itinerary = plan(
+        [[{"name": "La Petite Venise", "kind": "meal", "time": "13:15"}]],
+        departure_date="2027-04-08",
+        destination="Paris",
+        origin="",
+        travel_scope="destination_only",
+    )
+
+    assert trip_guard._duration_of(itinerary["day_wise_itinerary"][0]["stops"][0]) == 60
+    assert not [
+        violation for violation in trip_guard.validate_plan(itinerary) if violation.code == "I3"
+    ]
+
+    itinerary["day_wise_itinerary"][0]["stops"][0]["kind"] = "attraction"
+    assert trip_guard._duration_of(itinerary["day_wise_itinerary"][0]["stops"][0]) == 90
+    assert [
+        violation
+        for violation in trip_guard.validate_plan(itinerary)
+        if violation.code == "I3"
+    ]
+
+
 # --------------------------------------------------------------------------- #
 # blast radius                                                                  #
 # --------------------------------------------------------------------------- #
@@ -917,7 +1186,3 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
-
-
-
-
