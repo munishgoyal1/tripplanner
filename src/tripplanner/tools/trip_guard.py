@@ -44,6 +44,7 @@ TURNAROUND_MIN = 10
 FEASIBILITY_GRACE_MIN = 10
 ROAD_SPEED_KMH = 42.0
 DEFAULT_VISIT_MIN = 90
+DEFAULT_MEAL_MIN = 60
 DEFAULT_LEG_MIN = 120
 DEFAULT_HOTEL_MIN = 45
 #: Far enough apart that no ordinary day trip explains it without a named journey.
@@ -216,16 +217,22 @@ def leg_touches_home(stop: Any, origin: str) -> tuple[bool, bool]:
     return _home_bound_leg(stop, _normalize_city(origin, first_part=True))
 
 
+def _default_duration(kind: str) -> int:
+    if kind in _TRANSPORT_KINDS:
+        return DEFAULT_LEG_MIN
+    if kind == "hotel":
+        return DEFAULT_HOTEL_MIN
+    if kind == "meal":
+        return DEFAULT_MEAL_MIN
+    return DEFAULT_VISIT_MIN
+
+
 def _duration_of(stop: Any) -> int:
     kind = _stop_kind(stop)
     raw = stop.get("duration_min") if isinstance(stop, dict) else None
     if isinstance(raw, (int, float)) and raw > 0:
         return int(raw)
-    if kind in _TRANSPORT_KINDS:
-        return DEFAULT_LEG_MIN
-    if kind == "hotel":
-        return DEFAULT_HOTEL_MIN
-    return DEFAULT_VISIT_MIN
+    return _default_duration(kind)
 
 
 def _is_home_endpoint(stop: Any, origin: str) -> bool:
@@ -955,8 +962,10 @@ def choose_placement(
     coords = _coords_from_summary(summary)
     facts = place_facts.facts_from_summary(summary)
     dates = day_dates(plan)
-    visit = duration_min if isinstance(duration_min, int) and duration_min > 0 else (
-        DEFAULT_HOTEL_MIN if kind == "hotel" else DEFAULT_VISIT_MIN
+    visit = (
+        duration_min
+        if isinstance(duration_min, int) and duration_min > 0
+        else _default_duration(kind)
     )
 
     best: tuple[float, Placement] | None = None
