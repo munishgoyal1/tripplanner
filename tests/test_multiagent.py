@@ -457,6 +457,28 @@ def test_assignment_round_trip_preserves_audit_policy() -> None:
     assert restored.evidence_class == "generated"
 
 
+def test_pre_upgrade_assignment_hydrates_audit_policy(monkeypatch) -> None:
+    assignment = core.Assignment(issue=42)
+    item = issue(
+        42,
+        core.BUG,
+        core.AUDIT_SOURCE,
+        body="audit-evidence-class: generated",
+    )
+    monkeypatch.setattr(runtime, "gh_issue", lambda _repo, _number: item)
+
+    assert runtime.hydrate_audit_policy("owner/repo", assignment)
+    assert assignment.audit_source is True
+    assert assignment.evidence_class == "generated"
+
+
+def test_pre_upgrade_assignment_defers_when_issue_metadata_is_unavailable(monkeypatch) -> None:
+    assignment = core.Assignment(issue=42)
+    monkeypatch.setattr(runtime, "gh_issue", lambda _repo, _number: None)
+
+    assert not runtime.hydrate_audit_policy("owner/repo", assignment)
+
+
 def test_audit_issue_gives_the_owner_concrete_ux_review_context() -> None:
     group = {
         "rule": "R2",
