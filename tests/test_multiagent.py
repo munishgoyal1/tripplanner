@@ -937,6 +937,44 @@ def test_reportless_push_requires_matching_issue_trailer(tmp_path, monkeypatch) 
     assert runtime.recover_reportless_push(space, assignment) == ""
 
 
+def test_a_blocked_worker_asks_the_owner_on_the_issue(tmp_path, monkeypatch) -> None:
+    """A question kept only in controller state would never reach the owner."""
+    assignment = core.Assignment(
+        issue=42, attempt=1, slot="slot-1", branch="multiagent/slot-1", state="stopped"
+    )
+    state = core.State(assignments=[assignment])
+    space = SimpleNamespace(transcripts=tmp_path, slot_path=lambda _slot: tmp_path)
+    runtime.transcript_path(space, 42, 1).write_text(
+        "RESULT: blocked\nQUESTION: should Day 2 move, or the place change?\n",
+        encoding="utf-8",
+    )
+    comments: list[tuple[int, str]] = []
+    monkeypatch.setattr(runtime, "set_agent_state", lambda *_a, **_k: None)
+    monkeypatch.setattr(runtime, "gh_relabel", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        runtime, "gh_comment", lambda _repo, number, body: comments.append((number, body))
+    )
+
+    runtime.collect(space, state, "owner/repo")
+
+    assert assignment.state == "blocked"
+    assert len(comments) == 1
+    number, body = comments[0]
+    assert number == 42
+    assert "should Day 2 move, or the place change?" in body
+    assert "owner:decision-needed" in body
+
+
+def test_status_reports_the_latest_line_of_a_running_worker(tmp_path) -> None:
+    assignment = core.Assignment(issue=42, attempt=1, slot="slot-1", state="running")
+    space = SimpleNamespace(transcripts=tmp_path)
+    runtime.transcript_path(space, 42, 1).write_text(
+        "earlier step\n\nreproducing the audit symptom now\n", encoding="utf-8"
+    )
+
+    assert runtime.latest_worker_note(space, assignment) == "reproducing the audit symptom now"
+
+
 def test_a_slot_is_reserved_until_its_pushed_commit_is_integrated() -> None:
     """Reusing the slot would force-reset the branch holding unintegrated work."""
     state = core.State(assignments=[core.Assignment(issue=42, slot="slot-1", state="pushed")])

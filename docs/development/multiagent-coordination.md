@@ -312,7 +312,8 @@ source and report a false pass.
 ## Owner decisions
 
 When a worker or the producer hits something genuinely ambiguous, it stops and
-writes one block into the issue:
+reports `RESULT: blocked` with its question. Workers run non-interactively, so the
+controller is what reaches you: it posts that question to the issue as one block:
 
 ```markdown
 ## Owner Decision
@@ -331,9 +332,11 @@ queue is one command:
 gh issue list --state open --label "owner:decision-needed"
 ```
 
-`Multiagent-Status` prints the same queue. You answer in the coordinator chat or
-directly in the issue; the controller resumes the work as a fresh attempt with the
-answer included in the assignment.
+`Multiagent-Status` prints the same queue, including the question the worker
+asked. Answer in the issue or the coordinator chat, then remove `agent:blocked`
+and `owner:decision-needed`: those labels are what hold the issue back, and
+removing them requeues it. The next attempt reads the whole issue thread, so your
+answer arrives as part of its handoff.
 
 ## Safety
 
