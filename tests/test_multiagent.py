@@ -9,6 +9,7 @@ import signal
 import subprocess
 import sys
 import time
+from datetime import timedelta
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 
@@ -477,6 +478,73 @@ def test_pre_upgrade_assignment_defers_when_issue_metadata_is_unavailable(monkey
     monkeypatch.setattr(runtime, "gh_issue", lambda _repo, _number: None)
 
     assert not runtime.hydrate_audit_policy("owner/repo", assignment)
+
+
+# --- shipping cadence and stale claims ---------------------------------------
+
+
+def integrated(issue_number: int, *, minutes_ago: int = 0) -> object:
+    finished = core.utcnow() - timedelta(minutes=minutes_ago)
+    return core.Assignment(
+        issue=issue_number,
+        state="integrated",
+        finished=core.format_time(finished),
+    )
+
+
+def test_a_busy_queue_still_publishes_accepted_work() -> None:
+    """A continuously refilled queue is never idle, so idleness cannot be the trigger."""
+    waiting = [integrated(1), integrated(2), integrated(3)]
+
+    assert core.batch_ship_reason(waiting, active=True)
+
+
+def test_accepted_work_publishes_once_it_has_waited_long_enough() -> None:
+    assert core.batch_ship_reason([integrated(1, minutes_ago=31)], active=True)
+    assert core.batch_ship_reason([integrated(1, minutes_ago=5)], active=True) is None
+
+
+def test_an_idle_controller_still_publishes_a_single_fix() -> None:
+    assert core.batch_ship_reason([integrated(1)], active=False)
+
+
+def test_nothing_accepted_means_nothing_to_publish() -> None:
+    assert core.batch_ship_reason([], active=False) is None
+
+
+def test_an_unowned_integrating_claim_is_returned_to_the_queue() -> None:
+    board = (
+        issue(1, core.INTEGRATING),
+        issue(2, core.INTEGRATING),
+        issue(3, core.BLOCKED, core.DECISION_NEEDED),
+    )
+
+    assert core.stale_claims(board, frozenset({2})) == (1,)
+
+
+def test_an_owner_decision_is_never_swept_away() -> None:
+    board = (issue(3, core.BLOCKED, core.DECISION_NEEDED),)
+
+    assert core.stale_claims(board, frozenset()) == ()
+
+
+def test_quality_loop_is_reachable_as_one_command() -> None:
+    args = runtime.build_parser().parse_args(["quality-loop"])
+
+    assert args.command == "quality-loop"
+    assert args.dry_run is False
+
+
+def test_quality_loop_launchers_do_not_depend_on_powershell() -> None:
+    """The loop must still run when the PowerShell host itself is broken."""
+    mac = (
+        ROOT / "scripts" / "mac" / "user" / "multiagent" / "Run-Quality-Loop.command"
+    ).read_text(encoding="utf-8")
+
+    assert "quality-loop" in mac
+    assert "multiagent.ps1" not in mac
+    assert "pwsh.sh" not in mac
+
 
 
 def test_audit_issue_gives_the_owner_concrete_ux_review_context() -> None:

@@ -653,6 +653,29 @@ def reconcile_landed_assignments(state: core.State, worktree: Path) -> int:
     return landed
 
 
+def reclaim_stale_claims(repo: str, state: core.State) -> int:
+    """Return issues the board still shows as mid-integration to the dispatch queue.
+
+    A wiped runtime directory leaves `agent:integrating` behind with no owner, and
+    those issues are then excluded from selection forever.
+    """
+    tracked = frozenset(
+        item.issue
+        for item in state.assignments
+        if item.state in ("dispatched", "running", "pushed", "integrated", "in-pull-request")
+    )
+    try:
+        issues = gh_issues(repo, [core.INTEGRATING])
+    except RuntimeError as error:
+        log(f"could not check for stale claims: {error}")
+        return 0
+    stale = core.stale_claims(tuple(issues), tracked)
+    for number in stale:
+        set_agent_state(repo, number, None)
+        log(f"#{number} released: claimed as integrating with no controller record")
+    return len(stale)
+
+
 def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
     """Merge current master into an idle integration lane before a new batch starts."""
     worktree = ensure_integration(space)
@@ -929,8 +952,10 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
 def finalise_batch(space: Workspace, state: core.State, repo: str) -> None:
     """Re-sync with master, validate the whole batch, and open one PR."""
     integrated = [item for item in state.assignments if item.state == "integrated"]
-    if not integrated or state.active():
+    reason = core.batch_ship_reason(integrated, active=bool(state.active()))
+    if not reason:
         return
+    log(f"publishing the batch: {reason}")
     worktree = ensure_integration(space)
     git(["fetch", "-q", "origin", "master"], cwd=worktree)
 
@@ -1569,6 +1594,50 @@ def cmd_prune(space: Workspace, args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_quality_loop(space: Workspace, args: argparse.Namespace) -> int:
+    """One click: reconcile the board, audit for new defects, and put fixers to work."""
+    problems = preflight(space)
+    if problems:
+        for problem in problems:
+            log(f"blocked: {problem}")
+        return 2
+    repo = space.repo()
+    state = load_state(space)
+
+    log(_BAR)
+    log("1/3  reconciling the issue board")
+    reclaimed = 0 if args.dry_run else reclaim_stale_claims(repo, state)
+    log(f"     released {reclaimed} stale claim(s)")
+
+    log(_BAR)
+    log("2/3  auditing the stored corpus (read-only, no model or provider calls)")
+    audited = cmd_audit(space, args)
+    if audited == 2:
+        log("stopping: the audit could not read a corpus, so nothing was proposed.")
+        return 2
+
+    log(_BAR)
+    log("3/3  putting the fixers to work")
+    if args.dry_run:
+        log("     dry run: the controller was not started.")
+    elif state.lease.valid() and pid_alive(state.lease.pid):
+        log(f"     controller already running (pid {state.lease.pid}); it will pick these up.")
+    else:
+        started = cmd_start(space, argparse.Namespace(
+            interval=CYCLE_SECONDS, force=False, no_chat=True,
+        ))
+        if started != 0:
+            return started
+
+    log(_BAR)
+    log("Fixes land through batch pull requests. Watch with Multiagent-Status.")
+    log("")
+    log("Corpus refresh is deliberately not part of this loop: it spends real money")
+    log("and needs a running stack. Run Refresh-Quality-Corpus yourself when the")
+    log("audit stops finding anything new, and agree the market scope first.")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -1606,6 +1675,17 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="capture affected itinerary days and publish them on audit-evidence",
     )
+
+    loop = sub.add_parser(
+        "quality-loop",
+        help="one click: reconcile the board, audit, and start the fixers",
+    )
+    loop.add_argument("--dry-run", action="store_true")
+    loop.add_argument(
+        "--screenshots",
+        action="store_true",
+        help="capture affected itinerary days and publish them on audit-evidence",
+    )
     return parser
 
 
@@ -1624,6 +1704,7 @@ def main(argv: list[str] | None = None) -> int:
         "coordinator": cmd_coordinator,
         "publish-coordinator": cmd_publish_coordinator,
         "audit": cmd_audit,
+        "quality-loop": cmd_quality_loop,
     }
     return handlers[args.command](space, args)
 
