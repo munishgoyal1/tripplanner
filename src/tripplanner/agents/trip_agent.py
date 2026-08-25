@@ -470,9 +470,11 @@ STEP 2.5 — SHARE A FIRST-CUT ITINERARY IMMEDIATELY (don't wait for searches)
   of asking the user to assemble the itinerary. The user can refine any choice
   conversationally after seeing a complete plan.
   The first planning turn must not end until concrete lodging, explicit journey
-  edges, named meal coverage on substantial days, and requested-budget cost
-  evidence are saved. Continue past the normal planning-tool budget when needed
-  for those core gates. Weather may remain deferred enrichment.
+  edges, named meal coverage on substantial days, requested-budget cost evidence,
+  and useful coverage for every non-transfer day are saved. Rebalance sparse days
+  with meaningful nearby stops or explicitly label intentional leisure; never add
+  filler or shorten fixed dates. Continue past the normal planning-tool budget when
+  needed for those core gates. Weather may remain deferred enrichment.
   Do NOT wait for flight/hotel/activity searches before persisting. The user
   must see something in the panel immediately.
 

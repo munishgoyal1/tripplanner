@@ -207,6 +207,49 @@ def test_the_phase_budget_does_not_end_with_a_hotel_only_day() -> None:
     assert "Day 7 has no planned places beyond the hotel" in (decision.requirement or "")
 
 
+def test_the_phase_budget_does_not_end_with_an_advisor_flagged_sparse_day() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="plan a seven-day Varanasi and Ayodhya circuit"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+        ],
+        active_trip={
+            "destination": "Varanasi and Ayodhya",
+            "origin": "Varanasi and Ayodhya",
+            "planning_recommendation": {
+                "target_active_minutes_per_full_day": 360,
+                "recommended_days": 7,
+            },
+            "preferences_snapshot": {"trip_style": "balanced"},
+            "day_wise_itinerary": [{
+                "day": 5,
+                "title": "Ayodhya temples",
+                "stops": [
+                    {"name": "Taraji Resort", "kind": "hotel"},
+                    {
+                        "name": "Kanak Bhawan",
+                        "kind": "attraction",
+                        "duration_min": 120,
+                    },
+                    {"name": "Makan-Malai", "kind": "meal", "duration_min": 60},
+                    {"name": "Taraji Resort", "kind": "hotel"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Taraji Resort"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.budget_exhausted is False
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "Day 5 has about 180 planned minutes" in (decision.requirement or "")
+    assert "meaningful nearby stops" in (decision.requirement or "")
+
+
 def test_new_trip_kickoff_preempts_incomplete_active_trip() -> None:
     decision = resolve_completion_policy(
         messages=[HumanMessage(content="Create a separate new Hawaii trip")],
