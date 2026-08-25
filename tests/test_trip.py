@@ -972,6 +972,45 @@ class TestTripPlanState:
         )
         assert "Day(s) 3, 4, 5, 6, 7, 8 name no bookable property" in result
 
+    def test_selected_gangtok_stay_cannot_mask_lachen_placeholders(self):
+        create_trip_plan.invoke({
+            "destination": "Gangtok & North Sikkim",
+            "departure_date": "2027-10-04",
+            "return_date": "2027-10-07",
+        })
+        before = json.loads(get_trip_plan.invoke({}))
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "The Elgin Nor-Khill",
+                "city": "Gangtok",
+                "address": "Paljor Stadium Road, Gangtok, Sikkim, India",
+            }],
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "city": "Gangtok",
+                    "stops": [{"name": "The Elgin Nor-Khill", "kind": "hotel"}],
+                },
+                {
+                    "day": 2,
+                    "city": "Lachen",
+                    "stops": [{"name": "Premium Hotel Lachen (TBD)", "kind": "hotel"}],
+                },
+                {
+                    "day": 3,
+                    "city": "Lachen",
+                    "stops": [{"name": "Premium Hotel Lachen (TBD)", "kind": "hotel"}],
+                },
+            ],
+        })})
+
+        assert json.loads(get_trip_plan.invoke({})) == before
+        assert result.startswith(
+            "Error: itinerary sanity validation rejected this update before persistence."
+        )
+        assert "Hotel placeholders remain on Day(s) 2, 3" in result
+
     def test_update_trip_plan_replaces_placeholder_anchors_with_concrete_hotel(self):
         create_trip_plan.invoke({
             "destination": "Mauritius",
