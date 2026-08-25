@@ -164,6 +164,20 @@ def test_two_issues_touching_the_same_file_are_serialised() -> None:
     assert "collide" in plan.deferred[0][1]
 
 
+def test_comment_only_scope_participates_in_collision_planning() -> None:
+    first = core.Issue(
+        number=1,
+        title="first",
+        labels=(core.READY,),
+        comments=(core.IssueComment("munishgoyal1", "also fix frontend/src/App.tsx"),),
+    )
+    second = issue(2, core.READY, body="change frontend/src/App.tsx")
+
+    plan = core.plan_dispatch([first, second], capacity=2)
+
+    assert [item.number for item in plan.dispatch] == [1]
+
+
 def test_a_shared_contract_collides_even_without_a_shared_file() -> None:
     """CODEMAP says the client package and the API move together."""
     api = issue(1, core.READY, body="src/tripplanner/api.py")
@@ -239,6 +253,43 @@ def test_each_slot_has_one_reusable_branch() -> None:
 def test_branch_namespace_stays_clear_of_the_sandbox_detector() -> None:
     """sandbox.ps1 only flags refs/heads/sandbox and sbx-* worktrees."""
     assert not core.branch_name("slot-1").startswith("sandbox/")
+
+
+def test_worker_prompt_includes_chronological_owner_comment_handoff() -> None:
+    item = core.Issue.from_api({
+        "number": 42,
+        "title": "Repair itinerary",
+        "body": "Fix the missing hotel.",
+        "labels": [{"name": core.READY}],
+        "comments": [
+            {
+                "author": {"login": "munishgoyal1"},
+                "body": "Also preserve the map selection.",
+                "createdAt": "2026-08-25T10:00:00Z",
+            },
+            {
+                "author": {"login": "helper"},
+                "body": "Observed on frontend/src/App.tsx.",
+                "createdAt": "2026-08-25T09:00:00Z",
+                "updatedAt": None,
+            },
+        ],
+    })
+
+    prompt = core.worker_prompt(
+        item,
+        slot="slot-1",
+        branch="multiagent/slot-1",
+        base_sha="a" * 40,
+        repo="munishgoyal1/tripplanner",
+    )
+
+    assert prompt.index("helper at 2026-08-25T09:00:00Z") < prompt.index(
+        "munishgoyal1 at 2026-08-25T10:00:00Z"
+    )
+    assert "Also preserve the map selection." in prompt
+    assert "Comments by the repository owner (`munishgoyal1`) are cumulative" in prompt
+    assert "helper at 2026-08-25T09:00:00Z (edited)" not in prompt
 
 
 # --- audit producer ----------------------------------------------------------

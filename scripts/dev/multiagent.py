@@ -230,7 +230,7 @@ def stop_owned_process(pid: int, marker: str) -> str:
 def gh_issues(repo: str, labels: list[str], *, state: str = "open") -> list[core.Issue]:
     args = [
         "gh", "issue", "list", "--repo", repo, "--state", state,
-        "--json", "number,title,body,labels,state,updatedAt", "--limit", "60",
+        "--json", "number,title,body,comments,labels,state,updatedAt", "--limit", "60",
     ]
     for label in labels:
         args += ["--label", label]
