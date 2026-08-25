@@ -10,6 +10,27 @@ Azure spend is governed separately by
 This document covers only Google Maps Platform and the Cloud Billing account
 behind it.
 
+## Apply from the repository
+
+All account-specific identifiers and limits live in
+[`infra/billing-guardrails.json`](../../infra/billing-guardrails.json). For a
+new account, edit that file and authenticate once, then preview and apply:
+
+```powershell
+pwsh -File infra/gcp/apply-billing-guardrails.ps1 -WhatIf
+pwsh -File infra/gcp/apply-billing-guardrails.ps1 -DeployShutoffFunction
+```
+
+Subsequent limit changes do not require redeploying the function:
+
+```powershell
+pwsh -File infra/gcp/apply-billing-guardrails.ps1
+```
+
+The script is idempotent: it updates existing budgets and quota preferences and
+does not duplicate alert policies. The detailed commands below explain and
+troubleshoot what the script automates.
+
 ## What a budget does and does not do
 
 A Cloud Billing budget **only sends notifications**. Nothing in Google Cloud

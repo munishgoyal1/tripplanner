@@ -1,0 +1,63 @@
+{
+  "$comment": "Declarative billing guardrails. Edit the identifiers for a new account, then run infra/gcp/apply-billing-guardrails.ps1 and infra/azure/apply-billing-guardrails.ps1. Both scripts are idempotent, so re-run them to tweak limits.",
+
+  "alertEmail": "munishgoyal1@gmail.com",
+
+  "thresholds": {
+    "environment": [0.5, 0.8, 1.0],
+    "global": [0.5, 0.8, 0.9, 1.0]
+  },
+
+  "gcp": {
+    "billingAccount": "01AD51-0D422D-41459D",
+    "currency": "INR",
+    "opsProject": "aitripplanner-ops",
+    "shutoffTopic": "billing-shutoff",
+    "shutoffRegion": "asia-south1",
+    "shutoffServiceAccount": "billing-shutoff",
+    "globalBudget": { "name": "tripplanner-global-8000inr", "amount": 8000 },
+    "environments": [
+      { "name": "local", "project": "aitripplanner-local", "budgetName": "tripplanner-local-2000inr", "budget": 2000 },
+      { "name": "canary", "project": "aitripplanner-canary", "budgetName": "tripplanner-canary-2000inr", "budget": 2000 },
+      { "name": "prod", "project": "project-8fc6cc28-590c-4f8b-987", "budgetName": "tripplanner-prod-2000inr", "budget": 2000 }
+    ],
+    "requiredServices": [
+      "places.googleapis.com",
+      "routes.googleapis.com",
+      "static-maps-backend.googleapis.com",
+      "maps-backend.googleapis.com"
+    ],
+    "quotas": [
+      { "service": "places.googleapis.com", "quotaId": "SearchTextRequestPerDayPerProject", "local": 40000, "canary": 4000, "prod": 4000 },
+      { "service": "places.googleapis.com", "quotaId": "SearchTextRequestPerMinutePerProject", "local": 600, "canary": 120, "prod": 120 },
+      { "service": "places.googleapis.com", "quotaId": "GetPlaceRequestPerDayPerProject", "local": 15000, "canary": 2000, "prod": 2000 },
+      { "service": "places.googleapis.com", "quotaId": "GetPlaceRequestPerMinutePerProject", "local": 300, "canary": 60, "prod": 60 },
+      { "service": "places.googleapis.com", "quotaId": "SearchNearbyRequestPerDayPerProject", "local": 2000, "canary": 500, "prod": 500 },
+      { "service": "places.googleapis.com", "quotaId": "SearchNearbyRequestPerMinutePerProject", "local": 60, "canary": 30, "prod": 30 },
+      { "service": "places.googleapis.com", "quotaId": "AutocompletePlacesRequestPerDayPerProject", "local": 1000, "canary": 500, "prod": 500 },
+      { "service": "places.googleapis.com", "quotaId": "AutocompletePlacesRequestPerMinutePerProject", "local": 60, "canary": 30, "prod": 30 },
+      { "service": "places.googleapis.com", "quotaId": "GetPhotoMediaRequestPerDayPerProject", "local": 1000, "canary": 500, "prod": 500 },
+      { "service": "places.googleapis.com", "quotaId": "GetPhotoMediaRequestPerMinutePerProject", "local": 60, "canary": 30, "prod": 30 },
+      { "service": "routes.googleapis.com", "quotaId": "ComputeRoutesRequestsPerDay", "local": 6000, "canary": 1000, "prod": 1000 },
+      { "service": "routes.googleapis.com", "quotaId": "ComputeRoutesRequestsPerMinutePerProject", "local": 120, "canary": 60, "prod": 60 },
+      { "service": "routes.googleapis.com", "quotaId": "ComputeRouteMatrixCellsPerDay", "local": 6000, "canary": 1000, "prod": 1000 },
+      { "service": "routes.googleapis.com", "quotaId": "ComputeRouteMatrixCellsPerMinutePerProject", "local": 120, "canary": 60, "prod": 60 },
+      { "service": "static-maps-backend.googleapis.com", "quotaId": "BillableDefaultPerDayPerProject", "local": 6000, "canary": 1000, "prod": 1000 },
+      { "service": "static-maps-backend.googleapis.com", "quotaId": "BillableDefaultPerMinutePerProject", "local": 120, "canary": 60, "prod": 60 }
+    ]
+  },
+
+  "azure": {
+    "subscriptionId": "2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b",
+    "currency": "INR",
+    "actionGroupResourceGroup": "rg-tripplanner-data",
+    "actionGroupName": "tripplanner-budget-alerts",
+    "actionGroupShortName": "tpbudget",
+    "globalBudget": { "name": "tripplanner-global-8000inr", "amount": 8000 },
+    "environments": [
+      { "name": "local", "resourceGroup": "rg-tripplanner-local", "budgetName": "tripplanner-local-2000inr", "budget": 2000 },
+      { "name": "canary", "resourceGroup": "rg-tripplanner-canary", "budgetName": "tripplanner-canary-2000inr", "budget": 2000 },
+      { "name": "prod", "resourceGroup": "rg-tripplanner-prod", "budgetName": "tripplanner-prod-2000inr", "budget": 2000 }
+    ]
+  }
+}
