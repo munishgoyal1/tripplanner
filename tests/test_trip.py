@@ -420,13 +420,16 @@ class TestPartialItineraryMerge:
 
         result = update_trip_plan.invoke({"updates_json": json.dumps({
             "day_wise_itinerary": [
-                {"day": 2, "stops": [{"name": "Budget Inn Indore", "kind": "hotel"}]},
+                {
+                    "day": 2,
+                    "stops": [{"name": "Lemon Tree Hotel Indore", "kind": "hotel"}],
+                },
             ],
         })})
 
         plan = json.loads(get_trip_plan.invoke({}))
         assert [day["day"] for day in plan["day_wise_itinerary"]] == [1, 2, 3]
-        assert plan["day_wise_itinerary"][1]["stops"][0]["name"] == "Budget Inn Indore"
+        assert plan["day_wise_itinerary"][1]["stops"][0]["name"] == "Lemon Tree Hotel Indore"
         assert "Partial itinerary update merged" in result
 
 
@@ -742,6 +745,7 @@ class TestTripPlanState:
             "departure_date": "2026-12-12",
             "return_date": "2026-12-18",
         })
+        before = json.loads(get_trip_plan.invoke({}))
         result = update_trip_plan.invoke({"updates_json": json.dumps({
             "selected_hotels": [
                 {"name": "Hotel in Kochi", "price": 15000},
@@ -754,9 +758,11 @@ class TestTripPlanState:
         })})
 
         plan = json.loads(get_trip_plan.invoke({}))
-        assert plan["selected_hotels"] == []
+        assert plan == before
+        assert result.startswith(
+            "Error: itinerary sanity validation rejected this update before persistence."
+        )
         assert "no bookable property" in result
-        assert "generic or placeholder hotel label" in result
 
     def test_update_trip_plan_accepts_concrete_hotel_selection(self):
         create_trip_plan.invoke({
@@ -1483,12 +1489,12 @@ class TestTripPlanState:
             "day_wise_itinerary": [{
                 "day": 3,
                 "stops": [
-                    {"name": "Stay", "kind": "hotel"},
+                    {"name": "Taj Cidade de Goa", "kind": "hotel"},
                     {"name": "Fort", "kind": "attraction"},
                     {"name": "Beach", "kind": "attraction"},
                     {"name": "Market", "kind": "attraction"},
                     {"name": "Dinner", "kind": "meal"},
-                    {"name": "Stay", "kind": "hotel"},
+                    {"name": "Taj Cidade de Goa", "kind": "hotel"},
                 ],
             }],
         })})
@@ -1744,7 +1750,10 @@ class TestTripPlanState:
         })
         update_trip_plan.invoke({"updates_json": json.dumps({
             "day_wise_itinerary": [
-                {"day": 1, "stops": [{"name": "Stay", "kind": "hotel"}]},
+                {
+                    "day": 1,
+                    "stops": [{"name": "Taj Cidade de Goa", "kind": "hotel"}],
+                },
                 {"day": 2, "stops": [
                     {"name": "Booked Tour", "kind": "attraction", "booked": True},
                     {"name": "Flexible Stop", "kind": "attraction"},

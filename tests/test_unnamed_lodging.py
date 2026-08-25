@@ -9,7 +9,10 @@ from __future__ import annotations
 import pytest
 
 from tripplanner.tools.trip_common import unnamed_lodging
-from tripplanner.tools.trip_validation import _hotel_selection_warnings
+from tripplanner.tools.trip_validation import (
+    _hotel_selection_warnings,
+    persistence_sanity_errors,
+)
 
 CITIES = {
     "kochi", "kuala lumpur", "penang", "colombo", "galle", "shimla", "rome",
@@ -72,6 +75,27 @@ def test_the_gap_names_the_days_whose_stay_cannot_be_booked() -> None:
 
     assert any("Day(s) 2, 3" in gap and "no bookable property" in gap for gap in gaps)
     assert not any("Day(s) 1" in gap for gap in gaps)
+
+
+def test_an_unnamed_stay_cannot_cross_persistence_without_an_origin() -> None:
+    plan = {
+        "destination": "Mussoorie",
+        "selected_hotels": [],
+        "day_wise_itinerary": [
+            {
+                "day": day,
+                "stops": [{"name": "Hotel in Mussoorie", "kind": "hotel"}],
+            }
+            for day in range(1, 5)
+        ],
+    }
+
+    errors = persistence_sanity_errors(plan)
+
+    assert any(
+        "Day(s) 1, 2, 3, 4" in error and "no bookable property" in error
+        for error in errors
+    )
 
 
 def test_a_named_stay_everywhere_raises_no_lodging_gap() -> None:

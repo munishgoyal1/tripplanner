@@ -282,6 +282,27 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
     itinerary = plan.get("day_wise_itinerary")
     if not isinstance(itinerary, list):
         return warnings
+    warnings.extend(_lodging_name_warnings(plan))
+    missing_days = [
+        violation.day
+        for violation in validate_plan(plan)
+        if violation.code == "I6" and violation.stop is None and violation.day is not None
+    ]
+    if missing_days:
+        warnings.append(
+            f"Day(s) {', '.join(str(day) for day in missing_days)} have no concrete "
+            "lodging anchor for the night."
+        )
+    return warnings
+
+
+def _lodging_name_warnings(
+    plan: dict[str, Any], *, include_placeholders: bool = True
+) -> list[str]:
+    itinerary = plan.get("day_wise_itinerary")
+    if not isinstance(itinerary, list):
+        return []
+    warnings: list[str] = []
     cities = _itinerary_hotel_locations(plan)
     destination = str(plan.get("destination") or "").strip().lower()
     if destination:
@@ -301,7 +322,7 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
             placeholder_days.append(day_num)
         elif any(unnamed_lodging(_stop_name(stop), cities) for stop in stays):
             unnamed_days.append(day_num)
-    if placeholder_days:
+    if include_placeholders and placeholder_days:
         warnings.append(
             f"Hotel placeholders remain on Day(s) {', '.join(placeholder_days)}."
         )
@@ -310,16 +331,6 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
             f"Day(s) {', '.join(unnamed_days)} name no bookable property -- a stay "
             "described only as a hotel in a city cannot be booked, reached, or priced. "
             "Choose a real property, or offer two or three named candidates."
-        )
-    missing_days = [
-        violation.day
-        for violation in validate_plan(plan)
-        if violation.code == "I6" and violation.stop is None and violation.day is not None
-    ]
-    if missing_days:
-        warnings.append(
-            f"Day(s) {', '.join(str(day) for day in missing_days)} have no concrete "
-            "lodging anchor for the night."
         )
     return warnings
 
@@ -590,6 +601,7 @@ def persistence_sanity_errors(plan: dict[str, Any]) -> list[str]:
     """Authoritative contradictions that must not cross the persistence boundary."""
     errors = [
         *_itinerary_time_errors(plan.get("day_wise_itinerary")),
+        *_lodging_name_warnings(plan, include_placeholders=False),
         *(
             violation.message
             for violation in validate_plan(plan)
