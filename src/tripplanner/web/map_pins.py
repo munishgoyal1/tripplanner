@@ -418,6 +418,15 @@ def _map_pins(
             if binding
             else (places_cache.get_details(name, context) or {})
         )
+        if (
+            not binding
+            and context != destination
+            and (info.get("lat") is None or info.get("lng") is None)
+        ):
+            destination_info = places_cache.get_details(name, destination) or {}
+            if destination_info.get("lat") is not None and destination_info.get("lng") is not None:
+                info = destination_info
+                context = destination
         provider_name = str(info.get("name") or "").strip()
         if (
             provider_name
