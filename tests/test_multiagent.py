@@ -324,6 +324,78 @@ def test_audit_issue_explains_when_visual_evidence_cannot_be_opened() -> None:
     assert "No static screenshot was published" in body
 
 
+def test_audit_issue_links_private_repository_screenshot_evidence() -> None:
+    group = {
+        "rule": "gap",
+        "example": "Hotel placeholders remain on Day 2",
+        "screenshot_links": [
+            "https://github.com/example/tripplanner/blob/audit-evidence/gap-day-2.png",
+            "https://github.com/example/tripplanner/blob/audit-evidence/gap-day-3.png",
+        ],
+    }
+
+    body = core.audit_issue_body(group, corpus_size=1, sources=["generated"])
+
+    assert "[Open exact audit screenshot 1](https://github.com/example/tripplanner/blob/" in body
+    assert "[Open exact audit screenshot 2](https://github.com/example/tripplanner/blob/" in body
+
+
+def test_audit_parser_accepts_opt_in_screenshots() -> None:
+    args = runtime.build_parser().parse_args(["audit", "--screenshots"])
+
+    assert args.screenshots is True
+
+
+def test_audit_screenshot_captures_affected_days_and_uploads(monkeypatch, tmp_path) -> None:
+    calls: list[list[str]] = []
+    space = SimpleNamespace(primary=tmp_path)
+
+    def fake_run(args, **_kwargs):  # type: ignore[no-untyped-def]
+        calls.append(args)
+        if "capture-audit-point.mjs" in " ".join(args):
+            output = next(value.removeprefix("--output=") for value in args if value.startswith("--output="))
+            Path(output).parent.mkdir(parents=True, exist_ok=True)
+            Path(output).write_bytes(b"png")
+        return subprocess.CompletedProcess(args, 0, stdout="{}", stderr="")
+
+    monkeypatch.setattr(runtime.shutil, "which", lambda _name: "/usr/bin/node")
+    monkeypatch.setattr(runtime, "git", lambda *_args, **_kwargs: "a" * 40)
+    monkeypatch.setattr(runtime, "run", fake_run)
+    monkeypatch.setattr(runtime, "ensure_evidence_branch", lambda *_args: True)
+    monkeypatch.setattr(
+        runtime,
+        "upload_audit_evidence",
+        lambda _space, _repo, path, _output, _mark: f"https://example.test/{path}",
+    )
+    group = {
+        "representative": {
+            "openable": True,
+            "user_id": "corpus-gangtok",
+            "trip_id": "gangtok-trip",
+            "record_id": "generated:gangtok",
+            "day": None,
+        }
+    }
+
+    links = runtime.capture_audit_screenshots(
+        space,
+        "example/tripplanner",
+        {**group, "example": "Hotel placeholders remain on Day(s) 2, 3."},
+        "gap/fbe3b74e",
+    )
+
+    captures = [args for args in calls if "capture-audit-point.mjs" in " ".join(args)]
+    assert [next(value for value in args if value.startswith("--day=")) for args in captures] == [
+        "--day=2",
+        "--day=3",
+    ]
+    assert "record=generated%3Agangtok" in next(
+        value for value in captures[0] if value.startswith("--url=")
+    )
+    assert links[0].endswith("gap-fbe3b74e-day-2.png")
+    assert links[1].endswith("gap-fbe3b74e-day-3.png")
+
+
 def test_the_producer_does_not_cap_new_finding_groups() -> None:
     groups = [
         {"rule": "A", "severity": "info", "count": 99},

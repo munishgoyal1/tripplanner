@@ -181,7 +181,9 @@ the saved-trip list. Plan mine and Skip to the app navigate to `/planner`, and
 `/planner/` behaves the same as `/planner`. A local audit inspection link also
 targets `/planner` and opens its exact record-backed representative trip. If the
 record cannot be resolved, the link remains intact for diagnosis instead of
-canonicalizing to an empty workspace.
+canonicalizing to an empty workspace. When both record and saved-trip IDs are
+present, the immutable audit record wins so a stale local copy cannot replace
+the evidence that produced the finding.
 
 **Executable proof:**
 

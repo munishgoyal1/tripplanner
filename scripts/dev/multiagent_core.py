@@ -329,13 +329,7 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
     ]
     review_lines: list[str] = []
     if representative.get("openable"):
-        query = urlencode(
-            {
-                "inspect": str(representative.get("user_id") or ""),
-                "trip": str(representative.get("trip_id") or ""),
-                "record": str(representative.get("record_id") or ""),
-            }
-        )
+        query = audit_review_query(representative)
         review_lines.extend(
             (
                 f"[Open the representative trip locally](http://localhost:5173/planner?{query})",
@@ -351,14 +345,23 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
             "in the product UI. Use its record ID in the Audit Inspector."
         )
     screenshot_url = redact(str(group.get("screenshot_url") or "").strip())
-    screenshot_lines = (
-        [f"![Representative audit screenshot]({screenshot_url})"]
-        if screenshot_url
-        else [
+    screenshot_links = [
+        redact(str(item).strip())
+        for item in (group.get("screenshot_links") or [])
+        if str(item).strip()
+    ]
+    if screenshot_url:
+        screenshot_lines = [f"![Representative audit screenshot]({screenshot_url})"]
+    elif screenshot_links:
+        screenshot_lines = [
+            f"[Open exact audit screenshot {index}]({link})"
+            for index, link in enumerate(screenshot_links, 1)
+        ]
+    else:
+        screenshot_lines = [
             "No static screenshot was published for this read-only audit finding. The local trip",
             "link above is the authoritative visual evidence when available.",
         ]
-    )
     return "\n".join(
         [
             f"The trip audit found {group.get('count', 0)} occurrence(s) of rule "
@@ -405,6 +408,16 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
             "",
             f"audit-fingerprint: {mark}",
         ]
+    )
+
+
+def audit_review_query(representative: dict) -> str:
+    return urlencode(
+        {
+            "inspect": str(representative.get("user_id") or ""),
+            "trip": str(representative.get("trip_id") or ""),
+            "record": str(representative.get("record_id") or ""),
+        }
     )
 
 

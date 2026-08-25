@@ -177,6 +177,7 @@ function DayCard({
   return (
     <section
       id={`it-day-${day.day}`}
+      data-audit-day={day.day}
       className={`overflow-hidden rounded-md bg-white shadow-card transition ${
         circuitActive ? "ring-2 ring-brand/40" : "ring-1 ring-slate-200"
       }`}
@@ -482,7 +483,11 @@ export default function ItineraryPanel({
       itineraryStopMatchesFilters(stop, filters, day.stops, index)
     )));
   return (
-    <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
+    <div
+      ref={scrollRef}
+      data-testid="audit-itinerary"
+      className="h-full overflow-y-auto bg-white"
+    >
       {filterControls}
       {overview && (
         <TripSnapshot
