@@ -207,37 +207,59 @@ def test_the_phase_budget_does_not_end_with_a_hotel_only_day() -> None:
     assert "Day 7 has no planned places beyond the hotel" in (decision.requirement or "")
 
 
-def test_the_phase_budget_does_not_end_with_an_advisor_flagged_sparse_day() -> None:
+def test_the_phase_budget_does_not_end_with_advisor_flagged_sparse_days() -> None:
     decision = resolve_completion_policy(
         messages=[
-            HumanMessage(content="plan a seven-day Varanasi and Ayodhya circuit"),
+            HumanMessage(content="plan a seven-day Mysore heritage trip"),
             _tool_call("create_trip_plan", "create-1"),
             ToolMessage(content="Created", tool_call_id="create-1"),
-            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 3),
+            _tool_call("nearby_restaurants", "restaurants-1"),
+            ToolMessage(content="Nearby restaurants", tool_call_id="restaurants-1"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
         ],
         active_trip={
-            "destination": "Varanasi and Ayodhya",
-            "origin": "Varanasi and Ayodhya",
+            "destination": "Mysore",
+            "origin": "Mysore",
             "planning_recommendation": {
                 "target_active_minutes_per_full_day": 360,
                 "recommended_days": 7,
             },
             "preferences_snapshot": {"trip_style": "balanced"},
-            "day_wise_itinerary": [{
-                "day": 5,
-                "title": "Ayodhya temples",
-                "stops": [
-                    {"name": "Taraji Resort", "kind": "hotel"},
-                    {
-                        "name": "Kanak Bhawan",
-                        "kind": "attraction",
-                        "duration_min": 120,
-                    },
-                    {"name": "Makan-Malai", "kind": "meal", "duration_min": 60},
-                    {"name": "Taraji Resort", "kind": "hotel"},
-                ],
-            }],
-            "selected_hotels": [{"name": "Taraji Resort"}],
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "title": title,
+                    "stops": [
+                        {"name": "Radisson Blu Plaza Hotel Mysore", "kind": "hotel"},
+                        {"name": first, "kind": "attraction", "duration_min": 90},
+                        {"name": second, "kind": "attraction", "duration_min": 60},
+                        {"name": "Radisson Blu Plaza Hotel Mysore", "kind": "hotel"},
+                    ],
+                }
+                for day, title, first, second in (
+                    (
+                        2,
+                        "Jaganmohan Palace and Devaraja Market",
+                        "Jaganmohan Palace and Art Gallery",
+                        "Devaraja Market",
+                    ),
+                    (
+                        3,
+                        "Chamundi Hill and St. Philomena's Cathedral",
+                        "Chamundi Hill and Temple",
+                        "St. Philomena's Cathedral",
+                    ),
+                    (
+                        4,
+                        "Lalitha Mahal and Rail Museum",
+                        "Lalitha Mahal Palace",
+                        "Mysore Rail Museum",
+                    ),
+                )
+            ],
+            "selected_hotels": [{"name": "Radisson Blu Plaza Hotel Mysore"}],
         },
         proposal_only=False,
         has_planning_intent=True,
@@ -246,8 +268,11 @@ def test_the_phase_budget_does_not_end_with_an_advisor_flagged_sparse_day() -> N
     assert decision.budget_exhausted is False
     assert decision.forced_tool == "update_trip_plan"
     assert decision.forced_reason == "persist_or_repair_plan"
-    assert "Day 5 has about 180 planned minutes" in (decision.requirement or "")
-    assert "meaningful nearby stops" in (decision.requirement or "")
+    requirement = decision.requirement or ""
+    assert "Day 2 has about 150 planned minutes" in requirement
+    assert "Day 3 has about 150 planned minutes" in requirement
+    assert "Day 4 has about 150 planned minutes" in requirement
+    assert "meaningful nearby stops" in requirement
 
 
 def test_new_trip_kickoff_preempts_incomplete_active_trip() -> None:
