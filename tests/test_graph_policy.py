@@ -133,6 +133,50 @@ def test_the_phase_budget_does_not_end_an_incomplete_first_planning_turn() -> No
     assert decision.forced_reason == "persist_or_repair_plan"
 
 
+def test_the_phase_budget_does_not_end_with_a_short_departure_buffer() -> None:
+    current_turn: list[BaseMessage] = [
+        HumanMessage(content="plan a trip to goa"),
+        _tool_call("create_trip_plan", "create-1"),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+        _tool_call("update_trip_plan", "update-1"),
+        ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 2),
+    ]
+    decision = resolve_completion_policy(
+        messages=current_turn,
+        active_trip={
+            "destination": "Goa",
+            "travel_scope": "destination_only",
+            "day_wise_itinerary": [
+                {
+                    "day": 4,
+                    "stops": [
+                        {
+                            "name": "Brunch",
+                            "kind": "meal",
+                            "time": "12:00",
+                            "duration_min": 60,
+                        },
+                        {
+                            "name": "Flight: Goa to Bangalore",
+                            "kind": "flight",
+                            "time": "14:00",
+                            "duration_min": 90,
+                        },
+                    ],
+                }
+            ],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.budget_exhausted is False
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "leaves only 60 minutes" in (decision.requirement or "")
+
+
 def test_new_trip_kickoff_preempts_incomplete_active_trip() -> None:
     decision = resolve_completion_policy(
         messages=[HumanMessage(content="Create a separate new Hawaii trip")],
