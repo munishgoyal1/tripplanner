@@ -28,6 +28,25 @@ def test_hosted_deployments_do_not_import_local_environment() -> None:
     assert "Import-DeploymentEnvironment -Path $EnvFile" in production
 
 
+def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
+    root = Path(__file__).parents[1]
+    guardrails = (root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8")
+    production = (root / "infra" / "deploy-prod.ps1").read_text(encoding="utf-8")
+    smoke = (root / "infra" / "smoke-hosted.ps1").read_text(encoding="utf-8")
+    browser_smoke = (root / "frontend" / "scripts" / "hosted-maps-smoke.mjs").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"https://aitripplanner.co/*"' in guardrails
+    assert '"browserKey": "aitripplanner-prod-browser"' in guardrails
+    assert '-BrowserBaseUrl "https://aitripplanner.co"' in production
+    assert "hosted-maps-smoke.mjs" in smoke
+    assert "window.gm_authFailure" in browser_smoke
+    assert "new window.google.maps.Map" in browser_smoke
+    assert "/api/destination/overview?destination=Paris&news=false" in browser_smoke
+    assert "destination overview returned no photo" in browser_smoke
+
+
 def test_hosted_deployments_use_shared_azure_json_and_delete_guards() -> None:
     root = Path(__file__).parents[1]
     canary = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")

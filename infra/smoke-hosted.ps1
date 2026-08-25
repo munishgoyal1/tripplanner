@@ -4,6 +4,7 @@ param(
     [ValidateSet("canary", "production")]
     [string]$Environment,
     [string]$BaseUrl = "",
+    [string]$BrowserBaseUrl = "",
     [string]$ExpectedOAuthCallback = "",
     [switch]$Deep = $false,
     [switch]$AllowProductionWrites = $false,
@@ -42,6 +43,9 @@ if ([string]::IsNullOrWhiteSpace($ExpectedOAuthCallback)) {
         "$($BaseUrl.TrimEnd('/'))/api/auth/callback/google"
     }
 }
+if ([string]::IsNullOrWhiteSpace($BrowserBaseUrl)) {
+    $BrowserBaseUrl = $BaseUrl
+}
 
 $pythonCandidates = @(
     (Join-Path (Join-Path ".venv" "Scripts") "python.exe"),
@@ -66,4 +70,17 @@ if ($Deep) { $arguments += "--deep" }
 & $python @arguments
 if ($LASTEXITCODE -ne 0) {
     throw "Hosted smoke tests failed for $Environment."
+}
+
+$frontendRoot = Join-Path $PSScriptRoot "../frontend"
+$npm = if ($IsWindows) { "npm.cmd" } else { "npm" }
+Push-Location $frontendRoot
+try {
+    & $npm exec -- node scripts/hosted-maps-smoke.mjs "--url=$BrowserBaseUrl"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Hosted Maps and destination-photo smoke failed for $Environment."
+    }
+}
+finally {
+    Pop-Location
 }

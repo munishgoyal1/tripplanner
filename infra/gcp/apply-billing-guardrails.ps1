@@ -94,6 +94,38 @@ foreach ($env in $gcp.environments) {
     }
 }
 
+# --- API key restrictions ---------------------------------------------------
+
+foreach ($env in $gcp.environments) {
+    $keys = Invoke-Gcloud @(
+        "services", "api-keys", "list", "--project=$($env.project)",
+        "--format=json(displayName,uid)"
+    ) | ConvertFrom-Json
+    $browser = @($keys | Where-Object { $_.displayName -eq $env.browserKey })
+    $server = @($keys | Where-Object { $_.displayName -eq $env.serverKey })
+    if ($browser.Count -ne 1 -or $server.Count -ne 1) {
+        throw "[$($env.name)] Expected one browser key '$($env.browserKey)' and one server key '$($env.serverKey)'."
+    }
+
+    $browserTargets = @("maps-backend.googleapis.com", "places.googleapis.com")
+    $browserArgs = @("services", "api-keys", "update", $browser[0].uid, "--project=$($env.project)")
+    $browserArgs += "--allowed-referrers=$($env.browserReferrers -join ',')"
+    foreach ($service in $browserTargets) { $browserArgs += "--api-target=service=$service" }
+    if ($PSCmdlet.ShouldProcess($env.browserKey, "Apply browser referrers and API restrictions")) {
+        Invoke-Gcloud $browserArgs | Out-Null
+    }
+
+    $serverTargets = @(
+        "places.googleapis.com", "routes.googleapis.com", "static-maps-backend.googleapis.com"
+    )
+    $serverArgs = @("services", "api-keys", "update", $server[0].uid, "--project=$($env.project)")
+    foreach ($service in $serverTargets) { $serverArgs += "--api-target=service=$service" }
+    if ($PSCmdlet.ShouldProcess($env.serverKey, "Apply server API restrictions")) {
+        Invoke-Gcloud $serverArgs | Out-Null
+    }
+    Write-Host "  [$($env.name)] API key restrictions applied"
+}
+
 # --- budgets ----------------------------------------------------------------
 
 function Get-BudgetId {

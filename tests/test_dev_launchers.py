@@ -129,6 +129,15 @@ def test_corpus_build_publishes_all_generated_artifacts() -> None:
     assert "Publish-GeneratedCorpus" in builder
 
 
+def test_dev_stack_overrides_inherited_google_keys_with_local_env() -> None:
+    root = Path(__file__).parents[1]
+    launcher = (root / "scripts" / "dev" / "dev-spa.ps1").read_text(encoding="utf-8")
+
+    assert 'foreach ($name in @("GOOGLE_MAPS_BROWSER_KEY", "GOOGLE_PLACES_API_KEY"))' in launcher
+    assert "Get-DotEnvValue -Name $name" in launcher
+    assert "SetEnvironmentVariable($name, $localValue, \"Process\")" in launcher
+
+
 def _merge_block(sandbox_script: str) -> str:
     start = sandbox_script.index('if ($PSCmdlet.ParameterSetName -eq "Merge")')
     end = sandbox_script.index('if ($PSCmdlet.ParameterSetName -eq "Promote")', start)
