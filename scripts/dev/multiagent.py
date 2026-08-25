@@ -255,6 +255,19 @@ def gh_issues(repo: str, labels: list[str], *, state: str = "open") -> list[core
     return [core.Issue.from_api(item) for item in json.loads(result.stdout or "[]")]
 
 
+def gh_issue(repo: str, number: int) -> core.Issue | None:
+    result = run([
+        "gh", "issue", "view", str(number), "--repo", repo,
+        "--json", "number,title,body,comments,labels,state,updatedAt",
+    ])
+    if result.returncode != 0:
+        return None
+    try:
+        return core.Issue.from_api(json.loads(result.stdout or "{}"))
+    except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+        return None
+
+
 def dispatchable_issues(repo: str) -> list[core.Issue]:
     """Return open issues that the multiagent intake policy permits."""
     candidates = {
@@ -452,6 +465,18 @@ def changed_paths(worktree: Path, base_sha: str, pushed_sha: str) -> tuple[str, 
         check=False,
     )
     return tuple(line.strip() for line in output.splitlines() if line.strip())
+
+
+def hydrate_audit_policy(repo: str, assignment: core.Assignment) -> bool:
+    """Populate policy fields missing from assignments dispatched before this gate existed."""
+    if assignment.evidence_class:
+        return True
+    item = gh_issue(repo, assignment.issue)
+    if item is None:
+        return False
+    assignment.audit_source = core.AUDIT_SOURCE in item.labels
+    assignment.evidence_class = core.audit_evidence_class(item)
+    return True
 
 
 def validate(space: Workspace, worktree: Path, *, frontend: bool) -> tuple[bool, str]:
@@ -824,6 +849,10 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
     git(["fetch", "-q", "origin"], cwd=worktree)
 
     for assignment in ready:
+        if not hydrate_audit_policy(repo, assignment):
+            assignment.validation = "audit policy metadata could not be loaded from GitHub"
+            log(f"#{assignment.issue} integration deferred: {assignment.validation}")
+            continue
         paths = changed_paths(worktree, assignment.base_sha, assignment.pushed_sha)
         rejection = core.audit_fix_rejection(
             audit_source=assignment.audit_source,
