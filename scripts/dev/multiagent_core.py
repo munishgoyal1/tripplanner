@@ -53,6 +53,11 @@ CORPUS_ARTIFACT_PREFIXES = ("audit/", "corpus/")
 PREVENTIVE_CODE_PREFIXES = ("frontend/src/", "mobile/", "packages/", "scripts/", "src/")
 REGRESSION_TEST_PREFIXES = ("frontend/", "mobile/", "tests/")
 
+# A continuously refilled queue never goes idle, so idleness alone cannot decide
+# when to publish: integrated fixes would accumulate on the branch forever.
+BATCH_SHIP_COUNT = 3
+BATCH_MAX_WAIT_MINUTES = 30
+
 # Files that are coupled through a contract rather than through their path.
 # Two issues touching the same surface are serialised even when no file
 # overlaps, because CODEMAP says a change to one forces a change to the other.
@@ -506,6 +511,45 @@ def audit_fix_rejection(
     ):
         return "the audit fix has no focused regression test proving recurrence is prevented"
     return None
+
+
+def batch_ship_reason(
+    integrated: list[Assignment],
+    *,
+    active: bool,
+    now: datetime | None = None,
+    count: int = BATCH_SHIP_COUNT,
+    max_wait_minutes: int = BATCH_MAX_WAIT_MINUTES,
+) -> str | None:
+    """Why accepted work should be published now, or None to keep accumulating."""
+    if not integrated:
+        return None
+    if not active:
+        return "no worker is running"
+    if len(integrated) >= count:
+        return f"{len(integrated)} accepted fixes are waiting to publish"
+    moment = now or utcnow()
+    waited = [
+        moment - finished
+        for finished in (parse_time(item.finished) for item in integrated)
+        if finished is not None
+    ]
+    if waited and max(waited) > timedelta(minutes=max_wait_minutes):
+        return f"accepted work has waited over {max_wait_minutes} minutes"
+    return None
+
+
+def stale_claims(issues: tuple[Issue, ...], tracked: frozenset[int]) -> tuple[int, ...]:
+    """Issues the board says are mid-integration that the controller has no record of.
+
+    Only ``agent:integrating`` is reclaimed. ``agent:blocked`` means a question is
+    waiting on the owner, which no automatic sweep may answer.
+    """
+    return tuple(
+        issue.number
+        for issue in issues
+        if INTEGRATING in issue.labels and issue.number not in tracked
+    )
 
 
 def audit_review_query(representative: dict) -> str:
