@@ -2336,10 +2336,12 @@ def update_trip_plan(updates_json: str) -> str:
                 + " Resubmit the full corrected day_wise_itinerary."
             )
 
-    if "selected_hotels" in updates and _sync_replaced_hotel_anchors(
-        plan,
-        before.get("selected_hotels"),
-        plan.get("selected_hotels"),
+    if {"selected_hotels", "day_wise_itinerary"}.intersection(updates) and (
+        _sync_replaced_hotel_anchors(
+            plan,
+            before.get("selected_hotels"),
+            plan.get("selected_hotels"),
+        )
     ):
         _reflow_unbooked_attractions(plan)
     if "selected_hotels" in updates:

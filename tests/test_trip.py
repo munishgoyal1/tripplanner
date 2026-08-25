@@ -844,6 +844,40 @@ class TestTripPlanState:
         assert {stop["name"] for stop in hotel_stops} == {"Preskil Island Resort"}
         assert [stop["time"] for stop in hotel_stops] == ["09:00", "18:00"]
 
+    def test_itinerary_update_cannot_restore_placeholders_after_hotel_selection(self):
+        create_trip_plan.invoke({
+            "destination": "Udaipur",
+            "departure_date": "2027-02-14",
+            "return_date": "2027-02-17",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "Trident Udaipur",
+                "destination": "Udaipur",
+                "address": "Haridasji Ki Magri, Udaipur",
+            }],
+        })})
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+                }
+                for day in range(1, 4)
+            ],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        hotel_stops = [
+            stop
+            for day in plan["day_wise_itinerary"]
+            for stop in day["stops"]
+            if stop.get("kind") == "hotel"
+        ]
+        assert {stop["name"] for stop in hotel_stops} == {"Trident Udaipur"}
+        assert "Hotel placeholders remain" not in result
+
     def test_update_trip_plan_rejects_hotel_outside_destination_atomically(self):
         create_trip_plan.invoke({
             "destination": "Manali, India",
