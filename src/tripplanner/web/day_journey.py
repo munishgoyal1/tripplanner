@@ -152,7 +152,7 @@ class _JourneyWalk:
         self._visit_place(name, kind)
 
     def _visit_transfer(self, stop: Any, stop_index: int, name: str, kind: str, mode: str) -> None:
-        # A new transfer supersedes any leg still waiting for its arrival.
+        # Place a known arrival before resolving the next transfer's departure.
         self._close_pending_arrival()
 
         self.journey.transfer_mode = mode
@@ -169,6 +169,10 @@ class _JourneyWalk:
             if (pin := self._resolve_pin(terminal_name, terminal_kind))
         ]
         terminal_ids = [pin_id for _, pin_id in resolved_terminals]
+        previous_transfer = self._open
+        if previous_transfer and previous_transfer.mode in _GROUND_MODES and terminal_ids:
+            self._commit_pending(terminal_ids[0], previous_transfer)
+            self._open = None
         if len(terminal_ids) == len(refs) and len(terminal_ids) >= 2:
             self._place(terminal_ids[0])
             # A connection is a place the traveller actually passes through, so

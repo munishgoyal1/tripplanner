@@ -1628,6 +1628,63 @@ def test_map_view_connects_origin_and_destination_segments_after_road_transfer(
     assert all("intercity" not in leg for leg in day["legs"][1:])
 
 
+def test_map_view_closes_a_drive_at_the_following_flight_terminal(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Hotel in Gangtok": (27.3314, 88.6138),
+        "Gangtok": (27.3314, 88.6138),
+        "Bagdogra Airport": (26.6812, 88.3286),
+        "Kolkata Airport": (22.6547, 88.4467),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Gangtok and North Sikkim",
+        "selected_hotels": [{"name": "Hotel in Gangtok"}],
+        "day_wise_itinerary": [{
+            "day": 6,
+            "stops": [
+                {"name": "Hotel in Gangtok", "kind": "hotel"},
+                {
+                    "name": "Drive: Gangtok to Bagdogra",
+                    "kind": "transport",
+                    "distance_km": 125,
+                    "duration_min": 300,
+                },
+                {
+                    "name": "Flight: Bagdogra to Kolkata",
+                    "kind": "flight",
+                    "duration_min": 75,
+                },
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    day = view["days"][0]
+    assert [names_by_id[pin_id] for pin_id in day["pin_ids"]] == [
+        "Hotel in Gangtok",
+        "Bagdogra Airport",
+        "Kolkata Airport",
+    ]
+    assert [leg["mode"] for leg in day["legs"]] == ["Drive", "Flight"]
+    assert day["legs"][0]["distance_km"] == 125
+    assert all(leg["intercity"] is True for leg in day["legs"])
+
+
 def test_map_view_connects_city_origin_to_hotel_for_road_trip(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
