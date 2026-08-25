@@ -168,6 +168,13 @@ def _sync_replaced_hotel_anchors(
             if part.strip()
         }
 
+    def explicit_locations(value: dict[str, Any]) -> set[str]:
+        return {
+            str(value.get(key) or "").strip().lower()
+            for key in ("destination", "city", "location")
+            if str(value.get(key) or "").strip()
+        }
+
     changed = False
     for day in plan.get("day_wise_itinerary") or []:
         if not isinstance(day, dict) or not isinstance(day.get("stops"), list):
@@ -181,7 +188,19 @@ def _sync_replaced_hotel_anchors(
                 if _HOTEL_PLACEHOLDER_RE.search(stop_name) or unnamed_lodging(
                     stop_name, lodging_locations
                 ):
-                    replacement = placeholder_replacement
+                    anchor_text = stop_name.lower()
+                    anchor_locations = explicit_locations(day) | {
+                        location
+                        for location in lodging_locations
+                        if re.search(rf"\b{re.escape(location)}\b", anchor_text)
+                    }
+                    replacement_locations = explicit_locations(placeholder_replacement)
+                    if (
+                        not anchor_locations
+                        or not replacement_locations
+                        or anchor_locations & replacement_locations
+                    ):
+                        replacement = placeholder_replacement
             if replacement is None:
                 continue
             replacement_name = _stop_name(replacement) or str(

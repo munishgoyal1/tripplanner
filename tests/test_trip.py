@@ -928,6 +928,50 @@ class TestTripPlanState:
         assert all(stop["address"] == "14 Rue Stanislas, Paris" for stop in hotel_stops)
         assert "no bookable property" not in result
 
+    def test_one_named_hotel_cannot_mask_unnamed_stays_in_other_cities(self):
+        create_trip_plan.invoke({
+            "destination": "Rajasthan",
+            "departure_date": "2027-02-02",
+            "return_date": "2027-02-10",
+        })
+        before = json.loads(get_trip_plan.invoke({}))
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "Twinstar Standard",
+                "city": "Jaipur",
+                "address": "Jaipur City Center",
+            }],
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "city": city,
+                    "stops": [{
+                        "name": f"Hotel in {city}",
+                        "kind": "hotel",
+                    }],
+                }
+                for day, city in enumerate(
+                    [
+                        "Jaipur",
+                        "Jaipur",
+                        "Jodhpur",
+                        "Jodhpur",
+                        "Jodhpur",
+                        "Udaipur",
+                        "Udaipur",
+                        "Udaipur",
+                    ],
+                    start=1,
+                )
+            ],
+        })})
+
+        assert json.loads(get_trip_plan.invoke({})) == before
+        assert result.startswith(
+            "Error: itinerary sanity validation rejected this update before persistence."
+        )
+        assert "Day(s) 3, 4, 5, 6, 7, 8 name no bookable property" in result
+
     def test_update_trip_plan_replaces_placeholder_anchors_with_concrete_hotel(self):
         create_trip_plan.invoke({
             "destination": "Mauritius",
