@@ -103,6 +103,27 @@ def test_a_stop_after_the_flight_home_breaks_the_envelope(located: None) -> None
     assert any("Mandu Fort" in violation.message for violation in violations)
 
 
+def test_a_home_arrival_endpoint_is_not_destination_activity_after_departure() -> None:
+    returned = plan(
+        [
+            [stop("Drive: Bengaluru to Indore", "08:00", "transport", 600)],
+            [
+                stop("Rajwada Palace", "09:00"),
+                stop("Drive: Indore to Bengaluru", "12:00", "transport", 600),
+                stop("Bengaluru", "22:00", "other"),
+            ],
+        ]
+    )
+
+    violations = trip_guard.validate_plan(returned)
+
+    assert not [
+        violation
+        for violation in violations
+        if violation.code == "I1" and violation.stop == "Bengaluru"
+    ]
+
+
 def test_an_outbound_leg_without_a_return_is_reported() -> None:
     one_way = plan([[stop("Flight Bengaluru → Indore", "09:00", "flight", 120)]])
     assert any(violation.code == "I7" for violation in trip_guard.validate_plan(one_way))
@@ -950,6 +971,5 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
-
 
 

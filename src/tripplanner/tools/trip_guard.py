@@ -228,6 +228,15 @@ def _duration_of(stop: Any) -> int:
     return DEFAULT_VISIT_MIN
 
 
+def _is_home_endpoint(stop: Any, origin: str) -> bool:
+    """True for a non-place row that explicitly marks arrival back at the origin."""
+    if _stop_kind(stop) in _PLACE_KINDS | {"hotel"}:
+        return False
+    home = _normalize_city(origin, first_part=True)
+    name = _normalize_city(_stop_name(stop))
+    return bool(home and name and (name == home or re.search(rf"\b{re.escape(home)}\b", name)))
+
+
 def _time_of(stop: Any) -> int | None:
     if not isinstance(stop, dict):
         return None
@@ -382,7 +391,7 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
     env = envelope(plan)
     structured = days_of(plan)
 
-    out.extend(_envelope_violations(structured, env))
+    out.extend(_envelope_violations(structured, env, str(plan.get("origin") or "")))
     out.extend(_presence_violations(structured, env))
     out.extend(_hours_violations(structured, destination, day_dates(plan)))
     out.extend(_availability_violations(structured, destination))
@@ -396,12 +405,12 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
 
 
 def _envelope_violations(
-    structured: list[tuple[int, dict[str, Any], list[Any]]], env: Envelope
+    structured: list[tuple[int, dict[str, Any], list[Any]]], env: Envelope, origin: str
 ) -> list[Violation]:
     out: list[Violation] = []
     for day, _entry, stops in structured:
         for stop in stops:
-            if _stop_kind(stop) in _TRANSPORT_KINDS:
+            if _stop_kind(stop) in _TRANSPORT_KINDS or _is_home_endpoint(stop, origin):
                 continue
             start = _time_of(stop)
             if start is None:
