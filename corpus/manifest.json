@@ -2105,10 +2105,10 @@
       "shape": "India: Delhi, Agra and Jaipur, history and culture, young-family, 5 days",
       "trip_id": "delhi_agra_jaipur_2027-02-05_2027-02-10",
       "days": 6,
-      "stops": 34,
-      "spent_inr": 48.62,
-      "seconds": 298.6,
-      "user_id": "corpus-india-golden-triangle-heritage-young-family-5d-66aa58e547c8",
+      "stops": 29,
+      "spent_inr": 58.45,
+      "seconds": 599.4,
+      "user_id": "corpus-india-golden-triangle-heritage-young-family-5d-aa6d1857b973",
       "destination": "india:golden-triangle",
       "emphasis": "heritage",
       "party": "young-family",
@@ -2122,9 +2122,9 @@
         "Evidence posture (high inclusion; medium shape): Official UP district data records 11,138,316 domestic and 970,901 foreign tourist visits to Agra in 2023; circuit shape is an inference."
       ],
       "budget_evidence_required": false,
-      "at": "2026-08-25T11:57:39.501495+00:00",
-      "generation_run_id": "2026-08-25T115240.453595Z",
-      "generated_by_commit": "c8f4473c5fa8eb4e7982c8b54f1d16c3f7fae350"
+      "at": "2026-08-25T12:52:15.807456+00:00",
+      "generation_run_id": "2026-08-25T124215.727244Z",
+      "generated_by_commit": "97b572dcf8cad104d6e9b216e5d78529c52b997e"
     }
   ]
 }

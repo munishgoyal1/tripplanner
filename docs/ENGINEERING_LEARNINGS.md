@@ -1279,6 +1279,23 @@ the outcome.
   explicit affected day, derive named days from deterministic finding text when
   necessary, and fall back to the itinerary pane only when no precise day exists.
 
+## 2026-08-25 - A Model Client Without An Explicit Timeout Hides As Slowness
+
+- A corpus turn wedged inside one Azure OpenAI call for sixteen minutes and
+  emitted no log line, no error, and no usage record. The only visible symptom
+  was the client-side `TimeoutError` a corpus run reports after its own long
+  request timeout, which reads as "the planner is slow" rather than "one call
+  never returned".
+- The OpenAI SDK defaults to a 600s read timeout and applies the configured
+  retry count on top of it, so a single stalled turn can hold a run for the
+  better part of an hour while the process still answers `/health`.
+- Set an explicit `timeout` on the model client sized against observed healthy
+  latency, not against the worst case you can imagine. Healthy planning calls
+  here finish under 40s, so 90s with three retries turns an invisible hour-long
+  stall into a retryable error within minutes.
+- When a long-running job reports only a client-side timeout, check the server
+  log's last timestamp against wall clock before blaming throughput. A gap with
+  no terminal event means a hung call, not slow work.
 ## 2026-08-25 - Unversioned Project Provisioning Drifts Where Deploys Cannot
 
 - Prod alone failed every Google Places call while canary, which tracks prod

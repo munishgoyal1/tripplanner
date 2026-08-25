@@ -223,7 +223,15 @@ def _build_llm(
         azure_deployment=deployment,
         api_version=api_version,
         temperature=0.3,
-        max_retries=5,
+        # The SDK default is a 600s read timeout with no cap on total wall time,
+        # so a wedged Azure call silently burned an hour per turn and looked like
+        # a hung corpus run. Healthy calls finish in under 40s, so 90s is generous
+        # and a stall now surfaces as a retryable error within a few minutes.
+        timeout=90.0,
+        max_retries=3,
+        # A degenerate turn once emitted the full 32k output window in one call,
+        # costing $0.43 and consuming the per-minute token quota other turns need.
+        max_tokens=8192,
         # Stream tokens so astream_events emits on_chat_model_stream chunks —
         # this is what lets the web UIs render the reply as it's typed instead
         # of waiting for the whole turn (which felt "stuck").
