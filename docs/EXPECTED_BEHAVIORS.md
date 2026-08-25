@@ -30,8 +30,10 @@ either enabled (the default) or disabled.
   them unambiguous; two adults are not assumed to be a couple. With smart defaults
   disabled, the same review may include other facts when an
   unresolved fact would materially improve the trip. Explicit prompt values and
-  configured preferences are not asked again, while a destination-only trip never
-  invents an origin. Any review preserves prefilled values and a skip/default path.
+  configured preferences are not asked again. When neither an origin nor self-arranged
+  arrival is known, the review requires the traveller to enter their city or choose
+  destination-only travel; that choice is persisted and an origin is never invented.
+  Other reviews preserve prefilled values and a skip/default path.
 - Submitted party counts and relationship are persisted with the trip, used for
   whole-party budgets and provider occupancy, and shape lodging, pace, transport,
   meal timing, accessibility, and age-appropriate experiences.

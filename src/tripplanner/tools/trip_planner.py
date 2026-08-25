@@ -1950,6 +1950,7 @@ def create_trip_plan(
     departure_date: str,
     return_date: str,
     origin: str = "",
+    travel_scope: str = "",
     travelers_summary: str = "",
     notes: str = "",
     planning_recommendation_json: str = "",
@@ -1961,6 +1962,8 @@ def create_trip_plan(
         departure_date: YYYY-MM-DD.
         return_date: YYYY-MM-DD.
         origin: Departure city (defaults from preferences if not provided).
+        travel_scope: "round_trip" when planning travel from the origin, or
+            "destination_only" when the traveller will arrange their own way there.
         travelers_summary: Name everyone travelling, e.g. 'Munish, Priya, and
             Aarav (5)'. Names matter: per-traveller passport and visa checks
             only run for people this text names. Fall back to counts
@@ -1969,9 +1972,14 @@ def create_trip_plan(
         planning_recommendation_json: Complete JSON returned by recommend_trip_duration.
     """
     prefs = load_preferences()
+    travel_scope = travel_scope.strip().lower()
+    if travel_scope not in {"", "round_trip", "destination_only"}:
+        return "Error: travel_scope must be round_trip or destination_only."
     origin_supplied = bool(origin.strip())
     profile = prefs.get("profile") or {}
-    if not origin_supplied:
+    if travel_scope == "destination_only":
+        origin = ""
+    elif not origin_supplied:
         home_city = str(profile.get("home_city") or "").strip()
         home_area = str(profile.get("home_area") or "").strip()
         origin = (
@@ -1979,6 +1987,8 @@ def create_trip_plan(
             if home_area and home_city and home_city.casefold() not in home_area.casefold()
             else home_area or home_city
         )
+    if not travel_scope and origin:
+        travel_scope = "round_trip"
     planning_recommendation: dict[str, Any] | None = None
     if planning_recommendation_json:
         try:
@@ -2010,6 +2020,8 @@ def create_trip_plan(
     if existing:
         if origin_supplied or not str(existing.get("origin") or "").strip():
             existing["origin"] = origin
+        if travel_scope:
+            existing["travel_scope"] = travel_scope
         if notes:
             existing["notes"] = notes
         if travelers_summary:
@@ -2036,6 +2048,7 @@ def create_trip_plan(
         "created_at": datetime.now().isoformat(),
         "destination": destination,
         "origin": origin,
+        "travel_scope": travel_scope,
         "departure_date": departure_date,
         "return_date": return_date,
         "travelers": travelers_summary,

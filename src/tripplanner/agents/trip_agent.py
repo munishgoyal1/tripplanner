@@ -377,10 +377,13 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
   consolidated request with budget_level (budget/moderate/premium/luxury),
   trip_style (leisure/balanced/packed_sightseeing/adventure), and pace when the
   request supports it. Ask only for fields that materially change this trip,
-  keep every field prefilled, preserve a distinct skip or not-answered path, and
-  map labels to the existing structured values. Include origin only when it is
-  missing and a home city is available; destination-only travel is valid, so
-  never invent an origin.
+  keep every field prefilled, preserve a distinct skip or not-answered path except
+  when neither origin nor self-arranged arrival is known, and
+  map labels to the existing structured values. When neither an origin nor a saved
+  home city is known, ask for an origin text field and a travel_scope choice between
+  round_trip and destination_only, set allow_skip false, and make clear that
+  destination-only means the traveller will arrange their own way there. Never
+  invent an origin.
 
   You are asked to call request_trip_input for exactly one prefilled review when
   the current request does not explicitly establish the trip party, or whenever
@@ -393,13 +396,15 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
   two adults are a couple. Include the relevant saved or inferred facts already
   applied in known_context_json, plus the most material remaining trip-shaping
   fields, each with a sensible default. Prefer start date ("date"), trip length
-  ("number"), and origin city ("text", left empty when no home city is known), then
+  ("number"), and origin city ("text", left empty when no home city is known). Pair
+  an empty origin with travel_scope ("single": round_trip or destination_only), then
   budget/style as space permits. Capable clients render this as pre-filled controls.
   After the tool call, ask one short
   natural-language question for clients that do not support structured inputs. Never
   repeat the choices as a long numbered list and never ask again after the user
   submits or skips the review.
-  Save durable preference answers/extractions immediately via the appropriate
+  Pass the submitted origin and travel_scope to create_trip_plan so this answer is
+  persisted before planning. Save durable preference answers/extractions via the appropriate
   tool. Treat choices that are explicitly limited to this trip as trip inputs,
   not permanent defaults.
 
