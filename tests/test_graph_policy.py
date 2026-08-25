@@ -7,6 +7,7 @@ from tripplanner.graph_policy import (
     MAX_TOOL_PHASES_PER_TURN,
     resolve_completion_policy,
 )
+from tripplanner.tools.trip_validation import core_planning_completion_gaps
 
 
 def _tool_call(name: str, call_id: str) -> AIMessage:
@@ -109,6 +110,16 @@ def test_a_broad_new_trip_must_still_save_before_the_phase_budget_traps_it() -> 
     assert decision.forced_tool == "update_trip_plan"
     assert decision.requirement is not None
     assert "no itinerary" in decision.requirement
+
+
+def test_unstructured_days_do_not_satisfy_the_initial_itinerary_gate() -> None:
+    gaps = core_planning_completion_gaps({
+        "destination": "Nashik",
+        "day_wise_itinerary": [{"day": 1}],
+    })
+
+    assert len(gaps) == 1
+    assert "full structured day_wise_itinerary" in gaps[0]
 
 
 def test_the_phase_budget_ends_after_bounded_first_turn_save_attempts() -> None:

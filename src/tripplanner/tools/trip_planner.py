@@ -68,6 +68,7 @@ from tripplanner.tools.trip_validation import (  # noqa: F401
     assess_itinerary_change,
     core_planning_completion_gaps,
     finalization_gaps,
+    has_structured_itinerary,
     persistence_sanity_errors,
     planning_completion_gaps,
 )
@@ -2232,6 +2233,12 @@ def update_trip_plan(updates_json: str) -> str:
         updates = json.loads(updates_json)
     except json.JSONDecodeError:
         return "Error: invalid JSON."
+
+    if "day_wise_itinerary" in updates and not has_structured_itinerary(updates):
+        return (
+            "Error: day_wise_itinerary must contain the full structured itinerary "
+            "with a stops list for every day. The saved itinerary was not changed."
+        )
 
     validation_plan = dict(plan)
     if isinstance(updates.get("day_wise_itinerary"), list):
