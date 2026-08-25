@@ -113,16 +113,16 @@ is never a silent abandon:
 - Already integrated: the change stays in the batch. Withdrawal after acceptance
   is a revert, which is its own issue.
 
-## The producer
+## The Quality Issue Producer
 
-The producer is deterministic. It runs the existing read-only trip audit, which
-reads stored trips and fixtures and calls no model and no provider, then turns
-new finding groups into proposed issues.
+The producer is deterministic. It runs the existing read-only Trip Quality Audit,
+which reads stored trips and fixtures and calls no model and no provider, then
+turns new finding groups into proposed issues.
 
 Every audit, whether owner-run or automatic after an integrated fix, writes a
 dated immutable report and readable summary under `audit/reports/`, updates the
-compact local history index, and refreshes `audit/latest.json` for the Inspector.
-The automatic post-fix run replays the current stored corpus through the
+compact local history index, and refreshes `audit/latest.json` for the Quality Inspector.
+The automatic post-fix run replays the current Trip Quality Corpus through the
 integrated code. Finding exit code `1` is evidence, not an integration failure.
 
 The producer follows these rules because breaking them would quietly defeat the purpose:
@@ -160,10 +160,10 @@ known), publish immutable PNGs on the repository's `audit-evidence` branch, and
 link them from the issue. Capture is opt-in because it requires the primary stack,
 Node.js, Chrome, and GitHub write access. A failed capture never blocks issue
 production or fabricates evidence; the issue falls back to its authoritative
-local trip or Inspector record.
+local trip or Quality Inspector record.
 
-Corpus generation spends real money and needs a running API, so it is never part
-of the automatic loop. The owner runs `Refresh-Audit-Corpus.command` when fresh
+Trip Quality Corpus generation spends real money and needs a running API, so it
+is never part of the automatic loop. The owner runs `Refresh-Quality-Corpus.command` when fresh
 planner evidence is needed; it uses the configured resumable corpus budget,
 retains successful trips in the global corpus, then writes the normal dated
 audit report. Routine fixes rely on regression tests and automatic historical
@@ -350,7 +350,7 @@ One shared implementation, thin launchers on both platforms.
 | `Plan-Multiagent` | Dry run: what it *would* dispatch, and why it excluded the rest |
 | `Open-Coordinator` | Open the owner-facing coordinator chat in VS Code |
 | `Publish-Coordinator` | Merge Coordinator work through a PR, update primary and Coordinator lanes, then synchronize all sandboxes |
-| `Run-Audit-Producer` | One producer pass; `--dry-run` reports findings without opening issues, while `--screenshots` captures and publishes exact affected-day evidence |
+| `Run-Quality-Issue-Producer` | One producer pass; `--dry-run` reports findings without opening issues, while `--screenshots` captures and publishes exact affected-day evidence |
 
 Windows launchers are in `scripts/win/user/multiagent/`, macOS in
 `scripts/mac/user/multiagent/`, and both forward to `scripts/dev/multiagent.ps1`.

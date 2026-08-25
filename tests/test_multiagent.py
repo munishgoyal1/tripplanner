@@ -353,7 +353,11 @@ def test_audit_screenshot_captures_affected_days_and_uploads(monkeypatch, tmp_pa
     def fake_run(args, **_kwargs):  # type: ignore[no-untyped-def]
         calls.append(args)
         if "capture-audit-point.mjs" in " ".join(args):
-            output = next(value.removeprefix("--output=") for value in args if value.startswith("--output="))
+            output = next(
+                value.removeprefix("--output=")
+                for value in args
+                if value.startswith("--output=")
+            )
             Path(output).parent.mkdir(parents=True, exist_ok=True)
             Path(output).write_bytes(b"png")
         return subprocess.CompletedProcess(args, 0, stdout="{}", stderr="")
@@ -425,13 +429,13 @@ def test_integration_records_a_post_fix_audit_without_treating_findings_as_failu
     assert "post-fix audit recorded" in source
 
 
-def test_corpus_refresh_launchers_build_then_audit() -> None:
+def test_quality_corpus_refresh_launchers_build_then_audit() -> None:
     powershell = (DEV / "refresh-audit-corpus.ps1").read_text(encoding="utf-8")
     mac = (
-        ROOT / "scripts" / "mac" / "user" / "validation" / "Refresh-Audit-Corpus.command"
+        ROOT / "scripts" / "mac" / "user" / "quality" / "Refresh-Quality-Corpus.command"
     ).read_text(encoding="utf-8")
     windows = (
-        ROOT / "scripts" / "win" / "user" / "validation" / "Refresh-Audit-Corpus.cmd"
+        ROOT / "scripts" / "win" / "user" / "quality" / "Refresh-Quality-Corpus.cmd"
     ).read_text(encoding="utf-8")
 
     assert "build-corpus.ps1" in powershell
@@ -950,7 +954,7 @@ def test_every_launcher_pair_forwards_the_same_verb() -> None:
         "Plan-Multiagent": "plan",
         "Open-Coordinator": "coordinator",
         "Publish-Coordinator": "publish-coordinator",
-        "Run-Audit-Producer": "audit",
+        "Run-Quality-Issue-Producer": "audit",
     }
     for name, verb in verbs.items():
         windows = (
