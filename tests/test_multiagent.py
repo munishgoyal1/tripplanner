@@ -866,6 +866,63 @@ def test_restart_reconciles_a_stopped_assignment_from_its_transcript(
     assert labels == [(42, core.INTEGRATING)]
 
 
+def test_reportless_worker_recovers_an_issue_referenced_remote_push(
+    tmp_path, monkeypatch
+) -> None:
+    assignment = core.Assignment(
+        issue=42,
+        attempt=1,
+        slot="slot-1",
+        branch="multiagent/slot-1",
+        base_sha="base-sha",
+        state="stopped",
+    )
+    state = core.State(assignments=[assignment])
+    space = SimpleNamespace(transcripts=tmp_path, slot_path=lambda _slot: tmp_path)
+    labels: list[tuple[int, str | None]] = []
+    monkeypatch.setattr(runtime, "recover_reportless_push", lambda *_args: "pushed-sha")
+    monkeypatch.setattr(runtime, "confirm_worker_push", lambda *_args: True)
+    monkeypatch.setattr(
+        runtime,
+        "set_agent_state",
+        lambda _repo, number, wanted: labels.append((number, wanted)),
+    )
+
+    runtime.collect(space, state, "owner/repo")
+
+    assert assignment.state == "pushed"
+    assert assignment.pushed_sha == "pushed-sha"
+    assert "integration validation required" in assignment.validation
+    assert labels == [(42, core.INTEGRATING)]
+
+
+def test_reportless_push_requires_matching_issue_trailer(tmp_path, monkeypatch) -> None:
+    assignment = core.Assignment(
+        issue=42,
+        slot="slot-1",
+        branch="multiagent/slot-1",
+        base_sha="base-sha",
+    )
+    space = SimpleNamespace(slot_path=lambda _slot: tmp_path)
+
+    monkeypatch.setattr(
+        runtime,
+        "run",
+        lambda args, **_kwargs: subprocess.CompletedProcess(args, 0, "", ""),
+    )
+
+    def git(args: list[str], **_kwargs: object) -> str:
+        if args[0] == "rev-parse":
+            return "pushed-sha"
+        if args[0] == "show":
+            return "A useful commit without an issue trailer"
+        return ""
+
+    monkeypatch.setattr(runtime, "git", git)
+
+    assert runtime.recover_reportless_push(space, assignment) == ""
+
+
 def test_worker_push_is_verified_and_given_remote_tracking(tmp_path, monkeypatch) -> None:
     commands: list[list[str]] = []
     assignment = core.Assignment(
