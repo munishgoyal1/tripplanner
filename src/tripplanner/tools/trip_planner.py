@@ -1602,6 +1602,36 @@ def refresh_active_trip_facts(*, expected_updated_at: str = "") -> dict[str, Any
     }
 
 
+@_serialized_mutation
+def recheck_active_trip_prices(*, expected_updated_at: str = "") -> dict[str, Any]:
+    """Explicitly refresh stale quote evidence without changing trip selections."""
+    from tripplanner.decisions.price_recheck import recheck_prices
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+        }
+    outcome = recheck_prices(plan)
+    if outcome["results"]:
+        _save_active_trip(outcome["plan"])
+    return {
+        "ok": True,
+        "stale": False,
+        "message": (
+            "Rechecked the trip's stale provider prices."
+            if outcome["results"]
+            else "No stale finalized-trip prices need rechecking."
+        ),
+        "results": outcome["results"],
+        "rechecked": outcome["rechecked"],
+    }
+
+
 def _mirror_to_history(plan: dict[str, Any]) -> None:
     """Persist the plan into the per-user trips collection under its trip_id."""
     tid = plan.get("trip_id")

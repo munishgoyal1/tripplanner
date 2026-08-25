@@ -371,6 +371,11 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "cost_evidence": cost_evidence,
         "offer_comparisons": compare_trip_decisions(trip, benefits=offer_benefits),
         "price_rechecks": plan_price_rechecks(trip),
+        "price_recheck_results": [
+            row
+            for row in trip.get("price_recheck_results") or []
+            if isinstance(row, dict)
+        ],
         "cost_baseline": _build_cost_baseline(trip, symbol),
         "provenance": build_provenance(trip),
         "budget": build_budget(trip, cost_evidence=cost_evidence),

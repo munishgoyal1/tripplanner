@@ -837,6 +837,22 @@ def test_review_duration_only_speaks_from_structured_place_evidence(
     assert any("Google visitor summaries" in note for note in notes)
 
 
+def test_activity_provider_duration_can_ground_an_under_timed_visit() -> None:
+    under_timed = plan([[stop("Lisbon Food Tour", "10:00", "attraction", 45)]])
+    under_timed["selected_activities"] = [
+        {
+            "name": "Lisbon Food Tour",
+            "provider": "viator",
+            "duration_minutes": {"min": 120, "max": 180},
+        }
+    ]
+
+    notes = trip_effort.coherence_notes(under_timed)
+
+    assert any("45 minutes" in note and "2 hours" in note for note in notes)
+    assert any("viator activity listing" in note for note in notes)
+
+
 def test_the_effort_model_cannot_refuse_anything() -> None:
     public = {
         name

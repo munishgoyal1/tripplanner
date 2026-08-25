@@ -385,6 +385,11 @@ def coherence_notes(plan: dict[str, Any]) -> list[str]:
         for entry in (weather_root.get("days") or [])
         if isinstance(entry, dict) and entry.get("date")
     }
+    selected_activity_evidence = {
+        str(item.get("name") or item.get("title") or "").strip().casefold(): item
+        for item in plan.get("selected_activities") or []
+        if isinstance(item, dict)
+    }
 
     for day, day_entry, stops in days_of(plan):
         timed = sorted(
@@ -451,6 +456,21 @@ def coherence_notes(plan: dict[str, Any]) -> list[str]:
                 if isinstance(summary, dict)
                 else ""
             )
+            if not source:
+                activity = selected_activity_evidence.get(_stop_name(stop).strip().casefold())
+                duration = activity.get("duration_minutes") if isinstance(activity, dict) else None
+                if isinstance(duration, dict):
+                    typical = duration.get("min")
+                    activity_source = activity.get("provider") or (
+                        activity.get("source", {}).get("provider")
+                        if isinstance(activity.get("source"), dict)
+                        else ""
+                    )
+                    source = (
+                        f"{str(activity_source).strip()} activity listing"
+                        if str(activity_source).strip()
+                        else ""
+                    )
             planned = _duration_of(stop)
             if (
                 source

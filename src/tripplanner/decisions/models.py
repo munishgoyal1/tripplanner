@@ -119,6 +119,7 @@ class LodgingFacts(BaseModel):
     rating: float | None = None
     review_count: int | None = None
     provider_ref: dict[str, str] = Field(default_factory=dict)
+    search_context: dict[str, Any] = Field(default_factory=dict)
 
 
 class FlightFacts(BaseModel):

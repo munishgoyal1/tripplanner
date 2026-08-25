@@ -212,6 +212,7 @@ export interface TripOverview {
     } | null;
   }>;
   price_rechecks?: Array<{ kind: string; provider: string; reason: string }>;
+  price_recheck_results?: PriceRecheckResult[];
   cost_baseline?: CostBaseline | null;
   provenance?: ProvenanceRow[];
   budget?: Budget | null;
@@ -657,6 +658,28 @@ export interface TripFreshnessResult extends PlaceFactFreshness {
   stale: boolean;
   message: string;
   verification: TripVerification;
+}
+
+export interface PriceRecheckResult {
+  kind: string;
+  provider: string;
+  status: "live" | "unavailable" | "provider_error";
+  reason?: string;
+  label?: string;
+  previous_total?: number | null;
+  current_total?: number | null;
+  delta?: number | null;
+  currency?: string;
+  observed_at: string;
+}
+
+export interface TripPriceRecheckResult {
+  ok: boolean;
+  stale: boolean;
+  message: string;
+  rechecked: number;
+  results: PriceRecheckResult[];
+  view?: TripView;
 }
 
 export interface RepairMove {
