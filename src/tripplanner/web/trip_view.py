@@ -1120,7 +1120,12 @@ def _transport_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
 
     departure_minutes = _clock_minutes(departure)
     arrival_estimated = False
-    if not arrival and departure_minutes is not None:
+    if (
+        not arrival
+        and departure_minutes is not None
+        and isinstance(duration, (int, float))
+        and duration > 0
+    ):
         arrival = _clock_display(departure_minutes + int(duration))
         stop["arrival_time"] = arrival
         stop["arrival_time_estimated"] = True
