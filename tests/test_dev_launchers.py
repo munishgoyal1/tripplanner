@@ -3,6 +3,24 @@ from __future__ import annotations
 from pathlib import Path
 
 
+def test_owner_quality_launchers_are_consolidated_in_one_folder() -> None:
+    root = Path(__file__).parents[1]
+
+    for platform, suffix in (("mac", ".command"), ("win", ".cmd")):
+        user_root = root / "scripts" / platform / "user"
+        quality = user_root / "quality"
+
+        assert not (user_root / "debug").exists()
+        for name in (
+            "Capture-Screens",
+            "Clear-TripRecorder",
+            "Maintain-TripRecorder",
+            "Restore-TripRecorder",
+            "Show-TripRecorder",
+        ):
+            assert (quality / f"{name}{suffix}").is_file()
+
+
 def test_primary_master_launchers_are_named_and_wired_consistently() -> None:
     root = Path(__file__).parents[1]
     run_script = (root / "scripts" / "dev" / "run-latest-master.ps1").read_text(encoding="utf-8")
