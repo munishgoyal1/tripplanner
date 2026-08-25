@@ -2072,6 +2072,33 @@
       "party": "three-generation",
       "signature": "nepal|accessible|three-generation|7",
       "at": "2026-08-18T16:59:08.054061+00:00"
+    },
+    {
+      "slug": "india-outbound-bali-honeymoon-couple-7d",
+      "shape": "India outbound: Bali, honeymoon and private downtime, couple, 7 days",
+      "trip_id": "bali_2027-06-02_2027-06-09",
+      "days": 7,
+      "stops": 24,
+      "spent_inr": 40.38,
+      "seconds": 480.9,
+      "user_id": "corpus-india-outbound-bali-honeymoon-couple-7d",
+      "destination": "india-outbound:bali",
+      "emphasis": "honeymoon",
+      "party": "couple",
+      "signature": "india-outbound:bali|honeymoon|couple|7",
+      "scenario_expectations": [
+        "Keep the destination scope to Bali.",
+        "Plan appropriately for 2 adults travelling as a couple on Indian passports.",
+        "Prioritize romantic stays, privacy, downtime and one special experience.",
+        "Keep the requested 7-day duration.",
+        "Do not promise visa eligibility, approval, fees or processing time from static data.",
+        "Heuristic audience rationale: Privacy, stays and transfers define the honeymoon.",
+        "Evidence posture (medium-low): Strong leisure archetype catalog prior; official statistics extraction was blocked."
+      ],
+      "budget_evidence_required": false,
+      "at": "2026-08-24T16:36:30.735932+00:00",
+      "generation_run_id": "2026-08-24T162247.964552Z",
+      "generated_by_commit": "ffc3e13c50bca19d989261f9354183b390d7affe"
     }
   ]
 }
