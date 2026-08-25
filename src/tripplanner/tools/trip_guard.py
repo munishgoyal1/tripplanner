@@ -847,6 +847,14 @@ def _return_violations(plan: dict[str, Any], env: Envelope) -> list[Violation]:
     destination = str(plan.get("destination") or "").strip()
     if not origin or not destination or origin.casefold() == destination.casefold():
         return []
+    if env.arrival_day is None and env.departure_day is not None:
+        return [
+            Violation(
+                "I7",
+                "Return coverage",
+                f"The return leg from {destination} has no matching outbound from {origin}.",
+            )
+        ]
     if env.arrival_day is None or env.departure_day is not None:
         return []
     return [
