@@ -269,6 +269,60 @@ def test_audit_content_is_fenced_as_data_not_instructions() -> None:
     assert "```text" in body
 
 
+def test_audit_issue_gives_the_owner_concrete_ux_review_context() -> None:
+    group = {
+        "rule": "R2",
+        "title": "Render",
+        "statement": "Every itinerary stop should show a usable time.",
+        "severity": "report",
+        "evaluated_in": "tripplanner.validation.render",
+        "symptom": "Day N stop has no visible time",
+        "count": 3,
+        "example": "Day 2 stop Ubud Palace has no visible time",
+        "representative": {
+            "record_id": "cosmos:trip-42",
+            "day": 2,
+            "provenance": "sandbox-1",
+            "destination": "Bali",
+            "departure_date": "2026-09-10",
+            "return_date": "2026-09-16",
+            "user_id": "google-owner",
+            "trip_id": "trip-42",
+            "openable": True,
+        },
+        "screenshot_url": "https://example.test/audit/r2.png",
+    }
+
+    body = core.audit_issue_body(group, corpus_size=12, sources=["sandbox-1"])
+
+    assert (
+        "**Expected traveller experience:** Every itinerary stop should show a usable time."
+        in body
+    )
+    assert "**Observed UX symptom:** Day N stop has no visible time" in body
+    assert "**Destination:** Bali" in body
+    assert "**Affected day:** 2" in body
+    assert "inspect=google-owner&trip=trip-42" in body
+    assert "![Representative audit screenshot](https://example.test/audit/r2.png)" in body
+
+
+def test_audit_issue_explains_when_visual_evidence_cannot_be_opened() -> None:
+    group = {
+        "rule": "I9",
+        "example": "No travel time",
+        "representative": {
+            "record_id": "fixture:trip",
+            "provenance": "fixture",
+            "openable": False,
+        },
+    }
+
+    body = core.audit_issue_body(group, corpus_size=1, sources=["fixture"])
+
+    assert "cannot be opened directly" in body
+    assert "No static screenshot was published" in body
+
+
 def test_the_producer_does_not_cap_new_finding_groups() -> None:
     groups = [
         {"rule": "A", "severity": "info", "count": 99},

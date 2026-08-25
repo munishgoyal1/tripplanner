@@ -250,6 +250,13 @@ def gh_comment(repo: str, number: int, body: str) -> None:
     run(["gh", "issue", "comment", str(number), "--repo", repo, "--body", core.redact(body)])
 
 
+def gh_replace_body(repo: str, number: int, body: str) -> None:
+    run([
+        "gh", "issue", "edit", str(number), "--repo", repo,
+        "--body", core.redact(body),
+    ])
+
+
 def set_agent_state(repo: str, number: int, wanted: str | None, *, lane: str = "") -> None:
     """Agent labels are a state, so the previous one always comes off."""
     remove = [label for label in core.AGENT_STATES if label != wanted]
@@ -1234,11 +1241,17 @@ def cmd_audit(space: Workspace, args: argparse.Namespace) -> int:
             "--json", "number,state", "--limit", "5",
         ])
         found = json.loads(existing.stdout or "[]") if existing.returncode == 0 else []
-        if any(str(item.get("state", "")).lower() == "open" for item in found):
+        open_match = next(
+            (item for item in found if str(item.get("state", "")).lower() == "open"),
+            None,
+        )
+        if open_match:
+            gh_replace_body(repo, int(open_match["number"]), body)
             log(f"  already open   {mark}")
             continue
         if found:
             number = found[0]["number"]
+            gh_replace_body(repo, int(number), body)
             run(["gh", "issue", "reopen", str(number), "--repo", repo])
             gh_comment(repo, number, "This finding recurs in the latest audit.")
             log(f"  reopened #{number}  {mark}")
