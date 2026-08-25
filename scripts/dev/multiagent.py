@@ -428,10 +428,10 @@ def park_slot(space: Workspace, state: core.State, slot: str) -> bool:
 
 
 def park_released_slots(space: Workspace, state: core.State) -> None:
-    busy = state.busy_slots()
+    held = state.held_slots()
     for index in range(1, SLOT_COUNT + 1):
         slot = f"slot-{index}"
-        if slot in busy:
+        if slot in held:
             continue
         park_slot(space, state, slot)
 
@@ -669,8 +669,8 @@ def batch_in_flight(state: core.State) -> bool:
 
 def dispatch(space: Workspace, state: core.State, repo: str) -> None:
     free = [f"slot-{index}" for index in range(1, SLOT_COUNT + 1)]
-    busy = state.busy_slots()
-    free = [slot for slot in free if slot not in busy]
+    held = state.held_slots()
+    free = [slot for slot in free if slot not in held]
     if not free:
         return
 

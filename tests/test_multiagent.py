@@ -937,6 +937,14 @@ def test_reportless_push_requires_matching_issue_trailer(tmp_path, monkeypatch) 
     assert runtime.recover_reportless_push(space, assignment) == ""
 
 
+def test_a_slot_is_reserved_until_its_pushed_commit_is_integrated() -> None:
+    """Reusing the slot would force-reset the branch holding unintegrated work."""
+    state = core.State(assignments=[core.Assignment(issue=42, slot="slot-1", state="pushed")])
+
+    assert state.held_slots() == {"slot-1"}
+    assert state.busy_slots() == set()
+
+
 def test_a_slow_command_fails_instead_of_killing_the_controller(monkeypatch) -> None:
     """TimeoutExpired escapes the cycle's except clause, so run() must absorb it."""
 

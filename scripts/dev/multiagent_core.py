@@ -672,6 +672,12 @@ class State:
     def busy_slots(self) -> set[str]:
         return {item.slot for item in self.active()}
 
+    def held_slots(self) -> set[str]:
+        """Slots that must keep their branch, including work pushed but not yet integrated."""
+        return self.busy_slots() | {
+            item.slot for item in self.assignments if item.state == "pushed"
+        }
+
     def for_issue(self, number: int) -> Assignment | None:
         matches = [item for item in self.assignments if item.issue == number]
         return matches[-1] if matches else None
