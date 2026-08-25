@@ -410,6 +410,16 @@ def test_a_place_the_provider_swapped_for_another_is_reported() -> None:
     assert [finding.rule for finding in reported] == [render.RULE_UNMAPPED]
 
 
+def test_a_generic_activity_with_an_explicit_map_explanation_is_not_reported() -> None:
+    view = {
+        "unmapped_stops": [
+            {"name": "Scuba Diving Centre", "day": 5, "reason": "not_a_place"}
+        ]
+    }
+
+    assert render._unmapped_findings(_record(), view, []) == []
+
+
 # ---- metamorphic ----------------------------------------------------------
 
 

@@ -37,6 +37,7 @@ class TestStopPlaceTier:
             "Check in and relax",
             "Lunch near the hotel",
             "Shopping",
+            "Scuba Diving Centre",
         ):
             assert stop_place_tier(name, "attraction") == LABEL
 
@@ -121,6 +122,26 @@ class TestUnmappedStops:
         reported = {stop["name"]: stop for stop in view["unmapped_stops"]}
         assert reported["Dinner"]["reason"] == "not_a_place"
         assert reported["Dinner"]["tier"] == LABEL
+
+    def test_a_generic_activity_centre_explains_why_it_has_no_pin(
+        self, _paris: None, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        view = _map_with(
+            monkeypatch,
+            [{"name": "Scuba Diving Centre", "kind": "attraction"}],
+        )
+
+        assert "Scuba Diving Centre" not in {pin["name"] for pin in view["pins"]}
+        assert view["unmapped_stops"] == [
+            {
+                "name": "Scuba Diving Centre",
+                "kind": "attraction",
+                "day": 1,
+                "tier": LABEL,
+                "reason": "not_a_place",
+                "candidate": None,
+            }
+        ]
 
     def test_a_stop_without_coordinates_is_reported(
         self, _paris: None, monkeypatch: pytest.MonkeyPatch

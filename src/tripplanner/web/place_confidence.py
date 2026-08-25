@@ -34,14 +34,15 @@ _ANCHOR_KINDS = frozenset({"hotel", "airport", "station", "bus_station", "origin
 _GENERIC_TOKENS = frozenset({
     "activities", "activity", "afternoon", "and", "area", "around", "arrival",
     "arrive", "beach", "breakfast", "brunch", "check", "checkin", "checkout",
-    "city", "day", "days", "depart", "departure", "dinner", "district",
+    "center", "centre", "city", "class", "day", "days", "depart", "departure",
+    "dinner", "district", "dive", "diving",
     "downtown", "drinks", "evening", "explore", "exploring", "for", "free",
     "from", "home", "hotel", "late", "leisure", "local", "lunch", "meal",
     "morning", "near", "nearby", "night", "old", "onward", "optional", "our",
-    "own", "pace", "pool", "relax", "rest", "return", "shop", "shopping",
-    "sightseeing", "snack", "stay", "stroll", "supper", "the", "time", "tour",
-    "town", "transfer", "travel", "trip", "visit", "walk", "walking", "with",
-    "your",
+    "own", "pace", "pool", "relax", "restaurant", "rest", "return", "scuba",
+    "shop", "shopping", "sightseeing", "snack", "spa", "stay", "stroll",
+    "supper", "tbd", "the", "time", "tour", "town", "transfer", "travel", "trip",
+    "visit", "walk", "walking", "with", "your",
 })
 
 
