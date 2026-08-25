@@ -81,6 +81,53 @@ def test_envelope_reads_both_legs_from_stop_names() -> None:
     assert env.bounded_start and env.bounded_end
 
 
+def test_envelope_prefers_explicit_local_arrival_time() -> None:
+    malaysia = plan(
+        [
+            [
+                {
+                    "name": "Flight: Chennai to Kuala Lumpur",
+                    "kind": "flight",
+                    "time": "06:30",
+                    "arrival_time": "13:00",
+                    "duration_min": 270,
+                },
+                stop("Petronas Twin Towers", "12:00"),
+            ]
+        ],
+        origin="Chennai",
+        destination="Malaysia (Kuala Lumpur & Penang)",
+    )
+
+    env = trip_guard.envelope(malaysia)
+    violations = trip_guard.validate_plan(malaysia)
+
+    assert env.arrival_end == 13 * 60
+    assert any(violation.code == "I1" for violation in violations)
+
+
+def test_envelope_supports_an_overnight_explicit_arrival_time() -> None:
+    overnight = plan(
+        [
+            [
+                {
+                    "name": "Flight: Bengaluru to Indore",
+                    "kind": "flight",
+                    "time": "23:00",
+                    "arrival_time": "01:00",
+                    "duration_min": 120,
+                }
+            ],
+            [stop("Rajwada Palace", "00:30")],
+        ]
+    )
+
+    env = trip_guard.envelope(overnight)
+
+    assert env.arrival_end == 25 * 60
+    assert any(violation.code == "I1" for violation in trip_guard.validate_plan(overnight))
+
+
 def test_a_sound_plan_reports_no_envelope_violation(located: None) -> None:
     codes = {violation.code for violation in trip_guard.validate_plan(ROUND_TRIP)}
     assert "I1" not in codes
