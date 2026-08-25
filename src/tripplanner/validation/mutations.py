@@ -15,6 +15,7 @@ from dataclasses import dataclass, replace
 from typing import Any
 
 from tripplanner.tools.trip_guard import leg_touches_home
+from tripplanner.tools.trip_validation import _itinerary_time_errors
 from tripplanner.validation.checks import check_record
 from tripplanner.validation.corpus import MUTATED, CorpusRecord
 from tripplanner.validation.findings import Finding, symptom_of
@@ -120,14 +121,21 @@ def reverse_days(plan: dict[str, Any]) -> Mutation | None:
 
 def break_time_order(plan: dict[str, Any]) -> Mutation | None:
     """Send the day's last stop back to dawn, before everything it follows."""
-    mutated = copy.deepcopy(plan)
-    for day in _days(mutated):
+    for day_index, day in enumerate(_days(plan)):
         stops = [stop for stop in (day.get("stops") or []) if isinstance(stop, dict)]
         timed = [stop for stop in stops if str(stop.get("time") or "").strip()]
-        if len(timed) < 3:
+        if len(timed) < 3 or _itinerary_time_errors([day]):
             continue
-        timed[-1]["time"] = "00:05"
-        return Mutation("break-time-order", DEGRADING, mutated)
+        mutated = copy.deepcopy(plan)
+        mutated_day = _days(mutated)[day_index]
+        mutated_timed = [
+            stop
+            for stop in (mutated_day.get("stops") or [])
+            if isinstance(stop, dict) and str(stop.get("time") or "").strip()
+        ]
+        mutated_timed[-1]["time"] = "00:05"
+        if _itinerary_time_errors([mutated_day]):
+            return Mutation("break-time-order", DEGRADING, mutated)
     return None
 
 
