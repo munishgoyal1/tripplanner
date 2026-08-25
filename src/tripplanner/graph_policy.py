@@ -561,6 +561,10 @@ def resolve_completion_policy(
         )
         else ()
     )
+    departure_journey_gap = any(
+        gap.startswith("Departure day has no explicit")
+        for gap in core_gaps_for_planning_turn
+    )
     # Asking the review and then planning anyway would make it decoration, so the
     # turn stops at the question until the traveller answers or skips it.
     if not proposal_only and awaiting_trip_kickoff_answer(messages):
@@ -585,9 +589,12 @@ def resolve_completion_policy(
             and not active_trip.get("day_wise_itinerary")
             and len(current_updates) < MAX_INITIAL_ITINERARY_UPDATES
         )
-        if not still_owes_first_save and not (
-            created_this_turn and core_gaps_for_planning_turn
-        ):
+        may_continue_past_budget = (
+            still_owes_first_save
+            or departure_journey_gap
+            or (created_this_turn and core_gaps_for_planning_turn)
+        )
+        if not may_continue_past_budget:
             try:
                 gaps = tuple(planning_completion_gaps(active_trip))
             except Exception:

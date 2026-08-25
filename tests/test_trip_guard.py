@@ -218,6 +218,25 @@ def test_a_regional_trip_missing_its_return_is_still_reported() -> None:
     assert "back to Bengaluru" in warnings[0]
 
 
+def test_missing_departure_journey_is_a_core_completion_gap() -> None:
+    missing_return = plan(
+        [
+            [
+                stop("Flight Bengaluru -> Indore", "09:00", "flight", 120),
+                stop("Hotel Sayaji", "14:00", "hotel", 45),
+            ],
+            [
+                stop("Hotel Sayaji", "08:00", "hotel", 30),
+                stop("Rajwada Palace", "10:00"),
+            ],
+        ]
+    )
+
+    gaps = trip_validation.core_planning_completion_gaps(missing_return)
+
+    assert any("Departure day has no explicit" in gap for gap in gaps)
+
+
 def test_a_stop_stranded_after_the_flight_home_blocks_completion(located: None) -> None:
     """A turn may not report success while the itinerary contradicts itself."""
     broken = plan(
@@ -980,4 +999,3 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
-
