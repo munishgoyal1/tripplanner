@@ -17,9 +17,36 @@
     "shutoffServiceAccount": "billing-shutoff",
     "globalBudget": { "name": "tripplanner-global-8000inr", "amount": 8000 },
     "environments": [
-      { "name": "local", "project": "aitripplanner-local", "budgetName": "tripplanner-local-2000inr", "budget": 2000 },
-      { "name": "canary", "project": "aitripplanner-canary", "budgetName": "tripplanner-canary-2000inr", "budget": 2000 },
-      { "name": "prod", "project": "project-8fc6cc28-590c-4f8b-987", "budgetName": "tripplanner-prod-2000inr", "budget": 2000 }
+      {
+        "name": "local",
+        "project": "aitripplanner-local",
+        "budgetName": "tripplanner-local-2000inr",
+        "budget": 2000,
+        "browserKey": "aitripplanner-local-browser",
+        "browserReferrers": ["http://localhost:5173/*", "http://127.0.0.1:5173/*"],
+        "serverKey": "aitripplanner-local-server"
+      },
+      {
+        "name": "canary",
+        "project": "aitripplanner-canary",
+        "budgetName": "tripplanner-canary-2000inr",
+        "budget": 2000,
+        "browserKey": "aitripplanner-canary-browser",
+        "browserReferrers": ["https://canary-app-zcebxnuakdwnu.ashysea-d232f837.eastus2.azurecontainerapps.io/*"],
+        "serverKey": "aitripplanner-canary-server"
+      },
+      {
+        "name": "prod",
+        "project": "project-8fc6cc28-590c-4f8b-987",
+        "budgetName": "tripplanner-prod-2000inr",
+        "budget": 2000,
+        "browserKey": "aitripplanner-prod-browser",
+        "browserReferrers": [
+          "https://aitripplanner.co/*",
+          "https://prod-app-f3ddjudq2rdt4.redglacier-42f3888f.eastus2.azurecontainerapps.io/*"
+        ],
+        "serverKey": "aitripplanner-prod-server"
+      }
     ],
     "requiredServices": [
       "places.googleapis.com",

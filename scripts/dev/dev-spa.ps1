@@ -110,6 +110,17 @@ function Get-DotEnvValue {
     return (($match -split "=", 2)[1].Trim()).Trim('"').Trim("'")
 }
 
+foreach ($name in @("GOOGLE_MAPS_BROWSER_KEY", "GOOGLE_PLACES_API_KEY")) {
+    $localValue = Get-DotEnvValue -Name $name
+    if (-not [string]::IsNullOrWhiteSpace($localValue)) {
+        $existing = [Environment]::GetEnvironmentVariable($name, "Process")
+        if ($null -ne $existing -and $existing -ne $localValue) {
+            Write-Host "Using local $name from .env instead of the inherited shell value." -ForegroundColor DarkGray
+        }
+        [Environment]::SetEnvironmentVariable($name, $localValue, "Process")
+    }
+}
+
 $configuredCosmosBackend = if ($PSBoundParameters.ContainsKey("CosmosBackend")) {
     $CosmosBackend
 } elseif (-not [string]::IsNullOrWhiteSpace($env:COSMOS_DEV_BACKEND)) {

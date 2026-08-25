@@ -352,6 +352,7 @@ $expectedOAuthCallback = "$($OAuthRedirectBase.TrimEnd('/'))/auth/callback/googl
 & "$PSScriptRoot/smoke-hosted.ps1" `
     -Environment production `
     -BaseUrl $deployment.containerAppUrl `
+    -BrowserBaseUrl "https://aitripplanner.co" `
     -ExpectedOAuthCallback $expectedOAuthCallback
 if ($LASTEXITCODE -ne 0) {
     throw "Production smoke tests failed. Run ./infra/rollback-prod.ps1 after confirming the failure."
