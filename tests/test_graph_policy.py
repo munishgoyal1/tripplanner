@@ -339,6 +339,42 @@ def test_first_turn_cannot_end_incomplete_before_phase_budget() -> None:
     assert "multiple activities but no named restaurant" in (decision.requirement or "")
 
 
+def test_planning_resume_cannot_end_without_arrival_journey() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Finish planning my Bali trip"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        ],
+        active_trip={
+            "destination": "Bali",
+            "origin": "Bangalore",
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Villa Kayu Raja", "kind": "hotel"},
+                        {"name": "Sambal Shrimp", "kind": "meal"},
+                    ],
+                },
+                {
+                    "day": 2,
+                    "stops": [
+                        {"name": "Villa Kayu Raja", "kind": "hotel"},
+                        {"name": "Seminyak Beach", "kind": "attraction"},
+                    ],
+                },
+            ],
+            "selected_hotels": [{"name": "Villa Kayu Raja"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "update_trip_plan"
+    assert "Bangalore to Bali" in (decision.requirement or "")
+
+
 def test_weather_can_remain_deferred_when_first_turn_core_plan_is_complete() -> None:
     decision = resolve_completion_policy(
         messages=[
