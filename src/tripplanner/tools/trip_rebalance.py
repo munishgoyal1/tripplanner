@@ -267,10 +267,15 @@ def _movable(
 def _reschedulable(
     plan: dict[str, Any], pinned: set[tuple[int, str]]
 ) -> list[tuple[int, dict[str, Any]]]:
-    fault_stops: set[tuple[int, str]] = set()
-    fault_targets = {
+    violations = trip_guard.validate_plan(plan)
+    fault_stops = {
         (violation.day, violation.stop)
-        for violation in trip_guard.validate_plan(plan)
+        for violation in violations
+        if violation.code == "I3"
+    }
+    overlap_targets = {
+        (violation.day, violation.stop)
+        for violation in violations
         if violation.code in {"I4", "I5"}
     }
     for day, _entry, stops in trip_guard.days_of(plan):
@@ -279,7 +284,7 @@ def _reschedulable(
             key=lambda stop: trip_guard._time_of(stop) or 0,
         )
         for current, following in zip(timed, timed[1:]):
-            if (day, _stop_name(following)) not in fault_targets:
+            if (day, _stop_name(following)) not in overlap_targets:
                 continue
             fault_stops.add((day, _stop_name(current)))
             fault_stops.add((day, _stop_name(following)))

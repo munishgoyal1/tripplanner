@@ -87,7 +87,7 @@ INVARIANTS: tuple[tuple[str, str, str], ...] = (
 #: A trip the traveller will reach on their own. Named by the user, never
 #: assumed, because the alternative is inventing a home city they never gave.
 DESTINATION_ONLY = "destination_only"
-KNOWN_FACT_CODES = frozenset({"I11", "I12", "I13"})
+KNOWN_FACT_CODES = frozenset({"I3", "I11", "I12", "I13"})
 
 
 def travel_scope(plan: dict[str, Any]) -> str:
@@ -996,22 +996,30 @@ def choose_placement(
                 )
                 continue
 
-            begins = window.start + inbound
-            begins = -(-begins // 5) * 5
-            local = begins - _abs(day, 0)
-            if hours and not any(
-                local >= opens and local + visit <= closes for opens, closes in hours
-            ):
-                rejections.append(
-                    Rejection(
-                        day,
-                        label,
-                        "I3",
-                        f"arriving {_fmt_hhmm(local)} does not fit "
-                        f"{facts.window_text(day_iso)}",
+            earliest = -(-(window.start + inbound) // 5) * 5
+            begins = earliest
+            if hours:
+                day_start = _abs(day, 0)
+                latest = window.end - outbound - visit
+                legal: list[int] = []
+                for opens, closes in hours:
+                    candidate = -(-max(earliest, day_start + opens) // 5) * 5
+                    if candidate <= latest and candidate + visit <= day_start + closes:
+                        legal.append(candidate)
+                if not legal:
+                    local = earliest - day_start
+                    rejections.append(
+                        Rejection(
+                            day,
+                            label,
+                            "I3",
+                            f"arriving {_fmt_hhmm(local)} does not fit "
+                            f"{facts.window_text(day_iso)}",
+                        )
                     )
-                )
-                continue
+                    continue
+                begins = min(legal)
+            local = begins - _abs(day, 0)
 
             detour = 0.0
             if coords and before_at:
