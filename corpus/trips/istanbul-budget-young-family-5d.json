@@ -139,8 +139,8 @@
     {
       "day": 3,
       "date": "2027-05-09",
-      "title": "Day 3 · Bosphorus & Spice Bazaar",
-      "summary": "Morning Bosphorus cruise, visit Spice Bazaar, and enjoy Turkish delights. Evening at leisure.",
+      "title": "Day 3 · Bosphorus, Spice Bazaar & Miniaturk",
+      "summary": "Take a Bosphorus cruise, visit Spice Bazaar, explore Miniaturk, and enjoy Turkish delights.",
       "stops": [
         {
           "name": "Sirkeci Mansion",
@@ -166,6 +166,12 @@
           "duration_min": 60
         },
         {
+          "name": "Miniaturk",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90
+        },
+        {
           "name": "Sirkeci Mansion",
           "kind": "hotel",
           "note": "Return and rest"
@@ -175,8 +181,8 @@
     {
       "day": 4,
       "date": "2027-05-10",
-      "title": "Day 4 · Kid-Friendly Istanbul",
-      "summary": "Visit Istanbul Aquarium, explore Miniaturk, and enjoy a family dinner.",
+      "title": "Day 4 · Istanbul Aquarium",
+      "summary": "Visit Istanbul Aquarium and enjoy a relaxed family lunch.",
       "stops": [
         {
           "name": "Sirkeci Mansion",
@@ -190,15 +196,9 @@
           "duration_min": 120
         },
         {
-          "name": "Miniaturk",
-          "kind": "attraction",
-          "time": "12:00",
-          "duration_min": 90
-        },
-        {
           "name": "Family Lunch (TBD)",
           "kind": "meal",
-          "time": "14:00",
+          "time": "12:00",
           "duration_min": 60
         },
         {
