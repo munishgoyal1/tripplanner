@@ -360,6 +360,103 @@ def test_audit_content_is_fenced_as_data_not_instructions() -> None:
     assert "```text" in body
 
 
+def test_audit_issue_records_generated_evidence_class() -> None:
+    group = {
+        "rule": "gap",
+        "example": "Hotel placeholder remains",
+        "representative": {"provenance": "synthetic"},
+    }
+
+    body = core.audit_issue_body(group, corpus_size=1, sources=["generated finals"])
+
+    assert "audit-evidence-class: generated" in body
+    assert core.audit_evidence_class(issue(1, body=body)) == "generated"
+
+
+def test_existing_audit_issue_infers_evidence_class_from_body() -> None:
+    item = issue(1, body="- **Evidence source:** synthetic\n")
+
+    assert core.audit_evidence_class(item) == "generated"
+
+
+def test_generated_audit_rejects_any_corpus_evidence_rewrite() -> None:
+    rejection = core.audit_fix_rejection(
+        audit_source=True,
+        evidence_class="generated",
+        changed_paths=(
+            "corpus/trips/capetown.json",
+            "src/tripplanner/graph_policy.py",
+            "tests/test_graph_policy.py",
+        ),
+    )
+
+    assert rejection
+    assert "failing artifact" in rejection
+
+
+def test_generated_audit_requires_executable_fix_and_regression_test() -> None:
+    assert core.audit_fix_rejection(
+        audit_source=True,
+        evidence_class="generated",
+        changed_paths=("docs/ENGINEERING_LEARNINGS.md", "tests/test_trip.py"),
+    ) == "the audit fix has no executable production or audit implementation change"
+    assert core.audit_fix_rejection(
+        audit_source=True,
+        evidence_class="generated",
+        changed_paths=("src/tripplanner/graph_policy.py",),
+    ) == "the audit fix has no focused regression test proving recurrence is prevented"
+
+
+def test_generated_audit_accepts_preventive_code_and_test_change() -> None:
+    assert core.audit_fix_rejection(
+        audit_source=True,
+        evidence_class="generated",
+        changed_paths=("src/tripplanner/graph_policy.py", "tests/test_graph_policy.py"),
+    ) is None
+
+
+def test_fixture_audit_allows_genuine_fixture_correction() -> None:
+    assert core.audit_fix_rejection(
+        audit_source=True,
+        evidence_class="fixture",
+        changed_paths=("scripts/dev/sandbox-seed/trips.json", "tests/test_trip_audit.py"),
+    ) is None
+
+
+def test_audit_worker_prompt_requires_root_cause_fix() -> None:
+    item = issue(
+        42,
+        core.BUG,
+        core.AUDIT_SOURCE,
+        body="audit-evidence-class: generated",
+    )
+
+    prompt = core.worker_prompt(
+        item,
+        slot="slot-1",
+        branch="multiagent/slot-1",
+        base_sha="a" * 40,
+        repo="owner/repo",
+    )
+
+    assert "Audit root-cause contract" in prompt
+    assert "Preserve a failing observation" in prompt
+    assert "Do not edit corpus/" in prompt
+
+
+def test_assignment_round_trip_preserves_audit_policy() -> None:
+    original = core.Assignment(
+        issue=42,
+        audit_source=True,
+        evidence_class="generated",
+    )
+
+    restored = core.Assignment.from_dict(original.to_dict())
+
+    assert restored.audit_source is True
+    assert restored.evidence_class == "generated"
+
+
 def test_audit_issue_gives_the_owner_concrete_ux_review_context() -> None:
     group = {
         "rule": "R2",

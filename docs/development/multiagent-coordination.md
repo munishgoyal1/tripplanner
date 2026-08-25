@@ -180,7 +180,20 @@ is never part of the automatic loop. The owner runs `Refresh-Quality-Corpus.comm
 planner evidence is needed; it uses the configured resumable corpus budget,
 retains successful trips in the global corpus, then writes the normal dated
 audit report. Routine fixes rely on regression tests and automatic historical
-replay unless they change planner generation behavior.
+replay.
+
+A defect in generated or persisted planner output is evidence about planner
+generation behavior. The failing artifact stays unchanged, and acceptance requires
+a preventive code, policy, validation, normalization, or completion-gate change
+with a focused regression test. The controller rejects an audit attempt that
+modifies `corpus/` or `audit/` for generated or persisted evidence, has no
+executable implementation change, or has no regression test.
+
+A corpus-only correction is valid only when the evidence itself is defective
+rather than the planner output it records: corrupt serialization, a schema
+migration, duplicate-representation drift, or an incorrect hand-authored golden
+fixture. Such a change must state that classification and add executable validation
+of the evidence contract; reducing the current finding count is not proof of a fix.
 
 ## Lanes, slots, and worktrees
 
