@@ -150,6 +150,40 @@ class TestUnmappedStops:
         assert "Eiffel Tower" in {pin["name"] for pin in view["pins"]}
         assert "Eiffel Tower" not in {stop["name"] for stop in view["unmapped_stops"]}
 
+    def test_a_fuzzy_hotel_match_in_france_is_not_pinned_for_gangtok(
+        self, _paris: None, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(
+            trip_view.places_cache,
+            "get_details",
+            lambda _name, _city: {
+                "place_id": "pid-france",
+                "name": "Park Hotel & Spa",
+                "address": "4 Avenue Jean Moulin, 39000 Lons-le-Saunier, France",
+                "lat": 46.671,
+                "lng": 5.551,
+            },
+        )
+        trip = {
+            **SAMPLE_TRIP,
+            "destination": "Gangtok & North Sikkim",
+            "selected_hotels": [{
+                "name": "Park Hotel Gangtok",
+                "city": "Gangtok",
+            }],
+            "day_wise_itinerary": [{
+                "day": 1,
+                "city": "Gangtok",
+                "stops": [{"name": "Park Hotel Gangtok", "kind": "hotel"}],
+            }],
+        }
+
+        view = trip_view.build_map_view(trip)
+
+        assert "Park Hotel Gangtok" not in {pin["name"] for pin in view["pins"]}
+        reported = {stop["name"]: stop for stop in view["unmapped_stops"]}
+        assert reported["Park Hotel Gangtok"]["reason"] == "wrong_location"
+
     def test_a_day_trip_uses_its_locality_for_places_lookup(
         self, _paris: None, monkeypatch: pytest.MonkeyPatch
     ) -> None:

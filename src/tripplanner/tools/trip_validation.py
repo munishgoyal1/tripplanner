@@ -599,9 +599,11 @@ _PERSISTENCE_SANITY_CODES = frozenset(
 
 def persistence_sanity_errors(plan: dict[str, Any]) -> list[str]:
     """Authoritative contradictions that must not cross the persistence boundary."""
+    selected_hotels = plan.get("selected_hotels")
+    has_selected_hotel = isinstance(selected_hotels, list) and bool(selected_hotels)
     errors = [
         *_itinerary_time_errors(plan.get("day_wise_itinerary")),
-        *_lodging_name_warnings(plan, include_placeholders=False),
+        *_lodging_name_warnings(plan, include_placeholders=has_selected_hotel),
         *(
             violation.message
             for violation in validate_plan(plan)
