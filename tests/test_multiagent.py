@@ -302,7 +302,8 @@ def test_audit_issue_gives_the_owner_concrete_ux_review_context() -> None:
     assert "**Observed UX symptom:** Day N stop has no visible time" in body
     assert "**Destination:** Bali" in body
     assert "**Affected day:** 2" in body
-    assert "inspect=google-owner&trip=trip-42" in body
+    assert "http://localhost:5173/planner?" in body
+    assert "inspect=google-owner&trip=trip-42&record=cosmos%3Atrip-42" in body
     assert "![Representative audit screenshot](https://example.test/audit/r2.png)" in body
 
 

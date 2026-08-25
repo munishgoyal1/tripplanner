@@ -15,6 +15,7 @@ const RESTORE_KEY = "tripplanner_inspect_restore";
 export type InspectRequest = {
   userId: string;
   tripId: string | null;
+  recordId: string | null;
 };
 
 export function debugToolsEnabled(): boolean {
@@ -25,7 +26,11 @@ export function readInspectRequest(search: string): InspectRequest | null {
   const params = new URLSearchParams(search);
   const userId = (params.get("inspect") || "").trim();
   if (!userId) return null;
-  return { userId, tripId: (params.get("trip") || "").trim() || null };
+  return {
+    userId,
+    tripId: (params.get("trip") || "").trim() || null,
+    recordId: (params.get("record") || "").trim() || null,
+  };
 }
 
 /** Adopt the inspected identity. Returns null when nothing was asked for. */

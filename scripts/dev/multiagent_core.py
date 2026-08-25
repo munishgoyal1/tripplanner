@@ -333,11 +333,12 @@ def audit_issue_body(group: dict, *, corpus_size: int, sources: list[str]) -> st
             {
                 "inspect": str(representative.get("user_id") or ""),
                 "trip": str(representative.get("trip_id") or ""),
+                "record": str(representative.get("record_id") or ""),
             }
         )
         review_lines.extend(
             (
-                f"[Open the representative trip locally](http://localhost:5173/?{query})",
+                f"[Open the representative trip locally](http://localhost:5173/planner?{query})",
                 "",
                 "Start the primary stack first if it is not already running. The link opens the",
                 "persisted trip under its owning local identity; inspect Itinerary, Map, Details,",

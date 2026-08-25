@@ -2172,6 +2172,44 @@ from tripplanner import storage_cosmos, user_context
 from tripplanner.tools import trip_planner
 
 
+def test_restore_inspection_trip_writes_identity_copy_without_archiving(monkeypatch) -> None:
+    source = {
+        "trip_id": "spiti_valley_2027-06-01_2027-06-08",
+        "user_id": "corpus-original",
+        "destination": "Spiti Valley",
+        "day_wise_itinerary": [{"day": 1, "stops": [{"name": "Narkanda"}]}],
+    }
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
+    monkeypatch.setattr(
+        trip_planner.debug_store,
+        "record_trip",
+        lambda *_args, **_kwargs: pytest.fail("inspection must not alter the debug archive"),
+    )
+    token = user_context._user_id.set("corpus-spiti-food-friends-7d")
+    try:
+        restored = trip_planner.restore_inspection_trip(
+            source,
+            "corpus-spiti-food-friends-7d",
+        )
+    finally:
+        user_context._user_id.reset(token)
+
+    active = json.loads(
+        (_TEST_DIR / "users/corpus-spiti-food-friends-7d/active_trip.json").read_text()
+    )
+    history = json.loads(
+        (
+            _TEST_DIR
+            / "users/corpus-spiti-food-friends-7d/trips"
+            / "spiti_valley_2027-06-01_2027-06-08.json"
+        ).read_text()
+    )
+    assert restored["user_id"] == "corpus-spiti-food-friends-7d"
+    assert active == history == restored
+    assert source["user_id"] == "corpus-original"
+    assert "updated_at" not in source
+
+
 class TestCosmosDispatch:
     """When Cosmos is enabled, read/write go through storage_cosmos, not files."""
 

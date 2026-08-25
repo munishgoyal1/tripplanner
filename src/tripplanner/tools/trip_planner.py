@@ -1402,6 +1402,28 @@ def _save_active_trip(plan: dict[str, Any]) -> None:
 
 
 @_serialized_mutation
+def restore_inspection_trip(plan: dict[str, Any], user_id: str) -> dict[str, Any]:
+    """Persist an audit artifact for local read-only inspection without archiving it."""
+    restored = deepcopy(plan)
+    restored["user_id"] = user_id
+    if not restored.get("trip_id"):
+        restored["trip_id"] = _compute_trip_id(restored)
+    _normalize_hotel_endpoints(restored)
+    restored["updated_at"] = datetime.now().isoformat()
+    trip_id = str(restored["trip_id"])
+    if storage_cosmos.is_enabled():
+        storage_cosmos.upsert_doc(
+            _COSMOS_USERS_CONTAINER, user_id, _ACTIVE_TRIP_DOC_ID, restored
+        )
+        storage_cosmos.upsert_doc(_COSMOS_TRIPS_CONTAINER, user_id, trip_id, restored)
+    else:
+        _ensure_dirs()
+        atomic_write_json(_resolve_active_trip_path(), restored, indent=2)
+        atomic_write_json(_resolve_trip_history_dir() / f"{trip_id}.json", restored, indent=2)
+    return restored
+
+
+@_serialized_mutation
 def record_trip_decision(decision) -> bool:
     """Attach a recorded comparison to the active trip.
 

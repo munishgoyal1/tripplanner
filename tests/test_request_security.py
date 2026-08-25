@@ -591,6 +591,73 @@ def test_inspection_may_still_choose_which_trip_to_look_at(monkeypatch) -> None:
     assert response.status_code != 409
 
 
+def test_local_inspection_restores_an_exact_audit_record(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from tripplanner.request_identity import INSPECT_HEADER
+    from tripplanner.tools import trip_planner
+    from tripplanner.validation import runner as audit_runner
+    from tripplanner.validation.corpus import CorpusRecord, ProvenanceLink
+    from tripplanner.web import trip_operations
+
+    record = CorpusRecord(
+        id="generated:spiti-food-friends-7d",
+        provenance="synthetic",
+        source="corpus/trips/spiti-food-friends-7d.json",
+        plan={
+            "trip_id": "spiti_valley_2027-06-01_2027-06-08",
+            "user_id": "corpus-original",
+            "destination": "Spiti Valley",
+            "day_wise_itinerary": [{"day": 1, "stops": [{"name": "Narkanda"}]}],
+        },
+        provenance_links=(
+            ProvenanceLink(
+                id="tripplanner-sbx-2-auto-validation:spiti_valley_2027-06-01_2027-06-08",
+                provenance="real",
+                source="tripplanner-sbx-2-auto-validation (saved)",
+            ),
+        ),
+    )
+    monkeypatch.setattr(audit_runner, "collect", lambda *_args, **_kwargs: ([record], [], []))
+    restored: dict[str, object] = {}
+
+    def restore(plan: dict, user_id: str) -> dict:  # type: ignore[type-arg]
+        restored.update(copy.deepcopy(plan))
+        restored["user_id"] = user_id
+        return restored
+
+    monkeypatch.setattr(trip_planner, "restore_inspection_trip", restore)
+    monkeypatch.setattr(
+        trip_operations,
+        "workspace_payload",
+        lambda plan: {"ok": True, "view": {"trip_id": plan["trip_id"]}, "itinerary": plan["day_wise_itinerary"]},
+    )
+    client = _local(monkeypatch)
+
+    response = client.post(
+        "/debug/audit/open",
+        json={
+            "user_id": "corpus-spiti-food-friends-7d",
+            "record_id": record.links[0].id,
+        },
+        headers={INSPECT_HEADER: "corpus-spiti-food-friends-7d"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["view"]["trip_id"] == "spiti_valley_2027-06-01_2027-06-08"
+    assert response.json()["itinerary"][0]["stops"][0]["name"] == "Narkanda"
+    assert restored["user_id"] == "corpus-spiti-food-friends-7d"
+
+
+def test_hosted_audit_record_restore_is_not_exposed(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    client = _hosted(monkeypatch)
+
+    response = client.post(
+        "/debug/audit/open",
+        json={"user_id": "corpus-probe", "record_id": "generated:probe"},
+    )
+
+    assert response.status_code == 404
+
+
 def test_a_normal_edit_is_untouched_by_the_guard(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     """Without the header nothing changes, so the guard cannot affect the product."""
     client = _local(monkeypatch)
