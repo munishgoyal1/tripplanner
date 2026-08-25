@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 from tripplanner.tools import trip_planner, user_preferences
-from tripplanner.tools.trip_guard import envelope
+from tripplanner.tools.trip_guard import envelope, validate_plan
 from tripplanner.tools.trip_planner import (
     add_selection,
     create_trip_plan,
@@ -731,3 +731,21 @@ def test_resetting_keeps_the_brief_and_drops_the_plan() -> None:
     assert after["selected_activities"] == []
     assert after["selected_flights"] == []
     assert json.loads(get_trip_plan.invoke({}))["day_wise_itinerary"] == []
+
+
+def test_resetting_keeps_destination_only_guard_coverage() -> None:
+    create_trip_plan.invoke(
+        {
+            "destination": "Udaipur",
+            "departure_date": "2026-11-07",
+            "return_date": "2026-11-09",
+            "travel_scope": "destination_only",
+        }
+    )
+
+    after = trip_planner.reset_active_trip()
+
+    assert after is not None
+    assert after["origin"] == ""
+    assert after["travel_scope"] == "destination_only"
+    assert not [violation for violation in validate_plan(after) if violation.code == "I10"]
