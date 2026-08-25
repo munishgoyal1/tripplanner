@@ -183,6 +183,45 @@ class TestUnmappedStops:
         assert "Anand Bhavan" in {pin["name"] for pin in view["pins"]}
         assert not view["unmapped_stops"]
 
+    def test_a_stop_retries_the_trip_destination_when_the_day_heading_has_no_location(
+        self, _paris: None, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        looked_up: list[tuple[str, str]] = []
+
+        def details(name: str, city: str) -> dict[str, Any] | None:
+            looked_up.append((name, city))
+            if name == "SeaShell Port Blair" and city == "Andaman (Port Blair & Havelock)":
+                return {
+                    "place_id": "pid-seashell",
+                    "name": "SeaShell, Port Blair",
+                    "lat": 11.6757343,
+                    "lng": 92.739726,
+                }
+            return None
+
+        monkeypatch.setattr(trip_view.places_cache, "get_details", details)
+        trip = {
+            **SAMPLE_TRIP,
+            "destination": "Andaman (Port Blair & Havelock)",
+            "selected_hotels": [{"name": "SeaShell Port Blair"}],
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "title": "Arrival in Port Blair",
+                    "stops": [{"name": "SeaShell Port Blair", "kind": "hotel"}],
+                }
+            ],
+        }
+
+        view = trip_view.build_map_view(trip)
+
+        assert looked_up[:2] == [
+            ("SeaShell Port Blair", "Arrival in Port Blair"),
+            ("SeaShell Port Blair", "Andaman (Port Blair & Havelock)"),
+        ]
+        assert "SeaShell Port Blair" in {pin["name"] for pin in view["pins"]}
+        assert not view["unmapped_stops"]
+
     def test_a_confirmed_binding_pins_the_stop_and_clears_the_report(
         self, _paris: None, monkeypatch: pytest.MonkeyPatch
     ) -> None:
