@@ -19,6 +19,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from tripplanner.web.map_pins import _haversine_km, _route_circuit_id
+from tripplanner.web.schedule import MAX_GROUND_LEG_KM
 from tripplanner.web.transport import (
     _canonical_transport_name,
     _intercity_transfer_mode,
@@ -42,7 +43,6 @@ _TRANSFER_DESTINATION_KINDS = {
 #: The journey a pair of terminals implies when the plan never named the leg.
 _TERMINAL_MODES = {"airport": "Flight", "station": "Train", "bus_station": "Bus"}
 IMPLIED_HOP_MIN_KM = 100.0
-MAX_TERMINAL_GROUND_KM = 300.0
 
 
 def implied_terminal_hop_mode(from_kind: str, to_kind: str, distance_km: float) -> str | None:
@@ -292,7 +292,7 @@ class _JourneyWalk:
         )
         if not mode:
             one_terminal = (previous_kind in TERMINAL_KINDS) != (pin_kind in TERMINAL_KINDS)
-            return not (one_terminal and distance > MAX_TERMINAL_GROUND_KM)
+            return not (one_terminal and distance > MAX_GROUND_LEG_KM)
         self.journey.intercity_edges[(self.journey.route_ids[-1], pin_id)] = mode
         self.journey.transfer_mode = mode
         return True

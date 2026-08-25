@@ -14,6 +14,8 @@ from typing import Any
 
 from tripplanner.web.transport import _intercity_transfer_mode
 
+MAX_GROUND_LEG_KM = 300.0
+
 _INTERCITY_SPEED_KMH = {
     "Flight": 650.0,
     "Train": 80.0,
