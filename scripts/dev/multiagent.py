@@ -783,6 +783,15 @@ def collect(space: Workspace, state: core.State, repo: str) -> None:
             assignment.question = report.get("QUESTION", "")
             set_agent_state(repo, assignment.issue, core.BLOCKED)
             gh_relabel(repo, assignment.issue, add=[core.DECISION_NEEDED])
+            gh_comment(
+                repo, assignment.issue,
+                "## Owner Decision\n\n**Question:** "
+                + (assignment.question or "the worker stopped without recording its question")
+                + f"\n**Why it blocks:** attempt {assignment.attempt} stopped in"
+                f" `{assignment.slot}`; `{assignment.branch}` and its transcript remain for"
+                " inspection.\n**Answer:** waiting — reply here, then remove `agent:blocked`"
+                " and `owner:decision-needed` to requeue it.",
+            )
             log(f"#{assignment.issue} is blocked on an owner decision")
         else:
             assignment.state = "failed"
@@ -925,6 +934,19 @@ def preflight(space: Workspace) -> list[str]:
     return problems
 
 
+def latest_worker_note(space: Workspace, assignment: core.Assignment, *, width: int = 92) -> str:
+    """The worker's most recent line, so a long run is never a silent one."""
+    transcript = transcript_path(space, assignment.issue, assignment.attempt)
+    if not transcript.exists():
+        return ""
+    text = transcript.read_text(encoding="utf-8", errors="replace")
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if not lines:
+        return ""
+    note = lines[-1]
+    return note if len(note) <= width else note[: width - 1].rstrip() + "…"
+
+
 def cmd_status(space: Workspace, args: argparse.Namespace) -> int:
     state = load_state(space)
     repo = space.repo()
@@ -946,6 +968,10 @@ def cmd_status(space: Workspace, args: argparse.Namespace) -> int:
             f"  #{item.issue:<5} {item.slot:<7} attempt {item.attempt}  {item.state:<16}"
             f" {item.pushed_sha[:12] or '-'}"
         )
+        if item.state in ("dispatched", "running"):
+            note = latest_worker_note(space, item)
+            if note:
+                log(f"           now: {note}")
     log(_BAR)
     try:
         waiting = gh_issues(repo, [core.DECISION_NEEDED])
@@ -954,8 +980,12 @@ def cmd_status(space: Workspace, args: argparse.Namespace) -> int:
         log(f"GitHub unavailable: {error}")
         return 1
     log(f"Waiting on you: {len(waiting)} issue(s)")
+    questions = {item.issue: item.question for item in state.assignments if item.question}
     for issue in waiting:
         log(f"  #{issue.number} {issue.title[:60]}")
+        asked = questions.get(issue.number, "")
+        if asked:
+            log(f"     asks: {asked[:88]}")
     log(f"Ready for multiagent: {len(ready)} issue(s)")
     log(_BAR)
     log("Recovery: Stop-Multiagent, then Start-Multiagent. Worktrees and branches are kept.")
