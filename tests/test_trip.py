@@ -844,17 +844,22 @@ class TestTripPlanState:
         assert {stop["name"] for stop in hotel_stops} == {"Preskil Island Resort"}
         assert [stop["time"] for stop in hotel_stops] == ["09:00", "18:00"]
 
-    def test_itinerary_update_cannot_restore_placeholders_after_hotel_selection(self):
+    def test_itinerary_update_cannot_restore_generic_or_placeholder_hotel(self):
         create_trip_plan.invoke({
-            "destination": "Udaipur",
-            "departure_date": "2027-02-14",
-            "return_date": "2027-02-17",
+            "destination": "Gujarat",
+            "departure_date": "2026-12-07",
+            "return_date": "2026-12-12",
         })
         update_trip_plan.invoke({"updates_json": json.dumps({
             "selected_hotels": [{
-                "name": "Trident Udaipur",
-                "destination": "Udaipur",
-                "address": "Haridasji Ki Magri, Udaipur",
+                "name": "Rann Utsav Tent City",
+                "city": "Kutch",
+                "address": "Dhordo, Kutch, Gujarat",
+            }],
+            "day_wise_itinerary": [{
+                "day": 3,
+                "city": "Kutch",
+                "stops": [{"name": "Rann Utsav Tent City", "kind": "hotel"}],
             }],
         })})
 
@@ -864,7 +869,7 @@ class TestTripPlanState:
                     "day": day,
                     "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
                 }
-                for day in range(1, 4)
+                for day in range(3, 6)
             ],
         })})
 
@@ -875,8 +880,29 @@ class TestTripPlanState:
             for stop in day["stops"]
             if stop.get("kind") == "hotel"
         ]
-        assert {stop["name"] for stop in hotel_stops} == {"Trident Udaipur"}
+        assert {stop["name"] for stop in hotel_stops} == {"Rann Utsav Tent City"}
         assert "Hotel placeholders remain" not in result
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "city": "Kutch",
+                    "stops": [{"name": "Hotel (Kutch)", "kind": "hotel"}],
+                }
+                for day in range(3, 6)
+            ],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        hotel_stops = [
+            stop
+            for day in plan["day_wise_itinerary"]
+            for stop in day["stops"]
+            if stop.get("kind") == "hotel"
+        ]
+        assert {stop["name"] for stop in hotel_stops} == {"Rann Utsav Tent City"}
+        assert "no bookable property" not in result
 
     def test_update_trip_plan_rejects_hotel_outside_destination_atomically(self):
         create_trip_plan.invoke({
