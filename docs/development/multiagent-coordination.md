@@ -125,6 +125,26 @@ is never a silent abandon:
 - Already integrated: the change stays in the batch. Withdrawal after acceptance
   is a revert, which is its own issue.
 
+## The one-click quality loop
+
+`Run-Quality-Loop` is the single entry point for "find current defects and fix
+them". It runs three phases and then leaves the controller working:
+
+1. **Reconcile.** Release `agent:integrating` claims that no controller record
+   owns, so a wiped runtime directory cannot strand issues outside the queue.
+   `agent:blocked` is never swept: it means a question is waiting on the owner.
+2. **Audit.** The deterministic read-only producer below.
+3. **Fix.** Start the controller if it is not already running.
+
+It is safe to re-run at will; `--dry-run` previews every phase without creating
+an issue or starting anything. The launcher calls Python directly rather than
+routing through `multiagent.ps1`, because the loop is most needed exactly when
+the PowerShell host is broken.
+
+Corpus refresh is deliberately outside the loop. It spends real money, needs a
+running stack, and its market scope is an owner decision. The loop recommends it
+and stops.
+
 ## The Quality Issue Producer
 
 The producer is deterministic. It runs the existing read-only Trip Quality Audit,
@@ -309,6 +329,10 @@ as the next attempt to whichever slot is free — slots are interchangeable.
   trailer. The PR body repeats every `Fixes #<n>` as a second guarantee.
 - Issues close when the PR reaches `master`. An accepted integration commit is not
   a closed issue.
+- **Publication cannot wait for an idle controller.** A continuously refilled
+  queue is never idle, so accepted work would accumulate on the integration
+  branch forever. The batch publishes when the controller goes idle, or once
+  three fixes are waiting, or once accepted work has waited thirty minutes.
 
 ### Validation
 
