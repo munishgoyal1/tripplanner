@@ -418,6 +418,52 @@ def test_render_does_not_draw_a_departure_flight_as_an_all_day_local_leg() -> No
     assert not any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
 
 
+def test_render_does_not_route_a_post_checkout_home_day_from_the_expired_stay() -> None:
+    plan = _plan(
+        destination="Varanasi and Ayodhya",
+        selected_hotels=[
+            {
+                "name": "Clarks Inn Express Ayodhya",
+                "city": "Ayodhya",
+                "checkin": "2027-02-05",
+                "checkout": "2027-02-07",
+            }
+        ],
+        day_wise_itinerary=[
+            {
+                "day": 6,
+                "date": "2027-02-08",
+                "title": "Arrival in Pune",
+                "stops": [{"name": "Pune", "kind": "other", "note": "Trip ends"}],
+            }
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="post-checkout-home",
+        provenance=corpus.REAL,
+        source="test",
+        plan=plan,
+        places={
+            "clarks inn express ayodhya|ayodhya": {
+                "place_id": "ayodhya-hotel",
+                "name": "Clarks Inn Express Ayodhya",
+                "lat": 26.79,
+                "lng": 82.20,
+            },
+            "pune|varanasi and ayodhya": {
+                "place_id": "pune",
+                "name": "Pune",
+                "lat": 18.52,
+                "lng": 73.86,
+            },
+        },
+    )
+
+    reported = render.check_render(record)
+
+    assert not any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
+
+
 def test_render_does_not_reuse_a_duplicate_brand_from_another_city() -> None:
     plan = _plan(
         destination="Kaziranga",
