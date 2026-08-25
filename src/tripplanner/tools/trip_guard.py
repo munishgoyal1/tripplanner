@@ -250,6 +250,12 @@ def _time_of(stop: Any) -> int | None:
     return _parse_hhmm(str(stop.get("time") or ""))
 
 
+def _arrival_of(stop: Any) -> int | None:
+    if not isinstance(stop, dict):
+        return None
+    return _parse_hhmm(str(stop.get("arrival_time") or ""))
+
+
 def days_of(plan: dict[str, Any]) -> list[tuple[int, dict[str, Any], list[Any]]]:
     """Return ``(day_number, day_entry, stops)`` for every structured day, in order."""
     itinerary = plan.get("day_wise_itinerary")
@@ -310,7 +316,13 @@ def envelope(plan: dict[str, Any]) -> Envelope:
                 start = _time_of(stop)
                 arrival_day = day
                 arrival_name = _stop_name(stop)
-                arrival_end = _abs(day, start + _duration_of(stop)) if start is not None else None
+                arrival = _arrival_of(stop)
+                if arrival is not None:
+                    arrival_end = _abs(day, arrival)
+                    if start is not None and arrival < start:
+                        arrival_end += 1440
+                elif start is not None:
+                    arrival_end = _abs(day, start + _duration_of(stop))
             if arrives_home:
                 start = _time_of(stop)
                 departure_day = day
