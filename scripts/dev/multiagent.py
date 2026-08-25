@@ -907,7 +907,13 @@ def cmd_plan(space: Workspace, args: argparse.Namespace) -> int:
         log(f"Nothing carries {core.READY}. Add it to an issue to authorise implementation.")
         return 0
     capacity = SLOT_COUNT - len(state.busy_slots())
-    plan = core.plan_dispatch(issues, capacity=capacity)
+    busy = tuple(
+        core.issue_footprint(issue)
+        for assignment in state.active()
+        for issue in issues
+        if issue.number == assignment.issue
+    )
+    plan = core.plan_dispatch(issues, capacity=capacity, busy=busy)
     log(f"{len(issues)} authorised issue(s); {capacity} free slot(s).")
     log(_BAR)
     for issue in plan.dispatch:

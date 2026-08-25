@@ -41,6 +41,8 @@ CLAIMED_STATES = (IN_PROGRESS, BLOCKED, INTEGRATING, NEEDS_VERIFY)
 _PATH_RE = re.compile(
     r"\b((?:src|frontend|scripts|docs|tests|packages|mobile|infra)/[\w./@-]+)",
 )
+_FENCED_BLOCK_RE = re.compile(r"```.*?```", re.DOTALL)
+_AUDIT_OWNER_RE = re.compile(r"\*\*Evaluated in:\*\* `(?P<module>tripplanner(?:\.[\w]+)+)`")
 _FINGERPRINT_RE = re.compile(r"audit-fingerprint:\s*([A-Za-z0-9_.-]+/[0-9a-f]{8})")
 
 # Files that are coupled through a contract rather than through their path.
@@ -197,7 +199,12 @@ def declared_paths(body: str) -> tuple[str, ...]:
     detection as a strictly formatted list, and cannot be got wrong.
     """
     seen: list[str] = []
-    for match in _PATH_RE.finditer(body or ""):
+    text = body or ""
+    for owner in _AUDIT_OWNER_RE.finditer(text):
+        path = f"src/{owner.group('module').replace('.', '/')}.py"
+        if path not in seen:
+            seen.append(path)
+    for match in _PATH_RE.finditer(_FENCED_BLOCK_RE.sub("", text)):
         path = match.group(1).rstrip(".,;:)")
         if path not in seen:
             seen.append(path)

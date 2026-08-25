@@ -164,6 +164,30 @@ def test_two_issues_touching_the_same_file_are_serialised() -> None:
     assert "collide" in plan.deferred[0][1]
 
 
+def test_audit_reproduction_command_is_not_treated_as_a_write_target() -> None:
+    first = issue(
+        1,
+        core.READY,
+        body=(
+            "**Evaluated in:** `tripplanner.validation.mutations`\n"
+            "```bash\nscripts/mac/user/validation/Audit-Trips.command --rule M2\n```"
+        ),
+    )
+    second = issue(
+        2,
+        core.READY,
+        body=(
+            "**Evaluated in:** `tripplanner.tools.trip_validation`\n"
+            "```bash\nscripts/mac/user/validation/Audit-Trips.command --rule gap\n```"
+        ),
+    )
+
+    plan = core.plan_dispatch([first, second], capacity=2)
+
+    assert [item.number for item in plan.dispatch] == [1, 2]
+    assert core.issue_footprint(first).paths == ("src/tripplanner/validation/mutations.py",)
+
+
 def test_comment_only_scope_participates_in_collision_planning() -> None:
     first = core.Issue(
         number=1,
