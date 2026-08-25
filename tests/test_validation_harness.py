@@ -362,6 +362,62 @@ def test_render_does_not_bind_an_unresolved_flight_to_the_next_local_pin() -> No
     assert not any(finding.rule == render.RULE_EMPTY_LEG for finding in reported)
 
 
+def test_render_does_not_draw_a_departure_flight_as_an_all_day_local_leg() -> None:
+    plan = _plan(
+        destination="Bhutan",
+        day_wise_itinerary=[
+            {
+                "day": 5,
+                "stops": [
+                    {"name": "Hotel in Paro", "kind": "hotel", "time": "07:00"},
+                    {
+                        "name": "Paro Town Walk",
+                        "kind": "attraction",
+                        "time": "08:00",
+                        "duration_min": 60,
+                    },
+                    {
+                        "name": "Flight: Paro to Delhi",
+                        "kind": "flight",
+                        "time": "11:00",
+                        "duration_min": 180,
+                    },
+                ],
+            }
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="bhutan-departure",
+        provenance=corpus.SYNTHETIC,
+        source="test",
+        plan=plan,
+        places={
+            "hotel in paro|bhutan": {
+                "place_id": "paro-hotel",
+                "name": "Hotel in Paro",
+                "lat": 27.43,
+                "lng": 89.42,
+            },
+            "paro town walk|bhutan": {
+                "place_id": "paro-walk",
+                "name": "Paro Town Walk",
+                "lat": 27.43,
+                "lng": 89.41,
+            },
+            "delhi airport|": {
+                "place_id": "delhi-airport",
+                "name": "Delhi Airport",
+                "lat": 28.56,
+                "lng": 77.10,
+            },
+        },
+    )
+
+    reported = render.check_render(record)
+
+    assert not any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
+
+
 def test_render_does_not_reuse_a_duplicate_brand_from_another_city() -> None:
     plan = _plan(
         destination="Kaziranga",
