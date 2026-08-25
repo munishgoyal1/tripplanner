@@ -81,14 +81,17 @@ Type labels reuse the GitHub defaults: `bug`, `enhancement`, `documentation`.
 ### Owner labels, and the multiagent queue
 
 `owner:*` labels are additive facts, not states. `owner:proposed` records that
-something entered as a candidate and is kept forever; `owner:ready` records that
-you authorised implementation. Adding `owner:ready` never removes
-`owner:proposed`.
+something entered as a candidate and is kept forever.
 
-`owner:ready` is what the autonomous coordinator selects on, so a manual lane
-should leave it alone. `agent:queued` stays with the manual lanes described here,
-and the coordinator ignores it. The full pipeline is in
-[multiagent-coordination.md](multiagent-coordination.md).
+Routine bugs and bounded tasks use `agent:queued` and are ready for multiagent
+pickup without a separate approval label. Audit-produced bugs are also ready by
+default. Large or impactful owner feature items use `owner:approval-required`;
+they remain held until the owner adds `owner:ready`. Adding `owner:ready` never
+removes `owner:proposed` or the approval-gate provenance.
+
+The autonomous coordinator selects routine queued work, audit bugs, and gated
+work that carries `owner:ready`. Agents never add either owner approval label.
+The full pipeline is in [multiagent-coordination.md](multiagent-coordination.md).
 
 ## Lifecycle
 

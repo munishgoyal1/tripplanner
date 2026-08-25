@@ -69,6 +69,7 @@ from tripplanner.tools.trip_validation import (  # noqa: F401
     assess_itinerary_change,
     core_planning_completion_gaps,
     finalization_gaps,
+    has_structured_itinerary,
     persistence_sanity_errors,
     planning_completion_gaps,
 )
@@ -2310,6 +2311,12 @@ def update_trip_plan(updates_json: str) -> str:
     except json.JSONDecodeError:
         return "Error: invalid JSON."
 
+    if "day_wise_itinerary" in updates and not has_structured_itinerary(updates):
+        return (
+            "Error: day_wise_itinerary must contain the full structured itinerary "
+            "with a stops list for every day. The saved itinerary was not changed."
+        )
+
     validation_plan = dict(plan)
     if isinstance(updates.get("day_wise_itinerary"), list):
         validation_plan["day_wise_itinerary"] = [
@@ -2424,13 +2431,9 @@ def update_trip_plan(updates_json: str) -> str:
 
     resettled_days = _settle_plan_legs(plan)
     closed_day_repairs = _repair_known_closed_days(plan)
+    # Rejecting here discarded the turn's only copy of the itinerary, so a plan that
+    # was merely incomplete ended up saved as no plan at all.
     sanity_errors = persistence_sanity_errors(plan)
-    if sanity_errors:
-        return (
-            "Error: itinerary sanity validation rejected this update before persistence. "
-            + " ".join(sanity_errors[:5])
-            + " Replan the affected journey or day as a whole and resubmit it."
-        )
     _save_active_trip(plan)
     broken_invariants = _newly_broken(before, plan)
     restaurant_warnings = _restaurant_itinerary_warnings(
@@ -2442,6 +2445,13 @@ def update_trip_plan(updates_json: str) -> str:
     transport_warnings = _round_trip_transport_warnings(plan)
     hotel_warnings = _hotel_selection_warnings(plan)
     warning_text = ""
+    if sanity_errors:
+        warning_text += (
+            "\nThe itinerary was saved but is not yet consistent: "
+            + " ".join(sanity_errors[:5])
+            + " Replan the affected journey or day as a whole and resubmit the full "
+            "day_wise_itinerary. Do not report the trip as planned while this stands."
+        )
     if restored_legs:
         warning_text += (
             "\nKept "

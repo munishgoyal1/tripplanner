@@ -407,6 +407,26 @@ class TestPartialItineraryMerge:
         assert partial is False
         assert merged == incoming
 
+    @pytest.mark.parametrize("invalid", [[], ["Day 1"], [{"day": 1}]])
+    def test_unstructured_itinerary_update_does_not_erase_saved_days(self, invalid):
+        existing = self._days(1, 2, 3)
+        create_trip_plan.invoke({
+            "destination": "Indore",
+            "departure_date": "2026-08-10",
+            "return_date": "2026-08-12",
+            "origin": "Bangalore",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": existing,
+        })})
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": invalid,
+        })})
+
+        assert result.startswith("Error: day_wise_itinerary must contain")
+        assert json.loads(get_trip_plan.invoke({}))["day_wise_itinerary"] == existing
+
     def test_hotel_swap_keeps_the_other_planned_days(self):
         create_trip_plan.invoke({
             "destination": "Indore",
@@ -579,11 +599,11 @@ class TestTripPlanState:
             "origin": "Bangalore",
         })
         save_result = update_trip_plan.invoke({"updates_json": json.dumps(base)})
-        assert save_result.startswith(
-            "Error: itinerary sanity validation rejected this update before persistence."
-        )
+        assert "The itinerary was saved but is not yet consistent:" in save_result
         assert "Bangalore to Mysore" in save_result
         assert "Mysore back to Bangalore" in save_result
+        # An incomplete journey must never cost the traveller the whole itinerary.
+        assert json.loads(get_trip_plan.invoke({}))["day_wise_itinerary"]
 
         complete = {
             **base,
@@ -871,10 +891,8 @@ class TestTripPlanState:
         })})
 
         plan = json.loads(get_trip_plan.invoke({}))
-        assert plan == before
-        assert result.startswith(
-            "Error: itinerary sanity validation rejected this update before persistence."
-        )
+        # The itinerary is saved rather than discarded, and the generic stay is warned about.
+        assert plan != before
         assert "no bookable property" in result
 
     def test_update_trip_plan_accepts_concrete_hotel_selection(self):
@@ -966,10 +984,8 @@ class TestTripPlanState:
             ],
         })})
 
-        assert json.loads(get_trip_plan.invoke({})) == before
-        assert result.startswith(
-            "Error: itinerary sanity validation rejected this update before persistence."
-        )
+        # The itinerary is saved rather than discarded, and the unnamed stays are warned about.
+        assert json.loads(get_trip_plan.invoke({})) != before
         assert "Day(s) 3, 4, 5, 6, 7, 8 name no bookable property" in result
 
     def test_selected_gangtok_stay_cannot_mask_lachen_placeholders(self):
@@ -1005,10 +1021,8 @@ class TestTripPlanState:
             ],
         })})
 
-        assert json.loads(get_trip_plan.invoke({})) == before
-        assert result.startswith(
-            "Error: itinerary sanity validation rejected this update before persistence."
-        )
+        # The itinerary is saved rather than discarded, and the placeholders are warned about.
+        assert json.loads(get_trip_plan.invoke({})) != before
         assert "Hotel placeholders remain on Day(s) 2, 3" in result
 
     def test_update_trip_plan_replaces_placeholder_anchors_with_concrete_hotel(self):

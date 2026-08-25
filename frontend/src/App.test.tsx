@@ -1,10 +1,11 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, isAnonymousUserMock, shareActiveTripMock, resetTripMock } = vi.hoisted(() => ({
+const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, startNewTripMock, isAnonymousUserMock, shareActiveTripMock, resetTripMock } = vi.hoisted(() => ({
   fetchTripViewMock: vi.fn(),
   selectItemMock: vi.fn(),
   deselectItemMock: vi.fn(),
+  startNewTripMock: vi.fn(),
   isAnonymousUserMock: vi.fn(() => true),
   shareActiveTripMock: vi.fn(),
   resetTripMock: vi.fn(),
@@ -43,7 +44,7 @@ vi.mock("./api", () => ({
   importSharedTrip: vi.fn(),
   selectItem: selectItemMock,
   deselectItem: deselectItemMock,
-  startNewTrip: vi.fn(),
+  startNewTrip: startNewTripMock,
   resetTrip: resetTripMock,
   shareActiveTrip: shareActiveTripMock,
   tripIcsUrl: vi.fn(() => "/api/trip/export.ics"),
@@ -192,6 +193,7 @@ describe("App responsive workspace", () => {
     });
     selectItemMock.mockReset();
     deselectItemMock.mockReset();
+    startNewTripMock.mockReset().mockResolvedValue(undefined);
     isAnonymousUserMock.mockReset().mockReturnValue(true);
   });
 
@@ -319,6 +321,20 @@ describe("App responsive workspace", () => {
 
     await waitFor(() => expect(selectItemMock).toHaveBeenCalledTimes(2));
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-selected", "true");
+  });
+
+  it("retries New trip while the Assistant still owns the workspace", async () => {
+    startNewTripMock
+      .mockRejectedValueOnce({ status: 409, retryAfterMs: 0 })
+      .mockResolvedValueOnce(undefined);
+    setDesktop(true);
+    render(<App />);
+
+    await screen.findByTestId("chat-panel");
+    fireEvent.click(screen.getByRole("button", { name: "New trip" }));
+
+    await waitFor(() => expect(startNewTripMock).toHaveBeenCalledTimes(2));
+    expect(screen.queryByText(/Could not start a new trip/i)).not.toBeInTheDocument();
   });
 
   it("does not let an older details refresh overwrite a switched trip", async () => {

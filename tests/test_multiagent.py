@@ -9,6 +9,7 @@ import signal
 import subprocess
 import sys
 import time
+from datetime import timedelta
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 
@@ -61,16 +62,31 @@ def assignment(issue_number: int, session_id: str) -> object:
     )
 
 
-# --- authorisation -----------------------------------------------------------
+# --- intake and authorisation ------------------------------------------------
 
 
-def test_only_owner_ready_authorises_dispatch() -> None:
-    """Proposing work is not approving it."""
+def test_unqueued_proposal_is_not_dispatched() -> None:
     proposed = issue(1, core.PROPOSED)
-    approved = issue(2, core.PROPOSED, core.READY)
 
     assert not core.eligible(proposed)
-    assert core.exclusion_reason(proposed) == f"no {core.READY}"
+    assert core.exclusion_reason(proposed) == "not queued for multiagent work"
+
+
+def test_routine_bug_or_task_is_ready_for_multiagent_pickup() -> None:
+    assert core.eligible(issue(1, core.BUG, core.QUEUED))
+    assert core.eligible(issue(2, core.QUEUED))
+
+
+def test_audit_bug_is_ready_without_owner_approval() -> None:
+    assert core.eligible(issue(1, core.BUG, core.PROPOSED, core.AUDIT_SOURCE))
+
+
+def test_approval_gate_requires_owner_ready() -> None:
+    gated = issue(1, core.PROPOSED, core.APPROVAL_REQUIRED)
+    approved = issue(2, core.PROPOSED, core.APPROVAL_REQUIRED, core.READY)
+
+    assert not core.eligible(gated)
+    assert core.exclusion_reason(gated) == f"waiting for {core.READY}"
     assert core.eligible(approved)
 
 
@@ -147,8 +163,7 @@ def test_a_claim_by_any_lane_excludes_the_issue() -> None:
 
 
 def test_the_manual_queue_label_does_not_block_the_multiagent_queue() -> None:
-    """agent:queued belongs to the manual lanes; owner:ready is this queue."""
-    assert core.eligible(issue(1, core.READY, core.QUEUED))
+    assert core.eligible(issue(1, core.QUEUED))
 
 
 # --- collisions --------------------------------------------------------------
@@ -344,6 +359,192 @@ def test_audit_content_is_fenced_as_data_not_instructions() -> None:
 
     assert core.UNTRUSTED_MARKER in body
     assert "```text" in body
+
+
+def test_audit_issue_records_generated_evidence_class() -> None:
+    group = {
+        "rule": "gap",
+        "example": "Hotel placeholder remains",
+        "representative": {"provenance": "synthetic"},
+    }
+
+    body = core.audit_issue_body(group, corpus_size=1, sources=["generated finals"])
+
+    assert "audit-evidence-class: generated" in body
+    assert core.audit_evidence_class(issue(1, body=body)) == "generated"
+
+
+def test_existing_audit_issue_infers_evidence_class_from_body() -> None:
+    item = issue(1, body="- **Evidence source:** synthetic\n")
+
+    assert core.audit_evidence_class(item) == "generated"
+
+
+def test_generated_audit_rejects_any_corpus_evidence_rewrite() -> None:
+    rejection = core.audit_fix_rejection(
+        audit_source=True,
+        evidence_class="generated",
+        changed_paths=(
+            "corpus/trips/capetown.json",
+            "src/tripplanner/graph_policy.py",
+            "tests/test_graph_policy.py",
+        ),
+    )
+
+    assert rejection
+    assert "failing artifact" in rejection
+
+
+def test_generated_audit_requires_executable_fix_and_regression_test() -> None:
+    assert core.audit_fix_rejection(
+        audit_source=True,
+        evidence_class="generated",
+        changed_paths=("docs/ENGINEERING_LEARNINGS.md", "tests/test_trip.py"),
+    ) == "the audit fix has no executable production or audit implementation change"
+    assert core.audit_fix_rejection(
+        audit_source=True,
+        evidence_class="generated",
+        changed_paths=("src/tripplanner/graph_policy.py",),
+    ) == "the audit fix has no focused regression test proving recurrence is prevented"
+
+
+def test_generated_audit_accepts_preventive_code_and_test_change() -> None:
+    assert core.audit_fix_rejection(
+        audit_source=True,
+        evidence_class="generated",
+        changed_paths=("src/tripplanner/graph_policy.py", "tests/test_graph_policy.py"),
+    ) is None
+
+
+def test_fixture_audit_allows_genuine_fixture_correction() -> None:
+    assert core.audit_fix_rejection(
+        audit_source=True,
+        evidence_class="fixture",
+        changed_paths=("scripts/dev/sandbox-seed/trips.json", "tests/test_trip_audit.py"),
+    ) is None
+
+
+def test_audit_worker_prompt_requires_root_cause_fix() -> None:
+    item = issue(
+        42,
+        core.BUG,
+        core.AUDIT_SOURCE,
+        body="audit-evidence-class: generated",
+    )
+
+    prompt = core.worker_prompt(
+        item,
+        slot="slot-1",
+        branch="multiagent/slot-1",
+        base_sha="a" * 40,
+        repo="owner/repo",
+    )
+
+    assert "Audit root-cause contract" in prompt
+    assert "Preserve a failing observation" in prompt
+    assert "Do not edit corpus/" in prompt
+
+
+def test_assignment_round_trip_preserves_audit_policy() -> None:
+    original = core.Assignment(
+        issue=42,
+        audit_source=True,
+        evidence_class="generated",
+    )
+
+    restored = core.Assignment.from_dict(original.to_dict())
+
+    assert restored.audit_source is True
+    assert restored.evidence_class == "generated"
+
+
+def test_pre_upgrade_assignment_hydrates_audit_policy(monkeypatch) -> None:
+    assignment = core.Assignment(issue=42)
+    item = issue(
+        42,
+        core.BUG,
+        core.AUDIT_SOURCE,
+        body="audit-evidence-class: generated",
+    )
+    monkeypatch.setattr(runtime, "gh_issue", lambda _repo, _number: item)
+
+    assert runtime.hydrate_audit_policy("owner/repo", assignment)
+    assert assignment.audit_source is True
+    assert assignment.evidence_class == "generated"
+
+
+def test_pre_upgrade_assignment_defers_when_issue_metadata_is_unavailable(monkeypatch) -> None:
+    assignment = core.Assignment(issue=42)
+    monkeypatch.setattr(runtime, "gh_issue", lambda _repo, _number: None)
+
+    assert not runtime.hydrate_audit_policy("owner/repo", assignment)
+
+
+# --- shipping cadence and stale claims ---------------------------------------
+
+
+def integrated(issue_number: int, *, minutes_ago: int = 0) -> object:
+    finished = core.utcnow() - timedelta(minutes=minutes_ago)
+    return core.Assignment(
+        issue=issue_number,
+        state="integrated",
+        finished=core.format_time(finished),
+    )
+
+
+def test_a_busy_queue_still_publishes_accepted_work() -> None:
+    """A continuously refilled queue is never idle, so idleness cannot be the trigger."""
+    waiting = [integrated(1), integrated(2), integrated(3)]
+
+    assert core.batch_ship_reason(waiting, active=True)
+
+
+def test_accepted_work_publishes_once_it_has_waited_long_enough() -> None:
+    assert core.batch_ship_reason([integrated(1, minutes_ago=31)], active=True)
+    assert core.batch_ship_reason([integrated(1, minutes_ago=5)], active=True) is None
+
+
+def test_an_idle_controller_still_publishes_a_single_fix() -> None:
+    assert core.batch_ship_reason([integrated(1)], active=False)
+
+
+def test_nothing_accepted_means_nothing_to_publish() -> None:
+    assert core.batch_ship_reason([], active=False) is None
+
+
+def test_an_unowned_integrating_claim_is_returned_to_the_queue() -> None:
+    board = (
+        issue(1, core.INTEGRATING),
+        issue(2, core.INTEGRATING),
+        issue(3, core.BLOCKED, core.DECISION_NEEDED),
+    )
+
+    assert core.stale_claims(board, frozenset({2})) == (1,)
+
+
+def test_an_owner_decision_is_never_swept_away() -> None:
+    board = (issue(3, core.BLOCKED, core.DECISION_NEEDED),)
+
+    assert core.stale_claims(board, frozenset()) == ()
+
+
+def test_quality_loop_is_reachable_as_one_command() -> None:
+    args = runtime.build_parser().parse_args(["quality-loop"])
+
+    assert args.command == "quality-loop"
+    assert args.dry_run is False
+
+
+def test_quality_loop_launchers_do_not_depend_on_powershell() -> None:
+    """The loop must still run when the PowerShell host itself is broken."""
+    mac = (
+        ROOT / "scripts" / "mac" / "user" / "multiagent" / "Run-Quality-Loop.command"
+    ).read_text(encoding="utf-8")
+
+    assert "quality-loop" in mac
+    assert "multiagent.ps1" not in mac
+    assert "pwsh.sh" not in mac
+
 
 
 def test_audit_issue_gives_the_owner_concrete_ux_review_context() -> None:
@@ -921,6 +1122,77 @@ def test_reportless_push_requires_matching_issue_trailer(tmp_path, monkeypatch) 
     monkeypatch.setattr(runtime, "git", git)
 
     assert runtime.recover_reportless_push(space, assignment) == ""
+
+
+def test_a_blocked_worker_asks_the_owner_on_the_issue(tmp_path, monkeypatch) -> None:
+    """A question kept only in controller state would never reach the owner."""
+    assignment = core.Assignment(
+        issue=42, attempt=1, slot="slot-1", branch="multiagent/slot-1", state="stopped"
+    )
+    state = core.State(assignments=[assignment])
+    space = SimpleNamespace(transcripts=tmp_path, slot_path=lambda _slot: tmp_path)
+    runtime.transcript_path(space, 42, 1).write_text(
+        "RESULT: blocked\nQUESTION: should Day 2 move, or the place change?\n",
+        encoding="utf-8",
+    )
+    comments: list[tuple[int, str]] = []
+    monkeypatch.setattr(runtime, "set_agent_state", lambda *_a, **_k: None)
+    monkeypatch.setattr(runtime, "gh_relabel", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        runtime, "gh_comment", lambda _repo, number, body: comments.append((number, body))
+    )
+
+    runtime.collect(space, state, "owner/repo")
+
+    assert assignment.state == "blocked"
+    assert len(comments) == 1
+    number, body = comments[0]
+    assert number == 42
+    assert "should Day 2 move, or the place change?" in body
+    assert "owner:decision-needed" in body
+
+
+def test_status_reports_the_latest_line_of_a_running_worker(tmp_path) -> None:
+    assignment = core.Assignment(issue=42, attempt=1, slot="slot-1", state="running")
+    space = SimpleNamespace(transcripts=tmp_path)
+    runtime.transcript_path(space, 42, 1).write_text(
+        "earlier step\n\nreproducing the audit symptom now\n", encoding="utf-8"
+    )
+
+    assert runtime.latest_worker_note(space, assignment) == "reproducing the audit symptom now"
+
+
+def test_a_slot_is_reserved_until_its_pushed_commit_is_integrated() -> None:
+    """Reusing the slot would force-reset the branch holding unintegrated work."""
+    state = core.State(assignments=[core.Assignment(issue=42, slot="slot-1", state="pushed")])
+
+    assert state.held_slots() == {"slot-1"}
+    assert state.busy_slots() == set()
+
+
+def test_a_slow_command_fails_instead_of_killing_the_controller(monkeypatch) -> None:
+    """TimeoutExpired escapes the cycle's except clause, so run() must absorb it."""
+
+    def explode(*_args: object, **_kwargs: object) -> None:
+        raise subprocess.TimeoutExpired(cmd="slow", timeout=1)
+
+    monkeypatch.setattr(runtime.subprocess, "run", explode)
+
+    result = runtime.run(["slow"], timeout=1)
+
+    assert result.returncode == runtime.TIMEOUT_RETURNCODE
+    assert "timed out" in result.stderr
+
+
+def test_heartbeat_publishes_progress_before_the_cycle_ends(tmp_path) -> None:
+    space = SimpleNamespace(state_path=tmp_path / "state.json", ensure_dirs=lambda: None)
+    state = core.State(assignments=[core.Assignment(issue=42, state="running")])
+
+    runtime.heartbeat(space, state)
+
+    published = core.State.from_dict(json.loads(space.state_path.read_text(encoding="utf-8")))
+    assert [item.issue for item in published.assignments] == [42]
+    assert published.lease.valid()
 
 
 def test_worker_push_is_verified_and_given_remote_tracking(tmp_path, monkeypatch) -> None:

@@ -443,7 +443,26 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   const handleStartNewTrip = async () => {
     try {
       dismissNotice("action-error");
-      await startNewTrip();
+      for (let attempt = 0; ; attempt += 1) {
+        try {
+          await startNewTrip();
+          break;
+        } catch (error) {
+          const status = typeof error === "object" && error !== null && "status" in error
+            ? (error as { status?: number }).status
+            : undefined;
+          if (status !== 409 || attempt === 89) throw error;
+          const retryAfterMs = typeof error === "object" && error !== null && "retryAfterMs" in error
+            ? (error as { retryAfterMs?: number | null }).retryAfterMs
+            : null;
+          notify({
+            id: "action-error",
+            tone: "progress",
+            message: "Waiting for the Assistant to finish before starting a new trip...",
+          });
+          await new Promise((resolve) => setTimeout(resolve, retryAfterMs ?? 2000));
+        }
+      }
       await handleNewTrip();
       setInspectorOpen(true);
       setChatOpen(true);

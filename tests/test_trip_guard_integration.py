@@ -144,7 +144,7 @@ def _names(plan: dict) -> list[str]:
     ]
 
 
-def test_an_update_without_a_required_nightly_stay_is_rejected_atomically() -> None:
+def test_an_update_without_a_required_nightly_stay_is_saved_with_a_warning() -> None:
     create_trip_plan.invoke(
         {
             "destination": "Spiti Valley",
@@ -184,11 +184,10 @@ def test_an_update_without_a_required_nightly_stay_is_rejected_atomically() -> N
         }
     )
 
-    assert result.startswith(
-        "Error: itinerary sanity validation rejected this update before persistence."
-    )
+    # The turn's only copy of the itinerary is saved rather than discarded, so the
+    # missing stay is reported as a warning instead of rejecting the update.
+    assert json.loads(get_trip_plan.invoke({})) != before
     assert "Day 1 has no concrete lodging anchor for the night" in result
-    assert json.loads(get_trip_plan.invoke({})) == before
 
 
 def test_a_new_place_is_never_scheduled_after_the_flight_home() -> None:
@@ -384,7 +383,7 @@ def test_backwards_transport_timeline_is_rejected_without_persistence() -> None:
     assert json.loads(get_trip_plan.invoke({})) == before
 
 
-def test_authoritative_closed_day_is_rejected_without_persistence(
+def test_authoritative_closed_day_is_saved_with_a_repair_warning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     create_trip_plan.invoke(
@@ -431,14 +430,15 @@ def test_authoritative_closed_day_is_rejected_without_persistence(
         }
     )
 
-    assert result.startswith(
-        "Error: itinerary sanity validation rejected this update before persistence."
-    )
+    # Losing the itinerary is worse than saving one that still needs a repair.
+    assert "The itinerary was saved but is not yet consistent:" in result
     assert "Louvre is closed on Tuesdays" in result
-    assert json.loads(get_trip_plan.invoke({})) == before
+    saved = json.loads(get_trip_plan.invoke({}))
+    assert saved != before
+    assert saved["day_wise_itinerary"][0]["stops"][0]["name"] == "Louvre"
 
 
-def test_permanently_closed_place_update_is_rejected_without_persistence(
+def test_permanently_closed_place_update_is_saved_with_a_warning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     create_trip_plan.invoke(
@@ -481,11 +481,10 @@ def test_permanently_closed_place_update_is_rejected_without_persistence(
         }
     )
 
-    assert result.startswith(
-        "Error: itinerary sanity validation rejected this update before persistence."
-    )
+    # The turn's only copy of the itinerary is saved rather than discarded, so the
+    # closure is reported as a warning instead of rejecting the update.
+    assert json.loads(get_trip_plan.invoke({})) != before
     assert "reported closed for business" in result
-    assert json.loads(get_trip_plan.invoke({})) == before
 
 
 def test_permanently_closed_place_selection_is_not_added(
