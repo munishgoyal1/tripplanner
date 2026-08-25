@@ -366,7 +366,7 @@ def test_first_turn_provider_failure_uses_hotel_fallback_after_phase_budget() ->
     assert decision.forced_reason == "hotel_provider_fallback"
 
 
-def test_first_turn_cannot_end_incomplete_before_phase_budget() -> None:
+def test_first_turn_researches_missing_restaurants_before_completion_repair() -> None:
     decision = resolve_completion_policy(
         messages=[
             HumanMessage(content="Plan a Paris stay"),
@@ -393,8 +393,74 @@ def test_first_turn_cannot_end_incomplete_before_phase_budget() -> None:
     )
 
     assert not decision.budget_exhausted
-    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_tool == "nearby_restaurants"
+    assert decision.forced_reason == "missing_named_restaurant"
     assert "multiple activities but no named restaurant" in (decision.requirement or "")
+
+
+def test_first_turn_persists_named_restaurants_after_research() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a Paris stay"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+            _tool_call("nearby_restaurants", "restaurants-1"),
+            ToolMessage(content="Bouillon Chartier", tool_call_id="restaurants-1"),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "origin": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel Le Six", "kind": "hotel"},
+                    {"name": "Louvre Museum", "kind": "attraction"},
+                    {"name": "Musee de l'Orangerie", "kind": "attraction"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Hotel Le Six"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "Research is complete but has not been persisted" in (decision.requirement or "")
+
+
+def test_restaurant_research_continues_past_the_first_turn_phase_budget() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a Paris stay"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 2),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "origin": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel Le Six", "kind": "hotel"},
+                    {"name": "Louvre Museum", "kind": "attraction"},
+                    {"name": "Musee de l'Orangerie", "kind": "attraction"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Hotel Le Six"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "nearby_restaurants"
+    assert decision.forced_reason == "missing_named_restaurant"
 
 
 def test_planning_resume_cannot_end_without_arrival_journey() -> None:
