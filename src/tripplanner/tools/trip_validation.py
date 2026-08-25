@@ -456,6 +456,7 @@ def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
             cities=_itinerary_hotel_locations(plan),
             dietary=_dietary_preferences(plan),
         ),
+        *_empty_itinerary_day_warnings(itinerary),
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
         *journey_continuity,

@@ -429,6 +429,22 @@ def test_core_completion_requires_cost_evidence_only_for_requested_budget() -> N
     assert trip_validation.core_planning_completion_gaps(complete) == []
 
 
+def test_core_completion_rejects_a_hotel_only_day() -> None:
+    plan = {
+        "destination": "Bali",
+        "origin": "Bali",
+        "day_wise_itinerary": [{
+            "day": 7,
+            "stops": [{"name": "Maya Sanur Resort", "kind": "hotel"}],
+        }],
+        "selected_hotels": [{"name": "Maya Sanur Resort"}],
+    }
+
+    assert trip_validation.core_planning_completion_gaps(plan) == [
+        "Day 7 has no planned places beyond the hotel."
+    ]
+
+
 def test_a_day_cannot_begin_where_the_trip_never_travelled(located: None) -> None:
     stranded = plan(
         [
