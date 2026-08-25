@@ -127,6 +127,8 @@ def test_llm_allows_token_bucket_recovery(monkeypatch) -> None:
     graph_mod._get_llm()
 
     assert captured["max_retries"] == 5
+    # One uncapped turn emitted the whole 32k output window and starved the quota.
+    assert captured["max_tokens"] == 8192
 
 
 def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) -> None:
