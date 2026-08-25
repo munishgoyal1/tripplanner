@@ -1523,6 +1523,56 @@ def test_map_view_does_not_draw_ground_legs_across_unresolved_flights(
     assert [leg["mode"] for leg in days[4]["legs"]] == ["Flight"]
 
 
+def test_map_view_does_not_taxi_from_paro_walk_to_delhi_airport(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Hotel in Paro": (27.4305, 89.4134),
+        "Paro Town Walk": (27.4298, 89.4147),
+        "Delhi Airport": (28.5562, 77.1000),
+    }
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+
+    def fake_summary(name: str, city: str) -> dict[str, Any] | None:
+        lat, lng = coords.get(name, (None, None))
+        return {"place_id": f"pid-{name}", "name": name, "lat": lat, "lng": lng}
+
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "top_places", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+    trip = {
+        "destination": "Bhutan",
+        "origin": "Delhi",
+        "selected_hotels": [{"name": "Hotel in Paro"}],
+        "day_wise_itinerary": [
+            {
+                "day": 5,
+                "stops": [
+                    {"name": "Hotel in Paro", "kind": "hotel"},
+                    {"name": "Paro Town Walk", "kind": "attraction"},
+                    {"name": "Flight: Paro to Delhi", "kind": "flight"},
+                ],
+            }
+        ],
+    }
+
+    view = trip_view.build_map_view(trip)
+    pins_by_id = {pin["id"]: pin for pin in view["pins"]}
+    day = view["days"][0]
+
+    assert "Delhi Airport" in {pin["name"] for pin in view["pins"]}
+    assert all(
+        not (
+            pins_by_id[leg["from_pin_id"]]["name"] == "Paro Town Walk"
+            and pins_by_id[leg["to_pin_id"]]["name"] == "Delhi Airport"
+        )
+        for leg in day["legs"]
+    )
+
+
 def test_unresolved_flight_origin_does_not_become_following_drive_origin(
     _long_haul_geo: None,
 ) -> None:
