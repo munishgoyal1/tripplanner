@@ -360,7 +360,10 @@ def _coords(stop: Any, destination: str) -> tuple[float, float] | None:
     name = _stop_name(stop)
     if not name:
         return None
-    return _coords_from_summary(_summary_for_place(name, destination))
+    summary = _summary_for_place(name, destination)
+    if not place_facts.names_match(name, str(summary.get("name") or "")):
+        return None
+    return _coords_from_summary(summary)
 
 
 def travel_min(a: tuple[float, float], b: tuple[float, float]) -> int:

@@ -427,6 +427,39 @@ def test_continuity_stays_silent_when_a_place_has_no_coordinates() -> None:
     assert "I9" not in codes
 
 
+def test_continuity_ignores_coordinates_from_a_different_provider_entity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    summaries = {
+        "Coorg Wilderness Resort": {
+            "name": "Coorg Wilderness Resort",
+            "lat": 12.3375,
+            "lng": 75.8069,
+        },
+        "Dubare Elephant Camp": {
+            "name": "Booking Office of Coorg Dubare Elephant camp",
+            "lat": 12.9710,
+            "lng": 77.6004,
+        },
+    }
+
+    def summary(name: str, _destination: str = "") -> dict[str, object]:
+        return summaries.get(name, {})
+
+    for module in (trip_common, trip_guard):
+        monkeypatch.setattr(module, "_summary_for_place", summary, raising=False)
+
+    coorg_day = plan(
+        [[
+            stop("Coorg Wilderness Resort", "07:30", "hotel"),
+            stop("Dubare Elephant Camp", "09:00"),
+        ]],
+        destination="Coorg",
+    )
+
+    assert not [v for v in trip_guard.validate_plan(coorg_day) if v.code == "I9"]
+
+
 def test_a_stop_far_from_the_one_before_it_is_a_gap_within_the_day(located: None) -> None:
     """The Paris shape: a stay in the destination listed after landing back home."""
     stranded = plan(
@@ -917,7 +950,6 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
-
 
 
 
