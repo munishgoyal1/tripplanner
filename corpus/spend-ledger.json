@@ -1,86 +1,94 @@
 {
-  "version": 1,
   "cap_inr": 15000.0,
   "runs": [
     {
       "at": "2026-08-15T15:15:50+00:00",
       "model": "unknown",
-      "trips": 22,
       "spent_inr": 908.01,
-      "usd_inr": 88.0,
-      "stopped_because": "matrix"
+      "stopped_because": "matrix",
+      "trips": 22,
+      "usd_inr": 88.0
     },
     {
       "at": "2026-08-16T13:53:41+00:00",
       "model": "unknown",
-      "trips": 2,
       "spent_inr": 147.45,
-      "usd_inr": 88.0,
-      "stopped_because": "budget"
+      "stopped_because": "budget",
+      "trips": 2,
+      "usd_inr": 88.0
     },
     {
       "at": "2026-08-16T15:25:21+00:00",
       "model": "unknown",
-      "trips": 13,
       "spent_inr": 502.85,
-      "usd_inr": 88.0,
-      "stopped_because": "budget"
+      "stopped_because": "budget",
+      "trips": 13,
+      "usd_inr": 88.0
     },
     {
       "at": "2026-08-18T10:24:29+00:00",
       "model": "unknown",
-      "trips": 0,
       "spent_inr": 0.0,
-      "usd_inr": 88.0,
-      "stopped_because": "barren"
+      "stopped_because": "barren",
+      "trips": 0,
+      "usd_inr": 88.0
     },
     {
       "at": "2026-08-18T16:59:08+00:00",
       "model": "unknown",
-      "trips": 76,
       "spent_inr": 3427.86,
-      "usd_inr": 88.0,
-      "stopped_because": "budget"
+      "stopped_because": "budget",
+      "trips": 76,
+      "usd_inr": 88.0
     },
     {
       "at": "2026-08-24T16:14:53+00:00",
       "model": "unknown",
-      "trips": 0,
       "spent_inr": 160.03,
-      "usd_inr": 88.0,
-      "stopped_because": "budget"
+      "stopped_because": "budget",
+      "trips": 0,
+      "usd_inr": 88.0
     },
     {
       "at": "2026-08-24T17:04:17+00:00",
       "model": "unknown",
-      "trips": 1,
       "spent_inr": 419.15,
-      "usd_inr": 88.0,
-      "stopped_because": "barren"
+      "stopped_because": "barren",
+      "trips": 1,
+      "usd_inr": 88.0
     },
     {
       "at": "2026-08-25T08:18:46+00:00",
       "model": "unknown",
-      "trips": 0,
       "spent_inr": 497.51,
-      "usd_inr": 88.0,
-      "stopped_because": "barren"
+      "stopped_because": "barren",
+      "trips": 0,
+      "usd_inr": 88.0
+    },
+    {
+      "at": "2026-08-25T11:57:39+00:00",
+      "model": "unknown",
+      "spent_inr": 48.62,
+      "stopped_because": "target",
+      "trips": 1,
+      "usd_inr": 88.0
     },
     {
       "at": "2026-08-25T12:38:50+00:00",
       "model": "unknown",
-      "trips": 0,
       "spent_inr": 12.14,
-      "usd_inr": 88.0,
-      "stopped_because": "exhausted"
+      "stopped_because": "exhausted",
+      "trips": 0,
+      "usd_inr": 88.0
     },
     {
       "at": "2026-08-25T12:52:15+00:00",
       "model": "unknown",
-      "trips": 1,
       "spent_inr": 58.45,
-      "usd_inr": 88.0,
-      "stopped_because": "target"
+      "stopped_because": "target",
+      "trips": 1,
+      "usd_inr": 88.0
     }
-  ]
+  ],
+  "version": 1
 }

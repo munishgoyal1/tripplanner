@@ -676,8 +676,8 @@ def reclaim_stale_claims(repo: str, state: core.State) -> int:
     return len(stale)
 
 
-def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
-    """Merge current master into an idle integration lane before a new batch starts."""
+def refresh_integration_baseline(space: Workspace, state: core.State) -> bool:
+    """Merge current master before assigning any newly free worker slot."""
     worktree = ensure_integration(space)
     git(["fetch", "-q", "origin", "master"], cwd=worktree)
     reconcile_landed_assignments(state, worktree)
@@ -715,13 +715,6 @@ def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
     park_released_slots(space, state)
     log(f"idle baseline refreshed from origin/master at {state.baseline_sha[:12]}")
     return True
-
-
-def batch_in_flight(state: core.State) -> bool:
-    return any(
-        item.state in ("dispatched", "running", "pushed", "integrated")
-        for item in state.assignments
-    )
 
 
 def dispatch(space: Workspace, state: core.State, repo: str) -> None:
@@ -949,12 +942,17 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
         log(f"#{assignment.issue} integrated; baseline now {state.baseline_sha[:12]}")
 
 
-def finalise_batch(space: Workspace, state: core.State, repo: str) -> None:
-    """Re-sync with master, validate the whole batch, and open one PR."""
+def finalise_batch(space: Workspace, state: core.State, repo: str) -> bool:
+    """Validate, publish, and merge a bounded batch before more work is dispatched."""
     integrated = [item for item in state.assignments if item.state == "integrated"]
-    reason = core.batch_ship_reason(integrated, active=bool(state.active()))
+    pending = [item for item in state.assignments if item.state == "in-pull-request"]
+    reason = (
+        "a previously published batch is awaiting merge"
+        if pending
+        else core.batch_ship_reason(integrated, active=bool(state.active()))
+    )
     if not reason:
-        return
+        return True
     log(f"publishing the batch: {reason}")
     worktree = ensure_integration(space)
     git(["fetch", "-q", "origin", "master"], cwd=worktree)
@@ -964,17 +962,18 @@ def finalise_batch(space: Workspace, state: core.State, repo: str) -> None:
         git(["merge", "--abort"], cwd=worktree, check=False)
         state.last_error = "integration branch conflicts with origin/master"
         log("batch cannot be finalised: conflicts with origin/master")
-        return
+        return False
 
     passed, summary = validate(space, worktree, frontend=True)
     if not passed:
         state.last_error = f"aggregate validation failed: {summary}"
         log(state.last_error)
-        return
+        return False
 
     state.baseline_sha = git(["rev-parse", "HEAD"], cwd=worktree)
     git(["push", "-q", "-u", "origin", INTEGRATION_BRANCH], cwd=worktree)
-    closes = "\n".join(f"Fixes #{item.issue}" for item in integrated)
+    publishing = [*pending, *integrated]
+    closes = "\n".join(f"Fixes #{item.issue}" for item in publishing)
     body = (
         "Batch produced by the multiagent coordinator.\n\n"
         f"Aggregate validation: {summary}\n\n"
@@ -983,18 +982,47 @@ def finalise_batch(space: Workspace, state: core.State, repo: str) -> None:
     )
     created = run([
         "gh", "pr", "create", "--repo", repo, "--base", "master", "--head", INTEGRATION_BRANCH,
-        "--title", f"Multiagent batch: {len(integrated)} issue(s)", "--body", body,
+        "--title", f"Multiagent batch: {len(publishing)} issue(s)", "--body", body,
     ])
     if created.returncode != 0 and "already exists" not in created.stderr:
         state.last_error = f"pull request not created: {created.stderr.strip()}"
         log(state.last_error)
-        return
+        return False
 
     for item in integrated:
         item.state = "in-pull-request"
         set_agent_state(repo, item.issue, core.NEEDS_VERIFY)
+    listed = run([
+        "gh", "pr", "list", "--repo", repo, "--head", INTEGRATION_BRANCH,
+        "--base", "master", "--state", "open", "--json", "number", "--jq",
+        ".[0].number",
+    ])
+    pr_number = listed.stdout.strip() if listed.returncode == 0 else ""
+    if not pr_number:
+        state.last_error = "batch pull request number could not be determined"
+        log(state.last_error)
+        return False
+
+    merged_pr = run(["gh", "pr", "merge", pr_number, "--repo", repo, "--merge"])
+    if merged_pr.returncode != 0:
+        state.last_error = f"batch PR #{pr_number} did not merge: {merged_pr.stderr.strip()}"
+        log(state.last_error)
+        return False
+
+    git(["fetch", "-q", "origin", "master"], cwd=worktree)
+    contained = run(
+        ["git", "merge-base", "--is-ancestor", state.baseline_sha, "origin/master"],
+        cwd=worktree,
+    )
+    if contained.returncode != 0:
+        state.last_error = f"batch PR #{pr_number} merged without the validated baseline"
+        log(state.last_error)
+        return False
+    for item in publishing:
+        item.state = "landed"
     state.batch = []
-    log(f"opened the batch pull request with {len(integrated)} issue(s)")
+    log(f"merged batch PR #{pr_number} with {len(publishing)} issue(s)")
+    return True
 
 
 # ----------------------------------------------------------------------------
@@ -1127,13 +1155,13 @@ def cmd_run(space: Workspace, args: argparse.Namespace) -> int:
             state.last_error = ""
             collect(space, state, repo)
             heartbeat(space, state)
-            baseline_ready = batch_in_flight(state) or refresh_idle_baseline(space, state)
-            # Free slots are filled before integration, which can validate for minutes.
+            integrate(space, state, repo)
+            heartbeat(space, state)
+            publication_ready = finalise_batch(space, state, repo)
+            baseline_ready = publication_ready and refresh_integration_baseline(space, state)
             if not state.paused and baseline_ready:
                 dispatch(space, state, repo)
                 heartbeat(space, state)
-            integrate(space, state, repo)
-            finalise_batch(space, state, repo)
             state.last_cycle = core.format_time(core.utcnow())
             save_state(space, state)
         except (RuntimeError, OSError, ValueError, json.JSONDecodeError) as error:

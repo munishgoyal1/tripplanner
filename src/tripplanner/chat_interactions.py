@@ -16,6 +16,7 @@ _FIELD_KINDS = {"single", "multi", "boolean", "number", "text", "date"}
 _ADULT_FIELD_IDS = {"adults", "adult_travelers", "adult_travellers", "travelers", "travellers"}
 _CHILD_FIELD_IDS = {"children", "child_travelers", "child_travellers", "kids"}
 _PARTY_TYPE_FIELD_IDS = {"party_type", "group_type", "travel_party", "trip_group"}
+_ORIGIN_FIELD_IDS = {"origin", "origin_city", "travelling_from", "traveling_from"}
 _PARTY_TYPE_OPTIONS = [
     {"value": "solo", "label": "Solo"},
     {"value": "couple", "label": "Couple"},
@@ -199,6 +200,47 @@ def _with_party_fields(fields: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [adult_field, child_field, party_field, *remaining][:6]
 
 
+def _with_travel_scope(fields: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], bool]:
+    """Pair an unanswered origin with an explicit self-arranged-arrival choice."""
+    origin = next(
+        (
+            field
+            for field in fields
+            if field["id"] in _ORIGIN_FIELD_IDS and field["kind"] == "text"
+        ),
+        None,
+    )
+    if origin is None or str(origin["value"]).strip():
+        return fields, False
+
+    scope = {
+        "id": "travel_scope",
+        "label": "Journey to the destination",
+        "kind": "single",
+        "value": "round_trip",
+        "options": [
+            {
+                "value": "round_trip",
+                "label": "Plan it from my city",
+                "detail": "Enter the city you will travel from.",
+            },
+            {
+                "value": "destination_only",
+                "label": "I'll arrange my own way there",
+            },
+        ],
+    }
+    origin = {
+        **origin,
+        "id": "origin",
+        "label": "Travelling from",
+        "placeholder": origin.get("placeholder") or "Your city",
+    }
+    travel_ids = _ORIGIN_FIELD_IDS | {"travel_scope"}
+    remaining = [field for field in fields if field["id"] not in travel_ids]
+    return [scope, origin, *remaining], True
+
+
 def build_input_request(
     question: str,
     known_context: Any,
@@ -232,6 +274,7 @@ def build_input_request(
         clean_fields.append(clean)
     if not clean_fields:
         raise ValueError("input requests must contain at least one usable field")
+    clean_fields, requires_travel_answer = _with_travel_scope(clean_fields)
     clean_fields = _with_party_fields(clean_fields)
     identity = json.dumps(
         {"question": clean_question, "fields": clean_fields},
@@ -246,7 +289,7 @@ def build_input_request(
         "known_context": clean_context,
         "fields": clean_fields,
         "submit_label": clean_submit,
-        "allow_skip": bool(allow_skip),
+        "allow_skip": bool(allow_skip) and not requires_travel_answer,
     }
 
 
@@ -266,6 +309,8 @@ def request_trip_input(
     Choice fields also include 2-6 ``options`` with ``value``, ``label``, and optional
     ``detail``. Use ``date`` (ISO ``YYYY-MM-DD``) for a start date, ``number`` for trip
     length, and ``text`` for an origin city, leaving its value empty when none is known.
+    An empty origin is paired with a required ``travel_scope`` choice so the traveller
+    either enters their city or explicitly says they will arrange their own way there.
     Always provide ``adults`` (ages 13+) and ``children`` (ages 0-12) number fields
     plus a ``party_type`` single choice (solo/couple/family/friends/group), prefilling
     explicit trip facts first and the user's usual party second. The validator supplies

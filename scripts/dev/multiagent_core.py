@@ -56,7 +56,7 @@ REGRESSION_TEST_PREFIXES = ("frontend/", "mobile/", "tests/")
 # A continuously refilled queue never goes idle, so idleness alone cannot decide
 # when to publish: integrated fixes would accumulate on the branch forever.
 BATCH_SHIP_COUNT = 3
-BATCH_MAX_WAIT_MINUTES = 30
+BATCH_MAX_WAIT_MINUTES = 10
 
 # Files that are coupled through a contract rather than through their path.
 # Two issues touching the same surface are serialised even when no file

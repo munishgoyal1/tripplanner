@@ -1296,3 +1296,23 @@ the outcome.
 - When a long-running job reports only a client-side timeout, check the server
   log's last timestamp against wall clock before blaming throughput. A gap with
   no terminal event means a hung call, not slow work.
+## 2026-08-25 - Unversioned Project Provisioning Drifts Where Deploys Cannot
+
+- Prod alone failed every Google Places call while canary, which tracks prod
+  closely in code, was healthy. The cause was not a deployment: the prod project
+  had been created through the Maps Platform console wizard, which enables the
+  legacy API bundle, and so never had `places.googleapis.com` enabled at all.
+- Deployment gates cover code and infrastructure templates, not the cloud
+  project a key belongs to. Anything provisioned by hand or by a vendor wizard
+  sits outside every check and drifts silently until one environment alone
+  misbehaves.
+- When a single environment fails an external API, compare enabled services
+  across projects before reading application code. A missing API presents as an
+  authorization error, not as a configuration error.
+- Cloud billing budgets only notify; they never stop spend, and their cost data
+  lags by hours. Per-API quotas are the only real-time ceiling. Treat an
+  automatic billing shutoff as a backstop for a slow leak, not as protection
+  against a runaway loop.
+- In Places API (New) the billed SKU is chosen by the request field mask, not by
+  the endpoint. Asking for `rating`, `reviews`, or `editorialSummary` silently
+  promotes a free ID lookup into the most expensive tier available.

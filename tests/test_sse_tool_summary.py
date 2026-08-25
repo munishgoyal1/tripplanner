@@ -187,6 +187,20 @@ def test_recursion_limit_outlasts_the_policy_tool_budget() -> None:
     assert api._CHAT_GRAPH_RECURSION_LIMIT > worst_case
 
 
+def test_recursion_limit_leaves_room_for_hotel_fallback_and_persistence() -> None:
+    from tripplanner import graph_policy
+
+    nodes_per_phase = 2
+    hotel_repair = 2
+    final_reply = 1
+    required_steps = (
+        nodes_per_phase * (graph_policy.MAX_TOOL_PHASES_PER_TURN + hotel_repair)
+        + final_reply
+    )
+
+    assert api._CHAT_GRAPH_RECURSION_LIMIT > required_steps
+
+
 def test_best_effort_plan_reply_reports_saved_plan_gaps(monkeypatch) -> None:
     from tripplanner.tools import trip_planner
 

@@ -135,9 +135,15 @@ def _resolve_iata(place: str) -> str:
     return place.upper()[:3]
 
 
-def _hotel_location_code(destination: str) -> str:
+def _hotel_location_code(destination: str) -> str | None:
     normalized = destination.strip().lower()
-    return _HOTEL_CITY_CODES.get(normalized, _resolve_iata(destination))
+    if normalized in _HOTEL_CITY_CODES:
+        return _HOTEL_CITY_CODES[normalized]
+    if normalized in _IATA_CODES:
+        return _IATA_CODES[normalized]
+    if len(normalized) == 3 and normalized.isalpha():
+        return normalized.upper()
+    return None
 
 
 class LiteAPIProvider:
@@ -167,6 +173,9 @@ class LiteAPIProvider:
             raise LiteAPIError(f"LiteAPI request failed: {type(exc).__name__}") from exc
 
     def search_hotels(self, query: HotelSearchQuery) -> list[HotelOffer]:
+        location_code = _hotel_location_code(query.destination)
+        if location_code is None:
+            return []
         occupancies = [
             {
                 "adults": query.adults_per_room,
@@ -177,7 +186,7 @@ class LiteAPIProvider:
         payload = self._post(
             "hotels/rates",
             {
-                "iataCode": _hotel_location_code(query.destination),
+                "iataCode": location_code,
                 "checkin": query.checkin,
                 "checkout": query.checkout,
                 "currency": query.currency,

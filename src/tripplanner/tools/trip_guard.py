@@ -44,6 +44,7 @@ TURNAROUND_MIN = 10
 FEASIBILITY_GRACE_MIN = 10
 ROAD_SPEED_KMH = 42.0
 DEFAULT_VISIT_MIN = 90
+DEFAULT_MEAL_MIN = 60
 DEFAULT_LEG_MIN = 120
 DEFAULT_HOTEL_MIN = 45
 #: Far enough apart that no ordinary day trip explains it without a named journey.
@@ -87,7 +88,7 @@ INVARIANTS: tuple[tuple[str, str, str], ...] = (
 #: A trip the traveller will reach on their own. Named by the user, never
 #: assumed, because the alternative is inventing a home city they never gave.
 DESTINATION_ONLY = "destination_only"
-KNOWN_FACT_CODES = frozenset({"I11", "I12", "I13"})
+KNOWN_FACT_CODES = frozenset({"I3", "I11", "I12", "I13"})
 
 
 def travel_scope(plan: dict[str, Any]) -> str:
@@ -216,22 +217,43 @@ def leg_touches_home(stop: Any, origin: str) -> tuple[bool, bool]:
     return _home_bound_leg(stop, _normalize_city(origin, first_part=True))
 
 
+def _default_duration(kind: str) -> int:
+    if kind in _TRANSPORT_KINDS:
+        return DEFAULT_LEG_MIN
+    if kind == "hotel":
+        return DEFAULT_HOTEL_MIN
+    if kind == "meal":
+        return DEFAULT_MEAL_MIN
+    return DEFAULT_VISIT_MIN
+
+
 def _duration_of(stop: Any) -> int:
     kind = _stop_kind(stop)
     raw = stop.get("duration_min") if isinstance(stop, dict) else None
     if isinstance(raw, (int, float)) and raw > 0:
         return int(raw)
-    if kind in _TRANSPORT_KINDS:
-        return DEFAULT_LEG_MIN
-    if kind == "hotel":
-        return DEFAULT_HOTEL_MIN
-    return DEFAULT_VISIT_MIN
+    return _default_duration(kind)
+
+
+def _is_home_endpoint(stop: Any, origin: str) -> bool:
+    """True for a non-place row that explicitly marks arrival back at the origin."""
+    if _stop_kind(stop) in _PLACE_KINDS | {"hotel"}:
+        return False
+    home = _normalize_city(origin, first_part=True)
+    name = _normalize_city(_stop_name(stop))
+    return bool(home and name and (name == home or re.search(rf"\b{re.escape(home)}\b", name)))
 
 
 def _time_of(stop: Any) -> int | None:
     if not isinstance(stop, dict):
         return None
     return _parse_hhmm(str(stop.get("time") or ""))
+
+
+def _arrival_of(stop: Any) -> int | None:
+    if not isinstance(stop, dict):
+        return None
+    return _parse_hhmm(str(stop.get("arrival_time") or ""))
 
 
 def days_of(plan: dict[str, Any]) -> list[tuple[int, dict[str, Any], list[Any]]]:
@@ -294,7 +316,13 @@ def envelope(plan: dict[str, Any]) -> Envelope:
                 start = _time_of(stop)
                 arrival_day = day
                 arrival_name = _stop_name(stop)
-                arrival_end = _abs(day, start + _duration_of(stop)) if start is not None else None
+                arrival = _arrival_of(stop)
+                if arrival is not None:
+                    arrival_end = _abs(day, arrival)
+                    if start is not None and arrival < start:
+                        arrival_end += 1440
+                elif start is not None:
+                    arrival_end = _abs(day, start + _duration_of(stop))
             if arrives_home:
                 start = _time_of(stop)
                 departure_day = day
@@ -360,7 +388,10 @@ def _coords(stop: Any, destination: str) -> tuple[float, float] | None:
     name = _stop_name(stop)
     if not name:
         return None
-    return _coords_from_summary(_summary_for_place(name, destination))
+    summary = _summary_for_place(name, destination)
+    if not place_facts.names_match(name, str(summary.get("name") or "")):
+        return None
+    return _coords_from_summary(summary)
 
 
 def travel_min(a: tuple[float, float], b: tuple[float, float]) -> int:
@@ -379,7 +410,7 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
     env = envelope(plan)
     structured = days_of(plan)
 
-    out.extend(_envelope_violations(structured, env))
+    out.extend(_envelope_violations(structured, env, str(plan.get("origin") or "")))
     out.extend(_presence_violations(structured, env))
     out.extend(_hours_violations(structured, destination, day_dates(plan)))
     out.extend(_availability_violations(structured, destination))
@@ -393,12 +424,12 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
 
 
 def _envelope_violations(
-    structured: list[tuple[int, dict[str, Any], list[Any]]], env: Envelope
+    structured: list[tuple[int, dict[str, Any], list[Any]]], env: Envelope, origin: str
 ) -> list[Violation]:
     out: list[Violation] = []
     for day, _entry, stops in structured:
         for stop in stops:
-            if _stop_kind(stop) in _TRANSPORT_KINDS:
+            if _stop_kind(stop) in _TRANSPORT_KINDS or _is_home_endpoint(stop, origin):
                 continue
             start = _time_of(stop)
             if start is None:
@@ -779,6 +810,7 @@ def _continuity_violations(
                 continue
             here = _coords(stop, destination)
             if not here:
+                previous = None
                 continue
             if previous is not None:
                 previous_name, previous_day, previous_coords, previous_terminal = previous
@@ -835,6 +867,14 @@ def _return_violations(plan: dict[str, Any], env: Envelope) -> list[Violation]:
     destination = str(plan.get("destination") or "").strip()
     if not origin or not destination or origin.casefold() == destination.casefold():
         return []
+    if env.arrival_day is None and env.departure_day is not None:
+        return [
+            Violation(
+                "I7",
+                "Return coverage",
+                f"The return leg from {destination} has no matching outbound from {origin}.",
+            )
+        ]
     if env.arrival_day is None or env.departure_day is not None:
         return []
     return [
@@ -935,9 +975,18 @@ def choose_placement(
     coords = _coords_from_summary(summary)
     facts = place_facts.facts_from_summary(summary)
     dates = day_dates(plan)
-    visit = duration_min if isinstance(duration_min, int) and duration_min > 0 else (
-        DEFAULT_HOTEL_MIN if kind == "hotel" else DEFAULT_VISIT_MIN
+    visit = (
+        duration_min
+        if isinstance(duration_min, int) and duration_min > 0
+        else _default_duration(kind)
     )
+
+    if kind in _PLACE_KINDS and facts.unavailable:
+        return None, [
+            Rejection(day, "all day", "I12", "reported closed for business")
+            for day, _entry, _stops in days_of(plan)
+            if preferred_day is None or day == preferred_day
+        ]
 
     best: tuple[float, Placement] | None = None
     rejections: list[Rejection] = []
@@ -984,22 +1033,30 @@ def choose_placement(
                 )
                 continue
 
-            begins = window.start + inbound
-            begins = -(-begins // 5) * 5
-            local = begins - _abs(day, 0)
-            if hours and not any(
-                local >= opens and local + visit <= closes for opens, closes in hours
-            ):
-                rejections.append(
-                    Rejection(
-                        day,
-                        label,
-                        "I3",
-                        f"arriving {_fmt_hhmm(local)} does not fit "
-                        f"{facts.window_text(day_iso)}",
+            earliest = -(-(window.start + inbound) // 5) * 5
+            begins = earliest
+            if hours:
+                day_start = _abs(day, 0)
+                latest = window.end - outbound - visit
+                legal: list[int] = []
+                for opens, closes in hours:
+                    candidate = -(-max(earliest, day_start + opens) // 5) * 5
+                    if candidate <= latest and candidate + visit <= day_start + closes:
+                        legal.append(candidate)
+                if not legal:
+                    local = earliest - day_start
+                    rejections.append(
+                        Rejection(
+                            day,
+                            label,
+                            "I3",
+                            f"arriving {_fmt_hhmm(local)} does not fit "
+                            f"{facts.window_text(day_iso)}",
+                        )
                     )
-                )
-                continue
+                    continue
+                begins = min(legal)
+            local = begins - _abs(day, 0)
 
             detour = 0.0
             if coords and before_at:

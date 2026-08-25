@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 from tripplanner.tools import trip_planner, user_preferences
-from tripplanner.tools.trip_guard import envelope
+from tripplanner.tools.trip_guard import envelope, validate_plan
 from tripplanner.tools.trip_planner import (
     add_selection,
     create_trip_plan,
@@ -91,6 +91,12 @@ def _round_trip() -> dict:
                             "day": 2,
                             "stops": [
                                 {
+                                    "name": "Hotel Sayaji",
+                                    "kind": "hotel",
+                                    "time": "08:00",
+                                    "duration_min": 45,
+                                },
+                                {
                                     "name": "Rajwada Palace",
                                     "kind": "attraction",
                                     "time": "10:00",
@@ -136,6 +142,52 @@ def _names(plan: dict) -> list[str]:
         for entry in plan["day_wise_itinerary"]
         for stop in entry.get("stops", [])
     ]
+
+
+def test_an_update_without_a_required_nightly_stay_is_saved_with_a_warning() -> None:
+    create_trip_plan.invoke(
+        {
+            "destination": "Spiti Valley",
+            "departure_date": "2027-06-01",
+            "return_date": "2027-06-03",
+            "travel_scope": "destination_only",
+        }
+    )
+    before = json.loads(get_trip_plan.invoke({}))
+
+    result = update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "selected_hotels": [
+                        {"name": "Spiti Valley Lodge", "city": "Spiti Valley"}
+                    ],
+                    "day_wise_itinerary": [
+                        {
+                            "day": 1,
+                            "stops": [
+                                {"name": "Drive to Narkanda", "kind": "transport"},
+                                {"name": "Hatu Peak", "kind": "attraction"},
+                            ],
+                        },
+                        {
+                            "day": 2,
+                            "stops": [{"name": "Tabo Monastery", "kind": "attraction"}],
+                        },
+                        {
+                            "day": 3,
+                            "stops": [{"name": "Return drive", "kind": "transport"}],
+                        },
+                    ],
+                }
+            )
+        }
+    )
+
+    # The turn's only copy of the itinerary is saved rather than discarded, so the
+    # missing stay is reported as a warning instead of rejecting the update.
+    assert json.loads(get_trip_plan.invoke({})) != before
+    assert "Day 1 has no concrete lodging anchor for the night" in result
 
 
 def test_a_new_place_is_never_scheduled_after_the_flight_home() -> None:
@@ -256,9 +308,24 @@ def test_origin_correction_restores_missing_selected_flight_legs() -> None:
                 {
                     "selected_flights": [{"airline": "IndiGo"}],
                     "day_wise_itinerary": [
-                        {"day": 1, "stops": [{"name": "Goa Hotel", "kind": "hotel"}]},
-                        {"day": 2, "stops": [{"name": "Goa Hotel", "kind": "hotel"}]},
-                        {"day": 3, "stops": [{"name": "Goa Hotel", "kind": "hotel"}]},
+                        {
+                            "day": 1,
+                            "stops": [
+                                {"name": "Holiday Inn Resort Goa", "kind": "hotel"}
+                            ],
+                        },
+                        {
+                            "day": 2,
+                            "stops": [
+                                {"name": "Holiday Inn Resort Goa", "kind": "hotel"}
+                            ],
+                        },
+                        {
+                            "day": 3,
+                            "stops": [
+                                {"name": "Holiday Inn Resort Goa", "kind": "hotel"}
+                            ],
+                        },
                     ],
                 }
             )
@@ -369,6 +436,76 @@ def test_authoritative_closed_day_is_saved_with_a_repair_warning(
     saved = json.loads(get_trip_plan.invoke({}))
     assert saved != before
     assert saved["day_wise_itinerary"][0]["stops"][0]["name"] == "Louvre"
+
+
+def test_permanently_closed_place_update_is_saved_with_a_warning(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    create_trip_plan.invoke(
+        {
+            "destination": "Cape Town",
+            "departure_date": "2027-11-15",
+            "return_date": "2027-11-15",
+            "travel_scope": "destination_only",
+        }
+    )
+    before = json.loads(get_trip_plan.invoke({}))
+    monkeypatch.setattr(
+        places_cache,
+        "get_summary",
+        lambda *_args, **_kwargs: {
+            "name": "The Company's Garden Restaurant",
+            "business_status": "CLOSED_PERMANENTLY",
+        },
+    )
+
+    result = update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "day_wise_itinerary": [
+                        {
+                            "day": 1,
+                            "stops": [
+                                {
+                                    "name": "The Company's Garden Restaurant",
+                                    "kind": "meal",
+                                    "time": "12:00",
+                                    "duration_min": 60,
+                                }
+                            ],
+                        }
+                    ]
+                }
+            )
+        }
+    )
+
+    # The turn's only copy of the itinerary is saved rather than discarded, so the
+    # closure is reported as a warning instead of rejecting the update.
+    assert json.loads(get_trip_plan.invoke({})) != before
+    assert "reported closed for business" in result
+
+
+def test_permanently_closed_place_selection_is_not_added(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _round_trip()
+    before = json.loads(get_trip_plan.invoke({}))
+    monkeypatch.setattr(
+        places_cache,
+        "get_summary",
+        lambda *_args, **_kwargs: {
+            "name": "Closed Museum",
+            "business_status": "CLOSED_PERMANENTLY",
+        },
+    )
+
+    result = add_selection("attraction", {"name": "Closed Museum"})
+
+    assert result["ok"] is False
+    assert "reported closed for business" in result["alerts"][0]
+    assert json.loads(get_trip_plan.invoke({})) == before
 
 
 def test_no_tool_result_ever_shows_the_traveller_a_number_for_the_trip() -> None:
@@ -690,6 +827,7 @@ def test_a_place_the_user_chose_is_moved_not_deleted_when_the_day_fills() -> Non
                         {
                             "day": 2,
                             "stops": [
+                                {"name": "Hotel Sayaji", "kind": "hotel"},
                                 {"name": "Rajwada Palace", "kind": "attraction",
                                  "time": "09:00", "duration_min": 120},
                                 {"name": "Lal Bagh Palace", "kind": "attraction",
@@ -714,7 +852,7 @@ def test_a_place_the_user_chose_is_moved_not_deleted_when_the_day_fills() -> Non
     assert "removed" not in " ".join(alerts)
     assert "Shree Bada Ganpati Mandir" in _names(plan)
     assert "Kaanch Mandir" in _names(plan)
-    assert len(_stops_on(plan, 2)) == 4
+    assert len(_stops_on(plan, 2)) == 5
 
 
 def test_resetting_keeps_the_brief_and_drops_the_plan() -> None:
@@ -732,3 +870,21 @@ def test_resetting_keeps_the_brief_and_drops_the_plan() -> None:
     assert after["selected_activities"] == []
     assert after["selected_flights"] == []
     assert json.loads(get_trip_plan.invoke({}))["day_wise_itinerary"] == []
+
+
+def test_resetting_keeps_destination_only_guard_coverage() -> None:
+    create_trip_plan.invoke(
+        {
+            "destination": "Udaipur",
+            "departure_date": "2026-11-07",
+            "return_date": "2026-11-09",
+            "travel_scope": "destination_only",
+        }
+    )
+
+    after = trip_planner.reset_active_trip()
+
+    assert after is not None
+    assert after["origin"] == ""
+    assert after["travel_scope"] == "destination_only"
+    assert not [violation for violation in validate_plan(after) if violation.code == "I10"]

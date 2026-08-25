@@ -141,6 +141,33 @@ def _resolved_stay_ids(
     return resolved
 
 
+def _active_stay_ids(
+    trip: dict[str, Any],
+    itinerary_days: dict[int, dict[str, Any]],
+    pin_for_stop: PinResolver,
+    day: int,
+    fallback_ids: list[str],
+) -> list[str]:
+    itinerary_date = str((itinerary_days.get(day) or {}).get("date") or "").strip()[:10]
+    if len(itinerary_date) != 10:
+        return fallback_ids
+
+    active: list[str] = []
+    has_dated_stay = False
+    for stay in trip.get("selected_hotels") or []:
+        if not isinstance(stay, dict):
+            continue
+        checkin = str(stay.get("checkin") or "").strip()[:10]
+        checkout = str(stay.get("checkout") or "").strip()[:10]
+        has_dated_stay = has_dated_stay or bool(checkin or checkout)
+        if (checkin and itinerary_date < checkin) or (checkout and itinerary_date > checkout):
+            continue
+        pin = pin_for_stop(stay.get("name"), "hotel")
+        if pin and str(pin["id"]) not in active:
+            active.append(str(pin["id"]))
+    return active if has_dated_stay else fallback_ids
+
+
 def _carried_stay_id(
     itinerary_days: dict[int, dict[str, Any]], pin_for_stop: PinResolver, day: int
 ) -> str | None:
@@ -216,8 +243,9 @@ def _build_days(
     pin_for_stop: PinResolver,
     itinerary_days: dict[int, dict[str, Any]],
     destination: str,
+    trip: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    stay_ids = [p["id"] for p in pins if p["kind"] == "hotel" and p["selected"]]
+    selected_stay_ids = [p["id"] for p in pins if p["kind"] == "hotel" and p["selected"]]
     empty_journey = DayJourney(day=0)
 
     def _pin_kind(pin_id: str) -> str:
@@ -238,8 +266,11 @@ def _build_days(
                     extra_stay_ids=resolved_stay_ids[1:],
                 )
             route_ids = journey.route_ids
-            ids = route_ids
+            ids = journey.map_pin_ids if journey.detached_pin_ids else route_ids
         else:
+            stay_ids = _active_stay_ids(
+                trip, itinerary_days, pin_for_stop, d, selected_stay_ids
+            )
             ids = _local_day_pin_ids(ids, pin_by_id, resolved_stay_ids, stay_ids)
             route_ids = [pid for pid in ids if pin_by_id[pid]["kind"] not in TERMINAL_KINDS]
         intercity_modes = journey.intercity_edges or None
@@ -428,6 +459,7 @@ def build(
         pin_for_stop,
         itinerary_days,
         destination,
+        trip,
     )
     road_circuits = _build_road_circuits(
         trip, transfer_metrics, days, pin_by_id, pin_for_stop, itinerary_days

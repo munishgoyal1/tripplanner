@@ -50,6 +50,7 @@ _TITLE_NOISE = frozenset({
 })
 
 _MOVABLE_KINDS = frozenset({"attraction", "meal"})
+_RESCHEDULABLE_KINDS = frozenset({"attraction", "hotel", "meal"})
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 
@@ -107,10 +108,13 @@ class Rebalance:
                 if move.saved_travel_min > 0
                 else ""
             )
-            out.append(
-                f"Moved {move.name} from Day {move.from_day} to Day {move.to_day} "
-                f"at {move.time}{saved}."
-            )
+            if move.from_day == move.to_day:
+                out.append(f"Rescheduled {move.name} on Day {move.to_day} at {move.time}{saved}.")
+            else:
+                out.append(
+                    f"Moved {move.name} from Day {move.from_day} to Day {move.to_day} "
+                    f"at {move.time}{saved}."
+                )
         return out
 
 
@@ -260,6 +264,47 @@ def _movable(
     return sorted(out, key=lambda pair: (pair[0], _stop_name(pair[1])))
 
 
+def _reschedulable(
+    plan: dict[str, Any], pinned: set[tuple[int, str]]
+) -> list[tuple[int, dict[str, Any]]]:
+    violations = trip_guard.validate_plan(plan)
+    fault_stops = {
+        (violation.day, violation.stop)
+        for violation in violations
+        if violation.code == "I3"
+    }
+    overlap_targets = {
+        (violation.day, violation.stop)
+        for violation in violations
+        if violation.code in {"I4", "I5"}
+    }
+    for day, _entry, stops in trip_guard.days_of(plan):
+        timed = sorted(
+            (stop for stop in stops if trip_guard._time_of(stop) is not None),
+            key=lambda stop: trip_guard._time_of(stop) or 0,
+        )
+        for current, following in zip(timed, timed[1:]):
+            if (day, _stop_name(following)) not in overlap_targets:
+                continue
+            fault_stops.add((day, _stop_name(current)))
+            fault_stops.add((day, _stop_name(following)))
+
+    out: list[tuple[int, dict[str, Any]]] = []
+    for day, _entry, stops in trip_guard.days_of(plan):
+        for stop in stops:
+            name = _stop_name(stop)
+            if not name or not isinstance(stop, dict):
+                continue
+            if (day, name) not in fault_stops:
+                continue
+            if _stop_kind(stop) not in _RESCHEDULABLE_KINDS:
+                continue
+            if (day, name) in pinned or trip_guard._has_a_time_of_its_own(stop):
+                continue
+            out.append((day, stop))
+    return sorted(out, key=lambda pair: (pair[0], _stop_name(pair[1])))
+
+
 def _place(
     plan: dict[str, Any], stop: dict[str, Any], from_day: int, to_day: int
 ) -> tuple[dict[str, Any], Move] | None:
@@ -324,6 +369,13 @@ def _candidates(
     current: dict[str, Any], pinned: set[tuple[int, str]], deadline: float
 ) -> Any:
     """Every arrangement one step away, cheapest neighbourhood first."""
+    for day, stop in _reschedulable(current, pinned):
+        if time.perf_counter() > deadline:
+            break
+        rescheduled = _relocated(current, day, stop, day)
+        if rescheduled is not None:
+            yield rescheduled[0], (rescheduled[1],)
+
     movable = _movable(current, pinned)
     for from_day, stop in movable:
         for to_day, _entry, _stops in trip_guard.days_of(current):
@@ -372,6 +424,7 @@ def rebalance(
     plan: dict[str, Any],
     *,
     pinned: set[tuple[int, str]] | frozenset[tuple[int, str]] = frozenset(),
+    priority_codes: set[str] | frozenset[str] = frozenset(),
     max_rounds: int = 8,
     budget_ms: int = 400,
 ) -> Rebalance:
@@ -379,6 +432,12 @@ def rebalance(
     current = deepcopy(plan)
     before = score(current)
     best_score = before
+    best_priority = (
+        sum(violation.code in priority_codes for violation in trip_guard.validate_plan(current))
+        if priority_codes
+        else 0
+    )
+    baseline_other = before.contradictions - best_priority
     moves: list[Move] = []
     deadline = time.perf_counter() + budget_ms / 1000
     rounds = 0
@@ -386,18 +445,35 @@ def rebalance(
 
     while rounds < max_rounds:
         rounds += 1
-        best: tuple[float, dict[str, Any], tuple[Move, ...]] | None = None
+        best: tuple[tuple[int, float], dict[str, Any], tuple[Move, ...]] | None = None
 
         for candidate, candidate_moves in _candidates(current, set(pinned), deadline):
             candidate_score = score(candidate)
-            if candidate_score.contradictions > before.contradictions:
+            candidate_priority = (
+                sum(
+                    violation.code in priority_codes
+                    for violation in trip_guard.validate_plan(candidate)
+                )
+                if priority_codes
+                else 0
+            )
+            candidate_other = candidate_score.contradictions - candidate_priority
+            if candidate_other > baseline_other:
                 continue
-            if candidate_score.total >= best_score.total:
+            candidate_rank = (
+                candidate_priority if priority_codes else 0,
+                candidate_score.total,
+            )
+            current_rank = (
+                best_priority if priority_codes else 0,
+                best_score.total,
+            )
+            if candidate_rank >= current_rank:
                 continue
-            if best is None or candidate_score.total < best[0]:
+            if best is None or candidate_rank < best[0]:
                 saved = best_score.travel_min - candidate_score.travel_min
                 best = (
-                    candidate_score.total,
+                    candidate_rank,
                     candidate,
                     tuple(
                         Move(move.name, move.from_day, move.to_day, move.time, saved)
@@ -409,8 +485,16 @@ def rebalance(
             exhausted = True
         if best is None:
             break
-        _total, current, accepted = best
+        _rank, current, accepted = best
         best_score = score(current)
+        best_priority = (
+            sum(
+                violation.code in priority_codes
+                for violation in trip_guard.validate_plan(current)
+            )
+            if priority_codes
+            else 0
+        )
         moves.extend(accepted)
         if exhausted:
             break

@@ -440,13 +440,16 @@ class TestPartialItineraryMerge:
 
         result = update_trip_plan.invoke({"updates_json": json.dumps({
             "day_wise_itinerary": [
-                {"day": 2, "stops": [{"name": "Budget Inn Indore", "kind": "hotel"}]},
+                {
+                    "day": 2,
+                    "stops": [{"name": "Lemon Tree Hotel Indore", "kind": "hotel"}],
+                },
             ],
         })})
 
         plan = json.loads(get_trip_plan.invoke({}))
         assert [day["day"] for day in plan["day_wise_itinerary"]] == [1, 2, 3]
-        assert plan["day_wise_itinerary"][1]["stops"][0]["name"] == "Budget Inn Indore"
+        assert plan["day_wise_itinerary"][1]["stops"][0]["name"] == "Lemon Tree Hotel Indore"
         assert "Partial itinerary update merged" in result
 
 
@@ -649,6 +652,21 @@ class TestTripPlanState:
 
         parsed = json.loads(get_trip_plan.invoke({}))
         assert parsed["origin"] == "Whitefield, Bangalore"
+        assert parsed["travel_scope"] == "round_trip"
+
+    def test_create_trip_plan_persists_self_arranged_arrival_without_origin(self):
+        update_preferences({"profile": {"home_city": "Bangalore"}})
+
+        create_trip_plan.invoke({
+            "destination": "Pondicherry",
+            "departure_date": "2026-11-07",
+            "return_date": "2026-11-09",
+            "travel_scope": "destination_only",
+        })
+
+        parsed = json.loads(get_trip_plan.invoke({}))
+        assert parsed["origin"] == ""
+        assert parsed["travel_scope"] == "destination_only"
 
     def test_resume_keeps_existing_explicit_origin(self):
         create_trip_plan.invoke({
@@ -705,6 +723,119 @@ class TestTripPlanState:
         assert plan["weather"]["source"] == "forecast"
         assert plan["total_cost"] == 8500
 
+    def test_update_trip_plan_moves_known_closed_day_before_persistence(
+        self, monkeypatch
+    ):
+        weekdays = (
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        )
+
+        def structured_hours(name, _destination):
+            if name != "Closed Museum":
+                return {}
+            return {
+                "name": name,
+                "weekday_descriptions": [
+                    f"{day}: {'Closed' if day == 'Tuesday' else '9:00 AM - 6:00 PM'}"
+                    for day in weekdays
+                ],
+            }
+
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_guard._summary_for_place",
+            structured_hours,
+        )
+        create_trip_plan.invoke(
+            {
+                "destination": "Paris",
+                "departure_date": "2026-09-07",
+                "return_date": "2026-09-08",
+                "travel_scope": "destination_only",
+            }
+        )
+
+        result = update_trip_plan.invoke(
+            {
+                "updates_json": json.dumps(
+                    {
+                        "day_wise_itinerary": [
+                            {
+                                "day": 1,
+                                "stops": [{"name": "Hotel Lutetia", "kind": "hotel"}],
+                            },
+                            {
+                                "day": 2,
+                                "stops": [
+                                    {
+                                        "name": "Closed Museum",
+                                        "kind": "attraction",
+                                        "time": "10:00",
+                                        "duration_min": 90,
+                                    }
+                                ],
+                            },
+                        ]
+                    }
+                )
+            }
+        )
+
+        saved = json.loads(get_trip_plan.invoke({}))
+        assert [
+            stop["name"]
+            for stop in saved["day_wise_itinerary"][0]["stops"]
+            if stop["kind"] == "attraction"
+        ] == ["Closed Museum"]
+        assert saved["day_wise_itinerary"][1]["stops"] == []
+        assert "Adjusted known closed-day visits before saving" in result
+
+    def test_update_trip_plan_does_not_infer_closed_day_from_unknown_hours(
+        self, monkeypatch
+    ):
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_guard._summary_for_place",
+            lambda *_: {},
+        )
+        create_trip_plan.invoke(
+            {
+                "destination": "Paris",
+                "departure_date": "2026-09-07",
+                "return_date": "2026-09-08",
+                "travel_scope": "destination_only",
+            }
+        )
+        itinerary = [
+            {
+                "day": 1,
+                "stops": [{"name": "Hotel Lutetia", "kind": "hotel"}],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {
+                        "name": "Unknown Museum",
+                        "kind": "attraction",
+                        "time": "10:00",
+                        "duration_min": 90,
+                    }
+                ],
+            },
+        ]
+
+        result = update_trip_plan.invoke(
+            {"updates_json": json.dumps({"day_wise_itinerary": itinerary})}
+        )
+
+        saved = json.loads(get_trip_plan.invoke({}))
+        assert saved["day_wise_itinerary"] == itinerary
+        assert "Adjusted known closed-day visits before saving" not in result
+
     def test_update_trip_plan_owns_numeric_budget_as_structured_user_target(self):
         create_trip_plan.invoke({
             "destination": "Goa",
@@ -741,6 +872,29 @@ class TestTripPlanState:
         assert "Hotel planning incomplete" in result
         assert "search_hotels" in result
 
+    def test_update_trip_plan_rejects_generic_city_hotel_selections(self):
+        create_trip_plan.invoke({
+            "destination": "Kochi, Kerala",
+            "departure_date": "2026-12-12",
+            "return_date": "2026-12-18",
+        })
+        before = json.loads(get_trip_plan.invoke({}))
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [
+                {"name": "Hotel in Kochi", "price": 15000},
+                {"name": "Kochi Hotel", "price": 14000},
+            ],
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel in Kochi", "kind": "hotel"}],
+            }],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        # The itinerary is saved rather than discarded, and the generic stay is warned about.
+        assert plan != before
+        assert "no bookable property" in result
+
     def test_update_trip_plan_accepts_concrete_hotel_selection(self):
         create_trip_plan.invoke({
             "destination": "Goa",
@@ -759,6 +913,117 @@ class TestTripPlanState:
         })})
 
         assert "Hotel planning incomplete" not in result
+
+    def test_update_trip_plan_replaces_unnamed_anchors_with_concrete_hotel(self):
+        create_trip_plan.invoke({
+            "destination": "Paris",
+            "departure_date": "2027-04-05",
+            "return_date": "2027-04-12",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "Hotel Le Six",
+                "city": "Paris",
+                "address": "14 Rue Stanislas, Paris",
+            }],
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "stops": [{"name": "Paris Hotel", "kind": "hotel"}],
+                }
+                for day in range(1, 8)
+            ],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        hotel_stops = [
+            stop
+            for day in plan["day_wise_itinerary"]
+            for stop in day["stops"]
+            if stop.get("kind") == "hotel"
+        ]
+        assert {stop["name"] for stop in hotel_stops} == {"Hotel Le Six"}
+        assert all(stop["address"] == "14 Rue Stanislas, Paris" for stop in hotel_stops)
+        assert "no bookable property" not in result
+
+    def test_one_named_hotel_cannot_mask_unnamed_stays_in_other_cities(self):
+        create_trip_plan.invoke({
+            "destination": "Rajasthan",
+            "departure_date": "2027-02-02",
+            "return_date": "2027-02-10",
+        })
+        before = json.loads(get_trip_plan.invoke({}))
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "Twinstar Standard",
+                "city": "Jaipur",
+                "address": "Jaipur City Center",
+            }],
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "city": city,
+                    "stops": [{
+                        "name": f"Hotel in {city}",
+                        "kind": "hotel",
+                    }],
+                }
+                for day, city in enumerate(
+                    [
+                        "Jaipur",
+                        "Jaipur",
+                        "Jodhpur",
+                        "Jodhpur",
+                        "Jodhpur",
+                        "Udaipur",
+                        "Udaipur",
+                        "Udaipur",
+                    ],
+                    start=1,
+                )
+            ],
+        })})
+
+        # The itinerary is saved rather than discarded, and the unnamed stays are warned about.
+        assert json.loads(get_trip_plan.invoke({})) != before
+        assert "Day(s) 3, 4, 5, 6, 7, 8 name no bookable property" in result
+
+    def test_selected_gangtok_stay_cannot_mask_lachen_placeholders(self):
+        create_trip_plan.invoke({
+            "destination": "Gangtok & North Sikkim",
+            "departure_date": "2027-10-04",
+            "return_date": "2027-10-07",
+        })
+        before = json.loads(get_trip_plan.invoke({}))
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "The Elgin Nor-Khill",
+                "city": "Gangtok",
+                "address": "Paljor Stadium Road, Gangtok, Sikkim, India",
+            }],
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "city": "Gangtok",
+                    "stops": [{"name": "The Elgin Nor-Khill", "kind": "hotel"}],
+                },
+                {
+                    "day": 2,
+                    "city": "Lachen",
+                    "stops": [{"name": "Premium Hotel Lachen (TBD)", "kind": "hotel"}],
+                },
+                {
+                    "day": 3,
+                    "city": "Lachen",
+                    "stops": [{"name": "Premium Hotel Lachen (TBD)", "kind": "hotel"}],
+                },
+            ],
+        })})
+
+        # The itinerary is saved rather than discarded, and the placeholders are warned about.
+        assert json.loads(get_trip_plan.invoke({})) != before
+        assert "Hotel placeholders remain on Day(s) 2, 3" in result
 
     def test_update_trip_plan_replaces_placeholder_anchors_with_concrete_hotel(self):
         create_trip_plan.invoke({
@@ -794,6 +1059,66 @@ class TestTripPlanState:
         assert "Hotel planning incomplete" not in result
         assert {stop["name"] for stop in hotel_stops} == {"Preskil Island Resort"}
         assert [stop["time"] for stop in hotel_stops] == ["09:00", "18:00"]
+
+    def test_itinerary_update_cannot_restore_generic_or_placeholder_hotel(self):
+        create_trip_plan.invoke({
+            "destination": "Gujarat",
+            "departure_date": "2026-12-07",
+            "return_date": "2026-12-12",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "Rann Utsav Tent City",
+                "city": "Kutch",
+                "address": "Dhordo, Kutch, Gujarat",
+            }],
+            "day_wise_itinerary": [{
+                "day": 3,
+                "city": "Kutch",
+                "stops": [{"name": "Rann Utsav Tent City", "kind": "hotel"}],
+            }],
+        })})
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+                }
+                for day in range(3, 6)
+            ],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        hotel_stops = [
+            stop
+            for day in plan["day_wise_itinerary"]
+            for stop in day["stops"]
+            if stop.get("kind") == "hotel"
+        ]
+        assert {stop["name"] for stop in hotel_stops} == {"Rann Utsav Tent City"}
+        assert "Hotel placeholders remain" not in result
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "city": "Kutch",
+                    "stops": [{"name": "Hotel (Kutch)", "kind": "hotel"}],
+                }
+                for day in range(3, 6)
+            ],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        hotel_stops = [
+            stop
+            for day in plan["day_wise_itinerary"]
+            for stop in day["stops"]
+            if stop.get("kind") == "hotel"
+        ]
+        assert {stop["name"] for stop in hotel_stops} == {"Rann Utsav Tent City"}
+        assert "no bookable property" not in result
 
     def test_update_trip_plan_rejects_hotel_outside_destination_atomically(self):
         create_trip_plan.invoke({
@@ -1374,12 +1699,12 @@ class TestTripPlanState:
             "day_wise_itinerary": [{
                 "day": 3,
                 "stops": [
-                    {"name": "Stay", "kind": "hotel"},
+                    {"name": "Taj Cidade de Goa", "kind": "hotel"},
                     {"name": "Fort", "kind": "attraction"},
                     {"name": "Beach", "kind": "attraction"},
                     {"name": "Market", "kind": "attraction"},
                     {"name": "Dinner", "kind": "meal"},
-                    {"name": "Stay", "kind": "hotel"},
+                    {"name": "Taj Cidade de Goa", "kind": "hotel"},
                 ],
             }],
         })})
@@ -1635,7 +1960,10 @@ class TestTripPlanState:
         })
         update_trip_plan.invoke({"updates_json": json.dumps({
             "day_wise_itinerary": [
-                {"day": 1, "stops": [{"name": "Stay", "kind": "hotel"}]},
+                {
+                    "day": 1,
+                    "stops": [{"name": "Taj Cidade de Goa", "kind": "hotel"}],
+                },
                 {"day": 2, "stops": [
                     {"name": "Booked Tour", "kind": "attraction", "booked": True},
                     {"name": "Flexible Stop", "kind": "attraction"},

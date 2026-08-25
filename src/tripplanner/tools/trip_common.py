@@ -48,7 +48,7 @@ _HOTEL_PLACEHOLDER_RE = re.compile(
 #: brief; none of them identifies a property anyone can book.
 _LODGING_NOUN_RE = re.compile(
     r"\b(hotels?|resorts?|homestays?|guest\s?houses?|accommodations?|"
-    r"lodges?|stays?|inns?|apartments?)\b",
+    r"lodges?|stays?|inns?|apartments?|camps?)\b",
     re.I,
 )
 _LODGING_QUALIFIER_RE = re.compile(
@@ -60,7 +60,7 @@ _LODGING_QUALIFIER_RE = re.compile(
 #: stay is, not which stay it is -- no gazetteer needed to know it names nobody.
 _LODGING_PREPOSITION_RE = re.compile(
     r"\b(hotels?|resorts?|homestays?|guest\s?houses?|accommodations?|"
-    r"lodges?|stays?|inns?|apartments?)\s+(in|at|near|around|close to)\b",
+    r"lodges?|stays?|inns?|apartments?|camps?)\s+(in|at|near|around|close to)\b",
     re.I,
 )
 

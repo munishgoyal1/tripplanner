@@ -145,6 +145,148 @@ def test_the_phase_budget_ends_after_bounded_first_turn_save_attempts() -> None:
     assert decision.forced_reason == "tool_phase_budget"
 
 
+def test_the_phase_budget_does_not_end_with_a_short_departure_buffer() -> None:
+    current_turn: list[BaseMessage] = [
+        HumanMessage(content="plan a trip to goa"),
+        _tool_call("create_trip_plan", "create-1"),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+        _tool_call("update_trip_plan", "update-1"),
+        ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 2),
+    ]
+    decision = resolve_completion_policy(
+        messages=current_turn,
+        active_trip={
+            "destination": "Goa",
+            "travel_scope": "destination_only",
+            "day_wise_itinerary": [
+                {
+                    "day": 4,
+                    "stops": [
+                        {
+                            "name": "Brunch",
+                            "kind": "meal",
+                            "time": "12:00",
+                            "duration_min": 60,
+                        },
+                        {
+                            "name": "Flight: Goa to Bangalore",
+                            "kind": "flight",
+                            "time": "14:00",
+                            "duration_min": 90,
+                        },
+                    ],
+                }
+            ],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.budget_exhausted is False
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "leaves only 60 minutes" in (decision.requirement or "")
+
+
+def test_the_phase_budget_does_not_end_with_a_hotel_only_day() -> None:
+    current_turn: list[BaseMessage] = [
+        HumanMessage(content="plan a seven-day Bali trip"),
+        _tool_call("create_trip_plan", "create-1"),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+        _tool_call("update_trip_plan", "update-1"),
+        ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 2),
+    ]
+    decision = resolve_completion_policy(
+        messages=current_turn,
+        active_trip={
+            "destination": "Bali",
+            "origin": "Bali",
+            "day_wise_itinerary": [{
+                "day": 7,
+                "stops": [{"name": "Maya Sanur Resort", "kind": "hotel"}],
+            }],
+            "selected_hotels": [{"name": "Maya Sanur Resort"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.budget_exhausted is False
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "Day 7 has no planned places beyond the hotel" in (decision.requirement or "")
+
+
+def test_the_phase_budget_does_not_end_with_advisor_flagged_sparse_days() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="plan a seven-day Mysore heritage trip"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 3),
+            _tool_call("nearby_restaurants", "restaurants-1"),
+            ToolMessage(content="Nearby restaurants", tool_call_id="restaurants-1"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        ],
+        active_trip={
+            "destination": "Mysore",
+            "origin": "Mysore",
+            "planning_recommendation": {
+                "target_active_minutes_per_full_day": 360,
+                "recommended_days": 7,
+            },
+            "preferences_snapshot": {"trip_style": "balanced"},
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "title": title,
+                    "stops": [
+                        {"name": "Radisson Blu Plaza Hotel Mysore", "kind": "hotel"},
+                        {"name": first, "kind": "attraction", "duration_min": 90},
+                        {"name": second, "kind": "attraction", "duration_min": 60},
+                        {"name": "Radisson Blu Plaza Hotel Mysore", "kind": "hotel"},
+                    ],
+                }
+                for day, title, first, second in (
+                    (
+                        2,
+                        "Jaganmohan Palace and Devaraja Market",
+                        "Jaganmohan Palace and Art Gallery",
+                        "Devaraja Market",
+                    ),
+                    (
+                        3,
+                        "Chamundi Hill and St. Philomena's Cathedral",
+                        "Chamundi Hill and Temple",
+                        "St. Philomena's Cathedral",
+                    ),
+                    (
+                        4,
+                        "Lalitha Mahal and Rail Museum",
+                        "Lalitha Mahal Palace",
+                        "Mysore Rail Museum",
+                    ),
+                )
+            ],
+            "selected_hotels": [{"name": "Radisson Blu Plaza Hotel Mysore"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.budget_exhausted is False
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    requirement = decision.requirement or ""
+    assert "Day 2 has about 150 planned minutes" in requirement
+    assert "Day 3 has about 150 planned minutes" in requirement
+    assert "Day 4 has about 150 planned minutes" in requirement
+    assert "meaningful nearby stops" in requirement
+
+
 def test_new_trip_kickoff_preempts_incomplete_active_trip() -> None:
     decision = resolve_completion_policy(
         messages=[HumanMessage(content="Create a separate new Hawaii trip")],
@@ -240,6 +382,64 @@ def test_hotel_provider_fallback_preempts_enrichment_persistence() -> None:
 
     assert decision.forced_tool == "search_places_with_reviews"
     assert decision.forced_reason == "hotel_provider_fallback"
+
+
+def test_missing_lodging_anchor_forces_hotel_research() -> None:
+    decision = resolve_completion_policy(
+        messages=[HumanMessage(content="Finish planning my Udaipur trip")],
+        active_trip={
+            "destination": "Udaipur",
+            "travel_scope": "destination_only",
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [{"name": "City Palace", "kind": "attraction"}],
+                },
+                {
+                    "day": 2,
+                    "stops": [{"name": "Jag Mandir", "kind": "attraction"}],
+                },
+            ],
+            "selected_hotels": [{"name": "Trident Udaipur"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"
+    assert "lodging anchor" in (decision.requirement or "")
+
+
+def test_prior_turn_hotel_search_does_not_retire_stay_repair() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan my Udaipur trip"),
+            _tool_call("search_hotels", "hotel-old"),
+            ToolMessage(content="No hotels found for Udaipur.", tool_call_id="hotel-old"),
+            HumanMessage(content="Finish the stay planning"),
+        ],
+        active_trip={
+            "destination": "Udaipur",
+            "travel_scope": "destination_only",
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+                },
+                {
+                    "day": 2,
+                    "stops": [{"name": "City Palace", "kind": "attraction"}],
+                },
+            ],
+            "selected_hotels": [],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"
 
 
 def test_resumed_hotel_gap_ignores_prior_turn_hotel_search() -> None:
@@ -405,7 +605,74 @@ def test_first_turn_provider_failure_uses_hotel_fallback_after_phase_budget() ->
     assert decision.forced_reason == "hotel_provider_fallback"
 
 
-def test_first_turn_cannot_end_incomplete_before_phase_budget() -> None:
+def test_first_turn_persists_six_day_hotel_fallback_after_phase_budget() -> None:
+    messages: list[BaseMessage] = [
+        HumanMessage(content="Plan a six-day New York trip"),
+        _tool_call("create_trip_plan", "create-1"),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+        _tool_call("search_hotels", "hotel-1"),
+        ToolMessage(content="No hotels found for New York.", tool_call_id="hotel-1"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 3),
+        _tool_call("search_places_with_reviews", "places-1"),
+        ToolMessage(content="The Wallace Hotel", tool_call_id="places-1"),
+    ]
+    decision = resolve_completion_policy(
+        messages=messages,
+        active_trip={
+            "destination": "New York",
+            "origin": "Delhi",
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+                }
+                for day in range(1, 7)
+            ],
+            "selected_hotels": [],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.tool_phases == MAX_TOOL_PHASES_PER_TURN
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "Research is complete but has not been persisted" in (decision.requirement or "")
+
+
+def test_phase_budget_cannot_end_first_turn_with_generic_city_hotel() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a Kerala trip"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+        ],
+        active_trip={
+            "destination": "Kochi, Kerala",
+            "origin": "Kochi",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel in Kochi", "kind": "hotel"},
+                    {"name": "Fort Kochi", "kind": "attraction"},
+                    {"name": "Kashi Art Cafe", "kind": "meal"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Hotel in Kochi"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"
+    assert "no bookable property" in (decision.requirement or "")
+
+
+def test_first_turn_researches_missing_restaurants_before_completion_repair() -> None:
     decision = resolve_completion_policy(
         messages=[
             HumanMessage(content="Plan a Paris stay"),
@@ -432,8 +699,106 @@ def test_first_turn_cannot_end_incomplete_before_phase_budget() -> None:
     )
 
     assert not decision.budget_exhausted
-    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_tool == "nearby_restaurants"
+    assert decision.forced_reason == "missing_named_restaurant"
     assert "multiple activities but no named restaurant" in (decision.requirement or "")
+
+
+def test_first_turn_researches_restaurants_when_meal_is_a_placeholder() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a Paris stay"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "origin": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel Le Six", "kind": "hotel"},
+                    {"name": "Louvre Museum", "kind": "attraction"},
+                    {"name": "Dinner TBD", "kind": "meal"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Hotel Le Six"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "nearby_restaurants"
+    assert decision.forced_reason == "missing_named_restaurant"
+    assert "meal placeholder instead of a named restaurant" in (decision.requirement or "")
+
+
+def test_first_turn_persists_named_restaurants_after_research() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a Paris stay"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+            _tool_call("nearby_restaurants", "restaurants-1"),
+            ToolMessage(content="Bouillon Chartier", tool_call_id="restaurants-1"),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "origin": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel Le Six", "kind": "hotel"},
+                    {"name": "Louvre Museum", "kind": "attraction"},
+                    {"name": "Musee de l'Orangerie", "kind": "attraction"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Hotel Le Six"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "Research is complete but has not been persisted" in (decision.requirement or "")
+
+
+def test_restaurant_research_continues_past_the_first_turn_phase_budget() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a Paris stay"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 2),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "origin": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel Le Six", "kind": "hotel"},
+                    {"name": "Louvre Museum", "kind": "attraction"},
+                    {"name": "Musee de l'Orangerie", "kind": "attraction"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Hotel Le Six"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "nearby_restaurants"
+    assert decision.forced_reason == "missing_named_restaurant"
 
 
 def test_planning_resume_cannot_end_without_arrival_journey() -> None:
@@ -470,6 +835,48 @@ def test_planning_resume_cannot_end_without_arrival_journey() -> None:
 
     assert decision.forced_tool == "update_trip_plan"
     assert "Bangalore to Bali" in (decision.requirement or "")
+
+
+def test_phase_budget_cannot_end_planning_resume_without_departure_journey() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Finish planning my Bali trip"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+        ],
+        active_trip={
+            "destination": "Bali",
+            "origin": "Bangalore",
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {
+                            "name": "Flight Bangalore to Bali",
+                            "kind": "flight",
+                        },
+                        {"name": "Villa Kayu Raja", "kind": "hotel"},
+                    ],
+                },
+                {
+                    "day": 2,
+                    "stops": [
+                        {"name": "Villa Kayu Raja", "kind": "hotel"},
+                        {"name": "Seminyak Beach", "kind": "attraction"},
+                    ],
+                },
+            ],
+            "selected_hotels": [{"name": "Villa Kayu Raja"}],
+            "selected_flights": [{"airline": "Air India"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "update_trip_plan"
+    assert "Bali back to Bangalore" in (decision.requirement or "")
 
 
 def test_weather_can_remain_deferred_when_first_turn_core_plan_is_complete() -> None:

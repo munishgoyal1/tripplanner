@@ -225,7 +225,7 @@
           "time": "11:30"
         },
         {
-          "name": "Hotel Delle Nazioni",
+          "name": "Florence: Hotel Delle Nazioni",
           "kind": "hotel",
           "note": "Check-in",
           "time": "13:30"
@@ -251,7 +251,7 @@
       "summary": "Visit Uffizi Gallery, Ponte Vecchio, and lunch at Rooster Cafe Firenze.",
       "stops": [
         {
-          "name": "Hotel Delle Nazioni",
+          "name": "Florence: Hotel Delle Nazioni",
           "kind": "hotel",
           "note": "Start from hotel"
         },
@@ -274,7 +274,7 @@
           "note": "Lunch, 4.8★, 9.6k reviews"
         },
         {
-          "name": "Hotel Delle Nazioni",
+          "name": "Florence: Hotel Delle Nazioni",
           "kind": "hotel",
           "note": "Return"
         }
@@ -287,7 +287,7 @@
       "summary": "Explore Accademia Gallery, Boboli Gardens, lunch at Trattoria Mario.",
       "stops": [
         {
-          "name": "Hotel Delle Nazioni",
+          "name": "Florence: Hotel Delle Nazioni",
           "kind": "hotel",
           "note": "Start from hotel"
         },
@@ -310,7 +310,7 @@
           "note": "Lunch, 4.5★, 8k reviews"
         },
         {
-          "name": "Hotel Delle Nazioni",
+          "name": "Florence: Hotel Delle Nazioni",
           "kind": "hotel",
           "note": "Return"
         }
@@ -323,7 +323,7 @@
       "summary": "Check out, return to Rome by train, fly back to Mumbai.",
       "stops": [
         {
-          "name": "Hotel Delle Nazioni",
+          "name": "Florence: Hotel Delle Nazioni",
           "kind": "hotel",
           "note": "Check out"
         },

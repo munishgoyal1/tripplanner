@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 from tripplanner import graph as graph_mod
 from tripplanner.graph import _trip_creation_tool_choice, _trip_kickoff_tool_choice
@@ -53,6 +53,43 @@ def test_direct_mode_skips_review_when_party_is_explicit(trip_prompt: str) -> No
     messages = [
         HumanMessage(content=trip_prompt),
         _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) is None
+
+
+def test_direct_mode_collects_missing_origin_even_when_party_is_explicit() -> None:
+    messages = [
+        HumanMessage(content="Plan a solo Paris trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+
+
+def test_direct_mode_accepts_explicit_self_arranged_arrival() -> None:
+    messages = [
+        HumanMessage(content="Plan a solo Paris trip; I'll arrange my own way there"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) is None
+
+
+def test_saved_home_city_satisfies_the_origin_review() -> None:
+    messages = [
+        HumanMessage(content="Plan a solo Paris trip"),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "get_travel_preferences", "args": {}, "id": "prefs"}],
+        ),
+        ToolMessage(
+            content='{"profile": {"home_city": "Bengaluru"}}',
+            tool_call_id="prefs",
+        ),
         _tool_message("recommend_trip_duration"),
     ]
 
@@ -261,6 +298,39 @@ def test_trip_agent_forces_the_prefilled_kickoff_in_interactive_mode(
     assert bound_options["tools"] == ["request_trip_input"]
 
 
+def test_trip_agent_keeps_a_forced_origin_review_in_direct_mode(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    messages = [
+        HumanMessage(content="Plan a solo Chennai trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="")
+
+    class FakeModel:
+        def bind_tools(self, tools: list, **options: object) -> FakeBoundModel:
+            bound_options["tools"] = [tool.name for tool in tools]
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_interactive_trip_questions", lambda: False)
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+
+    graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound_options["tool_choice"] == "request_trip_input"
+    assert bound_options["tools"] == ["request_trip_input"]
+
+
 def test_trip_agent_waits_for_the_kickoff_answer_before_planning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -429,7 +499,7 @@ def test_direct_mode_hides_the_optional_input_tool(monkeypatch: pytest.MonkeyPat
 
     graph_mod.trip_agent({
         "messages": [
-            HumanMessage(content="Plan a Paris trip"),
+            HumanMessage(content="Plan a solo Paris trip from Delhi"),
             _tool_message("get_travel_preferences"),
             _tool_message("recommend_trip_duration"),
         ],
