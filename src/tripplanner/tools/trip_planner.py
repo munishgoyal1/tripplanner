@@ -44,6 +44,7 @@ from tripplanner.tools.trip_common import (  # noqa: F401
     _stop_name,
     _style_caps,
     _summary_for_place,
+    unnamed_lodging,
 )
 from tripplanner.tools.trip_diff import diff_plans, format_diff
 from tripplanner.tools.trip_effort import coherence_notes, pacing_statement
@@ -158,6 +159,14 @@ def _sync_replaced_hotel_anchors(
     if len(removed) == 1 and len(added) == 1:
         replacements[next(iter(removed))] = selected[next(iter(added))]
     placeholder_replacement = next(iter(selected.values())) if len(selected) == 1 else None
+    lodging_locations = _itinerary_hotel_locations(plan)
+    destination = str(plan.get("destination") or "").strip().lower()
+    if destination:
+        lodging_locations = lodging_locations | {destination} | {
+            part.strip()
+            for part in re.split(r"[,&/()]| and ", destination)
+            if part.strip()
+        }
 
     changed = False
     for day in plan.get("day_wise_itinerary") or []:
@@ -169,7 +178,9 @@ def _sync_replaced_hotel_anchors(
             stop_name = _stop_name(stop)
             replacement = replacements.get(stop_name.lower())
             if replacement is None and placeholder_replacement is not None:
-                if _HOTEL_PLACEHOLDER_RE.search(stop_name):
+                if _HOTEL_PLACEHOLDER_RE.search(stop_name) or unnamed_lodging(
+                    stop_name, lodging_locations
+                ):
                     replacement = placeholder_replacement
             if replacement is None:
                 continue
@@ -2296,10 +2307,19 @@ def update_trip_plan(updates_json: str) -> str:
                         "updated_at": datetime.now().isoformat(),
                     }
             if key == "selected_hotels" and isinstance(val, list):
+                lodging_locations = _itinerary_hotel_locations(validation_plan)
+                destination = str(plan.get("destination") or "").strip().lower()
+                if destination:
+                    lodging_locations = lodging_locations | {destination} | {
+                        part.strip()
+                        for part in re.split(r"[,&/()]| and ", destination)
+                        if part.strip()
+                    }
                 val = [
                     hotel
                     for hotel in val
                     if not _HOTEL_PLACEHOLDER_RE.search(_stop_name(hotel))
+                    and not unnamed_lodging(_stop_name(hotel), lodging_locations)
                 ]
             if key == "day_wise_itinerary" and isinstance(val, list):
                 val, merged_partial_itinerary = _merge_itinerary_days(

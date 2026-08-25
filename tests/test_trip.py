@@ -736,6 +736,25 @@ class TestTripPlanState:
         assert "Hotel planning incomplete" in result
         assert "search_hotels" in result
 
+    def test_update_trip_plan_rejects_unnamed_hotel_selection(self):
+        create_trip_plan.invoke({
+            "destination": "Paris",
+            "departure_date": "2027-04-05",
+            "return_date": "2027-04-12",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{"name": "Hotel in Paris", "price": 15000}],
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel in Paris", "kind": "hotel"}],
+            }],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["selected_hotels"] == []
+        assert "Hotel planning incomplete" in result
+        assert "no bookable property" in result
+
     def test_update_trip_plan_accepts_concrete_hotel_selection(self):
         create_trip_plan.invoke({
             "destination": "Goa",
@@ -754,6 +773,38 @@ class TestTripPlanState:
         })})
 
         assert "Hotel planning incomplete" not in result
+
+    def test_update_trip_plan_replaces_unnamed_anchors_with_concrete_hotel(self):
+        create_trip_plan.invoke({
+            "destination": "Paris",
+            "departure_date": "2027-04-05",
+            "return_date": "2027-04-12",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "Hotel Le Six",
+                "city": "Paris",
+                "address": "14 Rue Stanislas, Paris",
+            }],
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "stops": [{"name": "Paris Hotel", "kind": "hotel"}],
+                }
+                for day in range(1, 8)
+            ],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        hotel_stops = [
+            stop
+            for day in plan["day_wise_itinerary"]
+            for stop in day["stops"]
+            if stop.get("kind") == "hotel"
+        ]
+        assert {stop["name"] for stop in hotel_stops} == {"Hotel Le Six"}
+        assert all(stop["address"] == "14 Rue Stanislas, Paris" for stop in hotel_stops)
+        assert "no bookable property" not in result
 
     def test_update_trip_plan_replaces_placeholder_anchors_with_concrete_hotel(self):
         create_trip_plan.invoke({
