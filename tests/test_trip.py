@@ -629,6 +629,21 @@ class TestTripPlanState:
 
         parsed = json.loads(get_trip_plan.invoke({}))
         assert parsed["origin"] == "Whitefield, Bangalore"
+        assert parsed["travel_scope"] == "round_trip"
+
+    def test_create_trip_plan_persists_self_arranged_arrival_without_origin(self):
+        update_preferences({"profile": {"home_city": "Bangalore"}})
+
+        create_trip_plan.invoke({
+            "destination": "Pondicherry",
+            "departure_date": "2026-11-07",
+            "return_date": "2026-11-09",
+            "travel_scope": "destination_only",
+        })
+
+        parsed = json.loads(get_trip_plan.invoke({}))
+        assert parsed["origin"] == ""
+        assert parsed["travel_scope"] == "destination_only"
 
     def test_resume_keeps_existing_explicit_origin(self):
         create_trip_plan.invoke({

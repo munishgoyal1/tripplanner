@@ -39,6 +39,9 @@ interface Props {
 
 export default function TripInputCard({ request, disabled = false, onSubmit, onSkip }: Props) {
   const [values, setValues] = useState<TripInputValues>(() => initialValues(request));
+  const travelScope = String(values.travel_scope ?? "");
+  const needsOrigin = travelScope === "round_trip";
+  const originMissing = needsOrigin && !String(values.origin ?? "").trim();
   const update = (field: TripInputField, value: TripInputField["value"]) => {
     setValues((current) => ({ ...current, [field.id]: value }));
   };
@@ -62,6 +65,7 @@ export default function TripInputCard({ request, disabled = false, onSubmit, onS
       <div className="mt-3 flex flex-wrap items-end gap-3">
         {request.fields.map((field) => {
           const value = values[field.id];
+          if (field.id === "origin" && travelScope === "destination_only") return null;
           if (field.kind === "single" || field.kind === "multi") {
             const selected = Array.isArray(value) ? value.map(String) : [String(value)];
             return (
@@ -132,7 +136,7 @@ export default function TripInputCard({ request, disabled = false, onSubmit, onS
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
         {request.allow_skip ? <button type="button" onClick={onSkip} disabled={disabled} className="text-xs font-semibold text-slate-500 hover:text-ink disabled:opacity-40">Use saved defaults</button> : <span />}
-        <button type="button" onClick={() => onSubmit(values)} disabled={disabled} className="btn-primary"><Sparkles size={14} /> {request.submit_label}</button>
+        <button type="button" onClick={() => onSubmit(values)} disabled={disabled || originMissing} className="btn-primary"><Sparkles size={14} /> {request.submit_label}</button>
       </div>
     </section>
   );

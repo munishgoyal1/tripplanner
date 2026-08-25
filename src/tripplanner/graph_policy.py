@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -77,6 +78,15 @@ _EXPLICIT_PARTY_RELATION_RE = re.compile(
 )
 _ADULT_COUNT_RE = re.compile(r"\b(\d+)\s*(?:adults?|grown[ -]?ups?)\b", re.IGNORECASE)
 _CHILD_COUNT_RE = re.compile(r"\b(\d+)\s*(?:children|child|kids?)\b", re.IGNORECASE)
+_EXPLICIT_ORIGIN_RE = re.compile(
+    r"\b(?:from|departing from|flying from|travell?ing from)\s+[A-Za-z]",
+    re.IGNORECASE,
+)
+_OWN_ARRIVAL_RE = re.compile(
+    r"\b(?:arrang(?:e|ing) (?:my|our) own|make (?:my|our) own way|"
+    r"(?:meet|start) (?:you|the trip) there|destination[ -]only)\b",
+    re.IGNORECASE,
+)
 _LODGING_GAP_RE = re.compile(
     r"\b(?:hotel|lodging|bookable (?:property|stay))\b",
     re.IGNORECASE,
@@ -370,6 +380,33 @@ def latest_user_has_explicit_party(messages: Sequence[BaseMessage]) -> bool:
     return False
 
 
+def latest_user_has_travel_origin_or_scope(messages: Sequence[BaseMessage]) -> bool:
+    """Whether kickoff can use a stated origin, saved home, or self-arranged arrival."""
+    latest_request = next(
+        (
+            str(message.content or "")
+            for message in reversed(messages)
+            if isinstance(message, HumanMessage)
+        ),
+        "",
+    )
+    if _EXPLICIT_ORIGIN_RE.search(latest_request) or _OWN_ARRIVAL_RE.search(latest_request):
+        return True
+
+    for result in reversed(_tool_result_texts(messages, "get_travel_preferences")):
+        try:
+            preferences = json.loads(result)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        profile = preferences.get("profile") if isinstance(preferences, dict) else None
+        if isinstance(profile, dict) and (
+            str(profile.get("home_city") or "").strip()
+            or str(profile.get("home_area") or "").strip()
+        ):
+            return True
+    return False
+
+
 def latest_user_requests_different_trip(
     messages: Sequence[BaseMessage],
     active_trip: dict[str, Any],
@@ -462,10 +499,14 @@ def trip_kickoff_tool_choice(
         return "get_travel_preferences"
     if "recommend_trip_duration" not in turn_tools:
         return "recommend_trip_duration"
-    # Party composition is trip-specific: a saved family roster does not establish
-    # who is joining this trip. Direct mode can skip the review only when the user
-    # already supplied a usable party; interactive mode still promises one review.
-    if interactive or not latest_user_has_explicit_party(messages):
+    # Party composition is trip-specific, and travel cannot be planned without either
+    # an origin or an explicit destination-only scope. Interactive mode still promises
+    # one review even when both facts are already available.
+    if (
+        interactive
+        or not latest_user_has_explicit_party(messages)
+        or not latest_user_has_travel_origin_or_scope(messages)
+    ):
         return "request_trip_input"
     return None
 

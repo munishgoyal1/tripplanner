@@ -89,12 +89,15 @@ def test_kickoff_can_ask_for_dates_length_and_origin() -> None:
 
     assert payload is not None
     assert [field["kind"] for field in payload["fields"]] == [
-        "number", "number", "single", "date", "number", "text",
+        "number", "number", "single", "single", "text", "date",
     ]
-    assert payload["fields"][3]["value"] == "2026-11-12"
+    assert payload["fields"][3]["id"] == "travel_scope"
+    assert payload["fields"][3]["value"] == "round_trip"
     # An unknown origin stays empty rather than being invented for the traveller.
-    assert payload["fields"][5]["value"] == ""
-    assert payload["fields"][5]["placeholder"] == "Your city"
+    assert payload["fields"][4]["value"] == ""
+    assert payload["fields"][4]["placeholder"] == "Your city"
+    assert payload["fields"][5]["value"] == "2026-11-12"
+    assert payload["allow_skip"] is False
 
 
 def test_kickoff_rejects_a_malformed_date() -> None:
