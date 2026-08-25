@@ -46,7 +46,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/quality/Run-Quality-Audit.cmd` | Run the Trip Quality Audit, always write dated JSON/Markdown evidence under `audit/reports/`, and exit non-zero on findings the baseline does not hold |
 | `win/user/quality/Run-Quality-Audit.cmd --all` | Show every finding, not only new ones |
 | `win/user/quality/Run-Quality-Audit.cmd --accept` | Record the current findings as known |
-| `win/user/quality/Build-Quality-Corpus.cmd` | Spend a bounded budget on planner-generated trips using the running stack for the checkout where the launcher is invoked; retained trips remain in the Trip Quality Corpus |
+| `win/user/quality/Build-Quality-Corpus.cmd` | Spend a bounded budget on planner-generated trips using the running stack for the checkout where the launcher is invoked; retained trips meet the corpus richness floor, empty drafts get one repair turn, three consecutive barren turns fail fast, and output reports accepted yield plus average time and stops |
 | `win/user/quality/Quality-Corpus-Cache.cmd` | Inspect, save, restore, or synchronize the Places grounding behind the Trip Quality Corpus |
 | `win/user/quality/Refresh-Quality-Corpus.cmd` | Spend the configured corpus budget on fresh planner trips, retain them globally, then write the normal dated quality report |
 | `win/user/multiagent/Start-Multiagent.cmd` | Start the coordinator detached and open the coordinator chat; dispatches routine queued work, audit bugs, and approved gated work |

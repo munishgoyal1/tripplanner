@@ -110,6 +110,10 @@ def read_generation_trips(database: str, *, user_id: str = "") -> list[dict[str,
             )
         ]
     except Exception as error:  # noqa: BLE001
+        from azure.cosmos.exceptions import CosmosResourceNotFoundError
+
+        if isinstance(error, CosmosResourceNotFoundError):
+            return []
         raise EmulatorUnreachableError(str(error)) from error
 
 

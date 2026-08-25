@@ -488,14 +488,15 @@ def resolve_completion_policy(
             index for index, name in positions
             if name == "update_trip_plan" and index > latest_human
         ]
-        still_owes_first_save = (
-            "create_trip_plan" in current_turn_names
-            and not active_trip.get("day_wise_itinerary")
+        can_attempt_completion_repair = (
+            created_this_turn
             and len(current_updates) < MAX_INITIAL_ITINERARY_UPDATES
+            and (
+                not active_trip.get("day_wise_itinerary")
+                or bool(core_gaps_for_planning_turn)
+            )
         )
-        if not still_owes_first_save and not (
-            created_this_turn and core_gaps_for_planning_turn
-        ):
+        if not can_attempt_completion_repair:
             try:
                 gaps = tuple(planning_completion_gaps(active_trip))
             except Exception:

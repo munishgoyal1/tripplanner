@@ -177,6 +177,45 @@ def test_generation_accepts_isolated_primary_and_sandbox_databases_only() -> Non
             assert_generation_database(name)
 
 
+def test_a_fresh_generation_database_has_no_trips(monkeypatch: pytest.MonkeyPatch) -> None:
+    from azure.cosmos.exceptions import CosmosResourceNotFoundError
+
+    from tripplanner.validation import emulator
+
+    class MissingContainer:
+        def query_items(self, **_kwargs: object) -> list[dict[str, Any]]:
+            raise CosmosResourceNotFoundError(message="Collection 'trips' not found")
+
+    class Database:
+        def get_container_client(self, _name: str) -> MissingContainer:
+            return MissingContainer()
+
+    class Client:
+        def get_database_client(self, _name: str) -> Database:
+            return Database()
+
+    monkeypatch.setattr(emulator, "_client", lambda: Client())
+
+    assert emulator.read_generation_trips("tripplanner-sbx-fresh") == []
+
+
+def test_generated_trip_acceptance_requires_two_stops_per_day(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    thin = {"day_wise_itinerary": [{"day": 1, "stops": [{"name": "Fort"}]}]}
+    rich = {
+        "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Fort"}, {"name": "Museum"}]},
+            {"day": 2, "stops": [{"name": "Market"}, {"name": "Palace"}]},
+        ]
+    }
+    monkeypatch.setattr(generate, "read_generation_trips", lambda *_args, **_kwargs: [thin])
+    assert generate._saved_trip("tripplanner-sbx-test", "user") is None
+
+    monkeypatch.setattr(generate, "read_generation_trips", lambda *_args, **_kwargs: [rich])
+    assert generate._saved_trip("tripplanner-sbx-test", "user") == rich
+
+
 # ---- checks ---------------------------------------------------------------
 
 
@@ -1010,9 +1049,73 @@ def test_a_repeated_attempt_never_reuses_failed_principal_state(
             requests=_ONE_REQUEST,
         )
 
-    assert len(seen) == 2
+    assert len(seen) == 4
     assert len(set(seen)) == 2
     assert all(user_id.startswith("corpus-corpus-slug-") for user_id in seen)
+
+
+def test_an_empty_first_turn_gets_one_bounded_recovery(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    asked: list[tuple[str, str, str]] = []
+    saved = iter(
+        (
+            None,
+            {
+                "id": "recovered-trip",
+                "day_wise_itinerary": [
+                    {"day": 1, "stops": [{"name": "Amber Fort"}]}
+                ],
+            },
+        )
+    )
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(
+        generate,
+        "_ask",
+        lambda api, message, user_id, request_id: asked.append(
+            (message, user_id, request_id)
+        ),
+    )
+    monkeypatch.setattr(generate, "_saved_trip", lambda database, user_id: next(saved))
+
+    result = generate._attempt(
+        _ONE_REQUEST[0],
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        usd_inr=80.0,
+    )
+
+    assert result.trip is not None
+    assert result.trip["id"] == "recovered-trip"
+    assert len(asked) == 2
+    assert asked[1][0] == generate._RECOVERY_MESSAGE
+    assert asked[1][1] == asked[0][1]
+    assert asked[1][2] != asked[0][2]
+
+
+def test_a_failed_first_turn_is_not_repeated_as_paid_recovery(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    asked: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(generate, "_MAX_ATTEMPTS", 1)
+
+    def fail(_api: str, _message: str, _user_id: str, request_id: str) -> None:
+        asked.append(request_id)
+        raise http.client.RemoteDisconnected("closed without response")
+
+    monkeypatch.setattr(generate, "_ask", fail)
+
+    result = generate._attempt(
+        _ONE_REQUEST[0],
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        usd_inr=80.0,
+    )
+
+    assert result.error.startswith("RemoteDisconnected:")
+    assert len(asked) == 1
 
 
 def test_a_run_is_charged_only_for_what_that_attempt_spent(
@@ -1287,6 +1390,36 @@ def test_build_corpus_scope_distinguishes_country_from_market(
     assert "not allowed with argument" in capsys.readouterr().err
 
 
+def test_build_corpus_returns_failure_when_planner_is_barren(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    script = Path(__file__).parents[1] / "scripts" / "dev" / "build_corpus.py"
+    spec = importlib.util.spec_from_file_location("build_corpus_barren", script)
+    assert spec and spec.loader
+    build_corpus = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(build_corpus)
+    monkeypatch.setattr(build_corpus.runner, "corpus_root", lambda _root: tmp_path)
+    monkeypatch.setattr(build_corpus.generate, "api_health_error", lambda _api: None)
+    monkeypatch.setattr(
+        build_corpus.generate,
+        "build",
+        lambda *_args, **_kwargs: {
+            "produced": [],
+            "attempts": 3,
+            "spent_inr": 120.0,
+            "stopped_because": "barren",
+            "corpus_total": 0,
+            "generation_run_id": "run-1",
+            "generated_by_commit": "abc123",
+        },
+    )
+
+    exit_code = build_corpus.main(["--budget", "1000"])
+
+    assert exit_code == 4
+    assert "accepted yield      0/3 (0%)" in capsys.readouterr().out
+
+
 def test_build_corpus_runtime_defaults_follow_the_current_checkout(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -1448,8 +1581,10 @@ def test_a_dropped_connection_is_retried_with_the_same_request_id(
         workers=1,
     )
 
-    assert len(seen) == 2
+    assert len(seen) == 3
     assert seen[0] == seen[1]
+    assert seen[2][0] == seen[0][0]
+    assert seen[2][1] != seen[0][1]
 
 
 def test_a_full_request_timeout_is_not_repeated(
@@ -1539,7 +1674,7 @@ def test_a_turn_that_keeps_failing_is_reported_and_the_run_goes_on(
         on_progress=lines.append,
     )
 
-    assert len(asked) == 3
+    assert len(asked) == 5
     assert result["stopped_because"] == "exhausted"
     assert any("RemoteDisconnected" in line for line in lines)
 
@@ -1885,11 +2020,10 @@ def test_a_run_that_saves_almost_nothing_stops_itself(
     )
 
     assert result["stopped_because"] == "barren"
-    # Judged only once enough have run to tell a bad run from an odd request.
     assert len(result["produced"]) == 0
     assert any("Stopping:" in line for line in lines)
     assert sum(1 for line in lines if "no itinerary saved" in line) == (
-        generate.MIN_ATTEMPTS_BEFORE_GIVING_UP
+        generate.MAX_CONSECUTIVE_BARREN
     )
 
 

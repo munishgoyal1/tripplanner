@@ -208,6 +208,20 @@ def main(argv: list[str] | None = None) -> int:
         f"Produced {len(result['produced'])} trip(s) for INR {result['spent_inr']:.0f}; "
         f"stopped on {result['stopped_because']}."
     )
+    attempts = int(result["attempts"])
+    if attempts:
+        produced = result["produced"]
+        avg_seconds = (
+            sum(float(item["seconds"]) for item in produced) / len(produced)
+            if produced
+            else 0
+        )
+        avg_stops = sum(int(item["stops"]) for item in produced) / len(produced) if produced else 0
+        print(
+            f"  accepted yield      {len(produced)}/{attempts} ({len(produced) / attempts:.0%})"
+        )
+        if produced:
+            print(f"  accepted averages   {avg_seconds:.0f}s, {avg_stops:.1f} stops per trip")
     print(f"Corpus now holds {result['corpus_total']} generated trip(s).")
     print(
         f"Generation evidence: run {result['generation_run_id']} at "
@@ -220,6 +234,13 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 3
+    if result["stopped_because"] == "barren":
+        print(
+            "Corpus generation stopped because the planner repeatedly saved no itinerary. "
+            "No further budget was spent.",
+            file=sys.stderr,
+        )
+        return 4
     return 0
 
 

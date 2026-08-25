@@ -3,6 +3,7 @@ from __future__ import annotations
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 
 from tripplanner.graph_policy import (
+    MAX_INITIAL_ITINERARY_UPDATES,
     MAX_TOOL_PHASES_PER_TURN,
     resolve_completion_policy,
 )
@@ -110,7 +111,7 @@ def test_a_broad_new_trip_must_still_save_before_the_phase_budget_traps_it() -> 
     assert "no itinerary" in decision.requirement
 
 
-def test_the_phase_budget_does_not_end_an_incomplete_first_planning_turn() -> None:
+def test_the_phase_budget_ends_after_bounded_first_turn_save_attempts() -> None:
     current_turn: list[BaseMessage] = [
         HumanMessage(content="plan a varanasi and ayodhya circuit trip"),
         _tool_call("create_trip_plan", "create-1"),
@@ -128,9 +129,9 @@ def test_the_phase_budget_does_not_end_an_incomplete_first_planning_turn() -> No
         has_planning_intent=True,
     )
 
-    assert decision.budget_exhausted is False
-    assert decision.forced_tool == "update_trip_plan"
-    assert decision.forced_reason == "persist_or_repair_plan"
+    assert decision.budget_exhausted
+    assert decision.forced_tool is None
+    assert decision.forced_reason == "tool_phase_budget"
 
 
 def test_new_trip_kickoff_preempts_incomplete_active_trip() -> None:
@@ -236,6 +237,35 @@ def test_tool_phase_budget_preempts_every_completion_gate() -> None:
             HumanMessage(content="Plan a trip to Hawaii"),
             *_tool_phases(MAX_TOOL_PHASES_PER_TURN),
         ],
+        active_trip={"destination": "Paris", "day_wise_itinerary": []},
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.tool_phases == MAX_TOOL_PHASES_PER_TURN
+    assert decision.budget_exhausted
+    assert decision.forced_tool is None
+    assert decision.forced_reason == "tool_phase_budget"
+
+
+def test_phase_budget_stops_after_bounded_initial_save_repairs() -> None:
+    messages: list[BaseMessage] = [
+        HumanMessage(content="Plan a Paris stay"),
+        _tool_call("create_trip_plan", "create-1"),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+    ]
+    for attempt in range(MAX_INITIAL_ITINERARY_UPDATES):
+        call_id = f"update-{attempt}"
+        messages.extend([
+            _tool_call("update_trip_plan", call_id),
+            ToolMessage(content="Error: invalid journey timing", tool_call_id=call_id),
+        ])
+    messages.extend(
+        _tool_phases(MAX_TOOL_PHASES_PER_TURN - 1 - MAX_INITIAL_ITINERARY_UPDATES)
+    )
+
+    decision = resolve_completion_policy(
+        messages=messages,
         active_trip={"destination": "Paris", "day_wise_itinerary": []},
         proposal_only=False,
         has_planning_intent=True,

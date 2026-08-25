@@ -1253,6 +1253,20 @@ the outcome.
   15-minute request timeout four times: shorter connection failures remain
   idempotently retryable, but the full timeout is the retry budget.
 
+## 2026-08-25 - Paid Corpus Success Must Mean Rich Persisted Data
+
+- A healthy HTTP response is not a successful corpus attempt. The planner can
+  spend several minutes, reject both structured itinerary saves, narrate a useful
+  plan in chat, and still leave a zero-day draft that produces no corpus file.
+- After a completed empty turn, use one distinct-idempotency recovery request on
+  the same isolated principal so it can repair the existing draft from gathered
+  research. Never issue that extra paid turn after a timeout or transport failure.
+- Measure acceptance against the corpus being built. The existing generated set
+  had at least 2.7 stops per itinerary day, so new records require at least two;
+  a merely non-empty day shell is not rich evidence. Report accepted yield and
+  average stops/time, and stop with a failing exit after three consecutive
+  completed turns save no acceptable itinerary rather than spending for an hour.
+
 ## 2026-08-25 - Audit Evidence Must Outrank Mutable Local State
 
 - A deep link carrying both a saved trip ID and an immutable corpus record opened

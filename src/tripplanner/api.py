@@ -523,9 +523,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
         turn_tools = set(_ran_tools(result.get("messages") or [], len(history)).get(
             graph_policy.RAN_TOOLS_KEY, []
         ))
-        # The agent sometimes writes the itinerary out instead of saving it. The
-        # SSE path has recovered that for a while; without the same net here a
-        # native or scripted caller is left with a trip that has no days.
+        # Recover a narrated itinerary when structured saves were skipped or rejected.
         if not req.proposal_only and _should_auto_persist_itinerary(turn_tools):
             await asyncio.to_thread(_auto_persist_itinerary, reply)
         completed_turn = [
@@ -638,9 +636,10 @@ _DAY_HDR = re.compile(
     r"(?:\s*[-\u2013\u2014:·]\s*([^\n\*]{0,80}))?",
 )
 _BOLD = re.compile(r"\*\*([^\*\n]{3,60})\*\*")
+_BULLET = re.compile(r"(?m)^\s*[-*]\s+([^\n]{3,100})")
 
 
-def _auto_persist_itinerary(reply: str) -> None:
+def _auto_persist_itinerary(reply: str) -> bool:
     """If the agent's reply describes a multi-day itinerary but never called
     update_trip_plan, parse a minimal structure and persist it directly so the
     Itinerary panel is never left blank.
@@ -650,9 +649,9 @@ def _auto_persist_itinerary(reply: str) -> None:
     """
     matches = list(_DAY_HDR.finditer(reply))
     if len(matches) < 2:
-        return  # not a day-wise reply
+        return False
 
-    from tripplanner.tools.trip_planner import update_trip_plan as _utp
+    from tripplanner.tools import trip_planner
 
     days: list[dict[str, Any]] = []
     for i, m in enumerate(matches):
@@ -664,10 +663,12 @@ def _auto_persist_itinerary(reply: str) -> None:
         chunk = reply[start:end].strip()
         # Collect bolded place names as stops (agent usually bolds them)
         stop_names = _BOLD.findall(chunk)
+        if not stop_names:
+            stop_names = _BULLET.findall(chunk)
         stops = [
-            {"name": n.strip(), "kind": "attraction"}
+            {"name": n.strip().strip("*_ "), "kind": "attraction"}
             for n in dict.fromkeys(stop_names)  # dedup, preserve order
-            if n.strip()
+            if n.strip().strip("*_ ")
         ][:6]
         days.append({
             "day": day_num,
@@ -678,16 +679,33 @@ def _auto_persist_itinerary(reply: str) -> None:
         })
 
     try:
-        _utp.invoke({"updates_json": json.dumps({"day_wise_itinerary": days})})
-    except Exception:
-        pass  # best-effort; never crash the response path
+        result = trip_planner.update_trip_plan.invoke(
+            {"updates_json": json.dumps({"day_wise_itinerary": days})}
+        )
+        active = trip_planner.load_active_trip_dict() or {}
+        persisted = bool(active.get("day_wise_itinerary"))
+        app_event(
+            "itinerary_auto_persist",
+            persisted=persisted,
+            result_error=str(result).lstrip().startswith("Error:"),
+            recovered_days=len(days),
+        )
+        return persisted
+    except Exception as exc:
+        app_event("itinerary_auto_persist_failed", error=type(exc).__name__)
+        return False
 
 
 def _should_auto_persist_itinerary(tool_names_called: set[str]) -> bool:
-    return (
-        "create_trip_plan" in tool_names_called
-        and "update_trip_plan" not in tool_names_called
-    )
+    if not {"create_trip_plan", "update_trip_plan"}.intersection(tool_names_called):
+        return False
+    from tripplanner.tools import trip_planner
+
+    try:
+        active = trip_planner.load_active_trip_dict() or {}
+    except Exception:
+        return False
+    return not active.get("day_wise_itinerary")
 
 
 @app.post("/chat/stream")
@@ -924,9 +942,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 ),
             ),
         ]
-        # Safety net: if the agent described a day-wise itinerary but never
-        # called update_trip_plan, parse the reply and persist it directly so
-        # the Itinerary panel is never left blank.
+        # Recover a narrated itinerary when structured saves were skipped or rejected.
         if not req.proposal_only and _should_auto_persist_itinerary(tool_names_called):
             await asyncio.to_thread(_auto_persist_itinerary, reply)
         try:
