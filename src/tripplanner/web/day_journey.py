@@ -42,6 +42,7 @@ _TRANSFER_DESTINATION_KINDS = {
 #: The journey a pair of terminals implies when the plan never named the leg.
 _TERMINAL_MODES = {"airport": "Flight", "station": "Train", "bus_station": "Bus"}
 IMPLIED_HOP_MIN_KM = 100.0
+MAX_TERMINAL_GROUND_KM = 300.0
 
 
 def implied_terminal_hop_mode(from_kind: str, to_kind: str, distance_km: float) -> str | None:
@@ -70,7 +71,9 @@ class DayJourney:
     route_ids: list[str] = field(default_factory=list)
     intercity_edges: dict[Edge, str] = field(default_factory=dict)
     circuit_edges: dict[Edge, str] = field(default_factory=dict)
+    detached_pin_ids: list[str] = field(default_factory=list)
     transfer_mode: str | None = None
+    route_disconnected: bool = False
 
     @property
     def is_transfer(self) -> bool:
@@ -106,10 +109,24 @@ class _JourneyWalk:
         self._pin_by_id[pin_id] = pin
         return pin_id
 
-    def _place(self, pin_id: str) -> None:
+    def _include_map_pin(self, pin_id: str) -> None:
         if pin_id not in self.journey.map_pin_ids:
             self.journey.map_pin_ids.append(pin_id)
+
+    def _place(self, pin_id: str) -> None:
+        self._include_map_pin(pin_id)
         self.journey.route_ids.append(pin_id)
+
+    def _detach(self, pin_id: str) -> None:
+        self._include_map_pin(pin_id)
+        if pin_id not in self.journey.detached_pin_ids:
+            self.journey.detached_pin_ids.append(pin_id)
+
+    def _reset_route(self) -> None:
+        for pin_id in self.journey.route_ids:
+            self._detach(pin_id)
+        self.journey.route_ids.clear()
+        self.journey.route_disconnected = True
 
     def _connect(self, to_id: str, transfer: _OpenTransfer) -> None:
         if not self.journey.route_ids:
@@ -152,6 +169,9 @@ class _JourneyWalk:
         self._visit_place(name, kind)
 
     def _visit_transfer(self, stop: Any, stop_index: int, name: str, kind: str, mode: str) -> None:
+        if self._open and not self._open.arrival_id and self._open.mode not in _GROUND_MODES:
+            self._reset_route()
+            self._open = None
         # Place a known arrival before resolving the next transfer's departure.
         self._close_pending_arrival()
 
@@ -174,6 +194,11 @@ class _JourneyWalk:
             self._commit_pending(terminal_ids[0], previous_transfer)
             self._open = None
         if len(terminal_ids) == len(refs) and len(terminal_ids) >= 2:
+            origin_pin = self._pin_by_id[terminal_ids[0]]
+            if not self._imply_terminal_hop(
+                origin_pin, terminal_ids[0], str(origin_pin.get("kind") or "")
+            ):
+                self._reset_route()
             self._place(terminal_ids[0])
             # A connection is a place the traveller actually passes through, so
             # each hop is drawn instead of one line that skips the stop.
@@ -206,7 +231,7 @@ class _JourneyWalk:
         if origin_id or (mode == "Drive" and self.journey.route_ids):
             self._open = transfer
         elif terminal_ids:
-            self._place(terminal_ids[-1])
+            self._detach(terminal_ids[-1])
 
     def _visit_place(self, name: str, kind: str) -> None:
         if self._open and self._open.arrival_id and kind not in _ENROUTE_KINDS:
@@ -234,32 +259,43 @@ class _JourneyWalk:
                 transfer.pending_edges.append((self.journey.route_ids[-1], pin_id))
             else:
                 # An unresolved transfer cannot borrow a local pin as its
-                # destination; keep the pin and leave the transfer unverified.
+                # destination. Start a destination-side path without drawing
+                # ground travel across the unresolved inter-city gap.
                 self._open = None
-        elif not transfer:
-            self._imply_terminal_hop(pin, pin_id, pin_kind)
+                self._reset_route()
+        elif not transfer and not self._imply_terminal_hop(pin, pin_id, pin_kind):
+            self._detach(pin_id)
+            return
         self._place(pin_id)
 
-    def _imply_terminal_hop(self, pin: dict[str, Any], pin_id: str, pin_kind: str) -> None:
+    def _imply_terminal_hop(
+        self, pin: dict[str, Any], pin_id: str, pin_kind: str
+    ) -> bool:
         """Draw the leg the plan forgot to name between two distant terminals."""
         if not self.journey.route_ids:
-            return
+            return True
         previous = self._pin_by_id.get(self.journey.route_ids[-1])
         if not previous:
-            return
+            return True
         coords = [(place.get("lat"), place.get("lng")) for place in (previous, pin)]
         if not all(isinstance(value, (int, float)) for pair in coords for value in pair):
-            return
+            return True
         (from_lat, from_lng), (to_lat, to_lng) = coords
+        distance = _haversine_km(
+            (float(from_lat), float(from_lng)), (float(to_lat), float(to_lng))
+        )
+        previous_kind = str(previous.get("kind") or "")
         mode = implied_terminal_hop_mode(
-            str(previous.get("kind") or ""),
+            previous_kind,
             pin_kind,
-            _haversine_km((float(from_lat), float(from_lng)), (float(to_lat), float(to_lng))),
+            distance,
         )
         if not mode:
-            return
+            one_terminal = (previous_kind in TERMINAL_KINDS) != (pin_kind in TERMINAL_KINDS)
+            return not (one_terminal and distance > MAX_TERMINAL_GROUND_KM)
         self.journey.intercity_edges[(self.journey.route_ids[-1], pin_id)] = mode
         self.journey.transfer_mode = mode
+        return True
 
     def finish(self) -> DayJourney:
         self._close_pending_arrival()
@@ -312,6 +348,13 @@ def start_journey_from_stay(
     the day begins, so every edge that left the origin is rebound to it.
     """
     route_ids = journey.route_ids
+    if journey.route_disconnected:
+        if stay_id not in journey.map_pin_ids:
+            journey.map_pin_ids.insert(0, stay_id)
+        for extra_id in extra_stay_ids or []:
+            if extra_id not in journey.map_pin_ids:
+                journey.map_pin_ids.append(extra_id)
+        return
     if route_ids and kind_of(route_ids[0]) == "origin":
         origin_id = route_ids.pop(0)
         _rebind_edges(journey.intercity_edges, origin_id, stay_id)
@@ -322,6 +365,8 @@ def start_journey_from_stay(
     # ending at whatever it saw last.
     returns_to_stay = bool(route_ids) and route_ids[-1] == stay_id
     journey.route_ids = [stay_id, *(pin_id for pin_id in route_ids if pin_id != stay_id)]
+    if stay_id not in journey.map_pin_ids:
+        journey.map_pin_ids.insert(0, stay_id)
     if returns_to_stay and len(journey.route_ids) > 1:
         journey.route_ids.append(stay_id)
     if (
@@ -334,6 +379,8 @@ def start_journey_from_stay(
     for extra_id in extra_stay_ids or []:
         if extra_id not in journey.route_ids:
             journey.route_ids.append(extra_id)
+        if extra_id not in journey.map_pin_ids:
+            journey.map_pin_ids.append(extra_id)
 
 
 def _rebind_edges(edges: dict[Edge, Any], from_id: str, to_id: str) -> None:
