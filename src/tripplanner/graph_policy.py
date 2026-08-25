@@ -36,6 +36,7 @@ ForcedReason: TypeAlias = Literal[
     "new_trip_creation",
     "origin_correction",
     "hotel_provider_fallback",
+    "missing_named_restaurant",
     "persist_or_repair_plan",
     "missing_concrete_hotel",
     "kickoff_answered",
@@ -265,6 +266,40 @@ def trip_hotel_search_requirement(
         + " Search real hotels for every overnight city in one parallel tool-call batch "
         "so the strongest preference-matched options can be selected by default in the "
         "next full-plan update. Do not defer another city's hotel search to a later turn."
+    )
+
+
+def trip_restaurant_search_requirement(
+    messages: Sequence[BaseMessage],
+    active_trip: dict[str, Any],
+    *,
+    has_planning_intent: bool,
+) -> str | None:
+    positions = _tool_call_positions(messages)
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    current_turn_names = {name for index, name in positions if index > latest_human}
+    if "nearby_restaurants" in current_turn_names:
+        return None
+    if not (
+        "create_trip_plan" in current_turn_names
+        or (has_planning_intent and "update_trip_plan" in current_turn_names)
+    ):
+        return None
+    restaurant_gaps = [
+        gap
+        for gap in core_planning_completion_gaps(active_trip)
+        if "no named restaurant stop" in gap.lower()
+    ]
+    if not restaurant_gaps:
+        return None
+    return (
+        "The saved itinerary still has substantial days without named restaurants: "
+        + " ".join(restaurant_gaps)
+        + " Search nearby restaurants for the affected day locations now, then choose "
+        "concrete preference-matched venues and save them as meal stops."
     )
 
 
@@ -547,12 +582,26 @@ def resolve_completion_policy(
             has_planning_intent=has_planning_intent,
         )
     )
+    restaurant_search_requirement = (
+        None
+        if proposal_only
+        or new_trip_flow
+        or hotel_fallback_requirement
+        or update_requirement
+        or hotel_search_requirement
+        else trip_restaurant_search_requirement(
+            messages,
+            active_trip,
+            has_planning_intent=has_planning_intent,
+        )
+    )
     if (
         core_gaps_for_planning_turn
         and not hotel_fallback_requirement
         and not origin_requirement
         and not update_requirement
         and not hotel_search_requirement
+        and not restaurant_search_requirement
     ):
         update_requirement = (
             "The planning turn cannot end because the saved trip still has core "
@@ -564,7 +613,12 @@ def resolve_completion_policy(
         )
     kickoff_tool = (
         None
-        if proposal_only or update_requirement or hotel_search_requirement
+        if (
+            proposal_only
+            or update_requirement
+            or hotel_search_requirement
+            or restaurant_search_requirement
+        )
         else trip_kickoff_tool_choice(
             messages,
             active_trip,
@@ -588,6 +642,8 @@ def resolve_completion_policy(
         if update_requirement
         else "search_hotels"
         if hotel_search_requirement
+        else "nearby_restaurants"
+        if restaurant_search_requirement
         else "create_trip_plan"
         if kickoff_answered
         else kickoff_tool
@@ -603,6 +659,8 @@ def resolve_completion_policy(
         if update_requirement
         else "missing_concrete_hotel"
         if hotel_search_requirement
+        else "missing_named_restaurant"
+        if restaurant_search_requirement
         else "kickoff_answered"
         if kickoff_answered
         else "trip_kickoff"
@@ -614,6 +672,7 @@ def resolve_completion_policy(
         or origin_requirement
         or update_requirement
         or hotel_search_requirement
+        or restaurant_search_requirement
     )
     return CompletionPolicyDecision(
         tool_phases=tool_phases,
