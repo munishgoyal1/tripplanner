@@ -407,6 +407,26 @@ class TestPartialItineraryMerge:
         assert partial is False
         assert merged == incoming
 
+    @pytest.mark.parametrize("invalid", [[], ["Day 1"], [{"day": 1}]])
+    def test_unstructured_itinerary_update_does_not_erase_saved_days(self, invalid):
+        existing = self._days(1, 2, 3)
+        create_trip_plan.invoke({
+            "destination": "Indore",
+            "departure_date": "2026-08-10",
+            "return_date": "2026-08-12",
+            "origin": "Bangalore",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": existing,
+        })})
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": invalid,
+        })})
+
+        assert result.startswith("Error: day_wise_itinerary must contain")
+        assert json.loads(get_trip_plan.invoke({}))["day_wise_itinerary"] == existing
+
     def test_hotel_swap_keeps_the_other_planned_days(self):
         create_trip_plan.invoke({
             "destination": "Indore",

@@ -434,10 +434,22 @@ def _requested_budget_without_cost_evidence(plan: dict[str, Any]) -> list[str]:
     ]
 
 
+def has_structured_itinerary(plan: dict[str, Any]) -> bool:
+    itinerary = plan.get("day_wise_itinerary")
+    return (
+        isinstance(itinerary, list)
+        and bool(itinerary)
+        and all(
+            isinstance(day, dict) and isinstance(day.get("stops"), list)
+            for day in itinerary
+        )
+    )
+
+
 def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
     """Gaps that a first planning turn must resolve even after its normal tool budget."""
     itinerary = plan.get("day_wise_itinerary")
-    if plan.get("destination") and not (isinstance(itinerary, list) and itinerary):
+    if plan.get("destination") and not has_structured_itinerary(plan):
         return [
             "No day-by-day itinerary is saved. Save the full structured "
             "day_wise_itinerary before presenting the trip as planned."
@@ -479,7 +491,6 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
                 "Sparse itinerary: " + reasons + ". Rebalance meaningful nearby stops "
                 "or explicitly label intentional leisure; do not add filler."
             )
-    itinerary = plan.get("day_wise_itinerary")
     # Every other check walks the days, so a trip with none of them reported
     # nothing at all and could be narrated as planned while holding no plan.
     missing_itinerary = (
@@ -487,7 +498,7 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
             "No day-by-day itinerary is saved. Save the full structured "
             "day_wise_itinerary before presenting the trip as planned."
         ]
-        if plan.get("destination") and not (isinstance(itinerary, list) and itinerary)
+        if plan.get("destination") and not has_structured_itinerary(plan)
         else []
     )
     coherence_gaps = itinerary_coherence_gaps(plan)

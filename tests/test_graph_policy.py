@@ -7,6 +7,7 @@ from tripplanner.graph_policy import (
     MAX_TOOL_PHASES_PER_TURN,
     resolve_completion_policy,
 )
+from tripplanner.tools.trip_validation import core_planning_completion_gaps
 
 
 def _tool_call(name: str, call_id: str) -> AIMessage:
@@ -109,6 +110,16 @@ def test_a_broad_new_trip_must_still_save_before_the_phase_budget_traps_it() -> 
     assert decision.forced_tool == "update_trip_plan"
     assert decision.requirement is not None
     assert "no itinerary" in decision.requirement
+
+
+def test_unstructured_days_do_not_satisfy_the_initial_itinerary_gate() -> None:
+    gaps = core_planning_completion_gaps({
+        "destination": "Nashik",
+        "day_wise_itinerary": [{"day": 1}],
+    })
+
+    assert len(gaps) == 1
+    assert "full structured day_wise_itinerary" in gaps[0]
 
 
 def test_the_phase_budget_ends_after_bounded_first_turn_save_attempts() -> None:
@@ -229,6 +240,62 @@ def test_hotel_provider_fallback_preempts_enrichment_persistence() -> None:
 
     assert decision.forced_tool == "search_places_with_reviews"
     assert decision.forced_reason == "hotel_provider_fallback"
+
+
+def test_resumed_hotel_gap_ignores_prior_turn_hotel_search() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan my Paris stay"),
+            _tool_call("search_hotels", "hotel-old"),
+            ToolMessage(
+                content='[{"name": "Hotel Le Six"}]',
+                tool_call_id="hotel-old",
+            ),
+            HumanMessage(content="Finish the incomplete itinerary"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+            }],
+            "selected_hotels": [],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"
+
+
+def test_resumed_hotel_gap_does_not_fallback_from_prior_turn_failure() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan my Paris stay"),
+            _tool_call("search_hotels", "hotel-old"),
+            ToolMessage(
+                content="No hotels found for Paris.",
+                tool_call_id="hotel-old",
+            ),
+            HumanMessage(content="Finish the incomplete itinerary"),
+        ],
+        active_trip={
+            "destination": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+            }],
+            "selected_hotels": [],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"
 
 
 def test_tool_phase_budget_preempts_every_completion_gate() -> None:
