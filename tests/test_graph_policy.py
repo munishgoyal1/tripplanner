@@ -440,6 +440,37 @@ def test_first_turn_provider_failure_uses_hotel_fallback_after_phase_budget() ->
     assert decision.forced_reason == "hotel_provider_fallback"
 
 
+def test_phase_budget_cannot_end_first_turn_with_generic_city_hotel() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a Kerala trip"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+        ],
+        active_trip={
+            "destination": "Kochi, Kerala",
+            "origin": "Kochi",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel in Kochi", "kind": "hotel"},
+                    {"name": "Fort Kochi", "kind": "attraction"},
+                    {"name": "Kashi Art Cafe", "kind": "meal"},
+                ],
+            }],
+            "selected_hotels": [{"name": "Hotel in Kochi"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"
+    assert "no bookable property" in (decision.requirement or "")
+
+
 def test_first_turn_researches_missing_restaurants_before_completion_repair() -> None:
     decision = resolve_completion_policy(
         messages=[

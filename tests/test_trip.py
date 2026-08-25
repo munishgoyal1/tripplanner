@@ -736,24 +736,27 @@ class TestTripPlanState:
         assert "Hotel planning incomplete" in result
         assert "search_hotels" in result
 
-    def test_update_trip_plan_rejects_unnamed_hotel_selection(self):
+    def test_update_trip_plan_rejects_generic_city_hotel_selections(self):
         create_trip_plan.invoke({
-            "destination": "Paris",
-            "departure_date": "2027-04-05",
-            "return_date": "2027-04-12",
+            "destination": "Kochi, Kerala",
+            "departure_date": "2026-12-12",
+            "return_date": "2026-12-18",
         })
         result = update_trip_plan.invoke({"updates_json": json.dumps({
-            "selected_hotels": [{"name": "Hotel in Paris", "price": 15000}],
+            "selected_hotels": [
+                {"name": "Hotel in Kochi", "price": 15000},
+                {"name": "Kochi Hotel", "price": 14000},
+            ],
             "day_wise_itinerary": [{
                 "day": 1,
-                "stops": [{"name": "Hotel in Paris", "kind": "hotel"}],
+                "stops": [{"name": "Hotel in Kochi", "kind": "hotel"}],
             }],
         })})
 
         plan = json.loads(get_trip_plan.invoke({}))
         assert plan["selected_hotels"] == []
-        assert "Hotel planning incomplete" in result
         assert "no bookable property" in result
+        assert "generic or placeholder hotel label" in result
 
     def test_update_trip_plan_accepts_concrete_hotel_selection(self):
         create_trip_plan.invoke({

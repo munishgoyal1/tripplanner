@@ -2442,8 +2442,8 @@ def update_trip_plan(updates_json: str) -> str:
             "\nHotel planning incomplete: "
             + " ".join(hotel_warnings)
             + " Call search_hotels, choose the best preference-matched real option by "
-            "default, verify it with search_places_with_reviews, and replace every hotel "
-            "placeholder before finishing."
+            "default, verify it with search_places_with_reviews, and replace every generic "
+            "or placeholder hotel label before finishing."
         )
     bullets = diff_plans(before, plan)
     if not bullets:
