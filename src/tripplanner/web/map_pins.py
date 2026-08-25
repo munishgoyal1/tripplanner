@@ -35,6 +35,7 @@ from tripplanner.web.place_confidence import (
 )
 from tripplanner.web.schedule import (
     _INTERCITY_SPEED_KMH,
+    MAX_GROUND_LEG_KM,
     _apply_saved_transfer_metrics,
     _haversine_km,
     _route_duration_display,
@@ -50,6 +51,11 @@ from tripplanner.web.transport import (
 )
 
 _MAX_OVERVIEW_ATTRACTIONS = 6
+_LOCAL_MODES = frozenset({"Walk", "Taxi"})
+_LOCATION_NOISE = frozenset({
+    "and", "arrival", "day", "departure", "excursion", "from", "hotel", "nearby",
+    "return", "the", "trip", "with",
+})
 
 
 def build_map_url(destination: str, highlights: list[str] | None = None) -> str:
@@ -261,6 +267,24 @@ def _day_place_context(entry: dict[str, Any], destination: str) -> str:
     return title
 
 
+def _location_tokens(value: Any) -> set[str]:
+    return {
+        token
+        for token in re.findall(r"[a-z0-9]+", str(value or "").casefold())
+        if len(token) > 2 and token not in _LOCATION_NOISE
+    }
+
+
+def _hotel_address_matches_context(
+    info: dict[str, Any], context: str, destination: str
+) -> bool:
+    address = str(info.get("address") or "").strip()
+    if not address:
+        return True
+    expected = _location_tokens(context) | _location_tokens(destination)
+    return not expected or bool(expected & _location_tokens(address))
+
+
 def _map_pins(
     trip: dict[str, Any],
     destination: str,
@@ -272,6 +296,13 @@ def _map_pins(
     the reason, so no surface has to guess why a stop is missing.
     """
     itinerary = trip.get("day_wise_itinerary") or []
+    selected_hotel_context = {
+        str(stay.get("name") or "").strip().lower(): str(
+            stay.get("city") or stay.get("location") or stay.get("destination") or ""
+        ).strip()
+        for stay in trip.get("selected_hotels") or []
+        if isinstance(stay, dict) and str(stay.get("name") or "").strip()
+    }
     selected = {
         "hotel": _selected_names(trip, "hotel"),
         "attraction": _selected_names(trip, "attraction"),
@@ -356,7 +387,10 @@ def _map_pins(
                 continue
             if kind not in {"hotel", "attraction", "meal", "restaurant"}:
                 kind = _infer_kind_from_name(name)
-            _add(kind, name, day_context)
+            context = day_context
+            if kind == "hotel":
+                context = selected_hotel_context.get(name.lower()) or day_context
+            _add(kind, name, context)
             explicit_day_by_name.setdefault(name.lower(), day_num)
             tier_by_name.setdefault(name.lower(), tier)
             from_itinerary.add(name.lower())
@@ -418,7 +452,33 @@ def _map_pins(
             if binding
             else (places_cache.get_details(name, context) or {})
         )
+        if (
+            not binding
+            and context != destination
+            and (info.get("lat") is None or info.get("lng") is None)
+        ):
+            destination_info = places_cache.get_details(name, destination) or {}
+            if destination_info.get("lat") is not None and destination_info.get("lng") is not None:
+                info = destination_info
+                context = destination
         provider_name = str(info.get("name") or "").strip()
+        if (
+            kind == "hotel"
+            and not binding
+            and not _hotel_address_matches_context(info, context, destination)
+        ):
+            _report(
+                name,
+                kind,
+                "wrong_location",
+                {
+                    "name": provider_name or name,
+                    "place_id": info.get("place_id"),
+                    "lat": info.get("lat"),
+                    "lng": info.get("lng"),
+                },
+            )
+            continue
         if (
             provider_name
             and not binding
@@ -546,6 +606,8 @@ def _route_legs_for_day(
                 from_name=str(start.get("name") or ""),
                 to_name=str(end.get("name") or ""),
             )
+        if metrics["mode"] in _LOCAL_MODES and distance > MAX_GROUND_LEG_KM:
+            continue
         circuit_id = (route_circuit_ids or {}).get((from_id, to_id))
         legs.append({
             "from_pin_id": from_id,

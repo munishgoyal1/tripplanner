@@ -14,9 +14,8 @@ from typing import Any
 
 from tripplanner.validation.corpus import CorpusRecord
 from tripplanner.validation.findings import Finding, symptom_of
+from tripplanner.web.schedule import MAX_GROUND_LEG_KM
 
-#: Ground travel beyond this is not a drive, whatever the leg claims.
-MAX_GROUND_LEG_KM = 300.0
 #: No single leg of a day plausibly takes longer than this.
 MAX_LEG_MINUTES = 16 * 60
 _GROUND_MODES = frozenset({"Walk", "Taxi", "Drive", "Bus", "Metro", "Cab", "Car"})

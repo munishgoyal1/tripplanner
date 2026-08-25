@@ -96,7 +96,7 @@
           "note": "Private car transfer"
         },
         {
-          "name": "Premium Hotel (TBD)",
+          "name": "Hotel EllBee Ganga View",
           "kind": "hotel",
           "time": "14:00",
           "note": "Check-in and relax"
@@ -110,7 +110,7 @@
       "summary": "Morning yoga, river rafting, visit Triveni Ghat, evening at hotel.",
       "stops": [
         {
-          "name": "Premium Hotel (TBD)",
+          "name": "Hotel EllBee Ganga View",
           "kind": "hotel",
           "time": "08:00"
         },
@@ -133,7 +133,7 @@
           "duration_min": 90
         },
         {
-          "name": "Premium Hotel (TBD)",
+          "name": "Hotel EllBee Ganga View",
           "kind": "hotel",
           "time": "18:00"
         }
@@ -146,7 +146,7 @@
       "summary": "Visit Neelkanth Mahadev Temple, Beatles Ashram, family activities at hotel.",
       "stops": [
         {
-          "name": "Premium Hotel (TBD)",
+          "name": "Hotel EllBee Ganga View",
           "kind": "hotel",
           "time": "08:00"
         },
@@ -163,7 +163,7 @@
           "duration_min": 90
         },
         {
-          "name": "Premium Hotel (TBD)",
+          "name": "Hotel EllBee Ganga View",
           "kind": "hotel",
           "time": "17:00"
         }
@@ -176,7 +176,7 @@
       "summary": "Visit Rajaji National Park, picnic lunch, evening spa at hotel.",
       "stops": [
         {
-          "name": "Premium Hotel (TBD)",
+          "name": "Hotel EllBee Ganga View",
           "kind": "hotel",
           "time": "08:00"
         },
@@ -193,7 +193,7 @@
           "duration_min": 60
         },
         {
-          "name": "Premium Hotel (TBD)",
+          "name": "Hotel EllBee Ganga View",
           "kind": "hotel",
           "time": "16:00"
         },
@@ -212,7 +212,7 @@
       "summary": "Explore local markets, visit Parmarth Niketan, drive back to Delhi.",
       "stops": [
         {
-          "name": "Premium Hotel (TBD)",
+          "name": "Hotel EllBee Ganga View",
           "kind": "hotel",
           "time": "08:00"
         },
