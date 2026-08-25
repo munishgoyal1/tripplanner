@@ -582,7 +582,7 @@ def _itinerary_time_errors(itinerary: Any) -> list[str]:
 
 
 _PERSISTENCE_SANITY_CODES = frozenset(
-    {"I1", "I2", "I3", "I4", "I5", "I7", "I9", "I11", "I12"}
+    {"I1", "I2", "I3", "I4", "I5", "I6", "I7", "I9", "I11", "I12"}
 )
 
 
