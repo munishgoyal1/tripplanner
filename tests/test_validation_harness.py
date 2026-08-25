@@ -433,6 +433,33 @@ def test_blanking_an_origin_that_is_already_missing_is_not_a_mutation() -> None:
     assert mutations.blank_origin(_plan(origin="")) is None
 
 
+def test_drop_first_leg_is_not_unnoticed_without_hotel_rows() -> None:
+    record = _record(
+        destination="Spiti Valley",
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Drive: Bangalore to Narkanda", "kind": "transport"},
+                    {"name": "Local Restaurant, Narkanda", "kind": "meal"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Drive: Narkanda to Bangalore", "kind": "transport"},
+                ],
+            },
+        ],
+    )
+
+    assert not [
+        finding
+        for finding in mutations.check_metamorphic(record)
+        if finding.rule == mutations.RULE_UNNOTICED and "drop-first-leg" in finding.message
+    ]
+
+
 def test_drop_last_leg_skips_terminal_markers_and_removes_the_journey() -> None:
     record = _record(
         origin="Guwahati",

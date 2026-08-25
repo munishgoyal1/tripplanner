@@ -162,6 +162,15 @@ def test_a_regional_outbound_without_a_return_is_reported() -> None:
     assert any(violation.code == "I7" for violation in trip_guard.validate_plan(one_way))
 
 
+def test_a_regional_return_without_an_outbound_is_reported() -> None:
+    return_only = plan(
+        [[stop("Flight Udaipur → Bengaluru", "18:00", "flight", 150)]],
+        destination="Rajasthan",
+    )
+
+    assert any(violation.code == "I7" for violation in trip_guard.validate_plan(return_only))
+
+
 def test_a_leg_between_two_destination_cities_never_bounds_the_trip() -> None:
     internal = plan(
         [
@@ -971,5 +980,4 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
-
 
