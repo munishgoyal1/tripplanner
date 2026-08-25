@@ -549,6 +549,34 @@ def confirm_worker_push(
     return True
 
 
+def recover_reportless_push(
+    space: Workspace,
+    assignment: core.Assignment,
+) -> str:
+    """Return a safely attributable remote tip when the final report is missing."""
+    worktree = space.slot_path(assignment.slot)
+    remote_ref = f"refs/remotes/origin/{assignment.branch}"
+    fetched = run(
+        ["git", "fetch", "-q", "origin", f"{assignment.branch}:{remote_ref}"],
+        cwd=worktree,
+    )
+    if fetched.returncode != 0:
+        return ""
+    pushed_sha = git(["rev-parse", remote_ref], cwd=worktree, check=False)
+    if not pushed_sha or pushed_sha == assignment.base_sha:
+        return ""
+    descended = run(
+        ["git", "merge-base", "--is-ancestor", assignment.base_sha, pushed_sha],
+        cwd=worktree,
+    )
+    if descended.returncode != 0:
+        return ""
+    message = git(["show", "-s", "--format=%B", pushed_sha], cwd=worktree, check=False)
+    if not re.search(rf"(?im)^Fixes\s+#{assignment.issue}\s*$", message):
+        return ""
+    return pushed_sha
+
+
 def reconcile_landed_assignments(state: core.State, worktree: Path) -> int:
     landed = 0
     for assignment in state.assignments:
@@ -701,6 +729,13 @@ def collect(space: Workspace, state: core.State, repo: str) -> None:
         assignment.validation = report.get("VALIDATION", "")
 
         pushed_sha = report.get("COMMIT", "none")
+        if not report:
+            recovered_sha = recover_reportless_push(space, assignment)
+            if recovered_sha:
+                outcome = "done"
+                pushed_sha = recovered_sha
+                assignment.validation = "worker report missing; integration validation required"
+                log(f"#{assignment.issue} recovered remote push {recovered_sha[:12]}")
         if outcome == "done" and pushed_sha not in ("", "none"):
             if not confirm_worker_push(space, assignment, pushed_sha):
                 assignment.state = "failed"
