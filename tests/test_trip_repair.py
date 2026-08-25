@@ -97,6 +97,24 @@ def test_it_clears_a_closed_day_it_owns() -> None:
     assert any("Louvre Museum" in line for line in outcome["sentences"])
 
 
+def test_a_closed_day_only_repair_leaves_unrelated_stops_in_place() -> None:
+    broken = _plan(
+        [_stop("Musee d'Orsay", "10:00")],
+        [_stop("Louvre Museum", "10:00"), _stop("Le Marais", "14:00")],
+    )
+
+    outcome = trip_repair.repair(broken, only_codes={"I11"})
+
+    assert outcome["changed"]
+    assert _closed_day_codes(outcome["plan"]) == []
+    assert [
+        (move["name"], move["from_day"], move["to_day"]) for move in outcome["moves"]
+    ] == [("Louvre Museum", 2, 1)]
+    assert outcome["plan"]["day_wise_itinerary"][1]["stops"] == [
+        _stop("Le Marais", "14:00")
+    ]
+
+
 def test_it_reschedules_a_planner_owned_visit_that_ends_after_closing() -> None:
     broken = _plan(
         [_stop("Al Fahidi Historical Neighbourhood", "19:30")],

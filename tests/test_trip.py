@@ -700,6 +700,119 @@ class TestTripPlanState:
         assert plan["weather"]["source"] == "forecast"
         assert plan["total_cost"] == 8500
 
+    def test_update_trip_plan_moves_known_closed_day_before_persistence(
+        self, monkeypatch
+    ):
+        weekdays = (
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        )
+
+        def structured_hours(name, _destination):
+            if name != "Closed Museum":
+                return {}
+            return {
+                "name": name,
+                "weekday_descriptions": [
+                    f"{day}: {'Closed' if day == 'Tuesday' else '9:00 AM - 6:00 PM'}"
+                    for day in weekdays
+                ],
+            }
+
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_guard._summary_for_place",
+            structured_hours,
+        )
+        create_trip_plan.invoke(
+            {
+                "destination": "Paris",
+                "departure_date": "2026-09-07",
+                "return_date": "2026-09-08",
+                "travel_scope": "destination_only",
+            }
+        )
+
+        result = update_trip_plan.invoke(
+            {
+                "updates_json": json.dumps(
+                    {
+                        "day_wise_itinerary": [
+                            {
+                                "day": 1,
+                                "stops": [{"name": "Hotel Lutetia", "kind": "hotel"}],
+                            },
+                            {
+                                "day": 2,
+                                "stops": [
+                                    {
+                                        "name": "Closed Museum",
+                                        "kind": "attraction",
+                                        "time": "10:00",
+                                        "duration_min": 90,
+                                    }
+                                ],
+                            },
+                        ]
+                    }
+                )
+            }
+        )
+
+        saved = json.loads(get_trip_plan.invoke({}))
+        assert [
+            stop["name"]
+            for stop in saved["day_wise_itinerary"][0]["stops"]
+            if stop["kind"] == "attraction"
+        ] == ["Closed Museum"]
+        assert saved["day_wise_itinerary"][1]["stops"] == []
+        assert "Adjusted known closed-day visits before saving" in result
+
+    def test_update_trip_plan_does_not_infer_closed_day_from_unknown_hours(
+        self, monkeypatch
+    ):
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_guard._summary_for_place",
+            lambda *_: {},
+        )
+        create_trip_plan.invoke(
+            {
+                "destination": "Paris",
+                "departure_date": "2026-09-07",
+                "return_date": "2026-09-08",
+                "travel_scope": "destination_only",
+            }
+        )
+        itinerary = [
+            {
+                "day": 1,
+                "stops": [{"name": "Hotel Lutetia", "kind": "hotel"}],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {
+                        "name": "Unknown Museum",
+                        "kind": "attraction",
+                        "time": "10:00",
+                        "duration_min": 90,
+                    }
+                ],
+            },
+        ]
+
+        result = update_trip_plan.invoke(
+            {"updates_json": json.dumps({"day_wise_itinerary": itinerary})}
+        )
+
+        saved = json.loads(get_trip_plan.invoke({}))
+        assert saved["day_wise_itinerary"] == itinerary
+        assert "Adjusted known closed-day visits before saving" not in result
+
     def test_update_trip_plan_owns_numeric_budget_as_structured_user_target(self):
         create_trip_plan.invoke({
             "destination": "Goa",

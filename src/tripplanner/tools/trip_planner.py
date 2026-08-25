@@ -484,6 +484,30 @@ def _newly_broken(before: dict[str, Any], after: dict[str, Any]) -> list[str]:
     ]
 
 
+def _repair_known_closed_days(plan: dict[str, Any]) -> list[str]:
+    """Move planner-owned visits off weekdays structured hours say are closed."""
+    closed_before = {
+        (item.day, item.stop) for item in validate_plan(plan) if item.code == "I11"
+    }
+    if not closed_before:
+        return []
+
+    from tripplanner.web import trip_repair
+
+    outcome = trip_repair.repair(plan, only_codes={"I11"})
+    closed_after = {
+        (item.day, item.stop)
+        for item in validate_plan(outcome["plan"])
+        if item.code == "I11"
+    }
+    if len(closed_after) >= len(closed_before):
+        return []
+
+    plan.clear()
+    plan.update(outcome["plan"])
+    return outcome["sentences"]
+
+
 def _pacing_text(plan: dict[str, Any]) -> str:
     """What the shape of the trip costs, in words the user could check.
 
@@ -2380,6 +2404,7 @@ def update_trip_plan(updates_json: str) -> str:
     restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
 
     resettled_days = _settle_plan_legs(plan)
+    closed_day_repairs = _repair_known_closed_days(plan)
     sanity_errors = persistence_sanity_errors(plan)
     if sanity_errors:
         return (
@@ -2412,6 +2437,10 @@ def update_trip_plan(updates_json: str) -> str:
             "\nReordered Day "
             + ", ".join(str(day) for day in resettled_days)
             + " so each journey opens or closes its day."
+        )
+    if closed_day_repairs:
+        warning_text += "\nAdjusted known closed-day visits before saving: " + " ".join(
+            closed_day_repairs
         )
     if broken_invariants:
         warning_text += (
