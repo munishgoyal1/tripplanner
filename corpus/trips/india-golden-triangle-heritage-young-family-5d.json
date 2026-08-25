@@ -1,0 +1,264 @@
+{
+  "status": "draft",
+  "trip_id": "delhi_agra_jaipur_2027-02-05_2027-02-10",
+  "trip_number": 1,
+  "created_at": "2026-08-25T17:23:33.216232",
+  "destination": "Delhi, Agra, Jaipur",
+  "origin": "Bangalore",
+  "departure_date": "2027-02-05",
+  "return_date": "2027-02-10",
+  "travelers": "2 adults, 2 children (ages 4 and 8)",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Delhi, Agra, Jaipur",
+    "estimated_planned_minutes": 1220,
+    "evidence_place_count": 10,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "10 preference-matched places account for about 1220 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "",
+      "title": "5 Feb · Arrival in Delhi",
+      "summary": "- Morning: Fly Bangalore → Delhi (direct flight, ~2.5 hrs) - Check in to hotel (central Delhi) - Afternoon: Connaught Place (lunch, stroll) - Evening: India Gate & Rajpath - Overnight: Delhi",
+      "stops": [
+        {
+          "name": "Morning: Fly Bangalore → Delhi (direct flight, ~2.5 hrs)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Check in to hotel (central Delhi)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon: Connaught Place (lunch, stroll)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Evening: India Gate & Rajpath",
+          "kind": "attraction"
+        },
+        {
+          "name": "Overnight: Delhi",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "",
+      "title": "6 Feb · Delhi: History & Architecture",
+      "summary": "- Morning: Red Fort (arrive early) - Midday: Jama Masjid - Lunch: Karim’s (famous Mughlai cuisine) - Afternoon: Qutub Minar - Overnight: Delhi",
+      "stops": [
+        {
+          "name": "Morning: Red Fort (arrive early)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Midday: Jama Masjid",
+          "kind": "attraction"
+        },
+        {
+          "name": "Lunch: Karim’s (famous Mughlai cuisine)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon: Qutub Minar",
+          "kind": "attraction"
+        },
+        {
+          "name": "Overnight: Delhi",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "",
+      "title": "7 Feb · Delhi → Agra: Mughal Marvels",
+      "summary": "- Morning: Express train Delhi → Agra (~2 hrs) - Check in to hotel - Late morning: Taj Mahal - Lunch: Pinch of Spice - Afternoon: Agra Fort - Overnight: Agra",
+      "stops": [
+        {
+          "name": "Morning: Express train Delhi → Agra (~2 hrs)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Check in to hotel",
+          "kind": "attraction"
+        },
+        {
+          "name": "Late morning: Taj Mahal",
+          "kind": "attraction"
+        },
+        {
+          "name": "Lunch: Pinch of Spice",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon: Agra Fort",
+          "kind": "attraction"
+        },
+        {
+          "name": "Overnight: Agra",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "",
+      "title": "8 Feb · Agra → Jaipur via Fatehpur Sikri",
+      "summary": "- Morning: Private car Agra → Fatehpur Sikri (~1 hr) - Visit Fatehpur Sikri - Lunch: Highway Restaurant (on the way) - Afternoon: Continue drive to Jaipur (~3 hrs) - Check in to hotel - Evening: Johari Bazaar (local markets) - Overnight: Jaipur",
+      "stops": [
+        {
+          "name": "Morning: Private car Agra → Fatehpur Sikri (~1 hr)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Visit Fatehpur Sikri",
+          "kind": "attraction"
+        },
+        {
+          "name": "Lunch: Highway Restaurant (on the way)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon: Continue drive to Jaipur (~3 hrs)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Check in to hotel",
+          "kind": "attraction"
+        },
+        {
+          "name": "Evening: Johari Bazaar (local markets)",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "",
+      "title": "9 Feb · Jaipur: Forts, Palaces & Museums",
+      "summary": "- Morning: Amber Fort - Late morning: City Palace - Lunch: LMB (Laxmi Misthan Bhandar) - Afternoon: Jantar Mantar - Late afternoon: Albert Hall Museum - Overnight: Jaipur",
+      "stops": [
+        {
+          "name": "Morning: Amber Fort",
+          "kind": "attraction"
+        },
+        {
+          "name": "Late morning: City Palace",
+          "kind": "attraction"
+        },
+        {
+          "name": "Lunch: LMB (Laxmi Misthan Bhandar)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon: Jantar Mantar",
+          "kind": "attraction"
+        },
+        {
+          "name": "Late afternoon: Albert Hall Museum",
+          "kind": "attraction"
+        },
+        {
+          "name": "Overnight: Jaipur",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "",
+      "title": "10 Feb · Departure",
+      "summary": "- Morning: Leisure time or last-minute shopping - Afternoon: Fly Jaipur → Bangalore (direct flight)  ──────────────────────────── UNRESOLVED DETAILS ──────────────────────────── - No concrete hotel is selected yet (will recommend 3-star+ family-frien",
+      "stops": [
+        {
+          "name": "Morning: Leisure time or last-minute shopping",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon: Fly Jaipur → Bangalore (direct flight)",
+          "kind": "attraction"
+        },
+        {
+          "name": "No concrete hotel is selected yet (will recommend 3-star+ family-friendly options in each city).",
+          "kind": "attraction"
+        },
+        {
+          "name": "No real-time flight, train, or hotel prices are included (these will be added in the next step).",
+          "kind": "attraction"
+        },
+        {
+          "name": "Restaurant and activity slots are based on local favorites and your interests, but can be adjusted.",
+          "kind": "attraction"
+        },
+        {
+          "name": "This is a draft: the day-by-day itinerary is ready for review but not yet fully saved due to technic",
+          "kind": "attraction"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T17:27:39.162578",
+  "id": "delhi_agra_jaipur_2027-02-05_2027-02-10",
+  "user_id": "corpus-india-golden-triangle-heritage-young-family-5d-66aa58e547c8"
+}
