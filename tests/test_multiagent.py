@@ -270,8 +270,10 @@ def test_areas_already_held_by_a_running_worker_block_a_new_one() -> None:
 
 
 def test_each_slot_has_one_reusable_branch() -> None:
+    assert runtime.SLOT_COUNT == 3
     assert core.branch_name("slot-1") == "multiagent/slot-1"
     assert core.branch_name("slot-2") == "multiagent/slot-2"
+    assert core.branch_name("slot-3") == "multiagent/slot-3"
 
 
 def test_branch_namespace_stays_clear_of_the_sandbox_detector() -> None:
@@ -586,6 +588,7 @@ def test_every_worker_launch_pins_gpt_56_sol_medium(tmp_path, monkeypatch) -> No
     assert command[command.index("--name") + 1] == "Slot 1 | #42 t"
     assert "--autopilot" in command
     assert "--allow-all" in command
+    assert "--remote-export" in command
     assert "--allow-all-tools" not in command
 
 
