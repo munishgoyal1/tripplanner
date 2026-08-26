@@ -1,0 +1,847 @@
+{
+  "status": "draft",
+  "trip_id": "new_york_2027-06-09_2027-06-23",
+  "trip_number": 1,
+  "created_at": "2026-08-25T22:38:11.476244",
+  "destination": "New York",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-06-09",
+  "return_date": "2027-06-23",
+  "travelers": "4 adults and 1 child (age 8), including grandparents, all on Indian passports",
+  "notes": "Flexible family time, practical sightseeing only, one US extension city to be added.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "New York",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 14-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 14,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp6556d4bf",
+        "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+      },
+      "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+      "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+      "checkin": "2027-06-09",
+      "checkout": "2027-06-23",
+      "adults": 4,
+      "children_ages": [
+        8
+      ],
+      "price": 7400,
+      "currency": "USD",
+      "rating": 4.6,
+      "reviews": 1200
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-06-09",
+      "title": "Day 1 · Arrival in New York",
+      "summary": "Fly from Delhi to New York. Arrive and check in to hotel. Rest and explore nearby Times Square in the evening.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to New York",
+          "kind": "flight",
+          "time": "01:30",
+          "arrival_time": "08:00",
+          "duration_min": 900,
+          "note": "Nonstop or 1-stop flight, approx. 15 hrs"
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "note": "Check in and settle in"
+        },
+        {
+          "name": "Times Square",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 60,
+          "note": "Evening stroll and dinner nearby"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-06-10",
+      "title": "Day 2 · Arrival in New York",
+      "summary": "Arrive in New York, transfer to hotel, rest and local walk if time allows.",
+      "stops": [
+        {
+          "name": "John F. Kennedy International Airport (JFK)",
+          "kind": "transport",
+          "time": "07:00",
+          "note": "Morning arrival"
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "note": "Central location for sightseeing",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "Bryant Park",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Easy stroll, good for all ages"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-06-11",
+      "title": "Day 3 · Central Park & Museums",
+      "summary": "Explore Central Park, American Museum of Natural History, and nearby family-friendly spots.",
+      "stops": [
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "Central Park",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120
+        },
+        {
+          "name": "American Museum of Natural History",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "16:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-06-12",
+      "title": "Day 4 · Midtown Manhattan",
+      "summary": "Visit Times Square, Rockefeller Center, and Grand Central Terminal. Flexible family time in the evening.",
+      "stops": [
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "Times Square",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Rockefeller Center",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Grand Central Terminal",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "16:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-06-13",
+      "title": "Day 5 · Statue of Liberty & Battery Park",
+      "summary": "Morning ferry to the Statue of Liberty and Ellis Island, afternoon at Battery Park.",
+      "stops": [
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "Statue of Liberty & Ellis Island",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 180
+        },
+        {
+          "name": "Battery Park",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "16:00"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-06-14",
+      "title": "Day 6 · The Met & Upper East Side",
+      "summary": "Visit The Metropolitan Museum of Art and stroll the Upper East Side. Flexible afternoon.",
+      "stops": [
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "The Metropolitan Museum of Art",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Upper East Side",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "15:30"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-06-15",
+      "title": "Day 7 · Brooklyn Day Trip",
+      "summary": "Explore Brooklyn Bridge Park, DUMBO, and Brooklyn Heights. Leisurely pace.",
+      "stops": [
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "Brooklyn Bridge Park",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120
+        },
+        {
+          "name": "DUMBO",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Brooklyn Heights Promenade",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "16:30"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-06-16",
+      "title": "Day 8 · Flexible Family Day",
+      "summary": "Open day for rest, shopping, or additional sightseeing as per family interests.",
+      "stops": [
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "day": 9,
+      "date": "2027-06-17",
+      "title": "Day 9 · Day Trip to Washington, D.C.",
+      "summary": "Take an early Amtrak train to Washington, D.C. Visit the National Mall, Capitol, and Smithsonian museums. Return to New York at night.",
+      "stops": [
+        {
+          "name": "Amtrak: New York Penn Station to Washington Union Station",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 180
+        },
+        {
+          "name": "National Mall",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Smithsonian National Museum of Natural History",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90
+        },
+        {
+          "name": "U.S. Capitol",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Amtrak: Washington Union Station to New York Penn Station",
+          "kind": "transport",
+          "time": "18:00",
+          "duration_min": 180
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "time": "21:30",
+          "note": "Return to hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200
+        }
+      ]
+    },
+    {
+      "day": 10,
+      "date": "2027-06-18",
+      "title": "Day 10 · High Line & Chelsea",
+      "summary": "Walk the High Line, visit Chelsea Market, and enjoy art galleries. Flexible evening.",
+      "stops": [
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "The High Line",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Chelsea Market",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "15:00"
+        }
+      ]
+    },
+    {
+      "day": 11,
+      "date": "2027-06-19",
+      "title": "Day 11 · Lower Manhattan & 9/11 Memorial",
+      "summary": "Visit the 9/11 Memorial & Museum, One World Observatory, and explore Wall Street.",
+      "stops": [
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "9/11 Memorial & Museum",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120
+        },
+        {
+          "name": "One World Observatory",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Wall Street",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "17:00"
+        }
+      ]
+    },
+    {
+      "day": 12,
+      "date": "2027-06-20",
+      "title": "Day 12 · Queens & Flushing Meadows",
+      "summary": "Explore Flushing Meadows Corona Park and Queens Museum. Flexible family time.",
+      "stops": [
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "Flushing Meadows Corona Park",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Queens Museum",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "15:30"
+        }
+      ]
+    },
+    {
+      "day": 13,
+      "date": "2027-06-21",
+      "title": "Day 13 · Flexible Family Day",
+      "summary": "Open day for leisure, shopping, or additional sightseeing as per family interests.",
+      "stops": [
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200,
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "day": 14,
+      "date": "2027-06-22",
+      "title": "Day 14 · Departure from New York",
+      "summary": "Check out and transfer to JFK for return flight to Delhi.",
+      "stops": [
+        {
+          "name": "John F. Kennedy International Airport (JFK)",
+          "kind": "transport",
+          "time": "17:00",
+          "note": "Evening flight to Delhi"
+        },
+        {
+          "name": "Deluxe Family Two Queen Beds (4AD+1CH)",
+          "kind": "hotel",
+          "time": "19:00",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp6556d4bf",
+            "offer_id": "3gAWonJzkt4AEaRzcmlk2gF3R1kyRE1OSldNTTNUS05aWUdZMlRFTUJXR1kzRENOVEVHWTRUTVlaWEhFWkRBTlpVRzQzVE1aUlNHQTNUQ05aVkdZMlRNTkpXTVVaREFOUlNHWTJUTU5CWEdNWkRBTVJZR00yRE1NSldHUVpHRU1aUkdZWlRNT0JTSEY2RENJWlNHQVpET01CV0dBNFhZTVJRR0kzVEFOUlNHTjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQ1FaWUY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9PQlFHNFpUS05CUk9aWldZVlpER0UzVEFNQlJIQTRUR05aVkVNWVRJTVJZRlVZVE9NQlFHRTREU01aWEdWNkZFUlNPUFFaREFNUlhHQTNEQU5KUUdBWURBN0JSUFJKRENNSlZHQjZEQ05KWEdJNERBTlpESUpCQ0dVU0dKWVJURU1CU0c0V1RBTlJOR0EyU0FNQlFISVlEQUlZo3ByY8tAv9yXCj1wpKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNi0wOCAwMDowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkmREVMVVhFIEZBTUlMWSBUV08gUVVFRU4gQkVEUyAoNEFEKzFDSCmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDYtMDUgMDA6MDA6MDChYctAkYv1wo9cKaFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDYtMDggMDA6MDA6MDChYctAv9yXCj1wpKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFUR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR1EzVE9OVEdHSVlET01KWEdVM0RLTlJWR1pTVEVNQldHSTNES05SVUc0WlRFTUJTSEFaVElOUlJHWTJERU9MNEdJUlRFTUJTRzRZRE1NQlpQUVpEQU1SWEdBM0RFTTM0TVZYRjZWS1RQ"
+          },
+          "address": "Deluxe Family Two Queen Beds, New York, NY, USA",
+          "checkin": "2027-06-09",
+          "checkout": "2027-06-23",
+          "adults": 4,
+          "children_ages": [
+            8
+          ],
+          "price": 7400,
+          "currency": "USD",
+          "rating": 4.6,
+          "reviews": 1200
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T22:58:39.740019",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-25T22:44:39",
+      "expires_at": "2026-08-26T10:44:39"
+    }
+  ],
+  "id": "new_york_2027-06-09_2027-06-23",
+  "user_id": "corpus-india-outbound-usa-vfr-three-generation-14d-b0b29b487fa7"
+}

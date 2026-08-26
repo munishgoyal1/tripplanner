@@ -1,0 +1,213 @@
+{
+  "status": "draft",
+  "trip_id": "madurai_rameswaram_thanjavur_2027-01-15_2027-01-20",
+  "trip_number": 1,
+  "created_at": "2026-08-25T21:50:43.933883",
+  "destination": "Madurai, Rameswaram, Thanjavur",
+  "origin": "Chennai",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-01-15",
+  "return_date": "2027-01-20",
+  "travelers": "4 adults and 1 child (age 8), including grandparents aged 68 and 72",
+  "notes": "Prioritize worship timings, temple access, modest pacing, and practical meals. Include accessibility for elderly.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Madurai, Rameswaram, Thanjavur",
+    "estimated_planned_minutes": 865,
+    "evidence_place_count": 7,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "7 preference-matched places account for about 865 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "",
+      "title": "Chennai → Madurai",
+      "summary": "** - Early morning departure by train (2nd/1st AC for comfort). - Arrive Madurai by afternoon, check in to a centrally located, accessible 3★ hotel. - Lunch and rest. - Evening darshan at Meenakshi Amman Temple (wheelchair access available, focus on ",
+      "stops": [
+        {
+          "name": "Early morning departure by train (2nd/1st AC for comfort).",
+          "kind": "attraction"
+        },
+        {
+          "name": "Arrive Madurai by afternoon, check in to a centrally located, accessible 3★ hotel.",
+          "kind": "attraction"
+        },
+        {
+          "name": "Lunch and rest.",
+          "kind": "attraction"
+        },
+        {
+          "name": "Evening darshan at Meenakshi Amman Temple (wheelchair access available, focus on senior-friendly ent",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner at Murugan Idli Shop.",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "",
+      "title": "Madurai Local",
+      "summary": "** - Morning darshan at Koodal Azhagar Temple (timed for pooja). - Visit Thirumalai Nayakkar Palace. - Lunch at Sree Sabarees. - Rest at hotel. - Evening stroll at Vandiyur Mariamman Teppakulam. - Dinner at Konar Mess.",
+      "stops": [
+        {
+          "name": "Morning darshan at Koodal Azhagar Temple (timed for pooja).",
+          "kind": "attraction"
+        },
+        {
+          "name": "Visit Thirumalai Nayakkar Palace.",
+          "kind": "attraction"
+        },
+        {
+          "name": "Lunch at Sree Sabarees.",
+          "kind": "attraction"
+        },
+        {
+          "name": "Rest at hotel.",
+          "kind": "attraction"
+        },
+        {
+          "name": "Evening stroll at Vandiyur Mariamman Teppakulam.",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner at Konar Mess.",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "",
+      "title": "Madurai → Rameswaram",
+      "summary": "** - Morning drive to Rameswaram (private AC Innova/Crysta, break at Paramakudi for breakfast). - Check in to accessible 3★ hotel, lunch. - Afternoon darshan at Ramanathaswamy Temple (senior-friendly darshan, bathing ghat access). - Visit Agni Theert",
+      "stops": [
+        {
+          "name": "Morning drive to Rameswaram (private AC Innova/Crysta, break at Paramakudi for breakfast).",
+          "kind": "attraction"
+        },
+        {
+          "name": "Check in to accessible 3★ hotel, lunch.",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon darshan at Ramanathaswamy Temple (senior-friendly darshan, bathing ghat access).",
+          "kind": "attraction"
+        },
+        {
+          "name": "Visit Agni Theertham.",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner at Gujarati Bhavan.",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "",
+      "title": "Rameswaram → Thanjavur",
+      "summary": "** - Morning drive to Thanjavur (break at Karaikudi for breakfast). - Check in to central 3★ hotel, lunch. - Afternoon darshan at Brihadeeswarar Temple (wheelchair access). - Visit Thanjavur Palace. - Dinner at Sathars Restaurant.",
+      "stops": [
+        {
+          "name": "Morning drive to Thanjavur (break at Karaikudi for breakfast).",
+          "kind": "attraction"
+        },
+        {
+          "name": "Check in to central 3★ hotel, lunch.",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon darshan at Brihadeeswarar Temple (wheelchair access).",
+          "kind": "attraction"
+        },
+        {
+          "name": "Visit Thanjavur Palace.",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner at Sathars Restaurant.",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "",
+      "title": "Thanjavur → Chennai",
+      "summary": "** - Morning leisure/shopping (handicrafts, senior-friendly). - Check out, drive back to Chennai (break at Villupuram for lunch). - Evening drop-off.  ---  **Key Features:** - All major temples prioritized for worship timings and senior access. - Mea",
+      "stops": [
+        {
+          "name": "Key Features:",
+          "kind": "attraction"
+        },
+        {
+          "name": "Unresolved Details:",
+          "kind": "attraction"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T21:55:09.499413",
+  "id": "madurai_rameswaram_thanjavur_2027-01-15_2027-01-20",
+  "user_id": "corpus-india-tamil-nadu-pilgrimage-three-generation-5d-f9a2c8d7cd0e"
+}

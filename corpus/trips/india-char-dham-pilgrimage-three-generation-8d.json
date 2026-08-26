@@ -1,0 +1,423 @@
+{
+  "status": "draft",
+  "trip_id": "haridwar_rishikesh_char_dham_2027-05-12_2027-05-20",
+  "trip_number": 1,
+  "created_at": "2026-08-25T22:22:03.490104",
+  "destination": "Haridwar, Rishikesh, Char Dham",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-05-12",
+  "return_date": "2027-05-20",
+  "travelers": "4 adults (including grandparents aged 68 and 72), 1 child (age 8)",
+  "notes": "Prioritize worship timings, temple access, modest pacing, and practical meals. Include accessibility for elderly.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Haridwar, Rishikesh, Char Dham",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 8-day duration is authoritative",
+      "No place-duration evidence was supplied; used the road_trip scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 8,
+    "recommended_range": [
+      6,
+      8
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-12",
+      "title": "Day 1 · Delhi to Haridwar",
+      "summary": "Depart from Delhi by road in the morning. Arrive in Haridwar, check in to hotel, evening Ganga Aarti at Har Ki Pauri.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Haridwar",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 330,
+          "distance_km": 220,
+          "note": "Private vehicle with comfort stops for elderly"
+        },
+        {
+          "name": "Hotel in Haridwar",
+          "kind": "hotel",
+          "time": "12:30",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Har Ki Pauri",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Attend Ganga Aarti, accessible entry"
+        },
+        {
+          "name": "Practical vegetarian dinner near hotel",
+          "kind": "meal",
+          "time": "20:00"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-13",
+      "title": "Day 2 · Haridwar Temples & Local Sights",
+      "summary": "Morning temple visits with focus on accessibility. Leisurely pace with midday rest. Evening at leisure or visit Chandi Devi.",
+      "stops": [
+        {
+          "name": "Hotel in Haridwar",
+          "kind": "hotel",
+          "time": "07:00"
+        },
+        {
+          "name": "Mansa Devi Temple",
+          "kind": "attraction",
+          "time": "08:15",
+          "duration_min": 90,
+          "note": "Cable car for elderly"
+        },
+        {
+          "name": "Shri Maya Devi Temple",
+          "kind": "attraction",
+          "time": "10:45",
+          "duration_min": 60
+        },
+        {
+          "name": "Lunch at Sattvik restaurant",
+          "kind": "meal",
+          "time": "12:15"
+        },
+        {
+          "name": "Hotel in Haridwar",
+          "kind": "hotel",
+          "time": "13:45",
+          "note": "Rest for elderly"
+        },
+        {
+          "name": "Chandi Devi Temple (optional)",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Cable car, skip if tired"
+        },
+        {
+          "name": "Dinner at hotel",
+          "kind": "meal",
+          "time": "19:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-14",
+      "title": "Day 3 · Haridwar to Barkot (Yamunotri base)",
+      "summary": "Scenic drive to Barkot, gateway to Yamunotri. Comfort breaks and meal stops. Early dinner and rest.",
+      "stops": [
+        {
+          "name": "Drive: Haridwar to Barkot",
+          "kind": "transport",
+          "time": "07:15",
+          "duration_min": 420,
+          "distance_km": 180,
+          "note": "Multiple comfort stops for elderly"
+        },
+        {
+          "name": "Hotel in Haridwar",
+          "kind": "hotel",
+          "time": "14:45"
+        },
+        {
+          "name": "Lunch at roadside dhaba",
+          "kind": "meal",
+          "time": "16:45"
+        },
+        {
+          "name": "Hotel in Barkot",
+          "kind": "hotel",
+          "time": "18:45",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Dinner at hotel",
+          "kind": "meal",
+          "time": "20:45"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-15",
+      "title": "Day 4 · Yamunotri Darshan",
+      "summary": "Early start for Yamunotri temple. Pony/doli options for elderly. Return to Barkot for rest.",
+      "stops": [
+        {
+          "name": "Drive: Barkot to Janki Chatti",
+          "kind": "transport",
+          "time": "05:45",
+          "duration_min": 60,
+          "distance_km": 36
+        },
+        {
+          "name": "Hotel in Barkot",
+          "kind": "hotel",
+          "time": "07:15"
+        },
+        {
+          "name": "Yamunotri Temple",
+          "kind": "attraction",
+          "time": "09:15",
+          "duration_min": 180,
+          "note": "Pony/doli for elderly, worship and prasad"
+        },
+        {
+          "name": "Lunch at Janki Chatti",
+          "kind": "meal",
+          "time": "12:45"
+        },
+        {
+          "name": "Drive: Janki Chatti to Barkot",
+          "kind": "transport",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel in Barkot",
+          "kind": "hotel",
+          "time": "13:30",
+          "note": "Rest"
+        },
+        {
+          "name": "Dinner at hotel",
+          "kind": "meal",
+          "time": "19:00"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-05-16",
+      "title": "Day 5 · Barkot to Uttarkashi",
+      "summary": "Drive to Uttarkashi, visit Vishwanath Temple. Leisurely day, early dinner.",
+      "stops": [
+        {
+          "name": "Drive: Barkot to Uttarkashi",
+          "kind": "transport",
+          "time": "07:45",
+          "duration_min": 240,
+          "distance_km": 82
+        },
+        {
+          "name": "Hotel in Barkot",
+          "kind": "hotel",
+          "time": "12:15"
+        },
+        {
+          "name": "Lunch at Uttarkashi hotel",
+          "kind": "meal",
+          "time": "14:15"
+        },
+        {
+          "name": "Hotel in Uttarkashi",
+          "kind": "hotel",
+          "time": "16:15",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Kashi Vishwanath Temple, Uttarkashi",
+          "kind": "attraction",
+          "time": "18:15",
+          "duration_min": 60
+        },
+        {
+          "name": "Dinner at hotel",
+          "kind": "meal",
+          "time": "19:45"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-05-17",
+      "title": "Day 6 · Gangotri Darshan",
+      "summary": "Early drive to Gangotri for temple darshan. Return to Uttarkashi for rest.",
+      "stops": [
+        {
+          "name": "Drive: Uttarkashi to Gangotri",
+          "kind": "transport",
+          "time": "05:45",
+          "duration_min": 180,
+          "distance_km": 100
+        },
+        {
+          "name": "Hotel in Uttarkashi",
+          "kind": "hotel",
+          "time": "09:15"
+        },
+        {
+          "name": "Gangotri Temple",
+          "kind": "attraction",
+          "time": "11:15",
+          "duration_min": 120,
+          "note": "Worship, prasad, accessible entry"
+        },
+        {
+          "name": "Lunch at Gangotri",
+          "kind": "meal",
+          "time": "13:45"
+        },
+        {
+          "name": "Drive: Gangotri to Uttarkashi",
+          "kind": "transport",
+          "time": "13:15",
+          "duration_min": 180
+        },
+        {
+          "name": "Hotel in Uttarkashi",
+          "kind": "hotel",
+          "time": "16:45",
+          "note": "Rest"
+        },
+        {
+          "name": "Dinner at hotel",
+          "kind": "meal",
+          "time": "19:00"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-05-18",
+      "title": "Day 7 · Uttarkashi to Rishikesh",
+      "summary": "Drive to Rishikesh. Evening Ganga Aarti at Triveni Ghat. Leisurely dinner.",
+      "stops": [
+        {
+          "name": "Drive: Uttarkashi to Rishikesh",
+          "kind": "transport",
+          "time": "07:45",
+          "duration_min": 360,
+          "distance_km": 170,
+          "note": "Comfort stops for elderly"
+        },
+        {
+          "name": "Hotel in Uttarkashi",
+          "kind": "hotel",
+          "time": "14:15"
+        },
+        {
+          "name": "Lunch en route",
+          "kind": "meal",
+          "time": "16:15"
+        },
+        {
+          "name": "Hotel in Rishikesh",
+          "kind": "hotel",
+          "time": "18:15",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Triveni Ghat",
+          "kind": "attraction",
+          "time": "20:15",
+          "duration_min": 90,
+          "note": "Ganga Aarti, accessible entry"
+        },
+        {
+          "name": "Dinner at hotel",
+          "kind": "meal",
+          "time": "22:15"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-05-19",
+      "title": "Day 8 · Rishikesh Sights & Return to Delhi",
+      "summary": "Morning at Rishikesh temples/ashrams. After lunch, drive back to Delhi. Trip concludes.",
+      "stops": [
+        {
+          "name": "Hotel in Rishikesh",
+          "kind": "hotel",
+          "time": "07:00"
+        },
+        {
+          "name": "Parmarth Niketan Ashram",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Ram Jhula",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Lunch at Sattvik restaurant",
+          "kind": "meal",
+          "time": "11:30"
+        },
+        {
+          "name": "Drive: Rishikesh to Delhi",
+          "kind": "transport",
+          "time": "13:00",
+          "duration_min": 360,
+          "distance_km": 240,
+          "note": "Comfort stops for elderly"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T22:24:17.040161",
+  "id": "haridwar_rishikesh_char_dham_2027-05-12_2027-05-20",
+  "user_id": "corpus-india-char-dham-pilgrimage-three-generation-8d-c6d7ce0432eb"
+}

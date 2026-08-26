@@ -1,0 +1,316 @@
+{
+  "status": "draft",
+  "trip_id": "bodh_gaya_nalanda_rajgir_2027-01-17_2027-01-21",
+  "trip_number": 1,
+  "created_at": "2026-08-26T00:03:47.877596",
+  "destination": "Bodh Gaya, Nalanda, Rajgir",
+  "origin": "Kolkata",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-01-17",
+  "return_date": "2027-01-21",
+  "travelers": "2 adults (ages 64 and 70)",
+  "notes": "Prioritize worship timings, temple access, modest pacing, and practical meals. Elder-friendly, domestic trip within India.",
+  "planning_recommendation": {
+    "recommended_days": 4,
+    "anchor_experiences": [
+      {
+        "place": "Mahabodhi Temple, Bodh Gaya",
+        "duration_hours": 2
+      },
+      {
+        "place": "Great Buddha Statue, Bodh Gaya",
+        "duration_hours": 1
+      },
+      {
+        "place": "Vishnupad Temple, Gaya",
+        "duration_hours": 1.5
+      },
+      {
+        "place": "Nalanda University ruins",
+        "duration_hours": 2
+      },
+      {
+        "place": "Venu Vana, Rajgir",
+        "duration_hours": 1
+      },
+      {
+        "place": "Japanese Peace Pagoda, Rajgir",
+        "duration_hours": 1
+      }
+    ],
+    "clusters": [
+      {
+        "city": "Bodh Gaya",
+        "nights": 2
+      },
+      {
+        "city": "Rajgir/Nalanda",
+        "nights": 2
+      }
+    ],
+    "suggested_pace": "modest",
+    "notes": "Elderly travelers, focus on temple access and worship timings, avoid rushed days, include practical meal stops and accessible hotels."
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel Sakura House, Bodh Gaya",
+      "city": "Bodh Gaya",
+      "checkin": "2027-01-17",
+      "checkout": "2027-01-19",
+      "rooms": 1,
+      "adults": 2,
+      "note": "Elder-friendly, central location, vegetarian meals available"
+    },
+    {
+      "name": "Nalanda Residency, Rajgir",
+      "city": "Rajgir",
+      "checkin": "2027-01-19",
+      "checkout": "2027-01-21",
+      "rooms": 1,
+      "adults": 2,
+      "note": "Accessible, comfortable, vegetarian meals available"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-17",
+      "title": "Day 1 · Kolkata to Bodh Gaya · Arrival",
+      "summary": "Morning train from Kolkata to Gaya (Bodh Gaya's nearest railhead). Private transfer to Bodh Gaya. Check-in at elder-friendly hotel. Evening at leisure for rest and gentle local exploration.",
+      "stops": [
+        {
+          "name": "Train: Kolkata to Gaya Junction",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 360,
+          "note": "Comfortable AC Chair Car, direct train"
+        },
+        {
+          "name": "Private Car: Gaya Junction to Bodh Gaya",
+          "kind": "transport",
+          "time": "13:20",
+          "duration_min": 30,
+          "note": "Pre-arranged taxi, 15km"
+        },
+        {
+          "name": "Hotel Sakura House, Bodh Gaya",
+          "kind": "hotel",
+          "note": "Check-in, elder-friendly, central location"
+        },
+        {
+          "name": "Be Happy Café",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Vegetarian, gentle menu, near hotel"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-18",
+      "title": "Day 2 · Mahabodhi Temple & Bodh Gaya Sights",
+      "summary": "Morning worship at Mahabodhi Temple, visit Great Buddha Statue, local lunch, gentle sightseeing, return to hotel for rest.",
+      "stops": [
+        {
+          "name": "Hotel Sakura House, Bodh Gaya",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Mahabodhi Temple",
+          "kind": "attraction",
+          "time": "06:30",
+          "duration_min": 120,
+          "note": "Morning worship, less crowded"
+        },
+        {
+          "name": "Great Buddha Statue",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Tirupati South Indian Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Accessible, vegetarian options"
+        },
+        {
+          "name": "Root Institute for Wisdom Culture",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Peaceful, accessible gardens"
+        },
+        {
+          "name": "Hotel Sakura House, Bodh Gaya",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-19",
+      "title": "Day 3 · Bodh Gaya to Rajgir & Nalanda",
+      "summary": "Check out and transfer to Rajgir. Visit Venu Vana and Japanese Peace Pagoda. Lunch at a local restaurant. Evening rest at hotel.",
+      "stops": [
+        {
+          "name": "Drive: Bodh Gaya to Rajgir",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "distance_km": 70,
+          "note": "Private car, elder-friendly breaks"
+        },
+        {
+          "name": "Hotel Sakura House, Bodh Gaya",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "10:30"
+        },
+        {
+          "name": "Venu Vana, Rajgir",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Japanese Peace Pagoda, Rajgir",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Nalanda Residency, Rajgir",
+          "kind": "hotel",
+          "note": "Check-in, accessible",
+          "time": "15:30"
+        },
+        {
+          "name": "Gurukripa Restaurant, Rajgir",
+          "kind": "meal",
+          "time": "17:30",
+          "note": "Simple, vegetarian, close to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-20",
+      "title": "Day 4 · Nalanda University & Rajgir",
+      "summary": "Morning visit to Nalanda University ruins, lunch, gentle sightseeing in Rajgir, evening at leisure.",
+      "stops": [
+        {
+          "name": "Nalanda Residency, Rajgir",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Nalanda University Ruins",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 120,
+          "note": "Accessible entry, guided tour available"
+        },
+        {
+          "name": "Hotel Glory, Nalanda",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Vegetarian, elder-friendly"
+        },
+        {
+          "name": "Rajgir Hot Springs",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Optional, gentle walk"
+        },
+        {
+          "name": "Nalanda Residency, Rajgir",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-01-21",
+      "title": "Day 5 · Rajgir to Kolkata · Return",
+      "summary": "Check out and transfer to Gaya for return train to Kolkata.",
+      "stops": [
+        {
+          "name": "Nalanda Residency, Rajgir",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Drive: Rajgir to Gaya Junction",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "distance_km": 70,
+          "note": "Private car, elder-friendly breaks"
+        },
+        {
+          "name": "Train: Gaya Junction to Kolkata",
+          "kind": "transport",
+          "time": "10:20",
+          "duration_min": 360,
+          "note": "Comfortable AC Chair Car, direct train"
+        },
+        {
+          "name": "Kolkata",
+          "kind": "transport",
+          "time": "16:30",
+          "note": "Arrive home"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-26T00:11:26.132257",
+  "id": "bodh_gaya_nalanda_rajgir_2027-01-17_2027-01-21",
+  "user_id": "corpus-india-bihar-buddhist-pilgrimage-senior-couple-4d-d56782c9445f"
+}

@@ -88,6 +88,14 @@
       "stopped_because": "target",
       "trips": 1,
       "usd_inr": 88.0
+    },
+    {
+      "at": "2026-08-26T02:08:35+00:00",
+      "model": "unknown",
+      "trips": 32,
+      "spent_inr": 1969.39,
+      "usd_inr": 88.0,
+      "stopped_because": "budget"
     }
   ],
   "version": 1

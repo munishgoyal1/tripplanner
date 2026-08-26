@@ -1,0 +1,312 @@
+{
+  "status": "draft",
+  "trip_id": "kathmandu_and_pokhara_2027-10-16_2027-10-22",
+  "trip_number": 1,
+  "created_at": "2026-08-25T22:17:52.084609",
+  "destination": "Kathmandu and Pokhara",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-10-16",
+  "return_date": "2027-10-22",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Indian passport holders do not need a visa for Nepal (tourism, up to 90 days). However, as of 2026, the Indian government advises Indian citizens to defer travel to Nepal until the situation stabilizes. For the latest updates, check official government sources before booking. See: https://www.mea.gov.in/press-releases.htm?dtl%2F40114=.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Kathmandu and Pokhara",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 6-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 6,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-16",
+      "title": "Arrival in Kathmandu",
+      "summary": "Fly from Delhi to Kathmandu. Airport assistance for elderly. Private accessible transfer to hotel. Evening at leisure or visit Pashupatinath Temple for evening aarti.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Kathmandu",
+          "kind": "flight",
+          "note": "Direct flight, airport wheelchair assistance"
+        },
+        {
+          "name": "Accessible hotel in Kathmandu",
+          "kind": "hotel",
+          "note": "Central, elevator, accessible rooms"
+        },
+        {
+          "name": "Pashupatinath Temple",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Evening aarti, accessible entry"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-17",
+      "title": "Kathmandu Rituals & Heritage",
+      "summary": "Morning ritual at Pashupatinath (if required). Visit Boudhanath Stupa and Swayambhunath. Lunch at accessible restaurant. Evening at leisure.",
+      "stops": [
+        {
+          "name": "Accessible hotel in Kathmandu",
+          "kind": "hotel"
+        },
+        {
+          "name": "Pashupatinath Temple",
+          "kind": "attraction",
+          "time": "07:30",
+          "duration_min": 90,
+          "note": "Morning ritual"
+        },
+        {
+          "name": "Boudhanath Stupa",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Wheelchair accessible"
+        },
+        {
+          "name": "Lunch: Garden Kitchen",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Accessible, family-friendly"
+        },
+        {
+          "name": "Swayambhunath (Monkey Temple)",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Accessible path, avoid stairs"
+        },
+        {
+          "name": "Accessible hotel in Kathmandu",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-18",
+      "title": "Kathmandu to Pokhara",
+      "summary": "Private accessible vehicle transfer to Pokhara with scenic stops. Lunch en route. Evening lakeside stroll.",
+      "stops": [
+        {
+          "name": "Drive: Kathmandu to Pokhara",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 420,
+          "distance_km": 200,
+          "note": "Accessible van, rest stops every 2 hours"
+        },
+        {
+          "name": "Accessible hotel in Kathmandu",
+          "kind": "hotel",
+          "time": "15:30"
+        },
+        {
+          "name": "Lunch: Riverside View",
+          "kind": "meal",
+          "time": "17:30",
+          "note": "Accessible, scenic stop after drive"
+        },
+        {
+          "name": "Accessible hotel in Pokhara",
+          "kind": "hotel",
+          "time": "19:30",
+          "note": "Lakeside, elevator, accessible rooms"
+        },
+        {
+          "name": "Phewa Lake promenade",
+          "kind": "attraction",
+          "time": "21:30",
+          "duration_min": 60,
+          "note": "Flat lakeside walk"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-19",
+      "title": "Pokhara Highlights & Rituals",
+      "summary": "Morning visit to Bindhyabasini Temple (rituals if required). Visit Davis Falls and Gupteshwor Cave (accessible sections). Leisurely lakeside lunch. Optional boat ride.",
+      "stops": [
+        {
+          "name": "Accessible hotel in Pokhara",
+          "kind": "hotel"
+        },
+        {
+          "name": "Bindhyabasini Temple",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 60,
+          "note": "Accessible entry, ritual support"
+        },
+        {
+          "name": "Davis Falls",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 75,
+          "note": "Accessible viewing area"
+        },
+        {
+          "name": "Gupteshwor Cave",
+          "kind": "attraction",
+          "time": "11:45",
+          "duration_min": 45,
+          "note": "Accessible section only"
+        },
+        {
+          "name": "Lunch: Moondance Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Accessible, lakeside"
+        },
+        {
+          "name": "Phewa Lake boat ride (optional)",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Assisted boarding available"
+        },
+        {
+          "name": "Accessible hotel in Pokhara",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-10-20",
+      "title": "Pokhara to Kathmandu",
+      "summary": "Return drive to Kathmandu with scenic stop and lunch. Evening free for shopping or rest.",
+      "stops": [
+        {
+          "name": "Drive: Pokhara to Kathmandu",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 420,
+          "distance_km": 200,
+          "note": "Accessible van, rest stops every 2 hours"
+        },
+        {
+          "name": "Accessible hotel in Pokhara",
+          "kind": "hotel",
+          "time": "15:30"
+        },
+        {
+          "name": "Lunch: Highway Garden",
+          "kind": "meal",
+          "time": "17:30",
+          "note": "Accessible, family-friendly, after drive"
+        },
+        {
+          "name": "Accessible hotel in Kathmandu",
+          "kind": "hotel",
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-10-21",
+      "title": "Kathmandu: Rituals, Shopping & Departure",
+      "summary": "Morning ritual at temple if needed. Accessible shopping at Thamel. Private transfer to airport for return flight to Delhi.",
+      "stops": [
+        {
+          "name": "Accessible hotel in Kathmandu",
+          "kind": "hotel"
+        },
+        {
+          "name": "Pashupatinath Temple (optional)",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 60,
+          "note": "Final rituals if required"
+        },
+        {
+          "name": "Thamel Market",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Accessible shopping"
+        },
+        {
+          "name": "Lunch: Third Eye Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Accessible, Indian cuisine"
+        },
+        {
+          "name": "Flight: Kathmandu to Delhi",
+          "kind": "flight",
+          "time": "15:00",
+          "note": "Wheelchair assistance at airport"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [
+    "Visa-free for Indian citizens with valid passport or Voter ID card.",
+    "Current Indian government advisory: Defer travel to Nepal until further notice (as of 2026). Verify before booking."
+  ],
+  "updated_at": "2026-08-25T22:20:30.657262",
+  "id": "kathmandu_and_pokhara_2027-10-16_2027-10-22",
+  "user_id": "corpus-india-outbound-nepal-pilgrimage-three-generation-6d-45e0cdfcd518"
+}

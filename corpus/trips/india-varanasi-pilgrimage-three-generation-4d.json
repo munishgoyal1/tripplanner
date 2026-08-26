@@ -1,0 +1,193 @@
+{
+  "status": "draft",
+  "trip_id": "varanasi_and_ayodhya_2027-02-12_2027-02-16",
+  "trip_number": 1,
+  "created_at": "2026-08-25T20:37:23.407609",
+  "destination": "Varanasi and Ayodhya",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-02-12",
+  "return_date": "2027-02-16",
+  "travelers": "4 adults (including grandparents aged 68 and 72) and 1 child (age 8)",
+  "notes": "Prioritize worship timings, temple access, modest pacing and practical meals. Grandparents aged 68 and 72 included.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Varanasi and Ayodhya",
+    "estimated_planned_minutes": 657,
+    "evidence_place_count": 6,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 4-day duration is authoritative",
+      "6 preference-matched places account for about 657 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 4,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "",
+      "title": "Delhi → Varanasi",
+      "summary": "** - Morning: Depart Delhi (flight/train) - Arrive Varanasi, check-in and rest - Lunch at hotel/nearby - Evening: Ganga Aarti at Dashashwamedh Ghat (reserved seating for elders) - Dinner at riverside restaurant - Overnight in Varanasi",
+      "stops": [
+        {
+          "name": "Morning: Depart Delhi (flight/train)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Arrive Varanasi, check-in and rest",
+          "kind": "attraction"
+        },
+        {
+          "name": "Lunch at hotel/nearby",
+          "kind": "attraction"
+        },
+        {
+          "name": "Evening: Ganga Aarti at Dashashwamedh Ghat (reserved seating for elders)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner at riverside restaurant",
+          "kind": "attraction"
+        },
+        {
+          "name": "Overnight in Varanasi",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "",
+      "title": "Varanasi Temples & Ghats",
+      "summary": "** - Early morning: Kashi Vishwanath Temple darshan (less crowded) - Breakfast near temple - Sankat Mochan Hanuman Temple visit - Leisurely lunch, rest at hotel for elders - Evening: Stroll along ghats (Assi to Dashashwamedh) - Dinner at hotel/nearby",
+      "stops": [
+        {
+          "name": "Early morning: Kashi Vishwanath Temple darshan (less crowded)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Breakfast near temple",
+          "kind": "attraction"
+        },
+        {
+          "name": "Sankat Mochan Hanuman Temple visit",
+          "kind": "attraction"
+        },
+        {
+          "name": "Leisurely lunch, rest at hotel for elders",
+          "kind": "attraction"
+        },
+        {
+          "name": "Evening: Stroll along ghats (Assi to Dashashwamedh)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner at hotel/nearby",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "",
+      "title": "Varanasi → Ayodhya",
+      "summary": "** - Morning: Transfer to Ayodhya (train/car, with rest breaks) - Check-in, lunch at hotel/nearby - Afternoon: Ram Janmabhoomi Temple darshan, Hanuman Garhi - Evening: Saryu Ghat for Aarti - Dinner at Ayodhya restaurant - Overnight in Ayodhya",
+      "stops": [
+        {
+          "name": "Morning: Transfer to Ayodhya (train/car, with rest breaks)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Check-in, lunch at hotel/nearby",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon: Ram Janmabhoomi Temple darshan, Hanuman Garhi",
+          "kind": "attraction"
+        },
+        {
+          "name": "Evening: Saryu Ghat for Aarti",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner at Ayodhya restaurant",
+          "kind": "attraction"
+        },
+        {
+          "name": "Overnight in Ayodhya",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "",
+      "title": "Ayodhya → Delhi",
+      "summary": "** - Morning: Leisure/optional temple visit (Kanak Bhawan/local) - Breakfast and rest at hotel - Early lunch - Afternoon: Return to Delhi (train/flight)  ---  **Important Unresolved Details** - No day-by-day itinerary is saved in the workspace yet du",
+      "stops": [
+        {
+          "name": "Important Unresolved Details",
+          "kind": "attraction"
+        },
+        {
+          "name": "Next Steps",
+          "kind": "attraction"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T20:41:15.726617",
+  "id": "varanasi_and_ayodhya_2027-02-12_2027-02-16",
+  "user_id": "corpus-india-varanasi-pilgrimage-three-generation-4d-48cb49e59ff7"
+}
