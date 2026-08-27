@@ -28,6 +28,25 @@ if ($LASTEXITCODE -eq 0 -and $commonDir) {
     $primaryRoot = Split-Path -Parent (Resolve-Path $resolved).Path
 }
 
+function Get-PrimaryDotEnvValue {
+    param([Parameter(Mandatory = $true)][string]$Name)
+
+    $envPath = Join-Path $primaryRoot ".env"
+    if (-not (Test-Path $envPath -PathType Leaf)) { return $null }
+    $match = Get-Content $envPath | Where-Object {
+        $_ -match "^\s*$([regex]::Escape($Name))\s*="
+    } | Select-Object -Last 1
+    if (-not $match) { return $null }
+    return (($match -split "=", 2)[1].Trim()).Trim('"').Trim("'")
+}
+
+foreach ($name in @("GOOGLE_MAPS_BROWSER_KEY", "GOOGLE_PLACES_API_KEY")) {
+    $value = Get-PrimaryDotEnvValue -Name $name
+    if (-not [string]::IsNullOrWhiteSpace($value)) {
+        [Environment]::SetEnvironmentVariable($name, $value, "Process")
+    }
+}
+
 $candidates = @(
     (Join-Path $repoRoot ".venv/bin/python"),
     (Join-Path $repoRoot ".venv/Scripts/python.exe"),

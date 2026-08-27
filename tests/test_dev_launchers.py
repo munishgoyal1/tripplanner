@@ -138,6 +138,16 @@ def test_dev_stack_overrides_inherited_google_keys_with_local_env() -> None:
     assert "SetEnvironmentVariable($name, $localValue, \"Process\")" in launcher
 
 
+def test_trip_audit_uses_primary_google_keys_from_sandboxes() -> None:
+    root = Path(__file__).parents[1]
+    launcher = (root / "scripts" / "dev" / "trip-audit.ps1").read_text(encoding="utf-8")
+
+    assert "rev-parse --git-common-dir" in launcher
+    assert 'Join-Path $primaryRoot ".env"' in launcher
+    assert 'foreach ($name in @("GOOGLE_MAPS_BROWSER_KEY", "GOOGLE_PLACES_API_KEY"))' in launcher
+    assert 'SetEnvironmentVariable($name, $value, "Process")' in launcher
+
+
 def _merge_block(sandbox_script: str) -> str:
     start = sandbox_script.index('if ($PSCmdlet.ParameterSetName -eq "Merge")')
     end = sandbox_script.index('if ($PSCmdlet.ParameterSetName -eq "Promote")', start)
