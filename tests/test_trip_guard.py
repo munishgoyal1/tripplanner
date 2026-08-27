@@ -510,6 +510,33 @@ def test_core_completion_rejects_a_hotel_only_day() -> None:
     ]
 
 
+def test_core_completion_rejects_an_implausibly_long_ground_leg() -> None:
+    plan = {
+        "destination": "Gangtok and North Sikkim",
+        "origin": "Kolkata",
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {
+                    "name": "Drive: Kolkata to Gangtok",
+                    "kind": "transport",
+                    "distance_km": 700,
+                },
+                {"name": "Mayfair Spa Resort & Casino", "kind": "hotel"},
+                stop("MG Marg", "17:00"),
+                {"name": "Taste of Tibet", "kind": "meal"},
+            ],
+        }],
+        "selected_hotels": [{"name": "Mayfair Spa Resort & Casino"}],
+    }
+
+    core_gaps = trip_validation.core_planning_completion_gaps(plan)
+    persistence_errors = trip_validation.persistence_sanity_errors(plan)
+
+    assert any("Drive: Kolkata to Gangtok" in gap for gap in core_gaps)
+    assert any("ground-leg distance" in error for error in persistence_errors)
+
+
 def test_a_day_cannot_begin_where_the_trip_never_travelled(located: None) -> None:
     stranded = plan(
         [
