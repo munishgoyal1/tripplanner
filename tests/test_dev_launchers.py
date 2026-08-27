@@ -138,14 +138,18 @@ def test_dev_stack_overrides_inherited_google_keys_with_local_env() -> None:
     assert "SetEnvironmentVariable($name, $localValue, \"Process\")" in launcher
 
 
-def test_trip_audit_uses_primary_google_keys_from_sandboxes() -> None:
+def test_sandbox_runs_and_audits_refresh_primary_environment() -> None:
     root = Path(__file__).parents[1]
-    launcher = (root / "scripts" / "dev" / "trip-audit.ps1").read_text(encoding="utf-8")
+    sandbox = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
+    audit = (root / "scripts" / "dev" / "trip-audit.ps1").read_text(encoding="utf-8")
 
-    assert "rev-parse --git-common-dir" in launcher
-    assert 'Join-Path $primaryRoot ".env"' in launcher
-    assert 'foreach ($name in @("GOOGLE_MAPS_BROWSER_KEY", "GOOGLE_PLACES_API_KEY"))' in launcher
-    assert 'SetEnvironmentVariable($name, $value, "Process")' in launcher
+    assert "function Copy-PrimaryEnvironment" in sandbox
+    assert sandbox.count("Copy-PrimaryEnvironment -WorktreeRoot") == 2
+    assert 'Join-Path $primaryRoot ".env"' in sandbox
+    assert "rev-parse --git-common-dir" in audit
+    assert 'Join-Path $primaryRoot ".env"' in audit
+    assert 'Join-Path $repoRoot ".env"' in audit
+    assert "Copy-Item -LiteralPath $sourceEnv" in audit
 
 
 def _merge_block(sandbox_script: str) -> str:

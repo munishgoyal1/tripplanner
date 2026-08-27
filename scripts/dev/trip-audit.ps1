@@ -28,22 +28,13 @@ if ($LASTEXITCODE -eq 0 -and $commonDir) {
     $primaryRoot = Split-Path -Parent (Resolve-Path $resolved).Path
 }
 
-function Get-PrimaryDotEnvValue {
-    param([Parameter(Mandatory = $true)][string]$Name)
-
-    $envPath = Join-Path $primaryRoot ".env"
-    if (-not (Test-Path $envPath -PathType Leaf)) { return $null }
-    $match = Get-Content $envPath | Where-Object {
-        $_ -match "^\s*$([regex]::Escape($Name))\s*="
-    } | Select-Object -Last 1
-    if (-not $match) { return $null }
-    return (($match -split "=", 2)[1].Trim()).Trim('"').Trim("'")
-}
-
-foreach ($name in @("GOOGLE_MAPS_BROWSER_KEY", "GOOGLE_PLACES_API_KEY")) {
-    $value = Get-PrimaryDotEnvValue -Name $name
-    if (-not [string]::IsNullOrWhiteSpace($value)) {
-        [Environment]::SetEnvironmentVariable($name, $value, "Process")
+if ($repoRoot -ne $primaryRoot) {
+    $sourceEnv = Join-Path $primaryRoot ".env"
+    if (Test-Path $sourceEnv -PathType Leaf) {
+        Copy-Item -LiteralPath $sourceEnv -Destination (Join-Path $repoRoot ".env") -Force
+        Write-Host "[env]     refreshed .env from the primary checkout" -ForegroundColor DarkGray
+    } else {
+        Write-Warning "The primary checkout has no .env; sandbox credentials were not refreshed."
     }
 }
 
