@@ -572,6 +572,7 @@ def resolve_completion_policy(
         gap.startswith(("Arrival day has no explicit", "Departure day has no explicit"))
         or "no matching outbound" in gap
         or "no matching return" in gap
+        or "no journey connects them" in gap
         or " minutes before " in gap
         for gap in core_gaps_for_planning_turn
     )
