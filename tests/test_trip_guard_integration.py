@@ -848,6 +848,63 @@ def test_flights_added_later_must_be_submitted_in_chronological_order() -> None:
     assert _stops_on(plan, 3) == planned_days[2]["stops"]
 
 
+def test_a_travel_infeasible_planner_update_is_retimed_before_persistence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coordinates = {
+        "Dubai Museum": (25.2635, 55.2972),
+        "Dubai Marina Walk": (25.0805, 55.1403),
+    }
+    monkeypatch.setattr(
+        places_cache,
+        "get_summary",
+        lambda name, _destination: {
+            "lat": coordinates[name][0],
+            "lng": coordinates[name][1],
+        },
+    )
+    create_trip_plan.invoke(
+        {
+            "destination": "Dubai",
+            "departure_date": "2026-11-20",
+            "return_date": "2026-11-24",
+            "travel_scope": "destination_only",
+        }
+    )
+
+    result = update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "day_wise_itinerary": [
+                        {
+                            "day": 1,
+                            "stops": [
+                                {
+                                    "name": "Dubai Museum",
+                                    "kind": "attraction",
+                                    "time": "10:00",
+                                    "duration_min": 90,
+                                },
+                                {
+                                    "name": "Dubai Marina Walk",
+                                    "kind": "attraction",
+                                    "time": "12:00",
+                                    "duration_min": 90,
+                                },
+                            ],
+                        }
+                    ]
+                }
+            )
+        }
+    )
+
+    saved = json.loads(get_trip_plan.invoke({}))
+    assert "Adjusted travel-infeasible visit times before saving" in result
+    assert not [item for item in validate_plan(saved) if item.code == "I4"]
+
+
 def test_a_place_is_never_scheduled_on_top_of_a_drive() -> None:
     _round_trip()
     _excursion_day()
