@@ -1316,3 +1316,13 @@ the outcome.
 - In Places API (New) the billed SKU is chosen by the request field mask, not by
   the endpoint. Asking for `rating`, `reviews`, or `editorialSummary` silently
   promotes a free ID lookup into the most expensive tier available.
+
+## 2026-08-27 - A No-Op Persistence Path Must Not Write
+
+- The trip archive correctly ignored `updated_at` when deciding whether a save
+  was a new revision, then rewrote the existing revision and `last_seen_at`
+  anyway. Opening an unchanged trip therefore dirtied the primary checkout and
+  blocked sandbox promotion even though the archive's meaningful hash matched.
+- Once durable content is known to be unchanged, return before collecting
+  volatile metadata or serializing. Test the file bytes, not only the revision
+  count; a structurally valid no-op rewrite is still an operational change.

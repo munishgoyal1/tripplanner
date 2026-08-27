@@ -414,7 +414,9 @@ def capture_trip(plan: dict[str, Any], user_id: str) -> Path | None:
     record.setdefault("first_captured_at", _now_iso())
     revisions = record.get("revisions") or []
     changed = not revisions or revisions[-1].get("content_hash") != content_hash(plan)
-    bundle = collect_bundle(plan, user_id) if changed else None
+    if not changed:
+        return path
+    bundle = collect_bundle(plan, user_id)
     atomic_write_json(path, merge_revision(record, plan, provenance(), bundle), indent=2)
     return path
 
