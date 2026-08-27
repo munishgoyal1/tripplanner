@@ -50,6 +50,7 @@ from tripplanner.tools.trip_diff import diff_plans, format_diff
 from tripplanner.tools.trip_effort import coherence_notes, pacing_statement
 from tripplanner.tools.trip_guard import (
     Envelope,
+    _duration_of,
     choose_placement,
     diff_stops,
     envelope,
@@ -254,6 +255,33 @@ def _retime_stops_in_order(stops: list[Any]) -> None:
         previous_end = current + (
             max(15, int(duration)) if isinstance(duration, (int, float)) else 90
         )
+
+    for leg_index, leg in enumerate(stops):
+        if not isinstance(leg, dict) or not _is_leg(leg):
+            continue
+        _fit_stops_before_leg(stops, leg_index)
+
+
+def _fit_stops_before_leg(stops: list[Any], leg_index: int) -> None:
+    leg = stops[leg_index]
+    next_start = (
+        _parse_hhmm(str(leg.get("time") or "")) if isinstance(leg, dict) else None
+    )
+    if next_start is None:
+        return
+    for index in range(leg_index - 1, -1, -1):
+        stop = stops[index]
+        if not isinstance(stop, dict) or _is_leg(stop):
+            break
+        current = _parse_hhmm(str(stop.get("time") or ""))
+        if current is None:
+            continue
+        turnaround = 0 if _stop_kind(stop) == "hotel" else 30
+        latest_start = next_start - turnaround - _duration_of(stop)
+        if current > latest_start and latest_start >= 0:
+            current = latest_start
+            stop["time"] = _fmt_hhmm(current)
+        next_start = current
 
 
 def _infer_stop_time(stops: list[Any], insert_at: int, kind: str) -> str:
@@ -967,6 +995,37 @@ def _settle_plan_legs(plan: dict[str, Any]) -> list[int]:
         entry["stops"] = settled
         resettled.append(day_number)
     return resettled
+
+
+def _fit_plan_to_departure(plan: dict[str, Any]) -> list[int]:
+    env = envelope(plan)
+    itinerary = plan.get("day_wise_itinerary")
+    if env.departure_day is None or not env.departure_name or not isinstance(itinerary, list):
+        return []
+    for index, entry in enumerate(itinerary):
+        if not isinstance(entry, dict):
+            continue
+        raw_day = entry.get("day")
+        day_number = raw_day if isinstance(raw_day, int) and raw_day > 0 else index + 1
+        if day_number != env.departure_day:
+            continue
+        stops = entry.get("stops")
+        if not isinstance(stops, list):
+            return []
+        leg_index = next(
+            (
+                stop_index
+                for stop_index, stop in enumerate(stops)
+                if _stop_name(stop) == env.departure_name
+            ),
+            None,
+        )
+        if leg_index is None:
+            return []
+        before = json.dumps(stops, sort_keys=True)
+        _fit_stops_before_leg(stops, leg_index)
+        return [day_number] if json.dumps(stops, sort_keys=True) != before else []
+    return []
 
 
 @_serialized_mutation
@@ -2386,7 +2445,9 @@ def update_trip_plan(updates_json: str) -> str:
                 )
             plan[key] = val
 
+    resettled_days: list[int] = []
     if "day_wise_itinerary" in updates:
+        resettled_days = _fit_plan_to_departure(plan)
         time_errors = _itinerary_time_errors(plan.get("day_wise_itinerary"))
         if time_errors:
             return (
@@ -2429,8 +2490,18 @@ def update_trip_plan(updates_json: str) -> str:
         }
     restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
 
-    resettled_days = _settle_plan_legs(plan)
+    resettled_days = list(dict.fromkeys([*resettled_days, *_settle_plan_legs(plan)]))
     closed_day_repairs = _repair_known_closed_days(plan)
+    envelope_errors = [
+        violation.message for violation in validate_plan(plan) if violation.code == "I1"
+    ]
+    if envelope_errors:
+        return (
+            "Error: itinerary stops must stay within the trip arrival and departure times. "
+            + " ".join(envelope_errors)
+            + " Resubmit the full corrected day_wise_itinerary. "
+            "The saved itinerary was not changed."
+        )
     # Rejecting here discarded the turn's only copy of the itinerary, so a plan that
     # was merely incomplete ended up saved as no plan at all.
     sanity_errors = persistence_sanity_errors(plan)

@@ -383,6 +383,55 @@ def test_backwards_transport_timeline_is_rejected_without_persistence() -> None:
     assert json.loads(get_trip_plan.invoke({})) == before
 
 
+def test_hotel_checkout_is_fitted_before_the_drive_home() -> None:
+    create_trip_plan.invoke(
+        {
+            "destination": "Meghalaya",
+            "departure_date": "2027-11-02",
+            "return_date": "2027-11-08",
+            "origin": "Guwahati",
+        }
+    )
+
+    result = update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "day_wise_itinerary": [
+                        {
+                            "day": 6,
+                            "stops": [
+                                {
+                                    "name": "Hotel in Cherrapunji",
+                                    "kind": "hotel",
+                                    "time": "08:00",
+                                    "note": "Check out",
+                                },
+                                {
+                                    "name": "Drive: Cherrapunji to Guwahati",
+                                    "kind": "transport",
+                                    "time": "08:30",
+                                    "duration_min": 300,
+                                },
+                                {
+                                    "name": "Guwahati Airport",
+                                    "kind": "transport",
+                                    "time": "13:30",
+                                },
+                            ],
+                        }
+                    ]
+                }
+            )
+        }
+    )
+
+    saved = json.loads(get_trip_plan.invoke({}))
+    assert not result.startswith("Error:")
+    assert _stops_on(saved, 6)[0]["time"] == "07:45"
+    assert not [violation for violation in validate_plan(saved) if violation.code == "I1"]
+
+
 def test_authoritative_closed_day_is_saved_with_a_repair_warning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
