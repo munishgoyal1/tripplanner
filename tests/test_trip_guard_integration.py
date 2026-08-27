@@ -432,7 +432,7 @@ def test_hotel_checkout_is_fitted_before_the_drive_home() -> None:
     assert not [violation for violation in validate_plan(saved) if violation.code == "I1"]
 
 
-def test_authoritative_closed_day_is_saved_with_a_repair_warning(
+def test_authoritative_closed_day_is_rejected_when_no_open_day_fits(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     create_trip_plan.invoke(
@@ -479,12 +479,10 @@ def test_authoritative_closed_day_is_saved_with_a_repair_warning(
         }
     )
 
-    # Losing the itinerary is worse than saving one that still needs a repair.
-    assert "The itinerary was saved but is not yet consistent:" in result
+    assert "known closed weekdays cannot be saved" in result
     assert "Louvre is closed on Tuesdays" in result
     saved = json.loads(get_trip_plan.invoke({}))
-    assert saved != before
-    assert saved["day_wise_itinerary"][0]["stops"][0]["name"] == "Louvre"
+    assert saved == before
 
 
 def test_permanently_closed_place_update_is_rejected(

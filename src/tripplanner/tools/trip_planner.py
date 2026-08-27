@@ -2548,6 +2548,16 @@ def update_trip_plan(updates_json: str) -> str:
     opening_hours_repairs = _repair_known_opening_hours(plan)
     feasibility_repairs = _repair_temporal_infeasibility(plan)
     violations = validate_plan(plan)
+    closed_day_errors = [
+        violation.message for violation in violations if violation.code == "I11"
+    ]
+    if "day_wise_itinerary" in updates and closed_day_errors:
+        return (
+            "Error: itinerary visits on known closed weekdays cannot be saved. "
+            + " ".join(closed_day_errors)
+            + " Move them to days when they are open and resubmit the full "
+            "day_wise_itinerary. The saved itinerary was not changed."
+        )
     availability_errors = [
         violation.message for violation in violations if violation.code == "I12"
     ]
