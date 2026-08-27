@@ -624,6 +624,29 @@ def test_a_stop_missing_from_the_stored_facts_is_not_called_unmapped() -> None:
     assert render._unmapped_findings(_record(), view, []) == []
 
 
+def test_a_coordinate_less_stored_fact_is_not_called_unmapped() -> None:
+    view = {"unmapped_stops": [{"name": "Bodh Gaya", "day": 3, "reason": "no_location"}]}
+    record = dataclasses.replace(
+        _record(),
+        places={
+            "bodh gaya|bodh gaya, nalanda, rajgir": {
+                "name": "Bodh Gaya",
+                "place_id": "bodh-gaya",
+            }
+        },
+    )
+
+    assert render._unmapped_findings(record, view, []) == []
+
+
+def test_a_located_stored_fact_that_failed_to_map_is_reported() -> None:
+    view = {"unmapped_stops": [{"name": "Hotel Lutetia", "day": 1, "reason": "no_location"}]}
+
+    reported = render._unmapped_findings(_record(), view, [])
+
+    assert [finding.rule for finding in reported] == [render.RULE_UNMAPPED]
+
+
 def test_a_place_the_provider_swapped_for_another_is_reported() -> None:
     view = {"unmapped_stops": [{"name": "Seine River Cruise", "day": 2, "reason": "no_match"}]}
 

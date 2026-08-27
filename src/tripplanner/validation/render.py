@@ -170,17 +170,22 @@ def _leg_findings(
 def _unmapped_findings(
     record: CorpusRecord, view: dict[str, Any], names: list[str]
 ) -> list[Finding]:
-    known = {str(key).partition("|")[0] for key in record.places}
+    located = {
+        str(key).partition("|")[0]
+        for key, entry in record.places.items()
+        if isinstance(entry, dict)
+        and entry.get("lat") is not None
+        and entry.get("lng") is not None
+    }
     found: list[Finding] = []
     for stop in view.get("unmapped_stops") or []:
         reason = str(stop.get("reason") or "")
         name = str(stop.get("name") or "")
         if reason == "not_a_place":
             continue
-        # A place absent from the stored facts has no location *here*, which says
-        # nothing about whether the app could map it. Only speak about places
-        # this audit can actually see.
-        if reason == "no_location" and name.strip().lower() not in known:
+        # Missing or coordinate-less stored facts say nothing about whether the
+        # app could map the place. Only speak when this audit can locate it.
+        if reason == "no_location" and name.strip().lower() not in located:
             continue
         message = (
             f"{name or 'A stop'} on Day {stop.get('day')} never reached "
