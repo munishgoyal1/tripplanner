@@ -258,7 +258,7 @@ class JsonFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:  # noqa: D401
         base: dict[str, Any] = {
-            "ts": _dt.datetime.fromtimestamp(record.created, _dt.timezone.utc)
+            "ts": _dt.datetime.fromtimestamp(record.created, _dt.UTC)
             .isoformat(timespec="milliseconds")
             .replace("+00:00", "Z"),
             "level": record.levelname,
@@ -286,7 +286,7 @@ class _TextFormatterWithPid(logging.Formatter):
     logger name and the level. Used in local dev mode."""
 
     def format(self, record: logging.LogRecord) -> str:  # noqa: D401
-        ts = _dt.datetime.fromtimestamp(record.created, _dt.timezone.utc).strftime("%H:%M:%S")
+        ts = _dt.datetime.fromtimestamp(record.created, _dt.UTC).strftime("%H:%M:%S")
         return f"{ts} {record.levelname:<5} {record.name}: {record.getMessage()}"
 
 
@@ -366,6 +366,19 @@ def setup_logging(force: bool = False) -> None:
 # ---------------------------------------------------------------------------
 
 _APP_EVENT_LOGGER = logging.getLogger("tripplanner.event")
+_EVENT_OBSERVERS_LOCK = threading.Lock()
+_EVENT_OBSERVERS: list[Any] = []
+
+
+def add_event_observer(observer: Any) -> None:
+    with _EVENT_OBSERVERS_LOCK:
+        _EVENT_OBSERVERS.append(observer)
+
+
+def remove_event_observer(observer: Any) -> None:
+    with _EVENT_OBSERVERS_LOCK:
+        if observer in _EVENT_OBSERVERS:
+            _EVENT_OBSERVERS.remove(observer)
 
 
 def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
@@ -381,6 +394,11 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
         app_event("tool_call", user_id, tool="search_flights_duffel",
                   status="ok", ms=842)
     """
+    from tripplanner.validation.harness.context import current_context
+
+    context = current_context()
+    if context is not None:
+        fields = {**context.event_fields(), **fields}
     safe: dict[str, Any] = {}
     for k, v in fields.items():
         if k.lower() in _SENSITIVE_FIELDS:
@@ -389,6 +407,13 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
             safe[k] = redact_value(v)
     safe["user_id"] = user_id  # JsonFormatter hashes this
     safe["event_kind"] = kind
+    with _EVENT_OBSERVERS_LOCK:
+        observers = tuple(_EVENT_OBSERVERS)
+    for observer in observers:
+        try:
+            observer(kind, safe)
+        except Exception:
+            continue
     _APP_EVENT_LOGGER.info("event %s", kind, extra=safe)
 
 
@@ -444,7 +469,7 @@ def audit_event(kind: str, user_id: str | None, **fields: Any) -> None:
     """
     rec: dict[str, Any] = {
         "id": str(uuid.uuid4()),
-        "ts": _dt.datetime.now(_dt.timezone.utc)
+        "ts": _dt.datetime.now(_dt.UTC)
         .isoformat(timespec="milliseconds")
         .replace("+00:00", "Z"),
         "kind": kind,

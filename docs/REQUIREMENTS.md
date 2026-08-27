@@ -95,7 +95,7 @@ re-describing the whole product.
 | OPS-03 | Owner-only Business and System Health operations dashboard | Implemented; hidden route, server-side verified-email guard, consented funnel/activity aggregates, chat/tool/provider/cache health, and explicit data-window labels |
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Implemented; `/` public entry, `/planner` workspace, privacy-safe analytics, and regional last-known-good demo pipeline |
 | FEEDBACK-01 | Lightweight repeatable trip feedback | Implemented; toolbar thumbs, optional stars/comment, append-only submissions, and trip-level sent rollup |
-| QUALITY-01 | Offline scenario-fidelity and experiential-quality audit | Implemented; every audit writes an immutable dated JSON report, readable summary, compact history index, comparable-run movement, scenario/preference and budget hard gates, and six non-gating experiential dimensions; generated and persisted findings require a preventive executable fix plus a focused regression test while preserving the failing evidence, genuine fixture corrections require evidence-contract validation, integrated fixes record deterministic post-fix replay, and fresh generation remains an explicit paid corpus refresh |
+| QUALITY-01 | Offline scenario-fidelity and experiential-quality audit | Implemented; every audit writes an immutable dated JSON report, readable summary, compact history index, comparable-run movement, scenario/preference and budget hard gates, and six non-gating experiential dimensions; the unified harness also correlates scenario/action evidence and reports measured usage, catalog-estimated cost, cache effectiveness, request amplification, performance, and deterministic plan quality while keeping subjective evaluation optional and separately costed; generated and persisted findings require a preventive executable fix plus a focused regression test while preserving the failing evidence, genuine fixture corrections require evidence-contract validation, integrated fixes record deterministic post-fix replay, and fresh generation remains an explicit paid corpus refresh |
 | DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Implemented for persisted provider evidence; exact products compare only with complete mandatory costs and published FX, consented public benefit terms apply without card numbers, and finalized unbooked expired flight/stay quotes can be explicitly rechecked without replacing selections |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
@@ -625,6 +625,10 @@ implemented capability baseline.
 - Performance and cost evidence is separated into a hermetic regression gate,
   production SLO/tool telemetry, and Azure billing/Cosmos RU analysis so changes
   are driven by measured bottlenecks rather than synthetic provider traffic.
+- Harness reports preserve measured runtime counts, versioned catalog estimates,
+  and delayed cloud-billing reconciliation as distinct layers. Google operation
+  and field-mask classes and Places memory, durable, miss, refresh, and coalesced
+  outcomes are emitted at their owning boundaries for per-scenario attribution.
 - All six application containers can be exported to a portable checksummed
   artifact and restored exactly into an empty isolated recovery database.
   Recovery drills reject live, same-coordinate, nonempty, incomplete, or
