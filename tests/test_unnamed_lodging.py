@@ -17,7 +17,7 @@ from tripplanner.tools.trip_validation import (
 CITIES = {
     "kochi", "kuala lumpur", "penang", "colombo", "galle", "shimla", "rome",
     "florence", "cherrapunji", "shillong", "amritsar", "chikmagalur", "udaipur",
-    "nubra valley", "pangong lake",
+    "coorg", "nubra valley", "pangong lake",
 }
 
 
@@ -35,6 +35,8 @@ CITIES = {
         "Premium Hotel",
         "A comfortable hotel near Shimla",
         "Budget accommodation in Udaipur",
+        "3-star+ Hotel in Coorg",
+        "3-star+ Coorg Hotel",
         "Hotel/Camp in Nubra Valley",
         "Camp/Hotel at Pangong Lake",
         "",
@@ -125,6 +127,30 @@ def test_an_unnamed_stay_cannot_cross_persistence_without_an_origin() -> None:
 
     assert any(
         "Day(s) 1, 2, 3, 4" in error and "no bookable property" in error
+        for error in errors
+    )
+
+
+def test_a_star_rating_requirement_cannot_cross_persistence_as_a_property() -> None:
+    plan = {
+        "destination": "Coorg",
+        "selected_hotels": [],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [{"name": "3-star+ Hotel in Coorg", "kind": "hotel"}],
+            },
+            {
+                "day": 2,
+                "stops": [{"name": "3-star+ Coorg Hotel", "kind": "hotel"}],
+            },
+        ],
+    }
+
+    errors = persistence_sanity_errors(plan)
+
+    assert any(
+        "Day(s) 1, 2" in error and "no bookable property" in error
         for error in errors
     )
 
