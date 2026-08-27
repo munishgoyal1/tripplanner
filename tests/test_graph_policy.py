@@ -881,6 +881,48 @@ def test_phase_budget_cannot_end_planning_resume_without_departure_journey() -> 
     assert "Bali back to Bangalore" in (decision.requirement or "")
 
 
+def test_phase_budget_cannot_end_planning_resume_without_outbound_journey() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Finish planning my Bali trip"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+        ],
+        active_trip={
+            "destination": "Bali",
+            "origin": "Bangalore",
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Villa Kayu Raja", "kind": "hotel"},
+                        {"name": "Sambal Shrimp", "kind": "meal"},
+                    ],
+                },
+                {
+                    "day": 2,
+                    "stops": [
+                        {"name": "Villa Kayu Raja", "kind": "hotel"},
+                        {
+                            "name": "Flight Bali to Bangalore",
+                            "kind": "flight",
+                        },
+                    ],
+                },
+            ],
+            "selected_hotels": [{"name": "Villa Kayu Raja"}],
+            "selected_flights": [{"airline": "Air India"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "update_trip_plan"
+    assert "no matching outbound" in (decision.requirement or "")
+
+
 def test_weather_can_remain_deferred_when_first_turn_core_plan_is_complete() -> None:
     decision = resolve_completion_policy(
         messages=[
