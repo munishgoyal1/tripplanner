@@ -795,6 +795,69 @@ class TestTripPlanState:
         assert saved["day_wise_itinerary"][1]["stops"] == []
         assert "Adjusted known closed-day visits before saving" in result
 
+    def test_update_trip_plan_repairs_visit_across_split_opening_hours(self, monkeypatch):
+        weekdays = (
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        )
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_guard._summary_for_place",
+            lambda name, _destination: {
+                "name": name,
+                "weekday_descriptions": [
+                    f"{day}: 6:00 AM - 12:00 PM, 6:00 PM - 9:00 PM"
+                    for day in weekdays
+                ],
+            }
+            if name == "Sri Mariamman Temple"
+            else {},
+        )
+        create_trip_plan.invoke(
+            {
+                "destination": "Singapore",
+                "departure_date": "2027-06-04",
+                "return_date": "2027-06-09",
+                "travel_scope": "destination_only",
+            }
+        )
+        itinerary = [{"day": day, "stops": []} for day in range(1, 7)]
+        itinerary[3]["stops"] = [
+            {
+                "name": "Sri Mariamman Temple",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 60,
+            }
+        ]
+        submitted = {
+            "destination": "Singapore",
+            "departure_date": "2027-06-04",
+            "day_wise_itinerary": itinerary,
+        }
+
+        from tripplanner.tools import trip_guard
+
+        violations = [
+            item.message for item in trip_guard.validate_plan(submitted) if item.code == "I3"
+        ]
+        assert violations == [
+            "Sri Mariamman Temple is open 06:00-12:00, 18:00-21:00; "
+            "the Day 4 visit runs 11:30–12:30."
+        ]
+
+        result = update_trip_plan.invoke(
+            {"updates_json": json.dumps({"day_wise_itinerary": itinerary})}
+        )
+
+        saved = json.loads(get_trip_plan.invoke({}))
+        assert "Adjusted visits to fit known opening hours before saving" in result
+        assert not [item for item in trip_guard.validate_plan(saved) if item.code == "I3"]
+
     def test_update_trip_plan_does_not_infer_closed_day_from_unknown_hours(
         self, monkeypatch
     ):
