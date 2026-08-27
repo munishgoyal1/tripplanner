@@ -152,7 +152,9 @@ def test_the_phase_budget_does_not_end_with_a_short_departure_buffer() -> None:
         ToolMessage(content="Created", tool_call_id="create-1"),
         _tool_call("update_trip_plan", "update-1"),
         ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
-        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 2),
+        _tool_call("update_trip_plan", "update-2"),
+        ToolMessage(content="Trip plan updated.", tool_call_id="update-2"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 3),
     ]
     decision = resolve_completion_policy(
         messages=current_turn,
