@@ -487,7 +487,7 @@ def test_authoritative_closed_day_is_saved_with_a_repair_warning(
     assert saved["day_wise_itinerary"][0]["stops"][0]["name"] == "Louvre"
 
 
-def test_permanently_closed_place_update_is_saved_with_a_warning(
+def test_permanently_closed_place_update_is_rejected(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     create_trip_plan.invoke(
@@ -530,10 +530,10 @@ def test_permanently_closed_place_update_is_saved_with_a_warning(
         }
     )
 
-    # The turn's only copy of the itinerary is saved rather than discarded, so the
-    # closure is reported as a warning instead of rejecting the update.
-    assert json.loads(get_trip_plan.invoke({})) != before
+    assert result.startswith("Error:")
     assert "reported closed for business" in result
+    assert "Replace them with places that are still operating" in result
+    assert json.loads(get_trip_plan.invoke({})) == before
 
 
 def test_permanently_closed_place_selection_is_not_added(
