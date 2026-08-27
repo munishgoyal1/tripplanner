@@ -1123,6 +1123,58 @@ class TestTripPlanState:
         assert {stop["name"] for stop in hotel_stops} == {"Preskil Island Resort"}
         assert [stop["time"] for stop in hotel_stops] == ["09:00", "18:00"]
 
+    def test_update_trip_plan_replaces_multi_city_placeholder_anchors(self):
+        create_trip_plan.invoke({
+            "destination": "Istanbul and Cappadocia",
+            "departure_date": "2027-05-10",
+            "return_date": "2027-05-18",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [
+                {
+                    "name": "Mest Hotel Istanbul Sirkeci",
+                    "city": "Istanbul",
+                    "address": "Cicek Pazari Sokak 22, Istanbul",
+                },
+                {
+                    "name": "Museum Hotel",
+                    "city": "Cappadocia",
+                    "address": "Tekeli Mahallesi, Uchisar, Cappadocia",
+                },
+            ],
+            "day_wise_itinerary": [
+                {
+                    "day": day,
+                    "city": city,
+                    "destination": "Istanbul and Cappadocia",
+                    "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+                }
+                for day, city in enumerate(
+                    [
+                        "Istanbul",
+                        "Istanbul",
+                        "Istanbul",
+                        "Istanbul",
+                        "Cappadocia",
+                        "Cappadocia",
+                        "Cappadocia",
+                        "Cappadocia",
+                    ],
+                    start=1,
+                )
+            ],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        hotel_names_by_day = [
+            day["stops"][0]["name"] for day in plan["day_wise_itinerary"]
+        ]
+        assert hotel_names_by_day == [
+            *(["Mest Hotel Istanbul Sirkeci"] * 4),
+            *(["Museum Hotel"] * 4),
+        ]
+        assert "Hotel placeholders remain" not in result
+
     def test_itinerary_update_cannot_restore_generic_or_placeholder_hotel(self):
         create_trip_plan.invoke({
             "destination": "Gujarat",

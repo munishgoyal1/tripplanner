@@ -160,7 +160,8 @@ def _sync_replaced_hotel_anchors(
     replacements: dict[str, dict[str, Any]] = {}
     if len(removed) == 1 and len(added) == 1:
         replacements[next(iter(removed))] = selected[next(iter(added))]
-    placeholder_replacement = next(iter(selected.values())) if len(selected) == 1 else None
+    selected_values = list(selected.values())
+    placeholder_replacement = selected_values[0] if len(selected_values) == 1 else None
     lodging_locations = _itinerary_hotel_locations(plan)
     destination = str(plan.get("destination") or "").strip().lower()
     if destination:
@@ -177,6 +178,14 @@ def _sync_replaced_hotel_anchors(
             if str(value.get(key) or "").strip()
         }
 
+    def specific_locations(value: dict[str, Any]) -> set[str]:
+        specific = {
+            str(value.get(key) or "").strip().lower()
+            for key in ("city", "location")
+            if str(value.get(key) or "").strip()
+        }
+        return specific or explicit_locations(value)
+
     changed = False
     for day in plan.get("day_wise_itinerary") or []:
         if not isinstance(day, dict) or not isinstance(day.get("stops"), list):
@@ -186,16 +195,28 @@ def _sync_replaced_hotel_anchors(
                 continue
             stop_name = _stop_name(stop)
             replacement = replacements.get(stop_name.lower())
-            if replacement is None and placeholder_replacement is not None:
-                if _HOTEL_PLACEHOLDER_RE.search(stop_name) or unnamed_lodging(
-                    stop_name, lodging_locations
-                ):
-                    anchor_text = stop_name.lower()
-                    anchor_locations = explicit_locations(day) | {
-                        location
-                        for location in lodging_locations
-                        if re.search(rf"\b{re.escape(location)}\b", anchor_text)
-                    }
+            is_placeholder = _HOTEL_PLACEHOLDER_RE.search(stop_name) or unnamed_lodging(
+                stop_name, lodging_locations
+            )
+            if replacement is None and is_placeholder:
+                anchor_text = stop_name.lower()
+                anchor_locations = specific_locations(day) | {
+                    location
+                    for location in lodging_locations
+                    if re.search(rf"\b{re.escape(location)}\b", anchor_text)
+                }
+                location_matches = [
+                    hotel
+                    for hotel in selected_values
+                    if any(
+                        anchor in hotel_location or hotel_location in anchor
+                        for anchor in anchor_locations
+                        for hotel_location in specific_locations(hotel)
+                    )
+                ]
+                if len(location_matches) == 1:
+                    replacement = location_matches[0]
+                elif placeholder_replacement is not None:
                     replacement_locations = explicit_locations(placeholder_replacement)
                     if (
                         not anchor_locations
