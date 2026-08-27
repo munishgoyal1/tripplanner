@@ -568,8 +568,11 @@ def resolve_completion_policy(
         )
         else ()
     )
-    departure_safety_gap = any(
-        gap.startswith("Departure day has no explicit") or " minutes before " in gap
+    journey_safety_gap = any(
+        gap.startswith(("Arrival day has no explicit", "Departure day has no explicit"))
+        or "no matching outbound" in gap
+        or "no matching return" in gap
+        or " minutes before " in gap
         for gap in core_gaps_for_planning_turn
     )
     # Asking the review and then planning anyway would make it decoration, so the
@@ -599,7 +602,7 @@ def resolve_completion_policy(
                 or bool(core_gaps_for_planning_turn)
             )
         )
-        may_continue_past_budget = can_attempt_completion_repair or departure_safety_gap
+        may_continue_past_budget = can_attempt_completion_repair or journey_safety_gap
         if not may_continue_past_budget:
             try:
                 gaps = tuple(planning_completion_gaps(active_trip))
