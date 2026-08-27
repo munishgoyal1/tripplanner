@@ -14,6 +14,7 @@ from typing import Any
 
 from tripplanner.validation.corpus import CorpusRecord
 from tripplanner.validation.findings import Finding, symptom_of
+from tripplanner.web.map_pins import _provider_name_matches
 from tripplanner.web.schedule import MAX_GROUND_LEG_KM
 
 #: No single leg of a day plausibly takes longer than this.
@@ -60,6 +61,10 @@ def _lookup(places: dict[str, Any]):
             for location in locations
         )
 
+    def name_matches(wanted: str, entry: Any) -> bool:
+        provider_name = str((entry or {}).get("name") or "").strip()
+        return not provider_name or _provider_name_matches(wanted, provider_name)
+
     def get_details(name: str, city: str = "", **_kwargs: Any) -> dict[str, Any] | None:
         wanted = str(name or "").strip().lower()
         destination = str(city or "").strip().lower()
@@ -70,6 +75,7 @@ def _lookup(places: dict[str, Any]):
             entry
             for cached_city, entry in by_name.get(wanted, [])
             if destination_matches(destination, cached_city, entry)
+            and name_matches(wanted, entry)
         ]
         identities = {
             str(entry.get("place_id") or "").strip()
@@ -176,6 +182,10 @@ def _unmapped_findings(
         if isinstance(entry, dict)
         and entry.get("lat") is not None
         and entry.get("lng") is not None
+        and (
+            not entry.get("name")
+            or _provider_name_matches(str(key).partition("|")[0], str(entry["name"]))
+        )
     }
     found: list[Finding] = []
     for stop in view.get("unmapped_stops") or []:

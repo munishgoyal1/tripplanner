@@ -611,6 +611,49 @@ def test_render_name_fallback_requires_destination_compatible_identity() -> None
     assert get_details("Dosa Plaza", "Kaziranga") is None
 
 
+def test_render_ignores_wrong_provider_identity_for_context_free_drive_endpoint() -> None:
+    plan = _plan(
+        destination="Guwahati and Kaziranga",
+        day_wise_itinerary=[
+            {
+                "day": 3,
+                "title": "Transfer to Kaziranga",
+                "stops": [
+                    {"name": "Drive: Guwahati to Kaziranga", "kind": "transport"},
+                    {"name": "IORA - The Retreat, Kaziranga", "kind": "hotel"},
+                ],
+            }
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="wrong-drive-endpoint",
+        provenance=corpus.REAL,
+        source="test",
+        plan=plan,
+        places={
+            "guwahati|kaziranga": {
+                "place_id": "kaziranga-national-park",
+                "name": "Kaziranga National Park",
+                "lat": 26.6445,
+                "lng": 93.3525,
+            },
+            "iora - the retreat, kaziranga|kaziranga": {
+                "place_id": "iora",
+                "name": "IORA - The Retreat, Kaziranga",
+                "lat": 26.5775,
+                "lng": 93.1711,
+            },
+        },
+    )
+
+    reported = render.check_render(record)
+
+    assert not any(
+        finding.rule == render.RULE_UNMAPPED and "Guwahati" in finding.message
+        for finding in reported
+    )
+
+
 def test_render_checks_stay_silent_without_the_facts_to_measure_with() -> None:
     blind = corpus.CorpusRecord(id="x", provenance=corpus.REAL, source="s", plan=_plan())
 
