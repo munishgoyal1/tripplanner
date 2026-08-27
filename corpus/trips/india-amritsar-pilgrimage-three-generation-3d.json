@@ -1,0 +1,276 @@
+{
+  "status": "draft",
+  "trip_id": "amritsar_2027-11-07_2027-11-10",
+  "trip_number": 1,
+  "created_at": "2026-08-25T22:03:51.065911",
+  "destination": "Amritsar",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-11-07",
+  "return_date": "2027-11-10",
+  "travelers": "4 adults (including grandparents aged 68 and 72), 1 child (age 8)",
+  "notes": "Hotel search API did not return live bookable options for Amritsar. Recommending a practical, family-friendly, accessible hotel based on current knowledge. Please confirm or suggest an alternative if you have a preference.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Amritsar",
+    "estimated_planned_minutes": 699,
+    "evidence_place_count": 6,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "6 preference-matched places account for about 699 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Ramada by Wyndham Amritsar",
+      "address": "Hall Bazaar, Amritsar, Punjab 143006, India",
+      "star_rating": 4,
+      "amenities": [
+        "wheelchair accessible",
+        "family rooms",
+        "restaurant",
+        "breakfast included",
+        "central location"
+      ],
+      "checkin": "2027-11-07",
+      "checkout": "2027-11-10",
+      "rooms": 2,
+      "adults": 4,
+      "children_ages": [
+        8
+      ],
+      "note": "Recommended for accessibility and proximity to Golden Temple. Please confirm or suggest an alternative if you have a preference."
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-07",
+      "title": "Day 1 · Arrival & Golden Temple Evening Visit",
+      "summary": "Arrive in Amritsar from Delhi, check in to Ramada by Wyndham Amritsar (accessible, family-friendly, near Golden Temple), rest, then visit the Golden Temple for evening worship (Aarti) and langar dinner.",
+      "stops": [
+        {
+          "name": "Delhi to Amritsar (Train/Flight)",
+          "kind": "transport",
+          "time": "07:00",
+          "note": "Morning train or flight for comfort"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "time": "11:30",
+          "note": "Check-in and rest; accessible room requested"
+        },
+        {
+          "name": "Golden Temple",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Evening worship (Aarti), wheelchair access available"
+        },
+        {
+          "name": "Guru Ka Langar (Golden Temple)",
+          "kind": "meal",
+          "time": "19:30",
+          "duration_min": 60,
+          "note": "Community meal at temple, vegetarian, practical for all ages"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "time": "21:00",
+          "note": "Return for early rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-08",
+      "title": "Day 2 · Morning Darshan, Jallianwala Bagh & Partition Museum",
+      "summary": "Early morning darshan at Golden Temple, visit Jallianwala Bagh, Partition Museum, and enjoy local Punjabi lunch. Modest pacing with breaks for elderly comfort.",
+      "stops": [
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "time": "06:00",
+          "note": "Start early for morning darshan"
+        },
+        {
+          "name": "Golden Temple (Morning Darshan)",
+          "kind": "attraction",
+          "time": "06:45",
+          "duration_min": 90,
+          "note": "Less crowded, peaceful worship"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "time": "08:45",
+          "note": "Breakfast and rest"
+        },
+        {
+          "name": "Jallianwala Bagh",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Accessible walkways, historical visit"
+        },
+        {
+          "name": "Partition Museum",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90,
+          "note": "Museum with seating and accessibility"
+        },
+        {
+          "name": "Bharawan Da Dhaba",
+          "kind": "meal",
+          "time": "14:30",
+          "duration_min": 60,
+          "note": "Famous for Punjabi vegetarian food, practical for all ages"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "time": "16:00",
+          "note": "Rest break for elderly"
+        },
+        {
+          "name": "Durgiana Temple",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 60,
+          "note": "Evening worship, accessible"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "time": "19:00",
+          "note": "Return for dinner and rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-09",
+      "title": "Day 3 · Gobindgarh Fort & Wagah Border Ceremony",
+      "summary": "Visit Gobindgarh Fort in the morning, enjoy a practical lunch, rest, then attend the Wagah Border ceremony in the evening before returning to hotel.",
+      "stops": [
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "time": "07:30",
+          "note": "Breakfast and morning prep"
+        },
+        {
+          "name": "Gobindgarh Fort",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Wheelchair accessible, cultural exhibits"
+        },
+        {
+          "name": "Kesar Da Dhaba",
+          "kind": "meal",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Traditional Punjabi meal, accessible seating"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Rest before evening outing"
+        },
+        {
+          "name": "Wagah Border Ceremony",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 180,
+          "note": "Arrive early for seating, accessible entry available"
+        },
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "time": "19:30",
+          "note": "Return after ceremony, dinner and rest"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-10",
+      "title": "Day 4 · Departure",
+      "summary": "Check out and return to Delhi after breakfast.",
+      "stops": [
+        {
+          "name": "Ramada by Wyndham Amritsar",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Check-out after breakfast"
+        },
+        {
+          "name": "Amritsar to Delhi (Train/Flight)",
+          "kind": "transport",
+          "time": "09:30",
+          "note": "Morning train or flight for comfort"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T22:06:42.160349",
+  "id": "amritsar_2027-11-07_2027-11-10",
+  "user_id": "corpus-india-amritsar-pilgrimage-three-generation-3d-157bbdb1e137"
+}

@@ -1,0 +1,286 @@
+{
+  "status": "draft",
+  "trip_id": "bangkok_phuket_or_krabi_2027-01-16_2027-01-22",
+  "trip_number": 1,
+  "created_at": "2026-08-25T20:42:49.384369",
+  "destination": "Bangkok, Phuket or Krabi",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-01-16",
+  "return_date": "2027-01-22",
+  "travelers": "4 adult friends (Indian passports)",
+  "notes": "Unable to retrieve live hotel data due to provider and API limits. Recommend these well-rated, centrally located hotels based on recent travel knowledge and typical availability for your dates: \nBangkok: \n1. Adelphi Suites Bangkok (Sukhumvit)\n2. Riva Surya Bangkok (Old City, riverside)\n3. Nouvo City Hotel (Old City, near Khao San Road)\nPhuket: \n1. Holiday Inn Resort Phuket (Patong)\n2. Burasari Phuket Resort & Spa (Patong)\n3. The Kee Resort & Spa (Patong)\nKrabi: \n1. Aonang Villa Resort (Ao Nang)\n2. Ban Sainai Resort (Ao Nang)\n3. Centara Ao Nang Beach Resort & Spa (Ao Nang)\nPlease confirm your preferred hotel(s) for each city, or let me know if you want to proceed with the first option in each location. Once confirmed, I will update your itinerary and proceed with the next steps.",
+  "planning_recommendation": {
+    "recommended_days": 6,
+    "anchor_experiences": [
+      {
+        "city": "Bangkok",
+        "days": 2
+      },
+      {
+        "city": "Phuket or Krabi",
+        "days": 4
+      }
+    ],
+    "reasoning": "Bangkok for urban culture and food, Phuket/Krabi for beaches and local cuisine. 2 days in Bangkok for temples, markets, and street food; 4 days in Phuket or Krabi for beaches, island tours, and southern Thai cuisine."
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-16",
+      "title": "Day 1 · Arrival in Bangkok",
+      "summary": "Arrive in Bangkok, check in at Adelphi Suites Bangkok, and explore local street food and culture in the evening.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Bangkok",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "15:00",
+          "duration_min": 240,
+          "note": "Morning direct flight"
+        },
+        {
+          "name": "Adelphi Suites Bangkok",
+          "kind": "hotel",
+          "note": "Central Sukhumvit location for food and culture"
+        },
+        {
+          "name": "Yaowarat Road (Chinatown)",
+          "kind": "attraction",
+          "time": "18:30",
+          "duration_min": 120,
+          "note": "Street food dinner and night market"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-17",
+      "title": "Day 2 · Bangkok Temples & Food",
+      "summary": "Visit iconic temples and sample regional specialties at local markets.",
+      "stops": [
+        {
+          "name": "Adelphi Suites Bangkok",
+          "kind": "hotel"
+        },
+        {
+          "name": "Grand Palace & Wat Phra Kaew",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Cultural highlight"
+        },
+        {
+          "name": "Wat Pho",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Lunch at Thip Samai Pad Thai",
+          "kind": "meal",
+          "time": "14:00",
+          "duration_min": 75,
+          "note": "Famous Pad Thai"
+        },
+        {
+          "name": "Pak Khlong Talat (Flower Market)",
+          "kind": "attraction",
+          "time": "15:45",
+          "duration_min": 60
+        },
+        {
+          "name": "Dinner at Raan Jay Fai",
+          "kind": "meal",
+          "time": "19:00",
+          "duration_min": 90,
+          "note": "Michelin-starred street food"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-18",
+      "title": "Day 3 · Fly to Phuket & Beachside Culture",
+      "summary": "Fly to Phuket, check in at Holiday Inn Resort Phuket, and experience local markets and cuisine.",
+      "stops": [
+        {
+          "name": "Flight: Bangkok to Phuket",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "11:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Adelphi Suites Bangkok",
+          "kind": "hotel",
+          "time": "11:30"
+        },
+        {
+          "name": "Holiday Inn Resort Phuket",
+          "kind": "hotel",
+          "note": "Beachside location in Patong",
+          "time": "13:30"
+        },
+        {
+          "name": "Banzaan Fresh Market (Phuket)",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Local food and crafts"
+        },
+        {
+          "name": "Dinner at Raya Restaurant (Phuket)",
+          "kind": "meal",
+          "time": "19:00",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-19",
+      "title": "Day 4 · Island Hopping & Southern Thai Cuisine",
+      "summary": "Take a day trip to nearby islands and enjoy authentic southern Thai food.",
+      "stops": [
+        {
+          "name": "Holiday Inn Resort Phuket",
+          "kind": "hotel"
+        },
+        {
+          "name": "Phi Phi Islands Tour",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 480,
+          "note": "Boat tour, snorkeling, beaches"
+        },
+        {
+          "name": "Lunch on the islands (seafood)",
+          "kind": "meal",
+          "time": "16:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Dinner at Blue Elephant Phuket",
+          "kind": "meal",
+          "time": "19:30",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-01-20",
+      "title": "Day 5 · Local Culture & Cooking Class",
+      "summary": "Explore local temples, markets, and take a Thai cooking class.",
+      "stops": [
+        {
+          "name": "Holiday Inn Resort Phuket",
+          "kind": "hotel"
+        },
+        {
+          "name": "Wat Chalong (Phuket)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Lunch at local eatery (Mee Hokkien Noodle or Roti Pancake)",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 75
+        },
+        {
+          "name": "Thai Cooking Class",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 180,
+          "note": "Hands-on with local chef"
+        },
+        {
+          "name": "Dinner at class or local seafood restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-01-21",
+      "title": "Day 6 · Leisure, Last Markets & Return",
+      "summary": "Relax at the beach, visit a final market, and fly back to Delhi in the evening.",
+      "stops": [
+        {
+          "name": "Holiday Inn Resort Phuket",
+          "kind": "hotel"
+        },
+        {
+          "name": "Beach time or spa",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180
+        },
+        {
+          "name": "Lunch at local market",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 75
+        },
+        {
+          "name": "Flight: Phuket to Delhi (via Bangkok)",
+          "kind": "flight",
+          "time": "18:00",
+          "arrival_time": "23:30",
+          "duration_min": 330
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T20:46:23.116975",
+  "id": "bangkok_phuket_or_krabi_2027-01-16_2027-01-22",
+  "user_id": "corpus-india-outbound-thailand-food-friends-6d-10b67d320825"
+}

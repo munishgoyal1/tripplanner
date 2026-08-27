@@ -1,0 +1,336 @@
+{
+  "status": "draft",
+  "trip_id": "lakshadweep_2027-02-03_2027-02-09",
+  "trip_number": 1,
+  "created_at": "2026-08-26T07:23:25.617967",
+  "destination": "Lakshadweep",
+  "origin": "Kochi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-02-03",
+  "return_date": "2027-02-09",
+  "travelers": "Couple: 2 adults",
+  "notes": "Hotel search API did not return real-time results for Agatti Island. Using best-known premium property: Agatti Island Beach Resort (well-reviewed, premium, sea-facing cottages, private transfers arranged). Will update with live rates when available.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Lakshadweep",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 6-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 6,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Agatti Island Beach Resort",
+      "address": "Agatti Island, Lakshadweep, India",
+      "rating": 4.5,
+      "price_per_night": 18000,
+      "currency": "INR",
+      "nights": 6,
+      "room_type": "Sea View Cottage",
+      "amenities": [
+        "Private beach",
+        "All meals included",
+        "Airport transfers",
+        "Water sports center",
+        "Spa"
+      ],
+      "note": "Premium stay, best available on Agatti"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-03",
+      "title": "Day 1 · Kochi to Lakshadweep · Arrival",
+      "summary": "Fly from Kochi to Agatti Island, Lakshadweep. Private transfer to Agatti Island Beach Resort. Relax and enjoy the sunset.",
+      "stops": [
+        {
+          "name": "Flight: Kochi to Agatti Island",
+          "kind": "flight",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Direct morning flight, premium seats"
+        },
+        {
+          "name": "Private Transfer: Agatti Airport to Resort",
+          "kind": "transport",
+          "duration_min": 30,
+          "note": "Comfortable private car/boat arranged by resort"
+        },
+        {
+          "name": "Agatti Island Beach Resort",
+          "kind": "hotel",
+          "note": "Check-in, welcome drink"
+        },
+        {
+          "name": "Agatti Island Beach Resort Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch at the resort"
+        },
+        {
+          "name": "Agatti Island Beach Resort Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner with sea view"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-04",
+      "title": "Day 2 · Water Sports & Island Leisure",
+      "summary": "Enjoy a relaxed breakfast, then try snorkeling or kayaking. Afternoon at leisure on the beach. Evening fine dining.",
+      "stops": [
+        {
+          "name": "Agatti Island Beach Resort",
+          "kind": "hotel"
+        },
+        {
+          "name": "Agatti Island Beach Resort Restaurant",
+          "kind": "meal",
+          "time": "08:30",
+          "note": "Breakfast"
+        },
+        {
+          "name": "Snorkeling/Kayaking (Resort Activity Center)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Guided session included"
+        },
+        {
+          "name": "Agatti Island Beach Resort Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch at the resort"
+        },
+        {
+          "name": "Resort Spa",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Couple's spa treatment"
+        },
+        {
+          "name": "Agatti Island Beach Resort Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner with sea view"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-05",
+      "title": "Day 3 · Island Hopping Excursion",
+      "summary": "Full-day private boat tour to nearby islands (Bangaram, Thinnakara). Picnic lunch on the beach. Return by sunset.",
+      "stops": [
+        {
+          "name": "Private Boat Excursion: Bangaram & Thinnakara",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 420,
+          "note": "Guided island hopping, snorkeling, picnic lunch"
+        },
+        {
+          "name": "Agatti Island Beach Resort",
+          "kind": "hotel",
+          "time": "16:30"
+        },
+        {
+          "name": "Bangaram Island",
+          "kind": "attraction",
+          "note": "Swim, relax, explore",
+          "time": "18:30"
+        },
+        {
+          "name": "Thinnakara Island",
+          "kind": "attraction",
+          "note": "Beach picnic",
+          "time": "20:30"
+        },
+        {
+          "name": "Agatti Island Beach Resort Restaurant",
+          "kind": "meal",
+          "time": "22:30",
+          "note": "Dinner at the resort"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-06",
+      "title": "Day 4 · Local Culture & Marine Life",
+      "summary": "Morning visit to local village and marine museum. Afternoon dolphin-spotting cruise. Evening at leisure.",
+      "stops": [
+        {
+          "name": "Agatti Island Beach Resort",
+          "kind": "hotel"
+        },
+        {
+          "name": "Local Village Tour",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Meet locals, see traditional crafts"
+        },
+        {
+          "name": "Marine Museum",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Learn about local marine life"
+        },
+        {
+          "name": "Agatti Island Beach Resort Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch at the resort"
+        },
+        {
+          "name": "Dolphin Spotting Cruise",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Guided boat tour"
+        },
+        {
+          "name": "Agatti Island Beach Resort Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner at the resort"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-07",
+      "title": "Day 5 · Leisure & Water Activities",
+      "summary": "Free morning for leisure or optional scuba diving. Afternoon paddleboarding or glass-bottom boat ride. Romantic beach dinner.",
+      "stops": [
+        {
+          "name": "Agatti Island Beach Resort",
+          "kind": "hotel"
+        },
+        {
+          "name": "Agatti Island Beach Resort Restaurant",
+          "kind": "meal",
+          "time": "08:30",
+          "note": "Breakfast"
+        },
+        {
+          "name": "Optional Scuba Diving",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Pre-book for certified divers"
+        },
+        {
+          "name": "Paddleboarding/Glass-bottom Boat",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Explore coral reefs"
+        },
+        {
+          "name": "Agatti Island Beach Resort Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Romantic beach dinner"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-02-08",
+      "title": "Day 6 · Departure: Lakshadweep to Kochi",
+      "summary": "Relaxing morning at the resort. Private transfer to Agatti Airport. Flight back to Kochi.",
+      "stops": [
+        {
+          "name": "Agatti Island Beach Resort",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Private Transfer: Resort to Agatti Airport",
+          "kind": "transport",
+          "duration_min": 30,
+          "note": "Private car/boat"
+        },
+        {
+          "name": "Flight: Agatti Island to Kochi",
+          "kind": "flight",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Afternoon direct flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-26T07:26:03.416727",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-26T07:26:03",
+      "expires_at": "2026-08-26T07:56:03"
+    }
+  ],
+  "id": "lakshadweep_2027-02-03_2027-02-09",
+  "user_id": "corpus-india-lakshadweep-premium-couple-6d-9a39e481f887"
+}

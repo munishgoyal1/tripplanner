@@ -1,0 +1,272 @@
+{
+  "status": "draft",
+  "trip_id": "guwahati_and_kaziranga_2027-02-06_2027-02-11",
+  "trip_number": 1,
+  "created_at": "2026-08-26T07:28:41.764379",
+  "destination": "Guwahati and Kaziranga",
+  "origin": "Kolkata",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-02-06",
+  "return_date": "2027-02-11",
+  "travelers": "2 adults, 2 children (ages 4 and 8)",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Guwahati and Kaziranga",
+    "estimated_planned_minutes": 1178,
+    "evidence_place_count": 6,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "6 preference-matched places account for about 1178 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-06",
+      "title": "Day 1 · Arrival in Guwahati",
+      "summary": "Fly from Kolkata to Guwahati, check in to Radisson Blu Hotel Guwahati, relax and explore the Brahmaputra riverfront in the evening.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Guwahati",
+          "kind": "flight",
+          "note": "Morning flight, 1.5h duration"
+        },
+        {
+          "name": "Radisson Blu Hotel Guwahati",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Brahmaputra Riverfront",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening stroll and views"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-07",
+      "title": "Day 2 · Guwahati Sightseeing",
+      "summary": "Visit Kamakhya Temple, Assam State Zoo, and enjoy a Brahmaputra river cruise. Family-friendly and relaxed pace.",
+      "stops": [
+        {
+          "name": "Radisson Blu Hotel Guwahati",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kamakhya Temple",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Morning visit"
+        },
+        {
+          "name": "Assam State Zoo",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 120,
+          "note": "Kids will enjoy"
+        },
+        {
+          "name": "Lunch at Paradise Restaurant",
+          "kind": "meal",
+          "time": "14:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Brahmaputra River Cruise",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Scenic sunset cruise"
+        },
+        {
+          "name": "Radisson Blu Hotel Guwahati",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-08",
+      "title": "Day 3 · Transfer to Kaziranga & Tea Garden",
+      "summary": "Drive to Kaziranga National Park, visit a tea garden en route, check in to IORA - The Retreat, Kaziranga.",
+      "stops": [
+        {
+          "name": "Drive: Guwahati to Kaziranga",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 300,
+          "distance_km": 200,
+          "note": "5-6 hour drive with scenic views"
+        },
+        {
+          "name": "Radisson Blu Hotel Guwahati",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "13:30"
+        },
+        {
+          "name": "Tea Garden Visit",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "Family-friendly stop"
+        },
+        {
+          "name": "IORA - The Retreat, Kaziranga",
+          "kind": "hotel",
+          "note": "Check in and relax",
+          "time": "17:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-09",
+      "title": "Day 4 · Kaziranga National Park Safari",
+      "summary": "Morning jeep safari in Kaziranga, visit the Interpretation Centre, and relax at the lodge. Focus on wildlife and scenery.",
+      "stops": [
+        {
+          "name": "IORA - The Retreat, Kaziranga",
+          "kind": "hotel",
+          "note": "Start from lodge"
+        },
+        {
+          "name": "Kaziranga National Park Jeep Safari",
+          "kind": "attraction",
+          "time": "06:30",
+          "duration_min": 180,
+          "note": "Best time for wildlife sightings"
+        },
+        {
+          "name": "Breakfast at lodge",
+          "kind": "meal",
+          "time": "10:00",
+          "duration_min": 45
+        },
+        {
+          "name": "Kaziranga Interpretation Centre",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Educational for kids"
+        },
+        {
+          "name": "Lunch at lodge",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Relax at lodge or nature walk",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Optional guided walk"
+        },
+        {
+          "name": "IORA - The Retreat, Kaziranga",
+          "kind": "hotel",
+          "note": "Overnight"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-10",
+      "title": "Day 5 · Return to Guwahati & Departure",
+      "summary": "Drive back to Guwahati and fly back to Kolkata. Lunch will be en route or at the airport, allowing enough time for the flight.",
+      "stops": [
+        {
+          "name": "IORA - The Retreat, Kaziranga",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "09:00"
+        },
+        {
+          "name": "Lunch at Guwahati Airport",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 45
+        },
+        {
+          "name": "Drive: Kaziranga to Guwahati",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 300,
+          "distance_km": 200,
+          "note": "Return journey"
+        },
+        {
+          "name": "Flight: Guwahati to Kolkata",
+          "kind": "flight",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Afternoon flight, 1.5h duration"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-26T07:31:36.162900",
+  "id": "guwahati_and_kaziranga_2027-02-06_2027-02-11",
+  "user_id": "corpus-india-assam-nature-young-family-5d-da9ba408e154"
+}
