@@ -10,9 +10,12 @@ from __future__ import annotations
 import time
 from concurrent.futures import ThreadPoolExecutor
 
+import httpx
 import pytest
 
 from tripplanner.web import places_cache as pc
+
+_REAL_LOOKUP_PLACE = pc._lookup_place
 
 
 @pytest.fixture(autouse=True)
@@ -119,6 +122,54 @@ def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
     details = pc.get_details("Fort Aguada", "Goa")
     assert details and details["place_id"] == "fort-aguada"
     assert calls["count"] == 2
+
+
+def test_lookup_retries_one_transient_server_error(_isolate, monkeypatch):
+    request = httpx.Request("POST", "https://places.googleapis.com/v1/places:searchText")
+    responses = iter(
+        [
+            httpx.Response(500, request=request),
+            httpx.Response(
+                200,
+                request=request,
+                json={
+                    "places": [
+                        {
+                            "id": "sunset-cafe",
+                            "displayName": {"text": "Sunset Cafe Beach Stay"},
+                            "location": {"latitude": 11.98, "longitude": 92.99},
+                        }
+                    ]
+                },
+            ),
+        ]
+    )
+    calls = {"count": 0}
+
+    def fake_post(*args, **kwargs):
+        calls["count"] += 1
+        return next(responses)
+
+    monkeypatch.setattr(pc.http_client, "post", fake_post)
+
+    result = _REAL_LOOKUP_PLACE("Sunset Cafe Beach Stay", "Neil Island")
+
+    assert result and result["place_id"] == "sunset-cafe"
+    assert calls["count"] == 2
+
+
+def test_lookup_does_not_retry_client_error(_isolate, monkeypatch):
+    request = httpx.Request("POST", "https://places.googleapis.com/v1/places:searchText")
+    calls = {"count": 0}
+
+    def fake_post(*args, **kwargs):
+        calls["count"] += 1
+        return httpx.Response(400, request=request)
+
+    monkeypatch.setattr(pc.http_client, "post", fake_post)
+
+    assert _REAL_LOOKUP_PLACE("Missing Place", "Goa") is None
+    assert calls["count"] == 1
 
 
 def test_refresh_details_preserves_known_facts_when_lookup_fails(_isolate, monkeypatch):

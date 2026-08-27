@@ -449,17 +449,24 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
         "places.businessStatus,places.currentOpeningHours.openNow,"
         "places.regularOpeningHours.weekdayDescriptions"
     )
-    try:
-        resp = http_client.post(
-            f"{_BASE}/places:searchText",
-            headers=_headers(field_mask),
-            json={"textQuery": f"{name} {city}".strip(), "pageSize": 1},
-            timeout=_HTTP_TIMEOUT_S,
-        )
-        resp.raise_for_status()
-    except httpx.HTTPError as exc:
-        log.warning("places lookup failed for %s: %s", name, exc)
-        return None
+    for attempt in range(2):
+        try:
+            resp = http_client.post(
+                f"{_BASE}/places:searchText",
+                headers=_headers(field_mask),
+                json={"textQuery": f"{name} {city}".strip(), "pageSize": 1},
+                timeout=_HTTP_TIMEOUT_S,
+            )
+            resp.raise_for_status()
+            break
+        except httpx.HTTPStatusError as exc:
+            if attempt == 0 and exc.response.status_code >= 500:
+                continue
+            log.warning("places lookup failed for %s: %s", name, exc)
+            return None
+        except httpx.HTTPError as exc:
+            log.warning("places lookup failed for %s: %s", name, exc)
+            return None
 
     places = resp.json().get("places") or []
     if not places:
