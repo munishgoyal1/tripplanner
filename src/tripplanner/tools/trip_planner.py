@@ -569,7 +569,7 @@ def _repair_known_closed_days(plan: dict[str, Any]) -> list[str]:
         for item in validate_plan(outcome["plan"])
         if item.code == "I11"
     }
-    if len(closed_after) >= len(closed_before):
+    if not closed_after < closed_before:
         return []
 
     plan.clear()

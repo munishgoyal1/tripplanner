@@ -920,6 +920,51 @@ def test_phase_budget_cannot_end_planning_resume_without_departure_journey() -> 
     assert "Bali back to Bangalore" in (decision.requirement or "")
 
 
+def test_phase_budget_rejects_airport_note_as_return_journey() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Finish planning my New York trip"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+        ],
+        active_trip={
+            "destination": "New York",
+            "origin": "Delhi",
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Flight: Delhi to New York", "kind": "flight"},
+                        {"name": "New York Hotel", "kind": "hotel"},
+                    ],
+                },
+                {
+                    "day": 14,
+                    "summary": "Check out and transfer to JFK for return flight to Delhi.",
+                    "stops": [
+                        {
+                            "name": "John F. Kennedy International Airport (JFK)",
+                            "kind": "transport",
+                            "note": "Evening flight to Delhi",
+                        },
+                        {"name": "New York Hotel", "kind": "hotel"},
+                    ],
+                },
+            ],
+            "selected_hotels": [{"name": "New York Hotel"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "New York back to Delhi" in (decision.requirement or "")
+    assert "no matching return to Delhi" in (decision.requirement or "")
+
+
 def test_phase_budget_cannot_end_planning_resume_without_outbound_journey() -> None:
     decision = resolve_completion_policy(
         messages=[
