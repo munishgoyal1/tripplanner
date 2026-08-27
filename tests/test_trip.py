@@ -795,6 +795,81 @@ class TestTripPlanState:
         assert saved["day_wise_itinerary"][1]["stops"] == []
         assert "Adjusted known closed-day visits before saving" in result
 
+    def test_update_trip_plan_moves_wat_kaew_korawaram_off_sunday(self, monkeypatch):
+        weekdays = (
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        )
+
+        def wat_hours(name, _destination):
+            if name != "Wat Kaew Korawaram":
+                return {}
+            return {
+                "name": name,
+                "weekday_descriptions": [
+                    f"{day}: {'Closed' if day == 'Sunday' else '8:00 AM - 6:00 PM'}"
+                    for day in weekdays
+                ],
+            }
+
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_guard._summary_for_place",
+            wat_hours,
+        )
+        create_trip_plan.invoke(
+            {
+                "destination": "Thailand",
+                "departure_date": "2027-01-09",
+                "return_date": "2027-01-12",
+                "origin": "Chennai",
+            }
+        )
+        submitted = {
+            "destination": "Thailand",
+            "departure_date": "2027-01-09",
+            "day_wise_itinerary": [
+                {"day": 1, "date": "2027-01-09", "stops": []},
+                {
+                    "day": 2,
+                    "date": "2027-01-10",
+                    "stops": [
+                        {
+                            "name": "Wat Kaew Korawaram",
+                            "kind": "attraction",
+                            "time": "15:00",
+                            "duration_min": 90,
+                        }
+                    ],
+                },
+                {"day": 3, "date": "2027-01-11", "stops": []},
+            ],
+        }
+
+        from tripplanner.tools import trip_guard
+
+        assert [item.code for item in trip_guard.validate_plan(submitted) if item.code == "I11"] == [
+            "I11"
+        ]
+
+        result = update_trip_plan.invoke(
+            {"updates_json": json.dumps({"day_wise_itinerary": submitted["day_wise_itinerary"]})}
+        )
+
+        saved = json.loads(get_trip_plan.invoke({}))
+        assert not [item for item in trip_guard.validate_plan(saved) if item.code == "I11"]
+        wat_days = [
+            day["day"]
+            for day in saved["day_wise_itinerary"]
+            if any(stop.get("name") == "Wat Kaew Korawaram" for stop in day["stops"])
+        ]
+        assert wat_days in ([1], [3])
+        assert "Adjusted known closed-day visits before saving" in result
+
     def test_update_trip_plan_repairs_visit_across_split_opening_hours(self, monkeypatch):
         weekdays = (
             "Monday",
