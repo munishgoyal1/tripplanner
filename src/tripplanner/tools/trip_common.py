@@ -17,6 +17,7 @@ from tripplanner.web import places_cache
 _MAX_DAY_STOPS = 5
 _MAX_DAY_DISTANCE_KM = 18.0
 _MAX_DAY_DURATION_MIN = 360
+MAX_GROUND_LEG_KM = 300.0
 _MEAL_PLACEHOLDER_RE = re.compile(
     r"\b(tbd|to be decided|restaurant option|restaurant recommendation|"
     r"lunch stop|dinner stop|breakfast stop|meal stop)\b",

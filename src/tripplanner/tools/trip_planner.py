@@ -556,6 +556,22 @@ def _repair_known_closed_days(plan: dict[str, Any]) -> list[str]:
     return outcome["sentences"]
 
 
+def _repair_temporal_infeasibility(plan: dict[str, Any]) -> list[str]:
+    """Retime planner-owned stops when travel makes their submitted clocks impossible."""
+    if not any(item.code == "I4" for item in validate_plan(plan)):
+        return []
+
+    from tripplanner.web import trip_repair
+
+    outcome = trip_repair.repair(plan, only_codes={"I4"})
+    if any(item.code == "I4" for item in validate_plan(outcome["plan"])):
+        return []
+
+    plan.clear()
+    plan.update(outcome["plan"])
+    return outcome["sentences"]
+
+
 def _pacing_text(plan: dict[str, Any]) -> str:
     """What the shape of the trip costs, in words the user could check.
 
@@ -2492,6 +2508,7 @@ def update_trip_plan(updates_json: str) -> str:
 
     resettled_days = list(dict.fromkeys([*resettled_days, *_settle_plan_legs(plan)]))
     closed_day_repairs = _repair_known_closed_days(plan)
+    feasibility_repairs = _repair_temporal_infeasibility(plan)
     envelope_errors = [
         violation.message for violation in validate_plan(plan) if violation.code == "I1"
     ]
@@ -2541,6 +2558,10 @@ def update_trip_plan(updates_json: str) -> str:
     if closed_day_repairs:
         warning_text += "\nAdjusted known closed-day visits before saving: " + " ".join(
             closed_day_repairs
+        )
+    if feasibility_repairs:
+        warning_text += "\nAdjusted travel-infeasible visit times before saving: " + " ".join(
+            feasibility_repairs
         )
     if broken_invariants:
         warning_text += (
