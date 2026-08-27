@@ -2526,9 +2526,18 @@ def update_trip_plan(updates_json: str) -> str:
     closed_day_repairs = _repair_known_closed_days(plan)
     opening_hours_repairs = _repair_known_opening_hours(plan)
     feasibility_repairs = _repair_temporal_infeasibility(plan)
-    envelope_errors = [
-        violation.message for violation in validate_plan(plan) if violation.code == "I1"
+    violations = validate_plan(plan)
+    availability_errors = [
+        violation.message for violation in violations if violation.code == "I12"
     ]
+    if availability_errors:
+        return (
+            "Error: itinerary places reported closed for business cannot be saved. "
+            + " ".join(availability_errors)
+            + " Replace them with places that are still operating and resubmit the full "
+            "day_wise_itinerary. The saved itinerary was not changed."
+        )
+    envelope_errors = [violation.message for violation in violations if violation.code == "I1"]
     if envelope_errors:
         return (
             "Error: itinerary stops must stay within the trip arrival and departure times. "
