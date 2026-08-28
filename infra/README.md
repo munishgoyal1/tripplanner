@@ -126,6 +126,16 @@ decides whether a shared Redis sits in front of it. Redis is read first, then
 memory, and a cache miss or an unreachable Redis degrades to memory rather than
 failing the request.
 
+Runtime configuration is not secret-only. Use the checkout `.env` for local and
+sandbox runs, `.env.canary` for canary deployment, and `.env.prod` for production.
+Those hosted files are loaded by the deployment scripts; secret values become
+Container Apps secrets, while cache switches and TTLs become ordinary environment
+variables. `CACHE_TTL_SCALE=1` is the default global control: `0.5` halves every
+runtime TTL and `2` doubles it. The named `*_CACHE_TTL_SEC` values remain the base
+lifetimes for individual search and fare classes. Changing hosted values creates a
+new Container Apps revision on the next deployment; it does not mutate a running
+revision in place.
+
 Only local runs it. `.env.canary` and `.env.prod` set `CACHE_REDIS_ENABLED=0`,
 so both hosted environments stay on the in-memory fallback and neither depends
 on a paid cache. The Redis instance described by `local-redis.bicep` is a

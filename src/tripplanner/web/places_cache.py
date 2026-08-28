@@ -56,6 +56,10 @@ _PHOTO_TTL_S = 50 * 60  # re-sign photo URLs before Google's ~1h expiry
 _MAX_WORKERS = 8
 _MAX_ENTRIES = 800  # soft cap; evict the oldest beyond this
 
+
+def _ttl(seconds: int | float) -> int:
+    return get_settings().cache_ttl(seconds)
+
 # Durable L2 store so warm data survives container restarts. Each place is one
 # small Cosmos item (keyed by a hash of the cache key) so the store scales well
 # past Cosmos's 2 MiB per-item limit; ``_COSMOS_DOC_ID`` is the legacy monolithic
@@ -129,7 +133,7 @@ def _load_once() -> None:
     now = time.time()
     with _CACHE_LOCK:
         for k, v in raw.items():
-            ttl = _MISS_TTL_S if _is_miss(v) else _META_TTL_S
+            ttl = _ttl(_MISS_TTL_S if _is_miss(v) else _META_TTL_S)
             if isinstance(v, dict) and (now - v.get("__at__", 0.0)) < ttl:
                 _CACHE[k] = v
         _loaded = True
@@ -156,7 +160,7 @@ def _live_snapshot() -> dict[str, dict[str, Any]]:
     now = time.time()
     snapshot: dict[str, dict[str, Any]] = {}
     for k, v in _CACHE.items():
-        ttl = _MISS_TTL_S if _is_miss(v) else _META_TTL_S
+        ttl = _ttl(_MISS_TTL_S if _is_miss(v) else _META_TTL_S)
         if (now - v.get("__at__", 0.0)) >= ttl:
             continue
         snapshot[k] = _persistable(v)
@@ -364,9 +368,11 @@ def _fresh(entry: dict[str, Any] | None, ttl: float | None = None) -> bool:
     if entry is None:
         return False
     if ttl is None and not _is_miss(entry) and not _has_location(entry):
-        ttl = _MISS_TTL_S
+        ttl = _ttl(_MISS_TTL_S)
     effective_ttl = (
-        ttl if ttl is not None else (_MISS_TTL_S if _is_miss(entry) else _META_TTL_S)
+        ttl
+        if ttl is not None
+        else _ttl(_MISS_TTL_S if _is_miss(entry) else _META_TTL_S)
     )
     return (time.time() - entry.get("__at__", 0.0)) < effective_ttl
 
@@ -589,7 +595,7 @@ def get_photos(
     if not info:
         return []
     with _CACHE_LOCK:
-        stale = (time.time() - info.get("__photos_at__", 0.0)) >= _PHOTO_TTL_S
+        stale = (time.time() - info.get("__photos_at__", 0.0)) >= _ttl(_PHOTO_TTL_S)
         needs_photos = refresh or "photo_urls" not in info or stale
         refs = list((info.get("photo_refs") or [])[:max_photos])
         current = list(info.get("photo_urls") or [])

@@ -132,6 +132,9 @@ class Settings(BaseModel):
     activity_search_cache_ttl_sec: int = _env_positive_int(
         "ACTIVITY_SEARCH_CACHE_TTL_SEC", 21600
     )
+    cache_ttl_scale: float = Field(
+        default_factory=lambda: _env_positive_float("CACHE_TTL_SCALE", 1.0)
+    )
     cache_redis_enabled: bool = Field(
         default_factory=lambda: os.getenv("CACHE_REDIS_ENABLED", "0").strip() == "1"
     )
@@ -143,6 +146,10 @@ class Settings(BaseModel):
     cache_redis_socket_timeout_sec: float = _env_positive_float(
         "CACHE_REDIS_SOCKET_TIMEOUT_SEC", 0.2
     )
+
+    def cache_ttl(self, seconds: int | float) -> int:
+        """Apply the environment-wide cache lifetime control."""
+        return max(1, round(float(seconds) * self.cache_ttl_scale))
 
     # Static schedule estimates used only when a persisted itinerary or live
     # provider does not contain the corresponding operational timing.

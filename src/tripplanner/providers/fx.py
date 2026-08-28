@@ -15,6 +15,7 @@ import httpx
 
 from tripplanner import http_client
 from tripplanner.caching import get_cache
+from tripplanner.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,8 @@ class RateTable:
 
     @property
     def is_fresh(self) -> bool:
-        return datetime.now(UTC) - self.fetched_at < _RATE_TTL
+        freshness = timedelta(seconds=get_settings().cache_ttl(_RATE_TTL.total_seconds()))
+        return datetime.now(UTC) - self.fetched_at < freshness
 
     def to_payload(self) -> dict:
         return {
