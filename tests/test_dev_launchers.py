@@ -376,3 +376,14 @@ def test_full_sync_keeps_active_worktrees_visible() -> None:
     assert "merge-tree --write-tree --quiet" in sandbox
     assert "SANDBOX_WIP_OVERLAP" in sandbox
     assert "its worktree was left untouched" in sandbox
+
+
+def test_full_sync_defaults_to_all_local_branches_with_sbx_compatibility_scope() -> None:
+    root = Path(__file__).parents[1]
+    full_sync = (root / "scripts" / "dev" / "full-2way-sync.ps1").read_text(encoding="utf-8")
+
+    assert '[string]$Scope = "all"' in full_sync
+    assert '$Scope -eq "sbx"' in full_sync
+    assert 'worktree", "list", "--porcelain"' in full_sync
+    assert '"refs/heads"' in full_sync
+    assert "Get-SandboxRegistry" in full_sync
