@@ -13,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 import httpx
 import pytest
 
+from tripplanner.validation.harness import EvidenceCollector, harness_scope
 from tripplanner.web import places_cache as pc
 
 _REAL_LOOKUP_PLACE = pc._lookup_place
@@ -66,6 +67,29 @@ def test_details_cached_within_week(_isolate):
     pc.get_summary("Taj", "Goa")
     pc.get_summary("Taj", "Goa")
     assert calls["lookup"] == 1  # second call served from cache
+
+
+def test_places_cache_emits_miss_and_memory_hit(_isolate):
+    with harness_scope("cache", run_id="cache-run"):
+        with EvidenceCollector("cache-run", "cache") as collector:
+            pc.get_details("Harness-only Place", "Harness City")
+            pc.get_details("Harness-only Place", "Harness City")
+
+    results = [
+        event.fields["result"]
+        for event in collector.evidence.events
+        if event.kind == "cache_access"
+    ]
+    assert results == ["miss", "memory_hit"]
+
+
+def test_places_cache_emits_forced_refresh(_isolate):
+    pc.get_details("Refresh Place", "Refresh City")
+    with harness_scope("cache", run_id="refresh-run"):
+        with EvidenceCollector("refresh-run", "cache") as collector:
+            pc.refresh_details("Refresh Place", "Refresh City")
+
+    assert [event.fields["result"] for event in collector.evidence.events] == ["refresh"]
 
 
 def test_explicit_airport_lookup_ignores_trip_destination(_isolate, monkeypatch):

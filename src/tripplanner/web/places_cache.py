@@ -555,10 +555,13 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
     cache = _cache()
     lookup_city = _lookup_city(name, city)
     k = _key(name, lookup_city)
+    with _CACHE_LOCK:
+        fresh_before_lock = not refresh and _fresh(cache.get(k))
     with _key_lock(k):
         with _CACHE_LOCK:
             entry = cache.get(k)
             if not refresh and _fresh(entry):
+                _record_cache("memory_hit" if fresh_before_lock else "coalesced_hit")
                 return {} if _is_miss(entry) else entry  # type: ignore[return-value]
         if not refresh:
             durable = _durable_read(k)
@@ -566,7 +569,9 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
                 with _CACHE_LOCK:
                     cache[k] = durable
                     _evict_if_needed()
+                    _record_cache("durable_hit")
                 return {} if _is_miss(durable) else durable
+        _record_cache("refresh" if refresh else "miss")
         info = _lookup_place(name, lookup_city) or {}
         info["__at__"] = time.time()
         with _CACHE_LOCK:
@@ -574,6 +579,12 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
             _evict_if_needed()
         _persist_entry(k)
         return {} if _is_miss(info) else info
+
+
+def _record_cache(result: str) -> None:
+    from tripplanner.observability import app_event
+
+    app_event("cache_access", cache="google_places", result=result)
 
 
 def get_photos(
@@ -589,7 +600,9 @@ def get_photos(
         refs = list((info.get("photo_refs") or [])[:max_photos])
         current = list(info.get("photo_urls") or [])
     if not needs_photos:
+        _record_cache("photo_url_hit")
         return current
+    _record_cache("photo_url_refresh" if current else "photo_url_miss")
     photo_urls = _photo_uris(refs)
     with _CACHE_LOCK:
         info["photo_urls"] = photo_urls
@@ -660,6 +673,7 @@ def refresh_details(name: str, city: str) -> tuple[dict[str, Any] | None, bool]:
             previous = cache.get(key)
         if previous is None:
             previous = _durable_read(key)
+        _record_cache("refresh")
         info = _lookup_place(name, lookup_city)
         if info is None:
             known = previous if previous and not _is_miss(previous) else None

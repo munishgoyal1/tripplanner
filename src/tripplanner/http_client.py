@@ -99,6 +99,42 @@ def endpoint_for(url: str) -> str:
     return host[4:] if host.startswith("www.") else host
 
 
+def _header_value(headers: Any, name: str) -> str:
+    if not headers:
+        return ""
+    match = next(
+        (value for key, value in dict(headers).items() if key.lower() == name.lower()),
+        "",
+    )
+    return str(match)
+
+
+def google_operation(url: str, kwargs: dict[str, Any]) -> tuple[str, str]:
+    """Return the billable operation and field-mask class for a Google request."""
+    path = urlsplit(str(url)).path
+    field_mask = _header_value(kwargs.get("headers"), "X-Goog-FieldMask")
+    if path.endswith("/media"):
+        return "photo_media", "photo_media"
+    if path.endswith("places:searchText"):
+        operation = "text_search"
+    elif "/places/" in path:
+        operation = "place_details"
+    elif path.endswith(":computeRoutes"):
+        return "compute_routes", "routes_essentials"
+    elif path.endswith(":computeRouteMatrix"):
+        return "compute_route_matrix", "routes_matrix"
+    else:
+        return "other", "unknown"
+
+    atmosphere = ("reviews", "editorialSummary")
+    pro = ("rating", "userRatingCount", "priceLevel", "websiteUri")
+    if any(field in field_mask for field in atmosphere):
+        return operation, "enterprise_atmosphere"
+    if any(field in field_mask for field in pro):
+        return operation, "pro"
+    return operation, "essentials"
+
+
 def policy_for(endpoint: str) -> EndpointPolicy:
     """Longest-suffix policy match, falling back to the default budget."""
     match = ""
@@ -134,8 +170,11 @@ def request(
     name = endpoint or endpoint_for(url)
     policy = policy_for(name)
     breaker = _breakers.get(name, policy.breaker)
+    operation, sku_class = (
+        google_operation(url, kwargs) if name.endswith("googleapis.com") else ("", "")
+    )
     if not breaker.allow():
-        _record(name, "circuit_open", 0.0, None)
+        _record(name, "circuit_open", 0.0, None, operation, sku_class)
         raise CircuitOpenError(f"{name} is temporarily unavailable (circuit open)")
 
     kwargs.setdefault("timeout", policy.timeout)
@@ -144,14 +183,28 @@ def request(
         response = get_client().request(method, url, **kwargs)
     except Exception as exc:
         breaker.record_failure()
-        _record(name, type(exc).__name__, (time.monotonic() - started) * 1000, None)
+        _record(
+            name,
+            type(exc).__name__,
+            (time.monotonic() - started) * 1000,
+            None,
+            operation,
+            sku_class,
+        )
         raise
 
     if response.status_code >= 500 or response.status_code in _FAILURE_STATUSES:
         breaker.record_failure()
     else:
         breaker.record_success()
-    _record(name, "ok", (time.monotonic() - started) * 1000, response.status_code)
+    _record(
+        name,
+        "ok",
+        (time.monotonic() - started) * 1000,
+        response.status_code,
+        operation,
+        sku_class,
+    )
     return response
 
 
@@ -172,7 +225,14 @@ def reset_breakers_for_tests() -> None:
     _breakers.reset()
 
 
-def _record(endpoint: str, status: str, duration_ms: float, http_status: int | None) -> None:
+def _record(
+    endpoint: str,
+    status: str,
+    duration_ms: float,
+    http_status: int | None,
+    operation: str = "",
+    sku_class: str = "",
+) -> None:
     from tripplanner.observability import app_event
 
     app_event(
@@ -181,4 +241,9 @@ def _record(endpoint: str, status: str, duration_ms: float, http_status: int | N
         status=status,
         http_status=http_status,
         ms=round(duration_ms, 2),
+        **(
+            {"provider": "google", "operation": operation, "sku_class": sku_class}
+            if operation
+            else {}
+        ),
     )

@@ -9,6 +9,27 @@ This runbook separates three kinds of evidence that answer different questions:
 Do not substitute one for another. A fast in-process benchmark is not a capacity test,
 and a quiet Azure bill does not prove acceptable latency.
 
+## Unified harness reports
+
+`tripplanner.validation.harness.run_scenario` wraps a callable in a scenario/run
+context, captures correlated `app_event` evidence, and returns one versioned report.
+Pass `output_path` to write the same report as JSON. Its sections cover cost, cache
+effectiveness, outbound-request amplification, event duration, and quality.
+
+The cost section deliberately contains separate layers:
+
+1. `measured` contains provider-reported tokens and classified successful Google
+  requests observed during the run.
+2. `estimated` applies the versioned planning catalog in
+  `validation/harness/pricing.py`; these assumptions are not authoritative prices.
+3. `billing_reconciliation` is absent until a delayed cloud billing export is supplied.
+
+Google classification uses both endpoint and `X-Goog-FieldMask` because Text Search
+and Place Details SKU classes cannot be attributed from host-level telemetry alone.
+Optional model-based subjective quality evaluation must record its own LLM evidence
+and cost; deterministic plan evals can be adapted with `plan_quality` without a model
+call. Harness evaluators calculate evidence, while CI/release gates own thresholds.
+
 ## Deterministic regression gate
 
 Run from the repository root:
