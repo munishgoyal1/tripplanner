@@ -353,20 +353,20 @@ deploy or restart the application:
 
 ```powershell
 # Windows
-scripts\win\user\Google-Places-Control.cmd disable prod
+scripts\win\user\google\Google-Places-Control.cmd disable prod
 
 # macOS
-./scripts/mac/user/Google-Places-Control.command disable prod
+./scripts/mac/user/google/Google-Places-Control.command disable prod
 ```
 
 Maps has the parallel owner command:
 
 ```powershell
 # Windows
-scripts\win\user\Google-Maps-Control.cmd disable all
+scripts\win\user\google\Google-Maps-Control.cmd disable all
 
 # macOS
-./scripts/mac/user/Google-Maps-Control.command disable all
+./scripts/mac/user/google/Google-Maps-Control.command disable all
 ```
 
 Use `status all` for a read-only desired/cloud comparison and `apply all` to

@@ -24,12 +24,12 @@ def test_owner_quality_launchers_are_consolidated_in_one_folder() -> None:
 def test_primary_master_launchers_are_named_and_wired_consistently() -> None:
     root = Path(__file__).parents[1]
     run_script = (root / "scripts" / "dev" / "run-latest-master.ps1").read_text(encoding="utf-8")
-    mac_launcher = (root / "scripts" / "mac" / "user" / "Run-Latest-Master.command").read_text(
-        encoding="utf-8"
-    )
-    windows_launcher = (root / "scripts" / "win" / "user" / "Run-Latest-Master.cmd").read_text(
-        encoding="utf-8"
-    )
+    mac_launcher = (
+        root / "scripts" / "mac" / "user" / "run" / "Run-Latest-Master.command"
+    ).read_text(encoding="utf-8")
+    windows_launcher = (
+        root / "scripts" / "win" / "user" / "run" / "Run-Latest-Master.cmd"
+    ).read_text(encoding="utf-8")
 
     assert 'branch -ne "master"' in run_script
     assert "fetch -q origin master" in run_script
@@ -42,11 +42,11 @@ def test_primary_master_launchers_are_named_and_wired_consistently() -> None:
 def test_google_places_control_has_cross_platform_owner_launchers() -> None:
     root = Path(__file__).parents[1]
     script_name = "set-google-places-access.ps1"
-    mac_launcher = (root / "scripts" / "mac" / "user" / "Google-Places-Control.command").read_text(
-        encoding="utf-8"
-    )
+    mac_launcher = (
+        root / "scripts" / "mac" / "user" / "google" / "Google-Places-Control.command"
+    ).read_text(encoding="utf-8")
     windows_launcher = (
-        root / "scripts" / "win" / "user" / "Google-Places-Control.cmd"
+        root / "scripts" / "win" / "user" / "google" / "Google-Places-Control.cmd"
     ).read_text(encoding="utf-8")
 
     assert script_name in mac_launcher
@@ -56,11 +56,11 @@ def test_google_places_control_has_cross_platform_owner_launchers() -> None:
 def test_google_maps_control_has_cross_platform_owner_launchers() -> None:
     root = Path(__file__).parents[1]
     script_name = "set-google-maps-access.ps1"
-    mac_launcher = (root / "scripts" / "mac" / "user" / "Google-Maps-Control.command").read_text(
-        encoding="utf-8"
-    )
+    mac_launcher = (
+        root / "scripts" / "mac" / "user" / "google" / "Google-Maps-Control.command"
+    ).read_text(encoding="utf-8")
     windows_launcher = (
-        root / "scripts" / "win" / "user" / "Google-Maps-Control.cmd"
+        root / "scripts" / "win" / "user" / "google" / "Google-Maps-Control.cmd"
     ).read_text(encoding="utf-8")
 
     assert script_name in mac_launcher
@@ -73,10 +73,10 @@ def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:
         encoding="utf-8"
     )
     mac_launcher = (
-        root / "scripts" / "mac" / "user" / "Sync-Sbxs-FromMaster.command"
+        root / "scripts" / "mac" / "user" / "sync" / "Sync-Sbxs-FromMaster.command"
     ).read_text(encoding="utf-8")
     windows_launcher = (
-        root / "scripts" / "win" / "user" / "Sync-Sbxs-FromMaster.cmd"
+        root / "scripts" / "win" / "user" / "sync" / "Sync-Sbxs-FromMaster.cmd"
     ).read_text(encoding="utf-8")
 
     assert '[string]$Sandbox = ""' in sync_script
@@ -88,6 +88,31 @@ def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:
     assert "sync-sbxs-from-master.ps1" in windows_launcher
     assert not (root / "scripts" / "dev" / "sync-latest.ps1").exists()
     assert not (root / "scripts" / "dev" / "all-worktrees-sync.ps1").exists()
+
+
+def test_categorized_owner_launchers_have_cross_platform_help() -> None:
+    root = Path(__file__).parents[1]
+    groups = {
+        "sync": (
+            "Full-2Way-Sync",
+            "Resolve-All-Recorded-Conflicts",
+            "Sync-Across-MasterSbx",
+            "Sync-Sbxs-FromMaster",
+        ),
+        "run": ("Run-Latest-Master", "Start-Dev-Spa"),
+        "google": ("Google-Maps-Control", "Google-Places-Control"),
+    }
+
+    for platform, suffix in (("mac", ".command"), ("win", ".cmd")):
+        user_root = root / "scripts" / platform / "user"
+        for group, launchers in groups.items():
+            for launcher in launchers:
+                path = user_root / group / f"{launcher}{suffix}"
+                content = path.read_text(encoding="utf-8")
+                assert "show-launcher-help.ps1" in content
+                assert '"?"' in content
+                assert '"help"' in content
+                assert not (user_root / f"{launcher}{suffix}").exists()
 
 
 def test_sync_recovers_pending_conflicts_without_manual_steps() -> None:
@@ -354,12 +379,12 @@ def test_sync_across_reuses_merge_gates_and_refreshes_sandboxes() -> None:
 
 def test_sync_across_launchers_exist_for_both_platforms() -> None:
     root = Path(__file__).parents[1]
-    mac_launcher = (root / "scripts" / "mac" / "user" / "Sync-Across-MasterSbx.command").read_text(
-        encoding="utf-8"
-    )
-    windows_launcher = (root / "scripts" / "win" / "user" / "Sync-Across-MasterSbx.cmd").read_text(
-        encoding="utf-8"
-    )
+    mac_launcher = (
+        root / "scripts" / "mac" / "user" / "sync" / "Sync-Across-MasterSbx.command"
+    ).read_text(encoding="utf-8")
+    windows_launcher = (
+        root / "scripts" / "win" / "user" / "sync" / "Sync-Across-MasterSbx.cmd"
+    ).read_text(encoding="utf-8")
 
     assert "sync-across-master-sbx.ps1" in mac_launcher
     assert "sync-across-master-sbx.ps1" in windows_launcher
@@ -450,10 +475,10 @@ def test_owner_can_resolve_recorded_conflicts_across_all_worktrees() -> None:
         root / "scripts" / "dev" / "resolve-all-recorded-conflicts.ps1"
     ).read_text(encoding="utf-8")
     mac_launcher = (
-        root / "scripts" / "mac" / "user" / "Resolve-All-Recorded-Conflicts.command"
+        root / "scripts" / "mac" / "user" / "sync" / "Resolve-All-Recorded-Conflicts.command"
     ).read_text(encoding="utf-8")
     windows_launcher = (
-        root / "scripts" / "win" / "user" / "Resolve-All-Recorded-Conflicts.cmd"
+        root / "scripts" / "win" / "user" / "sync" / "Resolve-All-Recorded-Conflicts.cmd"
     ).read_text(encoding="utf-8")
 
     assert "worktree list --porcelain" in resolver

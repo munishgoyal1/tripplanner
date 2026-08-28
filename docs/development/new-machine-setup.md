@@ -152,7 +152,7 @@ npm --prefix mobile run typecheck
 
 `git worktree list` should show the primary `master` checkout and any currently
 active sandboxes. Master owns local stack startup. Start the application from the primary
-checkout with `scripts/win/user/Run-Latest-Master.cmd` on Windows. The macOS setup,
+checkout with `scripts/win/user/run/Run-Latest-Master.cmd` on Windows. The macOS setup,
 dependency, build/test, and sandbox paths are available, but the full local
 `dev-spa.ps1` lifecycle is not yet qualified because Windows-specific process
 and npm hooks remain. Use direct Python/npm commands or the hosted canary for
@@ -178,6 +178,6 @@ Sandboxes use server-free validation unless their isolated stack is needed.
 - If a sandbox directory exists but is invalid, inspect `git worktree list`
    before removing anything. Do not delete a worktree containing uncommitted or
    unpushed work.
-- Run `scripts/win/user/Run-Latest-Master.cmd` from the primary checkout before starting
+- Run `scripts/win/user/run/Run-Latest-Master.cmd` from the primary checkout before starting
    the canonical local stack. Use `Update-Sandbox` to bring an in-flight sandbox
    forward from `origin/master`.
