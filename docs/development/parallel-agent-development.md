@@ -54,12 +54,14 @@ sandboxes learn about every Coordinator landing without periodic background
 mutations. A lane that cannot merge cleanly is reported and left for explicit
 resolution; its uncommitted files are never stashed or rewritten.
 
-`Full-2Way-Sync` keeps active work visible. It never stashes a dirty worktree:
-incoming committed history is preflighted without changing files, then merged
-only when it does not overlap the lane's uncommitted paths. An overlap leaves the
-worktree untouched and names the paths. A dirty lane can take and push current
-`master`, but its own commits are not published to `master` until its active
-iteration is committed or finished.
+`Full-2Way-Sync` keeps active work visible and defaults to every local branch,
+including registered sandboxes, multiagent worktrees, and standalone branches
+without an attached worktree. Pass `sbx` to retain the registered-sandbox-only
+scope. It never stashes a dirty worktree: incoming committed history is
+preflighted without changing files, then merged only when it does not overlap the
+lane's uncommitted paths. An overlap leaves the worktree untouched and names the
+paths. A dirty lane can take and push current `master`, but its own commits are
+not published to `master` until its active iteration is committed or finished.
 
 `Sync-Across-MasterSbx` is the rare counterpart that also sends work the other
 way: it merges each sandbox into `master` through the same `-Merge` gates, then
