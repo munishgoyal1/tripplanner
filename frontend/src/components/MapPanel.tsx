@@ -63,18 +63,21 @@ declare global {
 
 let loaderPromise: Promise<any> | null = null;
 
-function loadGoogleMaps(key: string): Promise<any> {
-  if (window.google?.maps?.places) return Promise.resolve(window.google);
-  if (window.google?.maps?.importLibrary) {
+function loadGoogleMaps(key: string, placesEnabled: boolean): Promise<any> {
+  if (window.google?.maps && (!placesEnabled || window.google.maps.places)) {
+    return Promise.resolve(window.google);
+  }
+  if (placesEnabled && window.google?.maps?.importLibrary) {
     return window.google.maps.importLibrary("places").then(() => window.google);
   }
   if (loaderPromise) return loaderPromise;
   loaderPromise = new Promise((resolve, reject) => {
     window.__gmapsReady__ = () => resolve(window.google);
     const s = document.createElement("script");
+    const libraries = placesEnabled ? "&libraries=places" : "";
     s.src =
       `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}` +
-      `&callback=__gmapsReady__&libraries=places&loading=async&v=weekly`;
+      `&callback=__gmapsReady__${libraries}&loading=async&v=weekly`;
     s.async = true;
     s.onerror = () => {
       loaderPromise = null;
@@ -158,6 +161,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
     [sourceView, filters],
   );
   const [key, setKey] = useState<string | null>(null);
+    const [placesEnabled, setPlacesEnabled] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -307,6 +311,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
         if (cancelled) return;
         setView(mv);
         setKey(cfg.enabled ? cfg.key : null);
+        setPlacesEnabled(cfg.enabled && cfg.places_enabled);
         configLoadedRef.current = true;
       } catch (requestError) {
         if (!cancelled && !(requestError instanceof DOMException && requestError.name === "AbortError")) {
@@ -343,7 +348,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
   useEffect(() => {
     if (!key || !view?.enabled || !mapEl.current || mapRef.current) return;
     let cancelled = false;
-    loadGoogleMaps(key)
+    loadGoogleMaps(key, placesEnabled)
       .then((google) => {
         if (cancelled || !mapEl.current) return;
         mapRef.current = new google.maps.Map(mapEl.current, {
@@ -395,7 +400,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
     // `draw` is intentionally omitted: it's called once here to paint the
     // initial overlays, then the dedicated redraw effect keeps it in sync.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, view?.enabled, view?.center, populateStopFromGooglePlace]);
+  }, [key, placesEnabled, view?.enabled, view?.center, populateStopFromGooglePlace]);
 
   // Drop the stale map instance if the component is torn down, so a remount
   // (e.g. toggling "Show map") rebinds to a fresh container instead of an

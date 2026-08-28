@@ -38,6 +38,7 @@ param cacheRedisNamespace = readEnvironmentVariable('CACHE_REDIS_NAMESPACE', 'tr
 param cacheRedisConnectTimeoutSec = readEnvironmentVariable('CACHE_REDIS_CONNECT_TIMEOUT_SEC', '0.2')
 param cacheRedisSocketTimeoutSec = readEnvironmentVariable('CACHE_REDIS_SOCKET_TIMEOUT_SEC', '0.2')
 param enableGooglePlaces = readEnvironmentVariable('ENABLE_GOOGLE_PLACES', '0') == '1'
+param enableGoogleMaps = readEnvironmentVariable('ENABLE_GOOGLE_MAPS', '0') == '1'
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
 param googleMapsBrowserKey = readEnvironmentVariable('GOOGLE_MAPS_BROWSER_KEY', '')
 param tavilyApiKey = readEnvironmentVariable('TAVILY_API_KEY', '')

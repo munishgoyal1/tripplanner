@@ -137,6 +137,9 @@ param tavilyApiKey string = ''
 @description('Explicit billing gate for Google Places API (New). Keep false outside production.')
 param enableGooglePlaces bool = false
 
+@description('Explicit billing gate for Google Maps, Routes, and Static Maps APIs.')
+param enableGoogleMaps bool = false
+
 @secure()
 @description('Google OAuth client id (web app). Optional; enables Sign in with Google.')
 param googleOauthClientId string = ''
@@ -272,6 +275,7 @@ var baseEnv = [
   { name: 'AZURE_OPENAI_API_KEY', secretRef: 'azure-openai-api-key' }
   { name: 'DUFFEL_API_KEY', secretRef: 'duffel-api-key' }
   { name: 'ENABLE_GOOGLE_PLACES', value: enableGooglePlaces ? '1' : '0' }
+  { name: 'ENABLE_GOOGLE_MAPS', value: enableGoogleMaps ? '1' : '0' }
   { name: 'GOOGLE_PLACES_API_KEY', secretRef: 'google-places-api-key' }
   { name: 'TAVILY_API_KEY', secretRef: 'tavily-api-key' }
   { name: 'GOOGLE_MAPS_BROWSER_KEY', value: googleMapsBrowserKey }

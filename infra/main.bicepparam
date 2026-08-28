@@ -29,6 +29,7 @@ param cacheTtlSettings = {
 	activityFare: int(readEnvironmentVariable('ACTIVITY_CACHE_TTL_SEC', '86400'))
 }
 param enableGooglePlaces = readEnvironmentVariable('ENABLE_GOOGLE_PLACES', '0') == '1'
+param enableGoogleMaps = readEnvironmentVariable('ENABLE_GOOGLE_MAPS', '0') == '1'
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
 param googleMapsBrowserKey = readEnvironmentVariable('GOOGLE_MAPS_BROWSER_KEY', '')
 param googleAnalyticsMeasurementId = readEnvironmentVariable('GOOGLE_ANALYTICS_MEASUREMENT_ID', '')

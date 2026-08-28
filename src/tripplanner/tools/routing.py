@@ -33,7 +33,8 @@ def is_configured() -> bool:
 
 
 def _google_configured() -> bool:
-    return bool(get_settings().google_places_api_key)
+    settings = get_settings()
+    return settings.enable_google_maps and bool(settings.google_places_api_key)
 
 
 def _ors_configured() -> bool:

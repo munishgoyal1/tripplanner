@@ -69,8 +69,18 @@ def _configured(monkeypatch):
     monkeypatch.setattr(
         routing,
         "get_settings",
-        lambda: SimpleNamespace(google_places_api_key="test-key"),
+        lambda: SimpleNamespace(enable_google_maps=True, google_places_api_key="test-key"),
     )
+
+
+def test_google_routes_key_does_not_bypass_disabled_maps_gate(monkeypatch):
+    monkeypatch.setattr(
+        routing,
+        "get_settings",
+        lambda: SimpleNamespace(enable_google_maps=False, google_places_api_key="copied-key"),
+    )
+
+    assert routing._google_configured() is False
 
 
 def test_compute_route_returns_legs_and_totals(_configured, monkeypatch):
@@ -138,6 +148,7 @@ def test_coordinate_route_falls_back_to_openrouteservice(monkeypatch):
         routing,
         "get_settings",
         lambda: SimpleNamespace(
+            enable_google_maps=False,
             google_places_api_key="",
             openrouteservice_api_key="ors-test-key",
             openrouteservice_base_url="https://api.openrouteservice.org",
@@ -179,6 +190,7 @@ def test_openrouteservice_coordinate_routes_are_cached(monkeypatch):
         routing,
         "get_settings",
         lambda: SimpleNamespace(
+            enable_google_maps=False,
             google_places_api_key="",
             openrouteservice_api_key="ors-test-key",
             openrouteservice_base_url="https://api.openrouteservice.org",

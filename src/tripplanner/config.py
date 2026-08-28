@@ -246,7 +246,11 @@ class Settings(BaseModel):
     # map (pins, day routes). MUST be a SEPARATE key from google_places_api_key
     # because it is exposed to the browser: lock it down with an HTTP-referrer
     # restriction + restrict it to "Maps JavaScript API" + "Directions API" in
-    # the Cloud console. Leave empty to disable the map panel entirely.
+    # the Cloud console. The owner must explicitly enable Maps for the current
+    # environment; a copied key alone must not activate billable requests.
+    enable_google_maps: bool = Field(
+        default_factory=lambda: os.getenv("ENABLE_GOOGLE_MAPS", "0").strip() == "1"
+    )
     google_maps_browser_key: str = os.getenv("GOOGLE_MAPS_BROWSER_KEY", "")
 
     # GA4 measurement id exposed to the browser only in production. This is a

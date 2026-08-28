@@ -806,7 +806,7 @@ export async function fetchMapsConfig(): Promise<MapsConfig> {
     const res = await fetch(`${BASE}/maps/config`);
     mapsConfigCache = (await res.json()) as MapsConfig;
   } catch {
-    mapsConfigCache = { enabled: false, key: "" };
+    mapsConfigCache = { enabled: false, places_enabled: false, key: "" };
   }
   return mapsConfigCache;
 }

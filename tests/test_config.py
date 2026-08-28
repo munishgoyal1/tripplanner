@@ -58,6 +58,16 @@ def test_google_places_requires_explicit_enable(monkeypatch):
     assert Settings().enable_google_places is True
 
 
+def test_google_maps_is_disabled_by_default(monkeypatch):
+    monkeypatch.delenv("ENABLE_GOOGLE_MAPS", raising=False)
+    assert Settings().enable_google_maps is False
+
+
+def test_google_maps_requires_explicit_enable(monkeypatch):
+    monkeypatch.setenv("ENABLE_GOOGLE_MAPS", "1")
+    assert Settings().enable_google_maps is True
+
+
 def test_cache_ttl_scale_is_owner_configurable(monkeypatch):
     monkeypatch.setenv("CACHE_TTL_SCALE", "0.5")
     settings = Settings()

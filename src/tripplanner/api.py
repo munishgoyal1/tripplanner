@@ -1214,8 +1214,14 @@ async def maps_config_endpoint() -> dict:
     """
     from tripplanner.config import get_settings
 
-    key = get_settings().google_maps_browser_key or ""
-    return {"enabled": bool(key), "key": key}
+    settings = get_settings()
+    key = settings.google_maps_browser_key or ""
+    enabled = settings.enable_google_maps and bool(key)
+    return {
+        "enabled": enabled,
+        "places_enabled": enabled and settings.enable_google_places,
+        "key": key if enabled else "",
+    }
 
 
 @app.get("/analytics/config")

@@ -315,35 +315,41 @@ first-paid-tier list prices, the configured cold ceiling is roughly USD 0.142
 This is a catalog estimate, not billed cost; provider billing exports remain
 authoritative, and Azure OpenAI/Routes remain outside this figure.
 
-### All-environment Places gate
+### Google API capability gates
 
-Google Places is disabled in every GCP project while the 2026-08-27 cost
-incident is investigated. Local, canary, and production keep
-`places.googleapis.com` disabled at the Google Service Usage layer.
-`placesEnabled` in
-[`infra/billing-guardrails.json`](../../infra/billing-guardrails.json) is the
-central owner-facing desired state for that cloud control. The application adds
-a second, fail-closed gate:
+One checked-in environment-profile flag owns the desired state for each paid
+capability. There is no duplicate desired-state boolean in
+[`infra/billing-guardrails.json`](../../infra/billing-guardrails.json):
 
 ```dotenv
 ENABLE_GOOGLE_PLACES=0
-GOOGLE_PLACES_API_KEY=
+ENABLE_GOOGLE_MAPS=0
 ```
 
-Both values are required before the application makes a Places request.
 Checked-in `config/environments/local.env`, `canary.env`, and `prod.env` own the
-non-secret switch, cache TTLs, and request ceilings. Ignored `.env`, `.env.canary`,
-and `.env.prod` contain only secret overlays, and `.env.example` documents that
-secret-only surface. All three environments are off. Hosted
-Bicep parameters enforce the same policy while the key remains a secret input.
-Google Routes and browser Maps have separate runtime paths and are not disabled
-by the Places switch.
+non-secret switches. Ignored `.env`, `.env.canary`, and `.env.prod` contain the
+keys as secret overlays. A key alone never activates a paid request.
+
+| Capability | Application surfaces | GCP Service Usage APIs |
+| --- | --- | --- |
+| Places | server Places API, browser autocomplete and place details | `places.googleapis.com` |
+| Maps | interactive base map, Google Routes fallback, itinerary Static Maps | `maps-backend.googleapis.com`, `routes.googleapis.com`, `static-maps-backend.googleapis.com` |
+
+The browser key is still a referrer-restricted credential for Maps JavaScript
+and browser Places. The server key still authenticates server-side Places,
+Routes, and Static Maps. Flags own capabilities rather than credentials because
+Service Usage is project-wide, not key-specific. When Maps is on and Places is
+off, the SPA loads the base map without the Places JavaScript library.
+
+All three checked-in environments currently set both capabilities to off.
+Hosted Bicep parameters pass the same flags into Container Apps.
 
 #### Emergency no-deployment control
 
-Disabling the API in Google Service Usage stops new Places calls regardless of
-the application flag, key, or currently running Container Apps revision. It does
-not deploy or restart the application:
+`disable` updates the checked-in profile and immediately disables the relevant
+GCP services. The Service Usage change stops new calls regardless of the
+application flag, key, or currently running Container Apps revision. It does not
+deploy or restart the application:
 
 ```powershell
 # Windows
@@ -353,20 +359,25 @@ scripts\win\user\Google-Places-Control.cmd disable prod
 ./scripts/mac/user/Google-Places-Control.command disable prod
 ```
 
-Read all current states with `status all`. An explicit `enable` is spend-bearing
-and therefore requires the final argument `APPROVE_GOOGLE_PLACES_SPEND`.
-An immediate enable/disable is an override; for durable policy, first edit
-`placesEnabled` in the central JSON and run:
+Maps has the parallel owner command:
 
 ```powershell
-pwsh -File infra/gcp/set-google-places-access.ps1 `
-  apply all APPROVE_GOOGLE_PLACES_SPEND
+# Windows
+scripts\win\user\Google-Maps-Control.cmd disable all
+
+# macOS
+./scripts/mac/user/Google-Maps-Control.command disable all
 ```
 
-Changing only Service Usage is sufficient for an emergency **off**. Turning an
-environment **on** still requires all three independent gates: cloud Service
-Usage enabled, `ENABLE_GOOGLE_PLACES=1`, and a valid Places key. A hosted runtime
-flag change creates a Container Apps revision; it is not an in-place toggle.
+Use `status all` for a read-only desired/cloud comparison and `apply all` to
+repair cloud drift from the profiles. `on`/`off` are aliases for
+`enable`/`disable`. Enabling is spend-bearing and requires the final argument
+`APPROVE_GOOGLE_PLACES_SPEND` or `APPROVE_GOOGLE_MAPS_SPEND`, respectively.
+
+Changing Service Usage is sufficient for an emergency off. A local process must
+restart to consume a profile change. A hosted runtime must be deployed to create
+a revision with the new flag; control scripts never perform that deployment.
+Production deployment remains a separate owner-approved operation.
 
 ### 2026-08-27 incident evidence
 

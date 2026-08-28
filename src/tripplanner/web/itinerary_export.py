@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import base64
 from html import escape
-import os
 from typing import Any
 from urllib.parse import quote
 
 import httpx
 
 from tripplanner import http_client
+from tripplanner.config import get_settings
 from tripplanner.web import places_cache, trip_view
 
 
@@ -83,7 +83,8 @@ def _qr_image_url(value: str) -> str:
 def _static_map_data_uri(
     pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]
   ) -> str:
-    key = os.getenv("GOOGLE_PLACES_API_KEY", "").strip()
+    settings = get_settings()
+    key = settings.google_places_api_key.strip() if settings.enable_google_maps else ""
     points = [pin_by_id.get(pin_id) or {} for pin_id in pin_ids]
     coords = [
       (float(point["lat"]), float(point["lng"]))
