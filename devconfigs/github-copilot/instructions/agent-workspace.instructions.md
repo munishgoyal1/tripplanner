@@ -14,3 +14,15 @@ applyTo: "**"
   near the bottom of the chat.
 - Open GitHub Copilot agent chats in the primary editor area when the host allows
   the agent to control placement. Preserve the workspace's restored layout.
+- Every substantive final reply and session summary must include a concise
+  `Original prompt` section quoting the latest active user request verbatim, so
+  the task can be identified without scrolling.
+- Every substantive final reply and session summary must include a concise
+  `Root cause (RCA)` section. For failures, state the supported direct cause,
+  evidence, contributing factors, why the fix works, and remaining risk. For
+  work with no failure to diagnose, say RCA is not applicable and give the
+  decision rationale instead of inventing a cause.
+- Every substantive final reply and session summary must include a concise
+  `Next actions` section with ordered steps, their owner, and any validation,
+  approval, deployment, or restart required. Write `None` when no follow-up is
+  needed.

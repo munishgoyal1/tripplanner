@@ -17,6 +17,12 @@ IDs, private keys, or machine-specific paths.
 | `macos/Brewfile` | Homebrew developer-tool package manifest |
 | `CONFIG-CHANGES.txt` | Plain-English, chronological configuration log |
 
+Repository-owned Copilot instructions are the portable source of truth for
+cross-machine agent behavior. Copilot memory under `/memories/` is machine- or
+service-scoped and may complement these instructions, but a fresh clone does not
+restore it. Put durable, secret-free behavior needed on every development machine
+in `github-copilot/instructions/` and let this installer copy it into place.
+
 ## Apply on a new machine
 
 For the full application, VS Code/Copilot, and four-agent environment, use the

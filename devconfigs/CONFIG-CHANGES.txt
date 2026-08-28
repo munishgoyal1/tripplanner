@@ -5,6 +5,28 @@ This is the plain-English running history of changes under devconfigs. Add the
 newest dated entry at the top. Record what changed, why it changed, how to apply
 it, and any manual recovery step that could help on a new or broken machine.
 
+2026-08-28 - Made agent summary preferences portable
+-----------------------------------------------------
+What changed:
+- Added the original prompt, root-cause analysis, and next-actions sections to
+  the repository-owned global Copilot instruction.
+- Documented that `/memories/` is not restored by a repository clone and that
+  durable, secret-free agent behavior belongs in the portable instruction bundle.
+
+Why:
+New machines and development environments should reproduce the same session
+summary behavior through the existing one-click setup instead of relying on
+machine-local Copilot memory.
+
+How to apply:
+Run `pwsh -File devconfigs/Apply-DevConfigs.ps1` or either platform's full
+`Setup-Tripplanner-Dev` launcher. Reopen active Copilot chats if they do not pick
+up the installed instruction immediately.
+
+Recovery:
+Remove `agent-workspace.instructions.md` from the VS Code User `prompts` folder
+and re-run the installer from a repository revision containing the desired rules.
+
 2026-08-10 - Retired fixed worker workspace layouts
 ---------------------------------------------------
 What changed:
