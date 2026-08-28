@@ -13,6 +13,8 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `setup-dev-machine-macos.sh` | Restore the full macOS toolchain and VS Code/Copilot profile |
 | `analyze-errors.ps1` | Generate local or canary error reports |
 | `cosmos_copy.py` | Guarded Cosmos data copy and verification utility |
+| `prod_cache_sync.py` | Merge-only local central cache and production Cosmos synchronizer; fixed to shared Places and global tool-cache partitions |
+| `prod-cache-sync.ps1` | Guarded operator entry point for cache status, pull, push, and two-way synchronization |
 | `hosted_smoke.py` | Read-only hosted HTTP smoke implementation |
 | `performance_baseline.py` | Hermetic endpoint performance baseline |
 | `smoke_test.py` | Local provider credential and connectivity smoke |
@@ -75,6 +77,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
 | `win/prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
 | `win/prod/Rollback-Prod.cmd` | Launch `infra/rollback-prod.ps1` to activate the previous production revision |
+| `win/prod/Sync-Prod-Cache.cmd` | Inspect or merge eligible cache entries between local `tripplanner-cache` and production; production writes require `APPROVE_PROD_CACHE_SYNC` |
 | `mac/` | macOS `.command` equivalents for every `win/` Windows `.cmd` launcher |
 
 The macOS launchers preserve the Windows names with a `.command` extension and
@@ -83,6 +86,40 @@ the same subfolder layout. For example, use
 `scripts/mac/user/sandbox/New-Sandbox.command`, or
 `scripts/mac/canary/Deploy-Canary.command`. They forward all arguments to the
 same PowerShell owners and retain the existing deployment approval gates.
+
+## Production cache synchronization
+
+`Sync-Prod-Cache` is an owner-triggered merge, not a database copy. Its fixed
+allowlist is `places_cache/_shared` plus `tool_cache/_global_` when the target
+profile enables `CACHE_WARM_EVERYTHING`. It never reads or writes `user:*`
+partitions, application containers, or deletes. Newer Places metadata, reviews,
+and signed photo URLs are selected independently; tool results use `cached_at`
+with the original Cosmos timestamp as a legacy fallback. Expired evidence is
+skipped rather than made fresh by copying, and writes use source snapshot ETags.
+
+Run the matching launcher from `scripts/mac/prod/` or `scripts/win/prod/`:
+
+```powershell
+# Read both sides and report planned changes. This is the default.
+./Sync-Prod-Cache.command
+
+# Production to the local central emulator cache.
+./Sync-Prod-Cache.command -Direction Pull
+
+# Local central cache to production, or merge both ways.
+./Sync-Prod-Cache.command -Direction Push -Approval APPROVE_PROD_CACHE_SYNC
+./Sync-Prod-Cache.command -Direction Both -Approval APPROVE_PROD_CACHE_SYNC
+
+# Preview one direction without writing either side.
+./Sync-Prod-Cache.command -Direction Both -WhatIf
+```
+
+The launcher accepts only the approved personal Azure identity and Visual Studio
+Enterprise subscription. It retrieves the shared account credential through the
+authenticated Azure CLI, keeps it in the child process environment only, removes
+it after the run, and writes a credential-free JSON report under
+`logs/cache-sync/`. The local Cosmos emulator must be running. Every apply is
+idempotent and can be rerun after reported ETag conflicts.
 
 Every entry point above writes its latest run to
 `<primary-checkout>/logs/last-run/<name>.log`, overwritten each run, next to an

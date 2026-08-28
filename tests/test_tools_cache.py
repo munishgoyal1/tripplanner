@@ -85,6 +85,7 @@ def test_forever_tool_entry_opts_out_of_cosmos_container_ttl(monkeypatch):
     from tripplanner import storage_cosmos
 
     captured: list[dict] = []
+    monkeypatch.setattr(tools_cache.time, "time", lambda: 1234.0)
     monkeypatch.setattr(
         storage_cosmos,
         "upsert_doc",
@@ -93,7 +94,9 @@ def test_forever_tool_entry_opts_out_of_cosmos_container_ttl(monkeypatch):
 
     tools_cache._cosmos_set("_global_", "place-key", "value", -1)
 
-    assert captured == [{"result": "value", "expires_at": -1, "ttl": -1}]
+    assert captured == [
+        {"result": "value", "cached_at": 1234.0, "expires_at": -1, "ttl": -1}
+    ]
 
 
 def test_stateful_tools_are_never_cached():
