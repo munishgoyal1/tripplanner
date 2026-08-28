@@ -62,6 +62,40 @@ def test_google_tool_cache_uses_places_specific_ttl(monkeypatch):
     assert captured == [86400]
 
 
+def test_stable_and_volatile_tool_results_use_separate_forever_flags(monkeypatch):
+    from tripplanner.config import get_settings
+
+    captured: list[int] = []
+    monkeypatch.setattr(
+        tools_cache,
+        "_local_set",
+        lambda _user_id, _key, _value, ttl: captured.append(ttl),
+    )
+    settings = get_settings()
+    monkeypatch.setattr(settings, "cache_stable_forever", True)
+    monkeypatch.setattr(settings, "cache_volatile_forever", False)
+
+    tools_cache.cache_store("get_place_reviews", {"place_id": "p"}, "stable")
+    tools_cache.cache_store("get_weather_forecast", {"city": "Paris"}, "volatile")
+
+    assert captured == [-1, settings.cache_ttl(90 * 60)]
+
+
+def test_forever_tool_entry_opts_out_of_cosmos_container_ttl(monkeypatch):
+    from tripplanner import storage_cosmos
+
+    captured: list[dict] = []
+    monkeypatch.setattr(
+        storage_cosmos,
+        "upsert_doc",
+        lambda _container, _partition, _key, body: captured.append(body),
+    )
+
+    tools_cache._cosmos_set("_global_", "place-key", "value", -1)
+
+    assert captured == [{"result": "value", "expires_at": -1, "ttl": -1}]
+
+
 def test_stateful_tools_are_never_cached():
     # Even if the caller pushes a value in, lookups still miss because the
     # store is a no-op for the stateful allow-list.

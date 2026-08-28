@@ -139,6 +139,15 @@ class Settings(BaseModel):
     cache_ttl_scale: float = Field(
         default_factory=lambda: _env_positive_float("CACHE_TTL_SCALE", 1.0)
     )
+    cache_stable_forever: bool = Field(
+        default_factory=lambda: os.getenv("CACHE_STABLE_FOREVER", "0").strip() == "1"
+    )
+    cache_volatile_forever: bool = Field(
+        default_factory=lambda: os.getenv("CACHE_VOLATILE_FOREVER", "0").strip() == "1"
+    )
+    cache_warm_everything: bool = Field(
+        default_factory=lambda: os.getenv("CACHE_WARM_EVERYTHING", "0").strip() == "1"
+    )
     cache_redis_enabled: bool = Field(
         default_factory=lambda: os.getenv("CACHE_REDIS_ENABLED", "0").strip() == "1"
     )
@@ -154,6 +163,14 @@ class Settings(BaseModel):
     def cache_ttl(self, seconds: int | float) -> int:
         """Apply the environment-wide cache lifetime control."""
         return max(1, round(float(seconds) * self.cache_ttl_scale))
+
+    def stable_cache_ttl(self, seconds: int | float) -> int:
+        """Resolve a stable-data TTL; -1 means the entry never expires."""
+        return -1 if self.cache_stable_forever else self.cache_ttl(seconds)
+
+    def volatile_cache_ttl(self, seconds: int | float) -> int:
+        """Resolve a fast-varying-data TTL; -1 means the entry never expires."""
+        return -1 if self.cache_volatile_forever else self.cache_ttl(seconds)
 
     # Static schedule estimates used only when a persisted itinerary or live
     # provider does not contain the corresponding operational timing.

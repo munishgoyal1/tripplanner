@@ -419,6 +419,24 @@ def test_live_snapshot_drops_expired_and_photo_urls(_isolate):
     assert "photo_urls" not in fresh and "__photos_at__" not in fresh
 
 
+def test_full_warming_snapshot_keeps_signed_photo_data(_isolate, monkeypatch):
+    from tripplanner.config import get_settings
+
+    monkeypatch.setattr(get_settings(), "cache_warm_everything", True)
+    now = time.time()
+    with pc._CACHE_LOCK:
+        pc._CACHE.clear()
+        pc._CACHE[pc._key("Fresh", "Goa")] = {
+            "__at__": now,
+            "name": "Fresh",
+            "photo_urls": ["https://signed"],
+            "__photos_at__": now,
+        }
+        snapshot = pc._live_snapshot()
+
+    assert snapshot[pc._key("Fresh", "Goa")]["photo_urls"] == ["https://signed"]
+
+
 def _fake_cosmos(monkeypatch, store: dict) -> None:
     """Point the durable layer at an in-memory sharded store keyed by doc id."""
     from tripplanner import storage_cosmos
@@ -454,6 +472,20 @@ def test_cosmos_persists_one_document_per_key(_isolate, monkeypatch):
     body = store[pc._doc_id(pc._key("Taj", "Goa"))]
     assert body["key"] == pc._key("Taj", "Goa")
     assert body["entry"]["place_id"] == "id-Taj"
+
+
+def test_stable_forever_marks_places_cosmos_items_never_expire(_isolate, monkeypatch):
+    from tripplanner.config import get_settings
+
+    store: dict = {}
+    _fake_cosmos(monkeypatch, store)
+    monkeypatch.setattr(get_settings(), "cache_stable_forever", True)
+
+    pc.get_details("Taj", "Goa")
+
+    assert pc.flush_writes()
+    body = store[pc._doc_id(pc._key("Taj", "Goa"))]
+    assert body["ttl"] == -1
 
 
 def test_lazy_load_serves_from_cosmos_without_google(_isolate, monkeypatch):

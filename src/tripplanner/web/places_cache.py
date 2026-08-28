@@ -65,12 +65,12 @@ def _ttl(seconds: int | float) -> int:
         _MISS_TTL_S: settings.google_places_miss_cache_ttl_sec,
         _PHOTO_TTL_S: settings.google_places_photo_url_cache_ttl_sec,
     }
-    return settings.cache_ttl(configured.get(seconds, seconds))
+    return settings.stable_cache_ttl(configured.get(seconds, seconds))
 
 
 def _reviews_ttl() -> int:
     settings = get_settings()
-    return settings.cache_ttl(settings.google_places_reviews_cache_ttl_sec)
+    return settings.stable_cache_ttl(settings.google_places_reviews_cache_ttl_sec)
 
 # Durable L2 store so warm data survives container restarts. Each place is one
 # small Cosmos item (keyed by a hash of the cache key) so the store scales well
@@ -146,7 +146,9 @@ def _load_once() -> None:
     with _CACHE_LOCK:
         for k, v in raw.items():
             ttl = _ttl(_MISS_TTL_S if _is_miss(v) else _META_TTL_S)
-            if isinstance(v, dict) and (now - v.get("__at__", 0.0)) < ttl:
+            if isinstance(v, dict) and (
+                ttl == -1 or (now - v.get("__at__", 0.0)) < ttl
+            ):
                 _CACHE[k] = v
         _loaded = True
 
@@ -159,6 +161,8 @@ def _doc_id(key: str) -> str:
 def _persistable(entry: dict[str, Any]) -> dict[str, Any]:
     """Drop volatile signed-photo fields before persisting; they expire within
     ~1h and are re-resolved from the long-lived ``photo_refs`` on reload."""
+    if get_settings().cache_warm_everything:
+        return dict(entry)
     return {k: v for k, v in entry.items() if k not in ("photo_urls", "__photos_at__")}
 
 
@@ -173,7 +177,7 @@ def _live_snapshot() -> dict[str, dict[str, Any]]:
     snapshot: dict[str, dict[str, Any]] = {}
     for k, v in _CACHE.items():
         ttl = _ttl(_MISS_TTL_S if _is_miss(v) else _META_TTL_S)
-        if (now - v.get("__at__", 0.0)) >= ttl:
+        if ttl != -1 and (now - v.get("__at__", 0.0)) >= ttl:
             continue
         snapshot[k] = _persistable(v)
     return snapshot
@@ -298,7 +302,11 @@ def _write_durable(keys: set[str]) -> None:
                         _COSMOS_CONTAINER,
                         _COSMOS_PARTITION,
                         _doc_id(k),
-                        {"key": k, "entry": entry},
+                        {
+                            "key": k,
+                            "entry": entry,
+                            **({"ttl": -1} if get_settings().cache_stable_forever else {}),
+                        },
                     )
                 except Exception as exc:  # noqa: BLE001
                     if getattr(exc, "status_code", None) == 429:
@@ -386,7 +394,7 @@ def _fresh(entry: dict[str, Any] | None, ttl: float | None = None) -> bool:
         if ttl is not None
         else _ttl(_MISS_TTL_S if _is_miss(entry) else _META_TTL_S)
     )
-    return (time.time() - entry.get("__at__", 0.0)) < effective_ttl
+    return effective_ttl == -1 or (time.time() - entry.get("__at__", 0.0)) < effective_ttl
 
 
 def _is_explicit_airport_name(name: str) -> bool:
@@ -694,9 +702,10 @@ def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
     if not info:
         return None
     with _CACHE_LOCK:
-        reviews_stale = (
+        review_ttl = _reviews_ttl()
+        reviews_stale = review_ttl != -1 and (
             time.time() - info.get("__reviews_at__", 0.0)
-        ) >= _reviews_ttl()
+        ) >= review_ttl
         needs_reviews = refresh or "reviews" not in info or reviews_stale
         place_id = info.get("place_id", "")
     if needs_reviews:

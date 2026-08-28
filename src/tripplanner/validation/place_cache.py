@@ -22,6 +22,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from tripplanner.config import get_settings
 from tripplanner.validation.emulator import (
     LIVE_DATABASE_NAMES,
     SANDBOX_PREFIX,
@@ -59,7 +60,7 @@ _VOLATILE_FIELDS = frozenset({"photo_urls", "__photos_at__"})
 #: Google returns ten photo references per place and the app renders at most
 #: three, but each reference is ~500 characters -- four fifths of an unfiltered
 #: export. Mirrors places_cache._MAX_PHOTOS_PER_PLACE; a test keeps them equal.
-_MAX_PHOTO_REFS = 3
+_MAX_PHOTO_REFS = 1
 
 
 def _doc_id(key: str) -> str:
@@ -70,10 +71,14 @@ def _worth_keeping(entry: Any) -> bool:
     """A lookup that failed is not grounding, and re-trying it is cheap."""
     if not isinstance(entry, dict):
         return False
+    if get_settings().cache_warm_everything:
+        return True
     return bool(entry.get("lat") or entry.get("lng") or entry.get("location"))
 
 
 def _portable(entry: dict[str, Any]) -> dict[str, Any]:
+    if get_settings().cache_warm_everything:
+        return dict(entry)
     trimmed = {k: v for k, v in entry.items() if k not in _VOLATILE_FIELDS}
     refs = trimmed.get("photo_refs")
     if isinstance(refs, list) and len(refs) > _MAX_PHOTO_REFS:

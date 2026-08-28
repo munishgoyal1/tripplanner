@@ -2116,7 +2116,23 @@ def test_only_the_photos_the_app_can_show_are_kept() -> None:
 
     portable = place_cache._portable({"lat": 1.0, "photo_refs": [str(n) for n in range(10)]})
 
-    assert portable["photo_refs"] == ["0", "1", "2"]
+    assert portable["photo_refs"] == ["0"]
+
+
+def test_warm_everything_keeps_the_complete_cache_entry(monkeypatch: pytest.MonkeyPatch) -> None:
+    from tripplanner.config import get_settings
+    from tripplanner.validation import place_cache
+
+    monkeypatch.setattr(get_settings(), "cache_warm_everything", True)
+    entry = {
+        "photo_urls": ["https://signed"],
+        "__photos_at__": 1.0,
+        "photo_refs": [str(n) for n in range(10)],
+        "reviews": [{"text": "lovely"}],
+    }
+
+    assert place_cache._portable(entry) == entry
+    assert place_cache._worth_keeping({"__at__": 1.0})
 
 
 def test_the_photo_cap_matches_what_the_app_renders() -> None:

@@ -13,6 +13,9 @@
 
 type cacheTtlSettingsType = {
   scale: string
+  stableForever: bool
+  volatileForever: bool
+  warmEverything: bool
   hotelSearch: int
   flightSearch: int
   activitySearch: int
@@ -86,6 +89,9 @@ param openRouteServiceRouteTtlSec int = 21600
 @description('Owner-controlled runtime cache lifetimes for this environment.')
 param cacheTtlSettings cacheTtlSettingsType = {
   scale: '1'
+  stableForever: false
+  volatileForever: false
+  warmEverything: false
   hotelSearch: 600
   flightSearch: 600
   activitySearch: 21600
@@ -271,6 +277,9 @@ var baseEnv = [
   { name: 'GOOGLE_MAPS_BROWSER_KEY', value: googleMapsBrowserKey }
   { name: 'GOOGLE_ANALYTICS_MEASUREMENT_ID', value: googleAnalyticsMeasurementId }
   { name: 'CACHE_TTL_SCALE', value: cacheTtlSettings.scale }
+  { name: 'CACHE_STABLE_FOREVER', value: cacheTtlSettings.stableForever ? '1' : '0' }
+  { name: 'CACHE_VOLATILE_FOREVER', value: cacheTtlSettings.volatileForever ? '1' : '0' }
+  { name: 'CACHE_WARM_EVERYTHING', value: cacheTtlSettings.warmEverything ? '1' : '0' }
   { name: 'HOTEL_SEARCH_CACHE_TTL_SEC', value: string(cacheTtlSettings.hotelSearch) }
   { name: 'FLIGHT_SEARCH_CACHE_TTL_SEC', value: string(cacheTtlSettings.flightSearch) }
   { name: 'ACTIVITY_SEARCH_CACHE_TTL_SEC', value: string(cacheTtlSettings.activitySearch) }

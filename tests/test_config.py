@@ -64,6 +64,29 @@ def test_cache_ttl_scale_is_owner_configurable(monkeypatch):
     assert settings.cache_ttl(1) == 1
 
 
+def test_stable_and_volatile_forever_flags_are_independent(monkeypatch):
+    monkeypatch.setenv("CACHE_TTL_SCALE", "0.5")
+    monkeypatch.setenv("CACHE_STABLE_FOREVER", "1")
+    monkeypatch.setenv("CACHE_VOLATILE_FOREVER", "0")
+    settings = Settings()
+
+    assert settings.stable_cache_ttl(600) == -1
+    assert settings.volatile_cache_ttl(600) == 300
+
+    monkeypatch.setenv("CACHE_STABLE_FOREVER", "0")
+    monkeypatch.setenv("CACHE_VOLATILE_FOREVER", "1")
+    settings = Settings()
+
+    assert settings.stable_cache_ttl(600) == 300
+    assert settings.volatile_cache_ttl(600) == -1
+
+
+def test_warm_everything_flag_is_owner_configurable(monkeypatch):
+    monkeypatch.setenv("CACHE_WARM_EVERYTHING", "1")
+
+    assert Settings().cache_warm_everything is True
+
+
 def test_google_places_cost_policy_is_owner_configurable(monkeypatch):
     monkeypatch.setenv("GOOGLE_PLACES_SEARCH_CACHE_TTL_SEC", "86400")
     monkeypatch.setenv("GOOGLE_PLACES_MAX_TEXT_SEARCHES_PER_TRIP", "2")
