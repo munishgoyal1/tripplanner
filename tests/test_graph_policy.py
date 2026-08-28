@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 
 from tripplanner.graph_policy import (
@@ -152,7 +153,9 @@ def test_the_phase_budget_does_not_end_with_a_short_departure_buffer() -> None:
         ToolMessage(content="Created", tool_call_id="create-1"),
         _tool_call("update_trip_plan", "update-1"),
         ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
-        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 2),
+        _tool_call("update_trip_plan", "update-2"),
+        ToolMessage(content="Trip plan updated.", tool_call_id="update-2"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 3),
     ]
     decision = resolve_completion_policy(
         messages=current_turn,
@@ -187,6 +190,44 @@ def test_the_phase_budget_does_not_end_with_a_short_departure_buffer() -> None:
     assert decision.forced_tool == "update_trip_plan"
     assert decision.forced_reason == "persist_or_repair_plan"
     assert "leaves only 60 minutes" in (decision.requirement or "")
+
+
+def test_the_phase_budget_does_not_end_with_an_intercity_continuity_gap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    current_turn: list[BaseMessage] = [
+        HumanMessage(content="plan a Delhi, Agra, and Jaipur trip"),
+        _tool_call("create_trip_plan", "create-1"),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+        _tool_call("update_trip_plan", "update-1"),
+        ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        _tool_call("update_trip_plan", "update-2"),
+        ToolMessage(content="Trip plan updated.", tool_call_id="update-2"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 3),
+    ]
+    continuity_gap = (
+        "Trident Jaipur is far from Trident Agra on Day 4, "
+        "and no journey connects them."
+    )
+    monkeypatch.setattr(
+        "tripplanner.graph_policy.core_planning_completion_gaps",
+        lambda _plan: [continuity_gap],
+    )
+
+    decision = resolve_completion_policy(
+        messages=current_turn,
+        active_trip={
+            "destination": "Delhi, Agra, Jaipur",
+            "day_wise_itinerary": [{"day": 4, "stops": []}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.budget_exhausted is False
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert continuity_gap in (decision.requirement or "")
 
 
 def test_the_phase_budget_does_not_end_with_a_hotel_only_day() -> None:
@@ -877,6 +918,93 @@ def test_phase_budget_cannot_end_planning_resume_without_departure_journey() -> 
     assert not decision.budget_exhausted
     assert decision.forced_tool == "update_trip_plan"
     assert "Bali back to Bangalore" in (decision.requirement or "")
+
+
+def test_phase_budget_rejects_airport_note_as_return_journey() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Finish planning my New York trip"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+        ],
+        active_trip={
+            "destination": "New York",
+            "origin": "Delhi",
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Flight: Delhi to New York", "kind": "flight"},
+                        {"name": "New York Hotel", "kind": "hotel"},
+                    ],
+                },
+                {
+                    "day": 14,
+                    "summary": "Check out and transfer to JFK for return flight to Delhi.",
+                    "stops": [
+                        {
+                            "name": "John F. Kennedy International Airport (JFK)",
+                            "kind": "transport",
+                            "note": "Evening flight to Delhi",
+                        },
+                        {"name": "New York Hotel", "kind": "hotel"},
+                    ],
+                },
+            ],
+            "selected_hotels": [{"name": "New York Hotel"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "New York back to Delhi" in (decision.requirement or "")
+    assert "no matching return to Delhi" in (decision.requirement or "")
+
+
+def test_phase_budget_cannot_end_planning_resume_without_outbound_journey() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Finish planning my Bali trip"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+            *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+        ],
+        active_trip={
+            "destination": "Bali",
+            "origin": "Bangalore",
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Villa Kayu Raja", "kind": "hotel"},
+                        {"name": "Sambal Shrimp", "kind": "meal"},
+                    ],
+                },
+                {
+                    "day": 2,
+                    "stops": [
+                        {"name": "Villa Kayu Raja", "kind": "hotel"},
+                        {
+                            "name": "Flight Bali to Bangalore",
+                            "kind": "flight",
+                        },
+                    ],
+                },
+            ],
+            "selected_hotels": [{"name": "Villa Kayu Raja"}],
+            "selected_flights": [{"airline": "Air India"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert not decision.budget_exhausted
+    assert decision.forced_tool == "update_trip_plan"
+    assert "no matching outbound" in (decision.requirement or "")
 
 
 def test_weather_can_remain_deferred_when_first_turn_core_plan_is_complete() -> None:

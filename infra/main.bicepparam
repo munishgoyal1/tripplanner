@@ -13,6 +13,7 @@ param azureOpenAiApiVersion = readEnvironmentVariable('AZURE_OPENAI_API_VERSION'
 param azureOpenAiApiKey = readEnvironmentVariable('AZURE_OPENAI_API_KEY', '')
 
 param duffelApiKey = readEnvironmentVariable('DUFFEL_API_KEY', '')
+param enableGooglePlaces = readEnvironmentVariable('ENABLE_GOOGLE_PLACES', '0') == '1'
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
 param googleMapsBrowserKey = readEnvironmentVariable('GOOGLE_MAPS_BROWSER_KEY', '')
 param googleAnalyticsMeasurementId = readEnvironmentVariable('GOOGLE_ANALYTICS_MEASUREMENT_ID', '')

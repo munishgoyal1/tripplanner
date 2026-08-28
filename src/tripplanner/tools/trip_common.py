@@ -17,6 +17,7 @@ from tripplanner.web import places_cache
 _MAX_DAY_STOPS = 5
 _MAX_DAY_DISTANCE_KM = 18.0
 _MAX_DAY_DURATION_MIN = 360
+MAX_GROUND_LEG_KM = 300.0
 _MEAL_PLACEHOLDER_RE = re.compile(
     r"\b(tbd|to be decided|restaurant option|restaurant recommendation|"
     r"lunch stop|dinner stop|breakfast stop|meal stop)\b",
@@ -63,6 +64,7 @@ _LODGING_PREPOSITION_RE = re.compile(
     r"lodges?|stays?|inns?|apartments?|camps?)\s+(in|at|near|around|close to)\b",
     re.I,
 )
+_LODGING_RATING_RE = re.compile(r"\b[1-5](?:\.\d)?\s*[- ]?\s*stars?\b\+?", re.I)
 
 
 def unnamed_lodging(name: str, cities: set[str]) -> bool:
@@ -85,6 +87,7 @@ def unnamed_lodging(name: str, cities: set[str]) -> bool:
         city = city.strip()
         if city:
             rest = re.sub(rf"\b{re.escape(city)}\b", " ", rest, flags=re.I)
+    rest = _LODGING_RATING_RE.sub(" ", rest)
     rest = _LODGING_QUALIFIER_RE.sub(" ", rest)
     return not re.sub(r"[^A-Za-z0-9]+", "", rest)
 

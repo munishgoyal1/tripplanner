@@ -645,7 +645,9 @@ STEP 4 — BUILD ITINERARY
     day, put the return journey after checkout. For nearby trips such as
     Bangalore to Mysore, choose a sensible ground mode from preferences and name
     both endpoints (for example, "Train: Bangalore to Mysore" and "Train: Mysore
-    to Bangalore"). A local taxi or destination transfer does not replace these
+    to Bangalore"). The return journey must be its own flight or transport stop
+    naming both endpoints; a day summary, stop note, airport, local taxi, or
+    destination transfer does not replace it.
     inter-city edges. Name road journeys "Drive: origin to destination", use the
     saved home area as the origin when known, and include realistic snack/rest
     breaks in duration_min using the saved road-break cadence. Persist grounded

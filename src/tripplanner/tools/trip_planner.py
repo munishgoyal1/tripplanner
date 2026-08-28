@@ -50,6 +50,7 @@ from tripplanner.tools.trip_diff import diff_plans, format_diff
 from tripplanner.tools.trip_effort import coherence_notes, pacing_statement
 from tripplanner.tools.trip_guard import (
     Envelope,
+    _duration_of,
     choose_placement,
     diff_stops,
     envelope,
@@ -159,7 +160,8 @@ def _sync_replaced_hotel_anchors(
     replacements: dict[str, dict[str, Any]] = {}
     if len(removed) == 1 and len(added) == 1:
         replacements[next(iter(removed))] = selected[next(iter(added))]
-    placeholder_replacement = next(iter(selected.values())) if len(selected) == 1 else None
+    selected_values = list(selected.values())
+    placeholder_replacement = selected_values[0] if len(selected_values) == 1 else None
     lodging_locations = _itinerary_hotel_locations(plan)
     destination = str(plan.get("destination") or "").strip().lower()
     if destination:
@@ -176,6 +178,14 @@ def _sync_replaced_hotel_anchors(
             if str(value.get(key) or "").strip()
         }
 
+    def specific_locations(value: dict[str, Any]) -> set[str]:
+        specific = {
+            str(value.get(key) or "").strip().lower()
+            for key in ("city", "location")
+            if str(value.get(key) or "").strip()
+        }
+        return specific or explicit_locations(value)
+
     changed = False
     for day in plan.get("day_wise_itinerary") or []:
         if not isinstance(day, dict) or not isinstance(day.get("stops"), list):
@@ -185,16 +195,28 @@ def _sync_replaced_hotel_anchors(
                 continue
             stop_name = _stop_name(stop)
             replacement = replacements.get(stop_name.lower())
-            if replacement is None and placeholder_replacement is not None:
-                if _HOTEL_PLACEHOLDER_RE.search(stop_name) or unnamed_lodging(
-                    stop_name, lodging_locations
-                ):
-                    anchor_text = stop_name.lower()
-                    anchor_locations = explicit_locations(day) | {
-                        location
-                        for location in lodging_locations
-                        if re.search(rf"\b{re.escape(location)}\b", anchor_text)
-                    }
+            is_placeholder = _HOTEL_PLACEHOLDER_RE.search(stop_name) or unnamed_lodging(
+                stop_name, lodging_locations
+            )
+            if replacement is None and is_placeholder:
+                anchor_text = stop_name.lower()
+                anchor_locations = specific_locations(day) | {
+                    location
+                    for location in lodging_locations
+                    if re.search(rf"\b{re.escape(location)}\b", anchor_text)
+                }
+                location_matches = [
+                    hotel
+                    for hotel in selected_values
+                    if any(
+                        anchor in hotel_location or hotel_location in anchor
+                        for anchor in anchor_locations
+                        for hotel_location in specific_locations(hotel)
+                    )
+                ]
+                if len(location_matches) == 1:
+                    replacement = location_matches[0]
+                elif placeholder_replacement is not None:
                     replacement_locations = explicit_locations(placeholder_replacement)
                     if (
                         not anchor_locations
@@ -254,6 +276,33 @@ def _retime_stops_in_order(stops: list[Any]) -> None:
         previous_end = current + (
             max(15, int(duration)) if isinstance(duration, (int, float)) else 90
         )
+
+    for leg_index, leg in enumerate(stops):
+        if not isinstance(leg, dict) or not _is_leg(leg):
+            continue
+        _fit_stops_before_leg(stops, leg_index)
+
+
+def _fit_stops_before_leg(stops: list[Any], leg_index: int) -> None:
+    leg = stops[leg_index]
+    next_start = (
+        _parse_hhmm(str(leg.get("time") or "")) if isinstance(leg, dict) else None
+    )
+    if next_start is None:
+        return
+    for index in range(leg_index - 1, -1, -1):
+        stop = stops[index]
+        if not isinstance(stop, dict) or _is_leg(stop):
+            break
+        current = _parse_hhmm(str(stop.get("time") or ""))
+        if current is None:
+            continue
+        turnaround = 0 if _stop_kind(stop) == "hotel" else 30
+        latest_start = next_start - turnaround - _duration_of(stop)
+        if current > latest_start and latest_start >= 0:
+            current = latest_start
+            stop["time"] = _fmt_hhmm(current)
+        next_start = current
 
 
 def _infer_stop_time(stops: list[Any], insert_at: int, kind: str) -> str:
@@ -520,7 +569,39 @@ def _repair_known_closed_days(plan: dict[str, Any]) -> list[str]:
         for item in validate_plan(outcome["plan"])
         if item.code == "I11"
     }
-    if len(closed_after) >= len(closed_before):
+    if not closed_after < closed_before:
+        return []
+
+    plan.clear()
+    plan.update(outcome["plan"])
+    return outcome["sentences"]
+
+
+def _repair_known_opening_hours(plan: dict[str, Any]) -> list[str]:
+    """Retime planner-owned visits to fit one complete structured-hours window."""
+    if not any(item.code == "I3" for item in validate_plan(plan)):
+        return []
+
+    from tripplanner.web import trip_repair
+
+    outcome = trip_repair.repair(plan, only_codes={"I3"})
+    if any(item.code == "I3" for item in validate_plan(outcome["plan"])):
+        return []
+
+    plan.clear()
+    plan.update(outcome["plan"])
+    return outcome["sentences"]
+
+
+def _repair_temporal_infeasibility(plan: dict[str, Any]) -> list[str]:
+    """Retime planner-owned stops when travel makes their submitted clocks impossible."""
+    if not any(item.code == "I4" for item in validate_plan(plan)):
+        return []
+
+    from tripplanner.web import trip_repair
+
+    outcome = trip_repair.repair(plan, only_codes={"I4"})
+    if any(item.code == "I4" for item in validate_plan(outcome["plan"])):
         return []
 
     plan.clear()
@@ -967,6 +1048,37 @@ def _settle_plan_legs(plan: dict[str, Any]) -> list[int]:
         entry["stops"] = settled
         resettled.append(day_number)
     return resettled
+
+
+def _fit_plan_to_departure(plan: dict[str, Any]) -> list[int]:
+    env = envelope(plan)
+    itinerary = plan.get("day_wise_itinerary")
+    if env.departure_day is None or not env.departure_name or not isinstance(itinerary, list):
+        return []
+    for index, entry in enumerate(itinerary):
+        if not isinstance(entry, dict):
+            continue
+        raw_day = entry.get("day")
+        day_number = raw_day if isinstance(raw_day, int) and raw_day > 0 else index + 1
+        if day_number != env.departure_day:
+            continue
+        stops = entry.get("stops")
+        if not isinstance(stops, list):
+            return []
+        leg_index = next(
+            (
+                stop_index
+                for stop_index, stop in enumerate(stops)
+                if _stop_name(stop) == env.departure_name
+            ),
+            None,
+        )
+        if leg_index is None:
+            return []
+        before = json.dumps(stops, sort_keys=True)
+        _fit_stops_before_leg(stops, leg_index)
+        return [day_number] if json.dumps(stops, sort_keys=True) != before else []
+    return []
 
 
 @_serialized_mutation
@@ -2386,7 +2498,9 @@ def update_trip_plan(updates_json: str) -> str:
                 )
             plan[key] = val
 
+    resettled_days: list[int] = []
     if "day_wise_itinerary" in updates:
+        resettled_days = _fit_plan_to_departure(plan)
         time_errors = _itinerary_time_errors(plan.get("day_wise_itinerary"))
         if time_errors:
             return (
@@ -2429,8 +2543,39 @@ def update_trip_plan(updates_json: str) -> str:
         }
     restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
 
-    resettled_days = _settle_plan_legs(plan)
+    resettled_days = list(dict.fromkeys([*resettled_days, *_settle_plan_legs(plan)]))
     closed_day_repairs = _repair_known_closed_days(plan)
+    opening_hours_repairs = _repair_known_opening_hours(plan)
+    feasibility_repairs = _repair_temporal_infeasibility(plan)
+    violations = validate_plan(plan)
+    closed_day_errors = [
+        violation.message for violation in violations if violation.code == "I11"
+    ]
+    if "day_wise_itinerary" in updates and closed_day_errors:
+        return (
+            "Error: itinerary visits on known closed weekdays cannot be saved. "
+            + " ".join(closed_day_errors)
+            + " Move them to days when they are open and resubmit the full "
+            "day_wise_itinerary. The saved itinerary was not changed."
+        )
+    availability_errors = [
+        violation.message for violation in violations if violation.code == "I12"
+    ]
+    if availability_errors:
+        return (
+            "Error: itinerary places reported closed for business cannot be saved. "
+            + " ".join(availability_errors)
+            + " Replace them with places that are still operating and resubmit the full "
+            "day_wise_itinerary. The saved itinerary was not changed."
+        )
+    envelope_errors = [violation.message for violation in violations if violation.code == "I1"]
+    if envelope_errors:
+        return (
+            "Error: itinerary stops must stay within the trip arrival and departure times. "
+            + " ".join(envelope_errors)
+            + " Resubmit the full corrected day_wise_itinerary. "
+            "The saved itinerary was not changed."
+        )
     # Rejecting here discarded the turn's only copy of the itinerary, so a plan that
     # was merely incomplete ended up saved as no plan at all.
     sanity_errors = persistence_sanity_errors(plan)
@@ -2470,6 +2615,15 @@ def update_trip_plan(updates_json: str) -> str:
     if closed_day_repairs:
         warning_text += "\nAdjusted known closed-day visits before saving: " + " ".join(
             closed_day_repairs
+        )
+    if opening_hours_repairs:
+        warning_text += (
+            "\nAdjusted visits to fit known opening hours before saving: "
+            + " ".join(opening_hours_repairs)
+        )
+    if feasibility_repairs:
+        warning_text += "\nAdjusted travel-infeasible visit times before saving: " + " ".join(
+            feasibility_repairs
         )
     if broken_invariants:
         warning_text += (

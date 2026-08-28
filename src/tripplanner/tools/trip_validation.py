@@ -17,6 +17,7 @@ from tripplanner.tools import trip_guard as validate_guard
 from tripplanner.tools.trip_common import (
     _HOTEL_PLACEHOLDER_RE,
     _MEAL_PLACEHOLDER_RE,
+    MAX_GROUND_LEG_KM,
     _day_stats,
     _fmt_hhmm,
     _parse_hhmm,
@@ -445,6 +446,40 @@ def _requested_budget_without_cost_evidence(plan: dict[str, Any]) -> list[str]:
     ]
 
 
+_GROUND_MODE_RE = re.compile(r"\b(?:bus|cab|car|drive|driving|metro|road|taxi|walk)\b", re.I)
+
+
+def _ground_leg_distance_warnings(plan: dict[str, Any]) -> list[str]:
+    """Explicit ground journeys that the rendered map cannot plausibly draw."""
+    warnings: list[str] = []
+    itinerary = plan.get("day_wise_itinerary")
+    if not isinstance(itinerary, list):
+        return warnings
+    for index, entry in enumerate(itinerary):
+        if not isinstance(entry, dict):
+            continue
+        day = entry.get("day") if isinstance(entry.get("day"), int) else index + 1
+        stops = entry.get("stops") if isinstance(entry.get("stops"), list) else []
+        for stop in stops:
+            if not isinstance(stop, dict) or _stop_kind(stop) != "transport":
+                continue
+            name = _stop_name(stop)
+            mode = str(stop.get("mode") or "")
+            if not _GROUND_MODE_RE.search(f"{mode} {name}"):
+                continue
+            try:
+                distance = float(stop.get("distance_km"))
+            except (TypeError, ValueError):
+                continue
+            if distance > MAX_GROUND_LEG_KM:
+                warnings.append(
+                    f"Day {day}'s {name or 'ground journey'} exceeds the supported "
+                    "ground-leg distance. Choose a plausible flight, train, or shorter "
+                    "road transfer before presenting the trip as complete."
+                )
+    return warnings
+
+
 def _itinerary_density_warnings(plan: dict[str, Any]) -> list[str]:
     recommendation = plan.get("planning_recommendation")
     if not isinstance(recommendation, dict):
@@ -504,6 +539,7 @@ def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *_hotel_selection_warnings(plan),
         *journey_continuity,
         *departure_buffers,
+        *_ground_leg_distance_warnings(plan),
         *_requested_budget_without_cost_evidence(plan),
         *_itinerary_density_warnings(plan),
     ]
@@ -539,6 +575,7 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
         *coherence_gaps,
+        *_ground_leg_distance_warnings(plan),
         *_itinerary_density_warnings(plan),
     ]
 
@@ -621,6 +658,7 @@ def persistence_sanity_errors(plan: dict[str, Any]) -> list[str]:
             if violation.code in _PERSISTENCE_SANITY_CODES
         ),
         *_journey_persistence_errors(plan),
+        *_ground_leg_distance_warnings(plan),
     ]
     return list(dict.fromkeys(errors))
 
