@@ -272,6 +272,26 @@ class Settings(BaseModel):
     cosmos_dev_backend: str = Field(
         default_factory=lambda: os.getenv("COSMOS_DEV_BACKEND", "emulator").strip().lower()
     )
+    secondary_durable_cache_enabled: bool = Field(
+        default_factory=lambda: os.getenv("SECONDARY_DURABLE_CACHE_ENABLED", "0").strip()
+        == "1"
+    )
+    secondary_durable_cache_endpoint: str = os.getenv(
+        "SECONDARY_DURABLE_CACHE_ENDPOINT", ""
+    )
+    secondary_durable_cache_key: str = os.getenv("SECONDARY_DURABLE_CACHE_KEY", "")
+    secondary_durable_cache_connection_string: str = os.getenv(
+        "SECONDARY_DURABLE_CACHE_CONNECTION_STRING", ""
+    )
+    secondary_durable_cache_use_managed_identity: bool = (
+        os.getenv("SECONDARY_DURABLE_CACHE_USE_MANAGED_IDENTITY", "").strip() == "1"
+    )
+    secondary_durable_cache_database: str = os.getenv(
+        "SECONDARY_DURABLE_CACHE_DATABASE", "tripplanner-cache"
+    )
+    secondary_durable_cache_emulator: bool = (
+        os.getenv("SECONDARY_DURABLE_CACHE_EMULATOR", "").strip() == "1"
+    )
 
     # General
     log_level: str = os.getenv("LOG_LEVEL", "INFO")

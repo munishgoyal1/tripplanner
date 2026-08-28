@@ -22,6 +22,8 @@ SECRET_KEYS = {
     "OAUTH_GITHUB_CLIENT_SECRET",
     "OAUTH_GOOGLE_CLIENT_SECRET",
     "OPENROUTESERVICE_API_KEY",
+    "SECONDARY_DURABLE_CACHE_CONNECTION_STRING",
+    "SECONDARY_DURABLE_CACHE_KEY",
     "SMTP_PASSWORD",
     "TAVILY_API_KEY",
     "VIATOR_API_KEY",
@@ -85,6 +87,29 @@ def test_warm_everything_flag_is_owner_configurable(monkeypatch):
     monkeypatch.setenv("CACHE_WARM_EVERYTHING", "1")
 
     assert Settings().cache_warm_everything is True
+
+
+def test_secondary_durable_cache_is_local_only_by_default() -> None:
+    profiles = {name: _profile_values(name) for name in ("local", "canary", "prod")}
+
+    assert profiles["local"]["SECONDARY_DURABLE_CACHE_ENABLED"] == "1"
+    assert profiles["local"]["SECONDARY_DURABLE_CACHE_ENDPOINT"] == (
+        "https://localhost:8081"
+    )
+    assert profiles["local"]["SECONDARY_DURABLE_CACHE_DATABASE"] == "tripplanner-cache"
+    assert profiles["canary"]["SECONDARY_DURABLE_CACHE_ENABLED"] == "0"
+    assert profiles["prod"]["SECONDARY_DURABLE_CACHE_ENABLED"] == "0"
+
+
+def test_local_launcher_routes_secondary_cache_by_cosmos_backend() -> None:
+    launcher = (
+        Path(__file__).parents[1] / "scripts" / "dev" / "dev-spa.ps1"
+    ).read_text(encoding="utf-8")
+
+    assert '$env:SECONDARY_DURABLE_CACHE_KEY = $env:COSMOS_KEY' in launcher
+    assert '$env:SECONDARY_DURABLE_CACHE_CONNECTION_STRING = ""' in launcher
+    assert '$env:SECONDARY_DURABLE_CACHE_USE_MANAGED_IDENTITY = "0"' in launcher
+    assert '$env:SECONDARY_DURABLE_CACHE_ENABLED = "0"' in launcher
 
 
 def test_google_places_cost_policy_is_owner_configurable(monkeypatch):

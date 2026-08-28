@@ -224,39 +224,46 @@ def _coerce_result(result: Any) -> str:
         return str(result)
 
 
-def _cosmos_get(user_id: str, key: str) -> str | None:
-    from tripplanner import storage_cosmos
-
-    doc = storage_cosmos.read_doc("tool_cache", user_id, key)
+def _valid_cosmos_result(doc: dict[str, Any] | None) -> str | None:
     if not doc:
         return None
     expires_at = float(doc.get("expires_at", 0))
     if expires_at != -1 and expires_at <= time.time():
+        return None
+    return doc.get("result")
+
+
+def _cosmos_get(user_id: str, key: str) -> str | None:
+    from tripplanner import storage_cosmos
+
+    doc = storage_cosmos.read_doc("tool_cache", user_id, key)
+    result = _valid_cosmos_result(doc)
+    if doc and result is None:
         # Lazy expiry: delete and miss.
         try:
             storage_cosmos.delete_doc("tool_cache", user_id, key)
         except Exception:
             # Best-effort cleanup; a stale row is fine, we'll skip it.
             pass
-        return None
-    return doc.get("result")
+    return result
 
 
-def _cosmos_set(user_id: str, key: str, value: str, ttl: int) -> None:
+def _cache_body(value: str, ttl: int) -> dict[str, Any]:
+    cached_at = time.time()
+    return {
+        "result": value,
+        "cached_at": cached_at,
+        "expires_at": -1 if ttl == -1 else cached_at + ttl,
+        **({"ttl": -1} if ttl == -1 else {}),
+    }
+
+
+def _cosmos_set(user_id: str, key: str, value: str, ttl: int) -> dict[str, Any]:
     from tripplanner import storage_cosmos
 
-    cached_at = time.time()
-    storage_cosmos.upsert_doc(
-        "tool_cache",
-        user_id,
-        key,
-        {
-            "result": value,
-            "cached_at": cached_at,
-            "expires_at": -1 if ttl == -1 else cached_at + ttl,
-            **({"ttl": -1} if ttl == -1 else {}),
-        },
-    )
+    body = _cache_body(value, ttl)
+    storage_cosmos.upsert_doc("tool_cache", user_id, key, body)
+    return body
 
 
 def _local_get(user_id: str, key: str) -> str | None:
@@ -289,16 +296,37 @@ def cache_lookup(tool_name: str, args: dict[str, Any] | None) -> str | None:
     user_id = get_user_id() or "local"
     partition = _resolve_user_partition(policy.scope, user_id)
     key = _cache_key(tool_name, args, scope=policy.scope)
+    local = _local_get(partition, key)
+    if local is not None:
+        return local
     # Prefer Cosmos when available so cache survives container restarts.
     try:
         from tripplanner import storage_cosmos
 
         if storage_cosmos.is_enabled():
-            return _cosmos_get(partition, key)
+            primary = _cosmos_get(partition, key)
+            if primary is not None:
+                return primary
     except Exception:
         # Cosmos can fail (network, perm); fall back to local cache.
         pass
-    return _local_get(partition, key)
+    if partition == _GLOBAL_USER_ID:
+        from tripplanner import secondary_cache
+
+        secondary_doc = secondary_cache.read_doc("tool_cache", key)
+        secondary = _valid_cosmos_result(secondary_doc)
+        if secondary is not None:
+            try:
+                from tripplanner import storage_cosmos
+
+                if storage_cosmos.is_enabled():
+                    storage_cosmos.upsert_doc(
+                        "tool_cache", partition, key, secondary_doc
+                    )
+            except Exception:
+                pass
+            return secondary
+    return None
 
 
 def cache_store(
@@ -329,16 +357,23 @@ def cache_store(
         if tool_name in _VOLATILE_TOOLS
         else settings.stable_cache_ttl(requested_ttl)
     )
+    body = _cache_body(value, ttl_seconds)
+    primary_stored = False
     try:
         from tripplanner import storage_cosmos
 
         if storage_cosmos.is_enabled():
-            _cosmos_set(partition, key, value, ttl_seconds)
-            return
+            storage_cosmos.upsert_doc("tool_cache", partition, key, body)
+            primary_stored = True
     except Exception:
         # Fall through to local cache on any Cosmos failure.
         pass
-    _local_set(partition, key, value, ttl_seconds)
+    if partition == _GLOBAL_USER_ID:
+        from tripplanner import secondary_cache
+
+        secondary_cache.schedule_merge_write("tool_cache", key, body)
+    if not primary_stored:
+        _local_set(partition, key, value, ttl_seconds)
 
 
 def clear_local_cache() -> None:

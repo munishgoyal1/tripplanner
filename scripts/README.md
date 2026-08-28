@@ -14,6 +14,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `analyze-errors.ps1` | Generate local or canary error reports |
 | `cosmos_copy.py` | Guarded Cosmos data copy and verification utility |
 | `prod_cache_sync.py` | Merge-only local central cache and production Cosmos synchronizer; fixed to shared Places and global tool-cache partitions |
+| `dev/corpus_cache.py` | Reviewable Places corpus save/status utility; `--sync` remains an explicit lane/central recovery import rather than a startup requirement |
 | `prod-cache-sync.ps1` | Guarded operator entry point for cache status, pull, push, and two-way synchronization |
 | `hosted_smoke.py` | Read-only hosted HTTP smoke implementation |
 | `performance_baseline.py` | Hermetic endpoint performance baseline |
@@ -105,6 +106,13 @@ interruption, verification failure, malformed checkpoint, or conflict therefore
 causes a conservative re-read on the next run; it cannot skip an unverified delta.
 Changing either cache-policy profile also invalidates the checkpoint and forces
 a full scan so newly eligible old evidence is reconsidered.
+
+Local request-time cache reuse does not require this operator synchronizer.
+With `SECONDARY_DURABLE_CACHE_ENABLED=1`, the application point-reads the central
+`tripplanner-cache` database only after a primary cache miss and writes eligible
+shared/global results back best-effort. Canary and production profiles disable
+that secondary connection; this command remains the approval-gated boundary for
+moving eligible evidence between local central storage and production.
 
 Run the matching launcher from `scripts/mac/prod/` or `scripts/win/prod/`:
 

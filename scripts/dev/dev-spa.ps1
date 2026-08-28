@@ -319,24 +319,14 @@ if (-not $FrontendOnly -and -not $UseCanaryData -and $configuredCosmosBackend -e
     $env:COSMOS_KEY = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
     $env:COSMOS_DATABASE = $emulatorDatabase
     $env:COSMOS_EMULATOR = "1"
+    $env:SECONDARY_DURABLE_CACHE_ENABLED = "1"
+    $env:SECONDARY_DURABLE_CACHE_ENDPOINT = $env:COSMOS_ENDPOINT
+    $env:SECONDARY_DURABLE_CACHE_KEY = $env:COSMOS_KEY
+    $env:SECONDARY_DURABLE_CACHE_CONNECTION_STRING = ""
+    $env:SECONDARY_DURABLE_CACHE_USE_MANAGED_IDENTITY = "0"
+    $env:SECONDARY_DURABLE_CACHE_DATABASE = "tripplanner-cache"
+    $env:SECONDARY_DURABLE_CACHE_EMULATOR = "1"
     Write-Host "Using isolated local Cosmos DB Emulator (database $emulatorDatabase)." -ForegroundColor DarkGray
-
-    # Every emulator-backed start passes through here, primary and sandbox alike,
-    # so this is where the place cache meets the central dump: hand over whatever
-    # this database fetched since last time, and take the rest if it is empty.
-    # Nothing reads the dump at request time -- it is a copy, not a data source.
-    $cacheScript = Join-Path $repoRoot "scripts/dev/corpus_cache.py"
-    $cacheRelativePython = if ($IsWindows) { ".venv\Scripts\python.exe" } else { ".venv/bin/python" }
-    $cachePython = @(
-        (Join-Path $repoRoot $cacheRelativePython),
-        (Join-Path $sharedRepoRoot $cacheRelativePython)
-    ) | Where-Object { Test-Path $_ -PathType Leaf } | Select-Object -First 1
-    if ((Test-Path $cacheScript -PathType Leaf) -and $cachePython) {
-        & $cachePython $cacheScript --sync --database $emulatorDatabase
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "Could not sync the place cache; places will be fetched as they are needed."
-        }
-    }
 }
 
 if (-not $FrontendOnly -and ($UseCanaryData -or $configuredCosmosBackend -eq "azure")) {
@@ -369,6 +359,12 @@ if (-not $FrontendOnly -and ($UseCanaryData -or $configuredCosmosBackend -eq "az
     $env:COSMOS_KEY = $cosmosKey
     $env:COSMOS_DATABASE = $cosmosDatabase
     Remove-Item Env:COSMOS_EMULATOR -ErrorAction SilentlyContinue
+    $env:SECONDARY_DURABLE_CACHE_ENABLED = "0"
+    $env:SECONDARY_DURABLE_CACHE_ENDPOINT = ""
+    $env:SECONDARY_DURABLE_CACHE_KEY = ""
+    $env:SECONDARY_DURABLE_CACHE_CONNECTION_STRING = ""
+    $env:SECONDARY_DURABLE_CACHE_USE_MANAGED_IDENTITY = "0"
+    $env:SECONDARY_DURABLE_CACHE_EMULATOR = "0"
     Write-Host "Using Azure Cosmos database $cosmosDatabase ($cosmosName)." -ForegroundColor DarkGray
 }
 

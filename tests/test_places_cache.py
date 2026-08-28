@@ -23,9 +23,11 @@ _REAL_LOOKUP_PLACE = pc._lookup_place
 def _isolate(monkeypatch, tmp_path):
     """Isolate the cache: tmp store dir, Cosmos off, deterministic network."""
     monkeypatch.setenv("TRIPPLANNER_HOME", str(tmp_path))
-    from tripplanner import storage_cosmos
+    from tripplanner import secondary_cache, storage_cosmos
 
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
+    monkeypatch.setattr(secondary_cache, "read_doc", lambda *_args: None)
+    monkeypatch.setattr(secondary_cache, "merge_write", lambda *_args: False)
     monkeypatch.setattr(pc, "is_configured", lambda: True)
 
     calls = {"lookup": 0, "photos": 0, "reviews": 0}
@@ -497,6 +499,61 @@ def test_lazy_load_serves_from_cosmos_without_google(_isolate, monkeypatch):
     result = pc.get_details("Taj", "Goa")
     assert result and result["place_id"] == "id-Taj"
     assert _isolate["lookup"] == calls_before  # served from Cosmos, no Google lookup
+
+
+def test_primary_miss_serves_and_promotes_fresh_secondary(_isolate, monkeypatch):
+    from tripplanner import secondary_cache
+
+    primary: dict = {}
+    _fake_cosmos(monkeypatch, primary)
+    key = pc._key("Taj", "Goa")
+    observed_at = time.time() - 10
+    secondary_entry = {
+        "place_id": "central-taj",
+        "name": "Taj",
+        "lat": 15.0,
+        "lng": 73.0,
+        "__at__": observed_at,
+    }
+    monkeypatch.setattr(
+        secondary_cache,
+        "read_doc",
+        lambda container, doc_id: {"key": key, "entry": secondary_entry},
+    )
+
+    result = pc.get_details("Taj", "Goa")
+
+    assert result and result["place_id"] == "central-taj"
+    assert result["__at__"] == observed_at
+    assert _isolate["lookup"] == 0
+    assert pc.flush_writes()
+    assert primary[pc._doc_id(key)]["entry"]["__at__"] == observed_at
+
+
+def test_provider_result_writes_secondary_best_effort(_isolate, monkeypatch):
+    from tripplanner import secondary_cache
+
+    primary: dict = {}
+    _fake_cosmos(monkeypatch, primary)
+    writes: list[tuple[str, str, dict]] = []
+
+    def capture_secondary(container: str, doc_id: str, body: dict) -> bool:
+        assert doc_id in primary
+        writes.append((container, doc_id, body))
+        return False
+
+    monkeypatch.setattr(
+        secondary_cache,
+        "merge_write",
+        capture_secondary,
+    )
+
+    result = pc.get_details("Taj", "Goa")
+
+    assert result and result["place_id"] == "id-Taj"
+    assert pc.flush_writes()
+    assert writes[0][0] == "places_cache"
+    assert writes[0][2]["entry"]["place_id"] == "id-Taj"
 
 
 def test_legacy_monolithic_doc_deleted_after_shard_write(_isolate, monkeypatch):
