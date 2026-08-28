@@ -1385,6 +1385,47 @@ def _stub_generate(monkeypatch: pytest.MonkeyPatch, usage: dict[str, Any]) -> No
     monkeypatch.setattr(generate, "assert_generation_database", lambda name: name)
     monkeypatch.setattr(generate, "_saved_trip", lambda database, user_id: None)
     monkeypatch.setattr(generate, "_usage_for", lambda database, user_id: dict(usage))
+    monkeypatch.setattr(generate, "_google_cost_usd", lambda database, interaction_ids: 0.0)
+
+
+def test_google_attempt_cost_uses_only_billable_records_for_its_request_ids(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    queries: list[str] = []
+
+    class Container:
+        def query_items(
+            self, *, parameters: list[dict[str, str]], **_kwargs: Any
+        ) -> list[dict[str, Any]]:
+            interaction_id = parameters[0]["value"]
+            queries.append(interaction_id)
+            return {
+                "turn-1": [
+                    {"estimated_cost_usd": 0.032, "billable": True},
+                    {"estimated_cost_usd": None, "billable": False},
+                ],
+                "recovery-1": [{"estimated_cost_usd": 0.007, "billable": True}],
+            }[interaction_id]
+
+    class Database:
+        def get_container_client(self, name: str) -> Container:
+            assert name == "provider_usage"
+            return Container()
+
+    class Client:
+        def get_database_client(self, name: str) -> Database:
+            assert name == "tripplanner-sbx-test"
+            return Database()
+
+    monkeypatch.setattr(generate, "assert_generation_database", lambda name: name)
+    monkeypatch.setattr("tripplanner.validation.emulator._client", lambda: Client())
+
+    cost = generate._google_cost_usd(
+        "tripplanner-sbx-test", ("turn-1", "recovery-1")
+    )
+
+    assert cost == pytest.approx(0.039)
+    assert queries == ["turn-1", "recovery-1"]
 
 
 def test_a_repeated_attempt_never_reuses_its_request_id(
@@ -1501,7 +1542,7 @@ def test_a_failed_first_turn_is_not_repeated_as_paid_recovery(
     assert len(asked) == 1
 
 
-def test_a_run_is_charged_only_for_what_that_attempt_spent(
+def test_a_run_budget_includes_model_and_known_google_costs(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     usage = {"cost_usd": 1.0}
@@ -1512,6 +1553,7 @@ def test_a_run_is_charged_only_for_what_that_attempt_spent(
 
     monkeypatch.setattr(generate, "_ask", _spend)
     monkeypatch.setattr(generate, "_usage_for", lambda database, user_id: dict(usage))
+    monkeypatch.setattr(generate, "_google_cost_usd", lambda database, interaction_ids: 0.05)
 
     result = generate.build(
         tmp_path,
@@ -1521,7 +1563,13 @@ def test_a_run_is_charged_only_for_what_that_attempt_spent(
         requests=_ONE_REQUEST,
     )
 
-    assert result["spent_inr"] == pytest.approx(0.25 * budget.usd_inr())
+    assert result["model_spent_inr"] == pytest.approx(0.25 * budget.usd_inr())
+    assert result["google_spent_inr"] == pytest.approx(0.05 * budget.usd_inr())
+    assert result["spent_inr"] == pytest.approx(0.30 * budget.usd_inr())
+    ledger_run = budget.load(tmp_path)["runs"][-1]
+    assert ledger_run["spent_inr"] == pytest.approx(0.30 * budget.usd_inr())
+    assert ledger_run["model_spent_inr"] == pytest.approx(0.25 * budget.usd_inr())
+    assert ledger_run["google_spent_inr"] == pytest.approx(0.05 * budget.usd_inr())
 
 
 def _primary(phrase: str) -> str:
@@ -1790,6 +1838,8 @@ def test_build_corpus_returns_failure_when_planner_is_barren(
             "produced": [],
             "attempts": 3,
             "spent_inr": 120.0,
+            "model_spent_inr": 100.0,
+            "google_spent_inr": 20.0,
             "stopped_because": "barren",
             "corpus_total": 0,
             "generation_run_id": "run-1",
