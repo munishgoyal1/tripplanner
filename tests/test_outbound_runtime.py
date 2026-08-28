@@ -117,6 +117,32 @@ def test_endpoint_identity_and_policy_lookup() -> None:
     assert unknown.timeout.read == 12.0
 
 
+@pytest.mark.parametrize(
+    ("url", "headers", "expected"),
+    [
+        (
+            "https://places.googleapis.com/v1/places:searchText",
+            {"X-Goog-FieldMask": "places.id,places.rating"},
+            ("text_search", "pro"),
+        ),
+        (
+            "https://places.googleapis.com/v1/places:searchText",
+            {"X-Goog-FieldMask": "places.id,places.editorialSummary"},
+            ("text_search", "enterprise_atmosphere"),
+        ),
+        (
+            "https://places.googleapis.com/v1/places/abc/photos/one/media",
+            {},
+            ("photo_media", "photo_media"),
+        ),
+    ],
+)
+def test_google_operation_classifies_billable_request(
+    url: str, headers: dict[str, str], expected: tuple[str, str]
+) -> None:
+    assert http_client.google_operation(url, {"headers": headers}) == expected
+
+
 def test_request_uses_the_pooled_client_and_endpoint_budget(monkeypatch) -> None:
     http_client.reset_breakers_for_tests()
     seen: dict = {}
