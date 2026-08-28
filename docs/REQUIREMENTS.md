@@ -616,9 +616,10 @@ implemented capability baseline.
   cap.
 - A durable environment-wide ledger independently limits new-trip workflows and
   existing-trip model conversations by UTC day, ISO week, and lifetime. Production
-  defaults to 10/25/50 new trips and 20/50/100 existing-trip turns; local and canary
-  declare disabled zero values. Request replay and the structured kickoff answer do
-  not consume another unit, while rejected requests stop before model or provider work.
+  and local default to 10/25/50 new trips and 20/50/100 existing-trip turns. Canary
+  uses lower 3/10/20 and 6/20/40 ceilings. Request replay and the structured kickoff
+  answer do not consume another unit, while rejected requests stop before model or
+  provider work.
 - Hosted chat bounds input size, per-user/IP request rate, and per-user/global
   concurrency before model execution; usage accounting follows the resolved
   server-derived principal.

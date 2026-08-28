@@ -49,7 +49,7 @@ def test_hosted_conversation_cost_limits_are_explicit_and_deployed() -> None:
     canary_deploy = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")
     production_deploy = (root / "infra" / "deploy-prod.ps1").read_text(encoding="utf-8")
 
-    expected_production = {
+    expected_local_and_production = {
         "CHAT_NEW_TRIP_LIMIT_DAILY": "10",
         "CHAT_EXISTING_TRIP_TURN_LIMIT_DAILY": "20",
         "CHAT_NEW_TRIP_LIMIT_WEEKLY": "25",
@@ -57,12 +57,21 @@ def test_hosted_conversation_cost_limits_are_explicit_and_deployed() -> None:
         "CHAT_NEW_TRIP_LIMIT_LIFETIME": "50",
         "CHAT_EXISTING_TRIP_TURN_LIMIT_LIFETIME": "100",
     }
-    for name, value in expected_production.items():
-        assert f"{name}=0" in local
-        assert f"{name}=0" in canary
+    expected_canary = {
+        "CHAT_NEW_TRIP_LIMIT_DAILY": "3",
+        "CHAT_EXISTING_TRIP_TURN_LIMIT_DAILY": "6",
+        "CHAT_NEW_TRIP_LIMIT_WEEKLY": "10",
+        "CHAT_EXISTING_TRIP_TURN_LIMIT_WEEKLY": "20",
+        "CHAT_NEW_TRIP_LIMIT_LIFETIME": "20",
+        "CHAT_EXISTING_TRIP_TURN_LIMIT_LIFETIME": "40",
+    }
+    for name, value in expected_local_and_production.items():
+        assert f"{name}={value}" in local
         assert f"{name}={value}" in production
         assert f'"{name}=$env:{name}"' in canary_deploy
         assert f'"{name}=$env:{name}"' in production_deploy
+    for name, value in expected_canary.items():
+        assert f"{name}={value}" in canary
 
 
 def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
