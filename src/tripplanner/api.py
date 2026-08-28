@@ -415,6 +415,7 @@ def _record_chat_error(
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONResponse:
     from tripplanner.graph import app_graph
+    from tripplanner.places_budget import places_budget_scope
     from tripplanner.usage import cap_message, is_over_cap
 
     started = time.monotonic()
@@ -471,15 +472,16 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
         history.append(HumanMessage(content=req.message))
         budget_exhausted = False
         try:
-            result = await asyncio.to_thread(
-                app_graph.invoke,
-                {
-                    "messages": history,
-                    "current_agent": "",
-                    "proposal_only": req.proposal_only,
-                },
-                config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
-            )
+            with places_budget_scope():
+                result = await asyncio.to_thread(
+                    app_graph.invoke,
+                    {
+                        "messages": history,
+                        "current_agent": "",
+                        "proposal_only": req.proposal_only,
+                    },
+                    config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
+                )
         except GraphRecursionError:
             # Native and scripted clients use this path; without the same
             # handling the SSE path has, an exhausted turn raised a 500 and the
@@ -721,6 +723,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     tool-progress over a plain HTTP stream.
     """
     from tripplanner.graph import app_graph
+    from tripplanner.places_budget import places_budget_scope
     from tripplanner.usage import cap_message, is_over_cap
 
     started = time.monotonic()
@@ -800,15 +803,20 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         receipts = ReceiptLog()
         yield _sse("progress", {"stage": "thinking"})
         try:
-            async for ev in app_graph.astream_events(
-                {
-                    "messages": history,
-                    "current_agent": "",
-                    "proposal_only": req.proposal_only,
-                },
-                config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
-                version="v2",
-            ):
+            async def budgeted_events():
+                with places_budget_scope():
+                    async for event in app_graph.astream_events(
+                        {
+                            "messages": history,
+                            "current_agent": "",
+                            "proposal_only": req.proposal_only,
+                        },
+                        config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
+                        version="v2",
+                    ):
+                        yield event
+
+            async for ev in budgeted_events():
                 kind = ev.get("event")
                 name = ev.get("name", "")
                 run_id = ev.get("run_id", "")

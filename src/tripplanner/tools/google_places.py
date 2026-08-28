@@ -16,6 +16,7 @@ from langchain_core.tools import tool
 
 from tripplanner import http_client
 from tripplanner.config import get_settings
+from tripplanner.places_budget import consume
 
 _BASE = "https://places.googleapis.com/v1"
 
@@ -35,6 +36,7 @@ def _headers(field_mask: str) -> dict:
 
 def _format_place(p: dict) -> dict:
     """Extract the most useful fields from a Places API response."""
+    location = p.get("location") or {}
     return {
         "name": p.get("displayName", {}).get("text", ""),
         "address": p.get("formattedAddress", ""),
@@ -46,7 +48,18 @@ def _format_place(p: dict) -> dict:
         "phone": p.get("internationalPhoneNumber", ""),
         "open_now": p.get("currentOpeningHours", {}).get("openNow"),
         "place_id": p.get("id", ""),
+        "lat": location.get("latitude"),
+        "lng": location.get("longitude"),
+        "photo_refs": [
+            photo.get("name") for photo in (p.get("photos") or []) if photo.get("name")
+        ],
     }
+
+
+def _remember_places(places: list[dict], city: str) -> None:
+    from tripplanner.web.places_cache import remember_places
+
+    remember_places(places, city)
 
 
 def _format_reviews(reviews: list[dict], limit: int = 3) -> list[dict]:
@@ -81,10 +94,13 @@ def search_places_with_reviews(query: str, city: str = "", max_results: int = 5)
         )
 
     full_query = f"{query} {city}".strip()
+    if not consume("text_search"):
+        return "Google Places search budget reached for this planning turn. Reuse prior results."
     field_mask = (
         "places.id,places.displayName,places.formattedAddress,places.rating,"
         "places.userRatingCount,places.priceLevel,places.types,places.websiteUri,"
-        "places.internationalPhoneNumber,places.currentOpeningHours.openNow"
+        "places.internationalPhoneNumber,places.currentOpeningHours.openNow,"
+        "places.location,places.photos"
     )
     try:
         resp = http_client.post(
@@ -99,6 +115,7 @@ def search_places_with_reviews(query: str, city: str = "", max_results: int = 5)
     places = [_format_place(p) for p in resp.json().get("places", [])]
     if not places:
         return f"No places found for '{full_query}'."
+    _remember_places(places, city)
     return json.dumps(places, indent=2)
 
 
@@ -113,6 +130,8 @@ def get_place_reviews(place_id: str, max_reviews: int = 5) -> str:
             "Google Places API disabled or not configured. "
             "Set ENABLE_GOOGLE_PLACES=1 and GOOGLE_PLACES_API_KEY in .env."
         )
+    if not consume("review_details"):
+        return "Google Places review budget reached for this planning turn. Reuse prior ratings."
 
     field_mask = "id,displayName,rating,userRatingCount,reviews,editorialSummary"
     try:
@@ -159,10 +178,13 @@ def nearby_restaurants(
         )
 
     parts = [p for p in [dietary, cuisine, "restaurants", "in", city] if p]
+    if not consume("text_search"):
+        return "Google Places search budget reached for this planning turn. Reuse prior results."
     query = " ".join(parts)
     field_mask = (
         "places.id,places.displayName,places.formattedAddress,places.rating,"
-        "places.userRatingCount,places.priceLevel,places.types,places.websiteUri"
+        "places.userRatingCount,places.priceLevel,places.types,places.websiteUri,"
+        "places.location,places.photos"
     )
     try:
         resp = http_client.post(
@@ -180,4 +202,5 @@ def nearby_restaurants(
     top = filtered[:max_results]
     if not top:
         return f"No restaurants found in {city} matching the criteria (min rating {min_rating})."
+    _remember_places(top, city)
     return json.dumps(top, indent=2)

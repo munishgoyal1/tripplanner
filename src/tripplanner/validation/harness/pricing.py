@@ -31,7 +31,7 @@ DEFAULT_AZURE_OPENAI = TokenRate(1.0, 3.0)
 # region, free usage caps, and contract; billing export remains authoritative.
 GOOGLE_PLACES_USD_PER_REQUEST = {
     "text_search:essentials": 0.032,
-    "text_search:pro": 0.035,
+    "text_search:pro": 0.032,
     "text_search:enterprise_atmosphere": 0.040,
     "place_details:essentials": 0.005,
     "place_details:pro": 0.017,

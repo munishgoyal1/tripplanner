@@ -306,12 +306,14 @@ Asking for `rating` promotes a call to Pro; asking for `reviews` or
 tier. Resolving a place name to an ID and coordinates with an IDs-only mask is
 free and unbounded.
 
-At roughly 58 Places calls per trip on the rich masks in
-[google_places.py](../../src/tripplanner/tools/google_places.py), a generated
-trip costs about **USD 0.52 (about INR 46)** in Maps calls alone. Budget
-arithmetic follows directly: a 1,000 INR monthly alert amount is only about 22
-such trips. Corpus runs in the hundreds of trips per day are only
-affordable after moving grounding lookups to IDs-only masks.
+The application now caps a planning/view scope at three Text Search calls, one
+review-details call, and three photo-media calls, with one photo maximum per
+place. Agent discovery results seed the structured UI cache, routine metadata
+omits `editorialSummary`, and unfocused views never fetch reviews. At global
+first-paid-tier list prices, the configured cold ceiling is roughly USD 0.142
+(about INR 12.50 at the planning assumption of INR 88/USD) before cache reuse.
+This is a catalog estimate, not billed cost; provider billing exports remain
+authoritative, and Azure OpenAI/Routes remain outside this figure.
 
 ### Production-only Places gate
 
@@ -328,12 +330,13 @@ GOOGLE_PLACES_API_KEY=
 ```
 
 Both values are required before the application makes a Places request.
-`.env`, `.env.canary`, and `.env.prod` are the owner-facing application runtime
-files; they contain non-secret switches as well as secret values. `.env.example`
-is their committed schema and safe defaults. The current files set local and
-canary off and production on. Hosted Bicep parameters enforce the same policy,
-while the key remains a secret input. Google Routes and browser Maps have
-separate runtime paths and are not disabled by the Places switch.
+Checked-in `config/environments/local.env`, `canary.env`, and `prod.env` own the
+non-secret switch, cache TTLs, and request ceilings. Ignored `.env`, `.env.canary`,
+and `.env.prod` contain only secret overlays, and `.env.example` documents that
+secret-only surface. Local and canary are off while production is on. Hosted
+Bicep parameters enforce the same policy while the key remains a secret input.
+Google Routes and browser Maps have separate runtime paths and are not disabled
+by the Places switch.
 
 #### Emergency no-deployment control
 

@@ -24,7 +24,7 @@ def test_export_renders_complete_day_circuit(monkeypatch: pytest.MonkeyPatch) ->
     )
     monkeypatch.setattr(
         itinerary_export.places_cache,
-        "get_summary",
+        "get_details",
         lambda _name, _destination: {"address": "1 Rue de Paris", "rating": 4.8},
     )
     monkeypatch.setattr(

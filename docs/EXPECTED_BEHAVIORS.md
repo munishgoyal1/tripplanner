@@ -315,7 +315,9 @@ and open the terminal as an inspectable place.
 
 - Map opens, selects the marker for that exact occurrence, and zooms to level 15.
 - Details opens and shows that place, including itinerary-only places not already
-  in the selected-place collection.
+  in the selected-place collection. Unfocused trip rendering uses cached metadata
+  and at most one thumbnail per place; it does not fetch reviews. Exact focus may
+  fetch one cached review-details result for the inspected place.
 - Airport, railway-station, bus-stand, and other enriched terminal focus pans and
   zooms to the requested day occurrence at level 15 and opens Details with
   available Places photos, rating, reviews, address, summary, and website. The
@@ -343,6 +345,8 @@ and open the terminal as an inspectable place.
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_connects_flight_airports_to_destination_stay`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_timed_surface_transport_adds_terminal_buffer_stops`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_focus_zooms_single_item`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_unfocused_view_skips_reviews_and_limits_photos`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_focused_view_fetches_reviews_once`
 
 ### EB-FOCUS-002 - Focus a day or the whole trip
 

@@ -123,7 +123,7 @@ def _canonical_place_kind(kind: str) -> str:
 
 
 def _summary_for_place(name: str, destination: str) -> dict[str, Any]:
-    info = places_cache.get_summary(name, destination) or {}
+    info = places_cache.get_details(name, destination) or {}
     return info if isinstance(info, dict) else {}
 
 

@@ -231,7 +231,7 @@ def build_export_html(
             photo_html = ""
             place_meta_html = ""
             if name and kind in {"hotel", "attraction", "meal", "restaurant"}:
-              place = places_cache.get_summary(name, destination) or {}
+              place = places_cache.get_details(name, destination) or {}
               address = str(place.get("address") or "")
               rating = place.get("rating")
               details = [address] if address else []

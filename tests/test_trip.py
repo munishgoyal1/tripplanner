@@ -2521,10 +2521,14 @@ class TestGooglePlacesHelpers:
             "websiteUri": "https://taj.com",
             "internationalPhoneNumber": "+91 22 6665 3366",
             "currentOpeningHours": {"openNow": True},
+            "location": {"latitude": 18.9217, "longitude": 72.8332},
+            "photos": [{"name": "places/abc/photos/one"}],
         })
         assert out["name"] == "Taj Mahal Palace"
         assert out["rating"] == 4.6
         assert out["place_id"] == "abc"
+        assert out["lat"] == 18.9217
+        assert out["photo_refs"] == ["places/abc/photos/one"]
         assert len(out["types"]) == 3
 
     def test_format_place_minimal(self):

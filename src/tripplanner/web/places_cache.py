@@ -40,11 +40,12 @@ import httpx
 from tripplanner import http_client
 from tripplanner.config import get_settings
 from tripplanner.json_store import atomic_write_json
+from tripplanner.places_budget import consume, current_budget, use_budget
 from tripplanner.tools.google_places import _BASE, is_configured
 
 log = logging.getLogger(__name__)
 
-_MAX_PHOTOS_PER_PLACE = 3
+_MAX_PHOTOS_PER_PLACE = 1
 _HTTP_TIMEOUT_S = 10
 # Place details (id, rating, address, summary, lat/lng, photo refs, reviews)
 # and the top-places lists barely change, so we keep them for a week. Signed
@@ -58,7 +59,18 @@ _MAX_ENTRIES = 800  # soft cap; evict the oldest beyond this
 
 
 def _ttl(seconds: int | float) -> int:
-    return get_settings().cache_ttl(seconds)
+    settings = get_settings()
+    configured = {
+        _META_TTL_S: settings.google_places_metadata_cache_ttl_sec,
+        _MISS_TTL_S: settings.google_places_miss_cache_ttl_sec,
+        _PHOTO_TTL_S: settings.google_places_photo_url_cache_ttl_sec,
+    }
+    return settings.cache_ttl(configured.get(seconds, seconds))
+
+
+def _reviews_ttl() -> int:
+    settings = get_settings()
+    return settings.cache_ttl(settings.google_places_reviews_cache_ttl_sec)
 
 # Durable L2 store so warm data survives container restarts. Each place is one
 # small Cosmos item (keyed by a hash of the cache key) so the store scales well
@@ -444,18 +456,38 @@ def normalize_place(p: dict[str, Any], name: str = "") -> dict[str, Any]:
     }
 
 
+def remember_places(places: list[dict[str, Any]], city: str) -> None:
+    """Seed structured discovery results into the shared UI place cache."""
+    now = time.time()
+    touched: set[str] = set()
+    cache = _cache()
+    with _CACHE_LOCK:
+        for place in places:
+            name = str(place.get("name") or "").strip()
+            if not name or not place.get("place_id"):
+                continue
+            key = _key(name, city)
+            existing = cache.get(key) or {}
+            cache[key] = {**existing, **place, "__at__": now}
+            touched.add(key)
+        _evict_if_needed()
+    _schedule_durable(touched)
+
+
 def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
-    """One Text Search call to grab id + photos + summary in a single hit."""
+    """One Text Search call to grab routine place metadata and photo references."""
     if not is_configured() or not name:
         return None
     field_mask = (
         "places.id,places.displayName,places.formattedAddress,places.rating,"
         "places.userRatingCount,places.priceLevel,places.photos,"
-        "places.editorialSummary,places.websiteUri,places.location,"
+        "places.websiteUri,places.location,"
         "places.businessStatus,places.currentOpeningHours.openNow,"
         "places.regularOpeningHours.weekdayDescriptions"
     )
     for attempt in range(2):
+        if not consume("text_search"):
+            return None
         try:
             resp = http_client.post(
                 f"{_BASE}/places:searchText",
@@ -488,8 +520,14 @@ def _photo_uris(refs: list[str], max_width_px: int = 800) -> list[str]:
     if len(refs) == 1:
         uri = _photo_uri(refs[0], max_width_px)
         return [uri] if uri else []
+    budget = current_budget()
+
+    def _resolve(ref: str) -> str | None:
+        with use_budget(budget):
+            return _photo_uri(ref, max_width_px)
+
     with ThreadPoolExecutor(max_workers=min(_MAX_WORKERS, len(refs))) as ex:
-        uris = list(ex.map(lambda r: _photo_uri(r, max_width_px), refs))
+        uris = list(ex.map(_resolve, refs))
     return [u for u in uris if u]
 
 
@@ -500,6 +538,8 @@ def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
     instead of following the binary redirect ourselves.
     """
     if not photo_ref or not is_configured():
+        return None
+    if not consume("photo"):
         return None
     try:
         resp = http_client.get(
@@ -520,6 +560,8 @@ def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
 
 def _fetch_reviews(place_id: str) -> list[dict[str, Any]]:
     if not place_id or not is_configured():
+        return []
+    if not consume("review_details"):
         return []
     try:
         resp = http_client.get(
@@ -591,6 +633,7 @@ def get_photos(
     name: str, city: str, max_photos: int = _MAX_PHOTOS_PER_PLACE, *, refresh: bool = False
 ) -> list[str]:
     """Return up to ``max_photos`` renderable image URLs for ``name``."""
+    max_photos = min(max_photos, get_settings().google_places_max_photos_per_place)
     info = _ensure(name, city, refresh=refresh)
     if not info:
         return []
@@ -629,13 +672,16 @@ def prefetch(
     if not todo:
         return
 
+    budget = current_budget()
+
     def _one(name: str) -> None:
-        if with_reviews:
-            get_summary(name, city, refresh=refresh)  # populates lookup + reviews
-        else:
-            get_details(name, city, refresh=refresh)
-        if max_photos > 0:
-            get_photos(name, city, max_photos=max_photos, refresh=refresh)
+        with use_budget(budget):
+            if with_reviews:
+                get_summary(name, city, refresh=refresh)  # populates lookup + reviews
+            else:
+                get_details(name, city, refresh=refresh)
+            if max_photos > 0:
+                get_photos(name, city, max_photos=max_photos, refresh=refresh)
 
     with _batched_persist():
         with ThreadPoolExecutor(max_workers=min(_MAX_WORKERS, len(todo))) as ex:
@@ -648,12 +694,16 @@ def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
     if not info:
         return None
     with _CACHE_LOCK:
-        needs_reviews = refresh or "reviews" not in info
+        reviews_stale = (
+            time.time() - info.get("__reviews_at__", 0.0)
+        ) >= _reviews_ttl()
+        needs_reviews = refresh or "reviews" not in info or reviews_stale
         place_id = info.get("place_id", "")
     if needs_reviews:
         reviews = _fetch_reviews(place_id)
         with _CACHE_LOCK:
             info["reviews"] = reviews
+            info["__reviews_at__"] = time.time()
         _persist_entry(_key(name, _lookup_city(name, city)))
     return info
 
@@ -728,6 +778,8 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
         else:
             query = f"top tourist attractions in {destination}"
         names: list[str] = []
+        if not consume("text_search"):
+            return names
         try:
             resp = http_client.post(
                 f"{_BASE}/places:searchText",

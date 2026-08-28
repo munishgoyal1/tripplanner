@@ -178,6 +178,52 @@ class Settings(BaseModel):
         default_factory=lambda: os.getenv("ENABLE_GOOGLE_PLACES", "0").strip() == "1"
     )
     google_places_api_key: str = os.getenv("GOOGLE_PLACES_API_KEY", "")
+    google_places_metadata_cache_ttl_sec: int = Field(
+        default_factory=lambda: _env_positive_int(
+            "GOOGLE_PLACES_METADATA_CACHE_TTL_SEC", 604800
+        )
+    )
+    google_places_search_cache_ttl_sec: int = Field(
+        default_factory=lambda: _env_positive_int(
+            "GOOGLE_PLACES_SEARCH_CACHE_TTL_SEC", 604800
+        )
+    )
+    google_places_reviews_cache_ttl_sec: int = Field(
+        default_factory=lambda: _env_positive_int(
+            "GOOGLE_PLACES_REVIEWS_CACHE_TTL_SEC", 604800
+        )
+    )
+    google_places_miss_cache_ttl_sec: int = Field(
+        default_factory=lambda: _env_positive_int("GOOGLE_PLACES_MISS_CACHE_TTL_SEC", 60)
+    )
+    google_places_hours_cache_ttl_sec: int = Field(
+        default_factory=lambda: _env_positive_int(
+            "GOOGLE_PLACES_HOURS_CACHE_TTL_SEC", 7200
+        )
+    )
+    google_places_photo_url_cache_ttl_sec: int = Field(
+        default_factory=lambda: _env_positive_int(
+            "GOOGLE_PLACES_PHOTO_URL_CACHE_TTL_SEC", 3000
+        )
+    )
+    google_places_max_text_searches_per_trip: int = Field(
+        default_factory=lambda: _env_positive_int(
+            "GOOGLE_PLACES_MAX_TEXT_SEARCHES_PER_TRIP", 3
+        )
+    )
+    google_places_max_review_details_per_trip: int = Field(
+        default_factory=lambda: _env_positive_int(
+            "GOOGLE_PLACES_MAX_REVIEW_DETAILS_PER_TRIP", 1
+        )
+    )
+    google_places_max_photos_per_trip: int = Field(
+        default_factory=lambda: _env_positive_int("GOOGLE_PLACES_MAX_PHOTOS_PER_TRIP", 3)
+    )
+    google_places_max_photos_per_place: int = Field(
+        default_factory=lambda: _env_positive_int(
+            "GOOGLE_PLACES_MAX_PHOTOS_PER_PLACE", 1
+        )
+    )
 
     # Google Maps JavaScript API — browser-side key for the interactive trip
     # map (pins, day routes). MUST be a SEPARATE key from google_places_api_key
