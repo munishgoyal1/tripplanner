@@ -61,7 +61,7 @@ def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
     assert "destination overview returned no photo" in browser_smoke
 
 
-def test_google_places_cloud_policy_is_production_only_and_observation_scaled() -> None:
+def test_google_places_cloud_policy_is_disabled_and_observation_scaled() -> None:
     root = Path(__file__).parents[1]
     guardrails = (root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8")
     apply_script = (root / "infra" / "gcp" / "apply-billing-guardrails.ps1").read_text(
@@ -71,8 +71,8 @@ def test_google_places_cloud_policy_is_production_only_and_observation_scaled() 
         encoding="utf-8"
     )
 
-    assert guardrails.count('"placesEnabled": false') == 2
-    assert guardrails.count('"placesEnabled": true') == 1
+    assert guardrails.count('"placesEnabled": false') == 3
+    assert '"placesEnabled": true' not in guardrails
     assert (
         '"quotaId": "SearchTextRequestPerDayPerProject", '
         '"local": 1, "canary": 1, "prod": 100'
