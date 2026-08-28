@@ -6,8 +6,13 @@ function argument(name) {
 }
 
 const baseUrl = argument("url").replace(/\/$/, "");
+const environment = argument("environment");
 if (!baseUrl) {
   console.error("ERROR: --url=<hosted app URL> is required");
+  process.exit(2);
+}
+if (!["canary", "production"].includes(environment)) {
+  console.error("ERROR: --environment=<canary|production> is required");
   process.exit(2);
 }
 
@@ -90,10 +95,14 @@ try {
   if (!overviewResponse.ok()) throw new Error(`destination overview HTTP ${overviewResponse.status()}`);
   const overview = await overviewResponse.json();
   const photoUrl = overview.photos?.[0] || overview.key_attractions?.find((item) => item.photo)?.photo;
-  if (!photoUrl) throw new Error("destination overview returned no photo");
-  const photoResponse = await context.request.get(photoUrl);
-  if (!photoResponse.ok()) throw new Error(`destination photo HTTP ${photoResponse.status()}`);
-  console.log(`[PASS] Destination photo loaded (${photoResponse.status()})`);
+  if (!photoUrl && environment === "canary") {
+    console.log("[SKIP] Destination photo (Google Places is intentionally disabled in canary)");
+  } else {
+    if (!photoUrl) throw new Error("destination overview returned no photo");
+    const photoResponse = await context.request.get(photoUrl);
+    if (!photoResponse.ok()) throw new Error(`destination photo HTTP ${photoResponse.status()}`);
+    console.log(`[PASS] Destination photo loaded (${photoResponse.status()})`);
+  }
 } finally {
   await browser.close();
 }
