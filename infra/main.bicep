@@ -101,6 +101,9 @@ param googleAnalyticsMeasurementId string = ''
 @description('Tavily web-search API key.')
 param tavilyApiKey string = ''
 
+@description('Explicit billing gate for Google Places API (New). Keep false outside production.')
+param enableGooglePlaces bool = false
+
 @secure()
 @description('Google OAuth client id (web app). Optional; enables Sign in with Google.')
 param googleOauthClientId string = ''
@@ -235,6 +238,7 @@ var baseEnv = [
   { name: 'AZURE_OPENAI_API_VERSION', value: azureOpenAiApiVersion }
   { name: 'AZURE_OPENAI_API_KEY', secretRef: 'azure-openai-api-key' }
   { name: 'DUFFEL_API_KEY', secretRef: 'duffel-api-key' }
+  { name: 'ENABLE_GOOGLE_PLACES', value: enableGooglePlaces ? '1' : '0' }
   { name: 'GOOGLE_PLACES_API_KEY', secretRef: 'google-places-api-key' }
   { name: 'TAVILY_API_KEY', secretRef: 'tavily-api-key' }
   { name: 'GOOGLE_MAPS_BROWSER_KEY', value: googleMapsBrowserKey }
@@ -477,4 +481,3 @@ output publicDemoRefreshJobName string = publicDemoRefreshJob.name
 output cosmosEndpoint string = cosmos.properties.documentEndpoint
 output cosmosAccountName string = cosmos.name
 output logAnalyticsId string = logs.id
-

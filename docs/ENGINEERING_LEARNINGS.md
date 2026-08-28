@@ -1326,3 +1326,18 @@ the outcome.
 - Once durable content is known to be unchanged, return before collecting
   volatile metadata or serializing. Test the file bytes, not only the revision
   count; a structurally valid no-op rewrite is still an operational change.
+
+## 2026-08-28 - A Paid Provider Key Is Not an Enable Switch
+
+- Copying a development `.env` into isolated workers gave every lane the same
+  billable key. Separate caches then turned one corpus run into repeated provider
+  purchases even though the owner never used the primary local UI.
+- Paid providers must require an explicit, fail-closed runtime switch in addition
+  to credentials. Secrets prove authorization; they do not express owner consent
+  to spend.
+- Keep a second guard at the provider project: disable the service or enforce a
+  tight quota outside approved environments. An application bug must not be able
+  to bypass the owner's environment policy.
+- Usage telemetry needs environment, lane, run, caller, field-mask class, and
+  cache-hit dimensions. Provider request totals can prove when and under which
+  key a leak occurred, but cannot reconstruct the responsible process afterward.

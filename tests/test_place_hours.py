@@ -82,7 +82,23 @@ def test_is_open_at_empty_periods_returns_false():
 def test_check_place_hours_not_configured(monkeypatch):
     monkeypatch.setattr(place_hours, "is_configured", lambda: False)
     out = place_hours.check_place_hours.invoke({"place_id": "X", "when_iso": ""})
-    assert "not configured" in out.lower()
+    assert "disabled or not configured" in out.lower()
+
+
+def test_place_hours_requires_flag_and_key(monkeypatch):
+    monkeypatch.setattr(
+        place_hours,
+        "get_settings",
+        lambda: SimpleNamespace(enable_google_places=False, google_places_api_key="copied-key"),
+    )
+    assert not place_hours.is_configured()
+
+    monkeypatch.setattr(
+        place_hours,
+        "get_settings",
+        lambda: SimpleNamespace(enable_google_places=True, google_places_api_key="test-key"),
+    )
+    assert place_hours.is_configured()
 
 
 def test_check_place_hours_returns_schedule_without_when(_configured, monkeypatch):

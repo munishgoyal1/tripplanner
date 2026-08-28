@@ -282,6 +282,34 @@ arithmetic follows directly: an 8,000 INR monthly cap funds on the order of
 350 trips per month. Corpus runs in the hundreds of trips per day are only
 affordable after moving grounding lookups to IDs-only masks.
 
+### Production-only Places gate
+
+Google Places is intentionally enabled only in the production GCP project.
+Local and canary keep `places.googleapis.com` disabled at the Google Service
+Usage layer. The application adds a second, fail-closed gate:
+
+```dotenv
+ENABLE_GOOGLE_PLACES=0
+GOOGLE_PLACES_API_KEY=
+```
+
+Both values are required before the application makes a Places request.
+`.env` is the central owner-facing runtime configuration file; it contains
+non-secret switches as well as secret values. `.env.example` is its committed
+schema and safe defaults. Hosted Bicep parameters pin canary off and production
+on, while the key remains a secret input. Google Routes and browser Maps have
+separate runtime paths and are not disabled by the Places switch.
+
+The 2026-08-27 local incident recorded 14,920 Text Search calls while 314 corpus
+trips were under audit-fix/evaluation activity: **47.5 Text Searches per trip**.
+That is an observed cold, isolated-sandbox-cache amplification figure, not the
+deterministic audit's intended behavior and not an unavoidable production trip
+cost. Pytest blocks outbound traffic and the final audit renderer uses stored
+place facts. The incident occurred because concurrent live sandbox/evaluation
+enrichment had the copied local key, separate per-lane caches, and automatic
+place warming; Google monitoring did not preserve a process or run ID that
+would identify each historical request more narrowly.
+
 ## Verify
 
 ```bash
