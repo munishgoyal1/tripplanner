@@ -96,6 +96,15 @@ partitions, application containers, or deletes. Newer Places metadata, reviews,
 and signed photo URLs are selected independently; tool results use `cached_at`
 with the original Cosmos timestamp as a legacy fallback. Expired evidence is
 skipped rather than made fresh by copying, and writes use source snapshot ETags.
+The first successful apply takes complete partition snapshots and atomically
+records a per-source, per-container Cosmos `_ts` watermark. Later runs query only
+a five-minute overlap behind each watermark, fetch complete documents only for
+candidate IDs, and still compare destination content before writing. A checkpoint
+advances only after every planned write verifies and no ETag conflict occurs. An
+interruption, verification failure, malformed checkpoint, or conflict therefore
+causes a conservative re-read on the next run; it cannot skip an unverified delta.
+Changing either cache-policy profile also invalidates the checkpoint and forces
+a full scan so newly eligible old evidence is reconsidered.
 
 Run the matching launcher from `scripts/mac/prod/` or `scripts/win/prod/`:
 
@@ -113,6 +122,9 @@ Run the matching launcher from `scripts/mac/prod/` or `scripts/win/prod/`:
 
 # Preview the default two-way merge without writing either side or prompting.
 ./Sync-Prod-Cache.command -WhatIf
+
+# Ignore saved watermarks and rebuild them from complete snapshots.
+./Sync-Prod-Cache.command -WhatIf -FullScan
 ```
 
 The launcher accepts only the approved personal Azure identity and Visual Studio
@@ -121,6 +133,14 @@ authenticated Azure CLI, keeps it in the child process environment only, removes
 it after the run, and writes a credential-free JSON report under
 `logs/cache-sync/`. The local Cosmos emulator must be running. Every apply is
 idempotent and can be rerun after reported ETag conflicts.
+The stable checkpoint is `logs/cache-sync/checkpoint.json`; `-CheckpointPath`
+can isolate another operator state, `-WatermarkOverlapSeconds` can widen the
+clock-safety window, and `-FullScan` provides deterministic recovery. Dry runs
+never advance a checkpoint. Reports include scan mode and watermarks, candidates,
+unchanged and stale counts, insert/replace outcomes, per-item delta status,
+request counts, request-unit charges, and JSON payload bytes for metadata queries,
+point reads, writes, and verification reads. Payload bytes describe serialized
+documents, not HTTP framing or Azure bandwidth billing.
 
 Every entry point above writes its latest run to
 `<primary-checkout>/logs/last-run/<name>.log`, overwritten each run, next to an

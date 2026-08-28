@@ -19,7 +19,11 @@ param(
     [string]$CosmosResourceGroup = "rg-tripplanner-data",
     [string]$CosmosAccountName = "",
     [string]$LocalDatabase = "tripplanner-cache",
-    [string]$ReportPath = ""
+    [string]$ReportPath = "",
+    [string]$CheckpointPath = "",
+    [ValidateRange(0, 86400)]
+        [int]$WatermarkOverlapSeconds = 300,
+    [switch]$FullScan = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -77,6 +81,9 @@ if ([string]::IsNullOrWhiteSpace($ReportPath)) {
     $ReportPath = Join-Path (Get-PrimaryRepoRoot) "logs/cache-sync/$stamp.json"
 }
 $primaryRoot = Get-PrimaryRepoRoot
+if ([string]::IsNullOrWhiteSpace($CheckpointPath)) {
+    $CheckpointPath = Join-Path $primaryRoot "logs/cache-sync/checkpoint.json"
+}
 $pythonCandidates = @(
     (Join-Path $primaryRoot ".venv/bin/python"),
     (Join-Path $primaryRoot ".venv/Scripts/python.exe"),
@@ -116,10 +123,15 @@ try {
         "--local-database", $LocalDatabase,
         "--local-config", "$repoRoot/config/environments/local.env",
         "--prod-config", "$repoRoot/config/environments/prod.env",
+        "--checkpoint", $CheckpointPath,
+        "--watermark-overlap-seconds", $WatermarkOverlapSeconds,
         "--report", $ReportPath
     )
     if ($apply) {
         $arguments += "--apply"
+    }
+    if ($FullScan) {
+        $arguments += "--full-scan"
     }
     & $pythonCommand @arguments
     $exitCode = $LASTEXITCODE

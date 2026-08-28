@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import json
+from types import SimpleNamespace
+
+import scripts.prod_cache_sync as cache_sync
 from scripts.prod_cache_sync import (
     PLACES_CONTAINER,
     TOOLS_CONTAINER,
+    ActivityMetrics,
     CachePolicy,
     CacheRecord,
     PlannedWrite,
+    Snapshot,
     _verify_write,
     merge_place_documents,
     plan_direction,
@@ -173,8 +179,9 @@ def test_write_verification_ignores_cosmos_system_fields():
     )
 
     class Container:
-        def read_item(self, *, item, partition_key):
+        def read_item(self, *, item, partition_key, response_hook):
             assert (item, partition_key) == ("p1", "_shared")
+            response_hook({"x-ms-request-charge": "1.25"}, None)
             return {
                 "id": "p1",
                 "user_id": "_shared",
@@ -184,4 +191,205 @@ def test_write_verification_ignores_cosmos_system_fields():
                 "_ts": 20,
             }
 
-    _verify_write(Container(), planned)
+    metrics = _verify_write(Container(), planned)
+
+    assert metrics.request_units == 1.25
+    assert metrics.requests == 1
+    assert metrics.payload_bytes > 0
+
+
+def _sync_args(tmp_path, checkpoint):
+    config = tmp_path / "cache.env"
+    config.write_text(
+        "CACHE_WARM_EVERYTHING=0\nCACHE_STABLE_FOREVER=1\n",
+        encoding="utf-8",
+    )
+    return SimpleNamespace(
+        apply=True,
+        checkpoint=str(checkpoint),
+        direction="push",
+        full_scan=False,
+        local_config=str(config),
+        local_database="tripplanner-cache",
+        prod_config=str(config),
+        prod_endpoint="https://example.documents.azure.com:443/",
+        watermark_overlap_seconds=300,
+    )
+
+
+def _seed_checkpoint(path, args, watermark=100):
+    checkpoint = cache_sync._empty_checkpoint(args)
+    checkpoint["sources"]["local"][PLACES_CONTAINER] = watermark
+    cache_sync._save_checkpoint(path, checkpoint)
+
+
+def _stub_sync_databases(monkeypatch):
+    class Database:
+        def get_container_client(self, _name):
+            return object()
+
+    local = Database()
+    production = Database()
+
+    class ProductionClient:
+        def get_database_client(self, _name):
+            return production
+
+    monkeypatch.setattr(cache_sync, "_local_client", lambda: object())
+    monkeypatch.setattr(cache_sync, "_local_database", lambda _client, _name: local)
+    monkeypatch.setattr(cache_sync, "_production_client", lambda _endpoint: ProductionClient())
+    return local, production
+
+
+def _stub_incremental_scan(monkeypatch, expected_watermark=100):
+    source = {
+        item_id: CacheRecord(
+            body={
+                "id": item_id,
+                "user_id": "_shared",
+                "entry": {"name": item_id, "__at__": 150},
+                "ttl": -1,
+            },
+            source_ts=200,
+        )
+        for item_id in ("p1", "p2")
+    }
+
+    def changed_snapshot(
+        _source_database,
+        _target_database,
+        _container,
+        watermark,
+        overlap_seconds,
+    ):
+        assert watermark == expected_watermark
+        assert overlap_seconds == 300
+        return (
+            Snapshot(source, 200, 0, False, ActivityMetrics()),
+            {},
+            ActivityMetrics(),
+            ActivityMetrics(),
+        )
+
+    monkeypatch.setattr(cache_sync, "_changed_snapshot", changed_snapshot)
+
+
+def test_partial_failure_keeps_checkpoint_and_reports_completed_delta(
+    tmp_path, monkeypatch
+):
+    checkpoint_path = tmp_path / "checkpoint.json"
+    args = _sync_args(tmp_path, checkpoint_path)
+    _seed_checkpoint(checkpoint_path, args)
+    checkpoint_before = checkpoint_path.read_bytes()
+    _stub_sync_databases(monkeypatch)
+    _stub_incremental_scan(monkeypatch)
+    calls = 0
+
+    def fail_second_write(_container, planned, metrics):
+        nonlocal calls
+        calls += 1
+        metrics.requests += 1
+        metrics.request_units += 2
+        metrics.add_payload(planned.body)
+        if calls == 2:
+            raise RuntimeError("interrupted")
+        return "inserted", metrics
+
+    def verify(_container, _planned, metrics):
+        metrics.requests += 1
+        metrics.request_units += 1
+        return metrics
+
+    monkeypatch.setattr(cache_sync, "_write", fail_second_write)
+    monkeypatch.setattr(cache_sync, "_verify_write", verify)
+
+    report = cache_sync.synchronize(args)
+
+    activity = report["containers"][PLACES_CONTAINER]["local_to_production"]
+    assert report["status"] == "failed"
+    assert report["written"] == 1
+    assert report["checkpoint"]["advanced"] is False
+    assert report["checkpoint"]["reason"] == "run_failed"
+    assert checkpoint_path.read_bytes() == checkpoint_before
+    assert [item["status"] for item in activity["delta_activity"]] == [
+        "verified",
+        "failed",
+    ]
+    assert activity["write_metrics"]["request_units"] == 4
+    assert activity["verification_metrics"]["request_units"] == 1
+
+
+def test_successful_incremental_run_advances_checkpoint(tmp_path, monkeypatch):
+    checkpoint_path = tmp_path / "checkpoint.json"
+    args = _sync_args(tmp_path, checkpoint_path)
+    _seed_checkpoint(checkpoint_path, args)
+    _stub_sync_databases(monkeypatch)
+    _stub_incremental_scan(monkeypatch)
+
+    def write(_container, planned, metrics):
+        metrics.requests += 1
+        metrics.add_payload(planned.body)
+        return "inserted", metrics
+
+    monkeypatch.setattr(cache_sync, "_write", write)
+    monkeypatch.setattr(
+        cache_sync,
+        "_verify_write",
+        lambda _container, _planned, metrics: metrics,
+    )
+
+    report = cache_sync.synchronize(args)
+    checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+
+    assert report["status"] == "passed"
+    assert report["checkpoint"]["advanced"] is True
+    assert checkpoint["sources"]["local"][PLACES_CONTAINER] == 200
+
+
+def test_etag_conflict_keeps_checkpoint_for_conservative_retry(tmp_path, monkeypatch):
+    checkpoint_path = tmp_path / "checkpoint.json"
+    args = _sync_args(tmp_path, checkpoint_path)
+    _seed_checkpoint(checkpoint_path, args)
+    checkpoint_before = checkpoint_path.read_bytes()
+    _stub_sync_databases(monkeypatch)
+    _stub_incremental_scan(monkeypatch)
+
+    class ConflictError(RuntimeError):
+        status_code = 412
+
+    monkeypatch.setattr(
+        cache_sync,
+        "_write",
+        lambda _container, _planned, _metrics: (_ for _ in ()).throw(
+            ConflictError("changed concurrently")
+        ),
+    )
+
+    report = cache_sync.synchronize(args)
+
+    activity = report["containers"][PLACES_CONTAINER]["local_to_production"]
+    assert report["status"] == "partial"
+    assert report["conflicts"] == 2
+    assert report["checkpoint"]["advanced"] is False
+    assert report["checkpoint"]["reason"] == "conflicts_detected"
+    assert checkpoint_path.read_bytes() == checkpoint_before
+    assert [item["status"] for item in activity["delta_activity"]] == [
+        "conflict",
+        "conflict",
+    ]
+
+
+def test_cache_policy_change_invalidates_checkpoint(tmp_path):
+    checkpoint_path = tmp_path / "checkpoint.json"
+    args = _sync_args(tmp_path, checkpoint_path)
+    _seed_checkpoint(checkpoint_path, args)
+    policy_path = tmp_path / "cache.env"
+    policy_path.write_text(
+        policy_path.read_text(encoding="utf-8") + "CACHE_TTL_SCALE=2\n",
+        encoding="utf-8",
+    )
+
+    checkpoint, state = cache_sync._load_checkpoint(checkpoint_path, args)
+
+    assert state == "scope_mismatch"
+    assert checkpoint["sources"] == {"local": {}, "production": {}}
