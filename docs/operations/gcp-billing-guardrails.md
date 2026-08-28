@@ -315,11 +315,12 @@ first-paid-tier list prices, the configured cold ceiling is roughly USD 0.142
 This is a catalog estimate, not billed cost; provider billing exports remain
 authoritative, and Azure OpenAI/Routes remain outside this figure.
 
-### Production-only Places gate
+### All-environment Places gate
 
-Google Places is intentionally enabled only in the production GCP project.
-Local and canary keep `places.googleapis.com` disabled at the Google Service
-Usage layer. `placesEnabled` in
+Google Places is disabled in every GCP project while the 2026-08-27 cost
+incident is investigated. Local, canary, and production keep
+`places.googleapis.com` disabled at the Google Service Usage layer.
+`placesEnabled` in
 [`infra/billing-guardrails.json`](../../infra/billing-guardrails.json) is the
 central owner-facing desired state for that cloud control. The application adds
 a second, fail-closed gate:
@@ -333,7 +334,7 @@ Both values are required before the application makes a Places request.
 Checked-in `config/environments/local.env`, `canary.env`, and `prod.env` own the
 non-secret switch, cache TTLs, and request ceilings. Ignored `.env`, `.env.canary`,
 and `.env.prod` contain only secret overlays, and `.env.example` documents that
-secret-only surface. Local and canary are off while production is on. Hosted
+secret-only surface. All three environments are off. Hosted
 Bicep parameters enforce the same policy while the key remains a secret input.
 Google Routes and browser Maps have separate runtime paths and are not disabled
 by the Places switch.
@@ -367,15 +368,58 @@ environment **on** still requires all three independent gates: cloud Service
 Usage enabled, `ENABLE_GOOGLE_PLACES=1`, and a valid Places key. A hosted runtime
 flag change creates a Container Apps revision; it is not an in-place toggle.
 
-The 2026-08-27 local incident recorded 14,920 Text Search calls while 314 corpus
-trips were under audit-fix/evaluation activity: **47.5 Text Searches per trip**.
-That is an observed cold, isolated-sandbox-cache amplification figure, not the
-deterministic audit's intended behavior and not an unavoidable production trip
-cost. Pytest blocks outbound traffic and the final audit renderer uses stored
-place facts. The incident occurred because concurrent live sandbox/evaluation
-enrichment had the copied local key, separate per-lane caches, and automatic
-place warming; Google monitoring did not preserve a process or run ID that
-would identify each historical request more narrowly.
+### 2026-08-27 incident evidence
+
+Google Service Runtime `api/request_count` gives the following daily aligned
+request buckets. These are measured requests, not billing estimates:
+
+| Project | Bucket ending | Places requests |
+| --- | --- | ---: |
+| production | 2026-08-24 | 5,854 |
+| local | 2026-08-25 | 140 |
+| production | 2026-08-25 | 15,111 |
+| local | 2026-08-26 | 128 |
+| production | 2026-08-26 | 1,768 |
+| local | 2026-08-27 | 14,847 |
+| production | 2026-08-27 | 158 |
+| production | 2026-08-28 | 45 |
+| canary | entire comparison window | 0 |
+
+The local spike ran from approximately 13:00Z through 16:00Z on 27 August.
+All 14,847 requests were `Places.SearchText` through one local API credential;
+14,846 returned HTTP 200 and one returned HTTP 500. The retry change made that
+evening could therefore account for at most one additional request and was not
+the spike's cause.
+
+The direct cause was unbounded cold-cache enrichment across live sandbox and
+evaluation runs. At 18:35 IST the audit launcher began importing the primary
+Places key into sandbox processes; at 18:46 IST every sandbox run began copying
+the complete primary `.env`. The trip view then synchronously prefetched every
+gallery item and scheduled whole-trip and destination-guide warming. Each lane
+had an isolated cache, so identical places were cold again in every concurrent
+lane. The incident coincided with repeated audit-fix integration activity over
+314 corpus trips. The billing snapshot showed 14,920 Text Search units, or 47.5
+per corpus trip; Service Runtime independently records 14,847 local calls in
+the spike. Google does not retain this application's process or run ID, so the
+remaining 73-unit difference and an exact per-lane allocation cannot be proven
+retrospectively.
+
+The incident-time field mask included `editorialSummary`, selecting Text Search
+Enterprise + Atmosphere rather than a cheap ID-only search. Earlier production
+traffic had already consumed the billing account's pooled monthly allowance,
+so the local burst arrived mostly or entirely in the paid tier. At the documented
+India catalog rate of USD 12 per 1,000 calls, 14,847 calls are approximately USD
+178.16 before allowance, credits, tax, and currency conversion. This is a catalog
+estimate, not the billed amount. A billing report moving from roughly INR 6,000
+to INR 11,000 and then INR 17,000 without corresponding new request metrics is
+consistent with delayed usage ingestion and credit allocation; the finalized
+billing export or invoice remains authoritative.
+
+No continuing caller was observed after the shutdown check: local and canary
+had no 28 August requests, production's final point ended at 08:46:51Z, and no
+local corpus, validation, or pytest process was running. Service Usage and the
+checked-in application gate are now disabled in all environments. Routes,
+Static Maps, and browser Maps are separate services and were not changed.
 
 ## Verify
 

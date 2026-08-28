@@ -1403,3 +1403,21 @@ the outcome.
   relative tolerance while keeping booleans, object keys, list order, and all
   nonnumeric values exact. Pair the accepted round-trip case with a test that
   rejects a meaningful coordinate change so tolerance cannot hide corruption.
+
+## 2026-08-28 - Provider Credentials Must Not Activate Sandbox Enrichment
+
+- Copying a primary environment file into every sandbox changed a read-only,
+  stored-data audit workflow into a spend-capable environment. The audit itself
+  made no provider calls, but live view rendering in those lanes automatically
+  warmed every place through isolated caches.
+- Treat credential distribution, runtime enablement, and cloud Service Usage as
+  independent gates. Sandboxes and evaluation jobs should remain disabled by
+  default even when a key is present, and an emergency stop must close the cloud
+  gate so already-running processes cannot bypass repository configuration.
+- Request budgets must cover synchronous rendering and background warming as one
+  scope. Concurrency reduces latency but does not reduce billable fan-out; without
+  a shared budget it can multiply cold requests across both items and lanes.
+- Diagnose billing incidents from provider request metrics before interpreting a
+  changing console total. Delayed usage and credit allocation can revise cost
+  after traffic stops; response-code and method dimensions distinguish retry
+  storms from successful high-cardinality fan-out.
