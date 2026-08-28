@@ -14,7 +14,7 @@ or quote the wildcard as `'?'` so the shell passes it to the launcher.
 | `run/Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
 | `google/Google-Places-Control.cmd disable prod` | Immediately disable paid Places in GCP without deploying; status, guarded enable, and profile apply are also supported |
 | `google/Google-Maps-Control.cmd disable prod` | Disable Maps JavaScript, Routes, and Static Maps in GCP without deploying; status, guarded enable, and profile apply are also supported |
-| `azure/Azure-Services-Control.cmd status` | Report all allowlisted Tripplanner Azure services; guarded disable stops hosted callers and blocks service access, while guarded enable restores them |
+| `azure/Azure-Services-Control.cmd status [all|local|canary|prod]` | Report or control one Tripplanner Azure environment or all; guarded disable stops hosted callers and blocks environment-owned service access, while guarded enable restores them |
 | `sync/Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every registered sandbox or only the selected sandbox |
 | `sync/Full-2Way-Sync.cmd [all\|sbx]` | Converge all local lanes and automatically replay recorded conflict resolutions without hiding active edits |
 | `sync/Resolve-All-Recorded-Conflicts.cmd` | Scan all attached worktrees and finish pending merges covered by recorded resolutions; report new conflicts without aborting them |

@@ -133,6 +133,10 @@ def test_azure_services_control_is_scoped_reversible_and_approval_gated() -> Non
     assert "munishgoyal1@gmail.com" in control
     assert "Visual Studio Enterprise Subscription" in control
     assert "config.azure.environments" in control
+    assert '[ValidateSet("all", "local", "canary", "prod")]' in control
+    assert '$Environment -eq "all" -or $_.name -eq $Environment' in control
+    assert '$Environment -eq "all" -and $config.azure.actionGroupResourceGroup' in control
+    assert "Cosmos serves local, canary, and prod" in control
     assert "Microsoft.App/containerApps" in control
     assert "Microsoft.App/jobs" in control
     assert "Microsoft.CognitiveServices/accounts" in control

@@ -46,7 +46,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/sync/Resolve-All-Recorded-Conflicts.cmd` | Manually scan all attached worktrees and finish every pending merge covered by a recorded resolution; new conflicts remain visible and are summarized |
 | `win/user/google/Google-Places-Control.cmd` | Inspect or synchronize Places profile and GCP Service Usage state; paid enable is approval-gated |
 | `win/user/google/Google-Maps-Control.cmd` | Inspect or synchronize Maps, Routes, and Static Maps state; paid enable is approval-gated |
-| `win/user/azure/Azure-Services-Control.cmd` | Report or control the allowlisted Tripplanner Azure estate as one unit; disable stops hosted callers and blocks service access without deleting data, while enable is spend approval-gated |
+| `win/user/azure/Azure-Services-Control.cmd [status|disable|enable] [all|local|canary|prod]` | Report or control one Tripplanner Azure environment or the whole allowlisted estate; disable stops hosted callers and blocks environment-owned service access without deleting data, while enable is spend approval-gated |
 | `win/user/quality/Show-TripRecorder.cmd [query] [--days N]` | List or search Trip Flight Recorder entries by number, destination, keyword, or label |
 | `win/user/quality/Maintain-TripRecorder.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report recorder health |
 | `win/user/quality/Restore-TripRecorder.cmd [sandbox] [days]` | Restore recorded trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |

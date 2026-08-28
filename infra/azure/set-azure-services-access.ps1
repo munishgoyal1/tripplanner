@@ -1,14 +1,14 @@
 #!/usr/bin/env pwsh
 <#+
 .SYNOPSIS
-  Report, disable, or enable the Tripplanner Azure estate as one unit.
+    Report, disable, or enable one Tripplanner Azure environment or the whole estate.
 
 .DESCRIPTION
-  Discovers supported resources only in the resource groups configured in
-  infra/billing-guardrails.json. Disable stops Container Apps, makes recurring
-  Container Apps Jobs manual, stops active job executions, and blocks public
-  access to Azure OpenAI, Cosmos DB, and Azure Managed Redis. It never deletes
-  a resource or data.
+    Discovers supported resources only in the selected resource groups configured
+    in infra/billing-guardrails.json. Disable stops Container Apps, makes recurring
+    Container Apps Jobs manual, stops active job executions, and blocks public
+    access to Azure OpenAI and Azure Managed Redis. The shared Cosmos account is
+    controlled only by the all scope. The script never deletes a resource or data.
 
   Network blocking prevents application usage but does not stop fixed charges
   for provisioned services such as Azure Managed Redis and Cosmos DB.
@@ -17,10 +17,10 @@
   ./infra/azure/set-azure-services-access.ps1 status
 
 .EXAMPLE
-  ./infra/azure/set-azure-services-access.ps1 disable APPROVE_AZURE_DISABLE
+    ./infra/azure/set-azure-services-access.ps1 disable prod APPROVE_AZURE_DISABLE
 
 .EXAMPLE
-  ./infra/azure/set-azure-services-access.ps1 enable APPROVE_AZURE_SPEND
+    ./infra/azure/set-azure-services-access.ps1 enable prod APPROVE_AZURE_SPEND
 #>
 
 [CmdletBinding(SupportsShouldProcess)]
@@ -30,6 +30,10 @@ param(
     [string]$Action = "status",
 
     [Parameter(Position = 1)]
+    [ValidateSet("all", "local", "canary", "prod")]
+    [string]$Environment = "all",
+
+    [Parameter(Position = 2)]
     [string]$Approval = "",
 
     [string]$ConfigPath = "$PSScriptRoot/../billing-guardrails.json"
@@ -208,8 +212,14 @@ if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
 
 $config = Get-Content -Raw -Path $ConfigPath | ConvertFrom-Json
 $script:SubscriptionId = [string]$config.azure.subscriptionId
-$script:ResourceGroups = @($config.azure.environments | ForEach-Object { $_.resourceGroup })
-if ($config.azure.actionGroupResourceGroup -notin $script:ResourceGroups) {
+$selectedEnvironments = @($config.azure.environments | Where-Object {
+    $Environment -eq "all" -or $_.name -eq $Environment
+})
+if ($selectedEnvironments.Count -eq 0) {
+    throw "Environment '$Environment' is not configured in $ConfigPath."
+}
+$script:ResourceGroups = @($selectedEnvironments | ForEach-Object { $_.resourceGroup })
+if ($Environment -eq "all" -and $config.azure.actionGroupResourceGroup -notin $script:ResourceGroups) {
     $script:ResourceGroups += $config.azure.actionGroupResourceGroup
 }
 
@@ -224,10 +234,10 @@ if ($account.id -ne $script:SubscriptionId -or $account.name -ne "Visual Studio 
 if ($Action -eq "off") { $Action = "disable" }
 if ($Action -eq "on") { $Action = "enable" }
 if ($Action -eq "disable" -and $Approval -cne "APPROVE_AZURE_DISABLE") {
-    throw "Disabling takes hosted Tripplanner offline. Pass APPROVE_AZURE_DISABLE as the second argument."
+    throw "Disabling takes Tripplanner offline in the selected scope. Pass APPROVE_AZURE_DISABLE as the third argument."
 }
 if ($Action -eq "enable" -and $Approval -cne "APPROVE_AZURE_SPEND") {
-    throw "Enabling permits paid Azure usage. Pass APPROVE_AZURE_SPEND as the second argument."
+    throw "Enabling permits paid Azure usage. Pass APPROVE_AZURE_SPEND as the third argument."
 }
 
 $containerApps = @(Get-ResourcesByType -ResourceType "Microsoft.App/containerApps")
@@ -240,7 +250,11 @@ Write-Host "Azure services control"
 Write-Host "  account      : $($account.user)"
 Write-Host "  subscription : $($account.name) ($($account.id))"
 Write-Host "  action       : $Action"
+Write-Host "  environment  : $Environment"
 Write-Host "  scope        : $($script:ResourceGroups -join ', ')"
+if ($Environment -ne "all") {
+    Write-Host "  shared data  : not changed; Cosmos serves local, canary, and prod"
+}
 Write-Host ""
 
 if ($Action -eq "status") {

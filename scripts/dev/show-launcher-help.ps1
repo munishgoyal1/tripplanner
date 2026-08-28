@@ -96,23 +96,26 @@ Usage: Start-Dev-Spa [-Watch] [-Logs] [-BackendOnly|-FrontendOnly] [-NoLabs] [-N
 Example: Start-Dev-Spa -Watch -NoLabs
 "@
     "azure-services-control" = @"
-Azure-Services-Control - report or control the Tripplanner Azure estate as one unit.
+Azure-Services-Control - report or control one Azure environment or the whole estate.
 
-Usage: Azure-Services-Control [status|disable|enable|off|on] [approval]
+Usage: Azure-Services-Control [status|disable|enable|off|on] [all|local|canary|prod] [approval]
 
-  status   Show app/job state, service access, and residual billing (default).
-  disable  Stop hosted apps and jobs, then block OpenAI, Cosmos, and Redis access.
+  status   Show state and residual billing for one environment or all (default).
+  disable  Stop hosted apps/jobs and block environment-owned OpenAI or Redis access.
+           The all scope also blocks the shared Cosmos account.
            Requires APPROVE_AZURE_DISABLE. Alias: off.
   enable   Start hosted apps, restore job schedules, and reopen service access.
            Requires APPROVE_AZURE_SPEND. Alias: on.
 
 Examples:
-  Azure-Services-Control status
-  Azure-Services-Control disable APPROVE_AZURE_DISABLE
-  Azure-Services-Control enable APPROVE_AZURE_SPEND
+  Azure-Services-Control status prod
+  Azure-Services-Control disable prod APPROVE_AZURE_DISABLE
+  Azure-Services-Control enable prod APPROVE_AZURE_SPEND
+  Azure-Services-Control disable all APPROVE_AZURE_DISABLE
 
 No resource or data is deleted. Redis, Cosmos, environments, logs, and other
 provisioned resources can continue billing while application access is disabled.
+Cosmos is shared by all environments, so only the all scope changes its access.
 "@
     "google-maps-control" = @"
 Google-Maps-Control - control Maps JavaScript, Routes, and Static Maps by environment.

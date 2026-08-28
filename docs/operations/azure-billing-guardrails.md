@@ -29,9 +29,10 @@ pwsh -File infra/show-billing-status.ps1 -Cloud azure
 For immediate owner control across all known Tripplanner Azure resource groups:
 
 ```powershell
-./scripts/win/user/azure/Azure-Services-Control.cmd status
-./scripts/win/user/azure/Azure-Services-Control.cmd disable APPROVE_AZURE_DISABLE
-./scripts/win/user/azure/Azure-Services-Control.cmd enable APPROVE_AZURE_SPEND
+./scripts/win/user/azure/Azure-Services-Control.cmd status prod
+./scripts/win/user/azure/Azure-Services-Control.cmd disable prod APPROVE_AZURE_DISABLE
+./scripts/win/user/azure/Azure-Services-Control.cmd enable prod APPROVE_AZURE_SPEND
+./scripts/win/user/azure/Azure-Services-Control.cmd disable all APPROVE_AZURE_DISABLE
 ```
 
 Use the matching `scripts/mac/user/azure/Azure-Services-Control.command` launcher
@@ -45,6 +46,10 @@ subscription, and never delete resources or data.
 This is a unified orchestrator, not a universal Azure billing switch. Managed
 Redis, Cosmos throughput and storage, Container Apps environments, Log Analytics,
 and other provisioned resources can continue billing while access is disabled.
+The `local`, `canary`, and `prod` scopes control resources in that environment's
+resource group. The Cosmos account in `rg-tripplanner-data` serves all three, so
+only an `all` operation changes its network access; a single-environment operation
+leaves shared Cosmos available to avoid taking down the other environments.
 Communication Services and Email are usage-metered and expose no reversible
 account-wide pause; stopping the hosted apps removes their hosted caller but does
 not invalidate independently held credentials.

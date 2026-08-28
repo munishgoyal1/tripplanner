@@ -377,7 +377,7 @@ conversation or explicit edit
 | `infra/billing-guardrails.json` | Owner-facing cloud service state, budgets, quotas, and account identifiers |
 | `infra/{gcp,azure}/apply-billing-guardrails.ps1` | Idempotent cross-platform guardrail provisioning scripts |
 | `infra/gcp/set-google-places-access.ps1` | Immediate no-deployment Places Service Usage control and central desired-state apply |
-| `infra/azure/set-azure-services-access.ps1` | Unified, approval-gated Azure status and reversible usage control across allowlisted Tripplanner resource groups; never deletes resources or data |
+| `infra/azure/set-azure-services-access.ps1` | Approval-gated Azure status and reversible usage control for `local`, `canary`, `prod`, or all allowlisted Tripplanner resource groups; shared Cosmos changes only with `all`, and no resource or data is deleted |
 | `infra/show-billing-status.ps1` | Read-only month-to-date spend report for both clouds |
 | `infra/gcp/billing-shutoff/` | Cloud Function that detaches billing when the global GCP budget breaks |
 | `docs/development/new-machine-setup.md` | Canonical one-click Windows/macOS environment recreation and manual sign-in steps |
