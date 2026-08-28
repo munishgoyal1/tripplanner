@@ -87,7 +87,7 @@ trip through shared API contracts.
 | `scripts/dev/multiagent_core.py` | Pure multiagent coordination logic: `owner:ready` eligibility, issue-body plus chronological-comment handoffs, comment-aware footprint collisions, attempt numbering, audit fingerprints, leases, and `/planner` audit links carrying immutable record IDs |
 | `scripts/dev/multiagent.py` | Multiagent runtime: dedicated Coordinator publication, post-publish sandbox sync, full GitHub issue-thread intake, autopilot workers, remote-verified attempt SHAs, validated `origin/master` baselines, slots, supervision, batch integration, and audit proposals with representative trip/UX evidence plus opt-in exact-day screenshots on the `audit-evidence` branch |
 | `scripts/dev/full-2way-sync.ps1` | Owner-invoked convergence across every local branch and attached worktree; preserves visible WIP, uses temporary worktrees for standalone branches, replays recorded conflict resolutions across every lane type, and retains `sbx` as the registered-sandbox-only scope |
-| `scripts/prod-cache-sync.ps1`, `scripts/prod_cache_sync.py` | Owner-triggered, merge-only cache exchange between local `tripplanner-cache` and production; fixed shared/global partition allowlists, destination TTL policy, original evidence timestamps, ETag writes, JSON reports, and an explicit production-write approval gate |
+| `scripts/prod-cache-sync.ps1`, `scripts/prod_cache_sync.py` | Owner-triggered, merge-only cache exchange between local `tripplanner-cache` and production; fixed shared/global partition allowlists, destination TTL policy, original evidence timestamps, fail-safe overlapping per-source watermarks, ETag writes, RU/byte/delta JSON reports, and an explicit production-write approval gate |
 | `scripts/dev/resolve-all-recorded-conflicts.ps1` | Manual all-worktree recovery: finds pending merges in primary, sandbox, multiagent, and standalone-branch worktrees, delegates recorded `rerere` decisions to the canonical resolver, and aggregates genuinely new conflicts without starting, aborting, or publishing merges |
 | `scripts/dev/build_corpus.py`, `scripts/dev/build-corpus.ps1` | Budgeted paid Trip Quality Corpus generation against the launcher checkout's running stack (primary `:8000`/`tripplanner-local`, or a registered sandbox's isolated API/database); logical attempts use fresh corpus principals so failed chat/trip state cannot contaminate retries, one same-principal recovery turn repairs a completed empty draft, acceptance requires at least two stops per itinerary day, three consecutive completed barren turns stop with a failing exit, generation is serial unless `--workers` explicitly opts into concurrency, and every non-dry run commits and pushes its generated manifest, spend ledger, place cache, and trip files on the current branch; output reports accepted yield and richness; `--country india` covers domestic destinations, while `--market india` alternates domestic and outbound Indian-traveler scenarios |
 
@@ -113,6 +113,11 @@ request. It merges `places_cache/_shared` and, when enabled by each destination,
 this boundary. Places metadata, reviews, and photos resolve freshness
 independently, while tool rows retain an explicit `cached_at`. Copying never
 refreshes evidence timestamps or deletes a destination-only entry.
+The first successful apply bootstraps from complete snapshots. Subsequent runs
+query an overlap behind each source/container `_ts` watermark and point-read only
+candidate IDs. The checkpoint is replaced atomically only after every planned
+write verifies without an optimistic-concurrency conflict; any partial failure
+retains the previous watermark so retrying can repeat work but cannot omit it.
 Paid Google Places access requires
 both `ENABLE_GOOGLE_PLACES=1` and `GOOGLE_PLACES_API_KEY`; a copied key alone
 must never activate billable requests.

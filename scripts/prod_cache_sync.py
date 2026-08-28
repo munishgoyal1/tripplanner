@@ -8,17 +8,19 @@ preserves the time at which provider evidence was originally observed.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
 import time
 import warnings
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from azure.core import MatchConditions
-from azure.cosmos import CosmosClient, PartitionKey
+from azure.cosmos import CosmosClient, PartitionKey, exceptions
 
 from tripplanner import tools_cache
 from tripplanner.validation.emulator import EMULATOR_ENDPOINT, EMULATOR_KEY
@@ -34,6 +36,8 @@ ALLOWED_PARTITIONS = {
 }
 PRODUCTION_DATABASE = "tripplanner-prod"
 LOCAL_DATABASE = "tripplanner-cache"
+CHECKPOINT_VERSION = 1
+DEFAULT_WATERMARK_OVERLAP_SECONDS = 300
 
 
 @dataclass(frozen=True)
@@ -117,6 +121,38 @@ class PlannedWrite:
     etag: str = ""
 
 
+@dataclass
+class ActivityMetrics:
+    request_units: float = 0.0
+    requests: int = 0
+    payload_bytes: int = 0
+
+    def response_hook(self, headers: Mapping[str, str], _result: Any) -> None:
+        self.requests += 1
+        self.request_units += _number(headers.get("x-ms-request-charge"))
+
+    def add_payload(self, body: Any) -> None:
+        self.payload_bytes += len(
+            json.dumps(body, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        )
+
+    def report(self) -> dict[str, int | float]:
+        return {
+            "requests": self.requests,
+            "request_units": round(self.request_units, 3),
+            "payload_bytes": self.payload_bytes,
+        }
+
+
+@dataclass(frozen=True)
+class Snapshot:
+    records: dict[str, CacheRecord]
+    observed_watermark: float
+    query_since: float
+    full_scan: bool
+    metrics: ActivityMetrics
+
+
 def _number(value: Any) -> float:
     try:
         number = float(value)
@@ -127,6 +163,71 @@ def _number(value: Any) -> float:
 
 def _portable(body: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in body.items() if key not in SYSTEM_FIELDS}
+
+
+def _checkpoint_scope(args: argparse.Namespace) -> dict[str, str]:
+    return {
+        "local_database": args.local_database,
+        "local_policy_sha256": _file_digest(Path(args.local_config)),
+        "production_database": PRODUCTION_DATABASE,
+        "production_endpoint": args.prod_endpoint.rstrip("/").casefold(),
+        "production_policy_sha256": _file_digest(Path(args.prod_config)),
+    }
+
+
+def _file_digest(path: Path) -> str:
+    try:
+        content = path.read_bytes()
+    except OSError:
+        return "unreadable"
+    return hashlib.sha256(content).hexdigest()
+
+
+def _empty_checkpoint(args: argparse.Namespace) -> dict[str, Any]:
+    return {
+        "version": CHECKPOINT_VERSION,
+        "scope": _checkpoint_scope(args),
+        "sources": {"local": {}, "production": {}},
+    }
+
+
+def _load_checkpoint(path: Path, args: argparse.Namespace) -> tuple[dict[str, Any], str]:
+    if not path.exists():
+        return _empty_checkpoint(args), "missing"
+    try:
+        checkpoint = json.loads(path.read_text(encoding="utf-8"))
+        if checkpoint.get("version") != CHECKPOINT_VERSION:
+            return _empty_checkpoint(args), "unsupported_version"
+        if checkpoint.get("scope") != _checkpoint_scope(args):
+            return _empty_checkpoint(args), "scope_mismatch"
+        sources = checkpoint.get("sources")
+        if not isinstance(sources, dict):
+            return _empty_checkpoint(args), "invalid_sources"
+        for source_name in ("local", "production"):
+            watermarks = sources.get(source_name)
+            if not isinstance(watermarks, dict):
+                return _empty_checkpoint(args), "invalid_sources"
+            for watermark in watermarks.values():
+                if _number(watermark) <= 0:
+                    return _empty_checkpoint(args), "invalid_watermark"
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+        return _empty_checkpoint(args), "unreadable"
+    return checkpoint, "loaded"
+
+
+def _save_checkpoint(path: Path, checkpoint: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    checkpoint["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(checkpoint, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    os.replace(temporary, path)
+
+
+def _watermark(checkpoint: dict[str, Any], source: str, container: str) -> float:
+    return _number(checkpoint["sources"][source].get(container))
 
 
 def _place_group(entry: dict[str, Any], fields: tuple[str, ...]) -> dict[str, Any]:
@@ -265,44 +366,160 @@ def plan_direction(
     return writes, stale
 
 
-def _snapshot(database: Any, container_name: str) -> dict[str, CacheRecord]:
+def _snapshot(database: Any, container_name: str) -> Snapshot:
     partition = ALLOWED_PARTITIONS[container_name]
     container = database.get_container_client(container_name)
+    metrics = ActivityMetrics()
     rows = container.query_items(
         query="SELECT * FROM c WHERE c.user_id = @partition",
         parameters=[{"name": "@partition", "value": partition}],
         partition_key=partition,
+        response_hook=metrics.response_hook,
     )
-    return {
-        str(row["id"]): CacheRecord(
+    records: dict[str, CacheRecord] = {}
+    observed_watermark = 0.0
+    for row in rows:
+        metrics.add_payload(row)
+        observed_watermark = max(observed_watermark, _number(row.get("_ts")))
+        records[str(row["id"])] = CacheRecord(
             body=_portable(dict(row)),
             etag=str(row.get("_etag", "")),
             source_ts=_number(row.get("_ts")),
         )
-        for row in rows
-    }
+    return Snapshot(records, observed_watermark, 0.0, True, metrics)
 
 
-def _write(container: Any, planned: PlannedWrite) -> None:
+def _read_record(
+    database: Any,
+    container_name: str,
+    item_id: str,
+    metrics: ActivityMetrics,
+) -> CacheRecord | None:
+    container = database.get_container_client(container_name)
+    try:
+        row = container.read_item(
+            item=item_id,
+            partition_key=ALLOWED_PARTITIONS[container_name],
+            response_hook=metrics.response_hook,
+        )
+    except exceptions.CosmosResourceNotFoundError:
+        return None
+    metrics.add_payload(row)
+    return CacheRecord(
+        body=_portable(dict(row)),
+        etag=str(row.get("_etag", "")),
+        source_ts=_number(row.get("_ts")),
+    )
+
+
+def _changed_snapshot(
+    source_database: Any,
+    target_database: Any,
+    container_name: str,
+    watermark: float,
+    overlap_seconds: int,
+) -> tuple[
+    Snapshot,
+    dict[str, CacheRecord],
+    ActivityMetrics,
+    ActivityMetrics,
+]:
+    partition = ALLOWED_PARTITIONS[container_name]
+    query_since = max(0.0, watermark - max(0, overlap_seconds))
+    query_metrics = ActivityMetrics()
+    source_read_metrics = ActivityMetrics()
+    target_read_metrics = ActivityMetrics()
+    rows = source_database.get_container_client(container_name).query_items(
+        query=(
+            "SELECT c.id, c._ts FROM c "
+            "WHERE c.user_id = @partition AND c._ts >= @since"
+        ),
+        parameters=[
+            {"name": "@partition", "value": partition},
+            {"name": "@since", "value": query_since},
+        ],
+        partition_key=partition,
+        response_hook=query_metrics.response_hook,
+    )
+    changed_ids: list[str] = []
+    observed_watermark = watermark
+    for row in rows:
+        query_metrics.add_payload(row)
+        changed_ids.append(str(row["id"]))
+        observed_watermark = max(observed_watermark, _number(row.get("_ts")))
+
+    source_records: dict[str, CacheRecord] = {}
+    target_records: dict[str, CacheRecord] = {}
+    for item_id in dict.fromkeys(changed_ids):
+        source_record = _read_record(
+            source_database, container_name, item_id, source_read_metrics
+        )
+        if source_record is None:
+            continue
+        source_records[item_id] = source_record
+        target_record = _read_record(
+            target_database, container_name, item_id, target_read_metrics
+        )
+        if target_record is not None:
+            target_records[item_id] = target_record
+    snapshot = Snapshot(
+        source_records,
+        observed_watermark,
+        query_since,
+        False,
+        query_metrics,
+    )
+    return snapshot, target_records, source_read_metrics, target_read_metrics
+
+
+def _combined_metrics(*values: ActivityMetrics) -> ActivityMetrics:
+    return ActivityMetrics(
+        request_units=sum(value.request_units for value in values),
+        requests=sum(value.requests for value in values),
+        payload_bytes=sum(value.payload_bytes for value in values),
+    )
+
+
+def _write(
+    container: Any,
+    planned: PlannedWrite,
+    metrics: ActivityMetrics | None = None,
+) -> tuple[str, ActivityMetrics]:
     body = {**planned.body, "id": planned.item_id, "user_id": planned.partition}
+    metrics = metrics or ActivityMetrics()
+    metrics.add_payload(body)
     if planned.etag:
         container.replace_item(
             item=planned.item_id,
             body=body,
             etag=planned.etag,
             match_condition=MatchConditions.IfNotModified,
+            response_hook=metrics.response_hook,
         )
+        return "replaced", metrics
     else:
-        container.create_item(body=body)
+        container.create_item(body=body, response_hook=metrics.response_hook)
+        return "inserted", metrics
 
 
-def _verify_write(container: Any, planned: PlannedWrite) -> None:
-    actual = container.read_item(item=planned.item_id, partition_key=planned.partition)
+def _verify_write(
+    container: Any,
+    planned: PlannedWrite,
+    metrics: ActivityMetrics | None = None,
+) -> ActivityMetrics:
+    metrics = metrics or ActivityMetrics()
+    actual = container.read_item(
+        item=planned.item_id,
+        partition_key=planned.partition,
+        response_hook=metrics.response_hook,
+    )
+    metrics.add_payload(actual)
     expected = {**planned.body, "id": planned.item_id, "user_id": planned.partition}
     if not _equivalent(expected, dict(actual)):
         raise RuntimeError(
             f"Verification failed for {planned.container}/{planned.partition}/{planned.item_id}"
         )
+    return metrics
 
 
 def _local_client() -> CosmosClient:
@@ -335,14 +552,6 @@ def _local_database(client: CosmosClient, name: str) -> Any:
 def synchronize(args: argparse.Namespace) -> dict[str, Any]:
     started = time.time()
     now = started
-    local_policy = CachePolicy.from_env_file(Path(args.local_config))
-    prod_policy = CachePolicy.from_env_file(Path(args.prod_config))
-    local_db = _local_database(_local_client(), args.local_database)
-    prod_db = _production_client(args.prod_endpoint).get_database_client(PRODUCTION_DATABASE)
-    containers = [PLACES_CONTAINER]
-    if local_policy.warm_everything or prod_policy.warm_everything:
-        containers.append(TOOLS_CONTAINER)
-
     report: dict[str, Any] = {
         "status": "passed",
         "mode": "apply" if args.apply else "dry-run",
@@ -352,56 +561,212 @@ def synchronize(args: argparse.Namespace) -> dict[str, Any]:
         "production_database": PRODUCTION_DATABASE,
         "containers": {},
     }
+    checkpoint_path = Path(args.checkpoint)
+    checkpoint, checkpoint_state = _load_checkpoint(checkpoint_path, args)
+    report["checkpoint"] = {
+        "path": str(checkpoint_path),
+        "state": checkpoint_state,
+        "overlap_seconds": args.watermark_overlap_seconds,
+        "advanced": False,
+    }
     total_written = 0
     total_conflicts = 0
-    for container_name in containers:
-        local = _snapshot(local_db, container_name)
-        prod = _snapshot(prod_db, container_name)
-        container_report: dict[str, Any] = {
-            "local_read": len(local),
-            "production_read": len(prod),
-        }
-        directions = []
-        if args.direction in {"pull", "both", "status"} and (
-            container_name != TOOLS_CONTAINER or local_policy.warm_everything
-        ):
-            directions.append(("production_to_local", prod, local, local_policy, local_db))
-        if args.direction in {"push", "both", "status"} and (
-            container_name != TOOLS_CONTAINER or prod_policy.warm_everything
-        ):
-            directions.append(("local_to_production", local, prod, prod_policy, prod_db))
-        for label, source, target, policy, destination in directions:
-            writes, stale = plan_direction(
-                container_name, source, target, policy, now=now
-            )
-            applied = 0
-            verified = 0
-            conflicts = 0
-            if args.apply:
-                target_container = destination.get_container_client(container_name)
-                for planned in writes:
-                    try:
-                        _write(target_container, planned)
-                        applied += 1
-                        _verify_write(target_container, planned)
-                        verified += 1
-                    except Exception as error:  # noqa: BLE001 - report per-item optimistic conflicts
-                        if getattr(error, "status_code", None) in {409, 412}:
-                            conflicts += 1
-                            continue
-                        raise
-            container_report[label] = {
-                "planned": len(writes),
-                "written": applied,
-                "verified": verified,
-                "skipped_stale": stale,
-                "conflicts": conflicts,
-            }
-            total_written += applied
-            total_conflicts += conflicts
-        report["containers"][container_name] = container_report
-    report["written"] = total_written
-    report["conflicts"] = total_conflicts
+    checkpoint_updates: list[tuple[str, str, float]] = []
+    all_metrics: list[ActivityMetrics] = []
+    try:
+        local_policy = CachePolicy.from_env_file(Path(args.local_config))
+        prod_policy = CachePolicy.from_env_file(Path(args.prod_config))
+        local_db = _local_database(_local_client(), args.local_database)
+        prod_db = _production_client(args.prod_endpoint).get_database_client(PRODUCTION_DATABASE)
+        databases = {"local": local_db, "production": prod_db}
+        containers = [PLACES_CONTAINER]
+        if local_policy.warm_everything or prod_policy.warm_everything:
+            containers.append(TOOLS_CONTAINER)
+
+        for container_name in containers:
+            direction_specs = []
+            if args.direction in {"pull", "both", "status"} and (
+                container_name != TOOLS_CONTAINER or local_policy.warm_everything
+            ):
+                direction_specs.append(
+                    ("production_to_local", "production", "local", local_policy)
+                )
+            if args.direction in {"push", "both", "status"} and (
+                container_name != TOOLS_CONTAINER or prod_policy.warm_everything
+            ):
+                direction_specs.append(
+                    ("local_to_production", "local", "production", prod_policy)
+                )
+
+            full_snapshots: dict[str, Snapshot] = {}
+            plans: list[tuple[Any, ...]] = []
+            container_report: dict[str, Any] = {}
+            for label, source_name, target_name, policy in direction_specs:
+                watermark = _watermark(checkpoint, source_name, container_name)
+                full_scan = args.full_scan or watermark <= 0
+                if full_scan:
+                    for environment in (source_name, target_name):
+                        if environment not in full_snapshots:
+                            full_snapshots[environment] = _snapshot(
+                                databases[environment], container_name
+                            )
+                            all_metrics.append(full_snapshots[environment].metrics)
+                    source_snapshot = full_snapshots[source_name]
+                    target_records = full_snapshots[target_name].records
+                    source_read_metrics = ActivityMetrics()
+                    target_read_metrics = full_snapshots[target_name].metrics
+                else:
+                    (
+                        source_snapshot,
+                        target_records,
+                        source_read_metrics,
+                        target_read_metrics,
+                    ) = _changed_snapshot(
+                        databases[source_name],
+                        databases[target_name],
+                        container_name,
+                        watermark,
+                        args.watermark_overlap_seconds,
+                    )
+                if not full_scan:
+                    all_metrics.extend(
+                        [
+                            source_snapshot.metrics,
+                            source_read_metrics,
+                            target_read_metrics,
+                        ]
+                    )
+                writes, stale = plan_direction(
+                    container_name,
+                    source_snapshot.records,
+                    target_records,
+                    policy,
+                    now=now,
+                )
+                direction_report: dict[str, Any] = {
+                    "scan": {
+                        "mode": "full" if source_snapshot.full_scan else "incremental",
+                        "watermark_before": watermark,
+                        "query_since": source_snapshot.query_since,
+                        "watermark_observed": source_snapshot.observed_watermark,
+                        "candidates": len(source_snapshot.records),
+                    },
+                    "reads": {
+                        "metadata_query": source_snapshot.metrics.report(),
+                        "source_documents": source_read_metrics.report(),
+                        "target_documents": target_read_metrics.report(),
+                    },
+                    "planned": len(writes),
+                    "unchanged": max(0, len(source_snapshot.records) - len(writes) - stale),
+                    "written": 0,
+                    "inserted": 0,
+                    "replaced": 0,
+                    "verified": 0,
+                    "skipped_stale": stale,
+                    "conflicts": 0,
+                    "write_metrics": ActivityMetrics().report(),
+                    "verification_metrics": ActivityMetrics().report(),
+                    "delta_activity": [
+                        {
+                            "id": planned.item_id,
+                            "action": "replace" if planned.etag else "insert",
+                            "status": "planned",
+                        }
+                        for planned in writes
+                    ],
+                }
+                container_report[label] = direction_report
+                plans.append(
+                    (
+                        label,
+                        source_name,
+                        target_name,
+                        source_snapshot,
+                        writes,
+                        direction_report,
+                    )
+                )
+
+            report["containers"][container_name] = container_report
+            for (
+                label,
+                source_name,
+                target_name,
+                source_snapshot,
+                writes,
+                direction_report,
+            ) in plans:
+                write_metrics = ActivityMetrics()
+                verification_metrics = ActivityMetrics()
+                all_metrics.extend([write_metrics, verification_metrics])
+                if args.apply:
+                    target_container = databases[target_name].get_container_client(
+                        container_name
+                    )
+                    for index, planned in enumerate(writes):
+                        activity = direction_report["delta_activity"][index]
+                        try:
+                            action, _ = _write(
+                                target_container, planned, write_metrics
+                            )
+                            direction_report["written"] += 1
+                            direction_report[action] += 1
+                            activity["status"] = "written"
+                            _verify_write(
+                                target_container,
+                                planned,
+                                verification_metrics,
+                            )
+                            direction_report["verified"] += 1
+                            activity["status"] = "verified"
+                        except Exception as error:  # noqa: BLE001 - preserve partial report
+                            if getattr(error, "status_code", None) in {409, 412}:
+                                direction_report["conflicts"] += 1
+                                activity["status"] = "conflict"
+                                continue
+                            activity["status"] = "failed"
+                            activity["error"] = type(error).__name__
+                            raise
+                        finally:
+                            direction_report["write_metrics"] = write_metrics.report()
+                            direction_report[
+                                "verification_metrics"
+                            ] = verification_metrics.report()
+                direction_report["write_metrics"] = write_metrics.report()
+                direction_report["verification_metrics"] = verification_metrics.report()
+                total_written += direction_report["written"]
+                total_conflicts += direction_report["conflicts"]
+                checkpoint_updates.append(
+                    (
+                        source_name,
+                        container_name,
+                        source_snapshot.observed_watermark,
+                    )
+                )
+        if total_conflicts:
+            report["status"] = "partial"
+            report["checkpoint"]["reason"] = "conflicts_detected"
+        elif args.apply:
+            for source_name, container_name, observed in checkpoint_updates:
+                if observed > 0:
+                    checkpoint["sources"][source_name][container_name] = observed
+            _save_checkpoint(checkpoint_path, checkpoint)
+            report["checkpoint"]["advanced"] = True
+            report["checkpoint"]["reason"] = "all_writes_verified"
+        else:
+            report["checkpoint"]["reason"] = "dry_run"
+    except Exception as error:  # noqa: BLE001 - retain the detailed partial-run report
+        report["status"] = "failed"
+        report["error"] = str(error)
+        report["checkpoint"]["reason"] = "run_failed"
+    direction_reports = [
+        direction
+        for container in report["containers"].values()
+        for direction in container.values()
+    ]
+    report["written"] = sum(direction["written"] for direction in direction_reports)
+    report["conflicts"] = sum(direction["conflicts"] for direction in direction_reports)
+    report["activity"] = _combined_metrics(*all_metrics).report()
     report["duration_seconds"] = round(time.time() - started, 3)
     return report
 
@@ -414,8 +779,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--local-database", default=LOCAL_DATABASE)
     parser.add_argument("--local-config", default="config/environments/local.env")
     parser.add_argument("--prod-config", default="config/environments/prod.env")
+    parser.add_argument("--checkpoint", required=True)
+    parser.add_argument(
+        "--watermark-overlap-seconds",
+        type=int,
+        default=DEFAULT_WATERMARK_OVERLAP_SECONDS,
+    )
+    parser.add_argument("--full-scan", action="store_true")
     parser.add_argument("--report", required=True)
     args = parser.parse_args(argv)
+    if args.watermark_overlap_seconds < 0:
+        parser.error("--watermark-overlap-seconds must be non-negative")
 
     report_path = Path(args.report)
     try:

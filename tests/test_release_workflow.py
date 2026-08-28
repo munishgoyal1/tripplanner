@@ -152,6 +152,9 @@ def test_production_cache_sync_defaults_to_approval_gated_two_way_merge() -> Non
     assert '$writesProduction = $Direction -in @("Push", "Both") -and -not $WhatIf' in script
     assert approval_gate < credential
     assert '$apply = $Direction -ne "Status" -and -not $WhatIf' in script
+    assert '"--checkpoint", $CheckpointPath' in script
+    assert '"--watermark-overlap-seconds", $WatermarkOverlapSeconds' in script
+    assert 'if ($FullScan)' in script
 
 
 def test_production_repairs_missing_canary_gate_before_approval() -> None:
