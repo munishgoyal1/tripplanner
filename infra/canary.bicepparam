@@ -19,6 +19,9 @@ param openRouteServiceBaseUrl = readEnvironmentVariable('OPENROUTESERVICE_BASE_U
 param openRouteServiceRouteTtlSec = int(readEnvironmentVariable('OPENROUTESERVICE_ROUTE_TTL_SEC', '21600'))
 param cacheTtlSettings = {
 	scale: readEnvironmentVariable('CACHE_TTL_SCALE', '1')
+	stableForever: readEnvironmentVariable('CACHE_STABLE_FOREVER', '0') == '1'
+	volatileForever: readEnvironmentVariable('CACHE_VOLATILE_FOREVER', '0') == '1'
+	warmEverything: readEnvironmentVariable('CACHE_WARM_EVERYTHING', '0') == '1'
 	hotelSearch: int(readEnvironmentVariable('HOTEL_SEARCH_CACHE_TTL_SEC', '600'))
 	flightSearch: int(readEnvironmentVariable('FLIGHT_SEARCH_CACHE_TTL_SEC', '600'))
 	activitySearch: int(readEnvironmentVariable('ACTIVITY_SEARCH_CACHE_TTL_SEC', '21600'))

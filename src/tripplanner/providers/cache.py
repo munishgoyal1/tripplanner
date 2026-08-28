@@ -147,7 +147,7 @@ class ProviderTTLCache(Generic[T]):
             return None
         try:
             expires_at = datetime.fromisoformat(str(stored["expires_at"]))
-            if datetime.now(UTC) >= expires_at:
+            if expires_at != datetime.max.replace(tzinfo=UTC) and datetime.now(UTC) >= expires_at:
                 self._cache.delete(key)
                 return None
             return ProviderCacheEntry(
@@ -162,12 +162,17 @@ class ProviderTTLCache(Generic[T]):
 
     def set(self, key: str, value: T, *, provider: str, ttl_seconds: int) -> ProviderCacheEntry[T]:
         checked_at = datetime.now(UTC)
-        effective_ttl = get_settings().cache_ttl(ttl_seconds)
+        effective_ttl = get_settings().volatile_cache_ttl(ttl_seconds)
+        expires_at = (
+            datetime.max.replace(tzinfo=UTC)
+            if effective_ttl == -1
+            else checked_at + timedelta(seconds=effective_ttl)
+        )
         entry = ProviderCacheEntry(
             value=value,
             provider=provider,
             checked_at=checked_at,
-            expires_at=checked_at + timedelta(seconds=effective_ttl),
+            expires_at=expires_at,
         )
         self._cache.set(
             key,

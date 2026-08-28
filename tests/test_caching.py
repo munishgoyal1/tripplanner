@@ -36,6 +36,21 @@ def test_shared_cache_applies_environment_ttl_scale(monkeypatch):
     assert cache.get("key") is None
 
 
+def test_stable_and_volatile_regions_honor_independent_forever_flags(monkeypatch):
+    settings = caching.get_settings()
+    monkeypatch.setattr(settings, "cache_stable_forever", True)
+    monkeypatch.setattr(settings, "cache_volatile_forever", False)
+    stable = caching.get_cache("stable-test", volatile=False)
+    volatile = caching.get_cache("volatile-test")
+
+    stable.set("key", "stable", ttl_seconds=1)
+    volatile.set("key", "volatile", ttl_seconds=1)
+    backend = caching.get_backend()
+
+    assert backend._items[stable._key("key")][0] == float("inf")
+    assert backend._items[volatile._key("key")][0] != float("inf")
+
+
 def test_regions_do_not_collide_on_the_same_key():
     left = caching.get_cache("left")
     right = caching.get_cache("right")

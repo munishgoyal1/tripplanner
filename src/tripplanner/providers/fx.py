@@ -37,7 +37,10 @@ class RateTable:
 
     @property
     def is_fresh(self) -> bool:
-        freshness = timedelta(seconds=get_settings().cache_ttl(_RATE_TTL.total_seconds()))
+        ttl = get_settings().volatile_cache_ttl(_RATE_TTL.total_seconds())
+        if ttl == -1:
+            return True
+        freshness = timedelta(seconds=ttl)
         return datetime.now(UTC) - self.fetched_at < freshness
 
     def to_payload(self) -> dict:

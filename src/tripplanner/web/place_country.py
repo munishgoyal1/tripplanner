@@ -41,7 +41,7 @@ _DOMINANCE = 5
 
 # Which country a place sits in does not change, so this is retained for a month
 # and re-looked-up only when it falls out.
-_cache = get_cache("place-country", default_ttl_seconds=30 * 24 * 60 * 60)
+_cache = get_cache("place-country", default_ttl_seconds=30 * 24 * 60 * 60, volatile=False)
 
 
 def _normalize(place: str) -> str:

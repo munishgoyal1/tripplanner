@@ -51,7 +51,7 @@ trip through shared API contracts.
 | `src/tripplanner/request_limits.py` | Chat/replay rate limits, concurrency, and workspace exclusion |
 | `src/tripplanner/cli.py` | Local command-line experience |
 | `src/tripplanner/config.py` | Pydantic environment settings |
-| `src/tripplanner/caching.py` | Shared memory/Redis backend and environment-wide TTL policy for disposable runtime caches; `CACHE_TTL_SCALE` applies to all runtime cache families |
+| `src/tripplanner/caching.py` | Shared memory/Redis backend and environment-wide TTL policy for disposable runtime caches; stable and volatile regions have independent no-expiry overrides |
 | `src/tripplanner/places_budget.py` | Shared per-planning/view ceilings for paid Places text search, review-details, and photo-media requests; parallel workers consume one thread-safe budget |
 | `src/tripplanner/models.py` | Core trip and itinerary models |
 | `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
@@ -97,9 +97,16 @@ Ignored `.env`, `.env.canary`, and `.env.prod` files are secret overlays;
 `.env.example` documents that secret-only surface. Local runtime loads its
 profile plus `.env`; hosted deployment scripts load their profile plus matching
 secret overlay and pass non-secrets as Container Apps environment variables
-while secrets become secret references. `CACHE_TTL_SCALE` adjusts
-all runtime cache lifetimes, and the named search/fare TTL settings provide
-precise overrides before that scale is applied. Paid Google Places access requires
+while secrets become secret references. `CACHE_TTL_SCALE` adjusts normal
+runtime cache lifetimes, and the named search/fare TTL settings provide precise
+overrides before that scale is applied. `CACHE_STABLE_FOREVER=1` bypasses both
+for Places facts, reviews, routes, country resolution, visa data, and other
+stable tool results. `CACHE_VOLATILE_FOREVER=1` independently does the same for
+prices, availability, weather, events, web search, FX, and provider caches.
+`CACHE_WARM_EVERYTHING=1` expands the Places warm manifest and durable payload
+to all available fields, photo references, and signed photo URLs; it changes
+surface only, so each entry still follows its stable or volatile TTL policy.
+Paid Google Places access requires
 both `ENABLE_GOOGLE_PLACES=1` and `GOOGLE_PLACES_API_KEY`; a copied key alone
 must never activate billable requests.
 
@@ -240,7 +247,7 @@ live use only ever reads its own `places_cache`.
 
 | Copy | Where | Written by | Holds |
 | --- | --- | --- | --- |
-| Reviewable | `corpus/places.json`, in git | `corpus_cache.py --save`, and the sandbox discard | Coordinates, hours, ratings, reviews, up to three photo references. Never signed photo URLs, never a failed lookup, no expiry |
+| Reviewable | `corpus/places.json`, in git | `corpus_cache.py --save`, and the sandbox discard | By default: grounded entries, reviews, and one photo reference, without signed URLs. With `CACHE_WARM_EVERYTHING=1`: every available entry and field, including all photo references and signed URLs |
 | Working | `tripplanner-cache` on the emulator | `corpus_cache.py --sync`, on every emulator-backed stack start, sandbox promotion and sandbox discard | The same shape, plus whatever no one has exported to git yet |
 
 The split exists because the git file is 5 MB of tracked content and the sandbox

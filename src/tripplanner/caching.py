@@ -89,7 +89,8 @@ class MemoryBackend:
 
     def set(self, key: str, value: Any, ttl_seconds: int) -> None:
         with self._lock:
-            self._items[key] = (time.time() + max(1, ttl_seconds), value)
+            expires_at = float("inf") if ttl_seconds == -1 else time.time() + max(1, ttl_seconds)
+            self._items[key] = (expires_at, value)
 
     def delete(self, key: str) -> None:
         with self._lock:
@@ -172,12 +173,15 @@ class RedisBackend:
         return self._mirror.get(key)
 
     def set(self, key: str, value: Any, ttl_seconds: int) -> None:
-        ttl = max(1, ttl_seconds)
+        ttl = -1 if ttl_seconds == -1 else max(1, ttl_seconds)
         self._mirror.set(key, value, ttl)
         if not self._client:
             return
         try:
-            self._client.set(key, json.dumps(value), ex=ttl)
+            if ttl == -1:
+                self._client.set(key, json.dumps(value))
+            else:
+                self._client.set(key, json.dumps(value), ex=ttl)
             self._down_since = None
         except (TypeError, ValueError):
             log.debug("cache value for %s is not JSON-encodable; kept in memory only", key)
@@ -284,9 +288,10 @@ def reset_backend() -> None:
 class Cache:
     """A named, TTL'd region of the shared backend."""
 
-    def __init__(self, name: str, *, default_ttl_seconds: int) -> None:
+    def __init__(self, name: str, *, default_ttl_seconds: int, volatile: bool) -> None:
         self.name = name
         self.default_ttl_seconds = max(1, default_ttl_seconds)
+        self.volatile = volatile
         self._hits = 0
         self._misses = 0
 
@@ -318,7 +323,14 @@ class Cache:
 
     def set(self, key: str, value: Any, *, ttl_seconds: int | None = None) -> None:
         configured_ttl = ttl_seconds or self.default_ttl_seconds
-        self._backend.set(self._key(key), value, get_settings().cache_ttl(configured_ttl))
+        settings = get_settings()
+        if configured_ttl == -1:
+            effective_ttl = -1
+        elif self.volatile:
+            effective_ttl = settings.volatile_cache_ttl(configured_ttl)
+        else:
+            effective_ttl = settings.stable_cache_ttl(configured_ttl)
+        self._backend.set(self._key(key), value, effective_ttl)
 
     def delete(self, key: str) -> None:
         self._backend.delete(self._key(key))
@@ -338,13 +350,17 @@ class Cache:
         )
 
 
-def get_cache(name: str, *, default_ttl_seconds: int = 3600) -> Cache:
+def get_cache(
+    name: str, *, default_ttl_seconds: int = 3600, volatile: bool = True
+) -> Cache:
     """The cache registered under ``name``, created on first use."""
     with _REGISTRY_LOCK:
         cache = _REGISTRY.get(name)
         if cache is None:
-            cache = Cache(name, default_ttl_seconds=default_ttl_seconds)
+            cache = Cache(name, default_ttl_seconds=default_ttl_seconds, volatile=volatile)
             _REGISTRY[name] = cache
+        elif cache.volatile != volatile:
+            raise ValueError(f"cache region {name!r} cannot change volatility classification")
         return cache
 
 

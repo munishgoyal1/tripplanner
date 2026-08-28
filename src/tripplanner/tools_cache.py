@@ -146,6 +146,20 @@ _GOOGLE_TTL_SETTINGS: dict[str, str] = {
     "check_place_hours": "google_places_hours_cache_ttl_sec",
 }
 
+_VOLATILE_TOOLS: frozenset[str] = frozenset(
+    {
+        "search_flights_duffel",
+        "verify_flight_offer",
+        "search_flights",
+        "search_hotels",
+        "search_activities",
+        "get_weather_forecast",
+        "find_local_events",
+        "check_place_hours",
+        "web_search",
+    }
+)
+
 # Per-process LRU when Cosmos is unavailable.
 _LOCAL_CACHE: OrderedDict[str, tuple[float, str]] = OrderedDict()
 _LOCAL_MAX = 256
@@ -216,7 +230,8 @@ def _cosmos_get(user_id: str, key: str) -> str | None:
     doc = storage_cosmos.read_doc("tool_cache", user_id, key)
     if not doc:
         return None
-    if float(doc.get("expires_at", 0)) <= time.time():
+    expires_at = float(doc.get("expires_at", 0))
+    if expires_at != -1 and expires_at <= time.time():
         # Lazy expiry: delete and miss.
         try:
             storage_cosmos.delete_doc("tool_cache", user_id, key)
@@ -234,7 +249,11 @@ def _cosmos_set(user_id: str, key: str, value: str, ttl: int) -> None:
         "tool_cache",
         user_id,
         key,
-        {"result": value, "expires_at": time.time() + ttl},
+        {
+            "result": value,
+            "expires_at": -1 if ttl == -1 else time.time() + ttl,
+            **({"ttl": -1} if ttl == -1 else {}),
+        },
     )
 
 
@@ -253,7 +272,8 @@ def _local_get(user_id: str, key: str) -> str | None:
 
 def _local_set(user_id: str, key: str, value: str, ttl: int) -> None:
     full = f"{user_id}|{key}"
-    _LOCAL_CACHE[full] = (time.time() + ttl, value)
+    expires_at = float("inf") if ttl == -1 else time.time() + ttl
+    _LOCAL_CACHE[full] = (expires_at, value)
     _LOCAL_CACHE.move_to_end(full)
     while len(_LOCAL_CACHE) > _LOCAL_MAX:
         _LOCAL_CACHE.popitem(last=False)
@@ -301,7 +321,12 @@ def cache_store(
         _GOOGLE_TTL_SETTINGS.get(tool_name, ""),
         policy.ttl_seconds,
     )
-    ttl_seconds = settings.cache_ttl(ttl if ttl is not None else configured_ttl)
+    requested_ttl = ttl if ttl is not None else configured_ttl
+    ttl_seconds = (
+        settings.volatile_cache_ttl(requested_ttl)
+        if tool_name in _VOLATILE_TOOLS
+        else settings.stable_cache_ttl(requested_ttl)
+    )
     try:
         from tripplanner import storage_cosmos
 
