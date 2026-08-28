@@ -88,7 +88,7 @@ re-describing the whole product.
 | ID-01 | Guest identity plus shared web/mobile Google identity | Implemented |
 | DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented |
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented |
-| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
+| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google Places access is fail-closed behind an explicit production-only runtime switch as well as GCP Service Usage |
 | TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, explicit place-fact rechecks with before/after changes and source-linked unusual-closure advisories, place-identity gate, and a rebalance that never moves a stop the traveller chose |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |

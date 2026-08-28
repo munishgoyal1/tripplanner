@@ -2550,15 +2550,42 @@ class TestGooglePlacesHelpers:
         from tripplanner import config
         monkeypatch.setattr(
             config, "get_settings",
-            lambda: type("S", (), {"google_places_api_key": ""})(),
+            lambda: type(
+                "S",
+                (),
+                {"enable_google_places": False, "google_places_api_key": "copied-key"},
+            )(),
         )
         # Re-bind in module under test
         monkeypatch.setattr(google_places, "get_settings", config.get_settings)
         assert not google_places.is_configured()
         result = search_places_with_reviews.invoke({"query": "test", "city": "Goa"})
-        assert "not configured" in result.lower()
+        assert "disabled or not configured" in result.lower()
         result = nearby_restaurants.invoke({"city": "Goa"})
-        assert "not configured" in result.lower()
+        assert "disabled or not configured" in result.lower()
+
+    def test_configured_requires_flag_and_key(self, monkeypatch):
+        monkeypatch.setattr(
+            google_places,
+            "get_settings",
+            lambda: type(
+                "S",
+                (),
+                {"enable_google_places": True, "google_places_api_key": ""},
+            )(),
+        )
+        assert not google_places.is_configured()
+
+        monkeypatch.setattr(
+            google_places,
+            "get_settings",
+            lambda: type(
+                "S",
+                (),
+                {"enable_google_places": True, "google_places_api_key": "test-key"},
+            )(),
+        )
+        assert google_places.is_configured()
 
 
 def test_hotel_search_uses_google_fallback_when_amadeus_unconfigured(monkeypatch):

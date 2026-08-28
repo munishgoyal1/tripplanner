@@ -22,6 +22,7 @@ param cacheRedisUrl = readEnvironmentVariable('CACHE_REDIS_URL', '')
 param cacheRedisNamespace = readEnvironmentVariable('CACHE_REDIS_NAMESPACE', 'tripplanner:provider-cache')
 param cacheRedisConnectTimeoutSec = readEnvironmentVariable('CACHE_REDIS_CONNECT_TIMEOUT_SEC', '0.2')
 param cacheRedisSocketTimeoutSec = readEnvironmentVariable('CACHE_REDIS_SOCKET_TIMEOUT_SEC', '0.2')
+param enableGooglePlaces = false
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
 param googleMapsBrowserKey = readEnvironmentVariable('GOOGLE_MAPS_BROWSER_KEY', '')
 param tavilyApiKey = readEnvironmentVariable('TAVILY_API_KEY', '')
