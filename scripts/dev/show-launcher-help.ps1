@@ -8,6 +8,7 @@ param(
         "start-dev-spa",
         "sync-across-master-sbx",
         "sync-sbxs-from-master",
+        "emergency-bringdown",
         "emergency-control",
         "azure-services-control",
         "google-maps-control",
@@ -17,24 +18,45 @@ param(
 )
 
 $help = @{
+    "emergency-bringdown" = @"
+Emergency-Bringdown - immediately stop or restore all hosted Tripplanner serving.
+
+Usage: Emergency-Bringdown [status|down|up|stop|start] [all|canary|prod] [approval]
+
+  status  Report canary and production app/job state without changing it (default).
+  down    Stop Container Apps, suspend recurring jobs, and stop active executions.
+          No approval is required. Alias: stop.
+  up      Start Container Apps and restore remembered job schedules.
+          Requires APPROVE_AZURE_SPEND. Alias: start.
+
+Examples:
+  Emergency-Bringdown
+  Emergency-Bringdown down all
+  Emergency-Bringdown down prod
+  Emergency-Bringdown up all APPROVE_AZURE_SPEND
+
+This is a reversible serving stop, not a deletion or complete cost stop. It leaves
+provider access, databases, resources, DNS, domains, and fixed charges unchanged.
+Endpoints may still resolve while their Container Apps are stopped.
+"@
     "emergency-control" = @"
 Emergency-Control - one status and emergency shutdown entry point for Tripplanner services.
 
-Usage: Emergency-Control [status|disable|enable|off|on] [all|google|azure]
-                         [all|local|canary|prod] [azure-approval]
-                         [google-maps-approval] [google-places-approval]
+Usage: Emergency-Control [status|disable|enable|off|on]
+                         [all|google|azure|local|canary|prod]
+                         [azure-approval] [google-maps-approval] [google-places-approval]
 
   status   Read every selected provider state without changing it (default).
-  disable  Stop or block every selected service. Azure requires APPROVE_AZURE_DISABLE.
+  disable  Stop or block every selected service. No approval is required.
   enable   Restore selected services. Each provider retains its spend approval gate.
 
 Examples:
   Emergency-Control
-  Emergency-Control status all prod
-  Emergency-Control disable all all APPROVE_AZURE_DISABLE
-  Emergency-Control disable google prod
-  Emergency-Control enable azure prod APPROVE_AZURE_SPEND
-  Emergency-Control enable all all APPROVE_AZURE_SPEND APPROVE_GOOGLE_MAPS_SPEND APPROVE_GOOGLE_PLACES_SPEND
+  Emergency-Control status prod
+  Emergency-Control disable all
+  Emergency-Control disable google
+  Emergency-Control enable azure APPROVE_AZURE_SPEND
+  Emergency-Control enable all APPROVE_AZURE_SPEND APPROVE_GOOGLE_MAPS_SPEND APPROVE_GOOGLE_PLACES_SPEND
 
 No resource or data is deleted. Disable is best-effort across all selected controls
 and returns a failure if any control could not be changed. Provisioned Azure resources
@@ -128,15 +150,15 @@ Usage: Azure-Services-Control [status|disable|enable|off|on] [all|local|canary|p
   status   Show state and residual billing for one environment or all (default).
   disable  Stop hosted apps/jobs and block environment-owned OpenAI or Redis access.
            The all scope also blocks the shared Cosmos account.
-           Requires APPROVE_AZURE_DISABLE. Alias: off.
+           No approval is required. Alias: off.
   enable   Start hosted apps, restore job schedules, and reopen service access.
            Requires APPROVE_AZURE_SPEND. Alias: on.
 
 Examples:
   Azure-Services-Control status prod
-  Azure-Services-Control disable prod APPROVE_AZURE_DISABLE
+  Azure-Services-Control disable prod
   Azure-Services-Control enable prod APPROVE_AZURE_SPEND
-  Azure-Services-Control disable all APPROVE_AZURE_DISABLE
+  Azure-Services-Control disable all
 
 No resource or data is deleted. Redis, Cosmos, environments, logs, and other
 provisioned resources can continue billing while application access is disabled.

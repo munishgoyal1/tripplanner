@@ -17,7 +17,7 @@
   ./infra/azure/set-azure-services-access.ps1 status
 
 .EXAMPLE
-    ./infra/azure/set-azure-services-access.ps1 disable prod APPROVE_AZURE_DISABLE
+    ./infra/azure/set-azure-services-access.ps1 disable prod
 
 .EXAMPLE
     ./infra/azure/set-azure-services-access.ps1 enable prod APPROVE_AZURE_SPEND
@@ -36,7 +36,9 @@ param(
     [Parameter(Position = 2)]
     [string]$Approval = "",
 
-    [string]$ConfigPath = "$PSScriptRoot/../billing-guardrails.json"
+    [string]$ConfigPath = "$PSScriptRoot/../billing-guardrails.json",
+
+    [switch]$ServingOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -253,13 +255,15 @@ if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
 $config = Get-Content -Raw -Path $ConfigPath | ConvertFrom-Json
 $script:SubscriptionId = [string]$config.azure.subscriptionId
 $selectedEnvironments = @($config.azure.environments | Where-Object {
-    $Environment -eq "all" -or $_.name -eq $Environment
+    ($Environment -eq "all" -or $_.name -eq $Environment) -and
+    (-not $ServingOnly -or $_.name -in @("canary", "prod"))
 })
 if ($selectedEnvironments.Count -eq 0) {
     throw "Environment '$Environment' is not configured in $ConfigPath."
 }
 $script:ResourceGroups = @($selectedEnvironments | ForEach-Object { $_.resourceGroup })
-if ($Environment -eq "all" -and $config.azure.actionGroupResourceGroup -notin $script:ResourceGroups) {
+if (-not $ServingOnly -and $Environment -eq "all" -and
+    $config.azure.actionGroupResourceGroup -notin $script:ResourceGroups) {
     $script:ResourceGroups += $config.azure.actionGroupResourceGroup
 }
 
@@ -273,32 +277,38 @@ if ($account.id -ne $script:SubscriptionId -or $account.name -ne "Visual Studio 
 
 if ($Action -eq "off") { $Action = "disable" }
 if ($Action -eq "on") { $Action = "enable" }
-if ($Action -eq "disable" -and $Approval -cne "APPROVE_AZURE_DISABLE") {
-    throw "Disabling takes Tripplanner offline in the selected scope. Pass APPROVE_AZURE_DISABLE as the third argument."
-}
 if ($Action -eq "enable" -and $Approval -cne "APPROVE_AZURE_SPEND") {
     throw "Enabling permits paid Azure usage. Pass APPROVE_AZURE_SPEND as the third argument."
 }
 
 $containerApps = @(Get-ResourcesByType -ResourceType "Microsoft.App/containerApps")
 $containerJobs = @(Get-ResourcesByType -ResourceType "Microsoft.App/jobs")
-$openAiAccounts = @(Get-ResourcesByType -ResourceType "Microsoft.CognitiveServices/accounts")
-$cosmosAccounts = @(Get-ResourcesByType -ResourceType "Microsoft.DocumentDB/databaseAccounts")
-$redisClusters = @(Get-ResourcesByType -ResourceType "Microsoft.Cache/redisEnterprise")
+$openAiAccounts = if ($ServingOnly) { @() } else {
+    @(Get-ResourcesByType -ResourceType "Microsoft.CognitiveServices/accounts")
+}
+$cosmosAccounts = if ($ServingOnly) { @() } else {
+    @(Get-ResourcesByType -ResourceType "Microsoft.DocumentDB/databaseAccounts")
+}
+$redisClusters = if ($ServingOnly) { @() } else {
+    @(Get-ResourcesByType -ResourceType "Microsoft.Cache/redisEnterprise")
+}
 
-Write-Host "Azure services control"
+$controlName = if ($ServingOnly) { "Azure hosted serving" } else { "Azure services" }
+Write-Host "$controlName control"
 Write-Host "  account      : $($account.user)"
 Write-Host "  subscription : $($account.name) ($($account.id))"
 Write-Host "  action       : $Action"
 Write-Host "  environment  : $Environment"
 Write-Host "  scope        : $($script:ResourceGroups -join ', ')"
-if ($Environment -ne "all") {
+if ($ServingOnly) {
+    Write-Host "  dependencies : unchanged"
+} elseif ($Environment -ne "all") {
     Write-Host "  shared data  : not changed; Cosmos serves local, canary, and prod"
 }
 Write-Host ""
 
 $openAiDesiredByResourceGroup = @{}
-foreach ($selectedEnvironment in $selectedEnvironments) {
+foreach ($selectedEnvironment in @($selectedEnvironments | Where-Object { -not $ServingOnly })) {
     if ($Action -in @("enable", "disable")) {
         Set-AzureOpenAiDesiredState -EnvironmentName $selectedEnvironment.name `
             -Enabled ($Action -eq "enable")
@@ -356,17 +366,25 @@ if ($Action -eq "status") {
         Set-PublicNetworkState -Resource $resource -State $targetState
     }
     if ($WhatIfPreference) {
-        Write-Host "Preview complete: Azure services would be $($targetState.ToLowerInvariant())."
+        Write-Host "Preview complete: $controlName would be $($targetState.ToLowerInvariant())."
     } else {
-        Write-Host "Azure services are now $($targetState.ToLowerInvariant())." -ForegroundColor Green
-        Write-Host "Updated $script:AzureOpenAiFlag in the selected checked-in environment profile(s)."
-        Write-Host "Local processes require a restart; hosted environments require a deployment."
+        Write-Host "$controlName is now $($targetState.ToLowerInvariant())." -ForegroundColor Green
+        if (-not $ServingOnly) {
+            Write-Host "Updated $script:AzureOpenAiFlag in the selected checked-in environment profile(s)."
+            Write-Host "Local processes require a restart; hosted environments require a deployment."
+        }
     }
 }
 
 Write-Host ""
-Write-Host "Residual-cost boundary: this command never deletes resources or data."
-Write-Host "Managed Redis, Cosmos throughput/storage, Container Apps environments, Log Analytics retention,"
-Write-Host "and other provisioned resources can continue billing while application access is disabled."
-Write-Host "Communication Services and Email are usage-metered and have no reversible account-wide pause;"
-Write-Host "stopping the hosted apps prevents their hosted Tripplanner caller, but stored credentials remain valid."
+if ($ServingOnly) {
+    Write-Host "Serving boundary: hosted apps are stopped and recurring jobs are suspended."
+    Write-Host "DNS and ingress endpoints can still resolve, but no Tripplanner container serves requests."
+    Write-Host "Dependencies, data, resources, and fixed charges remain unchanged."
+} else {
+    Write-Host "Residual-cost boundary: this command never deletes resources or data."
+    Write-Host "Managed Redis, Cosmos throughput/storage, Container Apps environments, Log Analytics retention,"
+    Write-Host "and other provisioned resources can continue billing while application access is disabled."
+    Write-Host "Communication Services and Email are usage-metered and have no reversible account-wide pause;"
+    Write-Host "stopping the hosted apps prevents their hosted Tripplanner caller, but stored credentials remain valid."
+}

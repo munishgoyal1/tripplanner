@@ -692,8 +692,13 @@ implemented capability baseline.
   suppresses or restores recurring jobs, and blocks or restores environment-owned
   OpenAI and Managed Redis public access. Shared Cosmos access changes only for
   `all`. It also updates each selected profile's Azure OpenAI desired state and
-  reports drift from cloud network access. Both directions are approval-gated,
-  never delete data, and report provisioned charges that continue.
+  reports drift from cloud network access. Disable is immediate; enable is spend
+  approval-gated. Neither direction deletes data, and both report provisioned
+  charges that continue.
+- A separate cross-platform emergency bringdown reports, stops, or restores all
+  canary and production serving without changing provider or database access.
+  Bringdown stops Container Apps, suspends jobs, and stops active executions
+  without approval; restoration requires explicit Azure spend approval.
 
 ### OPS-02 - Failure detection and response
 

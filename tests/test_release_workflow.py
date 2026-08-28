@@ -160,20 +160,21 @@ def test_billing_shutoff_trigger_can_invoke_its_cloud_run_service() -> None:
     assert '"shutoffEnabled": false' in guardrails
 
 
-def test_azure_services_control_is_scoped_reversible_and_approval_gated() -> None:
+def test_azure_services_control_is_scoped_reversible_and_enable_is_approval_gated() -> None:
     root = Path(__file__).parents[1]
     control = (
         root / "infra" / "azure" / "set-azure-services-access.ps1"
     ).read_text(encoding="utf-8")
 
-    assert "APPROVE_AZURE_DISABLE" in control
+    assert "APPROVE_AZURE_DISABLE" not in control
     assert "APPROVE_AZURE_SPEND" in control
     assert "munishgoyal1@gmail.com" in control
     assert "Visual Studio Enterprise Subscription" in control
     assert "config.azure.environments" in control
     assert '[ValidateSet("all", "local", "canary", "prod")]' in control
     assert '$Environment -eq "all" -or $_.name -eq $Environment' in control
-    assert '$Environment -eq "all" -and $config.azure.actionGroupResourceGroup' in control
+    assert '-not $ServingOnly -and $Environment -eq "all"' in control
+    assert "$config.azure.actionGroupResourceGroup -notin $script:ResourceGroups" in control
     assert "Cosmos serves local, canary, and prod" in control
     assert "Get-AzureOpenAiDesiredState" in control
     assert "Set-AzureOpenAiDesiredState" in control

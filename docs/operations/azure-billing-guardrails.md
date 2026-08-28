@@ -30,9 +30,9 @@ For immediate owner control across all known Tripplanner Azure resource groups:
 
 ```powershell
 ./scripts/win/user/azure/Azure-Services-Control.cmd status prod
-./scripts/win/user/azure/Azure-Services-Control.cmd disable prod APPROVE_AZURE_DISABLE
+./scripts/win/user/azure/Azure-Services-Control.cmd disable prod
 ./scripts/win/user/azure/Azure-Services-Control.cmd enable prod APPROVE_AZURE_SPEND
-./scripts/win/user/azure/Azure-Services-Control.cmd disable all APPROVE_AZURE_DISABLE
+./scripts/win/user/azure/Azure-Services-Control.cmd disable all
 ```
 
 Use the matching `scripts/mac/user/azure/Azure-Services-Control.command` launcher
@@ -41,7 +41,14 @@ to manual while retaining their original trigger, stops active job executions,
 and blocks public access to OpenAI, Cosmos DB, and Azure Managed Redis. Enable
 reverses those controls. Both actions discover resources only in the resource
 groups declared in `billing-guardrails.json`, verify the personal account and
-subscription, and never delete resources or data.
+subscription, and never delete resources or data. Disable is immediate and does
+not require approval; enable remains spend approval-gated.
+
+To stop all hosted canary and production serving without changing dependency
+access or data, use `Emergency-Bringdown down all`. It stops Container Apps,
+suspends recurring jobs, and stops active executions. `Emergency-Bringdown up all
+APPROVE_AZURE_SPEND` reverses it. DNS and endpoints can still resolve while the
+apps are stopped, and provisioned services can continue billing.
 
 Azure OpenAI has an additional application-level consent gate. Every model
 client requires `ENABLE_AZURE_OPENAI=1`; credentials alone are insufficient.

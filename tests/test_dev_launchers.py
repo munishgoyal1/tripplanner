@@ -94,12 +94,13 @@ def test_unified_emergency_control_has_safe_cross_platform_owner_launchers() -> 
     )
 
     assert '[string]$Action = "status"' in script
-    assert '$Scope -eq "all" -or $_.Scope -eq $Scope' in script
-    assert "No emergency controls are registered for scope" in script
+    assert 'ValidateSet("all", "google", "azure", "local", "canary", "prod")' in script
+    assert '$providerScope = if ($Target -in' in script
+    assert '$environment = if ($Target -in' in script
     assert "set-azure-services-access.ps1" in script
     assert "set-google-maps-access.ps1" in script
     assert "set-google-places-access.ps1" in script
-    assert "APPROVE_AZURE_DISABLE" in script
+    assert "APPROVE_AZURE_DISABLE" not in script
     assert "APPROVE_AZURE_SPEND" in script
     assert "APPROVE_GOOGLE_MAPS_SPEND" in script
     assert "APPROVE_GOOGLE_PLACES_SPEND" in script
@@ -108,6 +109,33 @@ def test_unified_emergency_control_has_safe_cross_platform_owner_launchers() -> 
         assert "emergency-control.ps1" in launcher
         assert "show-launcher-help.ps1" in launcher
         assert "emergency-control" in launcher
+
+
+def test_emergency_bringdown_has_safe_cross_platform_owner_launchers() -> None:
+    root = Path(__file__).parents[1]
+    script = (root / "scripts" / "dev" / "emergency-bringdown.ps1").read_text(
+        encoding="utf-8"
+    )
+    azure_control = (
+        root / "infra" / "azure" / "set-azure-services-access.ps1"
+    ).read_text(encoding="utf-8")
+    launchers = (
+        root / "scripts" / "mac" / "user" / "Emergency-Bringdown.command",
+        root / "scripts" / "win" / "user" / "Emergency-Bringdown.cmd",
+    )
+
+    assert '[string]$Action = "status"' in script
+    assert 'ValidateSet("all", "canary", "prod")' in script
+    assert "APPROVE_AZURE_SPEND" in script
+    assert "-ServingOnly" in script
+    assert "APPROVE_AZURE_DISABLE" not in script
+    assert "[switch]$ServingOnly" in azure_control
+    assert '(-not $ServingOnly -or $_.name -in @("canary", "prod"))' in azure_control
+    for launcher_path in launchers:
+        launcher = launcher_path.read_text(encoding="utf-8")
+        assert "emergency-bringdown.ps1" in launcher
+        assert "show-launcher-help.ps1" in launcher
+        assert "emergency-bringdown" in launcher
 
 
 def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:

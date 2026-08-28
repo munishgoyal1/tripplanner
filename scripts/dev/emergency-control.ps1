@@ -17,19 +17,16 @@ param(
     [string]$Action = "status",
 
     [Parameter(Position = 1)]
-    [string]$Scope = "all",
+    [ValidateSet("all", "google", "azure", "local", "canary", "prod")]
+    [string]$Target = "all",
 
     [Parameter(Position = 2)]
-    [ValidateSet("all", "local", "canary", "prod")]
-    [string]$Environment = "all",
-
-    [Parameter(Position = 3)]
     [string]$AzureApproval = "",
 
-    [Parameter(Position = 4)]
+    [Parameter(Position = 3)]
     [string]$GoogleMapsApproval = "",
 
-    [Parameter(Position = 5)]
+    [Parameter(Position = 4)]
     [string]$GooglePlacesApproval = ""
 )
 
@@ -37,6 +34,8 @@ $ErrorActionPreference = "Stop"
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "../..")).Path
 $normalizedAction = @{ on = "enable"; off = "disable" }[$Action]
 if (-not $normalizedAction) { $normalizedAction = $Action }
+$providerScope = if ($Target -in @("google", "azure")) { $Target } else { "all" }
+$environment = if ($Target -in @("local", "canary", "prod")) { $Target } else { "all" }
 
 # Add future emergency controls here. The provider-specific script retains
 # ownership of credentials, allowlists, mutation details, and final validation.
@@ -48,7 +47,6 @@ $controls = @(
         DisableOrder = 10
         EnableOrder = 30
         Approval = $AzureApproval
-        DisableApproval = "APPROVE_AZURE_DISABLE"
         EnableApproval = "APPROVE_AZURE_SPEND"
     },
     [pscustomobject]@{
@@ -58,7 +56,6 @@ $controls = @(
         DisableOrder = 20
         EnableOrder = 20
         Approval = $GoogleMapsApproval
-        DisableApproval = ""
         EnableApproval = "APPROVE_GOOGLE_MAPS_SPEND"
     },
     [pscustomobject]@{
@@ -68,26 +65,22 @@ $controls = @(
         DisableOrder = 30
         EnableOrder = 10
         Approval = $GooglePlacesApproval
-        DisableApproval = ""
         EnableApproval = "APPROVE_GOOGLE_PLACES_SPEND"
     }
 )
 
-$selected = @($controls | Where-Object { $Scope -eq "all" -or $_.Scope -eq $Scope })
+$selected = @($controls | Where-Object {
+    $providerScope -eq "all" -or $_.Scope -eq $providerScope
+})
 if ($selected.Count -eq 0) {
-    throw "No emergency controls are registered for scope '$Scope'."
+    throw "No emergency controls are registered for target '$Target'."
 }
 
-if ($normalizedAction -in @("disable", "enable")) {
-    $approvalProperty = if ($normalizedAction -eq "disable") {
-        "DisableApproval"
-    } else {
-        "EnableApproval"
-    }
+if ($normalizedAction -eq "enable") {
     $missingApprovals = @($selected | Where-Object {
-        $required = [string]$_.$approvalProperty
+        $required = [string]$_.EnableApproval
         $required -and $_.Approval -cne $required
-    } | ForEach-Object { "  $($_.Name): $($_.$approvalProperty)" })
+    } | ForEach-Object { "  $($_.Name): $($_.EnableApproval)" })
     if ($missingApprovals.Count -gt 0) {
         throw "Required approvals were not supplied:`n$($missingApprovals -join "`n")"
     }
@@ -98,8 +91,8 @@ $selected = @($selected | Sort-Object $orderProperty)
 
 Write-Host "Tripplanner emergency control"
 Write-Host "  action      : $normalizedAction"
-Write-Host "  scope       : $Scope"
-Write-Host "  environment : $Environment"
+Write-Host "  target      : $Target"
+Write-Host "  environment : $environment"
 Write-Host "  controls    : $($selected.Name -join ', ')"
 Write-Host ""
 
@@ -107,7 +100,7 @@ $failures = @()
 foreach ($control in $selected) {
     Write-Host "[$($control.Name)]" -ForegroundColor Cyan
     try {
-        & $control.Script $normalizedAction $Environment $control.Approval
+        & $control.Script $normalizedAction $environment $control.Approval
         if ($LASTEXITCODE -ne 0) {
             throw "exited with code $LASTEXITCODE"
         }
