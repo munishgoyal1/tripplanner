@@ -38,12 +38,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/lib/run-log.ps1` | Shared last-run transcript logging for every entry-point script |
 | `dev/start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
-| `win/user/Start-Dev-Spa.cmd` | Windows launcher for the canonical local stack without synchronizing first |
-| `win/user/Run-Latest-Master.cmd` | Windows owner-facing synchronize-and-run launcher for primary `master` |
-| `win/user/Sync-Sbxs-FromMaster.cmd [sandbox]` | Windows launcher to fast-forward primary `master`, then update every sandbox or only the selected one |
-| `win/user/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
-| `win/user/Full-2Way-Sync.cmd [all\|sbx]` | Converge every local branch by default without hiding active edits. Clean committed lanes publish to `master`; dirty lanes take non-overlapping updates and defer publication; recorded conflicts auto-resolve across sandbox, multiagent, and standalone lanes. Pass `sbx` for registered sandboxes only. Re-runnable |
-| `win/user/Resolve-All-Recorded-Conflicts.cmd` | Manually scan all attached worktrees and finish every pending merge covered by a recorded resolution; new conflicts remain visible and are summarized |
+| `win/user/run/Start-Dev-Spa.cmd` | Windows launcher for the canonical local stack without synchronizing first |
+| `win/user/run/Run-Latest-Master.cmd` | Windows owner-facing synchronize-and-run launcher for primary `master` |
+| `win/user/sync/Sync-Sbxs-FromMaster.cmd [sandbox]` | Windows launcher to fast-forward primary `master`, then update every sandbox or only the selected one |
+| `win/user/sync/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
+| `win/user/sync/Full-2Way-Sync.cmd [all\|sbx]` | Converge every local branch by default without hiding active edits. Clean committed lanes publish to `master`; dirty lanes take non-overlapping updates and defer publication; recorded conflicts auto-resolve across sandbox, multiagent, and standalone lanes. Pass `sbx` for registered sandboxes only. Re-runnable |
+| `win/user/sync/Resolve-All-Recorded-Conflicts.cmd` | Manually scan all attached worktrees and finish every pending merge covered by a recorded resolution; new conflicts remain visible and are summarized |
+| `win/user/google/Google-Places-Control.cmd` | Inspect or synchronize Places profile and GCP Service Usage state; paid enable is approval-gated |
+| `win/user/google/Google-Maps-Control.cmd` | Inspect or synchronize Maps, Routes, and Static Maps state; paid enable is approval-gated |
 | `win/user/quality/Show-TripRecorder.cmd [query] [--days N]` | List or search Trip Flight Recorder entries by number, destination, keyword, or label |
 | `win/user/quality/Maintain-TripRecorder.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report recorder health |
 | `win/user/quality/Restore-TripRecorder.cmd [sandbox] [days]` | Restore recorded trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |
@@ -83,10 +85,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 
 The macOS launchers preserve the Windows names with a `.command` extension and
 the same subfolder layout. For example, use
-`scripts/mac/user/Run-Latest-Master.command`,
+`scripts/mac/user/run/Run-Latest-Master.command`,
 `scripts/mac/user/sandbox/New-Sandbox.command`, or
 `scripts/mac/canary/Deploy-Canary.command`. They forward all arguments to the
 same PowerShell owners and retain the existing deployment approval gates.
+Launchers under `user/sync`, `user/run`, and `user/google` print their purpose,
+syntax, options, safety notes, and examples when their first argument is `help`
+or `?`; help mode never invokes the underlying operation. In zsh, quote or
+escape the wildcard as `'?'` or `\?`, or use the simpler `help` form.
 
 ## Production cache synchronization
 

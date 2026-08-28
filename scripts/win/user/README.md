@@ -2,19 +2,22 @@
 
 This folder contains the regular owner-facing launchers. Their implementation
 stays under `scripts/dev/` so everyday commands remain easy to find.
-Windows launchers live here; matching macOS launchers live under
-`scripts/mac/user/` with the same base name and a `.command` extension.
+Windows launchers are grouped by purpose; matching macOS launchers use the same
+subfolder and base name under `scripts/mac/user/`, with a `.command` extension.
+Every launcher listed under `run/`, `sync/`, and `google/` accepts `help` or `?`
+as its first argument and exits after printing usage. On macOS zsh, use `help`
+or quote the wildcard as `'?'` so the shell passes it to the launcher.
 
 | Command | Purpose |
 | --- | --- |
-| `Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
-| `Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
-| `Google-Places-Control.cmd disable prod` | Immediately disable paid Places in GCP without deploying; status, guarded enable, and central-policy apply are also supported |
-| `Google-Maps-Control.cmd disable prod` | Disable Maps JavaScript, Routes, and Static Maps in GCP without deploying; status, guarded enable, and profile apply are also supported |
-| `Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every registered sandbox or only the selected sandbox |
-| `Full-2Way-Sync.cmd [all\|sbx]` | Converge all local lanes and automatically replay recorded conflict resolutions without hiding active edits |
-| `Resolve-All-Recorded-Conflicts.cmd` | Scan all attached worktrees and finish pending merges covered by recorded resolutions; report new conflicts without aborting them |
-| `Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Requires typing `APPROVE_SANDBOX_TO_MASTER` |
+| `run/Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
+| `run/Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
+| `google/Google-Places-Control.cmd disable prod` | Immediately disable paid Places in GCP without deploying; status, guarded enable, and profile apply are also supported |
+| `google/Google-Maps-Control.cmd disable prod` | Disable Maps JavaScript, Routes, and Static Maps in GCP without deploying; status, guarded enable, and profile apply are also supported |
+| `sync/Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every registered sandbox or only the selected sandbox |
+| `sync/Full-2Way-Sync.cmd [all\|sbx]` | Converge all local lanes and automatically replay recorded conflict resolutions without hiding active edits |
+| `sync/Resolve-All-Recorded-Conflicts.cmd` | Scan all attached worktrees and finish pending merges covered by recorded resolutions; report new conflicts without aborting them |
+| `sync/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox into `master`, or merge one selected sandbox, then refresh all sandboxes. Requires typing `APPROVE_SANDBOX_TO_MASTER` |
 | `sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
 | `sandbox/Rename-Sandbox.cmd <sandbox> <new-name>` | Rename a sandbox, keeping its number and ports |
 | `sandbox/Merge-Sandbox.cmd <sandbox>` | Merge the sandbox into `master` and resynchronize it, keeping the sandbox active |
@@ -24,18 +27,18 @@ Windows launchers live here; matching macOS launchers live under
 from `origin/master` and accepts every optional `dev-spa.ps1` parameter:
 
 ```cmd
-Run-Latest-Master.cmd
-Run-Latest-Master.cmd -Watch -NoLabs
+run\Run-Latest-Master.cmd
+run\Run-Latest-Master.cmd -Watch -NoLabs
 ```
 
 For an isolated feature, use the sandbox launchers. On macOS, run the
 corresponding primary launcher from the repository root:
 
 ```bash
-./scripts/mac/user/Run-Latest-Master.command
-./scripts/mac/user/Run-Latest-Master.command -Watch -NoLabs
-./scripts/mac/user/Sync-Sbxs-FromMaster.command 2
-./scripts/mac/user/Sync-Sbxs-FromMaster.command
+./scripts/mac/user/run/Run-Latest-Master.command
+./scripts/mac/user/run/Run-Latest-Master.command -Watch -NoLabs
+./scripts/mac/user/sync/Sync-Sbxs-FromMaster.command 2
+./scripts/mac/user/sync/Sync-Sbxs-FromMaster.command
 ```
 
 A successful sync guarantees that every registered sandbox branch, both local
