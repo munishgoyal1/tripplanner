@@ -64,7 +64,7 @@ if ($unmerged.Count -gt 0) {
 & git -C $worktree rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
 if ($LASTEXITCODE -ne 0 -and (-not $statePath -or -not (Test-Path $statePath))) {
     Write-Host "[no-op] Lane '$laneName' has no pending merge." -ForegroundColor Yellow
-    return
+    exit 0
 }
 if ($LASTEXITCODE -eq 0 -and $PSCmdlet.ShouldProcess($targetBranch, "Finish recorded merge")) {
     & git -C $worktree add -u
@@ -92,6 +92,6 @@ if ($statePath -and (Test-Path $statePath)) {
 & git -C $worktree rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[resolved] Lane '$laneName' is conflict-free." -ForegroundColor Green
-    return
+    exit 0
 }
 throw "Lane '$laneName' still has a pending merge after conflict recovery."

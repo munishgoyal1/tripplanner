@@ -1383,3 +1383,13 @@ the outcome.
 - Preserve one explicit precedence order: command/process override, then secret
   overlay, then checked-in profile, then code default. A setting with multiple
   hardcoded environment values has no clear owner even when all values agree.
+## 2026-08-28 - PowerShell Script Success Must Reset Native Exit State
+
+- Calling one PowerShell script from another does not clear `$LASTEXITCODE`.
+  A resolver successfully committed a merge, then used a failing
+  `git rev-parse MERGE_HEAD` probe to prove the merge was finished. Its caller
+  received that probe's exit code `1` and reported the successful recovery as a
+  failure.
+- A script consumed by other scripts must establish an explicit success exit
+  code after expected failing probes. Test the caller contract, not only the
+  resulting files: both the Git state and the process result must say success.
