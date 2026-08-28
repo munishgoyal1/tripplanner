@@ -413,6 +413,7 @@ def test_full_sync_auto_resolves_sandbox_multiagent_and_standalone_conflicts() -
     assert 'ParameterSetName = "Worktree"' in resolver
     assert "[string]$WorkingDirectory" in resolver
     assert "& git -C $worktree rerere" in resolver
+    assert resolver.count("exit 0") == 2
     assert "-WorkingDirectory $workingDirectory" in full_sync
     assert "-Kind $entry.kind" in full_sync
     assert "function Test-MergePending" in full_sync
@@ -427,3 +428,33 @@ def test_full_sync_auto_resolves_sandbox_multiagent_and_standalone_conflicts() -
     assert full_sync.index("& $resolverScript -WorkingDirectory") < full_sync.index(
         "& git -C $workingDirectory merge --abort"
     )
+
+
+def test_owner_can_resolve_recorded_conflicts_across_all_worktrees() -> None:
+    root = Path(__file__).parents[1]
+    resolver = (
+        root / "scripts" / "dev" / "resolve-all-recorded-conflicts.ps1"
+    ).read_text(encoding="utf-8")
+    mac_launcher = (
+        root / "scripts" / "mac" / "user" / "Resolve-All-Recorded-Conflicts.command"
+    ).read_text(encoding="utf-8")
+    windows_launcher = (
+        root / "scripts" / "win" / "user" / "Resolve-All-Recorded-Conflicts.cmd"
+    ).read_text(encoding="utf-8")
+
+    assert "worktree list --porcelain" in resolver
+    assert "Get-SandboxRegistry" in resolver
+    assert "Test-PendingMerge" in resolver
+    assert "--diff-filter=U" in resolver
+    assert "MERGE_HEAD" in resolver
+    assert "resolve-sandbox-conflicts.ps1" in resolver
+    assert "-WorkingDirectory $path" in resolver
+    assert "-Sandbox $sandboxByWorktree[$path].slug" in resolver
+    assert "pending-conflict-" in resolver
+    assert "foreach ($worktree in @(Get-AttachedWorktrees))" in resolver
+    assert "Still requires manual resolution" in resolver
+    assert "merge --abort" not in resolver
+    assert "git push" not in resolver
+    assert "git fetch" not in resolver
+    assert "resolve-all-recorded-conflicts.ps1" in mac_launcher
+    assert "resolve-all-recorded-conflicts.ps1" in windows_launcher
