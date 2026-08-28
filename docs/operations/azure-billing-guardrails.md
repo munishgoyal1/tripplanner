@@ -43,6 +43,17 @@ reverses those controls. Both actions discover resources only in the resource
 groups declared in `billing-guardrails.json`, verify the personal account and
 subscription, and never delete resources or data.
 
+Azure OpenAI has an additional application-level consent gate. Every model
+client requires `ENABLE_AZURE_OPENAI=1`; credentials alone are insufficient.
+The controller updates that flag in each selected checked-in environment profile
+and reports whether it agrees with the OpenAI account's public-network state.
+Cloud blocking or restoration is immediate. The profile change takes effect in
+local processes after restart and in canary or production after deployment; the
+controller does not deploy the application. Current profiles explicitly use `1`
+to preserve operation, while an absent flag defaults to disabled. Communication
+Services and Email intentionally have no application flag because they are
+usage-metered and do not share OpenAI's automated runaway-spend exposure.
+
 This is a unified orchestrator, not a universal Azure billing switch. Managed
 Redis, Cosmos throughput and storage, Container Apps environments, Log Analytics,
 and other provisioned resources can continue billing while access is disabled.

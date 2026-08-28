@@ -140,6 +140,9 @@ param enableGooglePlaces bool = false
 @description('Explicit billing gate for Google Maps, Routes, and Static Maps APIs.')
 param enableGoogleMaps bool = false
 
+@description('Explicit billing gate for every Azure OpenAI model call.')
+param enableAzureOpenAi bool = false
+
 @secure()
 @description('Google OAuth client id (web app). Optional; enables Sign in with Google.')
 param googleOauthClientId string = ''
@@ -269,6 +272,7 @@ var baseSecrets = [
 
 var baseEnv = [
   { name: 'TRIPPLANNER_ENVIRONMENT', value: namePrefix }
+  { name: 'ENABLE_AZURE_OPENAI', value: enableAzureOpenAi ? '1' : '0' }
   { name: 'AZURE_OPENAI_ENDPOINT', value: azureOpenAiEndpoint }
   { name: 'AZURE_OPENAI_DEPLOYMENT', value: azureOpenAiDeployment }
   { name: 'AZURE_OPENAI_API_VERSION', value: azureOpenAiApiVersion }

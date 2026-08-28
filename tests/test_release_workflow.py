@@ -110,6 +110,7 @@ def test_google_api_cloud_policy_comes_from_disabled_runtime_profiles() -> None:
         profile = (root / "config" / "environments" / f"{environment}.env").read_text(
             encoding="utf-8"
         )
+        assert "ENABLE_AZURE_OPENAI=1" in profile
         assert "ENABLE_GOOGLE_PLACES=0" in profile
         assert "ENABLE_GOOGLE_MAPS=0" in profile
     assert (
@@ -165,6 +166,10 @@ def test_azure_services_control_is_scoped_reversible_and_approval_gated() -> Non
     assert '$Environment -eq "all" -or $_.name -eq $Environment' in control
     assert '$Environment -eq "all" -and $config.azure.actionGroupResourceGroup' in control
     assert "Cosmos serves local, canary, and prod" in control
+    assert "Get-AzureOpenAiDesiredState" in control
+    assert "Set-AzureOpenAiDesiredState" in control
+    assert "ENABLE_AZURE_OPENAI" in control
+    assert '"DRIFT"' in control
     assert "Microsoft.App/containerApps" in control
     assert "Microsoft.App/jobs" in control
     assert "Microsoft.CognitiveServices/accounts" in control
@@ -174,6 +179,13 @@ def test_azure_services_control_is_scoped_reversible_and_approval_gated() -> Non
     assert "public-network-access" in control
     assert '"delete"' not in control.lower()
     assert "never deletes resources or data" in control
+
+    main_bicep = (root / "infra" / "main.bicep").read_text(encoding="utf-8")
+    assert "param enableAzureOpenAi bool = false" in main_bicep
+    assert "'ENABLE_AZURE_OPENAI'" in main_bicep
+    for parameters in ("main.bicepparam", "canary.bicepparam", "prod.bicepparam"):
+        content = (root / "infra" / parameters).read_text(encoding="utf-8")
+        assert "param enableAzureOpenAi = readEnvironmentVariable(" in content
 
 
 def test_hosted_deployments_use_shared_azure_json_and_delete_guards() -> None:

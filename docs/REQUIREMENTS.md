@@ -626,6 +626,8 @@ implemented capability baseline.
   final response without adding noisy warnings to the user experience.
 - Provider secrets are configuration, not repository content, and hosted secrets
   are injected into Container Apps.
+- Azure OpenAI credentials do not imply permission to spend. Every model client
+  requires the fail-closed `ENABLE_AZURE_OPENAI=1` runtime consent flag.
 - User data is partitioned by identity; canary and production use isolated data.
 - OAuth callbacks, session signing, and Google Maps keys are owned by the target
   environment. Local, canary, and production use separate Google Cloud
@@ -684,8 +686,9 @@ implemented capability baseline.
   or the whole allowlisted Tripplanner Azure estate. It stops or starts hosted apps,
   suppresses or restores recurring jobs, and blocks or restores environment-owned
   OpenAI and Managed Redis public access. Shared Cosmos access changes only for
-  `all`. Both directions are approval-gated, never delete data, and report
-  provisioned charges that continue.
+  `all`. It also updates each selected profile's Azure OpenAI desired state and
+  reports drift from cloud network access. Both directions are approval-gated,
+  never delete data, and report provisioned charges that continue.
 
 ### OPS-02 - Failure detection and response
 

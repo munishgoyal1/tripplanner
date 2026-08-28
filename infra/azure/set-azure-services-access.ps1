@@ -43,6 +43,46 @@ $ErrorActionPreference = "Stop"
 $script:OriginalTriggerTag = "tripplannerControlOriginalTrigger"
 $script:ContainerAppsApiVersion = "2025-01-01"
 $script:ResourceGroups = @()
+$script:AzureOpenAiFlag = "ENABLE_AZURE_OPENAI"
+
+function Get-AzureOpenAiProfilePath {
+    param([Parameter(Mandatory)][string]$EnvironmentName)
+
+    return Join-Path $PSScriptRoot "../../config/environments/$EnvironmentName.env"
+}
+
+function Get-AzureOpenAiDesiredState {
+    param([Parameter(Mandatory)][string]$EnvironmentName)
+
+    $path = Get-AzureOpenAiProfilePath -EnvironmentName $EnvironmentName
+    $match = [regex]::Match(
+        (Get-Content $path -Raw),
+        "(?m)^$([regex]::Escape($script:AzureOpenAiFlag))=([01])$"
+    )
+    if (-not $match.Success) {
+        throw "$script:AzureOpenAiFlag must be set to 0 or 1 in $path."
+    }
+    return $match.Groups[1].Value -eq "1"
+}
+
+function Set-AzureOpenAiDesiredState {
+    param(
+        [Parameter(Mandatory)][string]$EnvironmentName,
+        [Parameter(Mandatory)][bool]$Enabled
+    )
+
+    $path = Get-AzureOpenAiProfilePath -EnvironmentName $EnvironmentName
+    $content = Get-Content $path -Raw
+    $pattern = "(?m)^$([regex]::Escape($script:AzureOpenAiFlag))=[01]$"
+    if (-not [regex]::IsMatch($content, $pattern)) {
+        throw "$script:AzureOpenAiFlag must be set to 0 or 1 in $path."
+    }
+    $value = if ($Enabled) { "1" } else { "0" }
+    if ($PSCmdlet.ShouldProcess($path, "set $script:AzureOpenAiFlag=$value")) {
+        $updated = [regex]::Replace($content, $pattern, "$script:AzureOpenAiFlag=$value")
+        [System.IO.File]::WriteAllText($path, $updated, [System.Text.UTF8Encoding]::new($false))
+    }
+}
 
 function Invoke-AzJson {
     param([Parameter(Mandatory)][string[]]$Arguments)
@@ -257,6 +297,18 @@ if ($Environment -ne "all") {
 }
 Write-Host ""
 
+$openAiDesiredByResourceGroup = @{}
+foreach ($selectedEnvironment in $selectedEnvironments) {
+    if ($Action -in @("enable", "disable")) {
+        Set-AzureOpenAiDesiredState -EnvironmentName $selectedEnvironment.name `
+            -Enabled ($Action -eq "enable")
+    }
+    $desired = Get-AzureOpenAiDesiredState -EnvironmentName $selectedEnvironment.name
+    $openAiDesiredByResourceGroup[[string]$selectedEnvironment.resourceGroup] = $desired
+    Write-Host "  $($selectedEnvironment.name) OpenAI desired: $desired"
+}
+Write-Host ""
+
 if ($Action -eq "status") {
     Write-Host ("  {0,-18} {1,-38} {2,-18} {3}" -f "SERVICE", "RESOURCE", "ACCESS", "BILLING")
     foreach ($resource in $containerApps) {
@@ -288,6 +340,12 @@ if ($Action -eq "status") {
             "Cosmos DB" { "throughput/storage continues" }
             default { "provisioned charge continues" }
         }
+        if ($kind -eq "Azure OpenAI" -and $openAiDesiredByResourceGroup.ContainsKey($resource.resourceGroup)) {
+            $desired = $openAiDesiredByResourceGroup[$resource.resourceGroup]
+            $cloudEnabled = $access -eq "Enabled"
+            $syncState = if ($access -eq "Unknown" -or $cloudEnabled -ne $desired) { "DRIFT" } else { "in sync" }
+            $access = "$access ($syncState)"
+        }
         Write-ControlRow -Kind $kind -Name $resource.name -State $access -Billing $billing
     }
 } else {
@@ -301,6 +359,8 @@ if ($Action -eq "status") {
         Write-Host "Preview complete: Azure services would be $($targetState.ToLowerInvariant())."
     } else {
         Write-Host "Azure services are now $($targetState.ToLowerInvariant())." -ForegroundColor Green
+        Write-Host "Updated $script:AzureOpenAiFlag in the selected checked-in environment profile(s)."
+        Write-Host "Local processes require a restart; hosted environments require a deployment."
     }
 }
 

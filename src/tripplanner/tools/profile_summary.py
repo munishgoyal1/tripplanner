@@ -131,6 +131,7 @@ def regenerate(prefs: dict[str, Any]) -> str:
         from langchain_core.messages import HumanMessage, SystemMessage
         from langchain_openai import AzureChatOpenAI
 
+        from tripplanner.azure_openai import require_azure_openai_enabled
         from tripplanner.config import get_settings
     except Exception as exc:  # pragma: no cover - import errors are environmental
         log.warning("profile_summary: imports failed (%s); skipping", exc)
@@ -141,7 +142,7 @@ def regenerate(prefs: dict[str, Any]) -> str:
     if planned:
         payload["planned_trips"] = planned
     try:
-        s = get_settings()
+        s = require_azure_openai_enabled(get_settings())
         llm = AzureChatOpenAI(
             azure_endpoint=s.azure_openai_endpoint,
             api_key=s.azure_openai_api_key,

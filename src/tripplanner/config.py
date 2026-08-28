@@ -33,6 +33,9 @@ def _env_positive_float(name: str, default: float) -> float:
 
 class Settings(BaseModel):
     # Azure OpenAI
+    enable_azure_openai: bool = Field(
+        default_factory=lambda: os.getenv("ENABLE_AZURE_OPENAI", "0").strip() == "1"
+    )
     azure_openai_endpoint: str = os.getenv("AZURE_OPENAI_ENDPOINT", "")
     azure_openai_api_key: str = os.getenv("AZURE_OPENAI_API_KEY", "")
     azure_openai_deployment: str = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
