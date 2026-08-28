@@ -1,8 +1,8 @@
 """Drive the real planner to produce corpus trips, within a budget.
 
 This is the only part of the harness that spends money, so it is deliberately
-cautious: it refuses to start without headroom, measures what each request
-actually cost from the usage ledger rather than estimating, records every trip
+cautious: it refuses to start without headroom, combines measured model cost
+with known provider catalog estimates, records every trip
 it produced, and stops the moment the budget or the target is reached.
 
 Re-running it tops the corpus up. A request that already produced a trip is
@@ -90,6 +90,8 @@ class Produced:
     days: int
     stops: int
     spent_inr: float
+    model_spent_inr: float
+    google_spent_inr: float
     seconds: float
     user_id: str
     destination: str = ""
@@ -167,6 +169,37 @@ def _spent_usd(database: str, user_id: str) -> float:
     return float(_usage_for(database, user_id).get("cost_usd") or 0.0)
 
 
+def _google_cost_usd(database: str, interaction_ids: tuple[str, ...]) -> float:
+    """Catalog-estimated Google cost recorded for these unique planning turns."""
+    from tripplanner.validation.emulator import _client
+
+    name = assert_generation_database(database)
+    container = (
+        _client()
+        .get_database_client(name)
+        .get_container_client("provider_usage")
+    )
+    total = 0.0
+    try:
+        for interaction_id in interaction_ids:
+            rows = container.query_items(
+                query=(
+                    "SELECT c.estimated_cost_usd, c.billable FROM c "
+                    "WHERE c.provider = 'google' AND c.interaction_id = @interaction"
+                ),
+                parameters=[{"name": "@interaction", "value": interaction_id}],
+                enable_cross_partition_query=True,
+            )
+            total += sum(
+                float(row.get("estimated_cost_usd") or 0.0)
+                for row in rows
+                if row.get("billable", True)
+            )
+    except Exception:  # noqa: BLE001 - model spend still provides a conservative floor
+        return 0.0
+    return total
+
+
 def _ask(api: str, message: str, user_id: str, request_id: str) -> None:
     body = json.dumps(
         {"message": message, "user_id": user_id, "request_id": request_id}
@@ -196,6 +229,8 @@ def _saved_trip(database: str, user_id: str) -> dict[str, Any] | None:
 class _Attempt:
     request: TripRequest
     cost_inr: float = 0.0
+    model_cost_inr: float = 0.0
+    google_cost_inr: float = 0.0
     seconds: float = 0.0
     trip: dict[str, Any] | None = None
     model: str = ""
@@ -245,36 +280,53 @@ def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -
     attempt_id = uuid.uuid4().hex[:12]
     user_id = f"corpus-{request.slug}-{attempt_id}"
     request_id = f"{user_id}-turn"
+    interaction_ids = [request_id]
     before_usd = _spent_usd(database, user_id)
     started = time.monotonic()
 
     error = _send_with_retry(api, request.message, user_id, request_id)
     trip = _saved_trip(database, user_id)
     if error is None and trip is None:
+        recovery_id = f"{user_id}-recovery"
+        interaction_ids.append(recovery_id)
         error = _send_with_retry(
             api,
             _RECOVERY_MESSAGE,
             user_id,
-            f"{user_id}-recovery",
+            recovery_id,
         )
         trip = _saved_trip(database, user_id)
     seconds = time.monotonic() - started
     usage = _usage_for(database, user_id)
-    cost_inr = max(0.0, float(usage.get("cost_usd") or 0.0) - before_usd) * usd_inr
+    model_cost_inr = max(0.0, float(usage.get("cost_usd") or 0.0) - before_usd) * usd_inr
+    google_cost_inr = _google_cost_usd(database, tuple(interaction_ids)) * usd_inr
+    cost_inr = model_cost_inr + google_cost_inr
     if error:
         if trip is not None:
             return _Attempt(
                 request,
                 cost_inr=cost_inr,
+                model_cost_inr=model_cost_inr,
+                google_cost_inr=google_cost_inr,
                 seconds=seconds,
                 trip=trip,
                 model=str(usage.get("model") or ""),
                 user_id=user_id,
             )
-        return _Attempt(request, cost_inr=cost_inr, seconds=seconds, error=error, user_id=user_id)
+        return _Attempt(
+            request,
+            cost_inr=cost_inr,
+            model_cost_inr=model_cost_inr,
+            google_cost_inr=google_cost_inr,
+            seconds=seconds,
+            error=error,
+            user_id=user_id,
+        )
     return _Attempt(
         request,
         cost_inr=cost_inr,
+        model_cost_inr=model_cost_inr,
+        google_cost_inr=google_cost_inr,
         seconds=seconds,
         trip=trip,
         model=str(usage.get("model") or ""),
@@ -310,6 +362,8 @@ def build(
     trips_dir.mkdir(parents=True, exist_ok=True)
 
     spent = 0.0
+    model_spent = 0.0
+    google_spent = 0.0
     produced: list[Produced] = []
     model = ""
     workers = max(1, workers)
@@ -339,9 +393,12 @@ def build(
         return barren / attempts if attempts else 0.0
 
     def _record(result: _Attempt) -> None:
-        nonlocal spent, model, barren, consecutive_barren, api_unavailable
+        nonlocal spent, model_spent, google_spent, model, barren, consecutive_barren
+        nonlocal api_unavailable
         request = result.request
         spent += result.cost_inr
+        model_spent += result.model_cost_inr
+        google_spent += result.google_cost_inr
         model = result.model or model
         if result.error:
             barren += 1
@@ -370,6 +427,8 @@ def build(
             days=len(days),
             stops=sum(len(day.get("stops") or []) for day in days),
             spent_inr=round(result.cost_inr, 2),
+            model_spent_inr=round(result.model_cost_inr, 2),
+            google_spent_inr=round(result.google_cost_inr, 2),
             seconds=round(result.seconds, 1),
             user_id=result.user_id,
             destination=request.destination,
@@ -476,6 +535,8 @@ def build(
     budget_module.record(
         corpus_root,
         spent_inr_amount=spent,
+        model_spent_inr=model_spent,
+        google_spent_inr=google_spent,
         trips=len(produced),
         model=model or "unknown",
         stopped_because=stopped,
@@ -499,6 +560,8 @@ def build(
     return {
         "produced": [asdict(entry) for entry in produced],
         "spent_inr": round(spent, 2),
+        "model_spent_inr": round(model_spent, 2),
+        "google_spent_inr": round(google_spent, 2),
         "attempts": len(produced) + barren,
         "budget_inr": allowed.budget_inr,
         "stopped_because": stopped,

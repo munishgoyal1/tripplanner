@@ -4,7 +4,7 @@
     python scripts/dev/build_corpus.py --budget 1000
 
 Spends money. It refuses to run without headroom under the cumulative cap,
-measures each request's real cost from the app's own usage ledger, and stops at
+combines measured model cost with known Google catalog estimates, and stops at
 whichever of the budget or the target comes first. Requests are composed from
 what the corpus does not already cover and run serially by default, so re-running
 tops it up with new shapes and never pays twice for the same one.
@@ -207,6 +207,10 @@ def main(argv: list[str] | None = None) -> int:
     print(
         f"Produced {len(result['produced'])} trip(s) for INR {result['spent_inr']:.0f}; "
         f"stopped on {result['stopped_because']}."
+    )
+    print(
+        f"  cost breakdown      model INR {result['model_spent_inr']:.2f}; "
+        f"estimated Google INR {result['google_spent_inr']:.2f}"
     )
     attempts = int(result["attempts"])
     if attempts:

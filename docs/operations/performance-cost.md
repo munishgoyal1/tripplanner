@@ -24,6 +24,12 @@ The cost section deliberately contains separate layers:
   `validation/harness/pricing.py`; these assumptions are not authoritative prices.
 3. `billing_reconciliation` is absent until a delayed cloud billing export is supplied.
 
+Paid corpus generation applies the same distinction to its safety cap. Its run
+and cumulative INR budgets count the measured model-ledger delta plus Google calls
+priced from the versioned planning catalog and attributed to that generation turn.
+The spend ledger preserves the model and estimated-Google components separately;
+Google Cloud Billing remains authoritative for the eventual billed amount.
+
 Google classification uses both endpoint and `X-Goog-FieldMask` because Text Search
 and Place Details SKU classes cannot be attributed from host-level telemetry alone.
 Optional model-based subjective quality evaluation must record its own LLM evidence

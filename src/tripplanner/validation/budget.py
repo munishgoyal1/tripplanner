@@ -6,9 +6,9 @@ that would breach the cumulative cap, and clamps a run to whatever headroom is
 left. A build that finds the corpus already big enough spends nothing at all --
 the owner asked for a durable corpus, not a recurring bill.
 
-Amounts are held in INR because that is the currency the cap was set in. The
-model bills in USD, so every run records the rate it converted at and stays
-auditable if the rate moves.
+Amounts are held in INR because that is the currency the cap was set in. Model
+usage and known provider catalog estimates are held in USD, so every run records
+the rate it converted at and stays auditable if the rate moves.
 """
 
 from __future__ import annotations
@@ -102,6 +102,8 @@ def record(
     corpus_root: Path,
     *,
     spent_inr_amount: float,
+    model_spent_inr: float | None = None,
+    google_spent_inr: float | None = None,
     trips: int,
     model: str,
     stopped_because: str,
@@ -114,6 +116,12 @@ def record(
         "model": model,
         "trips": int(trips),
         "spent_inr": round(float(spent_inr_amount), 2),
+        "model_spent_inr": round(float(model_spent_inr), 2)
+        if model_spent_inr is not None
+        else None,
+        "google_spent_inr": round(float(google_spent_inr), 2)
+        if google_spent_inr is not None
+        else None,
         "usd_inr": usd_inr_rate or usd_inr(),
         "stopped_because": stopped_because,
     }
