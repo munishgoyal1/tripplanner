@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from types import SimpleNamespace
 
+import pytest
+
 import scripts.prod_cache_sync as cache_sync
 from scripts.prod_cache_sync import (
     PLACES_CONTAINER,
@@ -196,6 +198,45 @@ def test_write_verification_ignores_cosmos_system_fields():
     assert metrics.request_units == 1.25
     assert metrics.requests == 1
     assert metrics.payload_bytes > 0
+
+
+def test_write_verification_accepts_cosmos_float_round_trip_drift():
+    planned = PlannedWrite(
+        container="places_cache",
+        partition="_shared",
+        item_id="p1",
+        body={"entry": {"lng": 12.471670699999999}},
+    )
+
+    class Container:
+        def read_item(self, *, item, partition_key, response_hook):
+            return {
+                "id": item,
+                "user_id": partition_key,
+                "entry": {"lng": 12.4716707},
+            }
+
+    _verify_write(Container(), planned)
+
+
+def test_write_verification_rejects_meaningful_float_change():
+    planned = PlannedWrite(
+        container="places_cache",
+        partition="_shared",
+        item_id="p1",
+        body={"entry": {"lng": 12.4716707}},
+    )
+
+    class Container:
+        def read_item(self, *, item, partition_key, response_hook):
+            return {
+                "id": item,
+                "user_id": partition_key,
+                "entry": {"lng": 12.4717707},
+            }
+
+    with pytest.raises(RuntimeError, match="Verification failed"):
+        _verify_write(Container(), planned)
 
 
 def _sync_args(tmp_path, checkpoint):
