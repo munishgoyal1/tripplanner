@@ -146,6 +146,21 @@ resource auditContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/con
   }
 }]
 
+resource providerUsageContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'provider_usage'
+  properties: {
+    resource: {
+      id: 'provider_usage'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+      defaultTtl: 7776000
+    }
+  }
+}]
+
 output accountName string = account.name
 output endpoint string = account.properties.documentEndpoint
 output databaseNames array = [for (databaseName, index) in databaseNames: databases[index].name]

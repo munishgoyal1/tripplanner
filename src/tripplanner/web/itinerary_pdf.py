@@ -7,8 +7,9 @@ from html import escape
 from io import BytesIO
 from typing import Any
 
-import requests
+import httpx
 
+from tripplanner import http_client
 from tripplanner.web import itinerary_export, places_cache, trip_view
 
 
@@ -38,14 +39,14 @@ def build_itinerary_pdf_bytes(
             if source.startswith("data:image/") and ";base64," in source:
                 raw = base64.b64decode(source.split(";base64,", 1)[1])
             else:
-                response = requests.get(source, timeout=12)
+                response = http_client.get(source, timeout=12)
                 response.raise_for_status()
                 raw = response.content
             ImageReader(BytesIO(raw)).getSize()
             image = Image(BytesIO(raw), width=width, height=height)
             image.hAlign = "LEFT"
             return image
-        except (OSError, ValueError, requests.RequestException):
+        except (OSError, ValueError, httpx.HTTPError):
             return None
 
     def _route_coords(pin_ids: list[str]) -> list[tuple[float, float]]:

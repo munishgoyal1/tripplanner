@@ -94,11 +94,20 @@ def test_ops_metrics_snapshot_aggregates_product_funnel_and_drop_offs(monkeypatc
 
 
 def test_ops_overview_is_owner_only_and_hidden_from_openapi(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setattr("tripplanner.provider_usage._read", lambda _since: [])
     owner = _client(monkeypatch, "OWNER@example.com")
     response = owner.get("/ops/overview")
 
     assert response.status_code == 200
-    assert {"business", "requests", "models", "tools", "cache"} <= response.json().keys()
+    assert {
+        "business",
+        "requests",
+        "models",
+        "tools",
+        "cache",
+        "provider_usage",
+    } <= response.json().keys()
+    assert response.json()["provider_usage"]["totals"]["calls"] == 0
     assert "/ops/overview" not in owner.get("/openapi.json").json()["paths"]
     assert "/analytics/event" not in owner.get("/openapi.json").json()["paths"]
 

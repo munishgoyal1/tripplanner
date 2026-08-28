@@ -52,6 +52,20 @@ const overview: OpsOverview = {
     search_hotels: { calls: 4, errors: 1, p50_ms: 100, p95_ms: 400, cache_hits: 2, hit_rate: 0.5, avg_ms: 180, error_types: { TimeoutError: 1 } },
   },
   providers: { liteapi: { calls: 4, successes: 3, failures: 1, failure_rate: 0.25, avg_ms: 300 } },
+  provider_usage: {
+    period_days: 30,
+    since: "2026-07-11T12:00:00Z",
+    pricing: { catalog_version: "2026-03-01", basis: "Planning estimates; provider billing exports remain authoritative.", currency: "USD" },
+    totals: { calls: 8, avoided_calls: 0, failures: 1, estimated_cost_usd: 0.052, unknown_cost_calls: 2, prompt_tokens: 1000, completion_tokens: 500 },
+    by_initiator: [
+      { environment: "canary", initiator: "user_trip", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 1000, completion_tokens: 500 },
+      { environment: "canary", initiator: "audit", calls: 2, avoided_calls: 0, failures: 1, estimated_cost_usd: 0.007, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 },
+    ],
+    by_trip: [{ environment: "canary", initiator: "user_trip", trip_id: "trip-kashmir", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 1000, completion_tokens: 500 }],
+    by_provider: [{ environment: "canary", initiator: "user_trip", trip_id: "trip-kashmir", provider: "google", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
+    by_operation: [{ environment: "canary", initiator: "user_trip", trip_id: "trip-kashmir", provider: "google", operation: "text_search", sku_class: "essentials", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
+    by_interaction: [{ environment: "canary", initiator: "user_trip", trip_id: "trip-kashmir", interaction_id: "request-123", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 1000, completion_tokens: 500 }],
+  },
   cache: { configured: true, backend: "redis", redis_connected: true, fallback_active: false, memory_entries: 2, redis_entries: 7, redis_bytes: 2048, redis_stats_truncated: false },
 };
 
@@ -69,5 +83,20 @@ describe("OpsDashboard", () => {
     expect(screen.getByText("Provider reliability")).toBeInTheDocument();
     expect(screen.getByText("Top cache hits")).toBeInTheDocument();
     expect(screen.getByText("Persisted inventory")).toBeInTheDocument();
+  });
+
+  it("shows measured calls, estimate caveats, and trip hierarchy", async () => {
+    render(<OpsDashboard />);
+    await screen.findByText("Activation funnel");
+
+    fireEvent.click(screen.getByRole("tab", { name: /api & cost/i }));
+
+    expect(screen.getByText("Measured calls")).toBeInTheDocument();
+    expect(screen.getByText("Cost is an estimate, not a billing statement.")).toBeInTheDocument();
+    expect(screen.getByText("Trip and provider hierarchy")).toBeInTheDocument();
+    expect(screen.getAllByText("trip-kashmir")).toHaveLength(2);
+    expect(screen.getByText("Unknown price")).toBeInTheDocument();
+    expect(screen.getAllByText(/\+ 1 unknown/).length).toBeGreaterThan(0);
+    expect(screen.getByText("Initiated interactions")).toBeInTheDocument();
   });
 });

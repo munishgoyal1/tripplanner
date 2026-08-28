@@ -100,14 +100,17 @@ def _client_singleton():
     return _client
 
 
-#: Caches are rebuildable from their provider, so rows expire instead of
+#: Rebuildable caches and operational usage records expire instead of
 #: accumulating forever. Everything else here is the user's own data and must
-#: never carry a TTL. Cosmos resets the clock on each write, so a place that
-#: keeps being looked up keeps living.
+#: never carry a TTL. Cosmos resets the clock on each write.
 #: Policy, and what is still unverified about this number, is in
 #: docs/CODEMAP.md under "Cached external data".
 _CACHE_TTL_SECONDS = 30 * 24 * 60 * 60
 _CACHE_CONTAINERS = frozenset({"places_cache", "tool_cache"})
+_CONTAINER_TTLS = {
+    **{name: _CACHE_TTL_SECONDS for name in _CACHE_CONTAINERS},
+    "provider_usage": 90 * 24 * 60 * 60,
+}
 
 
 def _container(name: str):
@@ -116,7 +119,7 @@ def _container(name: str):
     _client_singleton()
     from azure.cosmos import PartitionKey  # imported lazily
 
-    ttl = _CACHE_TTL_SECONDS if name in _CACHE_CONTAINERS else None
+    ttl = _CONTAINER_TTLS.get(name)
     container = _database.create_container_if_not_exists(
         id=name,
         partition_key=PartitionKey(path="/user_id"),

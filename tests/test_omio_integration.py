@@ -441,7 +441,7 @@ class TestOmioErrorHandling:
     def test_request_http_error_raises_omio_error(self) -> None:
         """HTTP errors are converted to OmioError."""
         source = OmioTrainSource(api_key="key")
-        with patch("tripplanner.providers.omio_client.httpx.request") as mock_request:
+        with patch("tripplanner.providers.omio_client.http_client.request") as mock_request:
             from httpx import HTTPStatusError, Response
             response = Response(status_code=500)
             mock_request.side_effect = HTTPStatusError(
@@ -454,7 +454,7 @@ class TestOmioErrorHandling:
     def test_request_json_error_raises_omio_error(self) -> None:
         """JSON parse errors are converted to OmioError."""
         source = OmioTrainSource(api_key="key")
-        with patch("tripplanner.providers.omio_client.httpx.request") as mock_request:
+        with patch("tripplanner.providers.omio_client.http_client.request") as mock_request:
             mock_response = MagicMock()
             mock_response.json.side_effect = ValueError("Invalid JSON")
             mock_request.return_value = mock_response

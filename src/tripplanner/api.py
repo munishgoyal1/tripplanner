@@ -214,8 +214,16 @@ async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-unt
         request.scope["path"] = path[4:]
     started_at = time.monotonic()
     status_code = 500
+    from tripplanner.usage_attribution import usage_scope
+
+    interaction_id = request.headers.get("x-request-id", "")
     try:
-        response = await call_next(request)
+        with usage_scope(
+            "user_action",
+            interaction_id=interaction_id,
+            route=f"{request.method} {request.scope.get('path', '')}",
+        ):
+            response = await call_next(request)
         status_code = response.status_code
         return response
     finally:
@@ -342,14 +350,16 @@ def _schedule_learning_sweep(user_id: str, message: str) -> None:
     """
     def _worker() -> None:
         from tripplanner.tools import passive_learning, profile_summary
+        from tripplanner.usage_attribution import usage_scope
         from tripplanner.user_context import set_user_id
 
         set_user_id(user_id)
-        passive_learning.learn_from_message(message)
-        # Refresh the system-authored profile summary. Gated internally by a
-        # durable-facts digest, so this is a no-op (no LLM call) when nothing
-        # durable changed — including trip-scoped one-offs.
-        profile_summary.update_summary()
+        with usage_scope("agent_background", route="passive_learning"):
+            passive_learning.learn_from_message(message)
+            # Refresh the system-authored profile summary. Gated internally by a
+            # durable-facts digest, so this is a no-op (no LLM call) when nothing
+            # durable changed — including trip-scoped one-offs.
+            profile_summary.update_summary()
 
     try:
         task = asyncio.create_task(asyncio.to_thread(_worker))
@@ -358,6 +368,13 @@ def _schedule_learning_sweep(user_id: str, message: str) -> None:
     except RuntimeError:
         # No running loop (e.g. a sync test harness) — run inline best-effort.
         _worker()
+
+
+def _run_agent_background(function: Any, *, route: str, trip_id: str = "") -> None:
+    from tripplanner.usage_attribution import usage_scope
+
+    with usage_scope("agent_background", route=route, trip_id=trip_id):
+        function()
 
 
 def _record_chat_operation(
@@ -472,16 +489,24 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
         history.append(HumanMessage(content=req.message))
         budget_exhausted = False
         try:
-            with places_budget_scope():
-                result = await asyncio.to_thread(
-                    app_graph.invoke,
-                    {
-                        "messages": history,
-                        "current_agent": "",
-                        "proposal_only": req.proposal_only,
-                    },
-                    config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
-                )
+            from tripplanner.usage_attribution import usage_scope
+
+            with usage_scope(
+                "user_trip",
+                interaction_id=req.request_id or "",
+                trip_id=history_tid or "",
+                route="POST /chat",
+            ):
+                with places_budget_scope():
+                    result = await asyncio.to_thread(
+                        app_graph.invoke,
+                        {
+                            "messages": history,
+                            "current_agent": "",
+                            "proposal_only": req.proposal_only,
+                        },
+                        config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
+                    )
         except GraphRecursionError:
             # Native and scripted clients use this path; without the same
             # handling the SSE path has, an exhausted turn raised a 500 and the
@@ -794,6 +819,8 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         )
 
     async def gen():
+        from tripplanner.usage_attribution import usage_scope
+
         reply_parts: list[str] = []
         tool_starts: dict[str, float] = {}
         # Capture tool message outputs so we can fact-check the agent's final
@@ -804,17 +831,23 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         yield _sse("progress", {"stage": "thinking"})
         try:
             async def budgeted_events():
-                with places_budget_scope():
-                    async for event in app_graph.astream_events(
-                        {
-                            "messages": history,
-                            "current_agent": "",
-                            "proposal_only": req.proposal_only,
-                        },
-                        config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
-                        version="v2",
-                    ):
-                        yield event
+                with usage_scope(
+                    "user_trip",
+                    interaction_id=req.request_id or "",
+                    trip_id=history_tid or "",
+                    route="POST /chat/stream",
+                ):
+                    with places_budget_scope():
+                        async for event in app_graph.astream_events(
+                            {
+                                "messages": history,
+                                "current_agent": "",
+                                "proposal_only": req.proposal_only,
+                            },
+                            config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
+                            version="v2",
+                        ):
+                            yield event
 
             async for ev in budgeted_events():
                 kind = ev.get("event")
@@ -1049,14 +1082,25 @@ async def trip_view_endpoint(
         else None
     )
     view = await asyncio.to_thread(trip_operations.build_view, focus)
+    trip_id = str(view.get("trip_id") or "")
     # Warm the destination-guide dataset after responding so the first city/kind
     # switch is instant while the user is still reading the itinerary.
     if focus is None:
-        background.add_task(trip_operations.warm_guide)
+        background.add_task(
+            _run_agent_background,
+            trip_operations.warm_guide,
+            route="warm_guide",
+            trip_id=trip_id,
+        )
     else:
         # A focus response only blocks on the focused place; top up the rest of
         # the gallery afterwards so the next focus stays a cache hit.
-        background.add_task(trip_operations.warm_view_items)
+        background.add_task(
+            _run_agent_background,
+            trip_operations.warm_view_items,
+            route="warm_view_items",
+            trip_id=trip_id,
+        )
     return view
 
 
@@ -1752,6 +1796,7 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
     acs_conn = os.getenv("AZURE_COMMUNICATION_CONNECTION_STRING", "").strip()
     acs_sender = os.getenv("AZURE_COMMUNICATION_EMAIL_SENDER", "").strip()
     if acs_conn and acs_sender:
+        email_started: float | None = None
         try:
             operation, _ = external_operations.claim_pending(
                 req.request_id, fingerprint, provider="acs"
@@ -1777,11 +1822,20 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
                     "html": html,
                 },
             }
+            email_started = time.monotonic()
             poller = client.begin_send(
                 message,
                 operation_id=external_operations.provider_operation_id(req.request_id),
             )
             poller.result()
+            from tripplanner.provider_usage import record_call
+
+            record_call(
+                provider="azure_communication_email",
+                operation="email_send",
+                status="ok",
+                duration_ms=(time.monotonic() - email_started) * 1000,
+            )
             result = {"ok": True, "message": f"Itinerary sent to {req.email}."}
             external_operations.record_completed(
                 req.request_id,
@@ -1792,6 +1846,15 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
             app_event("api_trip_export_email_sent", destination=destination, provider="acs")
             return result
         except Exception as exc:
+            if email_started is not None:
+                from tripplanner.provider_usage import record_call
+
+                record_call(
+                    provider="azure_communication_email",
+                    operation="email_send",
+                    status=type(exc).__name__,
+                    duration_ms=(time.monotonic() - email_started) * 1000,
+                )
             app_event("api_trip_export_email_error", error=type(exc).__name__, provider="acs")
             return JSONResponse(
                 {
@@ -1859,6 +1922,7 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
     )
 
     try:
+        email_started = time.monotonic()
         with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as smtp:
             if smtp_tls:
                 smtp.starttls()
@@ -1866,6 +1930,14 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
                 smtp.login(smtp_user, smtp_pass)
             smtp.send_message(msg)
     except Exception as exc:
+        from tripplanner.provider_usage import record_call
+
+        record_call(
+            provider="smtp",
+            operation="email_send",
+            status=type(exc).__name__,
+            duration_ms=(time.monotonic() - email_started) * 1000,
+        )
         app_event("api_trip_export_email_error", error=type(exc).__name__)
         return JSONResponse(
             {
@@ -1876,6 +1948,14 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
             status_code=503,
         )
 
+    from tripplanner.provider_usage import record_call
+
+    record_call(
+        provider="smtp",
+        operation="email_send",
+        status="ok",
+        duration_ms=(time.monotonic() - email_started) * 1000,
+    )
     result = {"ok": True, "message": f"Itinerary sent to {req.email}."}
     external_operations.record_completed(
         req.request_id,
@@ -2800,7 +2880,7 @@ async def analytics_event(request: Request) -> Response:
 
 
 @app.get("/ops/overview", include_in_schema=False)
-async def ops_overview(request: Request) -> dict[str, Any]:
+async def ops_overview(request: Request, days: int = 30) -> dict[str, Any]:
     """Return content-free business and engineering metrics to the owner only."""
     session = require_owner(request)
     set_user_id(str(session["user_id"]))
@@ -2809,6 +2889,7 @@ async def ops_overview(request: Request) -> dict[str, Any]:
 
     from tripplanner.observability import tool_metrics_snapshot
     from tripplanner.ops_metrics import snapshot
+    from tripplanner.provider_usage import summary as provider_usage_summary
     from tripplanner.providers.cache import provider_cache_status
     from tripplanner.providers.fares import get_provider_stats
     from tripplanner.tools.trip_planner import list_saved_trips
@@ -2886,6 +2967,7 @@ async def ops_overview(request: Request) -> dict[str, Any]:
         for provider in sorted(provider_names)
     }
     runtime["cache"] = provider_cache_status()
+    runtime["provider_usage"] = provider_usage_summary(days=days)
     return runtime
 
 

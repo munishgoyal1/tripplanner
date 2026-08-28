@@ -8,8 +8,9 @@ import os
 from typing import Any
 from urllib.parse import quote
 
-import requests
+import httpx
 
+from tripplanner import http_client
 from tripplanner.web import places_cache, trip_view
 
 
@@ -109,7 +110,7 @@ def _static_map_data_uri(
       ("key", key),
     ]
     try:
-      response = requests.get(
+      response = http_client.get(
         "https://maps.googleapis.com/maps/api/staticmap",
         params=params,
         timeout=12,
@@ -120,7 +121,7 @@ def _static_map_data_uri(
         return ""
       encoded = base64.b64encode(response.content).decode("ascii")
       return f"data:{content_type};base64,{encoded}"
-    except requests.RequestException:
+    except httpx.HTTPError:
       return ""
 
 
