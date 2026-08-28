@@ -4,14 +4,15 @@
   Merge eligible cache entries between the local emulator and production Cosmos.
 
 .EXAMPLE
+    # Defaults to a two-way apply and prompts for APPROVE_PROD_CACHE_SYNC.
   ./scripts/prod-cache-sync.ps1
   ./scripts/prod-cache-sync.ps1 -Direction Pull
-  ./scripts/prod-cache-sync.ps1 -Direction Both -Approval APPROVE_PROD_CACHE_SYNC
+    ./scripts/prod-cache-sync.ps1 -Approval APPROVE_PROD_CACHE_SYNC
 #>
 
 param(
     [ValidateSet("Status", "Pull", "Push", "Both")]
-    [string]$Direction = "Status",
+        [string]$Direction = "Both",
     [switch]$WhatIf = $false,
     [string]$Approval = "",
     [string]$SubscriptionId = "",

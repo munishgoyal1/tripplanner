@@ -100,18 +100,19 @@ skipped rather than made fresh by copying, and writes use source snapshot ETags.
 Run the matching launcher from `scripts/mac/prod/` or `scripts/win/prod/`:
 
 ```powershell
-# Read both sides and report planned changes. This is the default.
+# Merge both ways. This is the default and prompts for the approval keyword.
 ./Sync-Prod-Cache.command
+./Sync-Prod-Cache.command -Approval APPROVE_PROD_CACHE_SYNC
 
 # Production to the local central emulator cache.
 ./Sync-Prod-Cache.command -Direction Pull
 
-# Local central cache to production, or merge both ways.
+# Local central cache to production, or explicitly select both ways.
 ./Sync-Prod-Cache.command -Direction Push -Approval APPROVE_PROD_CACHE_SYNC
 ./Sync-Prod-Cache.command -Direction Both -Approval APPROVE_PROD_CACHE_SYNC
 
-# Preview one direction without writing either side.
-./Sync-Prod-Cache.command -Direction Both -WhatIf
+# Preview the default two-way merge without writing either side or prompting.
+./Sync-Prod-Cache.command -WhatIf
 ```
 
 The launcher accepts only the approved personal Azure identity and Visual Studio
