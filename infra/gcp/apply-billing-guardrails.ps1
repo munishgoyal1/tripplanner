@@ -23,7 +23,9 @@
 param(
     [string]$ConfigPath = "$PSScriptRoot/../billing-guardrails.json",
     [switch]$DeployShutoffFunction,
-    [switch]$SkipQuotas
+    [switch]$SkipQuotas,
+    [switch]$AllowQuotaIncreases,
+    [string]$ShutoffApproval = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -46,7 +48,21 @@ $config = Get-Content -Raw -Path $ConfigPath | ConvertFrom-Json
 $gcp = $config.gcp
 $billingAccount = $gcp.billingAccount
 $ops = $gcp.opsProject
+$placesService = "places.googleapis.com"
 $topicPath = "projects/$ops/topics/$($gcp.shutoffTopic)"
+$sa = "$($gcp.shutoffServiceAccount)@$ops.iam.gserviceaccount.com"
+
+if ([bool]$gcp.shutoffEnabled -and -not $DeployShutoffFunction) {
+    throw "An armed configuration requires -DeployShutoffFunction so stale events cannot survive."
+}
+if ($DeployShutoffFunction) {
+    if (-not [bool]$gcp.shutoffEnabled) {
+        throw "Refusing to deploy while gcp.shutoffEnabled=false."
+    }
+    if ($ShutoffApproval -ne "APPROVE_ACCOUNT_WIDE_BILLING_SHUTOFF") {
+        throw "Deployment requires -ShutoffApproval APPROVE_ACCOUNT_WIDE_BILLING_SHUTOFF."
+    }
+}
 
 Write-Host "GCP billing guardrails"
 Write-Host "  billing account : $billingAccount"
@@ -85,13 +101,41 @@ if ($PSCmdlet.ShouldProcess($ops, "Enable ops APIs")) {
     Invoke-Gcloud (@("services", "enable") + $opsServices + @("--project=$ops")) | Out-Null
 }
 
+# Never update a global budget while an old trigger can consume the resulting
+# event. Disarmed applies remove it; armed applies recreate it from a clean slate.
+$existingFunction = Invoke-Gcloud @(
+    "functions", "describe", "billing-shutoff", "--gen2",
+    "--region=$($gcp.shutoffRegion)", "--project=$ops", "--format=value(name)"
+) -AllowFailure
+if (
+    $existingFunction -and
+    $existingFunction -notmatch "ERROR" -and
+    $PSCmdlet.ShouldProcess("billing-shutoff", "Delete existing function and Eventarc trigger")
+) {
+    Invoke-Gcloud @(
+        "functions", "delete", "billing-shutoff", "--gen2",
+        "--region=$($gcp.shutoffRegion)", "--project=$ops", "--quiet"
+    ) | Out-Null
+    Write-Host "  removed existing billing shutoff trigger"
+}
+
 # --- per-environment services ----------------------------------------------
 
 foreach ($env in $gcp.environments) {
-    if ($PSCmdlet.ShouldProcess($env.project, "Enable Maps APIs")) {
-        Invoke-Gcloud (@("services", "enable") + $gcp.requiredServices + @("--project=$($env.project)")) | Out-Null
-        Write-Host "  [$($env.name)] Maps APIs enabled"
+    $sharedServices = @($gcp.requiredServices | Where-Object { $_ -ne $placesService })
+    if ($PSCmdlet.ShouldProcess($env.project, "Enable shared Maps APIs")) {
+        Invoke-Gcloud (@("services", "enable") + $sharedServices + @("--project=$($env.project)")) | Out-Null
     }
+    if ([bool]$env.placesEnabled) {
+        if ($PSCmdlet.ShouldProcess($env.project, "Enable paid Google Places API")) {
+            Invoke-Gcloud @("services", "enable", $placesService, "--project=$($env.project)") | Out-Null
+        }
+    } elseif ($PSCmdlet.ShouldProcess($env.project, "Disable paid Google Places API")) {
+        Invoke-Gcloud @(
+            "services", "disable", $placesService, "--project=$($env.project)", "--force", "--quiet"
+        ) | Out-Null
+    }
+    Write-Host "  [$($env.name)] Places enabled: $([bool]$env.placesEnabled)"
 }
 
 # --- API key restrictions ---------------------------------------------------
@@ -199,7 +243,6 @@ Set-Budget -DisplayName $gcp.globalBudget.name -Amount $gcp.globalBudget.amount 
 
 # --- shutoff identity -------------------------------------------------------
 
-$sa = "$($gcp.shutoffServiceAccount)@$ops.iam.gserviceaccount.com"
 $accounts = Invoke-Gcloud @("iam", "service-accounts", "list", "--project=$ops", "--format=value(email)") -AllowFailure
 if ($accounts -notmatch [regex]::Escape($sa)) {
     if ($PSCmdlet.ShouldProcess($sa, "Create shutoff service account")) {
@@ -218,6 +261,12 @@ if ($PSCmdlet.ShouldProcess($sa, "Grant billing admin")) {
             "--member=serviceAccount:$sa", "--role=roles/billing.projectManager"
         ) | Out-Null
     }
+    foreach ($role in @("roles/eventarc.eventReceiver", "roles/pubsub.subscriber")) {
+        Invoke-Gcloud @(
+            "projects", "add-iam-policy-binding", $ops,
+            "--member=serviceAccount:$sa", "--role=$role"
+        ) | Out-Null
+    }
 }
 
 if ($DeployShutoffFunction) {
@@ -227,6 +276,7 @@ if ($DeployShutoffFunction) {
             "functions", "deploy", "billing-shutoff", "--gen2", "--runtime=python312",
             "--region=$($gcp.shutoffRegion)", "--source=$source", "--entry-point=shutoff",
             "--trigger-topic=$($gcp.shutoffTopic)", "--service-account=$sa",
+            "--trigger-service-account=$sa",
             "--set-env-vars=BILLING_ACCOUNT=$billingAccount,GUARDED_BUDGET=$($gcp.globalBudget.name)",
             "--project=$ops", "--quiet"
         ) | Out-Null
@@ -234,6 +284,34 @@ if ($DeployShutoffFunction) {
     }
 } else {
     Write-Host "  shutoff function skipped (pass -DeployShutoffFunction; the deploy takes several minutes)"
+}
+
+# Gen2 functions run on Cloud Run. Bind the identity reported by the deployed
+# Eventarc trigger rather than assuming it matches the runtime identity.
+$functionName = Invoke-Gcloud @(
+    "functions", "describe", "billing-shutoff", "--gen2",
+    "--region=$($gcp.shutoffRegion)", "--project=$ops", "--format=value(name)"
+) -AllowFailure
+if ([bool]$gcp.shutoffEnabled -and $functionName -and $functionName -notmatch "ERROR") {
+    $triggerServiceAccount = Invoke-Gcloud @(
+        "functions", "describe", "billing-shutoff", "--gen2",
+        "--region=$($gcp.shutoffRegion)", "--project=$ops",
+        "--format=value(eventTrigger.serviceAccountEmail)"
+    )
+    if (-not $triggerServiceAccount) {
+        throw "The deployed billing-shutoff function did not report an Eventarc trigger identity."
+    }
+    if ($PSCmdlet.ShouldProcess($triggerServiceAccount, "Arm billing shutoff Cloud Run invoker")) {
+        Invoke-Gcloud @(
+            "run", "services", "add-iam-policy-binding", "billing-shutoff",
+            "--region=$($gcp.shutoffRegion)", "--project=$ops",
+            "--member=serviceAccount:$triggerServiceAccount",
+            "--role=roles/run.invoker", "--quiet"
+        ) | Out-Null
+        Write-Host "  billing shutoff armed"
+    }
+} else {
+    Write-Host "  billing shutoff disarmed"
 }
 
 # --- quotas -----------------------------------------------------------------
@@ -247,17 +325,33 @@ if (-not $SkipQuotas) {
 
             # Both --allow flags are required when tightening below Google's
             # defaults by more than ten percent or below current usage.
-            $args = @(
-                "quotas", "preferences", "create", "--project=$($env.project)",
+            $quotaArgs = @(
+                "--project=$($env.project)",
                 "--service=$($quota.service)", "--quota-id=$($quota.quotaId)",
-                "--preferred-value=$value", "--preference-id=$preferenceId",
+                "--preferred-value=$value",
                 "--allow-high-percentage-quota-decrease", "--allow-quota-decrease-below-usage"
             )
             if ($PSCmdlet.ShouldProcess("$($env.project)/$($quota.quotaId)", "Set quota to $value")) {
-                $result = Invoke-Gcloud $args -AllowFailure
-                if ($result -match "ALREADY_EXISTS|already exists") {
-                    $args[2] = "update"
-                    Invoke-Gcloud $args | Out-Null
+                $existingJson = Invoke-Gcloud @(
+                    "quotas", "preferences", "describe", $preferenceId,
+                    "--project=$($env.project)", "--format=json"
+                ) -AllowFailure
+                if ($existingJson -notmatch "ERROR") {
+                    $existing = $existingJson | ConvertFrom-Json
+                    $currentValue = [long]$existing.quotaConfig.preferredValue
+                    if ($value -gt $currentValue -and -not $AllowQuotaIncreases) {
+                        Write-Host "  [$($env.name)] kept tighter $($quota.quotaId) quota at $currentValue"
+                        continue
+                    }
+                    $updateArgs = @(
+                        "quotas", "preferences", "update", $preferenceId
+                    ) + $quotaArgs
+                    Invoke-Gcloud $updateArgs | Out-Null
+                } else {
+                    $createArgs = @(
+                        "quotas", "preferences", "create", "--preference-id=$preferenceId"
+                    ) + $quotaArgs
+                    Invoke-Gcloud $createArgs | Out-Null
                 }
             }
         }

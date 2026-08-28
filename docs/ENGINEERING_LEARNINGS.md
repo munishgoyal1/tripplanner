@@ -1341,3 +1341,18 @@ the outcome.
 - Usage telemetry needs environment, lane, run, caller, field-mask class, and
   cache-hit dimensions. Provider request totals can prove when and under which
   key a leak occurred, but cannot reconstruct the responsible process afterward.
+
+## 2026-08-28 - Never Arm a Budget Backstop Below Accrued Spend
+
+- Cloud Billing evaluates an updated budget against already reported
+  month-to-date cost. Lowering a threshold below that cost can publish an
+  immediate breach event; repairing a broken consumer at the same time can turn
+  a configuration apply into an account-wide outage.
+- Provision the event path separately from arming it. Use an explicit arming
+  switch, refuse deployment while disarmed, and check current reported spend
+  before granting invocation.
+- Removing an invoker binding is not guaranteed to cancel an event already
+  accepted or in flight. Delete the trigger or function when immediate
+  containment must be definitive, then restore billing links.
+- Hard per-API daily and minute quotas are the safe real-time cost ceiling.
+  Delayed account-wide billing detachment is only a secondary-period backstop.
