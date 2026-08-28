@@ -1421,3 +1421,21 @@ the outcome.
   changing console total. Delayed usage and credit allocation can revise cost
   after traffic stops; response-code and method dimensions distinguish retry
   storms from successful high-cardinality fan-out.
+
+## 2026-08-28 - Offline Claims Need a Default-Deny Execution Boundary
+
+- A full stored-corpus audit issued 14,847 successful Places Text Search calls
+  over roughly four hours and generated no corpus trips. Its render fixture
+  replaced details, photos, discovery, and the browser key but omitted coordinate
+  lookup; each cache miss therefore escaped to live Places while hundreds of
+  persisted records were inspected.
+- The provider budget treated a missing scope as unlimited permission, and
+  reusable view builders created their own scopes. Mocks could hide common paths
+  but could neither express nor enforce permission to spend.
+- Authorization belongs at execution entry points, not inside reusable domain
+  functions. Admit only named user-interaction and budgeted-corpus scopes, deny
+  absence, propagate one shared ceiling through workers, and check known billable
+  hosts again immediately before network access.
+- Attribution explains spend after it happens; it is not authorization. Keep
+  cloud quotas as the independent last line of defense if application policy is
+  bypassed.

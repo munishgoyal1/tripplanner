@@ -50,6 +50,15 @@ independent layers are therefore needed:
 Quotas are the only real-time control. Treat the shutoff as a backstop for a
 slow leak, not as protection against a runaway loop.
 
+The application adds an earlier real-time boundary. Paid travel-provider calls
+are denied unless execution is inside a named `user_interaction` or
+`corpus_generation` scope. Reusable view builders, audits, tests, issue-fix
+validation, and background work cannot create that scope. Places call sites
+consume the shared per-scope operation ceilings, and the common outbound HTTP
+runtime rejects unscoped requests to known billable Google hosts before opening
+the network client. This application boundary complements rather than replaces
+cloud quotas: quotas remain the protection against a compromised process or key.
+
 `shutoffEnabled` in the central JSON is the arming switch. It is currently
 `false`: the observation budget was lowered after this month's accrued spend had
 already crossed it, so arming would immediately detach every funded project.
@@ -306,7 +315,7 @@ Asking for `rating` promotes a call to Pro; asking for `reviews` or
 tier. Resolving a place name to an ID and coordinates with an IDs-only mask is
 free and unbounded.
 
-The application now caps a planning/view scope at three Text Search calls, one
+The application now caps an authorized user/corpus scope at three Text Search calls, one
 review-details call, and three photo-media calls, with one photo maximum per
 place. Agent discovery results seed the structured UI cache, routine metadata
 omits `editorialSummary`, and unfocused views never fetch reviews. At global

@@ -205,7 +205,12 @@ def _ask(api: str, message: str, user_id: str, request_id: str) -> None:
         {"message": message, "user_id": user_id, "request_id": request_id}
     ).encode()
     request = urllib.request.Request(
-        f"{api.rstrip('/')}/chat", data=body, headers={"Content-Type": "application/json"}
+        f"{api.rstrip('/')}/chat",
+        data=body,
+        headers={
+            "Content-Type": "application/json",
+            "X-Tripplanner-Paid-Provider-Purpose": "corpus_generation",
+        },
     )
     with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SEC) as response:
         response.read()

@@ -11,7 +11,7 @@ def test_budget_limits_parallel_paid_calls(monkeypatch):
     monkeypatch.setattr(settings, "google_places_max_review_details_per_trip", 1)
     monkeypatch.setattr(settings, "google_places_max_photos_per_trip", 3)
 
-    with places_budget.places_budget_scope() as budget:
+    with places_budget.places_budget_scope("user_interaction") as budget:
         with ThreadPoolExecutor(max_workers=8) as executor:
             allowed = list(
                 executor.map(lambda _index: budget.consume("text_search"), range(8))
@@ -21,15 +21,15 @@ def test_budget_limits_parallel_paid_calls(monkeypatch):
     assert allowed.count(False) == 5
 
 
-def test_calls_outside_budget_scope_remain_allowed():
-    assert places_budget.consume("text_search") is True
+def test_unscoped_request_is_denied() -> None:
+    assert places_budget.consume("text_search") is False
 
 
 def test_worker_can_share_active_budget(monkeypatch):
     settings = places_budget.get_settings()
     monkeypatch.setattr(settings, "google_places_max_photos_per_trip", 1)
 
-    with places_budget.places_budget_scope():
+    with places_budget.places_budget_scope("user_interaction"):
         budget = places_budget.current_budget()
 
         def consume_in_worker(_index: int) -> bool:

@@ -32,7 +32,6 @@ from tripplanner.decisions.trip_cost import (
     compare_trip_decisions,
     plan_price_rechecks,
 )
-from tripplanner.places_budget import budgeted
 from tripplanner.tools import user_preferences
 from tripplanner.tools.trip_effort import coherence_notes, pacing_statement
 from tripplanner.web import map_view, places_cache
@@ -807,7 +806,6 @@ def warm_guide(trip: dict[str, Any] | None) -> None:
         places_cache.prefetch(names, city, max_photos=1, with_reviews=False)
 
 
-@budgeted
 def warm_view_items(trip: dict[str, Any] | None) -> None:
     """Warm the trip-panel gallery for the whole unfocused item set.
 
@@ -885,7 +883,6 @@ def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
     return out
 
 
-@budgeted
 def build_view(
     trip: dict[str, Any] | None, focus: dict[str, Any] | None
 ) -> dict[str, Any]:
@@ -989,7 +986,6 @@ def build_view(
 _MAX_NEWS_ITEMS = 4
 
 
-@budgeted
 def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     """Build the interactive-map view-model (frontend-agnostic).
 

@@ -9,7 +9,6 @@ import pytest
 
 from tripplanner.web import itinerary_export, itinerary_pdf
 
-
 _PNG_DATA_URI = "data:image/png;base64," + base64.b64encode(
     base64.b64decode(
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
@@ -27,6 +26,24 @@ def test_static_maps_key_does_not_bypass_disabled_maps_gate(monkeypatch) -> None
         itinerary_export.http_client,
         "get",
         lambda *args, **kwargs: pytest.fail("Static Maps must not be called"),
+    )
+
+    assert itinerary_export._static_map_data_uri(
+        ["a", "b"],
+        {"a": {"lat": 1.0, "lng": 2.0}, "b": {"lat": 3.0, "lng": 4.0}},
+    ) == ""
+
+
+def test_static_maps_denies_unscoped_provider_call(monkeypatch) -> None:
+    monkeypatch.setattr(
+        itinerary_export,
+        "get_settings",
+        lambda: SimpleNamespace(enable_google_maps=True, google_places_api_key="test-key"),
+    )
+    monkeypatch.setattr(
+        itinerary_export.http_client,
+        "get",
+        lambda *args, **kwargs: pytest.fail("unscoped provider call"),
     )
 
     assert itinerary_export._static_map_data_uri(

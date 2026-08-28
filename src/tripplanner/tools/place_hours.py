@@ -19,6 +19,7 @@ from langchain_core.tools import tool
 
 from tripplanner import http_client
 from tripplanner.config import get_settings
+from tripplanner.places_budget import consume
 
 _BASE = "https://places.googleapis.com/v1"
 
@@ -113,6 +114,8 @@ def check_place_hours(place_id: str, when_iso: str = "") -> str:
             "Set ENABLE_GOOGLE_PLACES=1 and GOOGLE_PLACES_API_KEY in .env. "
             "See https://console.cloud.google.com."
         )
+    if not consume("review_details"):
+        return "Paid provider access is not authorized for this operation."
 
     field_mask = (
         "id,displayName,businessStatus,utcOffsetMinutes,"

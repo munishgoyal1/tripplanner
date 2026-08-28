@@ -18,6 +18,7 @@ from langchain_core.tools import tool
 
 from tripplanner import http_client
 from tripplanner.config import get_settings
+from tripplanner.places_budget import paid_provider_authorized
 from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.openrouteservice import OpenRouteServiceError, OpenRouteServiceProvider
 
@@ -34,7 +35,11 @@ def is_configured() -> bool:
 
 def _google_configured() -> bool:
     settings = get_settings()
-    return settings.enable_google_maps and bool(settings.google_places_api_key)
+    return (
+        paid_provider_authorized()
+        and settings.enable_google_maps
+        and bool(settings.google_places_api_key)
+    )
 
 
 def _ors_configured() -> bool:
@@ -103,6 +108,8 @@ def _meters_to_human(meters) -> str:
 
 
 def _post_routes(payload: dict, field_mask: str) -> dict:
+    if not paid_provider_authorized():
+        raise RuntimeError("Paid provider access is not authorized")
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": get_settings().google_places_api_key,
@@ -166,6 +173,8 @@ def _coordinate_stops(stops: list) -> list[tuple[float, float]] | None:
 
 
 def _ors_route(stops: list, mode: str) -> dict | None:
+    if not paid_provider_authorized():
+        return None
     coordinates = _coordinate_stops(stops)
     if not coordinates or not _ors_configured():
         return None
