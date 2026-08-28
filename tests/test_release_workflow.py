@@ -140,6 +140,20 @@ def test_hosted_deployments_surface_azure_cli_failures() -> None:
         assert "if ($deployExitCode -ne 0)" in deploy_block
 
 
+def test_production_cache_sync_defaults_to_approval_gated_two_way_merge() -> None:
+    script = (
+        Path(__file__).parents[1] / "scripts" / "prod-cache-sync.ps1"
+    ).read_text(encoding="utf-8")
+
+    approval_gate = script.index('if ($Approval -ne "APPROVE_PROD_CACHE_SYNC")')
+    credential = script.index("$env:TRIPPLANNER_PROD_COSMOS_KEY = az cosmosdb keys list")
+
+    assert '[string]$Direction = "Both"' in script
+    assert '$writesProduction = $Direction -in @("Push", "Both") -and -not $WhatIf' in script
+    assert approval_gate < credential
+    assert '$apply = $Direction -ne "Status" -and -not $WhatIf' in script
+
+
 def test_production_repairs_missing_canary_gate_before_approval() -> None:
     production = (
         Path(__file__).parents[1] / "infra" / "deploy-prod.ps1"
