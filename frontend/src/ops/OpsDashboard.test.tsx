@@ -48,6 +48,11 @@ const overview: OpsOverview = {
   },
   models: { calls: 4, errors: 0, p50_ms: 800, p95_ms: 2200, recent: [] },
   usage: { month: "2026-08", model_calls: 20, prompt_tokens: 1000, completion_tokens: 500, cost_usd: 1.25 },
+  conversation_limits: {
+    daily: { key: "2026-08-28", resets_at: "2026-08-29T00:00:00Z", categories: { new_trip: { used: 4, limit: 10, remaining: 6 }, existing_trip_turn: { used: 7, limit: 20, remaining: 13 } } },
+    weekly: { key: "2026-W35", resets_at: "2026-08-31T00:00:00Z", categories: { new_trip: { used: 9, limit: 25, remaining: 16 }, existing_trip_turn: { used: 18, limit: 50, remaining: 32 } } },
+    lifetime: { key: "lifetime", resets_at: null, categories: { new_trip: { used: 19, limit: 50, remaining: 31 }, existing_trip_turn: { used: 38, limit: 100, remaining: 62 } } },
+  },
   tools: {
     search_hotels: { calls: 4, errors: 1, p50_ms: 100, p95_ms: 400, cache_hits: 2, hit_rate: 0.5, avg_ms: 180, error_types: { TimeoutError: 1 } },
   },
@@ -83,6 +88,9 @@ describe("OpsDashboard", () => {
     expect(screen.getByText("Provider reliability")).toBeInTheDocument();
     expect(screen.getByText("Top cache hits")).toBeInTheDocument();
     expect(screen.getByText("Persisted inventory")).toBeInTheDocument();
+    expect(screen.getByText("Conversation capacity")).toBeInTheDocument();
+    expect(screen.getByText("4 / 10")).toBeInTheDocument();
+    expect(screen.getByText("38 / 100")).toBeInTheDocument();
   });
 
   it("shows measured calls, estimate caveats, and trip hierarchy", async () => {

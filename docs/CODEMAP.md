@@ -49,6 +49,7 @@ trip through shared API contracts.
 | `src/tripplanner/tools/trip_shape.py` | Read-only model tool exposing auditable trip-shape recommendations |
 | `src/tripplanner/request_identity.py` | Signed web, native, and guest principal resolution |
 | `src/tripplanner/request_limits.py` | Chat/replay rate limits, concurrency, and workspace exclusion |
+| `src/tripplanner/conversation_limits.py` | Durable environment-wide daily, ISO-week, and lifetime admission ceilings for new-trip and existing-trip model conversations |
 | `src/tripplanner/cli.py` | Local command-line experience |
 | `src/tripplanner/config.py` | Pydantic environment settings |
 | `src/tripplanner/caching.py` | Shared memory/Redis backend and environment-wide TTL policy for disposable runtime caches; stable and volatile regions have independent no-expiry overrides |

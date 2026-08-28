@@ -271,6 +271,44 @@ def _completed_chat_request(request_id: str | None) -> dict[str, str] | None:
     return chat_store.completed_request(request_id)
 
 
+async def _reserve_conversation(req: ChatRequest, user_id: str, history: list[BaseMessage]) -> None:
+    from tripplanner import conversation_limits
+    from tripplanner.tools.trip_planner import load_active_trip_dict
+
+    active_trip = await asyncio.to_thread(load_active_trip_dict) or {}
+    category = conversation_limits.classify_conversation(history, req.message, active_trip)
+    await asyncio.to_thread(
+        conversation_limits.reserve,
+        category,
+        user_id=user_id,
+        request_id=req.request_id,
+    )
+
+
+def _conversation_limit_response(exc: BaseException) -> JSONResponse:
+    from tripplanner.conversation_limits import ConversationLimitError
+
+    if isinstance(exc, ConversationLimitError):
+        detail = exc.as_detail()
+        reset = (
+            f" It resets at {exc.resets_at}."
+            if exc.resets_at
+            else " It does not reset automatically."
+        )
+        detail["message"] = (
+            "This environment has reached its conversation planning limit."
+            f"{reset} Saved trips and preferences are unchanged."
+        )
+        return JSONResponse(status_code=429, content=detail)
+    return JSONResponse(
+        status_code=503,
+        content={
+            "code": "conversation_limit_unavailable",
+            "message": "Conversation cost controls are unavailable. Please retry shortly.",
+        },
+    )
+
+
 async def _repair_completed_chat(
     request_id: str | None, replay: dict[str, str]
 ) -> None:
@@ -382,7 +420,9 @@ def _record_chat_operation(
     *,
     user_id: str,
     transport: Literal["json", "sse"],
-    outcome: Literal["completed", "replayed", "capped", "error"],
+    outcome: Literal[
+        "completed", "replayed", "capped", "conversation_limited", "rate_limited", "error"
+    ],
     error: str | None = None,
     exception: BaseException | None = None,
     tool_calls: int = 0,
@@ -484,6 +524,18 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
                 started, user_id=user_id, transport="json", outcome="capped"
             )
             return ChatResponse(reply=msg, agent="cap")
+        try:
+            await _reserve_conversation(req, user_id, history)
+        except Exception as exc:
+            response = _conversation_limit_response(exc)
+            _record_chat_operation(
+                started,
+                user_id=user_id,
+                transport="json",
+                outcome="conversation_limited",
+                error=type(exc).__name__,
+            )
+            return response
 
         base_history = list(history)
         history.append(HumanMessage(content=req.message))
@@ -817,6 +869,19 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             headers=_SSE_HEADERS,
             background=BackgroundTask(release_chat, permit),
         )
+    try:
+        await _reserve_conversation(req, user_id, base_history)
+    except Exception as exc:
+        await release_chat(permit)
+        response = _conversation_limit_response(exc)
+        _record_chat_operation(
+            started,
+            user_id=user_id,
+            transport="sse",
+            outcome="conversation_limited",
+            error=type(exc).__name__,
+        )
+        return response
 
     async def gen():
         from tripplanner.usage_attribution import usage_scope
@@ -2950,6 +3015,9 @@ async def ops_overview(request: Request, days: int = 30) -> dict[str, Any]:
         "completion_tokens": usage.get("completion_tokens", 0),
         "cost_usd": usage.get("cost_usd", 0.0),
     }
+    from tripplanner.conversation_limits import snapshot as conversation_limit_snapshot
+
+    runtime["conversation_limits"] = await asyncio.to_thread(conversation_limit_snapshot)
     runtime["tools"] = tool_metrics_snapshot()
     provider_stats = get_provider_stats()
     provider_names = set(provider_stats["quote_success"]) | set(provider_stats["quote_failure"])

@@ -37,6 +37,34 @@ def test_hosted_deployments_do_not_import_local_environment() -> None:
     assert '[string]$OAuthRedirectBase = ""' in production
 
 
+def test_hosted_conversation_cost_limits_are_explicit_and_deployed() -> None:
+    root = Path(__file__).parents[1]
+    local = (root / "config" / "environments" / "local.env").read_text(encoding="utf-8")
+    canary = (root / "config" / "environments" / "canary.env").read_text(
+        encoding="utf-8"
+    )
+    production = (root / "config" / "environments" / "prod.env").read_text(
+        encoding="utf-8"
+    )
+    canary_deploy = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")
+    production_deploy = (root / "infra" / "deploy-prod.ps1").read_text(encoding="utf-8")
+
+    expected_production = {
+        "CHAT_NEW_TRIP_LIMIT_DAILY": "10",
+        "CHAT_EXISTING_TRIP_TURN_LIMIT_DAILY": "20",
+        "CHAT_NEW_TRIP_LIMIT_WEEKLY": "25",
+        "CHAT_EXISTING_TRIP_TURN_LIMIT_WEEKLY": "50",
+        "CHAT_NEW_TRIP_LIMIT_LIFETIME": "50",
+        "CHAT_EXISTING_TRIP_TURN_LIMIT_LIFETIME": "100",
+    }
+    for name, value in expected_production.items():
+        assert f"{name}=0" in local
+        assert f"{name}=0" in canary
+        assert f"{name}={value}" in production
+        assert f'"{name}=$env:{name}"' in canary_deploy
+        assert f'"{name}=$env:{name}"' in production_deploy
+
+
 def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
     root = Path(__file__).parents[1]
     guardrails = (root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8")

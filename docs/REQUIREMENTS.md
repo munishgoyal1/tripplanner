@@ -88,7 +88,7 @@ re-describing the whole product.
 | ID-01 | Guest identity plus shared web/mobile Google identity | Implemented |
 | DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented |
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented; all runtime cache families share one owner-controlled TTL policy, with environment-wide scaling, precise provider overrides, independent stable/volatile no-expiry switches, and an opt-in full-surface Places warm manifest supplied through checked-in local/sandbox, canary, and production non-secret profiles plus ignored secret overlays; local runtimes use an optional cache-only secondary durable Cosmos client for fresh shared Places and global tool results after primary misses and for best-effort timestamp-preserving write-through, while failures open a short circuit and never fail requests, user-scoped/application data is excluded, and canary/production keep the feature disabled; an approval-gated on-demand merge exchanges only eligible cache evidence between the local central cache and production without refreshing timestamps or deleting entries; complete snapshots bootstrap atomic per-source watermarks, then overlapping incremental scans fetch only candidate documents, retain the old checkpoint on any partial failure or conflict, and report measured RU, payload, and item outcomes; disposable and durable regions retain storage appropriate to their recovery contract |
-| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google Places is fail-closed behind a production-only runtime switch, owner emergency Service Usage control, observation-scale provider quotas, configurable request ceilings, shared discovery evidence, focused reviews, and one-photo enrichment defaults |
+| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google Places is fail-closed behind a production-only runtime switch, owner emergency Service Usage control, observation-scale provider quotas, configurable request ceilings, durable environment-wide conversation ceilings, shared discovery evidence, focused reviews, and one-photo enrichment defaults |
 | TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, explicit place-fact rechecks with before/after changes and source-linked unusual-closure advisories, place-identity gate, and a rebalance that never moves a stop the traveller chose |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
@@ -614,6 +614,11 @@ implemented capability baseline.
 
 - Per-user monthly LLM cost accounting can stop new chat turns at a configured
   cap.
+- A durable environment-wide ledger independently limits new-trip workflows and
+  existing-trip model conversations by UTC day, ISO week, and lifetime. Production
+  defaults to 10/25/50 new trips and 20/50/100 existing-trip turns; local and canary
+  declare disabled zero values. Request replay and the structured kickoff answer do
+  not consume another unit, while rejected requests stop before model or provider work.
 - Hosted chat bounds input size, per-user/IP request rate, and per-user/global
   concurrency before model execution; usage accounting follows the resolved
   server-derived principal.
