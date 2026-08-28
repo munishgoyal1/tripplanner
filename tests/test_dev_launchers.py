@@ -86,12 +86,12 @@ def test_unified_emergency_control_has_safe_cross_platform_owner_launchers() -> 
     script = (root / "scripts" / "dev" / "emergency-control.ps1").read_text(
         encoding="utf-8"
     )
-    mac_launcher = (root / "scripts" / "mac" / "user" / "Emergency-Control.command").read_text(
-        encoding="utf-8"
-    )
-    windows_launcher = (root / "scripts" / "win" / "user" / "Emergency-Control.cmd").read_text(
-        encoding="utf-8"
-    )
+    mac_launcher = (
+        root / "scripts" / "mac" / "user" / "emergency" / "Emergency-Control.command"
+    ).read_text(encoding="utf-8")
+    windows_launcher = (
+        root / "scripts" / "win" / "user" / "emergency" / "Emergency-Control.cmd"
+    ).read_text(encoding="utf-8")
 
     assert '[string]$Action = "status"' in script
     assert 'ValidateSet("all", "google", "azure", "local", "canary", "prod")' in script
@@ -120,8 +120,8 @@ def test_emergency_bringdown_has_safe_cross_platform_owner_launchers() -> None:
         root / "infra" / "azure" / "set-azure-services-access.ps1"
     ).read_text(encoding="utf-8")
     launchers = (
-        root / "scripts" / "mac" / "user" / "Emergency-Bringdown.command",
-        root / "scripts" / "win" / "user" / "Emergency-Bringdown.cmd",
+        root / "scripts" / "mac" / "user" / "emergency" / "Emergency-Bringdown.command",
+        root / "scripts" / "win" / "user" / "emergency" / "Emergency-Bringdown.cmd",
     )
 
     assert '[string]$Action = "status"' in script
