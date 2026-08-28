@@ -233,7 +233,9 @@ re-describing the whole product.
   structured Places cache so Map and Details reuse the same paid result. Routine
   metadata omits atmosphere fields; reviews load only for exact focus, photos
   default to one per place, and owner-controlled TTL and request ceilings bound
-  cold planning/view amplification.
+  cold planning/view amplification. Places query results, reviews, place-hours details, Routes responses,
+  and Static Maps exports are cached below their direct callers before consuming
+  paid-call budget, including nested tool calls outside the graph wrapper.
 - Google Routes supplies measured route distance/time and route optimization.
   Map circuit drawings and fallback estimates avoid unnecessary Directions calls.
 - OpenRouteService is an optional free-tier fallback for coordinate-based

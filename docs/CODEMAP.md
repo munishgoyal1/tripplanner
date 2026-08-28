@@ -54,6 +54,7 @@ trip through shared API contracts.
 | `src/tripplanner/config.py` | Pydantic environment settings |
 | `src/tripplanner/caching.py` | Shared memory/Redis backend and environment-wide TTL policy for disposable runtime caches; stable and volatile regions have independent no-expiry overrides |
 | `src/tripplanner/places_budget.py` | Default-deny paid-provider execution authorization for explicit user-interaction and corpus-generation scopes, plus shared Places text-search, review-details, and photo-media ceilings; parallel workers consume one thread-safe budget |
+| `src/tripplanner/tools/google_places.py`, `place_hours.py`, `routing.py`; `src/tripplanner/web/itinerary_export.py` | Lowest shared paid-Google cache boundaries for successful Places queries/reviews, hours payloads, Routes responses, and Static Maps images; reads precede paid-budget consumption so direct and graph callers share results |
 | `src/tripplanner/models.py` | Core trip and itinerary models |
 | `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
 | `src/tripplanner/http_client.py` | Outbound HTTP runtime: pooled connections and TLS reuse, per-endpoint latency budget, circuit breaking, `outbound_call` telemetry, and a second default-deny check for known billable Google hosts. Every remote dependency goes through it |

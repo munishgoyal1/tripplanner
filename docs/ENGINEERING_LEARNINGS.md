@@ -1439,3 +1439,12 @@ the outcome.
 - Attribution explains spend after it happens; it is not authorization. Keep
   cloud quotas as the independent last line of defense if application policy is
   bypassed.
+
+## 2026-08-28 - Paid Response Caching Belongs Below Every Caller
+
+- Graph-level tool caching did not cover direct domain calls such as route
+  metrics, Static Maps exports, or one tool invoking another Places tool.
+- Cache successful paid responses at the lowest shared provider boundary and
+  check that cache before consuming paid-call budget. A fresh cache hit then
+  consumes neither provider quota nor per-turn allowance, while transient errors
+  remain uncached.

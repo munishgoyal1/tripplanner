@@ -25,6 +25,7 @@ from tripplanner.providers.openrouteservice import OpenRouteServiceError, OpenRo
 _ENDPOINT = "https://routes.googleapis.com/directions/v2:computeRoutes"
 
 _VALID_MODES = {"DRIVE", "WALK", "BICYCLE", "TRANSIT", "TWO_WHEELER"}
+_GOOGLE_ROUTE_CACHE: ProviderTTLCache[dict] = ProviderTTLCache("google-route")
 _ORS_ROUTE_CACHE: ProviderTTLCache[dict] = ProviderTTLCache("ors-route")
 
 
@@ -110,6 +111,14 @@ def _meters_to_human(meters) -> str:
 def _post_routes(payload: dict, field_mask: str) -> dict:
     if not paid_provider_authorized():
         raise RuntimeError("Paid provider access is not authorized")
+    cache_key = json.dumps(
+        {"field_mask": field_mask, "payload": payload},
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    cached = _GOOGLE_ROUTE_CACHE.get(cache_key)
+    if cached:
+        return cached.value
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": get_settings().google_places_api_key,
@@ -117,7 +126,15 @@ def _post_routes(payload: dict, field_mask: str) -> dict:
     }
     resp = http_client.post(_ENDPOINT, headers=headers, json=payload)
     resp.raise_for_status()
-    return resp.json()
+    data = resp.json()
+    if data.get("routes"):
+        _GOOGLE_ROUTE_CACHE.set(
+            cache_key,
+            data,
+            provider="google_routes",
+            ttl_seconds=get_settings().openrouteservice_route_ttl_sec,
+        )
+    return data
 
 
 def _build_route_payload(stops: list, mode: str, *, optimize: bool) -> dict:

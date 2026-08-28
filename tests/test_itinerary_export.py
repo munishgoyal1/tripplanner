@@ -7,6 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from tripplanner.places_budget import places_budget_scope
 from tripplanner.web import itinerary_export, itinerary_pdf
 
 _PNG_DATA_URI = "data:image/png;base64," + base64.b64encode(
@@ -50,6 +51,37 @@ def test_static_maps_denies_unscoped_provider_call(monkeypatch) -> None:
         ["a", "b"],
         {"a": {"lat": 1.0, "lng": 2.0}, "b": {"lat": 3.0, "lng": 4.0}},
     ) == ""
+
+
+def test_static_maps_reuse_cached_image(monkeypatch) -> None:
+    itinerary_export._STATIC_MAP_CACHE.clear()
+    calls = []
+    monkeypatch.setattr(
+        itinerary_export,
+        "get_settings",
+        lambda: SimpleNamespace(enable_google_maps=True, google_places_api_key="test-key"),
+    )
+
+    class Response:
+        content = b"map"
+        headers = {"content-type": "image/png"}
+
+        def raise_for_status(self) -> None:
+            return None
+
+    def fake_get(*args, **kwargs):
+        calls.append(args[0])
+        return Response()
+
+    monkeypatch.setattr(itinerary_export.http_client, "get", fake_get)
+    pins = {"a": {"lat": 1.0, "lng": 2.0}, "b": {"lat": 3.0, "lng": 4.0}}
+
+    with places_budget_scope("user_interaction"):
+        first = itinerary_export._static_map_data_uri(["a", "b"], pins)
+        second = itinerary_export._static_map_data_uri(["a", "b"], pins)
+
+    assert first == second
+    assert len(calls) == 1
 
 
 def test_export_renders_complete_day_circuit(monkeypatch: pytest.MonkeyPatch) -> None:
