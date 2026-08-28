@@ -95,6 +95,14 @@ def test_meta_ttl_is_one_week():
     assert pc._META_TTL_S == 7 * 24 * 60 * 60
 
 
+def test_places_cache_applies_environment_ttl_scale(monkeypatch):
+    settings = pc.get_settings()
+    monkeypatch.setattr(settings, "cache_ttl_scale", 0.5)
+
+    assert pc._ttl(pc._META_TTL_S) == pc._META_TTL_S // 2
+    assert pc._ttl(pc._PHOTO_TTL_S) == pc._PHOTO_TTL_S // 2
+
+
 def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
     calls = {"count": 0}
 

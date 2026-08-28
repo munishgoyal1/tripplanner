@@ -51,6 +51,7 @@ trip through shared API contracts.
 | `src/tripplanner/request_limits.py` | Chat/replay rate limits, concurrency, and workspace exclusion |
 | `src/tripplanner/cli.py` | Local command-line experience |
 | `src/tripplanner/config.py` | Pydantic environment settings |
+| `src/tripplanner/caching.py` | Shared memory/Redis backend and environment-wide TTL policy for disposable runtime caches; `CACHE_TTL_SCALE` applies to all runtime cache families |
 | `src/tripplanner/models.py` | Core trip and itinerary models |
 | `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
 | `src/tripplanner/http_client.py` | Outbound HTTP runtime: pooled connections and TLS reuse, per-endpoint latency budget, circuit breaking, and `outbound_call` telemetry. Every remote dependency goes through it |
@@ -88,9 +89,22 @@ trip through shared API contracts.
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
 boundary. `.env` is the central owner-facing runtime configuration surface:
 `.env.example` documents both non-secret switches and secret inputs, while
-`Settings` is the only application reader. Paid Google Places access requires
+`Settings` is the only application reader. Local and sandboxes read their
+checkout `.env`; canary and production deployment scripts read `.env.canary`
+and `.env.prod` and pass non-secret settings as Container Apps environment
+variables while secrets become secret references. `CACHE_TTL_SCALE` adjusts
+all runtime cache lifetimes, and the named search/fare TTL settings provide
+precise overrides before that scale is applied. Paid Google Places access requires
 both `ENABLE_GOOGLE_PLACES=1` and `GOOGLE_PLACES_API_KEY`; a copied key alone
 must never activate billable requests.
+
+Runtime cache policy is unified, but physical storage is intentionally tiered.
+Provider, FX, route, country, and comparison regions use `caching.py`; read-only
+tool results and structured Places facts retain specialized Cosmos/local durable
+stores while honoring the same `Settings.cache_ttl()` policy. Corpus place facts
+are validation evidence, not a runtime cache, and frontend memoization remains
+browser-local. Do not describe those persistence and client-state boundaries as
+one physical cache backend.
 
 ## Frontend Ownership
 

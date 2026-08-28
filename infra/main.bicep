@@ -11,6 +11,19 @@
 //   - Container App scales to zero (minReplicas = 0) — no charge when idle
 //   - Log Analytics PAYG, 30-day retention
 
+type cacheTtlSettingsType = {
+  scale: string
+  hotelSearch: int
+  flightSearch: int
+  activitySearch: int
+  flightFare: int
+  hotelFare: int
+  trainFare: int
+  coachFare: int
+  ferryFare: int
+  activityFare: int
+}
+
 @description('Prefix used for all resource names. Keep short.')
 param namePrefix string = 'tripplanner'
 
@@ -69,6 +82,20 @@ param openRouteServiceBaseUrl string = 'https://api.openrouteservice.org'
 
 @description('Coordinate route fallback cache TTL in seconds.')
 param openRouteServiceRouteTtlSec int = 21600
+
+@description('Owner-controlled runtime cache lifetimes for this environment.')
+param cacheTtlSettings cacheTtlSettingsType = {
+  scale: '1'
+  hotelSearch: 600
+  flightSearch: 600
+  activitySearch: 21600
+  flightFare: 14400
+  hotelFare: 14400
+  trainFare: 43200
+  coachFare: 43200
+  ferryFare: 43200
+  activityFare: 86400
+}
 
 @description('Enable Redis-backed provider cache. Off keeps in-memory-only behavior.')
 param cacheRedisEnabled bool = false
@@ -243,6 +270,16 @@ var baseEnv = [
   { name: 'TAVILY_API_KEY', secretRef: 'tavily-api-key' }
   { name: 'GOOGLE_MAPS_BROWSER_KEY', value: googleMapsBrowserKey }
   { name: 'GOOGLE_ANALYTICS_MEASUREMENT_ID', value: googleAnalyticsMeasurementId }
+  { name: 'CACHE_TTL_SCALE', value: cacheTtlSettings.scale }
+  { name: 'HOTEL_SEARCH_CACHE_TTL_SEC', value: string(cacheTtlSettings.hotelSearch) }
+  { name: 'FLIGHT_SEARCH_CACHE_TTL_SEC', value: string(cacheTtlSettings.flightSearch) }
+  { name: 'ACTIVITY_SEARCH_CACHE_TTL_SEC', value: string(cacheTtlSettings.activitySearch) }
+  { name: 'FLIGHT_CACHE_TTL_SEC', value: string(cacheTtlSettings.flightFare) }
+  { name: 'HOTEL_CACHE_TTL_SEC', value: string(cacheTtlSettings.hotelFare) }
+  { name: 'TRAIN_CACHE_TTL_SEC', value: string(cacheTtlSettings.trainFare) }
+  { name: 'COACH_CACHE_TTL_SEC', value: string(cacheTtlSettings.coachFare) }
+  { name: 'FERRY_CACHE_TTL_SEC', value: string(cacheTtlSettings.ferryFare) }
+  { name: 'ACTIVITY_CACHE_TTL_SEC', value: string(cacheTtlSettings.activityFare) }
   { name: 'CACHE_REDIS_ENABLED', value: cacheRedisEnabled ? '1' : '0' }
   { name: 'CACHE_REDIS_NAMESPACE', value: cacheRedisNamespace }
   { name: 'CACHE_REDIS_CONNECT_TIMEOUT_SEC', value: cacheRedisConnectTimeoutSec }

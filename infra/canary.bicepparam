@@ -17,6 +17,18 @@ param travelActivityProvider = readEnvironmentVariable('TRAVEL_ACTIVITY_PROVIDER
 param openRouteServiceApiKey = readEnvironmentVariable('OPENROUTESERVICE_API_KEY', '')
 param openRouteServiceBaseUrl = readEnvironmentVariable('OPENROUTESERVICE_BASE_URL', 'https://api.openrouteservice.org')
 param openRouteServiceRouteTtlSec = int(readEnvironmentVariable('OPENROUTESERVICE_ROUTE_TTL_SEC', '21600'))
+param cacheTtlSettings = {
+	scale: readEnvironmentVariable('CACHE_TTL_SCALE', '1')
+	hotelSearch: int(readEnvironmentVariable('HOTEL_SEARCH_CACHE_TTL_SEC', '600'))
+	flightSearch: int(readEnvironmentVariable('FLIGHT_SEARCH_CACHE_TTL_SEC', '600'))
+	activitySearch: int(readEnvironmentVariable('ACTIVITY_SEARCH_CACHE_TTL_SEC', '21600'))
+	flightFare: int(readEnvironmentVariable('FLIGHT_CACHE_TTL_SEC', '14400'))
+	hotelFare: int(readEnvironmentVariable('HOTEL_CACHE_TTL_SEC', '14400'))
+	trainFare: int(readEnvironmentVariable('TRAIN_CACHE_TTL_SEC', '43200'))
+	coachFare: int(readEnvironmentVariable('COACH_CACHE_TTL_SEC', '43200'))
+	ferryFare: int(readEnvironmentVariable('FERRY_CACHE_TTL_SEC', '43200'))
+	activityFare: int(readEnvironmentVariable('ACTIVITY_CACHE_TTL_SEC', '86400'))
+}
 param cacheRedisEnabled = readEnvironmentVariable('CACHE_REDIS_ENABLED', '0') == '1'
 param cacheRedisUrl = readEnvironmentVariable('CACHE_REDIS_URL', '')
 param cacheRedisNamespace = readEnvironmentVariable('CACHE_REDIS_NAMESPACE', 'tripplanner:provider-cache')
