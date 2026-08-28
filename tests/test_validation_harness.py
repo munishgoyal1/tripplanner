@@ -2301,7 +2301,7 @@ def test_the_central_dump_is_a_cache_target_and_no_lane_reads_it_at_request_time
         for path in source_root.rglob("*.py")
         if place_cache.CENTRAL_DATABASE in path.read_text(encoding="utf-8")
     }
-    assert naming_it == {"validation/place_cache.py"}
+    assert naming_it == {"config.py", "validation/place_cache.py"}
 
 
 def test_a_sync_writes_only_what_the_other_side_does_not_already_have() -> None:

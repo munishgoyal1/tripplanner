@@ -306,8 +306,25 @@ def prepare_for_destination(
     return body
 
 
+def _equivalent_values(left: Any, right: Any) -> bool:
+    if isinstance(left, bool) or isinstance(right, bool):
+        return left is right
+    if isinstance(left, (int, float)) and isinstance(right, (int, float)):
+        return math.isclose(left, right, rel_tol=1e-15, abs_tol=1e-12)
+    if isinstance(left, dict) and isinstance(right, dict):
+        return left.keys() == right.keys() and all(
+            _equivalent_values(left[key], right[key]) for key in left
+        )
+    if isinstance(left, list) and isinstance(right, list):
+        return len(left) == len(right) and all(
+            _equivalent_values(left_value, right_value)
+            for left_value, right_value in zip(left, right, strict=True)
+        )
+    return left == right
+
+
 def _equivalent(left: dict[str, Any], right: dict[str, Any]) -> bool:
-    return _portable(left) == _portable(right)
+    return _equivalent_values(_portable(left), _portable(right))
 
 
 def plan_direction(

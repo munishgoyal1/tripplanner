@@ -159,7 +159,12 @@ def test_provider_cache_status_reports_memory_redis_and_fallback(monkeypatch) ->
     settings = type(
         "Settings",
         (),
-        {"cache_redis_enabled": True, "cache_redis_namespace": "tripplanner:test"},
+        {
+            "cache_redis_enabled": True,
+            "cache_redis_namespace": "tripplanner:test",
+            "stable_cache_ttl": lambda _self, seconds: seconds,
+            "volatile_cache_ttl": lambda _self, seconds: seconds,
+        },
     )()
 
     # Redis selected but unreachable: the request still gets a cache, and the

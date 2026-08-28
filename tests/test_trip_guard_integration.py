@@ -39,7 +39,7 @@ def _no_machine_facts(monkeypatch: pytest.MonkeyPatch) -> None:
     to have fetched before. The guard's degraded mode is the honest baseline
     here; facts get their own tests.
     """
-    monkeypatch.setattr(places_cache, "get_summary", lambda *args, **kwargs: None)
+    monkeypatch.setattr(places_cache, "get_details", lambda *args, **kwargs: None)
     monkeypatch.setattr(places_cache, "get_details", lambda *args, **kwargs: None)
 
 
@@ -446,7 +446,7 @@ def test_authoritative_closed_day_is_rejected_when_no_open_day_fits(
     before = json.loads(get_trip_plan.invoke({}))
     monkeypatch.setattr(
         places_cache,
-        "get_summary",
+        "get_details",
         lambda *_args, **_kwargs: {
             "name": "Louvre",
             "business_status": "OPERATIONAL",
@@ -499,7 +499,7 @@ def test_permanently_closed_place_update_is_rejected(
     before = json.loads(get_trip_plan.invoke({}))
     monkeypatch.setattr(
         places_cache,
-        "get_summary",
+        "get_details",
         lambda *_args, **_kwargs: {
             "name": "The Company's Garden Restaurant",
             "business_status": "CLOSED_PERMANENTLY",
@@ -541,7 +541,7 @@ def test_permanently_closed_place_selection_is_not_added(
     before = json.loads(get_trip_plan.invoke({}))
     monkeypatch.setattr(
         places_cache,
-        "get_summary",
+        "get_details",
         lambda *_args, **_kwargs: {
             "name": "Closed Museum",
             "business_status": "CLOSED_PERMANENTLY",
@@ -855,7 +855,7 @@ def test_a_travel_infeasible_planner_update_is_retimed_before_persistence(
     }
     monkeypatch.setattr(
         places_cache,
-        "get_summary",
+        "get_details",
         lambda name, _destination: {
             "lat": coordinates[name][0],
             "lng": coordinates[name][1],
