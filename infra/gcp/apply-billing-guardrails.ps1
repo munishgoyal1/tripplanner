@@ -166,7 +166,7 @@ foreach ($env in $gcp.environments) {
         throw "[$($env.name)] Expected one browser key '$($env.browserKey)' and one server key '$($env.serverKey)'."
     }
 
-    $browserTargets = @("maps-backend.googleapis.com", "places.googleapis.com")
+    $browserTargets = @($gcp.browserServices)
     $browserArgs = @("services", "api-keys", "update", $browser[0].uid, "--project=$($env.project)")
     $browserArgs += "--allowed-referrers=$($env.browserReferrers -join ',')"
     foreach ($service in $browserTargets) { $browserArgs += "--api-target=service=$service" }
@@ -174,9 +174,7 @@ foreach ($env in $gcp.environments) {
         Invoke-Gcloud $browserArgs | Out-Null
     }
 
-    $serverTargets = @(
-        "places.googleapis.com", "routes.googleapis.com", "static-maps-backend.googleapis.com"
-    )
+    $serverTargets = @($gcp.serverServices)
     $serverArgs = @("services", "api-keys", "update", $server[0].uid, "--project=$($env.project)")
     foreach ($service in $serverTargets) { $serverArgs += "--api-target=service=$service" }
     if ($PSCmdlet.ShouldProcess($env.serverKey, "Apply server API restrictions")) {
@@ -336,7 +334,11 @@ if (-not $SkipQuotas) {
         foreach ($quota in $gcp.quotas) {
             $value = $quota.($env.name)
             if ($null -eq $value) { continue }
-            $preferenceId = "tp-" + $quota.quotaId.ToLower().Replace("_", "")
+            $preferenceId = if ($quota.preferenceId) {
+                [string]$quota.preferenceId
+            } else {
+                "tp-" + $quota.quotaId.ToLower().Replace("_", "")
+            }
 
             # Both --allow flags are required when tightening below Google's
             # defaults by more than ten percent or below current usage.

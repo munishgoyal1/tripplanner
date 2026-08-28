@@ -263,8 +263,15 @@ cold trips per day at the incident's observed 47.5 Text Searches per trip:
 | `SearchNearbyRequestPerDayPerProject` | 1 | 1 | 20 |
 | `AutocompletePlacesRequestPerDayPerProject` | 1 | 1 | 50 |
 | `GetPhotoMediaRequestPerDayPerProject` | 1 | 1 | 200 |
+| `BillableDefaultPerDayPerProject` (Places JavaScript) | 1 | 1 | 100 |
 | `ComputeRoutesRequestsPerDay`, `ComputeRouteMatrixCellsPerDay` | 6,000 | 1,000 | 1,000 |
 | `BillableDefaultPerDayPerProject` (Static Maps) | 6,000 | 1,000 | 1,000 |
+| `BillableDefaultPerDayPerProject` (Maps JavaScript) | 6,000 | 1,000 | 1,000 |
+
+`requiredServices` must equal the union of `browserServices` and
+`serverServices`. The release contract requires every callable service to have
+both a project-level daily cap and a project-level per-minute cap. Add quota
+definitions before adding an API to either credential surface.
 
 Unused API surfaces are pinned low deliberately. An API nobody calls should not
 be able to spend money if a key leaks.

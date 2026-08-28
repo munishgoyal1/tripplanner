@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 
@@ -130,15 +131,63 @@ def test_google_api_cloud_policy_comes_from_disabled_runtime_profiles() -> None:
         '"quotaId": "GetPhotoMediaRequestPerDayPerProject", '
         '"local": 1, "canary": 1, "prod": 200'
     ) in guardrails
+    guardrail_config = json.loads(guardrails)["gcp"]
+    maps_quotas = [
+        quota
+        for quota in guardrail_config["quotas"]
+        if quota["service"] == "maps-backend.googleapis.com"
+    ]
+    assert maps_quotas == [
+        {
+            "service": "maps-backend.googleapis.com",
+            "quotaId": "BillableDefaultPerDayPerProject",
+            "preferenceId": "tp-mapsjs-billabledefaultperdayperproject",
+            "local": 6000,
+            "canary": 1000,
+            "prod": 1000,
+        },
+        {
+            "service": "maps-backend.googleapis.com",
+            "quotaId": "BillableDefaultPerMinutePerProject",
+            "preferenceId": "tp-mapsjs-billabledefaultperminuteperproject",
+            "local": 120,
+            "canary": 60,
+            "prod": 60,
+        },
+    ]
+    places_javascript_quotas = [
+        quota
+        for quota in guardrail_config["quotas"]
+        if quota["service"] == "places-backend.googleapis.com"
+    ]
+    assert [quota["preferenceId"] for quota in places_javascript_quotas] == [
+        "tp-placesjs-billabledefaultperdayperproject",
+        "tp-placesjs-billabledefaultperminuteperproject",
+    ]
+    assert [quota["prod"] for quota in places_javascript_quotas] == [100, 30]
+    callable_services = set(guardrail_config["browserServices"]) | set(
+        guardrail_config["serverServices"]
+    )
+    assert callable_services == set(guardrail_config["requiredServices"])
+    for service in callable_services:
+        quota_ids = {
+            quota["quotaId"]
+            for quota in guardrail_config["quotas"]
+            if quota["service"] == service
+        }
+        assert any("PerDay" in quota_id for quota_id in quota_ids), service
+        assert any("PerMinutePerProject" in quota_id for quota_id in quota_ids), service
     assert "Get-GoogleApiDesiredState" in apply_script
     assert "$GooglePlacesApproval" in apply_script
     assert "$GoogleMapsApproval" in apply_script
     assert '"quotas", "preferences", "update", $preferenceId' in apply_script
+    assert "$quota.preferenceId" in apply_script
     assert "kept tighter" in apply_script
     assert "$AllowQuotaIncreases" in apply_script
     assert "set-google-api-access.ps1" in control_script
     assert "APPROVE_GOOGLE_PLACES_SPEND" in control_contract
     assert "APPROVE_GOOGLE_MAPS_SPEND" in control_contract
+    assert "places-backend.googleapis.com" in control_contract
     assert "routes.googleapis.com" in control_contract
     assert "static-maps-backend.googleapis.com" in control_contract
     assert "maps-backend.googleapis.com" in control_contract

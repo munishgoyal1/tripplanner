@@ -10,7 +10,7 @@ function Get-GoogleApiCapability {
             Name = "Places"
             Flag = "ENABLE_GOOGLE_PLACES"
             Approval = "APPROVE_GOOGLE_PLACES_SPEND"
-            Services = @("places.googleapis.com")
+            Services = @("places.googleapis.com", "places-backend.googleapis.com")
         }
     }
     return [pscustomobject]@{
