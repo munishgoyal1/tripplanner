@@ -333,8 +333,9 @@ conversation or explicit edit
 | `docs/operations/backup-recovery.md` | Guarded backup and restore drill |
 | `docs/operations/gcp-billing-guardrails.md` | Reproducible Google Cloud budget, quota, and billing-shutoff setup |
 | `docs/operations/azure-billing-guardrails.md` | Reproducible Azure budget and alert setup, including hard-cap limitations |
-| `infra/billing-guardrails.json` | Shared declarative limits and cloud account identifiers |
+| `infra/billing-guardrails.json` | Owner-facing cloud service state, budgets, quotas, and account identifiers |
 | `infra/{gcp,azure}/apply-billing-guardrails.ps1` | Idempotent cross-platform guardrail provisioning scripts |
+| `infra/gcp/set-google-places-access.ps1` | Immediate no-deployment Places Service Usage control and central desired-state apply |
 | `infra/show-billing-status.ps1` | Read-only month-to-date spend report for both clouds |
 | `infra/gcp/billing-shutoff/` | Cloud Function that detaches billing when the global GCP budget breaks |
 | `docs/development/new-machine-setup.md` | Canonical one-click Windows/macOS environment recreation and manual sign-in steps |

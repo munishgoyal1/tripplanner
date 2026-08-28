@@ -49,6 +49,49 @@ def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
     assert "destination overview returned no photo" in browser_smoke
 
 
+def test_google_places_cloud_policy_is_production_only_and_observation_scaled() -> None:
+    root = Path(__file__).parents[1]
+    guardrails = (root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8")
+    apply_script = (root / "infra" / "gcp" / "apply-billing-guardrails.ps1").read_text(
+        encoding="utf-8"
+    )
+    control_script = (root / "infra" / "gcp" / "set-google-places-access.ps1").read_text(
+        encoding="utf-8"
+    )
+
+    assert guardrails.count('"placesEnabled": false') == 2
+    assert guardrails.count('"placesEnabled": true') == 1
+    assert (
+        '"quotaId": "SearchTextRequestPerDayPerProject", '
+        '"local": 1, "canary": 1, "prod": 100'
+    ) in guardrails
+    assert (
+        '"quotaId": "GetPhotoMediaRequestPerDayPerProject", '
+        '"local": 1, "canary": 1, "prod": 200'
+    ) in guardrails
+    assert "Where-Object { $_ -ne $placesService }" in apply_script
+    assert '"services", "disable", $placesService' in apply_script
+    assert '"quotas", "preferences", "update", $preferenceId' in apply_script
+    assert "kept tighter" in apply_script
+    assert "$AllowQuotaIncreases" in apply_script
+    assert "APPROVE_GOOGLE_PLACES_SPEND" in control_script
+    assert "central desired state" in control_script
+
+
+def test_billing_shutoff_trigger_can_invoke_its_cloud_run_service() -> None:
+    root = Path(__file__).parents[1]
+    guardrails = (root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8")
+    apply_script = (
+        root / "infra" / "gcp" / "apply-billing-guardrails.ps1"
+    ).read_text(encoding="utf-8")
+
+    assert '"functions", "delete", "billing-shutoff"' in apply_script
+    assert "--trigger-service-account=$sa" in apply_script
+    assert "--member=serviceAccount:$triggerServiceAccount" in apply_script
+    assert "APPROVE_ACCOUNT_WIDE_BILLING_SHUTOFF" in apply_script
+    assert '"shutoffEnabled": false' in guardrails
+
+
 def test_hosted_deployments_use_shared_azure_json_and_delete_guards() -> None:
     root = Path(__file__).parents[1]
     canary = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")

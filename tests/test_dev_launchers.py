@@ -39,6 +39,20 @@ def test_primary_master_launchers_are_named_and_wired_consistently() -> None:
     assert not (root / "scripts" / "dev" / "run-latest.ps1").exists()
 
 
+def test_google_places_control_has_cross_platform_owner_launchers() -> None:
+    root = Path(__file__).parents[1]
+    script_name = "set-google-places-access.ps1"
+    mac_launcher = (root / "scripts" / "mac" / "user" / "Google-Places-Control.command").read_text(
+        encoding="utf-8"
+    )
+    windows_launcher = (
+        root / "scripts" / "win" / "user" / "Google-Places-Control.cmd"
+    ).read_text(encoding="utf-8")
+
+    assert script_name in mac_launcher
+    assert script_name in windows_launcher
+
+
 def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:
     root = Path(__file__).parents[1]
     sync_script = (root / "scripts" / "dev" / "sync-sbxs-from-master.ps1").read_text(
