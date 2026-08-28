@@ -12,6 +12,7 @@ from typing import Any
 
 import httpx
 
+from tripplanner import http_client
 from tripplanner.providers.models import (
     CoachOffer,
     CoachSearchQuery,
@@ -90,7 +91,7 @@ class KiwiTrainSource:
             "Accept": "application/json",
         }
         try:
-            response = httpx.request(
+            response = http_client.request(
                 method,
                 f"{self._base_url}/{path.lstrip('/')}",
                 headers=headers,
@@ -189,7 +190,7 @@ class KiwiCoachSource:
             "Accept": "application/json",
         }
         try:
-            response = httpx.request(
+            response = http_client.request(
                 method,
                 f"{self._base_url}/{path.lstrip('/')}",
                 headers=headers,
@@ -283,7 +284,7 @@ class KiwiFerrySource:
             "Accept": "application/json",
         }
         try:
-            response = httpx.request(
+            response = http_client.request(
                 method,
                 f"{self._base_url}/{path.lstrip('/')}",
                 headers=headers,

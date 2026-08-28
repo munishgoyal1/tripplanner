@@ -234,6 +234,45 @@ def _record(
     sku_class: str = "",
 ) -> None:
     from tripplanner.observability import app_event
+    from tripplanner.provider_usage import record_call
+
+    provider = next(
+        (
+            label
+            for suffix, label in (
+                ("googleapis.com", "google"),
+                ("tavily.com", "tavily"),
+                ("duffel.com", "duffel"),
+                ("liteapi.travel", "liteapi"),
+                ("amadeus.com", "amadeus"),
+                ("viator.com", "viator"),
+                ("openrouteservice.org", "openrouteservice"),
+                ("open-meteo.com", "open_meteo"),
+                ("frankfurter.dev", "frankfurter"),
+            )
+            if endpoint == suffix or endpoint.endswith("." + suffix)
+        ),
+        endpoint,
+    )
+    call_status = (
+        "ok"
+        if status == "ok" and (http_status or 0) < 400
+        else f"http_{http_status}"
+        if status == "ok" and http_status is not None
+        else status
+    )
+    billable = status != "circuit_open"
+
+    record_call(
+        provider=provider,
+        operation=operation or "request",
+        sku_class=sku_class,
+        status=call_status,
+        duration_ms=duration_ms,
+        http_status=http_status,
+        attempted=status != "circuit_open",
+        billable=billable,
+    )
 
     app_event(
         "outbound_call",
@@ -242,8 +281,8 @@ def _record(
         http_status=http_status,
         ms=round(duration_ms, 2),
         **(
-            {"provider": "google", "operation": operation, "sku_class": sku_class}
+            {"provider": provider, "operation": operation, "sku_class": sku_class}
             if operation
-            else {}
+            else {"provider": provider, "operation": "request"}
         ),
     )

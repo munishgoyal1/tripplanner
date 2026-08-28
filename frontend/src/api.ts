@@ -39,6 +39,23 @@ export interface OpsMetricRow {
   p90_ms?: number;
 }
 
+export interface OpsUsageRollup {
+  environment?: string;
+  initiator?: string;
+  trip_id?: string;
+  provider?: string;
+  operation?: string;
+  sku_class?: string;
+  interaction_id?: string;
+  calls: number;
+  avoided_calls: number;
+  failures: number;
+  estimated_cost_usd: number;
+  unknown_cost_calls: number;
+  prompt_tokens: number;
+  completion_tokens: number;
+}
+
 export interface OpsOverview {
   generated_at: string;
   uptime_seconds: number;
@@ -103,6 +120,21 @@ export interface OpsOverview {
     failure_rate: number;
     avg_ms: number;
   }>;
+  provider_usage: {
+    period_days: number;
+    since: string;
+    pricing: {
+      catalog_version: string;
+      basis: string;
+      currency: "USD";
+    };
+    totals: OpsUsageRollup;
+    by_initiator: OpsUsageRollup[];
+    by_trip: OpsUsageRollup[];
+    by_provider: OpsUsageRollup[];
+    by_operation: OpsUsageRollup[];
+    by_interaction: OpsUsageRollup[];
+  };
   cache: {
     configured: boolean;
     backend: "redis" | "memory";
@@ -115,8 +147,8 @@ export interface OpsOverview {
   };
 }
 
-export async function fetchOpsOverview(signal?: AbortSignal): Promise<OpsOverview> {
-  const response = await apiFetch(`${BASE}/ops/overview`, { signal });
+export async function fetchOpsOverview(days = 30, signal?: AbortSignal): Promise<OpsOverview> {
+  const response = await apiFetch(`${BASE}/ops/overview?days=${days}`, { signal });
   ensureOk(response, "Operations overview unavailable");
   return response.json() as Promise<OpsOverview>;
 }

@@ -189,6 +189,19 @@ class _UsageCallback(BaseCallbackHandler):
                 prompt_tokens=prompt,
                 completion_tokens=completion,
             )
+            from tripplanner.provider_usage import record_call
+            from tripplanner.usage import cost_for
+
+            record_call(
+                provider="azure_openai",
+                operation="chat_completion",
+                sku_class=self._model,
+                status="ok",
+                duration_ms=duration_ms,
+                prompt_tokens=prompt,
+                completion_tokens=completion,
+                estimated_cost_usd=cost_for(self._model, prompt, completion),
+            )
         except Exception:
             # Accounting must never break a turn.
             pass
@@ -208,6 +221,16 @@ class _UsageCallback(BaseCallbackHandler):
                 message_count=context.message_count,
                 prompt_chars=context.prompt_chars,
                 error=type(error).__name__,
+            )
+            from tripplanner.provider_usage import record_call
+
+            record_call(
+                provider="azure_openai",
+                operation="chat_completion",
+                sku_class=self._model,
+                status="error",
+                duration_ms=duration_ms,
+                billable=False,
             )
         except Exception:
             pass

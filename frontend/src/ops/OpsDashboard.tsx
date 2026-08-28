@@ -3,13 +3,16 @@ import {
   Activity,
   AlertTriangle,
   Bot,
+  Boxes,
   Clock3,
   Database,
+  DollarSign,
   Gauge,
   Globe2,
   PlaneTakeoff,
   RefreshCw,
   Server,
+  Split,
   Users,
   Workflow,
   Wrench,
@@ -85,6 +88,81 @@ function Panel({ title, note, children }: { title: string; note?: string; childr
 
 function Empty({ children }: { children: ReactNode }) {
   return <p className="px-5 py-8 text-center text-sm text-stone-500">{children}</p>;
+}
+
+const initiatorLabels: Record<string, string> = {
+  user_trip: "User trip building",
+  user_action: "User action outside planning",
+  audit: "Audit and validation",
+  agent_background: "Agent background work",
+  automation: "Automation",
+  unattributed: "Unattributed",
+};
+
+function estimatedCost(cost: number, unknown: number): string {
+  const value = `$${cost.toFixed(cost < 0.01 ? 4 : 2)}`;
+  return unknown ? `${value} + ${unknown} unknown` : value;
+}
+
+function CostView({ overview }: { overview: OpsOverview }) {
+  const usage = overview.provider_usage;
+  const interactions = usage.by_interaction.filter((row) => row.interaction_id);
+  const trips = usage.by_trip;
+  const userCalls = usage.by_initiator
+    .filter((row) => row.initiator === "user_trip" || row.initiator === "user_action")
+    .reduce((total, row) => total + row.calls, 0);
+  const backgroundCalls = usage.totals.calls - userCalls;
+
+  return (
+    <>
+      <section className="grid gap-y-6 border-y border-stone-300 bg-white py-5 sm:grid-cols-2 xl:grid-cols-5">
+        <Metric label="Measured calls" value={number.format(usage.totals.calls)} detail={`${usage.totals.failures} failed · ${usage.totals.avoided_calls} avoided`} icon={Boxes} />
+        <Metric label="Estimated cost" value={`$${usage.totals.estimated_cost_usd.toFixed(2)}`} detail="Known catalog prices only" icon={DollarSign} />
+        <Metric label="Unknown price" value={number.format(usage.totals.unknown_cost_calls)} detail="Measured calls, cost unavailable" icon={AlertTriangle} />
+        <Metric label="User initiated" value={number.format(userCalls)} detail={`${usage.totals.calls ? Math.round(userCalls / usage.totals.calls * 100) : 0}% of measured calls`} icon={Users} />
+        <Metric label="Non-user initiated" value={number.format(backgroundCalls)} detail={`${interactions.length} attributed interactions`} icon={Workflow} />
+      </section>
+
+      <section className="mt-6 border border-amber-300 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+        <p className="font-semibold">Cost is an estimate, not a billing statement.</p>
+        <p className="mt-1 text-xs">{usage.pricing.basis} Catalog {usage.pricing.catalog_version}. Unknown-price calls remain visible and are excluded from the dollar total.</p>
+      </section>
+
+      <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
+        <Panel title="Activity source" note="Environment → initiator">
+          {usage.by_initiator.length ? <div className="divide-y divide-stone-100">{usage.by_initiator.map((row) => (
+            <div key={`${row.environment}-${row.initiator}`} className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 py-4 text-sm">
+              <div><p className="font-semibold">{initiatorLabels[row.initiator || ""] || row.initiator}</p><p className="mt-1 text-xs uppercase text-stone-500">{row.environment}</p></div>
+              <div className="text-right"><p className="font-semibold">{number.format(row.calls)} calls</p><p className="mt-1 text-xs text-stone-500">{estimatedCost(row.estimated_cost_usd, row.unknown_cost_calls)}</p></div>
+            </div>
+          ))}</div> : <Empty>No provider or model calls recorded in this period.</Empty>}
+        </Panel>
+
+        <Panel title="Trip and provider hierarchy" note="Expand a trip for operation detail">
+          {trips.length ? <div className="divide-y divide-stone-200">{trips.map((trip) => {
+            const providers = usage.by_provider.filter((row) => row.environment === trip.environment && row.initiator === trip.initiator && row.trip_id === trip.trip_id);
+            return <details key={`${trip.environment}-${trip.initiator}-${trip.trip_id}`} className="group">
+              <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 py-4 text-sm hover:bg-stone-50">
+                <div className="min-w-0"><p className="truncate font-semibold">{trip.trip_id && trip.trip_id !== "unattributed" ? trip.trip_id : "Not tied to a saved trip"}</p><p className="mt-1 text-xs text-stone-500">{trip.environment} · {initiatorLabels[trip.initiator || ""] || trip.initiator}</p></div>
+                <div className="text-right"><p>{trip.calls} calls</p><p className="mt-1 text-xs text-stone-500">{estimatedCost(trip.estimated_cost_usd, trip.unknown_cost_calls)}</p></div>
+              </summary>
+              <div className="border-t border-stone-100 bg-stone-50 px-5 py-3">{providers.map((provider) => {
+                const operations = usage.by_operation.filter((row) => row.environment === provider.environment && row.initiator === provider.initiator && row.trip_id === provider.trip_id && row.provider === provider.provider);
+                return <div key={provider.provider} className="border-b border-stone-200 py-3 last:border-b-0">
+                  <div className="flex justify-between gap-4 text-sm"><strong>{provider.provider}</strong><span>{provider.calls} calls · {estimatedCost(provider.estimated_cost_usd, provider.unknown_cost_calls)}</span></div>
+                  <div className="mt-2 space-y-1">{operations.map((operation) => <div key={`${operation.operation}-${operation.sku_class}`} className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 font-mono text-xs text-stone-600"><span className="truncate">{operation.operation} · {operation.sku_class}</span><span>{operation.calls} · {estimatedCost(operation.estimated_cost_usd, operation.unknown_cost_calls)}</span></div>)}</div>
+                </div>;
+              })}</div>
+            </details>;
+          })}</div> : <Empty>No trip-attributed calls recorded in this period.</Empty>}
+        </Panel>
+      </div>
+
+      <div className="mt-6"><Panel title="Initiated interactions" note="One request or audit run, content-free">
+        {interactions.length ? <div className="overflow-x-auto"><table className="w-full min-w-[720px] text-left text-sm"><thead className="bg-stone-50 text-xs uppercase text-stone-500"><tr><th className="px-5 py-3">Interaction</th><th>Source</th><th>Trip</th><th>Calls</th><th>Failures</th><th>Estimated cost</th></tr></thead><tbody>{interactions.map((row) => <tr key={`${row.environment}-${row.interaction_id}`} className="border-t border-stone-100"><td className="max-w-64 truncate px-5 py-3 font-mono text-xs">{row.interaction_id}</td><td>{initiatorLabels[row.initiator || ""] || row.initiator}</td><td className="font-mono text-xs">{row.trip_id === "unattributed" ? "—" : row.trip_id}</td><td>{row.calls}</td><td className={row.failures ? "text-rose-700" : "text-stone-500"}>{row.failures}</td><td>{estimatedCost(row.estimated_cost_usd, row.unknown_cost_calls)}</td></tr>)}</tbody></table></div> : <Empty>No interaction IDs recorded in this period.</Empty>}
+      </Panel></div>
+    </>
+  );
 }
 
 function BusinessView({ overview }: { overview: OpsOverview }) {
@@ -219,14 +297,15 @@ function SystemView({ overview }: { overview: OpsOverview }) {
 
 export default function OpsDashboard() {
   const [overview, setOverview] = useState<OpsOverview | null>(null);
-  const [view, setView] = useState<"business" | "system">("business");
+  const [view, setView] = useState<"business" | "cost" | "system">("business");
+  const [days, setDays] = useState(30);
   const [notFound, setNotFound] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = async (signal?: AbortSignal) => {
     setRefreshing(true);
     try {
-      setOverview(await fetchOpsOverview(signal));
+      setOverview(await fetchOpsOverview(days, signal));
       setNotFound(false);
     } catch {
       if (!signal?.aborted) setNotFound(true);
@@ -240,7 +319,7 @@ export default function OpsDashboard() {
     void load(controller.signal);
     const timer = window.setInterval(() => void load(controller.signal), 30_000);
     return () => { controller.abort(); window.clearInterval(timer); };
-  }, []);
+  }, [days]);
 
   if (notFound) return <main className="grid min-h-full place-items-center bg-stone-100 px-6 text-center"><div><p className="font-display text-7xl text-stone-900">404</p><p className="mt-3 text-sm text-stone-500">Page not found.</p></div></main>;
   if (!overview) return <main className="grid min-h-full place-items-center bg-stone-100 text-sm text-stone-500">Loading</main>;
@@ -250,14 +329,15 @@ export default function OpsDashboard() {
       <header className="border-b border-stone-700 bg-[#1f2926] px-5 py-4 text-stone-50 sm:px-8">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-4">
           <div><p className="text-xs font-semibold uppercase text-emerald-300">Tripplanner operations</p><h1 className="font-display text-2xl">Owner insight console</h1></div>
-          <div className="flex items-center gap-4 text-xs text-stone-300"><span className="hidden sm:inline">Updated {new Date(overview.generated_at).toLocaleTimeString()}</span><button type="button" className="grid size-9 place-items-center border border-stone-600 hover:bg-stone-700" onClick={() => void load()} title="Refresh metrics" aria-label="Refresh metrics"><RefreshCw size={16} className={refreshing ? "animate-spin" : ""} /></button></div>
+          <div className="flex items-center gap-4 text-xs text-stone-300"><span className="hidden sm:inline">Updated {new Date(overview.generated_at).toLocaleTimeString()}</span>{view === "cost" && <div className="flex border border-stone-600" aria-label="Cost reporting period">{[7, 30, 90].map((period) => <button key={period} type="button" className={`px-3 py-2 ${days === period ? "bg-stone-100 text-stone-950" : "hover:bg-stone-700"}`} onClick={() => setDays(period)}>{period}d</button>)}</div>}<button type="button" className="grid size-9 place-items-center border border-stone-600 hover:bg-stone-700" onClick={() => void load()} title="Refresh metrics" aria-label="Refresh metrics"><RefreshCw size={16} className={refreshing ? "animate-spin" : ""} /></button></div>
         </div>
         <div className="mx-auto mt-4 flex max-w-[1500px] gap-1" role="tablist" aria-label="Operations views">
           <button type="button" role="tab" aria-selected={view === "business"} onClick={() => setView("business")} className={`px-4 py-2 text-sm font-semibold ${view === "business" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Users size={15} />Business</span></button>
+          <button type="button" role="tab" aria-selected={view === "cost"} onClick={() => setView("cost")} className={`px-4 py-2 text-sm font-semibold ${view === "cost" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Split size={15} />API &amp; cost</span></button>
           <button type="button" role="tab" aria-selected={view === "system"} onClick={() => setView("system")} className={`px-4 py-2 text-sm font-semibold ${view === "system" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Server size={15} />System health</span></button>
         </div>
       </header>
-      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} /> : <SystemView overview={overview} />}</div>
+      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} /> : view === "cost" ? <CostView overview={overview} /> : <SystemView overview={overview} />}</div>
     </main>
   );
 }
