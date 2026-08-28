@@ -62,6 +62,11 @@ preflighted without changing files, then merged only when it does not overlap th
 lane's uncommitted paths. An overlap leaves the worktree untouched and names the
 paths. A dirty lane can take and push current `master`, but its own commits are
 not published to `master` until its active iteration is committed or finished.
+When committed histories conflict, the full sync invokes the shared conflict
+resolver for registered sandboxes, multiagent worktrees, and temporary
+standalone-branch worktrees. It replays only resolutions already recorded by
+Git `rerere`; genuinely new conflicts remain visible in attached worktrees, or
+are aborted in temporary worktrees and reported for manual resolution.
 
 `Sync-Across-MasterSbx` is the rare counterpart that also sends work the other
 way: it merges each sandbox into `master` through the same `-Merge` gates, then

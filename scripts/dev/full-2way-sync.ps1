@@ -85,6 +85,23 @@ function Add-Remaining {
     $remaining.Add("$Lane|$Problem|$NextStep")
 }
 
+function Update-PrimaryCheckout {
+    param([string]$Problem, [string]$NextStep)
+
+    if (-not $PSCmdlet.ShouldProcess(
+        $BaseBranch,
+        "Fast-forward primary checkout to origin/$BaseBranch"
+    )) {
+        return
+    }
+    & git -C $primaryRoot merge --ff-only "origin/$BaseBranch" 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0 -and -not (
+        $remaining | Where-Object { $_.StartsWith("$BaseBranch|") }
+    )) {
+        Add-Remaining -Lane $BaseBranch -Problem $Problem -NextStep $NextStep
+    }
+}
+
 function Get-Dirty {
     param([string]$WorkingDirectory)
     return @(& git -C $WorkingDirectory status --porcelain)
@@ -154,6 +171,13 @@ function Get-SyncLanes {
 function Update-BranchLane {
     param([object]$Entry)
 
+    if (-not $PSCmdlet.ShouldProcess(
+        $Entry.branch,
+        "Merge origin/$BaseBranch into branch lane"
+    )) {
+        return $true
+    }
+
     $temporaryWorktree = ""
     $workingDirectory = $Entry.worktree
     if (-not $workingDirectory) {
@@ -171,10 +195,28 @@ function Update-BranchLane {
     try {
         & git -C $workingDirectory merge --no-edit "origin/$BaseBranch" 2>&1 | Out-Host
         if ($LASTEXITCODE -ne 0) {
-            & git -C $workingDirectory merge --abort 2>$null
-            Add-Remaining -Lane $Entry.slug -Problem "could not take $BaseBranch without conflicts" `
-                -NextStep "Resolve $BaseBranch into branch '$($Entry.branch)', then run this script again."
-            return $false
+            & git -C $workingDirectory rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                Add-Remaining -Lane $Entry.slug -Problem "could not take $BaseBranch" `
+                    -NextStep "Inspect branch '$($Entry.branch)', then run this script again."
+                return $false
+            }
+            Write-Host "[resolve] $($Entry.slug) - replaying recorded conflict resolutions" `
+                -ForegroundColor Yellow
+            try {
+                & $resolverScript -WorkingDirectory $workingDirectory `
+                    -Lane $Entry.slug -Confirm:$false
+                if ($LASTEXITCODE -ne 0) { throw "the resolver returned $LASTEXITCODE" }
+                Add-Did "$($Entry.slug) - resolved a recorded merge conflict"
+            } catch {
+                if ($temporaryWorktree) {
+                    & git -C $workingDirectory merge --abort 2>$null
+                }
+                Add-Remaining -Lane $Entry.slug `
+                    -Problem "could not take $BaseBranch without a recorded resolution" `
+                    -NextStep "Resolve $BaseBranch into branch '$($Entry.branch)', then run this script again."
+                return $false
+            }
         }
         & git -C $workingDirectory push -q -u origin "HEAD:refs/heads/$($Entry.branch)"
         if ($LASTEXITCODE -ne 0) {
@@ -278,24 +320,46 @@ function Get-Unmerged {
     return @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
 }
 
+function Test-MergePending {
+    param([string]$WorkingDirectory)
+
+    & git -C $WorkingDirectory rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
+    return $LASTEXITCODE -eq 0
+}
+
 function Resolve-Pending {
     <#
       Finish a merge left half-done by an earlier run, using recorded
       resolutions only. Returns whether the lane is clear afterwards.
     #>
-    param([string]$WorkingDirectory, [string]$Lane)
+    param([string]$WorkingDirectory, [string]$Lane, [string]$Kind)
 
-    if ((Get-Unmerged -WorkingDirectory $WorkingDirectory).Count -eq 0) { return $true }
+    $unmerged = @(Get-Unmerged -WorkingDirectory $WorkingDirectory)
+    if ($unmerged.Count -eq 0 -and -not (
+        Test-MergePending -WorkingDirectory $WorkingDirectory
+    )) {
+        return $true
+    }
     Write-Host "[resolve] $Lane - replaying recorded conflict resolutions" -ForegroundColor Yellow
     try {
-        & $resolverScript -Sandbox $Lane -Confirm:$false
+        if ($Kind -eq "sandbox") {
+            & $resolverScript -Sandbox $Lane -Confirm:$false
+        } else {
+            & $resolverScript -WorkingDirectory $WorkingDirectory -Lane $Lane -Confirm:$false
+        }
         if ($LASTEXITCODE -ne 0) { throw "the resolver returned $LASTEXITCODE" }
     } catch {
         # Expected whenever the conflict is genuinely new.
     }
     $left = Get-Unmerged -WorkingDirectory $WorkingDirectory
-    if ($left.Count -gt 0) {
-        Add-Remaining -Lane $Lane -Problem "has $($left.Count) conflicted file(s): $($left -join ', ')" `
+    $mergeStillPending = Test-MergePending -WorkingDirectory $WorkingDirectory
+    if ($left.Count -gt 0 -or $mergeStillPending) {
+        $problem = if ($left.Count -gt 0) {
+            "has $($left.Count) conflicted file(s): $($left -join ', ')"
+        } else {
+            "still has an unfinished merge"
+        }
+        Add-Remaining -Lane $Lane -Problem $problem `
             -NextStep "Resolve them in $WorkingDirectory, then run this script again."
         return $false
     }
@@ -364,11 +428,9 @@ if ($LASTEXITCODE -ne 0) { throw "Could not fetch origin." }
 
 # The primary checkout is a live lane too. Git may fast-forward around
 # non-overlapping WIP, but must never make those files disappear.
-& git -C $primaryRoot merge --ff-only "origin/$BaseBranch" 2>&1 | Out-Null
-if ($LASTEXITCODE -ne 0) {
-    Add-Remaining -Lane $BaseBranch -Problem "could not take origin/$BaseBranch without disturbing its visible work in progress" `
-        -NextStep "Finish or reconcile the overlapping files in $primaryRoot, then run this script again."
-}
+Update-PrimaryCheckout `
+    -Problem "could not take origin/$BaseBranch without disturbing its visible work in progress" `
+    -NextStep "Finish or reconcile the overlapping files in $primaryRoot, then run this script again."
 $primaryAhead = @(& git -C $primaryRoot log --oneline "origin/$BaseBranch..HEAD")
 if ($primaryAhead.Count -gt 0 -and $PSCmdlet.ShouldProcess($BaseBranch, "Push $($primaryAhead.Count) local commit(s)")) {
     & git -C $primaryRoot push -q origin HEAD
@@ -399,12 +461,9 @@ foreach ($entry in $lanes) {
         continue
     }
     Write-Host "[lane]    $lane" -ForegroundColor Cyan
-    if ($entry.worktree -and $entry.kind -eq "sandbox" -and `
-        -not (Resolve-Pending -WorkingDirectory $entry.worktree -Lane $lane)) { continue }
-    if ($entry.worktree -and $entry.kind -eq "branch" -and `
-        (Get-Unmerged -WorkingDirectory $entry.worktree).Count -gt 0) {
-        Add-Remaining -Lane $lane -Problem "has unresolved conflicts" `
-            -NextStep "Resolve them in $($entry.worktree), then run this script again."
+    if ($entry.worktree -and -not (
+        Resolve-Pending -WorkingDirectory $entry.worktree -Lane $lane -Kind $entry.kind
+    )) {
         continue
     }
     if (-not (Update-Lane -Entry $entry)) { continue }
@@ -473,12 +532,9 @@ if ($PullOnly) {
 Write-Host ""
 Write-Host "== 3/4 bring every lane up to the new $BaseBranch ==" -ForegroundColor Green
 & git -C $primaryRoot fetch -q origin $BaseBranch
-& git -C $primaryRoot merge --ff-only "origin/$BaseBranch" 2>&1 | Out-Null
-if ($LASTEXITCODE -ne 0 -and -not ($remaining | Where-Object { $_.StartsWith("$BaseBranch|") })) {
-    Add-Remaining -Lane $BaseBranch `
-        -Problem "local work in progress overlaps the new origin/$BaseBranch" `
-        -NextStep "Its files stayed visible and untouched. Reconcile them in $primaryRoot, then re-run."
-}
+Update-PrimaryCheckout `
+    -Problem "local work in progress overlaps the new origin/$BaseBranch" `
+    -NextStep "Its files stayed visible and untouched. Reconcile them in $primaryRoot, then re-run."
 foreach ($entry in $lanes) {
     if ($entry.worktree -and -not (Test-Path $entry.worktree -PathType Container)) { continue }
     if ($remaining | Where-Object { $_.StartsWith("$($entry.slug)|") }) { continue }

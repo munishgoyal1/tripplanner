@@ -1356,3 +1356,18 @@ the outcome.
   containment must be definitive, then restore billing links.
 - Hard per-API daily and minute quotas are the safe real-time cost ceiling.
   Delayed account-wide billing detachment is only a secondary-period backstop.
+
+## 2026-08-28 - Dry-Run Safety and Recovery Must Cover Every Lane Type
+
+- Declaring `SupportsShouldProcess` on a wrapper does not make raw `git` calls
+  honor `-WhatIf`. Every mutating helper must check `ShouldProcess` before it
+  creates a worktree, merges, commits, or pushes.
+- A synchronization flow that discovers several lane kinds must route every one
+  through the same recovery contract. Handling only registered sandboxes left
+  multiagent and standalone branches unable to replay known `rerere` decisions.
+- Detect both unmerged index entries and `MERGE_HEAD`. With `rerere.autoupdate`,
+  files can already be staged while the merge still needs its commit, so checking
+  only `git diff --diff-filter=U` can skip the finalization step.
+- After any preview-path defect, inspect and restore the exact worktree the
+  preview touched before continuing; a dry run must leave byte and Git state
+  unchanged.

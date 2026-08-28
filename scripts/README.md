@@ -18,7 +18,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `smoke_test.py` | Local provider credential and connectivity smoke |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
 | `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes; linked Lab sandboxes version successful iterations and promotion |
-| `dev/full-2way-sync.ps1` | Convergence sync for every local branch, including sandbox, multiagent, and unattached branches; pass `sbx` for the former registered-sandbox-only scope |
+| `dev/full-2way-sync.ps1` | Convergence sync for every local branch, including sandbox, multiagent, and unattached branches; automatically replays recorded conflict resolutions across every lane type; pass `sbx` for registered sandboxes only |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/debug_store_cli.py` | Internal CLI behind the Trip Flight Recorder launchers |
 | `dev/debug-store.ps1` | Dispatcher the Trip Flight Recorder launchers call |
@@ -38,7 +38,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/Run-Latest-Master.cmd` | Windows owner-facing synchronize-and-run launcher for primary `master` |
 | `win/user/Sync-Sbxs-FromMaster.cmd [sandbox]` | Windows launcher to fast-forward primary `master`, then update every sandbox or only the selected one |
 | `win/user/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
-| `win/user/Full-2Way-Sync.cmd [all\|sbx]` | Converge every local branch by default without hiding active edits. Clean committed lanes publish to `master`; dirty lanes take non-overlapping updates and defer publication. Pass `sbx` for registered sandboxes only. Re-runnable |
+| `win/user/Full-2Way-Sync.cmd [all\|sbx]` | Converge every local branch by default without hiding active edits. Clean committed lanes publish to `master`; dirty lanes take non-overlapping updates and defer publication; recorded conflicts auto-resolve across sandbox, multiagent, and standalone lanes. Pass `sbx` for registered sandboxes only. Re-runnable |
 | `win/user/quality/Show-TripRecorder.cmd [query] [--days N]` | List or search Trip Flight Recorder entries by number, destination, keyword, or label |
 | `win/user/quality/Maintain-TripRecorder.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report recorder health |
 | `win/user/quality/Restore-TripRecorder.cmd [sandbox] [days]` | Restore recorded trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |

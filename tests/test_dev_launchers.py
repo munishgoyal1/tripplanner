@@ -401,3 +401,29 @@ def test_full_sync_defaults_to_all_local_branches_with_sbx_compatibility_scope()
     assert 'worktree", "list", "--porcelain"' in full_sync
     assert '"refs/heads"' in full_sync
     assert "Get-SandboxRegistry" in full_sync
+
+
+def test_full_sync_auto_resolves_sandbox_multiagent_and_standalone_conflicts() -> None:
+    root = Path(__file__).parents[1]
+    full_sync = (root / "scripts" / "dev" / "full-2way-sync.ps1").read_text(encoding="utf-8")
+    resolver = (root / "scripts" / "dev" / "resolve-sandbox-conflicts.ps1").read_text(
+        encoding="utf-8"
+    )
+
+    assert 'ParameterSetName = "Worktree"' in resolver
+    assert "[string]$WorkingDirectory" in resolver
+    assert "& git -C $worktree rerere" in resolver
+    assert "-WorkingDirectory $workingDirectory" in full_sync
+    assert "-Kind $entry.kind" in full_sync
+    assert "function Test-MergePending" in full_sync
+    assert "Test-MergePending -WorkingDirectory $WorkingDirectory" in full_sync
+    assert "function Update-PrimaryCheckout" in full_sync
+    assert '"Fast-forward primary checkout to origin/$BaseBranch"' in full_sync
+    assert full_sync.count('& git -C $primaryRoot merge --ff-only "origin/$BaseBranch"') == 1
+    assert "merge --abort" in full_sync
+    should_process = full_sync.index('"Merge origin/$BaseBranch into branch lane"')
+    branch_merge = full_sync.index('merge --no-edit "origin/$BaseBranch"')
+    assert should_process < branch_merge
+    assert full_sync.index("& $resolverScript -WorkingDirectory") < full_sync.index(
+        "& git -C $workingDirectory merge --abort"
+    )
