@@ -1393,3 +1393,13 @@ the outcome.
 - A script consumed by other scripts must establish an explicit success exit
   code after expected failing probes. Test the caller contract, not only the
   resulting files: both the Git state and the process result must say success.
+
+## 2026-08-28 - Verify Cosmos Numbers by Value, Not Representation
+
+- Cosmos and its emulator can deserialize the same JSON number into slightly
+  different binary floats. A longitude written as `12.471670699999999` was read
+  back as `12.4716707`, so exact document equality rejected a successful write.
+- Verification should compare nested numeric values with a small absolute and
+  relative tolerance while keeping booleans, object keys, list order, and all
+  nonnumeric values exact. Pair the accepted round-trip case with a test that
+  rejects a meaningful coordinate change so tolerance cannot hide corruption.

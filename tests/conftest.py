@@ -68,11 +68,18 @@ def _memory_cache_backend(monkeypatch: pytest.MonkeyPatch) -> None:
 
     A developer's ``.env`` may enable it, which made the tests both slow and
     non-hermetic: they read entries another environment had written, and wrote
-    their own fixtures back.
+    their own fixtures back. Keep environment-wide cache lifetime and warming
+    policy out of tests for the same reason; focused tests override these values.
     """
     from tripplanner import caching
+    from tripplanner.config import get_settings
 
     monkeypatch.setattr(caching, "_BACKEND", caching.MemoryBackend())
+    settings = get_settings()
+    monkeypatch.setattr(settings, "cache_ttl_scale", 1.0)
+    monkeypatch.setattr(settings, "cache_stable_forever", False)
+    monkeypatch.setattr(settings, "cache_volatile_forever", False)
+    monkeypatch.setattr(settings, "cache_warm_everything", False)
     for cache in list(caching._REGISTRY.values()):
         cache.rebind()
         cache.clear()

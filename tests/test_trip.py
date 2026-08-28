@@ -1608,7 +1608,7 @@ class TestTripPlanState:
         from tripplanner.tools import trip_planner
 
         monkeypatch.setattr(
-            "tripplanner.tools.trip_planner.places_cache.get_summary",
+            "tripplanner.tools.trip_planner.places_cache.get_details",
             lambda _name, _destination: {"lat": 15.3, "lng": 73.9},
         )
         plan = {
@@ -1812,7 +1812,7 @@ class TestTripPlanState:
 
     def test_add_selection_keeps_explicit_itinerary_day(self, monkeypatch):
         monkeypatch.setattr(
-            "tripplanner.tools.trip_planner.places_cache.get_summary",
+            "tripplanner.tools.trip_planner.places_cache.get_details",
             lambda name, _destination: {
                 "North Stay": {"lat": 15.60, "lng": 73.75},
                 "South Stay": {"lat": 15.20, "lng": 74.00},
@@ -2109,7 +2109,7 @@ class TestTripPlanState:
             "South Fort": {"lat": 15.21, "lng": 73.99},
         }
         monkeypatch.setattr(
-            "tripplanner.tools.trip_planner.places_cache.get_summary",
+            "tripplanner.tools.trip_planner.places_cache.get_details",
             lambda name, _destination: coords.get(name, {}),
         )
         create_trip_plan.invoke({
@@ -2140,7 +2140,7 @@ class TestTripPlanState:
 
     def test_itinerary_reflow_keeps_booked_attraction_on_its_day(self, monkeypatch):
         monkeypatch.setattr(
-            "tripplanner.tools.trip_planner.places_cache.get_summary",
+            "tripplanner.tools.trip_planner.places_cache.get_details",
             lambda *_args: {"lat": 15.5, "lng": 73.8},
         )
         create_trip_plan.invoke({
@@ -2175,7 +2175,7 @@ class TestTripPlanState:
             "South Fort": {"lat": 15.21, "lng": 73.99},
         }
         monkeypatch.setattr(
-            "tripplanner.tools.trip_planner.places_cache.get_summary",
+            "tripplanner.tools.trip_planner.places_cache.get_details",
             lambda name, _destination: coords.get(name, {}),
         )
         create_trip_plan.invoke({
