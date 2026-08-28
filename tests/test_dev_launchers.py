@@ -67,6 +67,20 @@ def test_google_maps_control_has_cross_platform_owner_launchers() -> None:
     assert script_name in windows_launcher
 
 
+def test_azure_services_control_has_cross_platform_owner_launchers() -> None:
+    root = Path(__file__).parents[1]
+    script_name = "set-azure-services-access.ps1"
+    mac_launcher = (
+        root / "scripts" / "mac" / "user" / "azure" / "Azure-Services-Control.command"
+    ).read_text(encoding="utf-8")
+    windows_launcher = (
+        root / "scripts" / "win" / "user" / "azure" / "Azure-Services-Control.cmd"
+    ).read_text(encoding="utf-8")
+
+    assert script_name in mac_launcher
+    assert script_name in windows_launcher
+
+
 def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:
     root = Path(__file__).parents[1]
     sync_script = (root / "scripts" / "dev" / "sync-sbxs-from-master.ps1").read_text(
@@ -100,6 +114,7 @@ def test_categorized_owner_launchers_have_cross_platform_help() -> None:
             "Sync-Sbxs-FromMaster",
         ),
         "run": ("Run-Latest-Master", "Start-Dev-Spa"),
+        "azure": ("Azure-Services-Control",),
         "google": ("Google-Maps-Control", "Google-Places-Control"),
     }
 

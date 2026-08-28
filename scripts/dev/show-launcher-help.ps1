@@ -8,6 +8,7 @@ param(
         "start-dev-spa",
         "sync-across-master-sbx",
         "sync-sbxs-from-master",
+        "azure-services-control",
         "google-maps-control",
         "google-places-control"
     )]
@@ -93,6 +94,25 @@ Usage: Start-Dev-Spa [-Watch] [-Logs] [-BackendOnly|-FrontendOnly] [-NoLabs] [-N
   -NoLabs         Skip Labs. -NoInspector skips the Quality Inspector.
 
 Example: Start-Dev-Spa -Watch -NoLabs
+"@
+    "azure-services-control" = @"
+Azure-Services-Control - report or control the Tripplanner Azure estate as one unit.
+
+Usage: Azure-Services-Control [status|disable|enable|off|on] [approval]
+
+  status   Show app/job state, service access, and residual billing (default).
+  disable  Stop hosted apps and jobs, then block OpenAI, Cosmos, and Redis access.
+           Requires APPROVE_AZURE_DISABLE. Alias: off.
+  enable   Start hosted apps, restore job schedules, and reopen service access.
+           Requires APPROVE_AZURE_SPEND. Alias: on.
+
+Examples:
+  Azure-Services-Control status
+  Azure-Services-Control disable APPROVE_AZURE_DISABLE
+  Azure-Services-Control enable APPROVE_AZURE_SPEND
+
+No resource or data is deleted. Redis, Cosmos, environments, logs, and other
+provisioned resources can continue billing while application access is disabled.
 "@
     "google-maps-control" = @"
 Google-Maps-Control - control Maps JavaScript, Routes, and Static Maps by environment.

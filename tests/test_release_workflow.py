@@ -122,6 +122,28 @@ def test_billing_shutoff_trigger_can_invoke_its_cloud_run_service() -> None:
     assert '"shutoffEnabled": false' in guardrails
 
 
+def test_azure_services_control_is_scoped_reversible_and_approval_gated() -> None:
+    root = Path(__file__).parents[1]
+    control = (
+        root / "infra" / "azure" / "set-azure-services-access.ps1"
+    ).read_text(encoding="utf-8")
+
+    assert "APPROVE_AZURE_DISABLE" in control
+    assert "APPROVE_AZURE_SPEND" in control
+    assert "munishgoyal1@gmail.com" in control
+    assert "Visual Studio Enterprise Subscription" in control
+    assert "config.azure.environments" in control
+    assert "Microsoft.App/containerApps" in control
+    assert "Microsoft.App/jobs" in control
+    assert "Microsoft.CognitiveServices/accounts" in control
+    assert "Microsoft.DocumentDB/databaseAccounts" in control
+    assert "Microsoft.Cache/redisEnterprise" in control
+    assert "tripplannerControlOriginalTrigger" in control
+    assert "public-network-access" in control
+    assert '"delete"' not in control.lower()
+    assert "never deletes resources or data" in control
+
+
 def test_hosted_deployments_use_shared_azure_json_and_delete_guards() -> None:
     root = Path(__file__).parents[1]
     canary = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")

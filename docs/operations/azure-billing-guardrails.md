@@ -26,6 +26,29 @@ pwsh -File infra/show-billing-status.ps1
 pwsh -File infra/show-billing-status.ps1 -Cloud azure
 ```
 
+For immediate owner control across all known Tripplanner Azure resource groups:
+
+```powershell
+./scripts/win/user/azure/Azure-Services-Control.cmd status
+./scripts/win/user/azure/Azure-Services-Control.cmd disable APPROVE_AZURE_DISABLE
+./scripts/win/user/azure/Azure-Services-Control.cmd enable APPROVE_AZURE_SPEND
+```
+
+Use the matching `scripts/mac/user/azure/Azure-Services-Control.command` launcher
+on macOS. Disable stops Container Apps, converts recurring Container Apps Jobs
+to manual while retaining their original trigger, stops active job executions,
+and blocks public access to OpenAI, Cosmos DB, and Azure Managed Redis. Enable
+reverses those controls. Both actions discover resources only in the resource
+groups declared in `billing-guardrails.json`, verify the personal account and
+subscription, and never delete resources or data.
+
+This is a unified orchestrator, not a universal Azure billing switch. Managed
+Redis, Cosmos throughput and storage, Container Apps environments, Log Analytics,
+and other provisioned resources can continue billing while access is disabled.
+Communication Services and Email are usage-metered and expose no reversible
+account-wide pause; stopping the hosted apps removes their hosted caller but does
+not invalidate independently held credentials.
+
 ## Current arrangement
 
 Subscription `2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b`, billing currency **INR**.

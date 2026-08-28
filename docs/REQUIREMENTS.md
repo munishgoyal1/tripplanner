@@ -675,6 +675,10 @@ implemented capability baseline.
 - Production smoke, normalized chat outcome/latency telemetry, explicit SLO
   queries, release monitoring, and guarded revision rollback complete the flow.
 - Production deployment and mobile store submission are never automatic.
+- One cross-platform owner command reports the allowlisted Tripplanner Azure estate,
+  stops or starts hosted apps, suppresses or restores recurring jobs, and blocks or
+  restores OpenAI, Cosmos DB, and Managed Redis public access. Both directions are
+  approval-gated, never delete data, and report provisioned charges that continue.
 
 ### OPS-02 - Failure detection and response
 
