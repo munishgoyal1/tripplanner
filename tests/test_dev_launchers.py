@@ -81,6 +81,35 @@ def test_azure_services_control_has_cross_platform_owner_launchers() -> None:
     assert script_name in windows_launcher
 
 
+def test_unified_emergency_control_has_safe_cross_platform_owner_launchers() -> None:
+    root = Path(__file__).parents[1]
+    script = (root / "scripts" / "dev" / "emergency-control.ps1").read_text(
+        encoding="utf-8"
+    )
+    mac_launcher = (root / "scripts" / "mac" / "user" / "Emergency-Control.command").read_text(
+        encoding="utf-8"
+    )
+    windows_launcher = (root / "scripts" / "win" / "user" / "Emergency-Control.cmd").read_text(
+        encoding="utf-8"
+    )
+
+    assert '[string]$Action = "status"' in script
+    assert '$Scope -eq "all" -or $_.Scope -eq $Scope' in script
+    assert "No emergency controls are registered for scope" in script
+    assert "set-azure-services-access.ps1" in script
+    assert "set-google-maps-access.ps1" in script
+    assert "set-google-places-access.ps1" in script
+    assert "APPROVE_AZURE_DISABLE" in script
+    assert "APPROVE_AZURE_SPEND" in script
+    assert "APPROVE_GOOGLE_MAPS_SPEND" in script
+    assert "APPROVE_GOOGLE_PLACES_SPEND" in script
+    assert script.index('Name = "Azure services"') < script.index('Name = "Google Maps"')
+    for launcher in (mac_launcher, windows_launcher):
+        assert "emergency-control.ps1" in launcher
+        assert "show-launcher-help.ps1" in launcher
+        assert "emergency-control" in launcher
+
+
 def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:
     root = Path(__file__).parents[1]
     sync_script = (root / "scripts" / "dev" / "sync-sbxs-from-master.ps1").read_text(

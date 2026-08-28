@@ -8,6 +8,7 @@ param(
         "start-dev-spa",
         "sync-across-master-sbx",
         "sync-sbxs-from-master",
+        "emergency-control",
         "azure-services-control",
         "google-maps-control",
         "google-places-control"
@@ -16,6 +17,30 @@ param(
 )
 
 $help = @{
+    "emergency-control" = @"
+Emergency-Control - one status and emergency shutdown entry point for Tripplanner services.
+
+Usage: Emergency-Control [status|disable|enable|off|on] [all|google|azure]
+                         [all|local|canary|prod] [azure-approval]
+                         [google-maps-approval] [google-places-approval]
+
+  status   Read every selected provider state without changing it (default).
+  disable  Stop or block every selected service. Azure requires APPROVE_AZURE_DISABLE.
+  enable   Restore selected services. Each provider retains its spend approval gate.
+
+Examples:
+  Emergency-Control
+  Emergency-Control status all prod
+  Emergency-Control disable all all APPROVE_AZURE_DISABLE
+  Emergency-Control disable google prod
+  Emergency-Control enable azure prod APPROVE_AZURE_SPEND
+  Emergency-Control enable all all APPROVE_AZURE_SPEND APPROVE_GOOGLE_MAPS_SPEND APPROVE_GOOGLE_PLACES_SPEND
+
+No resource or data is deleted. Disable is best-effort across all selected controls
+and returns a failure if any control could not be changed. Provisioned Azure resources
+can retain fixed charges after access is blocked. Profile changes need a local restart
+or hosted deployment; no deployment is performed by this launcher.
+"@
     "full-2way-sync" = @"
 Full-2Way-Sync - converge committed work across master and local lanes.
 

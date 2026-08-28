@@ -627,6 +627,10 @@ implemented capability baseline.
   final response without adding noisy warnings to the user experience.
 - Provider secrets are configuration, not repository content, and hosted secrets
   are injected into Container Apps.
+- One cross-platform owner launcher reports or applies every registered Google and
+  Azure emergency control for cost, legal, security, or operational incidents. It
+  defaults to read-only status, preserves provider identity and approval gates,
+  attempts every selected shutdown, deletes nothing, and reports residual fixed costs.
 - Azure OpenAI credentials do not imply permission to spend. Every model client
   requires the fail-closed `ENABLE_AZURE_OPENAI=1` runtime consent flag.
 - User data is partitioned by identity; canary and production use isolated data.
