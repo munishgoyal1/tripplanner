@@ -28,12 +28,18 @@ There is one interactive agent. The producer never talks to you directly, and
 neither does a worker; everything reaches you through an issue and the
 coordinator chat reads it.
 
+Workers export their named Copilot CLI sessions for read-only visibility in VS Code's
+Chat Sessions list. VS Code indexes those sessions asynchronously, so controller status
+and the runtime transcript remain authoritative while a session is still appearing.
+Opening an exported session must not start a second worker in the same slot.
+
 Every fix you ask for in the coordinator chat belongs to the persistent
 `multiagent/coordinator` lane by default, regardless of size. It does not create
 an issue or enter the autonomous queue. A worker, sandbox, or issue-backed handoff
 happens only when you explicitly request it, or when the work is deferred rather
-than completed in the current chat. The coordinator never adds `owner:ready`;
-only you can move issue-backed work into the autonomous queue.
+than completed in the current chat. The coordinator never adds `owner:ready` or
+`owner:approval-required`. Routine bugs and bounded tasks are ready when queued;
+only you can release explicitly approval-gated work.
 
 The same no-issue default applies inside sandbox chats: work requested and fixed
 there stays in that sandbox conversation. A sandbox agent does not create an issue
@@ -59,17 +65,20 @@ Coordinator landing without periodically rewriting active lanes.
 ## How work enters the system
 
 ```text
-you file a Requirement issue        -> owner:proposed
+you file a Requirement issue        -> owner:proposed + owner:approval-required
+you file a routine Bug or Task       -> agent:queued
 the producer finds a bug            -> owner:proposed + source:audit + bug
-you decide it should be built       -> owner:proposed + owner:ready
+you approve a gated feature          -> + owner:ready
 the controller dispatches it        -> + agent:in-progress + lane:mw-<slot>
 a worker pushes its commit          -> + agent:integrating
 integration and validation pass     -> + agent:needs-verify, in the batch PR
 you merge the PR                    -> issue closes on master
 ```
 
-Nothing is ever dispatched because an agent thought it was a good idea. The only
-entry to execution is you adding `owner:ready`.
+Routine bugs, bounded tasks, and audit bugs are ready for pickup when you ask the
+multiagent controller to work the issue queue. Large or impactful owner-created
+features are explicitly held by `owner:approval-required` until you add
+`owner:ready`. Agents do not infer approval from prose or add either label.
 
 ### Labels
 
@@ -79,7 +88,8 @@ removed as work progresses.
 | Label | Fact it records |
 | --- | --- |
 | `owner:proposed` | Entered as a candidate; kept forever as provenance |
-| `owner:ready` | You authorised implementation |
+| `owner:approval-required` | Large or impactful feature must wait for your approval |
+| `owner:ready` | You approved explicitly gated implementation |
 | `owner:withdrawn` | You revoked authorisation after dispatch |
 | `owner:decision-needed` | Something is waiting on your answer |
 | `source:audit` | The producer created this from an audit finding |
@@ -89,18 +99,20 @@ at a time, and the controller removes the previous one on every transition:
 `agent:queued`, `agent:in-progress`, `agent:blocked`, `agent:integrating`,
 `agent:needs-verify`.
 
-Selection is by containment, never by absence of `owner:proposed`:
+Selection admits routine queued work, audit bugs, and approved gated work:
 
 ```text
-is:issue is:open label:owner:ready
+(agent:queued) OR (bug + source:audit) OR (owner:ready)
 ```
 
 filtered further to exclude `owner:withdrawn` and any issue already holding an
-active `agent:*` state.
+active `agent:*` state. An issue carrying `owner:approval-required` is excluded
+unless it also carries `owner:ready`.
 
-The Requirement and audit issues do **not** get `agent:queued`. `owner:ready` is
-the multiagent queue; `agent:queued` stays with the manual lanes so the two
-systems cannot fight over the same issue.
+Requirement issues do **not** get `agent:queued`; their explicit approval gate is
+their intake state. Audit bugs need no separate owner approval. Dispatch changes
+`agent:queued` to `agent:in-progress`, so manual and multiagent lanes still cannot
+claim the same issue.
 
 ### Withdrawing authorisation
 
@@ -113,16 +125,36 @@ is never a silent abandon:
 - Already integrated: the change stays in the batch. Withdrawal after acceptance
   is a revert, which is its own issue.
 
-## The producer
+## The one-click quality loop
 
-The producer is deterministic. It runs the existing read-only trip audit, which
-reads stored trips and fixtures and calls no model and no provider, then turns
-new finding groups into proposed issues.
+`Run-Quality-Loop` is the single entry point for "find current defects and fix
+them". It runs three phases and then leaves the controller working:
+
+1. **Reconcile.** Release `agent:integrating` claims that no controller record
+   owns, so a wiped runtime directory cannot strand issues outside the queue.
+   `agent:blocked` is never swept: it means a question is waiting on the owner.
+2. **Audit.** The deterministic read-only producer below.
+3. **Fix.** Start the controller if it is not already running.
+
+It is safe to re-run at will; `--dry-run` previews every phase without creating
+an issue or starting anything. The launcher calls Python directly rather than
+routing through `multiagent.ps1`, because the loop is most needed exactly when
+the PowerShell host is broken.
+
+Corpus refresh is deliberately outside the loop. It spends real money, needs a
+running stack, and its market scope is an owner decision. The loop recommends it
+and stops.
+
+## The Quality Issue Producer
+
+The producer is deterministic. It runs the existing read-only Trip Quality Audit,
+which reads stored trips and fixtures and calls no model and no provider, then
+turns new finding groups into proposed issues.
 
 Every audit, whether owner-run or automatic after an integrated fix, writes a
 dated immutable report and readable summary under `audit/reports/`, updates the
-compact local history index, and refreshes `audit/latest.json` for the Inspector.
-The automatic post-fix run replays the current stored corpus through the
+compact local history index, and refreshes `audit/latest.json` for the Quality Inspector.
+The automatic post-fix run replays the current Trip Quality Corpus through the
 integrated code. Finding exit code `1` is evidence, not an integration failure.
 
 The producer follows these rules because breaking them would quietly defeat the purpose:
@@ -133,9 +165,10 @@ The producer follows these rules because breaking them would quietly defeat the 
 2. **Exit code `2` is an infrastructure failure, not a clean run.** It means the
    corpus was empty and nothing was checked. Exit `1` means new findings; exit
    `0` means genuinely clean.
-3. **It proposes every new deduplicated finding group.** Proposed issues are inert
-  until the owner adds `owner:ready`, so completeness here does not authorize or
-  dispatch work. Existing fingerprints are skipped or reopened rather than duplicated.
+3. **It proposes every new deduplicated finding group.** Audit bugs are eligible
+  for routine multiagent pickup, but the controller still runs only when the owner
+  starts or resumes it. Existing fingerprints are skipped or reopened rather than
+  duplicated.
 
 Deduplication survives a wiped runtime directory because the fingerprint lives in
 the issue body, not on disk:
@@ -160,14 +193,27 @@ known), publish immutable PNGs on the repository's `audit-evidence` branch, and
 link them from the issue. Capture is opt-in because it requires the primary stack,
 Node.js, Chrome, and GitHub write access. A failed capture never blocks issue
 production or fabricates evidence; the issue falls back to its authoritative
-local trip or Inspector record.
+local trip or Quality Inspector record.
 
-Corpus generation spends real money and needs a running API, so it is never part
-of the automatic loop. The owner runs `Refresh-Audit-Corpus.command` when fresh
+Trip Quality Corpus generation spends real money and needs a running API, so it
+is never part of the automatic loop. The owner runs `Refresh-Quality-Corpus.command` when fresh
 planner evidence is needed; it uses the configured resumable corpus budget,
 retains successful trips in the global corpus, then writes the normal dated
 audit report. Routine fixes rely on regression tests and automatic historical
-replay unless they change planner generation behavior.
+replay.
+
+A defect in generated or persisted planner output is evidence about planner
+generation behavior. The failing artifact stays unchanged, and acceptance requires
+a preventive code, policy, validation, normalization, or completion-gate change
+with a focused regression test. The controller rejects an audit attempt that
+modifies `corpus/` or `audit/` for generated or persisted evidence, has no
+executable implementation change, or has no regression test.
+
+A corpus-only correction is valid only when the evidence itself is defective
+rather than the planner output it records: corrupt serialization, a schema
+migration, duplicate-representation drift, or an incorrect hand-authored golden
+fixture. Such a change must state that classification and add executable validation
+of the evidence contract; reducing the current finding count is not proof of a fix.
 
 ## Lanes, slots, and worktrees
 
@@ -177,21 +223,24 @@ tripplanner.worktrees/multiagent/
   integration/      long-lived, reset to origin/master each batch
   slot-1/           reusable worker worktree
   slot-2/           reusable worker worktree
+  slot-3/           reusable worker worktree
   runtime/          state, leases, pids, transcripts (outside the repo, untracked)
 ```
 
 Slots are reusable worktrees, not per-issue creations. Creating a worktree per
 small issue would re-install frontend dependencies and re-link the client package
 every time; reusing a slot keeps `node_modules` and the linked packages warm.
-Each slot also owns exactly one reusable branch, `multiagent/slot-1` or
-`multiagent/slot-2`. The controller resets that branch to the validated baseline
+Each slot also owns exactly one reusable branch, `multiagent/slot-1`,
+`multiagent/slot-2`, or `multiagent/slot-3`. The controller resets that branch
+to the validated baseline
 with `--force-with-lease` before each assignment and attaches upstream tracking
 before the worker starts. Issue and attempt identity belongs to controller state,
 the worker chat title, transcript, commit message, and GitHub issue rather than
 accumulating Git refs. Every attempt still gets a fresh agent session, so one
 issue never inherits another's reasoning.
 
-Lane labels are `lane:mw-1` and `lane:mw-2`, distinct from `lane:sbx-<n>`.
+Lane labels are `lane:mw-1`, `lane:mw-2`, and `lane:mw-3`, distinct from
+`lane:sbx-<n>`.
 
 ### Why this cannot disturb sandboxes
 
@@ -257,29 +306,36 @@ as the next attempt to whichever slot is free — slots are interchangeable.
 
 - Integration merges the **exact pushed SHA**, never a branch name that may have
   moved.
-- `multiagent/integration` is long-lived. On every idle controller cycle, the
-  controller fetches `origin/master`; when it has advanced, the controller merges
-  it, validates the combined tree, records that exact HEAD as the baseline, and
-  pushes the integration branch. The same reconciliation therefore always
-  happens before the first dispatch of a new batch.
-- Every worker in a live batch uses that immutable baseline. The controller does
+- `multiagent/integration` is long-lived. Before assigning any newly free slot,
+  the controller fetches `origin/master`; when it has advanced, the controller
+  merges it, validates the combined tree, records that exact HEAD as the baseline,
+  and pushes the integration branch.
+- Every assignment records and keeps its own immutable baseline. A later dispatch
+  round may start from a newer master-containing baseline, but the controller does
   not move a running worker's files when another sandbox lands on `master`.
 - Reusable slot worktrees are parked on tracked `multiagent/slot-<s>` branches
-  whenever an assignment releases them and whenever the idle baseline refreshes.
+  whenever an assignment releases them and whenever the integration baseline refreshes.
   A dirty failed attempt is left untouched for recovery; otherwise the same slot
   branch is reset to the validated current baseline with force-with-lease.
-- After a batch merge reaches `origin/master`, the idle reconciliation marks each
+- After a batch merge reaches `origin/master`, reconciliation marks each
   contained `in-pull-request` assignment as `landed`. Historical assignment data
   remains available for retry numbering without appearing as active work.
 - Focused validation runs after each merge. The baseline advances only on success.
 - Because Coordinator and sandbox publication can advance `master`, the batch
   re-syncs with current `origin/master` and re-runs aggregate validation before
-  the PR opens. A batch
-  validated against a stale base is not validated.
+  publication. A batch validated against a stale base is not validated.
 - The PR is **merged, not squashed**, so each worker commit keeps its `Fixes #<n>`
   trailer. The PR body repeats every `Fixes #<n>` as a second guarantee.
+- After aggregate validation, the controller opens and merges the batch PR itself.
+  A failed or pending publication blocks new dispatch rather than allowing more
+  accepted work to accumulate behind it.
 - Issues close when the PR reaches `master`. An accepted integration commit is not
   a closed issue.
+- **Publication cannot wait for an idle controller.** A continuously refilled
+  queue is never idle, so accepted work would accumulate on the integration
+  branch forever. One publication round is at most the three worker slots: the
+  batch publishes when the controller goes idle, once three fixes are waiting,
+  or once accepted work has waited ten minutes.
 
 ### Validation
 
@@ -296,7 +352,8 @@ source and report a false pass.
 ## Owner decisions
 
 When a worker or the producer hits something genuinely ambiguous, it stops and
-writes one block into the issue:
+reports `RESULT: blocked` with its question. Workers run non-interactively, so the
+controller is what reaches you: it posts that question to the issue as one block:
 
 ```markdown
 ## Owner Decision
@@ -315,9 +372,11 @@ queue is one command:
 gh issue list --state open --label "owner:decision-needed"
 ```
 
-`Multiagent-Status` prints the same queue. You answer in the coordinator chat or
-directly in the issue; the controller resumes the work as a fresh attempt with the
-answer included in the assignment.
+`Multiagent-Status` prints the same queue, including the question the worker
+asked. Answer in the issue or the coordinator chat, then remove `agent:blocked`
+and `owner:decision-needed`: those labels are what hold the issue back, and
+removing them requeues it. The next attempt reads the whole issue thread, so your
+answer arrives as part of its handoff.
 
 ## Safety
 
@@ -350,7 +409,7 @@ One shared implementation, thin launchers on both platforms.
 | `Plan-Multiagent` | Dry run: what it *would* dispatch, and why it excluded the rest |
 | `Open-Coordinator` | Open the owner-facing coordinator chat in VS Code |
 | `Publish-Coordinator` | Merge Coordinator work through a PR, update primary and Coordinator lanes, then synchronize all sandboxes |
-| `Run-Audit-Producer` | One producer pass; `--dry-run` reports findings without opening issues, while `--screenshots` captures and publishes exact affected-day evidence |
+| `Run-Quality-Issue-Producer` | One producer pass; `--dry-run` reports findings without opening issues, while `--screenshots` captures and publishes exact affected-day evidence |
 
 Windows launchers are in `scripts/win/user/multiagent/`, macOS in
 `scripts/mac/user/multiagent/`, and both forward to `scripts/dev/multiagent.ps1`.

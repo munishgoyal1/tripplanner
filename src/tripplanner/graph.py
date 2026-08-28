@@ -223,7 +223,15 @@ def _build_llm(
         azure_deployment=deployment,
         api_version=api_version,
         temperature=0.3,
-        max_retries=5,
+        # The SDK default is a 600s read timeout with no cap on total wall time,
+        # so a wedged Azure call silently burned an hour per turn and looked like
+        # a hung corpus run. Healthy calls finish in under 40s, so 90s is generous
+        # and a stall now surfaces as a retryable error within a few minutes.
+        timeout=90.0,
+        max_retries=3,
+        # A degenerate turn once emitted the full 32k output window in one call,
+        # costing $0.43 and consuming the per-minute token quota other turns need.
+        max_tokens=8192,
         # Stream tokens so astream_events emits on_chat_model_stream chunks —
         # this is what lets the web UIs render the reply as it's typed instead
         # of waiting for the whole turn (which felt "stuck").
@@ -450,7 +458,7 @@ def trip_agent(state: AgentState) -> AgentState:
         message_count=len(state["messages"]),
     )
     tools = select_tools(state["messages"], proposal_only=proposal_only)
-    if not interactive_questions:
+    if not interactive_questions and decision.forced_tool != "request_trip_input":
         tools = [tool for tool in tools if tool.name != "request_trip_input"]
     if decision.forced_tool:
         tools = [tool for tool in tools if tool.name == decision.forced_tool]
@@ -485,7 +493,10 @@ def trip_agent(state: AgentState) -> AgentState:
             "Start this new trip with one compact preference review. Call "
             "request_trip_input now. Enumerate the relevant saved preferences and "
             "past-trip signals already applied in known_context_json, and prefill "
-            "useful trip-specific choices. Do not call create_trip_plan yet."
+            "useful trip-specific choices. If no origin or saved home is known, ask "
+            "which city the traveller is coming from or whether they will arrange "
+            "their own way there, using origin and travel_scope fields with no skip. "
+            "Do not call create_trip_plan yet."
         )))
     elif decision.kickoff_tool == "recommend_trip_duration":
         instructions.append(SystemMessage(content=(

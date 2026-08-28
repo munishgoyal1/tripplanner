@@ -177,6 +177,45 @@ def test_generation_accepts_isolated_primary_and_sandbox_databases_only() -> Non
             assert_generation_database(name)
 
 
+def test_a_fresh_generation_database_has_no_trips(monkeypatch: pytest.MonkeyPatch) -> None:
+    from azure.cosmos.exceptions import CosmosResourceNotFoundError
+
+    from tripplanner.validation import emulator
+
+    class MissingContainer:
+        def query_items(self, **_kwargs: object) -> list[dict[str, Any]]:
+            raise CosmosResourceNotFoundError(message="Collection 'trips' not found")
+
+    class Database:
+        def get_container_client(self, _name: str) -> MissingContainer:
+            return MissingContainer()
+
+    class Client:
+        def get_database_client(self, _name: str) -> Database:
+            return Database()
+
+    monkeypatch.setattr(emulator, "_client", lambda: Client())
+
+    assert emulator.read_generation_trips("tripplanner-sbx-fresh") == []
+
+
+def test_generated_trip_acceptance_requires_two_stops_per_day(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    thin = {"day_wise_itinerary": [{"day": 1, "stops": [{"name": "Fort"}]}]}
+    rich = {
+        "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Fort"}, {"name": "Museum"}]},
+            {"day": 2, "stops": [{"name": "Market"}, {"name": "Palace"}]},
+        ]
+    }
+    monkeypatch.setattr(generate, "read_generation_trips", lambda *_args, **_kwargs: [thin])
+    assert generate._saved_trip("tripplanner-sbx-test", "user") is None
+
+    monkeypatch.setattr(generate, "read_generation_trips", lambda *_args, **_kwargs: [rich])
+    assert generate._saved_trip("tripplanner-sbx-test", "user") == rich
+
+
 # ---- checks ---------------------------------------------------------------
 
 
@@ -275,30 +314,110 @@ def test_the_audit_reports_the_corpus_it_actually_read(tmp_path: Path) -> None:
 
 
 def test_a_leg_drawn_as_ground_travel_across_a_continent_is_reported() -> None:
-    """The reported defect: a taxi from Bengaluru to a Paris hotel."""
-    return_day = _plan()
-    return_day["day_wise_itinerary"] = [
-        {
-            "day": 1,
-            "stops": [
-                {"name": "Charles de Gaulle Airport", "kind": "transport", "time": "09:55"},
-                {"name": "Kempegowda International Airport", "kind": "transport", "time": "23:20"},
-                {"name": "Hotel Lutetia", "kind": "hotel", "time": "23:59"},
-            ],
-        }
-    ]
+    record = _record()
+    view = {
+        "pins": [
+            {"id": "airport", "name": "Kempegowda International Airport"},
+            {"id": "hotel", "name": "Hotel Lutetia"},
+        ],
+        "days": [
+            {
+                "day": 1,
+                "legs": [
+                    {
+                        "from_pin_id": "airport",
+                        "to_pin_id": "hotel",
+                        "mode": "Taxi",
+                        "distance_km": 7700,
+                        "duration_min": 16 * 60 + 1,
+                    }
+                ],
+            }
+        ],
+    }
+
+    reported = render._leg_findings(record, view, [])
+
+    assert any(finding.rule == render.RULE_GROUND_LEG for finding in reported)
+    assert any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
+
+
+def test_unresolved_shinkansen_does_not_draw_kyoto_meal_to_tokyo_airport_as_taxi() -> None:
+    from tripplanner.web import trip_view
+
+    plan = _plan(
+        destination="Japan (Tokyo & Kyoto)",
+        day_wise_itinerary=[
+            {
+                "day": 6,
+                "stops": [
+                    {
+                        "name": "GYUKATSU Kyoto Katsugyu Teramachi Kyogoku",
+                        "kind": "meal",
+                    },
+                    {"name": "Shinkansen: Kyoto to Tokyo", "kind": "transport"},
+                    {"name": "Flight: Tokyo to Delhi", "kind": "flight"},
+                ],
+            }
+        ],
+    )
     record = corpus.CorpusRecord(
-        id="return-day",
+        id="tokyo-departure",
         provenance=corpus.REAL,
         source="test",
-        plan=return_day,
-        places={**_PLACES, "charles de gaulle airport|paris": {"lat": 49.0097, "lng": 2.5479}},
+        plan=plan,
+        places={
+            "gyukatsu kyoto katsugyu teramachi kyogoku|japan (tokyo & kyoto)": {
+                "place_id": "kyoto-meal",
+                "name": "GYUKATSU Kyoto Katsugyu Teramachi Kyogoku",
+                "lat": 35.005,
+                "lng": 135.768,
+            },
+            "tokyo airport|": {
+                "place_id": "tokyo-airport",
+                "name": "Tokyo Airport",
+                "lat": 35.549,
+                "lng": 139.779,
+            },
+        },
+    )
+
+    reported = render.check_render(record)
+    with render.render_facts(record.places):
+        view = trip_view.build_map_view(record.plan)
+    pins = {str(pin["id"]): pin for pin in view["pins"]}
+    circuit_names = [pins[pin_id]["name"] for pin_id in view["days"][0]["circuit_pin_ids"]]
+
+    assert not any(finding.rule == render.RULE_GROUND_LEG for finding in reported)
+    assert circuit_names == ["Tokyo Airport"]
+
+
+def test_an_unresolved_flight_endpoint_is_not_drawn_as_ground_travel() -> None:
+    plan = _plan(
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Flight: Bangalore to Paris", "kind": "flight"},
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                ],
+            }
+        ]
+    )
+    record = corpus.CorpusRecord(
+        id="unresolved-flight",
+        provenance=corpus.REAL,
+        source="test",
+        plan=plan,
+        places={
+            **_PLACES,
+            "bangalore airport|": {"lat": 13.1986, "lng": 77.7066},
+        },
     )
 
     reported = render.check_render(record)
 
-    assert any(finding.rule == render.RULE_GROUND_LEG for finding in reported)
-    assert any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
+    assert not any(finding.rule == render.RULE_GROUND_LEG for finding in reported)
 
 
 def test_render_does_not_bind_an_unresolved_flight_to_the_next_local_pin() -> None:
@@ -330,6 +449,108 @@ def test_render_does_not_bind_an_unresolved_flight_to_the_next_local_pin() -> No
     reported = render.check_render(record)
 
     assert not any(finding.rule == render.RULE_EMPTY_LEG for finding in reported)
+
+
+def test_render_does_not_draw_a_departure_flight_as_an_all_day_local_leg() -> None:
+    plan = _plan(
+        destination="Bhutan",
+        day_wise_itinerary=[
+            {
+                "day": 5,
+                "stops": [
+                    {"name": "Hotel in Paro", "kind": "hotel", "time": "07:00"},
+                    {
+                        "name": "Paro Town Walk",
+                        "kind": "attraction",
+                        "time": "08:00",
+                        "duration_min": 60,
+                    },
+                    {
+                        "name": "Flight: Paro to Delhi",
+                        "kind": "flight",
+                        "time": "11:00",
+                        "duration_min": 180,
+                    },
+                ],
+            }
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="bhutan-departure",
+        provenance=corpus.SYNTHETIC,
+        source="test",
+        plan=plan,
+        places={
+            "hotel in paro|bhutan": {
+                "place_id": "paro-hotel",
+                "name": "Hotel in Paro",
+                "lat": 27.43,
+                "lng": 89.42,
+            },
+            "paro town walk|bhutan": {
+                "place_id": "paro-walk",
+                "name": "Paro Town Walk",
+                "lat": 27.43,
+                "lng": 89.41,
+            },
+            "delhi airport|": {
+                "place_id": "delhi-airport",
+                "name": "Delhi Airport",
+                "lat": 28.56,
+                "lng": 77.10,
+            },
+        },
+    )
+
+    reported = render.check_render(record)
+
+    assert not any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
+
+
+def test_render_does_not_route_a_post_checkout_home_day_from_the_expired_stay() -> None:
+    plan = _plan(
+        destination="Varanasi and Ayodhya",
+        selected_hotels=[
+            {
+                "name": "Clarks Inn Express Ayodhya",
+                "city": "Ayodhya",
+                "checkin": "2027-02-05",
+                "checkout": "2027-02-07",
+            }
+        ],
+        day_wise_itinerary=[
+            {
+                "day": 6,
+                "date": "2027-02-08",
+                "title": "Arrival in Pune",
+                "stops": [{"name": "Pune", "kind": "other", "note": "Trip ends"}],
+            }
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="post-checkout-home",
+        provenance=corpus.REAL,
+        source="test",
+        plan=plan,
+        places={
+            "clarks inn express ayodhya|ayodhya": {
+                "place_id": "ayodhya-hotel",
+                "name": "Clarks Inn Express Ayodhya",
+                "lat": 26.79,
+                "lng": 82.20,
+            },
+            "pune|varanasi and ayodhya": {
+                "place_id": "pune",
+                "name": "Pune",
+                "lat": 18.52,
+                "lng": 73.86,
+            },
+        },
+    )
+
+    reported = render.check_render(record)
+
+    assert not any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
 
 
 def test_render_does_not_reuse_a_duplicate_brand_from_another_city() -> None:
@@ -390,6 +611,49 @@ def test_render_name_fallback_requires_destination_compatible_identity() -> None
     assert get_details("Dosa Plaza", "Kaziranga") is None
 
 
+def test_render_ignores_wrong_provider_identity_for_context_free_drive_endpoint() -> None:
+    plan = _plan(
+        destination="Guwahati and Kaziranga",
+        day_wise_itinerary=[
+            {
+                "day": 3,
+                "title": "Transfer to Kaziranga",
+                "stops": [
+                    {"name": "Drive: Guwahati to Kaziranga", "kind": "transport"},
+                    {"name": "IORA - The Retreat, Kaziranga", "kind": "hotel"},
+                ],
+            }
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="wrong-drive-endpoint",
+        provenance=corpus.REAL,
+        source="test",
+        plan=plan,
+        places={
+            "guwahati|kaziranga": {
+                "place_id": "kaziranga-national-park",
+                "name": "Kaziranga National Park",
+                "lat": 26.6445,
+                "lng": 93.3525,
+            },
+            "iora - the retreat, kaziranga|kaziranga": {
+                "place_id": "iora",
+                "name": "IORA - The Retreat, Kaziranga",
+                "lat": 26.5775,
+                "lng": 93.1711,
+            },
+        },
+    )
+
+    reported = render.check_render(record)
+
+    assert not any(
+        finding.rule == render.RULE_UNMAPPED and "Guwahati" in finding.message
+        for finding in reported
+    )
+
+
 def test_render_checks_stay_silent_without_the_facts_to_measure_with() -> None:
     blind = corpus.CorpusRecord(id="x", provenance=corpus.REAL, source="s", plan=_plan())
 
@@ -403,11 +667,44 @@ def test_a_stop_missing_from_the_stored_facts_is_not_called_unmapped() -> None:
     assert render._unmapped_findings(_record(), view, []) == []
 
 
+def test_a_coordinate_less_stored_fact_is_not_called_unmapped() -> None:
+    view = {"unmapped_stops": [{"name": "Bodh Gaya", "day": 3, "reason": "no_location"}]}
+    record = dataclasses.replace(
+        _record(),
+        places={
+            "bodh gaya|bodh gaya, nalanda, rajgir": {
+                "name": "Bodh Gaya",
+                "place_id": "bodh-gaya",
+            }
+        },
+    )
+
+    assert render._unmapped_findings(record, view, []) == []
+
+
+def test_a_located_stored_fact_that_failed_to_map_is_reported() -> None:
+    view = {"unmapped_stops": [{"name": "Hotel Lutetia", "day": 1, "reason": "no_location"}]}
+
+    reported = render._unmapped_findings(_record(), view, [])
+
+    assert [finding.rule for finding in reported] == [render.RULE_UNMAPPED]
+
+
 def test_a_place_the_provider_swapped_for_another_is_reported() -> None:
     view = {"unmapped_stops": [{"name": "Seine River Cruise", "day": 2, "reason": "no_match"}]}
 
     reported = render._unmapped_findings(_record(), view, [])
     assert [finding.rule for finding in reported] == [render.RULE_UNMAPPED]
+
+
+def test_a_generic_activity_with_an_explicit_map_explanation_is_not_reported() -> None:
+    view = {
+        "unmapped_stops": [
+            {"name": "Scuba Diving Centre", "day": 5, "reason": "not_a_place"}
+        ]
+    }
+
+    assert render._unmapped_findings(_record(), view, []) == []
 
 
 # ---- metamorphic ----------------------------------------------------------
@@ -431,6 +728,192 @@ def test_a_mutation_never_edits_the_plan_it_was_given() -> None:
 
 def test_blanking_an_origin_that_is_already_missing_is_not_a_mutation() -> None:
     assert mutations.blank_origin(_plan(origin="")) is None
+
+
+def test_break_time_order_introduces_a_new_chronology_defect() -> None:
+    plan = _plan(
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Origin station", "kind": "transport", "time": "07:00"},
+                    {"name": "Outbound train", "kind": "transport", "time": "07:30"},
+                    {"name": "Destination station", "kind": "transport", "time": "17:30"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hotel", "kind": "hotel", "time": "07:00"},
+                    {"name": "Museum", "kind": "attraction", "time": "08:00"},
+                    {"name": "Market", "kind": "attraction", "time": "12:00"},
+                    {"name": "Hotel", "kind": "hotel", "time": "15:00"},
+                ],
+            },
+        ]
+    )
+
+    mutation = mutations.break_time_order(plan)
+
+    assert mutation is not None
+    assert mutation.plan["day_wise_itinerary"][0] == plan["day_wise_itinerary"][0]
+    assert mutation.plan["day_wise_itinerary"][1]["stops"][-1]["time"] == "00:05"
+
+
+def test_reverse_days_keeps_each_days_findings_attached_to_its_evidence() -> None:
+    plan = _plan(
+        destination="New York",
+        departure_date="2027-10-11",
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "date": "2027-10-11",
+                "title": "Arrival",
+                "stops": [{"name": "Hotel", "kind": "hotel"}],
+            },
+            {
+                "day": 2,
+                "date": "2027-10-12",
+                "title": "Museum day",
+                "stops": [
+                    {"name": "Closed Museum", "kind": "attraction", "time": "10:00"},
+                    {"name": "Central Park", "kind": "attraction", "time": "14:00"},
+                ],
+            },
+            {
+                "day": 3,
+                "date": "2027-10-13",
+                "title": "Market day",
+                "stops": [{"name": "Market", "kind": "attraction", "time": "10:00"}],
+            },
+            {
+                "day": 4,
+                "date": "2027-10-14",
+                "title": "Departure",
+                "stops": [{"name": "Hotel", "kind": "hotel"}],
+            },
+        ],
+    )
+    record = corpus.CorpusRecord(
+        id="new-york",
+        provenance=corpus.REAL,
+        source="test",
+        plan=plan,
+        places={
+            "closed museum|new york": {
+                "name": "Closed Museum",
+                "lat": 40.0,
+                "lng": -74.0,
+                "weekday_descriptions": ["Tuesday: Closed"],
+            }
+        },
+    )
+
+    mutation = mutations.reverse_days(plan)
+
+    assert mutation is not None
+    assert [day["day"] for day in mutation.plan["day_wise_itinerary"]] == [4, 3, 2, 1]
+    assert mutation.plan["day_wise_itinerary"][2] == plan["day_wise_itinerary"][1]
+    before = {finding.key for finding in check_record(record)}
+    after = {
+        finding.key
+        for finding in check_record(dataclasses.replace(record, plan=mutation.plan))
+    }
+    assert any(key.startswith("I11|") for key in before)
+    assert before <= after
+    assert not [
+        finding
+        for finding in mutations.check_metamorphic(record)
+        if finding.rule == mutations.RULE_QUIETER and "reverse-days" in finding.message
+    ]
+
+
+def test_drop_first_leg_is_not_unnoticed_without_hotel_rows() -> None:
+    record = _record(
+        destination="Spiti Valley",
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Drive: Bangalore to Narkanda", "kind": "transport"},
+                    {"name": "Local Restaurant, Narkanda", "kind": "meal"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Drive: Narkanda to Bangalore", "kind": "transport"},
+                ],
+            },
+        ],
+    )
+
+    assert not [
+        finding
+        for finding in mutations.check_metamorphic(record)
+        if finding.rule == mutations.RULE_UNNOTICED and "drop-first-leg" in finding.message
+    ]
+
+
+def test_drop_last_leg_skips_terminal_markers_and_removes_the_journey() -> None:
+    record = _record(
+        origin="Guwahati",
+        destination="Meghalaya",
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Drive: Guwahati to Shillong", "kind": "transport"},
+                    {"name": "Hotel in Shillong", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hotel in Cherrapunji", "kind": "hotel"},
+                    {"name": "Drive: Cherrapunji to Guwahati", "kind": "transport"},
+                    {"name": "Guwahati Airport", "kind": "transport"},
+                ],
+            },
+        ],
+    )
+
+    mutation = mutations.drop_last_leg(record.plan)
+
+    assert mutation is not None
+    assert [stop["name"] for stop in mutation.plan["day_wise_itinerary"][-1]["stops"]] == [
+        "Hotel in Cherrapunji",
+        "Guwahati Airport",
+    ]
+    assert not [
+        finding
+        for finding in mutations.check_metamorphic(record)
+        if finding.rule == mutations.RULE_UNNOTICED and "drop-last-leg" in finding.message
+    ]
+
+
+def test_drop_last_leg_skips_redundant_homebound_routes() -> None:
+    plan = _plan(
+        day_wise_itinerary=[
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Flight: Bangalore to Paris", "kind": "flight"},
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                    {"name": "Flight: Paris to Bangalore", "kind": "flight"},
+                    {"name": "Flight: CDG to Bangalore", "kind": "flight"},
+                ],
+            },
+        ]
+    )
+
+    assert mutations.drop_last_leg(plan) is None
 
 
 def test_an_edit_that_changes_nothing_must_change_no_finding() -> None:
@@ -949,9 +1432,73 @@ def test_a_repeated_attempt_never_reuses_failed_principal_state(
             requests=_ONE_REQUEST,
         )
 
-    assert len(seen) == 2
+    assert len(seen) == 4
     assert len(set(seen)) == 2
     assert all(user_id.startswith("corpus-corpus-slug-") for user_id in seen)
+
+
+def test_an_empty_first_turn_gets_one_bounded_recovery(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    asked: list[tuple[str, str, str]] = []
+    saved = iter(
+        (
+            None,
+            {
+                "id": "recovered-trip",
+                "day_wise_itinerary": [
+                    {"day": 1, "stops": [{"name": "Amber Fort"}]}
+                ],
+            },
+        )
+    )
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(
+        generate,
+        "_ask",
+        lambda api, message, user_id, request_id: asked.append(
+            (message, user_id, request_id)
+        ),
+    )
+    monkeypatch.setattr(generate, "_saved_trip", lambda database, user_id: next(saved))
+
+    result = generate._attempt(
+        _ONE_REQUEST[0],
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        usd_inr=80.0,
+    )
+
+    assert result.trip is not None
+    assert result.trip["id"] == "recovered-trip"
+    assert len(asked) == 2
+    assert asked[1][0] == generate._RECOVERY_MESSAGE
+    assert asked[1][1] == asked[0][1]
+    assert asked[1][2] != asked[0][2]
+
+
+def test_a_failed_first_turn_is_not_repeated_as_paid_recovery(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    asked: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(generate, "_MAX_ATTEMPTS", 1)
+
+    def fail(_api: str, _message: str, _user_id: str, request_id: str) -> None:
+        asked.append(request_id)
+        raise http.client.RemoteDisconnected("closed without response")
+
+    monkeypatch.setattr(generate, "_ask", fail)
+
+    result = generate._attempt(
+        _ONE_REQUEST[0],
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        usd_inr=80.0,
+    )
+
+    assert result.error.startswith("RemoteDisconnected:")
+    assert len(asked) == 1
 
 
 def test_a_run_is_charged_only_for_what_that_attempt_spent(
@@ -1226,6 +1773,36 @@ def test_build_corpus_scope_distinguishes_country_from_market(
     assert "not allowed with argument" in capsys.readouterr().err
 
 
+def test_build_corpus_returns_failure_when_planner_is_barren(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    script = Path(__file__).parents[1] / "scripts" / "dev" / "build_corpus.py"
+    spec = importlib.util.spec_from_file_location("build_corpus_barren", script)
+    assert spec and spec.loader
+    build_corpus = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(build_corpus)
+    monkeypatch.setattr(build_corpus.runner, "corpus_root", lambda _root: tmp_path)
+    monkeypatch.setattr(build_corpus.generate, "api_health_error", lambda _api: None)
+    monkeypatch.setattr(
+        build_corpus.generate,
+        "build",
+        lambda *_args, **_kwargs: {
+            "produced": [],
+            "attempts": 3,
+            "spent_inr": 120.0,
+            "stopped_because": "barren",
+            "corpus_total": 0,
+            "generation_run_id": "run-1",
+            "generated_by_commit": "abc123",
+        },
+    )
+
+    exit_code = build_corpus.main(["--budget", "1000"])
+
+    assert exit_code == 4
+    assert "accepted yield      0/3 (0%)" in capsys.readouterr().out
+
+
 def test_build_corpus_runtime_defaults_follow_the_current_checkout(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -1387,8 +1964,10 @@ def test_a_dropped_connection_is_retried_with_the_same_request_id(
         workers=1,
     )
 
-    assert len(seen) == 2
+    assert len(seen) == 3
     assert seen[0] == seen[1]
+    assert seen[2][0] == seen[0][0]
+    assert seen[2][1] != seen[0][1]
 
 
 def test_a_full_request_timeout_is_not_repeated(
@@ -1478,7 +2057,7 @@ def test_a_turn_that_keeps_failing_is_reported_and_the_run_goes_on(
         on_progress=lines.append,
     )
 
-    assert len(asked) == 3
+    assert len(asked) == 5
     assert result["stopped_because"] == "exhausted"
     assert any("RemoteDisconnected" in line for line in lines)
 
@@ -1824,11 +2403,10 @@ def test_a_run_that_saves_almost_nothing_stops_itself(
     )
 
     assert result["stopped_because"] == "barren"
-    # Judged only once enough have run to tell a bad run from an odd request.
     assert len(result["produced"]) == 0
     assert any("Stopping:" in line for line in lines)
     assert sum(1 for line in lines if "no itinerary saved" in line) == (
-        generate.MIN_ATTEMPTS_BEFORE_GIVING_UP
+        generate.MAX_CONSECUTIVE_BARREN
     )
 
 

@@ -43,7 +43,7 @@ param(
     [int]$ApiPort = 8000,
     [int]$FrontendPort = 5173,
     [int]$LabsPort = 5175,
-    # Audit inspector. Derived from LabsPort by default so every sandbox slot gets
+    # Quality Inspector. Derived from LabsPort by default so every sandbox slot gets
     # a free port without another entry in sandboxes.json.
     [int]$InspectorPort = 0,
     [switch]$BackendOnly,
@@ -108,6 +108,17 @@ function Get-DotEnvValue {
         return $null
     }
     return (($match -split "=", 2)[1].Trim()).Trim('"').Trim("'")
+}
+
+foreach ($name in @("GOOGLE_MAPS_BROWSER_KEY", "GOOGLE_PLACES_API_KEY")) {
+    $localValue = Get-DotEnvValue -Name $name
+    if (-not [string]::IsNullOrWhiteSpace($localValue)) {
+        $existing = [Environment]::GetEnvironmentVariable($name, "Process")
+        if ($null -ne $existing -and $existing -ne $localValue) {
+            Write-Host "Using local $name from .env instead of the inherited shell value." -ForegroundColor DarkGray
+        }
+        [Environment]::SetEnvironmentVariable($name, $localValue, "Process")
+    }
 }
 
 $configuredCosmosBackend = if ($PSBoundParameters.ContainsKey("CosmosBackend")) {
@@ -287,7 +298,7 @@ if (-not $BackendOnly) {
         Clear-ListeningPort -Port $LabsPort -Service "UX Labs"
     }
     if (-not $NoInspector) {
-        Clear-ListeningPort -Port $InspectorPort -Service "Audit Inspector"
+        Clear-ListeningPort -Port $InspectorPort -Service "Quality Inspector"
     }
 }
 
@@ -413,7 +424,7 @@ if (-not $BackendOnly) {
 
     $inspector = $null
     if (-not $NoInspector) {
-        Write-Host "Starting Audit Inspector on :$InspectorPort ..." -ForegroundColor Cyan
+        Write-Host "Starting Quality Inspector on :$InspectorPort ..." -ForegroundColor Cyan
         $env:VITE_INSPECTOR_PORT = "$InspectorPort"
         $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
         # Where the inspector's "Open" links send the browser.
@@ -456,7 +467,7 @@ if (-not $BackendOnly) {
         }
         if ($inspector) {
             try {
-                Clear-ListeningPort -Port $InspectorPort -Service "Audit Inspector"
+                Clear-ListeningPort -Port $InspectorPort -Service "Quality Inspector"
             } catch {
                 Write-Warning "Could not stop the inspector cleanly: $($_.Exception.Message)"
             }

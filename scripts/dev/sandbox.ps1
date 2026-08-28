@@ -203,6 +203,18 @@ function Invoke-Git {
     return $output
 }
 
+function Copy-PrimaryEnvironment {
+    param([Parameter(Mandatory = $true)][string]$WorktreeRoot)
+
+    $sourceEnv = Join-Path $primaryRoot ".env"
+    if (Test-Path $sourceEnv -PathType Leaf) {
+        Copy-Item -LiteralPath $sourceEnv -Destination (Join-Path $WorktreeRoot ".env") -Force
+        Write-Host "[env]     refreshed .env from the primary checkout" -ForegroundColor DarkGray
+    } else {
+        Write-Warning "The primary checkout has no .env; sandbox credentials were not refreshed."
+    }
+}
+
 function Assert-ShortName {
     param([Parameter(Mandatory = $true)][string]$Name)
     if ($Name -notmatch "^[a-z0-9][a-z0-9-]*$") {
@@ -1342,13 +1354,7 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     )
     $createdCommit = Invoke-Git -WorkingDirectory $worktreePath -Arguments @("rev-parse", "HEAD")
 
-    $sourceEnv = Join-Path $primaryRoot ".env"
-    if (Test-Path $sourceEnv -PathType Leaf) {
-        Copy-Item $sourceEnv (Join-Path $worktreePath ".env")
-        Write-Host "[copied]  .env from the primary checkout"
-    } else {
-        Write-Warning "The primary checkout has no .env; create one in the sandbox worktree before running."
-    }
+    Copy-PrimaryEnvironment -WorktreeRoot $worktreePath
 
     $entry = [pscustomobject]@{
         slug         = $slug
@@ -1494,6 +1500,8 @@ if ($PSCmdlet.ParameterSetName -eq "Run") {
     if (-not (Test-Path $entry.worktree -PathType Container)) {
         throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $shortName."
     }
+
+    Copy-PrimaryEnvironment -WorktreeRoot $entry.worktree
 
     & "$PSScriptRoot\start-cosmos-emulator.ps1"
     if ($LASTEXITCODE -ne 0) {

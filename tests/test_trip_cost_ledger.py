@@ -6,7 +6,16 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from tripplanner.decisions.trip_cost import LIVE, STALE, UNPRICED, UNVERIFIED, build_cost_ledger
+from tripplanner.decisions.trip_cost import (
+    LIVE,
+    STALE,
+    UNPRICED,
+    UNVERIFIED,
+    build_cost_ledger,
+    compare_equivalent_offers,
+    compare_trip_decisions,
+    plan_price_rechecks,
+)
 from tripplanner.providers import fx
 
 
@@ -227,3 +236,170 @@ def test_the_summary_names_what_is_not_backed():
     assert ledger.summary == "1 priced · 1 unpriced"
     assert ledger.as_dict()["complete"] is False
     assert ledger.as_dict()["coverage_pct"] == 50
+
+
+def test_equivalent_cross_source_offers_compare_confirmed_all_in_totals():
+    offers = [
+        {
+            "provider": "liteapi",
+            "subject_key": "hotel:abc:2026-09-10:2026-09-13:room-deluxe",
+            "label": "Deluxe room",
+            "amount": 420,
+            "currency": "EUR",
+            "price_composition": {"all_in": True},
+            "checked_at": datetime.now(UTC).isoformat(),
+        },
+        {
+            "provider": "hotel-direct",
+            "subject_key": "hotel:abc:2026-09-10:2026-09-13:room-deluxe",
+            "label": "Deluxe room direct",
+            "amount": 390,
+            "currency": "EUR",
+            "price_composition": {
+                "mandatory_costs_complete": True,
+                "excluded": [{"label": "City tax", "amount": 15}],
+            },
+            "checked_at": datetime.now(UTC).isoformat(),
+        },
+    ]
+
+    comparison = compare_equivalent_offers(offers, target_currency="EUR")
+
+    assert comparison[0]["recommended_provider"] == "hotel-direct"
+    assert comparison[0]["recommended_all_in_total"] == 405
+    assert comparison[0]["savings"] == 15
+    assert comparison[0]["compared_providers"] == ["hotel-direct", "liteapi"]
+
+
+def test_cross_source_comparison_withholds_savings_when_fees_are_unknown():
+    offers = [
+        {
+            "provider": "one",
+            "subject_key": "flight:blr-del:2026-09-10:economy",
+            "amount": 100,
+            "currency": "EUR",
+            "price_composition": {"all_in": True},
+        },
+        {
+            "provider": "two",
+            "subject_key": "flight:blr-del:2026-09-10:economy",
+            "amount": 80,
+            "currency": "EUR",
+            "price_composition": {},
+        },
+    ]
+
+    comparison = compare_equivalent_offers(offers, target_currency="EUR")
+
+    assert comparison[0]["recommended_provider"] == "one"
+    assert comparison[0]["savings"] is None
+    assert comparison[0]["excluded_providers"] == {"two": "mandatory costs are unresolved"}
+
+
+def test_persisted_stay_decisions_compare_only_the_same_room_product():
+    at = datetime.now(UTC).isoformat()
+
+    def option(option_id: str, provider: str, room: str, amount: int) -> dict:
+        return {
+            "id": option_id,
+            "label": "LX Boutique",
+            "price": {
+                "amount": amount,
+                "currency": "EUR",
+                "basis": "per_party",
+                "all_in": True,
+            },
+            "lodging": {
+                "checkin": "2026-09-10",
+                "checkout": "2026-09-13",
+                "room_name": room,
+                "board_name": "Breakfast",
+                "refundable": True,
+            },
+            "source": {"provider": provider, "checked_at": at},
+        }
+
+    plan = {
+        "currency": "EUR",
+        "decisions": [
+            {
+                "id": "dec_lodging_lisbon",
+                "kind": "lodging",
+                "created_at": at,
+                "rule": {"code": "verified_stay_total", "text": "Lowest total"},
+                "chosen_option_id": "lite-deluxe",
+                "options": [
+                    option("lite-deluxe", "liteapi", "Deluxe", 420),
+                    option("direct-deluxe", "hotel-direct", "Deluxe", 390),
+                    option("other-standard", "other", "Standard", 300),
+                ],
+            }
+        ],
+    }
+
+    comparisons = compare_trip_decisions(plan)
+
+    assert len(comparisons) == 1
+    deluxe = comparisons[0]
+    assert deluxe["recommended_provider"] == "hotel-direct"
+    assert deluxe["savings"] == 30
+    assert "other" not in deluxe["compared_providers"]
+
+
+def test_finalized_unbooked_stale_prices_produce_explicit_recheck_tasks():
+    plan = {
+        "trip_id": "trip-1",
+        "status": "finalized",
+        "selected_hotels": [{"name": "LX Boutique", "booking_status": "planned"}],
+        "price_checks": [check("lodging", "liteapi", minutes_ago=120, ttl_minutes=30)],
+    }
+
+    tasks = plan_price_rechecks(plan)
+
+    assert tasks == [
+        {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "reason": "finalized but unbooked quote expired",
+        }
+    ]
+
+
+def test_consent_gated_offer_benefit_uses_terms_but_never_card_numbers():
+    offers = [
+        {
+            "provider": "portal",
+            "subject_key": "hotel:abc:2026-09-10:2026-09-13:room-deluxe",
+            "amount": 400,
+            "currency": "EUR",
+            "price_composition": {"all_in": True},
+        }
+    ]
+    benefits = [
+        {
+            "program": "Example Rewards",
+            "card_label": "Example Premier",
+            "card_number": "4111111111111111",
+            "portal": "portal",
+            "discount_percent": 10,
+            "terms_url": "https://example.test/terms",
+            "consent": True,
+        }
+    ]
+
+    comparison = compare_equivalent_offers(
+        offers,
+        target_currency="EUR",
+        benefits=benefits,
+    )
+
+    applied = comparison[0]["applied_benefit"]
+    assert comparison[0]["recommended_all_in_total"] == 360
+    assert applied == {
+        "program": "Example Rewards",
+        "card_label": "Example Premier",
+        "discount": 40,
+        "currency": "EUR",
+        "terms_url": "https://example.test/terms",
+    }
+    assert "4111111111111111" not in str(comparison)

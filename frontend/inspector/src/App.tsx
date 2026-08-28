@@ -294,7 +294,7 @@ export default function App() {
   return (
     <div className="wrap">
       <header>
-        <h1>Audit inspector</h1>
+        <h1>Quality Inspector</h1>
         <div className="sub">
           {report.corpus.size} trips · {report.groups.length} finding groups ·{" "}
           {report.groups.filter((group) => group.new).length} not yet accepted · report generated{" "}

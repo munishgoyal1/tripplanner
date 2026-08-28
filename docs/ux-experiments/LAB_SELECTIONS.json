@@ -512,7 +512,7 @@
     "selection": "toolbar-pill",
     "selectionLabel": "A · Toolbar rating pill",
     "comment": "",
-    "disposition": "ready",
+    "disposition": "completed",
     "handoffs": [
       {
         "version": 1,
@@ -521,10 +521,18 @@
         "comment": "",
         "disposition": "ready",
         "recordedAt": "2026-08-18T10:07:23.826Z"
+      },
+      {
+        "version": 2,
+        "selection": "toolbar-pill",
+        "selectionLabel": "A · Toolbar rating pill",
+        "comment": "",
+        "disposition": "completed",
+        "recordedAt": "2026-08-25T10:44:46.842Z"
       }
     ],
     "implementations": [],
-    "stateChangedAt": "2026-08-18T10:07:23.826Z",
-    "updatedAt": "2026-08-18T10:07:23.826Z"
+    "stateChangedAt": "2026-08-25T10:44:46.842Z",
+    "updatedAt": "2026-08-25T10:44:46.842Z"
   }
 }

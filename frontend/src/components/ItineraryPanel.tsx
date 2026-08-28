@@ -453,7 +453,7 @@ export default function ItineraryPanel({
     return (
       <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
         {filterControls}
-        {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} />}
+        {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} onTripChanged={onTripChanged} />}
         <div className="grid min-h-40 place-items-center p-6 text-sm text-slate-400">
           Loading itinerary…
         </div>
@@ -465,7 +465,7 @@ export default function ItineraryPanel({
     return (
       <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
         {filterControls}
-        {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} />}
+        {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} onTripChanged={onTripChanged} />}
         <div className="grid min-h-48 place-items-center p-6 text-center">
           <div className="max-w-xs text-sm text-slate-500">
             No day-by-day plan yet. Once the assistant builds your itinerary, each
@@ -496,6 +496,7 @@ export default function ItineraryPanel({
           stops={stats.stops}
           active={allDaysActive}
           onAllDaysMap={onAllDaysMap}
+          onTripChanged={onTripChanged}
         />
       )}
       <div className="px-4 py-4">

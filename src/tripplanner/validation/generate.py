@@ -49,7 +49,14 @@ _MAX_RETRY_WAIT_SEC = 180.0
 #: request or two that legitimately needed a question.
 MIN_ATTEMPTS_BEFORE_GIVING_UP = 10
 MAX_BARREN_SHARE = 0.25
+MAX_CONSECUTIVE_BARREN = 3
 _MAX_ATTEMPTS = 4
+_RECOVERY_MESSAGE = (
+    "The draft trip from the previous turn still has no saved itinerary. Use the research "
+    "already gathered, correct any invalid journey timing, and call update_trip_plan with "
+    "the complete day_wise_itinerary now. Persist concrete hotels, activities, meals, and "
+    "costs where evidence is already available. Do not restart research or ask a question."
+)
 
 
 def api_health_error(api: str, timeout: float = 3.0) -> str | None:
@@ -179,7 +186,8 @@ def _saved_trip(database: str, user_id: str) -> dict[str, Any] | None:
     """
     for trip in read_generation_trips(database, user_id=user_id):
         days = [day for day in (trip.get("day_wise_itinerary") or []) if isinstance(day, dict)]
-        if days and any(day.get("stops") for day in days):
+        stops = sum(len(day.get("stops") or []) for day in days)
+        if days and stops >= 2 * len(days):
             return trip
     return None
 
@@ -241,11 +249,19 @@ def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -
     started = time.monotonic()
 
     error = _send_with_retry(api, request.message, user_id, request_id)
+    trip = _saved_trip(database, user_id)
+    if error is None and trip is None:
+        error = _send_with_retry(
+            api,
+            _RECOVERY_MESSAGE,
+            user_id,
+            f"{user_id}-recovery",
+        )
+        trip = _saved_trip(database, user_id)
     seconds = time.monotonic() - started
     usage = _usage_for(database, user_id)
     cost_inr = max(0.0, float(usage.get("cost_usd") or 0.0) - before_usd) * usd_inr
     if error:
-        trip = _saved_trip(database, user_id)
         if trip is not None:
             return _Attempt(
                 request,
@@ -260,7 +276,7 @@ def _attempt(request: TripRequest, *, database: str, api: str, usd_inr: float) -
         request,
         cost_inr=cost_inr,
         seconds=seconds,
-        trip=_saved_trip(database, user_id),
+        trip=trip,
         model=str(usage.get("model") or ""),
         user_id=user_id,
     )
@@ -302,6 +318,7 @@ def build(
     reserved = 0.0
     exhausted = False
     barren = 0
+    consecutive_barren = 0
     giving_up = False
     api_unavailable = False
     generated_at = datetime.now(UTC)
@@ -322,7 +339,7 @@ def build(
         return barren / attempts if attempts else 0.0
 
     def _record(result: _Attempt) -> None:
-        nonlocal spent, model, barren, api_unavailable
+        nonlocal spent, model, barren, consecutive_barren, api_unavailable
         request = result.request
         spent += result.cost_inr
         model = result.model or model
@@ -335,12 +352,14 @@ def build(
             return
         if result.trip is None:
             barren += 1
+            consecutive_barren += 1
             if on_progress:
                 on_progress(
                     f"  {request.slug}: no itinerary saved "
                     f"(INR {result.cost_inr:.1f}, {result.seconds:.0f}s)"
                 )
             return
+        consecutive_barren = 0
         days = [
             day for day in (result.trip.get("day_wise_itinerary") or []) if isinstance(day, dict)
         ]
@@ -420,6 +439,15 @@ def build(
                     result = _Attempt(request, error=f"{type(error).__name__}: {error}")
                 _record(result)
             attempts = len(produced) + barren
+            if not giving_up and consecutive_barren >= MAX_CONSECUTIVE_BARREN:
+                giving_up = True
+                if on_progress:
+                    on_progress(
+                        f"\n  Stopping: {consecutive_barren} consecutive requests saved no "
+                        f"itinerary (INR {spent:.0f} spent).\n"
+                        "  The planner is not producing corpus data reliably. Check the first "
+                        "failed request before spending more."
+                    )
             if (
                 not giving_up
                 and attempts >= MIN_ATTEMPTS_BEFORE_GIVING_UP
@@ -471,6 +499,7 @@ def build(
     return {
         "produced": [asdict(entry) for entry in produced],
         "spent_inr": round(spent, 2),
+        "attempts": len(produced) + barren,
         "budget_inr": allowed.budget_inr,
         "stopped_because": stopped,
         "corpus_total": len(load_manifest(corpus_root)["produced"]),

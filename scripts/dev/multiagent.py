@@ -1,13 +1,14 @@
-"""Coordinate bounded agent workers over owner-approved GitHub issues.
+"""Coordinate bounded agent workers over ready GitHub issues.
 
     python scripts/dev/multiagent.py status
     python scripts/dev/multiagent.py plan
     python scripts/dev/multiagent.py start
     python scripts/dev/multiagent.py audit --dry-run
 
-Nothing here dispatches work the owner did not authorise: an issue is only
-eligible while it carries the ``owner:ready`` label. The pure selection,
-collision, and fingerprint logic lives in ``multiagent_core.py``.
+Routine queued work and audit bugs are eligible by default. Work carrying
+``owner:approval-required`` stays held until the owner adds ``owner:ready``.
+The pure selection, collision, and fingerprint logic lives in
+``multiagent_core.py``.
 """
 
 from __future__ import annotations
@@ -30,13 +31,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import multiagent_core as core  # noqa: E402
 
-SLOT_COUNT = 2
+SLOT_COUNT = 3
 LEASE_MINUTES = 15
 CYCLE_SECONDS = 20
 WORKER_TIMEOUT_MINUTES = 60
 INTEGRATION_BRANCH = "multiagent/integration"
 COORDINATOR_BRANCH = "multiagent/coordinator"
 TEST_TIMEOUT_SECONDS = 3600
+# The post-fix corpus audit only annotates the record, so it may never hold the loop for long.
+AUDIT_TIMEOUT_SECONDS = 300
+TIMEOUT_RETURNCODE = 124
 WORKER_MODEL = "gpt-5.6-sol"
 WORKER_REASONING_EFFORT = "medium"
 STOP_GRACE_SECONDS = 2.0
@@ -62,16 +66,21 @@ def run(
     input_text: str | None = None,
     timeout: int | None = 600,
 ) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        args,
-        cwd=str(cwd) if cwd else None,
-        env=env,
-        input=input_text,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        check=False,
-    )
+    try:
+        return subprocess.run(
+            args,
+            cwd=str(cwd) if cwd else None,
+            env=env,
+            input=input_text,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        # A slow command must degrade into a failed result; raising here kills the controller.
+        message = f"timed out after {timeout}s"
+        return subprocess.CompletedProcess(args, TIMEOUT_RETURNCODE, "", message)
 
 
 def git(args: list[str], *, cwd: Path, check: bool = True) -> str:
@@ -138,6 +147,12 @@ def save_state(space: Workspace, state: core.State) -> None:
     temp = space.state_path.with_suffix(".tmp")
     temp.write_text(payload, encoding="utf-8")
     temp.replace(space.state_path)
+
+
+def heartbeat(space: Workspace, state: core.State) -> None:
+    """Publish progress and renew the lease inside a cycle, not only at its end."""
+    state.lease = core.Lease.issue_to("controller", minutes=LEASE_MINUTES, pid=os.getpid())
+    save_state(space, state)
 
 
 def pid_alive(pid: int) -> bool:
@@ -230,7 +245,7 @@ def stop_owned_process(pid: int, marker: str) -> str:
 def gh_issues(repo: str, labels: list[str], *, state: str = "open") -> list[core.Issue]:
     args = [
         "gh", "issue", "list", "--repo", repo, "--state", state,
-        "--json", "number,title,body,labels,state,updatedAt", "--limit", "60",
+        "--json", "number,title,body,comments,labels,state,updatedAt", "--limit", "60",
     ]
     for label in labels:
         args += ["--label", label]
@@ -238,6 +253,29 @@ def gh_issues(repo: str, labels: list[str], *, state: str = "open") -> list[core
     if result.returncode != 0:
         raise RuntimeError(f"gh issue list failed: {result.stderr.strip()}")
     return [core.Issue.from_api(item) for item in json.loads(result.stdout or "[]")]
+
+
+def gh_issue(repo: str, number: int) -> core.Issue | None:
+    result = run([
+        "gh", "issue", "view", str(number), "--repo", repo,
+        "--json", "number,title,body,comments,labels,state,updatedAt",
+    ])
+    if result.returncode != 0:
+        return None
+    try:
+        return core.Issue.from_api(json.loads(result.stdout or "{}"))
+    except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+        return None
+
+
+def dispatchable_issues(repo: str) -> list[core.Issue]:
+    """Return open issues that the multiagent intake policy permits."""
+    candidates = {
+        issue.number: issue
+        for label in (core.QUEUED, core.AUDIT_SOURCE, core.READY)
+        for issue in gh_issues(repo, [label])
+    }
+    return [issue for issue in candidates.values() if core.eligible(issue)]
 
 
 def gh_relabel(repo: str, number: int, *, add: list[str] = (), remove: list[str] = ()) -> None:
@@ -403,10 +441,10 @@ def park_slot(space: Workspace, state: core.State, slot: str) -> bool:
 
 
 def park_released_slots(space: Workspace, state: core.State) -> None:
-    busy = state.busy_slots()
+    held = state.held_slots()
     for index in range(1, SLOT_COUNT + 1):
         slot = f"slot-{index}"
-        if slot in busy:
+        if slot in held:
             continue
         park_slot(space, state, slot)
 
@@ -418,6 +456,27 @@ def park_released_slots(space: Workspace, state: core.State) -> None:
 
 def touched_frontend(files: str) -> bool:
     return "frontend/" in files or "packages/" in files
+
+
+def changed_paths(worktree: Path, base_sha: str, pushed_sha: str) -> tuple[str, ...]:
+    output = git(
+        ["diff", "--name-only", f"{base_sha}..{pushed_sha}"],
+        cwd=worktree,
+        check=False,
+    )
+    return tuple(line.strip() for line in output.splitlines() if line.strip())
+
+
+def hydrate_audit_policy(repo: str, assignment: core.Assignment) -> bool:
+    """Populate policy fields missing from assignments dispatched before this gate existed."""
+    if assignment.evidence_class:
+        return True
+    item = gh_issue(repo, assignment.issue)
+    if item is None:
+        return False
+    assignment.audit_source = core.AUDIT_SOURCE in item.labels
+    assignment.evidence_class = core.audit_evidence_class(item)
+    return True
 
 
 def validate(space: Workspace, worktree: Path, *, frontend: bool) -> tuple[bool, str]:
@@ -504,6 +563,7 @@ def launch_worker(
         "--prompt", prompt,
         "--autopilot",
         "--allow-all",
+        "--remote-export",
         "--no-ask-user",
         "--no-color",
         "--silent",
@@ -548,6 +608,34 @@ def confirm_worker_push(
     return True
 
 
+def recover_reportless_push(
+    space: Workspace,
+    assignment: core.Assignment,
+) -> str:
+    """Return a safely attributable remote tip when the final report is missing."""
+    worktree = space.slot_path(assignment.slot)
+    remote_ref = f"refs/remotes/origin/{assignment.branch}"
+    fetched = run(
+        ["git", "fetch", "-q", "origin", f"{assignment.branch}:{remote_ref}"],
+        cwd=worktree,
+    )
+    if fetched.returncode != 0:
+        return ""
+    pushed_sha = git(["rev-parse", remote_ref], cwd=worktree, check=False)
+    if not pushed_sha or pushed_sha == assignment.base_sha:
+        return ""
+    descended = run(
+        ["git", "merge-base", "--is-ancestor", assignment.base_sha, pushed_sha],
+        cwd=worktree,
+    )
+    if descended.returncode != 0:
+        return ""
+    message = git(["show", "-s", "--format=%B", pushed_sha], cwd=worktree, check=False)
+    if not re.search(rf"(?im)^Fixes\s+#{assignment.issue}\s*$", message):
+        return ""
+    return pushed_sha
+
+
 def reconcile_landed_assignments(state: core.State, worktree: Path) -> int:
     landed = 0
     for assignment in state.assignments:
@@ -565,8 +653,31 @@ def reconcile_landed_assignments(state: core.State, worktree: Path) -> int:
     return landed
 
 
-def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
-    """Merge current master into an idle integration lane before a new batch starts."""
+def reclaim_stale_claims(repo: str, state: core.State) -> int:
+    """Return issues the board still shows as mid-integration to the dispatch queue.
+
+    A wiped runtime directory leaves `agent:integrating` behind with no owner, and
+    those issues are then excluded from selection forever.
+    """
+    tracked = frozenset(
+        item.issue
+        for item in state.assignments
+        if item.state in ("dispatched", "running", "pushed", "integrated", "in-pull-request")
+    )
+    try:
+        issues = gh_issues(repo, [core.INTEGRATING])
+    except RuntimeError as error:
+        log(f"could not check for stale claims: {error}")
+        return 0
+    stale = core.stale_claims(tuple(issues), tracked)
+    for number in stale:
+        set_agent_state(repo, number, None)
+        log(f"#{number} released: claimed as integrating with no controller record")
+    return len(stale)
+
+
+def refresh_integration_baseline(space: Workspace, state: core.State) -> bool:
+    """Merge current master before assigning any newly free worker slot."""
     worktree = ensure_integration(space)
     git(["fetch", "-q", "origin", "master"], cwd=worktree)
     reconcile_landed_assignments(state, worktree)
@@ -606,21 +717,14 @@ def refresh_idle_baseline(space: Workspace, state: core.State) -> bool:
     return True
 
 
-def batch_in_flight(state: core.State) -> bool:
-    return any(
-        item.state in ("dispatched", "running", "pushed", "integrated")
-        for item in state.assignments
-    )
-
-
 def dispatch(space: Workspace, state: core.State, repo: str) -> None:
     free = [f"slot-{index}" for index in range(1, SLOT_COUNT + 1)]
-    busy = state.busy_slots()
-    free = [slot for slot in free if slot not in busy]
+    held = state.held_slots()
+    free = [slot for slot in free if slot not in held]
     if not free:
         return
 
-    issues = gh_issues(repo, [core.READY])
+    issues = dispatchable_issues(repo)
     busy: list[core.Footprint] = []
     for assignment in state.active():
         issue = next((item for item in issues if item.number == assignment.issue), None)
@@ -656,6 +760,8 @@ def dispatch(space: Workspace, state: core.State, repo: str) -> None:
                 state="running",
                 started=core.format_time(core.utcnow()),
                 heartbeat=core.format_time(core.utcnow()),
+                audit_source=core.AUDIT_SOURCE in issue.labels,
+                evidence_class=core.audit_evidence_class(issue),
             )
         )
         if issue.number not in state.batch:
@@ -700,6 +806,13 @@ def collect(space: Workspace, state: core.State, repo: str) -> None:
         assignment.validation = report.get("VALIDATION", "")
 
         pushed_sha = report.get("COMMIT", "none")
+        if not report:
+            recovered_sha = recover_reportless_push(space, assignment)
+            if recovered_sha:
+                outcome = "done"
+                pushed_sha = recovered_sha
+                assignment.validation = "worker report missing; integration validation required"
+                log(f"#{assignment.issue} recovered remote push {recovered_sha[:12]}")
         if outcome == "done" and pushed_sha not in ("", "none"):
             if not confirm_worker_push(space, assignment, pushed_sha):
                 assignment.state = "failed"
@@ -722,6 +835,15 @@ def collect(space: Workspace, state: core.State, repo: str) -> None:
             assignment.question = report.get("QUESTION", "")
             set_agent_state(repo, assignment.issue, core.BLOCKED)
             gh_relabel(repo, assignment.issue, add=[core.DECISION_NEEDED])
+            gh_comment(
+                repo, assignment.issue,
+                "## Owner Decision\n\n**Question:** "
+                + (assignment.question or "the worker stopped without recording its question")
+                + f"\n**Why it blocks:** attempt {assignment.attempt} stopped in"
+                f" `{assignment.slot}`; `{assignment.branch}` and its transcript remain for"
+                " inspection.\n**Answer:** waiting — reply here, then remove `agent:blocked`"
+                " and `owner:decision-needed` to requeue it.",
+            )
             log(f"#{assignment.issue} is blocked on an owner decision")
         else:
             assignment.state = "failed"
@@ -743,6 +865,27 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
     git(["fetch", "-q", "origin"], cwd=worktree)
 
     for assignment in ready:
+        if not hydrate_audit_policy(repo, assignment):
+            assignment.validation = "audit policy metadata could not be loaded from GitHub"
+            log(f"#{assignment.issue} integration deferred: {assignment.validation}")
+            continue
+        paths = changed_paths(worktree, assignment.base_sha, assignment.pushed_sha)
+        rejection = core.audit_fix_rejection(
+            audit_source=assignment.audit_source,
+            evidence_class=assignment.evidence_class,
+            changed_paths=paths,
+        )
+        if rejection:
+            assignment.state = "rejected"
+            assignment.validation = rejection
+            set_agent_state(repo, assignment.issue, None)
+            gh_comment(
+                repo,
+                assignment.issue,
+                "Integration rejected before merge: " + rejection + ".",
+            )
+            log(f"#{assignment.issue} rejected: {rejection}")
+            continue
         merged = run(
             ["git", "merge", "--no-ff", "-m",
              f"Integrate #{assignment.issue} attempt {assignment.attempt}", assignment.pushed_sha],
@@ -760,6 +903,7 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
             log(f"#{assignment.issue} conflicted during integration; re-queued")
             continue
 
+        log(f"#{assignment.issue} integrating {assignment.pushed_sha[:12]}; validating")
         passed, summary = validate(
             space, worktree, frontend=touched_frontend(assignment.validation)
         )
@@ -782,7 +926,7 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
             [space.python(), str(worktree / "scripts" / "dev" / "trip_audit.py"), "--json"],
             cwd=worktree,
             env={**os.environ, "TRIPPLANNER_AUDIT_REPORT_ROOT": str(space.primary)},
-            timeout=TEST_TIMEOUT_SECONDS,
+            timeout=AUDIT_TIMEOUT_SECONDS,
         )
         if audit.returncode not in (0, 1):
             assignment.validation += f"; post-fix audit unavailable (exit {audit.returncode})"
@@ -794,14 +938,22 @@ def integrate(space: Workspace, state: core.State, repo: str) -> None:
             except json.JSONDecodeError:
                 assignment.validation += "; post-fix audit report recorded"
         park_slot(space, state, assignment.slot)
+        heartbeat(space, state)
         log(f"#{assignment.issue} integrated; baseline now {state.baseline_sha[:12]}")
 
 
-def finalise_batch(space: Workspace, state: core.State, repo: str) -> None:
-    """Re-sync with master, validate the whole batch, and open one PR."""
+def finalise_batch(space: Workspace, state: core.State, repo: str) -> bool:
+    """Validate, publish, and merge a bounded batch before more work is dispatched."""
     integrated = [item for item in state.assignments if item.state == "integrated"]
-    if not integrated or state.active():
-        return
+    pending = [item for item in state.assignments if item.state == "in-pull-request"]
+    reason = (
+        "a previously published batch is awaiting merge"
+        if pending
+        else core.batch_ship_reason(integrated, active=bool(state.active()))
+    )
+    if not reason:
+        return True
+    log(f"publishing the batch: {reason}")
     worktree = ensure_integration(space)
     git(["fetch", "-q", "origin", "master"], cwd=worktree)
 
@@ -810,17 +962,18 @@ def finalise_batch(space: Workspace, state: core.State, repo: str) -> None:
         git(["merge", "--abort"], cwd=worktree, check=False)
         state.last_error = "integration branch conflicts with origin/master"
         log("batch cannot be finalised: conflicts with origin/master")
-        return
+        return False
 
     passed, summary = validate(space, worktree, frontend=True)
     if not passed:
         state.last_error = f"aggregate validation failed: {summary}"
         log(state.last_error)
-        return
+        return False
 
     state.baseline_sha = git(["rev-parse", "HEAD"], cwd=worktree)
     git(["push", "-q", "-u", "origin", INTEGRATION_BRANCH], cwd=worktree)
-    closes = "\n".join(f"Fixes #{item.issue}" for item in integrated)
+    publishing = [*pending, *integrated]
+    closes = "\n".join(f"Fixes #{item.issue}" for item in publishing)
     body = (
         "Batch produced by the multiagent coordinator.\n\n"
         f"Aggregate validation: {summary}\n\n"
@@ -829,18 +982,47 @@ def finalise_batch(space: Workspace, state: core.State, repo: str) -> None:
     )
     created = run([
         "gh", "pr", "create", "--repo", repo, "--base", "master", "--head", INTEGRATION_BRANCH,
-        "--title", f"Multiagent batch: {len(integrated)} issue(s)", "--body", body,
+        "--title", f"Multiagent batch: {len(publishing)} issue(s)", "--body", body,
     ])
     if created.returncode != 0 and "already exists" not in created.stderr:
         state.last_error = f"pull request not created: {created.stderr.strip()}"
         log(state.last_error)
-        return
+        return False
 
     for item in integrated:
         item.state = "in-pull-request"
         set_agent_state(repo, item.issue, core.NEEDS_VERIFY)
+    listed = run([
+        "gh", "pr", "list", "--repo", repo, "--head", INTEGRATION_BRANCH,
+        "--base", "master", "--state", "open", "--json", "number", "--jq",
+        ".[0].number",
+    ])
+    pr_number = listed.stdout.strip() if listed.returncode == 0 else ""
+    if not pr_number:
+        state.last_error = "batch pull request number could not be determined"
+        log(state.last_error)
+        return False
+
+    merged_pr = run(["gh", "pr", "merge", pr_number, "--repo", repo, "--merge"])
+    if merged_pr.returncode != 0:
+        state.last_error = f"batch PR #{pr_number} did not merge: {merged_pr.stderr.strip()}"
+        log(state.last_error)
+        return False
+
+    git(["fetch", "-q", "origin", "master"], cwd=worktree)
+    contained = run(
+        ["git", "merge-base", "--is-ancestor", state.baseline_sha, "origin/master"],
+        cwd=worktree,
+    )
+    if contained.returncode != 0:
+        state.last_error = f"batch PR #{pr_number} merged without the validated baseline"
+        log(state.last_error)
+        return False
+    for item in publishing:
+        item.state = "landed"
     state.batch = []
-    log(f"opened the batch pull request with {len(integrated)} issue(s)")
+    log(f"merged batch PR #{pr_number} with {len(publishing)} issue(s)")
+    return True
 
 
 # ----------------------------------------------------------------------------
@@ -860,6 +1042,19 @@ def preflight(space: Workspace) -> list[str]:
     if not (space.primary / ".venv").exists():
         problems.append(f"no virtual environment at {space.primary}/.venv")
     return problems
+
+
+def latest_worker_note(space: Workspace, assignment: core.Assignment, *, width: int = 92) -> str:
+    """The worker's most recent line, so a long run is never a silent one."""
+    transcript = transcript_path(space, assignment.issue, assignment.attempt)
+    if not transcript.exists():
+        return ""
+    text = transcript.read_text(encoding="utf-8", errors="replace")
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if not lines:
+        return ""
+    note = lines[-1]
+    return note if len(note) <= width else note[: width - 1].rstrip() + "…"
 
 
 def cmd_status(space: Workspace, args: argparse.Namespace) -> int:
@@ -883,17 +1078,25 @@ def cmd_status(space: Workspace, args: argparse.Namespace) -> int:
             f"  #{item.issue:<5} {item.slot:<7} attempt {item.attempt}  {item.state:<16}"
             f" {item.pushed_sha[:12] or '-'}"
         )
+        if item.state in ("dispatched", "running"):
+            note = latest_worker_note(space, item)
+            if note:
+                log(f"           now: {note}")
     log(_BAR)
     try:
         waiting = gh_issues(repo, [core.DECISION_NEEDED])
-        ready = gh_issues(repo, [core.READY])
+        ready = dispatchable_issues(repo)
     except RuntimeError as error:
         log(f"GitHub unavailable: {error}")
         return 1
     log(f"Waiting on you: {len(waiting)} issue(s)")
+    questions = {item.issue: item.question for item in state.assignments if item.question}
     for issue in waiting:
         log(f"  #{issue.number} {issue.title[:60]}")
-    log(f"Authorised and open: {len(ready)} issue(s)")
+        asked = questions.get(issue.number, "")
+        if asked:
+            log(f"     asks: {asked[:88]}")
+    log(f"Ready for multiagent: {len(ready)} issue(s)")
     log(_BAR)
     log("Recovery: Stop-Multiagent, then Start-Multiagent. Worktrees and branches are kept.")
     return 0
@@ -902,13 +1105,19 @@ def cmd_status(space: Workspace, args: argparse.Namespace) -> int:
 def cmd_plan(space: Workspace, args: argparse.Namespace) -> int:
     state = load_state(space)
     repo = space.repo()
-    issues = gh_issues(repo, [core.READY])
+    issues = dispatchable_issues(repo)
     if not issues:
-        log(f"Nothing carries {core.READY}. Add it to an issue to authorise implementation.")
+        log("No routine queued, audit bug, or owner-approved issue is ready.")
         return 0
     capacity = SLOT_COUNT - len(state.busy_slots())
-    plan = core.plan_dispatch(issues, capacity=capacity)
-    log(f"{len(issues)} authorised issue(s); {capacity} free slot(s).")
+    busy = tuple(
+        core.issue_footprint(issue)
+        for assignment in state.active()
+        for issue in issues
+        if issue.number == assignment.issue
+    )
+    plan = core.plan_dispatch(issues, capacity=capacity, busy=busy)
+    log(f"{len(issues)} ready issue(s); {capacity} free slot(s).")
     log(_BAR)
     for issue in plan.dispatch:
         paths = ", ".join(core.declared_paths(issue.body)[:3]) or "no declared paths"
@@ -945,11 +1154,14 @@ def cmd_run(space: Workspace, args: argparse.Namespace) -> int:
             state.lease = core.Lease.issue_to("controller", minutes=LEASE_MINUTES, pid=os.getpid())
             state.last_error = ""
             collect(space, state, repo)
+            heartbeat(space, state)
             integrate(space, state, repo)
-            baseline_ready = batch_in_flight(state) or refresh_idle_baseline(space, state)
+            heartbeat(space, state)
+            publication_ready = finalise_batch(space, state, repo)
+            baseline_ready = publication_ready and refresh_integration_baseline(space, state)
             if not state.paused and baseline_ready:
                 dispatch(space, state, repo)
-            finalise_batch(space, state, repo)
+                heartbeat(space, state)
             state.last_cycle = core.format_time(core.utcnow())
             save_state(space, state)
         except (RuntimeError, OSError, ValueError, json.JSONDecodeError) as error:
@@ -996,7 +1208,7 @@ def cmd_start(space: Workspace, args: argparse.Namespace) -> int:
     log(f"Controller started (pid {process.pid}).")
     log(f"  worktrees  {space.root}")
     log(f"  log        {space.runtime / 'controller.log'}")
-    log("  dispatch   only issues carrying owner:ready")
+    log("  dispatch   routine queued work, audit bugs, and owner-approved gated work")
     if not args.no_chat:
         cmd_coordinator(space, args)
     return 0
@@ -1079,7 +1291,8 @@ def cmd_coordinator(space: Workspace, args: argparse.Namespace) -> int:
         "request in that Coordinator lane, never directly in primary master, the integration "
         "lane, a worker slot, or a sandbox. Read "
         "docs/development/multiagent-coordination.md, then report: issues waiting on my "
-        "decision (owner:decision-needed), what is authorised (owner:ready), and what the "
+        "decision (owner:decision-needed), what is explicitly approval-gated "
+        "(owner:approval-required without owner:ready), what is ready for pickup, and what the "
         "controller is doing (scripts/dev/multiagent.py status). Help me draft requirements "
         "and answer blocked issues. Every fix I request in this chat is owned by this coordinator "
         "by default, regardless of size. Do not create an issue, dispatch a "
@@ -1087,7 +1300,7 @@ def cmd_coordinator(space: Workspace, args: argparse.Namespace) -> int:
         "owner request that may edit files, require a clean Coordinator worktree and merge current "
         "origin/master. After the fix, validate and commit, then run Publish-Coordinator to merge "
         "through a PR and synchronize primary master plus every registered sandbox. Never add "
-        "owner:ready yourself."
+        "owner:ready or owner:approval-required yourself."
     )
     opened = run(
         ["code", "chat", "-m", "autopilot", "--reuse-window", prompt],
@@ -1270,7 +1483,7 @@ def cmd_audit(space: Workspace, args: argparse.Namespace) -> int:
         ])
         log(f"  proposed       {mark}  {created.stdout.strip() or created.stderr.strip()}")
 
-    log("Nothing is authorised. Add owner:ready to whichever should be built.")
+    log("Audit bugs are ready for multiagent pickup unless explicitly blocked.")
     return 0
 
 
@@ -1409,6 +1622,50 @@ def cmd_prune(space: Workspace, args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_quality_loop(space: Workspace, args: argparse.Namespace) -> int:
+    """One click: reconcile the board, audit for new defects, and put fixers to work."""
+    problems = preflight(space)
+    if problems:
+        for problem in problems:
+            log(f"blocked: {problem}")
+        return 2
+    repo = space.repo()
+    state = load_state(space)
+
+    log(_BAR)
+    log("1/3  reconciling the issue board")
+    reclaimed = 0 if args.dry_run else reclaim_stale_claims(repo, state)
+    log(f"     released {reclaimed} stale claim(s)")
+
+    log(_BAR)
+    log("2/3  auditing the stored corpus (read-only, no model or provider calls)")
+    audited = cmd_audit(space, args)
+    if audited == 2:
+        log("stopping: the audit could not read a corpus, so nothing was proposed.")
+        return 2
+
+    log(_BAR)
+    log("3/3  putting the fixers to work")
+    if args.dry_run:
+        log("     dry run: the controller was not started.")
+    elif state.lease.valid() and pid_alive(state.lease.pid):
+        log(f"     controller already running (pid {state.lease.pid}); it will pick these up.")
+    else:
+        started = cmd_start(space, argparse.Namespace(
+            interval=CYCLE_SECONDS, force=False, no_chat=True,
+        ))
+        if started != 0:
+            return started
+
+    log(_BAR)
+    log("Fixes land through batch pull requests. Watch with Multiagent-Status.")
+    log("")
+    log("Corpus refresh is deliberately not part of this loop: it spends real money")
+    log("and needs a running stack. Run Refresh-Quality-Corpus yourself when the")
+    log("audit stops finding anything new, and agree the market scope first.")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -1446,6 +1703,17 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="capture affected itinerary days and publish them on audit-evidence",
     )
+
+    loop = sub.add_parser(
+        "quality-loop",
+        help="one click: reconcile the board, audit, and start the fixers",
+    )
+    loop.add_argument("--dry-run", action="store_true")
+    loop.add_argument(
+        "--screenshots",
+        action="store_true",
+        help="capture affected itinerary days and publish them on audit-evidence",
+    )
     return parser
 
 
@@ -1464,6 +1732,7 @@ def main(argv: list[str] | None = None) -> int:
         "coordinator": cmd_coordinator,
         "publish-coordinator": cmd_publish_coordinator,
         "audit": cmd_audit,
+        "quality-loop": cmd_quality_loop,
     }
     return handlers[args.command](space, args)
 

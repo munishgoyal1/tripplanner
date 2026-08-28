@@ -30,8 +30,10 @@ either enabled (the default) or disabled.
   them unambiguous; two adults are not assumed to be a couple. With smart defaults
   disabled, the same review may include other facts when an
   unresolved fact would materially improve the trip. Explicit prompt values and
-  configured preferences are not asked again, while a destination-only trip never
-  invents an origin. Any review preserves prefilled values and a skip/default path.
+  configured preferences are not asked again. When neither an origin nor self-arranged
+  arrival is known, the review requires the traveller to enter their city or choose
+  destination-only travel; that choice is persisted and an origin is never invented.
+  Other reviews preserve prefilled values and a skip/default path.
 - Submitted party counts and relationship are persisted with the trip, used for
   whole-party budgets and provider occupancy, and shape lodging, pace, transport,
   meal timing, accessibility, and age-appropriate experiences.
@@ -192,6 +194,35 @@ the evidence that produced the finding.
 - [`tests/test_request_security.py`](../tests/test_request_security.py)
 
 ## Planner workspace
+
+### EB-DEAL-001 - Compare and recheck exact finalized-trip offers
+
+**Trigger:** Open a trip whose persisted decisions contain equivalent provider
+offers, or a finalized unbooked trip whose recorded quote has expired.
+
+**Expected:**
+
+- Offers compare only when provider-neutral room/rate or flight-itinerary identity
+  matches and all mandatory costs are known. Unknown fees suppress savings claims.
+- A consented portal benefit applies only from numeric public terms and returns
+  program/card labels plus the terms link; card numbers are never consumed or shown.
+- Expired quotes for finalized unbooked items appear as explicit recheck work.
+  Rendering performs no provider request. Selecting Recheck prices verifies an
+  exact flight offer or re-searches a stay only with its original occupancy,
+  nationality, dates, property, room, board, and refundability context.
+- Recheck results report movement or unavailability, refresh quote provenance,
+  and never replace the selected item. A stale client revision is rejected.
+- Grounded forecast heat/rain and structured place or activity-provider duration
+  evidence may add advisory effort notes. Missing evidence remains silent and
+  effort never blocks.
+
+**Executable proof:**
+
+- [`tests/test_trip_cost_ledger.py`](../tests/test_trip_cost_ledger.py)
+- [`tests/test_price_recheck.py`](../tests/test_price_recheck.py)
+- [`tests/test_trip_guard.py`](../tests/test_trip_guard.py)
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py)
+- [`frontend/src/components/TripSnapshot.test.tsx`](../frontend/src/components/TripSnapshot.test.tsx)
 
 ### EB-VERIFY-001 - Recheck itinerary place facts
 

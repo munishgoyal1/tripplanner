@@ -80,7 +80,7 @@
           "duration_min": 600
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Lotte Hotel Seoul",
           "kind": "hotel",
           "note": "Check-in and rest"
         },
@@ -100,7 +100,7 @@
       "summary": "Visit Gyeongbokgung Palace, National Folk Museum, Bukchon Hanok Village, Insadong, and Cheonggyecheon Stream.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Lotte Hotel Seoul",
           "kind": "hotel",
           "note": "Start from hotel"
         },
@@ -135,7 +135,7 @@
           "duration_min": 60
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Lotte Hotel Seoul",
           "kind": "hotel",
           "note": "Return to hotel"
         }
@@ -148,7 +148,7 @@
       "summary": "Explore N Seoul Tower, Namdaemun Market, Dongdaemun Design Plaza, and Seoul Children's Museum.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Lotte Hotel Seoul",
           "kind": "hotel",
           "note": "Start from hotel"
         },
@@ -177,7 +177,7 @@
           "duration_min": 90
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Lotte Hotel Seoul",
           "kind": "hotel",
           "note": "Return to hotel"
         }
@@ -190,7 +190,7 @@
       "summary": "Visit Lotte World, COEX Aquarium, Bongeunsa Temple, and Gangnam District.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Lotte Hotel Seoul",
           "kind": "hotel",
           "note": "Start from hotel"
         },
@@ -219,7 +219,7 @@
           "duration_min": 90
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "Lotte Hotel Seoul",
           "kind": "hotel",
           "note": "Return to hotel"
         }
@@ -232,7 +232,7 @@
       "summary": "Check out, visit Seoul Museum of History, shop for souvenirs, transfer to airport for flight home.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "Lotte Hotel Seoul",
           "kind": "hotel",
           "note": "Check out"
         },

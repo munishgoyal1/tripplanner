@@ -1,0 +1,335 @@
+{
+  "status": "draft",
+  "trip_id": "hanoi_ha_long_bay_central_vietnam_2027-02-14_2027-02-21",
+  "trip_number": 1,
+  "created_at": "2026-08-25T21:10:34.675410",
+  "destination": "Hanoi, Ha Long Bay, Central Vietnam",
+  "origin": "Kolkata",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-02-14",
+  "return_date": "2027-02-21",
+  "travelers": "Couple: 2 adults, 0 children",
+  "notes": "Unable to fetch live restaurant data for Hoi An; will recommend top-rated local restaurants based on well-known options. Will update with live data when available.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Hanoi, Ha Long Bay, Central Vietnam",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-14",
+      "title": "Arrival in Hanoi",
+      "summary": "Arrive in Hanoi, check in to your hotel, and enjoy a welcome dinner with authentic northern Vietnamese cuisine.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Hanoi",
+          "kind": "flight",
+          "time": "09:00",
+          "note": "Morning flight, direct if possible"
+        },
+        {
+          "name": "Hotel in Hanoi Old Quarter",
+          "kind": "hotel",
+          "note": "Central location for food and culture"
+        },
+        {
+          "name": "Bún Chả Hương Liên",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Famous for Hanoi-style grilled pork with noodles"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-15",
+      "title": "Hanoi Old Quarter & Street Food",
+      "summary": "Explore Hanoi's Old Quarter, visit the Temple of Literature, and enjoy a guided street food tour.",
+      "stops": [
+        {
+          "name": "Hotel in Hanoi Old Quarter",
+          "kind": "hotel"
+        },
+        {
+          "name": "Temple of Literature",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Vietnam's first university"
+        },
+        {
+          "name": "Hanoi Old Quarter Street Food Tour",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 150,
+          "note": "Sample pho, banh mi, egg coffee"
+        },
+        {
+          "name": "Chả Cá Thăng Long",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Signature Hanoi fish dish"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-16",
+      "title": "Cultural Hanoi & Water Puppet Show",
+      "summary": "Visit the Ho Chi Minh Mausoleum, One Pillar Pagoda, and enjoy a traditional water puppet show.",
+      "stops": [
+        {
+          "name": "Hotel in Hanoi Old Quarter",
+          "kind": "hotel"
+        },
+        {
+          "name": "Ho Chi Minh Mausoleum",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "One Pillar Pagoda",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 45
+        },
+        {
+          "name": "Thang Long Water Puppet Theatre",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Traditional Vietnamese performance"
+        },
+        {
+          "name": "Bánh Cuốn Gia Truyền Thanh Vân",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Delicate steamed rice rolls"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-17",
+      "title": "Hanoi to Ha Long Bay",
+      "summary": "Travel to Ha Long Bay for an overnight cruise with seafood and scenic limestone islands.",
+      "stops": [
+        {
+          "name": "Drive: Hanoi to Ha Long Bay",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "distance_km": 160,
+          "note": "Private transfer or shuttle"
+        },
+        {
+          "name": "Hotel in Hanoi Old Quarter",
+          "kind": "hotel",
+          "time": "11:30"
+        },
+        {
+          "name": "Ha Long Bay Cruise Ship",
+          "kind": "hotel",
+          "note": "Overnight on the bay",
+          "time": "13:30"
+        },
+        {
+          "name": "Seafood Lunch on Cruise",
+          "kind": "meal",
+          "time": "15:30"
+        },
+        {
+          "name": "Kayaking in Ha Long Bay",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Seafood Dinner on Cruise",
+          "kind": "meal",
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-18",
+      "title": "Ha Long Bay to Hoi An (via Hanoi/Da Nang)",
+      "summary": "Morning cruise, then transfer to Hoi An via Hanoi/Da Nang. Evening in Hoi An Ancient Town.",
+      "stops": [
+        {
+          "name": "Morning Cruise Activities",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Drive: Ha Long Bay to Hanoi",
+          "kind": "transport",
+          "time": "10:30",
+          "duration_min": 180,
+          "distance_km": 160
+        },
+        {
+          "name": "Flight: Hanoi to Da Nang",
+          "kind": "flight",
+          "time": "15:00",
+          "note": "Afternoon flight"
+        },
+        {
+          "name": "Ha Long Bay Cruise Ship",
+          "kind": "hotel",
+          "time": "17:00"
+        },
+        {
+          "name": "Hotel in Hoi An Ancient Town",
+          "kind": "hotel",
+          "note": "Boutique stay in the heritage area",
+          "time": "19:00"
+        },
+        {
+          "name": "Cao Lầu Restaurant",
+          "kind": "meal",
+          "time": "21:00",
+          "note": "Hoi An's signature noodle dish"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-02-19",
+      "title": "Hoi An Culture & Cooking",
+      "summary": "Explore Hoi An's markets, take a Vietnamese cooking class, and enjoy lantern-lit streets in the evening.",
+      "stops": [
+        {
+          "name": "Hotel in Hoi An Ancient Town",
+          "kind": "hotel"
+        },
+        {
+          "name": "Hoi An Central Market",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Vietnamese Cooking Class",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 180,
+          "note": "Hands-on with local ingredients"
+        },
+        {
+          "name": "An Bang Beach",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Evening Lantern Walk & Street Food",
+          "kind": "attraction",
+          "time": "19:00",
+          "duration_min": 120,
+          "note": "Sample local snacks"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-02-20",
+      "title": "Hoi An to Kolkata (via Da Nang/Hanoi)",
+      "summary": "Morning at leisure in Hoi An, then transfer to Da Nang for return flights via Hanoi to Kolkata.",
+      "stops": [
+        {
+          "name": "Hotel in Hoi An Ancient Town",
+          "kind": "hotel"
+        },
+        {
+          "name": "Leisure Time in Hoi An",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Drive: Hoi An to Da Nang Airport",
+          "kind": "transport",
+          "time": "11:30",
+          "duration_min": 45,
+          "distance_km": 30
+        },
+        {
+          "name": "Flight: Da Nang to Hanoi",
+          "kind": "flight",
+          "time": "14:00"
+        },
+        {
+          "name": "Flight: Hanoi to Kolkata",
+          "kind": "flight",
+          "time": "17:00"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T21:12:48.518298",
+  "id": "hanoi_ha_long_bay_central_vietnam_2027-02-14_2027-02-21",
+  "user_id": "corpus-india-outbound-vietnam-food-couple-7d-ed44252d3e2b"
+}

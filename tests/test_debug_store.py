@@ -70,6 +70,15 @@ def test_resaving_identical_plan_adds_no_revision():
     assert len(debug_store.iter_records()) == 1
 
 
+def test_resaving_identical_plan_does_not_rewrite_archive():
+    path = debug_store.capture_trip(make_plan(), "google-123")
+    original = path.read_bytes()
+
+    debug_store.capture_trip(make_plan(updated_at="2026-07-02T11:00:00"), "google-123")
+
+    assert path.read_bytes() == original
+
+
 def test_meaningful_change_appends_a_revision_to_the_same_run():
     debug_store.capture_trip(make_plan(), "google-123")
     path = debug_store.capture_trip(

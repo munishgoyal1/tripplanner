@@ -44,7 +44,12 @@ def _option_id(offer: HotelOffer) -> str:
 
 
 def options_from_offers(
-    offers: list[HotelOffer], *, checkin: str, checkout: str, cached: bool
+    offers: list[HotelOffer],
+    *,
+    checkin: str,
+    checkout: str,
+    cached: bool,
+    search_context: dict[str, object] | None = None,
 ) -> list[Option]:
     """Keep the cheapest verified room rate per property from this exact response."""
     cheapest: dict[str, HotelOffer] = {}
@@ -80,6 +85,7 @@ def options_from_offers(
                 address=offer.address,
                 rating=offer.rating,
                 provider_ref=dict(offer.provider_ref),
+                search_context=dict(search_context or {}),
             ),
             source=Source(
                 provider=offer.provider,
@@ -179,8 +185,15 @@ def build_lodging_decision(
     checkin: str,
     checkout: str,
     cached: bool,
+    search_context: dict[str, object] | None = None,
 ) -> Decision | None:
-    options = options_from_offers(offers, checkin=checkin, checkout=checkout, cached=cached)
+    options = options_from_offers(
+        offers,
+        checkin=checkin,
+        checkout=checkout,
+        cached=cached,
+        search_context=search_context,
+    )
     ranked = rank_stays(options)
     if ranked is None or len(options) < 2:
         return None

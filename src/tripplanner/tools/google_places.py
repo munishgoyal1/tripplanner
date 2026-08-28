@@ -21,7 +21,8 @@ _BASE = "https://places.googleapis.com/v1"
 
 
 def is_configured() -> bool:
-    return bool(get_settings().google_places_api_key)
+    settings = get_settings()
+    return settings.enable_google_places and bool(settings.google_places_api_key)
 
 
 def _headers(field_mask: str) -> dict:
@@ -74,8 +75,8 @@ def search_places_with_reviews(query: str, city: str = "", max_results: int = 5)
     """
     if not is_configured():
         return (
-            "Google Places API not configured. "
-            "Set GOOGLE_PLACES_API_KEY in .env. "
+            "Google Places API disabled or not configured. "
+            "Set ENABLE_GOOGLE_PLACES=1 and GOOGLE_PLACES_API_KEY in .env. "
             "Get a key at https://console.cloud.google.com (enable 'Places API (New)')."
         )
 
@@ -108,7 +109,10 @@ def get_place_reviews(place_id: str, max_reviews: int = 5) -> str:
     Returns rating breakdown plus the most helpful review snippets.
     """
     if not is_configured():
-        return "Google Places API not configured. Set GOOGLE_PLACES_API_KEY in .env."
+        return (
+            "Google Places API disabled or not configured. "
+            "Set ENABLE_GOOGLE_PLACES=1 and GOOGLE_PLACES_API_KEY in .env."
+        )
 
     field_mask = "id,displayName,rating,userRatingCount,reviews,editorialSummary"
     try:
@@ -149,7 +153,10 @@ def nearby_restaurants(
         max_results: How many to return.
     """
     if not is_configured():
-        return "Google Places API not configured. Set GOOGLE_PLACES_API_KEY in .env."
+        return (
+            "Google Places API disabled or not configured. "
+            "Set ENABLE_GOOGLE_PLACES=1 and GOOGLE_PLACES_API_KEY in .env."
+        )
 
     parts = [p for p in [dietary, cuisine, "restaurants", "in", city] if p]
     query = " ".join(parts)
@@ -174,4 +181,3 @@ def nearby_restaurants(
     if not top:
         return f"No restaurants found in {city} matching the criteria (min rating {min_rating})."
     return json.dumps(top, indent=2)
-

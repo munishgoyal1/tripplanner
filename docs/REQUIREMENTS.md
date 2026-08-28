@@ -88,15 +88,15 @@ re-describing the whole product.
 | ID-01 | Guest identity plus shared web/mobile Google identity | Implemented |
 | DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented |
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented |
-| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
+| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google Places access is fail-closed behind an explicit production-only runtime switch as well as GCP Service Usage |
 | TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, explicit place-fact rechecks with before/after changes and source-linked unusual-closure advisories, place-identity gate, and a rebalance that never moves a stop the traveller chose |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
 | OPS-03 | Owner-only Business and System Health operations dashboard | Implemented; hidden route, server-side verified-email guard, consented funnel/activity aggregates, chat/tool/provider/cache health, and explicit data-window labels |
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Implemented; `/` public entry, `/planner` workspace, privacy-safe analytics, and regional last-known-good demo pipeline |
 | FEEDBACK-01 | Lightweight repeatable trip feedback | Implemented; toolbar thumbs, optional stars/comment, append-only submissions, and trip-level sent rollup |
-| QUALITY-01 | Offline scenario-fidelity and experiential-quality audit | Implemented; every audit writes an immutable dated JSON report, readable summary, compact history index, comparable-run movement, scenario/preference and budget hard gates, and six non-gating experiential dimensions; integrated fixes automatically record deterministic post-fix replay evidence, while fresh generation remains an explicit paid corpus refresh |
-| DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Partially implemented; exact alternatives and budget what-if are joined by a strict all-in cost ledger that separates live quoted subtotal, confirmed mandatory total, reported components, and unresolved fee categories without estimating missing amounts |
+| QUALITY-01 | Offline scenario-fidelity and experiential-quality audit | Implemented; every audit writes an immutable dated JSON report, readable summary, compact history index, comparable-run movement, scenario/preference and budget hard gates, and six non-gating experiential dimensions; the unified harness also correlates scenario/action evidence and reports measured usage, catalog-estimated cost, cache effectiveness, request amplification, performance, and deterministic plan quality while keeping subjective evaluation optional and separately costed; generated and persisted findings require a preventive executable fix plus a focused regression test while preserving the failing evidence, genuine fixture corrections require evidence-contract validation, integrated fixes record deterministic post-fix replay, and fresh generation remains an explicit paid corpus refresh |
+| DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Implemented for persisted provider evidence; exact products compare only with complete mandatory costs and published FX, consented public benefit terms apply without card numbers, and finalized unbooked expired flight/stay quotes can be explicitly rechecked without replacing selections |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
 
@@ -108,6 +108,10 @@ re-describing the whole product.
   part of the current product.
 - Tool schemas are selected by conversation phase so greetings and preference
   turns do not pay the context cost of every search provider.
+- Daily effort and whole-trip reserve account for grounded forecast heat and rain
+  as advisory exposure only. Coherence notes name source-backed weather pressure
+  and structured place/activity-provider duration mismatches without inventing
+  evidence or blocking itinerary completion.
 - The agent presents progress as friendly thinking, search, review, and save
   phases while keeping internal tool names and raw arguments out of the UI. The
   chat and common command bar show one overall elapsed clock, a typical 2–4 minute
@@ -621,6 +625,10 @@ implemented capability baseline.
 - Performance and cost evidence is separated into a hermetic regression gate,
   production SLO/tool telemetry, and Azure billing/Cosmos RU analysis so changes
   are driven by measured bottlenecks rather than synthetic provider traffic.
+- Harness reports preserve measured runtime counts, versioned catalog estimates,
+  and delayed cloud-billing reconciliation as distinct layers. Google operation
+  and field-mask classes and Places memory, durable, miss, refresh, and coalesced
+  outcomes are emitted at their owning boundaries for per-scenario attribution.
 - All six application containers can be exported to a portable checksummed
   artifact and restored exactly into an empty isolated recovery database.
   Recovery drills reject live, same-coordinate, nonempty, incomplete, or
@@ -689,16 +697,22 @@ implemented capability baseline.
 - Structured Assistant input is not yet rendered in production web or native UI.
   The selectable overlay/control prototype is active in UX Labs; production wiring
   requires an owner-selected direction.
-- No complete cost-optimization layer (DEAL-01). Exact-response stay and flight
+- The implemented cost-optimization layer (DEAL-01) covers exact-response stay and flight
   comparisons support deterministic selection and reversal. User-owned budget
   targets, evidence-labeled headroom, published FX provenance, explicitly
   requested exact-alternative savings proposals, and atomic coordinated proposal
   acceptance are implemented. Provider-reported taxes, fees, and property-due
   amounts now survive exact-option selection; the strict ledger keeps a live
   quoted subtotal distinct from a confirmed all-in total and names unresolved
-  mandatory taxes, fees, and baggage rather than inventing them. Provider-specific
-  inclusion/exclusion semantics, cross-source comparison, finalized-but-unbooked
-  re-checks, loyalty, card-benefit, and portal-offer modeling remain gaps.
+  mandatory taxes, fees, and baggage rather than inventing them. Persisted offers
+  for the same provider-neutral room/rate or flight itinerary now compare across
+  sources only when mandatory costs are complete. Consented program/card identity
+  and published portal discount terms may be applied without storing payment data.
+  Finalized unbooked expired exact flight and stay quotes can be rechecked through
+  an explicit action. Rechecks preserve original occupancy/nationality evidence,
+  record price movement, and never replace a selection; older stays without that
+  context fail closed. Automated schedules, provider-specific inclusion semantics,
+  and broader loyalty/portal terms ingestion remain future extensions.
 - No server-rendered public edge. One FastAPI process serves the API and the
   client-rendered SPA, so landing, destination-content, and shared-trip URLs are
   not indexable and not first-paint-fast for anonymous visitors.
@@ -793,8 +807,9 @@ provider actions.
   and quote time.
 - Compare more than one source for the same choice before recommending it, and
   keep provider, price, and fetch time attached to every claim.
-- Re-check prices for a finalized-but-unbooked trip on an explicit, time-boxed
-  schedule; never silently mutate the plan because a price moved.
+- Re-check prices for a finalized-but-unbooked trip through an explicit bounded
+  action; never silently mutate the plan because a price moved. Automated
+  schedules remain a later extension.
 - Treat loyalty programs, card benefits, and portal offers as consent-gated
   preference data. Store program and card identity only, never card numbers, and
   link every offer claim to its terms.

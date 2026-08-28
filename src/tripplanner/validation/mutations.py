@@ -14,9 +14,12 @@ from collections.abc import Callable
 from dataclasses import dataclass, replace
 from typing import Any
 
+from tripplanner.tools.trip_guard import leg_touches_home
+from tripplanner.tools.trip_validation import _itinerary_time_errors
 from tripplanner.validation.checks import check_record
 from tripplanner.validation.corpus import MUTATED, CorpusRecord
 from tripplanner.validation.findings import Finding, symptom_of
+from tripplanner.web.transport import _transport_route_endpoints
 
 #: Makes the plan contradict itself without taking anything out of it.
 DEGRADING = "degrading"
@@ -48,7 +51,30 @@ def _days(plan: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _is_leg(stop: Any) -> bool:
-    return isinstance(stop, dict) and str(stop.get("kind") or "") in {"flight", "transport"}
+    if not isinstance(stop, dict) or str(stop.get("kind") or "") not in {
+        "flight",
+        "transport",
+    }:
+        return False
+    return _transport_route_endpoints(str(stop.get("name") or "")) is not None
+
+
+def _home_leg(
+    plan: dict[str, Any], *, leaves_home: bool
+) -> tuple[list[Any], int] | None:
+    origin = str(plan.get("origin") or "").strip()
+    matches: list[tuple[list[Any], int]] = []
+    for day in _days(plan):
+        stops = day.get("stops")
+        if not isinstance(stops, list):
+            continue
+        for index, stop in enumerate(stops):
+            if not _is_leg(stop):
+                continue
+            outbound, homebound = leg_touches_home(stop, origin)
+            if outbound if leaves_home else homebound:
+                matches.append((stops, index))
+    return matches[0] if len(matches) == 1 else None
 
 
 def blank_origin(plan: dict[str, Any]) -> Mutation | None:
@@ -62,53 +88,55 @@ def blank_origin(plan: dict[str, Any]) -> Mutation | None:
 
 def drop_first_leg(plan: dict[str, Any]) -> Mutation | None:
     mutated = copy.deepcopy(plan)
-    for day in _days(mutated):
-        stops = day.get("stops")
-        if not isinstance(stops, list):
-            continue
-        for index, stop in enumerate(stops):
-            if _is_leg(stop):
-                stops.pop(index)
-                return Mutation("drop-first-leg", REMOVAL, mutated)
-    return None
+    match = _home_leg(mutated, leaves_home=True)
+    if match is None:
+        return None
+    stops, index = match
+    stops.pop(index)
+    return Mutation("drop-first-leg", REMOVAL, mutated)
 
 
 def drop_last_leg(plan: dict[str, Any]) -> Mutation | None:
     mutated = copy.deepcopy(plan)
-    for day in reversed(_days(mutated)):
-        stops = day.get("stops")
-        if not isinstance(stops, list):
-            continue
-        for index in range(len(stops) - 1, -1, -1):
-            if _is_leg(stops[index]):
-                stops.pop(index)
-                return Mutation("drop-last-leg", REMOVAL, mutated)
-    return None
+    match = _home_leg(mutated, leaves_home=False)
+    if match is None:
+        return None
+    stops, index = match
+    stops.pop(index)
+    return Mutation("drop-last-leg", REMOVAL, mutated)
 
 
 def reverse_days(plan: dict[str, Any]) -> Mutation | None:
-    """Keep every day, run the trip backwards: the same content, incoherent."""
-    days = _days(plan)
-    if len(days) < 3:
+    """Run the itinerary backwards without detaching a day's evidence from it."""
+    itinerary = plan.get("day_wise_itinerary")
+    if (
+        not isinstance(itinerary, list)
+        or len(itinerary) < 3
+        or any(not isinstance(day, dict) for day in itinerary)
+    ):
         return None
     mutated = copy.deepcopy(plan)
-    entries = _days(mutated)
-    stops = [day.get("stops") for day in entries]
-    for day, reversed_stops in zip(entries, reversed(stops)):
-        day["stops"] = reversed_stops
+    mutated["day_wise_itinerary"].reverse()
     return Mutation("reverse-days", DEGRADING, mutated)
 
 
 def break_time_order(plan: dict[str, Any]) -> Mutation | None:
     """Send the day's last stop back to dawn, before everything it follows."""
-    mutated = copy.deepcopy(plan)
-    for day in _days(mutated):
+    for day_index, day in enumerate(_days(plan)):
         stops = [stop for stop in (day.get("stops") or []) if isinstance(stop, dict)]
         timed = [stop for stop in stops if str(stop.get("time") or "").strip()]
-        if len(timed) < 3:
+        if len(timed) < 3 or _itinerary_time_errors([day]):
             continue
-        timed[-1]["time"] = "00:05"
-        return Mutation("break-time-order", DEGRADING, mutated)
+        mutated = copy.deepcopy(plan)
+        mutated_day = _days(mutated)[day_index]
+        mutated_timed = [
+            stop
+            for stop in (mutated_day.get("stops") or [])
+            if isinstance(stop, dict) and str(stop.get("time") or "").strip()
+        ]
+        mutated_timed[-1]["time"] = "00:05"
+        if _itinerary_time_errors([mutated_day]):
+            return Mutation("break-time-order", DEGRADING, mutated)
     return None
 
 

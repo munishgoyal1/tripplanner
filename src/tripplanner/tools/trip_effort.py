@@ -41,13 +41,14 @@ from tripplanner.tools.trip_guard import (
     travel_min,
 )
 
-CURRENCIES = ("physical", "transit", "logistical", "circadian")
+CURRENCIES = ("physical", "transit", "logistical", "circadian", "exposure")
 
 CURRENCY_LABEL = {
     "physical": "on your feet",
     "transit": "in transit",
     "logistical": "packing up and moving on",
     "circadian": "against the clock",
+    "exposure": "in difficult weather",
 }
 
 # Every tunable lives here, so retuning the model is one edit rather than a hunt.
@@ -61,8 +62,18 @@ EARLY_HOUR = 7 * 60
 LATE_HOUR = 22 * 60
 EARLY_FACTOR = 1.4
 LATE_FACTOR = 1.2
-RECOVERY = {"physical": 0.55, "transit": 0.8, "logistical": 0.95, "circadian": 0.35}
+RECOVERY = {
+    "physical": 0.55,
+    "transit": 0.8,
+    "logistical": 0.95,
+    "circadian": 0.35,
+    "exposure": 0.7,
+}
 BASE_CAPACITY_MIN = 480
+HEAT_THRESHOLD_C = 32.0
+HEAT_FACTOR_PER_C = 0.04
+RAIN_THRESHOLD_PCT = 60.0
+RAIN_FACTOR = 0.2
 
 # A statement only earns its place when the debt is large and sustained.
 DEBT_THRESHOLD = 0.25
@@ -166,7 +177,14 @@ def day_efforts(plan: dict[str, Any]) -> list[DayEffort]:
     destination = str(plan.get("destination") or "")
     out: list[DayEffort] = []
 
-    for day, _entry, stops in days_of(plan):
+    weather_root = plan.get("weather") if isinstance(plan.get("weather"), dict) else {}
+    weather_source = str(weather_root.get("source") or "").strip()
+    weather_by_date = {
+        str(entry.get("date") or ""): entry
+        for entry in (weather_root.get("days") or [])
+        if isinstance(entry, dict) and entry.get("date")
+    }
+    for day, day_entry, stops in days_of(plan):
         effort = zero_effort()
         transit = 0
         route_km = 0.0
@@ -186,6 +204,22 @@ def day_efforts(plan: dict[str, Any]) -> list[DayEffort]:
                 effort["logistical"] += CHECK_COST
             else:
                 effort["physical"] += duration * ACTIVE_FACTOR
+
+        weather = weather_by_date.get(str(day_entry.get("date") or ""))
+        if isinstance(weather, dict) and weather_source:
+            outdoor_minutes = sum(
+                _duration_of(stop)
+                for stop, _at in timed
+                if _stop_kind(stop) not in {"flight", "transport", "hotel", "meal"}
+            )
+            high_c = weather.get("high_c")
+            if isinstance(high_c, (int, float)) and high_c >= HEAT_THRESHOLD_C:
+                effort["exposure"] += (
+                    outdoor_minutes * (high_c - HEAT_THRESHOLD_C + 1) * HEAT_FACTOR_PER_C
+                )
+            rain = weather.get("precip_probability_pct")
+            if isinstance(rain, (int, float)) and rain >= RAIN_THRESHOLD_PCT:
+                effort["exposure"] += outdoor_minutes * RAIN_FACTOR
 
         located = [
             (stop, coords)
@@ -335,15 +369,29 @@ def _nearest_neighbour_km(points: list[tuple[float, float]]) -> float:
 def coherence_notes(plan: dict[str, Any]) -> list[str]:
     """Things that read as wrong without being infeasible.
 
-    Only the checks that measured data can answer honestly are here. Time-of-day
-    fit and under-timed visits need place metadata and review evidence this
-    module does not have, so it says nothing about them rather than guessing.
+    Only the checks that measured data can answer honestly are here. Structured
+    weather and visit-duration evidence may add a note; absent provenance stays
+    silent rather than inviting a guess.
     """
     destination = str(plan.get("destination") or "")
     notes: list[str] = []
     previous_end: tuple[int, int] | None = None
 
-    for day, _entry, stops in days_of(plan):
+    weather_root = plan.get("weather") if isinstance(plan.get("weather"), dict) else {}
+    weather_source = str(weather_root.get("source") or "").strip()
+    weather_label = "Open-Meteo forecast" if weather_source == "forecast" else "seasonal evidence"
+    weather_by_date = {
+        str(entry.get("date") or ""): entry
+        for entry in (weather_root.get("days") or [])
+        if isinstance(entry, dict) and entry.get("date")
+    }
+    selected_activity_evidence = {
+        str(item.get("name") or item.get("title") or "").strip().casefold(): item
+        for item in plan.get("selected_activities") or []
+        if isinstance(item, dict)
+    }
+
+    for day, day_entry, stops in days_of(plan):
         timed = sorted(
             ((stop, at) for stop in stops if (at := _time_of(stop)) is not None),
             key=lambda pair: pair[1],
@@ -373,6 +421,70 @@ def coherence_notes(plan: dict[str, Any]) -> list[str]:
                 f"Day {day} starts at {_fmt_hhmm(first)}."
             )
         previous_end = (day, last)
+
+        weather = weather_by_date.get(str(day_entry.get("date") or ""))
+        if isinstance(weather, dict):
+            high_c = weather.get("high_c")
+            rain = weather.get("precip_probability_pct")
+            outdoor = [
+                stop
+                for stop, _at in timed
+                if _stop_kind(stop) not in {"flight", "transport", "hotel", "meal"}
+            ]
+            if weather_source and outdoor and isinstance(high_c, (int, float)) and high_c >= 35:
+                notes.append(
+                    f"Day {day} puts outdoor visits into a {high_c:g}°C forecast "
+                    f"from {weather_label}."
+                )
+            if weather_source and outdoor and isinstance(rain, (int, float)) and rain >= 70:
+                notes.append(
+                    f"Day {day} has a {rain:g}% rain forecast from {weather_label} during "
+                    "outdoor visits."
+                )
+
+        for stop, _at in timed:
+            if _stop_kind(stop) in {"flight", "transport", "hotel", "meal"}:
+                continue
+            summary = _summary_for_place(_stop_name(stop), destination)
+            typical = (
+                summary.get("typical_visit_duration_min")
+                if isinstance(summary, dict)
+                else None
+            )
+            source = (
+                str(summary.get("visit_duration_source") or "").strip()
+                if isinstance(summary, dict)
+                else ""
+            )
+            if not source:
+                activity = selected_activity_evidence.get(_stop_name(stop).strip().casefold())
+                duration = activity.get("duration_minutes") if isinstance(activity, dict) else None
+                if isinstance(duration, dict):
+                    typical = duration.get("min")
+                    activity_source = activity.get("provider") or (
+                        activity.get("source", {}).get("provider")
+                        if isinstance(activity.get("source"), dict)
+                        else ""
+                    )
+                    source = (
+                        f"{str(activity_source).strip()} activity listing"
+                        if str(activity_source).strip()
+                        else ""
+                    )
+            planned = _duration_of(stop)
+            if (
+                source
+                and isinstance(typical, (int, float))
+                and typical >= 60
+                and planned < typical * 0.65
+            ):
+                typical_text = (
+                    f"{typical / 60:g} hours" if typical % 60 == 0 else f"{typical:g} minutes"
+                )
+                notes.append(
+                    f"Day {day} gives {_stop_name(stop)} {planned} minutes; {source} "
+                    f"indicates about {typical_text}."
+                )
 
         # C3 — crossing the city and coming back reads worse than the kilometres suggest.
         points = [

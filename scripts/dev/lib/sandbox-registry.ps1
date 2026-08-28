@@ -9,6 +9,16 @@
   launchers drift apart.
 #>
 
+function Get-PrimaryRepositoryRoot {
+    param([Parameter(Mandatory = $true)][string]$RepositoryRoot)
+
+    $commonGitDir = & git -C $RepositoryRoot rev-parse --path-format=absolute --git-common-dir 2>$null
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($commonGitDir)) {
+        throw "Could not locate the primary repository from '$RepositoryRoot'."
+    }
+    return Split-Path -Parent $commonGitDir.Trim()
+}
+
 function Get-SandboxRegistryPath {
     param([Parameter(Mandatory = $true)][string]$PrimaryRoot)
     return "$PrimaryRoot.worktrees/sandboxes.json"

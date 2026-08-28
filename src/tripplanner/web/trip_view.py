@@ -27,8 +27,13 @@ from tripplanner.concurrency import run_parallel
 from tripplanner.config import get_settings
 from tripplanner.decisions.provenance import build_provenance
 from tripplanner.decisions.store import list_decisions
-from tripplanner.decisions.trip_cost import build_cost_ledger
+from tripplanner.decisions.trip_cost import (
+    build_cost_ledger,
+    compare_trip_decisions,
+    plan_price_rechecks,
+)
 from tripplanner.tools import user_preferences
+from tripplanner.tools.trip_effort import coherence_notes, pacing_statement
 from tripplanner.web import map_view, places_cache
 
 # Budget/money helpers live in ``budget`` (tech-debt #7); re-exported here so
@@ -347,6 +352,11 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         prefs = None
     symbol = currency_symbol(trip)
     cost_evidence = build_cost_ledger(trip).as_dict()
+    offer_benefits = (
+        prefs.get("offer_benefits")
+        if isinstance(prefs, dict) and isinstance(prefs.get("offer_benefits"), list)
+        else []
+    )
     return {
         "destination": trip.get("destination") or "",
         "origin": trip.get("origin") or "",
@@ -359,10 +369,19 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "total_cost": total,
         "total_cost_display": fmt_money(total, symbol),
         "cost_evidence": cost_evidence,
+        "offer_comparisons": compare_trip_decisions(trip, benefits=offer_benefits),
+        "price_rechecks": plan_price_rechecks(trip),
+        "price_recheck_results": [
+            row
+            for row in trip.get("price_recheck_results") or []
+            if isinstance(row, dict)
+        ],
         "cost_baseline": _build_cost_baseline(trip, symbol),
         "provenance": build_provenance(trip),
         "budget": build_budget(trip, cost_evidence=cost_evidence),
         "weather": build_weather(trip),
+        "effort_notes": coherence_notes(trip),
+        "pacing_statement": pacing_statement(trip),
         "family_pills": family_pills(prefs),
         "constraints": [
             str(c).strip()
@@ -1120,7 +1139,12 @@ def _transport_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
 
     departure_minutes = _clock_minutes(departure)
     arrival_estimated = False
-    if not arrival and departure_minutes is not None:
+    if (
+        not arrival
+        and departure_minutes is not None
+        and isinstance(duration, (int, float))
+        and duration > 0
+    ):
         arrival = _clock_display(departure_minutes + int(duration))
         stop["arrival_time"] = arrival
         stop["arrival_time_estimated"] = True

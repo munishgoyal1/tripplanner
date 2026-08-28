@@ -26,7 +26,8 @@ _WEEKDAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frida
 
 
 def is_configured() -> bool:
-    return bool(get_settings().google_places_api_key)
+    settings = get_settings()
+    return settings.enable_google_places and bool(settings.google_places_api_key)
 
 
 def _parse_when(when_iso: str) -> datetime | None:
@@ -108,8 +109,8 @@ def check_place_hours(place_id: str, when_iso: str = "") -> str:
     """
     if not is_configured():
         return (
-            "Google Places API not configured. "
-            "Set GOOGLE_PLACES_API_KEY in .env (Places API New). "
+            "Google Places API disabled or not configured. "
+            "Set ENABLE_GOOGLE_PLACES=1 and GOOGLE_PLACES_API_KEY in .env. "
             "See https://console.cloud.google.com."
         )
 
@@ -168,4 +169,3 @@ def check_place_hours(place_id: str, when_iso: str = "") -> str:
             out["open_at_requested_time"] = _is_open_at(periods, when)
 
     return json.dumps(out, indent=2)
-

@@ -18,14 +18,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `smoke_test.py` | Local provider credential and connectivity smoke |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
 | `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes; linked Lab sandboxes version successful iterations and promotion |
-| `dev/full-2way-sync.ps1` | Convergence sync that keeps active WIP visible, publishes clean committed lanes, and reports overlaps or deferred publication |
+| `dev/full-2way-sync.ps1` | Convergence sync for every local branch, including sandbox, multiagent, and unattached branches; pass `sbx` for the former registered-sandbox-only scope |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
-| `dev/debug_store_cli.py` | Show, maintain, restore, or tear down the local debug trip store |
-| `dev/debug-store.ps1` | Dispatcher the debug-store launchers call |
-| `dev/build-corpus.ps1` | Generate paid planner corpus trips; choose one scope per run: `--country india` for trips within India or `--market india` for both domestic and outbound Indian-traveler scenarios |
-| `dev/trip_audit.py` | Run every trip rule over the local corpus and report what is new |
-| `dev/trip-audit.ps1` | Dispatcher the Audit-Trips launchers call |
-| `dev/multiagent.py` | Multiagent controller: dispatch owner-approved issues to bounded workers, integrate, and open one batch PR |
+| `dev/debug_store_cli.py` | Internal CLI behind the Trip Flight Recorder launchers |
+| `dev/debug-store.ps1` | Dispatcher the Trip Flight Recorder launchers call |
+| `dev/build-corpus.ps1` | Generate paid Trip Quality Corpus records; choose one scope per run: `--country india` for trips within India or `--market india` for both domestic and outbound Indian-traveler scenarios |
+| `dev/trip_audit.py` | Run every quality rule over the available trip evidence and report what is new |
+| `dev/trip-audit.ps1` | Dispatcher the Run-Quality-Audit launchers call |
+| `dev/multiagent.py` | Multiagent controller: dispatch routine and explicitly approved issues to bounded workers, integrate, and open one batch PR |
 | `dev/multiagent_core.py` | Pure selection, collision, fingerprint, and lease logic behind the controller |
 | `dev/multiagent.ps1` | Dispatcher the multiagent launchers call |
 | `dev/capture-screens.ps1` | Capture screenshots, API view-models, console output, and DOM from a running local stack |
@@ -38,25 +38,26 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `win/user/Run-Latest-Master.cmd` | Windows owner-facing synchronize-and-run launcher for primary `master` |
 | `win/user/Sync-Sbxs-FromMaster.cmd [sandbox]` | Windows launcher to fast-forward primary `master`, then update every sandbox or only the selected one |
 | `win/user/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
-| `win/user/Full-2Way-Sync.cmd` | Converge committed lane history without hiding active edits. Clean committed lanes publish to `master`; dirty lanes take non-overlapping updates and defer publication. Re-runnable |
-| `win/user/debug/Show-DebugStore.cmd [query] [--days N]` | List or search archived local trips by number, destination, keyword, or label |
-| `win/user/debug/Maintain-DebugStore.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report store health |
-| `win/user/debug/Restore-DebugStore.cmd [sandbox] [days]` | Restore archived trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |
-| `win/user/debug/Clear-DebugStore.cmd --confirm CLEAR_DEBUG_STORE` | Delete the whole debug store and restart numbering |
-| `win/user/validation/Audit-Trips.cmd` | Audit every stored trip, always write dated JSON/Markdown evidence under `audit/reports/`, and exit non-zero on findings the baseline does not hold |
-| `win/user/validation/Audit-Trips.cmd --all` | Show every finding, not only new ones |
-| `win/user/validation/Audit-Trips.cmd --accept` | Record the current findings as known |
-| `win/user/validation/Build-Corpus.cmd` | Spend a bounded budget on planner-generated trips using the running stack for the checkout where the launcher is invoked; retained trips remain in the global corpus |
-| `win/user/validation/Refresh-Audit-Corpus.cmd` | Spend the configured corpus budget on fresh planner trips, retain them globally, then write the normal dated audit report |
-| `win/user/multiagent/Start-Multiagent.cmd` | Start the coordinator detached and open the coordinator chat; dispatches only issues carrying `owner:ready` |
+| `win/user/Full-2Way-Sync.cmd [all\|sbx]` | Converge every local branch by default without hiding active edits. Clean committed lanes publish to `master`; dirty lanes take non-overlapping updates and defer publication. Pass `sbx` for registered sandboxes only. Re-runnable |
+| `win/user/quality/Show-TripRecorder.cmd [query] [--days N]` | List or search Trip Flight Recorder entries by number, destination, keyword, or label |
+| `win/user/quality/Maintain-TripRecorder.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report recorder health |
+| `win/user/quality/Restore-TripRecorder.cmd [sandbox] [days]` | Restore recorded trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |
+| `win/user/quality/Clear-TripRecorder.cmd --confirm CLEAR_DEBUG_STORE` | Delete the whole Trip Flight Recorder and restart numbering |
+| `win/user/quality/Run-Quality-Audit.cmd` | Run the Trip Quality Audit, always write dated JSON/Markdown evidence under `audit/reports/`, and exit non-zero on findings the baseline does not hold |
+| `win/user/quality/Run-Quality-Audit.cmd --all` | Show every finding, not only new ones |
+| `win/user/quality/Run-Quality-Audit.cmd --accept` | Record the current findings as known |
+| `win/user/quality/Build-Quality-Corpus.cmd` | Spend a bounded budget on planner-generated trips using the running stack for the checkout where the launcher is invoked; retained trips meet the corpus richness floor, empty drafts get one repair turn, three consecutive barren turns fail fast, and output reports accepted yield plus average time and stops |
+| `win/user/quality/Quality-Corpus-Cache.cmd` | Inspect, save, restore, or synchronize the Places grounding behind the Trip Quality Corpus |
+| `win/user/quality/Refresh-Quality-Corpus.cmd` | Spend the configured corpus budget on fresh planner trips, retain them globally, then write the normal dated quality report |
+| `win/user/multiagent/Start-Multiagent.cmd` | Start the coordinator detached and open the coordinator chat; dispatches routine queued work, audit bugs, and approved gated work |
 | `win/user/multiagent/Multiagent-Status.cmd` | Controller, slots, assignments, issues waiting on an owner decision, and recovery commands |
 | `win/user/multiagent/Plan-Multiagent.cmd` | Dry run: what would be dispatched now, and why the rest is held |
 | `win/user/multiagent/Pause-Multiagent.cmd` | Stop dispatching; running workers finish |
 | `win/user/multiagent/Resume-Multiagent.cmd` | Resume dispatching |
 | `win/user/multiagent/Stop-Multiagent.cmd` | Stop the controller and its workers, keeping worktrees, branches, and transcripts |
 | `win/user/multiagent/Open-Coordinator.cmd` | Open the owner-facing coordinator chat in VS Code |
-| `win/user/multiagent/Run-Audit-Producer.cmd [--dry-run]` | Run the read-only trip audit and propose every new deduplicated finding group as an inert `owner:proposed` issue; never accepts the baseline |
-| `win/user/debug/Capture-Screens.cmd [-Sandbox n] [-Label name]` | Capture UI evidence for a bug: screenshots, `/trip/view` and map JSON, console errors, and DOM |
+| `win/user/multiagent/Run-Quality-Issue-Producer.cmd [--dry-run]` | Run the read-only Trip Quality Audit and propose every new deduplicated finding group as an inert `owner:proposed` issue; never accepts the baseline |
+| `win/user/quality/Capture-Screens.cmd [-Sandbox n] [-Label name]` | Capture UI evidence for a quality finding: screenshots, `/trip/view` and map JSON, console errors, and DOM |
 | `win/user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `win/user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `win/user/sandbox/Run-All-Sandboxes.cmd` | Seed and run every registered sandbox in independent background processes |

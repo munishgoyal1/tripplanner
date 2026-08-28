@@ -3,6 +3,24 @@ from __future__ import annotations
 from pathlib import Path
 
 
+def test_owner_quality_launchers_are_consolidated_in_one_folder() -> None:
+    root = Path(__file__).parents[1]
+
+    for platform, suffix in (("mac", ".command"), ("win", ".cmd")):
+        user_root = root / "scripts" / platform / "user"
+        quality = user_root / "quality"
+
+        assert not (user_root / "debug").exists()
+        for name in (
+            "Capture-Screens",
+            "Clear-TripRecorder",
+            "Maintain-TripRecorder",
+            "Restore-TripRecorder",
+            "Show-TripRecorder",
+        ):
+            assert (quality / f"{name}{suffix}").is_file()
+
+
 def test_primary_master_launchers_are_named_and_wired_consistently() -> None:
     root = Path(__file__).parents[1]
     run_script = (root / "scripts" / "dev" / "run-latest-master.ps1").read_text(encoding="utf-8")
@@ -67,11 +85,14 @@ def test_sandbox_scripts_share_one_reference_resolver() -> None:
     )
     sandbox = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
 
+    assert "function Get-PrimaryRepositoryRoot" in lib
+    assert "rev-parse --path-format=absolute --git-common-dir" in lib
     assert "function Select-SandboxEntry" in lib
     assert '$Reference -match "^\\d+$"' in lib
     for script in (resolver, sandbox):
         assert "lib/sandbox-registry.ps1" in script
         assert "Select-SandboxEntry" in script
+    assert "Get-PrimaryRepositoryRoot -RepositoryRoot $checkoutRoot" in resolver
     # The duplicated registry lookup the resolver used to carry is gone.
     assert "([int]$_.slot + 1)" not in resolver
     assert "was not uniquely found" not in resolver
@@ -106,6 +127,29 @@ def test_corpus_build_publishes_all_generated_artifacts() -> None:
     assert 'git -C $repoRoot push origin "HEAD:$branch"' in builder
     assert "if (-not $dryRun)" in builder
     assert "Publish-GeneratedCorpus" in builder
+
+
+def test_dev_stack_overrides_inherited_google_keys_with_local_env() -> None:
+    root = Path(__file__).parents[1]
+    launcher = (root / "scripts" / "dev" / "dev-spa.ps1").read_text(encoding="utf-8")
+
+    assert 'foreach ($name in @("GOOGLE_MAPS_BROWSER_KEY", "GOOGLE_PLACES_API_KEY"))' in launcher
+    assert "Get-DotEnvValue -Name $name" in launcher
+    assert "SetEnvironmentVariable($name, $localValue, \"Process\")" in launcher
+
+
+def test_sandbox_runs_and_audits_refresh_primary_environment() -> None:
+    root = Path(__file__).parents[1]
+    sandbox = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
+    audit = (root / "scripts" / "dev" / "trip-audit.ps1").read_text(encoding="utf-8")
+
+    assert "function Copy-PrimaryEnvironment" in sandbox
+    assert sandbox.count("Copy-PrimaryEnvironment -WorktreeRoot") == 2
+    assert 'Join-Path $primaryRoot ".env"' in sandbox
+    assert "rev-parse --git-common-dir" in audit
+    assert 'Join-Path $primaryRoot ".env"' in audit
+    assert 'Join-Path $repoRoot ".env"' in audit
+    assert "Copy-Item -LiteralPath $sourceEnv" in audit
 
 
 def _merge_block(sandbox_script: str) -> str:
@@ -332,3 +376,14 @@ def test_full_sync_keeps_active_worktrees_visible() -> None:
     assert "merge-tree --write-tree --quiet" in sandbox
     assert "SANDBOX_WIP_OVERLAP" in sandbox
     assert "its worktree was left untouched" in sandbox
+
+
+def test_full_sync_defaults_to_all_local_branches_with_sbx_compatibility_scope() -> None:
+    root = Path(__file__).parents[1]
+    full_sync = (root / "scripts" / "dev" / "full-2way-sync.ps1").read_text(encoding="utf-8")
+
+    assert '[string]$Scope = "all"' in full_sync
+    assert '$Scope -eq "sbx"' in full_sync
+    assert 'worktree", "list", "--porcelain"' in full_sync
+    assert '"refs/heads"' in full_sync
+    assert "Get-SandboxRegistry" in full_sync

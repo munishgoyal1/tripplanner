@@ -79,7 +79,7 @@
           "note": "Overnight or early morning flight, actual time TBC"
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "The Onyx Apartment Hotel",
           "kind": "hotel",
           "note": "Check-in and freshen up"
         },
@@ -99,7 +99,7 @@
       "summary": "Morning cable car ride up Table Mountain, light walk at the top, then visit Company’s Garden. Free afternoon.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "The Onyx Apartment Hotel",
           "kind": "hotel",
           "note": "Start from hotel"
         },
@@ -118,7 +118,7 @@
           "note": "Family-friendly gardens, squirrels, and playground"
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "The Onyx Apartment Hotel",
           "kind": "hotel",
           "time": "14:00",
           "note": "Return for a free afternoon"
@@ -132,7 +132,7 @@
       "summary": "Morning trip to see the penguins at Boulders Beach, explore Simon’s Town, relaxed return.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "The Onyx Apartment Hotel",
           "kind": "hotel",
           "note": "Start from hotel"
         },
@@ -151,7 +151,7 @@
           "note": "Historic naval town, family-friendly cafes"
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "The Onyx Apartment Hotel",
           "kind": "hotel",
           "time": "14:00",
           "note": "Return for a free afternoon"
@@ -165,7 +165,7 @@
       "summary": "Scenic drive to Cape Point, visit Cape of Good Hope, stop at Kalk Bay for lunch. Free afternoon.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "The Onyx Apartment Hotel",
           "kind": "hotel",
           "note": "Start from hotel"
         },
@@ -191,7 +191,7 @@
           "note": "Seaside lunch, family-friendly cafes"
         },
         {
-          "name": "Hotel (TBD)",
+          "name": "The Onyx Apartment Hotel",
           "kind": "hotel",
           "time": "15:00",
           "note": "Return for a free afternoon"
@@ -205,7 +205,7 @@
       "summary": "Morning at Kirstenbosch National Botanical Garden, relax before transfer to airport for return flight.",
       "stops": [
         {
-          "name": "Hotel (TBD)",
+          "name": "The Onyx Apartment Hotel",
           "kind": "hotel",
           "note": "Check out"
         },

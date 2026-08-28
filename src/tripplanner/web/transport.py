@@ -15,13 +15,15 @@ _ROUTE_SEPARATOR_RE = re.compile(r"\s+(?:to|->|→)\s+|\s*(?:->|→)\s*", re.I)
 _VIA_RE = re.compile(r"\s+via\s+", re.I)
 _CONNECTION_SEPARATOR_RE = re.compile(r"\s*(?:,|&|\band\b|->|→)\s*", re.I)
 _FLIGHT_WORD_RE = re.compile(r"\b(?:flight|fly|flying|flies|flown)\b", re.I)
+_RAIL_WORD_RE = re.compile(r"\b(?:train|rail|shinkansen)\b", re.I)
 
 
 def _strip_route_affixes(name: str) -> str:
     route = str(name or "").strip()
     route = re.sub(
         r"^(?:(?:drive|driving|road journey|road transfer|transfer|private car|"
-        r"car(?: ride| transfer)?|taxi|flight|toy train|train|rail|bus)(?::|\s+))+(?:from\s+)?",
+        r"car(?: ride| transfer)?|taxi|flight|toy train|train|rail|shinkansen|bus)"
+        r"(?::|\s+))+(?:from\s+)?",
         "",
         route,
         flags=re.I,
@@ -98,7 +100,7 @@ def _transport_terminal_refs(name: str, kind: str) -> list[tuple[str, str]]:
             )
             for waypoint in waypoints
         ]
-    if "train" in lowered or "rail" in lowered:
+    if _RAIL_WORD_RE.search(lowered):
         return [("station", f"{waypoint} Railway Station") for waypoint in waypoints]
     if "bus" in lowered:
         return [("bus_station", f"{waypoint} Bus Stand") for waypoint in waypoints]
@@ -117,7 +119,7 @@ def _intercity_transfer_mode(name: str, kind: str) -> str | None:
     # as a local hop is what turns an ocean crossing into a drive.
     if _FLIGHT_WORD_RE.search(lowered) and ("to" in lowered.split() or "→" in lowered):
         return "Flight"
-    if "train" in lowered or "rail" in lowered:
+    if _RAIL_WORD_RE.search(lowered):
         return "Train"
     if "bus" in lowered:
         return "Bus"

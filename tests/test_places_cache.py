@@ -10,9 +10,13 @@ from __future__ import annotations
 import time
 from concurrent.futures import ThreadPoolExecutor
 
+import httpx
 import pytest
 
+from tripplanner.validation.harness import EvidenceCollector, harness_scope
 from tripplanner.web import places_cache as pc
+
+_REAL_LOOKUP_PLACE = pc._lookup_place
 
 
 @pytest.fixture(autouse=True)
@@ -63,6 +67,29 @@ def test_details_cached_within_week(_isolate):
     pc.get_summary("Taj", "Goa")
     pc.get_summary("Taj", "Goa")
     assert calls["lookup"] == 1  # second call served from cache
+
+
+def test_places_cache_emits_miss_and_memory_hit(_isolate):
+    with harness_scope("cache", run_id="cache-run"):
+        with EvidenceCollector("cache-run", "cache") as collector:
+            pc.get_details("Harness-only Place", "Harness City")
+            pc.get_details("Harness-only Place", "Harness City")
+
+    results = [
+        event.fields["result"]
+        for event in collector.evidence.events
+        if event.kind == "cache_access"
+    ]
+    assert results == ["miss", "memory_hit"]
+
+
+def test_places_cache_emits_forced_refresh(_isolate):
+    pc.get_details("Refresh Place", "Refresh City")
+    with harness_scope("cache", run_id="refresh-run"):
+        with EvidenceCollector("refresh-run", "cache") as collector:
+            pc.refresh_details("Refresh Place", "Refresh City")
+
+    assert [event.fields["result"] for event in collector.evidence.events] == ["refresh"]
 
 
 def test_explicit_airport_lookup_ignores_trip_destination(_isolate, monkeypatch):
@@ -119,6 +146,54 @@ def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
     details = pc.get_details("Fort Aguada", "Goa")
     assert details and details["place_id"] == "fort-aguada"
     assert calls["count"] == 2
+
+
+def test_lookup_retries_one_transient_server_error(_isolate, monkeypatch):
+    request = httpx.Request("POST", "https://places.googleapis.com/v1/places:searchText")
+    responses = iter(
+        [
+            httpx.Response(500, request=request),
+            httpx.Response(
+                200,
+                request=request,
+                json={
+                    "places": [
+                        {
+                            "id": "sunset-cafe",
+                            "displayName": {"text": "Sunset Cafe Beach Stay"},
+                            "location": {"latitude": 11.98, "longitude": 92.99},
+                        }
+                    ]
+                },
+            ),
+        ]
+    )
+    calls = {"count": 0}
+
+    def fake_post(*args, **kwargs):
+        calls["count"] += 1
+        return next(responses)
+
+    monkeypatch.setattr(pc.http_client, "post", fake_post)
+
+    result = _REAL_LOOKUP_PLACE("Sunset Cafe Beach Stay", "Neil Island")
+
+    assert result and result["place_id"] == "sunset-cafe"
+    assert calls["count"] == 2
+
+
+def test_lookup_does_not_retry_client_error(_isolate, monkeypatch):
+    request = httpx.Request("POST", "https://places.googleapis.com/v1/places:searchText")
+    calls = {"count": 0}
+
+    def fake_post(*args, **kwargs):
+        calls["count"] += 1
+        return httpx.Response(400, request=request)
+
+    monkeypatch.setattr(pc.http_client, "post", fake_post)
+
+    assert _REAL_LOOKUP_PLACE("Missing Place", "Goa") is None
+    assert calls["count"] == 1
 
 
 def test_refresh_details_preserves_known_facts_when_lookup_fails(_isolate, monkeypatch):

@@ -94,6 +94,63 @@ def test_build_view_overview_and_items() -> None:
     assert hotel["reviews"]
 
 
+def test_overview_exposes_effort_and_price_recheck_intelligence() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "status": "finalized",
+        "selected_hotels": [
+            {
+                "name": "Taj Exotica Resort",
+                "price": 12000,
+                "booking_status": "planned",
+            }
+        ],
+        "price_checks": [
+            {
+                "kind": "lodging",
+                "provider": "liteapi",
+                "checked_at": "2026-01-01T00:00:00+00:00",
+                "expires_at": "2026-01-01T00:00:00+00:00",
+            }
+        ],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "date": "2026-01-10",
+                "stops": [
+                    {
+                        "name": "Fort Aguada",
+                        "kind": "attraction",
+                        "time": "12:00",
+                        "duration_min": 180,
+                    }
+                ],
+            }
+        ],
+        "weather": {
+            "source": "forecast",
+            "days": [
+                {
+                    "date": "2026-01-10",
+                    "high_c": 36,
+                    "precip_probability_pct": 80,
+                }
+            ],
+        },
+    }
+
+    overview = trip_view.build_view(trip, None)["overview"]
+
+    assert any("36°C" in note for note in overview["effort_notes"])
+    assert overview["price_rechecks"] == [
+        {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "reason": "finalized but unbooked quote expired",
+        }
+    ]
+
+
 def test_build_weather_normalizes_forecast_and_packing() -> None:
     weather = trip_view.build_weather(
         {
@@ -1403,6 +1460,135 @@ def test_map_view_flies_between_terminals_the_plan_never_connected(
     assert day["legs"][0]["intercity"] is True
 
 
+def test_map_view_does_not_draw_ground_legs_across_unresolved_flights(
+    _long_haul_geo: None,
+) -> None:
+    trip = {
+        **_long_haul_trip([]),
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Flight: Bengaluru to Bali", "kind": "flight"},
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                    {"name": "Flight: Bali to Bengaluru", "kind": "flight"},
+                ],
+            },
+            {
+                "day": 3,
+                "stops": [
+                    {"name": "Flight: Bali to Bengaluru", "kind": "flight"},
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 4,
+                "stops": [
+                    {"name": "Flight: Paris to Bengaluru", "kind": "flight"},
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 5,
+                "stops": [
+                    {"name": "Hotel Lutetia", "kind": "hotel"},
+                    {"name": "Flight: Bengaluru to Paris", "kind": "flight"},
+                ],
+            },
+        ],
+    }
+
+    view = trip_view.build_map_view(trip)
+    pins_by_id = {pin["id"]: pin for pin in view["pins"]}
+    days = view["days"]
+
+    assert [
+        [pins_by_id[pin_id]["name"] for pin_id in day["pin_ids"]]
+        for day in days
+    ] == [
+        ["Bengaluru Airport", "Hotel Lutetia"],
+        ["Hotel Lutetia", "Bengaluru Airport"],
+        ["Bengaluru Airport", "Hotel Lutetia"],
+        ["Paris Airport", "Bengaluru Airport", "Hotel Lutetia"],
+        ["Hotel Lutetia", "Bengaluru Airport", "Paris Airport"],
+    ]
+    assert [day["legs"] for day in days[:3]] == [[], [], []]
+    assert [leg["mode"] for leg in days[3]["legs"]] == ["Taxi", "Flight"]
+    assert [leg["mode"] for leg in days[4]["legs"]] == ["Flight"]
+
+
+def test_map_view_does_not_taxi_from_paro_walk_to_delhi_airport(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Hotel in Paro": (27.4305, 89.4134),
+        "Paro Town Walk": (27.4298, 89.4147),
+        "Delhi Airport": (28.5562, 77.1000),
+    }
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+
+    def fake_summary(name: str, city: str) -> dict[str, Any] | None:
+        lat, lng = coords.get(name, (None, None))
+        return {"place_id": f"pid-{name}", "name": name, "lat": lat, "lng": lng}
+
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "top_places", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+    trip = {
+        "destination": "Bhutan",
+        "origin": "Delhi",
+        "selected_hotels": [{"name": "Hotel in Paro"}],
+        "day_wise_itinerary": [
+            {
+                "day": 5,
+                "stops": [
+                    {"name": "Hotel in Paro", "kind": "hotel"},
+                    {"name": "Paro Town Walk", "kind": "attraction"},
+                    {"name": "Flight: Paro to Delhi", "kind": "flight"},
+                ],
+            }
+        ],
+    }
+
+    view = trip_view.build_map_view(trip)
+    pins_by_id = {pin["id"]: pin for pin in view["pins"]}
+    day = view["days"][0]
+
+    assert "Delhi Airport" in {pin["name"] for pin in view["pins"]}
+    assert all(
+        not (
+            pins_by_id[leg["from_pin_id"]]["name"] == "Paro Town Walk"
+            and pins_by_id[leg["to_pin_id"]]["name"] == "Delhi Airport"
+        )
+        for leg in day["legs"]
+    )
+
+
+def test_unresolved_flight_origin_does_not_become_following_drive_origin(
+    _long_haul_geo: None,
+) -> None:
+    trip = _long_haul_trip(
+        [
+            {"name": "Flight: Bengaluru to Bali", "kind": "flight"},
+            {"name": "Drive: Bali to Paris", "kind": "transport"},
+            {"name": "Hotel Lutetia", "kind": "hotel"},
+        ]
+    )
+
+    day = trip_view.build_map_view(trip)["days"][0]
+
+    assert day["legs"] == []
+
+
 def test_itinerary_does_not_bookend_a_long_haul_day_with_the_destination_stay(
     _long_haul_geo: None,
 ) -> None:
@@ -1571,6 +1757,63 @@ def test_map_view_connects_origin_and_destination_segments_after_road_transfer(
     assert all("intercity" not in leg for leg in day["legs"][1:])
 
 
+def test_map_view_closes_a_drive_at_the_following_flight_terminal(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Hotel in Gangtok": (27.3314, 88.6138),
+        "Gangtok": (27.3314, 88.6138),
+        "Bagdogra Airport": (26.6812, 88.3286),
+        "Kolkata Airport": (22.6547, 88.4467),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Gangtok and North Sikkim",
+        "selected_hotels": [{"name": "Hotel in Gangtok"}],
+        "day_wise_itinerary": [{
+            "day": 6,
+            "stops": [
+                {"name": "Hotel in Gangtok", "kind": "hotel"},
+                {
+                    "name": "Drive: Gangtok to Bagdogra",
+                    "kind": "transport",
+                    "distance_km": 125,
+                    "duration_min": 300,
+                },
+                {
+                    "name": "Flight: Bagdogra to Kolkata",
+                    "kind": "flight",
+                    "duration_min": 75,
+                },
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    day = view["days"][0]
+    assert [names_by_id[pin_id] for pin_id in day["pin_ids"]] == [
+        "Hotel in Gangtok",
+        "Bagdogra Airport",
+        "Kolkata Airport",
+    ]
+    assert [leg["mode"] for leg in day["legs"]] == ["Drive", "Flight"]
+    assert day["legs"][0]["distance_km"] == 125
+    assert all(leg["intercity"] is True for leg in day["legs"])
+
+
 def test_map_view_connects_city_origin_to_hotel_for_road_trip(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
@@ -1673,6 +1916,101 @@ def test_map_view_connects_train_stations_between_stays(
     assert day["route"]["mode"] == "Train + local"
     assert day["legs"][1]["mode"] == "Train"
     assert day["legs"][1]["intercity"] is True
+
+
+def test_map_view_renders_shinkansen_between_tokyo_and_kyoto(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Tokyo Railway Station": (35.6812, 139.7671),
+        "Kyoto Railway Station": (34.9858, 135.7588),
+        "Sunroute Plaza Shinjuku": (35.6877, 139.7004),
+        "Hotel Granvia Kyoto": (34.9859, 135.7585),
+        "Gion District": (35.0037, 135.7788),
+    }
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", trip_view.places_cache.get_details)
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "top_places", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Japan (Tokyo & Kyoto)",
+        "selected_hotels": [
+            {"name": "Sunroute Plaza Shinjuku"},
+            {"name": "Hotel Granvia Kyoto"},
+        ],
+        "day_wise_itinerary": [
+            {
+                "day": 4,
+                "stops": [
+                    {"name": "Shinkansen: Tokyo to Kyoto", "kind": "transport"},
+                    {"name": "Sunroute Plaza Shinjuku", "kind": "hotel"},
+                    {"name": "Hotel Granvia Kyoto", "kind": "hotel"},
+                    {"name": "Gion District", "kind": "attraction"},
+                ],
+            }
+        ],
+    }
+
+    day = trip_view.build_map_view(trip)["days"][0]
+
+    assert any(leg["mode"] == "Train" and leg["intercity"] for leg in day["legs"])
+    assert all(
+        leg["distance_km"] <= 300 or leg["mode"] not in {"Walk", "Taxi"}
+        for leg in day["legs"]
+    )
+
+
+def test_map_view_omits_implausibly_long_ground_leg(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Tokyo Hotel": (35.6764, 139.6500),
+        "Kyoto Hotel": (35.0116, 135.7681),
+    }
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", trip_view.places_cache.get_details)
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "top_places", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+    trip = {
+        **SAMPLE_TRIP,
+        "selected_hotels": [{"name": "Tokyo Hotel"}, {"name": "Kyoto Hotel"}],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Tokyo Hotel", "kind": "hotel"},
+                    {"name": "Kyoto Hotel", "kind": "hotel"},
+                ],
+            }
+        ],
+    }
+
+    assert trip_view.build_map_view(trip)["days"][0]["legs"] == []
 
 
 def test_map_view_connects_bus_stands_between_stays(
@@ -1841,9 +2179,7 @@ def test_map_view_does_not_bind_partial_flight_to_destination_hotel(
         "Bangalore Airport",
         "Destination Hotel",
     ]
-    assert day["route"]["mode"] == "Taxi"
-    assert day["legs"][0]["mode"] == "Taxi"
-    assert "intercity" not in day["legs"][0]
+    assert day["legs"] == []
 
 
 def test_map_view_pins_flight_stops_named_as_single_airports(
@@ -3394,6 +3730,30 @@ def test_train_arrival_estimates_destination_hotel_check_in(
     )
     assert hotel["time"] == trip_view._clock_display(expected_check_in)
     assert hotel["time_estimated"] is True
+
+
+def test_train_without_duration_keeps_arrival_unknown() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [{
+                "name": "Train: Delhi to Amritsar",
+                "kind": "transport",
+                "time": "09:00",
+            }],
+        }],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    stops = itinerary["days"][0]["stops"]
+    train = next(stop for stop in stops if stop["kind"] == "transport")
+    arrival_station = next(stop for stop in stops if stop.get("terminal_role") == "arrival")
+    assert train["arrival_time"] == ""
+    assert "arrival_time_estimated" not in train
+    assert arrival_station["time"] == ""
+    assert arrival_station["time_estimated"] is False
 
 
 def test_timed_road_transfer_estimates_destination_hotel_check_in() -> None:

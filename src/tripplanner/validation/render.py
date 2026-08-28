@@ -14,9 +14,9 @@ from typing import Any
 
 from tripplanner.validation.corpus import CorpusRecord
 from tripplanner.validation.findings import Finding, symptom_of
+from tripplanner.web.map_pins import _provider_name_matches
+from tripplanner.web.schedule import MAX_GROUND_LEG_KM
 
-#: Ground travel beyond this is not a drive, whatever the leg claims.
-MAX_GROUND_LEG_KM = 300.0
 #: No single leg of a day plausibly takes longer than this.
 MAX_LEG_MINUTES = 16 * 60
 _GROUND_MODES = frozenset({"Walk", "Taxi", "Drive", "Bus", "Metro", "Cab", "Car"})
@@ -61,6 +61,10 @@ def _lookup(places: dict[str, Any]):
             for location in locations
         )
 
+    def name_matches(wanted: str, entry: Any) -> bool:
+        provider_name = str((entry or {}).get("name") or "").strip()
+        return not provider_name or _provider_name_matches(wanted, provider_name)
+
     def get_details(name: str, city: str = "", **_kwargs: Any) -> dict[str, Any] | None:
         wanted = str(name or "").strip().lower()
         destination = str(city or "").strip().lower()
@@ -71,6 +75,7 @@ def _lookup(places: dict[str, Any]):
             entry
             for cached_city, entry in by_name.get(wanted, [])
             if destination_matches(destination, cached_city, entry)
+            and name_matches(wanted, entry)
         ]
         identities = {
             str(entry.get("place_id") or "").strip()
@@ -171,17 +176,26 @@ def _leg_findings(
 def _unmapped_findings(
     record: CorpusRecord, view: dict[str, Any], names: list[str]
 ) -> list[Finding]:
-    known = {str(key).partition("|")[0] for key in record.places}
+    located = {
+        str(key).partition("|")[0]
+        for key, entry in record.places.items()
+        if isinstance(entry, dict)
+        and entry.get("lat") is not None
+        and entry.get("lng") is not None
+        and (
+            not entry.get("name")
+            or _provider_name_matches(str(key).partition("|")[0], str(entry["name"]))
+        )
+    }
     found: list[Finding] = []
     for stop in view.get("unmapped_stops") or []:
         reason = str(stop.get("reason") or "")
         name = str(stop.get("name") or "")
         if reason == "not_a_place":
             continue
-        # A place absent from the stored facts has no location *here*, which says
-        # nothing about whether the app could map it. Only speak about places
-        # this audit can actually see.
-        if reason == "no_location" and name.strip().lower() not in known:
+        # Missing or coordinate-less stored facts say nothing about whether the
+        # app could map the place. Only speak when this audit can locate it.
+        if reason == "no_location" and name.strip().lower() not in located:
             continue
         message = (
             f"{name or 'A stop'} on Day {stop.get('day')} never reached "

@@ -78,8 +78,8 @@
     {
       "day": 1,
       "date": "2027-02-06",
-      "title": "Day 1 · Arrival & Check-in",
-      "summary": "Drive from Guwahati to Kaziranga, check in to Borgos The Wild Haven, relax, and enjoy a local Assamese dinner.",
+      "title": "Day 1 · Arrival & Jeep Safari",
+      "summary": "Drive from Guwahati to Kaziranga, check in to Borgos The Wild Haven, take an afternoon jeep safari, and enjoy a local Assamese dinner.",
       "stops": [
         {
           "name": "Drive: Guwahati to Kaziranga",
@@ -95,6 +95,13 @@
           "note": "Check-in and refresh"
         },
         {
+          "name": "Kaziranga Jeep Safari",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 180,
+          "note": "Spot rhinos, elephants, and deer"
+        },
+        {
           "name": "John's Kitchen",
           "kind": "meal",
           "time": "19:00",
@@ -105,8 +112,8 @@
     {
       "day": 2,
       "date": "2027-02-07",
-      "title": "Day 2 · Jeep Safari & Wetlands",
-      "summary": "Early morning jeep safari in Kaziranga National Park, visit Kaziranga Wetlands for birdwatching, lunch at Baankahi, afternoon tea garden walk.",
+      "title": "Day 2 · Wetlands & Tea Gardens",
+      "summary": "Visit Kaziranga Wetlands for birdwatching, lunch at Baankahi, and take an afternoon tea garden walk.",
       "stops": [
         {
           "name": "Borgos The Wild Haven, Kaziranga",
@@ -119,13 +126,6 @@
           "time": "07:00",
           "duration_min": 90,
           "note": "Birdwatching and photography"
-        },
-        {
-          "name": "Kaziranga Jeep Safari",
-          "kind": "attraction",
-          "time": "09:00",
-          "duration_min": 180,
-          "note": "Spot rhinos, elephants, deer (open Monday)"
         },
         {
           "name": "Baankahi",

@@ -1,4 +1,4 @@
-"""Inspect, maintain, restore, and tear down the local debug trip store.
+"""Inspect, maintain, restore, and tear down the local Trip Flight Recorder.
 
     python scripts/dev/debug_store_cli.py show "maui" --days 30
     python scripts/dev/debug_store_cli.py maintain
@@ -132,7 +132,7 @@ def cmd_show(args: argparse.Namespace) -> int:
 def cmd_maintain(args: argparse.Namespace) -> int:
     root = debug_store.users_root()
     if not root.exists():
-        print("Debug store is empty; nothing to maintain.")
+        print("Trip Flight Recorder is empty; nothing to maintain.")
         return 0
 
     unreadable = [
@@ -198,7 +198,7 @@ def cmd_maintain(args: argparse.Namespace) -> int:
         print(f"Pruned {len(stale)} stale record(s).")
 
     total = len(debug_store.iter_records())
-    print(f"Debug store: {total} archived trip(s) at {debug_store.store_root()}")
+    print(f"Trip Flight Recorder: {total} recorded trip(s) at {debug_store.store_root()}")
     print(f"  descriptors refreshed : {refreshed}")
     print(f"  numbers reassigned    : {renumbered}")
     print(f"  revision lists trimmed: {trimmed}")
@@ -352,13 +352,13 @@ def cmd_restore(args: argparse.Namespace) -> int:
 def cmd_clear(args: argparse.Namespace) -> int:
     root = debug_store.store_root()
     if args.confirm != "CLEAR_DEBUG_STORE":
-        return _fail("pass --confirm CLEAR_DEBUG_STORE to tear the store down")
+        return _fail("pass --confirm CLEAR_DEBUG_STORE to tear the recorder down")
     if not root.exists():
-        print("Debug store is already empty.")
+        print("Trip Flight Recorder is already empty.")
         return 0
     count = len(debug_store.iter_records())
     shutil.rmtree(root)
-    print(f"Removed {count} archived trip(s) and deleted {root}.")
+    print(f"Removed {count} recorded trip(s) and deleted {root}.")
     print("Numbering restarts at 1 on the next capture.")
     return 0
 

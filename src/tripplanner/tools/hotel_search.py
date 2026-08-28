@@ -132,12 +132,21 @@ def search_hotels(
         offers = result.value
         if offers:
             note_price_check("lodging", result.provider)
+            search_context = {
+                "destination": query.destination,
+                "adults_per_room": query.adults_per_room,
+                "rooms": query.rooms,
+                "children_ages": list(query.children_ages),
+                "guest_nationality": query.guest_nationality,
+                "refundable_only": query.refundable_only,
+            }
             decision = build_lodging_decision(
                 offers,
                 destination=city,
                 checkin=checkin,
                 checkout=checkout,
                 cached=result.cache_hit,
+                search_context=search_context,
             )
             if decision is not None:
                 from tripplanner.tools import trip_planner
@@ -152,21 +161,19 @@ def search_hotels(
                     "expires_at": result.expires_at,
                     "decision_id": decision.id if decision else None,
                     "recommended_option_id": decision.chosen_option_id if decision else None,
-                    "offers": [offer.model_dump(mode="json") for offer in offers],
+                    "offers": [
+                        {**offer.model_dump(mode="json"), "search_context": search_context}
+                        for offer in offers
+                    ],
                 },
                 ensure_ascii=False,
                 default=str,
             )
         if result.errors:
-            return json.dumps(
-                {
-                    "quote_status": result.quote_status,
-                    "provider": result.provider,
-                    "errors": result.errors,
-                },
-                ensure_ascii=False,
-                default=str,
-            )
+            details = "; ".join(result.errors)
+            if all(error.endswith(": no availability") for error in result.errors):
+                return f"No hotels found for {city}. Provider details: {details}"
+            return f"Hotel search error: {details}"
 
     if not amadeus_client.is_configured():
         places = search_places_with_reviews.invoke(
@@ -219,4 +226,3 @@ def search_hotels(
         return result
     except Exception as e:
         return f"Hotel search error: {e}"
-

@@ -1,5 +1,7 @@
-import { BedDouble, CalendarDays, CheckCircle2, Compass, Plane } from "lucide-react";
+import { BedDouble, CalendarDays, CheckCircle2, Compass, Plane, RefreshCw } from "lucide-react";
+import { useState } from "react";
 import type { Budget, TripOverview } from "../types";
+import { recheckPrices } from "../api";
 import WeatherIcon from "./WeatherIcon";
 import { formatDate, formatSourceAmount, useDisplayPreferences, type DisplayCurrency } from "../lib/displayPreferences";
 
@@ -9,6 +11,7 @@ interface Props {
   stops?: number;
   active?: boolean;
   onAllDaysMap?: () => void;
+  onTripChanged?: () => void | Promise<void>;
 }
 
 function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCurrency: DisplayCurrency }) {
@@ -64,8 +67,17 @@ function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCur
   );
 }
 
-export default function TripSnapshot({ overview, booked, stops, active = false, onAllDaysMap }: Props) {
+export default function TripSnapshot({
+  overview,
+  booked,
+  stops,
+  active = false,
+  onAllDaysMap,
+  onTripChanged,
+}: Props) {
   const { currency } = useDisplayPreferences();
+  const [rechecking, setRechecking] = useState(false);
+  const [recheckOutcome, setRecheckOutcome] = useState("");
   const statusTone = overview.status === "booked"
     ? "bg-brand/10 text-brand ring-brand/20"
     : overview.status === "finalized"
@@ -90,6 +102,28 @@ export default function TripSnapshot({ overview, booked, stops, active = false, 
       ? `with ${overview.counts.activities} planned ${overview.counts.activities === 1 ? "place" : "places"}.`
       : "with itinerary details still being planned.",
   ].filter(Boolean).join(" ");
+
+  async function runPriceRecheck() {
+    setRechecking(true);
+    setRecheckOutcome("");
+    try {
+      const result = await recheckPrices();
+      const changed = result.results.filter((row) => row.delta != null && row.delta !== 0).length;
+      const unavailable = result.results.filter((row) => row.status !== "live").length;
+      setRecheckOutcome(
+        changed > 0
+          ? `Rechecked ${result.rechecked}; ${changed} price${changed === 1 ? "" : "s"} changed.`
+          : unavailable > 0
+            ? `Rechecked ${result.rechecked}; ${unavailable} could not be confirmed.`
+            : result.message,
+      );
+      await onTripChanged?.();
+    } catch {
+      setRecheckOutcome("Could not recheck prices just now.");
+    } finally {
+      setRechecking(false);
+    }
+  }
 
   return (
     <section
@@ -142,6 +176,21 @@ export default function TripSnapshot({ overview, booked, stops, active = false, 
               {costEvidence.summary}
             </p>
           )}
+          {!!overview.price_rechecks?.length && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                void runPriceRecheck();
+              }}
+              disabled={rechecking}
+              className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold text-brand disabled:opacity-60"
+            >
+              <RefreshCw className={`h-3 w-3 ${rechecking ? "animate-spin" : ""}`} aria-hidden />
+              {rechecking ? "Rechecking prices…" : "Recheck prices"}
+            </button>
+          )}
+          {recheckOutcome && <p className="mt-1 max-w-52 text-[10px] text-slate-600">{recheckOutcome}</p>}
         </div>
       </div>
 

@@ -1,0 +1,571 @@
+{
+  "status": "draft",
+  "trip_id": "leh_nubra_valley_pangong_2027-07-02_2027-07-09",
+  "trip_number": 1,
+  "created_at": "2026-08-25T22:13:11.920529",
+  "destination": "Leh, Nubra Valley, Pangong",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-07-02",
+  "return_date": "2027-07-09",
+  "travelers": "4 adult friends",
+  "notes": "Focus on scenery, wildlife, and practical outdoor experiences. Domestic India trip. Balanced pace, moderate budget.",
+  "planning_recommendation": {
+    "recommended_days": 8,
+    "anchor_experiences": [
+      {
+        "place": "Leh",
+        "min_days": 2
+      },
+      {
+        "place": "Nubra Valley",
+        "min_days": 2
+      },
+      {
+        "place": "Pangong Lake",
+        "min_days": 2
+      },
+      {
+        "place": "Delhi",
+        "min_days": 2
+      }
+    ],
+    "clusters": [
+      {
+        "name": "Leh",
+        "days": 2
+      },
+      {
+        "name": "Nubra Valley",
+        "days": 2
+      },
+      {
+        "name": "Pangong Lake",
+        "days": 2
+      },
+      {
+        "name": "Delhi (transit)",
+        "days": 2
+      }
+    ],
+    "notes": "8 days allows for acclimatization, scenic drives, and wildlife/outdoor activities in each region."
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "The Grand Dragon Ladakh",
+      "city": "Leh",
+      "address": "Old Road Sheynam, Leh, 194101",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp3ae3d"
+      },
+      "checkin": "2027-07-02",
+      "checkout": "2027-07-04",
+      "room_count": 2,
+      "adults": 4,
+      "price_per_night": 18000,
+      "currency": "INR",
+      "rating": 4.6,
+      "note": "Top-rated, central, scenic views, breakfast included"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-07-02",
+      "title": "Day 1 · Delhi to Leh · Arrival & Acclimatization",
+      "summary": "Fly from Delhi to Leh. Arrive, transfer to hotel, rest and acclimatize to altitude. Evening stroll in Leh market.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Leh",
+          "kind": "flight",
+          "time": "07:00",
+          "arrival_time": "08:30",
+          "duration_min": 90,
+          "note": "Morning direct flight"
+        },
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel",
+          "note": "Check-in and acclimatization"
+        },
+        {
+          "name": "Leh Main Bazaar",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening stroll and local shopping"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-07-03",
+      "title": "Day 2 · Leh Monasteries & Wildlife",
+      "summary": "Visit Thiksey and Hemis monasteries, explore Hemis National Park for wildlife spotting (snow leopards, blue sheep).",
+      "stops": [
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Thiksey Monastery",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Scenic monastery with views"
+        },
+        {
+          "name": "Hemis Monastery",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Hemis National Park",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 180,
+          "note": "Wildlife spotting, guided walk"
+        },
+        {
+          "name": "Gesmo Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Local Ladakhi cuisine"
+        },
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-07-04",
+      "title": "Day 3 · Leh to Nubra Valley via Khardung La",
+      "summary": "Drive to Nubra Valley via Khardung La Pass (world's highest motorable road). Stop for photos at Khardung La (within drive), reach Hunder, check in, explore sand dunes and Bactrian camels.",
+      "stops": [
+        {
+          "name": "Drive: Leh to Nubra Valley via Khardung La (with photo stop)",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 360,
+          "distance_km": 130,
+          "note": "Scenic drive, photo stop at Khardung La around 12:00"
+        },
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "14:30"
+        },
+        {
+          "name": "Hunder Sand Dunes",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 60,
+          "note": "Camel ride and scenery"
+        },
+        {
+          "name": "Stone Hedge Hotel Nubra",
+          "kind": "hotel",
+          "note": "Check-in at Hunder",
+          "time": "18:00"
+        },
+        {
+          "name": "The Tibetan Table",
+          "kind": "meal",
+          "time": "20:00",
+          "note": "Dinner in Hunder"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-07-05",
+      "title": "Day 4 · Nubra Valley: Diskit & Wildlife",
+      "summary": "Visit Diskit Monastery, explore Nubra Valley villages, visit Yarab Tso Lake, birdwatching and local wildlife. Leisure evening.",
+      "stops": [
+        {
+          "name": "Stone Hedge Hotel Nubra",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Diskit Monastery",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Famous Buddha statue and valley views"
+        },
+        {
+          "name": "Yarab Tso Lake",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Hidden lake, birdwatching"
+        },
+        {
+          "name": "Local Village Walk",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Explore rural life"
+        },
+        {
+          "name": "Stone Hedge Hotel Nubra",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Bon Appetit Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner in Nubra"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-07-06",
+      "title": "Day 5 · Nubra to Pangong Lake (via Shyok) · Camp Stay",
+      "summary": "Scenic drive from Nubra to Pangong Lake via Shyok River. Arrive, check in to lakeside camp, enjoy sunset and stargazing.",
+      "stops": [
+        {
+          "name": "Drive: Nubra Valley to Pangong Lake via Shyok",
+          "kind": "transport",
+          "time": "07:30",
+          "duration_min": 360,
+          "distance_km": 180,
+          "note": "Mountain roads, river views"
+        },
+        {
+          "name": "Stone Hedge Hotel Nubra",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "14:00"
+        },
+        {
+          "name": "Pangong Lake",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Walk by the lake, photography"
+        },
+        {
+          "name": "The Pangong Retreat Camp",
+          "kind": "hotel",
+          "note": "Lakeside camp check-in",
+          "time": "18:30"
+        },
+        {
+          "name": "Camp Dinner",
+          "kind": "meal",
+          "time": "20:30",
+          "note": "Dinner at camp, stargazing"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-07-07",
+      "title": "Day 6 · Pangong Lake & Wildlife",
+      "summary": "Morning by Pangong Lake, birdwatching (bar-headed geese, Brahminy ducks), short hike, relax at camp.",
+      "stops": [
+        {
+          "name": "The Pangong Retreat Camp",
+          "kind": "hotel",
+          "note": "Start from camp"
+        },
+        {
+          "name": "Pangong Lake Birdwatching",
+          "kind": "attraction",
+          "time": "07:30",
+          "duration_min": 90,
+          "note": "Look for migratory birds"
+        },
+        {
+          "name": "Short Hike along Pangong",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Easy scenic hike"
+        },
+        {
+          "name": "The Pangong Retreat Camp",
+          "kind": "hotel",
+          "note": "Return to camp"
+        },
+        {
+          "name": "Camp Dinner",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner at camp"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-07-08",
+      "title": "Day 7 · Pangong to Leh via Chang La · Leisure",
+      "summary": "Drive back to Leh via Chang La Pass. Check in, relax, optional visit to Shanti Stupa or Leh Palace.",
+      "stops": [
+        {
+          "name": "Drive: Pangong Lake to Leh via Chang La",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 420,
+          "distance_km": 220,
+          "note": "Mountain pass, photo stops"
+        },
+        {
+          "name": "The Pangong Retreat Camp",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "15:30"
+        },
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel",
+          "note": "Check-in Leh",
+          "time": "17:30"
+        },
+        {
+          "name": "Shanti Stupa",
+          "kind": "attraction",
+          "time": "19:30",
+          "duration_min": 60,
+          "note": "Optional evening visit"
+        },
+        {
+          "name": "Sky Wok Restaurant",
+          "kind": "meal",
+          "time": "21:00",
+          "note": "Dinner in Leh"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-07-09",
+      "title": "Day 8 · Leh to Delhi · Departure",
+      "summary": "Check out, transfer to airport, fly back to Delhi.",
+      "stops": [
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Flight: Leh to Delhi",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "10:30",
+          "duration_min": 90,
+          "note": "Morning direct flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T22:15:43.074017",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-25T22:14:42",
+      "expires_at": "2026-08-26T10:14:42"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_leh_2027_07_02_2027_07_04",
+      "kind": "lodging",
+      "created_at": "2026-08-25T16:44:42.336382Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Leh",
+        "date": "2027-07-02"
+      },
+      "subject": "Stay in Leh",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_158faa9442b2",
+      "options": [
+        {
+          "id": "opt_stay_158faa9442b2",
+          "mode": null,
+          "label": "Suite Saint Jean Studio centre Honfleur",
+          "detail": "Deluxe Room",
+          "price": {
+            "amount": 40598.82,
+            "currency": "INR",
+            "basis": "per_party",
+            "taxes": null,
+            "fees": null,
+            "due_at_property": null,
+            "all_in": null,
+            "mandatory_costs_complete": null,
+            "excluded": [],
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-02",
+            "checkout": "2027-07-04",
+            "room_name": "Deluxe Room",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "61 Rue du Puits",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp3ae3d",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gEVR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRRzRZREU3QlNHQVpET01CWEdBMkhZWkxPTDVLVkc3Q0pKWjZFU1RTU1BRMkVDTUNERjQyRUNNQ0RQUTJES01SWlBSVVZBWjJWSkI2RENOWllHNDNET05SU0c0M0RNTUJVS1pCVUlZUkRHSTJEQ01SUkdNUlRDTlpWR0FXVEVOQlJHSVlURzdDT0tKREU0N0JTR0FaRE1NQllHSVpEQ01CUUdCNkRDN0NTR0VZVEtNRDRHUVlES09KWUhBWVNHVVNQRU5IRkVSU09FTVpEQU1SV0ZVWURRTEpTR0lRRENNQjJHQVlDR6NwcmPLQNPS2j1wo9elb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm6rRGVsdXhlIFJvb22jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk7eABGkc3JpZNoBFUdZMkRNTkpXTU0zVEtOWllHWTJURU1CWEdJM0dNTlRHR1pTSFlNUkRHSVlERU5aUUc0WURFN0JTR0FaRE9NQlhHQTJIWVpMT0w1S1ZHN0NKSlo2RVNUU1NQUTJFQ01DREY0MkVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZRzQzRE9OUlNHNDNETU1CVUtaQlVJWVJER0kyRENNUlJHTVJUQ05aVkdBV1RFTkJSR0lZVEc3Q09LSkRFNDdCU0dBWkRNTUJZR0laRENNQlFHQjZEQzdDU0dFWVRLTUQ0R1FZREtPSllIQVlTR1VTUEVOSEZFUlNPRU1aREFNUldGVVlEUUxKU0dJUURDTUIyR0FZQ0ejcHJjy0DT0to9cKPXpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgKkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmMjQxMjEzo3NpZAKjaGlkp2xwM2FlM2Sjb2NjkoGhYQSBoWEEo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNy0wMqJjb6oyMDI3LTA3LTA0o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMzljZjM3MGEwRDJMQVUxNDlJQUpKRDJMaEhyRFIyVkx4ckVGo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnCoWSlVGF4ZXOhYctAiH8KPXCj16Fjo0lOUqJscMCjYmt0AQ==",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHJEZUOTKOKRDUOWSTJBMU2SSEI5EVSRCFJZNFCRZULFCEKN2CKNDUCWSEJ5GUEWCHIEZEQWK2JRHUYNKLKZDTOQ2KJJNDMRKTKRJVGUCRGJCUGTKDIRDDIMSFINGUGRCQKEZEIS2NKJNFAUSVKZAVUMSWJJBDMRCDJZNFSRZUGNCE6TSSKNDTIM2EJVGUEVKLLJBFKSKZKJCEOSJSIRBU2USSI5GVEVCDJZNFMR2BK5KEKTSCKJDUSWKUI43UGT2LJJCEKNBXIJJUOQK2IRGU2QSZI5EVURCDJVBFCR2CGZCEGN2DKNDUKWKUJNGUINCHKFMUIS2PJJMUQQKZKNDVKU2QIVHEQRSFKJJU6RKNLJCECTKSK5DFKWKEKFGEUU2HJFIUIQ2NIIZEOQKZINDXYMRQGI4TSLRUGF6HYUSPPR6HY7CEMVWHK6DFEBJG633NPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            },
+            "search_context": {
+              "destination": "Leh",
+              "adults_per_room": 4,
+              "rooms": 2,
+              "children_ages": [],
+              "guest_nationality": "IN",
+              "refundable_only": false
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-25T16:44:42.293944Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_597337894a64",
+          "mode": null,
+          "label": "Les Maisons de Léa & Spa - Radisson Individuals",
+          "detail": "FAMILY ROOM QUEEN BED NON SMOKING",
+          "price": {
+            "amount": 194166.66,
+            "currency": "INR",
+            "basis": "per_party",
+            "taxes": null,
+            "fees": null,
+            "due_at_property": null,
+            "all_in": null,
+            "mandatory_costs_complete": null,
+            "excluded": [],
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹153,568 more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-02",
+            "checkout": "2027-07-04",
+            "room_name": "FAMILY ROOM QUEEN BED NON SMOKING",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Place Sainte Catherine",
+            "rating": 8.5,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lpaabf9",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gFdR1kzRE1NSldNUTNEU05UREc0NFRFTUJYR0kzR01OVEdHWlNERU1CWEdFM1RLTlJWR1kyVE1aSlNHQTNERU5SVkdZMkRFTUJXTVUzR01OVEZHSVlET01aV01RM0dNTlRDR1k0VE1aSldHNTZEQ0laU0dBWkRPTUJYR0FaSFlNUlFHSTNUQU5aUUdSNkdLM1M3S1ZKWFlTS09QUkVVNFVUNEdSQVRBUVpQR1JBVEFRMzRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUTU1SWEdZM0RBTkNXSU5DR0VJWldIRTRUR09CVkVNWVRPTkpRRlUzRFNPSlRIQTJYWVRTU0laSEhZTVJRR0kzREFPQlNHTVlEU05KWlBRWVhZVVJSR0UyVEE3QlJIRTJEQ05SV0dZM0NHVVNQRU5IRkVSU09FTVpEQU1SV0ZVWURRTEpTR01RREFPSjJHVTRTR6NwcmPLQPeztUeuFHulb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZIUZBTUlMWSBST09NIFFVRUVOIEJFRCBOT04gU01PS0lOR6NvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJCicnSkTlJGTt4AEaRzcmlk2gFdR1kzRE1NSldNUTNEU05UREc0NFRFTUJYR0kzR01OVEdHWlNERU1CWEdFM1RLTlJWR1kyVE1aSlNHQTNERU5SVkdZMkRFTUJXTVUzR01OVEZHSVlET01aV01RM0dNTlRDR1k0VE1aSldHNTZERUlaU0dBWkRPTUJYR0FaSFlNUlFHSTNUQU5aUUdSNkdLM1M3S1ZKWFlTS09QUkVVNFVUNEdSQVRBUVpQR1JBVEFRMzRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUTU1SWEdZM0RBTkNXSU5DR0VJWldIRTRUR09CVkVNWVRPTkpRRlUzRFNPSlRIQTJYWVRTU0laSEhZTVJRR0kzREFPQlNHTVlEU05KWlBRWVhZVVJSR0UyVEE3QlJIRTJEQ05SV0dZM0NHVVNQRU5IRkVSU09FTVpEQU1SV0ZVWURRTEpTR01RREFPSjJHVTRTR6NwcmPLQPeztUeuFHulb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZIUZBTUlMWSBST09NIFFVRUVOIEJFRCBOT04gU01PS0lOR6NvY24CpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJCicnSkTlJGTqRzaGlkpjY5OTM4NaNzaWQCo2hpZKdscGFhYmY5o29jY5KBoWEEgaFhBKNjdXKjSU5SomduoklOomNpqjIwMjctMDctMDKiY2-qMjAyNy0wNy0wNKNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDM5Y2YzNzBhMEQyTEFVMTQ5SUFKSkQyTGhIckRSMlZMeHJFRqNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpwqFkqENpdHkgdGF4oWHLQJEMUeuFHrihY6NJTlKEoWnCoWSjVkFUoWHLQLL2KPXCj1yhY6NJTlKibHDAo2JrdAE=",
+              "rate_id": "I5MTGRCNJVFFOTKRGNCFGTSUIRDTINCUIVGUEWCHJEZUOTKOKRDUOWSTIRCU2QSYI5CTGVCLJZJFMR2ZGJKE2WSKKNDUCM2EIVHFEVSHLEZEIRKNIJLU2VJTI5GU4VCGI5EVSRCPJVNFOTKRGNDU2TSUINDVSNCUJVNEUV2HGU3EIQ2JLJJUOQK2IRHU2QSYI5AVUSCZJVJFCR2JGNKECTS2KFDVENSHJMZVGN2LKZFFQWKTJNHVAUSFKU2FKVBUI5JECVCBKFNFAR2SIFKECUJTGRDVCMSUIVHUYNCOIZEUOT2WJNEVAUKZKRHU6QSYI5MTGVCNJVJFQR2ZGNCECTSDK5EU4Q2HIVEVUV2IIU2FIR2PIJLEKTKZKRHU4SSRIZKTGRCTJ5FFISCBGJMFSVCTKNEVUSCILFGVEUKHJEZUIQKPIJJUOTKZIRJU4SS2KBIVSWCZKVJFER2FGJKECN2CKJEEKMSEINHFEV2HLEZUGR2VKNIEKTSIIZCVEU2PIVGVURCBJVJFORSVLFCFCTCKKNDU2UKEIFHUUMSHKU2FGR34HE3TAOBTFYZTG7D4KJHXY7D4PRDECTKJJRMSAUSPJ5GSAUKVIVCU4ICCIVCCATSPJYQFGTKPJNEU4R34GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            },
+            "search_context": {
+              "destination": "Leh",
+              "adults_per_room": 4,
+              "rooms": 2,
+              "children_ages": [],
+              "guest_nationality": "IN",
+              "refundable_only": false
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-25T16:44:42.293944Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 40598.82,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "leh_nubra_valley_pangong_2027-07-02_2027-07-09",
+  "user_id": "corpus-india-ladakh-nature-friends-8d-013f5ebfadee"
+}

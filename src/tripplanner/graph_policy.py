@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -36,6 +37,7 @@ ForcedReason: TypeAlias = Literal[
     "new_trip_creation",
     "origin_correction",
     "hotel_provider_fallback",
+    "missing_named_restaurant",
     "persist_or_repair_plan",
     "missing_concrete_hotel",
     "kickoff_answered",
@@ -76,6 +78,20 @@ _EXPLICIT_PARTY_RELATION_RE = re.compile(
 )
 _ADULT_COUNT_RE = re.compile(r"\b(\d+)\s*(?:adults?|grown[ -]?ups?)\b", re.IGNORECASE)
 _CHILD_COUNT_RE = re.compile(r"\b(\d+)\s*(?:children|child|kids?)\b", re.IGNORECASE)
+_EXPLICIT_ORIGIN_RE = re.compile(
+    r"\b(?:from|departing from|flying from|travell?ing from)\s+[A-Za-z]",
+    re.IGNORECASE,
+)
+_OWN_ARRIVAL_RE = re.compile(
+    r"\b(?:arrang(?:e|ing) (?:my|our) own|make (?:my|our) own way|"
+    r"(?:meet|start) (?:you|the trip) there|destination[ -]only)\b",
+    re.IGNORECASE,
+)
+_LODGING_GAP_RE = re.compile(
+    r"\b(?:no concrete hotel|hotel placeholders?|no bookable property|"
+    r"no concrete lodging anchor)\b",
+    re.IGNORECASE,
+)
 
 
 #: Tools a saved turn ran, restored by chat_store. The graph's tool messages do
@@ -115,9 +131,13 @@ def current_turn_tool_phases(messages: Sequence[BaseMessage]) -> int:
 def _tool_result_texts(
     messages: Sequence[BaseMessage],
     tool_name: str,
+    *,
+    after_index: int = -1,
 ) -> list[str]:
     call_ids: set[str] = set()
-    for message in messages:
+    for index, message in enumerate(messages):
+        if index <= after_index:
+            continue
         for tool_call in getattr(message, "tool_calls", None) or []:
             name = (
                 tool_call.get("name")
@@ -247,15 +267,22 @@ def trip_hotel_search_requirement(
     has_planning_intent: bool,
 ) -> str | None:
     positions = _tool_call_positions(messages)
-    if any(name == "search_hotels" for _, name in positions):
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    current_turn_names = {
+        name for index, name in positions if index > latest_human
+    }
+    if "search_hotels" in current_turn_names:
         return None
     if not active_trip.get("destination") or not active_trip.get("day_wise_itinerary"):
         return None
-    created_this_turn = any(name == "create_trip_plan" for _, name in positions)
+    created_this_turn = "create_trip_plan" in current_turn_names
     if not created_this_turn and not has_planning_intent:
         return None
     hotel_gaps = [
-        gap for gap in planning_completion_gaps(active_trip) if "hotel" in gap.lower()
+        gap for gap in planning_completion_gaps(active_trip) if _LODGING_GAP_RE.search(gap)
     ]
     if not hotel_gaps:
         return None
@@ -268,15 +295,56 @@ def trip_hotel_search_requirement(
     )
 
 
+def trip_restaurant_search_requirement(
+    messages: Sequence[BaseMessage],
+    active_trip: dict[str, Any],
+    *,
+    has_planning_intent: bool,
+) -> str | None:
+    positions = _tool_call_positions(messages)
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    current_turn_names = {name for index, name in positions if index > latest_human}
+    if "nearby_restaurants" in current_turn_names:
+        return None
+    if not (
+        "create_trip_plan" in current_turn_names
+        or (has_planning_intent and "update_trip_plan" in current_turn_names)
+    ):
+        return None
+    restaurant_gaps = [
+        gap
+        for gap in core_planning_completion_gaps(active_trip)
+        if "named restaurant" in gap.lower()
+    ]
+    if not restaurant_gaps:
+        return None
+    return (
+        "The saved itinerary still has days without concrete named restaurants: "
+        + " ".join(restaurant_gaps)
+        + " Search nearby restaurants for the affected day locations now, then choose "
+        "concrete preference-matched venues and save them as meal stops."
+    )
+
+
 def trip_hotel_fallback_requirement(
     messages: Sequence[BaseMessage],
 ) -> str | None:
     positions = _tool_call_positions(messages)
-    if not any(name == "search_hotels" for _, name in positions):
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    current_turn_names = {
+        name for index, name in positions if index > latest_human
+    }
+    if "search_hotels" not in current_turn_names:
         return None
-    if any(name == "search_places_with_reviews" for _, name in positions):
+    if "search_places_with_reviews" in current_turn_names:
         return None
-    results = _tool_result_texts(messages, "search_hotels")
+    results = _tool_result_texts(messages, "search_hotels", after_index=latest_human)
     if not results:
         return None
     failure_markers = (
@@ -316,6 +384,33 @@ def latest_user_has_explicit_party(messages: Sequence[BaseMessage]) -> bool:
             if adults and children:
                 return int(children.group(1)) > 0 or int(adults.group(1)) == 1
             return False
+    return False
+
+
+def latest_user_has_travel_origin_or_scope(messages: Sequence[BaseMessage]) -> bool:
+    """Whether kickoff can use a stated origin, saved home, or self-arranged arrival."""
+    latest_request = next(
+        (
+            str(message.content or "")
+            for message in reversed(messages)
+            if isinstance(message, HumanMessage)
+        ),
+        "",
+    )
+    if _EXPLICIT_ORIGIN_RE.search(latest_request) or _OWN_ARRIVAL_RE.search(latest_request):
+        return True
+
+    for result in reversed(_tool_result_texts(messages, "get_travel_preferences")):
+        try:
+            preferences = json.loads(result)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        profile = preferences.get("profile") if isinstance(preferences, dict) else None
+        if isinstance(profile, dict) and (
+            str(profile.get("home_city") or "").strip()
+            or str(profile.get("home_area") or "").strip()
+        ):
+            return True
     return False
 
 
@@ -411,10 +506,14 @@ def trip_kickoff_tool_choice(
         return "get_travel_preferences"
     if "recommend_trip_duration" not in turn_tools:
         return "recommend_trip_duration"
-    # Party composition is trip-specific: a saved family roster does not establish
-    # who is joining this trip. Direct mode can skip the review only when the user
-    # already supplied a usable party; interactive mode still promises one review.
-    if interactive or not latest_user_has_explicit_party(messages):
+    # Party composition is trip-specific, and travel cannot be planned without either
+    # an origin or an explicit destination-only scope. Interactive mode still promises
+    # one review even when both facts are already available.
+    if (
+        interactive
+        or not latest_user_has_explicit_party(messages)
+        or not latest_user_has_travel_origin_or_scope(messages)
+    ):
         return "request_trip_input"
     return None
 
@@ -460,10 +559,22 @@ def resolve_completion_policy(
     )
     current_turn_names = {name for index, name in positions if index > latest_human}
     created_this_turn = "create_trip_plan" in current_turn_names
-    core_gaps_for_first_turn = (
+    updated_this_turn = "update_trip_plan" in current_turn_names
+    core_gaps_for_planning_turn = (
         tuple(core_planning_completion_gaps(active_trip))
-        if created_this_turn and not proposal_only
+        if (
+            not proposal_only
+            and (created_this_turn or (has_planning_intent and updated_this_turn))
+        )
         else ()
+    )
+    journey_safety_gap = any(
+        gap.startswith(("Arrival day has no explicit", "Departure day has no explicit"))
+        or "no matching outbound" in gap
+        or "no matching return" in gap
+        or "no journey connects them" in gap
+        or " minutes before " in gap
+        for gap in core_gaps_for_planning_turn
     )
     # Asking the review and then planning anyway would make it decoration, so the
     # turn stops at the question until the traveller answers or skips it.
@@ -484,12 +595,16 @@ def resolve_completion_policy(
             index for index, name in positions
             if name == "update_trip_plan" and index > latest_human
         ]
-        still_owes_first_save = (
-            "create_trip_plan" in current_turn_names
-            and not active_trip.get("day_wise_itinerary")
+        can_attempt_completion_repair = (
+            created_this_turn
             and len(current_updates) < MAX_INITIAL_ITINERARY_UPDATES
+            and (
+                not active_trip.get("day_wise_itinerary")
+                or bool(core_gaps_for_planning_turn)
+            )
         )
-        if not still_owes_first_save and not core_gaps_for_first_turn:
+        may_continue_past_budget = can_attempt_completion_repair or journey_safety_gap
+        if not may_continue_past_budget:
             try:
                 gaps = tuple(planning_completion_gaps(active_trip))
             except Exception:
@@ -541,24 +656,43 @@ def resolve_completion_policy(
             has_planning_intent=has_planning_intent,
         )
     )
+    restaurant_search_requirement = (
+        None
+        if proposal_only
+        or new_trip_flow
+        or hotel_fallback_requirement
+        or update_requirement
+        or hotel_search_requirement
+        else trip_restaurant_search_requirement(
+            messages,
+            active_trip,
+            has_planning_intent=has_planning_intent,
+        )
+    )
     if (
-        core_gaps_for_first_turn
+        core_gaps_for_planning_turn
         and not hotel_fallback_requirement
         and not origin_requirement
         and not update_requirement
         and not hotel_search_requirement
+        and not restaurant_search_requirement
     ):
         update_requirement = (
-            "The first planning turn cannot end because the saved trip still has core "
+            "The planning turn cannot end because the saved trip still has core "
             "completion gaps: "
-            + " ".join(core_gaps_for_first_turn)
+            + " ".join(core_gaps_for_planning_turn)
             + " Continue planning and call update_trip_plan with a complete corrected "
             "plan. Do not give a final response until these core gaps are resolved. "
             "Weather and other enrichment may remain deferred."
         )
     kickoff_tool = (
         None
-        if proposal_only or update_requirement or hotel_search_requirement
+        if (
+            proposal_only
+            or update_requirement
+            or hotel_search_requirement
+            or restaurant_search_requirement
+        )
         else trip_kickoff_tool_choice(
             messages,
             active_trip,
@@ -582,6 +716,8 @@ def resolve_completion_policy(
         if update_requirement
         else "search_hotels"
         if hotel_search_requirement
+        else "nearby_restaurants"
+        if restaurant_search_requirement
         else "create_trip_plan"
         if kickoff_answered
         else kickoff_tool
@@ -597,6 +733,8 @@ def resolve_completion_policy(
         if update_requirement
         else "missing_concrete_hotel"
         if hotel_search_requirement
+        else "missing_named_restaurant"
+        if restaurant_search_requirement
         else "kickoff_answered"
         if kickoff_answered
         else "trip_kickoff"
@@ -608,6 +746,7 @@ def resolve_completion_policy(
         or origin_requirement
         or update_requirement
         or hotel_search_requirement
+        or restaurant_search_requirement
     )
     return CompletionPolicyDecision(
         tool_phases=tool_phases,

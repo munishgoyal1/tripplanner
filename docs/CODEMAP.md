@@ -72,8 +72,9 @@ trip through shared API contracts.
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics |
-| `src/tripplanner/debug_store.py` | Local-only archive of real trips for debugging and emulator restore; never active in hosted mode |
-| `src/tripplanner/validation/` | Offline validation harness: corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, comparable-run summaries (brief 004), and durable provenance aliases used by local audit inspection links |
+| `src/tripplanner/debug_store.py` | Internal implementation of the Trip Flight Recorder: automatic local-only history of real trip revisions for investigation and emulator restore; never active in hosted mode |
+| `src/tripplanner/validation/` | Trip Quality Audit implementation: Trip Quality Corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, comparable-run summaries (brief 004), and durable provenance aliases used by local inspection links |
+| `src/tripplanner/validation/harness/` | Correlated scenario execution and evidence capture; deterministic plan-eval namespace; unified measured usage, catalog-estimated cost, optional billing reconciliation, cache, amplification, performance, and quality reports. `tripplanner.evals` remains the compatibility API; policy gates consume reports but remain separate from measurement |
 | `src/tripplanner/validation/market_catalog.py`, `india_heuristic_matrix.py`, `india_outbound_matrix.py` | Deterministic weighted India-domestic and India-outbound corpus scenarios; exact dedupe, destination-aware durations, audience priors, and evidence posture from `docs/research/india-*-2026-08.md` |
 | `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
 | `src/tripplanner/error_analysis.py` | Local and canary failure classification and reports |
@@ -81,12 +82,17 @@ trip through shared API contracts.
 | `src/tripplanner/providers/` | Normalized travel provider clients, capability registry, TTL/fallback runtime, and non-secret readiness status |
 | `src/tripplanner/tools/` | LangChain tools and stable agent/provider boundaries |
 | `scripts/mac/` | macOS `.command` launchers mirroring Windows root, user, sandbox, canary, and production entry points |
-| `scripts/dev/multiagent_core.py` | Pure multiagent coordination logic: `owner:ready` eligibility, footprint collisions, attempt numbering, audit fingerprints, leases, and `/planner` audit links carrying immutable record IDs |
-| `scripts/dev/multiagent.py` | Multiagent runtime: dedicated Coordinator publication, post-publish sandbox sync, autopilot workers, remote-verified attempt SHAs, validated `origin/master` baselines, slots, supervision, batch integration, and audit proposals with representative trip/UX evidence plus opt-in exact-day screenshots on the `audit-evidence` branch |
-| `scripts/dev/build_corpus.py`, `scripts/dev/build-corpus.ps1` | Budgeted paid corpus generation against the launcher checkout's running stack (primary `:8000`/`tripplanner-local`, or a registered sandbox's isolated API/database); logical attempts use fresh corpus principals so failed chat/trip state cannot contaminate retries, generation is serial unless `--workers` explicitly opts into concurrency, and every non-dry run commits and pushes its generated manifest, spend ledger, place cache, and trip files on the current branch; `--country india` covers domestic destinations, while `--market india` alternates domestic and outbound Indian-traveler scenarios |
+| `scripts/dev/multiagent_core.py` | Pure multiagent coordination logic: `owner:ready` eligibility, issue-body plus chronological-comment handoffs, comment-aware footprint collisions, attempt numbering, audit fingerprints, leases, and `/planner` audit links carrying immutable record IDs |
+| `scripts/dev/multiagent.py` | Multiagent runtime: dedicated Coordinator publication, post-publish sandbox sync, full GitHub issue-thread intake, autopilot workers, remote-verified attempt SHAs, validated `origin/master` baselines, slots, supervision, batch integration, and audit proposals with representative trip/UX evidence plus opt-in exact-day screenshots on the `audit-evidence` branch |
+| `scripts/dev/full-2way-sync.ps1` | Owner-invoked convergence across every local branch and attached worktree; preserves visible WIP, uses temporary worktrees for standalone branches, and retains `sbx` as the registered-sandbox-only scope |
+| `scripts/dev/build_corpus.py`, `scripts/dev/build-corpus.ps1` | Budgeted paid Trip Quality Corpus generation against the launcher checkout's running stack (primary `:8000`/`tripplanner-local`, or a registered sandbox's isolated API/database); logical attempts use fresh corpus principals so failed chat/trip state cannot contaminate retries, one same-principal recovery turn repairs a completed empty draft, acceptance requires at least two stops per itinerary day, three consecutive completed barren turns stop with a failing exit, generation is serial unless `--workers` explicitly opts into concurrency, and every non-dry run commits and pushes its generated manifest, spend ledger, place cache, and trip files on the current branch; output reports accepted yield and richness; `--country india` covers domestic destinations, while `--market india` alternates domestic and outbound Indian-traveler scenarios |
 
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
-boundary. Configuration comes from `Settings`, not scattered environment reads.
+boundary. `.env` is the central owner-facing runtime configuration surface:
+`.env.example` documents both non-secret switches and secret inputs, while
+`Settings` is the only application reader. Paid Google Places access requires
+both `ENABLE_GOOGLE_PLACES=1` and `GOOGLE_PLACES_API_KEY`; a copied key alone
+must never activate billable requests.
 
 ## Frontend Ownership
 
@@ -234,7 +240,8 @@ that the reviewable one does not, which is when `--save` is worth running.
 | Flights, hotels, activities, and tickets | Stable agent tools plus `providers/registry.py`, `providers/runtime.py`, and `providers/cache.py` | Prefer free/sandbox active providers, cache before fan-out, fall back in order, and label evidence/freshness accurately. A provider that returns nothing must fall through to the next source, never end the search |
 | Item comparisons and overrides | `decisions/`, provider search tools, `web/trip_view.py`, and `frontend/src/components/DecisionPanel.tsx` | Persist candidates from the exact search response, rank with kind-specific deterministic rules, mutate through the active-trip owner, and keep opaque provider references out of display and share contracts |
 | Currency normalization | `providers/fx.py` consumed by `decisions/rules.py` | Published ECB reference rates, cached; an unavailable rate drops the money term rather than comparing raw amounts across currencies |
-| Trip cost evidence and what-if | `decisions/trip_cost.py`, `decisions/budget_what_if.py`, `providers/fx.py`, and `web/budget.py` | Classify selected items as live, stale, unverified or unpriced; retain published timestamped FX provenance; label incomplete headroom as estimated; generate cheaper exact-alternative proposals only on explicit request |
+| Trip cost evidence, recheck, and what-if | `decisions/trip_cost.py`, `decisions/price_recheck.py`, `decisions/budget_what_if.py`, provider registry, `web/budget.py`, and `web/trip_view.py` | Classify quote evidence; compare exact products only with known mandatory costs/FX; apply consented public benefit terms; explicitly verify stale exact flight offers or re-search exact-context stays; persist bounded observations without replacing selections |
+| Advisory effort intelligence | `tools/trip_effort.py`, persisted weather, structured place/activity-provider evidence, and `web/trip_view.py` | Rank with physical, transit, logistical, circadian, and weather-exposure effort; emit at most grounded advisory notes and one pacing statement; never block or infer absent evidence |
 | Gated provider candidates | `providers/registry.py` catalog plus disabled experimental adapters | Do not auto-enable without current approved API access and acceptable terms |
 | Maps and geocoding | `tools/routing.py`, optional `providers/openrouteservice.py`, and frontend map utilities | Google Routes is primary; OpenRouteService is a coordinate-only free-tier fallback; keep coordinates and selected itinerary synchronized |
 | Preferences | About Me extractor, apply logic, and store | Merge additively unless the owner explicitly removes data |
@@ -310,6 +317,12 @@ conversation or explicit edit
 | `docs/ux-experiments/` | UX Lab decisions and lifecycle records; `LAB_SELECTIONS.json` is the tracked canonical handoff and implementation history |
 | `docs/operations/deployment-flow.md` | Canonical canary, production, monitoring, and rollback runbook |
 | `docs/operations/backup-recovery.md` | Guarded backup and restore drill |
+| `docs/operations/gcp-billing-guardrails.md` | Reproducible Google Cloud budget, quota, and billing-shutoff setup |
+| `docs/operations/azure-billing-guardrails.md` | Reproducible Azure budget and alert setup, including hard-cap limitations |
+| `infra/billing-guardrails.json` | Shared declarative limits and cloud account identifiers |
+| `infra/{gcp,azure}/apply-billing-guardrails.ps1` | Idempotent cross-platform guardrail provisioning scripts |
+| `infra/show-billing-status.ps1` | Read-only month-to-date spend report for both clouds |
+| `infra/gcp/billing-shutoff/` | Cloud Function that detaches billing when the global GCP budget breaks |
 | `docs/development/new-machine-setup.md` | Canonical one-click Windows/macOS environment recreation and manual sign-in steps |
 | `docs/development/parallel-agent-development.md` | Sandbox lifecycle and promotion workflow |
 | `infra/` | Azure IaC and approval-gated operational scripts |

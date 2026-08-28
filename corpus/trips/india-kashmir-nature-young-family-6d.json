@@ -1,0 +1,331 @@
+{
+  "status": "draft",
+  "trip_id": "srinagar_gulmarg_pahalgam_2027-05-14_2027-05-20",
+  "trip_number": 1,
+  "created_at": "2026-08-25T20:47:50.931359",
+  "destination": "Srinagar, Gulmarg, Pahalgam",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-05-14",
+  "return_date": "2027-05-20",
+  "travelers": "2 adults, 2 children (ages 4 and 8)",
+  "notes": "Focus on scenery, wildlife, and practical outdoor experiences. Balanced pace. Moderate budget. 3-star+ hotels. Economy flights. Prefer direct flights. Open to rental car and trains. No bus travel.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Srinagar, Gulmarg, Pahalgam",
+    "estimated_planned_minutes": 1070,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 6-day duration is authoritative",
+      "8 preference-matched places account for about 1070 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 6,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-14",
+      "title": "Arrival in Srinagar",
+      "summary": "Fly from Delhi to Srinagar. Check in to Welcome Heritage Gurkha Houseboats (Dal Lake). Leisurely Shikara ride on Dal Lake in the evening.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Srinagar",
+          "kind": "flight",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Morning direct flight"
+        },
+        {
+          "name": "Welcome Heritage Gurkha Houseboats",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Shamyana Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch with lake view"
+        },
+        {
+          "name": "Dal Lake (Shikara Ride)",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening boat ride"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-15",
+      "title": "Srinagar Gardens & Wildlife",
+      "summary": "Explore Mughal gardens and visit Dachigam National Park for wildlife spotting. Stay at Welcome Heritage Gurkha Houseboats.",
+      "stops": [
+        {
+          "name": "Welcome Heritage Gurkha Houseboats",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Shalimar Bagh",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Nishat Bagh",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Ahdoos Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch - Kashmiri cuisine"
+        },
+        {
+          "name": "Dachigam National Park",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 180,
+          "note": "Wildlife experience"
+        },
+        {
+          "name": "Welcome Heritage Gurkha Houseboats",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-16",
+      "title": "Srinagar to Gulmarg",
+      "summary": "Drive to Gulmarg. Check in to The Khyber Himalayan Resort & Spa. Take the Gondola ride and enjoy meadows. Family-friendly outdoor activities.",
+      "stops": [
+        {
+          "name": "Drive: Srinagar to Gulmarg",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 120,
+          "distance_km": 50,
+          "note": "Scenic drive"
+        },
+        {
+          "name": "Welcome Heritage Gurkha Houseboats",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "11:30"
+        },
+        {
+          "name": "The Khyber Himalayan Resort & Spa",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "13:30"
+        },
+        {
+          "name": "Cloves Restaurant",
+          "kind": "meal",
+          "time": "15:30",
+          "note": "Lunch at Khyber Resort"
+        },
+        {
+          "name": "Gulmarg Gondola",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 180,
+          "note": "Cable car ride, panoramic views"
+        },
+        {
+          "name": "Children's Park Gulmarg",
+          "kind": "attraction",
+          "time": "21:00",
+          "duration_min": 60,
+          "note": "Playground for kids"
+        },
+        {
+          "name": "The Khyber Himalayan Resort & Spa",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "time": "22:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-17",
+      "title": "Gulmarg to Pahalgam",
+      "summary": "Drive to Pahalgam via scenic stops. Visit Betaab Valley and check in to Welcomhotel Pine N Peak.",
+      "stops": [
+        {
+          "name": "Drive: Gulmarg to Pahalgam",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 240,
+          "distance_km": 140,
+          "note": "Scenic drive with breaks"
+        },
+        {
+          "name": "The Khyber Himalayan Resort & Spa",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "13:30"
+        },
+        {
+          "name": "Dana Pani Restaurant",
+          "kind": "meal",
+          "time": "15:30",
+          "note": "Lunch in Pahalgam"
+        },
+        {
+          "name": "Betaab Valley",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 90,
+          "note": "Famous for scenery, Bollywood location"
+        },
+        {
+          "name": "Welcomhotel Pine N Peak",
+          "kind": "hotel",
+          "note": "Check-in and rest",
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-05-18",
+      "title": "Aru Valley & Outdoor Fun",
+      "summary": "Explore Aru Valley. Pony rides, riverside picnic, and family-friendly outdoor activities. Stay at Welcomhotel Pine N Peak.",
+      "stops": [
+        {
+          "name": "Welcomhotel Pine N Peak",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Aru Valley",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 180,
+          "note": "Pony rides, riverside walks"
+        },
+        {
+          "name": "Troutbeat Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch by the river"
+        },
+        {
+          "name": "Welcomhotel Pine N Peak",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-05-19",
+      "title": "Pahalgam to Srinagar & Departure",
+      "summary": "Return to Srinagar, local shopping, and fly back to Delhi. Stay at Welcome Heritage Gurkha Houseboats if needed before flight.",
+      "stops": [
+        {
+          "name": "Welcomhotel Pine N Peak",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "09:00"
+        },
+        {
+          "name": "Lhasa Restaurant",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch in Srinagar"
+        },
+        {
+          "name": "Srinagar Local Market",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 90,
+          "note": "Souvenir shopping"
+        },
+        {
+          "name": "Welcome Heritage Gurkha Houseboats",
+          "kind": "hotel",
+          "note": "Rest/refresh if needed",
+          "time": "16:30"
+        },
+        {
+          "name": "Drive: Pahalgam to Srinagar",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 180,
+          "distance_km": 90,
+          "note": "Return drive"
+        },
+        {
+          "name": "Flight: Srinagar to Delhi",
+          "kind": "flight",
+          "time": "16:30",
+          "duration_min": 90,
+          "note": "Evening flight back"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T20:50:40.846268",
+  "id": "srinagar_gulmarg_pahalgam_2027-05-14_2027-05-20",
+  "user_id": "corpus-india-kashmir-nature-young-family-6d-7331dc7dcd81"
+}

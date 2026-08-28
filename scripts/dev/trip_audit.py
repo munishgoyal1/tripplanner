@@ -1,12 +1,12 @@
-"""Audit every trip the harness can see, and report what is new.
+"""Run the Trip Quality Audit and report what is new.
 
     python scripts/dev/trip_audit.py
     python scripts/dev/trip_audit.py --all --rule I9
     python scripts/dev/trip_audit.py --accept
 
-Reads the debug store, every sandbox emulator database, and the captured
-fixtures. Never calls a model or a provider: place facts come from what each
-trip was rendered with.
+Reads the Trip Flight Recorder, Trip Quality Corpus, sandbox emulator databases,
+and captured fixtures. Never calls a model or a provider: place facts come from
+what each trip was rendered with.
 """
 
 from __future__ import annotations

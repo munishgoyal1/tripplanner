@@ -1,0 +1,354 @@
+{
+  "status": "draft",
+  "trip_id": "port_blair_havelock_and_neil_island_2027-01-07_2027-01-14",
+  "trip_number": 1,
+  "created_at": "2026-08-26T07:06:00.893105",
+  "destination": "Port Blair, Havelock and Neil Island",
+  "origin": "Kolkata",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-01-07",
+  "return_date": "2027-01-14",
+  "travelers": "Couple: 2 adults, 0 children",
+  "notes": "Hotel provider did not return real-time rates for Port Blair. Will recommend top premium properties based on local knowledge and recent reviews. Real-time prices and booking links can be added once provider access is restored.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Port Blair, Havelock and Neil Island",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-07",
+      "title": "Day 1 · Kolkata to Port Blair",
+      "summary": "Fly from Kolkata to Port Blair. Check in to a premium hotel and relax. Evening at leisure with a waterfront dinner.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Port Blair",
+          "kind": "flight",
+          "time": "09:00",
+          "duration_min": 150,
+          "note": "Direct morning flight"
+        },
+        {
+          "name": "Premium Hotel, Port Blair",
+          "kind": "hotel",
+          "note": "Check-in and refresh"
+        },
+        {
+          "name": "Waterfront Restaurant, Port Blair",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner with sea view"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-08",
+      "title": "Day 2 · Port Blair Highlights",
+      "summary": "Explore Cellular Jail, Corbyn’s Cove Beach, and the local market. Evening Sound & Light Show.",
+      "stops": [
+        {
+          "name": "Premium Hotel, Port Blair",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Cellular Jail",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Corbyn’s Cove Beach",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Local Market, Port Blair",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Sound & Light Show, Cellular Jail",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Premium Hotel, Port Blair",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-09",
+      "title": "Day 3 · Port Blair to Havelock",
+      "summary": "Morning ferry to Havelock Island. Check in to a luxury beach resort. Relax at Radhanagar Beach.",
+      "stops": [
+        {
+          "name": "Ferry: Port Blair to Havelock",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "note": "Premium ferry"
+        },
+        {
+          "name": "Premium Hotel, Port Blair",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "10:30"
+        },
+        {
+          "name": "Luxury Beach Resort, Havelock",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "12:30"
+        },
+        {
+          "name": "Radhanagar Beach",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Luxury Beach Resort, Havelock",
+          "kind": "hotel",
+          "note": "Return to resort",
+          "time": "17:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-10",
+      "title": "Day 4 · Havelock: Snorkeling & Leisure",
+      "summary": "Snorkeling at Elephant Beach, followed by a relaxing afternoon. Romantic dinner at the resort.",
+      "stops": [
+        {
+          "name": "Luxury Beach Resort, Havelock",
+          "kind": "hotel",
+          "note": "Start from resort"
+        },
+        {
+          "name": "Elephant Beach",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Snorkeling experience"
+        },
+        {
+          "name": "Luxury Beach Resort, Havelock",
+          "kind": "hotel",
+          "note": "Leisure afternoon"
+        },
+        {
+          "name": "Resort Restaurant, Havelock",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Romantic dinner"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-01-11",
+      "title": "Day 5 · Havelock to Neil Island",
+      "summary": "Morning ferry to Neil Island. Check in to a premium resort. Visit Laxmanpur Beach for sunset.",
+      "stops": [
+        {
+          "name": "Ferry: Havelock to Neil Island",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 60,
+          "note": "Premium ferry"
+        },
+        {
+          "name": "Luxury Beach Resort, Havelock",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "09:30"
+        },
+        {
+          "name": "Premium Resort, Neil Island",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "11:30"
+        },
+        {
+          "name": "Laxmanpur Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Sunset view"
+        },
+        {
+          "name": "Premium Resort, Neil Island",
+          "kind": "hotel",
+          "note": "Return to resort",
+          "time": "18:30"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-01-12",
+      "title": "Day 6 · Neil Island: Natural Bridge & Beaches",
+      "summary": "Visit Natural Bridge, Bharatpur Beach, and enjoy a relaxed day with a beachside lunch.",
+      "stops": [
+        {
+          "name": "Premium Resort, Neil Island",
+          "kind": "hotel",
+          "note": "Start from resort"
+        },
+        {
+          "name": "Natural Bridge",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Bharatpur Beach",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Beachside Café, Neil Island",
+          "kind": "meal",
+          "time": "14:30",
+          "note": "Lunch"
+        },
+        {
+          "name": "Premium Resort, Neil Island",
+          "kind": "hotel",
+          "note": "Return to resort"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-01-13",
+      "title": "Day 7 · Neil Island to Port Blair",
+      "summary": "Morning ferry back to Port Blair. Last-minute shopping or sightseeing. Overnight in a premium hotel.",
+      "stops": [
+        {
+          "name": "Ferry: Neil Island to Port Blair",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "note": "Premium ferry"
+        },
+        {
+          "name": "Premium Resort, Neil Island",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "10:30"
+        },
+        {
+          "name": "Premium Hotel, Port Blair",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "12:30"
+        },
+        {
+          "name": "Aberdeen Bazaar, Port Blair",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Premium Hotel, Port Blair",
+          "kind": "hotel",
+          "note": "Overnight",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-01-14",
+      "title": "Day 8 · Departure: Port Blair to Kolkata",
+      "summary": "Checkout and fly back to Kolkata.",
+      "stops": [
+        {
+          "name": "Premium Hotel, Port Blair",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Flight: Port Blair to Kolkata",
+          "kind": "flight",
+          "time": "10:00",
+          "duration_min": 150,
+          "note": "Direct flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-26T07:07:50.277165",
+  "id": "port_blair_havelock_and_neil_island_2027-01-07_2027-01-14",
+  "user_id": "corpus-india-andaman-premium-couple-7d-6aed8261546e"
+}

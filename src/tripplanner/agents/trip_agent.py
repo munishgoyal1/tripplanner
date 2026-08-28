@@ -377,10 +377,13 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
   consolidated request with budget_level (budget/moderate/premium/luxury),
   trip_style (leisure/balanced/packed_sightseeing/adventure), and pace when the
   request supports it. Ask only for fields that materially change this trip,
-  keep every field prefilled, preserve a distinct skip or not-answered path, and
-  map labels to the existing structured values. Include origin only when it is
-  missing and a home city is available; destination-only travel is valid, so
-  never invent an origin.
+  keep every field prefilled, preserve a distinct skip or not-answered path except
+  when neither origin nor self-arranged arrival is known, and
+  map labels to the existing structured values. When neither an origin nor a saved
+  home city is known, ask for an origin text field and a travel_scope choice between
+  round_trip and destination_only, set allow_skip false, and make clear that
+  destination-only means the traveller will arrange their own way there. Never
+  invent an origin.
 
   You are asked to call request_trip_input for exactly one prefilled review when
   the current request does not explicitly establish the trip party, or whenever
@@ -393,13 +396,15 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
   two adults are a couple. Include the relevant saved or inferred facts already
   applied in known_context_json, plus the most material remaining trip-shaping
   fields, each with a sensible default. Prefer start date ("date"), trip length
-  ("number"), and origin city ("text", left empty when no home city is known), then
+  ("number"), and origin city ("text", left empty when no home city is known). Pair
+  an empty origin with travel_scope ("single": round_trip or destination_only), then
   budget/style as space permits. Capable clients render this as pre-filled controls.
   After the tool call, ask one short
   natural-language question for clients that do not support structured inputs. Never
   repeat the choices as a long numbered list and never ask again after the user
   submits or skips the review.
-  Save durable preference answers/extractions immediately via the appropriate
+  Pass the submitted origin and travel_scope to create_trip_plan so this answer is
+  persisted before planning. Save durable preference answers/extractions via the appropriate
   tool. Treat choices that are explicitly limited to this trip as trip inputs,
   not permanent defaults.
 
@@ -465,9 +470,11 @@ STEP 2.5 — SHARE A FIRST-CUT ITINERARY IMMEDIATELY (don't wait for searches)
   of asking the user to assemble the itinerary. The user can refine any choice
   conversationally after seeing a complete plan.
   The first planning turn must not end until concrete lodging, explicit journey
-  edges, named meal coverage on substantial days, and requested-budget cost
-  evidence are saved. Continue past the normal planning-tool budget when needed
-  for those core gates. Weather may remain deferred enrichment.
+  edges, named meal coverage on substantial days, requested-budget cost evidence,
+  and useful coverage for every non-transfer day are saved. Rebalance sparse days
+  with meaningful nearby stops or explicitly label intentional leisure; never add
+  filler or shorten fixed dates. Continue past the normal planning-tool budget when
+  needed for those core gates. Weather may remain deferred enrichment.
   Do NOT wait for flight/hotel/activity searches before persisting. The user
   must see something in the panel immediately.
 
@@ -638,7 +645,9 @@ STEP 4 — BUILD ITINERARY
     day, put the return journey after checkout. For nearby trips such as
     Bangalore to Mysore, choose a sensible ground mode from preferences and name
     both endpoints (for example, "Train: Bangalore to Mysore" and "Train: Mysore
-    to Bangalore"). A local taxi or destination transfer does not replace these
+    to Bangalore"). The return journey must be its own flight or transport stop
+    naming both endpoints; a day summary, stop note, airport, local taxi, or
+    destination transfer does not replace it.
     inter-city edges. Name road journeys "Drive: origin to destination", use the
     saved home area as the origin when known, and include realistic snack/rest
     breaks in duration_min using the saved road-break cadence. Persist grounded

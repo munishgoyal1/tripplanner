@@ -115,13 +115,6 @@
           "note": "Authentic Andhra cuisine"
         },
         {
-          "name": "Chandragiri Fort",
-          "kind": "attraction",
-          "time": "16:30",
-          "duration_min": 120,
-          "note": "Medieval fort, history museum"
-        },
-        {
           "name": "Dinner at Minerva Grand Restaurant",
           "kind": "meal",
           "time": "19:30",
@@ -204,8 +197,8 @@
     {
       "day": 3,
       "date": "2027-08-15",
-      "title": "Day 3 · Departure & Final Heritage Stops",
-      "summary": "Visit Kapila Theertham and local heritage before departing for Hyderabad.",
+      "title": "Day 3 · Chandragiri Fort & Departure",
+      "summary": "Visit Kapila Theertham and Chandragiri Fort before departing for Hyderabad.",
       "stops": [
         {
           "name": "Hotel (TBD)",
@@ -225,6 +218,13 @@
           "time": "08:30",
           "duration_min": 60,
           "note": "Ancient temple and waterfall"
+        },
+        {
+          "name": "Chandragiri Fort",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Medieval fort, history museum"
         },
         {
           "name": "Lunch at Hotel Bliss Restaurant",

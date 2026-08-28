@@ -1253,6 +1253,20 @@ the outcome.
   15-minute request timeout four times: shorter connection failures remain
   idempotently retryable, but the full timeout is the retry budget.
 
+## 2026-08-25 - Paid Corpus Success Must Mean Rich Persisted Data
+
+- A healthy HTTP response is not a successful corpus attempt. The planner can
+  spend several minutes, reject both structured itinerary saves, narrate a useful
+  plan in chat, and still leave a zero-day draft that produces no corpus file.
+- After a completed empty turn, use one distinct-idempotency recovery request on
+  the same isolated principal so it can repair the existing draft from gathered
+  research. Never issue that extra paid turn after a timeout or transport failure.
+- Measure acceptance against the corpus being built. The existing generated set
+  had at least 2.7 stops per itinerary day, so new records require at least two;
+  a merely non-empty day shell is not rich evidence. Report accepted yield and
+  average stops/time, and stop with a failing exit after three consecutive
+  completed turns save no acceptable itinerary rather than spending for an hour.
+
 ## 2026-08-25 - Audit Evidence Must Outrank Mutable Local State
 
 - A deep link carrying both a saved trip ID and an immutable corpus record opened
@@ -1264,3 +1278,66 @@ the outcome.
 - Screenshots are useful only when they identify the finding point. Capture the
   explicit affected day, derive named days from deterministic finding text when
   necessary, and fall back to the itinerary pane only when no precise day exists.
+
+## 2026-08-25 - A Model Client Without An Explicit Timeout Hides As Slowness
+
+- A corpus turn wedged inside one Azure OpenAI call for sixteen minutes and
+  emitted no log line, no error, and no usage record. The only visible symptom
+  was the client-side `TimeoutError` a corpus run reports after its own long
+  request timeout, which reads as "the planner is slow" rather than "one call
+  never returned".
+- The OpenAI SDK defaults to a 600s read timeout and applies the configured
+  retry count on top of it, so a single stalled turn can hold a run for the
+  better part of an hour while the process still answers `/health`.
+- Set an explicit `timeout` on the model client sized against observed healthy
+  latency, not against the worst case you can imagine. Healthy planning calls
+  here finish under 40s, so 90s with three retries turns an invisible hour-long
+  stall into a retryable error within minutes.
+- When a long-running job reports only a client-side timeout, check the server
+  log's last timestamp against wall clock before blaming throughput. A gap with
+  no terminal event means a hung call, not slow work.
+## 2026-08-25 - Unversioned Project Provisioning Drifts Where Deploys Cannot
+
+- Prod alone failed every Google Places call while canary, which tracks prod
+  closely in code, was healthy. The cause was not a deployment: the prod project
+  had been created through the Maps Platform console wizard, which enables the
+  legacy API bundle, and so never had `places.googleapis.com` enabled at all.
+- Deployment gates cover code and infrastructure templates, not the cloud
+  project a key belongs to. Anything provisioned by hand or by a vendor wizard
+  sits outside every check and drifts silently until one environment alone
+  misbehaves.
+- When a single environment fails an external API, compare enabled services
+  across projects before reading application code. A missing API presents as an
+  authorization error, not as a configuration error.
+- Cloud billing budgets only notify; they never stop spend, and their cost data
+  lags by hours. Per-API quotas are the only real-time ceiling. Treat an
+  automatic billing shutoff as a backstop for a slow leak, not as protection
+  against a runaway loop.
+- In Places API (New) the billed SKU is chosen by the request field mask, not by
+  the endpoint. Asking for `rating`, `reviews`, or `editorialSummary` silently
+  promotes a free ID lookup into the most expensive tier available.
+
+## 2026-08-27 - A No-Op Persistence Path Must Not Write
+
+- The trip archive correctly ignored `updated_at` when deciding whether a save
+  was a new revision, then rewrote the existing revision and `last_seen_at`
+  anyway. Opening an unchanged trip therefore dirtied the primary checkout and
+  blocked sandbox promotion even though the archive's meaningful hash matched.
+- Once durable content is known to be unchanged, return before collecting
+  volatile metadata or serializing. Test the file bytes, not only the revision
+  count; a structurally valid no-op rewrite is still an operational change.
+
+## 2026-08-28 - A Paid Provider Key Is Not an Enable Switch
+
+- Copying a development `.env` into isolated workers gave every lane the same
+  billable key. Separate caches then turned one corpus run into repeated provider
+  purchases even though the owner never used the primary local UI.
+- Paid providers must require an explicit, fail-closed runtime switch in addition
+  to credentials. Secrets prove authorization; they do not express owner consent
+  to spend.
+- Keep a second guard at the provider project: disable the service or enforce a
+  tight quota outside approved environments. An application bug must not be able
+  to bypass the owner's environment policy.
+- Usage telemetry needs environment, lane, run, caller, field-mask class, and
+  cache-hit dimensions. Provider request totals can prove when and under which
+  key a leak occurred, but cannot reconstruct the responsible process afterward.

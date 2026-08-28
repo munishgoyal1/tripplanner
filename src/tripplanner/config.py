@@ -161,9 +161,11 @@ class Settings(BaseModel):
     ).rstrip("/")
     travel_activity_provider: str = os.getenv("TRAVEL_ACTIVITY_PROVIDER", "auto").strip().lower()
 
-    # Google Places API (New) — restaurant/attraction ratings & reviews
-    # Get a key: https://console.cloud.google.com (enable 'Places API (New)')
-    # Free tier: $200/month credit
+    # Google Places API (New) is a paid provider. A key alone is insufficient:
+    # the owner must explicitly enable it for the current environment.
+    enable_google_places: bool = Field(
+        default_factory=lambda: os.getenv("ENABLE_GOOGLE_PLACES", "0").strip() == "1"
+    )
     google_places_api_key: str = os.getenv("GOOGLE_PLACES_API_KEY", "")
 
     # Google Maps JavaScript API — browser-side key for the interactive trip
@@ -220,4 +222,3 @@ class Settings(BaseModel):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-

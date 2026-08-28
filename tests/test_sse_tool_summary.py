@@ -56,23 +56,98 @@ def test_auto_persist_itinerary_invokes_update_tool(monkeypatch) -> None:
             calls.append(value)
 
     monkeypatch.setattr(trip_planner, "update_trip_plan", FakeUpdateTool())
+    monkeypatch.setattr(
+        trip_planner,
+        "load_active_trip_dict",
+        lambda: {"day_wise_itinerary": [{"day": 1}]},
+    )
 
-    _auto_persist_itinerary(
+    persisted = _auto_persist_itinerary(
         "Day 1 - Arrival\nVisit **Louvre Museum**.\n"
         "Day 2 - Montmartre\nExplore **Sacré-Cœur**."
     )
 
+    assert persisted
     assert len(calls) == 1
     assert "updates_json" in calls[0]
 
 
-def test_auto_persist_requires_trip_created_in_same_turn() -> None:
+def test_auto_persist_itinerary_recovers_plain_bullet_stops(monkeypatch) -> None:
+    import json
+
+    from tripplanner.tools import trip_planner
+
+    calls: list[dict] = []
+
+    class FakeUpdateTool:
+        def invoke(self, value: dict) -> None:
+            calls.append(value)
+
+    monkeypatch.setattr(trip_planner, "update_trip_plan", FakeUpdateTool())
+    monkeypatch.setattr(
+        trip_planner,
+        "load_active_trip_dict",
+        lambda: {"day_wise_itinerary": [{"day": 1}]},
+    )
+
+    _auto_persist_itinerary(
+        "Day 1: Arrival in Srinagar\n- Check in to your hotel\n- Shikara ride\n"
+        "Day 2: Srinagar sightseeing\n- Visit Dachigam National Park\n- Nishat Bagh"
+    )
+
+    updates = json.loads(calls[0]["updates_json"])
+    assert updates["day_wise_itinerary"][0]["stops"][0]["name"] == (
+        "Check in to your hotel"
+    )
+    assert updates["day_wise_itinerary"][1]["stops"][0]["name"] == (
+        "Visit Dachigam National Park"
+    )
+
+
+def test_auto_persist_reports_rejected_update_as_not_persisted(monkeypatch) -> None:
+    from tripplanner.tools import trip_planner
+
+    class FakeUpdateTool:
+        def invoke(self, _value: dict) -> str:
+            return "Error: rejected itinerary"
+
+    monkeypatch.setattr(trip_planner, "update_trip_plan", FakeUpdateTool())
+    monkeypatch.setattr(
+        trip_planner,
+        "load_active_trip_dict",
+        lambda: {"day_wise_itinerary": []},
+    )
+
+    assert not _auto_persist_itinerary(
+        "Day 1: Arrival\n- Check in\nDay 2: Explore\n- Visit the museum"
+    )
+
+
+def test_auto_persist_requires_trip_created_in_same_turn(monkeypatch) -> None:
+    from tripplanner.tools import trip_planner
+
+    monkeypatch.setattr(
+        trip_planner,
+        "load_active_trip_dict",
+        lambda: {"destination": "Paris", "day_wise_itinerary": []},
+    )
     assert not _should_auto_persist_itinerary(set())
     assert not _should_auto_persist_itinerary({"search_hotels"})
     assert _should_auto_persist_itinerary({"create_trip_plan"})
-    assert not _should_auto_persist_itinerary(
-        {"create_trip_plan", "update_trip_plan"}
+    assert _should_auto_persist_itinerary({"update_trip_plan"})
+    assert _should_auto_persist_itinerary({"create_trip_plan", "update_trip_plan"})
+
+
+def test_auto_persist_does_not_replace_a_successful_structured_save(monkeypatch) -> None:
+    from tripplanner.tools import trip_planner
+
+    monkeypatch.setattr(
+        trip_planner,
+        "load_active_trip_dict",
+        lambda: {"day_wise_itinerary": [{"day": 1, "stops": [{"name": "Louvre"}]}]},
     )
+
+    assert not _should_auto_persist_itinerary({"create_trip_plan", "update_trip_plan"})
 
 
 def test_tool_timing_does_not_overwrite_chat_request_start() -> None:
@@ -110,6 +185,20 @@ def test_recursion_limit_outlasts_the_policy_tool_budget() -> None:
         graph_policy.MAX_TOOL_PHASES_PER_TURN + graph_policy.MAX_INITIAL_ITINERARY_UPDATES
     ) + 1
     assert api._CHAT_GRAPH_RECURSION_LIMIT > worst_case
+
+
+def test_recursion_limit_leaves_room_for_hotel_fallback_and_persistence() -> None:
+    from tripplanner import graph_policy
+
+    nodes_per_phase = 2
+    hotel_repair = 2
+    final_reply = 1
+    required_steps = (
+        nodes_per_phase * (graph_policy.MAX_TOOL_PHASES_PER_TURN + hotel_repair)
+        + final_reply
+    )
+
+    assert api._CHAT_GRAPH_RECURSION_LIMIT > required_steps
 
 
 def test_best_effort_plan_reply_reports_saved_plan_gaps(monkeypatch) -> None:

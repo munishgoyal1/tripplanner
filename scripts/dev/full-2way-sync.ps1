@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Bring every lane to the same commit, and keep going when one lane cannot.
+    Bring every local branch current, and keep going when one branch cannot.
 
 .DESCRIPTION
   The convergence tool for when the lanes have drifted and you want them all on
@@ -27,14 +27,22 @@
   only documentation or captured data is merged without the suite, because no
   test reads those files. Pass -AlwaysValidate to disable that judgement.
 
+    With no positional argument, every local branch is included: registered
+    sandboxes, multiagent worktrees, and branches without an attached worktree.
+    Pass "sbx" to retain the original registered-sandboxes-only behavior.
+
 .EXAMPLE
   ./scripts/dev/full-2way-sync.ps1 -WhatIf
   ./scripts/dev/full-2way-sync.ps1
+    ./scripts/dev/full-2way-sync.ps1 sbx
   ./scripts/dev/full-2way-sync.ps1 -PullOnly
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
+    [Parameter(Position = 0)]
+    [ValidateSet("all", "sbx")]
+    [string]$Scope = "all",
     [string]$BaseBranch = "master",
     [switch]$AlwaysValidate,
     # Bring lanes up to the base without publishing any lane work to it.
@@ -82,6 +90,188 @@ function Get-Dirty {
     return @(& git -C $WorkingDirectory status --porcelain)
 }
 
+function Get-LaneCommits {
+    param([object]$Entry)
+    $workingDirectory = if ($Entry.worktree) { $Entry.worktree } else { $primaryRoot }
+    $head = if ($Entry.worktree) { "HEAD" } else { $Entry.branch }
+    return @(& git -C $workingDirectory log --oneline "origin/$BaseBranch..$head")
+}
+
+function Get-SyncLanes {
+    param([object[]]$RegisteredSandboxes)
+
+    $lanes = [System.Collections.Generic.List[object]]::new()
+    $knownBranches = [System.Collections.Generic.HashSet[string]]::new(
+        [System.StringComparer]::OrdinalIgnoreCase
+    )
+    foreach ($entry in $RegisteredSandboxes) {
+        $lanes.Add([pscustomobject]@{
+            slug = $entry.slug
+            branch = $entry.branch
+            worktree = $entry.worktree
+            kind = "sandbox"
+        })
+        $knownBranches.Add($entry.branch) | Out-Null
+    }
+    if ($Scope -eq "sbx") { return @($lanes) }
+
+    $worktreePath = ""
+    foreach ($line in @(& git -C $primaryRoot @("worktree", "list", "--porcelain"))) {
+        if ($line.StartsWith("worktree ")) {
+            $worktreePath = $line.Substring(9)
+            continue
+        }
+        if (-not $line.StartsWith("branch refs/heads/")) { continue }
+        $branchName = $line.Substring(18)
+        if ($branchName -eq $BaseBranch -or $knownBranches.Contains($branchName)) { continue }
+        $lanes.Add([pscustomobject]@{
+            slug = $branchName
+            branch = $branchName
+            worktree = $worktreePath
+            kind = "branch"
+        })
+        $knownBranches.Add($branchName) | Out-Null
+    }
+    if ($LASTEXITCODE -ne 0) { throw "Could not enumerate Git worktrees." }
+
+    $localBranches = @(& git -C $primaryRoot @(
+        "for-each-ref", "--format=%(refname:short)", "refs/heads"
+    ))
+    if ($LASTEXITCODE -ne 0) { throw "Could not enumerate local branches." }
+    foreach ($branchName in $localBranches) {
+        if ($branchName -eq $BaseBranch -or $knownBranches.Contains($branchName)) { continue }
+        $lanes.Add([pscustomobject]@{
+            slug = $branchName
+            branch = $branchName
+            worktree = ""
+            kind = "branch"
+        })
+        $knownBranches.Add($branchName) | Out-Null
+    }
+    return @($lanes)
+}
+
+function Update-BranchLane {
+    param([object]$Entry)
+
+    $temporaryWorktree = ""
+    $workingDirectory = $Entry.worktree
+    if (-not $workingDirectory) {
+        $safeName = $Entry.branch -replace '[^A-Za-z0-9_.-]', '-'
+        $temporaryWorktree = Join-Path ([System.IO.Path]::GetTempPath()) "tripplanner-sync-$PID-$safeName"
+        & git -C $primaryRoot worktree add --quiet $temporaryWorktree $Entry.branch
+        if ($LASTEXITCODE -ne 0) {
+            Add-Remaining -Lane $Entry.slug -Problem "could not create a temporary worktree" `
+                -NextStep "Check the local branch and Git worktree metadata, then run this script again."
+            return $false
+        }
+        $workingDirectory = $temporaryWorktree
+    }
+
+    try {
+        & git -C $workingDirectory merge --no-edit "origin/$BaseBranch" 2>&1 | Out-Host
+        if ($LASTEXITCODE -ne 0) {
+            & git -C $workingDirectory merge --abort 2>$null
+            Add-Remaining -Lane $Entry.slug -Problem "could not take $BaseBranch without conflicts" `
+                -NextStep "Resolve $BaseBranch into branch '$($Entry.branch)', then run this script again."
+            return $false
+        }
+        & git -C $workingDirectory push -q -u origin "HEAD:refs/heads/$($Entry.branch)"
+        if ($LASTEXITCODE -ne 0) {
+            Add-Remaining -Lane $Entry.slug -Problem "is current locally but could not be pushed" `
+                -NextStep "Push branch '$($Entry.branch)' manually, then run this script again."
+            return $false
+        }
+        return $true
+    } finally {
+        if ($temporaryWorktree) {
+            & git -C $primaryRoot worktree remove --force $temporaryWorktree 2>$null
+        }
+    }
+}
+
+function Invoke-BranchValidation {
+    param([string]$WorkingDirectory)
+
+    $pythonCandidates = @(
+        (Join-Path $primaryRoot ".venv/bin/python"),
+        (Join-Path $primaryRoot ".venv/Scripts/python.exe")
+    )
+    $python = $pythonCandidates | Where-Object { Test-Path $_ -PathType Leaf } | Select-Object -First 1
+    if (-not $python) { $python = "python" }
+
+    $previousPythonPath = $env:PYTHONPATH
+    $env:PYTHONPATH = Join-Path $WorkingDirectory "src"
+    Push-Location $WorkingDirectory
+    try {
+        Write-Host "[check]   pytest" -ForegroundColor Cyan
+        & $python -m pytest tests -q
+        if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
+    } finally {
+        Pop-Location
+        $env:PYTHONPATH = $previousPythonPath
+    }
+
+    $frontend = Join-Path $WorkingDirectory "frontend"
+    if (-not (Test-Path (Join-Path $frontend "package.json") -PathType Leaf)) { return }
+    Push-Location $frontend
+    try {
+        Write-Host "[check]   tsc" -ForegroundColor Cyan
+        & npx tsc --noEmit
+        if ($LASTEXITCODE -ne 0) { throw "tsc failed; fix it before shipping." }
+        Write-Host "[check]   vitest" -ForegroundColor Cyan
+        & npx vitest run
+        if ($LASTEXITCODE -ne 0) { throw "vitest failed; fix it before shipping." }
+    } finally {
+        Pop-Location
+    }
+}
+
+function Publish-BranchLane {
+    param([object]$Entry, [bool]$Validate)
+
+    $temporaryWorktree = ""
+    $workingDirectory = $Entry.worktree
+    if (-not $workingDirectory) {
+        $safeName = $Entry.branch -replace '[^A-Za-z0-9_.-]', '-'
+        $temporaryWorktree = Join-Path ([System.IO.Path]::GetTempPath()) "tripplanner-publish-$PID-$safeName"
+        & git -C $primaryRoot worktree add --quiet $temporaryWorktree $Entry.branch
+        if ($LASTEXITCODE -ne 0) { throw "could not create a temporary validation worktree" }
+        $workingDirectory = $temporaryWorktree
+    }
+
+    try {
+        if ($Validate) { Invoke-BranchValidation -WorkingDirectory $workingDirectory }
+        & git -C $workingDirectory push -q -u origin "HEAD:refs/heads/$($Entry.branch)"
+        if ($LASTEXITCODE -ne 0) { throw "could not push $($Entry.branch)" }
+
+        $gh = Get-Command gh -ErrorAction SilentlyContinue
+        if (-not $gh) { throw "GitHub CLI 'gh' is required to publish non-sandbox branches" }
+        $prNumber = (& $gh.Source pr list --head $Entry.branch `
+            --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
+        if ($LASTEXITCODE -ne 0) { throw "gh pr list failed" }
+        if (-not $prNumber) {
+            Push-Location $workingDirectory
+            try {
+                & $gh.Source pr create --base $BaseBranch --head $Entry.branch --fill
+                if ($LASTEXITCODE -ne 0) { throw "gh pr create failed" }
+            } finally {
+                Pop-Location
+            }
+            $prNumber = (& $gh.Source pr list --head $Entry.branch `
+                --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
+        }
+        if (-not $prNumber) { throw "could not determine the pull request number" }
+        & $gh.Source pr merge $prNumber --merge
+        if ($LASTEXITCODE -ne 0) { throw "gh pr merge failed for #$prNumber" }
+        Write-Host "[merged]  #$prNumber from $($Entry.branch)" -ForegroundColor Green
+    } finally {
+        if ($temporaryWorktree) {
+            & git -C $primaryRoot worktree remove --force $temporaryWorktree 2>$null
+        }
+    }
+}
+
 function Get-Unmerged {
     # Ask git rather than matching an error message; the launchers rewrap text.
     param([string]$WorkingDirectory)
@@ -116,7 +306,13 @@ function Resolve-Pending {
 
 function Update-Lane {
     <# Merge the base into one lane, recovering from a conflict once. #>
-    param([string]$WorkingDirectory, [string]$Lane)
+    param([object]$Entry)
+
+    $WorkingDirectory = $Entry.worktree
+    $Lane = $Entry.slug
+    if ($Entry.kind -eq "branch") {
+        return Update-BranchLane -Entry $Entry
+    }
 
     try {
         & $sandboxScript -Update $Lane -BaseBranch $BaseBranch -NoSync -Confirm:$false
@@ -148,10 +344,12 @@ function Test-NeedsValidation {
       Documentation and captured data are read by no test, so validating a lane
       that only touches them spends minutes to prove nothing.
     #>
-    param([string]$WorkingDirectory, [string[]]$Commits)
+    param([object]$Entry, [string[]]$Commits)
 
     if ($AlwaysValidate) { return $true }
-    $changed = @(& git -C $WorkingDirectory diff --name-only "origin/$BaseBranch...HEAD")
+    $workingDirectory = if ($Entry.worktree) { $Entry.worktree } else { $primaryRoot }
+    $head = if ($Entry.worktree) { "HEAD" } else { $Entry.branch }
+    $changed = @(& git -C $workingDirectory diff --name-only "origin/$BaseBranch...$head")
     if ($LASTEXITCODE -ne 0 -or $changed.Count -eq 0) { return $true }
     $inert = $changed | Where-Object {
         $_ -like "docs/*" -or $_ -like "debug-store/*" -or $_ -like "logs/*" -or
@@ -183,8 +381,9 @@ if ($primaryAhead.Count -gt 0 -and $PSCmdlet.ShouldProcess($BaseBranch, "Push $(
 }
 
 $registered = @(Get-SandboxRegistry -PrimaryRoot $primaryRoot)
-if ($registered.Count -eq 0) {
-    Write-Host "[ready]   No sandboxes are registered." -ForegroundColor Green
+$lanes = @(Get-SyncLanes -RegisteredSandboxes $registered)
+if ($lanes.Count -eq 0) {
+    Write-Host "[ready]   No branches are in scope." -ForegroundColor Green
     Stop-RunLog
     return
 }
@@ -192,16 +391,23 @@ if ($registered.Count -eq 0) {
 Write-Host ""
 Write-Host "== 1/4 bring every lane current without hiding work ==" -ForegroundColor Green
 $ready = [System.Collections.Generic.List[object]]::new()
-foreach ($entry in $registered) {
+foreach ($entry in $lanes) {
     $lane = $entry.slug
-    if (-not (Test-Path $entry.worktree -PathType Container)) {
+    if ($entry.worktree -and -not (Test-Path $entry.worktree -PathType Container)) {
         Add-Remaining -Lane $lane -Problem "has no worktree at $($entry.worktree)" `
             -NextStep "Recreate it with New-Sandbox, or drop it with Discard-Sandbox."
         continue
     }
     Write-Host "[lane]    $lane" -ForegroundColor Cyan
-    if (-not (Resolve-Pending -WorkingDirectory $entry.worktree -Lane $lane)) { continue }
-    if (-not (Update-Lane -WorkingDirectory $entry.worktree -Lane $lane)) { continue }
+    if ($entry.worktree -and $entry.kind -eq "sandbox" -and `
+        -not (Resolve-Pending -WorkingDirectory $entry.worktree -Lane $lane)) { continue }
+    if ($entry.worktree -and $entry.kind -eq "branch" -and `
+        (Get-Unmerged -WorkingDirectory $entry.worktree).Count -gt 0) {
+        Add-Remaining -Lane $lane -Problem "has unresolved conflicts" `
+            -NextStep "Resolve them in $($entry.worktree), then run this script again."
+        continue
+    }
+    if (-not (Update-Lane -Entry $entry)) { continue }
     $ready.Add($entry)
 }
 
@@ -212,9 +418,9 @@ if ($PullOnly) {
 } else {
     $withWork = [System.Collections.Generic.List[object]]::new()
     foreach ($entry in $ready) {
-        $commits = @(& git -C $entry.worktree log --oneline "origin/$BaseBranch..HEAD")
+        $commits = @(Get-LaneCommits -Entry $entry)
         if ($commits.Count -eq 0) { continue }
-        $dirty = @(Get-Dirty -WorkingDirectory $entry.worktree)
+        $dirty = if ($entry.worktree) { @(Get-Dirty -WorkingDirectory $entry.worktree) } else { @() }
         if ($dirty.Count -gt 0) {
             $deferredPublication.Add([pscustomobject]@{ Entry = $entry; Commits = $commits })
             Write-Host "[active]  $($entry.slug) - kept $($dirty.Count) visible WIP path(s); publication deferred" -ForegroundColor Yellow
@@ -223,7 +429,7 @@ if ($PullOnly) {
         $withWork.Add([pscustomobject]@{
             Entry = $entry
             Commits = $commits
-            Validate = Test-NeedsValidation -WorkingDirectory $entry.worktree -Commits $commits
+            Validate = Test-NeedsValidation -Entry $entry -Commits $commits
         })
     }
 
@@ -247,9 +453,13 @@ if ($PullOnly) {
             try {
                 # One lane failing must not strand the rest, so unlike the
                 # gated two-way sync this keeps going and reports at the end.
-                & $sandboxScript -Merge $lane -BaseBranch $BaseBranch `
-                    -SkipValidation:(-not $item.Validate) -AllowDirtyPrimary -Confirm:$false
-                if ($LASTEXITCODE -ne 0) { throw "merge returned $LASTEXITCODE" }
+                if ($item.Entry.kind -eq "sandbox") {
+                    & $sandboxScript -Merge $lane -BaseBranch $BaseBranch `
+                        -SkipValidation:(-not $item.Validate) -AllowDirtyPrimary -Confirm:$false
+                    if ($LASTEXITCODE -ne 0) { throw "merge returned $LASTEXITCODE" }
+                } else {
+                    Publish-BranchLane -Entry $item.Entry -Validate $item.Validate
+                }
                 Add-Did "$lane - merged $($item.Commits.Count) commit(s) into $BaseBranch"
             } catch {
                 $reason = $_.Exception.Message
@@ -269,15 +479,15 @@ if ($LASTEXITCODE -ne 0 -and -not ($remaining | Where-Object { $_.StartsWith("$B
         -Problem "local work in progress overlaps the new origin/$BaseBranch" `
         -NextStep "Its files stayed visible and untouched. Reconcile them in $primaryRoot, then re-run."
 }
-foreach ($entry in $registered) {
-    if (-not (Test-Path $entry.worktree -PathType Container)) { continue }
+foreach ($entry in $lanes) {
+    if ($entry.worktree -and -not (Test-Path $entry.worktree -PathType Container)) { continue }
     if ($remaining | Where-Object { $_.StartsWith("$($entry.slug)|") }) { continue }
     Write-Host "[level]   $($entry.slug)" -ForegroundColor Cyan
-    Update-Lane -WorkingDirectory $entry.worktree -Lane $entry.slug | Out-Null
+    Update-Lane -Entry $entry | Out-Null
 }
 
 foreach ($item in $deferredPublication) {
-    $commits = @(& git -C $item.Entry.worktree log --oneline "origin/$BaseBranch..HEAD")
+    $commits = @(Get-LaneCommits -Entry $item.Entry)
     if ($commits.Count -gt 0) {
         Add-Remaining -Lane $item.Entry.slug `
             -Problem "kept $($commits.Count) committed change(s) out of $BaseBranch while its work in progress remains visible" `
@@ -290,9 +500,11 @@ Write-Host "== 4/4 verify ==" -ForegroundColor Green
 & git -C $primaryRoot fetch -q origin $BaseBranch
 $baseHead = (& git -C $primaryRoot rev-parse "origin/$BaseBranch").Trim()
 $level = 0
-foreach ($entry in $registered) {
-    if (-not (Test-Path $entry.worktree -PathType Container)) { continue }
-    & git -C $entry.worktree merge-base --is-ancestor $baseHead HEAD 2>$null
+foreach ($entry in $lanes) {
+    if ($entry.worktree -and -not (Test-Path $entry.worktree -PathType Container)) { continue }
+    $verifyRef = if ($entry.worktree) { "HEAD" } else { $entry.branch }
+    $verifyRoot = if ($entry.worktree) { $entry.worktree } else { $primaryRoot }
+    & git -C $verifyRoot merge-base --is-ancestor $baseHead $verifyRef 2>$null
     if ($LASTEXITCODE -eq 0) {
         $level++
     } elseif (-not $WhatIfPreference -and -not ($remaining | Where-Object { $_.StartsWith("$($entry.slug)|") })) {
@@ -309,7 +521,7 @@ if ($WhatIfPreference) {
     Stop-RunLog
     return
 }
-Write-Host "$BaseBranch is at $($baseHead.Substring(0, 7)). $level of $($registered.Count) lane(s) contain it."
+Write-Host "$BaseBranch is at $($baseHead.Substring(0, 7)). $level of $($lanes.Count) lane(s) contain it."
 if ($did.Count -gt 0) {
     Write-Host ""
     Write-Host "Done this run:" -ForegroundColor Green
