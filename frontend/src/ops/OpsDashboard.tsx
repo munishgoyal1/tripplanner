@@ -236,6 +236,10 @@ function SystemView({ overview }: { overview: OpsOverview }) {
   const toolErrors = tools.flatMap(([tool, row]) => Object.entries(row.error_types).map(([error, count]) => ({ tool, error, count }))).sort((a, b) => b.count - a.count);
   const errorRate = overview.requests.calls ? (overview.requests.errors / overview.requests.calls) * 100 : 0;
   const chatErrorRate = overview.chat_turns.calls ? (overview.chat_turns.errors / overview.chat_turns.calls) * 100 : 0;
+  const conversationWindows = (["daily", "weekly", "lifetime"] as const).map((window) => ({
+    window,
+    ...overview.conversation_limits[window],
+  }));
 
   return (
     <>
@@ -246,6 +250,21 @@ function SystemView({ overview }: { overview: OpsOverview }) {
         <Metric label="Chat failures" value={`${chatErrorRate.toFixed(1)}%`} detail={`${overview.chat_turns.errors} failed turns`} icon={AlertTriangle} />
         <Metric label="API errors" value={`${errorRate.toFixed(1)}%`} detail={`${overview.requests.errors} of ${overview.requests.calls} calls`} icon={Activity} />
       </section>
+
+      <div className="mt-6">
+        <Panel title="Conversation capacity" note="Environment-wide cost guardrail">
+          <div className="grid divide-y divide-stone-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            {conversationWindows.map(({ window, categories, resets_at: resetsAt }) => (
+              <div key={window} className="px-5 py-4 text-sm">
+                <div className="mb-3 font-semibold capitalize text-stone-900">{window}</div>
+                <div className="flex justify-between gap-4 py-1"><span>New trips</span><strong>{categories.new_trip.used} / {categories.new_trip.limit || "Off"}</strong></div>
+                <div className="flex justify-between gap-4 py-1"><span>Trip updates</span><strong>{categories.existing_trip_turn.used} / {categories.existing_trip_turn.limit || "Off"}</strong></div>
+                {resetsAt && <div className="mt-2 text-xs text-stone-500">Resets {new Date(resetsAt).toLocaleString()}</div>}
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </div>
 
       <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
         <Panel title="Tool performance" note="Volume · failures · cache · p95">

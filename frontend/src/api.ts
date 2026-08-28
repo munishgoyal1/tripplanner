@@ -107,6 +107,15 @@ export interface OpsOverview {
     completion_tokens: number;
     cost_usd: number;
   };
+  conversation_limits: Record<"daily" | "weekly" | "lifetime", {
+    key: string;
+    resets_at: string | null;
+    categories: Record<"new_trip" | "existing_trip_turn", {
+      used: number;
+      limit: number;
+      remaining: number | null;
+    }>;
+  }>;
   tools: Record<string, OpsMetricRow & {
     cache_hits: number;
     hit_rate: number;

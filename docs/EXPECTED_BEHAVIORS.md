@@ -120,6 +120,30 @@ either enabled (the default) or disabled.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `keeps timely build progress in the top bar until the refreshed itinerary is ready`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `summarizes an itinerary modification after its refreshed view loads`
 
+### EB-PLAN-004 - Enforce environment conversation ceilings before planning
+
+**Trigger:** Submit a new-trip request or another model-bearing Assistant turn.
+
+**Expected:**
+
+- New-trip workflows and all other model-bearing conversations consume separate
+  environment-wide daily, ISO-week, and lifetime capacity before model execution.
+- A completed request replay and the answer to an already admitted structured
+  new-trip kickoff consume no additional capacity. Asking for another destination
+  from an active trip consumes new-trip capacity.
+- Reaching any configured ceiling returns a structured limit response without
+  invoking the model or providers. Saved trips, transcripts, and preferences remain
+  unchanged. UTC daily and ISO-week capacity reset automatically; lifetime capacity
+  changes only when the owner changes its configuration.
+- The owner-only System Health view shows used and configured capacity for both
+  conversation categories in all three windows.
+
+**Executable proof:**
+
+- [`tests/test_conversation_limits.py`](../tests/test_conversation_limits.py)
+- [`tests/test_release_workflow.py`](../tests/test_release_workflow.py) - `test_hosted_conversation_cost_limits_are_explicit_and_deployed`
+- [`frontend/src/ops/OpsDashboard.test.tsx`](../frontend/src/ops/OpsDashboard.test.tsx) - `switches between business and system health insights`
+
 ## Public entry
 
 ### EB-PUBLIC-001 - Open the public landing route
