@@ -1,4 +1,37 @@
+import re
+from pathlib import Path
+
+from dotenv import dotenv_values
+
 from tripplanner.config import DEFAULT_AZURE_OPENAI_API_VERSION, Settings
+
+SECRET_KEYS = {
+    "AMADEUS_API_KEY",
+    "AMADEUS_API_SECRET",
+    "AZURE_COMMUNICATION_CONNECTION_STRING",
+    "AZURE_OPENAI_API_KEY",
+    "CACHE_REDIS_URL",
+    "COSMOS_CONNECTION_STRING",
+    "COSMOS_KEY",
+    "DUFFEL_API_KEY",
+    "GOOGLE_MAPS_BROWSER_KEY",
+    "GOOGLE_PLACES_API_KEY",
+    "KIWI_API_KEY",
+    "LITEAPI_API_KEY",
+    "OMIO_API_KEY",
+    "OAUTH_GITHUB_CLIENT_SECRET",
+    "OAUTH_GOOGLE_CLIENT_SECRET",
+    "OPENROUTESERVICE_API_KEY",
+    "SMTP_PASSWORD",
+    "TAVILY_API_KEY",
+    "VIATOR_API_KEY",
+    "WEB_SESSION_SECRET",
+}
+
+
+def _profile_values(name: str) -> dict[str, str | None]:
+    path = Path(__file__).parents[1] / "config" / "environments" / f"{name}.env"
+    return dict(dotenv_values(path))
 
 
 def test_azure_openai_default_matches_deployment_contract(monkeypatch) -> None:
@@ -29,3 +62,34 @@ def test_cache_ttl_scale_is_owner_configurable(monkeypatch):
 
     assert settings.cache_ttl(600) == 300
     assert settings.cache_ttl(1) == 1
+
+
+def test_checked_in_environment_profiles_have_the_same_non_secret_keys() -> None:
+    profiles = {name: _profile_values(name) for name in ("local", "canary", "prod")}
+
+    assert profiles["local"].keys() == profiles["canary"].keys() == profiles["prod"].keys()
+    assert not (profiles["local"].keys() & SECRET_KEYS)
+    for name, values in profiles.items():
+        assert values["TRIPPLANNER_ENVIRONMENT"] == name
+
+
+def test_every_settings_environment_key_is_owned_by_profiles_or_secret_overlay() -> None:
+    config_source = (
+        Path(__file__).parents[1] / "src" / "tripplanner" / "config.py"
+    ).read_text(encoding="utf-8")
+    referenced_keys = set(
+        re.findall(
+            r'(?:os\.getenv|_env_positive_int|_env_positive_float)\(\s*["\']'
+            r'([A-Z][A-Z0-9_]+)["\']',
+            config_source,
+        )
+    )
+
+    assert referenced_keys <= (_profile_values("local").keys() | SECRET_KEYS)
+
+
+def test_env_example_is_only_the_secret_overlay_template() -> None:
+    template = dict(dotenv_values(Path(__file__).parents[1] / ".env.example"))
+
+    assert template.keys() == SECRET_KEYS
+    assert not (template.keys() & _profile_values("local").keys())

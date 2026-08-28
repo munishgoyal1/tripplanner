@@ -27,6 +27,7 @@ param(
     [string]$CosmosAccountName = "",
     [string]$AzureOpenAIAccountName = "aoaicanarymd1ks",
     [string]$OAuthRedirectBase = "",
+    [string]$ConfigFile = "config/environments/canary.env",
     [string]$EnvFile = ".env.canary"
 )
 
@@ -34,7 +35,11 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/deployment-common.ps1"
 Start-RunLog -Name "canary-deploy" | Out-Null
+Import-DeploymentEnvironment -Path $ConfigFile
 Import-DeploymentEnvironment -Path $EnvFile
+if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
+    $OAuthRedirectBase = $env:OAUTH_REDIRECT_BASE
+}
 
 if (-not $NoBuild -and $ImageTag -eq "latest") {
     $ImageTag = (git rev-parse --short HEAD 2>$null)

@@ -24,8 +24,17 @@ def test_hosted_deployments_do_not_import_local_environment() -> None:
 
     assert '[string]$EnvFile = ".env.canary"' in canary
     assert '[string]$EnvFile = ".env.prod"' in production
+    assert '[string]$ConfigFile = "config/environments/canary.env"' in canary
+    assert '[string]$ConfigFile = "config/environments/prod.env"' in production
+    assert "Import-DeploymentEnvironment -Path $ConfigFile" in canary
+    assert "Import-DeploymentEnvironment -Path $ConfigFile" in production
     assert "Import-DeploymentEnvironment -Path $EnvFile" in canary
     assert "Import-DeploymentEnvironment -Path $EnvFile" in production
+    assert canary.index("-Path $ConfigFile") < canary.index("-Path $EnvFile")
+    assert production.index("-Path $ConfigFile") < production.index("-Path $EnvFile")
+    assert '$OAuthRedirectBase = $env:OAUTH_REDIRECT_BASE' in canary
+    assert '$OAuthRedirectBase = $env:OAUTH_REDIRECT_BASE' in production
+    assert '[string]$OAuthRedirectBase = ""' in production
 
 
 def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:

@@ -90,12 +90,13 @@ trip through shared API contracts.
 | `scripts/dev/build_corpus.py`, `scripts/dev/build-corpus.ps1` | Budgeted paid Trip Quality Corpus generation against the launcher checkout's running stack (primary `:8000`/`tripplanner-local`, or a registered sandbox's isolated API/database); logical attempts use fresh corpus principals so failed chat/trip state cannot contaminate retries, one same-principal recovery turn repairs a completed empty draft, acceptance requires at least two stops per itinerary day, three consecutive completed barren turns stop with a failing exit, generation is serial unless `--workers` explicitly opts into concurrency, and every non-dry run commits and pushes its generated manifest, spend ledger, place cache, and trip files on the current branch; output reports accepted yield and richness; `--country india` covers domestic destinations, while `--market india` alternates domestic and outbound Indian-traveler scenarios |
 
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
-boundary. `.env` is the central owner-facing runtime configuration surface:
-`.env.example` documents both non-secret switches and secret inputs, while
-`Settings` is the only application reader. Local and sandboxes read their
-checkout `.env`; canary and production deployment scripts read `.env.canary`
-and `.env.prod` and pass non-secret settings as Container Apps environment
-variables while secrets become secret references. `CACHE_TTL_SCALE` adjusts
+boundary. Checked-in `config/environments/local.env`, `canary.env`, and
+`prod.env` own complete non-secret runtime profiles with matching key sets.
+Ignored `.env`, `.env.canary`, and `.env.prod` files are secret overlays;
+`.env.example` documents that secret-only surface. Local runtime loads its
+profile plus `.env`; hosted deployment scripts load their profile plus matching
+secret overlay and pass non-secrets as Container Apps environment variables
+while secrets become secret references. `CACHE_TTL_SCALE` adjusts
 all runtime cache lifetimes, and the named search/fare TTL settings provide
 precise overrides before that scale is applied. Paid Google Places access requires
 both `ENABLE_GOOGLE_PLACES=1` and `GOOGLE_PLACES_API_KEY`; a copied key alone

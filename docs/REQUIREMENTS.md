@@ -87,7 +87,7 @@ re-describing the whole product.
 | MOBILE-01 | Native Expo client for iPhone and Android | Implemented |
 | ID-01 | Guest identity plus shared web/mobile Google identity | Implemented |
 | DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented |
-| REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented; all runtime cache families share one owner-controlled TTL policy, with environment-wide scaling and precise provider overrides supplied through local/sandbox, canary, and production environment configuration; disposable and durable regions retain storage appropriate to their recovery contract |
+| REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented; all runtime cache families share one owner-controlled TTL policy, with environment-wide scaling and precise provider overrides supplied through checked-in local/sandbox, canary, and production non-secret profiles plus ignored secret overlays; disposable and durable regions retain storage appropriate to their recovery contract |
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google Places is fail-closed behind a production-only runtime switch, owner emergency Service Usage control, and observation-scale provider quotas |
 | TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, explicit place-fact rechecks with before/after changes and source-linked unusual-closure advisories, place-identity gate, and a rebalance that never moves a stop the traveller chose |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
