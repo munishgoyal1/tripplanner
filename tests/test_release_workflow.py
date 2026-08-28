@@ -50,11 +50,14 @@ def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
     assert '"browserKey": "aitripplanner-prod-browser"' in guardrails
     assert '-BrowserBaseUrl "https://aitripplanner.co"' in production
     assert "hosted-maps-smoke.mjs" in smoke
+    assert '"--environment=$Environment"' in smoke
     assert "window.gm_authFailure" in browser_smoke
     assert "new window.google.maps.Map" in browser_smoke
     assert "/api/auth/guest/session" in browser_smoke
     assert "Authorization: `Bearer ${guestToken}`" in browser_smoke
     assert "/api/destination/overview?destination=Paris&news=false" in browser_smoke
+    assert 'environment === "canary"' in browser_smoke
+    assert "Google Places is intentionally disabled in canary" in browser_smoke
     assert "destination overview returned no photo" in browser_smoke
 
 

@@ -76,7 +76,9 @@ $frontendRoot = Join-Path $PSScriptRoot "../frontend"
 $npm = if ($IsWindows) { "npm.cmd" } else { "npm" }
 Push-Location $frontendRoot
 try {
-    & $npm exec -- node scripts/hosted-maps-smoke.mjs "--url=$BrowserBaseUrl"
+    & $npm exec -- node scripts/hosted-maps-smoke.mjs `
+        "--url=$BrowserBaseUrl" `
+        "--environment=$Environment"
     if ($LASTEXITCODE -ne 0) {
         throw "Hosted Maps and destination-photo smoke failed for $Environment."
     }
