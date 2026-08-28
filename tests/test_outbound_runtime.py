@@ -14,6 +14,7 @@ from tripplanner.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerRegistry,
 )
+from tripplanner.places_budget import places_budget_scope
 
 
 class FakeClock:
@@ -154,10 +155,22 @@ def test_request_uses_the_pooled_client_and_endpoint_budget(monkeypatch) -> None
 
     monkeypatch.setattr(http_client, "get_client", FakeClient)
 
-    response = http_client.get("https://places.googleapis.com/v1/places:searchText")
+    with places_budget_scope("user_interaction"):
+        response = http_client.get("https://places.googleapis.com/v1/places:searchText")
 
     assert response.status_code == 200
     assert seen["timeout"].read == 8.0
+
+
+def test_request_denies_unscoped_paid_provider_before_network(monkeypatch) -> None:
+    monkeypatch.setattr(
+        http_client,
+        "get_client",
+        lambda: pytest.fail("unscoped provider call reached the network client"),
+    )
+
+    with pytest.raises(PermissionError, match="not authorized"):
+        http_client.get("https://places.googleapis.com/v1/places:searchText")
 
 
 def test_repeated_failure_short_circuits_instead_of_paying_the_timeout(monkeypatch) -> None:

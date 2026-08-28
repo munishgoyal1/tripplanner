@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from tripplanner import api
+from tripplanner import api, places_budget
 from tripplanner.web import trip_operations
 
 
@@ -36,6 +36,54 @@ def test_trip_view_preserves_exact_itinerary_occurrence(
         "day": 2,
         "stop": 1,
     }
+
+
+def test_http_request_authorizes_user_provider_scope(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
+
+    def fake_build_view(_focus):
+        budget = places_budget.current_budget()
+        return {"purpose": budget.purpose if budget else None}
+
+    monkeypatch.setattr(trip_operations, "build_view", fake_build_view)
+
+    response = TestClient(api.app).get("/trip/view")
+
+    assert response.json()["purpose"] == "user_interaction"
+
+
+def test_corpus_header_selects_budgeted_provider_scope(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
+
+    def fake_build_view(_focus):
+        budget = places_budget.current_budget()
+        return {"purpose": budget.purpose if budget else None}
+
+    monkeypatch.setattr(trip_operations, "build_view", fake_build_view)
+
+    response = TestClient(api.app).get(
+        "/trip/view",
+        headers={"X-Tripplanner-Paid-Provider-Purpose": "corpus_generation"},
+    )
+
+    assert response.json()["purpose"] == "corpus_generation"
+
+
+def test_test_request_does_not_receive_paid_provider_scope(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_build_view(_focus):
+        return {"authorized": places_budget.paid_provider_authorized()}
+
+    monkeypatch.setattr(trip_operations, "build_view", fake_build_view)
+
+    response = TestClient(api.app).get("/trip/view")
+
+    assert response.json()["authorized"] is False
 
 
 def test_budget_what_if_is_generated_only_by_explicit_post(

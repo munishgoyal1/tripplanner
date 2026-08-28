@@ -32,6 +32,7 @@ import os
 import re
 import time
 from collections.abc import AsyncIterator
+from contextlib import nullcontext
 from datetime import datetime
 from typing import Any, Literal
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
@@ -217,13 +218,24 @@ async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-unt
     from tripplanner.usage_attribution import usage_scope
 
     interaction_id = request.headers.get("x-request-id", "")
+    from tripplanner.places_budget import PaidProviderPurpose, places_budget_scope
+
+    purpose: PaidProviderPurpose = (
+        "corpus_generation"
+        if request.headers.get("x-tripplanner-paid-provider-purpose") == "corpus_generation"
+        else "user_interaction"
+    )
+    provider_scope = (
+        nullcontext() if os.environ.get("PYTEST_CURRENT_TEST") else places_budget_scope(purpose)
+    )
     try:
-        with usage_scope(
-            "user_action",
-            interaction_id=interaction_id,
-            route=f"{request.method} {request.scope.get('path', '')}",
-        ):
-            response = await call_next(request)
+        with provider_scope:
+            with usage_scope(
+                "user_action",
+                interaction_id=interaction_id,
+                route=f"{request.method} {request.scope.get('path', '')}",
+            ):
+                response = await call_next(request)
         status_code = response.status_code
         return response
     finally:
@@ -549,7 +561,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
                 trip_id=history_tid or "",
                 route="POST /chat",
             ):
-                with places_budget_scope():
+                with places_budget_scope("user_interaction"):
                     result = await asyncio.to_thread(
                         app_graph.invoke,
                         {
@@ -902,7 +914,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                     trip_id=history_tid or "",
                     route="POST /chat/stream",
                 ):
-                    with places_budget_scope():
+                    with places_budget_scope("user_interaction"):
                         async for event in app_graph.astream_events(
                             {
                                 "messages": history,

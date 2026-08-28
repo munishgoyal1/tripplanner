@@ -168,6 +168,11 @@ def request(
 ) -> httpx.Response:
     """Perform one pooled, budgeted, breakered outbound request."""
     name = endpoint or endpoint_for(url)
+    if name in {"places.googleapis.com", "routes.googleapis.com", "maps.googleapis.com"}:
+        from tripplanner.places_budget import paid_provider_authorized
+
+        if not paid_provider_authorized():
+            raise PermissionError(f"Paid provider access is not authorized for {name}")
     policy = policy_for(name)
     breaker = _breakers.get(name, policy.breaker)
     operation, sku_class = (

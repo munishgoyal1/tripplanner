@@ -13,10 +13,18 @@ from concurrent.futures import ThreadPoolExecutor
 import httpx
 import pytest
 
+from tripplanner.places_budget import places_budget_scope
 from tripplanner.validation.harness import EvidenceCollector, harness_scope
 from tripplanner.web import places_cache as pc
 
 _REAL_LOOKUP_PLACE = pc._lookup_place
+
+
+@pytest.fixture
+def _authorized():
+    with places_budget_scope("user_interaction") as budget:
+        budget.limits["text_search"] = 10
+        yield
 
 
 @pytest.fixture(autouse=True)
@@ -179,7 +187,7 @@ def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
     assert calls["count"] == 2
 
 
-def test_lookup_retries_one_transient_server_error(_isolate, monkeypatch):
+def test_lookup_retries_one_transient_server_error(_isolate, _authorized, monkeypatch):
     request = httpx.Request("POST", "https://places.googleapis.com/v1/places:searchText")
     responses = iter(
         [
@@ -213,7 +221,7 @@ def test_lookup_retries_one_transient_server_error(_isolate, monkeypatch):
     assert calls["count"] == 2
 
 
-def test_lookup_does_not_retry_client_error(_isolate, monkeypatch):
+def test_lookup_does_not_retry_client_error(_isolate, _authorized, monkeypatch):
     request = httpx.Request("POST", "https://places.googleapis.com/v1/places:searchText")
     calls = {"count": 0}
 
@@ -326,7 +334,7 @@ def test_refresh_forces_refetch(_isolate):
     assert _isolate["lookup"] == 2  # forced re-fetch despite fresh cache
 
 
-def test_top_places_cached_and_refreshable(_isolate, monkeypatch):
+def test_top_places_cached_and_refreshable(_isolate, _authorized, monkeypatch):
     seen = {"n": 0}
 
     class FakeResp:

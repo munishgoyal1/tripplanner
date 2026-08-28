@@ -8,6 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from tripplanner.places_budget import places_budget_scope
 from tripplanner.tools import place_hours
 
 
@@ -19,6 +20,9 @@ def _configured(monkeypatch):
         "get_settings",
         lambda: SimpleNamespace(google_places_api_key="test-key"),
     )
+    with places_budget_scope("user_interaction") as budget:
+        budget.limits["review_details"] = 10
+        yield
 
 
 def _mk_response(payload):
@@ -83,6 +87,19 @@ def test_check_place_hours_not_configured(monkeypatch):
     monkeypatch.setattr(place_hours, "is_configured", lambda: False)
     out = place_hours.check_place_hours.invoke({"place_id": "X", "when_iso": ""})
     assert "disabled or not configured" in out.lower()
+
+
+def test_check_place_hours_denies_unscoped_provider_call(monkeypatch):
+    monkeypatch.setattr(place_hours, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        place_hours.http_client,
+        "get",
+        lambda *args, **kwargs: pytest.fail("unscoped provider call"),
+    )
+
+    out = place_hours.check_place_hours.invoke({"place_id": "X", "when_iso": ""})
+
+    assert "not authorized" in out.lower()
 
 
 def test_place_hours_requires_flag_and_key(monkeypatch):

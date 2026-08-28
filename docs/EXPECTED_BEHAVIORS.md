@@ -277,6 +277,37 @@ offers, or a finalized unbooked trip whose recorded quote has expired.
 - [`tests/test_places_cache.py`](../tests/test_places_cache.py) - `test_refresh_details_preserves_known_facts_when_lookup_fails`
 - [`frontend/src/components/TripVerificationCard.test.tsx`](../frontend/src/components/TripVerificationCard.test.tsx)
 
+### EB-COST-001 - Authorize paid provider access only for approved flows
+
+**Trigger:** Any server code attempts a paid Google Places, Routes, Static Maps,
+or configured route-provider request.
+
+**Expected:**
+
+- Paid network access is denied by default. Credentials and capability flags do
+  not authorize a call by themselves.
+- A real HTTP user interaction or interactive CLI turn receives one named,
+  shared `user_interaction` scope. Parallel work consumes the same per-turn
+  Places ceilings.
+- Corpus generation explicitly identifies a `corpus_generation` scope and still
+  obeys its separate INR run and cumulative caps.
+- Audits, tests (including HTTP `TestClient` requests), issue validation, stored-data rendering, and arbitrary
+  background work receive no paid scope. Audit rendering uses only persisted
+  facts, including coordinates, and cannot grant itself access by calling a
+  reusable view builder.
+- Known billable Google hosts are checked again in the shared HTTP runtime, so a
+  new call site that omits its local gate is rejected before network access.
+
+**Executable proof:**
+
+- [`tests/test_places_budget.py`](../tests/test_places_budget.py)
+- [`tests/test_outbound_runtime.py`](../tests/test_outbound_runtime.py) - `test_request_denies_unscoped_paid_provider_before_network`
+- [`tests/test_place_hours.py`](../tests/test_place_hours.py) - `test_check_place_hours_denies_unscoped_provider_call`
+- [`tests/test_routing.py`](../tests/test_routing.py) - `test_google_routes_denies_unscoped_provider_call`
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_static_maps_denies_unscoped_provider_call`
+- [`tests/test_trip_view_api.py`](../tests/test_trip_view_api.py) - `test_corpus_header_selects_budgeted_provider_scope`
+- [`tests/test_validation_harness.py`](../tests/test_validation_harness.py) - stored-fact render coverage
+
 ### EB-FEEDBACK-001 - Record lightweight trip feedback
 
 **Trigger:** With an active trip, select the toolbar thumbs-up or thumbs-down action,

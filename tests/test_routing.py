@@ -7,6 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from tripplanner.places_budget import places_budget_scope
 from tripplanner.tools import routing
 
 # ---------------------------------------------------------------------------
@@ -63,7 +64,13 @@ def _mk_response(payload: dict):
 
 
 @pytest.fixture
-def _configured(monkeypatch):
+def _authorized():
+    with places_budget_scope("user_interaction"):
+        yield
+
+
+@pytest.fixture
+def _configured(monkeypatch, _authorized):
     """Force is_configured() True without needing a real env var."""
     monkeypatch.setattr(routing, "is_configured", lambda: True)
     monkeypatch.setattr(
@@ -81,6 +88,27 @@ def test_google_routes_key_does_not_bypass_disabled_maps_gate(monkeypatch):
     )
 
     assert routing._google_configured() is False
+
+
+def test_google_routes_denies_unscoped_provider_call(monkeypatch):
+    monkeypatch.setattr(
+        routing,
+        "get_settings",
+        lambda: SimpleNamespace(
+            enable_google_maps=True,
+            google_places_api_key="test-key",
+            openrouteservice_api_key="",
+        ),
+    )
+    monkeypatch.setattr(
+        routing.http_client,
+        "post",
+        lambda *args, **kwargs: pytest.fail("unscoped provider call"),
+    )
+
+    out = routing.compute_route.invoke({"stops_json": '["A", "B"]'})
+
+    assert out == "No route found for the supplied stops."
 
 
 def test_compute_route_returns_legs_and_totals(_configured, monkeypatch):
@@ -141,7 +169,7 @@ def test_compute_route_not_configured(monkeypatch):
     assert "not configured" in out.lower()
 
 
-def test_coordinate_route_falls_back_to_openrouteservice(monkeypatch):
+def test_coordinate_route_falls_back_to_openrouteservice(_authorized, monkeypatch):
     captured = {}
     routing._ORS_ROUTE_CACHE.clear()
     monkeypatch.setattr(
@@ -183,7 +211,7 @@ def test_coordinate_route_falls_back_to_openrouteservice(monkeypatch):
     assert captured["json"]["coordinates"] == [[2.3522, 48.8566], [2.34, 48.86]]
 
 
-def test_openrouteservice_coordinate_routes_are_cached(monkeypatch):
+def test_openrouteservice_coordinate_routes_are_cached(_authorized, monkeypatch):
     calls = []
     routing._ORS_ROUTE_CACHE.clear()
     monkeypatch.setattr(

@@ -385,6 +385,10 @@ def test_unresolved_shinkansen_does_not_draw_kyoto_meal_to_tokyo_airport_as_taxi
     reported = render.check_render(record)
     with render.render_facts(record.places):
         view = trip_view.build_map_view(record.plan)
+        assert trip_view._place_coords(
+            "GYUKATSU Kyoto Katsugyu Teramachi Kyogoku",
+            "Japan (Tokyo & Kyoto)",
+        ) == (35.005, 135.768)
     pins = {str(pin["id"]): pin for pin in view["pins"]}
     circuit_names = [pins[pin_id]["name"] for pin_id in view["days"][0]["circuit_pin_ids"]]
 
@@ -2419,6 +2423,37 @@ def test_api_health_check_explains_a_refused_local_connection(
 
     assert error is not None
     assert "Connection refused" in error
+
+
+def test_corpus_request_explicitly_authorizes_budgeted_provider_scope(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import urllib.request
+
+    from tripplanner.validation import generate
+
+    captured: dict[str, object] = {}
+
+    class Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return b""
+
+    def open_request(request, *, timeout):
+        captured.update(request=request, timeout=timeout)
+        return Response()
+
+    monkeypatch.setattr(urllib.request, "urlopen", open_request)
+
+    generate._ask("http://planner", "Plan", "corpus-user", "request-1")
+
+    request = captured["request"]
+    assert request.get_header("X-tripplanner-paid-provider-purpose") == "corpus_generation"
 
 
 def test_exhausted_connection_refusals_are_an_api_outage(
