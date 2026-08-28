@@ -28,6 +28,7 @@ param cacheTtlSettings = {
 	ferryFare: int(readEnvironmentVariable('FERRY_CACHE_TTL_SEC', '43200'))
 	activityFare: int(readEnvironmentVariable('ACTIVITY_CACHE_TTL_SEC', '86400'))
 }
+param enableAzureOpenAi = readEnvironmentVariable('ENABLE_AZURE_OPENAI', '0') == '1'
 param enableGooglePlaces = readEnvironmentVariable('ENABLE_GOOGLE_PLACES', '0') == '1'
 param enableGoogleMaps = readEnvironmentVariable('ENABLE_GOOGLE_MAPS', '0') == '1'
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')

@@ -136,9 +136,10 @@ def _invoke(document_type: str, content: Any) -> dict[str, Any]:
     from langchain_core.messages import HumanMessage, SystemMessage
     from langchain_openai import AzureChatOpenAI
 
+    from tripplanner.azure_openai import require_azure_openai_enabled
     from tripplanner.config import get_settings
 
-    settings = get_settings()
+    settings = require_azure_openai_enabled(get_settings())
     llm = AzureChatOpenAI(
         azure_endpoint=settings.azure_openai_endpoint,
         api_key=settings.azure_openai_api_key,

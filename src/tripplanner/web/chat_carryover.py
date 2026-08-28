@@ -75,6 +75,7 @@ def distill(
         from langchain_core.messages import HumanMessage, SystemMessage
         from langchain_openai import AzureChatOpenAI
 
+        from tripplanner.azure_openai import require_azure_openai_enabled
         from tripplanner.config import get_settings
     except Exception as exc:  # pragma: no cover - import errors are environmental
         log.warning("chat_carryover: imports failed (%s); skipping", exc)
@@ -86,7 +87,7 @@ def distill(
         f"Recent conversation:\n{transcript}"
     )
     try:
-        s = get_settings()
+        s = require_azure_openai_enabled(get_settings())
         if not (s.azure_openai_endpoint and s.azure_openai_api_key):
             return ""
         llm = AzureChatOpenAI(

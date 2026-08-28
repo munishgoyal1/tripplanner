@@ -13,6 +13,7 @@ import time
 from types import SimpleNamespace
 from typing import Annotated, TypedDict
 
+import pytest
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from langchain_core.tools import tool
 from langgraph.graph import END, StateGraph
@@ -117,6 +118,7 @@ def test_llm_allows_token_bucket_recovery(monkeypatch) -> None:
         graph_mod,
         "get_settings",
         lambda: SimpleNamespace(
+            enable_azure_openai=True,
             azure_openai_endpoint="https://example.openai.azure.com",
             azure_openai_api_key="test-key",
             azure_openai_deployment="test-deployment",
@@ -131,6 +133,30 @@ def test_llm_allows_token_bucket_recovery(monkeypatch) -> None:
     assert captured["timeout"] == 90.0
     # One uncapped turn emitted the whole 32k output window and starved the quota.
     assert captured["max_tokens"] == 8192
+
+
+def test_llm_rejects_credentials_when_azure_openai_is_disabled(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+    from tripplanner.azure_openai import AzureOpenAIDisabledError
+
+    def fail_if_constructed(**kwargs):
+        raise AssertionError(f"AzureChatOpenAI received {kwargs}")
+
+    monkeypatch.setattr(graph_mod, "AzureChatOpenAI", fail_if_constructed)
+    monkeypatch.setattr(
+        graph_mod,
+        "get_settings",
+        lambda: SimpleNamespace(
+            enable_azure_openai=False,
+            azure_openai_endpoint="https://example.openai.azure.com",
+            azure_openai_api_key="valid-but-not-consent",
+            azure_openai_deployment="test-deployment",
+            azure_openai_api_version="2024-10-21",
+        ),
+    )
+
+    with pytest.raises(AzureOpenAIDisabledError, match="intentionally disabled"):
+        graph_mod._get_llm()
 
 
 def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) -> None:

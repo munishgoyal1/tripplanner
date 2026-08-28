@@ -48,6 +48,16 @@ def test_azure_openai_api_version_allows_an_explicit_override(monkeypatch) -> No
     assert Settings().azure_openai_api_version == "explicit-version"
 
 
+def test_azure_openai_is_disabled_by_default(monkeypatch) -> None:
+    monkeypatch.delenv("ENABLE_AZURE_OPENAI", raising=False)
+    assert Settings().enable_azure_openai is False
+
+
+def test_azure_openai_requires_explicit_enable(monkeypatch) -> None:
+    monkeypatch.setenv("ENABLE_AZURE_OPENAI", "1")
+    assert Settings().enable_azure_openai is True
+
+
 def test_google_places_is_disabled_by_default(monkeypatch):
     monkeypatch.delenv("ENABLE_GOOGLE_PLACES", raising=False)
     assert Settings().enable_google_places is False

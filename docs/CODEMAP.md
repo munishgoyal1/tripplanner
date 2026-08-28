@@ -137,6 +137,12 @@ Paid base Maps, Google Routes fallback, and Static Maps export similarly require
 flags are the sole desired state; `infra/gcp/set-google-places-access.ps1` and
 `set-google-maps-access.ps1` synchronize project-level Service Usage and retain
 deployment-free emergency off controls.
+Every Azure OpenAI client construction requires `ENABLE_AZURE_OPENAI=1`; endpoint
+and key presence alone never permits model spend. The default is fail-closed.
+`infra/azure/set-azure-services-access.ps1` owns the profile desired state while
+also blocking or restoring the selected OpenAI account's public network access.
+Profile changes require a local restart or hosted deployment before application
+processes observe them; cloud network enforcement is immediate.
 
 Runtime cache policy is unified, but physical storage is intentionally tiered.
 Provider, FX, route, country, and comparison regions use `caching.py`; read-only

@@ -274,7 +274,9 @@ def _get_llm() -> AzureChatOpenAI:
     to Azure OpenAI before the first token. The client carries no per-call
     state; usage accounting is keyed by run id instead.
     """
-    s = get_settings()
+    from tripplanner.azure_openai import require_azure_openai_enabled
+
+    s = require_azure_openai_enabled(get_settings())
     return _build_llm(
         s.azure_openai_endpoint,
         s.azure_openai_api_key,

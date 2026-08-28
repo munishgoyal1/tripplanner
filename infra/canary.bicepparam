@@ -37,6 +37,7 @@ param cacheRedisUrl = readEnvironmentVariable('CACHE_REDIS_URL', '')
 param cacheRedisNamespace = readEnvironmentVariable('CACHE_REDIS_NAMESPACE', 'tripplanner:provider-cache')
 param cacheRedisConnectTimeoutSec = readEnvironmentVariable('CACHE_REDIS_CONNECT_TIMEOUT_SEC', '0.2')
 param cacheRedisSocketTimeoutSec = readEnvironmentVariable('CACHE_REDIS_SOCKET_TIMEOUT_SEC', '0.2')
+param enableAzureOpenAi = readEnvironmentVariable('ENABLE_AZURE_OPENAI', '0') == '1'
 param enableGooglePlaces = readEnvironmentVariable('ENABLE_GOOGLE_PLACES', '0') == '1'
 param enableGoogleMaps = readEnvironmentVariable('ENABLE_GOOGLE_MAPS', '0') == '1'
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
