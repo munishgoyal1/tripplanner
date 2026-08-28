@@ -18,10 +18,14 @@ import httpx
 from langchain_core.tools import tool
 
 from tripplanner import http_client
+from tripplanner.caching import get_cache
 from tripplanner.config import get_settings
 from tripplanner.places_budget import consume
 
 _BASE = "https://places.googleapis.com/v1"
+_PLACE_HOURS_CACHE = get_cache(
+    "google-place-hours", default_ttl_seconds=7200, volatile=True
+)
 
 _WEEKDAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -114,26 +118,31 @@ def check_place_hours(place_id: str, when_iso: str = "") -> str:
             "Set ENABLE_GOOGLE_PLACES=1 and GOOGLE_PLACES_API_KEY in .env. "
             "See https://console.cloud.google.com."
         )
-    if not consume("review_details"):
-        return "Paid provider access is not authorized for this operation."
-
     field_mask = (
         "id,displayName,businessStatus,utcOffsetMinutes,"
         "regularOpeningHours.weekdayDescriptions,regularOpeningHours.periods,"
         "currentOpeningHours.weekdayDescriptions,currentOpeningHours.periods"
     )
-    headers = {
-        "Content-Type": "application/json",
-        "X-Goog-Api-Key": get_settings().google_places_api_key,
-        "X-Goog-FieldMask": field_mask,
-    }
-    try:
-        resp = http_client.get(f"{_BASE}/places/{place_id}", headers=headers)
-        resp.raise_for_status()
-    except httpx.HTTPError as e:
-        return f"Failed to fetch place hours: {e}"
-
-    p = resp.json()
+    p = _PLACE_HOURS_CACHE.get(place_id)
+    if not isinstance(p, dict):
+        if not consume("review_details"):
+            return "Paid provider access is not authorized for this operation."
+        headers = {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": get_settings().google_places_api_key,
+            "X-Goog-FieldMask": field_mask,
+        }
+        try:
+            resp = http_client.get(f"{_BASE}/places/{place_id}", headers=headers)
+            resp.raise_for_status()
+        except httpx.HTTPError as e:
+            return f"Failed to fetch place hours: {e}"
+        p = resp.json()
+        _PLACE_HOURS_CACHE.set(
+            place_id,
+            p,
+            ttl_seconds=get_settings().google_places_hours_cache_ttl_sec,
+        )
     # currentOpeningHours reflects the next 7 days (holidays, special hours).
     # Prefer it; fall back to regularOpeningHours.
     hours = p.get("currentOpeningHours") or p.get("regularOpeningHours") or {}

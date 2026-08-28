@@ -14,15 +14,20 @@ from tripplanner.tools import place_hours
 
 @pytest.fixture
 def _configured(monkeypatch):
+    place_hours._PLACE_HOURS_CACHE.clear()
     monkeypatch.setattr(place_hours, "is_configured", lambda: True)
     monkeypatch.setattr(
         place_hours,
         "get_settings",
-        lambda: SimpleNamespace(google_places_api_key="test-key"),
+        lambda: SimpleNamespace(
+            google_places_api_key="test-key",
+            google_places_hours_cache_ttl_sec=7200,
+        ),
     )
     with places_budget_scope("user_interaction") as budget:
         budget.limits["review_details"] = 10
         yield
+    place_hours._PLACE_HOURS_CACHE.clear()
 
 
 def _mk_response(payload):
@@ -178,6 +183,27 @@ def test_check_place_hours_open_verdict(_configured, monkeypatch):
     )
     assert closed_out["open_at_requested_time"] is False
     assert closed_out["requested_weekday"] == "Tuesday"
+
+
+def test_check_place_hours_reuses_cached_provider_response(_configured, monkeypatch):
+    calls = []
+    payload = {
+        "id": "P1",
+        "displayName": {"text": "Louvre"},
+        "businessStatus": "OPERATIONAL",
+        "regularOpeningHours": {"weekdayDescriptions": [], "periods": []},
+    }
+
+    def fake_get(*args, **kwargs):
+        calls.append(args[0])
+        return _mk_response(payload)
+
+    monkeypatch.setattr(place_hours.http_client, "get", fake_get)
+
+    place_hours.check_place_hours.invoke({"place_id": "P1"})
+    place_hours.check_place_hours.invoke({"place_id": "P1", "when_iso": "2026-07-13"})
+
+    assert len(calls) == 1
 
 
 def test_check_place_hours_permanent_closure_warning(_configured, monkeypatch):

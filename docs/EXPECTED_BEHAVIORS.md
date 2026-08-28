@@ -297,6 +297,10 @@ or configured route-provider request.
   reusable view builder.
 - Known billable Google hosts are checked again in the shared HTTP runtime, so a
   new call site that omits its local gate is rejected before network access.
+- Successful paid responses are cached at the lowest shared provider boundary,
+  and cache lookup happens before paid-call budget consumption. Fresh cache hits
+  consume neither provider quota nor the turn's allowance. Transient errors and
+  empty provider results are not stored as successful responses.
 
 **Executable proof:**
 
@@ -305,6 +309,7 @@ or configured route-provider request.
 - [`tests/test_place_hours.py`](../tests/test_place_hours.py) - `test_check_place_hours_denies_unscoped_provider_call`
 - [`tests/test_routing.py`](../tests/test_routing.py) - `test_google_routes_denies_unscoped_provider_call`
 - [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_static_maps_denies_unscoped_provider_call`
+- [`tests/test_google_places_cache.py`](../tests/test_google_places_cache.py)
 - [`tests/test_trip_view_api.py`](../tests/test_trip_view_api.py) - `test_corpus_header_selects_budgeted_provider_scope`
 - [`tests/test_validation_harness.py`](../tests/test_validation_harness.py) - stored-fact render coverage
 

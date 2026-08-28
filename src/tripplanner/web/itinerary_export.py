@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import base64
+import hashlib
+import json
 from html import escape
 from typing import Any
 from urllib.parse import quote
@@ -10,8 +12,14 @@ from urllib.parse import quote
 import httpx
 
 from tripplanner import http_client
+from tripplanner.caching import get_cache
 from tripplanner.config import get_settings
 from tripplanner.web import places_cache, trip_view
+
+_STATIC_MAP_CACHE_TTL_S = 7 * 24 * 60 * 60
+_STATIC_MAP_CACHE = get_cache(
+  "google-static-map", default_ttl_seconds=_STATIC_MAP_CACHE_TTL_S, volatile=False
+)
 
 
 def _e(value: Any) -> str:
@@ -99,6 +107,13 @@ def _static_map_data_uri(
     if not key or len(coords) < 2:
       return ""
 
+    cache_key = hashlib.sha256(
+      json.dumps(coords, separators=(",", ":")).encode()
+    ).hexdigest()
+    cached = _STATIC_MAP_CACHE.get(cache_key)
+    if isinstance(cached, str):
+      return cached
+
     path = "color:0x0369a1ff|weight:4|" + "|".join(
       f"{lat:.6f},{lng:.6f}" for lat, lng in coords
     )
@@ -125,7 +140,13 @@ def _static_map_data_uri(
       if not content_type.startswith("image/"):
         return ""
       encoded = base64.b64encode(response.content).decode("ascii")
-      return f"data:{content_type};base64,{encoded}"
+      result = f"data:{content_type};base64,{encoded}"
+      _STATIC_MAP_CACHE.set(
+        cache_key,
+        result,
+        ttl_seconds=_STATIC_MAP_CACHE_TTL_S,
+      )
+      return result
     except httpx.HTTPError:
       return ""
 

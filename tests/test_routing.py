@@ -76,7 +76,11 @@ def _configured(monkeypatch, _authorized):
     monkeypatch.setattr(
         routing,
         "get_settings",
-        lambda: SimpleNamespace(enable_google_maps=True, google_places_api_key="test-key"),
+        lambda: SimpleNamespace(
+            enable_google_maps=True,
+            google_places_api_key="test-key",
+            openrouteservice_route_ttl_sec=21600,
+        ),
     )
 
 
@@ -236,6 +240,21 @@ def test_openrouteservice_coordinate_routes_are_cached(_authorized, monkeypatch)
 
     assert routing.route_metrics(origin, destination, "DRIVE") is not None
     assert routing.route_metrics(origin, destination, "DRIVE") is not None
+    assert len(calls) == 1
+
+
+def test_google_route_metrics_are_cached(_configured, monkeypatch):
+    calls = []
+    routing._GOOGLE_ROUTE_CACHE.clear()
+
+    def fake_post(*args, **kwargs):
+        calls.append(kwargs["json"])
+        return _mk_response({"routes": [{"duration": "600s", "distanceMeters": 1200}]})
+
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
+
+    assert routing.route_metrics("A", "B", "DRIVE") is not None
+    assert routing.route_metrics("A", "B", "DRIVE") is not None
     assert len(calls) == 1
 
 

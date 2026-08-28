@@ -9,16 +9,25 @@ review snippets instead of LLM guesses.
 
 from __future__ import annotations
 
+import hashlib
 import json
 
 import httpx
 from langchain_core.tools import tool
 
 from tripplanner import http_client
+from tripplanner.caching import get_cache
 from tripplanner.config import get_settings
 from tripplanner.places_budget import consume
 
 _BASE = "https://places.googleapis.com/v1"
+_SEARCH_CACHE = get_cache("google-places-search", default_ttl_seconds=604800, volatile=False)
+_REVIEWS_CACHE = get_cache("google-places-reviews", default_ttl_seconds=604800, volatile=False)
+
+
+def _cache_key(operation: str, payload: dict) -> str:
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    return f"{operation}:{hashlib.sha256(encoded).hexdigest()}"
 
 
 def is_configured() -> bool:
@@ -94,6 +103,14 @@ def search_places_with_reviews(query: str, city: str = "", max_results: int = 5)
         )
 
     full_query = f"{query} {city}".strip()
+    cache_key = _cache_key(
+        "search",
+        {"query": " ".join(full_query.lower().split()), "max_results": max_results},
+    )
+    cached = _SEARCH_CACHE.get(cache_key)
+    if isinstance(cached, str):
+        _remember_places(json.loads(cached), city)
+        return cached
     if not consume("text_search"):
         return "Google Places search budget reached for this planning turn. Reuse prior results."
     field_mask = (
@@ -116,7 +133,13 @@ def search_places_with_reviews(query: str, city: str = "", max_results: int = 5)
     if not places:
         return f"No places found for '{full_query}'."
     _remember_places(places, city)
-    return json.dumps(places, indent=2)
+    result = json.dumps(places, indent=2)
+    _SEARCH_CACHE.set(
+        cache_key,
+        result,
+        ttl_seconds=get_settings().google_places_search_cache_ttl_sec,
+    )
+    return result
 
 
 @tool
@@ -130,6 +153,10 @@ def get_place_reviews(place_id: str, max_reviews: int = 5) -> str:
             "Google Places API disabled or not configured. "
             "Set ENABLE_GOOGLE_PLACES=1 and GOOGLE_PLACES_API_KEY in .env."
         )
+    cache_key = _cache_key("reviews", {"place_id": place_id, "max_reviews": max_reviews})
+    cached = _REVIEWS_CACHE.get(cache_key)
+    if isinstance(cached, str):
+        return cached
     if not consume("review_details"):
         return "Google Places review budget reached for this planning turn. Reuse prior ratings."
 
@@ -151,7 +178,13 @@ def get_place_reviews(place_id: str, max_reviews: int = 5) -> str:
         "editorial_summary": p.get("editorialSummary", {}).get("text", ""),
         "reviews": _format_reviews(p.get("reviews", []), max_reviews),
     }
-    return json.dumps(out, indent=2)
+    result = json.dumps(out, indent=2)
+    _REVIEWS_CACHE.set(
+        cache_key,
+        result,
+        ttl_seconds=get_settings().google_places_reviews_cache_ttl_sec,
+    )
+    return result
 
 
 @tool
@@ -178,6 +211,20 @@ def nearby_restaurants(
         )
 
     parts = [p for p in [dietary, cuisine, "restaurants", "in", city] if p]
+    cache_key = _cache_key(
+        "restaurants",
+        {
+            "city": " ".join(city.lower().split()),
+            "cuisine": " ".join(cuisine.lower().split()),
+            "dietary": " ".join(dietary.lower().split()),
+            "min_rating": min_rating,
+            "max_results": max_results,
+        },
+    )
+    cached = _SEARCH_CACHE.get(cache_key)
+    if isinstance(cached, str):
+        _remember_places(json.loads(cached), city)
+        return cached
     if not consume("text_search"):
         return "Google Places search budget reached for this planning turn. Reuse prior results."
     query = " ".join(parts)
@@ -203,4 +250,10 @@ def nearby_restaurants(
     if not top:
         return f"No restaurants found in {city} matching the criteria (min rating {min_rating})."
     _remember_places(top, city)
-    return json.dumps(top, indent=2)
+    result = json.dumps(top, indent=2)
+    _SEARCH_CACHE.set(
+        cache_key,
+        result,
+        ttl_seconds=get_settings().google_places_search_cache_ttl_sec,
+    )
+    return result
