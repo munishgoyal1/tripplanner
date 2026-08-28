@@ -23,6 +23,19 @@ def test_a_value_survives_until_its_ttl_and_not_beyond(monkeypatch):
     assert cache.get("short") is None
 
 
+def test_shared_cache_applies_environment_ttl_scale(monkeypatch):
+    settings = caching.get_settings()
+    monkeypatch.setattr(settings, "cache_ttl_scale", 0.5)
+    now = [0.0]
+    monkeypatch.setattr(caching.time, "time", lambda: now[0])
+
+    cache = caching.get_cache("scaled")
+    cache.set("key", "value", ttl_seconds=10)
+    now[0] = 6.0
+
+    assert cache.get("key") is None
+
+
 def test_regions_do_not_collide_on_the_same_key():
     left = caching.get_cache("left")
     right = caching.get_cache("right")

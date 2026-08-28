@@ -14,6 +14,7 @@ from enum import StrEnum
 from typing import Any, Generic, TypeVar
 
 from tripplanner.caching import cache_status, get_cache
+from tripplanner.config import get_settings
 
 T = TypeVar("T")
 log = logging.getLogger(__name__)
@@ -161,11 +162,12 @@ class ProviderTTLCache(Generic[T]):
 
     def set(self, key: str, value: T, *, provider: str, ttl_seconds: int) -> ProviderCacheEntry[T]:
         checked_at = datetime.now(UTC)
+        effective_ttl = get_settings().cache_ttl(ttl_seconds)
         entry = ProviderCacheEntry(
             value=value,
             provider=provider,
             checked_at=checked_at,
-            expires_at=checked_at + timedelta(seconds=max(1, ttl_seconds)),
+            expires_at=checked_at + timedelta(seconds=effective_ttl),
         )
         self._cache.set(
             key,
@@ -175,7 +177,7 @@ class ProviderTTLCache(Generic[T]):
                 "checked_at": entry.checked_at.isoformat(),
                 "expires_at": entry.expires_at.isoformat(),
             },
-            ttl_seconds=max(1, ttl_seconds),
+            ttl_seconds=ttl_seconds,
         )
         return entry
 

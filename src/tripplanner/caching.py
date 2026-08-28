@@ -317,7 +317,8 @@ class Cache:
         return value
 
     def set(self, key: str, value: Any, *, ttl_seconds: int | None = None) -> None:
-        self._backend.set(self._key(key), value, ttl_seconds or self.default_ttl_seconds)
+        configured_ttl = ttl_seconds or self.default_ttl_seconds
+        self._backend.set(self._key(key), value, get_settings().cache_ttl(configured_ttl))
 
     def delete(self, key: str) -> None:
         self._backend.delete(self._key(key))

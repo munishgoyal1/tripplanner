@@ -286,7 +286,9 @@ def cache_store(
     partition = _resolve_user_partition(policy.scope, user_id)
     key = _cache_key(tool_name, args, scope=policy.scope)
     value = _coerce_result(result)
-    ttl_seconds = ttl if ttl is not None else policy.ttl_seconds
+    from tripplanner.config import get_settings
+
+    ttl_seconds = get_settings().cache_ttl(ttl if ttl is not None else policy.ttl_seconds)
     try:
         from tripplanner import storage_cosmos
 
