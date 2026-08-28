@@ -245,13 +245,15 @@ def _cosmos_get(user_id: str, key: str) -> str | None:
 def _cosmos_set(user_id: str, key: str, value: str, ttl: int) -> None:
     from tripplanner import storage_cosmos
 
+    cached_at = time.time()
     storage_cosmos.upsert_doc(
         "tool_cache",
         user_id,
         key,
         {
             "result": value,
-            "expires_at": -1 if ttl == -1 else time.time() + ttl,
+            "cached_at": cached_at,
+            "expires_at": -1 if ttl == -1 else cached_at + ttl,
             **({"ttl": -1} if ttl == -1 else {}),
         },
     )
