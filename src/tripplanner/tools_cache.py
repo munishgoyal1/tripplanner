@@ -139,6 +139,13 @@ _CACHE_POLICIES: dict[str, CachePolicy] = {
     "optimize_day_route": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=6 * 60 * 60),
 }
 
+_GOOGLE_TTL_SETTINGS: dict[str, str] = {
+    "search_places_with_reviews": "google_places_search_cache_ttl_sec",
+    "nearby_restaurants": "google_places_search_cache_ttl_sec",
+    "get_place_reviews": "google_places_reviews_cache_ttl_sec",
+    "check_place_hours": "google_places_hours_cache_ttl_sec",
+}
+
 # Per-process LRU when Cosmos is unavailable.
 _LOCAL_CACHE: OrderedDict[str, tuple[float, str]] = OrderedDict()
 _LOCAL_MAX = 256
@@ -288,7 +295,13 @@ def cache_store(
     value = _coerce_result(result)
     from tripplanner.config import get_settings
 
-    ttl_seconds = get_settings().cache_ttl(ttl if ttl is not None else policy.ttl_seconds)
+    settings = get_settings()
+    configured_ttl = getattr(
+        settings,
+        _GOOGLE_TTL_SETTINGS.get(tool_name, ""),
+        policy.ttl_seconds,
+    )
+    ttl_seconds = settings.cache_ttl(ttl if ttl is not None else configured_ttl)
     try:
         from tripplanner import storage_cosmos
 

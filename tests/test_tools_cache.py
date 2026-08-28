@@ -42,6 +42,26 @@ def test_cache_store_then_lookup_returns_value():
     assert tools_cache.cache_lookup("web_search", {"q": "x"}) == "first hit"
 
 
+def test_google_tool_cache_uses_places_specific_ttl(monkeypatch):
+    from tripplanner.config import get_settings
+
+    captured: list[int] = []
+    monkeypatch.setattr(
+        tools_cache,
+        "_local_set",
+        lambda _user_id, _key, _value, ttl: captured.append(ttl),
+    )
+    monkeypatch.setattr(
+        get_settings(),
+        "google_places_search_cache_ttl_sec",
+        86400,
+    )
+
+    tools_cache.cache_store("search_places_with_reviews", {"query": "Paris"}, "result")
+
+    assert captured == [86400]
+
+
 def test_stateful_tools_are_never_cached():
     # Even if the caller pushes a value in, lookups still miss because the
     # store is a no-op for the stateful allow-list.

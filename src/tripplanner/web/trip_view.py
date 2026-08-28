@@ -32,6 +32,7 @@ from tripplanner.decisions.trip_cost import (
     compare_trip_decisions,
     plan_price_rechecks,
 )
+from tripplanner.places_budget import budgeted
 from tripplanner.tools import user_preferences
 from tripplanner.tools.trip_effort import coherence_notes, pacing_statement
 from tripplanner.web import map_view, places_cache
@@ -116,7 +117,7 @@ from tripplanner.web.transport import (  # noqa: F401
     _transport_terminal_refs,
 )
 
-_MAX_PHOTOS_PER_ITEM = 3
+_MAX_PHOTOS_PER_ITEM = 1
 _MAX_REVIEWS_PER_ITEM = 2
 
 # Lab 13 — paged destination guide.
@@ -398,11 +399,22 @@ def _build_item(
     itinerary_names: set[str] | None = None,
     occurrences: list[dict[str, Any]] | None = None,
     city: str = "",
+    with_reviews: bool = False,
+    max_photos: int = 0,
 ) -> dict[str, Any]:
     name = ref["name"]
     kind = ref.get("kind", "place")
-    info = places_cache.get_summary(name, destination) or {}
-    photos = places_cache.get_photos(name, destination, max_photos=_MAX_PHOTOS_PER_ITEM)
+    lookup_context = city or destination
+    info = (
+        places_cache.get_summary(name, lookup_context)
+        if with_reviews
+        else places_cache.get_details(name, lookup_context)
+    ) or {}
+    photos = (
+        places_cache.get_photos(name, lookup_context, max_photos=max_photos)
+        if max_photos > 0
+        else []
+    )
     reviews = [
         {
             "rating": r.get("rating"),
@@ -795,6 +807,7 @@ def warm_guide(trip: dict[str, Any] | None) -> None:
         places_cache.prefetch(names, city, max_photos=1, with_reviews=False)
 
 
+@budgeted
 def warm_view_items(trip: dict[str, Any] | None) -> None:
     """Warm the trip-panel gallery for the whole unfocused item set.
 
@@ -803,11 +816,13 @@ def warm_view_items(trip: dict[str, Any] | None) -> None:
     """
     if not trip or not places_cache.is_configured():
         return
-    refs = itinerary_items(trip, None)[:_MAX_GALLERY_ITEMS]
+    settings = get_settings()
+    refs = itinerary_items(trip, None)[: settings.google_places_max_photos_per_trip]
     places_cache.prefetch(
         [r["name"] for r in refs],
         str(trip.get("destination") or ""),
-        max_photos=_MAX_PHOTOS_PER_ITEM,
+        max_photos=min(_MAX_PHOTOS_PER_ITEM, settings.google_places_max_photos_per_place),
+        with_reviews=False,
     )
 
 
@@ -870,6 +885,7 @@ def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
     return out
 
 
+@budgeted
 def build_view(
     trip: dict[str, Any] | None, focus: dict[str, Any] | None
 ) -> dict[str, Any]:
@@ -916,7 +932,10 @@ def build_view(
     warm_names = [r["name"] for r in refs]
     if focus_name:
         warm_names = [n for n in warm_names if n.strip().lower() == focus_name] or warm_names[:1]
-    places_cache.prefetch(warm_names, destination, max_photos=_MAX_PHOTOS_PER_ITEM)
+    settings = get_settings()
+    photo_limit = settings.google_places_max_photos_per_trip
+    photo_names = warm_names[:photo_limit]
+    places_cache.prefetch(photo_names, destination, max_photos=1, with_reviews=False)
     place_occurrences = _place_occurrence_index(trip)
     terminal_occurrences = _terminal_occurrence_index(trip)
     items = [
@@ -929,6 +948,12 @@ def build_view(
             if ref["kind"] in {"airport", "station", "bus_station"}
             else _place_occurrences(trip, ref["name"], place_occurrences),
             city=city_map.get(ref["name"].strip().lower(), destination),
+            with_reviews=bool(focus_name and ref["name"].strip().lower() == focus_name),
+            max_photos=(
+                min(_MAX_PHOTOS_PER_ITEM, settings.google_places_max_photos_per_place)
+                if ref["name"] in photo_names
+                else 0
+            ),
         )
         for ref in refs
     ]
@@ -964,6 +989,7 @@ def build_view(
 _MAX_NEWS_ITEMS = 4
 
 
+@budgeted
 def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     """Build the interactive-map view-model (frontend-agnostic).
 
@@ -2241,15 +2267,22 @@ def _overview_places(
     attraction_names = places_cache.top_places(
         destination, "attraction", n=_MAX_OVERVIEW_ATTRACTIONS
     )
-    places_cache.prefetch(attraction_names, destination, max_photos=2)
+    photo_limit = get_settings().google_places_max_photos_per_trip
+    places_cache.prefetch(
+        attraction_names[:photo_limit], destination, max_photos=1, with_reviews=False
+    )
 
     photos: list[str] = []
     key_attractions: list[dict[str, Any]] = []
     reviews: list[dict[str, Any]] = []
     summary = ""
     for name in attraction_names:
-        info = places_cache.get_summary(name, destination) or {}
-        pics = places_cache.get_photos(name, destination, max_photos=2)
+        info = places_cache.get_details(name, destination) or {}
+        pics = (
+            places_cache.get_photos(name, destination, max_photos=1)
+            if name in attraction_names[:photo_limit]
+            else []
+        )
         photos.extend(pics)
         if not summary and info.get("editorial_summary"):
             summary = info["editorial_summary"]
@@ -2262,17 +2295,6 @@ def _overview_places(
                 "photo": pics[0] if pics else None,
             }
         )
-        for r in (info.get("reviews") or [])[:1]:
-            text = (r.get("text") or "").strip()
-            if text:
-                reviews.append(
-                    {
-                        "place": info.get("name") or name,
-                        "rating": r.get("rating"),
-                        "text": text,
-                        "author": r.get("author") or "Guest",
-                    }
-                )
     return photos, key_attractions, reviews, summary
 
 

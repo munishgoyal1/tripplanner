@@ -7,6 +7,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 from tripplanner.observability import setup_logging
+from tripplanner.places_budget import places_budget_scope
 
 setup_logging()
 console = Console()
@@ -35,7 +36,8 @@ def main() -> None:
 
         messages.append(HumanMessage(content=user_input))
 
-        result = app_graph.invoke({"messages": messages, "current_agent": ""})
+        with places_budget_scope():
+            result = app_graph.invoke({"messages": messages, "current_agent": ""})
         messages = result["messages"]
 
         # Print the last AI message

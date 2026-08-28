@@ -64,6 +64,15 @@ def test_cache_ttl_scale_is_owner_configurable(monkeypatch):
     assert settings.cache_ttl(1) == 1
 
 
+def test_google_places_cost_policy_is_owner_configurable(monkeypatch):
+    monkeypatch.setenv("GOOGLE_PLACES_SEARCH_CACHE_TTL_SEC", "86400")
+    monkeypatch.setenv("GOOGLE_PLACES_MAX_TEXT_SEARCHES_PER_TRIP", "2")
+    settings = Settings()
+
+    assert settings.google_places_search_cache_ttl_sec == 86400
+    assert settings.google_places_max_text_searches_per_trip == 2
+
+
 def test_checked_in_environment_profiles_have_the_same_non_secret_keys() -> None:
     profiles = {name: _profile_values(name) for name in ("local", "canary", "prod")}
 

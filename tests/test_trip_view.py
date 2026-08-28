@@ -94,6 +94,55 @@ def test_build_view_overview_and_items() -> None:
     assert hotel["reviews"]
 
 
+def test_unfocused_view_skips_reviews_and_limits_photos(monkeypatch: pytest.MonkeyPatch) -> None:
+    review_calls: list[str] = []
+    photo_calls: list[tuple[str, int]] = []
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *args, **kwargs: None)
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_summary",
+        lambda name, _city: review_calls.append(name) or {"name": name},
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, _city: {"name": name, "rating": 4.5},
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_photos",
+        lambda name, _city, max_photos: photo_calls.append((name, max_photos)) or [],
+    )
+
+    trip_view.build_view(SAMPLE_TRIP, None)
+
+    assert review_calls == []
+    assert len(photo_calls) <= 3
+    assert all(max_photos == 1 for _, max_photos in photo_calls)
+
+
+def test_focused_view_fetches_reviews_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    review_calls: list[str] = []
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *args, **kwargs: None)
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_summary",
+        lambda name, _city: review_calls.append(name) or {"name": name},
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, _city: {"name": name},
+    )
+
+    trip_view.build_view(
+        SAMPLE_TRIP,
+        {"kind": "attraction", "name": "Dudhsagar Falls Trek"},
+    )
+
+    assert review_calls == ["Dudhsagar Falls Trek"]
+
+
 def test_overview_exposes_effort_and_price_recheck_intelligence() -> None:
     trip = {
         **SAMPLE_TRIP,

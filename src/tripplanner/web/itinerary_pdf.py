@@ -173,7 +173,7 @@ def build_itinerary_pdf_bytes(
             name = str(stop.get("name") or "")
             kind = str(stop.get("kind") or "")
             place = (
-                places_cache.get_summary(name, destination) or {}
+                places_cache.get_details(name, destination) or {}
                 if name and kind in {"hotel", "attraction", "meal", "restaurant"}
                 else {}
             )

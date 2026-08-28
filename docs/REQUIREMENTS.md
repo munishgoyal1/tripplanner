@@ -88,7 +88,7 @@ re-describing the whole product.
 | ID-01 | Guest identity plus shared web/mobile Google identity | Implemented |
 | DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented |
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented; all runtime cache families share one owner-controlled TTL policy, with environment-wide scaling and precise provider overrides supplied through checked-in local/sandbox, canary, and production non-secret profiles plus ignored secret overlays; disposable and durable regions retain storage appropriate to their recovery contract |
-| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google Places is fail-closed behind a production-only runtime switch, owner emergency Service Usage control, and observation-scale provider quotas |
+| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google Places is fail-closed behind a production-only runtime switch, owner emergency Service Usage control, observation-scale provider quotas, configurable request ceilings, shared discovery evidence, focused reviews, and one-photo enrichment defaults |
 | TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, explicit place-fact rechecks with before/after changes and source-linked unusual-closure advisories, place-identity gate, and a rebalance that never moves a stop the traveller chose |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
@@ -229,7 +229,11 @@ re-describing the whole product.
   configurable by capability and intentionally favor low cost over exact
   real-time behavior.
 - Google Places supplies place search, ratings, reviews, photos, restaurants,
-  addresses, coordinates, and opening hours.
+  addresses, coordinates, and opening hours. Agent discovery seeds the durable
+  structured Places cache so Map and Details reuse the same paid result. Routine
+  metadata omits atmosphere fields; reviews load only for exact focus, photos
+  default to one per place, and owner-controlled TTL and request ceilings bound
+  cold planning/view amplification.
 - Google Routes supplies measured route distance/time and route optimization.
   Map circuit drawings and fallback estimates avoid unnecessary Directions calls.
 - OpenRouteService is an optional free-tier fallback for coordinate-based

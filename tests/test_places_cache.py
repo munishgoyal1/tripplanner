@@ -127,6 +127,27 @@ def test_places_cache_applies_environment_ttl_scale(monkeypatch):
     assert pc._ttl(pc._PHOTO_TTL_S) == pc._PHOTO_TTL_S // 2
 
 
+def test_remembered_discovery_place_avoids_ui_lookup(_isolate):
+    pc.remember_places(
+        [
+            {
+                "place_id": "fort-aguada",
+                "name": "Fort Aguada",
+                "rating": 4.4,
+                "lat": 15.49,
+                "lng": 73.77,
+                "photo_refs": ["places/fort-aguada/photos/one"],
+            }
+        ],
+        "Goa",
+    )
+
+    details = pc.get_details("Fort Aguada", "Goa")
+
+    assert details and details["place_id"] == "fort-aguada"
+    assert _isolate["lookup"] == 0
+
+
 def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
     calls = {"count": 0}
 
@@ -282,6 +303,18 @@ def test_photos_resign_after_photo_ttl(_isolate, monkeypatch):
     pc.get_photos("Taj", "Goa")
     assert _isolate["photos"] == 2  # re-signed, but no new lookup
     assert _isolate["lookup"] == 1
+
+
+def test_reviews_refresh_on_independent_review_ttl(_isolate, monkeypatch):
+    pc.get_summary("Taj", "Goa")
+    entry = pc._CACHE[pc._key("Taj", "Goa")]
+    entry["__reviews_at__"] = time.time() - 101
+    monkeypatch.setattr(pc.get_settings(), "google_places_reviews_cache_ttl_sec", 100)
+
+    pc.get_summary("Taj", "Goa")
+
+    assert _isolate["lookup"] == 1
+    assert _isolate["reviews"] == 2
 
 
 def test_refresh_forces_refetch(_isolate):

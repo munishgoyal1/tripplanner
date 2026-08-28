@@ -52,6 +52,7 @@ trip through shared API contracts.
 | `src/tripplanner/cli.py` | Local command-line experience |
 | `src/tripplanner/config.py` | Pydantic environment settings |
 | `src/tripplanner/caching.py` | Shared memory/Redis backend and environment-wide TTL policy for disposable runtime caches; `CACHE_TTL_SCALE` applies to all runtime cache families |
+| `src/tripplanner/places_budget.py` | Shared per-planning/view ceilings for paid Places text search, review-details, and photo-media requests; parallel workers consume one thread-safe budget |
 | `src/tripplanner/models.py` | Core trip and itinerary models |
 | `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
 | `src/tripplanner/http_client.py` | Outbound HTTP runtime: pooled connections and TLS reuse, per-endpoint latency budget, circuit breaking, and `outbound_call` telemetry. Every remote dependency goes through it |
@@ -205,7 +206,7 @@ Everything fetched from a provider lands in one of three places.
 
 | Source | Store | Freshness | In the repository |
 | --- | --- | --- | --- |
-| Google Places | `places_cache` + in-process | 7-day read check; photo URLs 50 min | Yes — `corpus/places.json` |
+| Google Places | `places_cache` + in-process | Configured metadata/review/search/hour TTLs; photo URLs default to 50 min | Yes — `corpus/places.json` |
 | Read-only tools (flights, weather, visa, events, search) | `tool_cache` + in-process LRU | per-entry `expires_at`, set per tool | No |
 | FX rates | in-process only | 12 hours | No |
 
