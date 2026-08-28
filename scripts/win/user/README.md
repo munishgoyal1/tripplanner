@@ -9,7 +9,10 @@ Windows launchers live here; matching macOS launchers live under
 | --- | --- |
 | `Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
 | `Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
+| `Google-Places-Control.cmd disable prod` | Immediately disable paid Places in GCP without deploying; status, guarded enable, and central-policy apply are also supported |
 | `Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every registered sandbox or only the selected sandbox |
+| `Full-2Way-Sync.cmd [all\|sbx]` | Converge all local lanes and automatically replay recorded conflict resolutions without hiding active edits |
+| `Resolve-All-Recorded-Conflicts.cmd` | Scan all attached worktrees and finish pending merges covered by recorded resolutions; report new conflicts without aborting them |
 | `Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Requires typing `APPROVE_SANDBOX_TO_MASTER` |
 | `sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
 | `sandbox/Rename-Sandbox.cmd <sandbox> <new-name>` | Rename a sandbox, keeping its number and ports |
@@ -37,6 +40,13 @@ corresponding primary launcher from the repository root:
 A successful sync guarantees that every registered sandbox branch, both local
 and pushed remote, contains the current `master` commit. A sandbox can be ahead
 of `master` with its own feature commits; it must never be behind it.
+
+Run `Resolve-All-Recorded-Conflicts.cmd` when several lanes are already stopped
+in merge conflicts. It checks the primary checkout and every attached sandbox,
+multiagent, and standalone-branch worktree, then finishes only merges Git
+`rerere` already knows how to resolve. It does not fetch, start or abort merges,
+or push branches. A local branch without an attached worktree cannot hold an
+in-progress merge and therefore has nothing for this recovery command to scan.
 
 When `Update-Sandbox` stops on a semantic merge conflict, resolve the marked
 files in that sandbox, then run `scripts/win/user/sandbox/Resolve-SandboxConflicts.cmd <sandbox>`

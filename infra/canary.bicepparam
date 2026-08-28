@@ -2,9 +2,9 @@ using './main.bicep'
 
 param namePrefix = 'canary'
 param containerImage = 'ghcr.io/munishgoyal1/tripplanner:latest'
-param azureOpenAiEndpoint = 'https://aoaicanarymd1ks-2703a.openai.azure.com/'
-param azureOpenAiDeployment = 'gpt-4-1-canary'
-param azureOpenAiApiVersion = '2024-10-21'
+param azureOpenAiEndpoint = readEnvironmentVariable('AZURE_OPENAI_ENDPOINT', '')
+param azureOpenAiDeployment = readEnvironmentVariable('AZURE_OPENAI_DEPLOYMENT', 'gpt-4o')
+param azureOpenAiApiVersion = readEnvironmentVariable('AZURE_OPENAI_API_VERSION', '2024-10-21')
 param azureOpenAiApiKey = readEnvironmentVariable('AZURE_OPENAI_API_KEY', '')
 param duffelApiKey = readEnvironmentVariable('DUFFEL_API_KEY', '')
 param liteapiApiKey = readEnvironmentVariable('LITEAPI_API_KEY', '')
@@ -34,7 +34,7 @@ param cacheRedisUrl = readEnvironmentVariable('CACHE_REDIS_URL', '')
 param cacheRedisNamespace = readEnvironmentVariable('CACHE_REDIS_NAMESPACE', 'tripplanner:provider-cache')
 param cacheRedisConnectTimeoutSec = readEnvironmentVariable('CACHE_REDIS_CONNECT_TIMEOUT_SEC', '0.2')
 param cacheRedisSocketTimeoutSec = readEnvironmentVariable('CACHE_REDIS_SOCKET_TIMEOUT_SEC', '0.2')
-param enableGooglePlaces = false
+param enableGooglePlaces = readEnvironmentVariable('ENABLE_GOOGLE_PLACES', '0') == '1'
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
 param googleMapsBrowserKey = readEnvironmentVariable('GOOGLE_MAPS_BROWSER_KEY', '')
 param tavilyApiKey = readEnvironmentVariable('TAVILY_API_KEY', '')
@@ -43,9 +43,9 @@ param googleOauthClientSecret = readEnvironmentVariable('OAUTH_GOOGLE_CLIENT_SEC
 param githubOauthClientId = readEnvironmentVariable('OAUTH_GITHUB_CLIENT_ID', '')
 param githubOauthClientSecret = readEnvironmentVariable('OAUTH_GITHUB_CLIENT_SECRET', '')
 param webSessionSecret = readEnvironmentVariable('WEB_SESSION_SECRET', readEnvironmentVariable('CHAINLIT_AUTH_SECRET', ''))
-param oauthRedirectBase = ''
+param oauthRedirectBase = readEnvironmentVariable('OAUTH_REDIRECT_BASE', '')
 param cosmosAccountName = readEnvironmentVariable('COSMOS_ACCOUNT_NAME', '')
 param cosmosResourceGroupName = readEnvironmentVariable('COSMOS_RESOURCE_GROUP', 'rg-tripplanner-data')
-param cosmosDatabaseName = 'tripplanner-canary'
+param cosmosDatabaseName = readEnvironmentVariable('COSMOS_DATABASE', 'tripplanner-canary')
 param minReplicas = 0
 param maxReplicas = 1

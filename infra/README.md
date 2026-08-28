@@ -126,10 +126,13 @@ decides whether a shared Redis sits in front of it. Redis is read first, then
 memory, and a cache miss or an unreachable Redis degrades to memory rather than
 failing the request.
 
-Runtime configuration is not secret-only. Use the checkout `.env` for local and
-sandbox runs, `.env.canary` for canary deployment, and `.env.prod` for production.
-Those hosted files are loaded by the deployment scripts; secret values become
-Container Apps secrets, while cache switches and TTLs become ordinary environment
+Checked-in `config/environments/local.env`, `canary.env`, and `prod.env` own all
+non-secret runtime settings. Local and sandbox runs combine the local profile
+with ignored `.env`; hosted deployments combine the matching profile with
+ignored `.env.canary` or `.env.prod`. Those ignored files contain secrets only.
+Existing non-secret entries remain compatible during migration, but new
+non-secret settings must be added to all three profiles. Hosted secrets become
+Container Apps secret references while ordinary settings become environment
 variables. `CACHE_TTL_SCALE=1` is the default global control: `0.5` halves every
 runtime TTL and `2` doubles it. The named `*_CACHE_TTL_SEC` values remain the base
 lifetimes for individual search and fare classes. Changing hosted values creates a

@@ -1341,3 +1341,55 @@ the outcome.
 - Usage telemetry needs environment, lane, run, caller, field-mask class, and
   cache-hit dimensions. Provider request totals can prove when and under which
   key a leak occurred, but cannot reconstruct the responsible process afterward.
+
+## 2026-08-28 - Never Arm a Budget Backstop Below Accrued Spend
+
+- Cloud Billing evaluates an updated budget against already reported
+  month-to-date cost. Lowering a threshold below that cost can publish an
+  immediate breach event; repairing a broken consumer at the same time can turn
+  a configuration apply into an account-wide outage.
+- Provision the event path separately from arming it. Use an explicit arming
+  switch, refuse deployment while disarmed, and check current reported spend
+  before granting invocation.
+- Removing an invoker binding is not guaranteed to cancel an event already
+  accepted or in flight. Delete the trigger or function when immediate
+  containment must be definitive, then restore billing links.
+- Hard per-API daily and minute quotas are the safe real-time cost ceiling.
+  Delayed account-wide billing detachment is only a secondary-period backstop.
+
+## 2026-08-28 - Dry-Run Safety and Recovery Must Cover Every Lane Type
+
+- Declaring `SupportsShouldProcess` on a wrapper does not make raw `git` calls
+  honor `-WhatIf`. Every mutating helper must check `ShouldProcess` before it
+  creates a worktree, merges, commits, or pushes.
+- A synchronization flow that discovers several lane kinds must route every one
+  through the same recovery contract. Handling only registered sandboxes left
+  multiagent and standalone branches unable to replay known `rerere` decisions.
+- Detect both unmerged index entries and `MERGE_HEAD`. With `rerere.autoupdate`,
+  files can already be staged while the merge still needs its commit, so checking
+  only `git diff --diff-filter=U` can skip the finalization step.
+- After any preview-path defect, inspect and restore the exact worktree the
+  preview touched before continuing; a dry run must leave byte and Git state
+  unchanged.
+
+## 2026-08-28 - Runtime Configuration Needs A Checked-In Owner
+
+- A comprehensive `.env.example` is still only a catalog. When each real
+  environment uses an ignored file, new non-secret controls can ship without
+  appearing in any file the owner actually reviews or deploys.
+- Keep complete non-secret profiles checked in with identical key sets, and use
+  ignored environment files only as secret overlays. Tests should reject profile
+  drift and known secrets in tracked profiles.
+- Preserve one explicit precedence order: command/process override, then secret
+  overlay, then checked-in profile, then code default. A setting with multiple
+  hardcoded environment values has no clear owner even when all values agree.
+## 2026-08-28 - PowerShell Script Success Must Reset Native Exit State
+
+- Calling one PowerShell script from another does not clear `$LASTEXITCODE`.
+  A resolver successfully committed a merge, then used a failing
+  `git rev-parse MERGE_HEAD` probe to prove the merge was finished. Its caller
+  received that probe's exit code `1` and reported the successful recovery as a
+  failure.
+- A script consumed by other scripts must establish an explicit success exit
+  code after expected failing probes. Test the caller contract, not only the
+  resulting files: both the Git state and the process result must say success.

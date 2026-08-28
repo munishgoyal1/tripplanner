@@ -85,16 +85,18 @@ trip through shared API contracts.
 | `scripts/mac/` | macOS `.command` launchers mirroring Windows root, user, sandbox, canary, and production entry points |
 | `scripts/dev/multiagent_core.py` | Pure multiagent coordination logic: `owner:ready` eligibility, issue-body plus chronological-comment handoffs, comment-aware footprint collisions, attempt numbering, audit fingerprints, leases, and `/planner` audit links carrying immutable record IDs |
 | `scripts/dev/multiagent.py` | Multiagent runtime: dedicated Coordinator publication, post-publish sandbox sync, full GitHub issue-thread intake, autopilot workers, remote-verified attempt SHAs, validated `origin/master` baselines, slots, supervision, batch integration, and audit proposals with representative trip/UX evidence plus opt-in exact-day screenshots on the `audit-evidence` branch |
-| `scripts/dev/full-2way-sync.ps1` | Owner-invoked convergence across every local branch and attached worktree; preserves visible WIP, uses temporary worktrees for standalone branches, and retains `sbx` as the registered-sandbox-only scope |
+| `scripts/dev/full-2way-sync.ps1` | Owner-invoked convergence across every local branch and attached worktree; preserves visible WIP, uses temporary worktrees for standalone branches, replays recorded conflict resolutions across every lane type, and retains `sbx` as the registered-sandbox-only scope |
+| `scripts/dev/resolve-all-recorded-conflicts.ps1` | Manual all-worktree recovery: finds pending merges in primary, sandbox, multiagent, and standalone-branch worktrees, delegates recorded `rerere` decisions to the canonical resolver, and aggregates genuinely new conflicts without starting, aborting, or publishing merges |
 | `scripts/dev/build_corpus.py`, `scripts/dev/build-corpus.ps1` | Budgeted paid Trip Quality Corpus generation against the launcher checkout's running stack (primary `:8000`/`tripplanner-local`, or a registered sandbox's isolated API/database); logical attempts use fresh corpus principals so failed chat/trip state cannot contaminate retries, one same-principal recovery turn repairs a completed empty draft, acceptance requires at least two stops per itinerary day, three consecutive completed barren turns stop with a failing exit, generation is serial unless `--workers` explicitly opts into concurrency, and every non-dry run commits and pushes its generated manifest, spend ledger, place cache, and trip files on the current branch; output reports accepted yield and richness; `--country india` covers domestic destinations, while `--market india` alternates domestic and outbound Indian-traveler scenarios |
 
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
-boundary. `.env` is the central owner-facing runtime configuration surface:
-`.env.example` documents both non-secret switches and secret inputs, while
-`Settings` is the only application reader. Local and sandboxes read their
-checkout `.env`; canary and production deployment scripts read `.env.canary`
-and `.env.prod` and pass non-secret settings as Container Apps environment
-variables while secrets become secret references. `CACHE_TTL_SCALE` adjusts
+boundary. Checked-in `config/environments/local.env`, `canary.env`, and
+`prod.env` own complete non-secret runtime profiles with matching key sets.
+Ignored `.env`, `.env.canary`, and `.env.prod` files are secret overlays;
+`.env.example` documents that secret-only surface. Local runtime loads its
+profile plus `.env`; hosted deployment scripts load their profile plus matching
+secret overlay and pass non-secrets as Container Apps environment variables
+while secrets become secret references. `CACHE_TTL_SCALE` adjusts
 all runtime cache lifetimes, and the named search/fare TTL settings provide
 precise overrides before that scale is applied. Paid Google Places access requires
 both `ENABLE_GOOGLE_PLACES=1` and `GOOGLE_PLACES_API_KEY`; a copied key alone
@@ -333,8 +335,9 @@ conversation or explicit edit
 | `docs/operations/backup-recovery.md` | Guarded backup and restore drill |
 | `docs/operations/gcp-billing-guardrails.md` | Reproducible Google Cloud budget, quota, and billing-shutoff setup |
 | `docs/operations/azure-billing-guardrails.md` | Reproducible Azure budget and alert setup, including hard-cap limitations |
-| `infra/billing-guardrails.json` | Shared declarative limits and cloud account identifiers |
+| `infra/billing-guardrails.json` | Owner-facing cloud service state, budgets, quotas, and account identifiers |
 | `infra/{gcp,azure}/apply-billing-guardrails.ps1` | Idempotent cross-platform guardrail provisioning scripts |
+| `infra/gcp/set-google-places-access.ps1` | Immediate no-deployment Places Service Usage control and central desired-state apply |
 | `infra/show-billing-status.ps1` | Read-only month-to-date spend report for both clouds |
 | `infra/gcp/billing-shutoff/` | Cloud Function that detaches billing when the global GCP budget breaks |
 | `docs/development/new-machine-setup.md` | Canonical one-click Windows/macOS environment recreation and manual sign-in steps |

@@ -18,10 +18,11 @@ new account, edit that file and authenticate once, then preview and apply:
 
 ```powershell
 pwsh -File infra/gcp/apply-billing-guardrails.ps1 -WhatIf
-pwsh -File infra/gcp/apply-billing-guardrails.ps1 -DeployShutoffFunction
+pwsh -File infra/gcp/apply-billing-guardrails.ps1
 ```
 
-Subsequent limit changes do not require redeploying the function:
+Subsequent service-state, budget, and limit changes do not require an application
+deployment or a function redeployment:
 
 ```powershell
 pwsh -File infra/gcp/apply-billing-guardrails.ps1
@@ -30,6 +31,9 @@ pwsh -File infra/gcp/apply-billing-guardrails.ps1
 The script is idempotent: it updates existing budgets and quota preferences and
 does not duplicate alert policies. The detailed commands below explain and
 troubleshoot what the script automates.
+
+Quota applies never loosen an existing lower preference by default. Pass
+`-AllowQuotaIncreases` only for a deliberate capacity increase.
 
 ## What a budget does and does not do
 
@@ -41,10 +45,28 @@ independent layers are therefore needed:
 | --- | --- | --- | --- |
 | API quotas | real time | yes, rejects calls | one API in one project |
 | Budget alerts | hours | no | informational |
-| Billing shutoff function | hours | yes, detaches billing | every project on the account |
+| Billing shutoff function, when armed | hours | yes, detaches billing | every project on the account |
 
 Quotas are the only real-time control. Treat the shutoff as a backstop for a
 slow leak, not as protection against a runaway loop.
+
+`shutoffEnabled` in the central JSON is the arming switch. It is currently
+`false`: the observation budget was lowered after this month's accrued spend had
+already crossed it, so arming would immediately detach every funded project.
+The active function and Eventarc trigger were removed; their source and corrected
+IAM provisioning remain in the repository. Deploy only at the start of a fresh
+billing period or with a threshold above already reported spend. Arming requires
+setting `shutoffEnabled` to `true` and then running:
+
+```powershell
+pwsh -File infra/gcp/apply-billing-guardrails.ps1 `
+  -DeployShutoffFunction `
+  -ShutoffApproval APPROVE_ACCOUNT_WIDE_BILLING_SHUTOFF
+```
+
+The apply deletes any old function and trigger before updating the global
+budget, then recreates Eventarc with an explicit trigger service account. This
+prevents a stale failed delivery from surviving across a disarm/re-arm cycle.
 
 ## Current arrangement
 
@@ -62,10 +84,15 @@ distort a per-environment number.
 
 | Budget | Amount | Scope | Thresholds |
 | --- | --- | --- | --- |
-| `tripplanner-local-2000inr` | 2,000 INR | local project | 50 / 80 / 100% |
-| `tripplanner-canary-2000inr` | 2,000 INR | canary project | 50 / 80 / 100% |
-| `tripplanner-prod-2000inr` | 2,000 INR | prod project | 50 / 80 / 100% |
-| `tripplanner-global-8000inr` | 8,000 INR | whole billing account | 50 / 80 / 90 / 100% → Pub/Sub |
+| `tripplanner-local-2000inr` | 100 INR | local project | 50 / 80 / 100% |
+| `tripplanner-canary-2000inr` | 100 INR | canary project | 50 / 80 / 100% |
+| `tripplanner-prod-2000inr` | 500 INR | prod project | 50 / 80 / 100% |
+| `tripplanner-global-8000inr` | 1,000 INR | whole billing account | 50 / 80 / 90 / 100% → Pub/Sub |
+
+The display names predate the lower observation-mode amounts. They are retained
+so the idempotent apply updates the existing budgets instead of creating
+duplicates. These budgets currently alert; the global automatic detach is
+disarmed as described above.
 
 ## Prerequisites
 
@@ -214,15 +241,19 @@ Both `--allow-*` flags are required when tightening a limit by more than ten
 percent or below current usage, which is almost always the case when moving from
 Google's generous defaults.
 
-Limits applied here, sized from a measured ~58 Places calls per generated trip:
+Places limits are sized for observation mode. Local and canary are disabled and
+also pinned to one request as defense in depth. Production supports roughly two
+cold trips per day at the incident's observed 47.5 Text Searches per trip:
 
 | Quota | local | canary | prod |
 | --- | --- | --- | --- |
-| `SearchTextRequestPerDayPerProject` | 40,000 | 4,000 | 4,000 |
-| `SearchTextRequestPerMinutePerProject` | 600 | 120 | 120 |
-| `GetPlaceRequestPerDayPerProject` | 15,000 | 2,000 | 2,000 |
-| `GetPlaceRequestPerMinutePerProject` | 300 | 60 | 60 |
-| `SearchNearbyRequest*`, `AutocompletePlacesRequest*`, `GetPhotoMediaRequest*` | held low | held low | held low |
+| `SearchTextRequestPerDayPerProject` | 1 | 1 | 100 |
+| `SearchTextRequestPerMinutePerProject` | 1 | 1 | 30 |
+| `GetPlaceRequestPerDayPerProject` | 1 | 1 | 100 |
+| `GetPlaceRequestPerMinutePerProject` | 1 | 1 | 30 |
+| `SearchNearbyRequestPerDayPerProject` | 1 | 1 | 20 |
+| `AutocompletePlacesRequestPerDayPerProject` | 1 | 1 | 50 |
+| `GetPhotoMediaRequestPerDayPerProject` | 1 | 1 | 200 |
 | `ComputeRoutesRequestsPerDay`, `ComputeRouteMatrixCellsPerDay` | 6,000 | 1,000 | 1,000 |
 | `BillableDefaultPerDayPerProject` (Static Maps) | 6,000 | 1,000 | 1,000 |
 
@@ -278,15 +309,18 @@ free and unbounded.
 At roughly 58 Places calls per trip on the rich masks in
 [google_places.py](../../src/tripplanner/tools/google_places.py), a generated
 trip costs about **USD 0.52 (about INR 46)** in Maps calls alone. Budget
-arithmetic follows directly: an 8,000 INR monthly cap funds on the order of
-350 trips per month. Corpus runs in the hundreds of trips per day are only
+arithmetic follows directly: a 1,000 INR monthly alert amount is only about 22
+such trips. Corpus runs in the hundreds of trips per day are only
 affordable after moving grounding lookups to IDs-only masks.
 
 ### Production-only Places gate
 
 Google Places is intentionally enabled only in the production GCP project.
 Local and canary keep `places.googleapis.com` disabled at the Google Service
-Usage layer. The application adds a second, fail-closed gate:
+Usage layer. `placesEnabled` in
+[`infra/billing-guardrails.json`](../../infra/billing-guardrails.json) is the
+central owner-facing desired state for that cloud control. The application adds
+a second, fail-closed gate:
 
 ```dotenv
 ENABLE_GOOGLE_PLACES=0
@@ -294,11 +328,41 @@ GOOGLE_PLACES_API_KEY=
 ```
 
 Both values are required before the application makes a Places request.
-`.env` is the central owner-facing runtime configuration file; it contains
-non-secret switches as well as secret values. `.env.example` is its committed
-schema and safe defaults. Hosted Bicep parameters pin canary off and production
-on, while the key remains a secret input. Google Routes and browser Maps have
+`.env`, `.env.canary`, and `.env.prod` are the owner-facing application runtime
+files; they contain non-secret switches as well as secret values. `.env.example`
+is their committed schema and safe defaults. The current files set local and
+canary off and production on. Hosted Bicep parameters enforce the same policy,
+while the key remains a secret input. Google Routes and browser Maps have
 separate runtime paths and are not disabled by the Places switch.
+
+#### Emergency no-deployment control
+
+Disabling the API in Google Service Usage stops new Places calls regardless of
+the application flag, key, or currently running Container Apps revision. It does
+not deploy or restart the application:
+
+```powershell
+# Windows
+scripts\win\user\Google-Places-Control.cmd disable prod
+
+# macOS
+./scripts/mac/user/Google-Places-Control.command disable prod
+```
+
+Read all current states with `status all`. An explicit `enable` is spend-bearing
+and therefore requires the final argument `APPROVE_GOOGLE_PLACES_SPEND`.
+An immediate enable/disable is an override; for durable policy, first edit
+`placesEnabled` in the central JSON and run:
+
+```powershell
+pwsh -File infra/gcp/set-google-places-access.ps1 `
+  apply all APPROVE_GOOGLE_PLACES_SPEND
+```
+
+Changing only Service Usage is sufficient for an emergency **off**. Turning an
+environment **on** still requires all three independent gates: cloud Service
+Usage enabled, `ENABLE_GOOGLE_PLACES=1`, and a valid Places key. A hosted runtime
+flag change creates a Container Apps revision; it is not an in-place toggle.
 
 The 2026-08-27 local incident recorded 14,920 Text Search calls while 314 corpus
 trips were under audit-fix/evaluation activity: **47.5 Text Searches per trip**.
@@ -315,10 +379,15 @@ would identify each historical request more narrowly.
 ```bash
 gcloud billing budgets list --billing-account="$BA" \
   --format="table(displayName,amount.specifiedAmount.units,budgetFilter.projects.list())"
-gcloud functions describe billing-shutoff --gen2 --region=asia-south1 \
-  --project="$OPS_PROJECT" --format="value(state)"
-gcloud quotas preferences list --project=<project> --service=places.googleapis.com
+# While shutoffEnabled=false this must return no rows.
+gcloud functions list --gen2 --regions=asia-south1 --project="$OPS_PROJECT" \
+  --filter="name:billing-shutoff"
+gcloud quotas preferences list --project=<project> \
+  --format="table(service,quotaId,quotaConfig.preferredValue,quotaConfig.grantedValue)"
 ```
+
+When armed, additionally verify the function is active and the reported Eventarc
+trigger identity has `roles/run.invoker` on its Cloud Run service.
 
 ## Recover after a shutoff
 

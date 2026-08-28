@@ -39,6 +39,20 @@ def test_primary_master_launchers_are_named_and_wired_consistently() -> None:
     assert not (root / "scripts" / "dev" / "run-latest.ps1").exists()
 
 
+def test_google_places_control_has_cross_platform_owner_launchers() -> None:
+    root = Path(__file__).parents[1]
+    script_name = "set-google-places-access.ps1"
+    mac_launcher = (root / "scripts" / "mac" / "user" / "Google-Places-Control.command").read_text(
+        encoding="utf-8"
+    )
+    windows_launcher = (
+        root / "scripts" / "win" / "user" / "Google-Places-Control.cmd"
+    ).read_text(encoding="utf-8")
+
+    assert script_name in mac_launcher
+    assert script_name in windows_launcher
+
+
 def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:
     root = Path(__file__).parents[1]
     sync_script = (root / "scripts" / "dev" / "sync-sbxs-from-master.ps1").read_text(
@@ -387,3 +401,60 @@ def test_full_sync_defaults_to_all_local_branches_with_sbx_compatibility_scope()
     assert 'worktree", "list", "--porcelain"' in full_sync
     assert '"refs/heads"' in full_sync
     assert "Get-SandboxRegistry" in full_sync
+
+
+def test_full_sync_auto_resolves_sandbox_multiagent_and_standalone_conflicts() -> None:
+    root = Path(__file__).parents[1]
+    full_sync = (root / "scripts" / "dev" / "full-2way-sync.ps1").read_text(encoding="utf-8")
+    resolver = (root / "scripts" / "dev" / "resolve-sandbox-conflicts.ps1").read_text(
+        encoding="utf-8"
+    )
+
+    assert 'ParameterSetName = "Worktree"' in resolver
+    assert "[string]$WorkingDirectory" in resolver
+    assert "& git -C $worktree rerere" in resolver
+    assert resolver.count("exit 0") == 2
+    assert "-WorkingDirectory $workingDirectory" in full_sync
+    assert "-Kind $entry.kind" in full_sync
+    assert "function Test-MergePending" in full_sync
+    assert "Test-MergePending -WorkingDirectory $WorkingDirectory" in full_sync
+    assert "function Update-PrimaryCheckout" in full_sync
+    assert '"Fast-forward primary checkout to origin/$BaseBranch"' in full_sync
+    assert full_sync.count('& git -C $primaryRoot merge --ff-only "origin/$BaseBranch"') == 1
+    assert "merge --abort" in full_sync
+    should_process = full_sync.index('"Merge origin/$BaseBranch into branch lane"')
+    branch_merge = full_sync.index('merge --no-edit "origin/$BaseBranch"')
+    assert should_process < branch_merge
+    assert full_sync.index("& $resolverScript -WorkingDirectory") < full_sync.index(
+        "& git -C $workingDirectory merge --abort"
+    )
+
+
+def test_owner_can_resolve_recorded_conflicts_across_all_worktrees() -> None:
+    root = Path(__file__).parents[1]
+    resolver = (
+        root / "scripts" / "dev" / "resolve-all-recorded-conflicts.ps1"
+    ).read_text(encoding="utf-8")
+    mac_launcher = (
+        root / "scripts" / "mac" / "user" / "Resolve-All-Recorded-Conflicts.command"
+    ).read_text(encoding="utf-8")
+    windows_launcher = (
+        root / "scripts" / "win" / "user" / "Resolve-All-Recorded-Conflicts.cmd"
+    ).read_text(encoding="utf-8")
+
+    assert "worktree list --porcelain" in resolver
+    assert "Get-SandboxRegistry" in resolver
+    assert "Test-PendingMerge" in resolver
+    assert "--diff-filter=U" in resolver
+    assert "MERGE_HEAD" in resolver
+    assert "resolve-sandbox-conflicts.ps1" in resolver
+    assert "-WorkingDirectory $path" in resolver
+    assert "-Sandbox $sandboxByWorktree[$path].slug" in resolver
+    assert "pending-conflict-" in resolver
+    assert "foreach ($worktree in @(Get-AttachedWorktrees))" in resolver
+    assert "Still requires manual resolution" in resolver
+    assert "merge --abort" not in resolver
+    assert "git push" not in resolver
+    assert "git fetch" not in resolver
+    assert "resolve-all-recorded-conflicts.ps1" in mac_launcher
+    assert "resolve-all-recorded-conflicts.ps1" in windows_launcher
