@@ -19,9 +19,11 @@ def _reset_state(monkeypatch):
     """
     tools_cache.clear_local_cache()
     user_context.set_user_id("alice")
-    from tripplanner import storage_cosmos
+    from tripplanner import secondary_cache, storage_cosmos
 
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
+    monkeypatch.setattr(secondary_cache, "read_doc", lambda *_args: None)
+    monkeypatch.setattr(secondary_cache, "schedule_merge_write", lambda *_args: None)
     yield
     tools_cache.clear_local_cache()
     user_context.set_user_id("local")
@@ -132,6 +134,85 @@ def test_global_cache_shares_across_users():
     tools_cache.cache_store("web_search", {"query": "paris"}, "global-hit")
     user_context.set_user_id("bob")
     assert tools_cache.cache_lookup("web_search", {"query": "paris"}) == "global-hit"
+
+
+def test_global_primary_miss_uses_and_promotes_secondary(monkeypatch):
+    from tripplanner import secondary_cache, storage_cosmos
+
+    primary: dict[str, dict] = {}
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(
+        storage_cosmos,
+        "read_doc",
+        lambda _container, _partition, key: primary.get(key),
+    )
+    monkeypatch.setattr(
+        storage_cosmos,
+        "upsert_doc",
+        lambda _container, _partition, key, body: primary.__setitem__(key, body),
+    )
+    key = tools_cache._cache_key("web_search", {"query": "paris"}, scope="global")
+    original_cached_at = time.time() - 10
+    monkeypatch.setattr(
+        secondary_cache,
+        "read_doc",
+        lambda _container, requested_key: {
+            "result": "central-hit",
+            "cached_at": original_cached_at,
+            "expires_at": time.time() + 300,
+        }
+        if requested_key == key
+        else None,
+    )
+
+    assert tools_cache.cache_lookup("web_search", {"query": "paris"}) == "central-hit"
+    assert primary[key]["cached_at"] == original_cached_at
+
+
+def test_user_scoped_tools_never_use_secondary(monkeypatch):
+    from tripplanner import secondary_cache
+
+    calls: list[str] = []
+    monkeypatch.setattr(
+        secondary_cache,
+        "read_doc",
+        lambda _container, key: calls.append(key),
+    )
+    monkeypatch.setattr(
+        secondary_cache,
+        "schedule_merge_write",
+        lambda _container, key, _body: calls.append(key),
+    )
+
+    assert tools_cache.cache_lookup("get_trip_plan", {}) is None
+    tools_cache.cache_store("get_trip_plan", {}, "private")
+
+    assert calls == []
+
+
+def test_newer_local_fallback_precedes_older_secondary(monkeypatch):
+    from tripplanner import secondary_cache, storage_cosmos
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(
+        storage_cosmos,
+        "upsert_doc",
+        lambda *_args: (_ for _ in ()).throw(RuntimeError("primary offline")),
+    )
+    monkeypatch.setattr(storage_cosmos, "read_doc", lambda *_args: None)
+    monkeypatch.setattr(
+        secondary_cache,
+        "read_doc",
+        lambda *_args: {
+            "result": "older-central",
+            "cached_at": time.time() - 60,
+            "expires_at": time.time() + 60,
+        },
+    )
+
+    tools_cache.cache_store("web_search", {"query": "paris"}, "fresh-local")
+
+    assert tools_cache.cache_lookup("web_search", {"query": "paris"}) == "fresh-local"
 
 
 def test_global_cache_key_normalizes_case_and_whitespace():

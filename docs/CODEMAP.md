@@ -70,6 +70,7 @@ trip through shared API contracts.
 | `src/tripplanner/web/external_operations.py` | Idempotency ledger for outbound provider writes |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
 | `src/tripplanner/storage_cosmos.py` | Cosmos implementation and conditional replacement |
+| `src/tripplanner/secondary_cache.py`, `cache_merge.py` | Optional cache-only Cosmos client and shared timestamp-aware merge policy; fixed Places/global-tool partitions, fail-open reads, asynchronous tool writes, and ETag retries |
 | `src/tripplanner/trip_events.py` | Durable trip event ownership |
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
@@ -107,6 +108,15 @@ prices, availability, weather, events, web search, FX, and provider caches.
 `CACHE_WARM_EVERYTHING=1` expands the Places warm manifest and durable payload
 to all available fields, photo references, and signed photo URLs; it changes
 surface only, so each entry still follows its stable or volatile TTL policy.
+`SECONDARY_DURABLE_CACHE_ENABLED=1` adds a cache-only durable fallback after a
+primary durable miss. Its endpoint, database, emulator guard, authentication,
+and enablement are independent settings. Fresh shared Places and global tool
+hits retain their evidence timestamps and are promoted into the primary cache;
+provider results write through to both. Secondary failures open a short local
+circuit and never fail an application request. The local profile enables the
+emulator database `tripplanner-cache`; canary and production explicitly disable
+the feature. User-scoped tool rows and all application data are structurally
+excluded.
 The production cache synchronizer moves that eligible surface only on owner
 request. It merges `places_cache/_shared` and, when enabled by each destination,
 `tool_cache/_global_`; user-scoped tool rows and application data never cross
@@ -254,13 +264,14 @@ Two things follow that are easy to miss:
 #### The two durable copies
 
 A lane's `places_cache` dies with its database, so places it paid Google for are
-kept in two places outside it. Neither is ever read at request time; a lane in
-live use only ever reads its own `places_cache`.
+kept in two places outside it. The reviewable corpus is never read at request
+time. The working central cache is the optional secondary durable lookup for
+live local requests after a lane-cache miss.
 
 | Copy | Where | Written by | Holds |
 | --- | --- | --- | --- |
 | Reviewable | `corpus/places.json`, in git | `corpus_cache.py --save`, and the sandbox discard | By default: grounded entries, reviews, and one photo reference, without signed URLs. With `CACHE_WARM_EVERYTHING=1`: every available entry and field, including all photo references and signed URLs |
-| Working | `tripplanner-cache` on the emulator | `corpus_cache.py --sync`, on every emulator-backed stack start, sandbox promotion and sandbox discard | The same shape, plus whatever no one has exported to git yet |
+| Working | `tripplanner-cache` on the emulator | Best-effort runtime read-through/write-through; `corpus_cache.py --sync` remains an explicit recovery/import utility | Shared Places and global tool-cache evidence, plus whatever no one has exported to git yet |
 
 The split exists because the git file is 5 MB of tracked content and the sandbox
 flows require a clean worktree — writing it on every stack start would leave the

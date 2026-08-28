@@ -23,6 +23,7 @@ from azure.core import MatchConditions
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 
 from tripplanner import tools_cache
+from tripplanner.cache_merge import merge_cache_documents
 from tripplanner.validation.emulator import EMULATOR_ENDPOINT, EMULATOR_KEY
 
 SYSTEM_FIELDS = frozenset({"_rid", "_self", "_etag", "_attachments", "_ts"})
@@ -230,34 +231,9 @@ def _watermark(checkpoint: dict[str, Any], source: str, container: str) -> float
     return _number(checkpoint["sources"][source].get(container))
 
 
-def _place_group(entry: dict[str, Any], fields: tuple[str, ...]) -> dict[str, Any]:
-    return {field: entry[field] for field in fields if field in entry}
-
-
 def merge_place_documents(left: CacheRecord, right: CacheRecord) -> CacheRecord:
-    left_entry = left.body.get("entry") if isinstance(left.body.get("entry"), dict) else {}
-    right_entry = right.body.get("entry") if isinstance(right.body.get("entry"), dict) else {}
-    if _number(right_entry.get("__at__")) >= _number(left_entry.get("__at__")):
-        newest = right
-        newest_entry, older_entry = right_entry, left_entry
-    else:
-        newest = left
-        newest_entry, older_entry = left_entry, right_entry
-
-    merged_entry = dict(newest_entry)
-    groups = (
-        (("reviews", "__reviews_at__"), "__reviews_at__"),
-        (("photo_urls", "__photos_at__"), "__photos_at__"),
-    )
-    for fields, timestamp in groups:
-        if _number(older_entry.get(timestamp)) > _number(newest_entry.get(timestamp)):
-            for field in fields:
-                merged_entry.pop(field, None)
-            merged_entry.update(_place_group(older_entry, fields))
-
-    body = _portable(newest.body)
-    body["entry"] = merged_entry
-    return CacheRecord(body=body, source_ts=max(left.source_ts, right.source_ts))
+    body = merge_cache_documents(PLACES_CONTAINER, left.body, right.body)
+    return CacheRecord(body=_portable(body), source_ts=max(left.source_ts, right.source_ts))
 
 
 def _tool_cached_at(record: CacheRecord) -> float:
@@ -267,8 +243,12 @@ def _tool_cached_at(record: CacheRecord) -> float:
 def merge_records(container: str, left: CacheRecord, right: CacheRecord) -> CacheRecord:
     if container == PLACES_CONTAINER:
         return merge_place_documents(left, right)
-    newest = right if _tool_cached_at(right) >= _tool_cached_at(left) else left
-    body = _portable(newest.body)
+    left_body = dict(left.body)
+    left_body["cached_at"] = _tool_cached_at(left)
+    right_body = dict(right.body)
+    right_body["cached_at"] = _tool_cached_at(right)
+    body = _portable(merge_cache_documents(container, left_body, right_body))
+    newest = right if body["cached_at"] == _tool_cached_at(right) else left
     body["cached_at"] = _tool_cached_at(newest)
     return CacheRecord(body=body, source_ts=newest.source_ts)
 

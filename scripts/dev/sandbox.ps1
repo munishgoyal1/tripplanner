@@ -1517,8 +1517,8 @@ if ($PSCmdlet.ParameterSetName -eq "Run") {
         }
     }
 
-    # The place cache is synced with the central dump inside dev-spa.ps1, which is
-    # the one path every emulator-backed start goes through.
+    # dev-spa.ps1 gives every emulator-backed lane the same optional secondary
+    # durable cache; request-time reads and writes keep shared evidence reusable.
 
     Write-Host "Sandbox '$slug' -> http://localhost:$($entry.frontendPort)" -ForegroundColor Green
     $devSpa = Join-Path $entry.worktree "scripts\dev\dev-spa.ps1"

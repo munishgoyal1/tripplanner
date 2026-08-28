@@ -198,6 +198,15 @@ def _durable_read(key: str) -> dict[str, Any] | None:
     return entry if isinstance(entry, dict) else None
 
 
+def _secondary_read(key: str) -> dict[str, Any] | None:
+    """Point-read one key from the optional shared durable cache."""
+    from tripplanner import secondary_cache
+
+    doc = secondary_cache.read_doc(_COSMOS_CONTAINER, _doc_id(key))
+    entry = doc.get("entry") if isinstance(doc, dict) else None
+    return entry if isinstance(entry, dict) else None
+
+
 def _cleanup_legacy_doc() -> None:
     """One-time best-effort delete of the pre-sharding monolithic cache doc."""
     global _legacy_doc_cleaned
@@ -291,6 +300,7 @@ def _write_durable(keys: set[str]) -> None:
         entries = {k: _persistable(_CACHE[k]) for k in keys if k in _CACHE}
         retry_after = _persist_retry_after
     now = time.time()
+    primary_ok = False
     try:
         from tripplanner import storage_cosmos
 
@@ -320,15 +330,29 @@ def _write_durable(keys: set[str]) -> None:
                     break
             if ok:
                 _cleanup_legacy_doc()
-                return
+                primary_ok = True
     except Exception as exc:  # noqa: BLE001
         log.warning("places_cache cosmos persist failed: %s", exc)
-    try:
-        with _CACHE_LOCK:
-            snapshot = _live_snapshot()
-        atomic_write_json(_local_path(), {"entries": snapshot})
-    except Exception as exc:  # noqa: BLE001
-        log.warning("places_cache local persist failed: %s", exc)
+    if not primary_ok:
+        try:
+            with _CACHE_LOCK:
+                snapshot = _live_snapshot()
+            atomic_write_json(_local_path(), {"entries": snapshot})
+        except Exception as exc:  # noqa: BLE001
+            log.warning("places_cache local persist failed: %s", exc)
+
+    from tripplanner import secondary_cache
+
+    for k, entry in entries.items():
+        secondary_cache.merge_write(
+            _COSMOS_CONTAINER,
+            _doc_id(k),
+            {
+                "key": k,
+                "entry": entry,
+                **({"ttl": -1} if get_settings().cache_stable_forever else {}),
+            },
+        )
 
 
 @contextmanager
@@ -621,6 +645,14 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
                     _evict_if_needed()
                     _record_cache("durable_hit")
                 return {} if _is_miss(durable) else durable
+            secondary = _secondary_read(k)
+            if secondary is not None and _fresh(secondary):
+                with _CACHE_LOCK:
+                    cache[k] = secondary
+                    _evict_if_needed()
+                    _record_cache("secondary_hit")
+                _persist_entry(k)
+                return {} if _is_miss(secondary) else secondary
         _record_cache("refresh" if refresh else "miss")
         info = _lookup_place(name, lookup_city) or {}
         info["__at__"] = time.time()
@@ -779,6 +811,13 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
                     cache[ck] = durable
                     _evict_if_needed()
                 return durable.get("names", [])
+            secondary = _secondary_read(ck)
+            if secondary is not None and _fresh(secondary):
+                with _CACHE_LOCK:
+                    cache[ck] = secondary
+                    _evict_if_needed()
+                _persist_entry(ck)
+                return secondary.get("names", [])
 
         if kind == "hotel":
             query = f"best hotels in {destination}"
