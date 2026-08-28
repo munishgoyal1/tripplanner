@@ -1371,3 +1371,15 @@ the outcome.
 - After any preview-path defect, inspect and restore the exact worktree the
   preview touched before continuing; a dry run must leave byte and Git state
   unchanged.
+
+## 2026-08-28 - Runtime Configuration Needs A Checked-In Owner
+
+- A comprehensive `.env.example` is still only a catalog. When each real
+  environment uses an ignored file, new non-secret controls can ship without
+  appearing in any file the owner actually reviews or deploys.
+- Keep complete non-secret profiles checked in with identical key sets, and use
+  ignored environment files only as secret overlays. Tests should reject profile
+  drift and known secrets in tracked profiles.
+- Preserve one explicit precedence order: command/process override, then secret
+  overlay, then checked-in profile, then code default. A setting with multiple
+  hardcoded environment values has no clear owner even when all values agree.

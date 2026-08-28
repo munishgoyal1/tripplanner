@@ -4,11 +4,15 @@ from __future__ import annotations
 
 import os
 from functools import lru_cache
+from pathlib import Path
 
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
-load_dotenv()
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+load_dotenv(_REPO_ROOT / ".env", override=False)
+_environment = os.getenv("TRIPPLANNER_ENVIRONMENT", "local").strip().lower()
+load_dotenv(_REPO_ROOT / "config" / "environments" / f"{_environment}.env", override=False)
 
 DEFAULT_AZURE_OPENAI_API_VERSION = "2024-10-21"
 

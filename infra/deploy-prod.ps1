@@ -28,10 +28,11 @@ param(
     [string]$CosmosResourceGroup = "rg-tripplanner-data",
     [string]$CosmosAccountName = "",
     [string]$AzureOpenAIAccountName = "aoaiprodmd1ks",
-    [string]$OAuthRedirectBase = "https://aitripplanner.co/api",
+    [string]$OAuthRedirectBase = "",
     [string]$CanaryResourceGroup = "rg-tripplanner-canary",
     [string]$CanaryNamePrefix = "canary",
     [string]$CanaryAppNamePrefix = "",
+    [string]$ConfigFile = "config/environments/prod.env",
     [string]$EnvFile = ".env.prod"
 )
 
@@ -147,7 +148,11 @@ if ($canaryImageMatches) {
     Write-Host "[canary] Deployment and smoke verification passed for $ImageTag."
 }
 
+Import-DeploymentEnvironment -Path $ConfigFile
 Import-DeploymentEnvironment -Path $EnvFile
+if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
+    $OAuthRedirectBase = $env:OAUTH_REDIRECT_BASE
+}
 
 # Configuration
 $prodRG = $ResourceGroup
