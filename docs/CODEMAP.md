@@ -132,6 +132,11 @@ retains the previous watermark so retrying can repeat work but cannot omit it.
 Paid Google Places access requires
 both `ENABLE_GOOGLE_PLACES=1` and `GOOGLE_PLACES_API_KEY`; a copied key alone
 must never activate billable requests.
+Paid base Maps, Google Routes fallback, and Static Maps export similarly require
+`ENABLE_GOOGLE_MAPS=1` plus their existing browser or server key. The profile
+flags are the sole desired state; `infra/gcp/set-google-places-access.ps1` and
+`set-google-maps-access.ps1` synchronize project-level Service Usage and retain
+deployment-free emergency off controls.
 
 Runtime cache policy is unified, but physical storage is intentionally tiered.
 Provider, FX, route, country, and comparison regions use `caching.py`; read-only

@@ -7,5 +7,5 @@ param(
     [string]$Approval = ""
 )
 
-& "$PSScriptRoot/set-google-api-access.ps1" -Capability places -Action $Action `
+& "$PSScriptRoot/set-google-api-access.ps1" -Capability maps -Action $Action `
     -Environment $Environment -Approval $Approval

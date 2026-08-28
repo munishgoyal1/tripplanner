@@ -10,6 +10,7 @@ Windows launchers live here; matching macOS launchers live under
 | `Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
 | `Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
 | `Google-Places-Control.cmd disable prod` | Immediately disable paid Places in GCP without deploying; status, guarded enable, and central-policy apply are also supported |
+| `Google-Maps-Control.cmd disable prod` | Disable Maps JavaScript, Routes, and Static Maps in GCP without deploying; status, guarded enable, and profile apply are also supported |
 | `Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every registered sandbox or only the selected sandbox |
 | `Full-2Way-Sync.cmd [all\|sbx]` | Converge all local lanes and automatically replay recorded conflict resolutions without hiding active edits |
 | `Resolve-All-Recorded-Conflicts.cmd` | Scan all attached worktrees and finish pending merges covered by recorded resolutions; report new conflicts without aborting them |

@@ -53,6 +53,20 @@ def test_google_places_control_has_cross_platform_owner_launchers() -> None:
     assert script_name in windows_launcher
 
 
+def test_google_maps_control_has_cross_platform_owner_launchers() -> None:
+    root = Path(__file__).parents[1]
+    script_name = "set-google-maps-access.ps1"
+    mac_launcher = (root / "scripts" / "mac" / "user" / "Google-Maps-Control.command").read_text(
+        encoding="utf-8"
+    )
+    windows_launcher = (
+        root / "scripts" / "win" / "user" / "Google-Maps-Control.cmd"
+    ).read_text(encoding="utf-8")
+
+    assert script_name in mac_launcher
+    assert script_name in windows_launcher
+
+
 def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:
     root = Path(__file__).parents[1]
     sync_script = (root / "scripts" / "dev" / "sync-sbxs-from-master.ps1").read_text(

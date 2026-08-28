@@ -25,10 +25,13 @@ param(
     [switch]$DeployShutoffFunction,
     [switch]$SkipQuotas,
     [switch]$AllowQuotaIncreases,
+    [string]$GooglePlacesApproval = "",
+    [string]$GoogleMapsApproval = "",
     [string]$ShutoffApproval = ""
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/google-api-control-common.ps1"
 
 function Invoke-Gcloud {
     param([string[]]$Arguments, [switch]$AllowFailure)
@@ -122,20 +125,32 @@ if (
 # --- per-environment services ----------------------------------------------
 
 foreach ($env in $gcp.environments) {
-    $sharedServices = @($gcp.requiredServices | Where-Object { $_ -ne $placesService })
-    if ($PSCmdlet.ShouldProcess($env.project, "Enable shared Maps APIs")) {
-        Invoke-Gcloud (@("services", "enable") + $sharedServices + @("--project=$($env.project)")) | Out-Null
-    }
-    if ([bool]$env.placesEnabled) {
-        if ($PSCmdlet.ShouldProcess($env.project, "Enable paid Google Places API")) {
-            Invoke-Gcloud @("services", "enable", $placesService, "--project=$($env.project)") | Out-Null
+    foreach ($capabilityName in @("places", "maps")) {
+        $capability = Get-GoogleApiCapability -Name $capabilityName
+        $enabled = Get-GoogleApiDesiredState -Environment $env.name -Flag $capability.Flag
+        $approval = if ($capabilityName -eq "places") {
+            $GooglePlacesApproval
+        } else {
+            $GoogleMapsApproval
         }
-    } elseif ($PSCmdlet.ShouldProcess($env.project, "Disable paid Google Places API")) {
-        Invoke-Gcloud @(
-            "services", "disable", $placesService, "--project=$($env.project)", "--force", "--quiet"
-        ) | Out-Null
+        if ($enabled -and $approval -ne $capability.Approval) {
+            throw "Enabling $($capability.Name) requires -Google$($capability.Name)Approval $($capability.Approval)."
+        }
+        if ($enabled) {
+            if ($PSCmdlet.ShouldProcess($env.project, "Enable paid Google $($capability.Name) APIs")) {
+                Invoke-Gcloud (@("services", "enable") + $capability.Services + @("--project=$($env.project)")) | Out-Null
+            }
+        } else {
+            foreach ($service in $capability.Services) {
+                if ($PSCmdlet.ShouldProcess($env.project, "Disable $service")) {
+                    Invoke-Gcloud @(
+                        "services", "disable", $service, "--project=$($env.project)", "--force", "--quiet"
+                    ) | Out-Null
+                }
+            }
+        }
+        Write-Host "  [$($env.name)] $($capability.Name) enabled: $enabled"
     }
-    Write-Host "  [$($env.name)] Places enabled: $([bool]$env.placesEnabled)"
 }
 
 # --- API key restrictions ---------------------------------------------------

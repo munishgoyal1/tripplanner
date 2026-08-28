@@ -21,7 +21,6 @@
       {
         "name": "local",
         "project": "aitripplanner-local",
-        "placesEnabled": false,
         "budgetName": "tripplanner-local-2000inr",
         "budget": 100,
         "browserKey": "aitripplanner-local-browser",
@@ -31,7 +30,6 @@
       {
         "name": "canary",
         "project": "aitripplanner-canary",
-        "placesEnabled": false,
         "budgetName": "tripplanner-canary-2000inr",
         "budget": 100,
         "browserKey": "aitripplanner-canary-browser",
@@ -41,7 +39,6 @@
       {
         "name": "prod",
         "project": "project-8fc6cc28-590c-4f8b-987",
-        "placesEnabled": false,
         "budgetName": "tripplanner-prod-2000inr",
         "budget": 500,
         "browserKey": "aitripplanner-prod-browser",

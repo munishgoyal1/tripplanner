@@ -61,7 +61,7 @@ def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
     assert "destination overview returned no photo" in browser_smoke
 
 
-def test_google_places_cloud_policy_is_disabled_and_observation_scaled() -> None:
+def test_google_api_cloud_policy_comes_from_disabled_runtime_profiles() -> None:
     root = Path(__file__).parents[1]
     guardrails = (root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8")
     apply_script = (root / "infra" / "gcp" / "apply-billing-guardrails.ps1").read_text(
@@ -70,9 +70,20 @@ def test_google_places_cloud_policy_is_disabled_and_observation_scaled() -> None
     control_script = (root / "infra" / "gcp" / "set-google-places-access.ps1").read_text(
         encoding="utf-8"
     )
+    shared_control = (root / "infra" / "gcp" / "set-google-api-access.ps1").read_text(
+        encoding="utf-8"
+    )
+    control_contract = (
+        root / "infra" / "gcp" / "google-api-control-common.ps1"
+    ).read_text(encoding="utf-8")
 
-    assert guardrails.count('"placesEnabled": false') == 3
-    assert '"placesEnabled": true' not in guardrails
+    assert "placesEnabled" not in guardrails
+    for environment in ("local", "canary", "prod"):
+        profile = (root / "config" / "environments" / f"{environment}.env").read_text(
+            encoding="utf-8"
+        )
+        assert "ENABLE_GOOGLE_PLACES=0" in profile
+        assert "ENABLE_GOOGLE_MAPS=0" in profile
     assert (
         '"quotaId": "SearchTextRequestPerDayPerProject", '
         '"local": 1, "canary": 1, "prod": 100'
@@ -81,13 +92,20 @@ def test_google_places_cloud_policy_is_disabled_and_observation_scaled() -> None
         '"quotaId": "GetPhotoMediaRequestPerDayPerProject", '
         '"local": 1, "canary": 1, "prod": 200'
     ) in guardrails
-    assert "Where-Object { $_ -ne $placesService }" in apply_script
-    assert '"services", "disable", $placesService' in apply_script
+    assert "Get-GoogleApiDesiredState" in apply_script
+    assert "$GooglePlacesApproval" in apply_script
+    assert "$GoogleMapsApproval" in apply_script
     assert '"quotas", "preferences", "update", $preferenceId' in apply_script
     assert "kept tighter" in apply_script
     assert "$AllowQuotaIncreases" in apply_script
-    assert "APPROVE_GOOGLE_PLACES_SPEND" in control_script
-    assert "central desired state" in control_script
+    assert "set-google-api-access.ps1" in control_script
+    assert "APPROVE_GOOGLE_PLACES_SPEND" in control_contract
+    assert "APPROVE_GOOGLE_MAPS_SPEND" in control_contract
+    assert "routes.googleapis.com" in control_contract
+    assert "static-maps-backend.googleapis.com" in control_contract
+    assert "maps-backend.googleapis.com" in control_contract
+    assert "Set-GoogleApiDesiredState" in shared_control
+    assert "No application deployment was performed." in shared_control
 
 
 def test_billing_shutoff_trigger_can_invoke_its_cloud_run_service() -> None:
