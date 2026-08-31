@@ -92,7 +92,7 @@ re-describing the whole product.
 | TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, explicit place-fact rechecks with before/after changes and source-linked unusual-closure advisories, place-identity gate, and a rebalance that never moves a stop the traveller chose |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, rollback, and guarded same-image Google runtime toggles | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
-| OPS-03 | Owner-only Business, API & Cost, and System Health operations dashboard | Implemented; hidden route, server-side verified-email guard, consented funnel/activity aggregates, chat/tool/provider/cache health, and a 7/30/90-day durable content-free hierarchy across environment, initiator, trip, interaction, provider, and operation; measured calls/tokens, avoided calls, versioned catalog estimates, and unknown-price calls remain explicit |
+| OPS-03 | Owner-only Business, API & Cost, and System Health operations dashboard | Implemented; hidden route, server-side verified-email guard, consented funnel/activity aggregates, chat/tool/provider/cache health, and a 7/30/90-day durable content-free hierarchy across environment, initiator, trip, interaction, provider, and operation; API & Cost separates new-trip creation from existing-trip updates, reports cumulative and average known provider estimates, joins saved destination names at read time, and expands each interaction into provider/operation components; measured calls/tokens, avoided calls, unknown-price calls, and unallocated shared Azure infrastructure remain explicit |
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Implemented; `/` public entry, `/planner` workspace, privacy-safe analytics, and regional last-known-good demo pipeline |
 | FEEDBACK-01 | Lightweight repeatable trip feedback | Implemented; toolbar thumbs, optional stars/comment, append-only submissions, and trip-level sent rollup |
 | QUALITY-01 | Offline scenario-fidelity and experiential-quality audit | Implemented; every audit writes an immutable dated JSON report, readable summary, compact history index, comparable-run movement, scenario/preference and budget hard gates, and six non-gating experiential dimensions; stored-fact rendering is provider-denied and substitutes coordinates as well as details, photos, discovery, and browser-map configuration; the unified harness also correlates scenario/action evidence and reports measured usage, catalog-estimated cost, cache effectiveness, request amplification, performance, and deterministic plan quality while keeping subjective evaluation optional and separately costed; fresh corpus generation explicitly identifies its paid execution scope, enforces its INR run and cumulative caps against measured model cost plus known Google catalog estimates, records that breakdown separately from provider-billed cost, and remains an explicit paid refresh; generated and persisted findings require a preventive executable fix plus a focused regression test while preserving the failing evidence, genuine fixture corrections require evidence-contract validation, and integrated fixes record deterministic post-fix replay |
@@ -646,13 +646,22 @@ implemented capability baseline.
   forced completion-gate reasons, structured events, and hosted health are
   observable through API metrics and Azure logs.
 - The owner operations view keeps an immutable 90-day content-free provider/model
-  ledger in local JSONL or hosted Cosmos. User trip building, other user actions,
-  audits, agent background work, automation, and unattributed activity remain
-  separate; every request or audit run has an interaction ID, and known trip IDs
-  roll up through provider, operation, and SKU class.
+  ledger in local JSONL or hosted Cosmos. A request-scoped batch normally produces
+  one storage document while retaining each provider/model call as a nested entry;
+  unusually large batches are bounded and chunked. User trip creation, existing-trip
+  updates, other user actions, audits, agent background work, automation, and
+  unattributed activity remain separate; every request or audit run has an interaction
+  ID, and known trip IDs roll up through provider, operation, and SKU class. Saved
+  destination names are joined only when the owner reads the dashboard, never copied
+  into the operational ledger. Legacy rows remain in totals until their TTL expires
+  but cannot be retroactively classified as creation or update.
 - Provider call counts and model tokens are measured. Dollar values are versioned
   planning estimates only; calls without a catalog rate remain visible as unknown
-  and are never represented as free. Provider billing exports remain authoritative.
+  and are never represented as free. Creation/update averages therefore cover known
+  catalog estimates and keep unknown-price interaction counts beside them. Provider
+  billing exports remain authoritative. Shared Azure infrastructure is not fabricated
+  as a per-trip amount and remains explicitly unallocated until authoritative billing
+  allocation exists.
 - Performance and cost evidence is separated into a hermetic regression gate,
   production SLO/tool telemetry, and Azure billing/Cosmos RU analysis so changes
   are driven by measured bottlenecks rather than synthetic provider traffic.

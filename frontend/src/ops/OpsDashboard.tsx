@@ -104,23 +104,71 @@ function estimatedCost(cost: number, unknown: number): string {
   return unknown ? `${value} + ${unknown} unknown` : value;
 }
 
+function TripCostSection({ overview, kind, title, note }: {
+  overview: OpsOverview;
+  kind: "new_trip" | "trip_update";
+  title: string;
+  note: string;
+}) {
+  const usage = overview.provider_usage;
+  const category = usage.trip_costs[kind];
+  const trips = usage.by_trip.filter((row) => row.interaction_kind === kind);
+
+  return <section className="mt-8">
+    <div className="mb-3 flex flex-wrap items-end justify-between gap-3 border-b border-stone-300 pb-3">
+      <div><h2 className="font-serif text-2xl text-stone-950">{title}</h2><p className="mt-1 text-sm text-stone-500">{note}</p></div>
+      <div className="flex gap-6 text-right text-sm">
+        <div><p className="text-xs uppercase text-stone-500">Average per {kind === "new_trip" ? "trip" : "update"}</p><p className="mt-1 font-semibold">{estimatedCost(category.average_estimated_cost_usd, 0)}</p><p className="mt-1 text-xs text-stone-500">{category.unknown_cost_interactions} include unknown prices</p></div>
+        <div><p className="text-xs uppercase text-stone-500">Cumulative</p><p className="mt-1 font-semibold">{estimatedCost(category.estimated_cost_usd, category.unknown_cost_interactions)}</p></div>
+      </div>
+    </div>
+    <Panel title={`${title} by trip`} note={`${category.interactions} measured ${category.interactions === 1 ? "interaction" : "interactions"} across ${category.trips} trips`}>
+      {trips.length ? <div className="divide-y divide-stone-200">{trips.map((trip) => {
+        const interactions = usage.by_interaction.filter((row) => row.interaction_kind === kind && row.trip_id === trip.trip_id && row.environment === trip.environment && row.initiator === trip.initiator);
+        const tripLabel = trip.trip_name || (trip.trip_id !== "unattributed" ? trip.trip_id : "Trip not yet saved");
+        return <details key={`${kind}-${trip.environment}-${trip.initiator}-${trip.trip_id}`} className="group">
+          <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 py-4 text-sm hover:bg-stone-50">
+            <div className="min-w-0"><p className="truncate font-semibold">{tripLabel}</p><p className="mt-1 truncate font-mono text-xs text-stone-500">{trip.trip_id === "unattributed" ? "Not tied to a saved trip" : trip.trip_id}</p></div>
+            <div className="text-right"><p>{interactions.length} {kind === "new_trip" ? "creation" : interactions.length === 1 ? "update" : "updates"}</p><p className="mt-1 text-xs text-stone-500">{estimatedCost(trip.estimated_cost_usd, trip.unknown_cost_calls)}</p></div>
+          </summary>
+          <div className="border-t border-stone-100 bg-stone-50 px-5 py-3">
+            {interactions.map((interaction, index) => {
+              const providers = usage.by_provider.filter((row) => row.interaction_id === interaction.interaction_id && row.interaction_kind === kind && row.trip_id === interaction.trip_id && row.environment === interaction.environment && row.initiator === interaction.initiator);
+              return <details key={`${interaction.environment}-${interaction.initiator}-${interaction.trip_id}-${interaction.interaction_id}`} className="border-b border-stone-200 last:border-b-0">
+                <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] gap-3 py-3 text-sm">
+                  <span className="font-semibold">{kind === "new_trip" ? "Creation request" : `Update ${index + 1}`}</span>
+                  <span>{interaction.calls} calls · {estimatedCost(interaction.estimated_cost_usd, interaction.unknown_cost_calls)}</span>
+                </summary>
+                <div className="pb-4 pl-3">
+                  {providers.map((provider) => {
+                    const operations = usage.by_operation.filter((row) => row.interaction_id === interaction.interaction_id && row.provider === provider.provider && row.trip_id === interaction.trip_id && row.environment === interaction.environment && row.initiator === interaction.initiator && row.interaction_kind === kind);
+                    return <div key={`${provider.environment}-${provider.initiator}-${provider.trip_id}-${provider.interaction_id}-${provider.provider}`} className="border-t border-stone-200 py-3 first:border-t-0">
+                      <div className="flex justify-between gap-4 text-sm"><strong>{provider.provider}</strong><span>{estimatedCost(provider.estimated_cost_usd, provider.unknown_cost_calls)}</span></div>
+                      {operations.map((operation) => <div key={`${operation.operation}-${operation.sku_class}`} className="mt-1 grid grid-cols-[minmax(0,1fr)_auto] gap-3 font-mono text-xs text-stone-600"><span className="truncate">{operation.operation} · {operation.sku_class}</span><span>{operation.calls} · {estimatedCost(operation.estimated_cost_usd, operation.unknown_cost_calls)}</span></div>)}
+                    </div>;
+                  })}
+                  <div className="flex justify-between gap-4 border-t border-stone-200 pt-3 text-xs text-stone-500"><span>Shared Azure infrastructure</span><span>Not allocated</span></div>
+                </div>
+              </details>;
+            })}
+          </div>
+        </details>;
+      })}</div> : <Empty>No measured {kind === "new_trip" ? "new-trip creations" : "existing-trip updates"} in this period.</Empty>}
+    </Panel>
+  </section>;
+}
+
 function CostView({ overview }: { overview: OpsOverview }) {
   const usage = overview.provider_usage;
-  const interactions = usage.by_interaction.filter((row) => row.interaction_id);
-  const trips = usage.by_trip;
-  const userCalls = usage.by_initiator
-    .filter((row) => row.initiator === "user_trip" || row.initiator === "user_action")
-    .reduce((total, row) => total + row.calls, 0);
-  const backgroundCalls = usage.totals.calls - userCalls;
 
   return (
     <>
       <section className="grid gap-y-6 border-y border-stone-300 bg-white py-5 sm:grid-cols-2 xl:grid-cols-5">
         <Metric label="Measured calls" value={number.format(usage.totals.calls)} detail={`${usage.totals.failures} failed · ${usage.totals.avoided_calls} avoided`} icon={Boxes} />
-        <Metric label="Estimated cost" value={`$${usage.totals.estimated_cost_usd.toFixed(2)}`} detail="Known catalog prices only" icon={DollarSign} />
+        <Metric label="Cumulative provider cost" value={`$${usage.totals.estimated_cost_usd.toFixed(2)}`} detail="Known catalog prices only" icon={DollarSign} />
+        <Metric label="Average new trip" value={estimatedCost(usage.trip_costs.new_trip.average_estimated_cost_usd, 0)} detail={`${usage.trip_costs.new_trip.interactions} measured creations`} icon={PlaneTakeoff} />
+        <Metric label="Average trip update" value={estimatedCost(usage.trip_costs.trip_update.average_estimated_cost_usd, 0)} detail={`${usage.trip_costs.trip_update.interactions} measured updates`} icon={Workflow} />
         <Metric label="Unknown price" value={number.format(usage.totals.unknown_cost_calls)} detail="Measured calls, cost unavailable" icon={AlertTriangle} />
-        <Metric label="User initiated" value={number.format(userCalls)} detail={`${usage.totals.calls ? Math.round(userCalls / usage.totals.calls * 100) : 0}% of measured calls`} icon={Users} />
-        <Metric label="Non-user initiated" value={number.format(backgroundCalls)} detail={`${interactions.length} attributed interactions`} icon={Workflow} />
       </section>
 
       <section className="mt-6 border border-amber-300 bg-amber-50 px-5 py-4 text-sm text-amber-950">
@@ -128,7 +176,7 @@ function CostView({ overview }: { overview: OpsOverview }) {
         <p className="mt-1 text-xs">{usage.pricing.basis} Catalog {usage.pricing.catalog_version}. Unknown-price calls remain visible and are excluded from the dollar total.</p>
       </section>
 
-      <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
+      <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-2">
         <Panel title="Activity source" note="Environment → initiator">
           {usage.by_initiator.length ? <div className="divide-y divide-stone-100">{usage.by_initiator.map((row) => (
             <div key={`${row.environment}-${row.initiator}`} className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 py-4 text-sm">
@@ -138,29 +186,13 @@ function CostView({ overview }: { overview: OpsOverview }) {
           ))}</div> : <Empty>No provider or model calls recorded in this period.</Empty>}
         </Panel>
 
-        <Panel title="Trip and provider hierarchy" note="Expand a trip for operation detail">
-          {trips.length ? <div className="divide-y divide-stone-200">{trips.map((trip) => {
-            const providers = usage.by_provider.filter((row) => row.environment === trip.environment && row.initiator === trip.initiator && row.trip_id === trip.trip_id);
-            return <details key={`${trip.environment}-${trip.initiator}-${trip.trip_id}`} className="group">
-              <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 py-4 text-sm hover:bg-stone-50">
-                <div className="min-w-0"><p className="truncate font-semibold">{trip.trip_id && trip.trip_id !== "unattributed" ? trip.trip_id : "Not tied to a saved trip"}</p><p className="mt-1 text-xs text-stone-500">{trip.environment} · {initiatorLabels[trip.initiator || ""] || trip.initiator}</p></div>
-                <div className="text-right"><p>{trip.calls} calls</p><p className="mt-1 text-xs text-stone-500">{estimatedCost(trip.estimated_cost_usd, trip.unknown_cost_calls)}</p></div>
-              </summary>
-              <div className="border-t border-stone-100 bg-stone-50 px-5 py-3">{providers.map((provider) => {
-                const operations = usage.by_operation.filter((row) => row.environment === provider.environment && row.initiator === provider.initiator && row.trip_id === provider.trip_id && row.provider === provider.provider);
-                return <div key={provider.provider} className="border-b border-stone-200 py-3 last:border-b-0">
-                  <div className="flex justify-between gap-4 text-sm"><strong>{provider.provider}</strong><span>{provider.calls} calls · {estimatedCost(provider.estimated_cost_usd, provider.unknown_cost_calls)}</span></div>
-                  <div className="mt-2 space-y-1">{operations.map((operation) => <div key={`${operation.operation}-${operation.sku_class}`} className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 font-mono text-xs text-stone-600"><span className="truncate">{operation.operation} · {operation.sku_class}</span><span>{operation.calls} · {estimatedCost(operation.estimated_cost_usd, operation.unknown_cost_calls)}</span></div>)}</div>
-                </div>;
-              })}</div>
-            </details>;
-          })}</div> : <Empty>No trip-attributed calls recorded in this period.</Empty>}
+        <Panel title="Cumulative provider cost" note="All measured work in this period">
+          {usage.by_provider_total.length ? <div className="divide-y divide-stone-100">{usage.by_provider_total.map((row) => <div key={`${row.environment}-${row.provider}`} className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 py-4 text-sm"><div><p className="font-semibold">{row.provider}</p><p className="mt-1 text-xs uppercase text-stone-500">{row.environment}</p></div><div className="text-right"><p className="font-semibold">{estimatedCost(row.estimated_cost_usd, row.unknown_cost_calls)}</p><p className="mt-1 text-xs text-stone-500">{row.calls} calls</p></div></div>)}</div> : <Empty>No provider costs recorded in this period.</Empty>}
         </Panel>
       </div>
-
-      <div className="mt-6"><Panel title="Initiated interactions" note="One request or audit run, content-free">
-        {interactions.length ? <div className="overflow-x-auto"><table className="w-full min-w-[720px] text-left text-sm"><thead className="bg-stone-50 text-xs uppercase text-stone-500"><tr><th className="px-5 py-3">Interaction</th><th>Source</th><th>Trip</th><th>Calls</th><th>Failures</th><th>Estimated cost</th></tr></thead><tbody>{interactions.map((row) => <tr key={`${row.environment}-${row.interaction_id}`} className="border-t border-stone-100"><td className="max-w-64 truncate px-5 py-3 font-mono text-xs">{row.interaction_id}</td><td>{initiatorLabels[row.initiator || ""] || row.initiator}</td><td className="font-mono text-xs">{row.trip_id === "unattributed" ? "—" : row.trip_id}</td><td>{row.calls}</td><td className={row.failures ? "text-rose-700" : "text-stone-500"}>{row.failures}</td><td>{estimatedCost(row.estimated_cost_usd, row.unknown_cost_calls)}</td></tr>)}</tbody></table></div> : <Empty>No interaction IDs recorded in this period.</Empty>}
-      </Panel></div>
+      <TripCostSection overview={overview} kind="new_trip" title="New trip creation" note="Cost of producing the first saved itinerary" />
+      <TripCostSection overview={overview} kind="trip_update" title="Existing trip updates" note="Cost of each later planning request" />
+      <p className="mt-6 text-xs text-stone-500">{usage.trip_costs.infrastructure.basis} Provider estimates above exclude that shared cost.</p>
     </>
   );
 }

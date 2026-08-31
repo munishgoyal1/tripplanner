@@ -43,6 +43,8 @@ export interface OpsUsageRollup {
   environment?: string;
   initiator?: string;
   trip_id?: string;
+  trip_name?: string;
+  interaction_kind?: "new_trip" | "trip_update" | "other" | "unattributed";
   provider?: string;
   operation?: string;
   sku_class?: string;
@@ -138,7 +140,22 @@ export interface OpsOverview {
       currency: "USD";
     };
     totals: OpsUsageRollup;
+    trip_costs: Record<"new_trip" | "trip_update", {
+      interactions: number;
+      trips: number;
+      calls: number;
+      estimated_cost_usd: number;
+      average_estimated_cost_usd: number;
+      unknown_cost_interactions: number;
+    }> & {
+      infrastructure: {
+        allocation_status: "not_allocated";
+        basis: string;
+      };
+    };
     by_initiator: OpsUsageRollup[];
+    by_interaction_kind: OpsUsageRollup[];
+    by_provider_total: OpsUsageRollup[];
     by_trip: OpsUsageRollup[];
     by_provider: OpsUsageRollup[];
     by_operation: OpsUsageRollup[];

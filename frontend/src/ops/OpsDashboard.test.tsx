@@ -62,14 +62,30 @@ const overview: OpsOverview = {
     since: "2026-07-11T12:00:00Z",
     pricing: { catalog_version: "2026-03-01", basis: "Planning estimates; provider billing exports remain authoritative.", currency: "USD" },
     totals: { calls: 8, avoided_calls: 0, failures: 1, estimated_cost_usd: 0.052, unknown_cost_calls: 2, prompt_tokens: 1000, completion_tokens: 500 },
+    trip_costs: {
+      new_trip: { interactions: 1, trips: 1, calls: 4, estimated_cost_usd: 0.03, average_estimated_cost_usd: 0.03, unknown_cost_interactions: 0 },
+      trip_update: { interactions: 1, trips: 1, calls: 2, estimated_cost_usd: 0.015, average_estimated_cost_usd: 0.015, unknown_cost_interactions: 1 },
+      infrastructure: { allocation_status: "not_allocated", basis: "Shared Azure infrastructure cost is not allocated per trip." },
+    },
     by_initiator: [
       { environment: "canary", initiator: "user_trip", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 1000, completion_tokens: 500 },
       { environment: "canary", initiator: "audit", calls: 2, avoided_calls: 0, failures: 1, estimated_cost_usd: 0.007, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 },
     ],
-    by_trip: [{ environment: "canary", initiator: "user_trip", trip_id: "trip-kashmir", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 1000, completion_tokens: 500 }],
-    by_provider: [{ environment: "canary", initiator: "user_trip", trip_id: "trip-kashmir", provider: "google", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
-    by_operation: [{ environment: "canary", initiator: "user_trip", trip_id: "trip-kashmir", provider: "google", operation: "text_search", sku_class: "essentials", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
-    by_interaction: [{ environment: "canary", initiator: "user_trip", trip_id: "trip-kashmir", interaction_id: "request-123", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 1000, completion_tokens: 500 }],
+    by_interaction_kind: [],
+    by_provider_total: [{ environment: "canary", provider: "google", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
+    by_trip: [
+      { environment: "canary", initiator: "user_trip", interaction_kind: "new_trip", trip_id: "trip-kashmir", trip_name: "Kashmir", calls: 4, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.03, unknown_cost_calls: 0, prompt_tokens: 700, completion_tokens: 300 },
+      { environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", trip_name: "Kashmir", calls: 2, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.015, unknown_cost_calls: 1, prompt_tokens: 300, completion_tokens: 200 },
+    ],
+    by_provider: [
+      { environment: "canary", initiator: "user_trip", interaction_kind: "new_trip", trip_id: "trip-kashmir", interaction_id: "request-create", provider: "google", calls: 4, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.03, unknown_cost_calls: 0, prompt_tokens: 0, completion_tokens: 0 },
+      { environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", interaction_id: "request-update", provider: "google", calls: 2, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.015, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 },
+    ],
+    by_operation: [{ environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", interaction_id: "request-update", provider: "google", operation: "text_search", sku_class: "essentials", calls: 2, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.015, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
+    by_interaction: [
+      { environment: "canary", initiator: "user_trip", interaction_kind: "new_trip", trip_id: "trip-kashmir", trip_name: "Kashmir", interaction_id: "request-create", calls: 4, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.03, unknown_cost_calls: 0, prompt_tokens: 700, completion_tokens: 300 },
+      { environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", trip_name: "Kashmir", interaction_id: "request-update", calls: 2, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.015, unknown_cost_calls: 1, prompt_tokens: 300, completion_tokens: 200 },
+    ],
   },
   cache: { configured: true, backend: "redis", redis_connected: true, fallback_active: false, memory_entries: 2, redis_entries: 7, redis_bytes: 2048, redis_stats_truncated: false },
 };
@@ -93,7 +109,7 @@ describe("OpsDashboard", () => {
     expect(screen.getByText("38 / 100")).toBeInTheDocument();
   });
 
-  it("shows measured calls, estimate caveats, and trip hierarchy", async () => {
+  it("shows new-trip and update cost averages with expandable trip details", async () => {
     render(<OpsDashboard />);
     await screen.findByText("Activation funnel");
 
@@ -101,10 +117,13 @@ describe("OpsDashboard", () => {
 
     expect(screen.getByText("Measured calls")).toBeInTheDocument();
     expect(screen.getByText("Cost is an estimate, not a billing statement.")).toBeInTheDocument();
-    expect(screen.getByText("Trip and provider hierarchy")).toBeInTheDocument();
-    expect(screen.getAllByText("trip-kashmir")).toHaveLength(2);
+    expect(screen.getByText("Average new trip")).toBeInTheDocument();
+    expect(screen.getByText("Average trip update")).toBeInTheDocument();
+    expect(screen.getByText("New trip creation")).toBeInTheDocument();
+    expect(screen.getByText("Existing trip updates")).toBeInTheDocument();
+    expect(screen.getAllByText("Kashmir")).toHaveLength(2);
     expect(screen.getByText("Unknown price")).toBeInTheDocument();
     expect(screen.getAllByText(/\+ 1 unknown/).length).toBeGreaterThan(0);
-    expect(screen.getByText("Initiated interactions")).toBeInTheDocument();
+    expect(screen.getAllByText("Cumulative provider cost").length).toBeGreaterThan(0);
   });
 });

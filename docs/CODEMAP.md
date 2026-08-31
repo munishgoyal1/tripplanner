@@ -82,7 +82,7 @@ trip through shared API contracts.
 | `src/tripplanner/validation/harness/` | Correlated scenario execution and evidence capture; deterministic plan-eval namespace; unified measured usage, catalog-estimated cost, optional billing reconciliation, cache, amplification, performance, and quality reports. `tripplanner.evals` remains the compatibility API; policy gates consume reports but remain separate from measurement |
 | `src/tripplanner/validation/market_catalog.py`, `india_heuristic_matrix.py`, `india_outbound_matrix.py` | Deterministic weighted India-domestic and India-outbound corpus scenarios; exact dedupe, destination-aware durations, audience priors, and evidence posture from `docs/research/india-*-2026-08.md` |
 | `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, timed-operation, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
-| `src/tripplanner/provider_usage.py`, `usage_attribution.py` | Content-free 90-day provider/model call ledger and request, trip, audit, automation, and background attribution; measured calls/tokens stay distinct from versioned catalog cost estimates and unknown-price calls |
+| `src/tripplanner/provider_usage.py`, `usage_attribution.py` | Content-free 90-day provider/model ledger; one bounded document per attributed interaction retains nested call detail, new-trip/update classification, and request, trip, audit, automation, and background attribution while measured calls/tokens stay distinct from versioned catalog cost estimates and unknown-price calls |
 | `src/tripplanner/error_analysis.py` | Local and canary failure classification and reports |
 | `src/tripplanner/critics.py` | Deterministic quality checks |
 | `src/tripplanner/providers/` | Normalized travel provider clients, capability registry, TTL/fallback runtime, and non-secret readiness status |
@@ -189,7 +189,7 @@ one physical cache backend.
 | `frontend/src/hooks/useWorkspaceFocus.ts` | Mutually exclusive place, identified drive/route, day-circuit, and all-days focus transitions and repeat-action tokens |
 | `frontend/src/hooks/` | Web state synchronization and reusable client behavior |
 | `frontend/src/lib/` | API client, mapping, formatting, and browser utilities |
-| `frontend/src/ops/OpsDashboard.tsx` | Direct-only Business, API & Cost, and System Health views; durable call/cost hierarchy is environment → initiator → trip → provider → operation, and server authorization remains authoritative |
+| `frontend/src/ops/OpsDashboard.tsx` | Direct-only Business, API & Cost, and System Health views; API & Cost leads with new-trip creation and existing-trip update averages, named-trip/interaction drilldown, cumulative provider estimates, unknown-price coverage, and an explicit unallocated shared-infrastructure boundary; server authorization remains authoritative |
 | `frontend/src/types.ts` | Web-local types not owned by the shared client package |
 | `frontend/e2e/` | Playwright end-to-end behavior |
 | `frontend/labs/` | Isolated UX experiments only, never production runtime code |
@@ -243,7 +243,7 @@ Cosmos containers have explicit ownership:
 | `public_demo_runs` | Immutable regional public-demo artifacts and the shared `_public` active manifest |
 | `places_cache` | Google Places details, shared across users at partition `_shared` |
 | `tool_cache` | Results of read-only tools, shared unless the tool is user-specific |
-| `provider_usage` | Immutable content-free provider/model call records, partitioned by environment with a 90-day TTL |
+| `provider_usage` | Immutable content-free provider/model interaction batches, partitioned by environment with a 90-day TTL; nested call entries preserve provider, operation, model/SKU, tokens, estimated cost, and failures while reducing hosted writes to normally one per interaction |
 
 Canary and production databases are isolated within the shared Cosmos account.
 Local emulator data is also isolated and must never be reset automatically. Data

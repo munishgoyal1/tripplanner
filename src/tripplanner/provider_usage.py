@@ -12,7 +12,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from tripplanner.usage_attribution import current_attribution
+from tripplanner.usage_attribution import current_attribution, current_batch
 from tripplanner.validation.harness.pricing import (
     CATALOG_VERSION,
     GOOGLE_PLACES_USD_PER_REQUEST,
@@ -23,6 +23,7 @@ _LOCK = threading.Lock()
 _LOGGER = logging.getLogger(__name__)
 _LOCAL_RETENTION_DAYS = 90
 _LAST_PRUNE_DAY = ""
+_MAX_BATCH_RECORDS = 100
 
 
 def _now() -> datetime:
@@ -64,6 +65,29 @@ def _write(record: dict[str, Any]) -> None:
     path = _local_path(str(record["occurred_at"])[:10])
     with _LOCK, path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(record, separators=(",", ":")) + "\n")
+
+
+def persist_batch(records: list[dict[str, Any]]) -> None:
+    """Persist request-scoped call details in a bounded number of documents."""
+    try:
+        for start in range(0, len(records), _MAX_BATCH_RECORDS):
+            entries = records[start : start + _MAX_BATCH_RECORDS]
+            if not entries:
+                continue
+            first = entries[0]
+            _write(
+                {
+                    "id": uuid.uuid4().hex,
+                    "occurred_at": first["occurred_at"],
+                    "day": first["day"],
+                    "environment": first["environment"],
+                    "interaction_id": first.get("interaction_id", ""),
+                    "record_count": len(entries),
+                    "entries": entries,
+                }
+            )
+    except Exception as exc:  # noqa: BLE001
+        _LOGGER.warning("provider usage batch write failed: %s", type(exc).__name__)
 
 
 def _prune_local() -> None:
@@ -110,6 +134,7 @@ def record_call(
         "interaction_id": attribution.get("interaction_id", ""),
         "trip_id": attribution.get("trip_id", ""),
         "route": attribution.get("route", ""),
+        "interaction_kind": attribution.get("interaction_kind", "other"),
         "provider": provider,
         "operation": operation or "request",
         "sku_class": sku_class or "unknown",
@@ -123,10 +148,11 @@ def record_call(
         "estimated_cost_usd": round(estimate, 8) if estimate is not None else None,
         "pricing_catalog_version": CATALOG_VERSION,
     }
-    try:
-        _write(record)
-    except Exception as exc:  # noqa: BLE001
-        _LOGGER.warning("provider usage write failed: %s", type(exc).__name__)
+    batch = current_batch()
+    if batch is not None:
+        batch.append(record)
+    else:
+        persist_batch([record])
     return record
 
 
@@ -156,16 +182,28 @@ def _read(since: datetime) -> list[dict[str, Any]]:
         if storage_cosmos.is_enabled():
             container = storage_cosmos._container(_CONTAINER)  # noqa: SLF001
             query = "SELECT * FROM c WHERE c.occurred_at >= @since"
-            return list(
+            documents = list(
                 container.query_items(
                     query=query,
                     parameters=[{"name": "@since", "value": since.isoformat()}],
                     enable_cross_partition_query=True,
                 )
             )
+            return _expand(documents)
     except Exception as exc:  # noqa: BLE001
         _LOGGER.warning("provider usage Cosmos read failed: %s", type(exc).__name__)
-    return _read_local(since)
+    return _expand(_read_local(since))
+
+
+def _expand(documents: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for document in documents:
+        entries = document.get("entries")
+        if isinstance(entries, list):
+            rows.extend(entry for entry in entries if isinstance(entry, dict))
+        else:
+            rows.append(document)
+    return rows
 
 
 def _rollup(rows: list[dict[str, Any]], dimensions: tuple[str, ...]) -> list[dict[str, Any]]:
@@ -208,7 +246,43 @@ def _rollup(rows: list[dict[str, Any]], dimensions: tuple[str, ...]) -> list[dic
     )
 
 
-def summary(*, days: int = 30) -> dict[str, Any]:
+def _trip_cost_summary(
+    interactions: list[dict[str, Any]], interaction_kind: str
+) -> dict[str, Any]:
+    matching = [row for row in interactions if row.get("interaction_kind") == interaction_kind]
+    interactions_count = len(matching)
+    estimated_cost = round(sum(float(row["estimated_cost_usd"]) for row in matching), 6)
+    return {
+        "interactions": interactions_count,
+        "trips": len(
+            {
+                str(row["trip_id"])
+                for row in matching
+                if row.get("trip_id") not in (None, "", "unattributed")
+            }
+        ),
+        "calls": sum(int(row["calls"]) for row in matching),
+        "estimated_cost_usd": estimated_cost,
+        "average_estimated_cost_usd": round(
+            estimated_cost / interactions_count if interactions_count else 0.0, 6
+        ),
+        "unknown_cost_interactions": sum(
+            1 for row in matching if int(row["unknown_cost_calls"]) > 0
+        ),
+    }
+
+
+def _add_trip_names(
+    rollups: list[dict[str, Any]], trip_names: dict[str, str]
+) -> list[dict[str, Any]]:
+    for rollup in rollups:
+        trip_id = str(rollup.get("trip_id") or "")
+        if trip_id and trip_id != "unattributed":
+            rollup["trip_name"] = trip_names.get(trip_id, "")
+    return rollups
+
+
+def summary(*, days: int = 30, trip_names: dict[str, str] | None = None) -> dict[str, Any]:
     period_days = max(1, min(90, int(days)))
     since = _now() - timedelta(days=period_days)
     rows = _read(since)
@@ -222,6 +296,14 @@ def summary(*, days: int = 30) -> dict[str, Any]:
         "prompt_tokens": 0,
         "completion_tokens": 0,
     }
+    names = trip_names or {}
+    by_interaction = _add_trip_names(
+        _rollup(
+            rows,
+            ("environment", "initiator", "interaction_kind", "trip_id", "interaction_id"),
+        ),
+        names,
+    )
     return {
         "period_days": period_days,
         "since": since.isoformat(),
@@ -232,12 +314,49 @@ def summary(*, days: int = 30) -> dict[str, Any]:
         },
         "totals": total,
         "by_initiator": _rollup(rows, ("environment", "initiator")),
-        "by_trip": _rollup(rows, ("environment", "initiator", "trip_id")),
-        "by_provider": _rollup(rows, ("environment", "initiator", "trip_id", "provider")),
-        "by_operation": _rollup(
-            rows, ("environment", "initiator", "trip_id", "provider", "operation", "sku_class")
+        "trip_costs": {
+            "new_trip": _trip_cost_summary(by_interaction, "new_trip"),
+            "trip_update": _trip_cost_summary(by_interaction, "trip_update"),
+            "infrastructure": {
+                "allocation_status": "not_allocated",
+                "basis": "Shared Azure infrastructure cost is not allocated per trip.",
+            },
+        },
+        "by_interaction_kind": _rollup(rows, ("environment", "interaction_kind")),
+        "by_trip": _add_trip_names(
+            _rollup(rows, ("environment", "initiator", "interaction_kind", "trip_id")),
+            names,
         ),
-        "by_interaction": _rollup(
-            rows, ("environment", "initiator", "trip_id", "interaction_id")
+        "by_provider_total": _rollup(rows, ("environment", "provider")),
+        "by_provider": _add_trip_names(
+            _rollup(
+                rows,
+                (
+                    "environment",
+                    "initiator",
+                    "interaction_kind",
+                    "trip_id",
+                    "interaction_id",
+                    "provider",
+                ),
+            ),
+            names,
         ),
+        "by_operation": _add_trip_names(
+            _rollup(
+                rows,
+                (
+                    "environment",
+                    "initiator",
+                    "interaction_kind",
+                    "trip_id",
+                    "interaction_id",
+                    "provider",
+                    "operation",
+                    "sku_class",
+                ),
+            ),
+            names,
+        ),
+        "by_interaction": by_interaction,
     }

@@ -1505,3 +1505,17 @@ the outcome.
 - Reconcile the mirror after a successful auth check and preserve it during
   transient auth endpoint failures. Account data remains under the stable Google
   identity and returns after the user signs in again.
+
+## 2026-08-31 - Measurement Detail Does Not Require Write Amplification
+
+- Provider accounting needs one measured row per external call, but persisting each
+  row separately made Cosmos write count scale with internal tool fan-out rather than
+  user intent. A request-scoped bounded batch now writes normally once while retaining
+  the detailed rows needed for provider, operation, token, and price rollups.
+- Classify a turn as new-trip creation or existing-trip update at admission, before
+  the graph mutates state. A new trip has no ID yet, so annotate the shared batch with
+  the persisted ID before its outer scope flushes; using post-turn state alone would
+  misclassify every successful creation as an update.
+- Keep trip names out of content-free operational storage. Join the saved destination
+  at dashboard read time, and leave shared infrastructure cost explicitly unallocated
+  until authoritative billing data supports a defensible allocation model.

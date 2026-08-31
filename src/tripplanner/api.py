@@ -575,24 +575,34 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
         history.append(HumanMessage(content=req.message))
         budget_exhausted = False
         try:
-            from tripplanner.usage_attribution import usage_scope
+            from tripplanner.usage_attribution import annotate_current_batch, usage_scope
 
             with usage_scope(
                 "user_trip",
                 interaction_id=req.request_id or "",
                 trip_id=history_tid or "",
                 route="POST /chat",
-            ):
-                with places_budget_scope("user_interaction"):
-                    result = await asyncio.to_thread(
-                        app_graph.invoke,
-                        {
-                            "messages": history,
-                            "current_agent": "",
-                            "proposal_only": req.proposal_only,
-                        },
-                        config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
-                    )
+                interaction_kind="trip_update" if history_tid else "new_trip",
+            ) as usage_attribution:
+                try:
+                    with places_budget_scope("user_interaction"):
+                        result = await asyncio.to_thread(
+                            app_graph.invoke,
+                            {
+                                "messages": history,
+                                "current_agent": "",
+                                "proposal_only": req.proposal_only,
+                            },
+                            config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
+                        )
+                finally:
+                    if not history_tid:
+                        from tripplanner.tools.trip_planner import active_trip_id
+
+                        annotate_current_batch(
+                            interaction_id=usage_attribution.interaction_id,
+                            trip_id=await asyncio.to_thread(active_trip_id) or "",
+                        )
         except GraphRecursionError:
             # Native and scripted clients use this path; without the same
             # handling the SSE path has, an exhausted turn raised a 500 and the
@@ -934,7 +944,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     _record_chat_phase(started, transport="sse", phase="admission")
 
     async def gen():
-        from tripplanner.usage_attribution import usage_scope
+        from tripplanner.usage_attribution import annotate_current_batch, usage_scope
 
         reply_parts: list[str] = []
         tool_starts: dict[str, float] = {}
@@ -951,18 +961,28 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                     interaction_id=req.request_id or "",
                     trip_id=history_tid or "",
                     route="POST /chat/stream",
-                ):
-                    with places_budget_scope("user_interaction"):
-                        async for event in app_graph.astream_events(
-                            {
-                                "messages": history,
-                                "current_agent": "",
-                                "proposal_only": req.proposal_only,
-                            },
-                            config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
-                            version="v2",
-                        ):
-                            yield event
+                    interaction_kind="trip_update" if history_tid else "new_trip",
+                ) as usage_attribution:
+                    try:
+                        with places_budget_scope("user_interaction"):
+                            async for event in app_graph.astream_events(
+                                {
+                                    "messages": history,
+                                    "current_agent": "",
+                                    "proposal_only": req.proposal_only,
+                                },
+                                config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
+                                version="v2",
+                            ):
+                                yield event
+                    finally:
+                        if not history_tid:
+                            from tripplanner.tools.trip_planner import active_trip_id
+
+                            annotate_current_batch(
+                                interaction_id=usage_attribution.interaction_id,
+                                trip_id=await asyncio.to_thread(active_trip_id) or "",
+                            )
 
             async for ev in budgeted_events():
                 kind = ev.get("event")
@@ -3103,7 +3123,14 @@ async def ops_overview(request: Request, days: int = 30) -> dict[str, Any]:
         for provider in sorted(provider_names)
     }
     runtime["cache"] = provider_cache_status()
-    runtime["provider_usage"] = provider_usage_summary(days=days)
+    runtime["provider_usage"] = provider_usage_summary(
+        days=days,
+        trip_names={
+            str(trip["trip_id"]): str(trip.get("destination") or "")
+            for trip in trips
+            if trip.get("trip_id")
+        },
+    )
     return runtime
 
 
