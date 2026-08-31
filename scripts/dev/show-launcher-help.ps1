@@ -12,7 +12,8 @@ param(
         "emergency-control",
         "azure-services-control",
         "google-maps-control",
-        "google-places-control"
+        "google-places-control",
+        "google-runtime-control"
     )]
     [string]$Launcher
 )
@@ -197,6 +198,26 @@ Examples:
   Google-Places-Control enable local APPROVE_GOOGLE_PLACES_SPEND
 
 No application deployment is performed.
+"@
+    "google-runtime-control" = @"
+Google-Runtime-Control - apply Google access to hosted apps without a full deployment.
+
+Usage: Google-Runtime-Control [status|apply|enable|disable|on|off] [all|canary|prod] [maps-approval] [places-approval]
+
+  status   Compare hosted runtime flags, checked-in profiles, and GCP Service Usage.
+  apply    Create a same-image revision from the checked-in profile flags.
+  disable  Gracefully stop app calls, then disable the GCP services. Alias: off.
+  enable   Enable GCP services, then create a serving same-image revision. Alias: on.
+           Requires both Google spend approvals.
+
+Examples:
+  Google-Runtime-Control status all
+  Google-Runtime-Control disable prod
+  Google-Runtime-Control enable canary APPROVE_GOOGLE_MAPS_SPEND APPROVE_GOOGLE_PLACES_SPEND
+  Google-Runtime-Control apply prod APPROVE_GOOGLE_MAPS_SPEND APPROVE_GOOGLE_PLACES_SPEND
+
+No image is built or changed and no Bicep deployment is run. Azure Container Apps
+creates a new revision because environment variables are revision-scoped.
 "@
 }
 

@@ -177,6 +177,30 @@ deployment. During canary bake, run
 `.\scripts\analyze-errors.ps1 -Environment canary -Hours 24`; canary produces a
 local report and never emails the production recipient.
 
+## Runtime-Only Google Access
+
+Google Maps and Places access can be changed without building an image or running
+the full Bicep deployment flow:
+
+```powershell
+# Read-only comparison of profiles, GCP Service Usage, and hosted revisions.
+Google-Runtime-Control status all
+
+# Graceful off: serve the off revision before disabling the provider APIs.
+Google-Runtime-Control disable prod
+
+# Enable provider APIs before serving the on revision.
+Google-Runtime-Control enable canary APPROVE_GOOGLE_MAPS_SPEND APPROVE_GOOGLE_PLACES_SPEND
+```
+
+The command updates the checked-in environment profiles so the next normal
+deployment preserves the selected state. Azure Container Apps environment
+variables are revision-scoped, so this operation still creates a revision; it
+reuses the current image and verifies that the image did not change, the latest
+revision became ready, and latest-revision traffic remains at 100%. It does not
+substitute for the canary-to-production release flow when source, image,
+infrastructure, secrets, or any other runtime setting changes.
+
 ## Hosted Smoke Suite
 
 Both deployment scripts run the read-only suite through the public URL. It uses

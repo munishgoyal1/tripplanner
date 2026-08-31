@@ -90,7 +90,7 @@ re-describing the whole product.
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented; all runtime cache families share one owner-controlled TTL policy, with environment-wide scaling, precise provider overrides, independent stable/volatile no-expiry switches, and an opt-in full-surface Places warm manifest supplied through checked-in local/sandbox, canary, and production non-secret profiles plus ignored secret overlays; local runtimes use an optional cache-only secondary durable Cosmos client for fresh shared Places and global tool results after primary misses and for best-effort timestamp-preserving write-through, while failures open a short circuit and never fail requests, user-scoped/application data is excluded, and canary/production keep the feature disabled; an approval-gated on-demand merge exchanges only eligible cache evidence between the local central cache and production without refreshing timestamps or deleting entries; complete snapshots bootstrap atomic per-source watermarks, then overlapping incremental scans fetch only candidate documents, retain the old checkpoint on any partial failure or conflict, and report measured RU, payload, and item outcomes; disposable and durable regions retain storage appropriate to their recovery contract |
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google and route-provider calls require an explicit user-interaction or budgeted-corpus execution scope and otherwise fail before network access; Places also remains fail-closed behind a production-only runtime switch, owner emergency Service Usage control, observation-scale provider quotas, configurable shared request ceilings, durable environment-wide conversation ceilings, shared discovery evidence, focused reviews, and one-photo enrichment defaults |
 | TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, explicit place-fact rechecks with before/after changes and source-linked unusual-closure advisories, place-identity gate, and a rebalance that never moves a stop the traveller chose |
-| OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
+| OPS-01 | Reproducible setup, canary promotion, smoke, production approval, rollback, and guarded same-image Google runtime toggles | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
 | OPS-03 | Owner-only Business, API & Cost, and System Health operations dashboard | Implemented; hidden route, server-side verified-email guard, consented funnel/activity aggregates, chat/tool/provider/cache health, and a 7/30/90-day durable content-free hierarchy across environment, initiator, trip, interaction, provider, and operation; measured calls/tokens, avoided calls, versioned catalog estimates, and unknown-price calls remain explicit |
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Implemented; `/` public entry, `/planner` workspace, privacy-safe analytics, and regional last-known-good demo pipeline |
@@ -701,6 +701,13 @@ implemented capability baseline.
   canary and production serving without changing provider or database access.
   Bringdown stops Container Apps, suspends jobs, and stops active executions
   without approval; restoration requires explicit Azure spend approval.
+- A guarded cross-platform Google runtime control compares checked-in desired
+  state, GCP Service Usage, and canary or production Container Apps. It enables
+  provider services before starting a same-image on revision and serves a
+  same-image off revision before disabling provider services. The operation
+  verifies unchanged image identity, revision readiness, and latest-revision
+  traffic without building an image or running Bicep; enable remains spend
+  approval-gated.
 
 ### OPS-02 - Failure detection and response
 
