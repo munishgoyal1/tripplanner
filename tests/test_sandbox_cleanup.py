@@ -103,3 +103,12 @@ def test_promotion_cleanup_removes_pending_conflict_marker() -> None:
 
     assert "Remove-PendingMergesFor" not in source
     assert 'pending-conflict-$((Split-Path -Leaf $entry.worktree)).json' in source
+
+
+def test_cleanup_only_blocks_on_authoritative_corpus_save_failure() -> None:
+    source = SANDBOX_SCRIPT.read_text(encoding="utf-8")
+
+    assert "if ($syncExit -ne 0)" in source
+    assert "the Git corpus save will remain authoritative" in source
+    assert "if ($saveExit -ne 0)" in source
+    assert "if ($syncExit -ne 0 -or $saveExit -ne 0)" not in source

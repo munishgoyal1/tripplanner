@@ -1991,7 +1991,10 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
             $syncExit = $LASTEXITCODE
             & $python $cacheScript --save --database $entry.database
             $saveExit = $LASTEXITCODE
-            if ($syncExit -ne 0 -or $saveExit -ne 0) {
+            if ($syncExit -ne 0) {
+                Write-Warning "Could not update the rebuildable central cache from $($entry.database); the Git corpus save will remain authoritative."
+            }
+            if ($saveExit -ne 0) {
                 $cleanupIssues += "could not preserve corpus data from $($entry.database)"
             } else {
                 try {

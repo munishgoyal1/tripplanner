@@ -1519,3 +1519,15 @@ the outcome.
 - Keep trip names out of content-free operational storage. Join the saved destination
   at dashboard read time, and leave shared infrastructure cost explicitly unallocated
   until authoritative billing data supports a defensible allocation model.
+
+## 2026-08-31 - Rebuildable Cache Sync Must Not Block Durable Cleanup
+
+- Sandbox discard has two preservation paths: `corpus_cache.py --sync` updates the
+  rebuildable emulator database `tripplanner-cache`, while `--save` writes the
+  authoritative Git corpus and per-lane trip snapshot.
+- A working-cache timeout does not mean lane evidence was lost when `--save` and the
+  retained-corpus publish succeed. Treating both exit codes as one gate stranded an
+  already-promoted sandbox after its branch and database cleanup had completed.
+- Warn on working-cache sync failure, but block destructive cleanup only when the
+  durable save or publish fails. A later restore can rebuild the working cache from
+  the Git corpus.
