@@ -313,6 +313,29 @@ or configured route-provider request.
 - [`tests/test_trip_view_api.py`](../tests/test_trip_view_api.py) - `test_corpus_header_selects_budgeted_provider_scope`
 - [`tests/test_validation_harness.py`](../tests/test_validation_harness.py) - stored-fact render coverage
 
+### EB-OPS-001 - Inspect interaction cost and provider flow without trip content
+
+**Trigger:** The verified owner opens API & Cost, selects a date range, or expands
+a new-trip or trip-update row.
+
+**Expected:** The selected inclusive range governs the full cost view. Creation and
+update sections show cumulative and average known provider estimates, named trip totals,
+and expandable interactions with provider/operation components. Service totals and
+provider-versus-cache share use measured calls; cache savings remain estimates, cache
+hits exclude other avoided calls, unknown-price calls remain visible, and shared Azure
+infrastructure remains unallocated. System Health reports cache effectiveness by dataset.
+Each interaction retains ordered content-free tool, provider, HTTP, cache, and storage
+events under the same request ID. Local study-file failures never fail the interaction,
+and hosted environments do not write local study artifacts.
+
+**Executable proof:**
+
+- [`tests/test_provider_usage.py`](../tests/test_provider_usage.py)
+- [`tests/test_interaction_telemetry.py`](../tests/test_interaction_telemetry.py)
+- [`tests/test_outbound_runtime.py`](../tests/test_outbound_runtime.py)
+- [`frontend/src/api.test.ts`](../frontend/src/api.test.ts)
+- [`frontend/src/ops/OpsDashboard.test.tsx`](../frontend/src/ops/OpsDashboard.test.tsx)
+
 ### EB-FEEDBACK-001 - Record lightweight trip feedback
 
 **Trigger:** With an active trip, select the toolbar thumbs-up or thumbs-down action,

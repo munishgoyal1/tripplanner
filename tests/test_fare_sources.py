@@ -134,3 +134,17 @@ def test_a_source_is_not_asked_about_a_mode_it_does_not_cover(request_for_train,
 def test_a_range_quote_keeps_its_upper_bound():
     quote = FareQuote(amount=25, amount_max=60, currency="EUR", provider="aggregator")
     assert quote.amount_max == 60
+
+
+@pytest.mark.asyncio
+async def test_async_fare_worker_preserves_usage_attribution(request_for_train):
+    from tripplanner.usage_attribution import current_attribution, usage_scope
+
+    observed = []
+    source = StubSource("threaded", {TransportMode.TRAIN})
+    source.quote = lambda _request: observed.append(current_attribution().interaction_id)
+
+    with usage_scope("user_trip", interaction_id="turn-fare"):
+        await fares._query_source_async(source, request_for_train, datetime.now(UTC))
+
+    assert observed == ["turn-fare"]

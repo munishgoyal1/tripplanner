@@ -118,6 +118,9 @@ def _post_routes(payload: dict, field_mask: str) -> dict:
     )
     cached = _GOOGLE_ROUTE_CACHE.get(cache_key)
     if cached:
+        from tripplanner.provider_usage import record_cache_hit
+
+        record_cache_hit(provider="google", operation="compute_routes")
         return cached.value
     headers = {
         "Content-Type": "application/json",

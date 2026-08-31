@@ -99,6 +99,22 @@ const initiatorLabels: Record<string, string> = {
   unattributed: "Unattributed",
 };
 
+const serviceLabels: Record<string, string> = {
+  azure_openai: "Azure OpenAI",
+  google_places: "Google Places",
+  google_routes: "Google Routes",
+  google_maps: "Google Maps",
+};
+
+const datasetLabels: Record<string, string> = {
+  places_search: "Places search and discovery",
+  places_details_reviews_hours: "Place details, reviews, and hours",
+  places_photos: "Place photos",
+  routes: "Routes",
+  static_maps: "Static maps",
+  llm_completion: "LLM completions",
+};
+
 function estimatedCost(cost: number, unknown: number): string {
   const value = `$${cost.toFixed(cost < 0.01 ? 4 : 2)}`;
   return unknown ? `${value} + ${unknown} unknown` : value;
@@ -129,7 +145,7 @@ function TripCostSection({ overview, kind, title, note }: {
         return <details key={`${kind}-${trip.environment}-${trip.initiator}-${trip.trip_id}`} className="group">
           <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 py-4 text-sm hover:bg-stone-50">
             <div className="min-w-0"><p className="truncate font-semibold">{tripLabel}</p><p className="mt-1 truncate font-mono text-xs text-stone-500">{trip.trip_id === "unattributed" ? "Not tied to a saved trip" : trip.trip_id}</p></div>
-            <div className="text-right"><p>{interactions.length} {kind === "new_trip" ? "creation" : interactions.length === 1 ? "update" : "updates"}</p><p className="mt-1 text-xs text-stone-500">{estimatedCost(trip.estimated_cost_usd, trip.unknown_cost_calls)}</p></div>
+            <div className="text-right"><p>{estimatedCost(trip.estimated_cost_usd, trip.unknown_cost_calls)}</p><p className="mt-1 text-xs text-stone-500">{trip.calls} provider · {trip.cache_hits ?? 0} cache · ${trip.estimated_savings_usd.toFixed(4)} saved</p></div>
           </summary>
           <div className="border-t border-stone-100 bg-stone-50 px-5 py-3">
             {interactions.map((interaction, index) => {
@@ -137,7 +153,7 @@ function TripCostSection({ overview, kind, title, note }: {
               return <details key={`${interaction.environment}-${interaction.initiator}-${interaction.trip_id}-${interaction.interaction_id}`} className="border-b border-stone-200 last:border-b-0">
                 <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] gap-3 py-3 text-sm">
                   <span className="font-semibold">{kind === "new_trip" ? "Creation request" : `Update ${index + 1}`}</span>
-                  <span>{interaction.calls} calls · {estimatedCost(interaction.estimated_cost_usd, interaction.unknown_cost_calls)}</span>
+                  <span>{interaction.calls} provider · {interaction.cache_hits ?? 0} cache · {estimatedCost(interaction.estimated_cost_usd, interaction.unknown_cost_calls)}</span>
                 </summary>
                 <div className="pb-4 pl-3">
                   {providers.map((provider) => {
@@ -158,11 +174,31 @@ function TripCostSection({ overview, kind, title, note }: {
   </section>;
 }
 
-function CostView({ overview }: { overview: OpsOverview }) {
+function CostView({ overview, days, startDate, endDate, onPreset, onStartDate, onEndDate }: {
+  overview: OpsOverview;
+  days: number;
+  startDate: string;
+  endDate: string;
+  onPreset: (days: number) => void;
+  onStartDate: (value: string) => void;
+  onEndDate: (value: string) => void;
+}) {
   const usage = overview.provider_usage;
+  const cache = usage.cache_effectiveness;
+  const today = new Date().toISOString().slice(0, 10);
+  const startMax = endDate && endDate < today ? endDate : today;
 
   return (
     <>
+      <section className="mb-6 flex flex-wrap items-end justify-between gap-4 border border-stone-300 bg-white px-5 py-4" aria-label="Cost reporting period">
+        <div><p className="text-xs font-semibold uppercase text-stone-500">Reporting period</p><p className="mt-1 text-sm font-semibold">{usage.start_date} to {usage.end_date}</p></div>
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex border border-stone-300">{[7, 30, 90].map((period) => <button key={period} type="button" className={`px-3 py-2 text-sm ${!startDate && !endDate && days === period ? "bg-stone-900 text-white" : "hover:bg-stone-100"}`} onClick={() => onPreset(period)}>{period}d</button>)}</div>
+          <label className="text-xs font-semibold text-stone-600">From<input type="date" value={startDate} max={startMax} onChange={(event) => onStartDate(event.target.value)} className="mt-1 block border border-stone-300 bg-white px-2 py-1.5 font-normal" /></label>
+          <label className="text-xs font-semibold text-stone-600">To<input type="date" value={endDate} min={startDate || undefined} max={today} onChange={(event) => onEndDate(event.target.value)} className="mt-1 block border border-stone-300 bg-white px-2 py-1.5 font-normal" /></label>
+        </div>
+      </section>
+
       <section className="grid gap-y-6 border-y border-stone-300 bg-white py-5 sm:grid-cols-2 xl:grid-cols-5">
         <Metric label="Measured calls" value={number.format(usage.totals.calls)} detail={`${usage.totals.failures} failed · ${usage.totals.avoided_calls} avoided`} icon={Boxes} />
         <Metric label="Cumulative provider cost" value={`$${usage.totals.estimated_cost_usd.toFixed(2)}`} detail="Known catalog prices only" icon={DollarSign} />
@@ -188,6 +224,17 @@ function CostView({ overview }: { overview: OpsOverview }) {
 
         <Panel title="Cumulative provider cost" note="All measured work in this period">
           {usage.by_provider_total.length ? <div className="divide-y divide-stone-100">{usage.by_provider_total.map((row) => <div key={`${row.environment}-${row.provider}`} className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 py-4 text-sm"><div><p className="font-semibold">{row.provider}</p><p className="mt-1 text-xs uppercase text-stone-500">{row.environment}</p></div><div className="text-right"><p className="font-semibold">{estimatedCost(row.estimated_cost_usd, row.unknown_cost_calls)}</p><p className="mt-1 text-xs text-stone-500">{row.calls} calls</p></div></div>)}</div> : <Empty>No provider costs recorded in this period.</Empty>}
+        </Panel>
+      </div>
+      <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-2">
+        <Panel title="Cumulative cost by service" note="Provider service · selected period">
+          {usage.by_service.length ? <div className="divide-y divide-stone-100">{usage.by_service.map((row) => <div key={`${row.environment}-${row.service}`} className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 py-4 text-sm"><div><p className="font-semibold">{serviceLabels[row.service || ""] || row.service?.replaceAll("_", " ")}</p><p className="mt-1 text-xs uppercase text-stone-500">{row.environment} · {row.calls} provider calls</p></div><div className="text-right"><p className="font-semibold">{estimatedCost(row.estimated_cost_usd, row.unknown_cost_calls)}</p><p className="mt-1 text-xs text-emerald-700">${row.estimated_savings_usd.toFixed(4)} cache savings</p></div></div>)}</div> : <Empty>No service costs recorded in this period.</Empty>}
+        </Panel>
+        <Panel title="Provider calls vs cache" note={`${cache.requests} measured requests`}>
+          <div className="p-5">
+            <div className="flex h-4 overflow-hidden bg-stone-100" aria-label={`${Math.round(cache.provider_call_rate * 100)}% provider calls and ${Math.round(cache.cache_hit_rate * 100)}% cache hits`}><div className="bg-amber-500" style={{ width: `${cache.provider_call_rate * 100}%` }} /><div className="bg-emerald-600" style={{ width: `${cache.cache_hit_rate * 100}%` }} /></div>
+            <div className="mt-4 grid grid-cols-2 gap-6 text-sm"><div><p className="text-xs uppercase text-stone-500">Provider calls</p><p className="mt-1 font-display text-2xl">{Math.round(cache.provider_call_rate * 100)}%</p><p className="text-xs text-stone-500">{cache.provider_calls} requests reached providers</p></div><div><p className="text-xs uppercase text-stone-500">Cache served</p><p className="mt-1 font-display text-2xl">{Math.round(cache.cache_hit_rate * 100)}%</p><p className="text-xs text-stone-500">{cache.cache_hits} requests · ${cache.estimated_savings_usd.toFixed(4)} estimated saved</p></div></div>
+          </div>
         </Panel>
       </div>
       <TripCostSection overview={overview} kind="new_trip" title="New trip creation" note="Cost of producing the first saved itinerary" />
@@ -272,6 +319,7 @@ function SystemView({ overview }: { overview: OpsOverview }) {
     window,
     ...overview.conversation_limits[window],
   }));
+  const cacheDatasets = overview.provider_usage.cache_effectiveness.by_dataset;
 
   return (
     <>
@@ -313,6 +361,12 @@ function SystemView({ overview }: { overview: OpsOverview }) {
         </Panel>
       </div>
 
+      <div className="mt-6">
+        <Panel title="Cache health by dataset" note={`${overview.provider_usage.start_date} to ${overview.provider_usage.end_date} · durable provider boundary`}>
+          <div className="overflow-x-auto"><table className="w-full min-w-[700px] text-left text-sm"><thead className="bg-stone-50 text-xs uppercase text-stone-500"><tr><th className="px-5 py-3">Dataset</th><th>Requests</th><th>Cache hits</th><th>Provider calls</th><th>Hit rate</th><th>Estimated saved</th></tr></thead><tbody>{cacheDatasets.map((row) => <tr key={row.dataset} className="border-t border-stone-100"><td className="px-5 py-3 font-semibold">{datasetLabels[row.dataset] || row.dataset.replaceAll("_", " ")}</td><td>{row.requests}</td><td>{row.cache_hits}</td><td>{row.provider_calls}</td><td className={row.hit_rate >= 0.5 ? "text-emerald-700" : "text-amber-700"}>{Math.round(row.hit_rate * 100)}%</td><td>${row.estimated_savings_usd.toFixed(4)}</td></tr>)}</tbody></table>{!cacheDatasets.length && <Empty>No durable cache activity in this period.</Empty>}</div>
+        </Panel>
+      </div>
+
       <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-2">
         <Panel title="Provider reliability" note="Fare providers · current process">
           <div className="overflow-x-auto"><table className="w-full min-w-[520px] text-left text-sm"><thead className="bg-stone-50 text-xs uppercase text-stone-500"><tr><th className="px-5 py-3">Provider</th><th>Calls</th><th>Failures</th><th>Failure rate</th><th>Avg</th></tr></thead><tbody>{providers.map(([name, row]) => <tr key={name} className="border-t border-stone-100"><td className="px-5 py-3 font-semibold">{name}</td><td>{row.calls}</td><td className={row.failures ? "text-rose-700" : "text-stone-500"}>{row.failures}</td><td>{Math.round(row.failure_rate * 100)}%</td><td className="font-mono text-xs">{duration(row.avg_ms)}</td></tr>)}</tbody></table>{!providers.length && <Empty>No fare-provider calls in this process yet.</Empty>}</div>
@@ -350,16 +404,24 @@ export default function OpsDashboard() {
   const [overview, setOverview] = useState<OpsOverview | null>(null);
   const [view, setView] = useState<"business" | "cost" | "system">("business");
   const [days, setDays] = useState(30);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [notFound, setNotFound] = useState(false);
+  const [rangeError, setRangeError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
   const load = async (signal?: AbortSignal) => {
     setRefreshing(true);
     try {
-      setOverview(await fetchOpsOverview(days, signal));
+      setOverview(await fetchOpsOverview(days, signal, startDate || undefined, endDate || undefined));
       setNotFound(false);
-    } catch {
-      if (!signal?.aborted) setNotFound(true);
+      setRangeError("");
+    } catch (error) {
+      if (!signal?.aborted) {
+        const status = (error as { status?: number }).status;
+        setNotFound(status === 404);
+        setRangeError(status === 422 ? "Choose a valid reporting range ending today or earlier." : "");
+      }
     } finally {
       if (!signal?.aborted) setRefreshing(false);
     }
@@ -370,7 +432,7 @@ export default function OpsDashboard() {
     void load(controller.signal);
     const timer = window.setInterval(() => void load(controller.signal), 30_000);
     return () => { controller.abort(); window.clearInterval(timer); };
-  }, [days]);
+  }, [days, startDate, endDate]);
 
   if (notFound) return <main className="grid min-h-full place-items-center bg-stone-100 px-6 text-center"><div><p className="font-display text-7xl text-stone-900">404</p><p className="mt-3 text-sm text-stone-500">Page not found.</p></div></main>;
   if (!overview) return <main className="grid min-h-full place-items-center bg-stone-100 text-sm text-stone-500">Loading</main>;
@@ -380,7 +442,7 @@ export default function OpsDashboard() {
       <header className="border-b border-stone-700 bg-[#1f2926] px-5 py-4 text-stone-50 sm:px-8">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-4">
           <div><p className="text-xs font-semibold uppercase text-emerald-300">Tripplanner operations</p><h1 className="font-display text-2xl">Owner insight console</h1></div>
-          <div className="flex items-center gap-4 text-xs text-stone-300"><span className="hidden sm:inline">Updated {new Date(overview.generated_at).toLocaleTimeString()}</span>{view === "cost" && <div className="flex border border-stone-600" aria-label="Cost reporting period">{[7, 30, 90].map((period) => <button key={period} type="button" className={`px-3 py-2 ${days === period ? "bg-stone-100 text-stone-950" : "hover:bg-stone-700"}`} onClick={() => setDays(period)}>{period}d</button>)}</div>}<button type="button" className="grid size-9 place-items-center border border-stone-600 hover:bg-stone-700" onClick={() => void load()} title="Refresh metrics" aria-label="Refresh metrics"><RefreshCw size={16} className={refreshing ? "animate-spin" : ""} /></button></div>
+          <div className="flex items-center gap-4 text-xs text-stone-300"><span className="hidden sm:inline">Updated {new Date(overview.generated_at).toLocaleTimeString()}</span><button type="button" className="grid size-9 place-items-center border border-stone-600 hover:bg-stone-700" onClick={() => void load()} title="Refresh metrics" aria-label="Refresh metrics"><RefreshCw size={16} className={refreshing ? "animate-spin" : ""} /></button></div>
         </div>
         <div className="mx-auto mt-4 flex max-w-[1500px] gap-1" role="tablist" aria-label="Operations views">
           <button type="button" role="tab" aria-selected={view === "business"} onClick={() => setView("business")} className={`px-4 py-2 text-sm font-semibold ${view === "business" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Users size={15} />Business</span></button>
@@ -388,7 +450,9 @@ export default function OpsDashboard() {
           <button type="button" role="tab" aria-selected={view === "system"} onClick={() => setView("system")} className={`px-4 py-2 text-sm font-semibold ${view === "system" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Server size={15} />System health</span></button>
         </div>
       </header>
-      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} /> : view === "cost" ? <CostView overview={overview} /> : <SystemView overview={overview} />}</div>
+
+      {rangeError && <div role="alert" className="border-b border-amber-300 bg-amber-50 px-5 py-3 text-sm text-amber-950 sm:px-8">{rangeError}</div>}
+      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} /> : view === "cost" ? <CostView overview={overview} days={days} startDate={startDate} endDate={endDate} onPreset={(period) => { setDays(period); setStartDate(""); setEndDate(""); }} onStartDate={setStartDate} onEndDate={setEndDate} /> : <SystemView overview={overview} />}</div>
     </main>
   );
 }

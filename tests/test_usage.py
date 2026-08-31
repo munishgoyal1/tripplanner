@@ -159,9 +159,7 @@ def test_chat_endpoint_returns_cap_message_when_over(monkeypatch):
     body = resp.json()
     assert body["agent"] == "cap"
     assert "budget" in body["reply"].lower() or "reached" in body["reply"].lower()
-    assert operations == [
-        {"user_id": "alice", "transport": "json", "outcome": "capped"}
-    ]
+    assert operations == [{"user_id": "alice", "transport": "json", "outcome": "capped"}]
 
 
 def test_completed_chat_request_replays_when_over_cap(monkeypatch):
@@ -193,9 +191,7 @@ def test_completed_chat_request_replays_when_over_cap(monkeypatch):
         "agent": "trip",
         "trip_id": "goa",
     }
-    assert operations == [
-        {"user_id": "alice", "transport": "json", "outcome": "replayed"}
-    ]
+    assert operations == [{"user_id": "alice", "transport": "json", "outcome": "replayed"}]
 
 
 def test_completed_stream_request_replays_when_over_cap(monkeypatch):
@@ -224,9 +220,71 @@ def test_completed_stream_request_replays_when_over_cap(monkeypatch):
     assert response.status_code == 200
     assert '"reply": "Persisted reply"' in response.text
     assert '"agent": "trip"' in response.text
-    assert operations == [
-        {"user_id": "alice", "transport": "sse", "outcome": "replayed"}
-    ]
+    assert operations == [{"user_id": "alice", "transport": "sse", "outcome": "replayed"}]
+
+
+def test_stream_rejects_mismatched_header_and_body_request_ids():
+    from fastapi.testclient import TestClient
+
+    from tripplanner import api
+
+    response = TestClient(api.app).post(
+        "/chat/stream",
+        headers={"X-Request-ID": "header-request"},
+        json={"user_id": "alice", "message": "plan goa", "request_id": "body-request"},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == "Request IDs in header and body must match."
+
+
+def test_stream_flushes_provider_usage_after_body_is_consumed(monkeypatch):
+    import asyncio
+
+    from fastapi.testclient import TestClient
+
+    from tripplanner import api, provider_usage
+    from tripplanner.graph import app_graph
+    from tripplanner.request_limits import chat_admission
+
+    writes = []
+
+    async def stream_with_provider_call(*_args, **_kwargs):
+        provider_usage.record_call(
+            provider="google",
+            operation="text_search",
+            sku_class="essentials",
+            status="ok",
+            duration_ms=10,
+        )
+        if False:
+            yield {}
+
+    monkeypatch.setattr(app_graph, "astream_events", stream_with_provider_call)
+    monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: None)
+    monkeypatch.setattr(api, "_load_chat_request", lambda _request_id: (None, [], None))
+    monkeypatch.setattr(api, "_save_chat", lambda *_args, **_kwargs: "trip-1")
+    monkeypatch.setattr(api, "_schedule_learning_sweep", lambda *_args: None)
+    monkeypatch.setattr(api, "_should_auto_persist_itinerary", lambda _tools: False)
+    monkeypatch.setattr(provider_usage, "persist_batch", lambda records, events: writes.append((records, events)))
+    monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (False, {}))
+    asyncio.run(chat_admission.reset())
+
+    try:
+        response = TestClient(api.app).post(
+            "/chat/stream",
+            headers={"X-Request-ID": "stream-usage"},
+            json={"user_id": "alice", "message": "plan goa"},
+        )
+    finally:
+        asyncio.run(chat_admission.reset())
+
+    assert response.status_code == 200
+    assert len(writes) == 1
+    records, events = writes[0]
+    assert len(records) == 1
+    assert records[0]["interaction_id"] == "stream-usage"
+    assert any(event["kind"] == "provider_call" for event in events)
 
 
 def test_stream_surfaces_partial_turn_save_failure(monkeypatch):
@@ -320,17 +378,11 @@ def test_sync_chat_retry_replaces_interrupted_attempt(monkeypatch, tmp_path):
         "outcome": "completed",
     }
     set_user_id("anon")
-    assert [
-        {"role": row["role"], "text": row["text"]}
-        for row in chat_store.transcript(None)
-    ] == [
+    assert [{"role": row["role"], "text": row["text"]} for row in chat_store.transcript(None)] == [
         {"role": "user", "text": "plan goa"},
         {"role": "assistant", "text": "Goa is ready"},
     ]
     set_user_id("local")
-
-
-
 
 
 def test_a_deployment_named_with_hyphens_is_priced_as_the_model_it_is() -> None:
@@ -364,21 +416,31 @@ def test_token_counts_are_read_from_wherever_the_client_reports_them() -> None:
     )
     modern = SimpleNamespace(
         llm_output={},
-        generations=[[SimpleNamespace(
-            message=SimpleNamespace(
-                usage_metadata={"input_tokens": 31000, "output_tokens": 900},
-                response_metadata={},
-            )
-        )]],
+        generations=[
+            [
+                SimpleNamespace(
+                    message=SimpleNamespace(
+                        usage_metadata={"input_tokens": 31000, "output_tokens": 900},
+                        response_metadata={},
+                    )
+                )
+            ]
+        ],
     )
     older = SimpleNamespace(
         llm_output=None,
-        generations=[[SimpleNamespace(
-            message=SimpleNamespace(
-                usage_metadata=None,
-                response_metadata={"token_usage": {"prompt_tokens": 5, "completion_tokens": 1}},
-            )
-        )]],
+        generations=[
+            [
+                SimpleNamespace(
+                    message=SimpleNamespace(
+                        usage_metadata=None,
+                        response_metadata={
+                            "token_usage": {"prompt_tokens": 5, "completion_tokens": 1}
+                        },
+                    )
+                )
+            ]
+        ],
     )
 
     assert _token_counts(legacy) == (10, 2)
@@ -411,9 +473,15 @@ def test_cached_prompt_tokens_are_counted_when_the_provider_reports_them() -> No
     from tripplanner.graph import _cached_tokens
 
     modern = SimpleNamespace(
-        generations=[[SimpleNamespace(
-            message=SimpleNamespace(usage_metadata={"input_token_details": {"cache_read": 6144}})
-        )]],
+        generations=[
+            [
+                SimpleNamespace(
+                    message=SimpleNamespace(
+                        usage_metadata={"input_token_details": {"cache_read": 6144}}
+                    )
+                )
+            ]
+        ],
         llm_output={},
     )
     legacy = SimpleNamespace(

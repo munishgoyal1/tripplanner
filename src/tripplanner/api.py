@@ -33,7 +33,7 @@ import re
 import time
 from collections.abc import AsyncIterator
 from contextlib import nullcontext
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Literal
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
@@ -230,12 +230,15 @@ async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-unt
     )
     try:
         with provider_scope:
-            with usage_scope(
-                "user_action",
-                interaction_id=interaction_id,
-                route=f"{request.method} {request.scope.get('path', '')}",
-            ):
+            if request.scope.get("path") == "/chat/stream":
                 response = await call_next(request)
+            else:
+                with usage_scope(
+                    "user_action",
+                    interaction_id=interaction_id,
+                    route=f"{request.method} {request.scope.get('path', '')}",
+                ):
+                    response = await call_next(request)
         status_code = response.status_code
         return response
     finally:
@@ -508,6 +511,10 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
     from tripplanner.usage import cap_message, is_over_cap
 
     started = time.monotonic()
+    header_request_id = request.headers.get("x-request-id", "")
+    if header_request_id and req.request_id and header_request_id != req.request_id:
+        raise HTTPException(status_code=422, detail="Request IDs in header and body must match.")
+    request_id = req.request_id or header_request_id
     user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_request", length=len(req.message), words=len(req.message.split()))
 
@@ -518,9 +525,9 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
         raise
     try:
         await check_replay_lookup(request, user_id)
-        replay = await asyncio.to_thread(_completed_chat_request, req.request_id)
+        replay = await asyncio.to_thread(_completed_chat_request, request_id)
         if replay is not None:
-            await _repair_completed_chat(req.request_id, replay)
+            await _repair_completed_chat(request_id, replay)
             _record_chat_operation(
                 started, user_id=user_id, transport="json", outcome="replayed"
             )
@@ -537,7 +544,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
         await release_replay_access(replay_permit)
     try:
         history_tid, history, replay = await asyncio.to_thread(
-            _load_chat_request, req.request_id
+            _load_chat_request, request_id
         )
         if replay is not None:
             _record_chat_operation(
@@ -579,7 +586,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
 
             with usage_scope(
                 "user_trip",
-                interaction_id=req.request_id or "",
+                interaction_id=request_id,
                 trip_id=history_tid or "",
                 route="POST /chat",
                 interaction_kind="trip_update" if history_tid else "new_trip",
@@ -619,7 +626,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
                         HumanMessage(content=req.message),
                         AIMessage(content="(interrupted)"),
                     ],
-                    req.request_id,
+                    request_id,
                     False,
                 )
             except Exception:
@@ -667,7 +674,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             history_tid,
             base_history,
             completed_turn,
-            req.request_id,
+            request_id,
             True,
             agent,
             max(int(time.monotonic() - started), 0),
@@ -862,6 +869,10 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     from tripplanner.usage import cap_message, is_over_cap
 
     started = time.monotonic()
+    header_request_id = request.headers.get("x-request-id", "")
+    if header_request_id and req.request_id and header_request_id != req.request_id:
+        raise HTTPException(status_code=422, detail="Request IDs in header and body must match.")
+    request_id = req.request_id or header_request_id
     user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_stream_request", length=len(req.message))
 
@@ -872,9 +883,9 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         raise
     try:
         await check_replay_lookup(request, user_id)
-        replay = await asyncio.to_thread(_completed_chat_request, req.request_id)
+        replay = await asyncio.to_thread(_completed_chat_request, request_id)
         if replay is not None:
-            await _repair_completed_chat(req.request_id, replay)
+            await _repair_completed_chat(request_id, replay)
             return StreamingResponse(
                 _sse_replay_stream(replay, started, user_id),
                 media_type="text/event-stream",
@@ -888,7 +899,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         await release_replay_access(replay_permit)
     try:
         history_tid, history, replay = await asyncio.to_thread(
-            _load_chat_request, req.request_id
+            _load_chat_request, request_id
         )
         if replay is not None:
             return StreamingResponse(
@@ -958,7 +969,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             async def budgeted_events():
                 with usage_scope(
                     "user_trip",
-                    interaction_id=req.request_id or "",
+                    interaction_id=request_id,
                     trip_id=history_tid or "",
                     route="POST /chat/stream",
                     interaction_kind="trip_update" if history_tid else "new_trip",
@@ -1075,7 +1086,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                     history_tid,
                     base_history,
                     completed_turn,
-                    req.request_id,
+                    request_id,
                     False,
                 )
             except Exception as save_exc:
@@ -1132,7 +1143,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 history_tid,
                 base_history,
                 completed_turn,
-                req.request_id,
+                request_id,
                 True,
                 "trip",
                 max(int(time.monotonic() - started), 0),
@@ -1180,8 +1191,21 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         )
         yield _sse("done", {"reply": reply, "agent": "trip", "trip_id": tid_after})
 
+    async def attributed_gen():
+        from tripplanner.usage_attribution import usage_scope
+
+        with usage_scope(
+            "user_trip",
+            interaction_id=request_id,
+            trip_id=history_tid or "",
+            route="POST /chat/stream",
+            interaction_kind="trip_update" if history_tid else "new_trip",
+        ):
+            async for event in gen():
+                yield event
+
     return StreamingResponse(
-        gen(),
+        attributed_gen(),
         media_type="text/event-stream",
         headers=_SSE_HEADERS,
         background=BackgroundTask(release_chat, permit),
@@ -3033,7 +3057,12 @@ async def analytics_event(request: Request) -> Response:
 
 
 @app.get("/ops/overview", include_in_schema=False)
-async def ops_overview(request: Request, days: int = 30) -> dict[str, Any]:
+async def ops_overview(
+    request: Request,
+    days: int = 30,
+    start_date: date | None = None,
+    end_date: date | None = None,
+) -> dict[str, Any]:
     """Return content-free business and engineering metrics to the owner only."""
     session = require_owner(request)
     set_user_id(str(session["user_id"]))
@@ -3123,14 +3152,19 @@ async def ops_overview(request: Request, days: int = 30) -> dict[str, Any]:
         for provider in sorted(provider_names)
     }
     runtime["cache"] = provider_cache_status()
-    runtime["provider_usage"] = provider_usage_summary(
-        days=days,
-        trip_names={
-            str(trip["trip_id"]): str(trip.get("destination") or "")
-            for trip in trips
-            if trip.get("trip_id")
-        },
-    )
+    try:
+        runtime["provider_usage"] = provider_usage_summary(
+            days=days,
+            start_date=start_date,
+            end_date=end_date,
+            trip_names={
+                str(trip["trip_id"]): str(trip.get("destination") or "")
+                for trip in trips
+                if trip.get("trip_id")
+            },
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return runtime
 
 

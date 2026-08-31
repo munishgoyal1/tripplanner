@@ -124,6 +124,10 @@ def check_place_hours(place_id: str, when_iso: str = "") -> str:
         "currentOpeningHours.weekdayDescriptions,currentOpeningHours.periods"
     )
     p = _PLACE_HOURS_CACHE.get(place_id)
+    if isinstance(p, dict):
+        from tripplanner.provider_usage import record_cache_hit
+
+        record_cache_hit(provider="google", operation="place_details", sku_class="essentials")
     if not isinstance(p, dict):
         if not consume("review_details"):
             return "Paid provider access is not authorized for this operation."

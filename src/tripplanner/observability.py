@@ -402,6 +402,12 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
     context = current_context()
     if context is not None:
         fields = {**context.event_fields(), **fields}
+    try:
+        from tripplanner.usage_attribution import current_attribution
+
+        fields = {**current_attribution().fields(), **fields}
+    except Exception:
+        pass
     safe: dict[str, Any] = {}
     for k, v in fields.items():
         if k.lower() in _SENSITIVE_FIELDS:
@@ -410,6 +416,12 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
             safe[k] = redact_value(v)
     safe["user_id"] = user_id  # JsonFormatter hashes this
     safe["event_kind"] = kind
+    try:
+        from tripplanner.usage_attribution import append_current_event
+
+        append_current_event(kind, safe)
+    except Exception:
+        pass
     with _EVENT_OBSERVERS_LOCK:
         observers = tuple(_EVENT_OBSERVERS)
     for observer in observers:

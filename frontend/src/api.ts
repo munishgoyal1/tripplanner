@@ -23,7 +23,11 @@ export {
 export type { AuthSession } from "./auth/authSession";
 
 function ensureOk(response: Response, action: string): void {
-  if (!response.ok) throw new Error(`${action} (${response.status}).`);
+  if (!response.ok) {
+    throw Object.assign(new Error(`${action} (${response.status}).`), {
+      status: response.status,
+    });
+  }
 }
 
 export interface ToolEventExtras {
@@ -46,13 +50,16 @@ export interface OpsUsageRollup {
   trip_name?: string;
   interaction_kind?: "new_trip" | "trip_update" | "other" | "unattributed";
   provider?: string;
+  service?: string;
   operation?: string;
   sku_class?: string;
   interaction_id?: string;
   calls: number;
   avoided_calls: number;
+  cache_hits?: number;
   failures: number;
   estimated_cost_usd: number;
+  estimated_savings_usd: number;
   unknown_cost_calls: number;
   prompt_tokens: number;
   completion_tokens: number;
@@ -134,6 +141,8 @@ export interface OpsOverview {
   provider_usage: {
     period_days: number;
     since: string;
+    start_date: string;
+    end_date: string;
     pricing: {
       catalog_version: string;
       basis: string;
@@ -156,6 +165,23 @@ export interface OpsOverview {
     by_initiator: OpsUsageRollup[];
     by_interaction_kind: OpsUsageRollup[];
     by_provider_total: OpsUsageRollup[];
+    by_service: OpsUsageRollup[];
+    cache_effectiveness: {
+      provider_calls: number;
+      cache_hits: number;
+      requests: number;
+      provider_call_rate: number;
+      cache_hit_rate: number;
+      estimated_savings_usd: number;
+      by_dataset: Array<{
+        dataset: string;
+        provider_calls: number;
+        cache_hits: number;
+        requests: number;
+        hit_rate: number;
+        estimated_savings_usd: number;
+      }>;
+    };
     by_trip: OpsUsageRollup[];
     by_provider: OpsUsageRollup[];
     by_operation: OpsUsageRollup[];
@@ -173,8 +199,16 @@ export interface OpsOverview {
   };
 }
 
-export async function fetchOpsOverview(days = 30, signal?: AbortSignal): Promise<OpsOverview> {
-  const response = await apiFetch(`${BASE}/ops/overview?days=${days}`, { signal });
+export async function fetchOpsOverview(
+  days = 30,
+  signal?: AbortSignal,
+  startDate?: string,
+  endDate?: string,
+): Promise<OpsOverview> {
+  const params = new URLSearchParams({ days: String(days) });
+  if (startDate) params.set("start_date", startDate);
+  if (endDate) params.set("end_date", endDate);
+  const response = await apiFetch(`${BASE}/ops/overview?${params}`, { signal });
   ensureOk(response, "Operations overview unavailable");
   return response.json() as Promise<OpsOverview>;
 }
@@ -198,7 +232,7 @@ export async function streamChat(
   const requestId = options.requestId ?? crypto.randomUUID();
   const res = await apiFetch(`${BASE}/chat/stream`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "X-Request-ID": requestId },
     body: JSON.stringify({
       message,
       user_id: getUserId(),
