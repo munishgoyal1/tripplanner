@@ -648,6 +648,31 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
     }
   };
 
+  const unmappedStops = useMemo(() => view?.unmapped_stops ?? [], [view]);
+
+  // Only an anchor interrupts: a stay or terminal missing from the map is the
+  // day's shape gone, not a cosmetic gap.
+  useEffect(() => {
+    publishUnmappedStops(unmappedStops);
+    const anchors = loudStops(unmappedStops);
+    if (!anchors.length) {
+      dismissNotice("map-unmapped-anchor");
+      return;
+    }
+    const [first] = anchors;
+    notify({
+      id: "map-unmapped-anchor",
+      tone: "decision",
+      message:
+        anchors.length === 1
+          ? `${first.name} isn't on the map`
+          : `${anchors.length} key stops aren't on the map`,
+      detail: first.candidate
+        ? `The map found “${first.candidate.name}” instead. Open the map to accept it or fix the stop.`
+        : "Open the map to see which stops could not be placed.",
+    });
+  }, [unmappedStops]);
+
   // ---- render --------------------------------------------------------------
   // "Not configured" is a terminal state — no map will ever mount, so it's safe
   // to return early.
@@ -746,31 +771,6 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
       ))}
     </div>
   ) : null;
-
-  const unmappedStops = useMemo(() => view?.unmapped_stops ?? [], [view]);
-
-  // Only an anchor interrupts: a stay or terminal missing from the map is the
-  // day's shape gone, not a cosmetic gap.
-  useEffect(() => {
-    publishUnmappedStops(unmappedStops);
-    const anchors = loudStops(unmappedStops);
-    if (!anchors.length) {
-      dismissNotice("map-unmapped-anchor");
-      return;
-    }
-    const [first] = anchors;
-    notify({
-      id: "map-unmapped-anchor",
-      tone: "decision",
-      message:
-        anchors.length === 1
-          ? `${first.name} isn't on the map`
-          : `${anchors.length} key stops aren't on the map`,
-      detail: first.candidate
-        ? `The map found “${first.candidate.name}” instead. Open the map to accept it or fix the stop.`
-        : "Open the map to see which stops could not be placed.",
-    });
-  }, [unmappedStops]);
 
   const handleConfirmStopPlace = async (stop: UnmappedStop) => {    setConfirmingStop(stop.name);
     try {

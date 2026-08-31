@@ -53,9 +53,15 @@ The runner exercises the real FastAPI application, identity middleware,
 - `GET /trip/map`
 - `GET /trip/itinerary`
 - `POST /trip/stop/booked`
+- `POST /chat` with a deterministic fake graph
+- `POST /chat/stream` with the same deterministic fake graph
 
 Storage and view computation are replaced with deterministic representative data.
-No model, Cosmos, travel provider, email provider, or external network call is made.
+The chat scenarios assert that JSON and SSE terminal payloads agree on reply,
+agent, and trip ID. No model, Cosmos, travel provider, email provider, or external
+network call is made. Process-local chat concurrency, replay-rate, conversation,
+and usage-cap admission state is substituted so repeated samples remain independent;
+dedicated request-limit and conversation-limit tests own those safety contracts.
 Three warmups are excluded, then 30 samples per scenario produce min, mean, p50,
 p95, max, HTTP error rate, and total run time. The gate fails on an HTTP error or a
 scenario p95 above 750 ms. It also compares LLM usage before and after the run and
@@ -78,9 +84,11 @@ $env:PYTHONPATH='src'
 
 Use [operations-slos.md](operations-slos.md) for the accepted-chat success and p95
 latency objectives, low-volume interpretation, release observation, failure diagnosis,
-and per-tool latency/error/cache-hit queries. Those events reflect real hosted model,
-provider, persistence, and cold-start behavior that the hermetic gate intentionally
-excludes.
+per-tool latency/error/cache-hit queries, and `chat_phase`, `workflow_operation`, and
+`storage_operation` breakdowns. The hidden owner operations endpoint exposes bounded
+process-local p50/p95/error aggregates for those timed operations; Log Analytics is the
+durable cross-revision source. Those events reflect real hosted model, provider,
+persistence, and cold-start behavior that the hermetic gate intentionally excludes.
 
 Investigate a repeated production regression in this order:
 
@@ -90,6 +98,10 @@ Investigate a repeated production regression in this order:
 4. Check Cosmos latency, normalized RU consumption, and HTTP 429 throttling.
 5. Change code, cache policy, throughput, or hosting only when that evidence identifies
    the controlling cost or latency source.
+
+Cosmos request-charge (RU) capture is not implemented. Current application timings show
+client-observed duration and write payload bytes, while Azure Cosmos metrics remain the
+authoritative source for normalized RU consumption and throttling.
 
 ## Cost review
 

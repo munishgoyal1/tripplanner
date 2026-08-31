@@ -1483,3 +1483,15 @@ the outcome.
 - Apply indefinite retention only to stable metadata. Provider misses must retain
   their short retry TTL, and signed URLs must retain an expiry-aware TTL even when
   their durable photo references are stable.
+
+## 2026-09-01 - Wall Time and Span Attribution Answer Different Questions
+
+- Summing nested workflow, provider, and storage durations can exceed elapsed request
+  time because spans overlap or contain one another. Report scenario wall time and
+  summed event time as separate measures; never label the latter latency.
+- A useful deterministic gate runs real transport and application orchestration while
+  substituting paid, nondeterministic, and quota-bearing process state. Dedicated tests
+  must retain ownership of admission safety. JSON/SSE parity and a zero-usage assertion
+  catch contract drift without turning a benchmark into a provider test.
+- Deployment optimization needs stage evidence. Measure build, push, ARM apply,
+  revision rollout, and smoke independently before removing or weakening any gate.

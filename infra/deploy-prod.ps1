@@ -40,6 +40,19 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/deployment-common.ps1"
 Start-RunLog -Name "prod-deploy" | Out-Null
+$totalTimer = Start-DeploymentTimer
+$stageTimer = $null
+$stageName = ""
+trap {
+    if ($null -ne $stageTimer -and $stageTimer.IsRunning) {
+        Complete-DeploymentTimer -Name "$stageName (failed)" -Timer $stageTimer | Out-Null
+    }
+    if ($totalTimer.IsRunning) {
+        Complete-DeploymentTimer -Name "Production deployment total (failed)" -Timer $totalTimer | Out-Null
+    }
+    Stop-RunLog
+    throw
+}
 
 if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
     az account set --subscription $SubscriptionId
@@ -273,6 +286,8 @@ Write-Host "  ✓ Files exist`n"
 
 # Step 2: Validate Bicep
 Write-Host "✓ Step 2: Validating Bicep template..."
+$stageName = "Bicep validation"
+$stageTimer = Start-DeploymentTimer
 $validation = az deployment group validate `
     --resource-group $prodRG `
     --template-file $bicepFile `
@@ -280,23 +295,32 @@ $validation = az deployment group validate `
     --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
     2>&1
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Bicep validation failed: $validation"
+    throw "Bicep validation failed: $validation"
 }
 Write-Host "  ✓ Template is valid`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
 # Step 3: Dry run (optional)
 if ($DryRun) {
     Write-Host "✓ Step 3: Performing DRY RUN (no changes)..."
+    $stageName = "Infrastructure what-if"
+    $stageTimer = Start-DeploymentTimer
     az deployment group what-if `
         --resource-group $prodRG `
         --template-file $bicepFile `
         --parameters $bicepParams `
         --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" | Out-String
+    if ($LASTEXITCODE -ne 0) { throw "Production infrastructure what-if failed." }
     Write-Host "  ✓ Dry run completed`n"
+    Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
+    Complete-DeploymentTimer -Name "Production dry run total" -Timer $totalTimer | Out-Null
+    Stop-RunLog
     exit 0
 }
 
 Write-Host "✓ Step 3: Checking infrastructure changes..."
+$stageName = "Infrastructure what-if"
+$stageTimer = Start-DeploymentTimer
 $rawWhatIf = az deployment group what-if `
     --resource-group $prodRG `
     --template-file $bicepFile `
@@ -312,9 +336,12 @@ if ($LASTEXITCODE -ne 0) {
 $whatIf = ConvertFrom-AzureCliJson -Output $rawWhatIf -Action "Production what-if"
 Assert-DeploymentHasNoDeletes -WhatIf $whatIf -EnvironmentName "Production"
 Write-Host "  ✓ What-if contains no deletes`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
 # Step 4: Deploy
 Write-Host "✓ Step 3: Deploying to PRODUCTION..."
+$stageName = "Infrastructure deployment"
+$stageTimer = Start-DeploymentTimer
 $rawDeploy = az deployment group create `
     --resource-group $prodRG `
     --template-file $bicepFile `
@@ -334,6 +361,7 @@ if ($deployment.state -ne "Succeeded") {
     throw "Deployment failed: $($deployment.state)"
 }
 Write-Host "  ✓ Infrastructure deployed`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
 if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
     $OAuthRedirectBase = "$($deployment.containerAppUrl.TrimEnd('/'))/api"
@@ -341,6 +369,8 @@ if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
 
 # Step 5: Always set app image so deployments never stay on the hello-world default.
 Write-Host "✓ Step 4: Updating Container App image to $ImageTag..."
+$stageName = "Container App rollout"
+$stageTimer = Start-DeploymentTimer
 az containerapp update `
     --resource-group $prodRG `
     --name $deployment.containerAppName `
@@ -358,8 +388,11 @@ if ($LASTEXITCODE -ne 0) {
     throw "Container App image update failed."
 }
 Write-Host "  ✓ Image updated`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
 Write-Host "✓ Step 5: Running read-only hosted smoke tests..."
+$stageName = "Hosted smoke tests"
+$stageTimer = Start-DeploymentTimer
 $expectedOAuthCallback = "$($OAuthRedirectBase.TrimEnd('/'))/auth/callback/google"
 & "$PSScriptRoot/smoke-hosted.ps1" `
     -Environment production `
@@ -370,6 +403,8 @@ if ($LASTEXITCODE -ne 0) {
     throw "Production smoke tests failed. Run ./infra/rollback-prod.ps1 after confirming the failure."
 }
 Write-Host "  ✓ Production smoke tests passed`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
+Complete-DeploymentTimer -Name "Production deployment total" -Timer $totalTimer | Out-Null
 
 # Step 6: Output results
 Write-Host "╔═══════════════════════════════════════════════════════════╗"

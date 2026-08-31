@@ -79,6 +79,12 @@ def test_hermetic_baseline_invokes_routes_and_records_zero_cost() -> None:
         "trip_map",
         "trip_itinerary",
         "stop_booked",
+        "chat_json",
+        "chat_sse",
+    }
+    assert report["chat_transport_parity"] == {
+        "matched": True,
+        "fields": ["reply", "agent", "trip_id"],
     }
     assert all(result["errors"] == 0 for result in report["scenarios"].values())
     assert all(result["p95_ms"] <= 750.0 for result in report["scenarios"].values())

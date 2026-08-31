@@ -970,6 +970,26 @@ describe("map stop selection", () => {
     delete window.google;
   });
 
+  it("keeps hook ordering stable when disabled map data arrives asynchronously", async () => {
+    fetchMapsConfigMock.mockResolvedValue({ enabled: false, key: "" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: false,
+      destination: "",
+      center: null,
+      pins: [],
+      days: [],
+      available_days: [],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+
+    render(createElement(MapPanel));
+
+    expect(await screen.findByText("The interactive map isn't configured.", { exact: false }))
+      .toBeInTheDocument();
+  });
+
   it("defaults a newly selected trip to All days even when its day numbers overlap", async () => {
     fetchMapsConfigMock.mockResolvedValue({ enabled: false, key: "" });
     fetchMapViewMock.mockResolvedValue({

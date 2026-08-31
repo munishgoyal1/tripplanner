@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from tripplanner.observability import timed_operation
 from tripplanner.validation.harness.context import harness_scope
 from tripplanner.validation.harness.evals import EvalResult, EvalScenario, evaluate_plan
 from tripplanner.validation.harness.evidence import EvidenceCollector
@@ -57,7 +58,8 @@ def run_scenario(
     actual_run_id = run_id or uuid4().hex
     with harness_scope(scenario_id, run_id=actual_run_id, environment=environment):
         with EvidenceCollector(actual_run_id, scenario_id, environment) as collector:
-            result = execute()
+            with timed_operation("scenario_operation", "execute"):
+                result = execute()
 
     quality_result = quality(result) if quality else None
     report = build_report(collector.evidence, quality=quality_result, billing=billing)

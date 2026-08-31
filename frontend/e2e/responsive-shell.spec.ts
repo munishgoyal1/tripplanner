@@ -23,11 +23,15 @@ const emptyTrip = {
 };
 
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("tripplanner_assistant_open", "true");
+  });
   await page.route("**/api/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
     let body: unknown = {};
     if (path.endsWith("/auth/config")) body = { google: false };
     else if (path.endsWith("/auth/me")) body = { authenticated: false };
+    else if (path.endsWith("/auth/guest/session")) body = { token: "e2e-guest-token" };
     else if (path.endsWith("/chat/history")) body = { messages: [] };
     else if (path.endsWith("/trip/view")) body = emptyTrip;
     else if (path.endsWith("/maps/config")) body = { enabled: false, key: "" };
@@ -70,18 +74,20 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("mounts exactly one chat workspace", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/planner");
 
-  await expect(page.getByRole("heading", { name: "Trip Planner" })).toHaveCount(1);
+  const composer = page.getByPlaceholder("e.g. Plan a 5-day trip to Goa in December for 2 people");
+  await expect(composer).toHaveCount(1);
+  await expect(composer).toBeEnabled();
 
   const desktop = await page.evaluate(() => window.matchMedia("(min-width: 768px)").matches);
   if (desktop) {
+    await expect(page.locator("main")).toHaveCount(1);
     await expect(page.getByRole("heading", { name: "Itinerary" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Map" })).toBeVisible();
     await expect(page.getByTestId("context-inspector")).toBeVisible();
     await expect(page.getByRole("separator", { name: "Resize itinerary and map" })).toBeVisible();
     await expect(page.getByRole("separator", { name: "Resize map and details" })).toBeVisible();
-    await expect(page.getByRole("separator", { name: "Resize details and chat" })).toBeVisible();
     await page.getByRole("button", { name: /Goa.*1/ }).click();
     const menu = page.getByTestId("saved-trips-menu");
     await expect(menu).toBeVisible();
@@ -200,12 +206,10 @@ test("refreshes the persisted itinerary after a completed planning turn", async 
     await route.fulfill({ json: body });
   });
 
-  await page.goto("/");
-  if (await page.evaluate(() => window.matchMedia("(min-width: 768px)").matches)) {
-    await expect(page.getByText("No day-by-day plan yet.", { exact: false })).toBeVisible();
-  }
+  await page.goto("/planner");
   const initialItineraryRequests = itineraryRequests;
   const composer = page.getByPlaceholder("e.g. Plan a 5-day trip to Goa in December for 2 people");
+  await expect(composer).toBeEnabled();
   await composer.fill("Plan a five-day Goa trip from Delhi in December.");
   await page.getByRole("button", { name: "Send" }).click();
 

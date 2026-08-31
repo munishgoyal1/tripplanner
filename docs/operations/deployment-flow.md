@@ -97,6 +97,12 @@ The script:
 7. Runs the public read-only hosted smoke suite.
 8. Prints and logs the tested image tag.
 
+The image publisher reports dependency/application build time, each tag push, total
+publish time, image ID, and local uncompressed bytes. Canary and production scripts
+report Bicep validation, what-if, ARM deployment, Container App rollout, smoke, and
+total elapsed time; canary also reports image build/push time. Compare repeated runs
+before optimizing. Registry transfer size is not the same as local uncompressed size.
+
 To redeploy an already-pushed artifact or apply infrastructure changes without
 building a new image:
 

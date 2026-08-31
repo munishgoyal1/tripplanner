@@ -371,9 +371,12 @@ milestone level.
 # Python lint
 .venv\Scripts\python.exe -m ruff check src tests
 
-# Frontend typecheck, tests, and build
+# Frontend typecheck, ownership-specific tests, and build
 npm --prefix frontend run typecheck
-npm --prefix frontend test -- --run
+npm --prefix frontend run test:unit
+npm --prefix frontend run test:labs
+npm --prefix frontend run test:inspector
+npm --prefix frontend run test:all
 npm --prefix frontend run build
 
 # Shared client

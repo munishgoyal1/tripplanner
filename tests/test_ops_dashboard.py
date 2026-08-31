@@ -6,6 +6,7 @@ from tripplanner import api
 from tripplanner.ops_metrics import (
     record_chat_turn,
     record_model_call,
+    record_operation,
     record_product_event,
     record_request,
     reset,
@@ -43,6 +44,34 @@ def test_ops_metrics_snapshot_counts_errors_and_percentiles() -> None:
     assert result["requests"]["p50_ms"] == 10
     assert result["requests"]["p95_ms"] == 30
     assert result["models"]["calls"] == 1
+
+
+def test_ops_metrics_snapshot_aggregates_timed_operations() -> None:
+    reset()
+    record_operation("storage_operation", "read", "ok", 10)
+    record_operation("storage_operation", "read", "error", 30)
+    record_operation("workflow_operation", "projection", "ok", 20)
+
+    result = snapshot()["operations"]
+
+    assert result == {
+        "calls": 3,
+        "errors": 1,
+        "by_operation": {
+            "storage_operation.read": {
+                "calls": 2,
+                "errors": 1,
+                "p50_ms": 10,
+                "p95_ms": 30,
+            },
+            "workflow_operation.projection": {
+                "calls": 1,
+                "errors": 0,
+                "p50_ms": 20,
+                "p95_ms": 20,
+            },
+        },
+    }
 
 
 def test_ops_metrics_snapshot_aggregates_privacy_safe_chat_turns() -> None:

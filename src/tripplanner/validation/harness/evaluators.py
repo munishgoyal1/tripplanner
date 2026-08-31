@@ -104,15 +104,33 @@ def evaluate_amplification(evidence: HarnessEvidence) -> dict[str, Any]:
 
 
 def evaluate_performance(evidence: HarnessEvidence) -> dict[str, Any]:
-    durations = [
-        float(event.fields["ms"])
-        for event in evidence.events
-        if isinstance(event.fields.get("ms"), (int, float))
+    timed = [
+        event for event in evidence.events if isinstance(event.fields.get("ms"), (int, float))
     ]
+    durations = [float(event.fields["ms"]) for event in timed]
     durations.sort()
+    by_kind: dict[str, dict[str, float | int]] = {}
+    by_operation: dict[str, dict[str, float | int]] = {}
+    for event in timed:
+        duration = float(event.fields["ms"])
+        kind = event.kind
+        operation = f"{kind}:{event.fields.get('operation') or 'unspecified'}"
+        for buckets, key in ((by_kind, kind), (by_operation, operation)):
+            bucket = buckets.setdefault(key, {"count": 0, "sum_ms": 0.0})
+            bucket["count"] = int(bucket["count"]) + 1
+            bucket["sum_ms"] = round(float(bucket["sum_ms"]) + duration, 2)
+    scenario_events = _events(evidence, "scenario_operation")
+    scenario_ms = (
+        float(scenario_events[-1].fields["ms"])
+        if scenario_events and isinstance(scenario_events[-1].fields.get("ms"), (int, float))
+        else None
+    )
     return {
         "source": "runtime_event_durations",
         "timed_events": len(durations),
-        "total_ms": round(sum(durations), 2),
+        "scenario_wall_ms": scenario_ms,
+        "sum_event_ms": round(sum(durations), 2),
         "p95_ms": durations[max(0, int(len(durations) * 0.95) - 1)] if durations else None,
+        "by_kind": dict(sorted(by_kind.items())),
+        "by_operation": dict(sorted(by_operation.items())),
     }

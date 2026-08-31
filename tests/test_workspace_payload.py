@@ -32,3 +32,33 @@ def test_build_workspace_payload_uses_one_plan_for_every_panel(monkeypatch) -> N
         "itinerary": {"itinerary": True},
     }
     assert calls == [("view", plan), ("map", plan), ("itinerary", plan)]
+
+
+def test_build_workspace_payload_emits_projection_timing(monkeypatch) -> None:
+    captured = {}
+    monkeypatch.setattr(
+        workspace_payload,
+        "timed_operation",
+        lambda kind, operation: _CapturedOperation(captured, kind, operation),
+    )
+
+    workspace_payload.build_workspace_payload(None)
+
+    assert captured == {
+        "kind": "workflow_operation",
+        "operation": "workspace_projection",
+        "entered": True,
+        "exited": True,
+    }
+
+
+class _CapturedOperation:
+    def __init__(self, captured: dict, kind: str, operation: str) -> None:
+        self.captured = captured
+        self.captured.update(kind=kind, operation=operation)
+
+    def __enter__(self) -> None:
+        self.captured["entered"] = True
+
+    def __exit__(self, *_args: object) -> None:
+        self.captured["exited"] = True

@@ -64,3 +64,19 @@ function Assert-DeploymentHasNoDeletes {
         throw "$EnvironmentName what-if contains $($deletes.Count) delete operation(s); review with -DryRun."
     }
 }
+
+function Start-DeploymentTimer {
+    return [System.Diagnostics.Stopwatch]::StartNew()
+}
+
+function Complete-DeploymentTimer {
+    param(
+        [Parameter(Mandatory)][string]$Name,
+        [Parameter(Mandatory)][System.Diagnostics.Stopwatch]$Timer
+    )
+
+    $Timer.Stop()
+    $seconds = [math]::Round($Timer.Elapsed.TotalSeconds, 1)
+    Write-Host "[timing]  $Name`: ${seconds}s"
+    return $seconds
+}

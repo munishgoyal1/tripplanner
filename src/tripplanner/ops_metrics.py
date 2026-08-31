@@ -14,6 +14,7 @@ _LOCK = threading.Lock()
 _REQUESTS: deque[dict[str, Any]] = deque(maxlen=1000)
 _MODELS: deque[dict[str, Any]] = deque(maxlen=250)
 _CHAT_TURNS: deque[dict[str, Any]] = deque(maxlen=500)
+_OPERATIONS: deque[dict[str, Any]] = deque(maxlen=2000)
 _PRODUCT_EVENTS: deque[dict[str, Any]] = deque(maxlen=2000)
 
 PRODUCT_EVENTS = {
@@ -88,6 +89,24 @@ def record_chat_turn(
         )
 
 
+def record_operation(
+    kind: str,
+    operation: str,
+    status: str,
+    duration_ms: float,
+) -> None:
+    with _LOCK:
+        _OPERATIONS.append(
+            {
+                "kind": kind,
+                "operation": operation,
+                "status": status,
+                "duration_ms": duration_ms,
+                "at": time.time(),
+            }
+        )
+
+
 def record_product_event(
     event: str,
     session_id: str,
@@ -120,6 +139,7 @@ def snapshot() -> dict[str, Any]:
         requests = list(_REQUESTS)
         models = list(_MODELS)
         chat_turns = list(_CHAT_TURNS)
+        operations = list(_OPERATIONS)
         product_events = list(_PRODUCT_EVENTS)
 
     by_route: dict[str, dict[str, Any]] = {}
@@ -173,6 +193,19 @@ def snapshot() -> dict[str, Any]:
     session_dimensions = [
         min(events, key=lambda item: float(item["at"])) for events in session_events.values()
     ]
+    by_operation: dict[str, dict[str, Any]] = {}
+    operation_keys = sorted({f"{item['kind']}.{item['operation']}" for item in operations})
+    for key in operation_keys:
+        matching = [
+            item for item in operations if f"{item['kind']}.{item['operation']}" == key
+        ]
+        latencies = [float(item["duration_ms"]) for item in matching]
+        by_operation[key] = {
+            "calls": len(matching),
+            "errors": sum(1 for item in matching if item["status"] == "error"),
+            "p50_ms": _percentile(latencies, 50),
+            "p95_ms": _percentile(latencies, 95),
+        }
     return {
         "generated_at": datetime.now(UTC).isoformat(),
         "uptime_seconds": max(0, round(time.time() - _STARTED_AT)),
@@ -205,6 +238,11 @@ def snapshot() -> dict[str, Any]:
             ),
             "outcomes": dict(chat_outcomes.most_common()),
         },
+        "operations": {
+            "calls": len(operations),
+            "errors": sum(1 for item in operations if item["status"] == "error"),
+            "by_operation": by_operation,
+        },
         "product": {
             "events": len(product_events),
             "sessions": len(session_events),
@@ -228,4 +266,5 @@ def reset() -> None:
         _REQUESTS.clear()
         _MODELS.clear()
         _CHAT_TURNS.clear()
+        _OPERATIONS.clear()
         _PRODUCT_EVENTS.clear()

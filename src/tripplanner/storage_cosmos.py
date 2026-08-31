@@ -15,6 +15,7 @@ Designed for the Cosmos Free Tier (1000 RU/s, 25 GB free per subscription).
 from __future__ import annotations
 
 import copy
+import json
 import logging
 import warnings
 from dataclasses import dataclass
@@ -24,6 +25,7 @@ from urllib.parse import urlparse
 from urllib3.exceptions import InsecureRequestWarning
 
 from tripplanner.config import get_settings
+from tripplanner.observability import timed_operation
 
 log = logging.getLogger(__name__)
 
@@ -58,7 +60,10 @@ def _client_options(endpoint: str, emulator: bool) -> dict[str, Any]:
 def _suppress_emulator_tls_warning() -> None:
     warnings.filterwarnings(
         "ignore",
-        message=r"Unverified HTTPS request is being made to host '(?:localhost|127\.0\.0\.1|::1)'\.",
+        message=(
+            r"Unverified HTTPS request is being made to host "
+            r"'(?:localhost|127\.0\.0\.1|::1)'\."
+        ),
         category=InsecureRequestWarning,
         module=r"urllib3\.connectionpool",
     )
@@ -159,14 +164,21 @@ def _strip_system_fields(doc: dict[str, Any]) -> dict[str, Any]:
     return clean
 
 
+def _payload_bytes(body: dict[str, Any] | None) -> int:
+    if body is None:
+        return 0
+    return len(json.dumps(body, separators=(",", ":"), default=str).encode("utf-8"))
+
+
 def read_doc(container: str, user_id: str, doc_id: str) -> dict[str, Any] | None:
     """Point read. Returns app-level payload or ``None`` if not found."""
     from azure.cosmos.exceptions import CosmosResourceNotFoundError
 
-    try:
-        item = _container(container).read_item(item=doc_id, partition_key=user_id)
-    except CosmosResourceNotFoundError:
-        return None
+    with timed_operation("storage_operation", "read", store="cosmos", container=container):
+        try:
+            item = _container(container).read_item(item=doc_id, partition_key=user_id)
+        except CosmosResourceNotFoundError:
+            return None
     return _strip_system_fields(item)
 
 
@@ -176,10 +188,13 @@ def read_doc_versioned(
     """Point read retaining an opaque version for a conditional replacement."""
     from azure.cosmos.exceptions import CosmosResourceNotFoundError
 
-    try:
-        item = _container(container).read_item(item=doc_id, partition_key=user_id)
-    except CosmosResourceNotFoundError:
-        return None
+    with timed_operation(
+        "storage_operation", "read_versioned", store="cosmos", container=container
+    ):
+        try:
+            item = _container(container).read_item(item=doc_id, partition_key=user_id)
+        except CosmosResourceNotFoundError:
+            return None
     return VersionedDocument(
         body=_strip_system_fields(item),
         version=str(item.get("_etag") or ""),
@@ -191,7 +206,14 @@ def upsert_doc(container: str, user_id: str, doc_id: str, body: dict[str, Any]) 
     payload = copy.deepcopy(body)
     payload["id"] = doc_id
     payload["user_id"] = user_id
-    _container(container).upsert_item(body=payload)
+    with timed_operation(
+        "storage_operation",
+        "upsert",
+        store="cosmos",
+        container=container,
+        payload_bytes=_payload_bytes(payload),
+    ):
+        _container(container).upsert_item(body=payload)
 
 
 def create_doc_if_absent(
@@ -203,14 +225,21 @@ def create_doc_if_absent(
     payload = copy.deepcopy(body)
     payload["id"] = doc_id
     payload["user_id"] = user_id
-    try:
-        _container(container).create_item(body=payload)
-    except CosmosHttpResponseError as exc:
-        if exc.status_code == 409:
-            raise WriteConflictError(
-                f"{container}/{doc_id} was created before it could be saved"
-            ) from exc
-        raise
+    with timed_operation(
+        "storage_operation",
+        "create",
+        store="cosmos",
+        container=container,
+        payload_bytes=_payload_bytes(payload),
+    ):
+        try:
+            _container(container).create_item(body=payload)
+        except CosmosHttpResponseError as exc:
+            if exc.status_code == 409:
+                raise WriteConflictError(
+                    f"{container}/{doc_id} was created before it could be saved"
+                ) from exc
+            raise
 
 
 def replace_doc_if_version(
@@ -227,29 +256,37 @@ def replace_doc_if_version(
     payload = copy.deepcopy(body)
     payload["id"] = doc_id
     payload["user_id"] = user_id
-    try:
-        _container(container).replace_item(
-            item=doc_id,
-            body=payload,
-            etag=version,
-            match_condition=MatchConditions.IfNotModified,
-        )
-    except CosmosHttpResponseError as exc:
-        if exc.status_code == 412:
-            raise WriteConflictError(
-                f"{container}/{doc_id} changed before it could be saved"
-            ) from exc
-        raise
+    with timed_operation(
+        "storage_operation",
+        "replace",
+        store="cosmos",
+        container=container,
+        payload_bytes=_payload_bytes(payload),
+    ):
+        try:
+            _container(container).replace_item(
+                item=doc_id,
+                body=payload,
+                etag=version,
+                match_condition=MatchConditions.IfNotModified,
+            )
+        except CosmosHttpResponseError as exc:
+            if exc.status_code == 412:
+                raise WriteConflictError(
+                    f"{container}/{doc_id} changed before it could be saved"
+                ) from exc
+            raise
 
 
 def delete_doc(container: str, user_id: str, doc_id: str) -> None:
     """Delete a document; silent if it doesn't exist."""
     from azure.cosmos.exceptions import CosmosResourceNotFoundError
 
-    try:
-        _container(container).delete_item(item=doc_id, partition_key=user_id)
-    except CosmosResourceNotFoundError:
-        return
+    with timed_operation("storage_operation", "delete", store="cosmos", container=container):
+        try:
+            _container(container).delete_item(item=doc_id, partition_key=user_id)
+        except CosmosResourceNotFoundError:
+            return
 
 
 def delete_doc_if_version(
@@ -262,21 +299,24 @@ def delete_doc_if_version(
         CosmosResourceNotFoundError,
     )
 
-    try:
-        _container(container).delete_item(
-            item=doc_id,
-            partition_key=user_id,
-            etag=version,
-            match_condition=MatchConditions.IfNotModified,
-        )
-    except CosmosResourceNotFoundError:
-        return
-    except CosmosHttpResponseError as exc:
-        if exc.status_code == 412:
-            raise WriteConflictError(
-                f"{container}/{doc_id} changed before it could be deleted"
-            ) from exc
-        raise
+    with timed_operation(
+        "storage_operation", "delete_versioned", store="cosmos", container=container
+    ):
+        try:
+            _container(container).delete_item(
+                item=doc_id,
+                partition_key=user_id,
+                etag=version,
+                match_condition=MatchConditions.IfNotModified,
+            )
+        except CosmosResourceNotFoundError:
+            return
+        except CosmosHttpResponseError as exc:
+            if exc.status_code == 412:
+                raise WriteConflictError(
+                    f"{container}/{doc_id} changed before it could be deleted"
+                ) from exc
+            raise
 
 
 def query_docs(container: str, user_id: str) -> list[dict[str, Any]]:

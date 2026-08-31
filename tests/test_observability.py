@@ -138,6 +138,24 @@ def test_model_rate_limit_fields_ignores_other_errors():
     assert obs.model_rate_limit_fields(RuntimeError("private"), "gpt-4-1-local") == {}
 
 
+def test_timed_operation_emits_content_free_terminal_event(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(
+        obs,
+        "app_event",
+        lambda kind, **fields: captured.update(kind=kind, **fields),
+    )
+
+    with obs.timed_operation("workflow_operation", "workspace_projection", panel_count=3):
+        pass
+
+    assert captured["kind"] == "workflow_operation"
+    assert captured["operation"] == "workspace_projection"
+    assert captured["status"] == "ok"
+    assert captured["panel_count"] == 3
+    assert captured["ms"] >= 0
+
+
 def test_terminal_chat_event_includes_safe_rate_limit_details(monkeypatch):
     from tripplanner import api
 
@@ -179,6 +197,23 @@ def test_terminal_chat_event_includes_safe_rate_limit_details(monkeypatch):
     assert captured["rate_limit_scope"] == "tokens"
     assert captured["retry_after_ms"] == 2000
     assert "private" not in json.dumps(captured)
+
+
+def test_chat_phase_records_content_free_operation_metrics(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from tripplanner import api
+    from tripplanner.ops_metrics import reset, snapshot
+
+    reset()
+    monkeypatch.setattr(api.time, "monotonic", lambda: 1.125)
+
+    api._record_chat_phase(1.0, transport="sse", phase="finalization")
+
+    assert snapshot()["operations"]["by_operation"]["chat_phase.sse.finalization"] == {
+        "calls": 1,
+        "errors": 0,
+        "p50_ms": 125.0,
+        "p95_ms": 125.0,
+    }
 
 
 # ---------------------------------------------------------------------------

@@ -28,6 +28,8 @@ from tripplanner.providers.registry import (
     get_train_provider,
 )
 
+pytestmark = pytest.mark.integration
+
 
 class TestOmioTrainSource:
     """OmioTrainSource integration tests."""

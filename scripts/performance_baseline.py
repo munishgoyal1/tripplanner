@@ -38,6 +38,18 @@ SCENARIOS = (
         "/trip/stop/booked",
         {"day": 1, "name": "Museum", "booked": True},
     ),
+    Scenario(
+        "chat_json",
+        "POST",
+        "/chat",
+        {"message": "Plan a benchmark trip", "proposal_only": True},
+    ),
+    Scenario(
+        "chat_sse",
+        "POST",
+        "/chat/stream",
+        {"message": "Plan a benchmark trip", "proposal_only": True},
+    ),
 )
 
 
@@ -144,11 +156,45 @@ def run_hermetic_baseline(
     warmups: int = DEFAULT_WARMUPS,
     p95_limit_ms: float = DEFAULT_P95_LIMIT_MS,
 ) -> dict[str, Any]:
+    import asyncio
+
+    from langchain_core.messages import AIMessage, AIMessageChunk
+
     from tripplanner import api, storage_cosmos, usage
+    from tripplanner.graph import app_graph
+    from tripplanner.request_limits import chat_admission
 
     view = {"overview": {"destination": "Benchmark City"}, "items": []}
     map_view = {"center": {"lat": 0.0, "lng": 0.0}, "pins": [], "days": []}
     itinerary = {"days": [], "stats": {"days": 0, "stops": 0}}
+    benchmark_reply = "Benchmark itinerary ready."
+
+    def fake_invoke(state: dict[str, Any], *_args: Any, **_kwargs: Any) -> dict[str, Any]:
+        return {
+            "messages": [*state["messages"], AIMessage(content=benchmark_reply)],
+            "current_agent": "trip",
+        }
+
+    async def fake_stream(*_args: Any, **_kwargs: Any):
+        for text in ("Benchmark itinerary ", "ready."):
+            yield {
+                "event": "on_chat_model_stream",
+                "name": "benchmark-model",
+                "run_id": "benchmark-run",
+                "data": {"chunk": AIMessageChunk(content=text)},
+            }
+
+    async def reserve_conversation(*_args: Any, **_kwargs: Any) -> None:
+        return None
+
+    async def acquire_permit(*_args: Any, **_kwargs: Any) -> object:
+        return object()
+
+    async def release_permit(*_args: Any, **_kwargs: Any) -> None:
+        return None
+
+    def save_chat(*_args: Any, **_kwargs: Any) -> str:
+        return "benchmark-trip"
 
     with TemporaryDirectory(prefix="tripplanner-performance-") as home:
         previous_home = os.environ.get("tripplanner_HOME")
@@ -174,14 +220,50 @@ def run_hermetic_baseline(
                         return_value={"ok": True, "itinerary": itinerary},
                     )
                 )
+                stack.enter_context(patch.object(app_graph, "invoke", fake_invoke))
+                stack.enter_context(patch.object(app_graph, "astream_events", fake_stream))
+                stack.enter_context(patch.object(api, "_completed_chat_request", lambda _: None))
+                stack.enter_context(
+                    patch.object(api, "_load_chat_request", lambda _: (None, [], None))
+                )
+                stack.enter_context(patch.object(api, "_save_chat", save_chat))
+                stack.enter_context(
+                    patch.object(api, "_reserve_conversation", reserve_conversation)
+                )
+                stack.enter_context(patch.object(api, "acquire_chat", acquire_permit))
+                stack.enter_context(patch.object(api, "release_chat", release_permit))
+                stack.enter_context(patch.object(api, "acquire_replay_access", acquire_permit))
+                stack.enter_context(patch.object(api, "release_replay_access", release_permit))
+                stack.enter_context(patch.object(api, "check_replay_lookup", release_permit))
+                stack.enter_context(patch.object(usage, "is_over_cap", lambda _: (False, {})))
                 usage_before = usage.get_usage(BENCHMARK_USER)
-                with TestClient(api.app) as client:
-                    report = run_baseline(
-                        client,
-                        samples=samples,
-                        warmups=warmups,
-                        p95_limit_ms=p95_limit_ms,
-                    )
+                asyncio.run(chat_admission.reset())
+                try:
+                    with TestClient(api.app) as client:
+                        report = run_baseline(
+                            client,
+                            samples=samples,
+                            warmups=warmups,
+                            p95_limit_ms=p95_limit_ms,
+                        )
+                        json_payload = client.post(
+                            "/chat",
+                            json={
+                                "user_id": BENCHMARK_USER,
+                                "message": "Plan a benchmark trip",
+                                "proposal_only": True,
+                            },
+                        ).json()
+                        stream_text = client.post(
+                            "/chat/stream",
+                            json={
+                                "user_id": BENCHMARK_USER,
+                                "message": "Plan a benchmark trip",
+                                "proposal_only": True,
+                            },
+                        ).text
+                finally:
+                    asyncio.run(chat_admission.reset())
                 usage_after = usage.get_usage(BENCHMARK_USER)
         finally:
             if previous_home is None:
@@ -196,6 +278,20 @@ def run_hermetic_baseline(
     )
     call_delta = int(usage_after.get("calls", 0)) - int(usage_before.get("calls", 0))
     report["llm_usage"] = {"calls": call_delta, "cost_usd": cost_delta}
+    done_payload = next(
+        json.loads(line.removeprefix("data: "))
+        for block in stream_text.split("\n\n")
+        if block.startswith("event: done\n")
+        for line in block.splitlines()
+        if line.startswith("data: ")
+    )
+    parity_fields = ("reply", "agent", "trip_id")
+    report["chat_transport_parity"] = {
+        "matched": all(json_payload.get(key) == done_payload.get(key) for key in parity_fields),
+        "fields": list(parity_fields),
+    }
+    if not report["chat_transport_parity"]["matched"]:
+        raise PerformanceRegressionError("JSON and SSE chat terminal payloads diverged.")
     if call_delta or cost_delta:
         raise PerformanceRegressionError("Hermetic baseline incurred LLM usage.")
     return report

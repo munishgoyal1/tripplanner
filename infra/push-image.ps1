@@ -32,6 +32,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$totalTimer = [System.Diagnostics.Stopwatch]::StartNew()
 
 . "$PSScriptRoot/../scripts/dev/lib/run-log.ps1"
 . "$PSScriptRoot/deployment-common.ps1"
@@ -125,24 +126,42 @@ if (-not [string]::IsNullOrWhiteSpace($token)) {
 # Build with all tags. Azure Container Apps runs linux/amd64, including when
 # the publisher is running Docker Desktop on Apple Silicon.
 Write-Host "✓ Building image ..."
+$buildTimer = [System.Diagnostics.Stopwatch]::StartNew()
 $buildArgs = @("build", "--platform", "linux/amd64")
 foreach ($t in $tags) { $buildArgs += @("-t", $t) }
 $buildArgs += "."
 Invoke-LoggedNative -FilePath "docker" -ArgumentList $buildArgs -FailureMessage "docker build failed."
-Write-Host "  ✓ Built`n"
+$buildTimer.Stop()
+$imageDetails = docker image inspect $tags[0] --format '{{json .}}' | ConvertFrom-Json
+if ($LASTEXITCODE -ne 0 -or $null -eq $imageDetails) {
+    throw "Could not inspect the built image."
+}
+$imageBytes = [int64]$imageDetails.Size
+$imageMiB = [math]::Round($imageBytes / 1MB, 1)
+$buildSeconds = [math]::Round($buildTimer.Elapsed.TotalSeconds, 1)
+Write-Host "  ✓ Built in ${buildSeconds}s | ${imageMiB} MiB uncompressed | $($imageDetails.Id)`n"
 
 # Push every tag.
 Write-Host "✓ Pushing image ..."
+$pushTimings = @()
 foreach ($t in $tags) {
+    $pushTimer = [System.Diagnostics.Stopwatch]::StartNew()
     Invoke-LoggedNative -FilePath "docker" -ArgumentList @("push", $t) -FailureMessage "docker push failed for $t"
+    $pushTimer.Stop()
+    $pushSeconds = [math]::Round($pushTimer.Elapsed.TotalSeconds, 1)
+    $pushTimings += "${t}=${pushSeconds}s"
+    Write-Host "  ✓ $t in ${pushSeconds}s"
 }
-Write-Host "  ✓ Pushed`n"
+$totalTimer.Stop()
+$totalSeconds = [math]::Round($totalTimer.Elapsed.TotalSeconds, 1)
+Write-Host "  ✓ Pushed | total workflow ${totalSeconds}s`n"
 
 # Log it.
 $historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/image-pushes.log"
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Add-Content $historyLog "[$timestamp] Pushed $($tags -join ', ') | By: $(Get-DeploymentUser)"
+$metrics = "Build: ${buildSeconds}s | Push: $($pushTimings -join ', ') | Total: ${totalSeconds}s | Size: $imageBytes bytes | Image ID: $($imageDetails.Id)"
+Add-Content $historyLog "[$timestamp] Pushed $($tags -join ', ') | $metrics | By: $(Get-DeploymentUser)"
 
 Write-Host "╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ✓ IMAGE PUSHED                                          ║"

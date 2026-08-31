@@ -16,7 +16,12 @@
     "build:inspector": "tsc -p inspector/tsconfig.json && vite build --config inspector/vite.config.ts",
     "preview": "vite preview",
     "preview:ux-lab": "vite preview --config labs/vite.config.ts",
-    "test": "vitest run",
+    "typecheck": "tsc -b --pretty false",
+    "test": "npm run test:all",
+    "test:unit": "vitest run --dir src",
+    "test:labs": "vitest run --dir labs",
+    "test:inspector": "vitest run --dir inspector",
+    "test:all": "vitest run",
     "test:e2e": "playwright test"
   },
   "dependencies": {

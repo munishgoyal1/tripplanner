@@ -81,7 +81,7 @@ trip through shared API contracts.
 | `src/tripplanner/validation/` | Trip Quality Audit implementation: Trip Quality Corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, comparable-run summaries (brief 004), and durable provenance aliases used by local inspection links |
 | `src/tripplanner/validation/harness/` | Correlated scenario execution and evidence capture; deterministic plan-eval namespace; unified measured usage, catalog-estimated cost, optional billing reconciliation, cache, amplification, performance, and quality reports. `tripplanner.evals` remains the compatibility API; policy gates consume reports but remain separate from measurement |
 | `src/tripplanner/validation/market_catalog.py`, `india_heuristic_matrix.py`, `india_outbound_matrix.py` | Deterministic weighted India-domestic and India-outbound corpus scenarios; exact dedupe, destination-aware durations, audience priors, and evidence posture from `docs/research/india-*-2026-08.md` |
-| `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
+| `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, timed-operation, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
 | `src/tripplanner/provider_usage.py`, `usage_attribution.py` | Content-free 90-day provider/model call ledger and request, trip, audit, automation, and background attribution; measured calls/tokens stay distinct from versioned catalog cost estimates and unknown-price calls |
 | `src/tripplanner/error_analysis.py` | Local and canary failure classification and reports |
 | `src/tripplanner/critics.py` | Deterministic quality checks |
@@ -416,7 +416,13 @@ conversation or explicit edit
 Run the narrowest command that exercises the changed ownership boundary.
 
 ```powershell
-# Python tests
+# Python fast tier (default development loop)
+.venv\Scripts\python.exe -m pytest -q -m "not integration"
+
+# Python integration tier
+.venv\Scripts\python.exe -m pytest -q -m integration
+
+# Python complete suite
 .venv\Scripts\python.exe -m pytest -q
 
 # Python lint
@@ -424,14 +430,17 @@ Run the narrowest command that exercises the changed ownership boundary.
 
 # Frontend typecheck and unit tests
 npm --prefix frontend run typecheck
-npm --prefix frontend test -- --run
+npm --prefix frontend run test:unit
+
+# Frontend ownership-specific or complete tests
+npm --prefix frontend run test:labs
+npm --prefix frontend run test:inspector
+npm --prefix frontend run test:all
 
 # Frontend production build
 npm --prefix frontend run build
 
-# Shared client
-npm --prefix packages/tripplanner-client test
-
+# Shared client is source-only; validate it through its frontend/mobile consumers.
 # Mobile typecheck and lint
 npm --prefix mobile run typecheck
 npm --prefix mobile run lint

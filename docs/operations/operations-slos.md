@@ -190,6 +190,33 @@ ContainerAppConsoleLogs_CL
 | order by errors desc, p95_ms desc
 ```
 
+### Chat, workflow, and storage phases
+
+```kql
+ContainerAppConsoleLogs_CL
+| where TimeGenerated >= ago(24h)
+| where ContainerAppName_s startswith "prod-app-"
+| extend event = parse_json(Log_s)
+| where tostring(event.event_kind) in
+    ("chat_phase", "workflow_operation", "storage_operation")
+| extend
+    kind = tostring(event.event_kind),
+    operation = tostring(event.operation),
+    status = tostring(event.status),
+    duration_ms = todouble(event.ms)
+| summarize
+    calls = count(),
+    errors = countif(status == "error"),
+    p50_ms = percentile(duration_ms, 50),
+    p95_ms = percentile(duration_ms, 95)
+    by kind, operation
+| order by errors desc, p95_ms desc
+```
+
+`chat_phase` separates admission/setup from post-generation finalization. Workflow
+and storage spans may be nested, so their summed durations are attribution evidence,
+not request wall time. Use `chat_operation` or request duration for end-to-end latency.
+
 ## Release response
 
 After production promotion, run the hosted smoke suite, complete one normal

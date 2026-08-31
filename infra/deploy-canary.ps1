@@ -35,6 +35,19 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/deployment-common.ps1"
 Start-RunLog -Name "canary-deploy" | Out-Null
+$totalTimer = Start-DeploymentTimer
+$stageTimer = $null
+$stageName = ""
+trap {
+    if ($null -ne $stageTimer -and $stageTimer.IsRunning) {
+        Complete-DeploymentTimer -Name "$stageName (failed)" -Timer $stageTimer | Out-Null
+    }
+    if ($totalTimer.IsRunning) {
+        Complete-DeploymentTimer -Name "Canary deployment total (failed)" -Timer $totalTimer | Out-Null
+    }
+    Stop-RunLog
+    throw
+}
 Import-DeploymentEnvironment -Path $ConfigFile
 Import-DeploymentEnvironment -Path $EnvFile
 if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
@@ -127,6 +140,8 @@ Write-Host "  ✓ Files exist`n"
 
 # Step 2: Validate Bicep
 Write-Host "✓ Step 2: Validating Bicep template..."
+$stageName = "Bicep validation"
+$stageTimer = Start-DeploymentTimer
 $validation = az deployment group validate `
     --resource-group $canaryRG `
     --template-file $bicepFile `
@@ -134,23 +149,32 @@ $validation = az deployment group validate `
     --parameters "namePrefix=$canaryPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
     2>&1
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Bicep validation failed: $validation"
+    throw "Bicep validation failed: $validation"
 }
 Write-Host "  ✓ Template is valid`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
 # Step 3: Dry run (optional)
 if ($DryRun) {
     Write-Host "✓ Step 3: Performing DRY RUN (no changes)..."
+    $stageName = "Infrastructure what-if"
+    $stageTimer = Start-DeploymentTimer
     az deployment group what-if `
         --resource-group $canaryRG `
         --template-file $bicepFile `
         --parameters $bicepParams `
         --parameters "namePrefix=$canaryPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" | Out-String
+    if ($LASTEXITCODE -ne 0) { throw "Canary infrastructure what-if failed." }
     Write-Host "  ✓ Dry run completed`n"
+    Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
+    Complete-DeploymentTimer -Name "Canary dry run total" -Timer $totalTimer | Out-Null
+    Stop-RunLog
     exit 0
 }
 
 Write-Host "✓ Step 3: Checking infrastructure changes..."
+$stageName = "Infrastructure what-if"
+$stageTimer = Start-DeploymentTimer
 $rawWhatIf = az deployment group what-if `
     --resource-group $canaryRG `
     --template-file $bicepFile `
@@ -166,17 +190,23 @@ if ($LASTEXITCODE -ne 0) {
 $whatIf = ConvertFrom-AzureCliJson -Output $rawWhatIf -Action "Canary what-if"
 Assert-DeploymentHasNoDeletes -WhatIf $whatIf -EnvironmentName "Canary"
 Write-Host "  ✓ What-if contains no deletes`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
 # Build + push only after all no-change paths have exited.
 if (-not $NoBuild) {
     Write-Host "✓ Step 0: Building & pushing image from current code..."
+    $stageName = "Image build and push"
+    $stageTimer = Start-DeploymentTimer
     & "$PSScriptRoot/push-image.ps1" -Tag $ImageTag
     if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
     Write-Host "  ✓ Image ready`n"
+    Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 }
 
 # Step 4: Deploy
 Write-Host "✓ Step 3: Deploying to CANARY..."
+$stageName = "Infrastructure deployment"
+$stageTimer = Start-DeploymentTimer
 $rawDeploy = az deployment group create `
     --resource-group $canaryRG `
     --template-file $bicepFile `
@@ -196,6 +226,7 @@ if ($deployment.state -ne "Succeeded") {
     throw "Deployment failed: $($deployment.state)"
 }
 Write-Host "  ✓ Infrastructure deployed`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
 if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
     $OAuthRedirectBase = "$($deployment.containerAppUrl.TrimEnd('/'))/api"
@@ -203,6 +234,8 @@ if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
 
 # Step 5: Always set app image so deployments never stay on the hello-world default.
 Write-Host "✓ Step 4: Updating Container App image to $ImageTag..."
+$stageName = "Container App rollout"
+$stageTimer = Start-DeploymentTimer
 az containerapp update `
     --resource-group $canaryRG `
     --name $deployment.containerAppName `
@@ -220,8 +253,11 @@ if ($LASTEXITCODE -ne 0) {
     throw "Container App image update failed."
 }
 Write-Host "  ✓ Image updated`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
 Write-Host "✓ Step 5: Running hosted smoke tests..."
+$stageName = "Hosted smoke tests"
+$stageTimer = Start-DeploymentTimer
 $expectedOAuthCallback = "$($OAuthRedirectBase.TrimEnd('/'))/auth/callback/google"
 & "$PSScriptRoot/smoke-hosted.ps1" `
     -Environment canary `
@@ -231,6 +267,8 @@ if ($LASTEXITCODE -ne 0) {
     throw "Canary smoke tests failed. Production promotion is blocked."
 }
 Write-Host "  ✓ Canary smoke tests passed`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
+Complete-DeploymentTimer -Name "Canary deployment total" -Timer $totalTimer | Out-Null
 
 # Step 6: Output results
 Write-Host "╔═══════════════════════════════════════════════════════════╗"

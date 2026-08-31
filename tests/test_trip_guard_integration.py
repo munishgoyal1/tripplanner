@@ -24,6 +24,8 @@ from tripplanner.tools.trip_planner import (
 )
 from tripplanner.web import places_cache
 
+pytestmark = pytest.mark.integration
+
 # Parallel sandboxes run this suite at the same time against one home
 # directory, so a shared name means one run's teardown deletes another
 # run's fixture mid-test. The pid keeps them disjoint.

@@ -481,6 +481,26 @@ def _record_chat_error(
     )
 
 
+def _record_chat_phase(
+    started: float,
+    *,
+    transport: Literal["json", "sse"],
+    phase: Literal["admission", "finalization"],
+    status: Literal["ok", "error"] = "ok",
+) -> None:
+    duration_ms = round((time.monotonic() - started) * 1000, 2)
+    app_event(
+        "chat_phase",
+        transport=transport,
+        operation=phase,
+        status=status,
+        ms=duration_ms,
+    )
+    from tripplanner.ops_metrics import record_operation
+
+    record_operation("chat_phase", f"{transport}.{phase}", status, duration_ms)
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONResponse:
     from tripplanner.graph import app_graph
@@ -549,6 +569,8 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             )
             return response
 
+        _record_chat_phase(started, transport="json", phase="admission")
+        finalization_started: float | None = None
         base_history = list(history)
         history.append(HumanMessage(content=req.message))
         budget_exhausted = False
@@ -600,6 +622,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
                 return throttled
             raise
 
+        finalization_started = time.monotonic()
         if budget_exhausted:
             reply, gap_count = await asyncio.to_thread(_best_effort_plan_reply)
             app_event("api_chat_budget_exhausted", completion_gap_count=gap_count)
@@ -642,6 +665,12 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
         if not req.proposal_only:
             _schedule_learning_sweep(user_id, req.message)
 
+        _record_chat_phase(
+            finalization_started,
+            transport="json",
+            phase="finalization",
+        )
+        finalization_started = None
         app_event("api_chat_response", reply_length=len(reply))
         _record_chat_operation(
             started, user_id=user_id, transport="json", outcome="completed"
@@ -650,6 +679,13 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             reply=reply, agent=agent, trip_id=tid_after
         )
     except Exception as exc:
+        if finalization_started is not None:
+            _record_chat_phase(
+                finalization_started,
+                transport="json",
+                phase="finalization",
+                status="error",
+            )
         _record_chat_operation(
             started,
             user_id=user_id,
@@ -895,6 +931,8 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         )
         return response
 
+    _record_chat_phase(started, transport="sse", phase="admission")
+
     async def gen():
         from tripplanner.usage_attribution import usage_scope
 
@@ -1045,6 +1083,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             return
 
         reply = "".join(reply_parts)
+        finalization_started = time.monotonic()
         yield _sse("progress", {"stage": "saving"})
         # Hallucination critic: log unverified prices/times/URLs as telemetry
         # only (internal QA signal — not surfaced to the user).
@@ -1080,6 +1119,12 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             )
         except Exception as exc:
             app_event("api_chat_stream_save_error", error=type(exc).__name__)
+            _record_chat_phase(
+                finalization_started,
+                transport="sse",
+                phase="finalization",
+                status="error",
+            )
             _record_chat_operation(
                 started,
                 user_id=user_id,
@@ -1100,6 +1145,11 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             return
         if not req.proposal_only:
             _schedule_learning_sweep(user_id, req.message)
+        _record_chat_phase(
+            finalization_started,
+            transport="sse",
+            phase="finalization",
+        )
         app_event("api_chat_stream_done", reply_length=len(reply))
         _record_chat_operation(
             started,

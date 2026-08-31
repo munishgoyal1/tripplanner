@@ -33,11 +33,15 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-# Install deps first (layer-cache friendly)
+# Resolve third-party dependencies from package metadata before copying the
+# application. Source-only edits can then reuse this expensive layer.
 COPY pyproject.toml ./
+COPY src/tripplanner/__init__.py src/tripplanner/__init__.py
+RUN PIP_INDEX_URL=${PYTHON_PACKAGE_INDEX} pip install --no-cache-dir "."
+
 COPY src/ src/
 COPY frontend/src/publicEntry/publicDemoRuns.json src/tripplanner/public_demo_runs.json
-RUN PIP_INDEX_URL=${PYTHON_PACKAGE_INDEX} pip install --no-cache-dir "."
+RUN PIP_INDEX_URL=${PYTHON_PACKAGE_INDEX} pip install --no-cache-dir --no-deps --force-reinstall "."
 
 # Built SPA from stage 1 — served by FastAPI at the root origin.
 COPY --from=frontend /web/dist ./frontend/dist

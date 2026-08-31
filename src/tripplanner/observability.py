@@ -35,7 +35,10 @@ import os
 import re
 import sys
 import threading
+import time
 import uuid
+from collections.abc import Iterator
+from contextlib import contextmanager
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Any
@@ -415,6 +418,33 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
         except Exception:
             continue
     _APP_EVENT_LOGGER.info("event %s", kind, extra=safe)
+
+
+@contextmanager
+def timed_operation(kind: str, operation: str, **fields: Any) -> Iterator[None]:
+    """Emit one content-free terminal duration event for an operation."""
+    started = time.perf_counter()
+    status = "ok"
+    error = None
+    try:
+        yield
+    except Exception as exc:
+        status = "error"
+        error = type(exc).__name__
+        raise
+    finally:
+        duration_ms = round((time.perf_counter() - started) * 1000, 2)
+        from tripplanner.ops_metrics import record_operation
+
+        record_operation(kind, operation, status, duration_ms)
+        app_event(
+            kind,
+            operation=operation,
+            status=status,
+            ms=duration_ms,
+            **({"error": error} if error else {}),
+            **fields,
+        )
 
 
 # ---------------------------------------------------------------------------
