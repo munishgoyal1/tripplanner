@@ -99,7 +99,7 @@ def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
     assert "destination overview returned no photo" in browser_smoke
 
 
-def test_google_api_cloud_policy_comes_from_disabled_runtime_profiles() -> None:
+def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
     root = Path(__file__).parents[1]
     guardrails = (root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8")
     apply_script = (root / "infra" / "gcp" / "apply-billing-guardrails.ps1").read_text(
@@ -121,8 +121,8 @@ def test_google_api_cloud_policy_comes_from_disabled_runtime_profiles() -> None:
             encoding="utf-8"
         )
         assert "ENABLE_AZURE_OPENAI=1" in profile
-        assert "ENABLE_GOOGLE_PLACES=0" in profile
-        assert "ENABLE_GOOGLE_MAPS=0" in profile
+        assert "ENABLE_GOOGLE_PLACES=1" in profile
+        assert "ENABLE_GOOGLE_MAPS=1" in profile
     assert (
         '"quotaId": "SearchTextRequestPerDayPerProject", '
         '"local": 1, "canary": 1, "prod": 100'
