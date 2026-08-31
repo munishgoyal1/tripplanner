@@ -67,6 +67,42 @@ def test_google_maps_control_has_cross_platform_owner_launchers() -> None:
     assert script_name in windows_launcher
 
 
+def test_google_runtime_control_has_safe_cross_platform_owner_launchers() -> None:
+    root = Path(__file__).parents[1]
+    script = (
+        root / "infra" / "azure" / "set-google-runtime-access.ps1"
+    ).read_text(encoding="utf-8")
+    launchers = (
+        root / "scripts" / "mac" / "user" / "google" / "Google-Runtime-Control.command",
+        root / "scripts" / "win" / "user" / "google" / "Google-Runtime-Control.cmd",
+    )
+
+    assert '[string]$Action = "status"' in script
+    assert 'ValidateSet("all", "canary", "prod")' in script
+    assert "APPROVE_GOOGLE_MAPS_SPEND" in script
+    assert "APPROVE_GOOGLE_PLACES_SPEND" in script
+    assert "munishgoyal1@gmail.com" in script
+    assert "Visual Studio Enterprise Subscription" in script
+    assert '"containerapp", "update"' not in script
+    assert "az containerapp update" in script
+    assert "--image" not in script
+    assert '"ENABLE_GOOGLE_MAPS=$desiredMaps"' in script
+    assert '"ENABLE_GOOGLE_PLACES=$desiredPlaces"' in script
+    assert "$after.image -ne $before.image" in script
+    assert "$after.latest -ne $after.ready" in script
+    assert "$_.latestRevision -eq $true" in script
+    update_index = script.index("az containerapp update")
+    assert script.index("if ($mapsEnabled) { & $mapsControl apply", 0, update_index) >= 0
+    assert script.index("if ($placesEnabled) { & $placesControl apply", 0, update_index) >= 0
+    assert script.index("if (-not $mapsEnabled) { & $mapsControl apply", update_index) >= 0
+    assert script.index("if (-not $placesEnabled) { & $placesControl apply", update_index) >= 0
+    for launcher_path in launchers:
+        launcher = launcher_path.read_text(encoding="utf-8")
+        assert "set-google-runtime-access.ps1" in launcher
+        assert "show-launcher-help.ps1" in launcher
+        assert "google-runtime-control" in launcher
+
+
 def test_azure_services_control_has_cross_platform_owner_launchers() -> None:
     root = Path(__file__).parents[1]
     script_name = "set-azure-services-access.ps1"

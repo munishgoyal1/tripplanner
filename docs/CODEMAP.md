@@ -89,6 +89,7 @@ trip through shared API contracts.
 | `src/tripplanner/tools/` | LangChain tools and stable agent/provider boundaries |
 | `scripts/mac/` | macOS `.command` launchers mirroring Windows root, user, sandbox, canary, and production entry points |
 | `scripts/dev/emergency-control.ps1` | Extensible cross-cloud emergency orchestration; status by default, explicit provider/environment scope, preflighted approvals, and delegation to allowlisted provider controls |
+| `infra/azure/set-google-runtime-access.ps1` | Guarded Google runtime synchronization for canary and production; coordinates profile desired state and GCP Service Usage with a verified same-image Container Apps revision, without an image build or Bicep deployment |
 | `scripts/dev/multiagent_core.py` | Pure multiagent coordination logic: `owner:ready` eligibility, issue-body plus chronological-comment handoffs, comment-aware footprint collisions, attempt numbering, audit fingerprints, leases, and `/planner` audit links carrying immutable record IDs |
 | `scripts/dev/multiagent.py` | Multiagent runtime: dedicated Coordinator publication, post-publish sandbox sync, full GitHub issue-thread intake, autopilot workers, remote-verified attempt SHAs, validated `origin/master` baselines, slots, supervision, batch integration, and audit proposals with representative trip/UX evidence plus opt-in exact-day screenshots on the `audit-evidence` branch |
 | `scripts/dev/full-2way-sync.ps1` | Owner-invoked convergence across every local branch and attached worktree; preserves visible WIP, uses temporary worktrees for standalone branches, replays recorded conflict resolutions across every lane type, and retains `sbx` as the registered-sandbox-only scope |
@@ -139,7 +140,10 @@ Paid base Maps, Google Routes fallback, and Static Maps export similarly require
 `ENABLE_GOOGLE_MAPS=1` plus their existing browser or server key. The profile
 flags are the sole desired state; `infra/gcp/set-google-places-access.ps1` and
 `set-google-maps-access.ps1` synchronize project-level Service Usage and retain
-deployment-free emergency off controls.
+deployment-free emergency off controls. For hosted application behavior,
+`infra/azure/set-google-runtime-access.ps1` applies those same flags to canary or
+production with a same-image Container Apps revision, verifies readiness and
+latest-revision traffic, and never runs a full infrastructure deployment.
 Every Azure OpenAI client construction requires `ENABLE_AZURE_OPENAI=1`; endpoint
 and key presence alone never permits model spend. The default is fail-closed.
 `infra/azure/set-azure-services-access.ps1` owns the profile desired state while
