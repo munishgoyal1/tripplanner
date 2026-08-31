@@ -217,6 +217,9 @@ contracts, not component implementations.
   must not be conflated.
 - Mutations use the persisted trip revision as an optimistic concurrency boundary.
   A stale write must fail rather than overwrite newer work.
+- `/trip/workspace` returns Details, Map, and Itinerary projections built from one
+  loaded plan snapshot. Focus-only navigation remains on `/trip/view` so it does
+  not rebuild unrelated workspace projections.
 - SSE event names and payloads are client contracts. Change producers, shared
   types, and consumers together.
 - `/healthz` is the liveness/readiness surface used by deployment smoke.

@@ -422,6 +422,14 @@ export async function fetchSavedTrips(): Promise<SavedTrip[]> {
   return sharedClient.fetchSavedTrips();
 }
 
+/** Load every planner panel from one active-trip snapshot. */
+export async function fetchWorkspace(
+  focus?: { kind: string; name: string; day?: number; stop?: number },
+  signal?: AbortSignal,
+): Promise<TripWorkspaceView> {
+  return sharedClient.fetchWorkspace(focus, signal);
+}
+
 /** Make a saved trip active (auto-saving whatever was active). Returns every
  * panel's view-model so the workspace swaps in one atomic update. */
 export async function switchTrip(tripId: string): Promise<TripWorkspaceView | null> {

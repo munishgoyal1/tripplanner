@@ -35,6 +35,7 @@ vi.mock("../api", () => ({
 describe("ChatPanel progress", () => {
   beforeEach(() => {
     streamChatMock.mockReset();
+    vi.mocked(fetchChatHistory).mockReset().mockResolvedValue([]);
     fetchPreferencesMock.mockResolvedValue({ planning_mode: "direct" });
     savePreferencesMock.mockReset();
     savePreferencesMock.mockResolvedValue({ ok: true, about_me_extracted: [] });
@@ -43,6 +44,19 @@ describe("ChatPanel progress", () => {
       configurable: true,
       value: vi.fn(),
     });
+  });
+
+  it("shows and retries an initial conversation load failure", async () => {
+    vi.mocked(fetchChatHistory)
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValueOnce([]);
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Could not load this conversation.");
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+
+    await waitFor(() => expect(fetchChatHistory).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
   });
 
   async function readyComposer(): Promise<HTMLTextAreaElement> {

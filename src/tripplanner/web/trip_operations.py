@@ -257,11 +257,20 @@ def activate_trip(trip_id: str) -> Any:
     return trip_planner.switch_active_trip(trip_id)
 
 
-def workspace_payload(plan: Any) -> dict[str, Any]:
+def workspace_payload(
+    plan: Any,
+    focus: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     # One payload for every panel. The plan is already loaded here, so the map
     # and itinerary cost no extra reads and all three panels swap together
     # instead of each fetching its own copy and settling one after another.
-    return build_workspace_payload(plan)
+    return build_workspace_payload(plan, focus)
+
+
+def active_workspace_payload(
+    focus: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    return workspace_payload(trip_planner.load_active_trip_dict(), focus)
 
 
 def switch_trip(trip_id: str) -> dict[str, Any]:

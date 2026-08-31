@@ -461,6 +461,23 @@ export default function ItineraryPanel({
     );
   }
 
+  if (error && !it) {
+    return (
+      <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
+        {filterControls}
+        {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} onTripChanged={onTripChanged} />}
+        <div className="grid min-h-48 place-items-center p-6 text-center">
+          <div className="max-w-xs text-sm text-rose-600">
+            <p>{error}</p>
+            <button type="button" onClick={() => setRetryToken((token) => token + 1)} className="mt-2 font-semibold underline">
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!it || !it.has_itinerary) {
     return (
       <div ref={scrollRef} className="h-full overflow-y-auto bg-white">

@@ -1275,6 +1275,41 @@ async def trip_view_endpoint(
     return view
 
 
+@app.get("/trip/workspace")
+async def trip_workspace_endpoint(
+    request: Request,
+    background: BackgroundTasks,
+    user_id: str = "local",
+    focus_kind: str = "",
+    focus_name: str = "",
+    focus_day: int | None = None,
+    focus_stop: int | None = None,
+) -> dict:
+    """Return every workspace projection from one active-trip snapshot."""
+    from tripplanner.web import trip_operations
+
+    _set_request_user(request, user_id)
+    focus = (
+        {
+            "kind": focus_kind,
+            "name": focus_name,
+            **({"day": focus_day} if focus_day is not None else {}),
+            **({"stop": focus_stop} if focus_stop is not None else {}),
+        }
+        if focus_name
+        else None
+    )
+    payload = await asyncio.to_thread(trip_operations.active_workspace_payload, focus)
+    trip_id = str((payload.get("view") or {}).get("trip_id") or "")
+    background.add_task(
+        _run_agent_background,
+        trip_operations.warm_guide if focus is None else trip_operations.warm_view_items,
+        route="warm_guide" if focus is None else "warm_view_items",
+        trip_id=trip_id,
+    )
+    return payload
+
+
 @app.post("/trip/fork")
 async def fork_inspected_trip(request: Request) -> dict:
     """Copy the trip being inspected into the caller's own workspace.

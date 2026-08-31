@@ -146,6 +146,20 @@ describe("ItineraryPanel", () => {
     });
   });
 
+  it("distinguishes an initial load failure from an empty itinerary", async () => {
+    fetchItineraryMock
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValueOnce(itinerary);
+    render(<ItineraryPanel />);
+
+    expect(await screen.findByText("Could not refresh the itinerary.")).toBeInTheDocument();
+    expect(screen.queryByText(/No day-by-day plan yet/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+
+    expect(await screen.findByText("Museums and river")).toBeInTheDocument();
+    expect(fetchItineraryMock).toHaveBeenCalledTimes(2);
+  });
+
   it("shows the compact brief and agenda metadata", async () => {
     render(<ItineraryPanel />);
 

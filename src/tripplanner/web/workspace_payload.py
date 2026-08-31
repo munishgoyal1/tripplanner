@@ -8,12 +8,15 @@ from tripplanner.observability import timed_operation
 from tripplanner.web import trip_view
 
 
-def build_workspace_payload(plan: dict[str, Any] | None) -> dict[str, Any]:
+def build_workspace_payload(
+    plan: dict[str, Any] | None,
+    focus: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Build every panel from one already-loaded trip snapshot."""
     with timed_operation("workflow_operation", "workspace_projection"):
         return {
             "ok": True,
-            "view": trip_view.build_view(plan, None),
+            "view": trip_view.build_view(plan, focus),
             "map": trip_view.build_map_view(plan),
             "itinerary": trip_view.build_itinerary(plan),
         }

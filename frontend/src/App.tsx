@@ -13,7 +13,7 @@ import { FloatingStatusBar } from "./components/StatusBar";
 import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
 import { trackEvent } from "./analytics";
-import { fetchDocumentReadiness, fetchPreferences, fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, resetTrip, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
+import { fetchDocumentReadiness, fetchPreferences, fetchTripView, fetchWorkspace, getDisplayName, getUserId, importSharedTrip, isAnonymousUser, resetTrip, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { ItineraryFilter } from "./lib/itineraryFilters";
 import { dismissNotice, notify } from "./lib/notices";
@@ -22,6 +22,7 @@ import type { PlannerReview, TripView, TripWorkspaceView, TurnEffect } from "./t
 import { diffTurnEffects } from "./turnEffects";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 import { ensureInitialDisplayPreferences, normalizeDisplayLanguage, normalizeDisplayRegion, writeDisplayPreferences } from "./lib/displayPreferences";
+import { SerializedMutationQueue } from "@tripplanner/client";
 
 interface NavRef {
   kind: string;
@@ -160,6 +161,8 @@ export default function App({ initialRequest = null }: { initialRequest?: string
 
   const refreshGeneration = useRef(0);
   const refreshController = useRef<AbortController | null>(null);
+  const workspaceEpoch = useRef(0);
+  const [mutationQueue] = useState(() => new SerializedMutationQueue());
   const pendingDeselects = useRef(new Set<string>());
   const workspaceRef = useRef<HTMLElement>(null);
   const inspectorRef = useRef<HTMLElement>(null);
@@ -303,7 +306,10 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   }, []);
 
   const refresh = useCallback(
-    async (f: NavRef | null = focus, options: { silent?: boolean } = {}) => {
+    async (
+      f: NavRef | null = focus,
+      options: { silent?: boolean; viewOnly?: boolean } = {},
+    ) => {
       const generation = ++refreshGeneration.current;
       refreshController.current?.abort();
       const controller = new AbortController();
@@ -313,11 +319,18 @@ export default function App({ initialRequest = null }: { initialRequest?: string
       // feel like the app had stalled.
       if (!options.silent) setLoading(true);
       try {
-        const v = await fetchTripView(f ?? undefined, controller.signal);
+        const workspaceView = options.viewOnly
+          ? {
+              view: await fetchTripView(f ?? undefined, controller.signal),
+              map: null,
+              itinerary: null,
+            }
+          : await fetchWorkspace(f ?? undefined, controller.signal);
         if (generation !== refreshGeneration.current) return;
-        applyView(v, f);
+        if (!options.viewOnly) setPanelSeed(workspaceView);
+        applyView(workspaceView.view, f);
         dismissNotice("action-error");
-        return v;
+        return workspaceView.view;
       } catch (error) {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
           console.error("Could not refresh trip view", error);
@@ -342,6 +355,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   }, []);
 
   const handleIdentityChanged = useCallback(async () => {
+    workspaceEpoch.current += 1;
     const nextSignedIn = !isAnonymousUser();
     setSignedIn(nextSignedIn);
     if (nextSignedIn) trackEvent("login", { method: "account" });
@@ -399,18 +413,19 @@ export default function App({ initialRequest = null }: { initialRequest?: string
       return { ...current, focus: f, items };
     });
     if (isDesktop) setInspectorOpen(true);
-    await refresh(f, { silent: true });
+    await refresh(f, { silent: true, viewOnly: true });
   };
 
   const handleClearFocus = async () => {
     clearFocus();
-    await refresh(null, { silent: true });
+    await refresh(null, { silent: true, viewOnly: true });
   };
 
   const handleSwitched = async (
     tripId?: string,
     payload?: TripWorkspaceView | TripView | null,
   ) => {
+    workspaceEpoch.current += 1;
     ++refreshGeneration.current;
     refreshController.current?.abort();
     setLoading(false);
@@ -441,39 +456,45 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     await refresh(null);
   };
   const handleStartNewTrip = async () => {
-    try {
-      dismissNotice("action-error");
-      for (let attempt = 0; ; attempt += 1) {
-        try {
-          await startNewTrip();
-          break;
-        } catch (error) {
-          const status = typeof error === "object" && error !== null && "status" in error
-            ? (error as { status?: number }).status
-            : undefined;
-          if (status !== 409 || attempt === 89) throw error;
-          const retryAfterMs = typeof error === "object" && error !== null && "retryAfterMs" in error
-            ? (error as { retryAfterMs?: number | null }).retryAfterMs
-            : null;
-          notify({
-            id: "action-error",
-            tone: "progress",
-            message: "Waiting for the Assistant to finish before starting a new trip...",
-          });
-          await new Promise((resolve) => setTimeout(resolve, retryAfterMs ?? 2000));
+    const epoch = workspaceEpoch.current;
+    const userId = getUserId();
+    await mutationQueue.run(async () => {
+      if (epoch !== workspaceEpoch.current || userId !== getUserId()) return;
+      try {
+        dismissNotice("action-error");
+        for (let attempt = 0; ; attempt += 1) {
+          try {
+            await startNewTrip();
+            break;
+          } catch (error) {
+            const status = typeof error === "object" && error !== null && "status" in error
+              ? (error as { status?: number }).status
+              : undefined;
+            if (status !== 409 || attempt === 89) throw error;
+            const retryAfterMs = typeof error === "object" && error !== null && "retryAfterMs" in error
+              ? (error as { retryAfterMs?: number | null }).retryAfterMs
+              : null;
+            notify({
+              id: "action-error",
+              tone: "progress",
+              message: "Waiting for the Assistant to finish before starting a new trip...",
+            });
+            await new Promise((resolve) => setTimeout(resolve, retryAfterMs ?? 2000));
+          }
         }
+        if (epoch !== workspaceEpoch.current || userId !== getUserId()) return;
+        await handleNewTrip();
+        setInspectorOpen(true);
+        setChatOpen(true);
+        trackEvent("new_trip_started", { surface: "desktop" });
+      } catch (error) {
+        notify({
+          id: "action-error",
+          tone: "error",
+          message: error instanceof Error ? error.message : "Could not start a new trip.",
+        });
       }
-      await handleNewTrip();
-      setInspectorOpen(true);
-      setChatOpen(true);
-      trackEvent("new_trip_started", { surface: "desktop" });
-    } catch (error) {
-      notify({
-        id: "action-error",
-        tone: "error",
-        message: error instanceof Error ? error.message : "Could not start a new trip.",
-      });
-    }
+    });
   };
   const handleResetTrip = async () => {
     if (
@@ -483,28 +504,38 @@ export default function App({ initialRequest = null }: { initialRequest?: string
       )
     )
       return;
-    try {
-      dismissNotice("action-error");
-      const workspace = await resetTrip();
-      setAssistantTurnStatus(null);
-      setPanelSeed(workspace);
-      dispatchWorkspace({ type: "trip-changed" });
-      await refresh(null);
-      notify({
-        id: "trip-reset",
-        tone: "success",
-        message: "Trip reset",
-        detail: "The plan is empty. Your destination, dates and travellers are unchanged.",
-      });
-      trackEvent("trip_reset", { surface: "desktop" });
-    } catch (error) {
-      notify({
-        id: "action-error",
-        tone: "error",
-        message: "Could not reset the trip",
-        detail: error instanceof Error ? error.message : undefined,
-      });
-    }
+    const epoch = workspaceEpoch.current;
+    const userId = getUserId();
+    await mutationQueue.run(async () => {
+      if (epoch !== workspaceEpoch.current || userId !== getUserId()) return;
+      try {
+        dismissNotice("action-error");
+        const workspace = await resetTrip();
+        if (epoch !== workspaceEpoch.current || userId !== getUserId()) return;
+        ++refreshGeneration.current;
+        refreshController.current?.abort();
+        setLoading(false);
+        setAssistantTurnStatus(null);
+        setPanelSeed(workspace);
+        dispatchWorkspace({ type: "trip-changed" });
+        if (workspace) applyView(workspace.view, null);
+        else await refresh(null);
+        notify({
+          id: "trip-reset",
+          tone: "success",
+          message: "Trip reset",
+          detail: "The plan is empty. Your destination, dates and travellers are unchanged.",
+        });
+        trackEvent("trip_reset", { surface: "desktop" });
+      } catch (error) {
+        notify({
+          id: "action-error",
+          tone: "error",
+          message: "Could not reset the trip",
+          detail: error instanceof Error ? error.message : undefined,
+        });
+      }
+    });
   };
   const handleImported = async () => {
     dispatchWorkspace({ type: "trip-changed" });
@@ -547,8 +578,8 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   // transcript replaces the previous trip's conversation.
   const handleTurnComplete = async (tripId?: string, context?: AssistantTurnContext) => {
     const tripChanged = Boolean(tripId && tripId !== chatTripId);
+    if (tripChanged) workspaceEpoch.current += 1;
     const beforeTurn = view;
-    dispatchWorkspace({ type: "trip-content-changed" });
     const refreshed = await refresh(tripChanged ? null : focus);
     if (tripId) dispatchWorkspace({ type: "chat-trip-observed", tripId });
     if (tripChanged) trackEvent("trip_created");
@@ -560,6 +591,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
       });
       return;
     }
+    dispatchWorkspace({ type: "trip-content-changed" });
     const effects = diffTurnEffects(tripChanged ? null : beforeTurn, refreshed);
     if (effects.length) setTurnEffects({ token: Date.now(), effects });
     if (!context?.proposalOnly) await applyTurnSelection(effects, tripChanged);
@@ -591,8 +623,10 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     kind: string,
     name: string,
     options?: SelectItemOptions,
+    isCurrent: () => boolean = () => true,
   ) => {
     for (let attempt = 0; attempt < 90; attempt += 1) {
+      if (!isCurrent()) return null;
       try {
         return await selectItem(kind, name, options);
       } catch (error) {
@@ -615,36 +649,48 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   };
 
   const handleSelect = async (kind: string, name: string, options?: SelectItemOptions) => {
-    try {
-      setAssistantTurnStatus(null);
-      dismissNotice("action-error");
-      const next = await selectWhenAvailable(kind, name, options);
-      const nextKind = focusKind(kind);
-      setPlaceFocus({ kind: nextKind, name });
-      ++refreshGeneration.current;
-      refreshController.current?.abort();
-      setLoading(false);
-      setView({ ...next.view, alerts: next.alerts });
-      setPlannerReview(next.planner_review ?? null);
-      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
-      const placement = next.placement || (next.placements && next.placements.length > 0 ? next.placements[0] : null);
-      if (placement?.day && placement?.name) {
-        dispatchWorkspace({
-          type: "jump",
-          target: { day: placement.day, name: placement.name, token: Date.now() },
+    const epoch = workspaceEpoch.current;
+    const userId = getUserId();
+    return mutationQueue.run(async () => {
+      if (epoch !== workspaceEpoch.current || userId !== getUserId()) return false;
+      try {
+        setAssistantTurnStatus(null);
+        dismissNotice("action-error");
+        const next = await selectWhenAvailable(
+          kind,
+          name,
+          options,
+          () => epoch === workspaceEpoch.current && userId === getUserId(),
+        );
+        if (!next) return false;
+        if (epoch !== workspaceEpoch.current || userId !== getUserId()) return false;
+        const nextKind = focusKind(kind);
+        setPlaceFocus({ kind: nextKind, name });
+        ++refreshGeneration.current;
+        refreshController.current?.abort();
+        setLoading(false);
+        setView({ ...next.view, alerts: next.alerts });
+        setPlannerReview(next.planner_review ?? null);
+        setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+        const placement = next.placement || (next.placements && next.placements.length > 0 ? next.placements[0] : null);
+        if (placement?.day && placement?.name) {
+          dispatchWorkspace({
+            type: "jump",
+            target: { day: placement.day, name: placement.name, token: Date.now() },
+          });
+        }
+        dispatchWorkspace({ type: "trip-content-changed" });
+        trackEvent("place_added", { exact_day: Boolean(options?.day) });
+        return true;
+      } catch (error) {
+        notify({
+          id: "action-error",
+          tone: "error",
+          message: error instanceof Error ? error.message : "Could not add the place.",
         });
+        return false;
       }
-      dispatchWorkspace({ type: "trip-content-changed" });
-      trackEvent("place_added", { exact_day: Boolean(options?.day) });
-      return true;
-    } catch (error) {
-      notify({
-        id: "action-error",
-        tone: "error",
-        message: error instanceof Error ? error.message : "Could not add the place.",
-      });
-      return false;
-    }
+    });
   };
 
   const handleDeselect = async (
@@ -652,6 +698,8 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     name: string,
     options: DeselectItemOptions = { all_occurrences: true },
   ) => {
+    const epoch = workspaceEpoch.current;
+    const userId = getUserId();
     const mutationKey = [
       focusKind(kind),
       name.trim().toLowerCase(),
@@ -661,32 +709,38 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     if (pendingDeselects.current.has(mutationKey)) return false;
     pendingDeselects.current.add(mutationKey);
     try {
-      setAssistantTurnStatus(null);
-      dismissNotice("action-error");
-      const next = await deselectItem(kind, name, options);
-      const retainedFocus = {
-        kind: focusKind(kind),
-        name,
-        day: options.all_occurrences === false ? options.day : undefined,
-        stop: options.all_occurrences === false ? options.stop : undefined,
-      };
-      setPlaceFocus(retainedFocus);
-      ++refreshGeneration.current;
-      refreshController.current?.abort();
-      setLoading(false);
-      setView({ ...next.view, focus: retainedFocus, alerts: next.alerts });
-      setPlannerReview(next.planner_review ?? null);
-      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
-      dispatchWorkspace({ type: "trip-content-changed" });
-      trackEvent("place_removed", { scope: options.all_occurrences === false ? "occurrence" : "all" });
-      return true;
-    } catch (error) {
-      notify({
-        id: "action-error",
-        tone: "error",
-        message: error instanceof Error ? error.message : "Could not remove the place.",
+      return await mutationQueue.run(async () => {
+        if (epoch !== workspaceEpoch.current || userId !== getUserId()) return false;
+        try {
+          setAssistantTurnStatus(null);
+          dismissNotice("action-error");
+          const next = await deselectItem(kind, name, options);
+          if (epoch !== workspaceEpoch.current || userId !== getUserId()) return false;
+          const retainedFocus = {
+            kind: focusKind(kind),
+            name,
+            day: options.all_occurrences === false ? options.day : undefined,
+            stop: options.all_occurrences === false ? options.stop : undefined,
+          };
+          setPlaceFocus(retainedFocus);
+          ++refreshGeneration.current;
+          refreshController.current?.abort();
+          setLoading(false);
+          setView({ ...next.view, focus: retainedFocus, alerts: next.alerts });
+          setPlannerReview(next.planner_review ?? null);
+          setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+          dispatchWorkspace({ type: "trip-content-changed" });
+          trackEvent("place_removed", { scope: options.all_occurrences === false ? "occurrence" : "all" });
+          return true;
+        } catch (error) {
+          notify({
+            id: "action-error",
+            tone: "error",
+            message: error instanceof Error ? error.message : "Could not remove the place.",
+          });
+          return false;
+        }
       });
-      return false;
     } finally {
       pendingDeselects.current.delete(mutationKey);
     }

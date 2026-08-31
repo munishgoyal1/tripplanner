@@ -1,8 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, startNewTripMock, isAnonymousUserMock, shareActiveTripMock, resetTripMock } = vi.hoisted(() => ({
+const { emptyView, fetchTripViewMock, fetchWorkspaceMock, selectItemMock, deselectItemMock, startNewTripMock, isAnonymousUserMock, shareActiveTripMock, resetTripMock } = vi.hoisted(() => ({
   fetchTripViewMock: vi.fn(),
+  fetchWorkspaceMock: vi.fn(),
   selectItemMock: vi.fn(),
   deselectItemMock: vi.fn(),
   startNewTripMock: vi.fn(),
@@ -35,6 +36,7 @@ const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, startNew
 
 vi.mock("./api", () => ({
   fetchTripView: fetchTripViewMock,
+  fetchWorkspace: fetchWorkspaceMock,
   fetchPreferences: vi.fn(() => Promise.resolve({
     display_currency_configured: false,
     display_currency: "USD",
@@ -50,6 +52,7 @@ vi.mock("./api", () => ({
   tripIcsUrl: vi.fn(() => "/api/trip/export.ics"),
   isAnonymousUser: isAnonymousUserMock,
   getDisplayName: vi.fn(() => "Munish"),
+  getUserId: vi.fn(() => "web-test"),
   fetchDocumentReadiness: vi.fn(() => Promise.resolve({ checks: [], blockers: 0, warnings: 0, badge: "" })),
 }));
 
@@ -78,13 +81,14 @@ vi.mock("./components/ChatPanel", () => ({
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ filters = [], onFilterToggle, reloadToken, onStopFocus, onStopMap, onDayMap, onAllDaysMap, jumpTo, overview, focusDay, focusStop, circuitFocusDay, circuitFocusToken }: { filters?: string[]; onFilterToggle?: (filter: "flight" | "road" | "train" | "hotel") => void; reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onDayMap?: (day: number) => void; onAllDaysMap?: () => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
+  default: ({ filters = [], onFilterToggle, reloadToken, onStopFocus, onStopMap, onDayMap, onAllDaysMap, jumpTo, overview, seed, focusDay, focusStop, circuitFocusDay, circuitFocusToken }: { filters?: string[]; onFilterToggle?: (filter: "flight" | "road" | "train" | "hotel") => void; reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onDayMap?: (day: number) => void; onAllDaysMap?: () => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; seed?: { destination?: string } | null; focusDay?: number; focusStop?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
     <div>
       <button
         type="button"
         data-testid="itinerary-panel"
         data-filters={filters.join(",")}
         data-reload-token={reloadToken}
+        data-seed-destination={seed?.destination ?? ""}
         data-jump-day={jumpTo && "day" in jumpTo ? jumpTo.day : ""}
         data-jump-name={jumpTo && "day" in jumpTo ? jumpTo.name ?? "" : ""}
         data-jump-summary={jumpTo && "summary" in jumpTo ? "true" : "false"}
@@ -123,8 +127,8 @@ vi.mock("./components/ItineraryPanel", () => ({
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ filters = [], reloadToken, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken, routeFocusDay, routeFocusId, routeFocusToken }: { filters?: string[]; reloadToken?: number; onPinFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number; routeFocusDay?: number; routeFocusId?: string; routeFocusToken?: number }) => (
-    <div data-testid="map-panel" data-filters={filters.join(",")} data-reload-token={reloadToken ?? 0} data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0} data-route-day={routeFocusDay ?? ""} data-route-id={routeFocusId ?? ""} data-route-token={routeFocusToken ?? 0}>
+  default: ({ filters = [], reloadToken, seed, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken, routeFocusDay, routeFocusId, routeFocusToken }: { filters?: string[]; reloadToken?: number; seed?: { empty_message?: string } | null; onPinFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number; routeFocusDay?: number; routeFocusId?: string; routeFocusToken?: number }) => (
+    <div data-testid="map-panel" data-filters={filters.join(",")} data-reload-token={reloadToken ?? 0} data-seed-message={seed?.empty_message ?? ""} data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0} data-route-day={routeFocusDay ?? ""} data-route-id={routeFocusId ?? ""} data-route-token={routeFocusToken ?? 0}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
       <button type="button" onClick={() => onPinFocus("airport", "Udaipur Airport", 1, 3)}>Focus airport pin</button>
       <button type="button" onClick={() => onDayFocus?.(2)}>Focus Day 2</button>
@@ -186,6 +190,13 @@ describe("App responsive workspace", () => {
     localStorage.clear();
     window.history.replaceState({}, "", "/");
     fetchTripViewMock.mockReset().mockResolvedValue(emptyView);
+    fetchWorkspaceMock.mockReset().mockImplementation((focus, signal) =>
+      fetchTripViewMock(focus, signal).then((view: typeof emptyView) => ({
+        view,
+        map: null,
+        itinerary: null,
+      })),
+    );
     shareActiveTripMock.mockReset().mockResolvedValue("https://example.com/shared-trip");
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
@@ -296,6 +307,32 @@ describe("App responsive workspace", () => {
 
     await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-selected", "true"));
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Eiffel Tower");
+  });
+
+  it("serializes overlapping trip mutations", async () => {
+    const unselectedView = {
+      ...emptyView,
+      has_trip: true,
+      items: [{ name: "Eiffel Tower", kind: "attraction", selected: false }],
+    };
+    const selectedView = {
+      ...unselectedView,
+      items: [{ name: "Eiffel Tower", kind: "attraction", selected: true }],
+    };
+    let resolveSelect!: (value: { view: typeof selectedView; alerts: string[] }) => void;
+    fetchTripViewMock.mockResolvedValue(unselectedView);
+    selectItemMock.mockReturnValue(new Promise((resolve) => { resolveSelect = resolve; }));
+    deselectItemMock.mockResolvedValue({ view: unselectedView, alerts: [] });
+    render(<App />);
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-selected", "false"));
+
+    fireEvent.click(screen.getByRole("button", { name: "Add Eiffel Tower" }));
+    fireEvent.click(screen.getByRole("button", { name: "Remove Eiffel Tower" }));
+    await waitFor(() => expect(selectItemMock).toHaveBeenCalledTimes(1));
+    expect(deselectItemMock).not.toHaveBeenCalled();
+
+    resolveSelect({ view: selectedView, alerts: [] });
+    await waitFor(() => expect(deselectItemMock).toHaveBeenCalledTimes(1));
   });
 
   it("retries a map add while the Assistant still owns the workspace", async () => {
@@ -787,16 +824,28 @@ describe("App responsive workspace", () => {
   });
 
   it("refreshes itinerary and map as soon as a planning turn completes", async () => {
+    fetchWorkspaceMock.mockResolvedValue({
+      view: { ...emptyView, trip_id: "khandala-pune-1", has_trip: true },
+      map: { empty_message: "snapshot-2" },
+      itinerary: { destination: "Snapshot 2" },
+    });
     setDesktop(true);
     render(<App />);
 
     expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-reload-token", "0");
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-reload-token", "0");
+    await waitFor(() => expect(fetchWorkspaceMock).toHaveBeenCalledTimes(1));
 
     fireEvent.click(screen.getByRole("button", { name: "Complete planning turn" }));
 
-    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-reload-token", "1");
-    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-reload-token", "1");
+    await waitFor(() => expect(fetchWorkspaceMock).toHaveBeenCalledTimes(2));
+    expect(fetchTripViewMock).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-reload-token", "1");
+      expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-seed-destination", "Snapshot 2");
+      expect(screen.getByTestId("map-panel")).toHaveAttribute("data-reload-token", "1");
+      expect(screen.getByTestId("map-panel")).toHaveAttribute("data-seed-message", "snapshot-2");
+    });
   });
 
   it("selects the stop a reply changed across every panel", async () => {

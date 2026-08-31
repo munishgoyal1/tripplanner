@@ -257,6 +257,27 @@ export class TripplannerClient {
     return response.json() as Promise<MapView>;
   }
 
+  async fetchWorkspace(
+    focus?: { kind: string; name: string; day?: number; stop?: number },
+    signal?: AbortSignal,
+  ): Promise<TripWorkspaceView> {
+    const params: Record<string, string> = { user_id: await this.userId() };
+    if (focus?.name) {
+      params.focus_kind = focus.kind;
+      params.focus_name = focus.name;
+      if (focus.day != null) params.focus_day = String(focus.day);
+      if (focus.stop != null) params.focus_stop = String(focus.stop);
+    }
+    const response = await this.request(this.url("/trip/workspace", params), { signal });
+    ensureOk(response, "Could not load the trip workspace");
+    const data = (await response.json()) as {
+      view: TripView;
+      map?: MapView;
+      itinerary?: Itinerary;
+    };
+    return { view: data.view, map: data.map ?? null, itinerary: data.itinerary ?? null };
+  }
+
   async fetchSavedTrips(signal?: AbortSignal): Promise<SavedTrip[]> {
     const response = await this.request(
       this.url("/trips", { user_id: await this.userId() }),

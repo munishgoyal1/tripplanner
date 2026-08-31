@@ -142,6 +142,8 @@ export default function ChatPanel({
     // race against it and load old guest messages before we know the auth state.
     const [authChecked, setAuthChecked] = useState(false);
   const [transcriptReady, setTranscriptReady] = useState(false);
+  const [transcriptError, setTranscriptError] = useState<string | null>(null);
+  const [transcriptRetry, setTranscriptRetry] = useState(0);
   const endRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -364,6 +366,7 @@ export default function ChatPanel({
     }
     let cancelled = false;
     setTranscriptReady(false);
+    setTranscriptError(null);
     const cached = transcriptCacheRef.current.get(cacheKey);
     if (cached) {
       setMessages(cached);
@@ -381,7 +384,7 @@ export default function ChatPanel({
         if (loadedTranscriptRequestRef.current === transcriptRequestKey) {
           loadedTranscriptRequestRef.current = null;
         }
-        /* keep whatever's on screen */
+        if (!cancelled) setTranscriptError("Could not load this conversation.");
       })
       .finally(() => {
         if (!cancelled) setTranscriptReady(true);
@@ -390,7 +393,7 @@ export default function ChatPanel({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authChecked, reloadToken, tripIdHint, cacheKey, busy, transcriptRequestKey]);
+  }, [authChecked, reloadToken, tripIdHint, cacheKey, busy, transcriptRequestKey, transcriptRetry]);
 
   useEffect(() => {
     clearTurnArtifacts();
@@ -644,6 +647,14 @@ export default function ChatPanel({
                 </button>
               </div>
             </div>
+          </div>
+        )}
+        {transcriptError && (
+          <div role="alert" className="mx-3 mb-3 rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-rose-100">
+            {transcriptError}{" "}
+            <button type="button" onClick={() => setTranscriptRetry((token) => token + 1)} className="font-semibold underline">
+              Retry
+            </button>
           </div>
         )}
         {renderedTurns.map(({ message: m, index: i, group }) => (

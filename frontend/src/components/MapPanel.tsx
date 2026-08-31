@@ -307,7 +307,10 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
       setLoading(true);
       setError(null);
       try {
-        const [cfg, mv] = await Promise.all([fetchMapsConfig(), fetchMapView(controller.signal)]);
+        const [cfg, mv] = await Promise.all([
+          fetchMapsConfig(),
+          seeded ? Promise.resolve(seeded) : fetchMapView(controller.signal),
+        ]);
         if (cancelled) return;
         setView(mv);
         setKey(cfg.enabled ? cfg.key : null);
@@ -909,7 +912,14 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
         )}
         {overlay && (
           <div className="absolute inset-0 grid place-items-center bg-white/85 p-6 text-center">
-            <div className={`max-w-xs text-sm ${overlay.tone}`}>{overlay.text}</div>
+            <div className={`max-w-xs text-sm ${overlay.tone}`}>
+              <p>{overlay.text}</p>
+              {error && !view && (
+                <button type="button" onClick={() => setRetryToken((token) => token + 1)} className="mt-2 font-semibold text-brand underline">
+                  Retry
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
