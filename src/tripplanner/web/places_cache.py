@@ -66,7 +66,10 @@ def _ttl(seconds: int | float) -> int:
         _MISS_TTL_S: settings.google_places_miss_cache_ttl_sec,
         _PHOTO_TTL_S: settings.google_places_photo_url_cache_ttl_sec,
     }
-    return settings.stable_cache_ttl(configured.get(seconds, seconds))
+    configured_ttl = configured.get(seconds, seconds)
+    if seconds in (_MISS_TTL_S, _PHOTO_TTL_S):
+        return settings.cache_ttl(configured_ttl)
+    return settings.stable_cache_ttl(configured_ttl)
 
 
 def _reviews_ttl() -> int:

@@ -1473,3 +1473,13 @@ the outcome.
 - The earlier absent-versus-empty cache rule is insufficient by itself because
   legacy entries may contain `photo_refs: []`. Persist an explicit schema marker
   to distinguish unverified legacy metadata from a current confirmed-empty result.
+
+## 2026-08-31 - Stable Cache Mode Must Exclude Transient Data
+
+- Hosted environments set `CACHE_STABLE_FOREVER=1`, but the Places TTL helper
+  applied that override to failed lookups and signed photo URLs as well as stable
+  metadata. One quota-era empty Paris result therefore never reached its intended
+  60-second retry window, while uncached destinations continued to work.
+- Apply indefinite retention only to stable metadata. Provider misses must retain
+  their short retry TTL, and signed URLs must retain an expiry-aware TTL even when
+  their durable photo references are stable.

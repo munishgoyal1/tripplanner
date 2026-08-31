@@ -138,6 +138,15 @@ def test_places_cache_applies_environment_ttl_scale(monkeypatch):
     assert pc._ttl(pc._PHOTO_TTL_S) == pc._PHOTO_TTL_S // 2
 
 
+def test_stable_cache_does_not_make_misses_or_signed_photos_permanent(monkeypatch):
+    settings = pc.get_settings()
+    monkeypatch.setattr(settings, "cache_stable_forever", True)
+
+    assert pc._ttl(pc._META_TTL_S) == -1
+    assert pc._ttl(pc._MISS_TTL_S) == settings.google_places_miss_cache_ttl_sec
+    assert pc._ttl(pc._PHOTO_TTL_S) == settings.google_places_photo_url_cache_ttl_sec
+
+
 def test_remembered_discovery_place_avoids_ui_lookup(_isolate):
     pc.remember_places(
         [
