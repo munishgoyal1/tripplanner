@@ -139,12 +139,12 @@ lifetimes for individual search and fare classes. Changing hosted values creates
 new Container Apps revision on the next deployment; it does not mutate a running
 revision in place.
 
-Google Maps and Places can be synchronized sooner without rebuilding an image or
-running Bicep. `Google-Runtime-Control` applies the checked-in canary or production
-flags through `infra/azure/set-google-runtime-access.ps1`, creates a same-image
-Container Apps revision, and verifies that the new revision is ready and owns
-latest-revision traffic. Enablement remains Google-spend approval gated; disablement
-first moves the app to its off revision and only then disables Google Service Usage.
+Registered settings can be synchronized sooner without rebuilding an image or
+running Bicep. `Apply-Runtime-Config` applies checked-in canary or production
+state through specialized handlers. Its first handler owns Google Maps and Places,
+creates a same-image Container Apps revision, and verifies that the new revision
+is ready and owns latest-revision traffic. Provider enablement precedes an on
+revision; an off revision is served before provider disablement.
 
 Only local runs it. `.env.canary` and `.env.prod` set `CACHE_REDIS_ENABLED=0`,
 so both hosted environments stay on the in-memory fallback and neither depends

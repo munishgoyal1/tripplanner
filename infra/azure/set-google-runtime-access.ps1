@@ -12,7 +12,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("status", "apply", "enable", "disable", "on", "off")]
+    [ValidateSet("status", "apply", "enable", "disable", "on", "off", "help", "?")]
     [string]$Action = "status",
 
     [Parameter(Position = 1)]
@@ -33,6 +33,24 @@ $commonPath = Join-Path $repoRoot "infra/gcp/google-api-control-common.ps1"
 $mapsControl = Join-Path $repoRoot "infra/gcp/set-google-maps-access.ps1"
 $placesControl = Join-Path $repoRoot "infra/gcp/set-google-places-access.ps1"
 . $commonPath
+
+function Show-GoogleRuntimeHelp {
+    Write-Host @"
+set-google-runtime-access.ps1 - synchronize hosted Google runtime access.
+
+Usage: set-google-runtime-access.ps1 [status|apply|enable|disable|help|?]
+                                     [all|canary|prod]
+                                     [maps-approval] [places-approval]
+
+This is the Google handler behind Apply-Runtime-Config. Prefer the common owner
+launcher for routine status and apply operations.
+"@
+}
+
+if ($Action -in @("help", "?")) {
+    Show-GoogleRuntimeHelp
+    exit 0
+}
 
 $normalizedAction = @{ on = "enable"; off = "disable" }[$Action]
 if (-not $normalizedAction) { $normalizedAction = $Action }
@@ -158,39 +176,46 @@ foreach ($target in $targets) {
     $before = Get-ContainerAppState -ResourceGroup $target.resourceGroup -Name $app.name
     $desiredMaps = if ($mapsEnabled) { "1" } else { "0" }
     $desiredPlaces = if ($placesEnabled) { "1" } else { "0" }
+    $actualMaps = Get-EnvironmentValue -Variables $before.env -Name "ENABLE_GOOGLE_MAPS"
+    $actualPlaces = Get-EnvironmentValue -Variables $before.env -Name "ENABLE_GOOGLE_PLACES"
+    $runtimeInSync = $actualMaps -eq $desiredMaps -and $actualPlaces -eq $desiredPlaces
 
     if ($normalizedAction -ne "status") {
         # Enable cloud services first; disable them only after the app stops calling them.
         if ($mapsEnabled) { & $mapsControl apply $target.name $GoogleMapsApproval }
         if ($placesEnabled) { & $placesControl apply $target.name $GooglePlacesApproval }
 
-        Write-Host "[$($target.name)] Creating a same-image runtime revision for $($app.name)..."
-        & az containerapp update `
-            --resource-group $target.resourceGroup `
-            --name $app.name `
-            --set-env-vars `
-                "ENABLE_GOOGLE_MAPS=$desiredMaps" `
-                "ENABLE_GOOGLE_PLACES=$desiredPlaces" `
-            --only-show-errors `
-            --output none
-        if ($LASTEXITCODE -ne 0) {
-            throw "Container App runtime update failed for $($app.name)."
-        }
+        if (-not $runtimeInSync) {
+            Write-Host "[$($target.name)] Creating a same-image runtime revision for $($app.name)..."
+            & az containerapp update `
+                --resource-group $target.resourceGroup `
+                --name $app.name `
+                --set-env-vars `
+                    "ENABLE_GOOGLE_MAPS=$desiredMaps" `
+                    "ENABLE_GOOGLE_PLACES=$desiredPlaces" `
+                --only-show-errors `
+                --output none
+            if ($LASTEXITCODE -ne 0) {
+                throw "Container App runtime update failed for $($app.name)."
+            }
 
-        $after = Get-ContainerAppState -ResourceGroup $target.resourceGroup -Name $app.name
-        if ($after.image -ne $before.image) {
-            throw "Runtime update changed the image for $($app.name): '$($before.image)' to '$($after.image)'."
+            $after = Get-ContainerAppState -ResourceGroup $target.resourceGroup -Name $app.name
+            if ($after.image -ne $before.image) {
+                throw "Runtime update changed the image for $($app.name): '$($before.image)' to '$($after.image)'."
+            }
+            if ($after.latest -ne $after.ready) {
+                throw "New revision '$($after.latest)' is not the latest ready revision for $($app.name)."
+            }
+            $latestTraffic = @($after.traffic | Where-Object {
+                $_.latestRevision -eq $true -and [int]$_.weight -eq 100
+            })
+            if ($latestTraffic.Count -ne 1) {
+                throw "The latest revision does not own 100% of traffic for $($app.name)."
+            }
+            $before = $after
+        } else {
+            Write-Host "[$($target.name)] Runtime flags already match; no revision created."
         }
-        if ($after.latest -ne $after.ready) {
-            throw "New revision '$($after.latest)' is not the latest ready revision for $($app.name)."
-        }
-        $latestTraffic = @($after.traffic | Where-Object {
-            $_.latestRevision -eq $true -and [int]$_.weight -eq 100
-        })
-        if ($latestTraffic.Count -ne 1) {
-            throw "The latest revision does not own 100% of traffic for $($app.name)."
-        }
-        $before = $after
 
         if (-not $mapsEnabled) { & $mapsControl apply $target.name }
         if (-not $placesEnabled) { & $placesControl apply $target.name }

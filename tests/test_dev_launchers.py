@@ -67,40 +67,53 @@ def test_google_maps_control_has_cross_platform_owner_launchers() -> None:
     assert script_name in windows_launcher
 
 
-def test_google_runtime_control_has_safe_cross_platform_owner_launchers() -> None:
+def test_common_runtime_config_has_safe_cross_platform_owner_launchers() -> None:
     root = Path(__file__).parents[1]
-    script = (
+    orchestrator = (root / "scripts" / "dev" / "apply-runtime-config.ps1").read_text(
+        encoding="utf-8"
+    )
+    google_handler = (
         root / "infra" / "azure" / "set-google-runtime-access.ps1"
     ).read_text(encoding="utf-8")
     launchers = (
-        root / "scripts" / "mac" / "user" / "google" / "Google-Runtime-Control.command",
-        root / "scripts" / "win" / "user" / "google" / "Google-Runtime-Control.cmd",
+        root / "scripts" / "mac" / "user" / "runtime" / "Apply-Runtime-Config.command",
+        root / "scripts" / "win" / "user" / "runtime" / "Apply-Runtime-Config.cmd",
     )
 
-    assert '[string]$Action = "status"' in script
-    assert 'ValidateSet("all", "canary", "prod")' in script
-    assert "APPROVE_GOOGLE_MAPS_SPEND" in script
-    assert "APPROVE_GOOGLE_PLACES_SPEND" in script
-    assert "munishgoyal1@gmail.com" in script
-    assert "Visual Studio Enterprise Subscription" in script
-    assert '"containerapp", "update"' not in script
-    assert "az containerapp update" in script
-    assert "--image" not in script
-    assert '"ENABLE_GOOGLE_MAPS=$desiredMaps"' in script
-    assert '"ENABLE_GOOGLE_PLACES=$desiredPlaces"' in script
-    assert "$after.image -ne $before.image" in script
-    assert "$after.latest -ne $after.ready" in script
-    assert "$_.latestRevision -eq $true" in script
-    update_index = script.index("az containerapp update")
-    assert script.index("if ($mapsEnabled) { & $mapsControl apply", 0, update_index) >= 0
-    assert script.index("if ($placesEnabled) { & $placesControl apply", 0, update_index) >= 0
-    assert script.index("if (-not $mapsEnabled) { & $mapsControl apply", update_index) >= 0
-    assert script.index("if (-not $placesEnabled) { & $placesControl apply", update_index) >= 0
+    assert 'ValidateSet("status", "apply", "help", "?")' in orchestrator
+    assert 'ValidateSet("all", "canary", "prod")' in orchestrator
+    assert "APPROVE_RUNTIME_CONFIG" in orchestrator
+    assert "set-google-runtime-access.ps1" in orchestrator
+    assert "Show-RuntimeConfigHelp" in orchestrator
+    assert "if ($Action -in @(\"help\", \"?\"))" in orchestrator
+    assert "APPROVE_GOOGLE_MAPS_SPEND" in orchestrator
+    assert "APPROVE_GOOGLE_PLACES_SPEND" in orchestrator
+
+    assert 'ValidateSet("status", "apply", "enable", "disable", "on", "off", "help", "?")' in google_handler
+    assert "Show-GoogleRuntimeHelp" in google_handler
+    assert "munishgoyal1@gmail.com" in google_handler
+    assert "Visual Studio Enterprise Subscription" in google_handler
+    assert "az containerapp update" in google_handler
+    assert "--image" not in google_handler
+    assert '"ENABLE_GOOGLE_MAPS=$desiredMaps"' in google_handler
+    assert '"ENABLE_GOOGLE_PLACES=$desiredPlaces"' in google_handler
+    assert "$after.image -ne $before.image" in google_handler
+    assert "$after.latest -ne $after.ready" in google_handler
+    assert "$_.latestRevision -eq $true" in google_handler
+    assert "if (-not $runtimeInSync)" in google_handler
+    assert "Runtime flags already match; no revision created." in google_handler
+    update_index = google_handler.index("az containerapp update")
+    assert google_handler.index("if ($mapsEnabled) { & $mapsControl apply", 0, update_index) >= 0
+    assert google_handler.index("if ($placesEnabled) { & $placesControl apply", 0, update_index) >= 0
+    assert google_handler.index("if (-not $mapsEnabled) { & $mapsControl apply", update_index) >= 0
+    assert google_handler.index("if (-not $placesEnabled) { & $placesControl apply", update_index) >= 0
     for launcher_path in launchers:
         launcher = launcher_path.read_text(encoding="utf-8")
-        assert "set-google-runtime-access.ps1" in launcher
+        assert "apply-runtime-config.ps1" in launcher
         assert "show-launcher-help.ps1" in launcher
-        assert "google-runtime-control" in launcher
+        assert "apply-runtime-config" in launcher
+        assert '"?"' in launcher
+        assert '"help"' in launcher
 
 
 def test_azure_services_control_has_cross_platform_owner_launchers() -> None:
@@ -209,6 +222,7 @@ def test_categorized_owner_launchers_have_cross_platform_help() -> None:
         "run": ("Run-Latest-Master", "Start-Dev-Spa"),
         "azure": ("Azure-Services-Control",),
         "google": ("Google-Maps-Control", "Google-Places-Control"),
+        "runtime": ("Apply-Runtime-Config",),
     }
 
     for platform, suffix in (("mac", ".command"), ("win", ".cmd")):
