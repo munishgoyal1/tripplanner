@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pytest
 
+from tripplanner import places_budget
+from tripplanner.web import trip_view
 from tripplanner.web.trip_view import build_destination_overview, build_map_url
 
 
@@ -65,3 +67,18 @@ def test_overview_includes_map_url_field(no_key) -> None:
     out = build_destination_overview("Paris", include_news=False)
     assert "map_url" in out
     assert out["map_url"] == ""
+
+
+def test_overview_places_branch_keeps_request_budget(monkeypatch, no_key) -> None:
+    consumed: list[bool] = []
+
+    def overview_places(_destination: str):
+        consumed.append(places_budget.consume("text_search"))
+        return [], [], [], ""
+
+    monkeypatch.setattr(trip_view, "_overview_places", overview_places)
+
+    with places_budget.places_budget_scope("user_interaction"):
+        build_destination_overview("Paris", include_news=False)
+
+    assert consumed == [True]

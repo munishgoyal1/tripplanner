@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import contextvars
+
 import httpx
 import pytest
 
@@ -242,3 +244,12 @@ def test_run_parallel_is_concurrent_not_sequential() -> None:
 
     assert results == {"a": "a", "b": "b", "c": "c"}
     assert elapsed < 0.5
+
+
+def test_run_parallel_propagates_context_to_worker_threads() -> None:
+    marker = contextvars.ContextVar("parallel_marker", default="missing")
+    marker.set("request-budget")
+
+    results = concurrency.run_parallel({"places": marker.get, "news": marker.get})
+
+    assert results == {"places": "request-budget", "news": "request-budget"}

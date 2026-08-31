@@ -1461,3 +1461,15 @@ the outcome.
 - A smoke failure should expose the earliest missing layer. Provider-call and
   cache-result logs distinguished "no photo request was attempted" from quota,
   authentication, and provider-data failures without weakening the smoke gate.
+
+## 2026-08-31 - Thread Fan-Out Must Preserve Request Context
+
+- The destination overview established a paid-provider budget in FastAPI, then
+  moved its Places branch through the shared thread pool. Python `contextvars`
+  did not cross that thread boundary, so every provider call was denied locally
+  and degraded to empty output without reaching Google or emitting an HTTP error.
+- Submit each branch with its own `contextvars.copy_context()`; one copied
+  context cannot be entered concurrently by multiple worker threads.
+- The earlier absent-versus-empty cache rule is insufficient by itself because
+  legacy entries may contain `photo_refs: []`. Persist an explicit schema marker
+  to distinguish unverified legacy metadata from a current confirmed-empty result.

@@ -17,6 +17,7 @@ branch must never wait on another branch of the same call.
 
 from __future__ import annotations
 
+import contextvars
 import logging
 import time
 from collections.abc import Callable, Mapping
@@ -57,7 +58,10 @@ def run_parallel(
         return {name: _safe(name, task)}
 
     executor = _get_executor()
-    futures = {name: executor.submit(task) for name, task in tasks.items()}
+    futures = {
+        name: executor.submit(contextvars.copy_context().run, task)
+        for name, task in tasks.items()
+    }
     deadline = None if timeout is None else time.monotonic() + timeout
     results: dict[str, Any] = {}
     for name, future in futures.items():
