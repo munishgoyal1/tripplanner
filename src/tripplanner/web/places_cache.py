@@ -677,6 +677,10 @@ def get_photos(
     info = _ensure(name, city, refresh=refresh)
     if not info:
         return []
+    if "photo_refs" not in info and not refresh:
+        refreshed, succeeded = refresh_details(name, city)
+        if succeeded and refreshed:
+            info = refreshed
     with _CACHE_LOCK:
         stale = (time.time() - info.get("__photos_at__", 0.0)) >= _ttl(_PHOTO_TTL_S)
         needs_photos = refresh or "photo_urls" not in info or stale

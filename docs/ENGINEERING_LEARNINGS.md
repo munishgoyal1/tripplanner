@@ -1448,3 +1448,16 @@ the outcome.
   check that cache before consuming paid-call budget. A fresh cache hit then
   consumes neither provider quota nor per-turn allowance, while transient errors
   remain uncached.
+
+## 2026-08-31 - Fresh Cache Entries Can Still Have a Stale Schema
+
+- Production destination metadata survived a deployment and remained fresh by
+  TTL, but older entries lacked the durable `photo_refs` field. Attractions and
+  ratings rendered from cache while every photo silently disappeared, making the
+  hosted smoke look like an upstream Places outage.
+- Treat an absent derived-source field differently from a present empty field.
+  Absence requires one metadata refresh to migrate the entry; an empty list is a
+  valid provider result and must not trigger repeated paid requests.
+- A smoke failure should expose the earliest missing layer. Provider-call and
+  cache-result logs distinguished "no photo request was attempted" from quota,
+  authentication, and provider-data failures without weakening the smoke gate.

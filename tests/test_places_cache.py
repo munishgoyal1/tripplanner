@@ -158,6 +158,35 @@ def test_remembered_discovery_place_avoids_ui_lookup(_isolate):
     assert _isolate["lookup"] == 0
 
 
+def test_photos_refresh_legacy_entry_without_photo_refs(_isolate, _authorized):
+    key = pc._key("Legacy Place", "Paris")
+    pc._CACHE[key] = {
+        "place_id": "legacy-id",
+        "name": "Legacy Place",
+        "rating": 4.5,
+        "__at__": time.time(),
+    }
+
+    photos = pc.get_photos("Legacy Place", "Paris")
+
+    assert len(photos) == 1
+    assert _isolate["lookup"] == 1
+    assert _isolate["photos"] == 1
+
+
+def test_photos_do_not_refresh_entry_with_known_empty_refs(_isolate, _authorized):
+    key = pc._key("No Photo Place", "Paris")
+    pc._CACHE[key] = {
+        "place_id": "no-photo-id",
+        "name": "No Photo Place",
+        "photo_refs": [],
+        "__at__": time.time(),
+    }
+
+    assert pc.get_photos("No Photo Place", "Paris") == []
+    assert _isolate["lookup"] == 0
+
+
 def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
     calls = {"count": 0}
 
