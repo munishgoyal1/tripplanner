@@ -60,31 +60,35 @@ const overview: OpsOverview = {
   provider_usage: {
     period_days: 30,
     since: "2026-07-11T12:00:00Z",
+    start_date: "2026-07-11",
+    end_date: "2026-08-10",
     pricing: { catalog_version: "2026-03-01", basis: "Planning estimates; provider billing exports remain authoritative.", currency: "USD" },
-    totals: { calls: 8, avoided_calls: 0, failures: 1, estimated_cost_usd: 0.052, unknown_cost_calls: 2, prompt_tokens: 1000, completion_tokens: 500 },
+    totals: { calls: 8, avoided_calls: 2, failures: 1, estimated_cost_usd: 0.052, estimated_savings_usd: 0.064, unknown_cost_calls: 2, prompt_tokens: 1000, completion_tokens: 500 },
     trip_costs: {
       new_trip: { interactions: 1, trips: 1, calls: 4, estimated_cost_usd: 0.03, average_estimated_cost_usd: 0.03, unknown_cost_interactions: 0 },
       trip_update: { interactions: 1, trips: 1, calls: 2, estimated_cost_usd: 0.015, average_estimated_cost_usd: 0.015, unknown_cost_interactions: 1 },
       infrastructure: { allocation_status: "not_allocated", basis: "Shared Azure infrastructure cost is not allocated per trip." },
     },
     by_initiator: [
-      { environment: "canary", initiator: "user_trip", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 1000, completion_tokens: 500 },
-      { environment: "canary", initiator: "audit", calls: 2, avoided_calls: 0, failures: 1, estimated_cost_usd: 0.007, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 },
+      { environment: "canary", initiator: "user_trip", calls: 6, avoided_calls: 2, failures: 0, estimated_cost_usd: 0.045, estimated_savings_usd: 0.064, unknown_cost_calls: 1, prompt_tokens: 1000, completion_tokens: 500 },
+      { environment: "canary", initiator: "audit", calls: 2, avoided_calls: 0, failures: 1, estimated_cost_usd: 0.007, estimated_savings_usd: 0, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 },
     ],
     by_interaction_kind: [],
-    by_provider_total: [{ environment: "canary", provider: "google", calls: 6, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.045, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
+    by_provider_total: [{ environment: "canary", provider: "google", calls: 6, avoided_calls: 2, failures: 0, estimated_cost_usd: 0.045, estimated_savings_usd: 0.064, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
+    by_service: [{ environment: "canary", service: "google_places", calls: 6, avoided_calls: 2, failures: 0, estimated_cost_usd: 0.045, estimated_savings_usd: 0.064, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
+    cache_effectiveness: { provider_calls: 6, cache_hits: 2, requests: 8, provider_call_rate: 0.75, cache_hit_rate: 0.25, estimated_savings_usd: 0.064, by_dataset: [{ dataset: "places_search", provider_calls: 6, cache_hits: 2, requests: 8, hit_rate: 0.25, estimated_savings_usd: 0.064 }] },
     by_trip: [
-      { environment: "canary", initiator: "user_trip", interaction_kind: "new_trip", trip_id: "trip-kashmir", trip_name: "Kashmir", calls: 4, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.03, unknown_cost_calls: 0, prompt_tokens: 700, completion_tokens: 300 },
-      { environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", trip_name: "Kashmir", calls: 2, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.015, unknown_cost_calls: 1, prompt_tokens: 300, completion_tokens: 200 },
+      { environment: "canary", initiator: "user_trip", interaction_kind: "new_trip", trip_id: "trip-kashmir", trip_name: "Kashmir", calls: 4, avoided_calls: 1, failures: 0, estimated_cost_usd: 0.03, estimated_savings_usd: 0.032, unknown_cost_calls: 0, prompt_tokens: 700, completion_tokens: 300 },
+      { environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", trip_name: "Kashmir", calls: 2, avoided_calls: 1, failures: 0, estimated_cost_usd: 0.015, estimated_savings_usd: 0.032, unknown_cost_calls: 1, prompt_tokens: 300, completion_tokens: 200 },
     ],
     by_provider: [
-      { environment: "canary", initiator: "user_trip", interaction_kind: "new_trip", trip_id: "trip-kashmir", interaction_id: "request-create", provider: "google", calls: 4, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.03, unknown_cost_calls: 0, prompt_tokens: 0, completion_tokens: 0 },
-      { environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", interaction_id: "request-update", provider: "google", calls: 2, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.015, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 },
+      { environment: "canary", initiator: "user_trip", interaction_kind: "new_trip", trip_id: "trip-kashmir", interaction_id: "request-create", provider: "google", calls: 4, avoided_calls: 1, failures: 0, estimated_cost_usd: 0.03, estimated_savings_usd: 0.032, unknown_cost_calls: 0, prompt_tokens: 0, completion_tokens: 0 },
+      { environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", interaction_id: "request-update", provider: "google", calls: 2, avoided_calls: 1, failures: 0, estimated_cost_usd: 0.015, estimated_savings_usd: 0.032, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 },
     ],
-    by_operation: [{ environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", interaction_id: "request-update", provider: "google", operation: "text_search", sku_class: "essentials", calls: 2, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.015, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
+    by_operation: [{ environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", interaction_id: "request-update", provider: "google", operation: "text_search", sku_class: "essentials", calls: 2, avoided_calls: 1, failures: 0, estimated_cost_usd: 0.015, estimated_savings_usd: 0.032, unknown_cost_calls: 1, prompt_tokens: 0, completion_tokens: 0 }],
     by_interaction: [
-      { environment: "canary", initiator: "user_trip", interaction_kind: "new_trip", trip_id: "trip-kashmir", trip_name: "Kashmir", interaction_id: "request-create", calls: 4, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.03, unknown_cost_calls: 0, prompt_tokens: 700, completion_tokens: 300 },
-      { environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", trip_name: "Kashmir", interaction_id: "request-update", calls: 2, avoided_calls: 0, failures: 0, estimated_cost_usd: 0.015, unknown_cost_calls: 1, prompt_tokens: 300, completion_tokens: 200 },
+      { environment: "canary", initiator: "user_trip", interaction_kind: "new_trip", trip_id: "trip-kashmir", trip_name: "Kashmir", interaction_id: "request-create", calls: 4, avoided_calls: 1, failures: 0, estimated_cost_usd: 0.03, estimated_savings_usd: 0.032, unknown_cost_calls: 0, prompt_tokens: 700, completion_tokens: 300 },
+      { environment: "canary", initiator: "user_trip", interaction_kind: "trip_update", trip_id: "trip-kashmir", trip_name: "Kashmir", interaction_id: "request-update", calls: 2, avoided_calls: 1, failures: 0, estimated_cost_usd: 0.015, estimated_savings_usd: 0.032, unknown_cost_calls: 1, prompt_tokens: 300, completion_tokens: 200 },
     ],
   },
   cache: { configured: true, backend: "redis", redis_connected: true, fallback_active: false, memory_entries: 2, redis_entries: 7, redis_bytes: 2048, redis_stats_truncated: false },
@@ -105,6 +109,8 @@ describe("OpsDashboard", () => {
     expect(screen.getByText("Top cache hits")).toBeInTheDocument();
     expect(screen.getByText("Persisted inventory")).toBeInTheDocument();
     expect(screen.getByText("Conversation capacity")).toBeInTheDocument();
+    expect(screen.getByText("Cache health by dataset")).toBeInTheDocument();
+    expect(screen.getByText("Places search and discovery")).toBeInTheDocument();
     expect(screen.getByText("4 / 10")).toBeInTheDocument();
     expect(screen.getByText("38 / 100")).toBeInTheDocument();
   });
@@ -125,5 +131,44 @@ describe("OpsDashboard", () => {
     expect(screen.getByText("Unknown price")).toBeInTheDocument();
     expect(screen.getAllByText(/\+ 1 unknown/).length).toBeGreaterThan(0);
     expect(screen.getAllByText("Cumulative provider cost").length).toBeGreaterThan(0);
+    expect(screen.getByText("Cumulative cost by service")).toBeInTheDocument();
+    expect(screen.getByText("Provider calls vs cache")).toBeInTheDocument();
+    expect(screen.getByText("Google Places")).toBeInTheDocument();
+    expect(screen.getByLabelText("75% provider calls and 25% cache hits")).toBeInTheDocument();
+    expect(screen.getByLabelText("From")).toHaveAttribute(
+      "max",
+      new Date().toISOString().slice(0, 10),
+    );
+    expect(screen.getByLabelText("To")).toHaveAttribute(
+      "max",
+      new Date().toISOString().slice(0, 10),
+    );
+
+    fireEvent.change(screen.getByLabelText("From"), { target: { value: "2026-08-01" } });
+    await waitFor(() => expect(fetchOpsOverview).toHaveBeenLastCalledWith(
+      30,
+      expect.any(AbortSignal),
+      "2026-08-01",
+      undefined,
+    ));
+  });
+
+  it("keeps the dashboard visible when the reporting range is invalid", async () => {
+    render(<OpsDashboard />);
+    await screen.findByText("Activation funnel");
+    fireEvent.click(screen.getByRole("tab", { name: /api & cost/i }));
+    vi.mocked(fetchOpsOverview).mockRejectedValueOnce(
+      Object.assign(new Error("invalid range"), { status: 422 }),
+    );
+
+    fireEvent.change(screen.getByLabelText("From"), {
+      target: { value: "2099-01-01" },
+    });
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Choose a valid reporting range ending today or earlier.",
+    );
+    expect(screen.getByRole("tab", { name: /api & cost/i })).toBeInTheDocument();
+    expect(screen.queryByText("Page not found.")).not.toBeInTheDocument();
   });
 });

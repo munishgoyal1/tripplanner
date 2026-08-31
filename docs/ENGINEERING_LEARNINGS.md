@@ -1531,3 +1531,15 @@ the outcome.
 - Warn on working-cache sync failure, but block destructive cleanup only when the
   durable save or publish fails. A later restore can rebuild the working cache from
   the Git corpus.
+
+## 2026-08-31 - Durable Interaction Traces Need Semantic Allowlists
+
+- Removing obvious message fields is not a privacy boundary; any arbitrary event
+  field can carry itinerary content. Persist only explicitly approved scalar fields,
+  and keep trip names out of operational traces.
+- Telemetry is observational, so local artifact failure must never fail the request.
+  Hosted durability can share the existing bounded interaction document instead of
+  adding one write per event.
+- Cache hits and avoided provider calls answer different questions. Keep circuit and
+  policy avoidance separate, and count multi-item cache results by the provider
+  requests they replace when reporting request share and estimated savings.

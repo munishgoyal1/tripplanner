@@ -317,9 +317,7 @@ def _record_success(provider: str, mode: str, latency_ms: float) -> None:
     # Rolling average
     current = _PROVIDER_STATS["avg_latency_ms"][provider]
     count = _PROVIDER_STATS["quote_success"][provider]
-    _PROVIDER_STATS["avg_latency_ms"][provider] = (
-        (current * (count - 1) + latency_ms) / count
-    )
+    _PROVIDER_STATS["avg_latency_ms"][provider] = (current * (count - 1) + latency_ms) / count
 
 
 def _record_failure(provider: str, mode: str) -> None:
@@ -349,8 +347,7 @@ async def _query_source_async(
     """Query a single source asynchronously. Returns (quote, error_message)."""
     try:
         # Run the synchronous quote call in a thread pool
-        loop = asyncio.get_event_loop()
-        quote = await loop.run_in_executor(None, source.quote, request)
+        quote = await asyncio.to_thread(source.quote, request)
 
         latency_ms = (datetime.now(UTC) - start_time).total_seconds() * 1000
         if quote is not None:
@@ -389,6 +386,9 @@ async def _quote_fare_async(
     cached = _FARE_CACHE.get(cache_key)
     if cached is not None:
         _record_cache_hit("cache")
+        from tripplanner.provider_usage import record_cache_hit
+
+        record_cache_hit(provider=cached.provider, operation="request")
         return cached, None
 
     candidates = sources_for(request.mode)
@@ -397,10 +397,7 @@ async def _quote_fare_async(
 
     # Launch concurrent queries
     start_time = datetime.now(UTC)
-    tasks = [
-        _query_source_async(source, request, start_time)
-        for source in candidates
-    ]
+    tasks = [_query_source_async(source, request, start_time) for source in candidates]
 
     try:
         # Wait for first successful result within timeout
@@ -411,20 +408,15 @@ async def _quote_fare_async(
                 _FARE_CACHE.set(cache_key, quote)
                 return quote, None
     except TimeoutError:
-        logger.info("fare query timeout for %s %s→%s",
-                   request.mode, request.from_place, request.to_place)
+        logger.info(
+            "fare query timeout for %s %s→%s", request.mode, request.from_place, request.to_place
+        )
     except Exception as exc:
         logger.error("unexpected error in concurrent fare query: %s", exc)
 
     # All queries failed or timed out
-    failed_any = any(
-        source.name in _PROVIDER_STATS["quote_failure"]
-        for source in candidates
-    )
-    return None, (
-        UnpricedReason.SOURCE_FAILED if failed_any
-        else UnpricedReason.OUT_OF_COVERAGE
-    )
+    failed_any = any(source.name in _PROVIDER_STATS["quote_failure"] for source in candidates)
+    return None, (UnpricedReason.SOURCE_FAILED if failed_any else UnpricedReason.OUT_OF_COVERAGE)
 
 
 def quote_fare(request: FareRequest) -> tuple[FareQuote | None, UnpricedReason | None]:
@@ -451,6 +443,9 @@ def quote_fare(request: FareRequest) -> tuple[FareQuote | None, UnpricedReason |
     cached = _FARE_CACHE.get(cache_key)
     if cached is not None:
         _record_cache_hit("cache")
+        from tripplanner.provider_usage import record_cache_hit
+
+        record_cache_hit(provider=cached.provider, operation="request")
         return cached, None
 
     failed = False

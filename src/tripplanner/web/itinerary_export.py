@@ -112,6 +112,9 @@ def _static_map_data_uri(
     ).hexdigest()
     cached = _STATIC_MAP_CACHE.get(cache_key)
     if isinstance(cached, str):
+      from tripplanner.provider_usage import record_cache_hit
+
+      record_cache_hit(provider="google", operation="static_map")
       return cached
 
     path = "color:0x0369a1ff|weight:4|" + "|".join(

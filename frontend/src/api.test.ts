@@ -73,8 +73,10 @@ describe("streamChat", () => {
     const events = handlers();
     events.onInputRequest = vi.fn();
 
-    await streamChat("plan a trip", events);
+    await streamChat("plan a trip", events, { requestId: "request-client-1" });
 
+    const request = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(new Headers(request.headers).get("X-Request-ID")).toBe("request-client-1");
     expect(events.onToken).toHaveBeenCalledWith("Hello");
     expect(events.onProgress).toHaveBeenCalledWith("thinking");
     expect(events.onInputRequest).toHaveBeenCalledWith(expect.objectContaining({

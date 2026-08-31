@@ -20,6 +20,10 @@ def test_harness_scope_correlates_and_collects_app_events() -> None:
         {
             "kind": "provider_call",
             "fields": {
+                    "initiator": "audit",
+                    "interaction_id": "run-1",
+                    "interaction_kind": "other",
+                    "route": "open-guide",
                 "run_id": "run-1",
                 "scenario_id": "open-destination",
                 "action_id": "open-guide",

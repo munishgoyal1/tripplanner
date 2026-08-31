@@ -123,6 +123,8 @@ def google_operation(url: str, kwargs: dict[str, Any]) -> tuple[str, str]:
         return "compute_routes", "routes_essentials"
     elif path.endswith(":computeRouteMatrix"):
         return "compute_route_matrix", "routes_matrix"
+    elif path.endswith("/maps/api/staticmap"):
+        return "static_map", "static_maps"
     else:
         return "other", "unknown"
 

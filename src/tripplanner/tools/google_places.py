@@ -109,6 +109,9 @@ def search_places_with_reviews(query: str, city: str = "", max_results: int = 5)
     )
     cached = _SEARCH_CACHE.get(cache_key)
     if isinstance(cached, str):
+        from tripplanner.provider_usage import record_cache_hit
+
+        record_cache_hit(provider="google", operation="text_search", sku_class="essentials")
         _remember_places(json.loads(cached), city)
         return cached
     if not consume("text_search"):
@@ -156,6 +159,13 @@ def get_place_reviews(place_id: str, max_reviews: int = 5) -> str:
     cache_key = _cache_key("reviews", {"place_id": place_id, "max_reviews": max_reviews})
     cached = _REVIEWS_CACHE.get(cache_key)
     if isinstance(cached, str):
+        from tripplanner.provider_usage import record_cache_hit
+
+        record_cache_hit(
+            provider="google",
+            operation="place_details",
+            sku_class="enterprise_atmosphere",
+        )
         return cached
     if not consume("review_details"):
         return "Google Places review budget reached for this planning turn. Reuse prior ratings."
@@ -223,6 +233,9 @@ def nearby_restaurants(
     )
     cached = _SEARCH_CACHE.get(cache_key)
     if isinstance(cached, str):
+        from tripplanner.provider_usage import record_cache_hit
+
+        record_cache_hit(provider="google", operation="text_search", sku_class="essentials")
         _remember_places(json.loads(cached), city)
         return cached
     if not consume("text_search"):

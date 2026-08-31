@@ -18,6 +18,7 @@ from tripplanner.validation.harness import EvidenceCollector, harness_scope
 from tripplanner.web import places_cache as pc
 
 _REAL_LOOKUP_PLACE = pc._lookup_place
+_REAL_PHOTO_URIS = pc._photo_uris
 
 
 @pytest.fixture
@@ -196,8 +197,42 @@ def test_photos_do_not_refresh_entry_with_known_empty_refs(_isolate, _authorized
         "__at__": time.time(),
     }
 
-    assert pc.get_photos("No Photo Place", "Paris") == []
+    cache_events = []
+    original = pc._record_cache
+    pc._record_cache = lambda result, **fields: cache_events.append((result, fields))
+    try:
+        assert pc.get_photos("No Photo Place", "Paris") == []
+        assert pc.get_photos("No Photo Place", "Paris") == []
+    finally:
+        pc._record_cache = original
     assert _isolate["lookup"] == 0
+    assert not any(result == "photo_url_hit" for result, _fields in cache_events)
+
+
+def test_places_executor_paths_preserve_usage_attribution(_isolate, monkeypatch):
+    from tripplanner.usage_attribution import current_attribution, usage_scope
+
+    observed = []
+    monkeypatch.setattr(pc, "_photo_uris", _REAL_PHOTO_URIS)
+    monkeypatch.setattr(
+        pc,
+        "_photo_uri",
+        lambda ref, _width=800: (
+            observed.append(current_attribution().interaction_id) or f"https://photos/{ref}"
+        ),
+    )
+    monkeypatch.setattr(
+        pc,
+        "get_summary",
+        lambda *_args, **_kwargs: observed.append(current_attribution().interaction_id),
+    )
+    monkeypatch.setattr(pc, "get_photos", lambda *_args, **_kwargs: [])
+
+    with usage_scope("user_trip", interaction_id="turn-parallel"):
+        assert len(pc._photo_uris(["one", "two"])) == 2
+        pc.prefetch(["A", "B"], "Goa", max_photos=0)
+
+    assert observed == ["turn-parallel"] * 4
 
 
 def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
@@ -614,8 +649,6 @@ def test_legacy_monolithic_doc_deleted_after_shard_write(_isolate, monkeypatch):
     assert pc._COSMOS_DOC_ID not in store  # legacy doc cleaned up after migration
 
 
-
-
 def test_concurrent_same_place_lookup_is_coalesced(_isolate, monkeypatch):
     original_lookup = pc._lookup_place
 
@@ -626,13 +659,10 @@ def test_concurrent_same_place_lookup_is_coalesced(_isolate, monkeypatch):
     monkeypatch.setattr(pc, "_lookup_place", slow_lookup)
 
     with ThreadPoolExecutor(max_workers=8) as executor:
-        summaries = list(
-            executor.map(lambda _: pc.get_details("Taj", "Goa"), range(8))
-        )
+        summaries = list(executor.map(lambda _: pc.get_details("Taj", "Goa"), range(8)))
 
     assert all(summary and summary["place_id"] == "id-Taj" for summary in summaries)
     assert _isolate["lookup"] == 1
-
 
 
 def test_an_entry_without_coordinates_expires_like_a_miss() -> None:
