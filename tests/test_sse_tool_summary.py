@@ -234,5 +234,4 @@ def test_json_chat_also_rescues_a_narrated_itinerary() -> None:
     """
     source = inspect.getsource(api.chat)
 
-    assert "_should_auto_persist_itinerary" in source
-    assert "_auto_persist_itinerary" in source
+    assert "coordinator.finalize" in source

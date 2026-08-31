@@ -73,6 +73,7 @@ either enabled (the default) or disabled.
 - [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_weather_can_remain_deferred_when_first_turn_core_plan_is_complete`
 - [`tests/test_sse_tool_summary.py`](../tests/test_sse_tool_summary.py) - `test_best_effort_plan_reply_reports_saved_plan_gaps`
 - [`tests/test_usage.py`](../tests/test_usage.py) - `test_stream_surfaces_partial_turn_save_failure`
+- [`tests/test_chat_turn.py`](../tests/test_chat_turn.py) - JSON/SSE lifecycle conformance for replay, caps, limits, interrupted saves, completion, and destination switches
 
 ### EB-PLAN-002 - Recommend a fitting trip shape
 

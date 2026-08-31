@@ -34,7 +34,9 @@ trip through shared API contracts.
 | `src/tripplanner/state.py` | Shared graph state and merge behavior |
 | `src/tripplanner/prompts.py` | Agent instructions and prompt assembly |
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |
-| `src/tripplanner/api.py` | FastAPI routes, hosted identity boundary, SSE transport, `/providers/status` diagnostics, production SPA mount |
+| `src/tripplanner/agents/trip_agent.py` | Phase-selected tool sets and the exhaustive read/trip-write/profile-write/external-write capability registry used by proposal-only mode |
+| `src/tripplanner/chat_turn.py` | Transport-neutral replay/admission, cap and conversation-limit decisions, interrupted-turn persistence, final transcript persistence, passive learning, and completion telemetry shared by JSON and SSE chat |
+| `src/tripplanner/api.py` | FastAPI routes, hosted identity boundary, JSON/SSE transport adaptation and stream events, `/providers/status` diagnostics, production SPA mount |
 | `src/tripplanner/public_demo.py` | Validated bundled regional demo fallback, Cosmos active-manifest reads, ETags, and atomic monthly refresh |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
 | `src/tripplanner/planning_intelligence.py` | Pure trip-duration, personal day-capacity, and sparse-itinerary policy |
@@ -201,7 +203,7 @@ one physical cache backend.
 | `mobile/providers/use-saved-trip-lifecycle.ts` | Serialized saved-trip switch and new-trip lifecycle |
 | `mobile/providers/use-trip-mutations.ts` | Serialized select, deselect, and booking mutations through authoritative refresh |
 | `mobile/lib/` | Native platform helpers |
-| `packages/tripplanner-client/` | Shared web/native request, response, event, and identity contracts |
+| `packages/tripplanner-client/` | Shared web/native request, response, event, identity, and SSE parsing contracts; platform adapters do not implement another event-stream parser |
 | `packages/tripplanner-client/src/serialized-mutation.ts` | Shared FIFO client mutation serialization and failure recovery |
 
 The React workspace has one owner for current trip revision, identity, selection,

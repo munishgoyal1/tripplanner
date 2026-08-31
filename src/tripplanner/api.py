@@ -40,7 +40,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
+from langchain_core.messages import BaseMessage, ToolMessage
 from langgraph.errors import GraphRecursionError
 from starlette.background import BackgroundTask
 
@@ -72,6 +72,12 @@ from tripplanner.api_contracts import (
     UserRequest,
 )
 from tripplanner.chat_interactions import extract_input_request
+from tripplanner.chat_turn import (
+    AdmittedTurn,
+    ChatTurnCoordinator,
+    ChatTurnDependencies,
+    TurnTerminal,
+)
 from tripplanner.decisions.receipts import ReceiptLog
 from tripplanner.observability import app_event, model_rate_limit_fields, setup_logging
 from tripplanner.request_identity import (
@@ -504,11 +510,43 @@ def _record_chat_phase(
     record_operation("chat_phase", f"{transport}.{phase}", status, duration_ms)
 
 
+def _chat_turn_coordinator(
+    req: ChatRequest,
+    request: Request,
+    user_id: str,
+    transport: Literal["json", "sse"],
+) -> ChatTurnCoordinator:
+    from tripplanner import usage
+
+    return ChatTurnCoordinator(
+        ChatTurnDependencies(
+            acquire_replay=lambda _user_id: acquire_replay_access(user_id),
+            release_replay=release_replay_access,
+            check_replay=lambda: check_replay_lookup(request, user_id),
+            completed_request=_completed_chat_request,
+            repair_completed=_repair_completed_chat,
+            acquire_chat=lambda: acquire_chat(request, user_id),
+            release_chat=release_chat,
+            load_request=_load_chat_request,
+            over_cap=usage.is_over_cap,
+            cap_message=usage.cap_message,
+            reserve=lambda history: _reserve_conversation(req, user_id, history),
+            limit_response=_conversation_limit_response,
+            save_chat=_save_chat,
+            auto_persist_needed=_should_auto_persist_itinerary,
+            auto_persist=_auto_persist_itinerary,
+            schedule_learning=_schedule_learning_sweep,
+            record_operation=_record_chat_operation,
+            record_phase=_record_chat_phase,
+            event=app_event,
+        )
+    )
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONResponse:
     from tripplanner.graph import app_graph
     from tripplanner.places_budget import places_budget_scope
-    from tripplanner.usage import cap_message, is_over_cap
 
     started = time.monotonic()
     header_request_id = request.headers.get("x-request-id", "")
@@ -518,68 +556,24 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
     user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_request", length=len(req.message), words=len(req.message.split()))
 
+    coordinator = _chat_turn_coordinator(req, request, user_id, "json")
     try:
-        replay_permit = await acquire_replay_access(user_id)
-    except Exception as exc:
-        _record_chat_error(started, user_id=user_id, transport="json", exc=exc)
-        raise
-    try:
-        await check_replay_lookup(request, user_id)
-        replay = await asyncio.to_thread(_completed_chat_request, request_id)
-        if replay is not None:
-            await _repair_completed_chat(request_id, replay)
-            _record_chat_operation(
-                started, user_id=user_id, transport="json", outcome="replayed"
-            )
-            return ChatResponse(
-                reply=replay["reply"],
-                agent=replay["agent"],
-                trip_id=replay["trip_id"] or None,
-            )
-        permit = await acquire_chat(request, user_id)
-    except Exception as exc:
-        _record_chat_error(started, user_id=user_id, transport="json", exc=exc)
-        raise
-    finally:
-        await release_replay_access(replay_permit)
-    try:
-        history_tid, history, replay = await asyncio.to_thread(
-            _load_chat_request, request_id
+        turn = await coordinator.admit(
+            started=started,
+            transport="json",
+            user_id=user_id,
+            request_id=request_id,
+            message=req.message,
         )
-        if replay is not None:
-            _record_chat_operation(
-                started, user_id=user_id, transport="json", outcome="replayed"
-            )
+        if isinstance(turn, TurnTerminal):
+            if turn.response is not None:
+                return turn.response
             return ChatResponse(
-                reply=replay["reply"],
-                agent=replay["agent"],
-                trip_id=replay["trip_id"] or None,
+                reply=turn.reply,
+                agent=turn.agent,
+                trip_id=turn.trip_id,
             )
-        over, usage = is_over_cap(user_id)
-        if over:
-            msg = cap_message(usage)
-            app_event("api_chat_capped", cost_usd=usage.get("cost_usd"))
-            _record_chat_operation(
-                started, user_id=user_id, transport="json", outcome="capped"
-            )
-            return ChatResponse(reply=msg, agent="cap")
-        try:
-            await _reserve_conversation(req, user_id, history)
-        except Exception as exc:
-            response = _conversation_limit_response(exc)
-            _record_chat_operation(
-                started,
-                user_id=user_id,
-                transport="json",
-                outcome="conversation_limited",
-                error=type(exc).__name__,
-            )
-            return response
-
-        _record_chat_phase(started, transport="json", phase="admission")
-        finalization_started: float | None = None
-        base_history = list(history)
-        history.append(HumanMessage(content=req.message))
+        assert isinstance(turn, AdmittedTurn)
         budget_exhausted = False
         try:
             from tripplanner.usage_attribution import annotate_current_batch, usage_scope
@@ -587,23 +581,23 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             with usage_scope(
                 "user_trip",
                 interaction_id=request_id,
-                trip_id=history_tid or "",
+                trip_id=turn.history_trip_id or "",
                 route="POST /chat",
-                interaction_kind="trip_update" if history_tid else "new_trip",
+                interaction_kind="trip_update" if turn.history_trip_id else "new_trip",
             ) as usage_attribution:
                 try:
                     with places_budget_scope("user_interaction"):
                         result = await asyncio.to_thread(
                             app_graph.invoke,
                             {
-                                "messages": history,
+                                "messages": turn.history,
                                 "current_agent": "",
                                 "proposal_only": req.proposal_only,
                             },
                             config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
                         )
                 finally:
-                    if not history_tid:
+                    if not turn.history_trip_id:
                         from tripplanner.tools.trip_planner import active_trip_id
 
                         annotate_current_batch(
@@ -615,22 +609,15 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             # handling the SSE path has, an exhausted turn raised a 500 and the
             # freshly created trip was left with no itinerary and no answer.
             budget_exhausted = True
-            result = {"messages": list(history), "current_agent": "trip"}
+            result = {"messages": list(turn.history), "current_agent": "trip"}
         except Exception as exc:
-            try:
-                await asyncio.to_thread(
-                    _save_chat,
-                    history_tid,
-                    base_history,
-                    [
-                        HumanMessage(content=req.message),
-                        AIMessage(content="(interrupted)"),
-                    ],
-                    request_id,
-                    False,
-                )
-            except Exception:
-                pass
+            await coordinator.persist_interrupted(
+                turn,
+                message=req.message,
+                partial_reply="",
+                error=exc,
+                tool_names=set(),
+            )
             throttled = _rate_limit_response(exc)
             if throttled is not None:
                 _record_chat_operation(
@@ -639,7 +626,6 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
                 return throttled
             raise
 
-        finalization_started = time.monotonic()
         if budget_exhausted:
             reply, gap_count = await asyncio.to_thread(_best_effort_plan_reply)
             app_event("api_chat_budget_exhausted", completion_gap_count=gap_count)
@@ -655,54 +641,24 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             if issues:
                 app_event("hallucination_critic", issues=len(issues), claims=issues)
 
-        turn_tools = set(_ran_tools(result.get("messages") or [], len(history)).get(
+        turn_tools = set(_ran_tools(result.get("messages") or [], len(turn.history)).get(
             graph_policy.RAN_TOOLS_KEY, []
         ))
-        # Recover a narrated itinerary when structured saves were skipped or rejected.
-        if not req.proposal_only and _should_auto_persist_itinerary(turn_tools):
-            await asyncio.to_thread(_auto_persist_itinerary, reply)
-        completed_turn = [
-            HumanMessage(content=req.message),
-            AIMessage(
-                content=reply,
-                additional_kwargs=_ran_tools(result.get("messages") or [], len(history)),
-            ),
-        ]
         agent = result.get("current_agent", "unknown")
-        tid_after = await asyncio.to_thread(
-            _save_chat,
-            history_tid,
-            base_history,
-            completed_turn,
-            request_id,
-            True,
-            agent,
-            max(int(time.monotonic() - started), 0),
+        completion = await coordinator.finalize(
+            turn,
+            message=req.message,
+            reply=reply,
+            agent=agent,
+            tool_names=turn_tools,
+            additional_kwargs=_ran_tools(result.get("messages") or [], len(turn.history)),
+            proposal_only=req.proposal_only,
         )
-        if not req.proposal_only:
-            _schedule_learning_sweep(user_id, req.message)
-
-        _record_chat_phase(
-            finalization_started,
-            transport="json",
-            phase="finalization",
-        )
-        finalization_started = None
         app_event("api_chat_response", reply_length=len(reply))
-        _record_chat_operation(
-            started, user_id=user_id, transport="json", outcome="completed"
-        )
         return ChatResponse(
-            reply=reply, agent=agent, trip_id=tid_after
+            reply=completion.reply, agent=completion.agent, trip_id=completion.trip_id
         )
     except Exception as exc:
-        if finalization_started is not None:
-            _record_chat_phase(
-                finalization_started,
-                transport="json",
-                phase="finalization",
-                status="error",
-            )
         _record_chat_operation(
             started,
             user_id=user_id,
@@ -712,7 +668,8 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
         )
         raise
     finally:
-        await release_chat(permit)
+        if "turn" in locals():
+            await coordinator.close(turn)
 
 
 def _sse(event: str, data: dict[str, Any]) -> str:
@@ -730,12 +687,9 @@ def _elapsed_clock(started: float) -> str:
 _SSE_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
 
 
-async def _sse_replay_stream(
-    replay: dict[str, Any], started: float, user_id: str
-) -> AsyncIterator[str]:
+async def _sse_replay_stream(replay: dict[str, Any]) -> AsyncIterator[str]:
     """Re-emit an already-completed turn as a single-token event stream."""
     yield _sse("token", {"text": replay["reply"]})
-    _record_chat_operation(started, user_id=user_id, transport="sse", outcome="replayed")
     yield _sse(
         "done",
         {
@@ -866,7 +820,6 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     """
     from tripplanner.graph import app_graph
     from tripplanner.places_budget import places_budget_scope
-    from tripplanner.usage import cap_message, is_over_cap
 
     started = time.monotonic()
     header_request_id = request.headers.get("x-request-id", "")
@@ -876,83 +829,32 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_stream_request", length=len(req.message))
 
+    coordinator = _chat_turn_coordinator(req, request, user_id, "sse")
     try:
-        replay_permit = await acquire_replay_access(user_id)
-    except Exception as exc:
-        _record_chat_error(started, user_id=user_id, transport="sse", exc=exc)
-        raise
-    try:
-        await check_replay_lookup(request, user_id)
-        replay = await asyncio.to_thread(_completed_chat_request, request_id)
-        if replay is not None:
-            await _repair_completed_chat(request_id, replay)
-            return StreamingResponse(
-                _sse_replay_stream(replay, started, user_id),
-                media_type="text/event-stream",
-                headers=_SSE_HEADERS,
-            )
-        permit = await acquire_chat(request, user_id)
-    except Exception as exc:
-        _record_chat_error(started, user_id=user_id, transport="sse", exc=exc)
-        raise
-    finally:
-        await release_replay_access(replay_permit)
-    try:
-        history_tid, history, replay = await asyncio.to_thread(
-            _load_chat_request, request_id
-        )
-        if replay is not None:
-            return StreamingResponse(
-                _sse_replay_stream(replay, started, user_id),
-                media_type="text/event-stream",
-                headers=_SSE_HEADERS,
-                background=BackgroundTask(release_chat, permit),
-            )
-        base_history = list(history)
-        history.append(HumanMessage(content=req.message))
-    except Exception as exc:
-        await release_chat(permit)
-        _record_chat_error(started, user_id=user_id, transport="sse", exc=exc)
-        raise
-
-    try:
-        over, usage = is_over_cap(user_id)
-    except Exception as exc:
-        await release_chat(permit)
-        _record_chat_error(started, user_id=user_id, transport="sse", exc=exc)
-        raise
-    if over:
-        msg = cap_message(usage)
-        app_event("api_chat_stream_capped", cost_usd=usage.get("cost_usd"))
-
-        async def _capped():
-            yield _sse("token", {"text": msg})
-            _record_chat_operation(
-                started, user_id=user_id, transport="sse", outcome="capped"
-            )
-            yield _sse("done", {"reply": msg, "agent": "cap"})
-
-        return StreamingResponse(
-            _capped(),
-            media_type="text/event-stream",
-            headers=_SSE_HEADERS,
-            background=BackgroundTask(release_chat, permit),
-        )
-    try:
-        await _reserve_conversation(req, user_id, base_history)
-    except Exception as exc:
-        await release_chat(permit)
-        response = _conversation_limit_response(exc)
-        _record_chat_operation(
-            started,
-            user_id=user_id,
+        turn = await coordinator.admit(
+            started=started,
             transport="sse",
-            outcome="conversation_limited",
-            error=type(exc).__name__,
+            user_id=user_id,
+            request_id=request_id,
+            message=req.message,
         )
-        return response
-
-    _record_chat_phase(started, transport="sse", phase="admission")
+        if isinstance(turn, TurnTerminal):
+            if turn.response is not None:
+                return turn.response
+            terminal = {
+                "reply": turn.reply,
+                "agent": turn.agent,
+                "trip_id": turn.trip_id or "",
+            }
+            return StreamingResponse(
+                _sse_replay_stream(terminal),
+                media_type="text/event-stream",
+                headers=_SSE_HEADERS,
+            )
+        assert isinstance(turn, AdmittedTurn)
+    except Exception as exc:
+        _record_chat_error(started, user_id=user_id, transport="sse", exc=exc)
+        raise
 
     async def gen():
         from tripplanner.usage_attribution import annotate_current_batch, usage_scope
@@ -970,15 +872,17 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 with usage_scope(
                     "user_trip",
                     interaction_id=request_id,
-                    trip_id=history_tid or "",
+                    trip_id=turn.history_trip_id or "",
                     route="POST /chat/stream",
-                    interaction_kind="trip_update" if history_tid else "new_trip",
+                    interaction_kind=(
+                        "trip_update" if turn.history_trip_id else "new_trip"
+                    ),
                 ) as usage_attribution:
                     try:
                         with places_budget_scope("user_interaction"):
                             async for event in app_graph.astream_events(
                                 {
-                                    "messages": history,
+                                    "messages": turn.history,
                                     "current_agent": "",
                                     "proposal_only": req.proposal_only,
                                 },
@@ -987,7 +891,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                             ):
                                 yield event
                     finally:
-                        if not history_tid:
+                        if not turn.history_trip_id:
                             from tripplanner.tools.trip_planner import active_trip_id
 
                             annotate_current_batch(
@@ -1076,26 +980,13 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             # orphaned — otherwise the active trip exists with an empty chat
             # that vanishes on refresh.
             partial = "".join(reply_parts)
-            completed_turn = [
-                HumanMessage(content=req.message),
-                AIMessage(content=partial or "(interrupted)"),
-            ]
-            partial_save_failed = False
-            try:
-                _save_chat(
-                    history_tid,
-                    base_history,
-                    completed_turn,
-                    request_id,
-                    False,
-                )
-            except Exception as save_exc:
-                partial_save_failed = True
-                app_event(
-                    "api_chat_stream_partial_save_error",
-                    error=type(save_exc).__name__,
-                    turn_error=type(exc).__name__,
-                )
+            partial_save_failed = not await coordinator.persist_interrupted(
+                turn,
+                message=req.message,
+                partial_reply=partial,
+                error=exc,
+                tool_names=tool_names_called,
+            )
             _record_chat_operation(
                 started,
                 user_id=user_id,
@@ -1114,7 +1005,6 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             return
 
         reply = "".join(reply_parts)
-        finalization_started = time.monotonic()
         yield _sse("progress", {"stage": "saving"})
         # Hallucination critic: log unverified prices/times/URLs as telemetry
         # only (internal QA signal — not surfaced to the user).
@@ -1123,39 +1013,22 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         issues = critique(reply, tool_outputs)
         if issues:
             app_event("hallucination_critic", issues=len(issues), claims=issues)
-        completed_turn = [
-            HumanMessage(content=req.message),
-            AIMessage(
-                content=reply,
+        try:
+            completion = await coordinator.finalize(
+                turn,
+                message=req.message,
+                reply=reply,
+                agent="trip",
+                tool_names=tool_names_called,
                 additional_kwargs=(
                     {graph_policy.RAN_TOOLS_KEY: sorted(tool_names_called)}
                     if tool_names_called
                     else {}
                 ),
-            ),
-        ]
-        # Recover a narrated itinerary when structured saves were skipped or rejected.
-        if not req.proposal_only and _should_auto_persist_itinerary(tool_names_called):
-            await asyncio.to_thread(_auto_persist_itinerary, reply)
-        try:
-            tid_after = await asyncio.to_thread(
-                _save_chat,
-                history_tid,
-                base_history,
-                completed_turn,
-                request_id,
-                True,
-                "trip",
-                max(int(time.monotonic() - started), 0),
+                proposal_only=req.proposal_only,
             )
         except Exception as exc:
             app_event("api_chat_stream_save_error", error=type(exc).__name__)
-            _record_chat_phase(
-                finalization_started,
-                transport="sse",
-                phase="finalization",
-                status="error",
-            )
             _record_chat_operation(
                 started,
                 user_id=user_id,
@@ -1174,22 +1047,15 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 },
             )
             return
-        if not req.proposal_only:
-            _schedule_learning_sweep(user_id, req.message)
-        _record_chat_phase(
-            finalization_started,
-            transport="sse",
-            phase="finalization",
-        )
         app_event("api_chat_stream_done", reply_length=len(reply))
-        _record_chat_operation(
-            started,
-            user_id=user_id,
-            transport="sse",
-            outcome="completed",
-            tool_calls=len(tool_names_called),
+        yield _sse(
+            "done",
+            {
+                "reply": completion.reply,
+                "agent": completion.agent,
+                "trip_id": completion.trip_id,
+            },
         )
-        yield _sse("done", {"reply": reply, "agent": "trip", "trip_id": tid_after})
 
     async def attributed_gen():
         from tripplanner.usage_attribution import usage_scope
@@ -1197,9 +1063,9 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         with usage_scope(
             "user_trip",
             interaction_id=request_id,
-            trip_id=history_tid or "",
+            trip_id=turn.history_trip_id or "",
             route="POST /chat/stream",
-            interaction_kind="trip_update" if history_tid else "new_trip",
+            interaction_kind="trip_update" if turn.history_trip_id else "new_trip",
         ):
             async for event in gen():
                 yield event
@@ -1208,7 +1074,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         attributed_gen(),
         media_type="text/event-stream",
         headers=_SSE_HEADERS,
-        background=BackgroundTask(release_chat, permit),
+        background=BackgroundTask(coordinator.close, turn),
     )
 
 

@@ -316,7 +316,9 @@ re-describing the whole product.
   crowding, excessive travel, empty days, or missing meals.
 - A flagged result offers `Review with planner` or `Keep as is`. Planner review
   is proposal-only: it binds read-only tools, disables fallback persistence and
-  passive learning, and cannot mutate until the user approves later.
+  passive learning, and cannot mutate until the user approves later. Every graph
+  tool has exactly one explicit capability; an unclassified tool fails closed
+  instead of becoming available to a proposal turn.
 
 ## 2. Personalization and memory
 
@@ -559,8 +561,9 @@ implemented capability baseline.
 
 - One Expo/React Native application provides native Trips, Plan, Map, Assistant,
   Details, and Account experiences on iOS and Android.
-- Shared dependency-free client code owns contracts, HTTP/SSE transport,
-  mutations, and workspace revisions for web and native clients.
+- Shared dependency-free client code owns contracts, HTTP/SSE transport and event
+  parsing, mutations, and workspace revisions for web and native clients. Web and
+  native delegate to that parser rather than maintaining platform copies.
 - Platform adapters own navigation, sheets, secure storage, maps, deep links,
   sharing, and lifecycle behavior.
 - Native mutations and completed Assistant turns refresh every dependent trip
@@ -582,6 +585,9 @@ implemented capability baseline.
 - Native rendered stop indexes are converted to the backend's one-based
   occurrence contract before exact repeated-place actions are sent.
 - Interrupted SSE exits busy state and preserves recoverable conversation state.
+- JSON and SSE chat share one turn coordinator for replay and admission, cost and
+  conversation limits, interrupted saves, final persistence, passive learning,
+  and completion telemetry; transports own only response and stream rendering.
 - Blocking backend trip operations run in worker threads rather than blocking
   the asynchronous API loop.
 - Local JSON writes are atomic with bounded Windows lock retry; same-user trip

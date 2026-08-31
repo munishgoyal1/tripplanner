@@ -92,4 +92,19 @@ def test_proposal_only_binds_no_mutating_tools(
 
     assert "get_trip_plan" in _names(tools)
     assert "compute_route" in _names(tools)
-    assert not (_names(tools) & trip_agent._MUTATING_TOOL_NAMES)
+    assert all(
+        trip_agent.tool_capability(tool) is trip_agent.ToolCapability.READ
+        for tool in tools
+    )
+
+
+def test_every_graph_tool_has_exactly_one_capability() -> None:
+    assert set(trip_agent.TOOL_CAPABILITIES) == _names(trip_agent.TRIP_TOOLS)
+
+
+def test_unclassified_tool_is_rejected() -> None:
+    class UnknownTool:
+        name = "unknown_tool"
+
+    with pytest.raises(RuntimeError, match="no declared capability"):
+        trip_agent.proposal_tools([UnknownTool()])

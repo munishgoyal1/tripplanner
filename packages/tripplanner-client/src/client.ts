@@ -386,20 +386,26 @@ export class TripplannerClient {
     options: StreamOptions = {},
   ): Promise<void> {
     const requestId = options.requestId ?? crypto.randomUUID();
-    const response = await this.post(
-      "/chat/stream",
-      {
+    const response = await this.request(this.url("/chat/stream"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Request-ID": requestId,
+      },
+      body: JSON.stringify({
         message,
+        user_id: await this.userId(),
         proposal_only: options.proposalOnly ?? false,
         request_id: requestId,
-      },
-      options.signal,
-    );
+      }),
+      signal: options.signal,
+    });
     if (!response.ok) {
       let detail = "";
       try {
-        const payload = (await response.json()) as { detail?: unknown };
-        if (typeof payload.detail === "string") detail = payload.detail;
+        const payload = (await response.json()) as { detail?: unknown; message?: unknown };
+        if (typeof payload.message === "string") detail = payload.message;
+        else if (typeof payload.detail === "string") detail = payload.detail;
       } catch {
         // Keep the status-based message when the server did not return JSON.
       }
@@ -418,7 +424,7 @@ export class TripplannerClient {
         if (frame.event === "done" || frame.event === "error") terminalEvent = true;
         dispatchFrame(frame.event, frame.data, handlers);
       }
-      if (!terminalEvent) throw new Error("The response ended before completion.");
+      if (!terminalEvent) throw new Error("The response ended before the reply completed.");
       return;
     }
 
@@ -444,7 +450,7 @@ export class TripplannerClient {
       if (finalFrame.event === "done" || finalFrame.event === "error") terminalEvent = true;
       dispatchFrame(finalFrame.event, finalFrame.data, handlers);
     }
-    if (!terminalEvent) throw new Error("The response stream ended before completion.");
+    if (!terminalEvent) throw new Error("The response stream ended before the reply completed.");
   }
 
   async overrideDecision(

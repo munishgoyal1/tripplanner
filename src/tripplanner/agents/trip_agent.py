@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from datetime import date, datetime, timedelta, timezone
+from enum import StrEnum
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import tool
@@ -934,26 +935,78 @@ _SEARCH_TOOLS = [
 # bound for schema purposes).
 TRIP_TOOLS = _CORE_TOOLS + _SEARCH_TOOLS
 
-_MUTATING_TOOL_NAMES = {
-  "create_trip_plan",
-  "update_trip_plan",
-  "finalize_trip",
-  "execute_bookings",
-  "resume_trip",
-  "save_travel_preferences",
-  "record_past_trip",
-  "record_trip_postmortem",
-  "remember_about_user",
-  "update_user_profile",
-  "add_family_member",
-  "add_user_interest",
-  "add_user_dislike",
-  "record_trip_mention",
-}
+class ToolCapability(StrEnum):
+  READ = "read"
+  TRIP_WRITE = "trip_write"
+  PROFILE_WRITE = "profile_write"
+  EXTERNAL_WRITE = "external_write"
+
+
+_READ_TOOLS = [
+  get_travel_preferences,
+  request_trip_input,
+  recommend_trip_duration,
+  recall_relevant_memory,
+  get_trip_plan,
+  list_past_trips,
+  *[tool for tool in _SEARCH_TOOLS if tool is not compare_transport_options],
+]
+_TRIP_WRITE_TOOLS = [
+  create_trip_plan,
+  update_trip_plan,
+  finalize_trip,
+  resume_trip,
+  compare_transport_options,
+]
+_PROFILE_WRITE_TOOLS = [
+  save_travel_preferences,
+  record_past_trip,
+  record_trip_postmortem,
+  remember_about_user,
+  update_user_profile,
+  add_family_member,
+  add_user_interest,
+  add_user_dislike,
+  record_trip_mention,
+]
+_EXTERNAL_WRITE_TOOLS = [execute_bookings]
+
+
+def _build_tool_capabilities() -> dict[str, ToolCapability]:
+  groups = {
+    ToolCapability.READ: _READ_TOOLS,
+    ToolCapability.TRIP_WRITE: _TRIP_WRITE_TOOLS,
+    ToolCapability.PROFILE_WRITE: _PROFILE_WRITE_TOOLS,
+    ToolCapability.EXTERNAL_WRITE: _EXTERNAL_WRITE_TOOLS,
+  }
+  classified: dict[str, ToolCapability] = {}
+  for capability, tools in groups.items():
+    for candidate in tools:
+      if candidate.name in classified:
+        raise RuntimeError(f"Tool {candidate.name!r} has more than one capability")
+      classified[candidate.name] = capability
+  missing = {tool.name for tool in TRIP_TOOLS} - classified.keys()
+  extra = classified.keys() - {tool.name for tool in TRIP_TOOLS}
+  if missing or extra:
+    raise RuntimeError(
+      f"Tool capability registry mismatch: missing={sorted(missing)}, extra={sorted(extra)}"
+    )
+  return classified
+
+
+TOOL_CAPABILITIES = _build_tool_capabilities()
+
+
+def tool_capability(tool: object) -> ToolCapability:
+  name = str(getattr(tool, "name", ""))
+  try:
+    return TOOL_CAPABILITIES[name]
+  except KeyError as exc:
+    raise RuntimeError(f"Tool {name or tool!r} has no declared capability") from exc
 
 
 def proposal_tools(tools: list) -> list:
-  return [tool for tool in tools if tool.name not in _MUTATING_TOOL_NAMES]
+    return [tool for tool in tools if tool_capability(tool) is ToolCapability.READ]
 
 # Tool calls that signal a planning session is under way.
 _PLANNING_TRIGGER_TOOLS = {

@@ -98,7 +98,7 @@ describe("shared chat stream contract", () => {
     const client = new TripplannerClient("/api", () => "local-user");
 
     await expect(client.streamChat("Plan a trip", handlers(), { requestId: "request-1" }))
-      .rejects.toThrow("response stream ended before completion");
+      .rejects.toThrow("response stream ended before the reply completed");
   });
 
   it("preserves the server reason when a stream is rejected by the workspace lock", async () => {

@@ -1,9 +1,10 @@
-import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, Receipt, SavedTrip, Itinerary, PlaceGuidePage, TripFreshnessResult, TripPriceRecheckResult, TripRepairResult, TripVerification, TripWorkspaceView } from "./types";
+import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary, PlaceGuidePage, TripFreshnessResult, TripPriceRecheckResult, TripRepairResult, TripVerification, TripWorkspaceView } from "./types";
 import {
   type DeselectItemOptions,
   type SelectItemOptions,
   type SelectionPlacement,
-  type TripInputRequest,
+  type StreamHandlers,
+  type StreamOptions,
 } from "@tripplanner/client";
 import { BASE, apiFetch, getUserId, sharedClient } from "./auth/authSession";
 
@@ -30,10 +31,7 @@ function ensureOk(response: Response, action: string): void {
   }
 }
 
-export interface ToolEventExtras {
-  args?: string;
-  duration_ms?: number;
-}
+export type { StreamHandlers, StreamOptions } from "@tripplanner/client";
 
 export interface OpsMetricRow {
   calls: number;
@@ -213,139 +211,12 @@ export async function fetchOpsOverview(
   return response.json() as Promise<OpsOverview>;
 }
 
-export interface StreamHandlers {
-  onToken: (text: string) => void;
-  onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
-  onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
-  onReceipt?: (receipt: Receipt) => void;
-  onInputRequest?: (request: TripInputRequest) => void;
-  onDone: (reply: string, tripId?: string) => void;
-  onError: (message: string) => void;
-}
-
-// POST /chat/stream and parse the Server-Sent Events stream incrementally.
 export async function streamChat(
   message: string,
-  h: StreamHandlers,
-  options: { proposalOnly?: boolean; requestId?: string; signal?: AbortSignal } = {},
+  handlers: StreamHandlers,
+  options: StreamOptions = {},
 ): Promise<void> {
-  const requestId = options.requestId ?? crypto.randomUUID();
-  const res = await apiFetch(`${BASE}/chat/stream`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Request-ID": requestId },
-    body: JSON.stringify({
-      message,
-      user_id: getUserId(),
-      proposal_only: options.proposalOnly ?? false,
-      request_id: requestId,
-    }),
-    signal: options.signal,
-  });
-  if (!res.ok) {
-    let message = `Chat request failed (${res.status}).`;
-    try {
-      const data = (await res.json()) as { detail?: string; message?: string };
-      message = data.message || data.detail || message;
-    } catch {
-      // Keep the status-based fallback for non-JSON responses.
-    }
-    throw new Error(message);
-  }
-  if (!res.body) {
-    throw new Error("No response stream from server.");
-  }
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let terminalEvent = false;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-
-    // SSE frames are separated by a blank line.
-    const frames = buffer.split("\n\n");
-    buffer = frames.pop() ?? "";
-    for (const frame of frames) {
-      const ev = parseFrame(frame);
-      if (!ev) continue;
-      if (ev.event === "done" || ev.event === "error") terminalEvent = true;
-      dispatch(ev.event, ev.data, h);
-    }
-  }
-  const finalFrame = parseFrame(buffer);
-  if (finalFrame) {
-    if (finalFrame.event === "done" || finalFrame.event === "error") terminalEvent = true;
-    dispatch(finalFrame.event, finalFrame.data, h);
-  }
-  if (!terminalEvent) {
-    throw new Error("The response stream ended before the reply completed.");
-  }
-}
-
-function parseFrame(frame: string): { event: string; data: any } | null {
-  let event = "message";
-  let data = "";
-  for (const line of frame.split("\n")) {
-    if (line.startsWith("event:")) event = line.slice(6).trim();
-    else if (line.startsWith("data:")) data += line.slice(5).trim();
-  }
-  if (!data) return null;
-  try {
-    return { event, data: JSON.parse(data) };
-  } catch {
-    return null;
-  }
-}
-
-function dispatch(event: string, data: any, h: StreamHandlers): void {
-  switch (event) {
-    case "token":
-      h.onToken(data.text ?? "");
-      break;
-    case "tool":
-      h.onTool(data.name ?? "", data.phase ?? "start", {
-        args: typeof data.args === "string" ? data.args : undefined,
-        duration_ms: typeof data.duration_ms === "number" ? data.duration_ms : undefined,
-      });
-      break;
-    case "receipt":
-      if (typeof data.text === "string" && data.text) {
-        h.onReceipt?.({
-          seq: typeof data.seq === "number" ? data.seq : 0,
-          at: typeof data.at === "string" ? data.at : "",
-          kind: typeof data.kind === "string" ? data.kind : "",
-          text: data.text,
-          detail: typeof data.detail === "string" ? data.detail : undefined,
-          decision_id: typeof data.decision_id === "string" ? data.decision_id : undefined,
-          source: typeof data.source === "string" ? data.source : undefined,
-        });
-      }
-      break;
-    case "progress":
-      if (["thinking", "reviewing", "saving"].includes(data.stage)) {
-        h.onProgress?.(data.stage);
-      }
-      break;
-    case "input_request":
-      if (
-        data.version === 1
-        && typeof data.request_id === "string"
-        && typeof data.question === "string"
-        && Array.isArray(data.fields)
-      ) {
-        h.onInputRequest?.(data as TripInputRequest);
-      }
-      break;
-    case "done":
-      h.onDone(data.reply ?? "", typeof data.trip_id === "string" ? data.trip_id : undefined);
-      break;
-    case "error":
-      h.onError(data.message ?? "Unknown error.");
-      break;
-  }
+  return sharedClient.streamChat(message, handlers, options);
 }
 
 /** Restore the persisted transcript for a trip (or the current active trip). */
