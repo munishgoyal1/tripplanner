@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from tripplanner import user_context
-from tripplanner.tools import trip_planner
+from tripplanner.tools import trip_history, trip_planner
 from tripplanner.web import share
 
 
@@ -17,6 +17,9 @@ def _isolate_storage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(trip_planner, "_TRIPS_DIR", tmp_path / ".tripplanner")
     monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", tmp_path / ".tripplanner" / "active_trip.json")
     monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", tmp_path / ".tripplanner" / "trips")
+    monkeypatch.setattr(trip_history, "_TRIPS_DIR", tmp_path / ".tripplanner")
+    monkeypatch.setattr(trip_history, "_ACTIVE_TRIP_FILE", tmp_path / ".tripplanner" / "active_trip.json")
+    monkeypatch.setattr(trip_history, "_TRIP_HISTORY_DIR", tmp_path / ".tripplanner" / "trips")
     monkeypatch.setenv("WEB_SESSION_SECRET", "test-secret-pin")
     user_context.set_user_id("alice")
     yield

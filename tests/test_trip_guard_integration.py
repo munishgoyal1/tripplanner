@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from tripplanner.tools import trip_planner, user_preferences
+from tripplanner.tools import trip_history, trip_planner, user_preferences
 from tripplanner.tools.trip_guard import envelope, validate_plan
 from tripplanner.tools.trip_planner import (
     add_selection,
@@ -52,6 +52,9 @@ def _isolate(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(trip_planner, "_TRIPS_DIR", _TEST_DIR)
     monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", _TEST_DIR / "active_trip.json")
     monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", _TEST_DIR / "trips")
+    monkeypatch.setattr(trip_history, "_TRIPS_DIR", _TEST_DIR)
+    monkeypatch.setattr(trip_history, "_ACTIVE_TRIP_FILE", _TEST_DIR / "active_trip.json")
+    monkeypatch.setattr(trip_history, "_TRIP_HISTORY_DIR", _TEST_DIR / "trips")
     _TEST_DIR.mkdir(parents=True, exist_ok=True)
     yield
     shutil.rmtree(_TEST_DIR, ignore_errors=True)

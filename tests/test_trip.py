@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from tripplanner.tools import user_preferences
+from tripplanner.tools import trip_history, user_preferences
 from tripplanner.tools.user_preferences import (
     _deep_merge,
     add_past_trip,
@@ -34,10 +34,13 @@ def _isolate_prefs(monkeypatch):
     monkeypatch.setattr(user_preferences, "_PREFS_FILE", _TEST_FILE)
 
     # Also redirect trip_planner storage
-    from tripplanner.tools import trip_planner
+    from tripplanner.tools import trip_history, trip_planner
     monkeypatch.setattr(trip_planner, "_TRIPS_DIR", _TEST_DIR)
     monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", _TEST_ACTIVE_TRIP)
     monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", _TEST_TRIP_HISTORY)
+    monkeypatch.setattr(trip_history, "_TRIPS_DIR", _TEST_DIR)
+    monkeypatch.setattr(trip_history, "_ACTIVE_TRIP_FILE", _TEST_ACTIVE_TRIP)
+    monkeypatch.setattr(trip_history, "_TRIP_HISTORY_DIR", _TEST_TRIP_HISTORY)
 
     _TEST_DIR.mkdir(parents=True, exist_ok=True)
     yield
@@ -2750,7 +2753,7 @@ def test_restore_inspection_trip_writes_identity_copy_without_archiving(monkeypa
     }
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
     monkeypatch.setattr(
-        trip_planner.debug_store,
+        trip_history.debug_store,
         "record_trip",
         lambda *_args, **_kwargs: pytest.fail("inspection must not alter the debug archive"),
     )
