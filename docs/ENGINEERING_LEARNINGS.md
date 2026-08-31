@@ -1483,3 +1483,14 @@ the outcome.
 - Apply indefinite retention only to stable metadata. Provider misses must retain
   their short retry TTL, and signed URLs must retain an expiry-aware TTL even when
   their durable photo references are stable.
+
+## 2026-08-31 - Persisted Browser Identity Must Follow Session Authority
+
+- Hosted identity is authorized by the signed cookie, while local storage only
+  mirrors that identity for existing request parameters and UI state.
+- Keeping a `google-*` local-storage value after `/auth/me` definitively reports
+  an anonymous session causes every protected request to claim an identity it can
+  no longer prove, producing repeated 401s before storage is reached.
+- Reconcile the mirror after a successful auth check and preserve it during
+  transient auth endpoint failures. Account data remains under the stable Google
+  identity and returns after the user signs in again.

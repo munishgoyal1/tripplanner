@@ -750,6 +750,21 @@ change without disturbing the other. Interface text remains English.
 - [`frontend/src/lib/displayPreferences.test.ts`](../frontend/src/lib/displayPreferences.test.ts)
 - [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx) - `keeps the country trip while pricing it in the chosen currency`
 
+### EB-ACCOUNT-004 - Recover from an expired Google session
+
+**Trigger:** Open the planner after the Google session cookie has expired or been
+removed while the browser still stores the prior `google-*` identity.
+
+**Expected:** A successful anonymous `/auth/me` response clears the stale display
+identity, establishes a fresh guest identity, and reloads the workspace instead of
+repeatedly sending unauthorized saved-trip, trip-view, and map requests. A transient
+auth endpoint failure does not sign the user out. Signing in with Google again restores
+the same account and its persisted trips.
+
+**Executable proof:**
+
+- [`frontend/src/auth/authSession.test.ts`](../frontend/src/auth/authSession.test.ts)
+
 ## UX Labs
 
 ### EB-LAB-001 - Preserve every Lab review and implementation

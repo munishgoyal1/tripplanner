@@ -141,6 +141,7 @@ export async function fetchAuthConfig(): Promise<{ google: boolean; redirect_uri
 export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string; prev_user_id?: string }> {
   try {
     const res = await fetch(`${BASE}/auth/me`, { credentials: "include" });
+    if (!res.ok) throw new Error(`auth status ${res.status}`);
     const session: AuthSession = await res.json();
     if (session.authenticated && session.user_id) {
       const prevId = localStorage.getItem("tripplanner_user_id") ?? "";
@@ -155,6 +156,15 @@ export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string
         localStorage.setItem("tripplanner_display_name", session.display_name);
       }
       return { ...session, prev_guest_id: guestId, prev_user_id: prevId || undefined };
+    }
+    const prevId = localStorage.getItem("tripplanner_user_id") ?? "";
+    if (prevId.startsWith("google-") && !inspectedUser()) {
+      localStorage.removeItem("tripplanner_user_id");
+      localStorage.removeItem("tripplanner_display_name");
+      localStorage.removeItem(GUEST_SESSION_KEY);
+      const userId = getUserId();
+      window.dispatchEvent(new Event("tripplanner:identity-changed"));
+      return { ...session, user_id: userId, prev_user_id: prevId };
     }
     return session;
   } catch {
