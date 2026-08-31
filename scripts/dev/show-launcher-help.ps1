@@ -10,10 +10,10 @@ param(
         "sync-sbxs-from-master",
         "emergency-bringdown",
         "emergency-control",
+        "apply-runtime-config",
         "azure-services-control",
         "google-maps-control",
-        "google-places-control",
-        "google-runtime-control"
+        "google-places-control"
     )]
     [string]$Launcher
 )
@@ -199,25 +199,24 @@ Examples:
 
 No application deployment is performed.
 "@
-    "google-runtime-control" = @"
-Google-Runtime-Control - apply Google access to hosted apps without a full deployment.
+    "apply-runtime-config" = @"
+Apply-Runtime-Config - compare or apply hosted runtime configuration.
 
-Usage: Google-Runtime-Control [status|apply|enable|disable|on|off] [all|canary|prod] [maps-approval] [places-approval]
+Usage: Apply-Runtime-Config [status|apply|help|?] [all|canary|prod] [approval]
 
-  status   Compare hosted runtime flags, checked-in profiles, and GCP Service Usage.
-  apply    Create a same-image revision from the checked-in profile flags.
-  disable  Gracefully stop app calls, then disable the GCP services. Alias: off.
-  enable   Enable GCP services, then create a serving same-image revision. Alias: on.
-           Requires both Google spend approvals.
+  status  Compare registered runtime configuration without changing it (default).
+  apply   Apply checked-in profiles through same-image revisions.
+          Requires APPROVE_RUNTIME_CONFIG.
+  help/?  Show this help.
 
 Examples:
-  Google-Runtime-Control status all
-  Google-Runtime-Control disable prod
-  Google-Runtime-Control enable canary APPROVE_GOOGLE_MAPS_SPEND APPROVE_GOOGLE_PLACES_SPEND
-  Google-Runtime-Control apply prod APPROVE_GOOGLE_MAPS_SPEND APPROVE_GOOGLE_PLACES_SPEND
+  Apply-Runtime-Config
+  Apply-Runtime-Config status prod
+  Apply-Runtime-Config apply canary APPROVE_RUNTIME_CONFIG
+  Apply-Runtime-Config apply all APPROVE_RUNTIME_CONFIG
 
-No image is built or changed and no Bicep deployment is run. Azure Container Apps
-creates a new revision because environment variables are revision-scoped.
+No image is built or changed and no Bicep deployment is run. Registered handlers
+retain their provider sequencing, account guards, and revision verification.
 "@
 }
 

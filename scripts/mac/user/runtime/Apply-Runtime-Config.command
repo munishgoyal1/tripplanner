@@ -6,6 +6,6 @@ TRIPPLANNER_REPO_ROOT="$repo_root"
 . "$repo_root/scripts/mac/lib/pwsh.sh"
 require_pwsh
 if [[ "${1:-}" == "?" || "${1:-}" == "help" ]]; then
-  exec "$PWSH_BIN" -NoProfile -File "$repo_root/scripts/dev/show-launcher-help.ps1" google-runtime-control
+  exec "$PWSH_BIN" -NoProfile -File "$repo_root/scripts/dev/show-launcher-help.ps1" apply-runtime-config
 fi
-exec "$PWSH_BIN" -NoProfile -File "$repo_root/infra/azure/set-google-runtime-access.ps1" "$@"
+exec "$PWSH_BIN" -NoProfile -File "$repo_root/scripts/dev/apply-runtime-config.ps1" "$@"

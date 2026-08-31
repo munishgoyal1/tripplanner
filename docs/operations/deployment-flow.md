@@ -177,29 +177,30 @@ deployment. During canary bake, run
 `.\scripts\analyze-errors.ps1 -Environment canary -Hours 24`; canary produces a
 local report and never emails the production recipient.
 
-## Runtime-Only Google Access
+## Runtime Configuration Sync
 
-Google Maps and Places access can be changed without building an image or running
-the full Bicep deployment flow:
+Registered runtime settings can be synchronized without building an image or
+running the full Bicep deployment flow. Google Maps and Places are the first
+registered configuration owner:
 
 ```powershell
 # Read-only comparison of profiles, GCP Service Usage, and hosted revisions.
-Google-Runtime-Control status all
+Apply-Runtime-Config status all
 
-# Graceful off: serve the off revision before disabling the provider APIs.
-Google-Runtime-Control disable prod
-
-# Enable provider APIs before serving the on revision.
-Google-Runtime-Control enable canary APPROVE_GOOGLE_MAPS_SPEND APPROVE_GOOGLE_PLACES_SPEND
+# Apply checked-in state without rebuilding or running Bicep.
+Apply-Runtime-Config apply canary APPROVE_RUNTIME_CONFIG
+Apply-Runtime-Config apply all APPROVE_RUNTIME_CONFIG
 ```
 
-The command updates the checked-in environment profiles so the next normal
-deployment preserves the selected state. Azure Container Apps environment
-variables are revision-scoped, so this operation still creates a revision; it
-reuses the current image and verifies that the image did not change, the latest
-revision became ready, and latest-revision traffic remains at 100%. It does not
-substitute for the canary-to-production release flow when source, image,
-infrastructure, secrets, or any other runtime setting changes.
+The checked-in environment profiles remain authoritative. Registered handlers
+retain provider-specific ordering and safety checks; the Google handler enables
+provider services before an on revision and serves an off revision before
+disabling provider services. Azure Container Apps environment variables are
+revision-scoped, so applying still creates a revision. The command reuses the
+current image and verifies that the image did not change, the latest revision
+became ready, and latest-revision traffic remains at 100%. It does not substitute
+for the canary-to-production release flow when source, image, infrastructure,
+secrets, or an unregistered runtime setting changes.
 
 ## Hosted Smoke Suite
 

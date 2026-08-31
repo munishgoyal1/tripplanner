@@ -701,13 +701,13 @@ implemented capability baseline.
   canary and production serving without changing provider or database access.
   Bringdown stops Container Apps, suspends jobs, and stops active executions
   without approval; restoration requires explicit Azure spend approval.
-- A guarded cross-platform Google runtime control compares checked-in desired
-  state, GCP Service Usage, and canary or production Container Apps. It enables
-  provider services before starting a same-image on revision and serves a
-  same-image off revision before disabling provider services. The operation
-  verifies unchanged image identity, revision readiness, and latest-revision
-  traffic without building an image or running Bicep; enable remains spend
-  approval-gated.
+- A guarded cross-platform runtime configuration command compares or applies
+  registered checked-in settings to canary or production. Specialized handlers
+  retain provider ordering and validation; the first coordinates Google Service
+  Usage, enabling provider services before a same-image on revision and serving
+  an off revision before disabling them. The operation verifies unchanged image
+  identity, revision readiness, and latest-revision traffic without building an
+  image or running Bicep; apply remains approval-gated.
 
 ### OPS-02 - Failure detection and response
 
