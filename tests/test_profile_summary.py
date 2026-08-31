@@ -15,6 +15,7 @@ from tripplanner.tools import (
     passive_learning,
     profile_suggestions,
     profile_summary,
+    trip_history,
     trip_planner,
     user_preferences,
 )
@@ -36,6 +37,9 @@ def _isolate(monkeypatch):
     monkeypatch.setattr(trip_planner, "_TRIPS_DIR", _TEST_DIR)
     monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", _TEST_ACTIVE_TRIP)
     monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", _TEST_TRIP_HISTORY)
+    monkeypatch.setattr(trip_history, "_TRIPS_DIR", _TEST_DIR)
+    monkeypatch.setattr(trip_history, "_ACTIVE_TRIP_FILE", _TEST_ACTIVE_TRIP)
+    monkeypatch.setattr(trip_history, "_TRIP_HISTORY_DIR", _TEST_TRIP_HISTORY)
     _TEST_DIR.mkdir(parents=True, exist_ok=True)
     yield
     shutil.rmtree(_TEST_DIR, ignore_errors=True)

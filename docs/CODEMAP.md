@@ -44,6 +44,8 @@ trip through shared API contracts.
 | `src/tripplanner/web/trip_verification.py` | The certificate: which checks ran, which failed, and which could not be evaluated |
 | `src/tripplanner/web/trip_freshness.py` | Explicit itinerary place-fact recheck, stable before/after snapshots, and source-linked seasonal or renovation closure advisories |
 | `src/tripplanner/tools/trip_rebalance.py` | Whole-trip arrangement search over legal slots, priced in minutes of regret |
+| `src/tripplanner/tools/trip_history.py` | Active and saved-trip persistence, stable trip IDs, history numbering, listing, and deletion across local JSON and Cosmos |
+| `src/tripplanner/tools/itinerary_edit.py` | Pure itinerary placement, timing, rebalancing, leg settling, and repair helpers |
 | `src/tripplanner/web/trip_repair.py` | Repair pass: clears the planner's own contradictions, reports the ones it may not touch |
 | `src/tripplanner/platform_planning_insights.py` | Privacy boundary for versioned cross-user aggregate planning priors |
 | `src/tripplanner/tools/trip_shape.py` | Read-only model tool exposing auditable trip-shape recommendations |

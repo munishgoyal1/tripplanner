@@ -170,7 +170,7 @@ def test_referenced_places_keeps_only_this_trip_and_destination(monkeypatch):
 
 def test_saving_a_real_trip_writes_through_to_the_archive(tmp_path, monkeypatch):
     """The capture hook must fire from the real trip save path, not just directly."""
-    from tripplanner.tools import trip_planner, user_preferences
+    from tripplanner.tools import trip_history, trip_planner, user_preferences
 
     home = tmp_path / "home"
     home.mkdir(parents=True, exist_ok=True)
@@ -179,6 +179,9 @@ def test_saving_a_real_trip_writes_through_to_the_archive(tmp_path, monkeypatch)
     monkeypatch.setattr(trip_planner, "_TRIPS_DIR", home)
     monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", home / "active_trip.json")
     monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", home / "trips")
+    monkeypatch.setattr(trip_history, "_TRIPS_DIR", home)
+    monkeypatch.setattr(trip_history, "_ACTIVE_TRIP_FILE", home / "active_trip.json")
+    monkeypatch.setattr(trip_history, "_TRIP_HISTORY_DIR", home / "trips")
 
     trip_planner.create_trip_plan.invoke(
         {

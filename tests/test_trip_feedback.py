@@ -5,7 +5,7 @@ import json
 from fastapi.testclient import TestClient
 
 from tripplanner import api
-from tripplanner.tools import trip_planner
+from tripplanner.tools import trip_history, trip_planner
 from tripplanner.web import trip_feedback
 
 
@@ -15,6 +15,8 @@ def test_feedback_appends_and_updates_trip_rollup(monkeypatch, tmp_path) -> None
     feedback_dir = tmp_path / "feedback" / "local"
     monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", active_path)
     monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", history_dir)
+    monkeypatch.setattr(trip_history, "_ACTIVE_TRIP_FILE", active_path)
+    monkeypatch.setattr(trip_history, "_TRIP_HISTORY_DIR", history_dir)
     monkeypatch.setattr(trip_feedback, "_LOCAL_ROOT", tmp_path / "feedback")
     monkeypatch.setattr(trip_planner.storage_cosmos, "is_enabled", lambda: False)
     active_path.write_text(
@@ -55,6 +57,8 @@ def test_deleting_a_trip_removes_its_feedback(monkeypatch, tmp_path) -> None:  #
     monkeypatch.setattr(trip_feedback, "_LOCAL_ROOT", tmp_path / "feedback")
     monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", tmp_path / "trips")
     monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", tmp_path / "active.json")
+    monkeypatch.setattr(trip_history, "_TRIP_HISTORY_DIR", tmp_path / "trips")
+    monkeypatch.setattr(trip_history, "_ACTIVE_TRIP_FILE", tmp_path / "active.json")
     monkeypatch.setattr(trip_planner.storage_cosmos, "is_enabled", lambda: False)
     trip_feedback.append(
         trip_id="lisbon",
