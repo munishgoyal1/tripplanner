@@ -250,19 +250,21 @@ Both `--allow-*` flags are required when tightening a limit by more than ten
 percent or below current usage, which is almost always the case when moving from
 Google's generous defaults.
 
-Places limits are sized for observation mode. Local and canary are disabled and
-also pinned to one request as defense in depth. Production supports roughly two
-cold trips per day at the incident's observed 47.5 Text Searches per trip:
+Places limits are sized for observation mode. Local is pinned to one request as
+defense in depth. Canary allows one standard plus one production-strict photo
+smoke per deployment (up to eight Text Searches and six photo-media requests).
+Production supports roughly two cold trips per day at the incident's observed
+47.5 Text Searches per trip:
 
 | Quota | local | canary | prod |
 | --- | --- | --- | --- |
-| `SearchTextRequestPerDayPerProject` | 1 | 1 | 100 |
-| `SearchTextRequestPerMinutePerProject` | 1 | 1 | 30 |
+| `SearchTextRequestPerDayPerProject` | 1 | 10 | 100 |
+| `SearchTextRequestPerMinutePerProject` | 1 | 10 | 30 |
 | `GetPlaceRequestPerDayPerProject` | 1 | 1 | 100 |
 | `GetPlaceRequestPerMinutePerProject` | 1 | 1 | 30 |
 | `SearchNearbyRequestPerDayPerProject` | 1 | 1 | 20 |
 | `AutocompletePlacesRequestPerDayPerProject` | 1 | 1 | 50 |
-| `GetPhotoMediaRequestPerDayPerProject` | 1 | 1 | 200 |
+| `GetPhotoMediaRequestPerDayPerProject` | 1 | 10 | 200 |
 | `BillableDefaultPerDayPerProject` (Places JavaScript) | 1 | 1 | 100 |
 | `ComputeRoutesRequestsPerDay`, `ComputeRouteMatrixCellsPerDay` | 6,000 | 1,000 | 1,000 |
 | `BillableDefaultPerDayPerProject` (Static Maps) | 6,000 | 1,000 | 1,000 |

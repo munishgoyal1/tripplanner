@@ -53,6 +53,7 @@ def _isolate(monkeypatch, tmp_path):
             "lat": 1.0,
             "lng": 2.0,
             "photo_refs": [f"places/{name}/photos/a", f"places/{name}/photos/b"],
+            "__photo_refs_schema": pc._PHOTO_REFS_SCHEMA,
         }
 
     def fake_photo_uris(refs, max_width_px: int = 800):
@@ -155,15 +156,17 @@ def test_remembered_discovery_place_avoids_ui_lookup(_isolate):
     details = pc.get_details("Fort Aguada", "Goa")
 
     assert details and details["place_id"] == "fort-aguada"
+    assert details["__photo_refs_schema"] == pc._PHOTO_REFS_SCHEMA
     assert _isolate["lookup"] == 0
 
 
-def test_photos_refresh_legacy_entry_without_photo_refs(_isolate, _authorized):
+def test_photos_refresh_legacy_entry_with_unversioned_refs(_isolate, _authorized):
     key = pc._key("Legacy Place", "Paris")
     pc._CACHE[key] = {
         "place_id": "legacy-id",
         "name": "Legacy Place",
         "rating": 4.5,
+        "photo_refs": [],
         "__at__": time.time(),
     }
 
@@ -180,6 +183,7 @@ def test_photos_do_not_refresh_entry_with_known_empty_refs(_isolate, _authorized
         "place_id": "no-photo-id",
         "name": "No Photo Place",
         "photo_refs": [],
+        "__photo_refs_schema": pc._PHOTO_REFS_SCHEMA,
         "__at__": time.time(),
     }
 

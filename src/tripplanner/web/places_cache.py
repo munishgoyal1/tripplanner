@@ -54,6 +54,7 @@ _HTTP_TIMEOUT_S = 10
 _META_TTL_S = 7 * 24 * 60 * 60  # 1 week
 _MISS_TTL_S = 60  # transient lookup failures must not hide itinerary pins for a week
 _PHOTO_TTL_S = 50 * 60  # re-sign photo URLs before Google's ~1h expiry
+_PHOTO_REFS_SCHEMA = 1
 _MAX_WORKERS = 8
 _MAX_ENTRIES = 800  # soft cap; evict the oldest beyond this
 
@@ -485,6 +486,7 @@ def normalize_place(p: dict[str, Any], name: str = "") -> dict[str, Any]:
         "lat": loc.get("latitude"),
         "lng": loc.get("longitude"),
         "photo_refs": [ph.get("name") for ph in (p.get("photos") or []) if ph.get("name")],
+        "__photo_refs_schema": _PHOTO_REFS_SCHEMA,
     }
 
 
@@ -500,7 +502,12 @@ def remember_places(places: list[dict[str, Any]], city: str) -> None:
                 continue
             key = _key(name, city)
             existing = cache.get(key) or {}
-            cache[key] = {**existing, **place, "__at__": now}
+            photo_schema = (
+                {"__photo_refs_schema": _PHOTO_REFS_SCHEMA}
+                if "photo_refs" in place
+                else {}
+            )
+            cache[key] = {**existing, **place, **photo_schema, "__at__": now}
             touched.add(key)
         _evict_if_needed()
     _schedule_durable(touched)
@@ -677,7 +684,7 @@ def get_photos(
     info = _ensure(name, city, refresh=refresh)
     if not info:
         return []
-    if "photo_refs" not in info and not refresh:
+    if info.get("__photo_refs_schema") != _PHOTO_REFS_SCHEMA and not refresh:
         refreshed, succeeded = refresh_details(name, city)
         if succeeded and refreshed:
             info = refreshed

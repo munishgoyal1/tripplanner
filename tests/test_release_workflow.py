@@ -125,11 +125,11 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
         assert "ENABLE_GOOGLE_MAPS=1" in profile
     assert (
         '"quotaId": "SearchTextRequestPerDayPerProject", '
-        '"local": 1, "canary": 1, "prod": 100'
+        '"local": 1, "canary": 10, "prod": 100'
     ) in guardrails
     assert (
         '"quotaId": "GetPhotoMediaRequestPerDayPerProject", '
-        '"local": 1, "canary": 1, "prod": 200'
+        '"local": 1, "canary": 10, "prod": 200'
     ) in guardrails
     guardrail_config = json.loads(guardrails)["gcp"]
     maps_quotas = [
