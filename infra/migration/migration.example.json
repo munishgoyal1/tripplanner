@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "azure": {
+    "enabled": true,
+    "source": {
+      "account": "munishgoyal1@gmail.com",
+      "tenantId": "d889d6d8-feaa-4837-937f-ddb9007ba8ef",
+      "subscriptionId": "2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b",
+      "resourceGroups": [
+        "rg-tripplanner-local",
+        "rg-tripplanner-data",
+        "rg-tripplanner-canary",
+        "rg-tripplanner-prod"
+      ],
+      "cosmosResourceGroup": "rg-tripplanner-data",
+      "cosmosAccount": "tripplanner-data-qftmtl5pavmcu"
+    },
+    "target": {
+      "account": "munishgoyal@aitripplanner.co",
+      "tenantId": "<target-tenant-id>",
+      "subscriptionId": "<target-subscription-id>",
+      "location": "eastus2",
+      "cosmosResourceGroup": "rg-tripplanner-data",
+      "cosmosAccount": "<globally-unique-target-cosmos-name>",
+      "failureAlertEmail": "munishgoyal@aitripplanner.co",
+      "apexManagedCertificateName": "tripplanner-prod-apex-target",
+      "wwwManagedCertificateName": "tripplanner-prod-www-target",
+      "hosted": {
+        "canary": {
+          "openAiAccount": "<globally-unique-target-canary-openai-name>",
+          "openAiDeployment": "gpt-4-1-canary",
+          "openAiSku": "Standard",
+          "openAiCapacity": 20
+        },
+        "prod": {
+          "openAiAccount": "<globally-unique-target-prod-openai-name>",
+          "openAiDeployment": "gpt-4-1-global",
+          "openAiSku": "GlobalStandard",
+          "openAiCapacity": 50
+        }
+      },
+      "communications": {
+        "serviceName": "<globally-unique-target-communication-name>",
+        "emailServiceName": "<globally-unique-target-email-name>"
+      },
+      "resourceGroups": [
+        "rg-tripplanner-local",
+        "rg-tripplanner-data",
+        "rg-tripplanner-canary",
+        "rg-tripplanner-prod"
+      ]
+    },
+    "imageTag": "<immutable-git-sha>",
+    "sourceSecretFiles": {
+      "canary": ".env.canary",
+      "prod": ".env.prod"
+    },
+    "dns": {
+      "apex": "aitripplanner.co",
+      "www": "www.aitripplanner.co",
+      "provider": "namecheap",
+      "cutoverHook": ""
+    },
+    "deleteSourceResourceGroupsOnRetire": true
+  },
+  "google": {
+    "enabled": true,
+    "source": {
+      "account": "<current-google-account>",
+      "billingAccount": "01AD51-0D422D-41459D"
+    },
+    "target": {
+      "account": "<target-google-account>",
+      "billingAccount": "<target-google-billing-account>",
+      "organizationId": ""
+    },
+    "projects": [
+      "aitripplanner-local",
+      "aitripplanner-canary",
+      "project-8fc6cc28-590c-4f8b-987",
+      "aitripplanner-ops"
+    ],
+    "removeSourcePrincipalOnRetire": true,
+    "deleteSourceBudgetsOnRetire": true
+  }
+}

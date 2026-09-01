@@ -58,6 +58,7 @@ a database or fall back to local `.env` credentials.
 | `rollback-prod.ps1` | Activate the previous production Container Apps revision |
 | `smoke-hosted.ps1` | Public read-only smoke and explicitly guarded deep smoke |
 | `bootstrap-environments.ps1` | Fresh-subscription orchestration |
+| `migration/` | Resumable Azure and Google account/billing migration, evidence, cutover, and source retirement |
 | `provision-aoai.ps1` | Provision or reuse Azure OpenAI resources |
 | `set-cosmos-throughput.ps1` | Guarded throughput correction for old databases |
 | `cleanup-obsolete-resources.ps1` | Approval-gated obsolete-resource cleanup |
@@ -160,9 +161,15 @@ namespace lets a canary response be served to production, and vice versa.
 
 ## Data Movement and Recovery
 
-`scripts/cosmos_copy.py` supports exact six-container copy and verification.
+`scripts/cosmos_copy.py` supports exact eight-container copy and verification.
 Credentials come from Azure CLI and are never written to files. Use direct copy
 for migration only; it is not a backup.
+
+Complete cloud-account moves use the manifest-driven workflow in
+[Cloud Account Migration](migration/README.md). It provisions a parallel Azure
+estate, copies and verifies data, moves Google projects and billing in place,
+and retires allowlisted source resources only through separate approval gates.
+It never closes subscriptions or billing accounts automatically.
 
 For recoverability evidence, use the guarded offline artifact workflow documented
 in [Backup and Recovery Drill](../docs/operations/backup-recovery.md). It rejects
