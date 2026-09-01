@@ -42,6 +42,7 @@ def test_google_migration_requires_checkpoints_before_retirement() -> None:
         "function New-TargetGuardrailsConfig", maxsplit=1
     )[0]
     assert "roles/resourcemanager.projectMover" in script
+    assert '"roles/iam.serviceAccountViewer"' in script
     assert '"roles/oauthconfig.editor"' in script
     assert '"roles/resourcemanager.projectIamAdmin"' in script
     assert '"roles/serviceusage.apiKeysAdmin"' in script

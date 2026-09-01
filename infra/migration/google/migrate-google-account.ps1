@@ -101,6 +101,7 @@ function Invoke-Grant {
     }
     foreach ($state in $states) {
         foreach ($role in @(
+            "roles/iam.serviceAccountViewer",
             "roles/oauthconfig.editor",
             "roles/resourcemanager.projectIamAdmin",
             "roles/serviceusage.apiKeysAdmin"
