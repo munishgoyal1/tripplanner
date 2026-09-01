@@ -34,7 +34,7 @@
         "budgetName": "tripplanner-canary-2000inr",
         "budget": 100,
         "browserKey": "aitripplanner-canary-browser",
-        "browserReferrers": ["https://canary-app-zcebxnuakdwnu.ashysea-d232f837.eastus2.azurecontainerapps.io/*"],
+        "browserReferrers": ["https://canary-app-dxnpu3yepagpo.politestone-92347d47.eastus2.azurecontainerapps.io/*"],
         "serverKey": "aitripplanner-canary-server"
       },
       {
