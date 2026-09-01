@@ -26,7 +26,8 @@ if ([string]::IsNullOrWhiteSpace($EvidenceRoot)) {
 }
 $config = Read-MigrationConfig -Path $ConfigPath
 Assert-ConfiguredValue "azure.target.subscriptionId" $config.azure.target.subscriptionId
-if ($Operation -eq "Migrate" -and -not $SkipGoogle) {
+$migrateGoogle = -not $SkipGoogle -and [bool]$config.google.enabled
+if ($Operation -eq "Migrate" -and $migrateGoogle) {
     $googleManifest = Read-MigrationConfig -Path $GoogleManifestPath
     if ([string]::IsNullOrWhiteSpace($SourceGcloudConfiguration)) {
         $SourceGcloudConfiguration = [string]$googleManifest.source.gcloudConfiguration
@@ -84,7 +85,7 @@ switch ($Operation) {
         Write-Host "Google Cloud project data stays with each in-place project move, so no Google data copy is required."
     }
     "Migrate" {
-        if (-not $SkipGoogle -and
+        if ($migrateGoogle -and
             ([string]::IsNullOrWhiteSpace($SourceGcloudConfiguration) -or
              [string]::IsNullOrWhiteSpace($TargetGcloudConfiguration))) {
             throw "Migrate requires source and target gcloud configurations, or -SkipGoogle for Azure-only recovery."
@@ -93,7 +94,7 @@ switch ($Operation) {
         Invoke-AzureProvision
         Invoke-AzureDataCopy
         Invoke-AzurePhase -Phase validate
-        if (-not $SkipGoogle) {
+        if ($migrateGoogle) {
             & $googleOrchestrator -Phase Migrate -ManifestPath $GoogleManifestPath `
                 -SourceGcloudConfiguration $SourceGcloudConfiguration `
                 -TargetGcloudConfiguration $TargetGcloudConfiguration `
@@ -104,6 +105,8 @@ switch ($Operation) {
         }
         Write-Host "Target migration completed and validated. Traffic cutover, source retirement, and billing-account closure remain separate owner actions."
     }
+        } else {
+            Write-Host "Google migration skipped because it is disabled in the Azure manifest or -SkipGoogle was supplied."
 }
 
 Write-Host "$Operation completed. Azure evidence: $EvidenceRoot/$RunId"
