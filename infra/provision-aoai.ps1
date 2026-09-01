@@ -4,8 +4,8 @@
   Provision an Azure OpenAI account + deployment for a target environment.
 
 .DESCRIPTION
-  Creates (or reuses) an Azure OpenAI account and a model deployment, then
-  prints environment-variable lines you can paste into .env.
+    Creates (or reuses) an Azure OpenAI account and a model deployment, then
+    prints non-secret environment metadata.
 
 .EXAMPLE
   ./infra/provision-aoai.ps1 -Environment canary -SubscriptionId <sub-id>
@@ -31,8 +31,28 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Invoke-AzChecked {
+    param(
+        [Parameter(Mandatory)]
+        [string[]]$Arguments,
+        [switch]$Capture
+    )
+
+    if ($Capture) {
+        $output = & az @Arguments
+    } else {
+        & az @Arguments
+    }
+    if ($LASTEXITCODE -ne 0) {
+        throw "Azure CLI command failed: az $($Arguments -join ' ')"
+    }
+    if ($Capture) {
+        return ($output -join [Environment]::NewLine).Trim()
+    }
+}
+
 if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
-    az account set --subscription $SubscriptionId
+    Invoke-AzChecked -Arguments @("account", "set", "--subscription", $SubscriptionId)
 }
 
 if ([string]::IsNullOrWhiteSpace($ResourceGroup)) {
@@ -56,69 +76,73 @@ if ([string]::IsNullOrWhiteSpace($DeploymentName)) {
 }
 
 Write-Host "\nPreparing Azure OpenAI for environment: $Environment"
-Write-Host "Subscription: $(az account show --query id -o tsv)"
+$activeSubscription = Invoke-AzChecked -Capture -Arguments @("account", "show", "--query", "id", "-o", "tsv")
+Write-Host "Subscription: $activeSubscription"
 Write-Host "Resource Group: $ResourceGroup"
 Write-Host "Account: $AccountName"
 Write-Host "Deployment: $DeploymentName"
 Write-Host "Model: $ModelName ($ModelVersion)"
 Write-Host "SKU: $SkuName (capacity: $Capacity)\n"
 
-az group create --name $ResourceGroup --location $Location -o none
+Invoke-AzChecked -Arguments @("group", "create", "--name", $ResourceGroup, "--location", $Location, "-o", "none")
 
-$existingAccount = az cognitiveservices account show `
-    --resource-group $ResourceGroup `
-    --name $AccountName `
-    --query name -o tsv 2>$null
+$existingAccount = Invoke-AzChecked -Capture -Arguments @(
+    "cognitiveservices", "account", "list",
+    "--resource-group", $ResourceGroup,
+    "--query", "[?name=='$AccountName'].name | [0]", "-o", "tsv"
+)
 
 if ([string]::IsNullOrWhiteSpace($existingAccount)) {
     Write-Host "Creating Azure OpenAI account..."
-    az cognitiveservices account create `
-        --resource-group $ResourceGroup `
-        --name $AccountName `
-        --location $Location `
-        --kind OpenAI `
-        --sku S0 `
-        --custom-domain $AccountName `
-        --yes -o none
+    Invoke-AzChecked -Arguments @(
+        "cognitiveservices", "account", "create",
+        "--resource-group", $ResourceGroup,
+        "--name", $AccountName,
+        "--location", $Location,
+        "--kind", "OpenAI",
+        "--sku", "S0",
+        "--custom-domain", $AccountName,
+        "--yes", "-o", "none"
+    )
     Write-Host "  Created account: $AccountName"
 } else {
     Write-Host "Account already exists, reusing: $existingAccount"
 }
 
-$existingDeployment = az cognitiveservices account deployment show `
-    --resource-group $ResourceGroup `
-    --name $AccountName `
-    --deployment-name $DeploymentName `
-    --query name -o tsv 2>$null
+$existingDeployment = Invoke-AzChecked -Capture -Arguments @(
+    "cognitiveservices", "account", "deployment", "list",
+    "--resource-group", $ResourceGroup,
+    "--name", $AccountName,
+    "--query", "[?name=='$DeploymentName'].name | [0]", "-o", "tsv"
+)
 
 if ([string]::IsNullOrWhiteSpace($existingDeployment)) {
     Write-Host "Creating model deployment..."
-    az cognitiveservices account deployment create `
-        --resource-group $ResourceGroup `
-        --name $AccountName `
-        --deployment-name $DeploymentName `
-        --model-name $ModelName `
-        --model-version $ModelVersion `
-        --model-format OpenAI `
-        --sku-name $SkuName `
-        --sku-capacity $Capacity -o none
+    Invoke-AzChecked -Arguments @(
+        "cognitiveservices", "account", "deployment", "create",
+        "--resource-group", $ResourceGroup,
+        "--name", $AccountName,
+        "--deployment-name", $DeploymentName,
+        "--model-name", $ModelName,
+        "--model-version", $ModelVersion,
+        "--model-format", "OpenAI",
+        "--sku-name", $SkuName,
+        "--sku-capacity", $Capacity,
+        "-o", "none"
+    )
     Write-Host "  Created deployment: $DeploymentName"
 } else {
     Write-Host "Deployment already exists, reusing: $existingDeployment"
 }
 
-$endpoint = az cognitiveservices account show `
-    --resource-group $ResourceGroup `
-    --name $AccountName `
-    --query properties.endpoint -o tsv
+$endpoint = Invoke-AzChecked -Capture -Arguments @(
+    "cognitiveservices", "account", "show",
+    "--resource-group", $ResourceGroup,
+    "--name", $AccountName,
+    "--query", "properties.endpoint", "-o", "tsv"
+)
 
-$key = az cognitiveservices account keys list `
-    --resource-group $ResourceGroup `
-    --name $AccountName `
-    --query key1 -o tsv
-
-Write-Host "\nAzure OpenAI ready. Paste these into .env for this environment:"
+Write-Host "\nAzure OpenAI ready. Non-secret environment metadata:"
 Write-Host "AZURE_OPENAI_ENDPOINT=$endpoint"
-Write-Host "AZURE_OPENAI_API_KEY=$key"
 Write-Host "AZURE_OPENAI_DEPLOYMENT=$DeploymentName"
 Write-Host "AZURE_OPENAI_API_VERSION=2024-10-21\n"
