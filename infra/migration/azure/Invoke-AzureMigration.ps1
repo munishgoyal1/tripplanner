@@ -262,13 +262,17 @@ switch ($Phase) {
             $guardrails = Get-Content (Join-Path $repoRoot "infra/billing-guardrails.json") -Raw | ConvertFrom-Json
             $guardrails.alertEmail = $target.failureAlertEmail
             $guardrails.azure.subscriptionId = $target.subscriptionId
+            $guardrails.azure.tenantId = $target.tenantId
             $targetGuardrails = Join-Path $EvidenceDirectory "target-billing-guardrails.json"
             Write-MigrationJson $targetGuardrails $guardrails
             & (Join-Path $repoRoot "infra/azure/apply-billing-guardrails.ps1") -ConfigPath $targetGuardrails
             if ($LASTEXITCODE -ne 0) { throw "Target Azure billing guardrails failed." }
+            & (Join-Path $repoRoot "infra/azure/deploy-budget-cutoff.ps1") `
+                -ConfigPath $targetGuardrails -InstallDependencies
+            if ($LASTEXITCODE -ne 0) { throw "Target Azure budget cutoff deployment failed." }
             Write-MigrationCheckpoint $EvidenceDirectory "provision" ([ordered]@{
                 targetProductionUrl = $prod.url
-                billingGuardrails = "applied"
+                billingGuardrails = "alerts-and-cutoff-applied"
             })
         }
     }

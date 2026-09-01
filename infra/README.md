@@ -173,6 +173,15 @@ estate, copies and verifies data, moves Google projects and billing in place,
 and retires allowlisted source resources only through separate approval gates.
 It never closes subscriptions or billing accounts automatically.
 
+Azure target provisioning creates email alerts at the configured thresholds and
+a separate cutoff Action Group used only by the subscription budget's 100% actual
+notification. Its managed-identity runbook stops Container Apps, makes jobs
+manual, and disables Azure OpenAI public access without delete permissions.
+Cost data can arrive hours late, so this is a delayed circuit breaker rather
+than an exact cap. Cosmos throughput, storage, managed environments, logs, and
+other fixed resources can continue charging after it runs; retain the native
+subscription spending limit whenever the offer supports one.
+
 For recoverability evidence, use the guarded offline artifact workflow documented
 in [Backup and Recovery Drill](../docs/operations/backup-recovery.md). It rejects
 canary, production, same-coordinate, nonempty, missing-container, and partial
