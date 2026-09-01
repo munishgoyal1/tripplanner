@@ -658,6 +658,9 @@ implemented capability baseline.
 - Tool latency, failures, cache hits, model-call latency/tokens/prompt size,
   forced completion-gate reasons, structured events, and hosted health are
   observable through API metrics and Azure logs.
+- Hidden operations and owner-only backend access is authorized solely to the
+  verified `munishgoyal1@gmail.com` application session. Cloud operator and billing
+  identities do not grant application-owner access, and customers receive no owner role.
 - The owner operations view keeps an immutable 90-day content-free provider/model
   ledger in local JSONL or hosted Cosmos. A request-scoped batch normally produces
   one storage document while retaining each provider/model call as a nested entry;
