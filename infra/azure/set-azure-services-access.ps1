@@ -295,11 +295,11 @@ if (-not $ServingOnly -and $Environment -eq "all" -and
 }
 
 $account = Invoke-AzJson -Arguments @("account", "show", "--query", "{id:id,name:name,user:user.name}")
-if ($account.user -ine "munishgoyal1@gmail.com") {
-    throw "Refusing Azure access as '$($account.user)'. Sign in with munishgoyal1@gmail.com."
+if ($account.user -ine [string]$config.azure.operatorAccount) {
+    throw "Refusing Azure access as '$($account.user)'. Sign in with $($config.azure.operatorAccount)."
 }
-if ($account.id -ne $script:SubscriptionId -or $account.name -ne "Visual Studio Enterprise Subscription") {
-    throw "Refusing Azure subscription '$($account.name)' ($($account.id)). Select the configured personal Visual Studio Enterprise subscription."
+if ($account.id -ne $script:SubscriptionId) {
+    throw "Refusing Azure subscription '$($account.name)' ($($account.id)). Select $script:SubscriptionId."
 }
 
 if ($Action -eq "off") { $Action = "disable" }

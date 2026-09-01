@@ -109,7 +109,7 @@ def require_signed_user(request: Request) -> str:
 
 def require_owner(request: Request) -> dict[str, str]:
     session = signed_session(request)
-    owner_email = os.getenv("OPS_DASHBOARD_OWNER_EMAIL", "munishgoyal1@gmail.com")
+    owner_email = os.getenv("OPS_DASHBOARD_OWNER_EMAIL", "munishgoyal@aitripplanner.co")
     if (
         session
         and session.get("session_kind") != "guest"

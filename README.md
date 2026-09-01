@@ -1,7 +1,7 @@
 # tripplanner — AI Trip Planner
 
 > **Owner**: Munish Goyal ([munishgoyal1](https://github.com/munishgoyal1))
-> **Azure account**: munishgoyal1@gmail.com
+> **Azure account**: [munishgoyal@aitripplanner.co](mailto:munishgoyal@aitripplanner.co)
 > **Repo**: https://github.com/munishgoyal1/tripplanner (private)
 > **Status**: Active development — trip planner with real Amadeus API search
 

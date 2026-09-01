@@ -15,9 +15,9 @@ param(
         [string]$Direction = "Both",
     [switch]$WhatIf = $false,
     [string]$Approval = "",
-    [string]$SubscriptionId = "",
+    [string]$SubscriptionId = "9fe3951c-d440-4d09-91f1-cb47e02f04c3",
     [string]$CosmosResourceGroup = "rg-tripplanner-data",
-    [string]$CosmosAccountName = "",
+    [string]$CosmosAccountName = "tripplanner-data-9fe3951c",
     [string]$LocalDatabase = "tripplanner-cache",
     [string]$ReportPath = "",
     [string]$CheckpointPath = "",
@@ -43,11 +43,11 @@ if ($LASTEXITCODE -ne 0) {
     throw "Azure CLI is not authenticated. Run az login with the approved personal account."
 }
 $account = $accountJson | ConvertFrom-Json
-if ($account.user -ne "munishgoyal1@gmail.com") {
-    throw "Refusing Azure access as '$($account.user)'. Use munishgoyal1@gmail.com."
+if ($account.user -ine "munishgoyal@aitripplanner.co") {
+    throw "Refusing Azure access as '$($account.user)'. Use munishgoyal@aitripplanner.co."
 }
-if ($account.name -ne "Visual Studio Enterprise Subscription") {
-    throw "Refusing subscription '$($account.name)'. Select the Visual Studio Enterprise subscription."
+if ($account.id -ne $SubscriptionId) {
+    throw "Refusing subscription '$($account.name)' ($($account.id)). Select $SubscriptionId."
 }
 
 if ([string]::IsNullOrWhiteSpace($CosmosAccountName)) {

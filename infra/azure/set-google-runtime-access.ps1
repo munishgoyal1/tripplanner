@@ -128,12 +128,11 @@ function Assert-GoogleApprovals {
 }
 
 $account = Invoke-AzJson @("account", "show", "--query", "{id:id,name:name,user:user.name}")
-if ($account.user -ine "munishgoyal1@gmail.com") {
-    throw "Refusing Azure access as '$($account.user)'. Sign in with munishgoyal1@gmail.com."
+if ($account.user -ine [string]$config.azure.operatorAccount) {
+    throw "Refusing Azure access as '$($account.user)'. Sign in with $($config.azure.operatorAccount)."
 }
-if ($account.id -ne $config.azure.subscriptionId -or
-    $account.name -ne "Visual Studio Enterprise Subscription") {
-    throw "Refusing Azure subscription '$($account.name)' ($($account.id)). Select the configured personal Visual Studio Enterprise subscription."
+if ($account.id -ne $config.azure.subscriptionId) {
+    throw "Refusing Azure subscription '$($account.name)' ($($account.id)). Select $($config.azure.subscriptionId)."
 }
 
 $targets = @($config.azure.environments | Where-Object {

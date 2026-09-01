@@ -53,6 +53,24 @@ function ConvertFrom-AzureCliJson {
     return $Output.Substring($jsonStart, $jsonEnd - $jsonStart + 1) | ConvertFrom-Json
 }
 
+function Get-AzureOpenAiResourceGroup {
+    param(
+        [Parameter(Mandatory)][string]$AccountName,
+        [Parameter(Mandatory)][string]$SubscriptionId
+    )
+
+    $resourceGroups = @(az resource list `
+        --subscription $SubscriptionId `
+        --name $AccountName `
+        --resource-type Microsoft.CognitiveServices/accounts `
+        --query "[].resourceGroup" `
+        --output tsv)
+    if ($LASTEXITCODE -ne 0 -or $resourceGroups.Count -ne 1) {
+        throw "Expected exactly one Azure OpenAI account named $AccountName in subscription $SubscriptionId."
+    }
+    return $resourceGroups[0]
+}
+
 function Assert-DeploymentHasNoDeletes {
     param(
         [Parameter(Mandatory)]$WhatIf,

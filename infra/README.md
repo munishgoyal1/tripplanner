@@ -70,14 +70,14 @@ a database or fall back to local `.env` credentials.
 Authenticate manually before any Azure operation:
 
 ```powershell
-az login --tenant d889d6d8-feaa-4837-937f-ddb9007ba8ef
-az account set --subscription 2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b
+az login --tenant 73dae932-6537-41dd-a995-a2f0254cd9e2
+az account set --subscription 9fe3951c-d440-4d09-91f1-cb47e02f04c3
 az account show --query "{subscription:name,id:id,tenant:tenantId,user:user.name}" -o table
 ```
 
-The personal Azure account for this repository is `munishgoyal1@gmail.com` in
-the `Visual Studio Enterprise Subscription` (`2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b`).
-Its tenant is `d889d6d8-feaa-4837-937f-ddb9007ba8ef`. Do not use the
+The Azure account for this repository is `munishgoyal@aitripplanner.co` in
+`Azure subscription 1` (`9fe3951c-d440-4d09-91f1-cb47e02f04c3`).
+Its tenant is `73dae932-6537-41dd-a995-a2f0254cd9e2`. Do not use the
 `mugoy@microsoft.com` work identity or any work subscription for tripplanner
 operations.
 

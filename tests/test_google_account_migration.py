@@ -112,5 +112,8 @@ def test_google_operator_identity_is_configured_separately_from_azure() -> None:
 
     assert guardrails["gcp"]["operatorAccount"] == "munishgoyal@aitripplanner.co"
     assert guardrails["gcp"]["billingAccount"] == "01CEBE-1C217F-A8F9D5"
+    assert guardrails["azure"]["operatorAccount"] == "munishgoyal@aitripplanner.co"
+    assert guardrails["azure"]["subscriptionId"] == "9fe3951c-d440-4d09-91f1-cb47e02f04c3"
+    assert guardrails["azure"]["tenantId"] == "73dae932-6537-41dd-a995-a2f0254cd9e2"
     assert "$config.gcp.operatorAccount" in runtime
-    assert 'if ($account.user -ine "munishgoyal1@gmail.com")' in runtime
+    assert "$config.azure.operatorAccount" in runtime
