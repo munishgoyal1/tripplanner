@@ -1,7 +1,7 @@
 {
   "$comment": "Declarative billing guardrails. Edit the identifiers for a new account, then run infra/gcp/apply-billing-guardrails.ps1 and infra/azure/apply-billing-guardrails.ps1. Both scripts are idempotent, so re-run them to tweak limits.",
 
-  "alertEmail": "munishgoyal1@gmail.com",
+  "alertEmail": "munishgoyal@aitripplanner.co",
 
   "thresholds": {
     "environment": [0.5, 0.8, 1.0],
@@ -9,8 +9,8 @@
   },
 
   "gcp": {
-    "operatorAccount": "munishgoyal1@gmail.com",
-    "billingAccount": "01AD51-0D422D-41459D",
+    "operatorAccount": "munishgoyal@aitripplanner.co",
+    "billingAccount": "01CEBE-1C217F-A8F9D5",
     "currency": "INR",
     "opsProject": "aitripplanner-ops",
     "shutoffTopic": "billing-shutoff",

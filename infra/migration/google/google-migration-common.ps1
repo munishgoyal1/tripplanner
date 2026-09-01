@@ -103,13 +103,6 @@ function Get-ProjectMigrationState {
         "beta", "billing", "projects", "describe", $ProjectId,
         "--format=json(billingAccountName,billingEnabled)"
     ) | ConvertFrom-Json
-    $ownerOutput = Invoke-GcloudMigration @(
-        "projects", "get-iam-policy", $ProjectId,
-        "--flatten=bindings[].members",
-        "--filter=bindings.role:roles/owner AND bindings.members:user:*",
-        "--format=value(bindings.members)"
-    )
-    $owners = @($ownerOutput -split "`n" | Where-Object { $_ })
     $parent = if ($project.PSObject.Properties.Name -contains "parent") {
         $project.parent
     } else {
@@ -124,7 +117,6 @@ function Get-ProjectMigrationState {
         parent = $parent
         billingAccount = ([string]$billing.billingAccountName -replace "^billingAccounts/", "")
         billingEnabled = [bool]$billing.billingEnabled
-        owners = $owners
     }
 }
 

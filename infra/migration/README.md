@@ -35,6 +35,16 @@ project numbers, API keys, OAuth clients, project-owned resources, and data. It
 discovers every project linked to the source billing account so an undocumented
 project cannot continue charging the old account unnoticed.
 
+Cross-organization migration access is inherited from `Project Mover` on the
+source organization and organization administration on the target. Every project
+receives Project IAM Admin and API Keys Admin so the target can preserve key
+restrictions and recreate guardrail identity bindings. Environment projects also
+receive Cloud Quotas Admin and Monitoring Editor; ops receives Service Account
+Admin and Pub/Sub Admin. A standalone project additionally receives Project Mover
+directly because it has no organization inheritance. Google blocks adding an
+external Workspace user as a project's basic `Owner`, and that binding is neither
+requested nor required by this workflow.
+
 Start with a read-only inventory from the source account:
 
 ```powershell

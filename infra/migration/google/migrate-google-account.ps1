@@ -100,11 +100,51 @@ function Invoke-Grant {
         throw "Source billing gained a project after Plan. Rerun Plan before granting access."
     }
     foreach ($state in $states) {
-        if ($PSCmdlet.ShouldProcess($state.projectId, "Grant target principal project owner")) {
+        foreach ($role in @(
+            "roles/resourcemanager.projectIamAdmin",
+            "roles/serviceusage.apiKeysAdmin"
+        )) {
+            if ($PSCmdlet.ShouldProcess($state.projectId, "Grant target principal $role")) {
+                Invoke-GcloudMigration @(
+                    "projects", "add-iam-policy-binding", $state.projectId,
+                    "--member=user:$($manifest.target.principal)",
+                    "--role=$role", "--quiet"
+                ) | Out-Null
+            }
+        }
+    }
+    foreach ($environment in $manifest.knownProjects | Where-Object { $_.environment -ne "ops" }) {
+        foreach ($role in @("roles/cloudquotas.admin", "roles/monitoring.editor")) {
+            if ($PSCmdlet.ShouldProcess($environment.projectId, "Grant target principal $role")) {
+                Invoke-GcloudMigration @(
+                    "projects", "add-iam-policy-binding", $environment.projectId,
+                    "--member=user:$($manifest.target.principal)",
+                    "--role=$role", "--quiet"
+                ) | Out-Null
+            }
+        }
+    }
+    $opsProject = @($manifest.knownProjects | Where-Object { $_.environment -eq "ops" })[0].projectId
+    foreach ($role in @("roles/iam.serviceAccountAdmin", "roles/pubsub.admin")) {
+        if ($PSCmdlet.ShouldProcess($opsProject, "Grant target principal $role")) {
             Invoke-GcloudMigration @(
-                "projects", "add-iam-policy-binding", $state.projectId,
-                "--member=user:$($manifest.target.principal)", "--role=roles/owner", "--quiet"
+                "projects", "add-iam-policy-binding", $opsProject,
+                "--member=user:$($manifest.target.principal)",
+                "--role=$role", "--quiet"
             ) | Out-Null
+        }
+    }
+    foreach ($state in $states | Where-Object {
+        $null -eq $_.parent -or [string]$_.parent.id -ne [string]$manifest.source.organization
+    }) {
+        foreach ($role in @("roles/resourcemanager.projectMover")) {
+            if ($PSCmdlet.ShouldProcess($state.projectId, "Grant target principal $role")) {
+                Invoke-GcloudMigration @(
+                    "projects", "add-iam-policy-binding", $state.projectId,
+                    "--member=user:$($manifest.target.principal)",
+                    "--role=$role", "--quiet"
+                ) | Out-Null
+            }
         }
     }
     if ($PSCmdlet.ShouldProcess($manifest.source.billingAccount, "Grant target billing administrator")) {
@@ -129,8 +169,9 @@ function Invoke-Grant {
         }
     }
     $body = [ordered]@{
-        grantedProjects = @($projects.projectId)
+        migrationProjects = @($projects.projectId)
         targetPrincipal = $manifest.target.principal
+        accessMode = "Source organization Project Mover plus billing administrator"
         next = "Sign in as the target principal, configure target organization and billing, then run Cutover."
     }
     Write-MigrationReport -Manifest $manifest -Phase "Grant" -Body $body -ManifestPath $ManifestPath
@@ -185,7 +226,9 @@ function Invoke-Cutover {
     ) | Out-Null
     $projects = @(Get-SourceBillingProjects -Manifest $manifest)
     $checkpointIds = @(Get-MigrationProjectIds -Manifest $manifest -ManifestPath $ManifestPath)
-    $newSourceIds = @($projects.projectId | Where-Object { $_ -notin $checkpointIds })
+    $newSourceIds = @(
+        $projects | ForEach-Object { $_.projectId } | Where-Object { $_ -notin $checkpointIds }
+    )
     if ($newSourceIds.Count -gt 0) {
         throw "Source billing gained projects after Plan: $($newSourceIds -join ', '). Rerun Plan."
     }
@@ -258,21 +301,21 @@ function Invoke-Verify {
         if ($state.billingAccount -ne $manifest.target.billingAccount -or -not $state.billingEnabled) {
             $failures += "$($state.projectId) is not enabled on target billing."
         }
-        if ("user:$($manifest.target.principal)" -notin $state.owners) {
-            $failures += "$($state.projectId) does not have the target project owner."
-        }
     }
     if ($sourceProjects.Count -gt 0) {
-        $failures += "Source billing still funds: $($sourceProjects.projectId -join ', ')."
+        $sourceProjectIds = @($sourceProjects | ForEach-Object { $_.projectId })
+        $failures += "Source billing still funds: $($sourceProjectIds -join ', ')."
     }
     $body = [ordered]@{
         passed = $failures.Count -eq 0
         failures = $failures
         projects = $states
-        sourceBillingProjects = @($sourceProjects.projectId)
-        excludedSourceBillingProjects = @($allSourceProjects.projectId | Where-Object {
-            $_ -in @($manifest.projectSelection.excludeProjectIds)
-        })
+        sourceBillingProjects = @($sourceProjects | ForEach-Object { $_.projectId })
+        excludedSourceBillingProjects = @(
+            $allSourceProjects |
+                ForEach-Object { $_.projectId } |
+                Where-Object { $_ -in @($manifest.projectSelection.excludeProjectIds) }
+        )
     }
     Write-MigrationReport -Manifest $manifest -Phase "Verify" -Body $body -ManifestPath $ManifestPath
     if ($failures.Count -gt 0) { throw ($failures -join "`n") }
