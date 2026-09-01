@@ -74,7 +74,7 @@ not invalidate independently held credentials.
 
 ## Current arrangement
 
-Subscription `2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b`, billing currency **INR**.
+Subscription `9fe3951c-d440-4d09-91f1-cb47e02f04c3`, billing currency **INR**.
 The script verifies and selects this subscription before writing anything.
 
 | Budget | Amount | Scope | Alerts |
@@ -84,7 +84,7 @@ The script verifies and selects this subscription before writing anything.
 | `tripplanner-prod-2000inr` | 2,000 INR | `rg-tripplanner-prod` | 50 / 80 / 100% actual, 100% forecast |
 | `tripplanner-global-8000inr` | 8,000 INR | whole subscription | 50 / 80 / 90 / 100% actual, 100% forecast |
 
-Alerts email `munishgoyal1@gmail.com` through the
+Alerts email `munishgoyal@aitripplanner.co` through the
 `tripplanner-budget-alerts` action group in `rg-tripplanner-data`.
 
 ## What Azure can cap
@@ -94,10 +94,8 @@ billing, stop a Container App, reduce Foundry model capacity, or delete a cache.
 Unlike Google Cloud, Azure exposes no operation that detaches billing from all
 resources at a chosen amount.
 
-This Visual Studio Enterprise subscription reports `spendingLimit: On`. Azure
-disables the subscription when its included monthly credit is exhausted. That
-is a real hard stop, but its amount is controlled by the subscription offer,
-not by `tripplanner-global-8000inr`.
+The target subscription's offer-level spending behavior is not controlled by
+`tripplanner-global-8000inr`; treat the budget as notification, not a hard cap.
 
 An automated budget response would necessarily be partial and destructive: it
 could scale Container Apps to zero and reduce model deployment capacity, taking

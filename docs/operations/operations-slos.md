@@ -16,7 +16,7 @@ previous five minutes for:
 - `tool_call` records with `status == "error"`.
 
 Any match opens a severity-1 alert and notifies the production Action Group at
-`munishgoyal1@gmail.com` using Azure Monitor's common alert schema. The alert is
+`munishgoyal@aitripplanner.co` using Azure Monitor's common alert schema. The alert is
 stateful, so a continuing failure condition remains one alert instead of sending
 one email per log line. Auto-mitigation resolves it after the query is clean.
 

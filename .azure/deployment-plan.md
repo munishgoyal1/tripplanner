@@ -1,16 +1,16 @@
 # Azure Deployment Plan
 
 Status: Validated
-Last updated: 2026-07-31
+Last updated: 2026-09-01
 
 ## Azure Account Context
 
 Use the owner's personal Azure account for this repository:
 
-- Login: `munishgoyal1@gmail.com`
-- Subscription: `Visual Studio Enterprise Subscription`
-- Subscription ID: `2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b`
-- Tenant ID: `d889d6d8-feaa-4837-937f-ddb9007ba8ef`
+- Login: `munishgoyal@aitripplanner.co`
+- Subscription: `Azure subscription 1`
+- Subscription ID: `9fe3951c-d440-4d09-91f1-cb47e02f04c3`
+- Tenant ID: `73dae932-6537-41dd-a995-a2f0254cd9e2`
 - Primary region: `eastus2`
 - Local resource group: `rg-tripplanner-local`
 
@@ -18,8 +18,8 @@ Authenticate the Azure CLI explicitly before resource operations so the
 Microsoft work tenant is not selected accidentally:
 
 ```bash
-az login --tenant d889d6d8-feaa-4837-937f-ddb9007ba8ef
-az account set --subscription 2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b
+az login --tenant 73dae932-6537-41dd-a995-a2f0254cd9e2
+az account set --subscription 9fe3951c-d440-4d09-91f1-cb47e02f04c3
 az account show --query "{subscription:name,id:id,tenant:tenantId,user:user.name}" -o table
 ```
 
@@ -303,7 +303,7 @@ Analytics data but no repository-owned periodic diagnostic report.
   disabled, so local and canary deployments do not create an Action Group or
   scheduled-query alert.
 - Enable the contract only in `infra/prod.bicepparam`, with the production alert
-  recipient set to `munishgoyal1@gmail.com`.
+  recipient set to `munishgoyal@aitripplanner.co`.
 - Create one production Action Group email receiver and one Azure Monitor
   scheduled-query rule scoped to the existing production Log Analytics workspace.
 - Evaluate every five minutes over a five-minute window and alert when at least

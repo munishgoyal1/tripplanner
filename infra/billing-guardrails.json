@@ -92,8 +92,9 @@
   },
 
   "azure": {
-    "subscriptionId": "2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b",
-    "tenantId": "d889d6d8-feaa-4837-937f-ddb9007ba8ef",
+    "operatorAccount": "munishgoyal@aitripplanner.co",
+    "subscriptionId": "9fe3951c-d440-4d09-91f1-cb47e02f04c3",
+    "tenantId": "73dae932-6537-41dd-a995-a2f0254cd9e2",
     "currency": "INR",
     "actionGroupResourceGroup": "rg-tripplanner-data",
     "actionGroupName": "tripplanner-budget-alerts",

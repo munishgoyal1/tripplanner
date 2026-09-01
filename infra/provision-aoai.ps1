@@ -61,9 +61,9 @@ if ([string]::IsNullOrWhiteSpace($ResourceGroup)) {
 
 if ([string]::IsNullOrWhiteSpace($AccountName)) {
     $AccountName = switch ($Environment) {
-        "local" { "aoailocalmd1ks" }
-        "canary" { "aoaicanarymd1ks" }
-        "prod" { "aoaiprodmd1ks" }
+        "local" { "aoailocaltp9fe3951c" }
+        "canary" { "aoaicanarytp9fe3951c" }
+        "prod" { "aoaiprodtp9fe3951c" }
     }
 }
 

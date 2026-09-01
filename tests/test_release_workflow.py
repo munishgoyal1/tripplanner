@@ -217,8 +217,8 @@ def test_azure_services_control_is_scoped_reversible_and_enable_is_approval_gate
 
     assert "APPROVE_AZURE_DISABLE" not in control
     assert "APPROVE_AZURE_SPEND" in control
-    assert "munishgoyal1@gmail.com" in control
-    assert "Visual Studio Enterprise Subscription" in control
+    assert "$config.azure.operatorAccount" in control
+    assert "$account.id -ne $script:SubscriptionId" in control
     assert "config.azure.environments" in control
     assert '[ValidateSet("all", "local", "canary", "prod")]' in control
     assert '$Environment -eq "all" -or $_.name -eq $Environment' in control
@@ -261,7 +261,18 @@ def test_hosted_deployments_use_shared_azure_json_and_delete_guards() -> None:
         assert '. "$PSScriptRoot/deployment-common.ps1"' in script
         assert "ConvertFrom-AzureCliJson" in script
         assert "Assert-DeploymentHasNoDeletes" in script
+        assert '[string]$SubscriptionId = "9fe3951c-d440-4d09-91f1-cb47e02f04c3"' in script
+        assert '[string]$CosmosAccountName = "tripplanner-data-9fe3951c"' in script
+        assert "([uri]$env:AZURE_OPENAI_ENDPOINT).Host.Split('.')[0]" in script
+        assert "Get-AzureOpenAiResourceGroup" in script
+        assert "--resource-group $azureOpenAiResourceGroup" in script
     assert "function ConvertFrom-AzureCliJson" in common
+    assert "function Get-AzureOpenAiResourceGroup" in common
+
+    prod_params = (root / "infra" / "prod.bicepparam").read_text(encoding="utf-8")
+    assert "param apexManagedCertificateName = 'tripplanner-prod-apex-target'" in prod_params
+    assert "param wwwManagedCertificateName = 'tripplanner-prod-www-target'" in prod_params
+    assert "param failureAlertEmail = 'munishgoyal@aitripplanner.co'" in prod_params
 
 
 def test_azure_openai_provisioning_defaults_match_deployment_accounts() -> None:
@@ -269,8 +280,8 @@ def test_azure_openai_provisioning_defaults_match_deployment_accounts() -> None:
         Path(__file__).parents[1] / "infra" / "provision-aoai.ps1"
     ).read_text(encoding="utf-8")
 
-    assert '"aoaiprodmd1ks"' in script
-    assert '"aoaicanarymd1ks"' in script
+    assert '"aoaiprodtp9fe3951c"' in script
+    assert '"aoaicanarytp9fe3951c"' in script
     assert "aoaiprodtripplanner" not in script
     assert "aoaicanarytripplanner" not in script
 
@@ -296,6 +307,10 @@ def test_production_cache_sync_defaults_to_approval_gated_two_way_merge() -> Non
     credential = script.index("$env:TRIPPLANNER_PROD_COSMOS_KEY = az cosmosdb keys list")
 
     assert '[string]$Direction = "Both"' in script
+    assert '[string]$SubscriptionId = "9fe3951c-d440-4d09-91f1-cb47e02f04c3"' in script
+    assert '[string]$CosmosAccountName = "tripplanner-data-9fe3951c"' in script
+    assert "munishgoyal@aitripplanner.co" in script
+    assert "$account.id -ne $SubscriptionId" in script
     assert '$writesProduction = $Direction -in @("Push", "Both") -and -not $WhatIf' in script
     assert approval_gate < credential
     assert '$apply = $Direction -ne "Status" -and -not $WhatIf' in script

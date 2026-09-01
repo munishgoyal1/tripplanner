@@ -19,15 +19,15 @@ param(
     [string]$ImageTag = "",
     [switch]$Build = $false,
     [switch]$DryRun = $false,
-    [string]$SubscriptionId = "",
+    [string]$SubscriptionId = "9fe3951c-d440-4d09-91f1-cb47e02f04c3",
     [string]$ResourceGroup = "rg-tripplanner-prod",
     [string]$NamePrefix = "prod",
     [string]$Location = "eastus2",
     [string]$BicepFile = "infra/main.bicep",
     [string]$BicepParams = "infra/prod.bicepparam",
     [string]$CosmosResourceGroup = "rg-tripplanner-data",
-    [string]$CosmosAccountName = "",
-    [string]$AzureOpenAIAccountName = "aoaiprodmd1ks",
+    [string]$CosmosAccountName = "tripplanner-data-9fe3951c",
+    [string]$AzureOpenAIAccountName = "",
     [string]$OAuthRedirectBase = "",
     [string]$CanaryResourceGroup = "rg-tripplanner-canary",
     [string]$CanaryNamePrefix = "canary",
@@ -163,6 +163,9 @@ if ($canaryImageMatches) {
 
 Import-DeploymentEnvironment -Path $ConfigFile
 Import-DeploymentEnvironment -Path $EnvFile
+if ([string]::IsNullOrWhiteSpace($AzureOpenAIAccountName)) {
+    $AzureOpenAIAccountName = ([uri]$env:AZURE_OPENAI_ENDPOINT).Host.Split('.')[0]
+}
 if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
     $OAuthRedirectBase = $env:OAUTH_REDIRECT_BASE
 }
@@ -258,13 +261,16 @@ if ($DryRun -and -not $resourceGroupExists) {
 if (-not $resourceGroupExists) {
     az group create --name $prodRG --location $Location -o none
 }
+$azureOpenAiResourceGroup = Get-AzureOpenAiResourceGroup `
+    -AccountName $AzureOpenAIAccountName `
+    -SubscriptionId $SubscriptionId
 $azureOpenAiApiKey = az cognitiveservices account keys list `
-    --resource-group $prodRG `
+    --resource-group $azureOpenAiResourceGroup `
     --name $AzureOpenAIAccountName `
     --query key1 `
     --output tsv
 if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($azureOpenAiApiKey)) {
-    throw "Could not read the API key for Azure OpenAI account $AzureOpenAIAccountName in $prodRG."
+    throw "Could not read the API key for Azure OpenAI account $AzureOpenAIAccountName in $azureOpenAiResourceGroup."
 }
 $env:AZURE_OPENAI_API_KEY = $azureOpenAiApiKey
 if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
