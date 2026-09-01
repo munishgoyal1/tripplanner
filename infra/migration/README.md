@@ -26,7 +26,10 @@ rerunning resumes checkpoints instead of rebuilding successful phases. Set
 `TRIPPLANNER_MIGRATION_CONFIG` only to use a different Azure manifest. For the
 combined command, set `TRIPPLANNER_SOURCE_GCLOUD_CONFIGURATION` and
 `TRIPPLANNER_TARGET_GCLOUD_CONFIGURATION`, pass the corresponding parameters, or
-keep the non-secret configuration names in the Google manifest current.
+keep the non-secret configuration names in the Google manifest current. Set
+`google.enabled` in the Azure manifest to `true` for a future combined Google
+move. It is `false` in the current manifest because the present Google migration
+has already completed and its source credential was retired.
 
 These commands do not switch production DNS, delete source resources, remove the
 old Google principal, or close billing accounts. Those operations remain separate

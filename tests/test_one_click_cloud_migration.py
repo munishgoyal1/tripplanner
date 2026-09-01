@@ -24,6 +24,7 @@ def test_one_click_operations_compose_existing_guarded_phases() -> None:
     assert "-Resume" in script
     assert "googleManifest.source.gcloudConfiguration" in script
     assert "googleManifest.target.gcloudConfiguration" in script
+    assert "$migrateGoogle = -not $SkipGoogle -and [bool]$config.google.enabled" in script
     assert "APPROVE_SOURCE_RETIREMENT" not in script
     assert "RETIRE_OLD_GOOGLE_ACCOUNT" not in script
 
@@ -52,6 +53,7 @@ def test_checked_in_manifest_has_exact_current_target_without_secrets() -> None:
     )
     assert manifest["azure"]["cosmosDatabases"] == ["tripplanner-canary", "tripplanner-prod"]
     assert manifest["azure"]["deleteSourceResourceGroupsOnRetire"] is False
+    assert manifest["google"]["enabled"] is False
     serialized = json.dumps(manifest).lower()
     for credential_field in ('"apikey"', '"clientsecret"', '"connectionstring"', '"token"'):
         assert credential_field not in serialized
