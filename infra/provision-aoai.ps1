@@ -15,7 +15,7 @@
 #>
 
 param(
-    [ValidateSet("canary", "prod")]
+    [ValidateSet("local", "canary", "prod")]
     [string]$Environment,
     [string]$SubscriptionId = "",
     [string]$ResourceGroup = "",
@@ -36,15 +36,23 @@ if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($ResourceGroup)) {
-    $ResourceGroup = if ($Environment -eq "prod") { "rg-tripplanner-prod" } else { "rg-tripplanner-canary" }
+    $ResourceGroup = "rg-tripplanner-$Environment"
 }
 
 if ([string]::IsNullOrWhiteSpace($AccountName)) {
-    $AccountName = if ($Environment -eq "prod") { "aoaiprodmd1ks" } else { "aoaicanarymd1ks" }
+    $AccountName = switch ($Environment) {
+        "local" { "aoailocalmd1ks" }
+        "canary" { "aoaicanarymd1ks" }
+        "prod" { "aoaiprodmd1ks" }
+    }
 }
 
 if ([string]::IsNullOrWhiteSpace($DeploymentName)) {
-    $DeploymentName = if ($Environment -eq "prod") { "gpt-4-1-global" } else { "gpt-4-1-canary" }
+    $DeploymentName = switch ($Environment) {
+        "local" { "gpt-4-1-local" }
+        "canary" { "gpt-4-1-canary" }
+        "prod" { "gpt-4-1-global" }
+    }
 }
 
 Write-Host "\nPreparing Azure OpenAI for environment: $Environment"

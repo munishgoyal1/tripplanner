@@ -140,9 +140,12 @@ switch ($Phase) {
         Assert-SourceScopeComplete
         Assert-ConfiguredValue "azure.imageTag" $azure.imageTag
         Assert-ConfiguredValue "azure.target.cosmosAccount" $target.cosmosAccount
-        foreach ($environment in @("canary", "prod")) {
-            $secretFile = Join-Path $repoRoot ([string]$azure.sourceSecretFiles.$environment)
-            if (-not (Test-Path $secretFile)) { throw "Required secret overlay not found: $secretFile" }
+        Assert-ConfiguredValue "azure.target.localRedisName" $target.localRedisName
+        foreach ($environment in @("local", "canary", "prod")) {
+            if ($environment -ne "local") {
+                $secretFile = Join-Path $repoRoot ([string]$azure.sourceSecretFiles.$environment)
+                if (-not (Test-Path $secretFile)) { throw "Required secret overlay not found: $secretFile" }
+            }
             Assert-ConfiguredValue "azure.target.hosted.$environment.openAiAccount" $target.hosted.$environment.openAiAccount
             Assert-ConfiguredValue "azure.target.hosted.$environment.openAiDeployment" $target.hosted.$environment.openAiDeployment
         }
@@ -212,9 +215,10 @@ switch ($Phase) {
             Invoke-CheckedCommand "az" @(
                 "deployment", "sub", "create", "--subscription", $target.subscriptionId,
                 "--location", $target.location, "--template-file", (Join-Path $repoRoot "infra/local-stack.bicep"),
-                "--parameters", "localResourceGroupName=rg-tripplanner-local", "--output", "none"
+                "--parameters", "localResourceGroupName=rg-tripplanner-local",
+                "redisName=$($target.localRedisName)", "--output", "none"
             ) "deploy target local Redis"
-            foreach ($environment in @("canary", "prod")) {
+            foreach ($environment in @("local", "canary", "prod")) {
                 $hosted = $target.hosted.$environment
                 & (Join-Path $repoRoot "infra/provision-aoai.ps1") -Environment $environment `
                     -SubscriptionId $target.subscriptionId -ResourceGroup "rg-tripplanner-$environment" `

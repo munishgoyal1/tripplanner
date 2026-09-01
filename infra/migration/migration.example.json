@@ -22,10 +22,17 @@
       "location": "eastus2",
       "cosmosResourceGroup": "rg-tripplanner-data",
       "cosmosAccount": "<globally-unique-target-cosmos-name>",
+      "localRedisName": "<globally-unique-target-redis-name>",
       "failureAlertEmail": "munishgoyal@aitripplanner.co",
       "apexManagedCertificateName": "tripplanner-prod-apex-target",
       "wwwManagedCertificateName": "tripplanner-prod-www-target",
       "hosted": {
+        "local": {
+          "openAiAccount": "<globally-unique-target-local-openai-name>",
+          "openAiDeployment": "gpt-4-1-local",
+          "openAiSku": "GlobalStandard",
+          "openAiCapacity": 30
+        },
         "canary": {
           "openAiAccount": "<globally-unique-target-canary-openai-name>",
           "openAiDeployment": "gpt-4-1-canary",
