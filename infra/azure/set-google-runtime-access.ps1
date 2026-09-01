@@ -62,12 +62,13 @@ if (-not (Get-Command gcloud -ErrorAction SilentlyContinue)) {
     throw "gcloud is not on PATH."
 }
 
+$config = Get-Content $configPath -Raw | ConvertFrom-Json
 $gcloudAccounts = @(& gcloud auth list --filter="status:ACTIVE" --format="value(account)")
 if ($LASTEXITCODE -ne 0 -or $gcloudAccounts.Count -ne 1) {
     throw "Could not resolve exactly one active gcloud account."
 }
-if ($gcloudAccounts[0] -ine "munishgoyal1@gmail.com") {
-    throw "Refusing Google Cloud access as '$($gcloudAccounts[0])'. Sign in with munishgoyal1@gmail.com."
+if ($gcloudAccounts[0] -ine $config.gcp.operatorAccount) {
+    throw "Refusing Google Cloud access as '$($gcloudAccounts[0])'. Sign in with $($config.gcp.operatorAccount)."
 }
 
 function Invoke-AzJson {
@@ -126,7 +127,6 @@ function Assert-GoogleApprovals {
     }
 }
 
-$config = Get-Content $configPath -Raw | ConvertFrom-Json
 $account = Invoke-AzJson @("account", "show", "--query", "{id:id,name:name,user:user.name}")
 if ($account.user -ine "munishgoyal1@gmail.com") {
     throw "Refusing Azure access as '$($account.user)'. Sign in with munishgoyal1@gmail.com."

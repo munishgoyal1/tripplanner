@@ -64,7 +64,7 @@
     "deleteSourceResourceGroupsOnRetire": true
   },
   "google": {
-    "enabled": true,
+    "enabled": false,
     "source": {
       "account": "<current-google-account>",
       "billingAccount": "01AD51-0D422D-41459D"

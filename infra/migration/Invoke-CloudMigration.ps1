@@ -19,6 +19,9 @@ $config = Read-MigrationConfig -Path $ConfigPath
 if ($config.schemaVersion -ne 1) {
     throw "Unsupported migration config schemaVersion '$($config.schemaVersion)'."
 }
+if ($Cloud -eq "google" -or ($Cloud -eq "all" -and [bool]$config.google.enabled)) {
+    throw "Google migration uses infra/migration/google/migrate-google-account.ps1 and its dedicated approvals. Set google.enabled=false for Azure orchestration."
+}
 if ($RunId -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]*$') {
     throw "RunId may contain only letters, numbers, dot, underscore, and hyphen."
 }
@@ -31,7 +34,7 @@ $phases = if ($Phase -eq "all") {
 } else {
     @($Phase)
 }
-$clouds = if ($Cloud -eq "all") { @("azure", "google") } else { @($Cloud) }
+$clouds = if ($Cloud -eq "all") { @("azure") } else { @($Cloud) }
 
 foreach ($selectedPhase in $phases) {
     foreach ($selectedCloud in $clouds) {
