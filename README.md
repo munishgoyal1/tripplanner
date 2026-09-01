@@ -439,7 +439,8 @@ tripplanner/
 │       └── user_preferences.py   # Sparse/explicit preference merge + replayable mutations
 │
 ├── tests/
-│   └── test_trip.py              # Preferences, planner, helpers, Cosmos dispatch
+│   ├── test_trip_*.py            # Ownership-split trip persistence, plan, provider, Cosmos, and saved-trip tests
+│   └── test_trip_view_*.py       # Summary, itinerary, map, journey, place, and verification projections
 │
 └── ~/.tripplanner/                # User data when running locally
     ├── user_preferences.json     # Preferences & past trip history
