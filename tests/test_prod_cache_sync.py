@@ -240,6 +240,40 @@ def test_write_verification_rejects_meaningful_float_change():
         _verify_write(Container(), planned)
 
 
+def test_successful_write_verifies_response_without_a_stale_point_read():
+    planned = PlannedWrite(
+        container="places_cache",
+        partition="_shared",
+        item_id="p1",
+        body={"entry": {"name": "new", "__at__": 20}, "ttl": -1},
+        etag="old-etag",
+    )
+
+    class Container:
+        def replace_item(self, **kwargs):
+            kwargs["response_hook"]({"x-ms-request-charge": "2"}, None)
+            return {
+                "id": "p1",
+                "user_id": "_shared",
+                "entry": {"name": "new", "__at__": 20},
+                "ttl": -1,
+                "_etag": "new-etag",
+            }
+
+        def read_item(self, **_kwargs):
+            raise AssertionError("an acknowledged write must not be verified by point-read")
+
+    action, retries = cache_sync._write_and_verify(
+        lambda _refresh: Container(),
+        planned,
+        ActivityMetrics(),
+        ActivityMetrics(),
+    )
+
+    assert action == "replaced"
+    assert retries == 0
+
+
 def _sync_args(tmp_path, checkpoint):
     config = tmp_path / "cache.env"
     config.write_text(
@@ -316,6 +350,10 @@ def _stub_incremental_scan(monkeypatch, expected_watermark=100):
     monkeypatch.setattr(cache_sync, "_changed_snapshot", changed_snapshot)
 
 
+def _written_body(planned):
+    return {**planned.body, "id": planned.item_id, "user_id": planned.partition}
+
+
 def test_partial_failure_keeps_checkpoint_and_reports_completed_delta(
     tmp_path, monkeypatch
 ):
@@ -335,7 +373,7 @@ def test_partial_failure_keeps_checkpoint_and_reports_completed_delta(
         metrics.add_payload(planned.body)
         if calls == 2:
             raise RuntimeError("interrupted")
-        return "inserted", metrics
+        return "inserted", metrics, _written_body(planned)
 
     def verify(_container, _planned, metrics):
         metrics.requests += 1
@@ -358,7 +396,7 @@ def test_partial_failure_keeps_checkpoint_and_reports_completed_delta(
         "failed",
     ]
     assert activity["write_metrics"]["request_units"] == 4
-    assert activity["verification_metrics"]["request_units"] == 1
+    assert activity["verification_metrics"]["request_units"] == 0
 
 
 def test_transient_write_timeout_is_reconciled_before_retry(tmp_path, monkeypatch):
@@ -375,7 +413,7 @@ def test_transient_write_timeout_is_reconciled_before_retry(tmp_path, monkeypatc
         metrics.add_payload(planned.body)
         if planned.item_id == "p1":
             raise ServiceResponseTimeoutError("local emulator response timed out")
-        return "inserted", metrics
+        return "inserted", metrics, _written_body(planned)
 
     def verify_committed_write(_container, _planned, metrics):
         metrics.requests += 1
@@ -413,7 +451,7 @@ def test_transient_timeout_refreshes_poisoned_target_session(monkeypatch):
         metrics.requests += 1
         if container is poisoned:
             raise ServiceResponseTimeoutError("poisoned session")
-        return "inserted", metrics
+        return "inserted", metrics, _written_body(_planned)
 
     def verify(container, _planned, metrics):
         nonlocal verifications
@@ -443,7 +481,7 @@ def test_transient_timeout_refreshes_poisoned_target_session(monkeypatch):
 
     assert action == "inserted"
     assert retries == 1
-    assert verifications == 2
+    assert verifications == 1
     assert refreshes[:2] == [False, True]
 
 
@@ -457,7 +495,7 @@ def test_successful_incremental_run_advances_checkpoint(tmp_path, monkeypatch):
     def write(_container, planned, metrics):
         metrics.requests += 1
         metrics.add_payload(planned.body)
-        return "inserted", metrics
+        return "inserted", metrics, _written_body(planned)
 
     monkeypatch.setattr(cache_sync, "_write", write)
     monkeypatch.setattr(

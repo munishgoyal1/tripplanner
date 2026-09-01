@@ -484,22 +484,30 @@ def _write(
     container: Any,
     planned: PlannedWrite,
     metrics: ActivityMetrics | None = None,
-) -> tuple[str, ActivityMetrics]:
+) -> tuple[str, ActivityMetrics, dict[str, Any]]:
     body = {**planned.body, "id": planned.item_id, "user_id": planned.partition}
     metrics = metrics or ActivityMetrics()
     metrics.add_payload(body)
     if planned.etag:
-        container.replace_item(
+        written = container.replace_item(
             item=planned.item_id,
             body=body,
             etag=planned.etag,
             match_condition=MatchConditions.IfNotModified,
             response_hook=metrics.response_hook,
         )
-        return "replaced", metrics
+        return "replaced", metrics, dict(written)
     else:
-        container.create_item(body=body, response_hook=metrics.response_hook)
-        return "inserted", metrics
+        written = container.create_item(body=body, response_hook=metrics.response_hook)
+        return "inserted", metrics, dict(written)
+
+
+def _assert_verified_body(actual: dict[str, Any], planned: PlannedWrite) -> None:
+    expected = {**planned.body, "id": planned.item_id, "user_id": planned.partition}
+    if not _equivalent(expected, actual):
+        raise RuntimeError(
+            f"Verification failed for {planned.container}/{planned.partition}/{planned.item_id}"
+        )
 
 
 def _verify_write(
@@ -514,11 +522,7 @@ def _verify_write(
         response_hook=metrics.response_hook,
     )
     metrics.add_payload(actual)
-    expected = {**planned.body, "id": planned.item_id, "user_id": planned.partition}
-    if not _equivalent(expected, dict(actual)):
-        raise RuntimeError(
-            f"Verification failed for {planned.container}/{planned.partition}/{planned.item_id}"
-        )
+    _assert_verified_body(dict(actual), planned)
     return metrics
 
 
@@ -568,7 +572,7 @@ def _write_and_verify(
     container = get_container(False)
     for attempt in range(1, MAX_TRANSIENT_ATTEMPTS + 1):
         try:
-            action, _ = _write(container, planned, write_metrics)
+            action, _, written = _write(container, planned, write_metrics)
         except Exception as error:  # noqa: BLE001 - reconcile ambiguous writes safely
             if not _is_transient(error):
                 raise
@@ -588,12 +592,8 @@ def _write_and_verify(
             _retry_delay(attempt)
             continue
 
-        _, verification_retries = _verify_with_retry(
-            get_container,
-            planned,
-            verification_metrics,
-        )
-        return action, retries + verification_retries
+        _assert_verified_body(written, planned)
+        return action, retries
     raise AssertionError("unreachable")
 
 

@@ -1589,3 +1589,13 @@ the outcome.
   reconciling or retrying a transient failure. Content verification and ETag conditions
   still decide whether the operation committed; session replacement only restores a
   usable transport.
+
+## 2026-09-01 - Verify Acknowledged Writes From Their Responses
+
+- A second point-read after every successful conditional write doubles request volume
+  and can observe stale or concurrently replaced content even though Cosmos already
+  returned the committed resource. One bootstrap verified 1,145 rows before this race
+  falsely failed a normal replace.
+- Validate the resource body returned by a successful create or replace. Reserve a
+  separate point-read for timeout and transport failures where no authoritative write
+  response exists; that is the case that genuinely needs reconciliation.
