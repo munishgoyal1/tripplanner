@@ -27,6 +27,16 @@ type cacheTtlSettingsType = {
   activityFare: int
 }
 
+type operationalAlertType = {
+  name: string
+  displayName: string
+  description: string
+  signal: string
+  severity: int
+  windowSize: string
+  query: string
+}
+
 @description('Prefix used for all resource names. Keep short.')
 param namePrefix string = 'tripplanner'
 
@@ -212,6 +222,44 @@ var envName = '${namePrefix}-env-${suffix}'
 var appName = '${namePrefix}-app-${suffix}'
 var publicDemoJobName = '${namePrefix}-demo-refresh-${take(suffix, 8)}'
 var failureAlertQuery = loadTextContent('queries/application-failures.kql')
+var operationalAlerts operationalAlertType[] = [
+  {
+    name: 'chat-latency-burn'
+    displayName: 'Tripplanner chat latency burn'
+    description: 'Alerts when at least five chat operations have a p95 above 120 seconds.'
+    signal: 'chat_latency_burn'
+    severity: 1
+    windowSize: 'PT15M'
+    query: loadTextContent('queries/chat-latency-burn.kql')
+  }
+  {
+    name: 'model-throttling'
+    displayName: 'Tripplanner model throttling'
+    description: 'Alerts when model throttling is repeated and exceeds 20 percent of chat operations.'
+    signal: 'model_throttling'
+    severity: 1
+    windowSize: 'PT15M'
+    query: loadTextContent('queries/model-throttling.kql')
+  }
+  {
+    name: 'provider-circuit-open'
+    displayName: 'Tripplanner provider circuit open'
+    description: 'Alerts when one provider circuit remains observably open for at least five minutes.'
+    signal: 'provider_circuit_open'
+    severity: 2
+    windowSize: 'PT15M'
+    query: loadTextContent('queries/provider-circuit-open.kql')
+  }
+  {
+    name: 'cache-degradation'
+    displayName: 'Tripplanner cache degradation'
+    description: 'Alerts when at least twenty cache accesses have a miss rate of 50 percent or more.'
+    signal: 'cache_degradation'
+    severity: 2
+    windowSize: 'PT15M'
+    query: loadTextContent('queries/cache-degradation.kql')
+  }
+]
 
 // OAuth secrets are only attached when a value is supplied. Container Apps
 // rejects empty-string secret values, so we conditionally build the secrets
@@ -387,9 +435,94 @@ resource failureAlert 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = if (
   }
 }
 
+resource operationalAlertRules 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = [for alert in operationalAlerts: if (enableFailureAlerts) {
+  name: '${namePrefix}-${alert.name}'
+  location: location
+  kind: 'LogAlert'
+  properties: {
+    displayName: alert.displayName
+    description: alert.description
+    severity: alert.severity
+    enabled: true
+    evaluationFrequency: 'PT5M'
+    windowSize: alert.windowSize
+    scopes: [logs.id]
+    targetResourceTypes: ['Microsoft.OperationalInsights/workspaces']
+    autoMitigate: true
+    skipQueryValidation: false
+    criteria: {
+      allOf: [
+        {
+          query: alert.query
+          timeAggregation: 'Count'
+          operator: 'GreaterThan'
+          threshold: 0
+          failingPeriods: {
+            numberOfEvaluationPeriods: 1
+            minFailingPeriodsToAlert: 1
+          }
+        }
+      ]
+    }
+    actions: {
+      actionGroups: [failureAlertActions.id]
+      customProperties: {
+        environment: namePrefix
+        signal: alert.signal
+      }
+    }
+  }
+}]
+
 resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' existing = {
   scope: resourceGroup(cosmosResourceGroupName)
   name: cosmosAccountName
+}
+
+resource cosmosThrottlingAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = if (enableFailureAlerts) {
+  name: '${namePrefix}-cosmos-throttling'
+  location: 'global'
+  properties: {
+    description: 'Alerts when Cosmos DB returns at least five throttled requests in five minutes.'
+    severity: 1
+    enabled: true
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT5M'
+    scopes: [cosmos.id]
+    targetResourceType: 'Microsoft.DocumentDB/databaseAccounts'
+    targetResourceRegion: location
+    autoMitigate: true
+    criteria: {
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      allOf: [
+        {
+          name: 'CosmosHttp429Responses'
+          criterionType: 'StaticThresholdCriterion'
+          metricName: 'TotalRequests'
+          metricNamespace: 'Microsoft.DocumentDB/databaseAccounts'
+          dimensions: [
+            {
+              name: 'StatusCode'
+              operator: 'Include'
+              values: ['429']
+            }
+          ]
+          operator: 'GreaterThanOrEqual'
+          threshold: 5
+          timeAggregation: 'Count'
+        }
+      ]
+    }
+    actions: [
+      {
+        actionGroupId: failureAlertActions.id
+        webHookProperties: {
+          environment: namePrefix
+          signal: 'cosmos_throttling'
+        }
+      }
+    ]
+  }
 }
 
 resource env 'Microsoft.App/managedEnvironments@2024-03-01' = {

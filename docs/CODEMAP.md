@@ -77,6 +77,7 @@ trip through shared API contracts.
 | `src/tripplanner/web/place_country.py` | Resolves a free-text place to its country via Open-Meteo geocoding, cached per string |
 | `src/tripplanner/web/document_extract.py` | Single-pass field extraction from a photo or pasted text; keeps nothing |
 | `src/tripplanner/web/external_operations.py` | Idempotency ledger for outbound provider writes |
+| `src/tripplanner/web/itinerary_email.py` | Itinerary email composition handoff, ACS/SMTP delivery, provider usage telemetry, mail-client fallback, and durable idempotency orchestration; `api.py` retains identity and HTTP adaptation |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
 | `src/tripplanner/storage_cosmos.py` | Cosmos implementation and conditional replacement |
 | `src/tripplanner/secondary_cache.py`, `cache_merge.py` | Optional cache-only Cosmos client and shared timestamp-aware merge policy; fixed Places/global-tool partitions, fail-open reads, asynchronous tool writes, and ETag retries |
@@ -86,7 +87,7 @@ trip through shared API contracts.
 | `src/tripplanner/observability.py` | Structured events and request diagnostics |
 | `src/tripplanner/debug_store.py` | Internal implementation of the Trip Flight Recorder: automatic local-only history of real trip revisions for investigation and emulator restore; never active in hosted mode |
 | `src/tripplanner/validation/` | Trip Quality Audit implementation: Trip Quality Corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, comparable-run summaries (brief 004), and durable provenance aliases used by local inspection links |
-| `src/tripplanner/validation/harness/` | Correlated scenario execution and evidence capture; deterministic plan-eval namespace; unified measured usage, catalog-estimated cost, optional billing reconciliation, cache, amplification, performance, and quality reports. `tripplanner.evals` remains the compatibility API; policy gates consume reports but remain separate from measurement |
+| `src/tripplanner/validation/harness/`, `scripts/runtime_evidence_gate.py` | Correlated scenario execution and evidence capture; deterministic plan-eval namespace; unified measured usage, catalog-estimated cost, optional billing reconciliation, cache, amplification, performance, quality, model-round, throttle, retry-delay, and token reports. The hermetic comparison gate requires six representative scenarios, material round reduction, bounded p95 latency, no quality regression, and successful degradation before behavior-sensitive runtime policy changes. `tripplanner.evals` remains the compatibility API |
 | `src/tripplanner/validation/market_catalog.py`, `india_heuristic_matrix.py`, `india_outbound_matrix.py` | Deterministic weighted India-domestic and India-outbound corpus scenarios; exact dedupe, destination-aware durations, audience priors, and evidence posture from `docs/research/india-*-2026-08.md` |
 | `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, timed-operation, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
 | `src/tripplanner/provider_usage.py`, `usage_attribution.py`, `interaction_telemetry.py` | Content-free provider/model ledger and interaction timeline; one bounded hosted document per attributed interaction retains ordered allowlisted events, nested call detail, new-trip/update classification, and request, trip, audit, automation, and background attribution while measured calls/tokens stay distinct from versioned catalog cost estimates, cache savings, and unknown-price calls. Local development additionally writes one fail-open study artifact under `TRIPPLANNER_HOME/trip-telemetry/interactions/`; hosted environments never write it |
@@ -173,12 +174,13 @@ one physical cache backend.
 | --- | --- |
 | `frontend/src/publicEntry/Root.tsx`, `publicEntryState.ts` | The `/` public-entry route, `/planner` workspace route, legacy `/welcome` redirect, browser-history transitions, and page-independent account-controller mounting |
 | `frontend/src/publicEntry/publicDemoRuns.json`, `demoRun.ts` | Ten self-contained regional public-demo artifacts, deterministic mapping, whole-artifact API replacement, and display-currency presentation |
-| `frontend/src/App.tsx` | Web application composition; trip state, refresh, mutations, pane/resize state, and panel body ownership |
+| `frontend/src/App.tsx` | Web application composition; authoritative trip refresh, pane/resize state, and panel body ownership |
+| `frontend/src/hooks/useWorkspaceTripMutations.ts` | Serialized new/reset/add/remove coordination, conflict retry, duplicate-removal suppression, stale identity/epoch rejection, and authoritative mutation response application |
 | `frontend/src/components/ChatPanel.tsx` | Assistant transcript presentation, composer, trip-input UI, and transcript loading/cache coordination |
 | `frontend/src/hooks/useChatStream.ts` | Assistant SSE lifecycle, progress timing, cancellation, retry state, trip-input requests, and workspace turn-status publication |
 | `frontend/src/workspaceState.ts` | Canonical web trip revision, identity, and focus reducer |
 | `frontend/src/components/CanvasPaneFrame.tsx`, `DetailsPaneShell.tsx`, `AssistantModalShell.tsx` | Render-only desktop pane frames and controls |
-| `frontend/src/components/DesktopToolbar.tsx`, `MobileWorkspaceShell.tsx` | Render-only responsive workspace chrome |
+| `frontend/src/components/DesktopToolbar.tsx`, `MobileWorkspaceShell.tsx`, `AccessibleSheet.tsx` | Responsive workspace chrome plus reusable mobile dialog focus containment, Escape/backdrop dismissal, and focus restoration |
 | `frontend/src/components/TripFeedbackControl.tsx` | Toolbar thumbs, optional rating/comment popover, and sent-count presentation |
 | `frontend/src/lib/notices.ts` | Global notice channel: id-keyed upsert, tone priority, and success auto-expiry |
 | `frontend/src/components/StatusBar.tsx` | Render-only toolbar and mobile presentation of the single active notice |
@@ -188,7 +190,7 @@ one physical cache backend.
 | `frontend/src/components/TravelDocumentsVault.tsx` | Travel-document capture, review, reveal, and deletion. The trip surface only shows the gap badge |
 | `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
 | `frontend/src/components/MapPanel.tsx` | Google Maps instance lifecycle, UI state, Places interaction, focus coordination, and compatibility re-exports |
-| `frontend/src/components/map/` | Map icon generation, focus matching, day and dedicated-drive route derivation, Google-place candidate conversion, React-independent overlay synchronization, and viewport mutation |
+| `frontend/src/components/map/` | Google Maps SDK loading, map icon generation, focus matching, day and dedicated-drive route derivation, Google-place candidate conversion, React-independent overlay synchronization, and viewport mutation |
 | `frontend/src/components/ItineraryPanel.tsx`, `ItineraryStopRow.tsx` | Itinerary loading, mutation, day composition, and stop-row presentation ownership |
 | `frontend/src/components/` | Production UI components and pane interactions |
 | `frontend/src/components/map/placeIdentity.ts` | Conservative hotel identity shared by itinerary and map labels |

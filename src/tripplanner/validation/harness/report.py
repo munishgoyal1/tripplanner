@@ -8,6 +8,7 @@ from tripplanner.validation.harness.evaluators import (
     evaluate_amplification,
     evaluate_cache,
     evaluate_cost,
+    evaluate_model,
     evaluate_performance,
 )
 from tripplanner.validation.harness.evidence import HarnessEvidence
@@ -18,6 +19,7 @@ def build_report(
     *,
     quality: dict[str, Any] | None = None,
     billing: dict[str, Any] | None = None,
+    git_sha: str = "unknown",
 ) -> dict[str, Any]:
     """Build one report while preserving measured, estimated, and billed layers."""
     cost = evaluate_cost(evidence)
@@ -26,13 +28,15 @@ def build_report(
         "source": "cloud_billing_export",
     }
     return {
-        "version": 1,
+        "version": 2,
         "run": {
             "run_id": evidence.run_id,
             "scenario_id": evidence.scenario_id,
             "environment": evidence.environment,
+            "git_sha": git_sha,
         },
         "cost": cost,
+        "model": evaluate_model(evidence),
         "cache": evaluate_cache(evidence),
         "amplification": evaluate_amplification(evidence),
         "performance": evaluate_performance(evidence),

@@ -137,6 +137,39 @@ def test_infrastructure_enables_email_alerts_only_in_production() -> None:
     assert 'event_kind == "tool_call" and status == "error"' in query
 
 
+def test_infrastructure_alerts_on_runtime_degradation_with_volume_guards() -> None:
+    root = Path(__file__).parents[1]
+    template = (root / "infra" / "main.bicep").read_text(encoding="utf-8")
+    queries = {
+        name: (root / "infra" / "queries" / name).read_text(encoding="utf-8")
+        for name in (
+            "chat-latency-burn.kql",
+            "model-throttling.kql",
+            "provider-circuit-open.kql",
+            "cache-degradation.kql",
+        )
+    }
+
+    assert "resource operationalAlertRules" in template
+    assert "if (enableFailureAlerts)" in template
+    assert "actionGroups: [failureAlertActions.id]" in template
+    assert "resource cosmosThrottlingAlert" in template
+    assert "metricName: 'TotalRequests'" in template
+    assert "name: 'StatusCode'" in template
+    assert "values: ['429']" in template
+    assert "threshold: 5" in template
+    assert "Samples >= 5 and P95DurationMs > 120000" in queries[
+        "chat-latency-burn.kql"
+    ]
+    assert "Samples >= 5 and Throttles >= 2" in queries["model-throttling.kql"]
+    assert "OpenSignals >= 3 and LastSeen - FirstSeen >= 5m" in queries[
+        "provider-circuit-open.kql"
+    ]
+    assert "Accesses >= 20 and MissRate >= 0.5" in queries[
+        "cache-degradation.kql"
+    ]
+
+
 def test_infrastructure_wires_openrouteservice_from_environment_files() -> None:
     root = Path(__file__).parents[1]
     template = (root / "infra" / "main.bicep").read_text(encoding="utf-8")

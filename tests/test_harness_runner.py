@@ -7,7 +7,16 @@ from tripplanner.validation.harness import run_scenario
 from tripplanner.validation.harness.evals import scenario_by_id
 
 
-def test_runner_correlates_execution_and_writes_report(tmp_path) -> None:
+def test_runner_stamps_report_with_release_identity(monkeypatch) -> None:
+    monkeypatch.setenv("GIT_SHA", "release-123")
+
+    report = run_scenario("smoke", lambda: {})
+
+    assert report["run"]["git_sha"] == "release-123"
+
+
+def test_runner_correlates_execution_and_writes_report(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("GIT_SHA", "release-123")
     output = tmp_path / "reports" / "run.json"
 
     def execute() -> dict[str, str]:
@@ -26,6 +35,7 @@ def test_runner_correlates_execution_and_writes_report(tmp_path) -> None:
         "run_id": "run-1",
         "scenario_id": "smoke",
         "environment": "local",
+        "git_sha": "release-123",
     }
     assert report["amplification"]["outbound_requests"] == 1
     assert report["quality"]["passed"] is True

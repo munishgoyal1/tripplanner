@@ -38,8 +38,21 @@ def test_report_separates_measurement_estimate_and_billing() -> None:
         ],
     )
 
-    report = build_report(evidence)
+    report = build_report(evidence, git_sha="abc123")
 
+    assert report["version"] == 2
+    assert report["run"]["git_sha"] == "abc123"
+    assert report["model"] == {
+        "source": "runtime_llm_events",
+        "rounds": 1,
+        "successful_rounds": 1,
+        "errors": 0,
+        "throttled_rounds": 0,
+        "throttle_rate": 0.0,
+        "retry_delay_ms": 0,
+        "prompt_tokens": 1_000_000,
+        "completion_tokens": 100_000,
+    }
     assert report["cost"]["measured"]["prompt_tokens"] == 1_000_000
     assert report["cost"]["estimated"]["authoritative"] is False
     assert report["cost"]["billing_reconciliation"]["status"] == "not_available"

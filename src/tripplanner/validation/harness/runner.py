@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -13,6 +15,21 @@ from tripplanner.validation.harness.context import harness_scope
 from tripplanner.validation.harness.evals import EvalResult, EvalScenario, evaluate_plan
 from tripplanner.validation.harness.evidence import EvidenceCollector
 from tripplanner.validation.harness.report import build_report
+
+
+def _git_sha() -> str:
+    configured = os.getenv("GIT_SHA") or os.getenv("CONTAINER_APP_REVISION")
+    if configured:
+        return configured
+    try:
+        return subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
 
 
 def plan_quality(
@@ -62,7 +79,12 @@ def run_scenario(
                 result = execute()
 
     quality_result = quality(result) if quality else None
-    report = build_report(collector.evidence, quality=quality_result, billing=billing)
+    report = build_report(
+        collector.evidence,
+        quality=quality_result,
+        billing=billing,
+        git_sha=_git_sha(),
+    )
     if output_path is not None:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         payload = json.dumps(report, indent=2, sort_keys=True) + "\n"

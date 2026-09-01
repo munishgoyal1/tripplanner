@@ -1,0 +1,13 @@
+ContainerAppConsoleLogs_CL
+| extend event = parse_json(Log_s)
+| extend
+    event_kind = tostring(event.event_kind),
+    provider = tostring(event.provider),
+    status = tostring(event.status)
+| where event_kind == "outbound_call" and status == "circuit_open"
+| summarize
+    OpenSignals = count(),
+    FirstSeen = min(TimeGenerated),
+    LastSeen = max(TimeGenerated)
+    by provider
+| where OpenSignals >= 3 and LastSeen - FirstSeen >= 5m

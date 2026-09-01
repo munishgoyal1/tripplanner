@@ -71,6 +71,39 @@ def evaluate_cost(evidence: HarnessEvidence) -> dict[str, Any]:
     }
 
 
+def evaluate_model(evidence: HarnessEvidence) -> dict[str, Any]:
+    calls = _events(evidence, "llm_call")
+    errors = [
+        event
+        for event in calls
+        if event.fields.get("status") not in (None, "ok")
+    ]
+    throttled = [
+        event
+        for event in errors
+        if event.fields.get("status") == "throttled"
+        or "rate" in str(event.fields.get("error") or "").casefold()
+        or str(event.fields.get("http_status") or "") == "429"
+    ]
+    return {
+        "source": "runtime_llm_events",
+        "rounds": len(calls),
+        "successful_rounds": len(calls) - len(errors),
+        "errors": len(errors),
+        "throttled_rounds": len(throttled),
+        "throttle_rate": round(len(throttled) / len(calls), 4) if calls else 0.0,
+        "retry_delay_ms": sum(
+            int(event.fields.get("retry_after_ms") or 0) for event in throttled
+        ),
+        "prompt_tokens": sum(
+            int(event.fields.get("prompt_tokens") or 0) for event in calls
+        ),
+        "completion_tokens": sum(
+            int(event.fields.get("completion_tokens") or 0) for event in calls
+        ),
+    }
+
+
 def evaluate_cache(evidence: HarnessEvidence) -> dict[str, Any]:
     outcomes = Counter(
         str(event.fields.get("result") or "unknown")

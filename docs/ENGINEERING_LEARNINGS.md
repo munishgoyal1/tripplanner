@@ -1555,3 +1555,15 @@ the outcome.
 - Retrying a detached full-document save after a conflict can erase concurrent
   fields. Replay semantic mutation callbacks on fresh state; reject stale detached
   saves explicitly so callers refresh instead of overwriting newer revisions.
+
+## 2026-09-01 - Runtime Policy Changes Need Representative Evidence
+
+- A faster synthetic call is not evidence that an agent policy is better. Compare
+  the same representative scenario set and record release identity, model rounds,
+  latency, quality, throttles, retry delay, tokens, and degradation outcomes.
+- A policy gate must reject missing scenarios and missing baseline evidence instead
+  of treating absence as improvement. Require material round reduction while
+  independently bounding latency and quality regression.
+- Low-volume operational alerts need minimum sample or event guards. Ratios without
+  volume thresholds turn one slow request, throttle, or cache miss into noise rather
+  than an actionable production signal.

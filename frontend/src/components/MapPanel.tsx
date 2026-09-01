@@ -8,6 +8,7 @@ import { dismissNotice, notify } from "../lib/notices";
 import { filterMapView, type ItineraryFilter } from "../lib/itineraryFilters";
 import { focusedDayForPin, focusNameForPin, pinMatchesFocus } from "./map/focusMatching";
 import { mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
+import { loadGoogleMaps } from "./map/googleMapsLoader";
 import { clearMapOverlays, synchronizeMapOverlays } from "./map/overlaySync";
 import {
   capCircuitZoom,
@@ -51,42 +52,6 @@ export {
   syncPinMarkerFocus,
   zoomToPin,
 } from "./map/viewportSync";
-
-// Google Maps JS isn't typed (we don't ship @types/google.maps), so we lean on
-// `any` for the map objects. The browser key is referrer-restricted server-side.
-declare global {
-  interface Window {
-    google?: any;
-    __gmapsReady__?: () => void;
-  }
-}
-
-let loaderPromise: Promise<any> | null = null;
-
-function loadGoogleMaps(key: string, placesEnabled: boolean): Promise<any> {
-  if (window.google?.maps && (!placesEnabled || window.google.maps.places)) {
-    return Promise.resolve(window.google);
-  }
-  if (placesEnabled && window.google?.maps?.importLibrary) {
-    return window.google.maps.importLibrary("places").then(() => window.google);
-  }
-  if (loaderPromise) return loaderPromise;
-  loaderPromise = new Promise((resolve, reject) => {
-    window.__gmapsReady__ = () => resolve(window.google);
-    const s = document.createElement("script");
-    const libraries = placesEnabled ? "&libraries=places" : "";
-    s.src =
-      `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}` +
-      `&callback=__gmapsReady__${libraries}&loading=async&v=weekly`;
-    s.async = true;
-    s.onerror = () => {
-      loaderPromise = null;
-      reject(new Error("Failed to load Google Maps"));
-    };
-    document.head.appendChild(s);
-  });
-  return loaderPromise;
-}
 
 function isAirportTarget(pin: MapPin | MapAirport): pin is MapAirport {
   return pin.id === "airport";
