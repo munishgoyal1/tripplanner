@@ -3,11 +3,13 @@
   "schemaVersion": 1,
   "source": {
     "principal": "munishgoyal1@gmail.com",
+    "gcloudConfiguration": "tripplanner-source",
     "organization": "1350569291",
     "billingAccount": "01AD51-0D422D-41459D"
   },
   "target": {
     "principal": "munishgoyal@aitripplanner.co",
+    "gcloudConfiguration": "tripplanner-target",
     "organization": "718733505524",
     "billingAccount": "01CEBE-1C217F-A8F9D5",
     "alertEmail": "munishgoyal@aitripplanner.co"

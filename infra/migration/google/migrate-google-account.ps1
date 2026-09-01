@@ -15,7 +15,7 @@
 
 [CmdletBinding(SupportsShouldProcess)]
 param(
-    [ValidateSet("Plan", "Grant", "Cutover", "Verify", "Retire", "All")]
+    [ValidateSet("Plan", "Grant", "Cutover", "Verify", "Retire", "Migrate", "All")]
     [string]$Phase = "Plan",
     [string]$ManifestPath = "$PSScriptRoot/google-account-migration.json",
     [string]$GrantApproval = "",
@@ -403,6 +403,24 @@ switch ($Phase) {
     "Cutover" { Invoke-Cutover }
     "Verify" { Invoke-Verify }
     "Retire" { Invoke-Retire }
+    "Migrate" {
+        if ([string]::IsNullOrWhiteSpace($SourceGcloudConfiguration) -or
+            [string]::IsNullOrWhiteSpace($TargetGcloudConfiguration)) {
+            throw "Migrate requires -SourceGcloudConfiguration and -TargetGcloudConfiguration."
+        }
+        Assert-TargetConfigured -Manifest $manifest
+        if ($GrantApproval -cne "GRANT_GOOGLE_MIGRATION_CONTROL" -or
+            $CutoverApproval -cne "MOVE_ALL_GOOGLE_PROJECTS_AND_BILLING") {
+            throw "Migrate requires Grant and Cutover approvals."
+        }
+        Select-GcloudConfiguration `
+            -Name $SourceGcloudConfiguration -ExpectedPrincipal $manifest.source.principal
+        Invoke-Plan
+        Invoke-Grant
+        Select-GcloudConfiguration `
+            -Name $TargetGcloudConfiguration -ExpectedPrincipal $manifest.target.principal
+        Invoke-Cutover
+    }
     "All" {
         if ([string]::IsNullOrWhiteSpace($SourceGcloudConfiguration) -or
             [string]::IsNullOrWhiteSpace($TargetGcloudConfiguration)) {

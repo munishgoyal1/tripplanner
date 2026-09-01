@@ -5,13 +5,40 @@ and Google Cloud estate to new account and billing boundaries. Azure and Google
 have separate operational flows because Azure copies data into newly provisioned
 resources while Google moves existing projects in place.
 
+## One-click commands
+
+The checked-in `cloud-account-migration.json` and
+`google/google-account-migration.json` are the non-secret migration manifests.
+Update them for a later destination account; ignored `.env.canary` and `.env.prod`
+remain the only hosted secret inputs.
+
+Double-click the matching `.command` file on macOS or `.cmd` file on Windows:
+
+| Command | Deterministic operation |
+| --- | --- |
+| `Provision-All-Cloud-Infrastructure` | Preflight, inventory, and idempotent Azure target provisioning for local, canary, and production. Google projects move in place and need no duplicate infrastructure. |
+| `Copy-All-Cloud-Data` | Exact copy and verification of the allowlisted canary and production Cosmos databases. Google data remains inside its moved projects. |
+| `Migrate-To-New-Cloud-Accounts` | Provision, copy, verify Azure canary, then move and verify all source-billed Google projects using named gcloud configurations. |
+
+Each launcher asks for one operation-level confirmation and maps it to the existing
+narrow phase approvals. The target subscription ID determines a stable run ID, so
+rerunning resumes checkpoints instead of rebuilding successful phases. Set
+`TRIPPLANNER_MIGRATION_CONFIG` only to use a different Azure manifest. For the
+combined command, set `TRIPPLANNER_SOURCE_GCLOUD_CONFIGURATION` and
+`TRIPPLANNER_TARGET_GCLOUD_CONFIGURATION`, pass the corresponding parameters, or
+keep the non-secret configuration names in the Google manifest current.
+
+These commands do not switch production DNS, delete source resources, remove the
+old Google principal, or close billing accounts. Those operations remain separate
+because they are irreversible or depend on external account-level validation.
+
 ## Azure
 
 The shared `Invoke-CloudMigration.ps1` orchestrator currently owns Azure migration:
 inventory, target provisioning, exact Cosmos copy and verification, DNS cutover,
-and allowlisted source resource-group retirement. Copy `migration.example.json`
-to an ignored path such as `logs/migration/config.json`, fill every Azure target
-value, and keep `google.enabled` false.
+and allowlisted source resource-group retirement. Edit
+`cloud-account-migration.json` for the destination account and keep
+`google.enabled` false. `migration.example.json` remains the annotated template.
 
 `azure.cosmosDatabases` is the explicit data-copy allowlist. Keep it limited to
 `tripplanner-canary` and `tripplanner-prod`; local development uses the Cosmos

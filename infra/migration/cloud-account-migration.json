@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "azure": {
+    "enabled": true,
+    "source": {
+      "account": "munishgoyal1@gmail.com",
+      "tenantId": "d889d6d8-feaa-4837-937f-ddb9007ba8ef",
+      "subscriptionId": "2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b",
+      "resourceGroups": [
+        "rg-tripplanner-local",
+        "rg-tripplanner-data",
+        "rg-tripplanner-canary",
+        "rg-tripplanner-prod"
+      ],
+      "cosmosResourceGroup": "rg-tripplanner-data",
+      "cosmosAccount": "tripplanner-data-qftmtl5pavmcu"
+    },
+    "target": {
+      "account": "munishgoyal@aitripplanner.co",
+      "tenantId": "73dae932-6537-41dd-a995-a2f0254cd9e2",
+      "subscriptionId": "9fe3951c-d440-4d09-91f1-cb47e02f04c3",
+      "location": "eastus2",
+      "cosmosResourceGroup": "rg-tripplanner-data",
+      "cosmosAccount": "tripplanner-data-9fe3951c",
+      "failureAlertEmail": "munishgoyal@aitripplanner.co",
+      "apexManagedCertificateName": "tripplanner-prod-apex-target",
+      "wwwManagedCertificateName": "tripplanner-prod-www-target",
+      "hosted": {
+        "local": {
+          "openAiAccount": "aoailocaltp9fe3951c",
+          "openAiDeployment": "gpt-4-1-local",
+          "openAiSku": "Standard",
+          "openAiCapacity": 30
+        },
+        "canary": {
+          "openAiAccount": "aoaicanarytp9fe3951c",
+          "openAiDeployment": "gpt-4-1-canary",
+          "openAiSku": "Standard",
+          "openAiCapacity": 20
+        },
+        "prod": {
+          "openAiAccount": "aoaiprodtp9fe3951c",
+          "openAiDeployment": "gpt-4-1-global",
+          "openAiSku": "Standard",
+          "openAiCapacity": 50
+        }
+      },
+      "communications": {
+        "serviceName": "tripplanner-comm-9fe3951c",
+        "emailServiceName": "tripplanner-email-9fe3951c"
+      },
+      "resourceGroups": [
+        "rg-tripplanner-local",
+        "rg-tripplanner-data",
+        "rg-tripplanner-canary",
+        "rg-tripplanner-prod"
+      ]
+    },
+    "cosmosDatabases": [
+      "tripplanner-canary",
+      "tripplanner-prod"
+    ],
+    "imageTag": "e62f51d7",
+    "sourceSecretFiles": {
+      "canary": ".env.canary",
+      "prod": ".env.prod"
+    },
+    "dns": {
+      "apex": "aitripplanner.co",
+      "www": "www.aitripplanner.co",
+      "provider": "namecheap",
+      "cutoverHook": ""
+    },
+    "deleteSourceResourceGroupsOnRetire": false
+  },
+  "google": {
+    "enabled": false
+  }
+}
