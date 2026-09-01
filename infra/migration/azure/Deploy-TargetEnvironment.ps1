@@ -106,6 +106,7 @@ $whatIfArguments = @(
     "--resource-group", $resourceGroup, "--template-file", $templateFile,
     "--parameters", $parametersFile, "--parameters"
 ) + $overrides + @("--result-format", "ResourceIdOnly", "--output", "json")
+$whatIfArguments += "--no-pretty-print"
 $whatIfRaw = Invoke-CheckedCommand -Executable "az" -Capture -Description "preview target $Environment" -Arguments $whatIfArguments
 $whatIf = ConvertFrom-AzureCliJson -Output $whatIfRaw -Action "Target $Environment what-if"
 Assert-DeploymentHasNoDeletes -WhatIf $whatIf -EnvironmentName "Target $Environment"

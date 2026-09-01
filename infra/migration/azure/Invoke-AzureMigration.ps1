@@ -12,6 +12,7 @@ $ErrorActionPreference = "Stop"
 $migrationRoot = Split-Path -Parent $PSScriptRoot
 $repoRoot = Resolve-Path (Join-Path $migrationRoot "../..")
 . "$migrationRoot/common.ps1"
+. "$repoRoot/infra/deployment-common.ps1"
 
 $config = Read-MigrationConfig -Path $ConfigPath
 $azure = $config.azure
@@ -126,7 +127,11 @@ function Stop-SourceServing {
     foreach ($job in $jobs) {
         Invoke-CheckedCommand -Executable "az" -Description "make source job manual" -Arguments @(
             "resource", "update", "--ids", $job.id, "--api-version", "2025-01-01",
-            "--set", "properties.configuration.triggerType=Manual", "--output", "none"
+            "--remove", "properties.configuration.scheduleTriggerConfig",
+            "--set", "properties.configuration.triggerType=Manual",
+            "properties.configuration.manualTriggerConfig.parallelism=1",
+            "properties.configuration.manualTriggerConfig.replicaCompletionCount=1",
+            "--output", "none"
         )
         $executions = @(Get-AzureJson -Description "list running source job executions" -Arguments @(
             "containerapp", "job", "execution", "list", "--subscription", $source.subscriptionId,
@@ -154,6 +159,9 @@ switch ($Phase) {
         foreach ($environment in @("local", "canary", "prod")) {
             if ($environment -ne "local") {
                 $secretFile = Join-Path $repoRoot ([string]$azure.sourceSecretFiles.$environment)
+                if (-not (Test-Path $secretFile)) {
+                    $secretFile = Join-Path (Get-PrimaryRepoRoot) (Split-Path -Leaf $secretFile)
+                }
                 if (-not (Test-Path $secretFile)) { throw "Required secret overlay not found: $secretFile" }
             }
             Assert-ConfiguredValue "azure.target.hosted.$environment.openAiAccount" $target.hosted.$environment.openAiAccount
@@ -252,13 +260,25 @@ switch ($Phase) {
             foreach ($jobId in $prodJobs) {
                 Invoke-CheckedCommand "az" @(
                     "resource", "update", "--ids", $jobId, "--api-version", "2025-01-01",
-                    "--set", "properties.configuration.triggerType=Manual", "--output", "none"
+                    "--remove", "properties.configuration.scheduleTriggerConfig",
+                    "--set", "properties.configuration.triggerType=Manual",
+                    "properties.configuration.manualTriggerConfig.parallelism=1",
+                    "properties.configuration.manualTriggerConfig.replicaCompletionCount=1",
+                    "--output", "none"
                 ) "suspend target production job before cutover"
             }
-            Invoke-CheckedCommand "az" @(
-                "containerapp", "stop", "--subscription", $target.subscriptionId,
-                "--resource-group", $prod.resourceGroup, "--name", $prod.appName, "--output", "none"
-            ) "stop target production before data cutover"
+            $prodRevisions = @(Get-AzureJson -Description "list active target production revisions" -Arguments @(
+                "containerapp", "revision", "list", "--subscription", $target.subscriptionId,
+                "--resource-group", $prod.resourceGroup, "--name", $prod.appName,
+                "--query", "[?properties.active].name"
+            ))
+            foreach ($revision in $prodRevisions) {
+                Invoke-CheckedCommand "az" @(
+                    "containerapp", "revision", "deactivate", "--subscription", $target.subscriptionId,
+                    "--resource-group", $prod.resourceGroup, "--name", $prod.appName,
+                    "--revision", $revision, "--output", "none"
+                ) "deactivate target production revision before data cutover"
+            }
             $guardrails = Get-Content (Join-Path $repoRoot "infra/billing-guardrails.json") -Raw | ConvertFrom-Json
             $guardrails.alertEmail = $target.failureAlertEmail
             $guardrails.azure.subscriptionId = $target.subscriptionId

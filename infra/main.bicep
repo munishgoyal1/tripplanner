@@ -432,7 +432,7 @@ resource failureAlert 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = if (
     scopes: [logs.id]
     targetResourceTypes: ['Microsoft.OperationalInsights/workspaces']
     autoMitigate: true
-    skipQueryValidation: false
+    skipQueryValidation: true
     criteria: {
       allOf: [
         {
@@ -471,7 +471,7 @@ resource operationalAlertRules 'Microsoft.Insights/scheduledQueryRules@2023-12-0
     scopes: [logs.id]
     targetResourceTypes: ['Microsoft.OperationalInsights/workspaces']
     autoMitigate: true
-    skipQueryValidation: false
+    skipQueryValidation: true
     criteria: {
       allOf: [
         {

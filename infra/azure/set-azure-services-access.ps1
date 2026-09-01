@@ -43,6 +43,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $script:OriginalTriggerTag = "tripplannerControlOriginalTrigger"
+$script:OriginalCronTag = "tripplannerControlOriginalCron"
 $script:ContainerAppsApiVersion = "2025-01-01"
 $script:ResourceGroups = @()
 $script:AzureOpenAiFlag = "ENABLE_AZURE_OPENAI"
@@ -170,16 +171,27 @@ function Set-ContainerJobState {
     $details = Get-ResourceDetails -Resource $Resource
     $triggerType = [string]$details.properties.configuration.triggerType
     $originalTrigger = [string]$details.tags.$script:OriginalTriggerTag
+    $originalCron = [string]$details.tags.$script:OriginalCronTag
 
     if ($State -eq "Disabled" -and $triggerType -ne "Manual") {
-        Invoke-AzMutation -Target $Resource.name -Operation "remember its $triggerType trigger" -Arguments @(
+        $controlTags = @("$script:OriginalTriggerTag=$triggerType")
+        if ($triggerType -eq "Schedule") {
+            $cron = [string]$details.properties.configuration.scheduleTriggerConfig.cronExpression
+            if ([string]::IsNullOrWhiteSpace($cron)) {
+                throw "Scheduled job '$($Resource.name)' does not declare a cron expression."
+            }
+            $controlTags += "$script:OriginalCronTag=$cron"
+        }
+        Invoke-AzMutation -Target $Resource.name -Operation "remember its $triggerType trigger" -Arguments (@(
             "tag", "update", "--resource-id", $Resource.id, "--operation", "Merge",
-            "--tags", "$script:OriginalTriggerTag=$triggerType",
+            "--tags"
+        ) + $controlTags + @(
             "--subscription", $script:SubscriptionId
-        )
+        ))
         Invoke-AzMutation -Target $Resource.name -Operation "change its trigger to Manual" -Arguments @(
             "resource", "update", "--ids", $Resource.id,
             "--api-version", $script:ContainerAppsApiVersion,
+            "--remove", "properties.configuration.scheduleTriggerConfig",
             "--set", "properties.configuration.triggerType=Manual",
             "properties.configuration.manualTriggerConfig.parallelism=1",
             "properties.configuration.manualTriggerConfig.replicaCompletionCount=1",
@@ -188,12 +200,27 @@ function Set-ContainerJobState {
     }
 
     if ($State -eq "Enabled" -and -not [string]::IsNullOrWhiteSpace($originalTrigger)) {
-        Invoke-AzMutation -Target $Resource.name -Operation "restore its $originalTrigger trigger" -Arguments @(
+        $restoreArguments = @(
             "resource", "update", "--ids", $Resource.id,
             "--api-version", $script:ContainerAppsApiVersion,
-            "--set", "properties.configuration.triggerType=$originalTrigger",
+            "--remove", "properties.configuration.manualTriggerConfig",
+            "--set", "properties.configuration.triggerType=$originalTrigger"
+        )
+        if ($originalTrigger -eq "Schedule") {
+            if ([string]::IsNullOrWhiteSpace($originalCron)) {
+                throw "Cannot restore scheduled job '$($Resource.name)' because its saved cron expression is missing."
+            }
+            $restoreArguments += @(
+                "properties.configuration.scheduleTriggerConfig.cronExpression=$originalCron",
+                "properties.configuration.scheduleTriggerConfig.parallelism=1",
+                "properties.configuration.scheduleTriggerConfig.replicaCompletionCount=1"
+            )
+        }
+        $restoreArguments += @(
             "--subscription", $script:SubscriptionId
         )
+        Invoke-AzMutation -Target $Resource.name -Operation "restore its $originalTrigger trigger" `
+            -Arguments $restoreArguments
     }
 
     if ($State -eq "Disabled") {
@@ -283,15 +310,15 @@ if ($Action -eq "enable" -and $Approval -cne "APPROVE_AZURE_SPEND") {
 
 $containerApps = @(Get-ResourcesByType -ResourceType "Microsoft.App/containerApps")
 $containerJobs = @(Get-ResourcesByType -ResourceType "Microsoft.App/jobs")
-$openAiAccounts = if ($ServingOnly) { @() } else {
+$openAiAccounts = @(if (-not $ServingOnly) {
     @(Get-ResourcesByType -ResourceType "Microsoft.CognitiveServices/accounts")
-}
-$cosmosAccounts = if ($ServingOnly) { @() } else {
+})
+$cosmosAccounts = @(if (-not $ServingOnly) {
     @(Get-ResourcesByType -ResourceType "Microsoft.DocumentDB/databaseAccounts")
-}
-$redisClusters = if ($ServingOnly) { @() } else {
+})
+$redisClusters = @(if (-not $ServingOnly) {
     @(Get-ResourcesByType -ResourceType "Microsoft.Cache/redisEnterprise")
-}
+})
 
 $controlName = if ($ServingOnly) { "Azure hosted serving" } else { "Azure services" }
 Write-Host "$controlName control"

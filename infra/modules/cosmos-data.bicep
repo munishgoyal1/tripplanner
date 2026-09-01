@@ -161,6 +161,34 @@ resource providerUsageContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatab
   }
 }]
 
+resource tripFeedbackContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'trip_feedback'
+  properties: {
+    resource: {
+      id: 'trip_feedback'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+    }
+  }
+}]
+
+resource publicDemoRunsContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'public_demo_runs'
+  properties: {
+    resource: {
+      id: 'public_demo_runs'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+    }
+  }
+}]
+
 output accountName string = account.name
 output endpoint string = account.properties.documentEndpoint
 output databaseNames array = [for (databaseName, index) in databaseNames: databases[index].name]
