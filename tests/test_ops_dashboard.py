@@ -145,6 +145,28 @@ def test_ops_overview_is_owner_only_and_hidden_from_openapi(monkeypatch) -> None
     assert _client(monkeypatch).get("/ops/overview").status_code == 404
 
 
+def test_ops_owner_defaults_to_personal_gmail_only(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "canary")
+    monkeypatch.setenv("WEB_SESSION_SECRET", _SECRET)
+    monkeypatch.delenv("OPS_DASHBOARD_OWNER_EMAIL", raising=False)
+    monkeypatch.setattr("tripplanner.provider_usage._read", lambda _since: [])
+    client = TestClient(api.app)
+
+    client.cookies.set(
+        oauth.SESSION_COOKIE,
+        oauth.make_session_token("google-owner", "Owner", "munishgoyal1@gmail.com", ""),
+    )
+    assert client.get("/ops/overview").status_code == 200
+
+    client.cookies.set(
+        oauth.SESSION_COOKIE,
+        oauth.make_session_token(
+            "google-company", "Company account", "munishgoyal@aitripplanner.co", ""
+        ),
+    )
+    assert client.get("/ops/overview").status_code == 404
+
+
 def test_ops_overview_is_reachable_on_a_local_run(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
     monkeypatch.setenv("WEB_SESSION_SECRET", _SECRET)

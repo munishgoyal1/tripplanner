@@ -38,6 +38,17 @@ def test_hosted_deployments_do_not_import_local_environment() -> None:
     assert '[string]$OAuthRedirectBase = ""' in production
 
 
+def test_all_runtime_profiles_authorize_only_the_personal_gmail_as_owner() -> None:
+    root = Path(__file__).parents[1]
+
+    for environment in ("local", "canary", "prod"):
+        profile = (root / "config" / "environments" / f"{environment}.env").read_text(
+            encoding="utf-8"
+        )
+        assert "OPS_DASHBOARD_OWNER_EMAIL=munishgoyal1@gmail.com" in profile
+        assert "OPS_DASHBOARD_OWNER_EMAIL=munishgoyal@aitripplanner.co" not in profile
+
+
 def test_hosted_conversation_cost_limits_are_explicit_and_deployed() -> None:
     root = Path(__file__).parents[1]
     local = (root / "config" / "environments" / "local.env").read_text(encoding="utf-8")
