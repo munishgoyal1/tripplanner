@@ -1599,3 +1599,16 @@ the outcome.
 - Validate the resource body returned by a successful create or replace. Reserve a
   separate point-read for timeout and transport failures where no authoritative write
   response exists; that is the case that genuinely needs reconciliation.
+
+## 2026-09-01 - Local Launchers Must Own Provider Credentials
+
+- A shell used for hosted deployment can retain a provider key after the command ends.
+  Because dotenv deliberately preserves inherited values, the next local stack paired
+  that stale key with the local Azure OpenAI endpoint and every chat attempt failed
+  authentication; retry correctly repeated the same deterministic mismatch.
+- At the local launcher boundary, replace every environment-specific provider secret
+  from the local overlay before starting the process. Protecting only Google keys leaves
+  the same cross-environment failure available to Azure OpenAI.
+- A provider hard cap must still admit the product behavior it guards. A one-photo daily
+  quota cannot support a three-photo destination guide; retain a small explicit cap that
+  covers one bounded inspection instead of making the enabled local feature unusable.

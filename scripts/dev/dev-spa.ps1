@@ -110,7 +110,7 @@ function Get-DotEnvValue {
     return (($match -split "=", 2)[1].Trim()).Trim('"').Trim("'")
 }
 
-foreach ($name in @("GOOGLE_MAPS_BROWSER_KEY", "GOOGLE_PLACES_API_KEY")) {
+foreach ($name in @("AZURE_OPENAI_API_KEY", "GOOGLE_MAPS_BROWSER_KEY", "GOOGLE_PLACES_API_KEY")) {
     $localValue = Get-DotEnvValue -Name $name
     if (-not [string]::IsNullOrWhiteSpace($localValue)) {
         $existing = [Environment]::GetEnvironmentVariable($name, "Process")
