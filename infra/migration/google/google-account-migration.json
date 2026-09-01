@@ -1,0 +1,31 @@
+{
+  "$comment": "Fill targetOrganization and targetBillingAccount after the new account creates them. No secrets belong here.",
+  "schemaVersion": 1,
+  "source": {
+    "principal": "munishgoyal1@gmail.com",
+    "organization": "1350569291",
+    "billingAccount": "01AD51-0D422D-41459D"
+  },
+  "target": {
+    "principal": "munishgoyal@aitripplanner.co",
+    "organization": "REQUIRED",
+    "billingAccount": "REQUIRED",
+    "alertEmail": "munishgoyal@aitripplanner.co"
+  },
+  "projectSelection": {
+    "mode": "all-linked-to-source-billing",
+    "excludeProjectIds": []
+  },
+  "knownProjects": [
+    { "environment": "local", "id": "aitripplanner-local", "name": "aitripplanner-local" },
+    { "environment": "canary", "id": "aitripplanner-canary", "name": "aitripplanner-canary" },
+    { "environment": "prod", "id": "project-8fc6cc28-590c-4f8b-987", "name": "aitripplanner-prod" },
+    { "environment": "ops", "id": "aitripplanner-ops", "name": "aitripplanner-ops" }
+  ],
+  "analytics": {
+    "propertyName": "AI Trip Planner Production",
+    "measurementId": "G-VNTSQG9SWZ"
+  },
+  "guardrailsConfig": "../../billing-guardrails.json",
+  "reportDirectory": "reports"
+}

@@ -9,6 +9,7 @@
   },
 
   "gcp": {
+    "operatorAccount": "munishgoyal1@gmail.com",
     "billingAccount": "01AD51-0D422D-41459D",
     "currency": "INR",
     "opsProject": "aitripplanner-ops",

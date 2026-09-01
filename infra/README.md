@@ -61,6 +61,7 @@ a database or fall back to local `.env` credentials.
 | `provision-aoai.ps1` | Provision or reuse Azure OpenAI resources |
 | `set-cosmos-throughput.ps1` | Guarded throughput correction for old databases |
 | `cleanup-obsolete-resources.ps1` | Approval-gated obsolete-resource cleanup |
+| `migration/` | Staged, approval-gated cloud account ownership and billing migrations |
 | `queries/application-failures.kql` | Shared production alert and canary analysis query |
 
 ## Provisioning
