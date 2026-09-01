@@ -2,8 +2,8 @@ targetScope = 'subscription'
 
 // The local provider cache. Canary and production deliberately do not get one:
 // their .bicepparam leave cacheRedisEnabled false, so main.bicep keeps them on
-// the in-memory fallback. This template exists so the instance the owner
-// created by hand is described somewhere instead of only living in the portal.
+// the in-memory fallback. This standalone template is an explicit future opt-in
+// and is never invoked by bootstrap or account migration.
 
 @description('Resource group holding owner-only local development resources.')
 param localResourceGroupName string = 'rg-tripplanner-local'

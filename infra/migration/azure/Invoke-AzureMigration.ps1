@@ -17,10 +17,16 @@ $config = Read-MigrationConfig -Path $ConfigPath
 $azure = $config.azure
 $source = $azure.source
 $target = $azure.target
+$cosmosDatabases = @($azure.cosmosDatabases)
+if ($cosmosDatabases.Count -eq 0) {
+    throw "azure.cosmosDatabases must explicitly list the hosted databases to migrate."
+}
+if ($cosmosDatabases -contains "tripplanner-local") {
+    throw "azure.cosmosDatabases must not include tripplanner-local; local development uses the Cosmos emulator."
+}
 $requiredProviders = @(
     "Microsoft.App", "Microsoft.CognitiveServices", "Microsoft.Communication",
-    "Microsoft.DocumentDB", "Microsoft.Insights", "Microsoft.OperationalInsights",
-    "Microsoft.Cache"
+    "Microsoft.DocumentDB", "Microsoft.Insights", "Microsoft.OperationalInsights"
 )
 
 function Get-AzureJson {
@@ -73,11 +79,16 @@ function Assert-SourceScopeComplete {
 
 function Get-CosmosDatabases {
     param($Coordinates)
-    return @(Get-AzureJson -Description "list Cosmos databases" -Arguments @(
+    $available = @(Get-AzureJson -Description "list Cosmos databases" -Arguments @(
         "cosmosdb", "sql", "database", "list", "--subscription", $Coordinates.subscriptionId,
         "--resource-group", $Coordinates.cosmosResourceGroup,
         "--account-name", $Coordinates.cosmosAccount, "--query", "[].name"
     ))
+    $missing = @($cosmosDatabases | Where-Object { $_ -notin $available })
+    if ($missing.Count -gt 0) {
+        throw "Configured Cosmos databases are missing from $($Coordinates.cosmosAccount): $($missing -join ', ')."
+    }
+    return @($cosmosDatabases)
 }
 
 function Invoke-CosmosCopy {
@@ -140,7 +151,6 @@ switch ($Phase) {
         Assert-SourceScopeComplete
         Assert-ConfiguredValue "azure.imageTag" $azure.imageTag
         Assert-ConfiguredValue "azure.target.cosmosAccount" $target.cosmosAccount
-        Assert-ConfiguredValue "azure.target.localRedisName" $target.localRedisName
         foreach ($environment in @("local", "canary", "prod")) {
             if ($environment -ne "local") {
                 $secretFile = Join-Path $repoRoot ([string]$azure.sourceSecretFiles.$environment)
@@ -212,12 +222,6 @@ switch ($Phase) {
             -Location $target.location -ResourceGroup $target.cosmosResourceGroup -AccountName $target.cosmosAccount `
             -DryRun:$WhatIfPreference
         if (-not $WhatIfPreference) {
-            Invoke-CheckedCommand "az" @(
-                "deployment", "sub", "create", "--subscription", $target.subscriptionId,
-                "--location", $target.location, "--template-file", (Join-Path $repoRoot "infra/local-stack.bicep"),
-                "--parameters", "localResourceGroupName=rg-tripplanner-local",
-                "redisName=$($target.localRedisName)", "--output", "none"
-            ) "deploy target local Redis"
             foreach ($environment in @("local", "canary", "prod")) {
                 $hosted = $target.hosted.$environment
                 & (Join-Path $repoRoot "infra/provision-aoai.ps1") -Environment $environment `

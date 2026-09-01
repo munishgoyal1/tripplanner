@@ -13,6 +13,12 @@ and allowlisted source resource-group retirement. Copy `migration.example.json`
 to an ignored path such as `logs/migration/config.json`, fill every Azure target
 value, and keep `google.enabled` false.
 
+`azure.cosmosDatabases` is the explicit data-copy allowlist. Keep it limited to
+`tripplanner-canary` and `tripplanner-prod`; local development uses the Cosmos
+Emulator and must not create or copy `tripplanner-local` in Azure.
+Azure Managed Redis is also excluded from migration provisioning; create it
+later through the standalone local template only after explicit owner approval.
+
 Use one stable run ID so each phase can verify prior evidence:
 
 ```powershell
