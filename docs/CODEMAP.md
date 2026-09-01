@@ -46,7 +46,10 @@ trip through shared API contracts.
 | `src/tripplanner/web/trip_verification.py` | The certificate: which checks ran, which failed, and which could not be evaluated |
 | `src/tripplanner/web/trip_freshness.py` | Explicit itinerary place-fact recheck, stable before/after snapshots, and source-linked seasonal or renovation closure advisories |
 | `src/tripplanner/tools/trip_rebalance.py` | Whole-trip arrangement search over legal slots, priced in minutes of regret |
-| `src/tripplanner/tools/trip_history.py` | Active and saved-trip persistence, stable trip IDs, history numbering, listing, and deletion across local JSON and Cosmos |
+| `src/tripplanner/tools/trip_history.py` | Active and saved-trip persistence facade, stable trip IDs, history numbering, listing, and deletion across local JSON and Cosmos |
+| `src/tripplanner/trip_models.py` | Tolerant typed contracts for persisted trips, partial mutations, revisions, and mutation outcomes |
+| `src/tripplanner/trip_repository.py` | Canonical versioned trip storage, conditional Cosmos retries, local per-trip locking, and active-pointer compatibility |
+| `src/tripplanner/request_state.py` | Lazy request-scoped snapshots for active trips, preferences, and transcripts, with copy isolation and read-your-writes updates |
 | `src/tripplanner/tools/itinerary_edit.py` | Pure itinerary placement, timing, rebalancing, leg settling, and repair helpers |
 | `src/tripplanner/web/trip_repair.py` | Repair pass: clears the planner's own contradictions, reports the ones it may not touch |
 | `src/tripplanner/platform_planning_insights.py` | Privacy boundary for versioned cross-user aggregate planning priors |
@@ -235,6 +238,12 @@ contracts, not component implementations.
 
 Local JSON and Cosmos implementations remain selectable through configuration.
 Hosted environments use Cosmos; direct local CLI use may retain JSON fallback.
+The complete trip exists once at `trips/{trip_id}`. `users/active_trip` contains
+only `{trip_id, revision}`; readers still accept legacy full active documents.
+Every canonical mutation increments `revision`. Cosmos mutations replay semantic
+callbacks after conditional-write conflicts, while stale detached saves fail as
+HTTP `409 trip_conflict` instead of overwriting a newer trip. A request-scoped
+snapshot reuses trip, preference, and transcript reads and is updated after writes.
 
 Cosmos containers have explicit ownership:
 

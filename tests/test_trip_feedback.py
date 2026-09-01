@@ -35,8 +35,12 @@ def test_feedback_appends_and_updates_trip_rollup(monkeypatch, tmp_path) -> None
     )
     assert second.status_code == 200
     assert second.json()["feedback"]["count"] == 1
-    saved = json.loads(active_path.read_text(encoding="utf-8"))
+    saved = json.loads((history_dir / "lisbon.json").read_text(encoding="utf-8"))
     assert saved["feedback"]["last_rating"] == 4
+    assert json.loads(active_path.read_text(encoding="utf-8")) == {
+        "trip_id": "lisbon",
+        "revision": 2,
+    }
     submissions = [
         json.loads(path.read_text(encoding="utf-8"))
         for path in feedback_dir.glob("*.json")

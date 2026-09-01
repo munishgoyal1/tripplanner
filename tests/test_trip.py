@@ -2939,9 +2939,17 @@ class TestCosmosDispatch:
         # read_doc is called for preferences (load_preferences) and active_trip
         # — return None so defaults are used and no existing plan is found.
         monkeypatch.setattr(storage_cosmos, "read_doc", lambda c, u, d: None)
+        monkeypatch.setattr(storage_cosmos, "read_doc_versioned", lambda c, u, d: None)
         monkeypatch.setattr(
             storage_cosmos,
             "upsert_doc",
+            lambda c, u, d, body: captured.append(
+                {"container": c, "doc_id": d, "body": body}
+            ),
+        )
+        monkeypatch.setattr(
+            storage_cosmos,
+            "create_doc_if_absent",
             lambda c, u, d, body: captured.append(
                 {"container": c, "doc_id": d, "body": body}
             ),
@@ -2952,13 +2960,19 @@ class TestCosmosDispatch:
             "return_date": "2026-10-07",
         })
         assert "Bali" in result
-        # Should have upserted exactly the active_trip doc to the users container.
+        # The full plan is canonical in trips; active_trip is only a pointer.
         active_writes = [
             c for c in captured
             if c["container"] == "users" and c["doc_id"] == "active_trip"
         ]
         assert len(active_writes) == 1
-        assert active_writes[0]["body"]["destination"] == "Bali"
+        assert active_writes[0]["body"] == {
+            "trip_id": "bali_2026-10-01_2026-10-07",
+            "revision": 1,
+        }
+        trip_writes = [c for c in captured if c["container"] == "trips"]
+        assert len(trip_writes) == 1
+        assert trip_writes[0]["body"]["destination"] == "Bali"
 
     def test_execute_bookings_deletes_active_trip_from_cosmos(self, monkeypatch):
         # State machine: cosmos read returns a finalized plan, then upserts and

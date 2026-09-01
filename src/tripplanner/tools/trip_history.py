@@ -7,8 +7,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-from tripplanner import debug_store, storage_cosmos
-from tripplanner.json_store import atomic_write_json
+from tripplanner import debug_store as debug_store
+from tripplanner import request_state, storage_cosmos
+from tripplanner.trip_repository import TripPaths, TripRepository
 from tripplanner.user_context import get_user_id
 
 _TRIPS_DIR = Path.home() / ".tripplanner"
@@ -48,35 +49,35 @@ def ensure_dirs() -> None:
     resolve_trip_history_dir().mkdir(parents=True, exist_ok=True)
 
 
+def _repository() -> TripRepository:
+    return TripRepository(
+        get_user_id(),
+        TripPaths(
+            active=resolve_active_trip_path(),
+            history=resolve_trip_history_dir(),
+        ),
+    )
+
+
 def load_active_trip() -> dict[str, Any] | None:
-    if storage_cosmos.is_enabled():
-        return storage_cosmos.read_doc(
-            _COSMOS_USERS_CONTAINER, get_user_id(), _ACTIVE_TRIP_DOC_ID
-        )
-    path = resolve_active_trip_path()
-    if path.exists():
-        return json.loads(path.read_text(encoding="utf-8"))
-    return None
+    user_id = get_user_id()
+    return request_state.get_or_load(
+        ("trip", user_id, "active"), _repository().load_active
+    )
 
 
 def delete_active_trip() -> None:
-    if storage_cosmos.is_enabled():
-        storage_cosmos.delete_doc(
-            _COSMOS_USERS_CONTAINER, get_user_id(), _ACTIVE_TRIP_DOC_ID
-        )
-        return
-    resolve_active_trip_path().unlink(missing_ok=True)
+    _repository().delete_active()
+    request_state.store(("trip", get_user_id(), "active"), None)
 
 
 def persist_active_trip(plan: dict[str, Any]) -> None:
-    if storage_cosmos.is_enabled():
-        storage_cosmos.upsert_doc(
-            _COSMOS_USERS_CONTAINER, get_user_id(), _ACTIVE_TRIP_DOC_ID, plan
-        )
-    else:
-        ensure_dirs()
-        atomic_write_json(resolve_active_trip_path(), plan, indent=2)
-    mirror_to_history(plan)
+    outcome = _repository().save(plan)
+    if outcome.plan is not None:
+        plan.clear()
+        plan.update(outcome.plan.model_dump(mode="python", exclude_unset=True))
+        request_state.store(("trip", get_user_id(), "active"), plan)
+        request_state.store(("trip", get_user_id(), str(plan["trip_id"])), plan)
 
 
 def mirror_to_history(plan: dict[str, Any]) -> None:
@@ -84,30 +85,19 @@ def mirror_to_history(plan: dict[str, Any]) -> None:
     trip_id = plan.get("trip_id")
     if not trip_id:
         return
-    if storage_cosmos.is_enabled():
-        storage_cosmos.upsert_doc(
-            _COSMOS_TRIPS_CONTAINER, get_user_id(), trip_id, plan
-        )
-    else:
-        ensure_dirs()
-        atomic_write_json(resolve_trip_history_dir() / f"{trip_id}.json", plan, indent=2)
-    debug_store.record_trip(plan, get_user_id())
+    _repository().save(plan, activate=False)
 
 
 def load_history_trip(trip_id: str) -> dict[str, Any] | None:
-    if not trip_id:
-        return None
-    if storage_cosmos.is_enabled():
-        return storage_cosmos.read_doc(
-            _COSMOS_TRIPS_CONTAINER, get_user_id(), trip_id
-        )
-    path = resolve_trip_history_dir() / f"{trip_id}.json"
-    if path.exists():
-        try:
-            return json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            return None
-    return None
+    user_id = get_user_id()
+    return request_state.get_or_load(
+        ("trip", user_id, trip_id), lambda: _repository().load(trip_id)
+    )
+
+
+def activate_trip(plan: dict[str, Any]) -> None:
+    _repository().set_active(plan)
+    request_state.store(("trip", get_user_id(), "active"), plan)
 
 
 def all_history_trips() -> list[dict[str, Any]]:

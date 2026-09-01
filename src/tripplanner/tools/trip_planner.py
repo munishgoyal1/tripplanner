@@ -694,9 +694,7 @@ def confirm_stop_place(name: str) -> bool:
 
 
 def _save_active_trip(plan: dict[str, Any]) -> None:
-    # Stamp a stable id + freshness so the trip can live in history and be
-    # listed / resumed later. Every save mirrors to the trips collection so
-    # in-progress drafts are never lost when the user switches trips.
+    # Stamp a stable id + freshness on the canonical saved-trip document.
     if not plan.get("trip_id"):
         plan["trip_id"] = _compute_trip_id(plan)
     _normalize_hotel_endpoints(plan)
@@ -954,7 +952,7 @@ def switch_active_trip(trip_id: str) -> dict[str, Any] | None:
     plan = _load_history_trip(trip_id)
     if not plan:
         return None
-    _save_active_trip(plan)
+    trip_history.activate_trip(plan)
     return plan
 
 
@@ -1077,6 +1075,7 @@ def _delete_active_trip() -> None:
 _RESET_KEEPS = frozenset(
     {
         "trip_id",
+        "revision",
         "created_at",
         "destination",
         "origin",

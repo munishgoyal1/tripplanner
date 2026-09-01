@@ -4,6 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from tripplanner import api, places_budget
+from tripplanner.trip_repository import TripConflictError
 from tripplanner.web import trip_operations
 
 
@@ -105,3 +106,20 @@ def test_budget_what_if_is_generated_only_by_explicit_post(
     assert response.status_code == 200
     assert response.json()["generated_on_demand"] is True
     assert calls == 1
+
+
+def test_trip_write_conflict_returns_http_409(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def conflict(*_args, **_kwargs):
+        raise TripConflictError("Trip 'goa' changed from revision 2 to 3")
+
+    monkeypatch.setattr(trip_operations, "select", conflict)
+
+    response = TestClient(api.app).post(
+        "/trip/select",
+        json={"kind": "attraction", "name": "Beach", "user_id": "local"},
+    )
+
+    assert response.status_code == 409
+    assert response.json()["error"] == "trip_conflict"

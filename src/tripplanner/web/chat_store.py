@@ -30,7 +30,7 @@ from typing import Any
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
-from tripplanner import storage_cosmos
+from tripplanner import request_state, storage_cosmos
 from tripplanner.json_store import atomic_write_json
 from tripplanner.user_context import get_user_id
 
@@ -80,12 +80,17 @@ def _read_local_document(document_id: str) -> dict[str, Any]:
 
 
 def _read_document(document_id: str) -> dict[str, Any]:
-    if storage_cosmos.is_enabled():
-        doc = storage_cosmos.read_doc(
-            _COSMOS_USERS_CONTAINER, get_user_id(), document_id
-        )
-        return dict(doc or {})
-    return _read_local_document(document_id)
+    user_id = get_user_id()
+
+    def load() -> dict[str, Any]:
+        if storage_cosmos.is_enabled():
+            doc = storage_cosmos.read_doc(
+                _COSMOS_USERS_CONTAINER, user_id, document_id
+            )
+            return dict(doc or {})
+        return _read_local_document(document_id)
+
+    return request_state.get_or_load(("chat", user_id, document_id), load)
 
 
 def _serialize(messages: list[BaseMessage], *, bounded: bool = True) -> list[dict[str, Any]]:
@@ -561,6 +566,7 @@ def _mutate_document(
                         updated,
                         current.version,
                     )
+                request_state.store(("chat", user_id, document_id), updated)
                 return updated, True
             except storage_cosmos.WriteConflictError:
                 if attempt == _MAX_WRITE_ATTEMPTS - 1:
@@ -576,6 +582,7 @@ def _mutate_document(
         if updated is None:
             return body, False
         atomic_write_json(path, updated, indent=2)
+        request_state.store(("chat", get_user_id(), document_id), updated)
         return updated, True
 
 

@@ -1543,3 +1543,15 @@ the outcome.
 - Cache hits and avoided provider calls answer different questions. Keep circuit and
   policy avoidance separate, and count multi-item cache results by the provider
   requests they replace when reporting request share and estimated savings.
+
+## 2026-09-01 - Tolerant Validation Must Preserve Persisted Shape
+
+- Allowing unknown fields prevents legacy data loss, but a normal typed dump can
+  still inject defaults for absent known fields and silently rewrite sparse data.
+  Validate the complete candidate, then serialize with unset fields excluded.
+- A canonical full document plus a lightweight active pointer removes copy
+  divergence and halves a normal trip update from four writes to two. Only the
+  canonical write carries the trip body.
+- Retrying a detached full-document save after a conflict can erase concurrent
+  fields. Replay semantic mutation callbacks on fresh state; reject stale detached
+  saves explicitly so callers refresh instead of overwriting newer revisions.

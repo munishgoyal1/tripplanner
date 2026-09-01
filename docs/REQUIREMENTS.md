@@ -86,7 +86,7 @@ re-describing the whole product.
 | EXPORT-01 | Preview, print, PDF, email, share link, and calendar exports | Implemented |
 | MOBILE-01 | Native Expo client for iPhone and Android | Implemented |
 | ID-01 | Guest identity plus shared web/mobile Google identity | Implemented |
-| DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented |
+| DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented; each complete trip has one canonical versioned document, the active-trip record is a lightweight pointer, conditional writes retry semantic mutations, stale detached saves return HTTP 409, tolerant contracts preserve legacy fields, and request-scoped snapshots reuse trip, preference, and transcript reads with read-your-writes behavior |
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented; all runtime cache families share one owner-controlled TTL policy, with environment-wide scaling, precise provider overrides, independent stable/volatile no-expiry switches, and an opt-in full-surface Places warm manifest supplied through checked-in local/sandbox, canary, and production non-secret profiles plus ignored secret overlays; local runtimes use an optional cache-only secondary durable Cosmos client for fresh shared Places and global tool results after primary misses and for best-effort timestamp-preserving write-through, while failures open a short circuit and never fail requests, user-scoped/application data is excluded, and canary/production keep the feature disabled; an approval-gated on-demand merge exchanges only eligible cache evidence between the local central cache and production without refreshing timestamps or deleting entries; complete snapshots bootstrap atomic per-source watermarks, then overlapping incremental scans fetch only candidate documents, retain the old checkpoint on any partial failure or conflict, and report measured RU, payload, and item outcomes; disposable and durable regions retain storage appropriate to their recovery contract |
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google and route-provider calls require an explicit user-interaction or budgeted-corpus execution scope and otherwise fail before network access; Places also remains fail-closed behind a production-only runtime switch, owner emergency Service Usage control, observation-scale provider quotas, configurable shared request ceilings, durable environment-wide conversation ceilings, shared discovery evidence, focused reviews, and one-photo enrichment defaults |
 | TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, explicit place-fact rechecks with before/after changes and source-linked unusual-closure advisories, place-identity gate, and a rebalance that never moves a stop the traveller chose |
@@ -356,7 +356,8 @@ re-describing the whole product.
   resume without discarding prior selections.
 - Users can list, switch, and resume saved trips. The saved-trip menu supports
   confirmed deletion of one checked trip, multiple checked trips, or all trips.
-- The active trip is mirrored into saved trips on each authoritative save.
+- Each authoritative save updates one canonical saved-trip document; the active
+  record stores only its trip ID and revision.
 - Chat history is stored per trip, survives refresh, and follows trip switches.
 - New-trip creation clears the active pointer without deleting saved history.
 
@@ -382,6 +383,11 @@ re-describing the whole product.
   account. Environment data must never be cross-wired.
 - Local and hosted writes have concurrency protections; Cosmos supports opt-in
   versioned reads and conditional replacement.
+- Persisted trip contracts tolerate unknown legacy fields and preserve sparse
+  known fields. Each mutation increments a revision; stale detached saves return
+  HTTP 409 rather than overwriting a concurrent update.
+- One lazy request-scoped snapshot serves repeated active-trip, preference, and
+  transcript reads, returns isolated copies, and observes writes made in that request.
 
 ## 4. Web planning workspace
 

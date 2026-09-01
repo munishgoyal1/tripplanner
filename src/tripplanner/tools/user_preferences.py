@@ -20,7 +20,7 @@ from pathlib import Path
 from threading import Lock
 from typing import Any
 
-from tripplanner import storage_cosmos
+from tripplanner import request_state, storage_cosmos
 from tripplanner.user_context import get_user_id
 
 log = logging.getLogger(__name__)
@@ -209,17 +209,22 @@ def _write_json_file_atomic(path: Path, data: dict[str, Any]) -> None:
 
 def load_preferences() -> dict[str, Any]:
     """Load preferences, merging with defaults for any missing keys."""
-    if storage_cosmos.is_enabled():
-        raw = storage_cosmos.read_doc(_COSMOS_CONTAINER, get_user_id(), _PREFS_DOC_ID)
-        if raw:
+    user_id = get_user_id()
+
+    def load() -> dict[str, Any]:
+        if storage_cosmos.is_enabled():
+            raw = storage_cosmos.read_doc(_COSMOS_CONTAINER, user_id, _PREFS_DOC_ID)
+            if raw:
+                return _deep_merge(_DEFAULT_PREFS, raw)
+            return json.loads(json.dumps(_DEFAULT_PREFS))
+
+        path = _resolve_prefs_path()
+        raw = _read_json_file(path)
+        if raw is not None:
             return _deep_merge(_DEFAULT_PREFS, raw)
         return json.loads(json.dumps(_DEFAULT_PREFS))
 
-    path = _resolve_prefs_path()
-    raw = _read_json_file(path)
-    if raw is not None:
-        return _deep_merge(_DEFAULT_PREFS, raw)
-    return json.loads(json.dumps(_DEFAULT_PREFS))
+    return request_state.get_or_load(("preferences", user_id), load)
 
 
 # Soft cap on free-form learned_notes so the list can't bloat the prompt
@@ -385,11 +390,13 @@ def save_preferences(prefs: dict[str, Any]) -> None:
                 prepared,
                 current.version,
             )
+        request_state.store(("preferences", user_id), prepared)
         return
 
     path = _resolve_prefs_path()
     with _local_lock(path):
         _write_json_file_atomic(path, prepared)
+    request_state.store(("preferences", get_user_id()), prepared)
 
 
 def mutate_preferences(
@@ -410,6 +417,7 @@ def mutate_preferences(
                 return current
             prepared = _prepare_preferences(updated)
             _write_json_file_atomic(path, prepared)
+            request_state.store(("preferences", get_user_id()), prepared)
             return prepared
 
     user_id = get_user_id()
@@ -444,6 +452,7 @@ def mutate_preferences(
             if attempt == _COSMOS_WRITE_ATTEMPTS - 1:
                 raise
             continue
+        request_state.store(("preferences", user_id), prepared)
         return prepared
 
     raise AssertionError("unreachable")

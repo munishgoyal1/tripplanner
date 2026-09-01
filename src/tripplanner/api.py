@@ -100,12 +100,28 @@ from tripplanner.request_limits import (
     release_replay_access,
     release_workspace_exclusive,
 )
+from tripplanner.request_state import request_state_scope
+from tripplanner.trip_repository import TripConflictError
 from tripplanner.user_context import set_user_id
 from tripplanner.web import oauth
 
 setup_logging()
 
 app = FastAPI(title="Personal Assistant API", version="0.1.0")
+
+
+@app.exception_handler(TripConflictError)
+async def _trip_conflict_handler(
+    _request: Request, exc: TripConflictError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=409,
+        content={
+            "detail": "This trip changed while your update was being saved. Refresh and retry.",
+            "error": "trip_conflict",
+            "message": str(exc),
+        },
+    )
 
 # LangGraph counts every node, so a flat 24 cut the turn off at exactly the step
 # where the policy forces the still-owed first itinerary save, leaving a created
@@ -235,16 +251,17 @@ async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-unt
         nullcontext() if os.environ.get("PYTEST_CURRENT_TEST") else places_budget_scope(purpose)
     )
     try:
-        with provider_scope:
-            if request.scope.get("path") == "/chat/stream":
-                response = await call_next(request)
-            else:
-                with usage_scope(
-                    "user_action",
-                    interaction_id=interaction_id,
-                    route=f"{request.method} {request.scope.get('path', '')}",
-                ):
+        with request_state_scope():
+            with provider_scope:
+                if request.scope.get("path") == "/chat/stream":
                     response = await call_next(request)
+                else:
+                    with usage_scope(
+                        "user_action",
+                        interaction_id=interaction_id,
+                        route=f"{request.method} {request.scope.get('path', '')}",
+                    ):
+                        response = await call_next(request)
         status_code = response.status_code
         return response
     finally:
