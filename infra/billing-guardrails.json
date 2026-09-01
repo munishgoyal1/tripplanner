@@ -93,11 +93,19 @@
 
   "azure": {
     "subscriptionId": "2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b",
+    "tenantId": "d889d6d8-feaa-4837-937f-ddb9007ba8ef",
     "currency": "INR",
     "actionGroupResourceGroup": "rg-tripplanner-data",
     "actionGroupName": "tripplanner-budget-alerts",
     "actionGroupShortName": "tpbudget",
     "globalBudget": { "name": "tripplanner-global-8000inr", "amount": 8000 },
+    "cutoff": {
+      "location": "eastus2",
+      "automationAccountName": "tripplanner-budget-cutoff",
+      "runbookName": "Stop-TripplannerSpend",
+      "webhookName": "budget-actual-100",
+      "actionGroupName": "tripplanner-budget-cutoff"
+    },
     "environments": [
       { "name": "local", "resourceGroup": "rg-tripplanner-local", "budgetName": "tripplanner-local-2000inr", "budget": 2000 },
       { "name": "canary", "resourceGroup": "rg-tripplanner-canary", "budgetName": "tripplanner-canary-2000inr", "budget": 2000 },
