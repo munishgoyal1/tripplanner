@@ -5,6 +5,8 @@ local setup and collaboration procedures, not product requirements, architecture
 or deployment policy.
 
 - [`dev.md`](dev.md): local application, test, and UX Lab commands.
+- [`testing.md`](testing.md): changed-path and expected-behavior test selection,
+  validation tiers, and publication gates.
 - [`new-machine-setup.md`](new-machine-setup.md): one-click Windows/macOS toolchain,
   VS Code/Copilot configuration, sandboxes, and manual sign-ins.
 - [`architecture-onboarding.md`](architecture-onboarding.md): guided system

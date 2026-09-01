@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "no_test_prefixes": [
+    ".github/",
+    "docs/",
+    "evidence/"
+  ],
+  "rules": [
+    {
+      "patterns": ["tests/conftest.py"],
+      "backend_all": true,
+      "reason": "global pytest isolation and fixture contract"
+    },
+    {
+      "patterns": ["tests/support/trip.py"],
+      "backend": [
+        "tests/test_trip_persistence.py",
+        "tests/test_trip_plan.py",
+        "tests/test_trip_providers.py",
+        "tests/test_trip_cosmos.py",
+        "tests/test_trip_saved.py"
+      ],
+      "reason": "shared trip test fixture and import boundary"
+    },
+    {
+      "patterns": ["tests/support/trip_view.py"],
+      "backend": [
+        "tests/test_trip_view_summary_weather_budget.py",
+        "tests/test_trip_view_itinerary_rendering.py",
+        "tests/test_trip_view_map_focus.py",
+        "tests/test_trip_view_journeys_transfers.py",
+        "tests/test_trip_view_places_gallery.py",
+        "tests/test_trip_view_verification_freshness.py"
+      ],
+      "reason": "shared trip-view test fixture boundary"
+    },
+    {
+      "patterns": ["tests/support/multiagent.py"],
+      "backend": [
+        "tests/test_multiagent_core.py",
+        "tests/test_multiagent_dispatch.py",
+        "tests/test_multiagent_audit.py",
+        "tests/test_multiagent_publication.py",
+        "tests/test_multiagent_state.py"
+      ],
+      "reason": "shared multiagent test factory boundary"
+    },
+    {
+      "patterns": ["src/tripplanner/api.py", "src/tripplanner/chat_turn.py"],
+      "backend": [
+        "tests/test_api_contracts.py",
+        "tests/test_chat_turn.py",
+        "tests/test_request_security.py",
+        "tests/test_sse_tool_summary.py"
+      ],
+      "reason": "chat and API transport contract"
+    },
+    {
+      "patterns": ["src/tripplanner/graph.py", "src/tripplanner/graph_policy.py", "src/tripplanner/agents/**"],
+      "backend": [
+        "tests/test_graph_policy.py",
+        "tests/test_parallel_tools.py",
+        "tests/test_tool_selection.py"
+      ],
+      "reason": "agent graph and phase-selected tool policy"
+    },
+    {
+      "patterns": ["src/tripplanner/web/trip_view.py", "src/tripplanner/web/map_*.py", "src/tripplanner/web/day_journey.py"],
+      "backend": [
+        "tests/test_trip_view_summary_weather_budget.py",
+        "tests/test_trip_view_itinerary_rendering.py",
+        "tests/test_trip_view_map_focus.py",
+        "tests/test_trip_view_journeys_transfers.py",
+        "tests/test_trip_view_places_gallery.py",
+        "tests/test_trip_view_verification_freshness.py",
+        "tests/test_trip_view_api.py"
+      ],
+      "frontend": [
+        "frontend/src/components/ItineraryPanel.test.tsx",
+        "frontend/src/components/MapPanel.test.ts"
+      ],
+      "frontend_typecheck": true,
+      "reason": "shared itinerary, map, and details projection"
+    },
+    {
+      "patterns": ["src/tripplanner/trip_*.py", "src/tripplanner/tools/trip_*.py", "src/tripplanner/tools/itinerary_edit.py"],
+      "backend": [
+        "tests/test_trip_persistence.py",
+        "tests/test_trip_plan.py",
+        "tests/test_trip_providers.py",
+        "tests/test_trip_cosmos.py",
+        "tests/test_trip_saved.py",
+        "tests/test_trip_repository.py",
+        "tests/test_trip_guard.py"
+      ],
+      "reason": "canonical trip mutation and persistence boundary"
+    },
+    {
+      "patterns": ["src/tripplanner/providers/**", "src/tripplanner/tools/google_places.py", "src/tripplanner/tools/routing.py"],
+      "backend": [
+        "tests/test_travel_providers.py",
+        "tests/test_google_places_cache.py",
+        "tests/test_routing.py"
+      ],
+      "reason": "provider normalization and fallback boundary"
+    },
+    {
+      "patterns": ["src/tripplanner/validation/**", "scripts/dev/build_corpus.py", "scripts/dev/trip_audit.py"],
+      "backend": [
+        "tests/test_validation_harness.py",
+        "tests/test_evals.py"
+      ],
+      "reason": "quality corpus and deterministic audit boundary"
+    },
+    {
+      "patterns": ["scripts/dev/multiagent.py", "scripts/dev/multiagent_core.py", "scripts/dev/test_selection.py", "scripts/dev/test-selection.json"],
+      "backend": [
+        "tests/test_multiagent_core.py",
+        "tests/test_multiagent_dispatch.py",
+        "tests/test_multiagent_audit.py",
+        "tests/test_multiagent_publication.py",
+        "tests/test_multiagent_state.py",
+        "tests/test_test_selection.py"
+      ],
+      "reason": "agent coordination and validation workflow"
+    },
+    {
+      "patterns": ["scripts/**/*.ps1", "scripts/**/*.command", "scripts/**/*.cmd"],
+      "backend": ["tests/test_dev_launchers.py"],
+      "reason": "cross-platform developer launcher contract"
+    },
+    {
+      "patterns": ["infra/**", "config/environments/**"],
+      "backend": ["tests/test_release_workflow.py"],
+      "reason": "deployment and environment contract"
+    },
+    {
+      "patterns": ["frontend/src/**"],
+      "frontend_typecheck": true,
+      "reason": "production frontend change"
+    },
+    {
+      "patterns": ["frontend/labs/**"],
+      "frontend": [],
+      "frontend_typecheck": true,
+      "reason": "isolated UX Lab change"
+    },
+    {
+      "patterns": ["packages/tripplanner-client/**"],
+      "frontend_all": true,
+      "frontend_typecheck": true,
+      "mobile": true,
+      "reason": "shared web/native client contract"
+    },
+    {
+      "patterns": ["mobile/**"],
+      "mobile": true,
+      "reason": "native client change"
+    }
+  ]
+}

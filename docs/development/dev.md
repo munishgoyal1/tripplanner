@@ -236,13 +236,20 @@ After that, every session is just `.\scripts\dev\dev-spa.ps1`.
 
 ---
 
-## Run unit tests
+## Run tests
 
 ```powershell
+# Select the tests owned by the current change and explain why.
+python scripts/dev/test_selection.py --base origin/master
+
+# Complete publication gate.
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Should print `106 passed` (or higher) in ~1.5 seconds.
+Run the selector's commands during iteration. See
+[`testing.md`](testing.md) for exact test nodes, expected-behavior selection,
+frontend commands, and publication tiers. Test counts and duration vary with the
+selected boundary and are deliberately not hardcoded here.
 
 ---
 

@@ -12,6 +12,11 @@ That is enough to identify the full expected outcome below.
 Change an expected behavior only with owner approval. A behavior change must
 update this file and its linked tests in the same commit.
 
+To resolve one behavior ID into its backend and frontend executable proofs, run
+`python scripts/dev/test_selection.py --behavior EB-PLAN-001` with the reported
+ID. Changed-path selection and publication tiers are documented in
+[`development/testing.md`](development/testing.md).
+
 ## Assistant planning
 
 ### EB-PLAN-001 - Complete a bounded new-trip planning turn
@@ -69,7 +74,7 @@ either enabled (the default) or disabled.
 - [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `keeps progress visible while answer text streams`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_new_trip_does_not_rewrite_incomplete_researched_plan_twice`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_ends_with_summary_at_tool_phase_budget`
-- [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_first_turn_cannot_end_incomplete_before_phase_budget`
+- [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_a_broad_new_trip_must_still_save_before_the_phase_budget_traps_it`
 - [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_weather_can_remain_deferred_when_first_turn_core_plan_is_complete`
 - [`tests/test_sse_tool_summary.py`](../tests/test_sse_tool_summary.py) - `test_best_effort_plan_reply_reports_saved_plan_gaps`
 - [`tests/test_usage.py`](../tests/test_usage.py) - `test_stream_surfaces_partial_turn_save_failure`
@@ -94,8 +99,8 @@ either enabled (the default) or disabled.
 **Executable proof:**
 
 - [`tests/test_planning_intelligence.py`](../tests/test_planning_intelligence.py)
-- [`tests/test_trip_kickoff.py`](../tests/test_trip_kickoff.py) - `test_new_paris_trip_forces_prefilled_kickoff_after_duration_advice`
-- [`tests/test_trip.py`](../tests/test_trip.py) - `test_create_trip_persists_planning_recommendation`
+- [`tests/test_trip_kickoff.py`](../tests/test_trip_kickoff.py) - `test_direct_mode_collects_missing_party_composition_after_duration_advice`
+- [`tests/test_trip_persistence.py`](../tests/test_trip_persistence.py) - `test_create_trip_persists_planning_recommendation`
 
 ### EB-PLAN-003 - Keep long planning turns visibly active
 
@@ -246,7 +251,7 @@ offers, or a finalized unbooked trip whose recorded quote has expired.
 - [`tests/test_trip_cost_ledger.py`](../tests/test_trip_cost_ledger.py)
 - [`tests/test_price_recheck.py`](../tests/test_price_recheck.py)
 - [`tests/test_trip_guard.py`](../tests/test_trip_guard.py)
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py)
+- [`tests/test_trip_view_verification_freshness.py`](../tests/test_trip_view_verification_freshness.py)
 - [`frontend/src/components/TripSnapshot.test.tsx`](../frontend/src/components/TripSnapshot.test.tsx)
 
 ### EB-VERIFY-001 - Recheck itinerary place facts
@@ -425,12 +430,12 @@ and open the terminal as an inspectable place.
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `zooms an airport like any exact itinerary stop`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `opens rich inspection for rail and bus terminal markers`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `opens airport details and keeps its exact map occurrence focused`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_airport_focus_exposes_place_details_and_terminal_occurrence`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_connects_flight_airports_to_destination_stay`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_timed_surface_transport_adds_terminal_buffer_stops`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_focus_zooms_single_item`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_unfocused_view_skips_reviews_and_limits_photos`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_focused_view_fetches_reviews_once`
+- [`tests/test_trip_view_places_gallery.py`](../tests/test_trip_view_places_gallery.py) - `test_airport_focus_exposes_place_details_and_terminal_occurrence`
+- [`tests/test_trip_view_map_focus.py`](../tests/test_trip_view_map_focus.py) - `test_map_view_connects_flight_airports_to_destination_stay`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_timed_surface_transport_adds_terminal_buffer_stops`
+- [`tests/test_trip_view_places_gallery.py`](../tests/test_trip_view_places_gallery.py) - `test_focus_zooms_single_item`
+- [`tests/test_trip_view_places_gallery.py`](../tests/test_trip_view_places_gallery.py) - `test_unfocused_view_skips_reviews_and_limits_photos`
+- [`tests/test_trip_view_places_gallery.py`](../tests/test_trip_view_places_gallery.py) - `test_focused_view_fetches_reviews_once`
 
 ### EB-FOCUS-002 - Focus a day or the whole trip
 
@@ -495,8 +500,8 @@ focus.
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `routes legacy drive and toy-train rows to the complete day route`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `forwards a first-class drive circuit when its travel row is clicked`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_drive_labels_share_transport_normalization_and_route_endpoints`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_drive_labels_share_transport_normalization_and_route_endpoints`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
 
 ### EB-ITIN-001 - Read a multi-city transition day chronologically
 
@@ -524,11 +529,11 @@ Journey and After check-in sections.
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a multi-city transfer as one chronological spine without changing stop identity`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `keeps the hotel return endpoint independently addressable`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `treats a trailing hotel locality as the same stay`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_timed_road_transfer_estimates_destination_hotel_check_in`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_road_transfer_estimates_duration_arrival_and_hotel_check_in`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_road_transfer_without_checkout_estimates_duration_but_not_check_in`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_untimed_road_transfer_does_not_invent_hotel_check_in`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_transfer_day_starts_from_prior_rameswaram_hotel`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_timed_road_transfer_estimates_destination_hotel_check_in`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_road_transfer_estimates_duration_arrival_and_hotel_check_in`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_road_transfer_without_checkout_estimates_duration_but_not_check_in`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_untimed_road_transfer_does_not_invent_hotel_check_in`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_transfer_day_starts_from_prior_rameswaram_hotel`
 
 ### EB-ITIN-002 - Use conservative local transfer modes
 
@@ -540,9 +545,9 @@ and Metro is never inferred from distance alone.
 
 **Executable proof:**
 
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_local_route_uses_taxi_for_three_kilometres`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_local_route_keeps_short_walks_walkable`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_local_route_does_not_invent_unverified_metro_service`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_local_route_uses_taxi_for_three_kilometres`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_local_route_keeps_short_walks_walkable`
+- [`tests/test_trip_view_verification_freshness.py`](../tests/test_trip_view_verification_freshness.py) - `test_local_route_does_not_invent_unverified_metro_service`
 
 ### EB-ITIN-003 - Do not invent a hotel return without an outing
 
@@ -553,7 +558,7 @@ separate departure or return endpoint because the traveler has no planned outing
 
 **Executable proof:**
 
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_structured_hotel_only_day_does_not_add_return_endpoint`
+- [`tests/test_trip_view_itinerary_rendering.py`](../tests/test_trip_view_itinerary_rendering.py) - `test_structured_hotel_only_day_does_not_add_return_endpoint`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows one stay row without a return for a hotel-only day`
 
 ### EB-ITIN-004 - Return after an arrival-day outing
@@ -571,11 +576,11 @@ transfer to the hotel, so a mid-day check-in is not left blank.
 
 **Executable proof:**
 
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_arrival_day_local_outing_returns_to_destination_hotel`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_arrival_day_does_not_invent_return_without_route_coordinates`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_structured_itinerary_preserves_arrival_and_departure_flights`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_arrival_hotel_time_requires_airport_transfer_evidence`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_train_arrival_estimates_destination_hotel_check_in`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_arrival_day_local_outing_returns_to_destination_hotel`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_arrival_day_does_not_invent_return_without_route_coordinates`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_structured_itinerary_preserves_arrival_and_departure_flights`
+- [`tests/test_trip_view_verification_freshness.py`](../tests/test_trip_view_verification_freshness.py) - `test_arrival_hotel_time_requires_airport_transfer_evidence`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_train_arrival_estimates_destination_hotel_check_in`
 
 ### EB-ITIN-005 - Keep daily hotels synchronized across views
 
@@ -592,9 +597,9 @@ hotel anchors together.
 
 **Executable proof:**
 
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_uses_rendered_stay_over_prose_hotel_alternatives`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_carries_forward_hotel_after_transition`
-- [`tests/test_trip.py`](../tests/test_trip.py) - `test_update_trip_plan_accepts_hotel_in_evidenced_itinerary_city`
+- [`tests/test_trip_view_map_focus.py`](../tests/test_trip_view_map_focus.py) - `test_map_view_uses_rendered_stay_over_prose_hotel_alternatives`
+- [`tests/test_trip_view_map_focus.py`](../tests/test_trip_view_map_focus.py) - `test_map_view_carries_forward_hotel_after_transition`
+- [`tests/test_trip_plan.py`](../tests/test_trip_plan.py) - `test_update_trip_plan_accepts_hotel_in_evidenced_itinerary_city`
 
 ### EB-ITIN-006 - Include complete round-trip transport
 
@@ -623,13 +628,13 @@ incomplete plan returns an actionable correction.
 
 **Executable proof:**
 
-- [`tests/test_trip.py`](../tests/test_trip.py) - `test_planning_completion_requires_round_trip_intercity_transport`
-- [`tests/test_trip.py`](../tests/test_trip.py) - `test_create_trip_plan_defaults_origin_from_saved_home_area`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_city_origin_drive_includes_origin_and_rest_break`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_bus_transfer_builds_separate_road_circuit_with_route_breaks`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_mode_tagged_gangtok_flights_expand_with_both_airports`
-- [`tests/test_trip.py`](../tests/test_trip.py) - `test_prompt_requires_grounded_ordered_road_breaks`
+- [`tests/test_trip_plan.py`](../tests/test_trip_plan.py) - `test_planning_completion_requires_round_trip_intercity_transport`
+- [`tests/test_trip_plan.py`](../tests/test_trip_plan.py) - `test_create_trip_plan_defaults_origin_from_saved_home_area`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_city_origin_drive_includes_origin_and_rest_break`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_bus_transfer_builds_separate_road_circuit_with_route_breaks`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_mode_tagged_gangtok_flights_expand_with_both_airports`
+- [`tests/test_trip_persistence.py`](../tests/test_trip_persistence.py) - `test_prompt_requires_grounded_ordered_road_breaks`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a road-trip city origin as a non-bookable O marker`
 
 ### EB-ITIN-007 - Filter itinerary structure across panes
@@ -696,7 +701,7 @@ dotted day route, including for legacy rows persisted with a generic kind.
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `distinguishes local, road, bus, rail, and flight route geometry`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `routes legacy drive and toy-train rows to the complete day route`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_connects_city_origin_to_hotel_for_road_trip`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_map_view_connects_city_origin_to_hotel_for_road_trip`
 
 ### EB-STATE-001 - Keep planner surfaces synchronized
 
@@ -717,7 +722,7 @@ inventing guide content for the home city or a connection airport.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `keeps the removed place focused when an older refresh resolves later`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `does not reload itinerary data for focus-only navigation`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shows an already-loaded focused place before its refresh completes`
-- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_connecting_round_trip_keeps_itinerary_and_map_terminals_in_sync`
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_connecting_round_trip_keeps_itinerary_and_map_terminals_in_sync`
 - [`frontend/src/components/map/routeDerivations.test.ts`](../frontend/src/components/map/routeDerivations.test.ts) - `separates outbound and return while keeping both attached to the terminals`
 
 ## Account settings
