@@ -435,8 +435,14 @@ conversation or explicit edit
 Run the narrowest command that exercises the changed ownership boundary.
 
 ```powershell
-# Python fast tier (default development loop)
-.venv\Scripts\python.exe -m pytest -q -m "not integration"
+# Explain and select tests for all changes relative to the branch baseline
+python scripts/dev/test_selection.py --base origin/master
+
+# Select the executable proofs for one reported behavior
+python scripts/dev/test_selection.py --behavior EB-PLAN-001
+
+# Direct Python target during the development loop
+.venv\Scripts\python.exe -m pytest -q tests/test_graph_policy.py
 
 # Python integration tier
 .venv\Scripts\python.exe -m pytest -q -m integration
@@ -469,7 +475,10 @@ git diff --check
 ```
 
 Use focused pytest targets or frontend tests during iteration. Workers use
-server-free validation unless the owner explicitly authorizes stack changes.
+the fail-closed selector and server-free validation unless the owner explicitly
+authorizes stack changes. Sandbox promotion, multiagent integration, branch
+convergence, and release remain complete-suite publication gates. The detailed
+workflow is [development/testing.md](development/testing.md).
 MasterAgent in the primary workspace owns local stack lifecycle and manual-test health.
 
 ## Deployment and Operations

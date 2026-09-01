@@ -5,15 +5,32 @@ The app auto-enables the Cosmos backend whenever ``COSMOS_ENDPOINT`` is set
 isolated local Cosmos account, which would otherwise make the suite read/write
 that shared live database instead of the per-test temp dirs each test sets up.
 
-Force Cosmos OFF by default for every test so storage stays hermetic and uses
-the monkeypatched local-JSON paths. Tests that specifically exercise the Cosmos
-dispatch branch (e.g. ``TestCosmosDispatch``) simply re-patch ``is_enabled`` to
-``True`` within the test, which overrides this default.
+Force Cosmos OFF and redirect local preferences to a per-test directory so the
+suite never reads or writes the developer's real profile. Tests that specifically
+exercise the Cosmos dispatch branch (e.g. ``TestCosmosDispatch``) simply re-patch
+``is_enabled`` to ``True`` within the test, which overrides this default.
 """
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
+
+pytest_plugins = ["tests.support.trip_view"]
+
+
+@pytest.fixture(autouse=True)
+def _isolate_local_preferences(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """Keep every local preference read and write inside this test's temp directory."""
+    from tripplanner.tools import user_preferences
+
+    root = tmp_path / "preferences"
+    monkeypatch.setattr(user_preferences, "_PREFS_DIR", root)
+    monkeypatch.setattr(user_preferences, "_PREFS_FILE", root / "user_preferences.json")
 
 
 @pytest.fixture(autouse=True)
