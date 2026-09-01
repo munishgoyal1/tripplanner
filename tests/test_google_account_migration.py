@@ -42,10 +42,11 @@ def test_google_migration_requires_checkpoints_before_retirement() -> None:
         "function New-TargetGuardrailsConfig", maxsplit=1
     )[0]
     assert "roles/resourcemanager.projectMover" in script
+    assert '"roles/oauthconfig.editor"' in script
     assert '"roles/resourcemanager.projectIamAdmin"' in script
     assert '"roles/serviceusage.apiKeysAdmin"' in script
     assert '"roles/cloudquotas.admin", "roles/monitoring.editor"' in script
-    assert '"roles/iam.serviceAccountAdmin", "roles/pubsub.admin"' in script
+    assert '"roles/serviceusage.serviceUsageConsumer"' in script
     assert "$null -eq $_.parent" in script
     assert '"projects", "get-iam-policy"' not in common
     assert script.index("Invoke-Verify\n") < script.index(

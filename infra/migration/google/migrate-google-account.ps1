@@ -101,6 +101,7 @@ function Invoke-Grant {
     }
     foreach ($state in $states) {
         foreach ($role in @(
+            "roles/oauthconfig.editor",
             "roles/resourcemanager.projectIamAdmin",
             "roles/serviceusage.apiKeysAdmin"
         )) {
@@ -125,7 +126,11 @@ function Invoke-Grant {
         }
     }
     $opsProject = @($manifest.knownProjects | Where-Object { $_.environment -eq "ops" })[0].projectId
-    foreach ($role in @("roles/iam.serviceAccountAdmin", "roles/pubsub.admin")) {
+    foreach ($role in @(
+        "roles/iam.serviceAccountAdmin",
+        "roles/pubsub.admin",
+        "roles/serviceusage.serviceUsageConsumer"
+    )) {
         if ($PSCmdlet.ShouldProcess($opsProject, "Grant target principal $role")) {
             Invoke-GcloudMigration @(
                 "projects", "add-iam-policy-binding", $opsProject,
