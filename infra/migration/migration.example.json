@@ -57,6 +57,10 @@
         "rg-tripplanner-prod"
       ]
     },
+    "cosmosDatabases": [
+      "tripplanner-canary",
+      "tripplanner-prod"
+    ],
     "imageTag": "<immutable-git-sha>",
     "sourceSecretFiles": {
       "canary": ".env.canary",

@@ -17,6 +17,13 @@ $config = Read-MigrationConfig -Path $ConfigPath
 $azure = $config.azure
 $source = $azure.source
 $target = $azure.target
+$cosmosDatabases = @($azure.cosmosDatabases)
+if ($cosmosDatabases.Count -eq 0) {
+    throw "azure.cosmosDatabases must explicitly list the hosted databases to migrate."
+}
+if ($cosmosDatabases -contains "tripplanner-local") {
+    throw "azure.cosmosDatabases must not include tripplanner-local; local development uses the Cosmos emulator."
+}
 $requiredProviders = @(
     "Microsoft.App", "Microsoft.CognitiveServices", "Microsoft.Communication",
     "Microsoft.DocumentDB", "Microsoft.Insights", "Microsoft.OperationalInsights",
@@ -73,11 +80,16 @@ function Assert-SourceScopeComplete {
 
 function Get-CosmosDatabases {
     param($Coordinates)
-    return @(Get-AzureJson -Description "list Cosmos databases" -Arguments @(
+    $available = @(Get-AzureJson -Description "list Cosmos databases" -Arguments @(
         "cosmosdb", "sql", "database", "list", "--subscription", $Coordinates.subscriptionId,
         "--resource-group", $Coordinates.cosmosResourceGroup,
         "--account-name", $Coordinates.cosmosAccount, "--query", "[].name"
     ))
+    $missing = @($cosmosDatabases | Where-Object { $_ -notin $available })
+    if ($missing.Count -gt 0) {
+        throw "Configured Cosmos databases are missing from $($Coordinates.cosmosAccount): $($missing -join ', ')."
+    }
+    return @($cosmosDatabases)
 }
 
 function Invoke-CosmosCopy {
