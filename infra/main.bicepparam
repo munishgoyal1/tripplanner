@@ -35,6 +35,8 @@ param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
 param googleMapsBrowserKey = readEnvironmentVariable('GOOGLE_MAPS_BROWSER_KEY', '')
 param googleAnalyticsMeasurementId = readEnvironmentVariable('GOOGLE_ANALYTICS_MEASUREMENT_ID', '')
 param tavilyApiKey = readEnvironmentVariable('TAVILY_API_KEY', '')
+param azureCommunicationConnectionString = readEnvironmentVariable('AZURE_COMMUNICATION_CONNECTION_STRING', '')
+param azureCommunicationEmailSender = readEnvironmentVariable('AZURE_COMMUNICATION_EMAIL_SENDER', '')
 
 // OAuth (all optional). Leaving WEB_SESSION_SECRET unset disables login
 // flows entirely — the app stays usable with ephemeral per-session identity.

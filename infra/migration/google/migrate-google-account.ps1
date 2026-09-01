@@ -47,7 +47,10 @@ function Select-GcloudConfiguration {
 
 function Invoke-Plan {
     Assert-ActiveGooglePrincipal -Expected $manifest.source.principal
-    $projects = @(Get-SourceBillingProjects -Manifest $manifest)
+    $allProjects = @(Get-SourceBillingProjects -Manifest $manifest -IncludeExcluded)
+    $projects = @($allProjects | Where-Object {
+        $_.projectId -notin @($manifest.projectSelection.excludeProjectIds)
+    })
     if ($projects.Count -eq 0) {
         throw "No projects were found on source billing account $($manifest.source.billingAccount)."
     }
@@ -67,6 +70,9 @@ function Invoke-Plan {
         discoveredProjectIds = @($states.projectId)
         inaccessibleProjectIds = @($states | Where-Object { -not $_.accessible } | ForEach-Object { $_.projectId })
         additionalProjectIds = @($states.projectId | Where-Object { $_ -notin $knownIds })
+        excludedSourceBilledProjectIds = @($allProjects.projectId | Where-Object {
+            $_ -in @($manifest.projectSelection.excludeProjectIds)
+        })
         projectCheckpoint = $checkpoint
         manualCheckpoints = @(
             "Create the target billing account and payment profile.",
@@ -234,7 +240,10 @@ function Invoke-Verify {
     Assert-TargetConfigured -Manifest $manifest
     Assert-ActiveGooglePrincipal -Expected $manifest.target.principal
     $projectIds = @(Get-MigrationProjectIds -Manifest $manifest -ManifestPath $ManifestPath)
-    $sourceProjects = @(Get-SourceBillingProjects -Manifest $manifest)
+    $allSourceProjects = @(Get-SourceBillingProjects -Manifest $manifest -IncludeExcluded)
+    $sourceProjects = @($allSourceProjects | Where-Object {
+        $_.projectId -notin @($manifest.projectSelection.excludeProjectIds)
+    })
     $states = @($projectIds | ForEach-Object { Get-ProjectMigrationState -ProjectId $_ })
     $failures = @()
     foreach ($state in $states) {
@@ -261,6 +270,9 @@ function Invoke-Verify {
         failures = $failures
         projects = $states
         sourceBillingProjects = @($sourceProjects.projectId)
+        excludedSourceBillingProjects = @($allSourceProjects.projectId | Where-Object {
+            $_ -in @($manifest.projectSelection.excludeProjectIds)
+        })
     }
     Write-MigrationReport -Manifest $manifest -Phase "Verify" -Body $body -ManifestPath $ManifestPath
     if ($failures.Count -gt 0) { throw ($failures -join "`n") }
@@ -323,13 +335,15 @@ function Invoke-Retire {
             $deletedBudgets += $budget
         }
     }
+    $remainingExcluded = @(Get-SourceBillingProjects -Manifest $manifest -IncludeExcluded |
+        Where-Object { $_.projectId -in @($manifest.projectSelection.excludeProjectIds) })
     $body = [ordered]@{
         retiredPrincipal = $manifest.source.principal
         retiredProjects = $projectIds
-        sourceBillingProjects = @()
+        sourceBillingProjects = @($remainingExcluded.projectId)
         sourceBudgetsDeleted = $deletedBudgets
         manualFinalAction = "Close source billing account $($manifest.source.billingAccount) in Google Cloud Console. gcloud has no billing-account close command."
-        chargingRisk = "No project remains linked to the source billing account, so it has no resource usage to charge."
+        chargingRisk = "Only owner-approved excluded projects may remain linked. Close or unlink them separately before closing the source billing account."
     }
     Write-MigrationReport -Manifest $manifest -Phase "Retire" -Body $body -ManifestPath $ManifestPath
 }

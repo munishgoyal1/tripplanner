@@ -18,7 +18,7 @@ def test_google_migration_manifest_selects_every_source_billed_project() -> None
     assert manifest["target"]["principal"] == "munishgoyal@aitripplanner.co"
     assert manifest["projectSelection"] == {
         "mode": "all-linked-to-source-billing",
-        "excludeProjectIds": [],
+        "excludeProjectIds": ["aitripplanner-local-507305"],
     }
     assert {project["environment"] for project in manifest["knownProjects"]} == {
         "local",
@@ -33,6 +33,7 @@ def test_google_migration_requires_checkpoints_before_retirement() -> None:
     common = (MIGRATION_ROOT / "google-migration-common.ps1").read_text(encoding="utf-8")
 
     assert "Get-SourceBillingProjects" in script
+    assert "-IncludeExcluded" in script
     assert "all-linked-to-source-billing" in common
     assert "Write-MigrationProjectCheckpoint" in script
     assert "Get-ExistingMigrationProjectIds" in script
@@ -58,6 +59,16 @@ def test_google_cutover_preserves_projects_and_reapplies_guardrails() -> None:
     assert "unexpected billing account" in script
     assert "$state.billingAccount -ne $manifest.target.billingAccount" in script
     assert '"projects", "delete"' not in script
+
+
+def test_generic_orchestrator_rejects_google_fixed_list_path() -> None:
+    orchestrator = (ROOT / "infra" / "migration" / "Invoke-CloudMigration.ps1").read_text(
+        encoding="utf-8"
+    )
+
+    assert "migrate-google-account.ps1" in orchestrator
+    assert '@("azure", "google")' not in orchestrator
+    assert not (MIGRATION_ROOT / "Invoke-GoogleMigration.ps1").exists()
 
 
 def test_google_all_mode_switches_pre_authenticated_configurations() -> None:

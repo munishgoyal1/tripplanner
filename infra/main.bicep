@@ -144,6 +144,13 @@ param googleAnalyticsMeasurementId string = ''
 @description('Tavily web-search API key.')
 param tavilyApiKey string = ''
 
+@secure()
+@description('Optional Azure Communication Services connection string for itinerary email delivery.')
+param azureCommunicationConnectionString string = ''
+
+@description('Optional Azure Communication Services sender address.')
+param azureCommunicationEmailSender string = ''
+
 @description('Explicit billing gate for Google Places API (New). Keep false outside production.')
 param enableGooglePlaces bool = false
 
@@ -290,6 +297,21 @@ var providerSecrets = concat(
 )
 
 var redisSecrets = empty(cacheRedisUrl) ? [] : [{ name: 'cache-redis-url', value: cacheRedisUrl }]
+
+var communicationSecrets = empty(azureCommunicationConnectionString)
+  ? []
+  : [{ name: 'azure-communication-connection-string', value: azureCommunicationConnectionString }]
+
+var communicationEnv = concat(
+  empty(azureCommunicationConnectionString) ? [] : [{
+    name: 'AZURE_COMMUNICATION_CONNECTION_STRING'
+    secretRef: 'azure-communication-connection-string'
+  }],
+  empty(azureCommunicationEmailSender) ? [] : [{
+    name: 'AZURE_COMMUNICATION_EMAIL_SENDER'
+    value: azureCommunicationEmailSender
+  }]
+)
 
 var providerEnv = concat(
   empty(liteapiApiKey) ? [] : [
@@ -591,7 +613,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
           }
         ]
       }
-      secrets: concat(baseSecrets, oauthSecrets, providerSecrets, redisSecrets)
+      secrets: concat(baseSecrets, oauthSecrets, providerSecrets, redisSecrets, communicationSecrets)
     }
     template: {
       containers: [
@@ -602,7 +624,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json('0.5')
             memory: '1Gi'
           }
-          env: concat(baseEnv, oauthEnv, providerEnv, redisEnv)
+          env: concat(baseEnv, oauthEnv, providerEnv, redisEnv, communicationEnv)
         }
       ]
       scale: {

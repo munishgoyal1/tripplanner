@@ -1,8 +1,32 @@
 # Cloud Account Migration
 
-This directory owns reusable, approval-gated account migration workflows. It is
-separate from ordinary deployment because migration changes ownership and billing
-rather than application code or an environment's desired runtime state.
+This directory owns repeatable, approval-gated migration of the Tripplanner Azure
+and Google Cloud estate to new account and billing boundaries. Azure and Google
+have separate operational flows because Azure copies data into newly provisioned
+resources while Google moves existing projects in place.
+
+## Azure
+
+The shared `Invoke-CloudMigration.ps1` orchestrator currently owns Azure migration:
+inventory, target provisioning, exact Cosmos copy and verification, DNS cutover,
+and allowlisted source resource-group retirement. Copy `migration.example.json`
+to an ignored path such as `logs/migration/config.json`, fill every Azure target
+value, and keep `google.enabled` false.
+
+Use one stable run ID so each phase can verify prior evidence:
+
+```powershell
+$run = Get-Date -Format "yyyyMMdd-HHmmss"
+pwsh -File infra/migration/Invoke-CloudMigration.ps1 `
+  -ConfigPath logs/migration/config.json -RunId $run -Cloud azure -Phase preflight
+pwsh -File infra/migration/Invoke-CloudMigration.ps1 `
+  -ConfigPath logs/migration/config.json -RunId $run -Cloud azure -Phase inventory
+```
+
+Later Azure write phases retain their exact approvals. Deleting source resource
+groups is irreversible, and subscription cancellation remains a manual billing
+owner action after the scripts prove that no managed resources remain. The final
+Cosmos backup under `logs/migration/<run>/azure/` is the recovery artifact.
 
 ## Google Cloud
 
@@ -87,11 +111,12 @@ Reports are written under `google/reports/` and are ignored by Git. They are
 checkpoints for resume and audit, not credentials. Never commit OAuth secrets, API
 key values, payment details, access tokens, or ADC files.
 
-The first live Plan currently discovers `aitripplanner-local-507305` on the source
-billing account even though the source principal cannot inspect it. Restore project
-access or unlink/delete that project before Grant. The workflow intentionally blocks
-all mutation while any source-billed project is inaccessible.
+`aitripplanner-local-507305` is explicitly excluded in the checked-in Google
+manifest following owner confirmation that it is an unused dummy project. The
+workflow still discovers all source-billed projects and blocks on any other new
+or inaccessible project. Closing or deleting that excluded dummy project remains
+a separate owner action if its billing link can incur charges.
 
-Azure remains unchanged by this workflow. A future Azure-to-Google workload
-migration belongs under `infra/migration/azure/` once its target architecture and
-data-transfer requirements are approved.
+The generic cloud orchestrator intentionally does not implement Google migration.
+Use the guarded Google command above so fixed project lists cannot omit a billed
+project and source retirement cannot run without its dedicated verification gates.

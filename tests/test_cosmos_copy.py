@@ -37,6 +37,16 @@ class FakeContainer:
         self.items.append(deepcopy(item))
 
 
+class CosmosLikeTtlContainer(FakeContainer):
+    def upsert_item(self, item: dict[str, Any]) -> None:
+        stored = deepcopy(item)
+        stored["_ts"] = 2_000
+        super().upsert_item(stored)
+
+    def read(self) -> dict[str, int]:
+        return {"defaultTtl": 7_776_000}
+
+
 class FakeDatabase:
     def __init__(self, containers: dict[str, FakeContainer]) -> None:
         self.containers = containers
@@ -124,6 +134,49 @@ def test_audit_copy_preserves_permanent_ttl() -> None:
 
     assert _portable_item(item, "audit_events", now=1_040)["ttl"] == -1
 
+
+def test_provider_usage_copy_preserves_remaining_ttl() -> None:
+    item = {
+        "id": "usage-1",
+        "user_id": "prod",
+        "_ts": 1_000,
+        "ttl": 100,
+    }
+
+    assert _portable_item(item, "provider_usage", now=1_040) == {
+        "id": "usage-1",
+        "user_id": "prod",
+        "ttl": 60,
+    }
+
+
+def test_backup_artifact_verifies_against_cosmos_assigned_timestamp() -> None:
+    source = FakeContainer(
+        [{"id": "usage-1", "user_id": "prod", "ttl": 60}]
+    )
+    target = CosmosLikeTtlContainer([])
+
+    assert copy_container(source, target, "provider_usage") == 1
+    assert verify_container(source, target, "provider_usage") == 1
+
+
+def test_copy_rejects_missing_required_source_container(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    source = FakeDatabase({"users": FakeContainer([])})
+    target = FakeDatabase({name: FakeContainer([]) for name in DEFAULT_CONTAINERS})
+    clients = iter(
+        [
+            FakeClient({"tripplanner-prod": source}),
+            FakeClient({"tripplanner-prod": target}),
+        ]
+    )
+    monkeypatch.setattr(cosmos_copy, "_client", lambda connection: next(clients))
+
+    with pytest.raises(RuntimeError, match="missing containers"):
+        copy_cosmos(
+            CosmosConnection("https://source.test", "secret", "tripplanner-prod"),
+            CosmosConnection("https://target.test", "secret", "tripplanner-prod"),
+            list(DEFAULT_CONTAINERS),
+        )
 
 def test_audit_verify_rejects_permanent_to_expiring_change() -> None:
     source = FakeContainer(
@@ -239,7 +292,7 @@ def test_backup_recovery_drill_reports_without_credentials(
 def test_recovery_drill_rejects_partial_container_scope() -> None:
     source_database, target_database = _recovery_databases()
 
-    with pytest.raises(ValueError, match="exactly the six default"):
+    with pytest.raises(ValueError, match="exactly the eight default"):
         _require_recovery_target(
             CosmosConnection("https://source.test", "secret", "tripplanner-prod"),
             CosmosConnection("https://target.test", "secret", "tripplanner-recovery"),
@@ -250,7 +303,7 @@ def test_recovery_drill_rejects_partial_container_scope() -> None:
 
 
 def test_backup_export_rejects_partial_container_scope(tmp_path) -> None:
-    with pytest.raises(ValueError, match="exactly the six default"):
+    with pytest.raises(ValueError, match="exactly the eight default"):
         export_backup(
             CosmosConnection("https://source.test", "secret", "tripplanner-prod"),
             tmp_path / "backup",
@@ -357,3 +410,39 @@ def test_restore_rejects_manifest_path_outside_artifact(monkeypatch, tmp_path) -
         )
 
     assert all(not container.items for container in target_database.containers.values())
+
+
+def test_export_only_does_not_require_target(monkeypatch, tmp_path, capsys) -> None:  # type: ignore[no-untyped-def]
+    source_database, _ = _recovery_databases()
+    monkeypatch.setattr(
+        cosmos_copy,
+        "_client",
+        lambda connection: FakeClient({"tripplanner-prod": source_database}),
+    )
+    monkeypatch.setattr(
+        cosmos_copy,
+        "_connection_from_args",
+        lambda args, prefix: CosmosConnection(
+            "https://source.test", "secret", "tripplanner-prod"
+        ),
+    )
+    monkeypatch.setattr(
+        cosmos_copy,
+        "parse_args",
+        lambda: cosmos_copy.argparse.Namespace(
+            export_only=True,
+            dry_run=False,
+            verify_only=False,
+            recovery_drill=False,
+            backup_dir=tmp_path / "backup",
+            report_path=None,
+            containers=list(DEFAULT_CONTAINERS),
+            json_output=True,
+            dst_db=None,
+        ),
+    )
+
+    assert cosmos_copy.main() == 0
+    output = cosmos_copy.json.loads(capsys.readouterr().out)
+    assert output["total_items"] == len(DEFAULT_CONTAINERS)
+    assert (tmp_path / "backup" / "manifest.json").is_file()

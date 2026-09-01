@@ -7,14 +7,16 @@ or perform an Azure-native point-in-time restore.
 
 ## Recovery scope
 
-The recoverable application set is all six runtime containers:
+The recoverable application set is all eight runtime containers:
 
 - `users`: preferences, active trip pointers, chat, usage, and operation ledgers.
 - `trips`: saved trip plans.
+- `documents`: traveller document readiness fields and metadata.
 - `places_cache`: durable place metadata cache.
 - `shared_trips`: public share snapshots.
 - `tool_cache`: provider search cache.
 - `audit_events`: restricted audit records with remaining TTL preserved.
+- `provider_usage`: content-free provider usage telemetry with remaining TTL preserved.
 
 The backup artifact contains one JSONL file per container plus `manifest.json`.
 The manifest records item counts, SHA-256 checksums, source host/database,
@@ -28,11 +30,11 @@ These are operational targets to validate during each drill, not guarantees
 until repeated evidence exists:
 
 | Objective | Initial target |
-|---|---:|
+| --- | ---: |
 | Recovery point objective (RPO) | Age of the selected backup artifact <= 24 hours |
 | Recovery time objective (RTO) | Artifact validation and isolated restore <= 60 minutes |
 | Drill frequency | Before a high-risk data release and at least quarterly |
-| Content verification | 100% of six containers, item counts, checksums, and exact values |
+| Content verification | 100% of eight containers, item counts, checksums, and exact values |
 
 A manual export only establishes an RPO from its `exported_at` timestamp. For a
 continuous production RPO, separately configure and verify Azure Cosmos DB
@@ -43,8 +45,8 @@ change is outside this drill and requires explicit approval.
 
 1. Create an empty isolated Cosmos database whose name contains `recovery`,
    `restore`, or `drill`.
-2. Provision the same six containers with partition key `/user_id`; set
-   `audit_events` default TTL to `7776000`.
+2. Provision the same eight containers with partition key `/user_id`; set
+   `audit_events` and `provider_usage` default TTL to `7776000`.
 3. Authenticate Azure CLI with read access to the source and data-plane write
    access to the isolated target.
 4. Choose a new empty local artifact directory and report path under `logs/`.
@@ -74,8 +76,8 @@ python scripts/cosmos_copy.py `
 
 The command performs these steps in order:
 
-1. Reads every document from all six source containers.
-2. Removes Cosmos system metadata and preserves remaining audit TTL.
+1. Reads every document from all eight source containers.
+2. Removes Cosmos system metadata and preserves remaining audit and provider-usage TTL.
 3. Writes deterministic JSONL files and a checksummed manifest.
 4. Reopens and verifies every artifact checksum, item count, and identity.
 5. Confirms the target is isolated, complete, and empty.
@@ -91,7 +93,7 @@ pass.
 A passing report must show:
 
 - `status: passed`.
-- Backup and restore counts for all six containers.
+- Backup and restore counts for all eight containers.
 - Matching backup `total_items` and restore `restored_items`.
 - `verification: checksum_and_exact_content`.
 - A target database containing `recovery`, `restore`, or `drill`.

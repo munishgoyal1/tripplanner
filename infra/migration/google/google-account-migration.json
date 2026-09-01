@@ -14,7 +14,9 @@
   },
   "projectSelection": {
     "mode": "all-linked-to-source-billing",
-    "excludeProjectIds": []
+    "excludeProjectIds": [
+      "aitripplanner-local-507305"
+    ]
   },
   "knownProjects": [
     { "environment": "local", "id": "aitripplanner-local", "name": "aitripplanner-local" },

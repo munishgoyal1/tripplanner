@@ -19,13 +19,19 @@ from azure.cosmos import CosmosClient
 DEFAULT_CONTAINERS = (
     "users",
     "trips",
+    "documents",
     "places_cache",
     "shared_trips",
     "tool_cache",
     "audit_events",
+    "provider_usage",
 )
 SYSTEM_FIELDS = {"_rid", "_self", "_etag", "_attachments", "_ts"}
 AUDIT_DEFAULT_TTL_SECONDS = 7_776_000
+EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS = {
+    "audit_events": 7_776_000,
+    "provider_usage": 7_776_000,
+}
 LIVE_DATABASE_NAMES = {"tripplanner-canary", "tripplanner-prod"}
 BACKUP_FORMAT_VERSION = 1
 
@@ -47,8 +53,10 @@ def _portable_item(
     item: dict[str, Any], container_name: str = "", *, now: int | None = None
 ) -> dict[str, Any]:
     portable = {key: value for key, value in item.items() if key not in SYSTEM_FIELDS}
-    if container_name == "audit_events" and "_ts" in item:
-        source_ttl = int(item.get("ttl", AUDIT_DEFAULT_TTL_SECONDS))
+    if container_name in EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS and "_ts" in item:
+        source_ttl = int(
+            item.get("ttl", EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS[container_name])
+        )
         if source_ttl == -1:
             portable["ttl"] = -1
         else:
@@ -68,8 +76,10 @@ def _verification_item(
 ) -> tuple[dict[str, Any], int | str | None]:
     portable = {key: value for key, value in item.items() if key not in SYSTEM_FIELDS}
     expires_at = None
-    if container_name == "audit_events":
-        ttl = int(portable.pop("ttl", AUDIT_DEFAULT_TTL_SECONDS))
+    if container_name in EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS:
+        ttl = int(
+            portable.pop("ttl", EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS[container_name])
+        )
         if ttl == -1:
             expires_at = "permanent"
         elif "_ts" in item:
@@ -117,12 +127,15 @@ def copy_container(
 
 
 def verify_container(src_container: Any, dst_container: Any, container_name: str) -> int:
-    if container_name == "audit_events" and hasattr(dst_container, "read"):
+    if container_name in EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS and hasattr(
+        dst_container, "read"
+    ):
         default_ttl = dst_container.read().get("defaultTtl")
-        if default_ttl != AUDIT_DEFAULT_TTL_SECONDS:
+        expected_ttl = EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS[container_name]
+        if default_ttl != expected_ttl:
             raise RuntimeError(
-                "Container audit_events verification failed: "
-                f"defaultTtl={default_ttl}, expected={AUDIT_DEFAULT_TTL_SECONDS}"
+                f"Container {container_name} verification failed: "
+                f"defaultTtl={default_ttl}, expected={expected_ttl}"
             )
     source = _items_by_key(src_container, container_name)
     target = _items_by_key(dst_container, container_name)
@@ -134,6 +147,8 @@ def verify_container(src_container: Any, dst_container: Any, container_name: str
         target_body, target_expiry = target[key]
         if isinstance(source_expiry, int) and isinstance(target_expiry, int):
             expiry_changed = abs(source_expiry - target_expiry) > 5
+        elif source_expiry is None or target_expiry is None:
+            expiry_changed = False
         else:
             expiry_changed = source_expiry != target_expiry
         if not _equivalent_values(source_body, target_body) or expiry_changed:
@@ -175,10 +190,11 @@ def copy_cosmos(
     existing_source = {
         container["id"] for container in src_database.list_containers()
     }
-    skipped = [name for name in containers if name not in existing_source]
-    for name in skipped:
-        print(f"Container {name}: skipped (absent on source database)")
-    containers = [name for name in containers if name in existing_source]
+    missing_source = [name for name in containers if name not in existing_source]
+    if missing_source:
+        raise RuntimeError(
+            f"Copy aborted because source database is missing containers: {missing_source}"
+        )
 
     total = 0
     for name in containers:
@@ -218,7 +234,7 @@ def _require_recovery_target(
         DEFAULT_CONTAINERS
     ):
         raise ValueError(
-            "Recovery drill requires exactly the six default application containers."
+            "Recovery drill requires exactly the eight default application containers."
         )
     if target.database.casefold() in LIVE_DATABASE_NAMES:
         raise ValueError(
@@ -278,7 +294,7 @@ def export_backup(
         DEFAULT_CONTAINERS
     ):
         raise ValueError(
-            "Backup export requires exactly the six default application containers."
+            "Backup export requires exactly the eight default application containers."
         )
     if backup_dir.exists() and any(backup_dir.iterdir()):
         raise ValueError("Backup directory must be empty or absent.")
@@ -457,7 +473,13 @@ def _az_output(*arguments: str) -> str:
     return result.stdout.strip()
 
 
-def _azure_connection(resource_group: str, account: str, database: str) -> CosmosConnection:
+def _azure_connection(
+    resource_group: str,
+    account: str,
+    database: str,
+    subscription: str | None = None,
+) -> CosmosConnection:
+    subscription_args = ("--subscription", subscription) if subscription else ()
     endpoint = _az_output(
         "cosmosdb",
         "show",
@@ -467,6 +489,7 @@ def _azure_connection(resource_group: str, account: str, database: str) -> Cosmo
         account,
         "--query",
         "documentEndpoint",
+        *subscription_args,
     )
     key = _az_output(
         "cosmosdb",
@@ -478,6 +501,7 @@ def _azure_connection(resource_group: str, account: str, database: str) -> Cosmo
         account,
         "--query",
         "primaryMasterKey",
+        *subscription_args,
     )
     return CosmosConnection(endpoint=endpoint, key=key, database=database)
 
@@ -488,9 +512,10 @@ def _connection_from_args(args: argparse.Namespace, prefix: str) -> CosmosConnec
     database = getattr(args, f"{prefix}_db")
     endpoint = getattr(args, f"{prefix}_endpoint")
     key = getattr(args, f"{prefix}_key")
+    subscription = getattr(args, f"{prefix}_subscription")
 
     if account and resource_group:
-        return _azure_connection(resource_group, account, database)
+        return _azure_connection(resource_group, account, database, subscription)
     if endpoint and key:
         return CosmosConnection(endpoint=endpoint, key=key, database=database)
     raise ValueError(
@@ -506,13 +531,15 @@ def parse_args() -> argparse.Namespace:
     for prefix in ("src", "dst"):
         parser.add_argument(f"--{prefix}-account")
         parser.add_argument(f"--{prefix}-resource-group")
+        parser.add_argument(f"--{prefix}-subscription")
         parser.add_argument(f"--{prefix}-endpoint")
         parser.add_argument(f"--{prefix}-key")
-        parser.add_argument(f"--{prefix}-db", required=True)
+        parser.add_argument(f"--{prefix}-db", required=prefix == "src")
     parser.add_argument("--containers", nargs="+", default=list(DEFAULT_CONTAINERS))
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--verify-only", action="store_true")
     parser.add_argument("--recovery-drill", action="store_true")
+    parser.add_argument("--export-only", action="store_true")
     parser.add_argument("--backup-dir", type=Path)
     parser.add_argument("--report-path", type=Path)
     parser.add_argument("--json", action="store_true", dest="json_output")
@@ -522,6 +549,26 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     source = _connection_from_args(args, "src")
+    if args.export_only:
+        if args.dry_run or args.verify_only or args.recovery_drill:
+            raise ValueError(
+                "--export-only cannot be combined with dry-run, verify-only, or recovery-drill."
+            )
+        if not args.backup_dir:
+            raise ValueError("--export-only requires --backup-dir.")
+        if args.containers != list(DEFAULT_CONTAINERS):
+            raise ValueError("--export-only does not permit a partial container list.")
+        manifest = export_backup(source, args.backup_dir, list(DEFAULT_CONTAINERS))
+        if args.report_path:
+            _write_report(args.report_path, manifest)
+        print(
+            json.dumps(manifest, sort_keys=True)
+            if args.json_output
+            else json.dumps(manifest, indent=2)
+        )
+        return 0
+    if not args.dst_db:
+        raise ValueError("--dst-db is required unless --export-only is used.")
     target = _connection_from_args(args, "dst")
     if args.recovery_drill:
         if args.dry_run or args.verify_only:

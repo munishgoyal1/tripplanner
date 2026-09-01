@@ -66,17 +66,22 @@ function Assert-TargetConfigured {
 }
 
 function Get-SourceBillingProjects {
-    param([Parameter(Mandatory)]$Manifest)
+    param(
+        [Parameter(Mandatory)]$Manifest,
+        [switch]$IncludeExcluded
+    )
 
     $raw = Invoke-GcloudMigration @(
         "beta", "billing", "projects", "list",
         "--billing-account=$($Manifest.source.billingAccount)",
         "--format=json(projectId,billingAccountName,billingEnabled,name)"
     )
-    $excluded = @($Manifest.projectSelection.excludeProjectIds)
-    return @($raw | ConvertFrom-Json | Where-Object {
-        $_.billingEnabled -and $_.projectId -notin $excluded
-    } | Sort-Object projectId)
+    $projects = @($raw | ConvertFrom-Json | Where-Object { $_.billingEnabled })
+    if (-not $IncludeExcluded) {
+        $excluded = @($Manifest.projectSelection.excludeProjectIds)
+        $projects = @($projects | Where-Object { $_.projectId -notin $excluded })
+    }
+    return @($projects | Sort-Object projectId)
 }
 
 function Get-ProjectMigrationState {
@@ -215,7 +220,10 @@ function Get-ExistingMigrationProjectIds {
     $directory = Get-MigrationReportDirectory -Manifest $Manifest -ManifestPath $ManifestPath
     $path = Join-Path $directory "project-checkpoint.json"
     if (-not (Test-Path $path)) { return @() }
-    return @(Get-MigrationProjectIds -Manifest $Manifest -ManifestPath $ManifestPath)
+    $excluded = @($Manifest.projectSelection.excludeProjectIds)
+    return @(Get-MigrationProjectIds -Manifest $Manifest -ManifestPath $ManifestPath | Where-Object {
+        $_ -notin $excluded
+    })
 }
 
 function Resolve-ManifestRelativePath {
