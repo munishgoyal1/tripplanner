@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from azure.core import MatchConditions
+from azure.core.exceptions import ServiceRequestError, ServiceResponseTimeoutError
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 
 from tripplanner import tools_cache
@@ -39,6 +40,8 @@ PRODUCTION_DATABASE = "tripplanner-prod"
 LOCAL_DATABASE = "tripplanner-cache"
 CHECKPOINT_VERSION = 1
 DEFAULT_WATERMARK_OVERLAP_SECONDS = 300
+MAX_TRANSIENT_ATTEMPTS = 3
+TRANSIENT_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
 
 
 @dataclass(frozen=True)
@@ -519,6 +522,77 @@ def _verify_write(
     return metrics
 
 
+def _is_transient(error: Exception) -> bool:
+    return isinstance(error, (ServiceRequestError, ServiceResponseTimeoutError)) or getattr(
+        error, "status_code", None
+    ) in TRANSIENT_STATUS_CODES
+
+
+def _retry_delay(attempt: int) -> None:
+    time.sleep(2 ** (attempt - 1))
+
+
+def _verify_with_retry(
+    container: Any,
+    planned: PlannedWrite,
+    metrics: ActivityMetrics,
+    *,
+    missing_is_false: bool = False,
+) -> tuple[bool, int]:
+    retries = 0
+    for attempt in range(1, MAX_TRANSIENT_ATTEMPTS + 1):
+        try:
+            _verify_write(container, planned, metrics)
+            return True, retries
+        except exceptions.CosmosResourceNotFoundError:
+            if missing_is_false:
+                return False, retries
+            raise
+        except Exception as error:  # noqa: BLE001 - retry only classified failures
+            if not _is_transient(error) or attempt == MAX_TRANSIENT_ATTEMPTS:
+                raise
+            retries += 1
+            _retry_delay(attempt)
+    raise AssertionError("unreachable")
+
+
+def _write_and_verify(
+    container: Any,
+    planned: PlannedWrite,
+    write_metrics: ActivityMetrics,
+    verification_metrics: ActivityMetrics,
+) -> tuple[str, int]:
+    retries = 0
+    for attempt in range(1, MAX_TRANSIENT_ATTEMPTS + 1):
+        try:
+            action, _ = _write(container, planned, write_metrics)
+        except Exception as error:  # noqa: BLE001 - reconcile ambiguous writes safely
+            if not _is_transient(error):
+                raise
+            retries += 1
+            committed, verification_retries = _verify_with_retry(
+                container,
+                planned,
+                verification_metrics,
+                missing_is_false=True,
+            )
+            retries += verification_retries
+            if committed:
+                return ("replaced" if planned.etag else "inserted"), retries
+            if attempt == MAX_TRANSIENT_ATTEMPTS:
+                raise
+            _retry_delay(attempt)
+            continue
+
+        _, verification_retries = _verify_with_retry(
+            container,
+            planned,
+            verification_metrics,
+        )
+        return action, retries + verification_retries
+    raise AssertionError("unreachable")
+
+
 def _local_client() -> CosmosClient:
     warnings.filterwarnings("ignore", message="Unverified HTTPS request")
     return CosmosClient(
@@ -661,6 +735,7 @@ def synchronize(args: argparse.Namespace) -> dict[str, Any]:
                     "verified": 0,
                     "skipped_stale": stale,
                     "conflicts": 0,
+                    "transient_retries": 0,
                     "write_metrics": ActivityMetrics().report(),
                     "verification_metrics": ActivityMetrics().report(),
                     "delta_activity": [
@@ -703,18 +778,16 @@ def synchronize(args: argparse.Namespace) -> dict[str, Any]:
                     for index, planned in enumerate(writes):
                         activity = direction_report["delta_activity"][index]
                         try:
-                            action, _ = _write(
-                                target_container, planned, write_metrics
+                            action, transient_retries = _write_and_verify(
+                                target_container,
+                                planned,
+                                write_metrics,
+                                verification_metrics,
                             )
                             direction_report["written"] += 1
                             direction_report[action] += 1
-                            activity["status"] = "written"
-                            _verify_write(
-                                target_container,
-                                planned,
-                                verification_metrics,
-                            )
                             direction_report["verified"] += 1
+                            direction_report["transient_retries"] += transient_retries
                             activity["status"] = "verified"
                         except Exception as error:  # noqa: BLE001 - preserve partial report
                             if getattr(error, "status_code", None) in {409, 412}:

@@ -4,6 +4,7 @@ import json
 from types import SimpleNamespace
 
 import pytest
+from azure.core.exceptions import ServiceResponseTimeoutError
 
 import scripts.prod_cache_sync as cache_sync
 from scripts.prod_cache_sync import (
@@ -358,6 +359,44 @@ def test_partial_failure_keeps_checkpoint_and_reports_completed_delta(
     ]
     assert activity["write_metrics"]["request_units"] == 4
     assert activity["verification_metrics"]["request_units"] == 1
+
+
+def test_transient_write_timeout_is_reconciled_before_retry(tmp_path, monkeypatch):
+    checkpoint_path = tmp_path / "checkpoint.json"
+    args = _sync_args(tmp_path, checkpoint_path)
+    _seed_checkpoint(checkpoint_path, args)
+    _stub_sync_databases(monkeypatch)
+    _stub_incremental_scan(monkeypatch)
+    write_calls: list[str] = []
+
+    def write_with_ambiguous_timeout(_container, planned, metrics):
+        write_calls.append(planned.item_id)
+        metrics.requests += 1
+        metrics.add_payload(planned.body)
+        if planned.item_id == "p1":
+            raise ServiceResponseTimeoutError("local emulator response timed out")
+        return "inserted", metrics
+
+    def verify_committed_write(_container, _planned, metrics):
+        metrics.requests += 1
+        return metrics
+
+    monkeypatch.setattr(cache_sync, "_write", write_with_ambiguous_timeout)
+    monkeypatch.setattr(cache_sync, "_verify_write", verify_committed_write)
+    monkeypatch.setattr(cache_sync.time, "sleep", lambda _seconds: None)
+
+    report = cache_sync.synchronize(args)
+
+    activity = report["containers"][PLACES_CONTAINER]["local_to_production"]
+    assert report["status"] == "passed"
+    assert report["written"] == 2
+    assert report["checkpoint"]["advanced"] is True
+    assert activity["transient_retries"] == 1
+    assert write_calls == ["p1", "p2"]
+    assert [item["status"] for item in activity["delta_activity"]] == [
+        "verified",
+        "verified",
+    ]
 
 
 def test_successful_incremental_run_advances_checkpoint(tmp_path, monkeypatch):

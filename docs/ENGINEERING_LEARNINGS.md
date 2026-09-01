@@ -1567,3 +1567,15 @@ the outcome.
 - Low-volume operational alerts need minimum sample or event guards. Ratios without
   volume thresholds turn one slow request, throttle, or cache miss into noise rather
   than an actionable production signal.
+
+## 2026-09-01 - Reconcile Ambiguous Writes Before Retrying Them
+
+- A response timeout does not prove that a remote write failed. The production-cache
+  bootstrap wrote and verified hundreds of emulator rows before one create response
+  timed out; retrying that create blindly could turn a transient failure into a conflict.
+- After a transient write error, point-read and verify the intended content first. Treat
+  an exact match as committed, retry only when the row is absent, and fail on a mismatch
+  so optimistic concurrency remains authoritative.
+- Keep the source watermark unchanged until every planned write verifies. Replaying
+  already-verified merge-only writes costs time but cannot omit cache evidence after a
+  partial run.
