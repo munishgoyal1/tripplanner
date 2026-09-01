@@ -22,7 +22,6 @@
       "location": "eastus2",
       "cosmosResourceGroup": "rg-tripplanner-data",
       "cosmosAccount": "<globally-unique-target-cosmos-name>",
-      "localRedisName": "<globally-unique-target-redis-name>",
       "failureAlertEmail": "munishgoyal@aitripplanner.co",
       "apexManagedCertificateName": "tripplanner-prod-apex-target",
       "wwwManagedCertificateName": "tripplanner-prod-www-target",

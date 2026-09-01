@@ -31,3 +31,16 @@ def test_azure_migration_copies_only_configured_hosted_databases() -> None:
     assert "$cosmosDatabases = @($azure.cosmosDatabases)" in script
     assert "must not include tripplanner-local" in script
     assert "return @($cosmosDatabases)" in script
+
+
+def test_azure_migration_defers_redis_provisioning() -> None:
+    script = (
+        MIGRATION_ROOT / "azure" / "Invoke-AzureMigration.ps1"
+    ).read_text(encoding="utf-8")
+    manifest = json.loads(
+        (MIGRATION_ROOT / "migration.example.json").read_text(encoding="utf-8")
+    )
+
+    assert "localRedisName" not in manifest["azure"]["target"]
+    assert "local-stack.bicep" not in script
+    assert "Microsoft.Cache" not in script

@@ -26,8 +26,7 @@ if ($cosmosDatabases -contains "tripplanner-local") {
 }
 $requiredProviders = @(
     "Microsoft.App", "Microsoft.CognitiveServices", "Microsoft.Communication",
-    "Microsoft.DocumentDB", "Microsoft.Insights", "Microsoft.OperationalInsights",
-    "Microsoft.Cache"
+    "Microsoft.DocumentDB", "Microsoft.Insights", "Microsoft.OperationalInsights"
 )
 
 function Get-AzureJson {
@@ -152,7 +151,6 @@ switch ($Phase) {
         Assert-SourceScopeComplete
         Assert-ConfiguredValue "azure.imageTag" $azure.imageTag
         Assert-ConfiguredValue "azure.target.cosmosAccount" $target.cosmosAccount
-        Assert-ConfiguredValue "azure.target.localRedisName" $target.localRedisName
         foreach ($environment in @("local", "canary", "prod")) {
             if ($environment -ne "local") {
                 $secretFile = Join-Path $repoRoot ([string]$azure.sourceSecretFiles.$environment)
@@ -224,12 +222,6 @@ switch ($Phase) {
             -Location $target.location -ResourceGroup $target.cosmosResourceGroup -AccountName $target.cosmosAccount `
             -DryRun:$WhatIfPreference
         if (-not $WhatIfPreference) {
-            Invoke-CheckedCommand "az" @(
-                "deployment", "sub", "create", "--subscription", $target.subscriptionId,
-                "--location", $target.location, "--template-file", (Join-Path $repoRoot "infra/local-stack.bicep"),
-                "--parameters", "localResourceGroupName=rg-tripplanner-local",
-                "redisName=$($target.localRedisName)", "--output", "none"
-            ) "deploy target local Redis"
             foreach ($environment in @("local", "canary", "prod")) {
                 $hosted = $target.hosted.$environment
                 & (Join-Path $repoRoot "infra/provision-aoai.ps1") -Environment $environment `

@@ -30,8 +30,8 @@ from this table.
 | Shared data | `rg-tripplanner-data` | n/a | Shared account | Canary/prod data plane |
 
 `rg-tripplanner-local` holds owner-only development resources, currently the
-Azure OpenAI account and the provider-cache Redis. It is not part of any hosted
-release.
+Azure OpenAI account. Provider-cache Redis is deferred until explicitly needed
+and is not part of bootstrap or account-migration provisioning.
 
 Production serves `aitripplanner.co` and `www.aitripplanner.co`. Namecheap owns
 DNS; Bicep owns the existing Azure-managed certificates and hostname bindings.
@@ -151,7 +151,8 @@ revision; an off revision is served before provider disablement.
 Only local runs it. `.env.canary` and `.env.prod` set `CACHE_REDIS_ENABLED=0`,
 so both hosted environments stay on the in-memory fallback and neither depends
 on a paid cache. The Redis instance described by `local-redis.bicep` is a
-single-developer convenience:
+single-developer convenience that is not provisioned by default. Create it only
+after explicit approval when local cache usage begins:
 
 ```powershell
 az deployment sub create --location eastus2 --template-file infra/local-stack.bicep
