@@ -187,14 +187,15 @@ foreach ($env in $gcp.environments) {
 
 function Get-BudgetId {
     param([string]$DisplayName)
-    $rows = Invoke-Gcloud @(
+    $json = Invoke-Gcloud @(
         "billing", "budgets", "list", "--billing-account=$billingAccount",
-        "--filter=displayName=$DisplayName", "--format=value(name)"
+        "--format=json(name,displayName)"
     ) -AllowFailure
-    if ($rows -match "ERROR") { return "" }
-    $first = ($rows -split "`n" | Where-Object { $_ } | Select-Object -First 1)
-    if (-not $first) { return "" }
-    return ($first -split "/")[-1]
+    if (-not $json -or $json -match "ERROR") { return "" }
+    $budget = @($json | ConvertFrom-Json | Where-Object { $_.displayName -eq $DisplayName }) |
+        Select-Object -First 1
+    if (-not $budget -or $budget.name -notmatch "/budgets/([^/]+)$") { return "" }
+    return $Matches[1]
 }
 
 function Set-Budget {
@@ -225,7 +226,8 @@ function Set-Budget {
         "--billing-account=$billingAccount",
         "--display-name=$DisplayName",
         "--budget-amount=$Amount$($gcp.currency)",
-        "--calendar-period=month"
+        "--calendar-period=month",
+        "--quiet"
     ) + $rules
 
     # --filter-projects takes the project number, not the project id.
@@ -334,7 +336,9 @@ if (-not $SkipQuotas) {
         foreach ($quota in $gcp.quotas) {
             $value = $quota.($env.name)
             if ($null -eq $value) { continue }
-            $preferenceId = if ($quota.preferenceId) {
+            $preferenceId = if (
+                $quota.PSObject.Properties["preferenceId"] -and $quota.preferenceId
+            ) {
                 [string]$quota.preferenceId
             } else {
                 "tp-" + $quota.quotaId.ToLower().Replace("_", "")

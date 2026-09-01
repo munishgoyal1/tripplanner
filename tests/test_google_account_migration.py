@@ -38,6 +38,16 @@ def test_google_migration_requires_checkpoints_before_retirement() -> None:
     assert "Write-MigrationProjectCheckpoint" in script
     assert "Get-ExistingMigrationProjectIds" in script
     assert "Assert-ProjectsAccessible" in script
+    assert '"--role=roles/owner"' not in script.split("function Invoke-Grant", maxsplit=1)[1].split(
+        "function New-TargetGuardrailsConfig", maxsplit=1
+    )[0]
+    assert "roles/resourcemanager.projectMover" in script
+    assert '"roles/resourcemanager.projectIamAdmin"' in script
+    assert '"roles/serviceusage.apiKeysAdmin"' in script
+    assert '"roles/cloudquotas.admin", "roles/monitoring.editor"' in script
+    assert '"roles/iam.serviceAccountAdmin", "roles/pubsub.admin"' in script
+    assert "$null -eq $_.parent" in script
+    assert '"projects", "get-iam-policy"' not in common
     assert script.index("Invoke-Verify\n") < script.index(
         '"Remove source principal project owner"'
     )
@@ -49,6 +59,9 @@ def test_google_migration_requires_checkpoints_before_retirement() -> None:
 
 def test_google_cutover_preserves_projects_and_reapplies_guardrails() -> None:
     script = (MIGRATION_ROOT / "migrate-google-account.ps1").read_text(encoding="utf-8")
+    guardrails = (ROOT / "infra" / "gcp" / "apply-billing-guardrails.ps1").read_text(
+        encoding="utf-8"
+    )
 
     assert '"beta", "projects", "move"' in script
     assert '"beta", "billing", "projects", "link"' in script
@@ -57,8 +70,14 @@ def test_google_cutover_preserves_projects_and_reapplies_guardrails() -> None:
     assert "APPROVE_GOOGLE_PLACES_SPEND" in script
     assert "Set-RepositoryTargetConfiguration" in script
     assert "unexpected billing account" in script
+    assert "$projects | ForEach-Object { $_.projectId }" in script
+    assert "sourceBillingProjects = @($sourceProjects | ForEach-Object { $_.projectId })" in script
     assert "$state.billingAccount -ne $manifest.target.billingAccount" in script
     assert '"projects", "delete"' not in script
+    assert '"--format=json(name,displayName)"' in guardrails
+    assert '$_.displayName -eq $DisplayName' in guardrails
+    assert '$quota.PSObject.Properties["preferenceId"]' in guardrails
+    assert '"--calendar-period=month",\n        "--quiet"' in guardrails
 
 
 def test_generic_orchestrator_rejects_google_fixed_list_path() -> None:
@@ -89,6 +108,7 @@ def test_google_operator_identity_is_configured_separately_from_azure() -> None:
         encoding="utf-8"
     )
 
-    assert guardrails["gcp"]["operatorAccount"] == "munishgoyal1@gmail.com"
+    assert guardrails["gcp"]["operatorAccount"] == "munishgoyal@aitripplanner.co"
+    assert guardrails["gcp"]["billingAccount"] == "01CEBE-1C217F-A8F9D5"
     assert "$config.gcp.operatorAccount" in runtime
     assert 'if ($account.user -ine "munishgoyal1@gmail.com")' in runtime
