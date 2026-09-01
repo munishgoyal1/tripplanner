@@ -235,6 +235,10 @@ def test_azure_services_control_is_scoped_reversible_and_enable_is_approval_gate
     assert "Microsoft.DocumentDB/databaseAccounts" in control
     assert "Microsoft.Cache/redisEnterprise" in control
     assert "tripplannerControlOriginalTrigger" in control
+    assert "tripplannerControlOriginalCron" in control
+    assert '"--remove", "properties.configuration.scheduleTriggerConfig"' in control
+    assert '"--remove", "properties.configuration.manualTriggerConfig"' in control
+    assert "properties.configuration.scheduleTriggerConfig.cronExpression=$originalCron" in control
     assert "public-network-access" in control
     assert '"delete"' not in control.lower()
     assert "never deletes resources or data" in control

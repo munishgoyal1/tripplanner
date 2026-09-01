@@ -29,7 +29,7 @@
         "local": {
           "openAiAccount": "aoailocaltp9fe3951c",
           "openAiDeployment": "gpt-4-1-local",
-          "openAiSku": "Standard",
+          "openAiSku": "GlobalStandard",
           "openAiCapacity": 30
         },
         "canary": {
@@ -40,9 +40,9 @@
         },
         "prod": {
           "openAiAccount": "aoaiprodtp9fe3951c",
-          "openAiDeployment": "gpt-4-1-global",
-          "openAiSku": "Standard",
-          "openAiCapacity": 50
+          "openAiDeployment": "gpt-5.4-mini",
+          "openAiSku": "DataZoneStandard",
+          "openAiCapacity": 150
         }
       },
       "communications": {

@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import time
 from collections.abc import Iterable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -25,6 +26,8 @@ DEFAULT_CONTAINERS = (
     "tool_cache",
     "audit_events",
     "provider_usage",
+    "trip_feedback",
+    "public_demo_runs",
 )
 SYSTEM_FIELDS = {"_rid", "_self", "_etag", "_attachments", "_ts"}
 AUDIT_DEFAULT_TTL_SECONDS = 7_776_000
@@ -114,13 +117,26 @@ def _equivalent_values(source: Any, target: Any) -> bool:
 
 
 def copy_container(
-    src_container: Any, dst_container: Any, container_name: str, *, dry_run: bool = False
+    src_container: Any,
+    dst_container: Any,
+    container_name: str,
+    *,
+    dry_run: bool = False,
+    workers: int = 1,
 ) -> int:
-    copied = 0
-    for item in _iter_all_items(src_container):
-        if not dry_run:
+    items = _iter_all_items(src_container)
+    if dry_run or workers == 1:
+        copied = 0
+        for item in items:
+            if not dry_run:
+                dst_container.upsert_item(_portable_item(item, container_name))
+            copied += 1
+    else:
+        def upsert(item: dict[str, Any]) -> None:
             dst_container.upsert_item(_portable_item(item, container_name))
-        copied += 1
+
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            copied = sum(1 for result in executor.map(upsert, items) if result is None)
     action = "would copy" if dry_run else "copied"
     print(f"Container {container_name}: {action} {copied} items")
     return copied
@@ -180,6 +196,7 @@ def copy_cosmos(
     *,
     dry_run: bool = False,
     verify_only: bool = False,
+    workers: int = 1,
 ) -> int:
     if source == target:
         raise ValueError("Source and target Cosmos coordinates must be different.")
@@ -190,19 +207,17 @@ def copy_cosmos(
     existing_source = {
         container["id"] for container in src_database.list_containers()
     }
-    missing_source = [name for name in containers if name not in existing_source]
-    if missing_source:
-        raise RuntimeError(
-            f"Copy aborted because source database is missing containers: {missing_source}"
-        )
 
     total = 0
     for name in containers:
+        if name not in existing_source:
+            print(f"Container {name}: skipped because it is absent from the source database")
+            continue
         src_container = src_database.get_container_client(name)
         dst_container = dst_database.get_container_client(name)
         if not verify_only:
             total += copy_container(
-                src_container, dst_container, name, dry_run=dry_run
+                src_container, dst_container, name, dry_run=dry_run, workers=workers
             )
         if not dry_run:
             verify_container(src_container, dst_container, name)
@@ -538,6 +553,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--containers", nargs="+", default=list(DEFAULT_CONTAINERS))
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--verify-only", action="store_true")
+    parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--recovery-drill", action="store_true")
     parser.add_argument("--export-only", action="store_true")
     parser.add_argument("--backup-dir", type=Path)
@@ -548,6 +564,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    workers = getattr(args, "workers", 1)
+    if workers < 1:
+        raise ValueError("--workers must be at least 1.")
     source = _connection_from_args(args, "src")
     if args.export_only:
         if args.dry_run or args.verify_only or args.recovery_drill:
@@ -593,6 +612,7 @@ def main() -> int:
         containers=args.containers,
         dry_run=args.dry_run,
         verify_only=args.verify_only,
+        workers=workers,
     )
     summary = {
         "copied": 0 if args.verify_only or args.dry_run else total,

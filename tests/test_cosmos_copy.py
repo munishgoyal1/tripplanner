@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from threading import Lock
 from typing import Any
 
 import pytest
@@ -23,18 +24,20 @@ from scripts.cosmos_copy import (
 class FakeContainer:
     def __init__(self, items: list[dict[str, Any]]) -> None:
         self.items = deepcopy(items)
+        self.lock = Lock()
 
     def query_items(self, **_: Any) -> list[dict[str, Any]]:
         return deepcopy(self.items)
 
     def upsert_item(self, item: dict[str, Any]) -> None:
         key = (item["user_id"], item["id"])
-        self.items = [
-            existing
-            for existing in self.items
-            if (existing["user_id"], existing["id"]) != key
-        ]
-        self.items.append(deepcopy(item))
+        with self.lock:
+            self.items = [
+                existing
+                for existing in self.items
+                if (existing["user_id"], existing["id"]) != key
+            ]
+            self.items.append(deepcopy(item))
 
 
 class CosmosLikeTtlContainer(FakeContainer):
@@ -75,6 +78,19 @@ def test_copy_strips_cosmos_metadata_and_verifies() -> None:
     assert copy_container(source, target, "users") == 1
     assert target.items == [{"id": "preferences", "user_id": "u1", "name": "Munish"}]
     assert verify_container(source, target, "users") == 1
+
+
+def test_copy_supports_bounded_parallel_upserts() -> None:
+    source = FakeContainer(
+        [
+            {"id": str(index), "user_id": "u1", "name": f"Trip {index}"}
+            for index in range(8)
+        ]
+    )
+    target = FakeContainer([])
+
+    assert copy_container(source, target, "trips", workers=4) == 8
+    assert sorted(item["id"] for item in target.items) == [str(index) for index in range(8)]
 
 
 def test_verify_rejects_changed_documents() -> None:
@@ -160,8 +176,10 @@ def test_backup_artifact_verifies_against_cosmos_assigned_timestamp() -> None:
     assert verify_container(source, target, "provider_usage") == 1
 
 
-def test_copy_rejects_missing_required_source_container(monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    source = FakeDatabase({"users": FakeContainer([])})
+def test_copy_skips_source_absent_containers(monkeypatch, capsys) -> None:  # type: ignore[no-untyped-def]
+    source = FakeDatabase(
+        {"users": FakeContainer([{"id": "preferences", "user_id": "u1"}])}
+    )
     target = FakeDatabase({name: FakeContainer([]) for name in DEFAULT_CONTAINERS})
     clients = iter(
         [
@@ -171,12 +189,17 @@ def test_copy_rejects_missing_required_source_container(monkeypatch) -> None:  #
     )
     monkeypatch.setattr(cosmos_copy, "_client", lambda connection: next(clients))
 
-    with pytest.raises(RuntimeError, match="missing containers"):
-        copy_cosmos(
-            CosmosConnection("https://source.test", "secret", "tripplanner-prod"),
-            CosmosConnection("https://target.test", "secret", "tripplanner-prod"),
-            list(DEFAULT_CONTAINERS),
-        )
+    copied = copy_cosmos(
+        CosmosConnection("https://source.test", "secret", "tripplanner-prod"),
+        CosmosConnection("https://target.test", "secret", "tripplanner-prod"),
+        list(DEFAULT_CONTAINERS),
+    )
+
+    assert copied == 1
+    assert target.get_container_client("users").items == [
+        {"id": "preferences", "user_id": "u1"}
+    ]
+    assert "Container documents: skipped" in capsys.readouterr().out
 
 def test_audit_verify_rejects_permanent_to_expiring_change() -> None:
     source = FakeContainer(

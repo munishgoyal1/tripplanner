@@ -45,7 +45,7 @@
         "browserKey": "aitripplanner-prod-browser",
         "browserReferrers": [
           "https://aitripplanner.co/*",
-          "https://prod-app-f3ddjudq2rdt4.redglacier-42f3888f.eastus2.azurecontainerapps.io/*"
+          "https://prod-app-xifzxr5gvdjmy.nicedesert-f3c0cfbf.eastus2.azurecontainerapps.io/*"
         ],
         "serverKey": "aitripplanner-prod-server"
       }
