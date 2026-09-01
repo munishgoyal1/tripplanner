@@ -399,6 +399,54 @@ def test_transient_write_timeout_is_reconciled_before_retry(tmp_path, monkeypatc
     ]
 
 
+def test_transient_timeout_refreshes_poisoned_target_session(monkeypatch):
+    poisoned = object()
+    healthy = object()
+    refreshes: list[bool] = []
+    verifications = 0
+
+    def get_container(refresh: bool):
+        refreshes.append(refresh)
+        return healthy if refresh or True in refreshes else poisoned
+
+    def write(container, _planned, metrics):
+        metrics.requests += 1
+        if container is poisoned:
+            raise ServiceResponseTimeoutError("poisoned session")
+        return "inserted", metrics
+
+    def verify(container, _planned, metrics):
+        nonlocal verifications
+        assert container is healthy
+        verifications += 1
+        metrics.requests += 1
+        if verifications == 1:
+            raise cache_sync.exceptions.CosmosResourceNotFoundError(status_code=404)
+        return metrics
+
+    planned = PlannedWrite(
+        container=PLACES_CONTAINER,
+        partition="_shared",
+        item_id="p1",
+        body={"entry": {"name": "Place", "__at__": 10}},
+    )
+    monkeypatch.setattr(cache_sync, "_write", write)
+    monkeypatch.setattr(cache_sync, "_verify_write", verify)
+    monkeypatch.setattr(cache_sync.time, "sleep", lambda _seconds: None)
+
+    action, retries = cache_sync._write_and_verify(
+        get_container,
+        planned,
+        ActivityMetrics(),
+        ActivityMetrics(),
+    )
+
+    assert action == "inserted"
+    assert retries == 1
+    assert verifications == 2
+    assert refreshes[:2] == [False, True]
+
+
 def test_successful_incremental_run_advances_checkpoint(tmp_path, monkeypatch):
     checkpoint_path = tmp_path / "checkpoint.json"
     args = _sync_args(tmp_path, checkpoint_path)

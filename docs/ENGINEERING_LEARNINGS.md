@@ -1579,3 +1579,13 @@ the outcome.
 - Keep the source watermark unchanged until every planned write verifies. Replaying
   already-verified merge-only writes costs time but cannot omit cache evidence after a
   partial run.
+
+## 2026-09-01 - A Retry Must Replace a Poisoned Transport Session
+
+- Repeating an operation through the same client is not recovery when a long-lived
+  emulator session has stalled. Three retries each consumed the full 65-second timeout
+  on one normal 7.2 KB row, while a fresh client created that exact row in 32 ms.
+- Isolate full-scan clients from apply clients, and replace the target client before
+  reconciling or retrying a transient failure. Content verification and ETag conditions
+  still decide whether the operation committed; session replacement only restores a
+  usable transport.

@@ -14,7 +14,7 @@ import math
 import os
 import time
 import warnings
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -533,13 +533,14 @@ def _retry_delay(attempt: int) -> None:
 
 
 def _verify_with_retry(
-    container: Any,
+    get_container: Callable[[bool], Any],
     planned: PlannedWrite,
     metrics: ActivityMetrics,
     *,
     missing_is_false: bool = False,
 ) -> tuple[bool, int]:
     retries = 0
+    container = get_container(False)
     for attempt in range(1, MAX_TRANSIENT_ATTEMPTS + 1):
         try:
             _verify_write(container, planned, metrics)
@@ -553,16 +554,18 @@ def _verify_with_retry(
                 raise
             retries += 1
             _retry_delay(attempt)
+            container = get_container(True)
     raise AssertionError("unreachable")
 
 
 def _write_and_verify(
-    container: Any,
+    get_container: Callable[[bool], Any],
     planned: PlannedWrite,
     write_metrics: ActivityMetrics,
     verification_metrics: ActivityMetrics,
 ) -> tuple[str, int]:
     retries = 0
+    container = get_container(False)
     for attempt in range(1, MAX_TRANSIENT_ATTEMPTS + 1):
         try:
             action, _ = _write(container, planned, write_metrics)
@@ -570,8 +573,9 @@ def _write_and_verify(
             if not _is_transient(error):
                 raise
             retries += 1
+            container = get_container(True)
             committed, verification_retries = _verify_with_retry(
-                container,
+                get_container,
                 planned,
                 verification_metrics,
                 missing_is_false=True,
@@ -585,7 +589,7 @@ def _write_and_verify(
             continue
 
         _, verification_retries = _verify_with_retry(
-            container,
+            get_container,
             planned,
             verification_metrics,
         )
@@ -620,6 +624,12 @@ def _local_database(client: CosmosClient, name: str) -> Any:
     return database
 
 
+def _database(environment: str, args: argparse.Namespace) -> Any:
+    if environment == "local":
+        return _local_database(_local_client(), args.local_database)
+    return _production_client(args.prod_endpoint).get_database_client(PRODUCTION_DATABASE)
+
+
 def synchronize(args: argparse.Namespace) -> dict[str, Any]:
     started = time.time()
     now = started
@@ -647,8 +657,8 @@ def synchronize(args: argparse.Namespace) -> dict[str, Any]:
     try:
         local_policy = CachePolicy.from_env_file(Path(args.local_config))
         prod_policy = CachePolicy.from_env_file(Path(args.prod_config))
-        local_db = _local_database(_local_client(), args.local_database)
-        prod_db = _production_client(args.prod_endpoint).get_database_client(PRODUCTION_DATABASE)
+        local_db = _database("local", args)
+        prod_db = _database("production", args)
         databases = {"local": local_db, "production": prod_db}
         containers = [PLACES_CONTAINER]
         if local_policy.warm_everything or prod_policy.warm_everything:
@@ -772,14 +782,23 @@ def synchronize(args: argparse.Namespace) -> dict[str, Any]:
                 verification_metrics = ActivityMetrics()
                 all_metrics.extend([write_metrics, verification_metrics])
                 if args.apply:
-                    target_container = databases[target_name].get_container_client(
-                        container_name
-                    )
+                    write_database = _database(target_name, args)
+
+                    def get_target_container(
+                        refresh: bool,
+                        target_environment: str = target_name,
+                        target_container_name: str = container_name,
+                    ) -> Any:
+                        nonlocal write_database
+                        if refresh:
+                            write_database = _database(target_environment, args)
+                        return write_database.get_container_client(target_container_name)
+
                     for index, planned in enumerate(writes):
                         activity = direction_report["delta_activity"][index]
                         try:
                             action, transient_retries = _write_and_verify(
-                                target_container,
+                                get_target_container,
                                 planned,
                                 write_metrics,
                                 verification_metrics,
