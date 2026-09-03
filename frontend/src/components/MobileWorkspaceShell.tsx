@@ -25,20 +25,20 @@ export default function MobileWorkspaceShell({
 }: Props) {
   return (
     <section className="flex h-screen flex-col bg-sand">
-      <button
-        type="button"
-        onClick={onOpenWelcome}
-        className="fixed right-3 top-3 z-30 inline-flex h-8 items-center gap-1.5 rounded-full bg-paper/90 px-2.5 text-xs font-semibold text-ink shadow-sm ring-1 ring-border backdrop-blur hover:bg-paper"
-        aria-label="Open home page"
-      >
-        <span aria-hidden>⌂</span> Home
-      </button>
-      {hasTrip && (
-        <div className="fixed left-3 top-3 z-30 rounded-full bg-paper/90 shadow-sm ring-1 ring-border backdrop-blur">
-          <TripFeedbackControl initial={feedback} mobile />
+      <header className="relative z-30 flex h-11 shrink-0 items-center justify-between border-b border-border bg-paper/95 px-3 backdrop-blur">
+        <div className="rounded-full bg-sand ring-1 ring-border">
+          {hasTrip && <TripFeedbackControl initial={feedback} mobile />}
         </div>
-      )}
-      {chat}
+        <button
+          type="button"
+          onClick={onOpenWelcome}
+          className="inline-flex h-8 items-center gap-1.5 rounded-full bg-paper px-2.5 text-xs font-semibold text-ink ring-1 ring-border hover:bg-clay-soft"
+          aria-label="Open home page"
+        >
+          <span aria-hidden>⌂</span> Home
+        </button>
+      </header>
+      <div className="min-h-0 flex-1">{chat}</div>
 
       {hasTrip && !tripOpen && (
         <button
