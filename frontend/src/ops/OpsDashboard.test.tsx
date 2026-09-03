@@ -8,6 +8,40 @@ vi.mock("../api", () => ({ fetchOpsOverview: vi.fn() }));
 const overview: OpsOverview = {
   generated_at: "2026-08-10T12:00:00Z",
   uptime_seconds: 120,
+  reporting_period: { days: 30, start_date: "2026-07-12", end_date: "2026-08-10" },
+  business_activity: {
+    visitors: 3,
+    page_counts: { welcome: 4, planner: 6 },
+    new_trips: 1,
+    existing_trip_updates: 2,
+    chat_turns: 3,
+  },
+  trip_insights: [{
+    user_id: "google-user-1",
+    trip_id: "trip-kashmir",
+    title: "Kashmir",
+    places_requested: "Kashmir",
+    created_at: "2026-08-08T10:00:00Z",
+    updated_at: "2026-08-10T10:00:00Z",
+    first_build_seconds: 185,
+    iterations: 2,
+    chat_turns: 3,
+    feedback: "up · 4/5 · Add more local food",
+  }],
+  infra: {
+    cosmos: {
+      enabled: true,
+      database: "tripplanner-canary",
+      containers: [
+        { name: "trips", records: 9, default_ttl: null },
+        { name: "provider_usage", records: 31, default_ttl: 7_776_000 },
+      ],
+    },
+    configuration: [
+      { category: "Runtime", name: "Compute", value: "Azure Container Apps" },
+      { category: "Data", name: "Cosmos authentication", value: "Managed identity" },
+    ],
+  },
   business: {
     new_trips: { today: 1, "7d": 3, "30d": 8 },
     active_trips: { today: 2, "7d": 5, "30d": 9 },
@@ -101,6 +135,8 @@ describe("OpsDashboard", () => {
     render(<OpsDashboard />);
     expect(await screen.findByText("Activation funnel")).toBeInTheDocument();
     expect(screen.getByText("Observed drop-off")).toBeInTheDocument();
+    expect(screen.getByText("Page visits")).toBeInTheDocument();
+    expect(screen.getByText("Trip updates")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("tab", { name: /system health/i }));
 
@@ -113,6 +149,24 @@ describe("OpsDashboard", () => {
     expect(screen.getByText("Places search and discovery")).toBeInTheDocument();
     expect(screen.getByText("4 / 10")).toBeInTheDocument();
     expect(screen.getByText("38 / 100")).toBeInTheDocument();
+  });
+
+  it("shows durable trip interactions and infrastructure snapshots", async () => {
+    render(<OpsDashboard />);
+    await screen.findByText("Activation funnel");
+
+    fireEvent.click(screen.getByRole("tab", { name: /^trips$/i }));
+    expect(screen.getByText("Trip interactions")).toBeInTheDocument();
+    expect(screen.getByText("google-user-1")).toBeInTheDocument();
+    expect(screen.getByText("Add more local food", { exact: false })).toBeInTheDocument();
+    expect(screen.getByText("3 min")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("tab", { name: /^infra$/i }));
+    expect(screen.getByText("Cosmos collections")).toBeInTheDocument();
+    expect(screen.getByText("provider_usage")).toBeInTheDocument();
+    expect(screen.getByText("31")).toBeInTheDocument();
+    expect(screen.getByText("Infrastructure configuration")).toBeInTheDocument();
+    expect(screen.getByText("Managed identity")).toBeInTheDocument();
   });
 
   it("shows new-trip and update cost averages with expandable trip details", async () => {

@@ -2734,6 +2734,7 @@ async def analytics_event(request: Request) -> Response:
         event = str(body.get("event") or "")
         session_id = str(body.get("session_id") or "")
         source = str(body.get("source") or "unknown")
+        page = str(body.get("page") or "other")
         if not re.fullmatch(r"[A-Za-z0-9-]{8,80}", session_id):
             return Response(status_code=204)
         session = signed_session(request)
@@ -2742,6 +2743,7 @@ async def analytics_event(request: Request) -> Response:
             session_id,
             user_id=str(session["user_id"]) if session else None,
             source=source,
+            page=page,
         )
     except (AttributeError, TypeError, ValueError):
         pass
@@ -2857,6 +2859,21 @@ async def ops_overview(
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+    from tripplanner.operations_reporting import snapshot as operations_snapshot
+
+    try:
+        durable = await asyncio.to_thread(
+            operations_snapshot,
+            days=days,
+            start_date=start_date,
+            end_date=end_date,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    runtime["reporting_period"] = durable["period"]
+    runtime["business_activity"] = durable["business"]
+    runtime["trip_insights"] = durable["trips"]
+    runtime["infra"] = durable["infra"]
     return runtime
 
 

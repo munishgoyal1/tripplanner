@@ -66,6 +66,38 @@ export interface OpsUsageRollup {
 export interface OpsOverview {
   generated_at: string;
   uptime_seconds: number;
+  reporting_period: {
+    days: number;
+    start_date: string;
+    end_date: string;
+  };
+  business_activity: {
+    visitors: number;
+    page_counts: Record<string, number>;
+    new_trips: number;
+    existing_trip_updates: number;
+    chat_turns: number;
+  };
+  trip_insights: Array<{
+    user_id: string;
+    trip_id: string;
+    title: string;
+    places_requested: string;
+    created_at: string;
+    updated_at: string;
+    first_build_seconds: number | null;
+    iterations: number;
+    chat_turns: number;
+    feedback: string;
+  }>;
+  infra: {
+    cosmos: {
+      enabled: boolean;
+      database: string;
+      containers: Array<{ name: string; records: number; default_ttl: number | null }>;
+    };
+    configuration: Array<{ category: string; name: string; value: string }>;
+  };
   business: {
     new_trips: Record<"today" | "7d" | "30d", number>;
     active_trips: Record<"today" | "7d" | "30d", number>;

@@ -329,6 +329,57 @@ def query_docs(container: str, user_id: str) -> list[dict[str, Any]]:
     return [_strip_system_fields(i) for i in items]
 
 
+def operations_inventory() -> dict[str, Any]:
+    """Return a current read-only inventory of existing Cosmos containers."""
+    if not is_enabled():
+        return {"enabled": False, "database": "", "containers": []}
+
+    _client_singleton()
+    containers: list[dict[str, Any]] = []
+    for properties in _database.list_containers():
+        name = str(properties.get("id") or "")
+        if not name:
+            continue
+        container = _database.get_container_client(name)
+        counts = list(
+            container.query_items(
+                query="SELECT VALUE COUNT(1) FROM c",
+                enable_cross_partition_query=True,
+            )
+        )
+        containers.append(
+            {
+                "name": name,
+                "records": int(counts[0]) if counts else 0,
+                "default_ttl": properties.get("defaultTtl"),
+            }
+        )
+    return {
+        "enabled": True,
+        "database": get_settings().cosmos_database,
+        "containers": sorted(containers, key=lambda item: item["name"]),
+    }
+
+
+def operations_query(
+    container: str,
+    query: str,
+    parameters: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    """Run one owner-dashboard read across an existing container."""
+    if not is_enabled():
+        return []
+    _client_singleton()
+    client = _database.get_container_client(container)
+    return list(
+        client.query_items(
+            query=query,
+            parameters=parameters or [],
+            enable_cross_partition_query=True,
+        )
+    )
+
+
 def delete_docs(container: str, user_id: str, id_prefix: str | None = None) -> int:
     """Delete documents for one user, optionally filtering by id prefix.
 
