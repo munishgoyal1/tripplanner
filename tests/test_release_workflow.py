@@ -209,6 +209,16 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
         assert environments["canary"]["budget"] == 600
         assert environments["prod"]["dailyBudget"] == 60
         assert environments["prod"]["budget"] == 1800
+        daily_ceiling = sum(environment["dailyBudget"] for environment in environments.values())
+        monthly_ceiling = cloud_config[cloud]["globalBudget"]["amount"]
+        assert environments["local"]["dailyBudget"] + environments["canary"]["dailyBudget"] == (
+            daily_ceiling * 0.7
+        )
+        assert environments["local"]["budget"] + environments["canary"]["budget"] == (
+            monthly_ceiling * 0.7
+        )
+        assert environments["prod"]["dailyBudget"] == daily_ceiling * 0.3
+        assert environments["prod"]["budget"] == monthly_ceiling * 0.3
     assert '$policyDisplayName = "[$($env.name)] Maps API quota exceeded"' in apply_script
     assert '$policySeverity = if ($env.name -eq "prod") { "ERROR" } else { "WARNING" }' in apply_script
     assert '"alertStrategy": { "autoClose": "3600s" }' in apply_script

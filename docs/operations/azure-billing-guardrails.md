@@ -78,9 +78,10 @@ Subscription `9fe3951c-d440-4d09-91f1-cb47e02f04c3`, billing currency **INR**.
 The script verifies and selects this subscription before writing anything.
 
 The planning ceiling is **200 INR/day**, represented by Azure's native monthly
-budgets as 6,000 INR for a 30-day planning month. The 70% development pool is
-split into 60% local and 10% canary so canary remains independently visible;
-production receives 30%. These are notification budgets, not daily hard caps.
+budgets as 6,000 INR for a 30-day planning month. The 70% local development
+quota is 140 INR/day and includes canary: 120 INR/day is enforced on local and
+20 INR/day on canary so each remains independently visible. Production receives
+the remaining 30%. These are notification budgets, not daily hard caps.
 
 | Budget | Daily allocation | Monthly amount | Scope | Alerts |
 | --- | ---: | ---: | --- | --- |

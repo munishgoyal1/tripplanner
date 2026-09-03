@@ -1,5 +1,5 @@
 {
-  "$comment": "Declarative billing guardrails. Monthly cloud budgets use a 30-day planning month: 120 INR/day local, 20 INR/day canary, and 60 INR/day prod. Edit identifiers for a new account, then run the idempotent GCP and Azure apply scripts.",
+  "$comment": "Declarative billing guardrails. Monthly cloud budgets use a 30-day planning month: the 140 INR/day local development quota includes 120 INR local and 20 INR canary; prod receives 60 INR/day. Edit identifiers for a new account, then run the idempotent GCP and Azure apply scripts.",
 
   "alertEmail": "munishgoyal@aitripplanner.co",
 

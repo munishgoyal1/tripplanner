@@ -99,9 +99,10 @@ distort a per-environment number.
 | `tripplanner-global-8000inr` | 6,000 INR | whole billing account | 50 / 80 / 90 / 100% → Pub/Sub |
 
 Cloud Billing budgets are monthly. The 6,000 INR global amount models a 200
-INR/day average over a 30-day planning month. Daily allocation is 120 INR local,
-20 INR canary, and 60 INR production: the local/canary development pool receives
-70% and production receives 30%.
+INR/day average over a 30-day planning month. The 140 INR/day local development
+quota includes 120 INR/day local and 20 INR/day canary, with separate project
+limits preserving environment-specific alerts. Production receives 60 INR/day,
+or 30%.
 
 The display names predate the lower observation-mode amounts. They are retained
 so the idempotent apply updates the existing budgets instead of creating
