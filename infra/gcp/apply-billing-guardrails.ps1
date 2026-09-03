@@ -382,66 +382,93 @@ if (-not $SkipQuotas) {
 
 # --- quota alerts -----------------------------------------------------------
 
-$policyFile = Join-Path ([System.IO.Path]::GetTempPath()) "tp-quota-policy.json"
-@'
-{
-  "displayName": "Maps API quota exceeded",
-  "documentation": {
-    "content": "A Maps Platform quota limit was hit. Requests are being rejected with RESOURCE_EXHAUSTED. Raise the limit in infra/billing-guardrails.json and re-run the guardrail script, or reduce load.",
-    "mimeType": "text/markdown"
-  },
-  "combiner": "OR",
-  "conditions": [
-    {
-      "displayName": "Quota exceeded",
-      "conditionThreshold": {
-        "filter": "metric.type=\"serviceruntime.googleapis.com/quota/exceeded\" AND resource.type=\"consumer_quota\"",
-        "comparison": "COMPARISON_GT",
-        "thresholdValue": 0,
-        "duration": "0s",
-        "aggregations": [
-          {
-            "alignmentPeriod": "300s",
-            "perSeriesAligner": "ALIGN_COUNT_TRUE",
-            "crossSeriesReducer": "REDUCE_SUM",
-            "groupByFields": ["metric.label.quota_metric", "resource.label.service"]
-          }
-        ]
-      }
-    }
-  ],
-  "alertStrategy": { "autoClose": "86400s" }
-}
-'@ | Set-Content -Path $policyFile -Encoding utf8
-
 foreach ($env in $gcp.environments) {
     if (-not $PSCmdlet.ShouldProcess($env.project, "Ensure quota alert policy")) { continue }
 
     Invoke-Gcloud @("services", "enable", "monitoring.googleapis.com", "--project=$($env.project)") | Out-Null
 
-    $policies = Invoke-Gcloud @(
-        "alpha", "monitoring", "policies", "list", "--project=$($env.project)",
-        "--format=value(displayName)"
-    ) -AllowFailure
-    if ($policies -match "Maps API quota exceeded") {
-        Write-Host "  [$($env.name)] quota alert already present"
-        continue
-    }
-
-    # Discard stderr: gcloud prints a WARNING on an empty filter result that
-    # otherwise lands in the channel id and produces a confusing 'not found'.
-    $channel = (& gcloud beta monitoring channels create --project=$($env.project) `
-        --display-name="Owner email" --type=email `
-        --channel-labels=email_address=$($config.alertEmail) `
-        --format="value(name)" --quiet 2>$null | Select-Object -Last 1)
-
-    Invoke-Gcloud @(
-        "alpha", "monitoring", "policies", "create", "--project=$($env.project)",
-        "--policy-from-file=$policyFile", "--notification-channels=$channel", "--quiet"
-    ) | Out-Null
-    Write-Host "  [$($env.name)] quota alert created"
+        $policyDisplayName = "[$($env.name)] Maps API quota exceeded"
+        $policySeverity = if ($env.name -eq "prod") { "ERROR" } else { "WARNING" }
+        $policyFile = Join-Path ([System.IO.Path]::GetTempPath()) "tp-$($env.name)-quota-policy.json"
+        @"
+{
+    "displayName": "$policyDisplayName",
+    "severity": "$policySeverity",
+    "documentation": {
+        "content": "[$($env.name)] A Maps Platform quota limit was hit in project $($env.project). Requests are being rejected with RESOURCE_EXHAUSTED. Adjust infra/billing-guardrails.json and re-run the guardrail script, or reduce load.",
+        "mimeType": "text/markdown"
+    },
+    "combiner": "OR",
+    "conditions": [
+        {
+            "displayName": "[$($env.name)] Quota exceeded",
+            "conditionThreshold": {
+                "filter": "metric.type=\"serviceruntime.googleapis.com/quota/exceeded\" AND resource.type=\"consumer_quota\"",
+                "comparison": "COMPARISON_GT",
+                "thresholdValue": 0,
+                "duration": "0s",
+                "aggregations": [
+                    {
+                        "alignmentPeriod": "300s",
+                        "perSeriesAligner": "ALIGN_COUNT_TRUE",
+                        "crossSeriesReducer": "REDUCE_SUM",
+                        "groupByFields": ["metric.label.quota_metric", "resource.label.service"]
+                    }
+                ]
+            }
+        }
+    ],
+    "alertStrategy": { "autoClose": "3600s" }
 }
+"@ | Set-Content -Path $policyFile -Encoding utf8
 
-Remove-Item $policyFile -ErrorAction SilentlyContinue
+        $channelsJson = Invoke-Gcloud @(
+                "beta", "monitoring", "channels", "list", "--project=$($env.project)",
+                "--format=json(name,displayName)"
+        ) -AllowFailure
+        $channel = if ($channelsJson -and $channelsJson -notmatch "ERROR") {
+                @($channelsJson | ConvertFrom-Json | Where-Object { $_.displayName -eq "Owner email" }) |
+                        Select-Object -First 1 -ExpandProperty name
+        } else {
+                ""
+        }
+        if (-not $channel) {
+                # Discard stderr: gcloud warns when no channel exists yet.
+                $channel = (& gcloud beta monitoring channels create --project=$($env.project) `
+                        --display-name="Owner email" --type=email `
+                        --channel-labels=email_address=$($config.alertEmail) `
+                        --format="value(name)" --quiet 2>$null | Select-Object -Last 1)
+        }
+
+        $policiesJson = Invoke-Gcloud @(
+        "alpha", "monitoring", "policies", "list", "--project=$($env.project)",
+                "--format=json(name,displayName)"
+    ) -AllowFailure
+        $existingPolicies = if ($policiesJson -and $policiesJson -notmatch "ERROR") {
+                @($policiesJson | ConvertFrom-Json | Where-Object {
+                        $_.displayName -in @($policyDisplayName, "Maps API quota exceeded")
+                })
+        } else {
+                @()
+    }
+        if ($existingPolicies.Count -gt 1) {
+                throw "[$($env.name)] Multiple quota alert policies match the current or legacy display name."
+        }
+        if ($existingPolicies.Count -eq 1) {
+                Invoke-Gcloud @(
+                        "alpha", "monitoring", "policies", "update", $existingPolicies[0].name,
+                        "--project=$($env.project)", "--policy-from-file=$policyFile",
+                        "--notification-channels=$channel", "--quiet"
+                ) | Out-Null
+                Write-Host "  [$($env.name)] quota alert updated: $policyDisplayName ($policySeverity)"
+        } else {
+                Invoke-Gcloud @(
+                        "alpha", "monitoring", "policies", "create", "--project=$($env.project)",
+                        "--policy-from-file=$policyFile", "--notification-channels=$channel", "--quiet"
+                ) | Out-Null
+                Write-Host "  [$($env.name)] quota alert created: $policyDisplayName ($policySeverity)"
+        }
+        Remove-Item $policyFile -ErrorAction SilentlyContinue
+}
 Write-Host ""
 Write-Host "GCP guardrails applied."

@@ -15,7 +15,7 @@ previous five minutes for:
 - terminal `chat_operation` records with `outcome == "error"`; and
 - `tool_call` records with `status == "error"`.
 
-Any match opens a severity-1 alert and notifies the production Action Group at
+Any match opens a `[prod]` severity-1 alert and notifies the production Action Group at
 `munishgoyal@aitripplanner.co` using Azure Monitor's common alert schema. The alert is
 stateful, so a continuing failure condition remains one alert instead of sending
 one email per log line. Auto-mitigation resolves it after the query is clean.

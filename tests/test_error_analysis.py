@@ -131,7 +131,7 @@ def test_infrastructure_enables_email_alerts_only_in_production() -> None:
     assert "autoMitigate: true" in template
     assert "muteActionsDuration" not in template
     assert "param enableFailureAlerts = true" in production
-    assert "munishgoyal1@gmail.com" in production
+    assert "munishgoyal@aitripplanner.co" in production
     assert "enableFailureAlerts" not in canary
     assert 'event_kind == "chat_operation" and outcome == "error"' in query
     assert 'event_kind == "tool_call" and status == "error"' in query
@@ -153,11 +153,26 @@ def test_infrastructure_alerts_on_runtime_degradation_with_volume_guards() -> No
     assert "resource operationalAlertRules" in template
     assert "if (enableFailureAlerts)" in template
     assert "actionGroups: [failureAlertActions.id]" in template
+    for alert_name, severity in (
+        ("chat-latency-burn", 2),
+        ("model-throttling", 2),
+        ("provider-circuit-open", 3),
+        ("cache-degradation", 3),
+    ):
+        alert_block = template.split(f"name: '{alert_name}'", 1)[1].split("query:", 1)[0]
+        assert "displayName: '[${namePrefix}]" in alert_block
+        assert f"severity: {severity}" in alert_block
     assert "resource cosmosThrottlingAlert" in template
-    assert "metricName: 'TotalRequests'" in template
-    assert "name: 'StatusCode'" in template
-    assert "values: ['429']" in template
-    assert "threshold: 5" in template
+    cosmos_block = template.split("resource cosmosThrottlingAlert", 1)[1].split(
+        "resource env", 1
+    )[0]
+    assert "description: '[${namePrefix}]" in cosmos_block
+    assert "severity: 3" in cosmos_block
+    assert "windowSize: 'PT15M'" in cosmos_block
+    assert "metricName: 'TotalRequests'" in cosmos_block
+    assert "name: 'StatusCode'" in cosmos_block
+    assert "values: ['429']" in cosmos_block
+    assert "threshold: 20" in cosmos_block
     assert "Samples >= 5 and P95DurationMs > 120000" in queries[
         "chat-latency-burn.kql"
     ]

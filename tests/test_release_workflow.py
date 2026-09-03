@@ -112,7 +112,9 @@ def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
 
 def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
     root = Path(__file__).parents[1]
-    guardrails = (root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8")
+    guardrails_path = root / "infra" / "billing-guardrails.json"
+    guardrails = guardrails_path.read_text(encoding="utf-8")
+    cloud_config = json.loads(guardrails)
     apply_script = (root / "infra" / "gcp" / "apply-billing-guardrails.ps1").read_text(
         encoding="utf-8"
     )
@@ -136,13 +138,13 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
         assert "ENABLE_GOOGLE_MAPS=1" in profile
     assert (
         '"quotaId": "SearchTextRequestPerDayPerProject", '
-        '"local": 10, "canary": 10, "prod": 100'
+        '"local": 30, "canary": 5, "prod": 15'
     ) in guardrails
     assert (
         '"quotaId": "GetPhotoMediaRequestPerDayPerProject", '
-        '"local": 10, "canary": 10, "prod": 200'
+        '"local": 30, "canary": 5, "prod": 15'
     ) in guardrails
-    guardrail_config = json.loads(guardrails)["gcp"]
+    guardrail_config = cloud_config["gcp"]
     maps_quotas = [
         quota
         for quota in guardrail_config["quotas"]
@@ -153,17 +155,17 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
             "service": "maps-backend.googleapis.com",
             "quotaId": "BillableDefaultPerDayPerProject",
             "preferenceId": "tp-mapsjs-billabledefaultperdayperproject",
-            "local": 6000,
-            "canary": 1000,
-            "prod": 1000,
+            "local": 100,
+            "canary": 20,
+            "prod": 50,
         },
         {
             "service": "maps-backend.googleapis.com",
             "quotaId": "BillableDefaultPerMinutePerProject",
             "preferenceId": "tp-mapsjs-billabledefaultperminuteperproject",
-            "local": 120,
-            "canary": 60,
-            "prod": 60,
+            "local": 30,
+            "canary": 10,
+            "prod": 20,
         },
     ]
     places_javascript_quotas = [
@@ -175,7 +177,7 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
         "tp-placesjs-billabledefaultperdayperproject",
         "tp-placesjs-billabledefaultperminuteperproject",
     ]
-    assert [quota["prod"] for quota in places_javascript_quotas] == [100, 30]
+    assert [quota["prod"] for quota in places_javascript_quotas] == [20, 10]
     callable_services = set(guardrail_config["browserServices"]) | set(
         guardrail_config["serverServices"]
     )
@@ -195,6 +197,32 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
     assert "$quota.preferenceId" in apply_script
     assert "kept tighter" in apply_script
     assert "$AllowQuotaIncreases" in apply_script
+    for cloud in ("azure", "gcp"):
+        environments = {
+            environment["name"]: environment
+            for environment in cloud_config[cloud]["environments"]
+        }
+        assert cloud_config[cloud]["globalBudget"]["amount"] == 6000
+        assert environments["local"]["dailyBudget"] == 120
+        assert environments["local"]["budget"] == 3600
+        assert environments["canary"]["dailyBudget"] == 20
+        assert environments["canary"]["budget"] == 600
+        assert environments["prod"]["dailyBudget"] == 60
+        assert environments["prod"]["budget"] == 1800
+        daily_ceiling = sum(environment["dailyBudget"] for environment in environments.values())
+        monthly_ceiling = cloud_config[cloud]["globalBudget"]["amount"]
+        assert environments["local"]["dailyBudget"] + environments["canary"]["dailyBudget"] == (
+            daily_ceiling * 0.7
+        )
+        assert environments["local"]["budget"] + environments["canary"]["budget"] == (
+            monthly_ceiling * 0.7
+        )
+        assert environments["prod"]["dailyBudget"] == daily_ceiling * 0.3
+        assert environments["prod"]["budget"] == monthly_ceiling * 0.3
+    assert '$policyDisplayName = "[$($env.name)] Maps API quota exceeded"' in apply_script
+    assert '$policySeverity = if ($env.name -eq "prod") { "ERROR" } else { "WARNING" }' in apply_script
+    assert '"alertStrategy": { "autoClose": "3600s" }' in apply_script
+    assert '"policies", "update"' in apply_script
     assert "set-google-api-access.ps1" in control_script
     assert "APPROVE_GOOGLE_PLACES_SPEND" in control_contract
     assert "APPROVE_GOOGLE_MAPS_SPEND" in control_contract
