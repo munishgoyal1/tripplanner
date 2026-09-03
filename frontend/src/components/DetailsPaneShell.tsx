@@ -31,23 +31,23 @@ export default function DetailsPaneShell({
       <aside
         ref={inspectorRef}
         data-testid="context-inspector"
-        className={`flex min-h-0 flex-col overflow-hidden bg-surface ${
+        className={`flex min-h-0 flex-col overflow-hidden bg-paper ${
           wideLayout || maximized
-            ? "h-full rounded-2xl border border-slate-200/70 shadow-card"
-            : "absolute inset-y-2 right-2 z-40 w-[min(27rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 shadow-pop"
+            ? "h-full rounded-md border border-border shadow-card"
+            : "absolute inset-y-2 right-2 z-40 w-[min(27rem,calc(100vw-2rem))] rounded-md border border-border shadow-pop"
         }`}
       >
         <section className={`h-full min-h-0 flex-col ${open ? "flex" : "hidden"}`}>
-          <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 bg-white px-3">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <header className="flex h-10 shrink-0 items-center gap-2 border-b border-border bg-paper px-3">
+            <h2 className="display text-base text-ink">
               {focused ? "Place details" : "Destination guide"}
             </h2>
             {focused && <span className="min-w-0 truncate text-xs font-medium text-ink">{focusName}</span>}
-            <div role="group" aria-label="Details pane controls" className="ml-auto flex shrink-0 items-center rounded-md bg-slate-50 p-0.5 ring-1 ring-inset ring-slate-200/80">
+            <div role="group" aria-label="Details pane controls" className="ml-auto flex shrink-0 items-center rounded-full bg-sand p-0.5 ring-1 ring-inset ring-border">
               <button
                 type="button"
                 onClick={onHide}
-                className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 hover:bg-white hover:text-ink hover:shadow-sm"
+                className="grid h-7 w-7 place-items-center rounded-full text-muted hover:bg-paper hover:text-ink hover:shadow-sm"
                 aria-label="Hide Details"
                 title="Hide Details"
               >
@@ -56,7 +56,7 @@ export default function DetailsPaneShell({
               <button
                 type="button"
                 onClick={onToggleMaximize}
-                className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 hover:bg-white hover:text-ink hover:shadow-sm"
+                className="grid h-7 w-7 place-items-center rounded-full text-muted hover:bg-paper hover:text-ink hover:shadow-sm"
                 aria-label={maximized ? "Restore Details" : "Maximize Details"}
                 title={maximized ? "Restore" : "Maximize"}
               >

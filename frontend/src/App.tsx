@@ -811,7 +811,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   // loaded transcript have to survive a hide/show round trip.
   const assistantDock = (
     <section
-      className={`relative z-30 shrink-0 border-t border-slate-200 bg-white${chatOpen ? "" : " hidden"}`}
+      className={`relative z-30 shrink-0 border-t border-border bg-paper${chatOpen ? "" : " hidden"}`}
     >
       {assistantPanel}
     </section>
@@ -882,7 +882,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     {!isDesktop && <FloatingStatusBar />}
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
     {isDesktop ? (
-      <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-surface">
+      <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-sand">
         <DesktopToolbar
           tripVersion={tripVersion}
           onTripSwitched={handleSwitched}
@@ -917,7 +917,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
 
         <main
           ref={workspaceRef}
-          className="relative grid min-h-0 flex-1 overflow-hidden p-2"
+          className="relative grid min-h-0 flex-1 overflow-hidden gap-1 p-1"
           style={{ gridTemplateColumns: workspaceColumns }}
         >
           <section className={`min-h-0 min-w-0 ${!itineraryOpen || maximizedPane && maximizedPane !== "itinerary" ? "hidden" : ""}`}>

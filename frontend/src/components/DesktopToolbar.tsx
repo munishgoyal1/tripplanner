@@ -1,4 +1,4 @@
-import { AlertTriangle, House, List, Map, MessageCircle, PanelRight, Plus, RotateCcw, UserRound } from "lucide-react";
+import { AlertTriangle, Compass, House, List, Map, MessageCircle, PanelRight, Plus, RotateCcw, UserRound } from "lucide-react";
 import type { TripWorkspaceView } from "../types";
 import StatusBar from "./StatusBar";
 import TripActionsMenu from "./TripActionsMenu";
@@ -58,9 +58,13 @@ export default function DesktopToolbar({
   feedback,
 }: Props) {
   return (
-    <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-[#dce2df] bg-[#fbfcfb]/95 px-3 shadow-[0_1px_4px_rgba(23,36,51,.06)] backdrop-blur">
+    <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-border bg-paper/95 px-3 shadow-card backdrop-blur">
+      <span className="mr-1 hidden shrink-0 items-center gap-2 lg:inline-flex">
+        <Compass size={16} className="text-brand" aria-hidden />
+        <span className="display text-base text-ink">AI Tripplanner</span>
+      </span>
       <TripSwitcher version={tripVersion} onSwitched={onTripSwitched} />
-      <div className="ml-3 h-5 w-px shrink-0 bg-slate-200" aria-hidden />
+      <div className="ml-2 h-5 w-px shrink-0 bg-border" aria-hidden />
       <div className="mr-auto flex min-w-32 flex-1 items-center gap-2 pl-3">
         <StatusBar />
         {documentBadge && (
@@ -92,7 +96,7 @@ export default function DesktopToolbar({
         <button
           type="button"
           onClick={onStartNewTrip}
-          className="inline-flex h-8 items-center gap-1.5 rounded-md bg-brand/10 px-3 text-xs font-semibold text-brand transition hover:bg-brand/15"
+          className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-paper px-3 text-xs font-semibold text-ink transition hover:bg-clay-soft"
           title="Start a new trip"
           aria-label="New trip"
         >
@@ -108,9 +112,9 @@ export default function DesktopToolbar({
         >
           <RotateCcw size={14} aria-hidden />
         </button>
-        <div className="mx-1 h-5 w-px bg-slate-200" aria-hidden />
+        <div className="mx-1 h-5 w-px bg-border" aria-hidden />
         <div
-          className="flex items-center gap-0.5 rounded-lg bg-slate-100/80 p-0.5 ring-1 ring-slate-200/80"
+          className="flex items-center gap-0.5 rounded-full bg-sand p-0.5 ring-1 ring-border"
           aria-label="Pane visibility"
         >
           {PANES.map(({ pane, label, Icon, title }) => (
@@ -120,8 +124,8 @@ export default function DesktopToolbar({
               onClick={() => onTogglePane(pane)}
               className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-md px-2 text-xs font-semibold transition ${
                 paneVisibility[pane]
-                  ? "bg-white text-slate-700 shadow-sm ring-1 ring-slate-200/70"
-                  : "text-slate-400 hover:text-slate-600"
+                  ? "bg-paper text-ink shadow-sm ring-1 ring-border"
+                  : "text-muted hover:text-ink"
               }`}
               aria-pressed={paneVisibility[pane]}
               title={title}

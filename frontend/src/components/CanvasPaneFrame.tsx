@@ -19,15 +19,15 @@ export default function CanvasPaneFrame({
   children,
 }: Props) {
   return (
-    <article className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-card">
-      <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 px-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</h2>
+    <article className="flex h-full min-h-0 flex-col overflow-hidden rounded-md border border-border bg-paper shadow-card">
+      <header className="flex h-10 shrink-0 items-center gap-2 border-b border-border bg-paper px-3">
+        <h2 className="display text-base text-ink">{label}</h2>
         {headerTargetRef && <div ref={headerTargetRef} className="min-w-0 flex-1" />}
-        <div role="group" aria-label={`${label} pane controls`} className="ml-auto flex shrink-0 items-center rounded-md bg-slate-50 p-0.5 ring-1 ring-inset ring-slate-200/80">
+        <div role="group" aria-label={`${label} pane controls`} className="ml-auto flex shrink-0 items-center rounded-full bg-sand p-0.5 ring-1 ring-inset ring-border">
           <button
             type="button"
             onClick={onHide}
-            className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 transition hover:bg-white hover:text-ink hover:shadow-sm"
+            className="grid h-7 w-7 place-items-center rounded-full text-muted transition hover:bg-paper hover:text-ink hover:shadow-sm"
             aria-label={`Hide ${label}`}
             title={`Hide ${label}`}
           >
@@ -36,7 +36,7 @@ export default function CanvasPaneFrame({
           <button
             type="button"
             onClick={onToggleMaximize}
-            className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 transition hover:bg-white hover:text-ink hover:shadow-sm"
+            className="grid h-7 w-7 place-items-center rounded-full text-muted transition hover:bg-paper hover:text-ink hover:shadow-sm"
             aria-label={maximized ? `Restore ${label}` : `Maximize ${label}`}
             title={maximized ? "Restore" : "Maximize"}
           >

@@ -24,17 +24,17 @@ export default function MobileWorkspaceShell({
   feedback,
 }: Props) {
   return (
-    <section className="flex h-screen flex-col">
+    <section className="flex h-screen flex-col bg-sand">
       <button
         type="button"
         onClick={onOpenWelcome}
-        className="fixed right-3 top-3 z-30 inline-flex h-8 items-center gap-1.5 rounded-md bg-white/90 px-2.5 text-xs font-semibold text-slate-600 shadow-sm ring-1 ring-slate-200 backdrop-blur hover:bg-white"
+        className="fixed right-3 top-3 z-30 inline-flex h-8 items-center gap-1.5 rounded-full bg-paper/90 px-2.5 text-xs font-semibold text-ink shadow-sm ring-1 ring-border backdrop-blur hover:bg-paper"
         aria-label="Open home page"
       >
         <span aria-hidden>⌂</span> Home
       </button>
       {hasTrip && (
-        <div className="fixed left-3 top-3 z-30 rounded-md bg-white/90 shadow-sm ring-1 ring-slate-200 backdrop-blur">
+        <div className="fixed left-3 top-3 z-30 rounded-full bg-paper/90 shadow-sm ring-1 ring-border backdrop-blur">
           <TripFeedbackControl initial={feedback} mobile />
         </div>
       )}
@@ -45,7 +45,7 @@ export default function MobileWorkspaceShell({
           type="button"
           onClick={onOpenTrip}
           aria-label="Open trip details"
-          className="fixed bottom-4 right-4 z-30 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-white shadow-pop ring-1 ring-black/10 transition active:scale-95"
+          className="fixed bottom-4 right-4 z-30 inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2.5 text-sm font-medium text-white shadow-pop ring-1 ring-black/10 transition active:scale-95"
         >
           <span>Trip details</span>
         </button>

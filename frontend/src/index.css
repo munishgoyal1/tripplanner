@@ -2,8 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Space Grotesk (UI) + Newsreader (display headings) are loaded via <link> in
-   index.html so we keep the @import-free CSS PostCSS prefers. */
+/* Work Sans (UI) + Instrument Serif (display headings) are loaded in index.html. */
+
+:root {
+  --background: 0.975 0.011 84;
+  --foreground: 0.238 0.026 47;
+  --paper: 0.992 0.006 86;
+  --card: 0.992 0.006 86;
+  --sand: 0.949 0.018 87;
+  --primary: 0.556 0.146 39;
+  --primary-strong: 0.47 0.142 37;
+  --clay: 0.556 0.146 39;
+  --clay-soft: 0.906 0.043 55;
+  --sage: 0.552 0.052 148;
+  --sage-strong: 0.45 0.065 148;
+  --sage-soft: 0.912 0.033 145;
+  --ochre: 0.727 0.128 74;
+  --ink: 0.238 0.026 47;
+  --muted-foreground: 0.505 0.026 60;
+  --border: 0.888 0.017 85;
+  --sidebar: 0.966 0.014 86;
+}
 
 @layer components {
   .input {
@@ -28,7 +47,8 @@
     @apply inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink;
   }
   .display {
-    @apply font-display tracking-tight;
+    @apply font-display;
+    letter-spacing: 0;
   }
 }
 
@@ -41,10 +61,15 @@ body,
 
 body {
   font-family: theme("fontFamily.sans");
-  background: theme("colors.surface");
+  background: oklch(var(--background));
   color: theme("colors.ink");
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+  outline: 2px solid oklch(var(--primary));
+  outline-offset: 2px;
 }
 
 .product-theme-aegean {

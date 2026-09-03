@@ -603,11 +603,11 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
-    expect(screen.getByRole("button", { name: "New trip" })).toHaveClass("bg-brand/10", "text-brand");
+    expect(screen.getByRole("button", { name: "New trip" })).toHaveClass("rounded-full", "bg-paper", "text-ink");
     expect(screen.getByText("New trip", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByLabelText("Pane visibility")).toBeInTheDocument();
     const itinerary = screen.getByTitle("Show or hide itinerary");
-    expect(itinerary).toHaveClass("rounded-md", "bg-white", "text-slate-700");
+    expect(itinerary).toHaveClass("rounded-md", "bg-paper", "text-ink");
     expect(itinerary.querySelector("svg.lucide-list")).toBeInTheDocument();
     expect(screen.getByText("Itinerary", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByText("Map", { selector: "nav span" })).toBeInTheDocument();
@@ -643,9 +643,9 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
     for (const label of ["Itinerary", "Map", "Details"]) {
       const controls = screen.getByRole("group", { name: `${label} pane controls` });
-      expect(controls).toHaveClass("bg-slate-50", "ring-inset");
-      expect(screen.getByRole("button", { name: `Hide ${label}` })).toHaveClass("rounded-[5px]");
-      expect(screen.getByRole("button", { name: `Maximize ${label}` })).toHaveClass("rounded-[5px]");
+      expect(controls).toHaveClass("rounded-full", "bg-sand", "ring-inset");
+      expect(screen.getByRole("button", { name: `Hide ${label}` })).toHaveClass("rounded-full");
+      expect(screen.getByRole("button", { name: `Maximize ${label}` })).toHaveClass("rounded-full");
     }
   });
 
