@@ -264,9 +264,10 @@ const scopes: Record<string, ScopeDefinition> = {
   "itinerary-trip-book": {
     changes: [
       "The exported Trip Book's structure, navigation, information layering, and visual emphasis",
-      "How itinerary, confirmations, documents, and personal context are organized for print and phone PDF",
+      "How itinerary, confirmations, documents, map circuits, and personal context are organized for print and phone PDF",
+      "Whether the book carries no map, a numbered day-circuit inset, or added trip and day map pages",
     ],
-    context: ["The underlying London trip facts and booking states", "Live workspace UI, document ingestion, storage, and PDF merge behavior"],
+    context: ["The underlying London trip facts, booking states, and day circuit order", "Live workspace UI, map provider imagery, document ingestion, storage, and PDF merge behavior"],
   },
   "itinerary-density": {
     changes: [

@@ -292,7 +292,7 @@ export const allLabs: LabRecord[] = [
     id: "itinerary-trip-book",
     title: "Execution-ready Trip Book",
     category: "Trip export",
-    description: "Compare compact, layered, and visual structures for one printable itinerary with confirmations and personal context.",
+    description: "Compare compact, layered, and visual structures for one printable itinerary with confirmations, numbered day-circuit maps, essentials, and personal context.",
     createdAt: "2026-07-30",
     defaultDisposition: "parked",
     defaultStateChangedAt: "2026-08-06",
