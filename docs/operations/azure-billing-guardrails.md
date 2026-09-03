@@ -77,15 +77,26 @@ not invalidate independently held credentials.
 Subscription `9fe3951c-d440-4d09-91f1-cb47e02f04c3`, billing currency **INR**.
 The script verifies and selects this subscription before writing anything.
 
-| Budget | Amount | Scope | Alerts |
-| --- | --- | --- | --- |
-| `tripplanner-local-2000inr` | 2,000 INR | `rg-tripplanner-local` | 50 / 80 / 100% actual, 100% forecast |
-| `tripplanner-canary-2000inr` | 2,000 INR | `rg-tripplanner-canary` | 50 / 80 / 100% actual, 100% forecast |
-| `tripplanner-prod-2000inr` | 2,000 INR | `rg-tripplanner-prod` | 50 / 80 / 100% actual, 100% forecast |
-| `tripplanner-global-8000inr` | 8,000 INR | whole subscription | 50 / 80 / 90 / 100% actual, 100% forecast |
+The planning ceiling is **200 INR/day**, represented by Azure's native monthly
+budgets as 6,000 INR for a 30-day planning month. The 70% development pool is
+split into 60% local and 10% canary so canary remains independently visible;
+production receives 30%. These are notification budgets, not daily hard caps.
+
+| Budget | Daily allocation | Monthly amount | Scope | Alerts |
+| --- | ---: | ---: | --- | --- |
+| `tripplanner-local-2000inr` | 120 INR | 3,600 INR | `rg-tripplanner-local` | 50 / 80 / 100% actual, 100% forecast |
+| `tripplanner-canary-2000inr` | 20 INR | 600 INR | `rg-tripplanner-canary` | 50 / 80 / 100% actual, 100% forecast |
+| `tripplanner-prod-2000inr` | 60 INR | 1,800 INR | `rg-tripplanner-prod` | 50 / 80 / 100% actual, 100% forecast |
+| `tripplanner-global-8000inr` | 200 INR | 6,000 INR | whole subscription | 50 / 80 / 90 / 100% actual, 100% forecast |
 
 Alerts email `munishgoyal@aitripplanner.co` through the
 `tripplanner-budget-alerts` action group in `rg-tripplanner-data`.
+
+Operational alerts are production-only and carry a `[prod]` title and environment
+property. Application failures remain severity 1. Sustained chat latency and model
+throttling are severity 2; provider-circuit and cache degradation are severity 3.
+Cosmos throttling is severity 3 and requires at least 20 HTTP 429 responses in a
+15-minute window, avoiding escalation on a few SDK-retried requests.
 
 ## What Azure can cap
 
@@ -110,9 +121,9 @@ Edit only [`infra/billing-guardrails.json`](../../infra/billing-guardrails.json)
 ```json
 {
   "azure": {
-    "globalBudget": { "name": "tripplanner-global-8000inr", "amount": 8000 },
+       "globalBudget": { "name": "tripplanner-global-8000inr", "amount": 6000 },
     "environments": [
-         { "name": "local", "resourceGroup": "rg-tripplanner-local", "budgetName": "tripplanner-local-2000inr", "budget": 2000 }
+          { "name": "local", "resourceGroup": "rg-tripplanner-local", "budgetName": "tripplanner-local-2000inr", "dailyBudget": 120, "budget": 3600 }
     ]
   }
 }

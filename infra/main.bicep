@@ -232,37 +232,37 @@ var failureAlertQuery = loadTextContent('queries/application-failures.kql')
 var operationalAlerts operationalAlertType[] = [
   {
     name: 'chat-latency-burn'
-    displayName: 'Tripplanner chat latency burn'
-    description: 'Alerts when at least five chat operations have a p95 above 120 seconds.'
+    displayName: '[${namePrefix}] Tripplanner chat latency burn'
+    description: '[${namePrefix}] Alerts when at least five chat operations have a p95 above 120 seconds.'
     signal: 'chat_latency_burn'
-    severity: 1
+    severity: 2
     windowSize: 'PT15M'
     query: loadTextContent('queries/chat-latency-burn.kql')
   }
   {
     name: 'model-throttling'
-    displayName: 'Tripplanner model throttling'
-    description: 'Alerts when model throttling is repeated and exceeds 20 percent of chat operations.'
+    displayName: '[${namePrefix}] Tripplanner model throttling'
+    description: '[${namePrefix}] Alerts when model throttling is repeated and exceeds 20 percent of chat operations.'
     signal: 'model_throttling'
-    severity: 1
+    severity: 2
     windowSize: 'PT15M'
     query: loadTextContent('queries/model-throttling.kql')
   }
   {
     name: 'provider-circuit-open'
-    displayName: 'Tripplanner provider circuit open'
-    description: 'Alerts when one provider circuit remains observably open for at least five minutes.'
+    displayName: '[${namePrefix}] Tripplanner provider circuit open'
+    description: '[${namePrefix}] Alerts when one provider circuit remains observably open for at least five minutes.'
     signal: 'provider_circuit_open'
-    severity: 2
+    severity: 3
     windowSize: 'PT15M'
     query: loadTextContent('queries/provider-circuit-open.kql')
   }
   {
     name: 'cache-degradation'
-    displayName: 'Tripplanner cache degradation'
-    description: 'Alerts when at least twenty cache accesses have a miss rate of 50 percent or more.'
+    displayName: '[${namePrefix}] Tripplanner cache degradation'
+    description: '[${namePrefix}] Alerts when at least twenty cache accesses have a miss rate of 50 percent or more.'
     signal: 'cache_degradation'
-    severity: 2
+    severity: 3
     windowSize: 'PT15M'
     query: loadTextContent('queries/cache-degradation.kql')
   }
@@ -410,7 +410,7 @@ resource failureAlertActions 'Microsoft.Insights/actionGroups@2023-01-01' = if (
     enabled: true
     emailReceivers: [
       {
-        name: 'Tripplanner production owner'
+        name: '[${namePrefix}] Tripplanner owner'
         emailAddress: failureAlertEmail
         useCommonAlertSchema: true
       }
@@ -423,8 +423,8 @@ resource failureAlert 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = if (
   location: location
   kind: 'LogAlert'
   properties: {
-    displayName: 'Tripplanner production application failures'
-    description: 'Alerts on PII-safe application, chat, or tool failure records.'
+    displayName: '[${namePrefix}] Tripplanner application failures'
+    description: '[${namePrefix}] Alerts on PII-safe application, chat, or tool failure records.'
     severity: 1
     enabled: true
     evaluationFrequency: 'PT5M'
@@ -505,11 +505,11 @@ resource cosmosThrottlingAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = if
   name: '${namePrefix}-cosmos-throttling'
   location: 'global'
   properties: {
-    description: 'Alerts when Cosmos DB returns at least five throttled requests in five minutes.'
-    severity: 1
+    description: '[${namePrefix}] Alerts when Cosmos DB returns at least twenty throttled requests in fifteen minutes.'
+    severity: 3
     enabled: true
     evaluationFrequency: 'PT5M'
-    windowSize: 'PT5M'
+    windowSize: 'PT15M'
     scopes: [cosmos.id]
     targetResourceType: 'Microsoft.DocumentDB/databaseAccounts'
     targetResourceRegion: location
@@ -530,7 +530,7 @@ resource cosmosThrottlingAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = if
             }
           ]
           operator: 'GreaterThanOrEqual'
-          threshold: 5
+          threshold: 20
           timeAggregation: 'Count'
         }
       ]
