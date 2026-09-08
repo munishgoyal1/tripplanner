@@ -1,0 +1,313 @@
+{
+  "status": "draft",
+  "trip_id": "goa_2027-03-10_2027-03-14",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:14:14.458680",
+  "destination": "Goa",
+  "origin": "Bangalore",
+  "departure_date": "2027-03-10",
+  "return_date": "2027-03-14",
+  "travelers": "2 adults",
+  "notes": "Packed sightseeing, early starts, see as much as possible.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Goa",
+    "estimated_planned_minutes": 1119,
+    "evidence_place_count": 9,
+    "reasons": [
+      "The user's explicit 4-day duration is authoritative",
+      "9 preference-matched places account for about 1119 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 4,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "The Crown Goa",
+      "address": "Bairo Alto Dos Pilotos, Panaji, Goa",
+      "star_rating": 4,
+      "amenities": [
+        "pool",
+        "breakfast included",
+        "river view"
+      ],
+      "price_per_night": 6500,
+      "currency": "INR",
+      "google_rating": 4.3,
+      "reviews": 1200
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-10",
+      "title": "Arrival & Old Goa Churches",
+      "summary": "Arrive in Goa from Bangalore, check in, explore Old Goa's historic churches.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Goa",
+          "kind": "flight",
+          "time": "07:00",
+          "arrival_time": "09:00",
+          "duration_min": 120,
+          "note": "Morning direct flight"
+        },
+        {
+          "name": "The Crown Goa",
+          "kind": "hotel",
+          "note": "Check-in and drop bags"
+        },
+        {
+          "name": "Basilica of Bom Jesus",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "UNESCO World Heritage Site"
+        },
+        {
+          "name": "Se Cathedral",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Largest church in Asia"
+        },
+        {
+          "name": "Viva Goa Restaurant",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Local Goan cuisine, highly rated"
+        },
+        {
+          "name": "Church of St. Francis of Assisi",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Fontainhas Latin Quarter",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 90,
+          "note": "Colorful Portuguese heritage area"
+        },
+        {
+          "name": "Mum's Kitchen",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Dinner, Goan specialties"
+        },
+        {
+          "name": "The Crown Goa",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-11",
+      "title": "North Goa Forts & Beaches",
+      "summary": "Explore iconic forts and beaches in North Goa, packed sightseeing day.",
+      "stops": [
+        {
+          "name": "The Crown Goa",
+          "kind": "hotel",
+          "note": "Start early"
+        },
+        {
+          "name": "Fort Aguada",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Chapora Fort",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Panoramic views"
+        },
+        {
+          "name": "Anjuna Beach",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 120,
+          "note": "Famous for its lively vibe"
+        },
+        {
+          "name": "Curlies Beach Shack",
+          "kind": "meal",
+          "time": "15:00",
+          "note": "Lunch, beachside"
+        },
+        {
+          "name": "Calangute Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Pousada by the Beach",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Dinner, seafood"
+        },
+        {
+          "name": "The Crown Goa",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-12",
+      "title": "Dudhsagar Falls & Spice Plantation",
+      "summary": "Day trip to Dudhsagar Falls and a Goan spice plantation tour.",
+      "stops": [
+        {
+          "name": "The Crown Goa",
+          "kind": "hotel",
+          "note": "Early departure"
+        },
+        {
+          "name": "Dudhsagar Falls",
+          "kind": "attraction",
+          "time": "07:30",
+          "duration_min": 240,
+          "note": "Scenic waterfall, jeep safari"
+        },
+        {
+          "name": "Sahakari Spice Farm",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch at spice plantation"
+        },
+        {
+          "name": "Spice Plantation Tour",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 90,
+          "note": "Guided tour"
+        },
+        {
+          "name": "Venite Bar & Restaurant",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Dinner, local cuisine"
+        },
+        {
+          "name": "The Crown Goa",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-03-13",
+      "title": "Panaji & River Cruise",
+      "summary": "Explore Panaji city, shopping, river cruise, and departure.",
+      "stops": [
+        {
+          "name": "The Crown Goa",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Panaji City Walk",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Markets & colonial architecture"
+        },
+        {
+          "name": "Hospedaria Venite",
+          "kind": "meal",
+          "time": "11:30",
+          "note": "Lunch, Portuguese-Goan"
+        },
+        {
+          "name": "Mandovi River Cruise",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 120,
+          "note": "Scenic cruise with music"
+        },
+        {
+          "name": "Shopping in Panaji",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Flight: Goa to Bangalore",
+          "kind": "flight",
+          "time": "17:00",
+          "arrival_time": "19:00",
+          "duration_min": 120,
+          "note": "Evening return flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:17:02.815836",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:16:41",
+      "expires_at": "2026-08-16T07:16:41"
+    }
+  ],
+  "id": "goa_2027-03-10_2027-03-14",
+  "user_id": "corpus-goa-see-it-all"
+}

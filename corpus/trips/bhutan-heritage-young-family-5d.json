@@ -1,0 +1,303 @@
+{
+  "status": "draft",
+  "trip_id": "bhutan_2027-10-15_2027-10-20",
+  "trip_number": 1,
+  "created_at": "2026-08-18T18:18:16.311877",
+  "destination": "Bhutan",
+  "origin": "Delhi",
+  "departure_date": "2027-10-15",
+  "return_date": "2027-10-20",
+  "travelers": "2 adults, 2 children (ages 6 and 9)",
+  "notes": "Focus on history and heritage sites in Thimphu and Paro. Moderate budget. Balanced pace.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Bhutan",
+    "estimated_planned_minutes": 760,
+    "evidence_place_count": 7,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "7 preference-matched places account for about 760 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-15",
+      "title": "Day 1 · Arrival in Paro & Transfer to Thimphu",
+      "summary": "Arrive in Paro from Delhi, visit Paro Dzong, then transfer to Thimphu. Check in to hotel and explore Thimphu town.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Paro",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "11:00",
+          "duration_min": 180,
+          "note": "Direct flight, Druk Air or Bhutan Airlines"
+        },
+        {
+          "name": "Drive: Paro to Thimphu",
+          "kind": "transport",
+          "time": "12:30",
+          "duration_min": 90,
+          "distance_km": 50,
+          "note": "Scenic drive along river valley"
+        },
+        {
+          "name": "Paro Dzong (Rinpung Dzong)",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 60,
+          "note": "Historic fortress-monastery"
+        },
+        {
+          "name": "Hotel in Thimphu",
+          "kind": "hotel",
+          "time": "16:00",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Thimphu Town Walk",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 60,
+          "note": "Explore main street, handicraft shops"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-16",
+      "title": "Day 2 · Thimphu Heritage Sites",
+      "summary": "Visit key heritage sites in Thimphu including Buddha Dordenma, Folk Heritage Museum, and Tashichho Dzong.",
+      "stops": [
+        {
+          "name": "Hotel in Thimphu",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Buddha Dordenma",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60,
+          "note": "Gigantic Buddha statue with panoramic views"
+        },
+        {
+          "name": "Folk Heritage Museum",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Traditional Bhutanese culture"
+        },
+        {
+          "name": "Lunch at Bhutan Kitchen",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Bhutanese cuisine"
+        },
+        {
+          "name": "Tashichho Dzong",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Seat of government and monastery"
+        },
+        {
+          "name": "Hotel in Thimphu",
+          "kind": "hotel",
+          "time": "16:00",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-17",
+      "title": "Day 3 · Thimphu to Paro & Heritage Exploration",
+      "summary": "Transfer to Paro, visit National Museum and Kyichu Lhakhang temple.",
+      "stops": [
+        {
+          "name": "Drive: Thimphu to Paro",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 90,
+          "distance_km": 50,
+          "note": "Scenic drive"
+        },
+        {
+          "name": "Hotel in Thimphu",
+          "kind": "hotel",
+          "time": "11:00",
+          "note": "Check-out"
+        },
+        {
+          "name": "National Museum of Bhutan",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "History and culture exhibits"
+        },
+        {
+          "name": "Lunch at Sonam Trophel Restaurant",
+          "kind": "meal",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Local cuisine"
+        },
+        {
+          "name": "Kyichu Lhakhang",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 60,
+          "note": "Ancient temple"
+        },
+        {
+          "name": "Hotel in Paro",
+          "kind": "hotel",
+          "time": "18:00",
+          "note": "Check-in"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-18",
+      "title": "Day 4 · Paro: Tiger’s Nest & Heritage",
+      "summary": "Hike to Tiger’s Nest Monastery, visit Drukgyel Dzong, and enjoy local culture.",
+      "stops": [
+        {
+          "name": "Hotel in Paro",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Tiger’s Nest Monastery (Taktsang)",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 240,
+          "note": "Iconic cliffside monastery, hike suitable for families"
+        },
+        {
+          "name": "Lunch at Champaca Café",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Relax after hike"
+        },
+        {
+          "name": "Drukgyel Dzong",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Historic fortress ruins"
+        },
+        {
+          "name": "Hotel in Paro",
+          "kind": "hotel",
+          "time": "15:30",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-10-19",
+      "title": "Day 5 · Departure",
+      "summary": "Morning at leisure in Paro, then return flight to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel in Paro",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Check-out"
+        },
+        {
+          "name": "Paro Town Walk",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 60,
+          "note": "Explore local market"
+        },
+        {
+          "name": "Flight: Paro to Delhi",
+          "kind": "flight",
+          "time": "11:00",
+          "arrival_time": "14:00",
+          "duration_min": 180,
+          "note": "Direct flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T18:23:34.957491",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-18T18:19:52",
+      "expires_at": "2026-08-18T18:49:52"
+    },
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T18:19:52",
+      "expires_at": "2026-08-19T06:19:52"
+    }
+  ],
+  "id": "bhutan_2027-10-15_2027-10-20",
+  "user_id": "corpus-bhutan-heritage-young-family-5d"
+}

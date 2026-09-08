@@ -1,0 +1,309 @@
+{
+  "status": "draft",
+  "trip_id": "paris_switzerland_northern_italy_2027-05-11_2027-05-22",
+  "trip_number": 1,
+  "created_at": "2026-08-25T21:00:44.253759",
+  "destination": "Paris, Switzerland, Northern Italy",
+  "origin": "Mumbai",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-05-11",
+  "return_date": "2027-05-22",
+  "travelers": "2 adults, 2 children (ages 6 and 10)",
+  "notes": "Focus on history, architecture, museums, and local culture. All travelers hold Indian passports.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Paris, Switzerland, Northern Italy",
+    "estimated_planned_minutes": 426,
+    "evidence_place_count": 7,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 11-day duration is authoritative",
+      "7 preference-matched places account for about 426 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 11,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "",
+      "title": "Arrival in Paris",
+      "summary": "** - Flight: Mumbai to Paris (overnight, arrives AM) - Check in, relax - Optional: Evening walk along the Seine",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Paris (overnight, arrives AM)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Check in, relax",
+          "kind": "attraction"
+        },
+        {
+          "name": "Optional: Evening walk along the Seine",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "",
+      "title": "Paris – Louvre & Historic Center",
+      "summary": "** - Louvre Museum (book skip-the-line tickets) - Notre-Dame Cathedral (exterior) - Île de la Cité walk - Local cuisine (e.g., Café Marly, Le Procope)",
+      "stops": [
+        {
+          "name": "Louvre Museum (book skip-the-line tickets)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Notre-Dame Cathedral (exterior)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Île de la Cité walk",
+          "kind": "attraction"
+        },
+        {
+          "name": "Local cuisine (e.g., Café Marly, Le Procope)",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "",
+      "title": "Paris – Montmartre & Musée d'Orsay",
+      "summary": "** - Montmartre walking tour - Sacré-Cœur Basilica - Musée d'Orsay - Dinner at Bouillon Pigalle",
+      "stops": [
+        {
+          "name": "Montmartre walking tour",
+          "kind": "attraction"
+        },
+        {
+          "name": "Sacré-Cœur Basilica",
+          "kind": "attraction"
+        },
+        {
+          "name": "Musée d'Orsay",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner at Bouillon Pigalle",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "",
+      "title": "Paris – Versailles Day Trip",
+      "summary": "** - RER train to Versailles - Palace of Versailles & Gardens - Return to Paris, dinner at Chez Janou",
+      "stops": [
+        {
+          "name": "RER train to Versailles",
+          "kind": "attraction"
+        },
+        {
+          "name": "Palace of Versailles & Gardens",
+          "kind": "attraction"
+        },
+        {
+          "name": "Return to Paris, dinner at Chez Janou",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "",
+      "title": "Paris to Lucerne (Switzerland)",
+      "summary": "** - Train: Paris to Lucerne (TGV Lyria or similar) - Chapel Bridge & Old Town - Dinner at Wirtshaus Galliker",
+      "stops": [
+        {
+          "name": "Train: Paris to Lucerne (TGV Lyria or similar)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Chapel Bridge & Old Town",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner at Wirtshaus Galliker",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "",
+      "title": "Lucerne & Mt. Pilatus",
+      "summary": "** - Swiss Museum of Transport - Mt. Pilatus excursion (cable car + cogwheel train) - Dinner at Rathaus Brauerei",
+      "stops": [
+        {
+          "name": "Swiss Museum of Transport",
+          "kind": "attraction"
+        },
+        {
+          "name": "Mt. Pilatus excursion (cable car + cogwheel train)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner at Rathaus Brauerei",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "",
+      "title": "Lucerne to Interlaken via Bern",
+      "summary": "** - Train: Lucerne to Bern - Bern Old Town walking tour - Train: Bern to Interlaken - Evening stroll Höhematte Park",
+      "stops": [
+        {
+          "name": "Train: Lucerne to Bern",
+          "kind": "attraction"
+        },
+        {
+          "name": "Bern Old Town walking tour",
+          "kind": "attraction"
+        },
+        {
+          "name": "Train: Bern to Interlaken",
+          "kind": "attraction"
+        },
+        {
+          "name": "Evening stroll Höhematte Park",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "",
+      "title": "Jungfrau Region or Zermatt Day Trip",
+      "summary": "** - Jungfraujoch excursion (or Zermatt for Matterhorn views, weather dependent) - Return to Interlaken",
+      "stops": [
+        {
+          "name": "Jungfraujoch excursion (or Zermatt for Matterhorn views, weather dependent)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Return to Interlaken",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 9,
+      "date": "",
+      "title": "Interlaken to Milan via Lake Como",
+      "summary": "** - Train: Interlaken to Como - Lake Como stroll & lunch - Train: Como to Milan",
+      "stops": [
+        {
+          "name": "Train: Interlaken to Como",
+          "kind": "attraction"
+        },
+        {
+          "name": "Lake Como stroll & lunch",
+          "kind": "attraction"
+        },
+        {
+          "name": "Train: Como to Milan",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 10,
+      "date": "",
+      "title": "Milan – Duomo, Sforza Castle & Navigli",
+      "summary": "** - Duomo di Milano - Galleria Vittorio Emanuele II - Sforza Castle - Navigli District stroll",
+      "stops": [
+        {
+          "name": "Duomo di Milano",
+          "kind": "attraction"
+        },
+        {
+          "name": "Galleria Vittorio Emanuele II",
+          "kind": "attraction"
+        },
+        {
+          "name": "Sforza Castle",
+          "kind": "attraction"
+        },
+        {
+          "name": "Navigli District stroll",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 11,
+      "date": "",
+      "title": "Milan to Mumbai",
+      "summary": "** - Leisure/shopping in Milan - Flight: Milan to Mumbai (overnight)  ---  **Unresolved Details** - No concrete hotels are selected yet (will recommend family-friendly, central hotels in each city). - No real-time flight/train/hotel/activity prices a",
+      "stops": [
+        {
+          "name": "Unresolved Details",
+          "kind": "attraction"
+        },
+        {
+          "name": "Next Steps",
+          "kind": "attraction"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T21:05:37.488006",
+  "id": "paris_switzerland_northern_italy_2027-05-11_2027-05-22",
+  "user_id": "corpus-india-outbound-schengen-classic-heritage-young-family-11d-76ed4b23d234"
+}

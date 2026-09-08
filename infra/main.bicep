@@ -11,6 +11,32 @@
 //   - Container App scales to zero (minReplicas = 0) — no charge when idle
 //   - Log Analytics PAYG, 30-day retention
 
+type cacheTtlSettingsType = {
+  scale: string
+  stableForever: bool
+  volatileForever: bool
+  warmEverything: bool
+  hotelSearch: int
+  flightSearch: int
+  activitySearch: int
+  flightFare: int
+  hotelFare: int
+  trainFare: int
+  coachFare: int
+  ferryFare: int
+  activityFare: int
+}
+
+type operationalAlertType = {
+  name: string
+  displayName: string
+  description: string
+  signal: string
+  severity: int
+  windowSize: string
+  query: string
+}
+
 @description('Prefix used for all resource names. Keep short.')
 param namePrefix string = 'tripplanner'
 
@@ -38,6 +64,72 @@ param azureOpenAiApiKey string
 param duffelApiKey string
 
 @secure()
+@description('Optional LiteAPI/Nuitee API key. Empty leaves hotel and flight provider integration inactive.')
+param liteapiApiKey string = ''
+
+@description('LiteAPI/Nuitee API base URL.')
+param liteapiBaseUrl string = 'https://api.liteapi.travel/v3.0'
+
+@description('Configured hotel provider selector. auto uses LiteAPI only when its key is present.')
+param travelHotelProvider string = 'auto'
+
+@description('Configured flight provider selector. auto uses LiteAPI only when its key is present.')
+param travelFlightProvider string = 'auto'
+
+@secure()
+@description('Optional Viator partner API key. Empty leaves activity provider integration inactive.')
+param viatorApiKey string = ''
+
+@description('Viator partner API base URL.')
+param viatorBaseUrl string = 'https://api.sandbox.viator.com/partner'
+
+@description('Configured activity provider selector. auto uses Viator only when its key is present.')
+param travelActivityProvider string = 'auto'
+
+@secure()
+@description('Optional OpenRouteService API key for coordinate-based directions fallback.')
+param openRouteServiceApiKey string = ''
+
+@description('OpenRouteService API base URL.')
+param openRouteServiceBaseUrl string = 'https://api.openrouteservice.org'
+
+@description('Coordinate route fallback cache TTL in seconds.')
+param openRouteServiceRouteTtlSec int = 21600
+
+@description('Owner-controlled runtime cache lifetimes for this environment.')
+param cacheTtlSettings cacheTtlSettingsType = {
+  scale: '1'
+  stableForever: false
+  volatileForever: false
+  warmEverything: false
+  hotelSearch: 600
+  flightSearch: 600
+  activitySearch: 21600
+  flightFare: 14400
+  hotelFare: 14400
+  trainFare: 43200
+  coachFare: 43200
+  ferryFare: 43200
+  activityFare: 86400
+}
+
+@description('Enable Redis-backed provider cache. Off keeps in-memory-only behavior.')
+param cacheRedisEnabled bool = false
+
+@secure()
+@description('Optional Redis URL (for example: rediss://:<key>@host:6380/0). Empty keeps local in-memory fallback only.')
+param cacheRedisUrl string = ''
+
+@description('Redis cache key namespace used by the provider cache layer.')
+param cacheRedisNamespace string = 'tripplanner:provider-cache'
+
+@description('Redis connect timeout in seconds.')
+param cacheRedisConnectTimeoutSec string = '0.2'
+
+@description('Redis socket timeout in seconds.')
+param cacheRedisSocketTimeoutSec string = '0.2'
+
+@secure()
 @description('Google Places (New) API key.')
 param googlePlacesApiKey string = ''
 
@@ -45,9 +137,28 @@ param googlePlacesApiKey string = ''
 @description('Google Maps browser key (referrer-restricted, Maps JavaScript API enabled). Sent to the browser to render the interactive trip map. Separate from googlePlacesApiKey.')
 param googleMapsBrowserKey string = ''
 
+@description('Public GA4 measurement id. Analytics remains disabled outside production and when this is empty.')
+param googleAnalyticsMeasurementId string = ''
+
 @secure()
 @description('Tavily web-search API key.')
 param tavilyApiKey string = ''
+
+@secure()
+@description('Optional Azure Communication Services connection string for itinerary email delivery.')
+param azureCommunicationConnectionString string = ''
+
+@description('Optional Azure Communication Services sender address.')
+param azureCommunicationEmailSender string = ''
+
+@description('Explicit billing gate for Google Places API (New). Keep false outside production.')
+param enableGooglePlaces bool = false
+
+@description('Explicit billing gate for Google Maps, Routes, and Static Maps APIs.')
+param enableGoogleMaps bool = false
+
+@description('Explicit billing gate for every Azure OpenAI model call.')
+param enableAzureOpenAi bool = false
 
 @secure()
 @description('Google OAuth client id (web app). Optional; enables Sign in with Google.')
@@ -72,6 +183,18 @@ param webSessionSecret string = ''
 @description('Public HTTPS base URL the OAuth callback returns to (no trailing slash). Required when serving Sign in with Google through Container Apps ingress, which terminates TLS and forwards plain HTTP to the container, so request.base_url is http://. Example: https://tripplanner-app-xxx.region.azurecontainerapps.io')
 param oauthRedirectBase string = ''
 
+@description('Optional apex custom domain bound to the Container App.')
+param apexCustomDomain string = ''
+
+@description('Existing or desired managed certificate name for apexCustomDomain.')
+param apexManagedCertificateName string = ''
+
+@description('Optional www custom domain bound to the Container App.')
+param wwwCustomDomain string = ''
+
+@description('Existing or desired managed certificate name for wwwCustomDomain.')
+param wwwManagedCertificateName string = ''
+
 @description('Name of the existing shared Cosmos DB account.')
 param cosmosAccountName string
 
@@ -94,10 +217,56 @@ param maxReplicas int = 1
 @description('If true, the restricted audit sink also stores the raw user message body. Opt-in for privacy; off by default.')
 param auditUserMessages bool = false
 
+@description('Create an Azure Monitor failure alert and email Action Group. Enable only in production.')
+param enableFailureAlerts bool = false
+
+@description('Email recipient for production failure alerts. Required when enableFailureAlerts is true.')
+param failureAlertEmail string = ''
+
 var suffix = uniqueString(resourceGroup().id)
 var logsName = '${namePrefix}-logs-${suffix}'
 var envName = '${namePrefix}-env-${suffix}'
 var appName = '${namePrefix}-app-${suffix}'
+var publicDemoJobName = '${namePrefix}-demo-refresh-${take(suffix, 8)}'
+var failureAlertQuery = loadTextContent('queries/application-failures.kql')
+var operationalAlerts operationalAlertType[] = [
+  {
+    name: 'chat-latency-burn'
+    displayName: '[${namePrefix}] Tripplanner chat latency burn'
+    description: '[${namePrefix}] Alerts when at least five chat operations have a p95 above 120 seconds.'
+    signal: 'chat_latency_burn'
+    severity: 2
+    windowSize: 'PT15M'
+    query: loadTextContent('queries/chat-latency-burn.kql')
+  }
+  {
+    name: 'model-throttling'
+    displayName: '[${namePrefix}] Tripplanner model throttling'
+    description: '[${namePrefix}] Alerts when model throttling is repeated and exceeds 20 percent of chat operations.'
+    signal: 'model_throttling'
+    severity: 2
+    windowSize: 'PT15M'
+    query: loadTextContent('queries/model-throttling.kql')
+  }
+  {
+    name: 'provider-circuit-open'
+    displayName: '[${namePrefix}] Tripplanner provider circuit open'
+    description: '[${namePrefix}] Alerts when one provider circuit remains observably open for at least five minutes.'
+    signal: 'provider_circuit_open'
+    severity: 3
+    windowSize: 'PT15M'
+    query: loadTextContent('queries/provider-circuit-open.kql')
+  }
+  {
+    name: 'cache-degradation'
+    displayName: '[${namePrefix}] Tripplanner cache degradation'
+    description: '[${namePrefix}] Alerts when at least twenty cache accesses have a miss rate of 50 percent or more.'
+    signal: 'cache_degradation'
+    severity: 3
+    windowSize: 'PT15M'
+    query: loadTextContent('queries/cache-degradation.kql')
+  }
+]
 
 // OAuth secrets are only attached when a value is supplied. Container Apps
 // rejects empty-string secret values, so we conditionally build the secrets
@@ -119,6 +288,50 @@ var oauthEnv = concat(
   empty(oauthRedirectBase) ? [] : [{ name: 'OAUTH_REDIRECT_BASE', value: oauthRedirectBase }]
 )
 
+// Optional provider secrets are omitted entirely when a key is absent. Container
+// Apps rejects empty secret values, and an absent key must keep that provider inactive.
+var providerSecrets = concat(
+  empty(liteapiApiKey) ? [] : [{ name: 'liteapi-api-key', value: liteapiApiKey }],
+  empty(viatorApiKey) ? [] : [{ name: 'viator-api-key', value: viatorApiKey }],
+  empty(openRouteServiceApiKey) ? [] : [{ name: 'openrouteservice-api-key', value: openRouteServiceApiKey }]
+)
+
+var redisSecrets = empty(cacheRedisUrl) ? [] : [{ name: 'cache-redis-url', value: cacheRedisUrl }]
+
+var communicationSecrets = empty(azureCommunicationConnectionString)
+  ? []
+  : [{ name: 'azure-communication-connection-string', value: azureCommunicationConnectionString }]
+
+var communicationEnv = concat(
+  empty(azureCommunicationConnectionString) ? [] : [{
+    name: 'AZURE_COMMUNICATION_CONNECTION_STRING'
+    secretRef: 'azure-communication-connection-string'
+  }],
+  empty(azureCommunicationEmailSender) ? [] : [{
+    name: 'AZURE_COMMUNICATION_EMAIL_SENDER'
+    value: azureCommunicationEmailSender
+  }]
+)
+
+var providerEnv = concat(
+  empty(liteapiApiKey) ? [] : [
+    { name: 'LITEAPI_API_KEY', secretRef: 'liteapi-api-key' }
+    { name: 'LITEAPI_BASE_URL', value: liteapiBaseUrl }
+    { name: 'TRAVEL_HOTEL_PROVIDER', value: travelHotelProvider }
+    { name: 'TRAVEL_FLIGHT_PROVIDER', value: travelFlightProvider }
+  ],
+  empty(viatorApiKey) ? [] : [
+    { name: 'VIATOR_API_KEY', secretRef: 'viator-api-key' }
+    { name: 'VIATOR_BASE_URL', value: viatorBaseUrl }
+    { name: 'TRAVEL_ACTIVITY_PROVIDER', value: travelActivityProvider }
+  ],
+  empty(openRouteServiceApiKey) ? [] : [
+    { name: 'OPENROUTESERVICE_API_KEY', secretRef: 'openrouteservice-api-key' }
+    { name: 'OPENROUTESERVICE_BASE_URL', value: openRouteServiceBaseUrl }
+    { name: 'OPENROUTESERVICE_ROUTE_TTL_SEC', value: string(openRouteServiceRouteTtlSec) }
+  ]
+)
+
 var baseSecrets = [
   { name: 'azure-openai-api-key', value: azureOpenAiApiKey }
   { name: 'duffel-api-key', value: duffelApiKey }
@@ -128,14 +341,36 @@ var baseSecrets = [
 ]
 
 var baseEnv = [
+  { name: 'TRIPPLANNER_ENVIRONMENT', value: namePrefix }
+  { name: 'ENABLE_AZURE_OPENAI', value: enableAzureOpenAi ? '1' : '0' }
   { name: 'AZURE_OPENAI_ENDPOINT', value: azureOpenAiEndpoint }
   { name: 'AZURE_OPENAI_DEPLOYMENT', value: azureOpenAiDeployment }
   { name: 'AZURE_OPENAI_API_VERSION', value: azureOpenAiApiVersion }
   { name: 'AZURE_OPENAI_API_KEY', secretRef: 'azure-openai-api-key' }
   { name: 'DUFFEL_API_KEY', secretRef: 'duffel-api-key' }
+  { name: 'ENABLE_GOOGLE_PLACES', value: enableGooglePlaces ? '1' : '0' }
+  { name: 'ENABLE_GOOGLE_MAPS', value: enableGoogleMaps ? '1' : '0' }
   { name: 'GOOGLE_PLACES_API_KEY', secretRef: 'google-places-api-key' }
   { name: 'TAVILY_API_KEY', secretRef: 'tavily-api-key' }
   { name: 'GOOGLE_MAPS_BROWSER_KEY', value: googleMapsBrowserKey }
+  { name: 'GOOGLE_ANALYTICS_MEASUREMENT_ID', value: googleAnalyticsMeasurementId }
+  { name: 'CACHE_TTL_SCALE', value: cacheTtlSettings.scale }
+  { name: 'CACHE_STABLE_FOREVER', value: cacheTtlSettings.stableForever ? '1' : '0' }
+  { name: 'CACHE_VOLATILE_FOREVER', value: cacheTtlSettings.volatileForever ? '1' : '0' }
+  { name: 'CACHE_WARM_EVERYTHING', value: cacheTtlSettings.warmEverything ? '1' : '0' }
+  { name: 'HOTEL_SEARCH_CACHE_TTL_SEC', value: string(cacheTtlSettings.hotelSearch) }
+  { name: 'FLIGHT_SEARCH_CACHE_TTL_SEC', value: string(cacheTtlSettings.flightSearch) }
+  { name: 'ACTIVITY_SEARCH_CACHE_TTL_SEC', value: string(cacheTtlSettings.activitySearch) }
+  { name: 'FLIGHT_CACHE_TTL_SEC', value: string(cacheTtlSettings.flightFare) }
+  { name: 'HOTEL_CACHE_TTL_SEC', value: string(cacheTtlSettings.hotelFare) }
+  { name: 'TRAIN_CACHE_TTL_SEC', value: string(cacheTtlSettings.trainFare) }
+  { name: 'COACH_CACHE_TTL_SEC', value: string(cacheTtlSettings.coachFare) }
+  { name: 'FERRY_CACHE_TTL_SEC', value: string(cacheTtlSettings.ferryFare) }
+  { name: 'ACTIVITY_CACHE_TTL_SEC', value: string(cacheTtlSettings.activityFare) }
+  { name: 'CACHE_REDIS_ENABLED', value: cacheRedisEnabled ? '1' : '0' }
+  { name: 'CACHE_REDIS_NAMESPACE', value: cacheRedisNamespace }
+  { name: 'CACHE_REDIS_CONNECT_TIMEOUT_SEC', value: cacheRedisConnectTimeoutSec }
+  { name: 'CACHE_REDIS_SOCKET_TIMEOUT_SEC', value: cacheRedisSocketTimeoutSec }
   { name: 'COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
   { name: 'COSMOS_KEY', secretRef: 'cosmos-key' }
   { name: 'COSMOS_DATABASE', value: cosmosDatabaseName }
@@ -145,6 +380,13 @@ var baseEnv = [
   // audit_events Cosmos container. Off by default.
   { name: 'AUDIT_USER_MESSAGES', value: auditUserMessages ? '1' : '' }
 ]
+
+var redisEnv = empty(cacheRedisUrl)
+  ? []
+  : [{
+      name: 'CACHE_REDIS_URL'
+      secretRef: 'cache-redis-url'
+    }]
 
 resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: logsName
@@ -160,9 +402,149 @@ resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   }
 }
 
+resource failureAlertActions 'Microsoft.Insights/actionGroups@2023-01-01' = if (enableFailureAlerts) {
+  name: '${namePrefix}-failure-alert-actions'
+  location: 'global'
+  properties: {
+    groupShortName: 'tripfail'
+    enabled: true
+    emailReceivers: [
+      {
+        name: '[${namePrefix}] Tripplanner owner'
+        emailAddress: failureAlertEmail
+        useCommonAlertSchema: true
+      }
+    ]
+  }
+}
+
+resource failureAlert 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = if (enableFailureAlerts) {
+  name: '${namePrefix}-application-failures'
+  location: location
+  kind: 'LogAlert'
+  properties: {
+    displayName: '[${namePrefix}] Tripplanner application failures'
+    description: '[${namePrefix}] Alerts on PII-safe application, chat, or tool failure records.'
+    severity: 1
+    enabled: true
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT5M'
+    scopes: [logs.id]
+    targetResourceTypes: ['Microsoft.OperationalInsights/workspaces']
+    autoMitigate: true
+    skipQueryValidation: true
+    criteria: {
+      allOf: [
+        {
+          query: failureAlertQuery
+          timeAggregation: 'Count'
+          operator: 'GreaterThan'
+          threshold: 0
+          failingPeriods: {
+            numberOfEvaluationPeriods: 1
+            minFailingPeriodsToAlert: 1
+          }
+        }
+      ]
+    }
+    actions: {
+      actionGroups: [failureAlertActions.id]
+      customProperties: {
+        environment: namePrefix
+        signal: 'application_failure'
+      }
+    }
+  }
+}
+
+resource operationalAlertRules 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = [for alert in operationalAlerts: if (enableFailureAlerts) {
+  name: '${namePrefix}-${alert.name}'
+  location: location
+  kind: 'LogAlert'
+  properties: {
+    displayName: alert.displayName
+    description: alert.description
+    severity: alert.severity
+    enabled: true
+    evaluationFrequency: 'PT5M'
+    windowSize: alert.windowSize
+    scopes: [logs.id]
+    targetResourceTypes: ['Microsoft.OperationalInsights/workspaces']
+    autoMitigate: true
+    skipQueryValidation: true
+    criteria: {
+      allOf: [
+        {
+          query: alert.query
+          timeAggregation: 'Count'
+          operator: 'GreaterThan'
+          threshold: 0
+          failingPeriods: {
+            numberOfEvaluationPeriods: 1
+            minFailingPeriodsToAlert: 1
+          }
+        }
+      ]
+    }
+    actions: {
+      actionGroups: [failureAlertActions.id]
+      customProperties: {
+        environment: namePrefix
+        signal: alert.signal
+      }
+    }
+  }
+}]
+
 resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' existing = {
   scope: resourceGroup(cosmosResourceGroupName)
   name: cosmosAccountName
+}
+
+resource cosmosThrottlingAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = if (enableFailureAlerts) {
+  name: '${namePrefix}-cosmos-throttling'
+  location: 'global'
+  properties: {
+    description: '[${namePrefix}] Alerts when Cosmos DB returns at least twenty throttled requests in fifteen minutes.'
+    severity: 3
+    enabled: true
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT15M'
+    scopes: [cosmos.id]
+    targetResourceType: 'Microsoft.DocumentDB/databaseAccounts'
+    targetResourceRegion: location
+    autoMitigate: true
+    criteria: {
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      allOf: [
+        {
+          name: 'CosmosHttp429Responses'
+          criterionType: 'StaticThresholdCriterion'
+          metricName: 'TotalRequests'
+          metricNamespace: 'Microsoft.DocumentDB/databaseAccounts'
+          dimensions: [
+            {
+              name: 'StatusCode'
+              operator: 'Include'
+              values: ['429']
+            }
+          ]
+          operator: 'GreaterThanOrEqual'
+          threshold: 20
+          timeAggregation: 'Count'
+        }
+      ]
+    }
+    actions: [
+      {
+        actionGroupId: failureAlertActions.id
+        webHookProperties: {
+          environment: namePrefix
+          signal: 'cosmos_throttling'
+        }
+      }
+    ]
+  }
 }
 
 resource env 'Microsoft.App/managedEnvironments@2024-03-01' = {
@@ -179,6 +561,39 @@ resource env 'Microsoft.App/managedEnvironments@2024-03-01' = {
   }
 }
 
+resource apexManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' = if (!empty(apexCustomDomain)) {
+  parent: env
+  name: apexManagedCertificateName
+  location: location
+  properties: {
+    domainControlValidation: 'HTTP'
+    subjectName: apexCustomDomain
+  }
+}
+
+resource wwwManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' = if (!empty(wwwCustomDomain)) {
+  parent: env
+  name: wwwManagedCertificateName
+  location: location
+  properties: {
+    domainControlValidation: 'CNAME'
+    subjectName: wwwCustomDomain
+  }
+}
+
+var customDomains = concat(
+  empty(apexCustomDomain) ? [] : [{
+    name: apexCustomDomain
+    bindingType: 'SniEnabled'
+    certificateId: apexManagedCertificate.id
+  }],
+  empty(wwwCustomDomain) ? [] : [{
+    name: wwwCustomDomain
+    bindingType: 'SniEnabled'
+    certificateId: wwwManagedCertificate.id
+  }]
+)
+
 resource app 'Microsoft.App/containerApps@2024-03-01' = {
   name: appName
   location: location
@@ -190,6 +605,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: 8000
         transport: 'http'
         allowInsecure: false
+        customDomains: customDomains
         traffic: [
           {
             weight: 100
@@ -197,7 +613,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
           }
         ]
       }
-      secrets: concat(baseSecrets, oauthSecrets)
+      secrets: concat(baseSecrets, oauthSecrets, providerSecrets, redisSecrets, communicationSecrets)
     }
     template: {
       containers: [
@@ -208,7 +624,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json('0.5')
             memory: '1Gi'
           }
-          env: concat(baseEnv, oauthEnv)
+          env: concat(baseEnv, oauthEnv, providerEnv, redisEnv, communicationEnv)
         }
       ]
       scale: {
@@ -219,10 +635,58 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
+resource publicDemoRefreshJob 'Microsoft.App/jobs@2024-03-01' = {
+  name: publicDemoJobName
+  location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    environmentId: env.id
+    configuration: {
+      triggerType: 'Schedule'
+      replicaTimeout: 900
+      replicaRetryLimit: 1
+      scheduleTriggerConfig: {
+        cronExpression: '0 3 1 * *'
+        parallelism: 1
+        replicaCompletionCount: 1
+      }
+    }
+    template: {
+      containers: [
+        {
+          name: 'public-demo-refresh'
+          image: containerImage
+          command: ['python']
+          args: ['-m', 'tripplanner.public_demo']
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+          env: [
+            { name: 'COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
+            { name: 'COSMOS_DATABASE', value: cosmosDatabaseName }
+            { name: 'COSMOS_USE_MANAGED_IDENTITY', value: '1' }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+module publicDemoCosmosRole 'public-demo-cosmos-role.bicep' = {
+  scope: resourceGroup(cosmosResourceGroupName)
+  params: {
+    cosmosAccountName: cosmosAccountName
+    principalId: publicDemoRefreshJob.identity.principalId
+  }
+}
+
 output containerAppFqdn string = app.properties.configuration.ingress.fqdn
 output containerAppUrl string = 'https://${app.properties.configuration.ingress.fqdn}'
 output containerAppName string = app.name
+output publicDemoRefreshJobName string = publicDemoRefreshJob.name
 output cosmosEndpoint string = cosmos.properties.documentEndpoint
 output cosmosAccountName string = cosmos.name
 output logAnalyticsId string = logs.id
-

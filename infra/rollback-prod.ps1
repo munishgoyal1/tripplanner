@@ -20,6 +20,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. "$PSScriptRoot/deployment-common.ps1"
+Start-RunLog -Name "prod-rollback" | Out-Null
+
 if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
   az account set --subscription $SubscriptionId
 }
@@ -37,7 +40,7 @@ if ([string]::IsNullOrWhiteSpace($AppName)) {
     throw "No Container App found in $prodRG with prefix '$AppNamePrefix'."
   }
   if ($appNames.Count -gt 1) {
-    throw "Multiple Container Apps match prefix '$AppNamePrefix' in $prodRG: $($appNames -join ', '). Pass -AppName explicitly."
+    throw "Multiple Container Apps match prefix '$AppNamePrefix' in ${prodRG}: $($appNames -join ', '). Pass -AppName explicitly."
   }
   $prodApp = $appNames[0]
 } else {
@@ -92,9 +95,10 @@ Write-Host "  Current: $currentRevision (deactivated)"
 Write-Host "  Active: $previousRevision`n"
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-$logDir = "logs"
-if (-not (Test-Path $logDir)) { mkdir $logDir -Force | Out-Null }
-Add-Content "logs/deployments-prod.log" "[$timestamp] ROLLBACK from $currentRevision to $previousRevision | By: $env:USERNAME"
+$historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-prod.log"
+New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
+Add-Content $historyLog "[$timestamp] ROLLBACK from $currentRevision to $previousRevision | By: $(Get-DeploymentUser)"
 
-Write-Host "✓ Logged to logs/deployments-prod.log`n"
+Write-Host "✓ Logged to $historyLog`n"
+Stop-RunLog
 

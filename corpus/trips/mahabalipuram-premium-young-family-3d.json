@@ -1,0 +1,251 @@
+{
+  "status": "draft",
+  "trip_id": "mahabalipuram_2027-12-02_2027-12-05",
+  "trip_number": 1,
+  "created_at": "2026-08-18T18:06:44.039420",
+  "destination": "Mahabalipuram",
+  "origin": "Chennai",
+  "departure_date": "2027-12-02",
+  "return_date": "2027-12-05",
+  "travelers": "2 adults, 2 children (ages 6 and 9)",
+  "notes": "No major local events or festivals during your dates. All top attractions open as usual.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Mahabalipuram",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Kaldan Samudhra Palace (Luxury Property)",
+      "address": "16/3B1B, East Coast Rd, Devaneri, Mahabalipuram, Tamil Nadu 603104, India",
+      "rating": 4.7,
+      "review_count": 8106,
+      "note": "Luxury palace-style resort, ideal for families, premium amenities"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-02",
+      "title": "Day 1 · Arrival & Shore Temple",
+      "summary": "Drive from Chennai to Mahabalipuram, check in to Kaldan Samudhra Palace, visit Shore Temple, evening at the beach.",
+      "stops": [
+        {
+          "name": "Drive: Chennai to Mahabalipuram",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 90,
+          "distance_km": 55,
+          "note": "Private car transfer"
+        },
+        {
+          "name": "Kaldan Samudhra Palace (Luxury Property)",
+          "kind": "hotel",
+          "note": "Check-in and settle in",
+          "time": "11:00"
+        },
+        {
+          "name": "Mahabalipuram Shore Temple",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "UNESCO World Heritage Site, 4.6★, 13k reviews"
+        },
+        {
+          "name": "Mahabalipuram Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Relax and play on the beach"
+        },
+        {
+          "name": "Kaldan Samudhra Palace (Luxury Property)",
+          "kind": "hotel",
+          "note": "Return for the night",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-03",
+      "title": "Day 2 · Pancha Rathas & Activities",
+      "summary": "Explore Pancha Rathas, enjoy fun for kids, visit Krishna's Butter Ball, dinner at Arabian Garden Multi Cuisine Restaurant.",
+      "stops": [
+        {
+          "name": "Kaldan Samudhra Palace (Luxury Property)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Five Rathas (Pancha Rathas)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Iconic monolithic monuments, 4.7★, 15k reviews"
+        },
+        {
+          "name": "Children's Activity (Beach games, sand art)",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Fun and educational, family-friendly"
+        },
+        {
+          "name": "Krishna's Butter Ball",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Famous balancing rock, 4.5★, 27k reviews"
+        },
+        {
+          "name": "ARABIAN GARDEN MULTI CUISINE RESTAURANT",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Top-rated, 4.7★, 11.7k reviews"
+        },
+        {
+          "name": "Kaldan Samudhra Palace (Luxury Property)",
+          "kind": "hotel",
+          "note": "Return for the night"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-04",
+      "title": "Day 3 · Arjuna's Penance & Departure",
+      "summary": "Visit Arjuna's Penance, shopping, lunch at Arabian Garden Seafood Restaurant, return to Chennai.",
+      "stops": [
+        {
+          "name": "Kaldan Samudhra Palace (Luxury Property)",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Descent of the Ganga River and Arjuna's Penance",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Largest bas-relief, 4.6★, 3k reviews"
+        },
+        {
+          "name": "Shopping in Mahabalipuram",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Local handicrafts"
+        },
+        {
+          "name": "Arabian Garden - Seafood Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Top-rated, 4.5★, 12.8k reviews"
+        },
+        {
+          "name": "Drive: Mahabalipuram to Chennai",
+          "kind": "transport",
+          "time": "15:00",
+          "duration_min": 90,
+          "distance_km": 55,
+          "note": "Private car transfer"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 36000,
+    "meals": 6000,
+    "activities": 3500,
+    "transport": 3500
+  },
+  "total_cost": 49000,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {
+    "source": "agent_climate_estimate",
+    "note": "December is pleasant and dry in Mahabalipuram, highs 28-30°C, lows 20-22°C, minimal rain",
+    "days": [
+      {
+        "date": "2027-12-02",
+        "high_c": 29,
+        "low_c": 21,
+        "precip_mm": 2
+      },
+      {
+        "date": "2027-12-03",
+        "high_c": 30,
+        "low_c": 22,
+        "precip_mm": 2
+      },
+      {
+        "date": "2027-12-04",
+        "high_c": 29,
+        "low_c": 21,
+        "precip_mm": 2
+      }
+    ],
+    "packing_advice": [
+      "Light cotton clothing",
+      "Sun hats",
+      "Swimwear",
+      "Sunscreen",
+      "Sandals"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T18:23:53.880728",
+  "id": "mahabalipuram_2027-12-02_2027-12-05",
+  "user_id": "corpus-mahabalipuram-premium-young-family-3d"
+}

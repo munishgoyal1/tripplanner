@@ -3,14 +3,23 @@
 from __future__ import annotations
 
 import base64
+import hashlib
+import json
 from html import escape
-import os
 from typing import Any
 from urllib.parse import quote
 
-import requests
+import httpx
 
+from tripplanner import http_client
+from tripplanner.caching import get_cache
+from tripplanner.config import get_settings
 from tripplanner.web import places_cache, trip_view
+
+_STATIC_MAP_CACHE_TTL_S = 7 * 24 * 60 * 60
+_STATIC_MAP_CACHE = get_cache(
+  "google-static-map", default_ttl_seconds=_STATIC_MAP_CACHE_TTL_S, volatile=False
+)
 
 
 def _e(value: Any) -> str:
@@ -82,7 +91,12 @@ def _qr_image_url(value: str) -> str:
 def _static_map_data_uri(
     pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]
   ) -> str:
-    key = os.getenv("GOOGLE_PLACES_API_KEY", "").strip()
+    from tripplanner.places_budget import paid_provider_authorized
+
+    if not paid_provider_authorized():
+      return ""
+    settings = get_settings()
+    key = settings.google_places_api_key.strip() if settings.enable_google_maps else ""
     points = [pin_by_id.get(pin_id) or {} for pin_id in pin_ids]
     coords = [
       (float(point["lat"]), float(point["lng"]))
@@ -92,6 +106,16 @@ def _static_map_data_uri(
     ]
     if not key or len(coords) < 2:
       return ""
+
+    cache_key = hashlib.sha256(
+      json.dumps(coords, separators=(",", ":")).encode()
+    ).hexdigest()
+    cached = _STATIC_MAP_CACHE.get(cache_key)
+    if isinstance(cached, str):
+      from tripplanner.provider_usage import record_cache_hit
+
+      record_cache_hit(provider="google", operation="static_map")
+      return cached
 
     path = "color:0x0369a1ff|weight:4|" + "|".join(
       f"{lat:.6f},{lng:.6f}" for lat, lng in coords
@@ -109,7 +133,7 @@ def _static_map_data_uri(
       ("key", key),
     ]
     try:
-      response = requests.get(
+      response = http_client.get(
         "https://maps.googleapis.com/maps/api/staticmap",
         params=params,
         timeout=12,
@@ -119,9 +143,76 @@ def _static_map_data_uri(
       if not content_type.startswith("image/"):
         return ""
       encoded = base64.b64encode(response.content).decode("ascii")
-      return f"data:{content_type};base64,{encoded}"
-    except requests.RequestException:
+      result = f"data:{content_type};base64,{encoded}"
+      _STATIC_MAP_CACHE.set(
+        cache_key,
+        result,
+        ttl_seconds=_STATIC_MAP_CACHE_TTL_S,
+      )
+      return result
+    except httpx.HTTPError:
       return ""
+
+
+def _decisions_section(trip: dict[str, Any]) -> str:
+    """The comparisons behind the plan, printed with the plan.
+
+    Carried through the same sanitiser the share link uses, so an exported page
+    can never leak more than a shared one.
+    """
+    from tripplanner.decisions.provenance import build_provenance
+    from tripplanner.decisions.rules import money
+    from tripplanner.web.share import sanitize_decisions
+
+    decisions = sanitize_decisions(trip.get("decisions"))
+    checks = build_provenance(trip)
+    if not decisions and not checks:
+        return ""
+    blocks: list[str] = []
+    for decision in decisions:
+        rows: list[str] = []
+        for option in decision.get("options") or []:
+            price = option.get("price")
+            if isinstance(price, dict) and price.get("amount") is not None:
+                price_text = money(float(price["amount"]), str(price.get("currency") or "EUR"))
+                source = option.get("source") or {}
+                provider = str(source.get("provider") or "")
+                if provider:
+                    price_text += f" · {provider}"
+            else:
+                price_text = "no fare source"
+            chosen = option.get("id") == decision.get("chosen_option_id")
+            reason = "" if chosen else str(option.get("rejected_because") or "")
+            rows.append(
+                "<li class='opt{cls}'><span class='opt-label'>{label}</span>"
+                "<span class='opt-price'>{price}</span>{reason}</li>".format(
+                    cls=" chosen" if chosen else "",
+                    label=_e(str(option.get("label") or "")),
+                    price=_e(price_text),
+                    reason=f"<div class='opt-reason'>{_e(reason)}</div>" if reason else "",
+                )
+            )
+        blocks.append(
+            "<div class='why-item'><div class='why-subject'>{subject}</div>"
+            "<div class='why-rule'>{rule}</div><ul class='opts'>{rows}</ul></div>".format(
+                subject=_e(str(decision.get("subject") or "")),
+                rule=_e(str(decision.get("rule_text") or "")),
+                rows="".join(rows),
+            )
+        )
+    checked = "".join(
+        "<li class='check{cls}'>{text}</li>".format(
+            cls="" if row["current"] else " stale",
+            text=_e(str(row["text"])),
+        )
+        for row in checks
+    )
+    if checked:
+        checked = f"<ul class='checks'>{checked}</ul>"
+    return (
+        "<section class='why'><h2>Why it is planned this way</h2>"
+        f"{''.join(blocks)}{checked}</section>"
+    )
 
 
 def build_export_html(
@@ -170,7 +261,7 @@ def build_export_html(
             photo_html = ""
             place_meta_html = ""
             if name and kind in {"hotel", "attraction", "meal", "restaurant"}:
-              place = places_cache.get_summary(name, destination) or {}
+              place = places_cache.get_details(name, destination) or {}
               address = str(place.get("address") or "")
               rating = place.get("rating")
               details = [address] if address else []
@@ -310,6 +401,8 @@ def build_export_html(
     else:
         share_section = ""
 
+    decisions_section = _decisions_section(trip)
+
     return f"""<!doctype html>
 <html>
 <head>
@@ -355,6 +448,19 @@ def build_export_html(
     .stop-photo-wrap {{ width:120px; flex-shrink:0; }}
     .stop-photo {{ width:120px; height:84px; object-fit:cover; border-radius:8px; border:1px solid var(--line); }}
     .foot {{ margin-top:18px; color:var(--muted); font-size:12px; }}
+    .why {{ margin-top:20px; border:1px solid var(--line); border-radius:14px; padding:14px; page-break-inside:avoid; }}
+    .why h2 {{ margin:0 0 4px; font-size:18px; }}
+    .why-item {{ margin-top:12px; }}
+    .why-subject {{ font-weight:700; }}
+    .why-rule {{ color:var(--muted); font-size:12px; margin-top:2px; }}
+    .opts {{ margin:8px 0 0; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:6px; }}
+    .opt {{ display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; border:1px solid var(--line); border-radius:10px; padding:8px 10px; background:var(--soft); font-size:13px; }}
+    .opt.chosen {{ border-color:var(--accent); background:#fff; font-weight:600; }}
+    .opt-price {{ color:var(--muted); }}
+    .opt-reason {{ flex-basis:100%; color:var(--muted); font-size:12px; font-weight:400; }}
+    .checks {{ margin:12px 0 0; padding-left:0; list-style:none; font-size:12px;
+      color:var(--muted); }}
+    .checks .stale {{ color:#92400e; }}
     @media print {{
       .wrap {{ max-width:none; padding:10mm; }}
       .day {{ break-inside: avoid; }}
@@ -375,6 +481,7 @@ def build_export_html(
       </div>
     </section>
     {''.join(day_blocks)}
+    {decisions_section}
     <p class='foot'>Generated by AI Trip Planner ({_e(title_suffix)} template). Tip: Use browser Print → Save as PDF for a carry-along copy.</p>
     {share_section}
   </div>

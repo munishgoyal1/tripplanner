@@ -1,0 +1,375 @@
+{
+  "status": "draft",
+  "trip_id": "kuala_lumpur_genting_penang_2027-07-04_2027-07-10",
+  "trip_number": 1,
+  "created_at": "2026-08-25T21:46:11.580846",
+  "destination": "Kuala Lumpur, Genting, Penang",
+  "origin": "Chennai",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-07-04",
+  "return_date": "2027-07-10",
+  "travelers": "2 adults, 2 children (ages 6 and 10)",
+  "notes": "Provider search for real hotels in Kuala Lumpur failed. Will use a well-known, family-friendly property as a placeholder for now: Berjaya Times Square Hotel Kuala Lumpur (central, pool, family suites). Replace with a bookable rate as soon as provider search is restored.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Kuala Lumpur, Genting, Penang",
+    "estimated_planned_minutes": 1202,
+    "evidence_place_count": 7,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 6-day duration is authoritative",
+      "7 preference-matched places account for about 1202 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 6,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Berjaya Times Square Hotel Kuala Lumpur",
+      "city": "Kuala Lumpur",
+      "address": "1 Jalan Imbi, 55100 Kuala Lumpur, Malaysia",
+      "star_rating": 4,
+      "amenities": [
+        "pool",
+        "family suites",
+        "central location"
+      ],
+      "nights": 2,
+      "checkin": "2027-07-04",
+      "checkout": "2027-07-06"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-07-04",
+      "title": "Day 1 · Arrival in Kuala Lumpur",
+      "summary": "Arrive in Kuala Lumpur from Chennai. Settle into your hotel and explore the nearby Bukit Bintang area for a relaxed introduction and dinner.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Kuala Lumpur",
+          "kind": "flight",
+          "note": "Morning flight, direct if possible",
+          "time": "09:00"
+        },
+        {
+          "name": "Check-in: Family Hotel Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Central, child-friendly hotel",
+          "time": "11:00"
+        },
+        {
+          "name": "Bukit Bintang Walk",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Explore shops and street food"
+        },
+        {
+          "name": "Dinner at Lot 10 Hutong",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Famous food court with child-friendly options"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-07-05",
+      "title": "Day 2 · Kuala Lumpur Landmarks",
+      "summary": "Visit iconic Kuala Lumpur attractions: Petronas Twin Towers, Aquaria KLCC, and nearby park. Lunch and dinner at practical, family-friendly spots.",
+      "stops": [
+        {
+          "name": "Berjaya Times Square Hotel Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "city": "Kuala Lumpur",
+          "address": "1 Jalan Imbi, 55100 Kuala Lumpur, Malaysia",
+          "star_rating": 4,
+          "amenities": [
+            "pool",
+            "family suites",
+            "central location"
+          ],
+          "nights": 2,
+          "checkin": "2027-07-04",
+          "checkout": "2027-07-06",
+          "time": "09:00"
+        },
+        {
+          "name": "Petronas Twin Towers",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Arrive early to avoid crowds"
+        },
+        {
+          "name": "Aquaria KLCC",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Great for kids"
+        },
+        {
+          "name": "Lunch at Suria KLCC Food Court",
+          "kind": "meal",
+          "time": "15:00",
+          "note": "Variety of cuisines, child-friendly"
+        },
+        {
+          "name": "KLCC Park Playground",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Let kids play and relax"
+        },
+        {
+          "name": "Dinner at Madam Kwan's",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Malaysian classics, family-friendly"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-07-06",
+      "title": "Day 3 · Batu Caves & Transfer to Genting",
+      "summary": "Morning visit to Batu Caves, then travel to Genting Highlands. Afternoon at leisure or explore the resort. Dinner at the hotel.",
+      "stops": [
+        {
+          "name": "Batu Caves",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Famous Hindu temple, lots of steps"
+        },
+        {
+          "name": "Drive: Kuala Lumpur to Genting Highlands",
+          "kind": "transport",
+          "time": "11:00",
+          "duration_min": 75,
+          "distance_km": 55,
+          "note": "Private transfer or taxi"
+        },
+        {
+          "name": "Berjaya Times Square Hotel Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "12:45",
+          "city": "Kuala Lumpur",
+          "address": "1 Jalan Imbi, 55100 Kuala Lumpur, Malaysia",
+          "star_rating": 4,
+          "amenities": [
+            "pool",
+            "family suites",
+            "central location"
+          ],
+          "nights": 2,
+          "checkin": "2027-07-04",
+          "checkout": "2027-07-06"
+        },
+        {
+          "name": "Dinner at Resort World Genting",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Multiple family options"
+        },
+        {
+          "name": "Check-in: Genting Highlands Family Resort",
+          "kind": "hotel",
+          "note": "Child-friendly resort",
+          "time": "21:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-07-07",
+      "title": "Day 4 · Genting Highlands Theme Park",
+      "summary": "Full day at Genting Highlands Theme Park. Enjoy rides, indoor attractions, and child-friendly meals.",
+      "stops": [
+        {
+          "name": "Genting Highlands Family Resort",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "09:00"
+        },
+        {
+          "name": "Genting SkyWorlds Theme Park",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 240,
+          "note": "Book tickets in advance"
+        },
+        {
+          "name": "Lunch at Malaysian Food Street",
+          "kind": "meal",
+          "time": "15:30",
+          "note": "Casual, family-friendly"
+        },
+        {
+          "name": "Skytropolis Indoor Theme Park",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 120,
+          "note": "Indoor rides for all ages"
+        },
+        {
+          "name": "Dinner at The Laughing Fish by Harry Ramsden",
+          "kind": "meal",
+          "time": "20:00",
+          "note": "Popular with families"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-07-08",
+      "title": "Day 5 · Transfer to Penang & Penang Hill",
+      "summary": "Travel to Penang by train or car. Afternoon visit to Penang Hill and The Habitat. Dinner at Gurney Drive Hawker Centre.",
+      "stops": [
+        {
+          "name": "Transfer: Genting to Penang (train/car)",
+          "kind": "transport",
+          "time": "08:30",
+          "duration_min": 240,
+          "distance_km": 350,
+          "note": "Train via Butterworth or private car"
+        },
+        {
+          "name": "Genting Highlands Family Resort",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "13:00"
+        },
+        {
+          "name": "Penang Hill",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Funicular train, great views"
+        },
+        {
+          "name": "The Habitat Penang Hill",
+          "kind": "attraction",
+          "time": "19:30",
+          "duration_min": 75,
+          "note": "Nature walks, canopy bridge"
+        },
+        {
+          "name": "Dinner at Gurney Drive Hawker Centre",
+          "kind": "meal",
+          "time": "21:15",
+          "note": "Penang street food, many choices for kids"
+        },
+        {
+          "name": "Check-in: Penang Family Hotel",
+          "kind": "hotel",
+          "note": "Central, family-friendly",
+          "time": "23:15"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-07-09",
+      "title": "Day 6 · Penang ESCAPE & Return",
+      "summary": "Morning at ESCAPE Penang adventure park. Afternoon at leisure or beach. Evening flight back to Chennai.",
+      "stops": [
+        {
+          "name": "Penang Family Hotel",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "09:00"
+        },
+        {
+          "name": "ESCAPE Penang",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 180,
+          "note": "Adventure park for all ages"
+        },
+        {
+          "name": "Lunch at ESCAPE Food Court",
+          "kind": "meal",
+          "time": "14:30",
+          "note": "Simple, practical"
+        },
+        {
+          "name": "Batu Ferringhi Beach (optional)",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 90,
+          "note": "Relax before departure"
+        },
+        {
+          "name": "Transfer: Hotel to Penang Airport",
+          "kind": "transport",
+          "time": "16:30",
+          "duration_min": 60,
+          "distance_km": 30,
+          "note": "Taxi or hotel transfer"
+        },
+        {
+          "name": "Flight: Penang to Chennai",
+          "kind": "flight",
+          "time": "18:00",
+          "note": "Evening flight, 1 stop likely"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "MYR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T21:49:13.206970",
+  "id": "kuala_lumpur_genting_penang_2027-07-04_2027-07-10",
+  "user_id": "corpus-india-outbound-malaysia-family-young-family-6d-b6669dc30bc8"
+}

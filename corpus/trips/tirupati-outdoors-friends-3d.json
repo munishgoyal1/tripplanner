@@ -1,0 +1,237 @@
+{
+  "status": "draft",
+  "trip_id": "tirupati_2027-08-01_2027-08-04",
+  "trip_number": 1,
+  "created_at": "2026-08-16T19:21:07.832599",
+  "destination": "Tirupati",
+  "origin": "Hyderabad",
+  "departure_date": "2027-08-01",
+  "return_date": "2027-08-04",
+  "travelers": "4 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Tirupati",
+    "estimated_planned_minutes": 897,
+    "evidence_place_count": 6,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "6 preference-matched places account for about 897 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Fortune Select Grand Ridge, Tirupati - Member ITC Hotels’ Group",
+      "address": "8-84, SHILPARAMAM, URBAN HUT, Tiruchanoor Rd, Korramenugunta, Tirupati, Andhra Pradesh 517503, India",
+      "star_rating": 4,
+      "price_per_night": 6500,
+      "currency": "INR",
+      "nights": 3,
+      "rooms": 2,
+      "total_price": 39000,
+      "checkin": "2027-08-01",
+      "checkout": "2027-08-04",
+      "google_rating": 4.2,
+      "review_count": 10207,
+      "website": "https://www.itchotels.com/in/en/fortuneselectgrandridge-tirupati?utm_source=google&utm_medium=GMB"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-08-01",
+      "title": "Day 1 · Arrival & Sri Venkateswara National Park",
+      "summary": "Depart from Hyderabad, arrive in Tirupati, check in to Fortune Select Grand Ridge, and explore Sri Venkateswara National Park for an immersive nature experience.",
+      "stops": [
+        {
+          "name": "Train: Hyderabad to Tirupati",
+          "kind": "transport",
+          "time": "06:00",
+          "duration_min": 480,
+          "note": "Morning train for scenic journey"
+        },
+        {
+          "name": "Fortune Select Grand Ridge, Tirupati - Member ITC Hotels’ Group",
+          "kind": "hotel",
+          "time": "14:15",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Perambur Srinivasa Sweets Ps4 Veg Restaurant (Tiruchanoor)",
+          "kind": "meal",
+          "time": "14:45",
+          "note": "Quick lunch before heading out"
+        },
+        {
+          "name": "Sri Venkateswara National Park",
+          "kind": "attraction",
+          "time": "15:45",
+          "duration_min": 180,
+          "note": "Nature trails and wildlife spotting"
+        },
+        {
+          "name": "Blue Fox",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner with local and continental options"
+        },
+        {
+          "name": "Fortune Select Grand Ridge, Tirupati - Member ITC Hotels’ Group",
+          "kind": "hotel",
+          "time": "21:00",
+          "note": "Overnight stay"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-08-02",
+      "title": "Day 2 · Talakona Waterfall & Deer Park",
+      "summary": "A day trip to Talakona Waterfall for trekking and relaxation, followed by a visit to Deer Park.",
+      "stops": [
+        {
+          "name": "Fortune Select Grand Ridge, Tirupati - Member ITC Hotels’ Group",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Breakfast at hotel"
+        },
+        {
+          "name": "Talakona Waterfall",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 210,
+          "note": "Trek and enjoy the waterfall"
+        },
+        {
+          "name": "Plantain Leaf Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch near Talakona"
+        },
+        {
+          "name": "Deer Park",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "See deer and relax in nature"
+        },
+        {
+          "name": "Minerva Coffee Shop",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner in Tirupati"
+        },
+        {
+          "name": "Fortune Select Grand Ridge, Tirupati - Member ITC Hotels’ Group",
+          "kind": "hotel",
+          "time": "20:30",
+          "note": "Overnight stay"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-08-03",
+      "title": "Day 3 · Kapila Theertham & Chandragiri Fort",
+      "summary": "Visit Kapila Theertham temple and waterfall, then explore the historic Chandragiri Fort before returning to Hyderabad.",
+      "stops": [
+        {
+          "name": "Fortune Select Grand Ridge, Tirupati - Member ITC Hotels’ Group",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Breakfast and check-out"
+        },
+        {
+          "name": "Kapila Theertham",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Temple and waterfall visit"
+        },
+        {
+          "name": "Chandragiri Fort",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120,
+          "note": "Explore the fort and gardens"
+        },
+        {
+          "name": "Blue Fox",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch before departure"
+        },
+        {
+          "name": "Train: Tirupati to Hyderabad",
+          "kind": "transport",
+          "time": "15:00",
+          "duration_min": 480,
+          "note": "Return journey"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T19:23:25.017601",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-16T19:22:00",
+      "expires_at": "2026-08-17T07:22:00"
+    }
+  ],
+  "id": "tirupati_2027-08-01_2027-08-04",
+  "user_id": "corpus-tirupati-outdoors-friends-3d"
+}

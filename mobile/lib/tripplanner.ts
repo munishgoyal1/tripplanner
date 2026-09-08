@@ -2,15 +2,16 @@ import { randomUUID } from 'expo-crypto';
 import * as Linking from 'expo-linking';
 import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
-import { TripplannerClient } from '@tripplanner/client';
+import { requireApiBaseUrl, TripplannerClient } from '@tripplanner/client';
 
-const PROD_API =
-  'https://prod-app-f3ddjudq2rdt4.redglacier-42f3888f.eastus2.azurecontainerapps.io/api';
 const IDENTITY_KEY = 'tripplanner.mobile.user-id';
 const ACCOUNT_KEY = 'tripplanner.mobile.account';
 const SESSION_KEY = 'tripplanner.mobile.session';
 
-export const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/$/, '') || PROD_API;
+export const apiBaseUrl = requireApiBaseUrl(
+  process.env.EXPO_PUBLIC_API_BASE_URL,
+  'EXPO_PUBLIC_API_BASE_URL',
+);
 
 export interface MobileAccount {
   user_id: string;
@@ -34,6 +35,26 @@ async function getMobileUserId(): Promise<string> {
   const created = `mobile-${randomUUID()}`;
   await SecureStore.setItemAsync(IDENTITY_KEY, created);
   return created;
+}
+
+async function getMobileSessionToken(): Promise<string | null> {
+  const existing = await SecureStore.getItemAsync(SESSION_KEY);
+  if (existing) return existing;
+  const response = await fetch(`${apiBaseUrl}/auth/guest/session`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: await getMobileUserId() }),
+  });
+  if (!response.ok) return null;
+  const session = await response.json() as { token?: string };
+  if (!session.token) return null;
+  await SecureStore.setItemAsync(SESSION_KEY, session.token);
+  return session.token;
+}
+
+async function mobileAuthHeaders(): Promise<Record<string, string>> {
+  const token = await getMobileSessionToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 export async function getMobileAccount(): Promise<MobileAccount | null> {
@@ -72,18 +93,33 @@ export async function logoutMobile(): Promise<void> {
 export async function fetchMobilePreferences(): Promise<MobilePreferences> {
   const response = await fetch(
     `${apiBaseUrl}/preferences?user_id=${encodeURIComponent(await getMobileUserId())}`,
+    { headers: await mobileAuthHeaders() },
   );
   if (!response.ok) throw new Error(`Could not load preferences (${response.status}).`);
-  return response.json() as Promise<MobilePreferences>;
+  const data = await response.json() as Partial<MobilePreferences>;
+  return {
+    display_name: data.display_name || '',
+    home_city: data.home_city || '',
+    home_country: data.home_country || '',
+    trip_style: data.trip_style || '',
+    budget_level: data.budget_level || '',
+    about_me: data.about_me || '',
+  };
 }
 
-export async function saveMobilePreferences(preferences: MobilePreferences): Promise<void> {
+export async function saveMobilePreferences(
+  preferences: Partial<MobilePreferences>,
+): Promise<void> {
   const response = await fetch(`${apiBaseUrl}/preferences`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...await mobileAuthHeaders() },
     body: JSON.stringify({ ...preferences, user_id: await getMobileUserId() }),
   });
   if (!response.ok) throw new Error(`Could not save preferences (${response.status}).`);
 }
 
-export const tripplannerClient = new TripplannerClient(apiBaseUrl, getMobileUserId);
+export const tripplannerClient = new TripplannerClient(
+  apiBaseUrl,
+  getMobileUserId,
+  getMobileSessionToken,
+);

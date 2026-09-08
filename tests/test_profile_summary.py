@@ -5,6 +5,7 @@
 3. passive-learning trip-scope guard — routes one-offs to the trip, not durable prefs.
 """
 
+import os
 import shutil
 from pathlib import Path
 
@@ -12,13 +13,18 @@ import pytest
 
 from tripplanner.tools import (
     passive_learning,
+    profile_suggestions,
     profile_summary,
+    trip_history,
     trip_planner,
     user_preferences,
 )
 from tripplanner.tools.user_preferences import load_preferences, save_preferences
 
-_TEST_DIR = Path.home() / ".tripplanner_test_profile"
+# Parallel sandboxes run this suite at the same time against one home
+# directory, so a shared name means one run's teardown deletes another
+# run's fixture mid-test. The pid keeps them disjoint.
+_TEST_DIR = Path.home() / f".tripplanner_test_profile-{os.getpid()}"
 _TEST_FILE = _TEST_DIR / "user_preferences.json"
 _TEST_ACTIVE_TRIP = _TEST_DIR / "active_trip.json"
 _TEST_TRIP_HISTORY = _TEST_DIR / "trips"
@@ -31,6 +37,9 @@ def _isolate(monkeypatch):
     monkeypatch.setattr(trip_planner, "_TRIPS_DIR", _TEST_DIR)
     monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", _TEST_ACTIVE_TRIP)
     monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", _TEST_TRIP_HISTORY)
+    monkeypatch.setattr(trip_history, "_TRIPS_DIR", _TEST_DIR)
+    monkeypatch.setattr(trip_history, "_ACTIVE_TRIP_FILE", _TEST_ACTIVE_TRIP)
+    monkeypatch.setattr(trip_history, "_TRIP_HISTORY_DIR", _TEST_TRIP_HISTORY)
     _TEST_DIR.mkdir(parents=True, exist_ok=True)
     yield
     shutil.rmtree(_TEST_DIR, ignore_errors=True)
@@ -113,10 +122,11 @@ class TestTripScopeGuard:
         monkeypatch.setattr(
             passive_learning.about_me_extractor, "extract_about_me", _fake
         )
-        touched = passive_learning.learn_from_message(
+        raised = passive_learning.learn_from_message(
             "I always love scuba diving on my trips"
         )
-        assert "interests" in touched
+        assert raised and raised != ["trip_constraint"]
+        profile_suggestions.resolve(raised[0], "save")
         prefs = load_preferences()
         assert "scuba diving" in prefs["interests"]
 
@@ -185,6 +195,33 @@ class TestProfileSummary:
         profile_summary.update_summary(force=True)
         assert calls["n"] == 2
 
+    def test_regeneration_does_not_overwrite_concurrent_user_edit(self, monkeypatch):
+        prefs = load_preferences()
+        prefs["interests"] = ["hiking"]
+        save_preferences(prefs)
+
+        def _fake_regen(_prefs):
+            profile_summary.set_summary("User correction.")
+            return "Stale generated summary."
+
+        monkeypatch.setattr(profile_summary, "regenerate", _fake_regen)
+
+        assert profile_summary.update_summary(force=True) == "User correction."
+        assert load_preferences()["profile_summary"] == "User correction."
+
+    def test_empty_regeneration_returns_concurrent_user_edit(self, monkeypatch):
+        prefs = load_preferences()
+        prefs["interests"] = ["hiking"]
+        save_preferences(prefs)
+
+        def _fake_regen(_prefs):
+            profile_summary.set_summary("User correction.")
+            return ""
+
+        monkeypatch.setattr(profile_summary, "regenerate", _fake_regen)
+
+        assert profile_summary.update_summary(force=True) == "User correction."
+
     def test_set_summary_persists_and_stamps_digest(self, monkeypatch):
         prefs = load_preferences()
         prefs["interests"] = ["hiking"]
@@ -206,6 +243,18 @@ class TestProfileSummary:
         out = profile_summary.update_summary()
         assert out == "My own words."
         assert calls["n"] == 0
+
+    def test_set_summary_rejects_stale_form_timestamp(self):
+        profile_summary.set_summary("Concurrent generated summary.")
+
+        result = profile_summary.set_summary(
+            "Stale form summary.",
+            expected_updated_at=None,
+        )
+
+        assert result["applied"] is False
+        assert result["profile_summary"] == "Concurrent generated summary."
+        assert load_preferences()["profile_summary"] == "Concurrent generated summary."
 
     def test_reset_clears_summary(self):
         profile_summary.set_summary("something")

@@ -1,0 +1,142 @@
+Portable Developer Configuration Change Log
+===========================================
+
+This is the plain-English running history of changes under devconfigs. Add the
+newest dated entry at the top. Record what changed, why it changed, how to apply
+it, and any manual recovery step that could help on a new or broken machine.
+
+2026-08-28 - Made agent summary preferences portable
+-----------------------------------------------------
+What changed:
+- Added the original prompt, root-cause analysis, and next-actions sections to
+  the repository-owned global Copilot instruction.
+- Documented that `/memories/` is not restored by a repository clone and that
+  durable, secret-free agent behavior belongs in the portable instruction bundle.
+
+Why:
+New machines and development environments should reproduce the same session
+summary behavior through the existing one-click setup instead of relying on
+machine-local Copilot memory.
+
+How to apply:
+Run `pwsh -File devconfigs/Apply-DevConfigs.ps1` or either platform's full
+`Setup-Tripplanner-Dev` launcher. Reopen active Copilot chats if they do not pick
+up the installed instruction immediately.
+
+Recovery:
+Remove `agent-workspace.instructions.md` from the VS Code User `prompts` folder
+and re-run the installer from a repository revision containing the desired rules.
+
+2026-08-10 - Retired fixed worker workspace layouts
+---------------------------------------------------
+What changed:
+- Removed the fixed worker workspace files and launchers.
+- Kept the portable chat-session, window restoration, sidebar, panel, and
+  editor-tab settings in the shared VS Code configuration.
+
+Why:
+The primary workspace and task-named sandboxes are the only supported developer
+workflow. Shared settings keep both layouts consistent without fixed lanes.
+
+How to apply:
+Run `pwsh -File devconfigs/Apply-DevConfigs.ps1`, then reopen the primary
+workspace or create a new sandbox. Place a Copilot chat in an editor once when
+desired; VS Code persists that placement locally.
+
+Recovery:
+Restore the timestamped VS Code user-settings backup created by the apply script.
+
+2026-08-07 - Saved one default VS Code layout
+----------------------------------------------
+What changed:
+- Saved the active hidden activity bar, right primary sidebar, right terminal
+  panel, hidden secondary sidebar, and single-tab editor layout as portable
+  user defaults.
+- Removed conflicting sidebar, panel, and tab overrides from every committed
+  development and agent workspace while preserving lane titles and colors.
+
+Why:
+Every workspace and new machine should use the owner's current layout instead
+of restoring older per-workspace defaults.
+
+How to apply:
+Run `pwsh -File devconfigs/Apply-DevConfigs.ps1`, then reopen existing workspace
+windows once so VS Code restores them with the portable defaults.
+
+Recovery:
+Restore the timestamped VS Code user settings backup created by the apply script
+and revert the workspace/config changes if the prior layout is needed.
+
+2026-08-06 - Added native macOS environment setup
+-------------------------------------------------
+What changed:
+- Added a Homebrew manifest and native macOS setup and agent-window launchers.
+- Made portable VS Code settings and Copilot instructions target the standard
+  macOS user profile while retaining the Windows profile behavior.
+- Made shared workspace tasks and Python virtual-environment discovery portable.
+
+Why:
+The same MasterAgent plus three-worker environment must be reproducible on a Mac,
+not only on Windows.
+
+How to apply:
+Run ./scripts/mac/Setup-Tripplanner-Dev.command from a macOS repository clone.
+
+Recovery:
+Re-run the launcher after an interrupted Homebrew install. Existing VS Code
+settings backups remain beside the macOS user settings file.
+
+2026-08-06 - Added full agent-environment setup
+------------------------------------------------
+What changed:
+- Added GitHub Copilot, Copilot Chat, and VS Code Speech to the curated extension
+  set used by full machine setup.
+- Connected portable settings and instructions to the one-click repository setup
+  that also restores all three persistent worker worktrees.
+
+Why:
+A new machine should reproduce the four-agent VS Code environment from declared,
+secret-free repository state instead of requiring several independent scripts.
+
+How to apply:
+Run scripts\win\Setup-Tripplanner-Dev.cmd from the repository root. Use
+devconfigs\Apply-DevConfigs.ps1 -InstallExtensions for configuration-only setup.
+
+Recovery:
+Re-run either entry point after an interrupted install. Existing VS Code settings
+backups remain beside the user settings file.
+
+2026-08-03 - Created the portable developer configuration bundle
+----------------------------------------------------------------
+What changed:
+- Added a stable VS Code layout and persistence baseline based on the owner's
+  current user settings.
+- Added a global GitHub Copilot instruction that keeps the current 4-5 word task
+  visible through the chat title or progress updates.
+- Added an idempotent PowerShell apply script. It merges owned VS Code settings,
+  backs up the prior file, and preserves unrelated settings.
+- Added an optional winget manifest for common Windows development tools.
+- Added an opt-in curated VS Code extension manifest for the repository's core
+  Python, web, container, Azure, Markdown, and source-control tooling.
+
+Why:
+The same working layout and agent visibility rules need to be portable across
+machines without copying secrets, Azure account selections, local extension
+paths, or permissive command approvals.
+
+How to apply:
+Run .\devconfigs\Apply-DevConfigs.ps1 from the repository root. Add
+-InstallTools only when software installation is intended. Use -WhatIf to
+preview changes. Add -InstallExtensions to install the curated VS Code extension
+set; this can be combined with -InstallTools.
+
+Recovery:
+The apply script writes timestamped settings.json backups beside the VS Code
+user settings file before changing it. Close VS Code, replace settings.json with
+the desired backup, and reopen VS Code. If a Copilot instruction causes trouble,
+remove agent-workspace.instructions.md from the VS Code User\prompts folder.
+
+Known limitation:
+VS Code currently has no portable setting that always opens a new chat in an
+editor tab or lets every agent host rename the active chat. Open a new chat in
+the editor once per new workspace; the restored editor state should retain it.

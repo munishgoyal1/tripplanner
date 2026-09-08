@@ -1,0 +1,299 @@
+{
+  "status": "draft",
+  "trip_id": "tirupati_2027-08-07_2027-08-14",
+  "trip_number": 1,
+  "created_at": "2026-08-18T16:59:48.873178",
+  "destination": "Tirupati",
+  "origin": "Hyderabad",
+  "departure_date": "2027-08-07",
+  "return_date": "2027-08-14",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Hotel search returned no live rates. Will recommend top-rated 3-star hotels based on recent reviews and heritage proximity.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Tirupati",
+    "estimated_planned_minutes": 942,
+    "evidence_place_count": 8,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "8 preference-matched places account for about 942 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-08-07",
+      "title": "Day 1 · Arrival in Tirupati",
+      "summary": "Travel from Hyderabad to Tirupati by train, check in to hotel, and relax.",
+      "stops": [
+        {
+          "name": "Hyderabad Railway Station",
+          "kind": "transport",
+          "time": "07:00",
+          "note": "Start early morning"
+        },
+        {
+          "name": "Train: Hyderabad to Tirupati",
+          "kind": "transport",
+          "time": "07:30",
+          "duration_min": 600,
+          "note": "Direct train, approx. 10 hours"
+        },
+        {
+          "name": "Tirupati Railway Station",
+          "kind": "transport",
+          "time": "17:30"
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "note": "Check in and rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-08-08",
+      "title": "Day 2 · Tirumala Temple & Heritage Walk",
+      "summary": "Morning visit to Sri Venkateswara Temple, then heritage walk in Tirumala Hills.",
+      "stops": [
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "07:00"
+        },
+        {
+          "name": "Sri Venkateswara Temple (Tirumala)",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 180,
+          "note": "Book darshan slot in advance"
+        },
+        {
+          "name": "Heritage Walk, Tirumala Hills",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "15:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-08-09",
+      "title": "Day 3 · Chandragiri Fort & Museum",
+      "summary": "Explore Chandragiri Fort and Raja Mahal Palace Museum.",
+      "stops": [
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Chandragiri Fort",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Historic fort and palace complex"
+        },
+        {
+          "name": "Raja Mahal Palace Museum",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "14:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-08-10",
+      "title": "Day 4 · Srikalahasti Temple & Local Heritage",
+      "summary": "Day trip to Srikalahasti Temple and local heritage sites.",
+      "stops": [
+        {
+          "name": "Drive: Tirupati to Srikalahasti",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 60,
+          "distance_km": 36
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "09:30"
+        },
+        {
+          "name": "Srikalahasti Temple",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 120,
+          "note": "Famous for its architecture"
+        },
+        {
+          "name": "Drive: Srikalahasti to Tirupati",
+          "kind": "transport",
+          "time": "12:00",
+          "duration_min": 60,
+          "distance_km": 36
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "13:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-08-11",
+      "title": "Day 5 · Sri Govindaraja Swamy Temple & Kapila Theertham",
+      "summary": "Visit Sri Govindaraja Swamy Temple and Kapila Theertham waterfall temple.",
+      "stops": [
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Sri Govindaraja Swamy Temple",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Kapila Theertham",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "13:00"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-08-12",
+      "title": "Day 6 · Sri Venkateswara Museum & Local Markets",
+      "summary": "Explore Sri Venkateswara Museum and shop at local markets.",
+      "stops": [
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "09:00"
+        },
+        {
+          "name": "Sri Venkateswara Museum",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Tirupati Local Markets",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "15:00"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-08-13",
+      "title": "Day 7 · Leisure & Departure",
+      "summary": "Relax at hotel, check out, and return to Hyderabad by train.",
+      "stops": [
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Tirupati Railway Station",
+          "kind": "transport",
+          "time": "10:00"
+        },
+        {
+          "name": "Train: Tirupati to Hyderabad",
+          "kind": "transport",
+          "time": "10:30",
+          "duration_min": 600
+        },
+        {
+          "name": "Hyderabad Railway Station",
+          "kind": "transport",
+          "time": "20:30"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:05:36.911736",
+  "id": "tirupati_2027-08-07_2027-08-14",
+  "user_id": "corpus-tirupati-heritage-three-generation-7d"
+}

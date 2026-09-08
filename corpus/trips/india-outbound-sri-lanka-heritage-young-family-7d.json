@@ -1,0 +1,393 @@
+{
+  "status": "draft",
+  "trip_id": "colombo_kandy_south_coast_sri_lanka_2027-02-14_2027-02-21",
+  "trip_number": 1,
+  "created_at": "2026-08-25T22:08:10.185549",
+  "destination": "Colombo, Kandy, South Coast, Sri Lanka",
+  "origin": "Chennai",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-02-14",
+  "return_date": "2027-02-21",
+  "travelers": "2 adults, 2 children (ages 6 and 10)",
+  "notes": "Unable to fetch real-time hotel availability for Colombo, Kandy, and Galle at this moment. Will use well-rated, family-friendly, centrally located hotels as placeholders for now. Real-time prices and booking links will require provider/API setup or direct search closer to travel dates.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Colombo, Kandy, South Coast, Sri Lanka",
+    "estimated_planned_minutes": 952,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "8 preference-matched places account for about 952 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-14",
+      "title": "Day 1 · Arrival in Colombo",
+      "summary": "Arrive in Colombo from Chennai. Transfer to Galle Face Hotel and relax. Evening stroll at Galle Face Green.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Colombo",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "11:00",
+          "duration_min": 120,
+          "note": "Direct morning flight"
+        },
+        {
+          "name": "Galle Face Hotel, Colombo",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Galle Face Green",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Evening walk and street food"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-15",
+      "title": "Day 2 · Colombo Museums & Heritage",
+      "summary": "Explore Colombo's history and architecture: National Museum, Gangaramaya Temple, Independence Square. Local lunch and dinner.",
+      "stops": [
+        {
+          "name": "Galle Face Hotel, Colombo",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Colombo National Museum",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Sri Lankan history and culture"
+        },
+        {
+          "name": "Gangaramaya Temple",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Buddhist temple with eclectic architecture"
+        },
+        {
+          "name": "Independence Memorial Hall",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Colonial architecture"
+        },
+        {
+          "name": "Upali's by Nawaloka",
+          "kind": "meal",
+          "time": "15:30",
+          "duration_min": 60,
+          "note": "Local Sri Lankan cuisine"
+        },
+        {
+          "name": "Dutch Hospital Shopping Precinct",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Colonial building, shops and cafes"
+        },
+        {
+          "name": "Galle Face Hotel, Colombo",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-16",
+      "title": "Day 3 · Colombo to Kandy – Culture & Temples",
+      "summary": "Travel to Kandy by morning train. Visit Temple of the Tooth and Kandy Lake. Evening cultural show.",
+      "stops": [
+        {
+          "name": "Train: Colombo to Kandy",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "note": "Scenic train journey"
+        },
+        {
+          "name": "Galle Face Hotel, Colombo",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "11:30"
+        },
+        {
+          "name": "Earl's Regent Hotel, Kandy",
+          "kind": "hotel",
+          "note": "Check-in and freshen up",
+          "time": "13:30"
+        },
+        {
+          "name": "Temple of the Tooth (Sri Dalada Maligawa)",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 120,
+          "note": "UNESCO World Heritage site"
+        },
+        {
+          "name": "Kandy Lake",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 60,
+          "note": "Leisurely walk"
+        },
+        {
+          "name": "Kandy Cultural Show",
+          "kind": "attraction",
+          "time": "19:30",
+          "duration_min": 90,
+          "note": "Traditional dance and music"
+        },
+        {
+          "name": "Earl's Regent Hotel, Kandy",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "21:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-17",
+      "title": "Day 4 · Kandy Museums & Local Life",
+      "summary": "Visit the National Museum of Kandy, stroll the Royal Botanical Gardens, and explore Kandy Market.",
+      "stops": [
+        {
+          "name": "Earl's Regent Hotel, Kandy",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "National Museum of Kandy",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Artifacts and history"
+        },
+        {
+          "name": "Royal Botanical Gardens, Peradeniya",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 120,
+          "note": "Famous for orchids and palms"
+        },
+        {
+          "name": "Kandy Market",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Local crafts and produce"
+        },
+        {
+          "name": "Slightly Chilled Lounge Bar and Restaurant",
+          "kind": "meal",
+          "time": "15:30",
+          "duration_min": 60,
+          "note": "Family-friendly with local and Asian cuisine"
+        },
+        {
+          "name": "Earl's Regent Hotel, Kandy",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-18",
+      "title": "Day 5 · Kandy to Galle (South Coast)",
+      "summary": "Travel to Galle on the south coast. Explore Galle Fort and Dutch Reformed Church.",
+      "stops": [
+        {
+          "name": "Drive: Kandy to Galle",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 300,
+          "distance_km": 225,
+          "note": "Private car with scenic stops"
+        },
+        {
+          "name": "Earl's Regent Hotel, Kandy",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "13:30"
+        },
+        {
+          "name": "Amari Galle Sri Lanka",
+          "kind": "hotel",
+          "note": "Check-in and freshen up",
+          "time": "15:30"
+        },
+        {
+          "name": "Galle Fort",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 120,
+          "note": "UNESCO World Heritage site"
+        },
+        {
+          "name": "Dutch Reformed Church, Galle",
+          "kind": "attraction",
+          "time": "20:00",
+          "duration_min": 60,
+          "note": "Historic church inside the fort"
+        },
+        {
+          "name": "Amari Galle Sri Lanka",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "21:30"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-02-19",
+      "title": "Day 6 · Galle & South Coast Museums",
+      "summary": "Visit the National Maritime Museum, explore local markets, and relax at Unawatuna Beach.",
+      "stops": [
+        {
+          "name": "Amari Galle Sri Lanka",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "National Maritime Museum, Galle",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Maritime history exhibits"
+        },
+        {
+          "name": "Galle Market",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Local produce and crafts"
+        },
+        {
+          "name": "Unawatuna Beach",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 120,
+          "note": "Family-friendly beach"
+        },
+        {
+          "name": "Kingfisher Restaurant, Unawatuna",
+          "kind": "meal",
+          "time": "15:30",
+          "duration_min": 60,
+          "note": "Seafood and Sri Lankan cuisine"
+        },
+        {
+          "name": "Amari Galle Sri Lanka",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-02-20",
+      "title": "Day 7 · Return to Colombo & Departure",
+      "summary": "Morning at leisure in Galle. Transfer to Colombo for evening flight to Chennai. Shopping and lunch at Colombo City Centre Mall before departure.",
+      "stops": [
+        {
+          "name": "Amari Galle Sri Lanka",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "09:00"
+        },
+        {
+          "name": "Colombo City Centre Mall",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 120,
+          "note": "Shopping and lunch"
+        },
+        {
+          "name": "Drive: Galle to Colombo",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 150,
+          "distance_km": 120,
+          "note": "Private car or van"
+        },
+        {
+          "name": "Flight: Colombo to Chennai",
+          "kind": "flight",
+          "time": "18:00",
+          "arrival_time": "20:00",
+          "duration_min": 120,
+          "note": "Evening return flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "LKR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T22:11:20.406846",
+  "id": "colombo_kandy_south_coast_sri_lanka_2027-02-14_2027-02-21",
+  "user_id": "corpus-india-outbound-sri-lanka-heritage-young-family-7d-6392ec4446bb"
+}

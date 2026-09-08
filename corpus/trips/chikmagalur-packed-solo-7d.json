@@ -1,0 +1,525 @@
+{
+  "status": "draft",
+  "trip_id": "chikmagalur_2027-12-02_2027-12-09",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:27:51.662847",
+  "destination": "Chikmagalur",
+  "origin": "Bangalore",
+  "departure_date": "2027-12-02",
+  "return_date": "2027-12-09",
+  "travelers": "1 adult",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Chikmagalur",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "The Serai Chikmagalur",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp3ee08"
+      },
+      "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+      "star_rating": 5,
+      "price_per_night": 18000,
+      "currency": "INR",
+      "checkin": "2027-12-02",
+      "checkout": "2027-12-09",
+      "room_type": "Estate Villa",
+      "refundable": true
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-02",
+      "title": "Day 1 · Arrival & Local Exploration",
+      "summary": "Drive from Bangalore to Chikmagalur, check in to hotel, explore Chikmagalur town and Coffee Museum.",
+      "stops": [
+        {
+          "name": "Drive: Bangalore to Chikmagalur",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 300,
+          "distance_km": 245,
+          "note": "Early morning start"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "12:30",
+          "note": "Check-in",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        },
+        {
+          "name": "Coffee Museum",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Learn about coffee history"
+        },
+        {
+          "name": "Kudremukh National Park",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 240,
+          "note": "Trek and wildlife"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "21:00",
+          "note": "Return to hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-03",
+      "title": "Day 2 · Mullayanagiri & Baba Budangiri",
+      "summary": "Visit Mullayanagiri peak, Baba Budangiri, and nearby caves.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Start early",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        },
+        {
+          "name": "Chikmagalur Town",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Explore local markets"
+        },
+        {
+          "name": "Local Shops",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Souvenir shopping"
+        },
+        {
+          "name": "Belur Temple",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Hoysala architecture"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "15:00",
+          "note": "Return to hotel, rest",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-04",
+      "title": "Day 3 · Coffee Estate Tour & Hirekolale Lake",
+      "summary": "Tour a coffee estate, visit Hirekolale Lake, and enjoy local cuisine.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "07:30",
+          "note": "Breakfast, depart",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        },
+        {
+          "name": "Mullayanagiri",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Highest peak in Karnataka"
+        },
+        {
+          "name": "Halebidu Temple",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Intricate carvings"
+        },
+        {
+          "name": "Local Restaurant (TBD)",
+          "kind": "meal",
+          "time": "14:30",
+          "note": "Lunch"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "16:30",
+          "note": "Return to hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-12-05",
+      "title": "Day 4 · Kudremukh National Park",
+      "summary": "Day trip to Kudremukh National Park for trekking and wildlife spotting.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "06:00",
+          "note": "Early departure",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        },
+        {
+          "name": "Baba Budangiri",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 90,
+          "note": "Sacred shrine and caves"
+        },
+        {
+          "name": "Local Restaurant (TBD)",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "15:00",
+          "note": "Return to hotel, rest",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-12-06",
+      "title": "Day 5 · Belur & Halebidu Temples",
+      "summary": "Explore ancient Hoysala temples at Belur and Halebidu.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Breakfast, depart",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        },
+        {
+          "name": "Manikyadhara Falls",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60,
+          "note": "Scenic waterfall"
+        },
+        {
+          "name": "Bhadra Wildlife Sanctuary",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 180,
+          "note": "Safari and birdwatching"
+        },
+        {
+          "name": "Local Restaurant (TBD)",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "16:00",
+          "note": "Return to hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-12-07",
+      "title": "Day 6 · Bhadra Wildlife Sanctuary & River Activities",
+      "summary": "Visit Bhadra Wildlife Sanctuary, enjoy river activities and birdwatching.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Breakfast, depart",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        },
+        {
+          "name": "Coffee Estate Tour",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Guided tour"
+        },
+        {
+          "name": "River Activities",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90,
+          "note": "Kayaking/boating"
+        },
+        {
+          "name": "Local Restaurant (TBD)",
+          "kind": "meal",
+          "time": "14:30",
+          "note": "Lunch"
+        },
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "16:30",
+          "note": "Return to hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-12-08",
+      "title": "Day 7 · Relaxation & Return",
+      "summary": "Leisure morning, visit local shops, return drive to Bangalore.",
+      "stops": [
+        {
+          "name": "The Serai Chikmagalur",
+          "kind": "hotel",
+          "time": "07:30",
+          "note": "Breakfast, check-out",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp3ee08"
+          },
+          "address": "Mugthihalli Post, KM Road, Chikmagalur 577133, Karnataka, India",
+          "star_rating": 5,
+          "price_per_night": 18000,
+          "currency": "INR",
+          "checkin": "2027-12-02",
+          "checkout": "2027-12-09",
+          "room_type": "Estate Villa",
+          "refundable": true
+        },
+        {
+          "name": "Hirekolale Lake",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Relax by the lake"
+        },
+        {
+          "name": "Drive: Chikmagalur to Bangalore",
+          "kind": "transport",
+          "time": "11:00",
+          "duration_min": 300,
+          "distance_km": 245,
+          "note": "Return drive"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:30:05.373641",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:29:51",
+      "expires_at": "2026-08-19T08:29:51"
+    }
+  ],
+  "id": "chikmagalur_2027-12-02_2027-12-09",
+  "user_id": "corpus-chikmagalur-packed-solo-7d"
+}

@@ -1,0 +1,702 @@
+{
+  "archive_no": 29,
+  "trip_id": "new_york_2027-10-09_2027-10-14",
+  "user_id": "corpus-newyork-business",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T15:12:22Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T15:12:22Z",
+      "content_hash": "8548e46909206710",
+      "plan": {
+        "status": "draft",
+        "trip_id": "new_york_2027-10-09_2027-10-14",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:42:22.593776",
+        "destination": "New York",
+        "origin": "Delhi",
+        "departure_date": "2027-10-09",
+        "return_date": "2027-10-14",
+        "travelers": "1 adult",
+        "notes": "Meetings from 9am to 2pm on 10–12 Oct. Moderate budget, 3-star+ hotel, economy direct flight. Balanced pace.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "New York",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 5-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 5,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:42:22.593807"
+      }
+    },
+    {
+      "at": "2026-08-15T15:13:30Z",
+      "content_hash": "8766f2c2daca5c44",
+      "plan": {
+        "status": "draft",
+        "trip_id": "new_york_2027-10-09_2027-10-14",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:42:22.593776",
+        "destination": "New York",
+        "origin": "Delhi",
+        "departure_date": "2027-10-09",
+        "return_date": "2027-10-14",
+        "travelers": "1 adult",
+        "notes": "Meetings from 9am to 2pm on 10–12 Oct. Moderate budget, 3-star+ hotel, economy direct flight. Balanced pace.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "New York",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 5-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 5,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-10-09",
+            "title": "Arrival in New York",
+            "summary": "Arrive in New York, check in to hotel, relax and explore the neighborhood.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel"
+              },
+              {
+                "name": "Explore Times Square",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-10-10",
+            "title": "Meetings & Central Park",
+            "summary": "Meetings 9am–2pm. Afternoon stroll in Central Park, evening at leisure.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel"
+              },
+              {
+                "name": "Meetings (User's location)",
+                "kind": "other",
+                "time": "09:00",
+                "duration_min": 300
+              },
+              {
+                "name": "Central Park",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Dinner at Carmine's Times Square",
+                "kind": "meal",
+                "time": "19:00",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-10-11",
+            "title": "Meetings & Museum Mile",
+            "summary": "Meetings 9am–2pm. Afternoon at The Met, evening in Upper East Side.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel"
+              },
+              {
+                "name": "Meetings (User's location)",
+                "kind": "other",
+                "time": "09:00",
+                "duration_min": 300
+              },
+              {
+                "name": "The Metropolitan Museum of Art",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Dinner at The Modern",
+                "kind": "meal",
+                "time": "19:00",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-10-12",
+            "title": "Meetings & Lower Manhattan",
+            "summary": "Meetings 9am–2pm. Visit 9/11 Memorial, walk in Battery Park, evening in SoHo.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel"
+              },
+              {
+                "name": "Meetings (User's location)",
+                "kind": "other",
+                "time": "09:00",
+                "duration_min": 300
+              },
+              {
+                "name": "9/11 Memorial & Museum",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Battery Park",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Dinner at Balthazar",
+                "kind": "meal",
+                "time": "19:00",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-10-13",
+            "title": "Iconic NYC: Statue of Liberty & Broadway",
+            "summary": "Morning ferry to Statue of Liberty, afternoon shopping/SoHo, Broadway show in evening.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel"
+              },
+              {
+                "name": "Statue of Liberty Ferry",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 180
+              },
+              {
+                "name": "Shopping in SoHo",
+                "kind": "attraction",
+                "time": "13:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Broadway Show (TBD)",
+                "kind": "attraction",
+                "time": "19:00",
+                "duration_min": 150
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-10-14",
+            "title": "Departure",
+            "summary": "Check out and depart for Delhi.",
+            "stops": [
+              {
+                "name": "Depart for airport",
+                "kind": "transport",
+                "time": "09:00"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "time": "11:00"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "USD",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:43:30.504086",
+        "price_checks": [
+          {
+            "kind": "flights",
+            "provider": "Duffel",
+            "checked_at": "2026-08-15T20:43:27",
+            "expires_at": "2026-08-15T21:13:27"
+          },
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:43:30",
+            "expires_at": "2026-08-16T08:43:30"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T15:13:00Z",
+    "user_id": "corpus-newyork-business",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {
+      "hotel (tbd)|pondicherry": {
+        "place_id": "ChIJd-8MryxiUzoR51gb948YN4o",
+        "name": "The Promenade",
+        "address": "23, Goubert Ave, White Town, Puducherry, 605001, India",
+        "rating": 4.2,
+        "review_count": 5803,
+        "price_level": null,
+        "website": "https://www.sarovarhotels.com/the-promenade-pondicherry/",
+        "editorial_summary": "Modern hotel offering 2 restaurants, plus a terrace, an outdoor pool & bay views.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 11.933294,
+        "lng": 79.835729,
+        "photo_refs": [
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydifTFwwJaKLMRLaNslv5WrRK8oMjb_abmjV2qWOuNSS_bX5pEPrF3OBcJq3QRc5eHWMw36J4O-URdGEQOdfeu9dF27iUGbcve8lBgIohnVNdJQxsUSGW7hQ3M_cADM9Nq5v52_Zr7tjAAa5GoKULaW1rnLCrtIrFE32yoCikS7EmfuotnF8V8rNMy0_DntevIoulF4pH5EXp_bMNwcuNU6gpLjiNfRqP7vvYz-iSOUcyHGw5hbK7u8PTX9R9mbkcAGCgzQWFzc_MdeSA7Xzr6g3OGqVQRhosBK8_-5J-M7cYQBANsS7S6_ejoJWctxJZvhs7vstIuRMi61V-hCFwjHmWhzcIAjYGdfHVfdEX7FOFOcmItWe_-Xv2L82Dp8zW4AHrI_2mDNEmfrJDiBmskYaBn8LfFtJKR9-5ds",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydir0mofNmYHn_KrxZAn4bVRHmuyxXepHEYvt60YJZ0rZUNfHR_30rq6QZe5SaXw2F_1cFLKNhZ9kgJLZR5yjAKRCNvCLYerECvFbSxGYHuMMFTGFk60nllp8Zv5_ULBCq7r3BI2Bbfv56QnQ8NNFzx7rOW-2unrPUZF1urwkzQ6zhHvMOTyH2onuwkVXg_Bp2cDBpXV6a9dpA3sDA0NfV68zSeP2cvcWKrKglaytPkCwoUVBf5M8y9XXGIpaHBMdJTHlCqZqqmWrVbiOmwzdVd3TprD0-baVbj5OFQRQG1e5dGKrlQdxXb3YIum_HYD6Lgw3dD-_RODOvJPs50-zSUw_FykrZ1nf2YoFmOx6uqOBPv6KtOv9Cu1_o10QfOdbVgcMDzmze9lFOvFbFR7rzqodbI4ogZTen5kbpfJqNJVRg",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydgXSbQJ_pUaZigUXJl-Pc49_7R_d0xJtoR8rOS3b7uQcZx7XucGfUXPlrdawL8ULcSCzbiKFIqJH2KrTedrL787_UecfccqnHx3XDoVP88N0hHXDB3wfeYSkXfSFH3vfh6Ec9ALpQfTPlUCxZLbFeVOXTIyLSXc-IbZb_jdoWSi1glV84QncVnx5PvbibvfGLxfHTlNha8LMlE8MFsC0HLarKxLVMBdBgMteCh3NHoVk4vo3OZQ3pKLxy0jXSDu1DMbDZphN6g4eARjKG9A3IAdZl8zcQGvhoT315L90ZVDH5GKdUkK4dgax3MhUEJ3Inc2k9XlwhKOCKmDpNXq__O0LqyxJ9HlUxh5DVuZZ77_UEDAyuGvzGJnPFn6m-OXYtGwrEjtCqoPHzMde5dcTaTK4cvpBwf-lbF5qMT_p5fcZg",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydh_F_ZPf8JUcen0cKxL8l7z-v6K8Lr6RA3X4pzuBkLINPNpk967L9qLKyRQN7cKSmCvKFFRuax2hBHXSAt7ZukQ02i0xD9q39xFaOkCt0Ub35tKZd1C_qvlHX6TIQgmN5TfbDdQah-K4T7yal-I0-cB9AeknPiGfgwNWnYv65VRYShd-qkoq38Lh1_DYqtYaEmqYtaWG1GtiG0_RU2nJhroELj1e4QAYHauAM0FJ-TO_ESsQFZpPi6F6I6bRnGJEkRIgpMvuoVC_KjJS8xBfMMIzn7JE9GrACkCkw3LrXgINKQm_i-u8d0ig2hFmVRnNnICBbsdYxGrSGVFjcTCgsKM1tzjAhRK-bsy5rsDm0dG79numwQajzCJ4o5Sv1fzDSOr5c94Mpds-L7eZnWjcXwqYpnmc9Q1iPSjkeVH_28",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydgBdrAGUvXRyOCLrAyjV3WlfJ6oitUFqmxJet0eZmxM_H4GZ_j6mJfIREqdjqwE14e_YNBknmSY0NOf8rGHoV4vFf_kWMP60kWcE_fMXloVDYRfpoOIEjd1QBfw2EAIyy3_4hND6lRvTUe73dABfm8iKyaMu9tswdu5UCPIoblTxoPaSqFnXcGdis0jcfs5LYxz7IjzoRE3cJBDrSqzRQ_5chpMGe_MTKvdwMLkjR4mBmAYOiCce2FVicGHXeZEHnsXXND7vGcF_aLVL1NchJm2O0ntehjmSABW-tm8SxKrW6YX3nFkVvANi0nKHpM_VBnIkWvi-eT_70OQviyDkt-z8FjvKw6AwUytNicLAu-UB0yHp2WdBwB0w-shhAxYCd0fRKVzSrKDjR_3Klmqd44eqGZbFkIRnVyjJNAo-ckY4A",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhfKbCZE57vXULIj0GYPOiEF9qJDtVmyo4hHGvEbcH3nGwty8rx1NzenGPesSS3ghNGeq4hYB1bR3a9UD6zn5AqYnXwlk2vngfO1vsjBrz7tW0GMdggW30RflxqOg7aJxFEpMcHQ7pGXo82bHXVwcelhx0XYxKVU7zHFfXT7rNsjaCG_UvHKHBZH5510okn86zddKM-OSMooHoE9lHHQ4IOeNZfMj82i5_LuJ5IANFlEdeJ-XGVINTdYEILw3YTSPgzUKbR7iSp9bXsrAn7vSnLRSLa0Bk4M8jkan7rTSfwz2jGNaNGS3wMnDK1U1y98-0tX_cC3GzoJZ4RBf_DHAz6jtxxDN39kd8NOBt2Xl0VEWSYbnDs2DQudjN78YNJLXN4252AZX8xAU9Q7tYOrxiG5-7WK64fAw2WuVKuTjGwLQ",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhKAgCHcwWoKF4L1EhFlHX_l7pRxoMmyo45trbVy-mC9YmWJ_tBURAu7FRjiUHhBBAp3Pw0NTL3pMZ8qsfMucqfyu3OnzFZ5G7qb0TcGYUsq5o5cAd6nYt3h5CoG__O9yEct1Yczq4qPOg4W7axEhNVEnmMG_c4rHqjg0g_0M3QR_4JmaM_fnYnJwkdtcwYIRKAu_C0QMU6kannedRHdQuDG4vyAiZk7W5Y-ZBVINdwuxGyuzK-fFIdY0dZnXcOl1S38lCJ8HqqaL3qQoZ7_SAn_orw1HIeBYAlbyDsyvWW-9wqUPzfJymcMZiJTCWvreTcDycSUAn-bNLFzxLNOS8Ywq8sAYgiSKzkgQzU4cO8EbwQMb4GPTpBNqKE5GwzdGpFelb43HVDnDQjO5Bh_E8f-OvCjIdQNvJtmFw9_CU",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhbBOiz0MBGcUgP5mURGs-GbyWkPFBRvpKHnDcTMUYXatsSGOQIvhwNwXOW8fsn-Tn0W9hWLLh4xOOOEdSzPXi76PCd-p1xpOs1S_m7qD72_yTbV22g2WtUozbXeWm0aGU9BP0gj7gdVkD2lW6WNFUBNqLX7jPYinTcGN24uOMgVpAD-wiaDMr0r91RToREesXjIQXDshY128EwasMqkzF1Fp0v4DX4ddNaaVzBNScWuVVmWbMLgLVZ7Wgx5egsAMpCKdGZJ6vWAt9cFLniFlcNu5D2YPiU2sDyQP5uqAGq_vlA1ORwqsbNPHR3-09hSvFwQbtrUZCSzDPJ0IvBWBrM4Da46JL0cSJK_I64ODD7ulkjVAdwQp1ZXfxFOShWDU5oZTHCAzq4T-xBzGBglyYbTEN7rVno52BdCVw0EoE",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydiqWB4wqDQQE3GB9zS0Uzk5lIn46CN7nkfcVpxxlYcXjNbRVtn3kqTqs_8ElBIpoac5T8BA0DgyOO5NSGsOQRKPBMQFk54nIGVEmWPuROcZrfbgW2r8APx7uMXCNWnACeoPIjpRNZN2Ertez3wjHR6AgXpZrJ1FO6jQiqO6VMRoPVXnEtXKJYZ9yfQGkUwiMD56pRZiPbWH8NPp0aLRoZNK5EnpfU5A-HdKIvjBvbjkWGyzpnAk61FG7hRMmEMwwZALccQoxhcSDf7L0cU-ihH4tZL1XSePOclf9rCDZfRjoMIKdc8F1-tjYhUHQdVoTtfPDfgQokbe3q6bpMLLGOKjAYeRFSdO-T5cAh8oLAVwOi7S9y1vLOya43G8IMVg61qwVdydpOEupymX5NIcoIUSMD5aZsb-TBrVku-fgNnJBUcj",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydj0zyIb68eWqUa95x_HnIFH-sFzUql74xVY9WcYCbvJacD2n0SbOoA6te3uhcbqlCQ-jFz4rJ0au7yzEJ0BqEzn_tSNUUrePt4fQpEzWMOWIckLPub2tu1D7MM9MFHayYs4dvyLlLUe_qclTjuXqAQx3Kb6aAE6jgNLorBxdmXFXs3xAERjalB3teX_t83HHTPNjiMNyAOQl3q6fngCujB4vpVuqfyhDwJXZ6znNuuzMDsk6zEseA5PZIPer0uN2P9NXmH0XBSYEPuwPhzVpUIazGfdcde83nKg0iOs1Zh47R3GIe_xwuLqaszzYXLIOsAehwj7515wyQuBSds8G6rjPRSId0GCvtc48exQw4lra1E-jb9P9EMcZxfN7FRBxf09d0qXpjyCdMhzUxNWs8MZPrYZezKgoun1jryvvTqKIQjX"
+        ],
+        "__at__": 1786798953.440507,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We stayed for one day in the sea facing premium room and didn’t feel like going anywhere else, the view was so good. The room itself was well maintained and very clean.\nCheck-in was super smooth and Zara Haider and Prabu were extremely helpful from airport pickup booking to room extension and helped",
+            "author": "Shyam Bhat"
+          },
+          {
+            "rating": 5,
+            "text": "We had an excellent two-day stay at The Promenade Hotel, Pondicherry. Our experience was truly memorable, thanks to the warm hospitality and outstanding service provided by the entire team.\n\nThe room was comfortable, well-maintained, and made our stay very pleasant. A special appreciation to the che",
+            "author": "Abirami C"
+          },
+          {
+            "rating": 4,
+            "text": "I stayed at The Promenade for one night. The location is great just on the seafront promenade as well as being in the French quarter so you can walk the streets easily to visit. All the staff are great, very friendly and provide a top service. The guest manager in the restaurant makes the effort in ",
+            "author": "Christopher Woods"
+          },
+          {
+            "rating": 5,
+            "text": "Had a wonderful stay at The Promenade Pondicherry.  Beautiful hotel with best location and service.\nRecommend if visiting Pondicherry. White town is beautiful and we covered every bit of it by walk.\nSpecial thanks to Bikram for his wonderful hospitality.  Their spa also was very relaxing and recomme",
+            "author": "prina sodhi"
+          },
+          {
+            "rating": 4,
+            "text": "Stayed there in May end and hotel is on nice location with nice staff overall. People address your needs and make sure that stay is comfortable. Special mention to GM Shubhi who made sure that our stay is comfortable and going out of the way to do that as well. Food is good and location is right on ",
+            "author": "Mudit Agarwal"
+          }
+        ]
+      },
+      "hotel (tbd)|goa": {
+        "place_id": "ChIJ53KYH8nrvzsRtWmk8og8o8s",
+        "name": "Hacienda De Bastora, Goa, amã Stays & Trails",
+        "address": "House No. 29/29C, 29/30C & 29/31C, Survey No. 133/1, D & 133/1-B, Xell Bastora Rd, Xell, Balbot, Bastora, Goa 403507, India",
+        "rating": 4.8,
+        "review_count": 28,
+        "price_level": null,
+        "website": "https://www.amastaysandtrails.com/en-in/hacienda-de-bastora-goa/?utm_source=Organic&utm_medium=GMB_Local",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 15.577680700000002,
+        "lng": 73.81502499999999,
+        "photo_refs": [
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydjXHOpArjiebZv7Wbcq9T8SM1yIXMnNcB1awJqW9X7ZO_U7ZHCbEmRfRKvgnwFwhEXQOmRjn3JyepxQCNmKwxLChtfGSQr5sPsnto3MXf_qRYx8Y-2cHfwoyxk4z0ASZt4KEHgDWVoDxc5fM5Du1vH_2vJVR6W3HcV0-hma0w6fhj5y_vdv_x6PXTVPWn2VBbhqRDNug-XcwLg6mYK-xY4GnadTod5GB8hR2yrchsa-N6YDeM_oflnTAh-voSIBOX_-3za38OL_nGqv4NEVyNhn_msryAg2Qgrp6cW8aFIEvoWqiSnfkeeoD8k1_325wghJUTTR7RFDeQWWP08BFd5Ak90jE_gBz8UizcexoeDAtFGEIgYkBwdwvr0UpUnqO8l7JfgxDf61nlwwz3uChwSafFgdYlE4UAfVY-Qz3qybrg",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydjc8Sr4-0LL8k8QSjmoWoRAoOhTJaI-AtuC88LQ_KIT4rmmmL_KDaq_Clp_KQ-VEz2Y6sNTk9K81CEsCfknNn8kSGRCQs-3DnW78LmwKTowxSLNo7tmVG50fpA72jUB6WWL_TO_ceff2FqQmauRqcvdFEozwvYHyv48M2n_9h98GrJAxyfo42V_I7MJvgfzAs8r53wyLLd9nKvSUcfwXjfNW-tMxe2ibZRNvgGjmBbTRCn0FY5OlogPptgyuraMEfh__u9fjoLmks6xI-ZyRWrfVHBd4vyytbfeRRHBlFPbMWIL36BmvVJSw7bmLk6jlBRVfd0MyI_UELIgiF7iKpAaGQ3rRJk3GDktP4qya4OA2vkzUiZIfAnnJDwlBieL94VnYSTdTwrRkOxXxP30afiOODN98bLflxNSTaWQYGCx71jZ",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwyditvBIAbpqT_t5wOYsWiKQgCL5iiuJBGQ6rh7iRGJmM-Y9ydiuqVhxRImPxIzgjNnPzUEZGRbpFmrM65gvCL7Q-detJutKE1bXu8xzlj7V6WkRCZimwcbRYe_OLZc2KmRH2eJJ8jDoEJGpnMYcpBJS32EeHTPWwU4zBlk0b5ziNw5TwkkBfzRfIBG1YEkXWWBYs43-ZTAs_OHP6aP2jGg3RVNAMzaUt7Em9cV4AELUld37vYno_IdXYKs_FJmyye0LBsPPE_IieDsEBx1aL1nkLhjOcGNFgxaKJmqtaeCRwlOJarXye6ikmhpdItO5c-lx2GxWucrFafDI2s-F9PHQYtBy-CxU2jpmGT9HuM0N6QNKeOhKqZepRG0-Tw-lCMsiVqHBU3Y424pqSynDn6K1Jk2fnnSIzJp1fqZ6Q0T5wSg",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydga3pRGEB1QPcUvCD5hDtyWTDS9uo2zA4Azh6cVQhsm4HkaNlMzGi6BZMnaAKi8K44A8Jikq1Dx6h0A_UayWeWncsx5NFl9COxeToGocDfMFzWrqWFFBeKPuCqoRf6V9I2DnV_TYScedXriHymdGG5iUnA1F3DpD70uinfMlGirvg_A5sE7TTbznG3fw5cVsVLPlaI10iK0DLnL2WyUQNdOHlX3KydAmTTWFdpQ5aPJzTubAol8yPyo4nCWCSJ7Y34oC9EhQF-tnQZewuxew1yKoDTUg8sbIutnF00Opw2ii3m46vkUJqTyehWCJ2EWvmJH_hfznvhaQ8KKsiJWstj2csvcRf9P6IjmJyIbqFdo1m3NpCrP_Py1w-WNLBuJiujtIkXZSIJ_W86yzBY0CiBW2_zJ_DzE3jrdfosYedkMHg",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydgdpMcZ15UeNJud2slJSBeaZj-N-08dDYL5HKc44H12Mg37AskKBvtwI8CirswTW7V6yyRftIHjhJudJ356KDTPO6TBOTC_LInrk0HvNn9WO7dgQMvA_X6ivyCyuvXmNVyW7SrGwby5kUlyRJ_WYuR6HsX-1TJrKVZ6ZY3sG9wi-sCJxBaxIvAvoyVwPyJWUt6dO-xgLCNgNoEq2Wtexb5B873BO2CFgRtjlo8lKSNdg9MTQKrOGhlTWLT-LWW8UmKlVi3oxvVIMX86w9JsnrDV-5EY8p3CvEV2wHwUYvc-e11L_Lf0mSeBZxhMwXRmRFPrj_rM9AWhodydDCQNm3k8bLDIR3c9gLU2BU9mQPjcqV2c8MkPR7l4dtI8Yfxs93FS7K7-N2fHHd1jq31IkDsvzy7UVo_XnVXu8ynqPLXHEpBE",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydg98LhzOfcronbdnc0Jhwi22npYWMya3kWbMzo8CXEsp6JuBWHfn3rNXnD49NvOabfkcS9Y3x1VUlQH3i8_FnMseeonKW2m-6ncMcKt0-hO4LssQvfA4Mi1_WFyvmVrULFfA9kJNklySdBRChpQK2Hqf2592Fcoty2S3SArGU71UsceLOVOMrolsWyfwgApemrAuLnmCp68gSZtp_Ed1oP53ovWScEdrAbuVz9Trg-AlQmW0FfElEsqQqp1KVFL0NwfyN4sJttXJ-7Mv3kIJvi4QKivZFTqrA2BCXybp5D47Cvy0sNweMLOfe1B6hR_k6woqnclCyBRXSDV81rWVAR5Xa8qm3ZAPH_sE7IDxyajQgXfWEKayI4-m5z1pxRa7_8j_Xqs5BGfc0mM9d9ZftyZ1uNeCdjaOTTackUzvUAdjA",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydglT1dB020onoB-x0kJ2Iudaw9fMIiCwx6lbNlngS6bUFCjmBpHIzccd774_udNzr6unX4WO5k-c2hlVRna50LviOfxKZ8IWmJ4_7NFnBX3qt3Pak3EUIp2RN18k4wYeifpKW-wuIWyW-gjpc6YqfKRL7p39vGRbkxamXSlVpt82NJFDBv0x-7OEj5vAWDozO8O6Eskri1hnJz0TGKXfLeDmWdxc3IJq6FMdmHgZZVoyxCfLyLAV-qQ6yaGtCbtXopW7Z7orLAZSMxwjm5DcFJ2lqFZCauXXlUVYE8sJF1iD-qAZ492gOZIYkc94exQaX_9G1xf5jK2aOgBA04GI-cQVv4xt5oCcxYg-kgb0uErVsppr6EVU2NyKhWJo3YhaSMOS2xC-jt0eq0-UXzCv3vdnpFg_FLIjO2ENzVvjRRVtg"
+        ],
+        "__at__": 1786801231.838101,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "One of the beautiful villa stay one can have!\nVery well maintained, neat and classy.\nChef afrid’s food were top notch, Nirmal and team really made the stay very special.",
+            "author": "adarsh j a"
+          },
+          {
+            "rating": 5,
+            "text": "The property is a labour of love - beautiful restoration which has ensured a delicate balance of luxury, comfort, and aesthetics.\n\nPerhaps the best 5* place we have stayed in the country for a group holiday - can host up to  10 guests.\n\nVery centrally located in North Goa - while we didn’t feel the ",
+            "author": "A Chandra"
+          },
+          {
+            "rating": 5,
+            "text": "Had an amazing stay at this beautiful property. The place is ensconced in a  lush natural setting in the village of Bastora.  The varied vegetation, sourced from around the world and planted here, lends a charming quality to the resort. The suites are luxuriously appointed and the villas have everyt",
+            "author": "Natasha Grewal"
+          },
+          {
+            "rating": 5,
+            "text": "No words to describe the beauty of this villa. Impeccably done interiors - all facilities required and the most impeccable service and stay! Nirmal, Vikas and Ashish took super good care of us. And the chef was also fabulous.\nHaving your own private spa, gym and dining spaces was just fab. Coupled w",
+            "author": "Veda Dhaul"
+          },
+          {
+            "rating": 5,
+            "text": "Great service, very sweet and friendly staff, food was amazing would def recommend for ultimate luxury. Rooms are huge heated jacuzzi is great to relax in and the gym is fully equipped if you want to burn those calories after all the delicious food. Big shout out to the bar tender Peter his cocktail",
+            "author": "Malvika Shroff"
+          }
+        ]
+      },
+      "hotel (tbd)|dubai": {
+        "place_id": "ChIJ0ye2phNrXz4RtqqaQf7_XIk",
+        "name": "The Biltmore Hotel Villas",
+        "address": "24th St - Al Barsha First - Al Barsha - Dubai - United Arab Emirates",
+        "rating": 4.7,
+        "review_count": 228,
+        "price_level": null,
+        "website": "https://www.thebiltmorehotels.com/en/biltmore-hotel-villas-dubai/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 25.114189999999997,
+        "lng": 55.1988273,
+        "photo_refs": [
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydh1kfzaAFbnIGF_PPIUqwdZy9C-6rc3PG2D0we3-SrWtvDeMgbdrAmYE-4e243SMzNDekuneTBc6KwufF9c2kxv4JpxIKfZ-_1EECoLyaS9zoVoP4eKWKt9JB7sKiHrNy9tQukHAv0kcJGco7clE6KcO7p-ooKAefHP71wFTaI_5j_gBAH5dTxu0V_9ZIOFb82MprLRIH_KqzhTngam67zCbWnYk5gIlRgE6HD2FY4DgB99rllDhegkJQoWxGpZhSAWJXQ1EgOwAUEUjyCJWnmMJcYcAj7uAKNn7tQApQ8bdB-JetHbycJiqd5NsHaTxKs8lr8a0BbLP4eQmI0-pTRecrmGmqTgMO76ZGjq17fb6wKghpQFtPAJsReJVC6Ci9y5SS00OWk2WnWb-XG9_Jpxdf3QbRT9rYSwbzGIB8g",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhmnSLjYLraVxLm1pOH-8n2osuW62TvZyhuBHU5jReE7FHaIOgGEu3iimKptFtqa7BJoBEKvavhrrmik9IjTRbIhCFz8LOdVsyP4PLEAdOxoOUrz0NE3iwMDqXQCQCSKumxWPj5W1UqFgFGuHgtHY6NQBE20bX2vsZYvA7b-X5tbaT3pRUY3OnrvG_nFz499xwtfISdD4d2XsIjIcGi_jCgx9GFdiUtYnrx-hOfQKHp2WV-lpSVn2UVQNuIJYpCpachj1NU_pBR7qgmtnPuA3UDyXHNkAKUliSCVRPpCqks6wFzTamvyqF23r5-NzSQj5aHf8HY0_Os68Uf6S9pco-eq6Kj8ToJf0TUjsN627BAgkHRntznb61tUBfEBZrNecsm21CzZeVH6cOggMSxG2zlgAgWKwoQqG_RJNDc6qgIRNJL",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhXM2yZasO509o5rMhtv7A_QtjJ5qlUH7py4F9dzxrsoJWC6LIGTv1RTqTVqRPBu4NtUZEgYc_lENRDSo7RSreNmJuAJg0BtaQfyafxxgldVT9ih_ZU_JAArEvVFgF7jWbhsDxJWonU9abjZeY0rRspXYtd_WB1Rkr6sH6tZJNClv-92sB9yARXB0i8ZSE9DMVn1j7L15XuErONpNqjkLi6lfjiYFejHhiIJLPVAKVxYWLfCumNGsNQgaTnDKc8EUPhCGx7tvRw3s3j4kV5zwiXX1zLMJlCSA4iQG-F2xLunuFaRQVkfPAHGuoIcGdRKJYZNDivfqPbYHKGorc-h3H4oT7DoIIkhDt3Mg8Qrt2R4AcbmAOGYp3aY_JfDXzaklR-seGmdWBGCMQpOFf7iWRJNs_6WeNFg_HJXpqWyDJiJf58",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydiJ0XG2KWUEgJVZz2clYpFZy9cEzeJQgks1EmPCHNUDdLlstpqHJFFeZ5ObFr_0R4lyETdja9chBs2LnKdzLZ6Rs2QZnz9kFF2_GRwnt-zt8tDI6KvDEYGdIrqV3B3x6maPMxQLW-tEg0XmtaxbLEmD_QKkcYoXmG-Elc3geboxDIVD3tFukq5LJM2H5kG45BkcutlWv6nxagVSIouFWCg9FwPHj39WJcemTpnqyYUB_eXPDYZ7wJiD7k6v_tctXlMCVKc8vUjnK_c-6NsX5KDhPDBnxSVZSZC4mBEjMF0g34bLKWuyjpXPnLulbKGHbjj9tTcN1RK5esrr6HtFKQxrkGyJhEGqm8mgQkE7ZK2JXK7OLdfxB9sCu4YtGOTyUFQtP27DS723W44KfLFqBF7A4NcVQwO1JkT0qCXsFH5lnw",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydjA1EHyQWK9ntGQlDOHRs94Wcs9lgSkPeqWYd5M-WMbpyI8WVXYwRFhw2XettxzRTNmbiV2Qev04q2M8cUw4iLciFQSBwXVavfF-Cize8XySd11qoN3MHg-k-eBl8AO5ptHY7FS88Whf7THoBo8m_cVbl_WNn-HGllHZWmM-lXU2YDa4xDu2tez-egKMJ7WEEiZk9ZicurD-mhUabLLTzYt90e82va_C7f_EJxt-YaBG8tcZTBccsXFg7CrmpdVCHkbZ6_NvyMsHrH-ZbVstEnL449mMwcgqc1HGC7YuxkB5ouecOEqM1LpOSkanqnteKsWpsAEHd-ix5kUuNdUFH8mCZqOFxUEjw-e5fGP05ER_S3pjGXZ02k4d2eNmVlWITFjQjQ65WR-GxEQHODGarpMuM1pSsk4SkjOuckrFco",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhT-eWwISVm_TTVfVmulSxHRv0fzbdnwnkQqc1YyG8C_HlgkMSeINrjAD0nefmc5B4CtZWistnAag4qiuJr4FN-6EgOPZCbxeQchoqUN67e1k7Vfy26nbigIv60ZVS25h63STF_9D0xu6Usw6D8tX7PDvMoWEeBBFy05yW7E6iXsjscuYlg5zkJzfe8ASMyQrdXz6rWmysAlTwpyDMFRBbem5R42FruFl-MZdgVvI3fVUGJ23T8dXn0mWyiP_bPRwlmEnIDeSSukVTCGpSeT9y3VamplIImfgAiRxDza-vKumCviCRdvTWp38Y6Iz7j3WdGQZmcN1UdbxJuUnph8VZ2z4Z3t78koRoahngyvDRN8i9rg7YM0aVo5CRuked77ANhuvMidIZHdCmsdJDT71wwoHHZffRuD34_oAm-5Sk",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydgcFGsdfCYCqAJUNiN-UZbjwyiCty7bqDkKpb6uiGuye9xsrTFui1vhXWi7gY7ceqkUuEVHQ_oreKeHoGJ3D9nhiN6jn7-dUEAk7vfZlOrTUJsWimJi8pHPtMv4CeqR7L_vtH622GM2caPO2aFC-WOvSyfcitE6yNXIXb8BOrWHHFix7cJHSlhobrIuR9ch7aQxqeVUPX_FqWQ0NV3T5n5NmSRIoW_tGG65Gpb7_STlo1wzW0PoVb0W2mkaYZ_MQo_F5SDMwNmXhzp5kj2h3J0ObzLk73BU8fq8eXHZcEoLKVWMYTI6cHL3vdc_iN82aOpPYX65tqDnsRSvruHMfw0pgDdF19xb2FFWvBnsFM2FS5tHXBTHjtQsnimaeDq1xflj8DAdrFO7NHcnibZoiBxlFkzYf2RVfCxgy4E_nkRAxg",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhx9nynEmO16quTz-JxYz-BA1-CE3dpwPLeheJRBbbt_n-JhBOS2bEuU5Hdxsx_Ar_G0WDrHdXIEWWafi4cgn4Rg-YxRWtkylplG07qWmGPZzCk1Caev8iBkKJmORyLx5qwHfXOxvcWxHGlS-gIaKJqIiSZnc-8gJTDQYDIzElkj-kFwZw0uRJNx4DgbucXs2LPQ5rhueNoxnKhhXBufKy_3g7TSy89RnSTqRUMgg-7mR2DUKAyQsKJA-6rtw09lT-hm_O2cXTUHUZ88ORU4CNYc2csufxcsy5nYmKs8Nug8vBuk9D5TsccqsfXXfoYJCGQL2C4vZxBfI1CIMAtBhm6qHOhFBLLLY7mClmnm0yRDRrEZ149gtWN1UWVXxyStAjINJ6r12AaJMk7-aeZ5fKPPheWkbNEV77bKm_LXJQ",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydjuRZDw0QrHeRN94il15-2dMMO3mrNcFjzUH7K8w0d5SAUFeBbNKs2n4A4u0KpfiSgzr5sOkZABEguOHW2LG2MM8wdSZRJoFGfv3jy5lJscnwIy2MDoYVlg2TfqYQPlL-M5EO8lRIcMJlCxGcMBHmi1filpOEnZjlmB7IIZLzIsnvwh-fE4eWqqoY_ph5EWkOlqBN4jWAToRut4jV3VhG-_ynfqgBj0dNlMF-_aoOBX-JAjrrUaB-niT9dK31cM5EfF1CjYlMJ9YQobV-Mr8kEGbPEbhi1creCXqQqBo7DefXpeqLbd44e922Hfrb39E0LmFary8qoxDFNCfqckaWWQZNWvdgUyNQPaRKlV_XOcTs8K3NWv7dHIpqH2MYu5_UNwG48xLXQ8So_AAIfldLu3GhonEX7hHH4GSFXBrIAGY1U",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydiAD_EJRIVxDJCD9b2LYmnWay9sT0EX_imxHu_pBRQBgKQjWE7Gd413r10JJdSl9fUabEOPLihAjAFFihK95f6mlvJsUCy3_N8VY_53-aUlmj2wd5nhCKNwPpYu-DbmQ_0DGUNI5sST7vM3ZSP21QBaFgyNk_zdXmRFMku_goFcjWMiaT2FTfb-pAg4Z4v5ROunBe4m1ppKbAqLiJAA08OkAY6NPaNlA-RQ8G9CdnVmX8DNwgY-wF-DDLdquo2YA2qcIi7viHCIRdOnRhfsuNb0yIm5wFyeDWecf3QjqbiCfklzFjzH-lknpRRisu2ZLlEHmNvlVRmXG--pWqVXilfHm_7GUjtjuYEE2-75tEB9_szpTN8xY4nHEmL6NuZHJEci2lKXlO1byQWTPqtg9VH4DAfiemAdpCVkxeNAQe_ejfRp"
+        ],
+        "__at__": 1786803248.5911539,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A group of friends and I had a lovely afternoon at their afternoon tea. They offered an earlier time to accommodate our party. The service was great and the value was superb. The staff was very friendly and professional. They welcomed us and made sure we had everything we needed and more. We will be",
+            "author": "Tessa Johnson"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing experience at the Brasserie at Biltmore! The food was delicious, the atmosphere was elegant, and the service was outstanding. The warm hospitality and genuine care from the team made our visit truly memorable. Highly recommended!",
+            "author": "MOHAMED MORTADA"
+          },
+          {
+            "rating": 5,
+            "text": "What a wonderful stay at this hotel! From the moment of arrival, a warm welcome was given by the doorman Ali and the amazing front office team, especially Gucci, whose professionalism and kindness truly stood out.\n\nExceptional service was experienced throughout the entire stay. Special appreciation ",
+            "author": "Andrijana Nedeljkovic"
+          },
+          {
+            "rating": 5,
+            "text": "Our family stay at Biltmore Villas last weekend was way above our expectations. This is undoubtedly the most luxurious and serene villa resort in the country. Location was amazing too being right next to the Mall of Emirates (literally three minutes walk). Villa design was simply giving us the feeli",
+            "author": "husham osman"
+          },
+          {
+            "rating": 5,
+            "text": "You enter this place and don’t want to leave. I’m a type of a person that loves going out and discovering new places but every time I enter the Biltmore, I want to sit and chill and enjoy the beautiful place. You have a spacious living room with great lighting, private pool, jacuzzi, cinema, basemen",
+            "author": "Shamma"
+          }
+        ]
+      },
+      "hotel (tbd)|hampi": {
+        "place_id": "ChIJ9dwxr4_VuTsRyfCHxHrWVIM",
+        "name": "Tungabhadra Resort Hampi",
+        "address": "Naranayanapete Road, Village - Ayodhya D. Post - Shivapur Tq, Ayodhya, Karnataka 583234, India",
+        "rating": 4.9,
+        "review_count": 26,
+        "price_level": null,
+        "website": "http://tungabhadraresorthampi.com/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 15.3456898,
+        "lng": 76.4040287,
+        "photo_refs": [
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydiZ5Gu50Ulj1v0kOAAV-XfwvLdD9UBcOJ_xICsCkwQ4_zqu9F5hNJj5sjBiSCnO7B3twG89Z81Qa6HSACXIM08w5VJCdUyiWCUDgcFmwRKaMDqBtwrxK4YQENu-tNZsmAXOy03jhFGfdMTr2mu3QSvBT_1pAipwXN9rWW9IGetk6Sf4vFLzIU6VyAWUjrc9a4z3-PlGuOhwVi5BxtHy9wFH-ctfUbnC4Nrg8x81YAI_ktQ1HTC77dYdfTddrsFdZXH_8OIldAXVdoZsQS3EAPWdV0lvyul_LwPtj89Rd7oTa3TQlWMGbDngB_PEv9D-WkG4b8JFHgH8thmaQBz9fQtQOt6C_W5DvlzReyZJJm-gwHf9Xl2wlTTDo5Nazu0Uru2DQVL4YOY4fTLW6uIt0my4RRCwoV__TszDEku7UiMkWJxhJ8UXCTE0htHrVpao",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhl2iUaQ6cnyMaUmdR_-pHntYRou34X7-dxOSW-kSVmgyEvfezGo5sxRAd1gHydnwC5Dp0gB-5ZL-vqWVJv4FMDQ8RaF4MLvkBzjfeu4dLuQfd86ZB5rnL1v8PJfxYaKpFdU6DJjC1CgkdUOa_5EpREoFfdysFXuEihWNrMHpEPUKKAKPDY6Ank2pxExaSi3QLx-1gft0nxYNq0u0EERVcTKBciLVRSWXx54Kg15j9WAZUQ5bhC1R025KWplojVb4TnM2oqKHvY3CZk5QDPe51GIjcQL1Sq-q333WOhPE5TCfuYbW2XnRn0Y35cTm4enxgyt2e8hS2_rqeLZ4NNsFcJMLKBUPAXF3P7xnEnY7crA-jxcYs8FpEIEX-aHs77pLFlT7ph5xcdcTvSGpd6TefqmuNdH6nTaVShUabJdX5WGnbD0eiktuuykx767wf4",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhc62e5No1mFXPUa_-XfgipFNEVLjJE-JKUqMzTlhN-M3C46hXTMEExpc27wA_GwR7pRscHtiog-hiteDFGUwqO-3ui4foswyiXMlMEXgW-LklB58ar0uucSoebHr2qnFaNQMtaLRsaYn_FrPyIVLEfzxECi8e1jjrinFHNoH8CMpVXRwLnixKwFjGM_B8__znBXqFXDyeQNbnT74pkggQOAxiF2i1fFk40HPeNy4MDMRBHrql2vC4pXbq7r9kfIX-Cv2QYe-1eaZSv_uXW4EpZ9O7nZ_6XlclO0xzq44rRfMrXyMewOW36_otyCHrWiy5V1vaH2Ft748OvFtF8bV446X6HavPgTr1M7_TaAUpsKeOgqN7xtpp36kudS7ektjGrIiDYvyBumylr1wnoMb9hr2oCUfHLqu569ZrE7TNnhNPteNONs4il4AsIw27d",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydiy5DThEraTSbBeTCV5j_VseLgDvAqpnJRbaNmKq5wafXJ7bN0VrojxaXMhLp3VvYplIEg8YoGsuIrj-ZC1yEQJtiRt3x2RGqtQJSLlDiws6pdcYSfVQRluHr7kSE1xHk7g9yqfrTAkGvwWcynklLb393DxZNoGTgNAXDJta661BC9BloPLcesM9b7h-0d0TKF7a1L9fjzXo1MZIAtEoo8otzhtBlZEK8juivp9a5O_vv1T6lo-KmWFhubPQXrfqA5A-lfS3jXzhFeGCQ58-ZLFhQilorSTqtM_iyK770HSAVZS-f_ShBDXfSadLTmjapCJQY7pqSwsIULq3RqDv3uMLosh7iM0mEjqUXIUcqpyzonjeXUqAfK2XQW23VcxmzFt8gB2WrWqeiPY9F2Qu_wEHbqZqppSl7MEz21QySXcsaRYSANq0oI3q2am2A",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhUzwNkUNp9x0DEWNliGL4Dfo6l2ILG6vmNJbe4htwfe-XmtOqEzsXbQyP1n6ANRdBD2UbZ8un5xcNyxx_3fQXBpc5clhhq75SwjqgM_RdCixeed-F-6Hq__T8sifiUCjf3Ulpio60JCKjpDiLqKgpQc8-CwRjEu3F2MLpd8zxNCE_eJa1DJ3RTCwvqxQiq4o3p6mrQBpLB_S-OtZHWXxatZZz21-2wpvst3RBsrR1ntC_GNcnF4wTMw4kVniadSunBZPsg47Dkpcai8KAkyKhGJf4lGok102oFJAvhd2ewpaHYN1rxyH859gSLI2fWIIo3WtPkE4ZmCDD7FeM9ba0gx1-MY-wBtrIfdX41UExMWWjMWcvEKRr1zX4ctWoBmT7E1dY-G1FqjjLg_FFkuKhj5GR4Xk5Ao-ZqruWEAbd5cI4hunpdEpsegOPedQ",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhlr7VFpTZsAy464hyTPGmxItgJiEjuU5IW2lLvunidu4wdjzizT9Ac25vvWZrvoNxvf4iSacbu65Jq5FaMp7c2Q7cFa-duTBgJNJtNkgGCt0yrYeh1zvkfGvrZjR7G8yylzOM3qmsC1VZ62LsDZUbHUXZ9u8Pyf_DTTOff7_lNV15DG9mbz6bFKMu0NqVXYIQr-DpucnRl9Fomw-vv8Puh0DxTF5BsVXZ89uCxD8oReyCPNqQipIfSjmfaIS7Xx1YBYBxnMhH07yK_M6qaXt1zSROuVko6iOauvZjTLBNNzzmwlEtZQiM4z9EiguUDLF31fYS6Vu_6hwQ2sFbcnl7DsH0AmeVm6s07nVEuSriBAEUWuYT8wZiA2tNGKszh3irzBM3_h_RKWc4tvJfCcCdr6w8TRkiHJGOzepymF9aU1jyw55iFhE_YkbTkYQ",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydh4YxgDQjYvSBsrDkxrRl1v7gRts0uE4HgpcGFJ6FErsBb-dQcoTv-GVoCWym3BM6K4JYA6w-KSUICzuyd352rh0s8JtcqAKdg302dKW0-9z98kqan_GHKECYZK6AL_5v7mp88Sj5Pztxfgd8cNswOhFDfJRMWiz7kyr1xPm_v5DzrXbq0ne2QuEceJpkOfCY6H3LeBTDka2UHWEqL1dq-EPR2v1jiXR9PyBjEItwn6TD3qqtQb0aOON7fdD4PjQZqoc1s2GswJQKu1ALAeXzdPYCJ26d2SuYUJ5xKavdKN7qJVaIOv0_usnLLTZaqqi3mwsST8Zs3Vzyxv97t5q0vFsIoLyztATX8Ds816bDqUh-5gc2czKIH-02fc3dkdAwsNq_6D34vF4Cu8uM5rxvZUNXaYgyPc51oxWZGTWtQh0odIbrg1pwHMlutaNUUi",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhTuwNtbbxUmf19qhoGeJo3mxFMfjnsT_pl7KAYlLu9xqLtUNx-ASQVoiy_0Kv8s_WoXE9Hl0u1QW1eWNpSihN-6frn5bg_sNxc6iQX7ADuljD9qgioeQu-_rjNqp3NzLlzOdhFxwzp1GcV46oik4Dpa9ctKQf3M4A171y6y6nr8Sje6xnsFJ3amTD7BVMOWfK7p56f3vraMYFo7L8GztfbavVaz6dLWFqt5fw79eZD0i44tYre-BsVh0Q0vNzHHnm78lfUFrDtBeqo0NWc-tJsZuLmN9WzhqCGvFJF6uSxlhdGi9veNvwBnYSFm6zZAmnrkSj4ZlYyr8x7Kflr3sPGj08oyLgEKkZxXMQbRJ30uCYO3a2AAw0sZTD_QEvyC2Aolz1LU5wfx0raK_cGqaApbS7RozyT9B9-iggD1Tw9giIo-Ni2FSjwCNNBroc6",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydh2CSv0wOBofLsT_GYdWmxQKH2jaOyJeBIFZqFsf5_J8nZdk7kjPELTjjSlpK5wqhjA-HSv-eOXCIvlUZKAjGeb8bZf0aeMD5cbpzC84JswOiToZyEgT5ny_AC0fq6ziMIDKz3tcAhoghl8-zNCNlOG6iXdlVTgDper8ssiliTQ5ApUgqB2AmUDuGCVHKRvgkKASiagDH-zAH1KCXXCSOVHkkB56EW9ydABIMlcSp8Imh4PgpxAfk2Cmf-AMVNhGohKUME8IAA9HFHq8vaU7PwsWKz2p8jJUme2Q1aSQT_RKgra0pWH_liJv3aHs_HMmPTYnTVJEHGIQp-4oEEG2ZSnONt4LKNGcwXz-C1QhjRMg4DWsHbpZZfpfo0N6XiCkPI47jx6T8RuEGIAEWPD3zH6aGWRQsgPRkuxPUFQSEgtq-yQtlzaBnPJYl35qg",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhhZfXcgLHgLKdHCXYkTJ9CUDQo8MWkP3dBtDUAACfxSQoP7sJkZKFdNDhPbKduTcR9YP9W__r-hIm7ZSQJunIOywo_AIgbRqK82-MRaCHTxQuIxZRKRG26PriFMjofBd3NQTESkzaglcYFWzcJKtEnSaXQU-0cfa2Tc6UYWV1svdmd-9EUdZwNJnC8fG-PV9UVaEEP0eMc3Dg8RatIdl-W6N6MYLbhnVIDHGdCEboeNxvwH99pAajhlIqsZ1MgUVH5tz0A9tYjGpR2BiZB7BmLRd7VqIMm9AT0KXESiYl_g5L_mCY_lFCBvK2Bc6pgY8S0JfKi-Ne5Ob7_r29z0PSIB_fLodjSYk-OmZT4RvyK2LB6juAiLwV4GwRTvqYhyCznaRjVy1alyx0WjkMoApNf9NnjaHDBQtBhN3DIYt71YQFY5qfOSbA2011HBJCT"
+        ],
+        "__at__": 1786806564.660026,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Beautiful place. Clean and nice rooms. Friendly staff and good services.",
+            "author": "Tuhina Bagchi"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent place to stay away from city. Good response by staff and owner. Food is very testy with natural garden very refreshing. It would be nice if u have a swimming pool",
+            "author": "Vaishnavi Sagar"
+          },
+          {
+            "rating": 5,
+            "text": "Stunning views, friendly staff, luxurious rooms, unforgettable experience.",
+            "author": "Avishkar mane"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing staff and services, beautiful location, comfortable rooms, and good food",
+            "author": "Vinod Tamabavekar"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent place to stay. Away from city crowd. Nice place to spend time with family and friends. Clean room. Staff is very cooperative. Food is very fresh. Natural beauty with farms around the resort.",
+            "author": "Manju Bagchi"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "New York",
+    "departure_date": "2027-10-09",
+    "return_date": "2027-10-14",
+    "nights": 5,
+    "month_year": "Oct 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 0,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "New York",
+      "Arrival in New York",
+      "Hotel (TBD)",
+      "Explore Times Square",
+      "Meetings & Central Park",
+      "Meetings (User's location)",
+      "Central Park",
+      "Dinner at Carmine's Times Square",
+      "Meetings & Museum Mile",
+      "The Metropolitan Museum of Art",
+      "Dinner at The Modern",
+      "Meetings & Lower Manhattan",
+      "9/11 Memorial & Museum",
+      "Battery Park",
+      "Dinner at Balthazar",
+      "Iconic NYC: Statue of Liberty & Broadway",
+      "Statue of Liberty Ferry",
+      "Shopping in SoHo",
+      "Broadway Show (TBD)",
+      "Departure",
+      "Depart for airport"
+    ],
+    "auto_summary": "5-night New York, Oct 2027",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T15:13:30Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T15:12:22Z"
+    }
+  ]
+}

@@ -1,0 +1,566 @@
+{
+  "status": "draft",
+  "trip_id": "gokarna_2027-01-14_2027-01-21",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:45:18.995751",
+  "destination": "Gokarna",
+  "origin": "Bangalore",
+  "departure_date": "2027-01-14",
+  "return_date": "2027-01-21",
+  "travelers": "1 adult",
+  "notes": "No major events or festivals during these dates. Beaches and treks will be peaceful.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Gokarna",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Stone Wood Premier Gokarna",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp78f8c",
+        "offer_id": "3gAWonJzkd4AEaRzcmlk2gEgRzRaRE1aUldNWTNHSU1UREdJWURNWVJXSEUzR0tOUlhHSVlETU1SV0dVM0RJN0JSRU1aREFNUlhHQVlUQ05ENEdJWURFTlpRR0VaREM3REZOWlBWS1UzNEpGSEhZU0tPS0o2RENRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5SU0dVM0RJTUJaR0ZHSFM2Q0hFTTJEU05KVkdBWUNHTUpTR1EzUzJOQlpHVTJUQU1ENEtKREU0N0JTR0FaRE9NQlJHRVpEQU5KUUdCNkRDN0NTR0VZVEtNQ0NIRTRUS1RSUUtVWUhZTkpYR0VZVEdPQlJFTkJFRUkyU0laSENHTVJRR0kzUzJNQlJGVVlURUlCUUdVNURBTUJEo3ByY8tA6-M564UeuKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wMS0xMiAwNTowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybq5ST09NLCBLSU5HIEJFRKNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJGFoXSzMjAyNy0wMS0xMiAwNTowMDowMKFhy0Dr4znrhR64oWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmNDk1NTAwo3NpZAKjaGlkp2xwNzhmOGOjb2NjkYGhYQGjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTAxLTE0omNvqjIwMjctMDEtMjGjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNTNhYjRlN3ZKN2pCWWpCRlhKM29ONGhkQWlNdUhyVGNXdVijaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4kYShacOhZKChYctAvMwFHrhR7KFjo0lOUqJscMCjYmt0Ag=="
+      },
+      "address": "890/1, Om Beach Rd, Village, Gokarna, Karnataka 581326, India",
+      "rating": 4.4,
+      "review_count": 3141,
+      "place_id": "ChIJ8XZU4ZCDvjsRCmIoWqBYWlI"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-14",
+      "title": "Day 1 · Arrival in Gokarna",
+      "summary": "Travel from Bangalore to Gokarna by train. Check in to Stone Wood Premier Gokarna. Evening stroll at Gokarna Beach.",
+      "stops": [
+        {
+          "name": "Train: Bangalore to Gokarna",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 420,
+          "distance_km": 485,
+          "note": "Morning train, approx. 7 hours"
+        },
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Gokarna Beach",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Evening walk"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-15",
+      "title": "Day 2 · Kudle Beach & Temples",
+      "summary": "Explore Kudle Beach, visit Mahabaleshwar Temple, and enjoy lunch at Mantra Cafe.",
+      "stops": [
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kudle Beach",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Morning beach time"
+        },
+        {
+          "name": "Mahabaleshwar Temple",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Historic temple visit"
+        },
+        {
+          "name": "Mantra Cafe",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Lunch with sea view"
+        },
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-16",
+      "title": "Day 3 · Om & Paradise Beach",
+      "summary": "Visit Om Beach, try water sports, and relax at Sunset Cafe Beach Stay.",
+      "stops": [
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Om Beach",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Iconic beach, water sports"
+        },
+        {
+          "name": "Sunset Cafe Beach Stay",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Lunch by the beach"
+        },
+        {
+          "name": "Paradise Beach",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 120,
+          "note": "Secluded beach, accessible by boat/trek"
+        },
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-17",
+      "title": "Day 4 · Yana Caves & Nature",
+      "summary": "Day trip to Yana Caves. Explore natural rock formations and forest trails.",
+      "stops": [
+        {
+          "name": "Drive: Gokarna to Yana",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 90,
+          "distance_km": 55,
+          "note": "Private taxi"
+        },
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "10:00"
+        },
+        {
+          "name": "Yana Caves",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120,
+          "note": "Nature walk and caves"
+        },
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "14:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-01-18",
+      "title": "Day 5 · Relaxation & Spa",
+      "summary": "Relax at hotel, enjoy spa treatments and visit Gokarna Market. Dinner at Chez Christophe.",
+      "stops": [
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Hotel Spa (Stone Wood Premier Gokarna)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Spa session"
+        },
+        {
+          "name": "Gokarna Market",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90,
+          "note": "Explore local shops"
+        },
+        {
+          "name": "Chez Christophe",
+          "kind": "meal",
+          "time": "19:00",
+          "duration_min": 90,
+          "note": "Dinner"
+        },
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-01-19",
+      "title": "Day 6 · Half Moon Beach Trek & Leisure",
+      "summary": "Morning trek to Half Moon Beach. Lunch at Cafe 1987. Leisure afternoon at hotel.",
+      "stops": [
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Half Moon Beach",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Trek and beach time"
+        },
+        {
+          "name": "Cafe 1987",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-01-20",
+      "title": "Day 7 · Departure",
+      "summary": "Check out and return to Bangalore by train.",
+      "stops": [
+        {
+          "name": "Stone Wood Premier Gokarna",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Train: Gokarna to Bangalore",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 420,
+          "distance_km": 485,
+          "note": "Morning train, approx. 7 hours"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-18T19:45:51.991814"
+  },
+  "currency": "INR",
+  "weather": {
+    "destination": "Gokarna",
+    "country": "India",
+    "latitude": 14.55,
+    "longitude": 74.31667,
+    "source": "seasonal_estimate",
+    "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+    "days": [
+      {
+        "date": "2027-01-14",
+        "summary": "Overcast",
+        "high_c": 31.8,
+        "low_c": 23.3,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-01-15",
+        "summary": "Partly cloudy",
+        "high_c": 33.7,
+        "low_c": 23.8,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-01-16",
+        "summary": "Partly cloudy",
+        "high_c": 33.1,
+        "low_c": 23.7,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-01-17",
+        "summary": "Sunny",
+        "high_c": 33.5,
+        "low_c": 23.2,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-01-18",
+        "summary": "Sunny",
+        "high_c": 33.8,
+        "low_c": 23.1,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-01-19",
+        "summary": "Sunny",
+        "high_c": 33.7,
+        "low_c": 23.3,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-01-20",
+        "summary": "Sunny",
+        "high_c": 33.6,
+        "low_c": 23.2,
+        "precip_mm": 0.0
+      }
+    ],
+    "packing_advice": [
+      "Pack light cotton clothing",
+      "Bring sunscreen and a hat",
+      "Carry a reusable water bottle",
+      "Sandals for the beach",
+      "Swimwear",
+      "Light jacket for evenings"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T19:49:25.657226",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T19:46:10",
+      "expires_at": "2026-08-19T07:46:10"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_gokarna_2027_01_14_2027_01_21",
+      "kind": "lodging",
+      "created_at": "2026-08-18T14:16:10.741357Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Gokarna",
+        "date": "2027-01-14"
+      },
+      "subject": "Stay in Gokarna",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_0019d2923d61",
+      "options": [
+        {
+          "id": "opt_stay_0019d2923d61",
+          "mode": null,
+          "label": "Quality Inn Guthrie",
+          "detail": "ROOM, KING BED",
+          "price": {
+            "amount": 57113.81,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-14",
+            "checkout": "2027-01-21",
+            "room_name": "ROOM, KING BED",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "2323 Territorial Trl",
+            "rating": 7.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp78f8c",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEgRzRaRE1aUldNWTNHSU1UREdJWURNWVJXSEUzR0tOUlhHSVlETU1SV0dVM0RJN0JSRU1aREFNUlhHQVlUQ05ENEdJWURFTlpRR0VaREM3REZOWlBWS1UzNEpGSEhZU0tPS0o2RENRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5SU0dVM0RJTUJaR0ZHSFM2Q0hFTTJEU05KVkdBWUNHTUpTR1EzUzJOQlpHVTJUQU1ENEtKREU0N0JTR0FaRE9NQlJHRVpEQU5KUUdCNkRDN0NTR0VZVEtNQ0NIRTRUS1RSUUtVWUhZTkpYR0VZVEdPQlJFTkJFRUkyU0laSENHTVJRR0kzUzJNQlJGVVlURUlCUUdVNURBTUJEo3ByY8tA6-M564UeuKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wMS0xMiAwNTowMDowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybq5ST09NLCBLSU5HIEJFRKNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJGFoXSzMjAyNy0wMS0xMiAwNTowMDowMKFhy0Dr4znrhR64oWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmNDk1NTAwo3NpZAKjaGlkp2xwNzhmOGOjb2NjkYGhYQGjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTAxLTE0omNvqjIwMjctMDEtMjGjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNTNhYjRlN3ZKN2pCWWpCRlhKM29ONGhkQWlNdUhyVGNXdVijaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4kYShacOhZKChYctAvMwFHrhR7KFjo0lOUqJscMCjYmt0Ag==",
+              "rate_id": "I42FURCNLJJFOTKZGNDUSTKUIRDUSWKEJVMVEV2IIUZUOS2OKJMEOSKZIRGU2USXI5KTGRCJG5BFERKNLJCECTKSLBDUCWKUINHEINCHJFMUIRKOLJIUORK2IRBTORCGJZNFAVSLKUZTISSGJBEFSU2LJ5FUUNSEINIUUUKJJY3EISKOJJJUQRRWI5JVKRCIJNLEKSCZJVFFQSCBGNKECTSSKNDVKM2EJFGUEWSHIZDUQUZWINEEKTJSIRJU4SSWI5AVSQ2HJVFFGR2RGNJTETSCLJDVKMSUIFGUINCLJJCEKNBXIJJUOQK2IRHU2QSSI5CVURCBJZFFCR2CGZCEGN2DKNDUKWKUJNGUGQ2IIU2FIS2UKJIUWVKZJBMU4SSYI5CVSVCHJ5BFERKOIJCUKSJSKNEVUSCDI5GVEUKHJEZVGMSNIJJEMVKZKRCUSQSRI5KTKRCBJVBEI7BVG4YTCMZOHAYXYMRQGI3S2MBRFUYTEIBQGU5DAMB2GAYHYQSJPR6HY7CSJ5HU2LBAJNEU4RZAIJCUI7BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T14:16:10.651777Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_9251f4c95f72",
+          "mode": null,
+          "label": "Holiday Inn Express & Suites Guthrie North Edmond by IHG",
+          "detail": "1 King Bed Standard",
+          "price": {
+            "amount": 59168.1,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹2,054 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-14",
+            "checkout": "2027-01-21",
+            "room_name": "1 King Bed Standard",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "2227 E Oklahoma Ave, Guthrie, Oklahoma, 73044",
+            "rating": 8.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp4f8cd",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEnR01ZVEVNQldNSTNEU05URkdZM1RFTUJXR0kzREtOUlVHSVlET01aWEdRM0RDTlRGR1kyRE1NSlhHSTNESTdCUkVNWkRBTVJYR0FZVENORDRHSVlERU5aUUdFWkRDN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRDUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzVEFOUlNHVTNESU1CWkdGR0hTNkNIRU1aVEVOSllHTTNTR01SUkc0NEMyTVpTR1U0REdOMzRKWkpFTVRUNEdJWURFTlJRSEFZVE1NSlFHQVlIWU1MNEtJWVRDTkpRUFEyVFNNSldIQVlUQUkyQ0lJUlU0VVNHSllSVEVNQlNHWVdUQU9CTkdFM0NBTUpRSElZREFJWaNwcmPLQOzkAzMzMzOlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJCSaRtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm6zMSBLaW5nIEJlZCBTdGFuZGFyZKNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJCicnSkTlJGTqRzaGlkpjMyNTgzN6NzaWQCo2hpZKdscDRmOGNko29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0xNKJjb6oyMDI3LTAxLTIxo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTUzYWI0ZTd2SjdqQllqQkZYSjNvTjRoZEFpTXVIclRjV3VYo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJWEoWnDoWSnTE9ER0lOR6Fhy0CrSZR64UeuoWOjSU5ShKFpw6FkqFNBTEVTVEFYoWHLQKGIvXCj1wqhY6NJTlKEoWnDoWSoU0FMRVNUQVihYctAnUKPXCj1w6Fjo0lOUoShacOhZKhTQUxFU1RBWKFhy0B3O4UeuFHsoWOjSU5ShKFpw6Fko0ZlZaFhy0A5DMzMzMzNoWOjSU5SomxwwKNia3QH",
+              "rate_id": "I5GVSVCFJVBFOTKJGNCFGTSUIZDVSM2UIVGUEV2HJEZUIS2OKJKUOSKZIRHU2WSYI5ITGRCDJZKEMR2ZGJCE2TKKLBDUSM2EJE3UEUSFJVNEIQKNKJMEOQKZKRBU4RBUI5EVSRCFJZNFCR2FLJCEGN2EIZHFUUCWJNKTGNCKIZEEQWKTJNHUWSRWIRBVCSSRJFHDMRCJJZFFGSCGGZDVGVKEJBFVMRKILFGUUWCIIEZVIQKOKJJUOVJTIREU2QS2I5DEOSCTGZBUQRKNLJKEKTSKLFDU2M2TI5GVEUSHGQ2EGMSNLJJUOVJUIRDU4MZUJJNEURKNKRKDIR2JLFCEKTSSKFEECWKUJVGUUUKHIFMUQWKNJQ2EWSKZKRBU4SSRKBITEVCTJVFFOSCBLFKECSJSINEUSUSVGRKVGR2KLFJFIRKNIJJUOWKXKRAU6QSOI5CTGQ2BJVFFCSCJLFCECSKZPQ2TSMJWHAXDCMD4PRBES7D4PR6DCICLNFXGOICCMVSCAU3UMFXGIYLSMR6DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T14:16:10.651777Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_5389570e1521",
+          "mode": null,
+          "label": "La Quinta by Wyndham Guthrie",
+          "detail": "1 King Bed",
+          "price": {
+            "amount": 61471.42,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹4,358 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-14",
+            "checkout": "2027-01-21",
+            "room_name": "1 King Bed",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "406 Heather Rd",
+            "rating": 8,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp85d7c",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEHR01ZVEVNQldNSTNEU05URkdZM1RFTUJXR0kzREtOUlVQUVlTR01SUUdJM1RBTUpSR1I2REVNQlNHNFlEQ01SUlBSU1c0WDJWS042RVNUVDRKRkhGRTdCUklFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlpRR1laREtOUlVHQTRUQ1REWlBCRFNHTkpVSEFaREVNQkRHRVpEUU1aTkdVMkRRTVJTR0I2RkVSU09QUVpEQU1SWEdBWVRDTVpRR0UyVFM3QlJQUkpEQ01KVkdCNkRNTUpVRzRZVElNUkRJSkJDR1VTR0pZUlRFTUJTRzRXVEFNSk5HRVpTQU1CUkhJMlRTSVmjcHJjy0DuA-1wo9cKpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTAxLTEzIDAxOjU5OjAwonJ0o1JGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JuqjEgS2luZyBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCRhaF0szIwMjctMDEtMTMgMDE6NTk6MDChYctA3gPtcKPXCqFjo0lOUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjU0ODIyMKNzaWQCo2hpZKdscDg1ZDdjo29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0xNKJjb6oyMDI3LTAxLTIxo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTUzYWI0ZTd2SjdqQllqQkZYSjNvTjRoZEFpTXVIclRjV3VYo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnCoWSjVEFYoWHLQMM1two9cKShY6NJTlKibHDAo2JrdAA=",
+              "rate_id": "I5GVSVCFJVBFOTKJGNCFGTSUIZDVSM2UIVGUEV2HJEZUIS2OKJKVAUKZKNDU2USRI5ETGVCBJVFFER2SGZCEKTKCKNDTIWKEINGVEUSQKJJVONCYGJLEWTRWIVJVIVBUJJDEQRSFG5BFESKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4WSRI5MVURCLJZJFKR2BGRKEGVCELJIEERCTI5HEUVKIIFNEIRKNIJCEORK2IRIU2WSOI5KTERCRJVJFGR2CGZDEKUSTJ5IFCWSEIFGVEWCHIFMVIQ2NLJIUORJSKRJTOQSSKBJEURCDJVFFMR2CGZCE2TKKKVDTIWKUJFGVERCJJJBEGR2VKNDUUWKSKRCU2QSTI42FOVCBJVFE4R2FLJJUCTKCKJEESMSUKNEVS7BWGE2DOMJOGQZHYMRQGI3S2MBRFUYTGIBQGE5DKOJ2GAYHYQSJPR6HY7BREBFWS3THEBBGKZD4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T14:16:10.651777Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 57113.81,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "gokarna_2027-01-14_2027-01-21",
+  "user_id": "corpus-gokarna-budget-solo-7d"
+}

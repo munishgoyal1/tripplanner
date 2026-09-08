@@ -7,8 +7,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from tripplanner.places_budget import places_budget_scope
 from tripplanner.tools import routing
-
 
 # ---------------------------------------------------------------------------
 # Pure-helper tests (no network)
@@ -64,14 +64,55 @@ def _mk_response(payload: dict):
 
 
 @pytest.fixture
-def _configured(monkeypatch):
+def _authorized():
+    with places_budget_scope("user_interaction"):
+        yield
+
+
+@pytest.fixture
+def _configured(monkeypatch, _authorized):
     """Force is_configured() True without needing a real env var."""
     monkeypatch.setattr(routing, "is_configured", lambda: True)
     monkeypatch.setattr(
         routing,
         "get_settings",
-        lambda: SimpleNamespace(google_places_api_key="test-key"),
+        lambda: SimpleNamespace(
+            enable_google_maps=True,
+            google_places_api_key="test-key",
+            openrouteservice_route_ttl_sec=21600,
+        ),
     )
+
+
+def test_google_routes_key_does_not_bypass_disabled_maps_gate(monkeypatch):
+    monkeypatch.setattr(
+        routing,
+        "get_settings",
+        lambda: SimpleNamespace(enable_google_maps=False, google_places_api_key="copied-key"),
+    )
+
+    assert routing._google_configured() is False
+
+
+def test_google_routes_denies_unscoped_provider_call(monkeypatch):
+    monkeypatch.setattr(
+        routing,
+        "get_settings",
+        lambda: SimpleNamespace(
+            enable_google_maps=True,
+            google_places_api_key="test-key",
+            openrouteservice_api_key="",
+        ),
+    )
+    monkeypatch.setattr(
+        routing.http_client,
+        "post",
+        lambda *args, **kwargs: pytest.fail("unscoped provider call"),
+    )
+
+    out = routing.compute_route.invoke({"stops_json": '["A", "B"]'})
+
+    assert out == "No route found for the supplied stops."
 
 
 def test_compute_route_returns_legs_and_totals(_configured, monkeypatch):
@@ -92,7 +133,7 @@ def test_compute_route_returns_legs_and_totals(_configured, monkeypatch):
             }]
         })
 
-    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
 
     stops_json = json.dumps(["Hotel Lutetia", "Louvre", "Notre Dame"])
     out = routing.compute_route.invoke({"stops_json": stops_json, "mode": "WALK"})
@@ -117,7 +158,7 @@ def test_compute_route_drive_sets_traffic_aware(_configured, monkeypatch):
         captured["payload"] = json
         return _mk_response({"routes": [{"duration": "60s", "distanceMeters": 100, "legs": []}]})
 
-    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
     routing.compute_route.invoke({
         "stops_json": json.dumps(["A", "B"]),
         "mode": "drive",  # lowercase is normalized
@@ -130,6 +171,91 @@ def test_compute_route_not_configured(monkeypatch):
     monkeypatch.setattr(routing, "is_configured", lambda: False)
     out = routing.compute_route.invoke({"stops_json": "[\"A\", \"B\"]"})
     assert "not configured" in out.lower()
+
+
+def test_coordinate_route_falls_back_to_openrouteservice(_authorized, monkeypatch):
+    captured = {}
+    routing._ORS_ROUTE_CACHE.clear()
+    monkeypatch.setattr(
+        routing,
+        "get_settings",
+        lambda: SimpleNamespace(
+            enable_google_maps=False,
+            google_places_api_key="",
+            openrouteservice_api_key="ors-test-key",
+            openrouteservice_base_url="https://api.openrouteservice.org",
+            openrouteservice_route_ttl_sec=60,
+        ),
+    )
+
+    def fake_post(url, headers=None, json=None, timeout=None):
+        captured.update(url=url, headers=headers, json=json, timeout=timeout)
+        return _mk_response(
+            {
+                "routes": [
+                    {
+                        "summary": {"duration": 900, "distance": 2200},
+                        "segments": [{"duration": 900, "distance": 2200}],
+                    }
+                ]
+            }
+        )
+
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
+    stops_json = json.dumps(
+        [{"name": "A", "lat": 48.8566, "lng": 2.3522}, {"name": "B", "lat": 48.86, "lng": 2.34}]
+    )
+
+    out = json.loads(routing.compute_route.invoke({"stops_json": stops_json, "mode": "WALK"}))
+
+    assert out["provider"] == "openrouteservice"
+    assert out["total_duration"] == "15m"
+    assert out["total_distance"] == "2.2 km"
+    assert captured["headers"]["Authorization"] == "ors-test-key"
+    assert captured["json"]["coordinates"] == [[2.3522, 48.8566], [2.34, 48.86]]
+
+
+def test_openrouteservice_coordinate_routes_are_cached(_authorized, monkeypatch):
+    calls = []
+    routing._ORS_ROUTE_CACHE.clear()
+    monkeypatch.setattr(
+        routing,
+        "get_settings",
+        lambda: SimpleNamespace(
+            enable_google_maps=False,
+            google_places_api_key="",
+            openrouteservice_api_key="ors-test-key",
+            openrouteservice_base_url="https://api.openrouteservice.org",
+            openrouteservice_route_ttl_sec=60,
+        ),
+    )
+
+    def fake_post(*args, **kwargs):
+        calls.append(args[0])
+        return _mk_response({"routes": [{"summary": {"duration": 60, "distance": 100}}]})
+
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
+    origin = {"lat": 48.8566, "lng": 2.3522}
+    destination = {"lat": 48.86, "lng": 2.34}
+
+    assert routing.route_metrics(origin, destination, "DRIVE") is not None
+    assert routing.route_metrics(origin, destination, "DRIVE") is not None
+    assert len(calls) == 1
+
+
+def test_google_route_metrics_are_cached(_configured, monkeypatch):
+    calls = []
+    routing._GOOGLE_ROUTE_CACHE.clear()
+
+    def fake_post(*args, **kwargs):
+        calls.append(kwargs["json"])
+        return _mk_response({"routes": [{"duration": "600s", "distanceMeters": 1200}]})
+
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
+
+    assert routing.route_metrics("A", "B", "DRIVE") is not None
+    assert routing.route_metrics("A", "B", "DRIVE") is not None
+    assert len(calls) == 1
 
 
 def test_compute_route_invalid_json(_configured):
@@ -154,7 +280,7 @@ def test_optimize_day_route_uses_returned_order(_configured, monkeypatch):
             }]
         })
 
-    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
 
     stops_json = json.dumps(["Hotel", "B", "C", "D", "Hotel"])
     out = routing.optimize_day_route.invoke({"stops_json": stops_json, "mode": "WALK"})
@@ -188,7 +314,7 @@ def test_optimize_day_route_sends_optimize_flag(_configured, monkeypatch):
             }]
         })
 
-    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
     routing.optimize_day_route.invoke({"stops_json": json.dumps(["A", "B", "C"])})
     assert captured["payload"]["optimizeWaypointOrder"] is True
     assert captured["payload"]["intermediates"] == [{"address": "B"}]

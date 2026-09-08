@@ -16,52 +16,165 @@
 #>
 
 param(
-    [string]$ImageTag = "latest",
+    [string]$ImageTag = "",
     [switch]$Build = $false,
     [switch]$DryRun = $false,
-    [string]$SubscriptionId = "",
+    [string]$SubscriptionId = "9fe3951c-d440-4d09-91f1-cb47e02f04c3",
     [string]$ResourceGroup = "rg-tripplanner-prod",
     [string]$NamePrefix = "prod",
     [string]$Location = "eastus2",
     [string]$BicepFile = "infra/main.bicep",
     [string]$BicepParams = "infra/prod.bicepparam",
     [string]$CosmosResourceGroup = "rg-tripplanner-data",
-    [string]$CosmosAccountName = ""
+    [string]$CosmosAccountName = "tripplanner-data-9fe3951c",
+    [string]$AzureOpenAIAccountName = "",
+    [string]$OAuthRedirectBase = "",
+    [string]$CanaryResourceGroup = "rg-tripplanner-canary",
+    [string]$CanaryNamePrefix = "canary",
+    [string]$CanaryAppNamePrefix = "",
+    [string]$ConfigFile = "config/environments/prod.env",
+    [string]$EnvFile = ".env.prod"
 )
 
 $ErrorActionPreference = "Stop"
 
-function Import-DotEnv {
-    param([string]$Path = ".env")
-
-    if (-not (Test-Path $Path)) {
-        return
+. "$PSScriptRoot/deployment-common.ps1"
+Start-RunLog -Name "prod-deploy" | Out-Null
+$totalTimer = Start-DeploymentTimer
+$stageTimer = $null
+$stageName = ""
+trap {
+    if ($null -ne $stageTimer -and $stageTimer.IsRunning) {
+        Complete-DeploymentTimer -Name "$stageName (failed)" -Timer $stageTimer | Out-Null
     }
+    if ($totalTimer.IsRunning) {
+        Complete-DeploymentTimer -Name "Production deployment total (failed)" -Timer $totalTimer | Out-Null
+    }
+    Stop-RunLog
+    throw
+}
 
-    Get-Content $Path | ForEach-Object {
-        if ($_ -match '^\s*([A-Za-z_][A-Za-z0-9_]*)=(.*)$') {
-            $name = $matches[1].Trim()
-            $value = $matches[2].Trim()
-
-            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name, 'Process'))) {
-                [Environment]::SetEnvironmentVariable($name, $value, 'Process')
-                Set-Item -Path "Env:$name" -Value $value
-            }
-        }
+if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
+    az account set --subscription $SubscriptionId
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not select Azure subscription $SubscriptionId."
     }
 }
 
-Import-DotEnv
+$imageTagWasExplicit = -not [string]::IsNullOrWhiteSpace($ImageTag)
+if (-not $imageTagWasExplicit) {
+    $ImageTag = (git rev-parse --short HEAD 2>$null)
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($ImageTag)) {
+        throw "Could not resolve the current Git commit for the immutable image tag."
+    }
+}
+if ($ImageTag -eq "latest") {
+    throw "Production requires an immutable image tag. Deploy a SHA to canary or pass -ImageTag <sha>."
+}
+if ($Build) {
+    throw "Production cannot rebuild an image after canary verification. Let the canary gate build the current SHA or pass an existing -ImageTag <sha>."
+}
+if ([string]::IsNullOrWhiteSpace($CanaryAppNamePrefix)) {
+    $CanaryAppNamePrefix = "${CanaryNamePrefix}-app-"
+} elseif (-not $PSBoundParameters.ContainsKey("CanaryNamePrefix") -and $CanaryAppNamePrefix -match '^(.*)-app-$') {
+    $CanaryNamePrefix = $matches[1]
+} elseif ($CanaryAppNamePrefix -ne "${CanaryNamePrefix}-app-") {
+    throw "CanaryNamePrefix and CanaryAppNamePrefix identify different Container Apps."
+}
+
+$imagePrefix = "ghcr.io/munishgoyal1/tripplanner:"
+$canaryHistoryLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-canary.log"
+
+function Get-CanaryImages {
+    $images = @(az containerapp list `
+        --resource-group $CanaryResourceGroup `
+        --query "[?starts_with(name, '$CanaryAppNamePrefix')].properties.template.containers[0].image" `
+        --output tsv)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not inspect canary images in $CanaryResourceGroup."
+    }
+    return @($images | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+}
+
+function Test-CanaryImageVerified {
+    if (-not (Test-Path $canaryHistoryLog)) {
+        return $false
+    }
+    return [bool](Select-String `
+        -Path $canaryHistoryLog `
+        -SimpleMatch "Image: ${imagePrefix}${ImageTag}" `
+        -Quiet)
+}
+
+$canaryImages = @(Get-CanaryImages)
+$uniqueCanaryImages = @($canaryImages | Select-Object -Unique)
+$canaryImageMatches = $uniqueCanaryImages.Count -eq 1 -and $uniqueCanaryImages[0] -eq "${imagePrefix}${ImageTag}"
+$canarySmokeVerified = Test-CanaryImageVerified
+
+if ($canaryImageMatches) {
+    if ($canarySmokeVerified) {
+        Write-Host "[canary] Current release $ImageTag is deployed and has passing smoke evidence."
+    } else {
+        Write-Host -ForegroundColor Yellow "[canary] Current release $ImageTag is already deployed. Local smoke evidence is missing, so no canary redeploy was required."
+    }
+} else {
+    $reasons = @()
+    if (-not $canaryImageMatches) {
+        $deployed = if ($canaryImages.Count -eq 0) { "none" } else { $canaryImages -join ", " }
+        $reasons += "deployed image is $deployed"
+    }
+    if (-not $canarySmokeVerified) {
+        $reasons += "passing smoke evidence is missing"
+    }
+    Write-Host -ForegroundColor Yellow "[canary] Release $ImageTag is not ready: $($reasons -join '; ')."
+
+    if ($DryRun) {
+        throw "Dry run cannot repair the canary gate. Deploy and verify $ImageTag in canary, then retry."
+    }
+
+    Write-Host "[canary] Deploying and verifying $ImageTag before production approval..."
+    $canaryArguments = @(
+        "-NoProfile",
+        "-File", "$PSScriptRoot/deploy-canary.ps1",
+        "-ImageTag", $ImageTag,
+        "-ResourceGroup", $CanaryResourceGroup,
+        "-NamePrefix", $CanaryNamePrefix
+    )
+    if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
+        $canaryArguments += @("-SubscriptionId", $SubscriptionId)
+    }
+    if ($imageTagWasExplicit -or $canaryImageMatches) {
+        $canaryArguments += "-NoBuild"
+    }
+
+    & pwsh @canaryArguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "Canary deployment or smoke verification failed. Production promotion is blocked."
+    }
+
+    $canaryImages = @(Get-CanaryImages)
+    $uniqueCanaryImages = @($canaryImages | Select-Object -Unique)
+    $canaryImageMatches = $uniqueCanaryImages.Count -eq 1 -and $uniqueCanaryImages[0] -eq "${imagePrefix}${ImageTag}"
+    if (-not $canaryImageMatches -or -not (Test-CanaryImageVerified)) {
+        throw "Canary did not retain verified image ${imagePrefix}${ImageTag}. Production promotion is blocked."
+    }
+    Write-Host "[canary] Deployment and smoke verification passed for $ImageTag."
+}
+
+Import-DeploymentEnvironment -Path $ConfigFile
+Import-DeploymentEnvironment -Path $EnvFile
+if ([string]::IsNullOrWhiteSpace($AzureOpenAIAccountName)) {
+    $AzureOpenAIAccountName = ([uri]$env:AZURE_OPENAI_ENDPOINT).Host.Split('.')[0]
+}
+if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
+    $OAuthRedirectBase = $env:OAUTH_REDIRECT_BASE
+}
 
 # Configuration
 $prodRG = $ResourceGroup
 $prodPrefix = $NamePrefix
 $bicepFile = $BicepFile
 $bicepParams = $BicepParams
-
-if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
-    az account set --subscription $SubscriptionId
-}
 
 Write-Host "`n╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ⚠️  PRODUCTION DEPLOYMENT — APPROVAL GATE               ║"
@@ -77,9 +190,10 @@ Write-Host "║  PRE-DEPLOYMENT CHECKLIST — VERIFY ALL BEFORE PROCEEDING ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
 $checklist = @(
-    "Canary environment tested and stable",
-    "All critical features verified",
-    "No canary errors or exceptions (last 24 hours)",
+    "Exact immutable image tag deployed to canary",
+    "Read-only and deep canary smoke suites passed",
+    "Critical and changed workflows manually verified",
+    "Canary bake period completed with acceptable telemetry",
     "Email endpoint tested end-to-end (test send successful)",
     "Database migrations validated (if any)",
     "Secrets/config parity confirmed between canary and prod",
@@ -147,102 +261,182 @@ if ($DryRun -and -not $resourceGroupExists) {
 if (-not $resourceGroupExists) {
     az group create --name $prodRG --location $Location -o none
 }
+$azureOpenAiResourceGroup = Get-AzureOpenAiResourceGroup `
+    -AccountName $AzureOpenAIAccountName `
+    -SubscriptionId $SubscriptionId
+$azureOpenAiApiKey = az cognitiveservices account keys list `
+    --resource-group $azureOpenAiResourceGroup `
+    --name $AzureOpenAIAccountName `
+    --query key1 `
+    --output tsv
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($azureOpenAiApiKey)) {
+    throw "Could not read the API key for Azure OpenAI account $AzureOpenAIAccountName in $azureOpenAiResourceGroup."
+}
+$env:AZURE_OPENAI_API_KEY = $azureOpenAiApiKey
+if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
+    $appFqdns = @(az containerapp list `
+        --resource-group $prodRG `
+        --query "[?starts_with(name, '${prodPrefix}-app-')].properties.configuration.ingress.fqdn" `
+        --output tsv)
+    if ($appFqdns.Count -gt 1) {
+        throw "Multiple Container Apps match ${prodPrefix}-app-* in $prodRG. Pass -OAuthRedirectBase explicitly."
+    }
+    if ($appFqdns.Count -eq 1 -and -not [string]::IsNullOrWhiteSpace($appFqdns[0])) {
+        $OAuthRedirectBase = "https://$($appFqdns[0])/api"
+    }
+}
+if (-not [string]::IsNullOrWhiteSpace($OAuthRedirectBase) -and $OAuthRedirectBase -notmatch '^https://') {
+    throw "Hosted OAuth redirect base must use HTTPS: $OAuthRedirectBase"
+}
 Write-Host "  ✓ Files exist`n"
 
 # Step 2: Validate Bicep
 Write-Host "✓ Step 2: Validating Bicep template..."
+$stageName = "Bicep validation"
+$stageTimer = Start-DeploymentTimer
 $validation = az deployment group validate `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" `
+    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
     2>&1
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Bicep validation failed: $validation"
+    throw "Bicep validation failed: $validation"
 }
 Write-Host "  ✓ Template is valid`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
 # Step 3: Dry run (optional)
 if ($DryRun) {
     Write-Host "✓ Step 3: Performing DRY RUN (no changes)..."
+    $stageName = "Infrastructure what-if"
+    $stageTimer = Start-DeploymentTimer
     az deployment group what-if `
         --resource-group $prodRG `
         --template-file $bicepFile `
         --parameters $bicepParams `
-        --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" | Out-String
+        --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" | Out-String
+    if ($LASTEXITCODE -ne 0) { throw "Production infrastructure what-if failed." }
     Write-Host "  ✓ Dry run completed`n"
+    Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
+    Complete-DeploymentTimer -Name "Production dry run total" -Timer $totalTimer | Out-Null
+    Stop-RunLog
     exit 0
 }
 
-# Optional: build + push only after all no-change paths have exited.
-if ($Build) {
-    Write-Host "✓ Step 0: Building & pushing image (-Build)..."
-    & "$PSScriptRoot/push-image.ps1"
-    if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
-    Write-Host "  ✓ Image ready`n"
+Write-Host "✓ Step 3: Checking infrastructure changes..."
+$stageName = "Infrastructure what-if"
+$stageTimer = Start-DeploymentTimer
+$rawWhatIf = az deployment group what-if `
+    --resource-group $prodRG `
+    --template-file $bicepFile `
+    --parameters $bicepParams `
+    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
+    --result-format ResourceIdOnly `
+    --no-pretty-print `
+    --only-show-errors `
+    --output json 2>$null | Out-String
+if ($LASTEXITCODE -ne 0) {
+    throw "Production infrastructure what-if failed."
 }
+$whatIf = ConvertFrom-AzureCliJson -Output $rawWhatIf -Action "Production what-if"
+Assert-DeploymentHasNoDeletes -WhatIf $whatIf -EnvironmentName "Production"
+Write-Host "  ✓ What-if contains no deletes`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
 
 # Step 4: Deploy
 Write-Host "✓ Step 3: Deploying to PRODUCTION..."
+$stageName = "Infrastructure deployment"
+$stageTimer = Start-DeploymentTimer
 $rawDeploy = az deployment group create `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" `
+    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
     --only-show-errors `
     --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value, containerAppName:properties.outputs.containerAppName.value}" `
-    --output json 2>$null | Out-String
-
-# az may prepend non-JSON info lines (e.g. "Bicep CLI is already installed...")
-# to stdout, so isolate the JSON object before parsing.
-$jsonStart = $rawDeploy.IndexOf('{')
-$jsonEnd = $rawDeploy.LastIndexOf('}')
-if ($jsonStart -lt 0 -or $jsonEnd -lt $jsonStart) {
-    throw "Deployment did not return JSON. Raw output:`n$rawDeploy"
+    --output json 2>&1 | Out-String
+$deployExitCode = $LASTEXITCODE
+if ($deployExitCode -ne 0) {
+    throw "Production infrastructure deployment failed. Azure CLI output:`n$rawDeploy"
 }
-$deployment = $rawDeploy.Substring($jsonStart, $jsonEnd - $jsonStart + 1) | ConvertFrom-Json
+
+$deployment = ConvertFrom-AzureCliJson -Output $rawDeploy -Action "Deployment"
 
 if ($deployment.state -ne "Succeeded") {
     throw "Deployment failed: $($deployment.state)"
 }
 Write-Host "  ✓ Infrastructure deployed`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
+
+if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
+    $OAuthRedirectBase = "$($deployment.containerAppUrl.TrimEnd('/'))/api"
+}
 
 # Step 5: Always set app image so deployments never stay on the hello-world default.
 Write-Host "✓ Step 4: Updating Container App image to $ImageTag..."
+$stageName = "Container App rollout"
+$stageTimer = Start-DeploymentTimer
 az containerapp update `
     --resource-group $prodRG `
     --name $deployment.containerAppName `
     --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
+    --set-env-vars `
+        "OAUTH_REDIRECT_BASE=$OAuthRedirectBase" `
+        "CHAT_NEW_TRIP_LIMIT_DAILY=$env:CHAT_NEW_TRIP_LIMIT_DAILY" `
+        "CHAT_EXISTING_TRIP_TURN_LIMIT_DAILY=$env:CHAT_EXISTING_TRIP_TURN_LIMIT_DAILY" `
+        "CHAT_NEW_TRIP_LIMIT_WEEKLY=$env:CHAT_NEW_TRIP_LIMIT_WEEKLY" `
+        "CHAT_EXISTING_TRIP_TURN_LIMIT_WEEKLY=$env:CHAT_EXISTING_TRIP_TURN_LIMIT_WEEKLY" `
+        "CHAT_NEW_TRIP_LIMIT_LIFETIME=$env:CHAT_NEW_TRIP_LIMIT_LIFETIME" `
+        "CHAT_EXISTING_TRIP_TURN_LIMIT_LIFETIME=$env:CHAT_EXISTING_TRIP_TURN_LIMIT_LIFETIME" `
     -o none
 if ($LASTEXITCODE -ne 0) {
     throw "Container App image update failed."
 }
 Write-Host "  ✓ Image updated`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
+
+Write-Host "✓ Step 5: Running read-only hosted smoke tests..."
+$stageName = "Hosted smoke tests"
+$stageTimer = Start-DeploymentTimer
+$expectedOAuthCallback = "$($OAuthRedirectBase.TrimEnd('/'))/auth/callback/google"
+& "$PSScriptRoot/smoke-hosted.ps1" `
+    -Environment production `
+    -BaseUrl $deployment.containerAppUrl `
+    -BrowserBaseUrl "https://aitripplanner.co" `
+    -ExpectedOAuthCallback $expectedOAuthCallback
+if ($LASTEXITCODE -ne 0) {
+    throw "Production smoke tests failed. Run ./infra/rollback-prod.ps1 after confirming the failure."
+}
+Write-Host "  ✓ Production smoke tests passed`n"
+Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null
+Complete-DeploymentTimer -Name "Production deployment total" -Timer $totalTimer | Out-Null
 
 # Step 6: Output results
 Write-Host "╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ✓ PRODUCTION DEPLOYMENT COMPLETE                        ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
-Write-Host "App URL: https://$($deployment.containerAppUrl)"
+Write-Host "App URL: $($deployment.containerAppUrl)"
 Write-Host "Environment: PRODUCTION"
 Write-Host "Resource Group: $prodRG"
 Write-Host "Container App: $($deployment.containerAppName)"
 Write-Host "Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag`n"
 
 # Log deployment
-$logDir = "logs"
-if (-not (Test-Path $logDir)) { mkdir $logDir -Force | Out-Null }
+$historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-prod.log"
+New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-$approver = $env:USERNAME
-Add-Content "logs/deployments-prod.log" "[$timestamp] APPROVED by $approver | RG: $prodRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | Status: SUCCESS"
+$approver = Get-DeploymentUser
+Add-Content $historyLog "[$timestamp] APPROVED by $approver | RG: $prodRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | Status: SUCCESS"
 
-Write-Host "✓ Logged to logs/deployments-prod.log"
+Write-Host "✓ Logged to $historyLog"
 Write-Host "✓ All users can now access the production deployment`n"
 
 # Post-deployment validation hint
 Write-Host "Next steps:"
-Write-Host "  1. Monitor production logs: az containerapp logs show -g $prodRG -n $prodApp"
+Write-Host "  1. Monitor production logs: az containerapp logs show -g $prodRG -n $($deployment.containerAppName)"
 Write-Host "  2. Test critical flows (chat, map, email)"
 Write-Host "  3. If issues arise, run: ./infra/rollback-prod.ps1`n"
+Stop-RunLog
 

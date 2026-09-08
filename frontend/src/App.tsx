@@ -1,27 +1,39 @@
-import { EyeOff, Map, Maximize2, MessageCircle, Minimize2, PanelLeft, PanelRight, Plus, Settings, UserRound } from "lucide-react";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
-import ChatPanel from "./components/ChatPanel";
+import CanvasPaneFrame from "./components/CanvasPaneFrame";
+import { openAccountSettings } from "./components/accountSettings";
+import ChatPanel, { type AssistantTurnContext, type AssistantTurnStatus } from "./components/ChatPanel";
+import DetailsPaneShell from "./components/DetailsPaneShell";
+import DesktopToolbar from "./components/DesktopToolbar";
 import ExportModal from "./components/ExportModal";
 import ItineraryPanel from "./components/ItineraryPanel";
 import MapPanel from "./components/MapPanel";
+import { isIntercityTravel } from "./components/map/routeDerivations";
+import MobileWorkspaceShell from "./components/MobileWorkspaceShell";
+import { FloatingStatusBar } from "./components/StatusBar";
 import TripPanel from "./components/TripPanel";
-import TripSwitcher from "./components/TripSwitcher";
-import TripActionsMenu from "./components/TripActionsMenu";
 import RightRail from "./components/RightRail";
-import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
-import type { PlannerReview, TripView } from "./types";
+import { trackEvent } from "./analytics";
+import { fetchDocumentReadiness, fetchPreferences, fetchTripView, fetchWorkspace, getDisplayName, importSharedTrip, isAnonymousUser, type DeselectItemOptions } from "./api";
+import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
+import { useWorkspaceTripMutations, type NavRef } from "./hooks/useWorkspaceTripMutations";
+import type { ItineraryFilter } from "./lib/itineraryFilters";
+import { dismissNotice, notify } from "./lib/notices";
+import { completionStatus } from "./lib/turnStatus";
+import type { PlannerReview, TripView, TripWorkspaceView, TurnEffect } from "./types";
+import { diffTurnEffects } from "./turnEffects";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
-
-interface NavRef {
-  kind: string;
-  name: string;
-  day?: number;
-  stop?: number;
-}
+import { ensureInitialDisplayPreferences, normalizeDisplayLanguage, normalizeDisplayRegion, writeDisplayPreferences } from "./lib/displayPreferences";
 
 type CanvasPane = "itinerary" | "map";
-type WorkspacePane = CanvasPane | "details" | "assistant";
-type ResizeTarget = "itinerary" | "inspector" | "chat" | null;
+type WorkspacePane = CanvasPane | "details";
+type ResizeTarget = "itinerary" | "inspector" | null;
+// The Assistant lives in a bottom dock: a single composer row by default, an
+// expanded reading sheet above it, or the full workspace height.
+type AssistantView = "bar" | "sheet" | "full";
+
+const ITINERARY_MIN_PCT = 18;
+const MAP_MIN_PCT = 20;
+const INSPECTOR_MIN_PCT = 24;
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
@@ -32,12 +44,20 @@ function storedPercent(key: string, fallback: number, min: number, max: number):
   return Number.isFinite(value) && value >= min && value <= max ? value : fallback;
 }
 
+function storedBoolean(key: string, fallback: boolean): boolean {
+  const value = localStorage.getItem(key);
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return fallback;
+}
+
 function isPlaceKind(kind: string): boolean {
-  return ["hotel", "attraction", "activity", "meal", "restaurant"].includes(kind);
+  return ["hotel", "attraction", "activity", "meal", "restaurant", "station", "bus_station"].includes(kind);
 }
 
 function focusKind(kind: string): string {
-  return kind === "hotel" ? "hotel" : "attraction";
+  if (["hotel", "airport", "station", "bus_station"].includes(kind)) return kind;
+  return "attraction";
 }
 
 function compactStatus(status?: string): string | undefined {
@@ -50,46 +70,81 @@ function compactStatus(status?: string): string | undefined {
   return status.length > 90 ? `${status.slice(0, 87).trimEnd()}...` : status;
 }
 
-export default function App() {
+export default function App({ initialRequest = null }: { initialRequest?: string | null }) {
+  useEffect(() => {
+    ensureInitialDisplayPreferences();
+    fetchPreferences().then((preferences) => {
+      if (!isAnonymousUser() || preferences.display_currency_configured) {
+        writeDisplayPreferences({
+          region: normalizeDisplayRegion(preferences.display_region || preferences.home_country || ""),
+          language: normalizeDisplayLanguage(preferences.display_language || "en"),
+          currency: preferences.display_currency || "USD",
+        });
+      }
+    }).catch(() => undefined);
+  }, []);
   const [view, setView] = useState<TripView | null>(null);
+  // Map + itinerary view-models handed over by a trip switch, so those panels
+  // can render the new trip without a second and third round-trip.
+  const [panelSeed, setPanelSeed] = useState<TripWorkspaceView | null>(null);
   const [loading, setLoading] = useState(true);
-  const [actionError, setActionError] = useState<string | null>(null);
   const [plannerReview, setPlannerReview] = useState<PlannerReview | null>(null);
-  const [assistantRequest, setAssistantRequest] = useState<{ id: number; message: string; proposalOnly?: boolean } | null>(null);
+  const [assistantRequest, setAssistantRequest] = useState<{ id: number; message: string; proposalOnly?: boolean } | null>(
+    // Seeded once when the public entry hands over a typed trip, so the workspace
+    // opens with that run already starting.
+    () => (initialRequest ? { id: Date.now(), message: initialRequest } : null)
+  );
+  const [assistantTurnStatus, setAssistantTurnStatus] = useState<AssistantTurnStatus | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
   const [workspace, dispatchWorkspace] = useReducer(workspaceReducer, initialWorkspaceState);
-  const [mapFocusToken, setMapFocusToken] = useState(0);
-  const [circuitFocus, setCircuitFocus] = useState({ day: 0, token: 0 });
-  const focus = workspace.activePlace;
-  const stopFocusName = workspace.activePlace?.name ?? null;
+  const {
+    place: focus,
+    placeToken: mapFocusToken,
+    circuitDay: circuitFocusDay,
+    circuitToken: circuitFocusToken,
+    routeDay: routeFocusDay,
+    routeCircuitId: routeFocusId,
+    routeToken: routeFocusToken,
+    setPlace: setPlaceFocus,
+    setCircuit: setCircuitFocus,
+    setRoute: setRouteFocus,
+    clear: clearFocus,
+  } = useWorkspaceFocus(workspace.focus, dispatchWorkspace);
+  const stopFocusName = focus?.name ?? null;
   const tripVersion = workspace.tripRevision;
   const chatReloadToken = workspace.chatRevision;
   const chatTripId = workspace.tripId;
   const itineraryJump = workspace.itineraryJump;
 
-  const [mapOpen, setMapOpen] = useState<boolean>(() => {
-    const saved = localStorage.getItem("tripplanner_map_open");
-    return saved ? JSON.parse(saved) : true;
-  });
+  const [mapOpen, setMapOpen] = useState(() => storedBoolean("tripplanner_map_open", true));
   const [maximizedPane, setMaximizedPane] = useState<WorkspacePane | null>(null);
-  const [itineraryOpen, setItineraryOpen] = useState(true);
-  const [inspectorOpen, setInspectorOpen] = useState(true);
-  const [chatOpen, setChatOpen] = useState(true);
+  const [itineraryHeaderTarget, setItineraryHeaderTarget] = useState<HTMLDivElement | null>(null);
+  const [itineraryFilters, setItineraryFilters] = useState<ItineraryFilter[]>([]);
+  const [itineraryOpen, setItineraryOpen] = useState(() => (
+    storedBoolean("tripplanner_itinerary_open", true)
+  ));
+  const [inspectorOpen, setInspectorOpen] = useState(() => (
+    storedBoolean("tripplanner_details_open", true)
+  ));
+  const [chatOpen, setChatOpen] = useState(() => (
+    storedBoolean("tripplanner_assistant_open", true)
+  ));
   const [showExport, setShowExport] = useState(false);
+  const [documentBadge, setDocumentBadge] = useState("");
+  const [documentBadgeTone, setDocumentBadgeTone] = useState<"blocker" | "warning">("warning");
+  const [documentsRevision, setDocumentsRevision] = useState(0);
   const [signedIn, setSignedIn] = useState(() => !isAnonymousUser());
-  const dockOpen = inspectorOpen || chatOpen;
-  const canvasMaximized = maximizedPane === "itinerary" || maximizedPane === "map";
-  const dockMaximized = maximizedPane === "details" || maximizedPane === "assistant";
+  const [assistantView, setAssistantView] = useState<AssistantView>("bar");
+  const [turnEffects, setTurnEffects] = useState<{ token: number; effects: TurnEffect[] } | null>(null);
+  const dockOpen = inspectorOpen;
+  const canvasMaximized = maximizedPane !== null && maximizedPane !== "details";
+  const dockMaximized = maximizedPane === "details";
   const [itineraryPct, setItineraryPct] = useState(() =>
-    storedPercent("tripplanner_itinerary_pct", 24, 18, 38)
+    storedPercent("tripplanner_itinerary_pct", 24, ITINERARY_MIN_PCT, 100 - MAP_MIN_PCT)
   );
   const [inspectorPct, setInspectorPct] = useState(() =>
-    storedPercent("tripplanner_inspector_pct", 31, 24, 40)
+    storedPercent("tripplanner_inspector_pct", 31, INSPECTOR_MIN_PCT, 100 - ITINERARY_MIN_PCT)
   );
-  const [chatPct, setChatPct] = useState(() =>
-    storedPercent("tripplanner_chat_pct", 46, 30, 65)
-  );
-
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
   );
@@ -99,16 +154,59 @@ export default function App() {
 
   const refreshGeneration = useRef(0);
   const refreshController = useRef<AbortController | null>(null);
-  const pendingDeselects = useRef(new Set<string>());
+  const workspaceEpoch = useRef(0);
   const workspaceRef = useRef<HTMLElement>(null);
   const inspectorRef = useRef<HTMLElement>(null);
   const resizeTarget = useRef<ResizeTarget>(null);
+  const canvasOpen = itineraryOpen || mapOpen;
+  const inspectorMaxPct = 100
+    - (itineraryOpen ? ITINERARY_MIN_PCT : 0)
+    - (mapOpen ? MAP_MIN_PCT : 0);
+  const effectiveInspectorPct = canvasOpen
+    ? clamp(inspectorPct, INSPECTOR_MIN_PCT, inspectorMaxPct)
+    : 100;
+  const itineraryMaxPct = 100
+    - MAP_MIN_PCT
+    - (isWideDesktop && dockOpen ? effectiveInspectorPct : 0);
+  const effectiveItineraryPct = clamp(
+    itineraryPct,
+    ITINERARY_MIN_PCT,
+    itineraryMaxPct,
+  );
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
     const onChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop || !chatOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setChatOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [chatOpen, isDesktop]);
+
+  // Document gaps are recomputed whenever the trip changes; the trip itself never
+  // stores the details, it only surfaces what is missing.
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchDocumentReadiness(controller.signal)
+      .then((readiness) => {
+        setDocumentBadge(readiness.badge || "");
+        setDocumentBadgeTone(readiness.badge_tone === "blocker" ? "blocker" : "warning");
+      })
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, [tripVersion, documentsRevision]);
+
+  useEffect(() => {
+    const bump = () => setDocumentsRevision((value) => value + 1);
+    window.addEventListener("tripplanner:documents-changed", bump);
+    return () => window.removeEventListener("tripplanner:documents-changed", bump);
   }, []);
 
   useEffect(() => {
@@ -123,28 +221,28 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("tripplanner_itinerary_pct", String(Math.round(itineraryPct)));
     localStorage.setItem("tripplanner_inspector_pct", String(Math.round(inspectorPct)));
-    localStorage.setItem("tripplanner_chat_pct", String(Math.round(chatPct)));
-  }, [chatPct, inspectorPct, itineraryPct]);
+  }, [inspectorPct, itineraryPct]);
+
+  useEffect(() => {
+    localStorage.setItem("tripplanner_itinerary_open", String(itineraryOpen));
+    localStorage.setItem("tripplanner_map_open", String(mapOpen));
+    localStorage.setItem("tripplanner_details_open", String(inspectorOpen));
+    localStorage.setItem("tripplanner_assistant_open", String(chatOpen));
+  }, [chatOpen, inspectorOpen, itineraryOpen, mapOpen]);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       const target = resizeTarget.current;
       if (!target) return;
 
-      if (target === "chat" && inspectorRef.current) {
-        const rect = inspectorRef.current.getBoundingClientRect();
-        setChatPct(clamp(((rect.bottom - event.clientY) / rect.height) * 100, 30, 65));
-        return;
-      }
-
       if (!workspaceRef.current) return;
       const rect = workspaceRef.current.getBoundingClientRect();
       if (target === "itinerary") {
         const next = ((event.clientX - rect.left) / rect.width) * 100;
-        setItineraryPct(clamp(next, 18, 100 - inspectorPct - 30));
+        setItineraryPct(clamp(next, ITINERARY_MIN_PCT, itineraryMaxPct));
       } else {
         const next = ((rect.right - event.clientX) / rect.width) * 100;
-        setInspectorPct(clamp(next, 24, Math.min(40, 100 - itineraryPct - 30)));
+        setInspectorPct(clamp(next, INSPECTOR_MIN_PCT, inspectorMaxPct));
       }
     };
 
@@ -161,11 +259,11 @@ export default function App() {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [chatPct, inspectorPct, itineraryPct]);
+  }, [inspectorMaxPct, itineraryMaxPct]);
 
   const startResize = (target: Exclude<ResizeTarget, null>) => {
     resizeTarget.current = target;
-    document.body.style.cursor = target === "chat" ? "row-resize" : "col-resize";
+    document.body.style.cursor = "col-resize";
     document.body.style.userSelect = "none";
   };
 
@@ -176,13 +274,17 @@ export default function App() {
     const growing = key === "ArrowRight" || key === "ArrowDown";
     const delta = growing ? 2 : -2;
     if (target === "itinerary" && (key === "ArrowLeft" || key === "ArrowRight")) {
-      setItineraryPct((value) => clamp(value + delta, 18, 100 - inspectorPct - 30));
+      setItineraryPct(clamp(
+        effectiveItineraryPct + delta,
+        ITINERARY_MIN_PCT,
+        itineraryMaxPct,
+      ));
     } else if (target === "inspector" && (key === "ArrowLeft" || key === "ArrowRight")) {
-      setInspectorPct((value) =>
-        clamp(value + (growing ? -2 : 2), 24, Math.min(40, 100 - itineraryPct - 30))
-      );
-    } else if (target === "chat" && (key === "ArrowUp" || key === "ArrowDown")) {
-      setChatPct((value) => clamp(value + (key === "ArrowUp" ? 2 : -2), 30, 65));
+      setInspectorPct(clamp(
+        effectiveInspectorPct + (growing ? -2 : 2),
+        INSPECTOR_MIN_PCT,
+        inspectorMaxPct,
+      ));
     } else {
       return false;
     }
@@ -195,24 +297,43 @@ export default function App() {
   }, []);
 
   const refresh = useCallback(
-    async (f: NavRef | null = focus) => {
+    async (
+      f: NavRef | null = focus,
+      options: { silent?: boolean; viewOnly?: boolean } = {},
+    ) => {
       const generation = ++refreshGeneration.current;
       refreshController.current?.abort();
       const controller = new AbortController();
       refreshController.current = controller;
-      setLoading(true);
+      // A focus change only reorders an already-rendered gallery, so it refreshes
+      // silently — flipping the panel into its loading state made the round-trip
+      // feel like the app had stalled.
+      if (!options.silent) setLoading(true);
       try {
-        const v = await fetchTripView(f ?? undefined, controller.signal);
+        const workspaceView = options.viewOnly
+          ? {
+              view: await fetchTripView(f ?? undefined, controller.signal),
+              map: null,
+              itinerary: null,
+            }
+          : await fetchWorkspace(f ?? undefined, controller.signal);
         if (generation !== refreshGeneration.current) return;
-        applyView(v, f);
-        setActionError(null);
+        if (!options.viewOnly) setPanelSeed(workspaceView);
+        applyView(workspaceView.view, f);
+        dismissNotice("action-error");
+        return workspaceView.view;
       } catch (error) {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
           console.error("Could not refresh trip view", error);
-          setActionError("Could not refresh the trip. Your previous view is still available.");
+          notify({
+            id: "action-error",
+            tone: "error",
+            message: "Could not refresh the trip. Your previous view is still available.",
+          });
         }
+        return null;
       } finally {
-        if (generation === refreshGeneration.current) setLoading(false);
+        if (generation === refreshGeneration.current && !options.silent) setLoading(false);
       }
     },
     [focus, applyView]
@@ -225,7 +346,10 @@ export default function App() {
   }, []);
 
   const handleIdentityChanged = useCallback(async () => {
-    setSignedIn(!isAnonymousUser());
+    workspaceEpoch.current += 1;
+    const nextSignedIn = !isAnonymousUser();
+    setSignedIn(nextSignedIn);
+    if (nextSignedIn) trackEvent("login", { method: "account" });
     setView(null);
     setLoading(true);
     dispatchWorkspace({ type: "identity-changed" });
@@ -250,6 +374,7 @@ export default function App() {
         if (cancelled) return;
         applyView(v, null);
         dispatchWorkspace({ type: "trip-changed" });
+        trackEvent("shared_trip_imported");
         const next = new URL(window.location.href);
         next.searchParams.delete("share");
         window.history.replaceState({}, "", next.toString());
@@ -268,9 +393,7 @@ export default function App() {
 
   const handleFocus = async (kind: string, name: string, context?: DeselectItemOptions) => {
     const f = { kind, name, day: context?.day, stop: context?.stop };
-    setCircuitFocus({ day: 0, token: 0 });
-    dispatchWorkspace({ type: "focus", place: f });
-    setMapFocusToken((token) => token + 1);
+    setPlaceFocus(f);
     setView((current) => {
       if (!current) return current;
       const index = current.items.findIndex((item) =>
@@ -281,58 +404,135 @@ export default function App() {
       return { ...current, focus: f, items };
     });
     if (isDesktop) setInspectorOpen(true);
-    await refresh(f);
+    await refresh(f, { silent: true, viewOnly: true });
   };
 
   const handleClearFocus = async () => {
-    dispatchWorkspace({ type: "focus", place: null });
-    await refresh(null);
+    clearFocus();
+    await refresh(null, { silent: true, viewOnly: true });
   };
 
-  const handleSwitched = async (tripId?: string, view?: TripView | null) => {
+  const handleSwitched = async (
+    tripId?: string,
+    payload?: TripWorkspaceView | TripView | null,
+  ) => {
+    workspaceEpoch.current += 1;
     ++refreshGeneration.current;
     refreshController.current?.abort();
     setLoading(false);
     setPlannerReview(null);
+    setAssistantTurnStatus(null);
+    const workspace: TripWorkspaceView | null = payload
+      ? "view" in payload
+        ? payload
+        : { view: payload, map: null, itinerary: null }
+      : null;
     dispatchWorkspace({ type: "trip-changed", tripId });
-    // The switcher already fetched the fresh view — reuse it instead of making
-    // the server rebuild the (cache-backed) view a second time.
-    if (view) {
-      applyView(view, null);
+    // The switch response already carries every panel's view-model — seed them
+    // all from it so the map and itinerary swap with the trip panel instead of
+    // each re-fetching and settling one after another. A missing payload must
+    // still drop the previous trip's seed, or a remounted panel would restore it.
+    setPanelSeed(workspace);
+    if (workspace) {
+      applyView(workspace.view, null);
     } else {
       await handleClearFocus();
     }
   };
 
-  const handleNewTrip = async () => {
-    dispatchWorkspace({ type: "trip-changed" });
-    await refresh(null);
-  };
-  const handleStartNewTrip = async () => {
-    try {
-      setActionError(null);
-      await startNewTrip();
-      await handleNewTrip();
-      setInspectorOpen(true);
-      setChatOpen(true);
-    } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not start a new trip.");
-    }
-  };
+  const {
+    handleNewTrip,
+    handleStartNewTrip,
+    handleResetTrip,
+    handleSelect,
+    handleDeselect,
+    handleStopRemove,
+  } = useWorkspaceTripMutations({
+    workspaceEpoch,
+    refreshGeneration,
+    refreshController,
+    refresh,
+    applyView,
+    dispatchWorkspace,
+    setPlaceFocus,
+    setView,
+    setPanelSeed,
+    setLoading,
+    setPlannerReview,
+    setAssistantTurnStatus,
+    setNavList,
+    setInspectorOpen,
+    setChatOpen,
+  });
   const handleImported = async () => {
     dispatchWorkspace({ type: "trip-changed" });
     await refresh(null);
+  };
+
+  // A turn that changed the plan selects what it changed, so the Itinerary,
+  // Map, and Details all land on the same subject without a manual click. The
+  // scope follows the shape of the change: one touched place is selected
+  // outright, a change spread across days (a new city, a reshuffle) keeps the
+  // whole trip in view instead of leaving one day scoped.
+  const applyTurnSelection = async (effects: TurnEffect[], tripChanged: boolean) => {
+    const applied = effects.filter((effect) => effect.change !== "removed");
+    if (!applied.length) {
+      if (tripChanged) handleMapAllDaysFocus();
+      return;
+    }
+    const days = new Set(
+      applied.map((effect) => effect.day).filter((day): day is number => typeof day === "number"),
+    );
+    if (tripChanged || days.size > 1) {
+      handleMapAllDaysFocus();
+      return;
+    }
+    const primary = applied.find((effect) => effect.kind === "hotel") ?? applied[0];
+    // Focus first: a focus dispatch clears any pending itinerary jump, so the
+    // scroll target has to be set after the Map and Details have landed.
+    await handleStopFocus(primary.kind, primary.name, primary.day, primary.stop);
+    if (primary.day) {
+      dispatchWorkspace({
+        type: "jump",
+        target: { day: primary.day, name: primary.name, token: Date.now() },
+      });
+    }
   };
 
   // After every chat turn: refresh every trip pane, and detect a mid-chat
   // destination switch (the agent created a NEW trip → server returns a new
   // trip_id). On a real switch we reload the chat so the fresh, carryover-seeded
   // transcript replaces the previous trip's conversation.
-  const handleTurnComplete = (tripId?: string) => {
+  const handleTurnComplete = async (tripId?: string, context?: AssistantTurnContext) => {
     const tripChanged = Boolean(tripId && tripId !== chatTripId);
-    dispatchWorkspace({ type: "trip-content-changed" });
-    refresh(tripChanged ? null : focus);
+    if (tripChanged) workspaceEpoch.current += 1;
+    const beforeTurn = view;
+    const refreshed = await refresh(tripChanged ? null : focus);
     if (tripId) dispatchWorkspace({ type: "chat-trip-observed", tripId });
+    if (tripChanged) trackEvent("trip_created");
+    if (!refreshed || (tripId && refreshed.trip_id !== tripId)) {
+      setAssistantTurnStatus({
+        phase: "error",
+        message: "Could not load the updated itinerary",
+        detail: "The planning work finished. Your previous view is still on screen.",
+      });
+      return;
+    }
+    dispatchWorkspace({ type: "trip-content-changed" });
+    const effects = diffTurnEffects(tripChanged ? null : beforeTurn, refreshed);
+    if (effects.length) setTurnEffects({ token: Date.now(), effects });
+    if (!context?.proposalOnly) await applyTurnSelection(effects, tripChanged);
+    setAssistantTurnStatus({
+      phase: "complete",
+      ...completionStatus({
+        destination: refreshed.destination,
+        startedWithoutTrip: Boolean(context?.startedWithoutTrip),
+        proposalOnly: Boolean(context?.proposalOnly),
+        effects,
+        reply: context?.reply ?? "",
+        alert: compactStatus(refreshed.alerts?.[0]),
+      }),
+    });
   };
 
   const focusIndex = focus
@@ -346,74 +546,32 @@ export default function App() {
     handleFocus(navList[next].kind, navList[next].name);
   };
 
-  const handleSelect = async (kind: string, name: string, options?: SelectItemOptions) => {
-    try {
-      setActionError(null);
-      const next = await selectItem(kind, name, options);
-      const nextKind = focusKind(kind);
-      dispatchWorkspace({ type: "focus", place: { kind: nextKind, name } });
-      ++refreshGeneration.current;
-      refreshController.current?.abort();
-      setLoading(false);
-      setView({ ...next.view, alerts: next.alerts });
-      setPlannerReview(next.planner_review ?? null);
-      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
-      const placement = next.placement || (next.placements && next.placements.length > 0 ? next.placements[0] : null);
-      if (placement?.day && placement?.name) {
-        dispatchWorkspace({
-          type: "jump",
-          target: { day: placement.day, name: placement.name, token: Date.now() },
-        });
-      }
-      dispatchWorkspace({ type: "trip-content-changed" });
-      return true;
-    } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not add the place.");
-      return false;
-    }
+  const handleDecisionApplied = (next: TripView, message: string, warnings: string[]) => {
+    dismissNotice("action-error");
+    ++refreshGeneration.current;
+    refreshController.current?.abort();
+    setLoading(false);
+    applyView(next, null);
+    dispatchWorkspace({ type: "trip-content-changed" });
+    notify({
+      id: "trip-alert",
+      tone: warnings.length > 0 ? "error" : "success",
+      message,
+      detail: warnings.join(" "),
+    });
   };
 
-  const handleDeselect = async (
-    kind: string,
-    name: string,
-    options: DeselectItemOptions = { all_occurrences: true },
-  ) => {
-    const mutationKey = [
-      focusKind(kind),
-      name.trim().toLowerCase(),
-      options.all_occurrences === false ? options.day ?? "day" : "all",
-      options.stop ?? "stop",
-    ].join(":");
-    if (pendingDeselects.current.has(mutationKey)) return false;
-    pendingDeselects.current.add(mutationKey);
-    try {
-      setActionError(null);
-      const next = await deselectItem(kind, name, options);
-      const retainedFocus = {
-        kind: focusKind(kind),
-        name,
-        day: options.all_occurrences === false ? options.day : undefined,
-        stop: options.all_occurrences === false ? options.stop : undefined,
-      };
-      dispatchWorkspace({ type: "focus", place: retainedFocus });
-      ++refreshGeneration.current;
-      refreshController.current?.abort();
-      setLoading(false);
-      setView({ ...next.view, focus: retainedFocus, alerts: next.alerts });
-      setPlannerReview(next.planner_review ?? null);
-      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
-      dispatchWorkspace({ type: "trip-content-changed" });
-      return true;
-    } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not remove the place.");
-      return false;
-    } finally {
-      pendingDeselects.current.delete(mutationKey);
-    }
+  // A stale write means someone else moved the trip on. Show them that trip
+  // rather than the one they were arguing with.
+  const handleDecisionStale = (next: TripView | undefined, message: string) => {
+    if (next) applyView(next, null);
+    else void refresh(null, { silent: true });
+    dispatchWorkspace({ type: "trip-content-changed" });
+    notify({ id: "action-error", tone: "error", message });
   };
 
-  const handleStopRemove = async (kind: string, name: string, day: number, stop: number) => {
-    await handleDeselect(kind, name, { day, stop, all_occurrences: false });
+  const handleDecisionError = (message: string) => {
+    notify({ id: "action-error", tone: "error", message });
   };
 
   const reviewWithPlanner = () => {
@@ -429,7 +587,6 @@ export default function App() {
   };
 
   const setCanvasOpen = (pane: CanvasPane, open: boolean) => {
-    if (!open && ((pane === "itinerary" && !mapOpen) || (pane === "map" && !itineraryOpen))) return;
     if (pane === "itinerary") setItineraryOpen(open);
     else setMapOpen(open);
     if (!open && maximizedPane === pane) setMaximizedPane(null);
@@ -441,34 +598,66 @@ export default function App() {
     if (!open && maximizedPane === pane) setMaximizedPane(null);
   };
 
-  const handleStopFocus = async (kind: string, name: string, day?: number, stop?: number) => {
+  const handleStopFocus = async (
+    kind: string,
+    name: string,
+    day?: number,
+    stop?: number,
+    routeCircuitId?: string,
+  ) => {
     setMapOpen(true);
-    if (isPlaceKind(kind)) {
+    if (isIntercityTravel(kind, name) && day) {
+      setRouteFocus(day, routeCircuitId);
+      setView((current) => current ? { ...current, focus: null } : current);
+      return;
+    }
+    if (isPlaceKind(kind) || kind === "airport") {
       await handleFocus(focusKind(kind), name, { day, stop });
     }
   };
 
-  const handleStopMap = async (kind: string, name: string, day?: number, stop?: number) => {
+  const handleStopMap = async (
+    kind: string,
+    name: string,
+    day?: number,
+    stop?: number,
+    routeCircuitId?: string,
+  ) => {
     setMapOpen(true);
-    if (isPlaceKind(kind)) {
+    if (isIntercityTravel(kind, name)) {
+      await handleStopFocus(kind, name, day, stop, routeCircuitId);
+      return;
+    }
+    if (isPlaceKind(kind) || kind === "airport") {
       await handleFocus(focusKind(kind), name, { day, stop });
     }
   };
 
   const handleDayFocus = (day: number) => {
     setMapOpen(true);
-    dispatchWorkspace({ type: "focus", place: null });
+    setCircuitFocus(day);
     setView((current) => current ? { ...current, focus: null } : current);
-    setCircuitFocus({ day, token: Date.now() });
     dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } });
   };
 
   const handleMapAllDaysFocus = () => {
-    dispatchWorkspace({ type: "focus", place: null });
+    setCircuitFocus(null);
     setView((current) => current ? { ...current, focus: null } : current);
-    setCircuitFocus({ day: 0, token: Date.now() });
     dispatchWorkspace({ type: "jump", target: { summary: true, token: Date.now() } });
   };
+
+  const handleItineraryFilterToggle = (filter: ItineraryFilter) => {
+    setItineraryFilters((current) => current.includes(filter)
+      ? current.filter((candidate) => candidate !== filter)
+      : [...current, filter]);
+    clearFocus();
+    setView((current) => current ? { ...current, focus: null } : current);
+    dispatchWorkspace({ type: "jump", target: { summary: true, token: Date.now() } });
+  };
+
+  useEffect(() => {
+    setItineraryFilters([]);
+  }, [chatTripId]);
 
   const tripPanelProps = {
     view,
@@ -483,17 +672,28 @@ export default function App() {
     focusContext: focus,
     tripVersion,
     onSwitched: handleSwitched,
+    onDecisionApplied: handleDecisionApplied,
+    onDecisionStale: handleDecisionStale,
+    onDecisionError: handleDecisionError,
   };
 
   const railProps = {
+    filters: itineraryFilters,
+    onFilterToggle: handleItineraryFilterToggle,
     overview: view?.overview ?? null,
     reloadToken: tripVersion,
+    tripId: chatTripId,
+    mapSeed: panelSeed?.map ?? null,
+    itinerarySeed: panelSeed?.itinerary ?? null,
     focusName: stopFocusName,
     focusDay: focus?.day,
     focusStop: focus?.stop,
     focusToken: mapFocusToken,
-    circuitFocusDay: circuitFocus.day || undefined,
-    circuitFocusToken: circuitFocus.token,
+    circuitFocusDay: circuitFocusDay ?? undefined,
+    circuitFocusToken,
+    routeFocusDay: routeFocusDay ?? undefined,
+    routeFocusId: routeFocusId ?? undefined,
+    routeFocusToken,
     itineraryJump,
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
@@ -512,27 +712,46 @@ export default function App() {
     if (pane === "itinerary") {
       return (
         <ItineraryPanel
+          filters={itineraryFilters}
+          onFilterToggle={handleItineraryFilterToggle}
+          headerTarget={itineraryHeaderTarget}
           overview={view?.overview}
           reloadToken={tripVersion}
+          tripId={chatTripId}
+          seed={panelSeed?.itinerary ?? null}
           focusName={stopFocusName}
           focusDay={focus?.day}
           focusStop={focus?.stop}
+          focusToken={mapFocusToken}
+          circuitFocusDay={circuitFocusDay ?? undefined}
+          circuitFocusToken={circuitFocusToken}
           jumpTo={itineraryJump}
           onStopFocus={handleStopFocus}
           onStopMap={handleStopMap}
           onDayMap={handleDayFocus}
+          onAllDaysMap={handleMapAllDaysFocus}
           onStopRemove={handleStopRemove}
+          onTripChanged={async () => {
+            await refresh(null, { silent: true });
+          }}
         />
       );
     }
     return (
       <MapPanel
+        filters={itineraryFilters}
         reloadToken={tripVersion}
+        tripId={chatTripId}
+        seed={panelSeed?.map ?? null}
         focusName={stopFocusName}
         focusDay={focus?.day}
+        focusStop={focus?.stop}
         focusToken={mapFocusToken}
-        circuitFocusDay={circuitFocus.day || undefined}
-        circuitFocusToken={circuitFocus.token}
+        circuitFocusDay={circuitFocusDay ?? undefined}
+        circuitFocusToken={circuitFocusToken}
+        routeFocusDay={routeFocusDay ?? undefined}
+        routeFocusId={routeFocusId ?? undefined}
+        routeFocusToken={routeFocusToken}
         onPinFocus={handleStopFocus}
         onDayFocus={handleDayFocus}
         onAllDaysFocus={handleMapAllDaysFocus}
@@ -542,129 +761,60 @@ export default function App() {
     );
   };
 
-  const renderCanvasPane = (pane: CanvasPane) => {
-    const label = pane === "itinerary" ? "Itinerary" : "Map";
-    return (
-      <article className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-card">
-        <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 px-3">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</h2>
-          <button
-            type="button"
-            onClick={() => setCanvasOpen(pane, false)}
-            className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink disabled:opacity-30"
-            aria-label={`Hide ${label}`}
-            title={`Hide ${label}`}
-            disabled={(pane === "itinerary" && !mapOpen) || (pane === "map" && !itineraryOpen)}
-          >
-            <EyeOff size={15} aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleMaxPane(pane)}
-            className="grid h-7 w-7 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink"
-            aria-label={maximizedPane === pane ? `Restore ${label}` : `Maximize ${label}`}
-            title={maximizedPane === pane ? "Restore" : "Maximize"}
-          >
-            {maximizedPane === pane ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
-          </button>
-        </header>
-        <div className="min-h-0 flex-1">{renderCanvasBody(pane)}</div>
-      </article>
-    );
-  };
-
   const inspector = (
-    <div className={!dockOpen || canvasMaximized ? "hidden" : "contents"}>
-      <aside
-        ref={inspectorRef}
-        data-testid="context-inspector"
-        className={`flex min-h-0 flex-col overflow-hidden bg-surface ${
-          isWideDesktop || dockMaximized
-            ? "h-full rounded-2xl border border-slate-200/70 shadow-card"
-            : "absolute inset-y-2 right-2 z-40 w-[min(27rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 shadow-pop"
-        }`}
-      >
-        <section className={`min-h-0 flex-col ${inspectorOpen && maximizedPane !== "assistant" ? "flex" : "hidden"} ${chatOpen && !dockMaximized ? "flex-1" : "h-full"}`}>
-          <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 bg-white px-3">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {focus ? "Place details" : "Destination guide"}
-            </h2>
-            {focus && <span className="min-w-0 truncate text-xs font-medium text-ink">{focus.name}</span>}
-            <button
-              type="button"
-              onClick={() => setDockPaneOpen("details", false)}
-              className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-ink"
-              aria-label="Hide Details"
-              title="Hide Details"
-            >
-              <EyeOff size={15} aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleMaxPane("details")}
-              className="grid h-7 w-7 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-ink"
-              aria-label={maximizedPane === "details" ? "Restore Details" : "Maximize Details"}
-              title={maximizedPane === "details" ? "Restore" : "Maximize"}
-            >
-              {maximizedPane === "details" ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
-            </button>
-          </header>
-          <div className="min-h-0 flex-1">
-            <TripPanel {...tripPanelProps} hideSwitcher />
-          </div>
-        </section>
-        {inspectorOpen && chatOpen && !dockMaximized && (
-          <div
-            role="separator"
-            tabIndex={0}
-            aria-label="Resize details and chat"
-            aria-orientation="horizontal"
-            aria-valuenow={Math.round(chatPct)}
-            onMouseDown={() => startResize("chat")}
-            onKeyDown={(event) => {
-              if (resizeWithKeyboard("chat", event.key)) event.preventDefault();
-            }}
-            className="group relative z-20 h-1.5 shrink-0 cursor-row-resize bg-transparent hover:bg-brand/20 focus:bg-brand/20 focus:outline-none"
-          >
-            <span className="absolute left-1/2 top-1/2 h-1 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 group-hover:bg-brand/60" />
-          </div>
-        )}
-        <section
-          className={`relative z-10 min-h-0 overflow-hidden border-t border-slate-200 bg-white shadow-[0_-12px_30px_rgba(15,23,42,0.08)] ${chatOpen && maximizedPane !== "details" ? "flex flex-col" : "hidden"} ${inspectorOpen && !dockMaximized ? "shrink-0" : "h-full flex-1"}`}
-          style={{ height: inspectorOpen && !dockMaximized ? `${chatPct}%` : "100%" }}
-        >
-          <div className="relative min-h-0 flex-1">
-            <ChatPanel
-              onTurnComplete={handleTurnComplete}
-              reloadToken={chatReloadToken}
-              tripIdHint={chatTripId}
-              onNewTrip={handleNewTrip}
-              onImported={handleImported}
-              hideGlobalControls
-              assistantRequest={assistantRequest}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => setDockPaneOpen("assistant", false)}
-            className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
-            aria-label="Hide Assistant"
-            title="Hide Assistant"
-          >
-            <EyeOff size={15} aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleMaxPane("assistant")}
-            className="absolute right-12 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
-            aria-label={maximizedPane === "assistant" ? "Restore Assistant" : "Maximize Assistant"}
-            title={maximizedPane === "assistant" ? "Restore" : "Maximize"}
-          >
-            {maximizedPane === "assistant" ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
-          </button>
-        </section>
-      </aside>
-    </div>
+    <DetailsPaneShell
+      open={inspectorOpen}
+      canvasMaximized={canvasMaximized}
+      wideLayout={isWideDesktop}
+      maximized={dockMaximized}
+      focused={Boolean(focus)}
+      focusName={focus?.name ?? null}
+      inspectorRef={inspectorRef}
+      onHide={() => setDockPaneOpen("details", false)}
+      onToggleMaximize={() => toggleMaxPane("details")}
+    >
+      <TripPanel {...tripPanelProps} hideSwitcher />
+    </DetailsPaneShell>
+  );
+
+  const coreColumns = isWideDesktop && dockOpen && canvasOpen
+    ? itineraryOpen && mapOpen
+      ? `${effectiveItineraryPct}fr 0.375rem ${100 - effectiveItineraryPct - effectiveInspectorPct}fr 0.375rem ${effectiveInspectorPct}fr`
+      : `minmax(0, ${100 - effectiveInspectorPct}fr) 0.375rem minmax(0, ${effectiveInspectorPct}fr)`
+    : itineraryOpen && mapOpen
+      ? `${effectiveItineraryPct}fr 0.375rem ${100 - effectiveItineraryPct}fr`
+      : "minmax(0, 1fr)";
+  const workspaceColumns = maximizedPane ? "minmax(0, 1fr)" : coreColumns;
+  const assistantPanel = (
+    <ChatPanel
+      onTurnComplete={handleTurnComplete}
+      onTurnStatus={setAssistantTurnStatus}
+      reloadToken={chatReloadToken}
+      tripIdHint={chatTripId}
+      hasActiveTrip={Boolean(view?.has_trip)}
+      destination={view?.destination ?? null}
+      onNewTrip={handleNewTrip}
+      onImported={handleImported}
+      hideGlobalControls
+      assistantRequest={assistantRequest}
+      layout={assistantView}
+      onChangeLayout={setAssistantView}
+      onHide={() => setDockPaneOpen("assistant", false)}
+      turnEffects={turnEffects}
+      onEffectSelect={(effect) => {
+        void handleStopFocus(effect.kind, effect.name, effect.day, effect.stop);
+      }}
+    />
+  );
+
+  // Hiding the dock must not unmount the Assistant: an in-flight turn and the
+  // loaded transcript have to survive a hide/show round trip.
+  const assistantDock = (
+    <section
+      className={`relative z-30 shrink-0 border-t border-slate-200 bg-white${chatOpen ? "" : " hidden"}`}
+    >
+      {assistantPanel}
+    </section>
   );
 
   const [mobileTripOpen, setMobileTripOpen] = useState(false);
@@ -672,136 +822,114 @@ export default function App() {
     if (isDesktop && mobileTripOpen) setMobileTripOpen(false);
   }, [isDesktop, mobileTripOpen]);
 
-  const errorBanner = actionError ? (
-    <div role="alert" className="fixed left-1/2 top-3 z-[70] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-xl bg-rose-50 px-4 py-2 text-sm text-rose-800 shadow-pop ring-1 ring-rose-200">
-      <span>{actionError}</span>
-      <button type="button" onClick={() => setActionError(null)} className="font-semibold" aria-label="Dismiss error">
-        x
-      </button>
-    </div>
-  ) : null;
+  // Hiding the Assistant must not leave it remembering a full-height sheet the
+  // next time it is opened.
+  useEffect(() => {
+    if (!chatOpen) setAssistantView("bar");
+  }, [chatOpen]);
+
+  // The first alert says what happened; anything after it is the guard saying
+  // what that cost. The headline stays short and the rest becomes the detail,
+  // so "apply and say what it cost" survives without a wall of text.
   const latestStatus = compactStatus(view?.alerts?.[0]);
-  const visibleStatus = plannerReview
+  const statusDetail = (view?.alerts ?? []).slice(1).filter(Boolean).join(" ") || undefined;
+  const reviewSummary = plannerReview
     ? [latestStatus, plannerReview.summary].filter(Boolean).join(" ")
-    : latestStatus;
+    : null;
+
+  // One notification channel for the whole workspace: progress while long work
+  // runs, the outcome when it lands, failures until dismissed, and decisions
+  // until answered. Effect order matters — equal-priority notices break the tie
+  // by recency, and the assistant is the most current voice.
+  useEffect(() => {
+    if (loading) notify({ id: "trip-refresh", tone: "progress", message: "Refreshing trip…" });
+    else dismissNotice("trip-refresh");
+  }, [loading]);
+
+  useEffect(() => {
+    if (latestStatus && !reviewSummary) {
+      notify({ id: "trip-alert", tone: "success", message: latestStatus, detail: statusDetail });
+    } else {
+      dismissNotice("trip-alert");
+    }
+  }, [latestStatus, statusDetail, reviewSummary]);
+
+  useEffect(() => {
+    if (reviewSummary) notify({ id: "planner-review", tone: "decision", message: reviewSummary });
+    else dismissNotice("planner-review");
+  }, [reviewSummary]);
+
+  useEffect(() => {
+    if (!assistantTurnStatus?.message) {
+      dismissNotice("assistant");
+      return;
+    }
+    const { phase, message, detail } = assistantTurnStatus;
+    notify({
+      id: "assistant",
+      tone:
+        phase === "working" || phase === "loading"
+          ? "progress"
+          : phase === "error"
+            ? "error"
+            : "success",
+      message,
+      detail,
+    });
+  }, [assistantTurnStatus]);
+
   return <>
-    {errorBanner}
+    {!isDesktop && <FloatingStatusBar />}
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
     {isDesktop ? (
       <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-surface">
-        <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-slate-100 bg-white/95 px-3 shadow-sm backdrop-blur">
-          <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
-          <div className="mr-auto flex min-w-32 flex-1 items-center gap-2">
-            <div className="min-w-0 flex-1" aria-live="polite" role="status">
-            {visibleStatus ? (
-              <p className={`line-clamp-2 whitespace-normal text-xs font-medium leading-tight ${plannerReview ? "text-amber-800" : "text-emerald-700"}`} title={visibleStatus}>
-                {visibleStatus}
-              </p>
-            ) : loading ? (
-              <p className="text-xs text-slate-400">Refreshing trip…</p>
-            ) : null}
-            </div>
-            {plannerReview && (
-              <div className="flex shrink-0 items-center gap-1" aria-label="Planner review choices">
-                <button type="button" onClick={reviewWithPlanner} className="rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-900 hover:bg-amber-200">
-                  Review with planner
-                </button>
-                <button type="button" onClick={() => setPlannerReview(null)} className="rounded-md px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100">
-                  Keep as is
-                </button>
-              </div>
-            )}
-          </div>
-          <nav className="flex shrink-0 items-center gap-1" aria-label="Workspace controls">
-            <button
-              type="button"
-              onClick={handleStartNewTrip}
-              className="btn-ghost"
-              title="Start a new trip"
-            >
-              <Plus size={15} aria-hidden /> <span className="hidden xl:inline">New trip</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setCanvasOpen("itinerary", !itineraryOpen)}
-              className={`btn-ghost ${itineraryOpen ? "bg-slate-100 text-ink" : ""}`}
-              aria-pressed={itineraryOpen}
-              title="Show or hide itinerary"
-            >
-              <PanelLeft size={15} aria-hidden /> <span className="hidden 2xl:inline">Itinerary</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setCanvasOpen("map", !mapOpen)}
-              className={`btn-ghost ${mapOpen ? "bg-slate-100 text-ink" : ""}`}
-              aria-pressed={mapOpen}
-              title="Show or hide map"
-            >
-              <Map size={15} aria-hidden /> <span className="hidden 2xl:inline">Map</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setDockPaneOpen("details", !inspectorOpen)}
-              className={`btn-ghost ${inspectorOpen ? "bg-slate-100 text-ink" : ""}`}
-              aria-pressed={inspectorOpen}
-              title="Show or hide trip details"
-            >
-              <PanelRight size={15} aria-hidden /> <span className="hidden xl:inline">Details</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setDockPaneOpen("assistant", !chatOpen)}
-              className={`btn-ghost ${chatOpen ? "bg-slate-100 text-ink" : ""}`}
-              aria-pressed={chatOpen}
-              title="Show or hide the trip assistant"
-            >
-              <MessageCircle size={15} aria-hidden /> <span className="hidden xl:inline">Assistant</span>
-            </button>
-            <TripActionsMenu
-              disabled={!view?.has_trip}
-              onExport={() => setShowExport(true)}
-            />
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
-              className="btn-ghost"
-              title={signedIn ? `Signed in as ${getDisplayName() || "user"}` : "Guest - sign in to sync trips"}
-              aria-label={signedIn ? `Signed in as ${getDisplayName() || "user"}` : "Guest - sign in"}
-            >
-              <span className="relative">
-                <UserRound size={15} aria-hidden />
-                <span className={`absolute -bottom-1 -right-1 h-2 w-2 rounded-full ring-2 ring-white ${signedIn ? "bg-emerald-500" : "bg-slate-400"}`} aria-hidden />
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new Event("tripplanner:open-settings"))}
-              className="btn-ghost"
-              title="Travel preferences"
-              aria-label="Travel preferences"
-            >
-              <Settings size={15} aria-hidden />
-            </button>
-          </nav>
-        </header>
+        <DesktopToolbar
+          tripVersion={tripVersion}
+          onTripSwitched={handleSwitched}
+          reviewPending={plannerReview !== null}
+          onReviewWithPlanner={reviewWithPlanner}
+          onKeepReview={() => setPlannerReview(null)}
+          onStartNewTrip={handleStartNewTrip}
+          onResetTrip={handleResetTrip}
+          paneVisibility={{
+            itinerary: itineraryOpen,
+            map: mapOpen,
+            details: inspectorOpen,
+            assistant: chatOpen,
+          }}
+          onTogglePane={(pane) => {
+            if (pane === "itinerary") setCanvasOpen(pane, !itineraryOpen);
+            else if (pane === "map") setCanvasOpen(pane, !mapOpen);
+            else if (pane === "details") setDockPaneOpen(pane, !inspectorOpen);
+            else setDockPaneOpen(pane, !chatOpen);
+          }}
+          tripActionsDisabled={!view?.has_trip}
+          onExport={() => setShowExport(true)}
+          signedIn={signedIn}
+          accountLabel={signedIn ? getDisplayName() || "Account" : "Guest"}
+          onOpenAccount={() => openAccountSettings()}
+          documentBadge={documentBadge}
+          documentBadgeTone={documentBadgeTone}
+          onOpenDocuments={() => openAccountSettings("documents")}
+          onOpenWelcome={() => window.dispatchEvent(new Event("tripplanner:open-welcome"))}
+          feedback={view?.feedback ?? { count: 0 }}
+        />
 
         <main
           ref={workspaceRef}
           className="relative grid min-h-0 flex-1 overflow-hidden p-2"
-          style={{
-            gridTemplateColumns: maximizedPane
-              ? "minmax(0, 1fr)"
-              : !itineraryOpen || !mapOpen
-                ? isWideDesktop && dockOpen
-                  ? `minmax(0, ${100 - inspectorPct}fr) 0.375rem minmax(0, ${inspectorPct}fr)`
-                  : "minmax(0, 1fr)"
-              : isWideDesktop && dockOpen
-                ? `${itineraryPct}fr 0.375rem ${100 - itineraryPct - inspectorPct}fr 0.375rem ${inspectorPct}fr`
-                : `${itineraryPct}fr 0.375rem ${100 - itineraryPct}fr`,
-          }}
+          style={{ gridTemplateColumns: workspaceColumns }}
         >
           <section className={`min-h-0 min-w-0 ${!itineraryOpen || maximizedPane && maximizedPane !== "itinerary" ? "hidden" : ""}`}>
-            {renderCanvasPane("itinerary")}
+            <CanvasPaneFrame
+              label="Itinerary"
+              maximized={maximizedPane === "itinerary"}
+              onHide={() => setCanvasOpen("itinerary", false)}
+              onToggleMaximize={() => toggleMaxPane("itinerary")}
+              headerTargetRef={setItineraryHeaderTarget}
+            >
+              {renderCanvasBody("itinerary")}
+            </CanvasPaneFrame>
           </section>
           {!maximizedPane && itineraryOpen && mapOpen && (
             <div
@@ -809,7 +937,9 @@ export default function App() {
               tabIndex={0}
               aria-label="Resize itinerary and map"
               aria-orientation="vertical"
-              aria-valuenow={Math.round(itineraryPct)}
+              aria-valuemin={ITINERARY_MIN_PCT}
+              aria-valuemax={Math.round(itineraryMaxPct)}
+              aria-valuenow={Math.round(effectiveItineraryPct)}
               onMouseDown={() => startResize("itinerary")}
               onKeyDown={(event) => {
                 if (resizeWithKeyboard("itinerary", event.key)) event.preventDefault();
@@ -820,15 +950,24 @@ export default function App() {
             </div>
           )}
           <section className={`min-h-0 min-w-0 ${!mapOpen || maximizedPane && maximizedPane !== "map" ? "hidden" : ""}`}>
-            {renderCanvasPane("map")}
+            <CanvasPaneFrame
+              label="Map"
+              maximized={maximizedPane === "map"}
+              onHide={() => setCanvasOpen("map", false)}
+              onToggleMaximize={() => toggleMaxPane("map")}
+            >
+              {renderCanvasBody("map")}
+            </CanvasPaneFrame>
           </section>
           {!maximizedPane && isWideDesktop && dockOpen && (itineraryOpen || mapOpen) && (
             <div
               role="separator"
               tabIndex={0}
-              aria-label="Resize map and details"
+              aria-label={`Resize ${mapOpen ? "map" : "itinerary"} and details`}
               aria-orientation="vertical"
-              aria-valuenow={Math.round(inspectorPct)}
+              aria-valuemin={INSPECTOR_MIN_PCT}
+              aria-valuemax={Math.round(inspectorMaxPct)}
+              aria-valuenow={Math.round(effectiveInspectorPct)}
               onMouseDown={() => startResize("inspector")}
               onKeyDown={(event) => {
                 if (resizeWithKeyboard("inspector", event.key)) event.preventDefault();
@@ -840,64 +979,32 @@ export default function App() {
           )}
           {inspector}
         </main>
+        {assistantDock}
       </div>
         ) : (
-        <section className="flex h-screen flex-col">
-        <ChatPanel
-          onTurnComplete={handleTurnComplete}
-          reloadToken={chatReloadToken}
-          tripIdHint={chatTripId}
-          onNewTrip={handleNewTrip}
-          onImported={handleImported}
-        />
-
-        {view?.has_trip && !mobileTripOpen && (
-          <button
-            type="button"
-            onClick={() => setMobileTripOpen(true)}
-            aria-label="Open trip details"
-            className="fixed bottom-4 right-4 z-30 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-white shadow-pop ring-1 ring-black/10 transition active:scale-95"
-          >
-            <span>Trip details</span>
-          </button>
-        )}
-
-        <div
-          onClick={() => setMobileTripOpen(false)}
-          aria-hidden={!mobileTripOpen}
-          className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity ${
-            mobileTripOpen ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
-        />
-        <section
-          role="dialog"
-          aria-modal="true"
-          aria-label="Trip details"
-          className={`fixed inset-x-0 bottom-0 z-50 flex h-[88vh] flex-col rounded-t-3xl bg-surface shadow-pop transition-transform duration-300 ${
-            mobileTripOpen ? "translate-y-0" : "translate-y-full"
-          }`}
-        >
-          <div className="flex items-center justify-between px-4 pt-2 pb-1">
-            <button
-              type="button"
-              onClick={() => setMobileTripOpen(false)}
-              aria-label="Close trip details"
-              className="-ml-2 grid h-10 w-10 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink"
-            >
-              <span className="text-xl leading-none">x</span>
-            </button>
-            <div
-              onClick={() => setMobileTripOpen(false)}
-              className="mx-auto -ml-10 h-1.5 w-12 cursor-pointer rounded-full bg-slate-300"
-              aria-hidden
+        <MobileWorkspaceShell
+          chat={(
+            <ChatPanel
+              onTurnComplete={handleTurnComplete}
+              onTurnStatus={setAssistantTurnStatus}
+              reloadToken={chatReloadToken}
+              tripIdHint={chatTripId}
+              hasActiveTrip={Boolean(view?.has_trip)}
+              destination={view?.destination ?? null}
+              onNewTrip={handleNewTrip}
+              onImported={handleImported}
             />
-            <span className="w-10" aria-hidden />
-          </div>
-          <div className="min-h-0 flex-1">
+          )}
+          hasTrip={Boolean(view?.has_trip)}
+          tripOpen={mobileTripOpen}
+          onOpenTrip={() => setMobileTripOpen(true)}
+          onCloseTrip={() => setMobileTripOpen(false)}
+          onOpenWelcome={() => window.dispatchEvent(new Event("tripplanner:open-welcome"))}
+          feedback={view?.feedback ?? { count: 0 }}
+          tripDetails={(
             <RightRail {...railProps} photos={<TripPanel {...tripPanelProps} hideSwitcher />} />
-          </div>
-        </section>
-      </section>
+          )}
+        />
     )}
   </>;
 }

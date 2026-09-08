@@ -1,0 +1,322 @@
+{
+  "status": "draft",
+  "trip_id": "vietnam_2027-11-13_2027-11-18",
+  "trip_number": 1,
+  "created_at": "2026-08-16T20:20:40.097586",
+  "destination": "Vietnam",
+  "origin": "Mumbai",
+  "departure_date": "2027-11-13",
+  "return_date": "2027-11-18",
+  "travelers": "4 adults (including grandparents) and 1 child (age 8)",
+  "notes": "Focus on local food experiences. Balanced sightseeing. Moderate budget. 3-star hotels. No stated accessibility needs.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Vietnam",
+    "estimated_planned_minutes": 1344,
+    "evidence_place_count": 7,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "7 preference-matched places account for about 1344 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hanoi Pearl Hotel",
+      "city": "Hanoi",
+      "checkin": "2027-11-13",
+      "checkout": "2027-11-15",
+      "address": "6 Bao Khanh Lane, Hoan Kiem, Hanoi, Vietnam",
+      "rating": 4.3,
+      "price_per_night": 6500,
+      "currency": "INR",
+      "rooms": 2,
+      "nights": 2
+    },
+    {
+      "name": "Royal Lotus Hotel Ha Long",
+      "city": "Ha Long",
+      "checkin": "2027-11-15",
+      "checkout": "2027-11-17",
+      "address": "Bai Chay, Ha Long, Vietnam",
+      "rating": 4.2,
+      "price_per_night": 6000,
+      "currency": "INR",
+      "rooms": 2,
+      "nights": 2
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-13",
+      "title": "Arrival in Hanoi",
+      "summary": "Arrive in Hanoi, check in, explore the Old Quarter, and enjoy a welcome dinner at a top local restaurant.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Hanoi",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "15:00",
+          "duration_min": 330,
+          "note": "Direct flight, economy class"
+        },
+        {
+          "name": "Hanoi Pearl Hotel",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Hanoi Old Quarter",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Evening stroll and street food sampling"
+        },
+        {
+          "name": "Pho Gia Truyen",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Welcome dinner at a famous pho restaurant"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-14",
+      "title": "Hanoi City & Food Tour",
+      "summary": "Guided street food tour, sightseeing, and night market exploration.",
+      "stops": [
+        {
+          "name": "Hanoi Pearl Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Hanoi Street Food Tour",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Sample local specialties with a guide"
+        },
+        {
+          "name": "Hoan Kiem Lake",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90,
+          "note": "Scenic walk"
+        },
+        {
+          "name": "Temple of Literature",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 90,
+          "note": "Historic site"
+        },
+        {
+          "name": "Quan An Ngon",
+          "kind": "meal",
+          "time": "16:30",
+          "note": "Lunch at a popular local restaurant"
+        },
+        {
+          "name": "Hanoi Night Market",
+          "kind": "attraction",
+          "time": "19:00",
+          "duration_min": 120,
+          "note": "Evening shopping and snacks"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-15",
+      "title": "Hanoi to Ha Long Bay",
+      "summary": "Transfer to Ha Long Bay, enjoy a scenic cruise with seafood lunch, and check in to your hotel.",
+      "stops": [
+        {
+          "name": "Drive: Hanoi to Ha Long Bay",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "distance_km": 160,
+          "note": "Private van, scenic route"
+        },
+        {
+          "name": "Hanoi Pearl Hotel",
+          "kind": "hotel",
+          "note": "Check-out",
+          "time": "11:30"
+        },
+        {
+          "name": "Ha Long Bay Day Cruise",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 480,
+          "note": "Day cruise with seafood lunch and sightseeing"
+        },
+        {
+          "name": "Royal Lotus Hotel Ha Long",
+          "kind": "hotel",
+          "note": "Check-in after cruise",
+          "time": "22:00"
+        },
+        {
+          "name": "Nhà Hàng Phương Nam",
+          "kind": "meal",
+          "time": "23:59",
+          "note": "Dinner at a top seafood restaurant"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-16",
+      "title": "Ha Long Bay Exploration",
+      "summary": "Kayaking, floating village visit, beach time, and more local seafood.",
+      "stops": [
+        {
+          "name": "Royal Lotus Hotel Ha Long",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kayaking in Ha Long Bay",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Family-friendly kayaking"
+        },
+        {
+          "name": "Cua Van Floating Village",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 180,
+          "note": "Cultural experience"
+        },
+        {
+          "name": "Linh Dan Restaurant Ha Long",
+          "kind": "meal",
+          "time": "15:00",
+          "note": "Lunch at a local favorite"
+        },
+        {
+          "name": "Ha Long Bay Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Relax and enjoy the views"
+        },
+        {
+          "name": "Co Ngu Restaurant Ha Long",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner at a top-rated seafood spot"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-17",
+      "title": "Return to Hanoi & Departure",
+      "summary": "Return to Hanoi, shop for souvenirs, and fly home.",
+      "stops": [
+        {
+          "name": "Royal Lotus Hotel Ha Long",
+          "kind": "hotel",
+          "note": "Check-out",
+          "time": "09:00"
+        },
+        {
+          "name": "Shopping in Hanoi",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 210,
+          "note": "Last-minute souvenirs"
+        },
+        {
+          "name": "Cha Ca Thang Long",
+          "kind": "meal",
+          "time": "15:30",
+          "note": "Farewell lunch"
+        },
+        {
+          "name": "Drive: Ha Long Bay to Hanoi",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "distance_km": 160,
+          "note": "Private van"
+        },
+        {
+          "name": "Flight: Hanoi to Mumbai",
+          "kind": "flight",
+          "time": "16:00",
+          "arrival_time": "22:00",
+          "duration_min": 330,
+          "note": "Direct flight, economy class"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T16:43:52.712887",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T16:43:27",
+      "expires_at": "2026-08-19T04:43:27"
+    }
+  ],
+  "id": "vietnam_2027-11-13_2027-11-18",
+  "user_id": "corpus-vietnam-food-three-generation-5d"
+}

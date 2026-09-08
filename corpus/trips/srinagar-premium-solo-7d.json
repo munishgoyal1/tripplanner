@@ -1,0 +1,664 @@
+{
+  "status": "draft",
+  "trip_id": "srinagar_and_gulmarg_2027-05-10_2027-05-17",
+  "trip_number": 1,
+  "created_at": "2026-08-17T20:17:05.047935",
+  "destination": "Srinagar and Gulmarg",
+  "origin": "Delhi",
+  "departure_date": "2027-05-10",
+  "return_date": "2027-05-17",
+  "travelers": "1 adult",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Srinagar and Gulmarg",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-10",
+      "title": "Day 1 · Arrival in Srinagar",
+      "summary": "Arrive from Delhi, check in to your premium hotel, relax and enjoy Dal Lake sunset.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Srinagar",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "11:00",
+          "duration_min": 120
+        },
+        {
+          "name": "The Lalit Grand Palace Srinagar",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Dal Lake",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Shikara ride at sunset"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-11",
+      "title": "Day 2 · Srinagar Heritage",
+      "summary": "Explore Mughal gardens, old city, and enjoy Kashmiri cuisine.",
+      "stops": [
+        {
+          "name": "The Lalit Grand Palace Srinagar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Nishat Bagh",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Shalimar Bagh",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Lunch at Ahdoos Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Jama Masjid",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "The Lalit Grand Palace Srinagar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-12",
+      "title": "Day 3 · Srinagar Culture",
+      "summary": "Visit local markets, handicraft shops, and enjoy a gourmet dinner.",
+      "stops": [
+        {
+          "name": "The Lalit Grand Palace Srinagar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Floating Market",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Hazratbal Shrine",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Lunch at Chinar Restaurant",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Handicrafts Market",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Dinner at Sky Lounge",
+          "kind": "meal",
+          "time": "19:00",
+          "duration_min": 90
+        },
+        {
+          "name": "The Lalit Grand Palace Srinagar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-13",
+      "title": "Day 4 · Gulmarg Transfer",
+      "summary": "Drive to Gulmarg, check in to your luxury hotel, and explore the meadow.",
+      "stops": [
+        {
+          "name": "Drive: Srinagar to Gulmarg",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 120,
+          "distance_km": 50,
+          "note": "Private car transfer"
+        },
+        {
+          "name": "The Lalit Grand Palace Srinagar",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "11:30"
+        },
+        {
+          "name": "Khyber Himalayan Resort & Spa",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "13:30"
+        },
+        {
+          "name": "Gulmarg Meadows",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-05-14",
+      "title": "Day 5 · Gulmarg Adventure",
+      "summary": "Enjoy gondola ride, scenic views, and gourmet meals.",
+      "stops": [
+        {
+          "name": "Khyber Himalayan Resort & Spa",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Gulmarg Gondola",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Lunch at Cloves Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Golf Course Gulmarg",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Dinner at Khyber Himalayan Resort",
+          "kind": "meal",
+          "time": "19:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Khyber Himalayan Resort & Spa",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-05-15",
+      "title": "Day 6 · Gulmarg Leisure",
+      "summary": "Relax at the resort, spa treatments, and optional hiking.",
+      "stops": [
+        {
+          "name": "Khyber Himalayan Resort & Spa",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Spa at Khyber Himalayan Resort",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Lunch at Khyber Himalayan Resort",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Optional: Gulmarg Trekking",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Khyber Himalayan Resort & Spa",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-05-16",
+      "title": "Day 7 · Departure",
+      "summary": "Check out and return to Srinagar for flight back to Delhi.",
+      "stops": [
+        {
+          "name": "Khyber Himalayan Resort & Spa",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Drive: Gulmarg to Srinagar",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 120,
+          "distance_km": 50
+        },
+        {
+          "name": "Flight: Srinagar to Delhi",
+          "kind": "flight",
+          "time": "13:00",
+          "arrival_time": "15:00",
+          "duration_min": 120
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T20:18:59.172095",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T20:18:59",
+      "expires_at": "2026-08-18T08:18:59"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_srinagar_2027_05_10_2027_05_13",
+      "kind": "lodging",
+      "created_at": "2026-08-17T14:48:17.597450Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Srinagar",
+        "date": "2027-05-10"
+      },
+      "subject": "Stay in Srinagar",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_3f47629b8ca9",
+      "options": [
+        {
+          "id": "opt_stay_3f47629b8ca9",
+          "mode": null,
+          "label": "Swiss-Belhotel Borneo Samarinda",
+          "detail": "Superior Twin ",
+          "price": {
+            "amount": 21593.93,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-10",
+            "checkout": "2027-05-13",
+            "room_name": "Superior Twin ",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Jl. Mulawarman no. 6",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp4f353",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEURzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laREFOWlVHNDNUTU9KV01VWkRBN0JSRU1aREFNUlhHQTJUQ01ENEdJWURFTlpRR1VZVEc3REZOWlBWS1UzNEpGSEhZU0tPS0o2RENRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNEU05aWUdBNFRBTVpZR1JTRVM0REhFTVpURU5CVUdNMlNHTUpTSEUyUzJNWlNHUTJER05MNEtKREU0N0JTR0FaRE9NQlZHQTRUQU1CUUdCNkRDN0NTR0VZVENOMzRHSVlUS09KVEhFWlNHVVNQRU5KRU1UUkRHSVlERU5aTkdBMlMyTUJaRUFZREFPUlFHQVJRo3ByY8tA1RZ7hR64UqVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNS0xMCAwMDowMDowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybq5TdXBlcmlvciBUd2luIKNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJKFoXSzMjAyNy0wNS0wOSAwMDowMDowMKFhy0C8HbMzMzMzoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSFoXSzMjAyNy0wNS0xMCAwMDowMDowMKFhy0DVFjHrhR64oWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmMzI0NDM1o3NpZAKjaGlkp2xwNGYzNTOjb2NjkYGhYQGjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA1LTEwomNvqjIwMjctMDUtMTOjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxMDMxYmQ3ZllnTWloSXI5Yk9uOU5PSUdYS0hLSjRrOEFmRW2jaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpw6Fkt1Byb3BlcnR5IHNlcnZpY2UgY2hhcmdloWHLQKDex64UeuGhY6NJTlKEoWnCoWSjVEFYoWHLQKDex64UeuGhY6NJTlKibHDAo2JrdAM=",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEIQKOLJKUONBTKRGU6SSXJVKVURCBG5BFERKNLJCECTKSLBDUCMSUINGUINCHJFMUIRKOLJIUOVKZKRDTORCGJZNFAVSLKUZTISSGJBEFSU2LJ5FUUNSEINIUUUKJJY3EISKOJJJUQRRWI5JVKRCIJNLEKSCZJVFFQSCBGNCFGTS2LFDUCNCUIFGVUWKHKJJUKUZUIREEKTK2KRCU4QSVI5GTEU2HJVFFGSCFGJJTETK2KNDVCMSEI5HEYNCLJJCEKNBXIJJUOQK2IRHU2QSWI5ATIVCBJVBFCR2CGZCEGN2DKNDUKWKUINHDGNCHJFMVIS2PJJKEQRK2KNDVKU2QIVHEURKNKRJEIR2JLFCEKTS2JZDUCMSTGJGUEWSFIFMUIQKPKJIUOQKSKF6DEMJVHEZS4OJTPQZDAMRXFUYDKLJRGAQDAMB2GAYDUMBQPRJE67D4PR6FG5LQMVZGS33SEBKHO2LOEB6DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:48:17.544746Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_991f15322c63",
+          "mode": null,
+          "label": "FUGO Hotel Samarinda (Bigmall)",
+          "detail": "Superior",
+          "price": {
+            "amount": 23910.29,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs ₹2,316 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-10",
+            "checkout": "2027-05-13",
+            "room_name": "Superior",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "no.08 Jl. Untung Suropati, Samarinda, Kalimantan Timur, 75243",
+            "rating": 9.8,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp656cf4be",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEQRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0o2RENJWlNHQVpET01CVkdFWUhZTVJRR0kzVEFOSlJHTjZHSzNTN0tWSlhZU0tPUFJFVTRVVDRHRkFUQVEzNEdRMlRFT0w0TkZJR09WS0lQUVlUT09CV0hFM1RRTUJaR0FaVFFOREVKRllHT0laUkc0WURDTlJUSEVaVEtPQkRHSVlUT09CTkdFM1RBTUpXR000VEdOSllQUkhGRVJTT1BRWkRBTVJXR0E0RENOSlJHQVlEQTdCUlBSSkRDTUpWR0I2REVNWlpHRVlERU9KRElKQkNHVFNTSVpIQ0dNUlFHSTNDMk1CWUZVWVRLSUJSR0E1REFNQkSjcHJjy0DXWZKPXCj2pW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JuqFN1cGVyaW9yo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMTYzOTM1OKNzaWQCo2hpZKpscDY1NmNmNGJlo29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNS0xMKJjb6oyMDI3LTA1LTEzo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTAzMWJkN2ZZZ01paElyOWJPbjlOT0lHWEtIS0o0azhBZkVto2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWSpU2FsZXMgdGF4oWHLQKHtlHrhR66hY6NJTlKEoWnDoWS4U2VydmljZSBjaGFyZ2UgKHRheGFibGUpoWHLQJzyrhR64UihY6NJTlKibHDAo2JrdAc=",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJI3EIQ2JLJJUOQK2IRHU2QSWI5CVSSCZJVJFCR2JGNKECTSKKJDU4NSHJMZVGN2LKZFFQWKTJNHVAUSFKU2FKVBUI5DECVCBKEZTIR2RGJKEKT2MGRHEMSKHJ5LEWSKQKFMVIT2PIJLUQRJTKRIU2QS2I5AVUVCRJZCEKSSGLFDU6SK2KJDTIWKEINHFEVCIIVNFIS2PIJCEOSKZKRHU6QSOI5CTGVCBJVFFOR2NGRKEOTSKLFIFESCGIVJFGT2QKFNEIQKNKJLUOQJUIRBU4SSSI5AVSRCBG5BFEUCSJJCEGTKKKZDUENSEIVGVUWSHIVMUIRKPJJCESSSCINDVIU2TJFNEQQ2HJVJFCR2JGNBTETKCLFDFKWKUJNEUEUSHIE2UIQKNIJCHYMRTHEYTALRSHF6HYQSJPR6HY7CTOVYGK4TJN5ZHYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:48:17.544746Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_71da0d86c04a",
+          "mode": null,
+          "label": "Aston Samarinda Hotel and Convention Center",
+          "detail": "Deluxe Room",
+          "price": {
+            "amount": 25275.7,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs ₹3,682 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-10",
+            "checkout": "2027-05-13",
+            "room_name": "Deluxe Room",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Jalan P.Hidayatullah",
+            "rating": 9.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp5b027",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1VZVEE3QlNHQVpET01CVkdFWlhZWkxPTDVLVkc3Q0pKWjZFU1RTU1BRWVVDTUNEUFEyREtNUlpQUlVWQVoyVkpCNkRDTlpZR1k0VE9PQlFIRVlER09CVU1SRVhBWlpER00zVEVOWlhHVVJUT05SVEZVWlRPTVJYRzQyWFlVU0dKWjZERU1CU0c0WURLTUJXR0E0VEtPTDRHRjZGRU1KV0dNNFhZTVJWR0kzVEtOWlFFTkJFRUkyU0laSENHTVJRR0kzUzJNQlZGVVlETUlCUUhFNURLT0pEo3ByY8tA2K7szMzMzaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNS0wNiAwOTo1OTowMKJydKNSRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqtEZWx1eGUgUm9vbaNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJGFoXSzMjAyNy0wNS0wNiAwOTo1OTowMKFhy0DIruzMzMzNoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmMzcyNzc1o3NpZAKjaGlkp2xwNWIwMjejb2NjkYGhYQGjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA1LTEwomNvqjIwMjctMDUtMTOjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxMDMxYmQ3ZllnTWloSXI5Yk9uOU5PSUdYS0hLSjRrOEFmRW2jaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpw6Fkt1Byb3BlcnR5IHNlcnZpY2UgY2hhcmdloWHLQKO_I9cKPXGhY6NJTlKEoWnCoWSjVEFYoWHLQKO_I9cKPXGhY6NJTlKibHDAo2JrdAQ=",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHJEZUOTKOKRDUOWSTJBMU2SSEI5EVSRCFJZNFCR2VLFKECN2CKNDUCWSEJ5GUEVSHIVNFQWK2JRHUYNKLKZDTOQ2KJJNDMRKTKRJVGUCRLFKUGTKDIRIFCMSEJNGVEWSQKJKVMQK2GJLEUQRWIRBU4WSZI5MTIVCPJ5BFCSCFLFCEOT2CKVGVERKYIFNFURCHJUZVIRKOLJMEOVKSKRHU4USUIZKVUVCPJVJFQRZUGJMFSVKTI5FFUNSEIVGUEU2HGRMUIS2NIJLUOQJUKRFU6TBUI5DDMRSFJVFFOR2NGRMFSTKSKZDUSM2UJNHFUUKFJZBEKRKJGJJUSWSIINDU2USRI5ETGUZSJVBFMRSVLFCE2SKCKFEEKNKEJNHUURD4GI2TENZVFY3TA7BSGAZDOLJQGUWTANRAGA4TUNJZHIYDA7CCJF6HY7D4IRSWY5LYMUQFE33PNV6DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:48:17.544746Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 21593.93,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    },
+    {
+      "id": "dec_lodging_gulmarg_2027_05_13_2027_05_17",
+      "kind": "lodging",
+      "created_at": "2026-08-17T14:48:59.165871Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Gulmarg",
+        "date": "2027-05-13"
+      },
+      "subject": "Stay in Gulmarg",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_8b1b335e9f9a",
+      "options": [
+        {
+          "id": "opt_stay_8b1b335e9f9a",
+          "mode": null,
+          "label": "Carlton Suites",
+          "detail": "Deluxe Queen Room",
+          "price": {
+            "amount": 29318.19,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-13",
+            "checkout": "2027-05-17",
+            "room_name": "Deluxe Queen Room",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "258 Sloane Street",
+            "rating": 7.7,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1ce504",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEgR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0UzVEtOUlZHWTJUTVpKU0dBM1RFTlRHR1pURE1aRDRHRVJURU1CU0c0WURLTUpUUFFaREFNUlhHQTJUQ04zNE1WWEY2VktUUFJFVTQ3Q0pKWkpIWU1LQkdCQlhZTkJWR0k0WFkyS1FNNUtVUTdCUkc0NERNT0pYSEFZVEdNUlhHNDNWQVVUUElRUlRDT0JaR00zREdOUkRHSVlUQU5aTkdFNERTTVpXR00zSFlVU0dKWjZERU1CU0c0WURLTUJaR0laVEtPTDRHTjZGRU1KUUdRWUhZTVJaR01ZVFFNSlpFTkpFNkkyU0laSENHTVJRR0kzUzJNQlZGVVlEU0lCU0dNNURLT0pEo3ByY8tA3KGMKPXCj6Vvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNS0wOSAyMzo1OTowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrFEZWx1eGUgUXVlZW4gUm9vbaNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJGFoXSzMjAyNy0wNS0wOSAyMzo1OTowMKFhy0DcoYwo9cKPoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSnMTg5MzYzNqNzaWQCo2hpZKhscDFjZTUwNKNvY2ORgaFhAaNjdXKjSU5SomduoklOomNpqjIwMjctMDUtMTOiY2-qMjAyNy0wNS0xN6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDEwMzI2MzEzYkNtckhOSnB5TFFYaW9OVktJd1ZKckFqbWVsUaNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnDoWSjVkFUoWHLQKTSFHrhR66hY6NJTlKibHDAo2JrdAc=",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHIUZVIS2OKJLEOWJSKRGVUSSTI5ATGVCFJZKEOR22KRCE2WSEGRDUKUSUIVGUEU2HGRMUIS2NJJKFAUK2IRAU2USYI5ATEVCDJYZTITKWLBDDMVSLKRIFERKVGQ3UGSSKLJFEQWKNJNBEOQSCLBMU4QSWI5ETIWCZGJFVCTJVJNKVCN2CKJDTINCEJVHUUWCIIFMVIR2NKJMEONBTKZAVKVCQJFIVEVCDJ5BFUR2NGNCEOTSSIRDUSWKUIFHFUTSHIU2EIU2NLJLUOTJTJBMVKU2HJJNDMRCFJVBFGRZULFCEWTKCLJDUSWSUJNHUYNCHJY3EMRKNJJIUOUKZJBMU2US2I5GVSVCRJVFFURKOJJCTMSJSKNEVUSCDI5GVEUKHJEZVGMSNIJLEMVKZIRJUSQSTI5GTKRCLJ5FEI7BSHEZTCOBOGE4XYMRQGI3S2MBVFUYDSIBSGM5DKOJ2GAYHYUSPPR6HY7CEMVWHK6DFEBIXKZLFNYQFE33PNV6DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:48:59.106305Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_e3a432fd6fa4",
+          "mode": null,
+          "label": "Mercure Goulburn",
+          "detail": "Superior Queen Bed",
+          "price": {
+            "amount": 42362.81,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs ₹13,045 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-13",
+            "checkout": "2027-05-17",
+            "room_name": "Superior Queen Bed",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "2 Lockyer Street",
+            "rating": 8.8,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp3370a",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEgRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laREFOWlJHNDJUTU5KV0dVM0dLTVJRR1laRE1OSldHUjZEQ0laU0dBWkRPTUJWR0VaWFlNUlFHSTNUQU5KUkc1NkdLM1M3S1ZKWFlTS09QUkVVNFVUNEdGQVRBUTM0R1EyVEVPTDRORklHT1ZLSVBRWVRPT0JXSEUzVFFNSlRHSTNUT04yUUtKWFVJSVpTR0VZRE1PSllFTVpEQ05aWUZVWkRDTUJXSEU0SFlVU0dKWjZERU1CU0c0WURLTUJaR0VZREFNRDRHRjZGRU1KUkdRNFhZTkJTR00zREVPQlJFTkpFNkkyU0laSENHTVJRR0kzUzJNQlZGVVlEU0lCUkdBNURBTUJEo3ByY8tA5K9Z64UeuKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNS0xMiAxMDowMDowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrJTdXBlcmlvciBRdWVlbiBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDUtMDkgMTA6MDA6MDChYctA5K9Z64UeuKFjo0lOUqJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDUtMTIgMTA6MDA6MDChYctA5K9Z64UeuKFjo0lOUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjIxMDY5OKNzaWQCo2hpZKdscDMzNzBho29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNS0xM6Jjb6oyMDI3LTA1LTE3o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTAzMjYzMTNiQ21ySE5KcHlMUVhpb05WS0l3VkpyQWptZWxRo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4kYShacOhZKlTYWxlcyB0YXihYctArhNrhR64UqFjo0lOUqJscMCjYmt0Bg==",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEIQKOLJJEONBSKRGU4SSXI5KTGR2LJVJFCR2ZLJCE2TSKK5DVENSEINEVUU2HIFNEIT2NIJLEORK2LBMU2USRI5ETGVCBJZFFERZVGZDUWM2TG5FVMSSYLFJUWT2QKJCVKNCVKQ2EORSBKRAVCMZUI5ITEVCFJ5GDITSGJFDU6VSLJFIFCWKUJ5HUEV2IIUZVIUKNJJKEOSJTKRHU4MSRJNFFQVKJJFNFGR2FLFCE2T2KLFCU2WSEINHFUWKGKVNEIQ2NIJLUQRJUJBMVKU2HJJNDMRCFJVBFGRZULFCEWTKCLJDUKWKEIFGUINCHIY3EMRKNJJJEOUJULBMU4QSTI5GTGRCFJ5BFERKOJJCTMSJSKNEVUSCDI5GVEUKHJEZVGMSNIJLEMVKZIRJUSQSSI5ATKRCBJVBEI7BUGIZTMMROHAYXYMRQGI3S2MBVFUYTEIBRGA5DAMB2GAYHYUSPPR6HY7CTOVYGK4TJN5ZCAULVMVSW4ICCMVSHYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:48:59.106305Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_9f1882d45371",
+          "mode": null,
+          "label": "Quest Goulburn",
+          "detail": "Studio",
+          "price": {
+            "amount": 54133.85,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs ₹24,816 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-13",
+            "checkout": "2027-05-17",
+            "room_name": "Studio",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "27 Clinton Street",
+            "rating": 9.1,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp22e7c4",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2f9HNFpUT05CWEdVM0RJTlJaR1pUSFlNSkRHSVlERU5aUUdVWVRHN0JTR0FaRE9NQlZHRTNYWVpMT0w1S1ZHN0NKSlo2RVNUU1NQUVlVQ01DRFBRMkRLTVJaUFJVVkFaMlZKQjZEQ05aWUdZNFRPT0JSR01aRE9OWlhLQkpHNlJCREdJWkRRTlpWR1UzQ0dOUldIRVdURU1SWUc0MlRLTlQ0SlpKRU1UVDRHSVlERU5SUUhBWVRLTUpRR0FZSFlNTDRLSVlUQ01CUlBRMlRJTUpUR000REtJMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HRTJTQU1KUUhJWURBSVmjcHJjy0DqbrszMzMzpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JuplN0dWRpb6NvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJCicnSkTlJGTqRzaGlkpzIyODc1NTajc2lkAqNoaWSobHAyMmU3YzSjb2NjkYGhYQGjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA1LTEzomNvqjIwMjctMDUtMTejZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxMDMyNjMxM2JDbXJITkpweUxRWGlvTlZLSXdWSnJBam1lbFGjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpw6FkqVNhbGVzIHRheKFhy0CzO8zMzMzNoWOjSU5SomxwwKNia3QG",
+              "rate_id": "I42FUVCPJZBFQR2VGNCESTSSLJDVUVCILFGUURCHJFMUIRKOLJIUOVKZKRDTOQSTI5AVURCPJVBFMR2FGNMFSWSMJ5GDKS2WI43UGSSKLI3EKU2UKNJVAUKZKVBU2Q2EKBITERCLJVJFUUCSKVLECWRSKZFEENSEINHFUWKHLE2FIT2PIJJEOTK2IRHU4WSYJNBEURZWKJBEIR2JLJCFCTS2KZDVKM2DI5HFEV2IIVLVIRKNKJMUONBSKRFU4VBUJJNEURKNKRKDIR2JLFCEKTSSKFEECWKUJNGUUUKHIFMUQWKNJQ2EWSKZKRBU2QSSKBITEVCJJVFFIR2NGRCEWSJSKNFDIUSVGRKVGR2KLFJFIRKNIJJUOWKXKRAU6QSOI5CTEU2BJVFFCSCJLFCECSKZPQ2TIMJTGMXDQNL4PRJE67D4PR6FG5DVMRUW67BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:48:59.106305Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 29318.19,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "srinagar_and_gulmarg_2027-05-10_2027-05-17",
+  "user_id": "corpus-srinagar-premium-solo-7d"
+}

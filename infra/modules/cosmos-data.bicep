@@ -74,6 +74,21 @@ resource tripsContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/con
   }
 }]
 
+// Traveller document details — extracted fields only, never an original file.
+resource documentsContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'documents'
+  properties: {
+    resource: {
+      id: 'documents'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+    }
+  }
+}]
+
 resource placesCacheContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
   parent: databases[index]
   name: 'places_cache'
@@ -127,6 +142,49 @@ resource auditContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/con
         kind: 'Hash'
       }
       defaultTtl: 7776000
+    }
+  }
+}]
+
+resource providerUsageContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'provider_usage'
+  properties: {
+    resource: {
+      id: 'provider_usage'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+      defaultTtl: 7776000
+    }
+  }
+}]
+
+resource tripFeedbackContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'trip_feedback'
+  properties: {
+    resource: {
+      id: 'trip_feedback'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+    }
+  }
+}]
+
+resource publicDemoRunsContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'public_demo_runs'
+  properties: {
+    resource: {
+      id: 'public_demo_runs'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
     }
   }
 }]

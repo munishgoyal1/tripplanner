@@ -1,0 +1,538 @@
+{
+  "chat-inputs": {
+    "labId": "chat-inputs",
+    "labTitle": "The agent asks, you tap",
+    "selection": "chips",
+    "selectionLabel": "A · Inline chips",
+    "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+    "disposition": "completed",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "chips",
+        "selectionLabel": "A · Inline chips",
+        "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+        "disposition": "ready",
+        "recordedAt": "2026-08-14T14:19:46.527Z"
+      },
+      {
+        "version": 2,
+        "selection": "chips",
+        "selectionLabel": "A · Inline chips",
+        "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+        "disposition": "implemented-review",
+        "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
+        "recordedAt": "2026-08-15T14:17:39.098407Z"
+      },
+      {
+        "version": 3,
+        "selection": "chips",
+        "selectionLabel": "A · Inline chips",
+        "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+        "disposition": "completed",
+        "recordedAt": "2026-08-16T13:28:58.850Z"
+      }
+    ],
+    "implementation": {
+      "selection": "chips",
+      "selectionLabel": "A · Inline chips",
+      "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+      "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
+      "handoffVersion": 2,
+      "recordedAt": "2026-08-15T14:17:39.098407Z"
+    },
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "chips",
+        "selectionLabel": "A · Inline chips",
+        "comment": "These should be asked only when you dont already have the info from either user preferences or their prompt. \nDo you want to add budget range or type of trip - luxury, moderate etc. and balanced relaxed.. all those questions you want to get answer as those are criotical info. basically getting all preferences if you cant infer them already.",
+        "summary": "Preference-aware inline kickoff input implemented in TripInputCard.tsx and the trip agent's graph policy; backend and frontend tests passed. PR #48; commit 833e796.",
+        "recordedAt": "2026-08-15T14:17:39.098407Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-16T13:28:58.850Z",
+    "updatedAt": "2026-08-16T13:28:58.850Z"
+  },
+  "family-details": {
+    "labId": "family-details",
+    "labTitle": "A family profile that grows with the trip",
+    "selection": "chat",
+    "selectionLabel": "D · Chat-led profile",
+    "comment": "",
+    "disposition": "completed",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "chat",
+        "selectionLabel": "D · Chat-led profile",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-08-14T14:29:55.901Z"
+      },
+      {
+        "version": 2,
+        "selection": "chat",
+        "selectionLabel": "D · Chat-led profile",
+        "comment": "",
+        "disposition": "implemented-review",
+        "summary": "Chat-led 'Learned while planning' suggestion card implemented in SettingsModal.tsx with explicit Remember/Not now confirmation; 345 frontend tests, TypeScript, and production build passed. PR #47; commit 214b5aa.",
+        "recordedAt": "2026-08-15T14:17:36.889925Z"
+      },
+      {
+        "version": 3,
+        "selection": "chat",
+        "selectionLabel": "D · Chat-led profile",
+        "comment": "",
+        "disposition": "completed",
+        "recordedAt": "2026-08-15T15:30:35.147Z"
+      }
+    ],
+    "implementation": {
+      "selection": "chat",
+      "selectionLabel": "D · Chat-led profile",
+      "comment": "",
+      "summary": "Chat-led 'Learned while planning' suggestion card implemented in SettingsModal.tsx with explicit Remember/Not now confirmation; 345 frontend tests, TypeScript, and production build passed. PR #47; commit 214b5aa.",
+      "handoffVersion": 2,
+      "recordedAt": "2026-08-15T14:17:36.889925Z"
+    },
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "chat",
+        "selectionLabel": "D · Chat-led profile",
+        "comment": "",
+        "summary": "Chat-led 'Learned while planning' suggestion card implemented in SettingsModal.tsx with explicit Remember/Not now confirmation; 345 frontend tests, TypeScript, and production build passed. PR #47; commit 214b5aa.",
+        "recordedAt": "2026-08-15T14:17:36.889925Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-15T15:30:35.147Z",
+    "updatedAt": "2026-08-15T15:30:35.147Z"
+  },
+  "live-plan": {
+    "labId": "live-plan",
+    "labTitle": "The live plan, and what the visitor is meant to do while it runs",
+    "selection": "exact",
+    "selectionLabel": "E · Dark stage, argued during the run",
+    "comment": "Recovered from committed Lab 22 owner prompts and implementation history. Any richer machine-local history is merged into this tracked record when that machine next opens the Labs server.",
+    "disposition": "completed",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Owner chose the exact dark Lab 21 stage with two inline overridable decisions as the direction to refine.",
+        "disposition": "ready",
+        "summary": "Recovered from the committed 2026-08-07 owner prompt and Lab option commit.",
+        "recordedAt": "2026-08-07T14:30:40Z"
+      },
+      {
+        "version": 2,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Implement Option E as the anonymous public entry in a linked sandbox.",
+        "disposition": "implemented-review",
+        "summary": "Anonymous public entry implementation committed as 5612eb5.",
+        "recordedAt": "2026-08-07T17:26:46Z"
+      },
+      {
+        "version": 3,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Keep the page grounded in a captured real run, retain sample pricing disclosure, and add the remaining sign-in and shared-trip surfaces.",
+        "disposition": "implemented-review",
+        "summary": "Captured-run public entry and decision-record milestones committed through aa610f5 and 54e5ebb.",
+        "recordedAt": "2026-08-08T12:29:40Z"
+      },
+      {
+        "version": 4,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Bridge the landing and app visual systems and show the complete landing-to-workspace flow before promotion.",
+        "disposition": "implemented-review",
+        "summary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
+        "recordedAt": "2026-08-08T14:01:49Z"
+      },
+      {
+        "version": 5,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "All Labs older than Lab 23 are complete.",
+        "disposition": "completed",
+        "summary": "Owner corrected the UX Lab catalog lifecycle state on 2026-08-09.",
+        "recordedAt": "2026-08-09T10:27:00Z"
+      }
+    ],
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Implement Option E as the anonymous public entry in a linked sandbox.",
+        "summary": "Anonymous public entry implementation committed as 5612eb5.",
+        "recordedAt": "2026-08-07T17:26:46Z"
+      },
+      {
+        "version": 2,
+        "handoffVersion": 3,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Keep the page grounded in a captured real run, retain sample pricing disclosure, and add the remaining sign-in and shared-trip surfaces.",
+        "summary": "Captured-run public entry and decision-record milestones committed through aa610f5 and 54e5ebb.",
+        "recordedAt": "2026-08-08T12:29:40Z"
+      },
+      {
+        "version": 3,
+        "handoffVersion": 4,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Bridge the landing and app visual systems and show the complete landing-to-workspace flow before promotion.",
+        "summary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
+        "recordedAt": "2026-08-08T14:01:49Z"
+      }
+    ],
+    "implementation": {
+      "handoffVersion": 4,
+      "selection": "exact",
+      "selectionLabel": "E · Dark stage, argued during the run",
+      "comment": "Bridge the landing and app visual systems and show the complete landing-to-workspace flow before promotion.",
+      "summary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
+      "recordedAt": "2026-08-08T14:01:49Z"
+    },
+    "implementationSummary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
+    "stateChangedAt": "2026-08-09T10:27:00Z",
+    "updatedAt": "2026-08-09T10:27:00Z"
+  },
+  "localization": {
+    "labId": "localization",
+    "labTitle": "Regional content and currency",
+    "selection": "profile",
+    "selectionLabel": "C · Profile-first",
+    "comment": "",
+    "disposition": "completed",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-08-09T17:56:28.86Z"
+      },
+      {
+        "version": 2,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "disposition": "implemented-review",
+        "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
+        "recordedAt": "2026-08-10T07:47:19.952948Z"
+      },
+      {
+        "version": 3,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "disposition": "completed",
+        "summary": "Promoted to master via PR #39 after validation and verification.\nSandbox: 1-lab24-real-preview; commit: 5cb31e0a2ba0",
+        "recordedAt": "2026-08-10T08:04:58.418454Z"
+      }
+    ],
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
+        "recordedAt": "2026-08-10T07:47:19.952948Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-10T08:04:58.418454Z",
+    "updatedAt": "2026-08-10T08:04:58.418454Z",
+    "implementation": {
+      "handoffVersion": 2,
+      "selection": "profile",
+      "selectionLabel": "C · Profile-first",
+      "comment": "",
+      "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
+      "recordedAt": "2026-08-10T07:47:19.952948Z"
+    },
+    "implementationSummary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867"
+  },
+  "product-themes": {
+    "labId": "product-themes",
+    "labTitle": "Product-wide visual themes",
+    "selection": "aegean",
+    "selectionLabel": "E · Aegean sun",
+    "comment": "Looks fitting",
+    "disposition": "completed",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "ready",
+        "recordedAt": "2026-08-09T11:15:56.327Z"
+      },
+      {
+        "version": 2,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Applied Aegean sun across landing and workspace via shared palette and typography tokens; preserved PublicEntry behavior; 288 frontend tests, TypeScript, production build, desktop/mobile browser checks, and API/SPA/Labs endpoint probes passed.\nSandbox: 1-lab23-aegean; commit: 55b91cd",
+        "recordedAt": "2026-08-09T11:43:12.43017Z"
+      },
+      {
+        "version": 3,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Contrast refinement in commit 0d58de5: preserved the Aegean palette and backgrounds while restoring white foregrounds on ink, brand, and violet filled controls and dark Aegean text on translucent chips. Browser checks measured 13.32:1 for itinerary choice buttons, 12.82:1 for Beta, and 4.41:1 for the brand action. PublicEntry 7/7 tests, full frontend 288/288 tests, TypeScript, production build, CSS diagnostics, and API/SPA/Labs endpoint checks passed.",
+        "recordedAt": "2026-08-09T11:53:06.955272Z"
+      },
+      {
+        "version": 4,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Final Lab 23 review: added permanent /welcome access, complete representative beta pricing with no missing-rate placeholders, improved text contrast, and standardized the AI Tripplanner Beta route-icon lockup. Focused public-entry and workspace tests, TypeScript, production build, and live API/SPA/Labs checks passed. Sandbox: 1-lab23-aegean; commit: 56ceb02",
+        "recordedAt": "2026-08-09T16:53:13.398062Z"
+      },
+      {
+        "version": 5,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
+        "recordedAt": "2026-08-09T16:58:34.097465Z"
+      },
+      {
+        "version": 6,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
+        "recordedAt": "2026-08-09T17:00:15.53503Z"
+      },
+      {
+        "version": 7,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "completed",
+        "summary": "Promoted to master via PR #38 after full backend, TypeScript, and frontend validation and merge verification.",
+        "recordedAt": "2026-08-09T17:41:42.550581Z"
+      }
+    ],
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Applied Aegean sun across landing and workspace via shared palette and typography tokens; preserved PublicEntry behavior; 288 frontend tests, TypeScript, production build, desktop/mobile browser checks, and API/SPA/Labs endpoint probes passed.\nSandbox: 1-lab23-aegean; commit: 55b91cd",
+        "recordedAt": "2026-08-09T11:43:12.43017Z"
+      },
+      {
+        "version": 2,
+        "handoffVersion": 3,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Contrast refinement in commit 0d58de5: preserved the Aegean palette and backgrounds while restoring white foregrounds on ink, brand, and violet filled controls and dark Aegean text on translucent chips. Browser checks measured 13.32:1 for itinerary choice buttons, 12.82:1 for Beta, and 4.41:1 for the brand action. PublicEntry 7/7 tests, full frontend 288/288 tests, TypeScript, production build, CSS diagnostics, and API/SPA/Labs endpoint checks passed.",
+        "recordedAt": "2026-08-09T11:53:06.955272Z"
+      },
+      {
+        "version": 3,
+        "handoffVersion": 4,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Final Lab 23 review: added permanent /welcome access, complete representative beta pricing with no missing-rate placeholders, improved text contrast, and standardized the AI Tripplanner Beta route-icon lockup. Focused public-entry and workspace tests, TypeScript, production build, and live API/SPA/Labs checks passed. Sandbox: 1-lab23-aegean; commit: 56ceb02",
+        "recordedAt": "2026-08-09T16:53:13.398062Z"
+      },
+      {
+        "version": 4,
+        "handoffVersion": 5,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
+        "recordedAt": "2026-08-09T16:58:34.097465Z"
+      },
+      {
+        "version": 5,
+        "handoffVersion": 6,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
+        "recordedAt": "2026-08-09T17:00:15.53503Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-09T17:41:42.550581Z",
+    "updatedAt": "2026-08-09T17:41:42.550581Z",
+    "implementation": {
+      "handoffVersion": 6,
+      "selection": "aegean",
+      "selectionLabel": "E · Aegean sun",
+      "comment": "Looks fitting",
+      "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
+      "recordedAt": "2026-08-09T17:00:15.53503Z"
+    },
+    "implementationSummary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664"
+  },
+  "profile-preferences": {
+    "labId": "profile-preferences",
+    "labTitle": "Profile, in choices you can see",
+    "selection": "shelf",
+    "selectionLabel": "A · Preference shelf",
+    "comment": "",
+    "disposition": "completed",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "shelf",
+        "selectionLabel": "A · Preference shelf",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-08-14T14:31:16.3Z"
+      },
+      {
+        "version": 2,
+        "selection": "shelf",
+        "selectionLabel": "A · Preference shelf",
+        "comment": "",
+        "disposition": "implemented-review",
+        "summary": "Preference shelf implemented in SettingsModal.tsx; 339 frontend tests, TypeScript, and production build passed. PR #46; commit d6f801b.",
+        "recordedAt": "2026-08-15T14:17:34.634298Z"
+      },
+      {
+        "version": 3,
+        "selection": "shelf",
+        "selectionLabel": "A · Preference shelf",
+        "comment": "",
+        "disposition": "completed",
+        "recordedAt": "2026-08-15T15:30:26.05Z"
+      }
+    ],
+    "implementation": {
+      "selection": "shelf",
+      "selectionLabel": "A · Preference shelf",
+      "comment": "",
+      "summary": "Preference shelf implemented in SettingsModal.tsx; 339 frontend tests, TypeScript, and production build passed. PR #46; commit d6f801b.",
+      "handoffVersion": 2,
+      "recordedAt": "2026-08-15T14:17:34.634298Z"
+    },
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "shelf",
+        "selectionLabel": "A · Preference shelf",
+        "comment": "",
+        "summary": "Preference shelf implemented in SettingsModal.tsx; 339 frontend tests, TypeScript, and production build passed. PR #46; commit d6f801b.",
+        "recordedAt": "2026-08-15T14:17:34.634298Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-15T15:30:26.05Z",
+    "updatedAt": "2026-08-15T15:30:26.05Z"
+  },
+  "profile-workspace": {
+    "labId": "profile-workspace",
+    "labTitle": "Room to edit your profile",
+    "selection": "full-page",
+    "selectionLabel": "A · Full profile page",
+    "comment": "Full profile, go with highest scoring most recommedned option.",
+    "disposition": "completed",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "full-page",
+        "selectionLabel": "B · Full profile page",
+        "comment": "Full profile, go with highest scoring most recommedned option.",
+        "disposition": "ready",
+        "recordedAt": "2026-08-15T15:38:29.906Z"
+      },
+      {
+        "version": 2,
+        "selection": "full-page",
+        "selectionLabel": "B · Full profile page",
+        "comment": "Full profile, go with highest scoring most recommedned option.",
+        "disposition": "implemented-review",
+        "summary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed.",
+        "recordedAt": "2026-08-15T16:40:34.0723850Z"
+      },
+      {
+        "version": 3,
+        "selection": "full-page",
+        "selectionLabel": "A · Full profile page",
+        "comment": "Full profile, go with highest scoring most recommedned option.",
+        "disposition": "completed",
+        "recordedAt": "2026-08-16T13:03:58.374Z"
+      }
+    ],
+    "implementation": {
+      "selection": "full-page",
+      "selectionLabel": "B · Full profile page",
+      "comment": "Full profile, go with highest scoring most recommedned option.",
+      "summary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed.",
+      "handoffVersion": 2,
+      "recordedAt": "2026-08-15T16:40:34.0723850Z"
+    },
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "full-page",
+        "selectionLabel": "B · Full profile page",
+        "comment": "Full profile, go with highest scoring most recommedned option.",
+        "summary": "Option B full profile page implemented: AccountSettingsHub is now a full-page workspace with a persistent section rail and wide two-column canvas, replacing the 384px drawer. Travellers promoted to its own destination (TravellerProfile.tsx), carrying the existing family-learning card and family_member chat suggestions out of Travel profile. 361 frontend tests, TypeScript, and production build passed.",
+        "recordedAt": "2026-08-15T16:40:34.0723850Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-16T13:03:58.374Z",
+    "updatedAt": "2026-08-16T13:03:58.374Z"
+  },
+  "trip-feedback": {
+    "labId": "trip-feedback",
+    "labTitle": "Say how the trip reads",
+    "selection": "toolbar-pill",
+    "selectionLabel": "A · Toolbar rating pill",
+    "comment": "",
+    "disposition": "completed",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "toolbar-pill",
+        "selectionLabel": "A · Toolbar rating pill",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-08-18T10:07:23.826Z"
+      },
+      {
+        "version": 2,
+        "selection": "toolbar-pill",
+        "selectionLabel": "A · Toolbar rating pill",
+        "comment": "",
+        "disposition": "completed",
+        "recordedAt": "2026-08-25T10:44:46.842Z"
+      }
+    ],
+    "implementations": [],
+    "stateChangedAt": "2026-08-25T10:44:46.842Z",
+    "updatedAt": "2026-08-25T10:44:46.842Z"
+  }
+}

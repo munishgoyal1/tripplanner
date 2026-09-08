@@ -3,17 +3,33 @@ import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import {
   capCircuitZoom,
+  airportIcon,
   focusedDayForPin,
   fitDayCircuit,
+  fitDayRoute,
+  fitDriveCircuit,
+  focusNameForPin,
   formatLegLabel,
+  hotelIcon,
+  hotelLabelsForDay,
+  mapContextForRoadCircuit,
+  mapContextForScope,
+  hotelReturnForDay,
+  isInspectableMapPin,
   kindForGooglePlace,
   mapPinFromGooglePlace,
   optionsForStopDay,
   pinIcon,
   pinMatchesFocus,
+  pinsForDayCircuit,
+  pinsForDayRoute,
   placeNameMatches,
+  routePathForPinIds,
+  routeStyleForLeg,
+  scheduleMapOverlayDraw,
   syncPinMarkerFocus,
   visitOrdersForDay,
+  zoomToPin,
 } from "./MapPanel";
 import MapPanel from "./MapPanel";
 
@@ -43,6 +59,23 @@ describe("placeNameMatches", () => {
     expect(placeNameMatches("Mapusa Municipal Market", "Mapusa Market")).toBe(true);
   });
 
+  it("uses the itinerary alias as a provider-expanded pin's focus identity", () => {
+    expect(focusNameForPin({
+      id: "udr",
+      name: "Maharana Pratap Airport",
+      source_name: "Udaipur Airport",
+      kind: "airport",
+      selected: true,
+      day: 1,
+      lat: 24.6177,
+      lng: 73.8961,
+      rating: null,
+      address: "",
+      photo: null,
+      occurrences: [],
+    })).toBe("Udaipur Airport");
+  });
+
   it("does not match unrelated restaurants or empty names", () => {
     expect(placeNameMatches("Peter Cat", "Mocambo")).toBe(false);
     expect(placeNameMatches("", "Peter Cat")).toBe(false);
@@ -50,6 +83,327 @@ describe("placeNameMatches", () => {
 });
 
 describe("map stop selection", () => {
+  it("derives aggregate day context instead of a stale place selection", () => {
+    const view = {
+      enabled: true,
+      destination: "Tamil Nadu",
+      center: null,
+      pins: [],
+      days: [{
+        day: 3,
+        label: "Day 3",
+        context_name: "Kanyakumari coast",
+        color: "#2563eb",
+        pin_ids: [],
+        route: { distance_km: 92, duration_min: 150, mode: "car", distance_display: "92 km", duration_display: "2 hrs 30 min" },
+        schedule: { start: "08:00", end: "18:00", duration_min: 600, duration_display: "10 hrs", travel_duration_min: 150, travel_duration_display: "2 hrs 30 min", estimated: false },
+      }],
+      available_days: [3],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(mapContextForScope(view, 3)).toEqual({
+      label: "Day 3",
+      title: "Kanyakumari coast",
+      schedule: "10 hrs · 08:00–18:00",
+      travel: "2 hrs 30 min · 92 km · car",
+    });
+    expect(mapContextForScope(view, "all")?.title).toBe("Tamil Nadu");
+  });
+
+  it("summarizes a focused road circuit and its useful breaks", () => {
+    const view = {
+      enabled: true,
+      destination: "New York",
+      center: null,
+      pins: [],
+      days: [],
+      available_days: [2],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+      road_circuits: [{
+        id: "day-2-stop-2-bus",
+        day: 2,
+        mode: "Bus" as const,
+        label: "Bus: Boston to New York",
+        pin_ids: ["origin", "scenic", "meal", "destination"],
+        waypoints: [
+          { pin_id: "origin", role: "origin" as const },
+          { pin_id: "scenic", role: "scenic" as const },
+          { pin_id: "meal", role: "meal" as const },
+          { pin_id: "destination", role: "destination" as const },
+        ],
+        legs: [],
+        route: {
+          distance_km: 350,
+          duration_min: 300,
+          mode: "Bus",
+          distance_display: "350 km",
+          duration_display: "5 hrs",
+        },
+      }],
+    };
+
+    expect(mapContextForRoadCircuit(view, "day-2-stop-2-bus")).toEqual({
+      label: "Bus transfer · Day 2",
+      title: "Bus: Boston to New York",
+      scheduleLabel: "Stops",
+      schedule: "1 scenic stop · 1 meal break",
+      travelLabel: "Road",
+      travel: "5 hrs · 350 km",
+    });
+  });
+
+  it("uses an A label for airport markers", () => {
+    expect(decodeURIComponent(airportIcon())).toContain(">A</text>");
+  });
+
+  it("numbers two hotels in their same-day route order", () => {
+    const hotel = (id: string, name: string) => ({
+      id,
+      name,
+      kind: "hotel",
+      selected: true,
+      day: 3,
+      lat: 24.5,
+      lng: 73.5,
+      rating: null,
+      address: "Rajasthan",
+      photo: null,
+      occurrences: [{ day: 3, stop: 1, time: "" }],
+    });
+    const view = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [hotel("udaipur", "Trident Udaipur"), hotel("mount-abu", "Hotel Hillock")],
+      days: [{
+        day: 3,
+        label: "Day 3",
+        color: "#2563eb",
+        pin_ids: ["udaipur", "mount-abu", "udaipur"],
+        route: { distance_km: 0, duration_min: 0, mode: "", distance_display: "", duration_display: "" },
+      }],
+      available_days: [3],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(Object.fromEntries(hotelLabelsForDay(view, 3))).toEqual({
+      udaipur: "H1",
+      "mount-abu": "H2",
+    });
+    expect(Object.fromEntries(hotelLabelsForDay({
+      ...view,
+      days: [{ ...view.days[0], pin_ids: ["udaipur"] }],
+    }, 3))).toEqual({ udaipur: "H" });
+    expect(Object.fromEntries(hotelLabelsForDay({
+      ...view,
+      pins: [hotel("sparsa-short", "Sparsa Kanyakumari"), hotel("sparsa-long", "Sparsa Kanyakumari, Kanyakumari")],
+      days: [{ ...view.days[0], pin_ids: ["sparsa-short", "sparsa-long"] }],
+    }, 3))).toEqual({ "sparsa-short": "H", "sparsa-long": "H" });
+    expect(Object.fromEntries(hotelLabelsForDay({
+      ...view,
+      pins: [
+        hotel("hyatt-short", "Hyatt Place Rameswaram"),
+        hotel("hyatt-long", "Hyatt Place Rameshwaram (Hotel)"),
+        hotel("sparsa-short", "Sparsa Kanyakumari"),
+        hotel("sparsa-long", "Sparsa Resort"),
+      ],
+      days: [{ ...view.days[0], pin_ids: ["hyatt-short", "hyatt-long", "sparsa-short", "sparsa-long"] }],
+    }, 3))).toEqual({
+      "hyatt-short": "H1",
+      "hyatt-long": "H1",
+      "sparsa-short": "H2",
+      "sparsa-long": "H2",
+    });
+    expect(Object.fromEntries(hotelLabelsForDay({
+      ...view,
+      pins: [hotel("hyatt-rameswaram", "Hyatt Place Rameswaram"), hotel("hyatt-madurai", "Hyatt Place Madurai")],
+      days: [{ ...view.days[0], pin_ids: ["hyatt-rameswaram", "hyatt-madurai"] }],
+    }, 3))).toEqual({ "hyatt-rameswaram": "H1", "hyatt-madurai": "H2" });
+    expect(decodeURIComponent(hotelIcon(false, "H1"))).toContain(">H1</text>");
+    expect(decodeURIComponent(hotelIcon(false, "H2"))).toContain(">H2</text>");
+  });
+
+  it("zooms an airport like any exact itinerary stop", () => {
+    const map = { panTo: vi.fn(), setZoom: vi.fn() };
+    zoomToPin(map, {
+      id: "arrival-airport",
+      name: "Udaipur Airport",
+      kind: "airport",
+      lat: 24.6177,
+      lng: 73.8961,
+    });
+
+    expect(map.panTo).toHaveBeenCalledWith({ lat: 24.6177, lng: 73.8961 });
+    expect(map.setZoom).toHaveBeenCalledWith(15);
+  });
+
+  it("defers and cancels superseded overlay redraws", () => {
+    const callbacks = new Map<number, FrameRequestCallback>();
+    let nextFrame = 0;
+    const requestFrame = vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
+      nextFrame += 1;
+      callbacks.set(nextFrame, callback);
+      return nextFrame;
+    });
+    const cancelFrame = vi.spyOn(window, "cancelAnimationFrame").mockImplementation((frame) => {
+      callbacks.delete(frame);
+    });
+    const staleDraw = vi.fn();
+    const latestDraw = vi.fn();
+
+    const cancelStale = scheduleMapOverlayDraw(staleDraw);
+    cancelStale();
+    scheduleMapOverlayDraw(latestDraw);
+
+    expect(staleDraw).not.toHaveBeenCalled();
+    expect(latestDraw).not.toHaveBeenCalled();
+    callbacks.forEach((callback) => callback(performance.now()));
+    expect(staleDraw).not.toHaveBeenCalled();
+    expect(latestDraw).toHaveBeenCalledOnce();
+    expect(requestFrame).toHaveBeenCalledTimes(2);
+    expect(cancelFrame).toHaveBeenCalledOnce();
+    requestFrame.mockRestore();
+    cancelFrame.mockRestore();
+  });
+
+  it("treats an enriched itinerary airport as an inspectable map pin", () => {
+    expect(isInspectableMapPin({
+      id: "arrival-airport",
+      name: "Maharana Pratap Airport",
+      source_name: "Udaipur Airport",
+      kind: "airport",
+      selected: true,
+      day: 1,
+      lat: 24.6177,
+      lng: 73.8961,
+      rating: 4.5,
+      address: "Dabok, Rajasthan",
+      photo: "https://example.com/airport.jpg",
+      occurrences: [{ day: 1, stop: 3, time: "10:05" }],
+    })).toBe(true);
+    expect(isInspectableMapPin({
+      id: "airport",
+      name: "Nearby airport",
+      kind: "airport",
+      lat: 24.6177,
+      lng: 73.8961,
+    })).toBe(false);
+  });
+
+  it("opens rich inspection for rail and bus terminal markers", async () => {
+    const markerClicks = new Map<string, () => void>();
+    const map = {
+      addListener: vi.fn(() => ({ remove: vi.fn() })),
+      fitBounds: vi.fn(),
+      getZoom: vi.fn(() => 11),
+      panTo: vi.fn(),
+      setZoom: vi.fn(),
+    };
+    window.google = {
+      maps: {
+        Map: vi.fn(function () { return map; }),
+        Marker: vi.fn(function (options: { title?: string }) {
+          return {
+            addListener: vi.fn((event: string, callback: () => void) => {
+              if (event === "click" && options.title) markerClicks.set(options.title, callback);
+            }),
+            setMap: vi.fn(),
+            setIcon: vi.fn(),
+            setZIndex: vi.fn(),
+          };
+        }),
+        Polyline: vi.fn(function () { return { setMap: vi.fn() }; }),
+        Size: vi.fn(function () {}),
+        Point: vi.fn(function () {}),
+        LatLngBounds: vi.fn(function () {
+          const points: Array<{ lat: number; lng: number }> = [];
+          return {
+            extend: (point: { lat: number; lng: number }) => points.push(point),
+            isEmpty: () => points.length === 0,
+          };
+        }),
+        places: {
+          Autocomplete: vi.fn(function () {
+            return {
+              addListener: vi.fn(() => ({ remove: vi.fn() })),
+              bindTo: vi.fn(),
+              unbindAll: vi.fn(),
+            };
+          }),
+        },
+      },
+    };
+    fetchMapsConfigMock.mockResolvedValue({ enabled: true, key: "test-key" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Rajasthan",
+      center: { lat: 25.7, lng: 74.7 },
+      pins: [
+        {
+          id: "rail",
+          name: "Udaipur Railway Station",
+          kind: "station",
+          selected: true,
+          day: 4,
+          lat: 24.5683,
+          lng: 73.6991,
+          rating: 4.2,
+          address: "Udaipur, Rajasthan",
+          photo: "https://example.com/rail.jpg",
+          occurrences: [{ day: 4, stop: 2, time: "09:00" }],
+        },
+        {
+          id: "bus",
+          name: "Jaipur Bus Stand",
+          kind: "bus_station",
+          selected: true,
+          day: 5,
+          lat: 26.92,
+          lng: 75.79,
+          rating: 3.9,
+          address: "Jaipur, Rajasthan",
+          photo: "https://example.com/bus.jpg",
+          occurrences: [{ day: 5, stop: 1, time: "08:30" }],
+        },
+      ],
+      days: [
+        { day: 4, label: "Day 4", color: "#2563eb", pin_ids: ["rail"], route: { distance_km: 0, duration_min: 0, mode: "Train", distance_display: "", duration_display: "" } },
+        { day: 5, label: "Day 5", color: "#e11d48", pin_ids: ["bus"], route: { distance_km: 0, duration_min: 0, mode: "Bus", distance_display: "", duration_display: "" } },
+      ],
+      available_days: [4, 5],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+    const onPinFocus = vi.fn();
+    const rendered = render(createElement(MapPanel, { onPinFocus }));
+
+    await waitFor(() => expect(markerClicks.has("Udaipur Railway Station")).toBe(true));
+    act(() => markerClicks.get("Udaipur Railway Station")?.());
+    expect(await screen.findByAltText("Udaipur Railway Station")).toHaveAttribute(
+      "src",
+      "https://example.com/rail.jpg",
+    );
+    expect(onPinFocus).toHaveBeenLastCalledWith("station", "Udaipur Railway Station", 4, 2);
+
+    act(() => markerClicks.get("Jaipur Bus Stand")?.());
+    expect(await screen.findByAltText("Jaipur Bus Stand")).toHaveAttribute(
+      "src",
+      "https://example.com/bus.jpg",
+    );
+    expect(onPinFocus).toHaveBeenLastCalledWith("bus_station", "Jaipur Bus Stand", 5, 1);
+
+    rendered.unmount();
+    delete window.google;
+  });
+
   it("numbers pins by itinerary occurrence when route pin order drifts", () => {
     const pin = (id: string, name: string, stop: number) => ({
       id,
@@ -79,6 +433,74 @@ describe("map stop selection", () => {
     expect(Object.fromEntries(visitOrdersForDay(view, 2))).toEqual({ fort: 1, mapusa: 2, chapora: 3 });
   });
 
+  it("does not number transport terminals as sightseeing stops", () => {
+    const pin = (id: string, kind: string, stop: number) => ({
+      id,
+      name: id,
+      kind,
+      selected: true,
+      day: 1,
+      lat: 15 + stop,
+      lng: 73 + stop,
+      rating: null,
+      address: "Rajasthan",
+      photo: null,
+      occurrences: [{ day: 1, stop, time: "" }],
+    });
+    const view = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [pin("origin-airport", "airport", 1), pin("palace", "attraction", 2)],
+      days: [{ day: 1, label: "Day 1", color: "#e11d48", pin_ids: ["origin-airport", "palace"], route: { distance_km: 0, duration_min: 0, mode: "", distance_display: "0 km", duration_display: "0 min" } }],
+      available_days: [1],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(Object.fromEntries(visitOrdersForDay(view, 1))).toEqual({ palace: 1 });
+  });
+
+  it("numbers both Mount Abu visits in a closed transfer-day circuit", () => {
+    const pin = (id: string, name: string, kind: string, stop: number) => ({
+      id,
+      name,
+      kind,
+      selected: true,
+      day: 3,
+      lat: 24 + stop / 100,
+      lng: 72 + stop / 100,
+      rating: null,
+      address: "Mount Abu",
+      photo: null,
+      occurrences: [{ day: 3, stop, time: "" }],
+    });
+    const view = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [
+        pin("hillock", "Hotel Hillock", "hotel", 3),
+        pin("dilwara", "Dilwara Temples", "attraction", 4),
+        pin("nakki", "Nakki Lake", "attraction", 5),
+      ],
+      days: [{
+        day: 3,
+        label: "Day 3",
+        color: "#2563eb",
+        pin_ids: ["hillock", "dilwara", "nakki", "hillock"],
+        route: { distance_km: 8, duration_min: 90, mode: "car", distance_display: "8 km", duration_display: "1 hr 30 min" },
+      }],
+      available_days: [3],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(Object.fromEntries(visitOrdersForDay(view, 3))).toEqual({ dilwara: 1, nakki: 2 });
+  });
+
   it("uses the requested occurrence day for a repeated hotel", () => {
     const hotel = {
       id: "p0",
@@ -97,6 +519,27 @@ describe("map stop selection", () => {
     expect(focusedDayForPin(hotel, 3)).toBe(1);
     expect(pinMatchesFocus(hotel, "Goa Marriott Resort", 2)).toBe(true);
     expect(pinMatchesFocus(hotel, "Goa Marriott Resort", 3)).toBe(false);
+  });
+
+  it("uses the requested stop to distinguish similarly named pins on one day", () => {
+    const pin = (id: string, name: string, stop: number) => ({
+      id,
+      name,
+      kind: "attraction",
+      selected: true,
+      day: 6,
+      lat: 26.9 + stop / 100,
+      lng: 70.9 + stop / 100,
+      rating: null,
+      address: "Jaisalmer",
+      photo: null,
+      occurrences: [{ day: 6, stop, time: "" }],
+    });
+    const camp = pin("camel-camp", "Camel Safari Camp", 2);
+    const safari = pin("camel-safari", "Camel Safari", 4);
+
+    expect(pinMatchesFocus(camp, "Camel Safari", 6, 4)).toBe(false);
+    expect(pinMatchesFocus(safari, "Camel Safari", 6, 4)).toBe(true);
   });
 
   it("builds an inspectable candidate only from real Google geometry", () => {
@@ -122,6 +565,78 @@ describe("map stop selection", () => {
   it("formats compact map leg labels", () => {
     expect(formatLegLabel({ distance_display: "4.6 km", duration_display: "15 min" }))
       .toBe("4.6 km · 15 min");
+  });
+
+  it("distinguishes local, road, bus, rail, and flight route geometry", () => {
+    const leg = {
+      from_pin_id: "origin",
+      to_pin_id: "destination",
+      distance_km: 100,
+      duration_min: 90,
+      mode: "Taxi",
+      distance_display: "100 km",
+      duration_display: "1 hr 30 min",
+    };
+
+    expect(routeStyleForLeg(leg, "#2563eb")).toMatchObject({
+      strokeColor: "#2563eb",
+      strokeOpacity: 0.85,
+      strokeWeight: 3,
+    });
+    const roadStyle = routeStyleForLeg({ ...leg, intercity: true, mode: "Drive" }, "#2563eb");
+    const busStyle = routeStyleForLeg({ ...leg, intercity: true, mode: "Bus" }, "#2563eb");
+    const trainStyle = routeStyleForLeg({ ...leg, intercity: true, mode: "Train" }, "#2563eb");
+    const flightStyle = routeStyleForLeg({ ...leg, intercity: true, mode: "Flight" }, "#2563eb");
+
+    expect(roadStyle).toMatchObject({
+      strokeColor: "#111827",
+      strokeOpacity: 0,
+      strokeWeight: 3,
+      icons: [
+        { icon: { strokeColor: "#111827" }, repeat: "10px" },
+        { icon: { fillColor: "#ffffff", strokeColor: "#111827" }, offset: "50%" },
+        { icon: { fillColor: "#111827" }, offset: "50%" },
+      ],
+    });
+    expect(busStyle).toMatchObject({
+      strokeColor: "#111827",
+      strokeOpacity: 0,
+      icons: [{ icon: { strokeColor: "#111827" } }, {}, { icon: { fillColor: "#111827" } }],
+    });
+    expect(trainStyle)
+      .toMatchObject({
+        strokeColor: "#6b7280",
+        strokeOpacity: 0,
+        strokeWeight: 3,
+        icons: [{ icon: { strokeColor: "#6b7280" } }, {}, { icon: { fillColor: "#6b7280" } }],
+      });
+    expect(flightStyle)
+      .toMatchObject({
+        strokeColor: "#2563eb",
+        strokeOpacity: 0,
+        strokeWeight: 3,
+        icons: [{ icon: { strokeColor: "#2563eb" } }, {}, { icon: { fillColor: "#2563eb" } }],
+      });
+    const modePath = (style: Record<string, unknown>) => (
+      style.icons as Array<{ icon: { path: string } }>
+    )[2].icon.path;
+    expect(new Set([roadStyle, busStyle, trainStyle, flightStyle].map(modePath)).size).toBe(4);
+    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Drive" }, "#2563eb", true))
+      .toEqual(roadStyle);
+  });
+
+  it("retains ordered route geometry when leg metadata is absent", () => {
+    const pins = [
+      { id: "origin", name: "Origin", kind: "hotel", selected: true, day: 1, lat: 26.9, lng: 75.8, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "station", name: "Station", kind: "station", selected: false, day: 1, lat: 25.7, lng: 74.7, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "destination", name: "Destination", kind: "hotel", selected: true, day: 1, lat: 24.6, lng: 73.7, rating: null, address: "", photo: null, occurrences: [] },
+    ];
+
+    expect(routePathForPinIds(["origin", "station", "destination"], pins)).toEqual([
+      { lat: 26.9, lng: 75.8 },
+      { lat: 25.7, lng: 74.7 },
+      { lat: 24.6, lng: 73.7 },
+    ]);
   });
 
   it("fits every pin in the requested day circuit", () => {
@@ -150,8 +665,210 @@ describe("map stop selection", () => {
     expect(fitBounds).toHaveBeenCalledWith(bounds, 64);
   });
 
-  it("keeps circuit framing after the active-day redraw", async () => {
+  it("fits every endpoint in the requested inter-city route", () => {
+    const extend = vi.fn();
+    const bounds = { extend };
     const fitBounds = vi.fn();
+    const google = { maps: { LatLngBounds: vi.fn(function () { return bounds; }) } };
+    const pins = [
+      { id: "source", name: "Bengaluru Airport", kind: "airport", selected: false, day: 1, lat: 13.2, lng: 77.7, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "destination", name: "Udaipur Airport", kind: "airport", selected: false, day: 1, lat: 24.6, lng: 73.9, rating: null, address: "", photo: null, occurrences: [] },
+    ];
+    const view = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins,
+      days: [{ day: 1, label: "Day 1", color: "#0284c7", pin_ids: ["source", "destination"], circuit_pin_ids: ["destination"], route: { distance_km: 0, duration_min: 0, mode: "Flight", distance_display: "", duration_display: "" } }],
+      available_days: [1],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(pinsForDayRoute(view, 1).map((pin) => pin.name)).toEqual([
+      "Bengaluru Airport",
+      "Udaipur Airport",
+    ]);
+    expect(fitDayRoute(google, { fitBounds }, view, 1)).toBe(true);
+    expect(extend).toHaveBeenCalledWith({ lat: 13.2, lng: 77.7 });
+    expect(extend).toHaveBeenCalledWith({ lat: 24.6, lng: 73.9 });
+    expect(fitBounds).toHaveBeenCalledWith(bounds, 64);
+  });
+
+  it("fits only the ordered points in the requested drive circuit", () => {
+    const extend = vi.fn();
+    const bounds = { extend };
+    const fitBounds = vi.fn();
+    const google = { maps: { LatLngBounds: vi.fn(function () { return bounds; }) } };
+    const pins = [
+      { id: "gangtok", name: "Gangtok Hotel", kind: "hotel", selected: true, day: 4, lat: 27.33, lng: 88.61, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "falls", name: "Seven Sisters Falls", kind: "attraction", selected: true, day: 4, lat: 27.47, lng: 88.61, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "singhik", name: "Singhik View Point", kind: "attraction", selected: true, day: 4, lat: 27.53, lng: 88.56, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "lachung", name: "Lachung Hotel", kind: "hotel", selected: true, day: 4, lat: 27.69, lng: 88.74, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "monastery", name: "Gangtok Monastery", kind: "attraction", selected: true, day: 4, lat: 27.34, lng: 88.62, rating: null, address: "", photo: null, occurrences: [] },
+    ];
+    const view = {
+      enabled: true,
+      destination: "Sikkim",
+      center: null,
+      pins,
+      days: [{ day: 4, label: "Day 4", color: "#0284c7", pin_ids: pins.map((pin) => pin.id), route: { distance_km: 121, duration_min: 360, mode: "car", distance_display: "121 km", duration_display: "6 hrs" } }],
+      drive_circuits: [{ id: "drive-day-4-gangtok-to-lachung", day: 4, mode: "Drive" as const, label: "Gangtok to Lachung", pin_ids: ["gangtok", "falls", "singhik", "lachung"], legs: [], route: { distance_km: 121, duration_min: 360, mode: "car", distance_display: "121 km", duration_display: "6 hrs" } }],
+      available_days: [4],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(fitDriveCircuit(google, { fitBounds }, view, "drive-day-4-gangtok-to-lachung")).toBe(true);
+    expect(extend.mock.calls.map(([point]) => point)).toEqual([
+      { lat: 27.33, lng: 88.61 },
+      { lat: 27.47, lng: 88.61 },
+      { lat: 27.53, lng: 88.56 },
+      { lat: 27.69, lng: 88.74 },
+    ]);
+    expect(fitBounds).toHaveBeenCalledWith(bounds, 64);
+  });
+
+  it("matches an abbreviated hotel alias only at its requested occurrence", () => {
+    const pin = {
+      id: "lachung-hotel",
+      name: "The Lachung Inn Hotel & Resort",
+      source_name: "Lachung Inn",
+      kind: "hotel",
+      selected: true,
+      day: 4,
+      lat: 27.69,
+      lng: 88.74,
+      rating: null,
+      address: "Lachung",
+      photo: null,
+      occurrences: [
+        { day: 4, stop: 4, time: "18:00" },
+        { day: 5, stop: 1, time: "08:00" },
+      ],
+    };
+
+    expect(pinMatchesFocus(pin, "Lachung Inn Resort", 5, 1)).toBe(true);
+    expect(pinMatchesFocus(pin, "Lachung Inn Resort", 5, 2)).toBe(false);
+  });
+
+  it("keeps route framing when the map initializes after the request", async () => {
+    const fitBounds = vi.fn();
+    const map = {
+      addListener: vi.fn(() => ({ remove: vi.fn() })),
+      fitBounds,
+      getZoom: vi.fn(() => 8),
+      panTo: vi.fn(),
+      setZoom: vi.fn(),
+    };
+    window.google = {
+      maps: {
+        Map: vi.fn(function () { return map; }),
+        Marker: vi.fn(function () {
+          return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() };
+        }),
+        Polyline: vi.fn(function () { return { setMap: vi.fn() }; }),
+        Size: vi.fn(function () {}),
+        Point: vi.fn(function () {}),
+        LatLngBounds: vi.fn(function () {
+          const points: Array<{ lat: number; lng: number }> = [];
+          return {
+            points,
+            extend: (point: { lat: number; lng: number }) => points.push(point),
+            isEmpty: () => points.length === 0,
+          };
+        }),
+        places: {
+          Autocomplete: vi.fn(function () {
+            return {
+              addListener: vi.fn(() => ({ remove: vi.fn() })),
+              bindTo: vi.fn(),
+              unbindAll: vi.fn(),
+            };
+          }),
+        },
+      },
+    };
+    fetchMapsConfigMock.mockResolvedValue({ enabled: true, key: "test-key" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Rajasthan",
+      center: { lat: 20, lng: 75 },
+      pins: [
+        { id: "source", name: "Bengaluru Airport", kind: "airport", selected: true, day: 1, lat: 13.2, lng: 77.7, rating: null, address: "", photo: null, occurrences: [] },
+        { id: "destination", name: "Udaipur Airport", kind: "airport", selected: true, day: 1, lat: 24.6, lng: 73.9, rating: null, address: "", photo: null, occurrences: [] },
+        { id: "other", name: "Jaisalmer Fort", kind: "attraction", selected: true, day: 2, lat: 26.9, lng: 70.9, rating: null, address: "", photo: null, occurrences: [] },
+      ],
+      days: [
+        { day: 1, label: "Day 1", color: "#0284c7", pin_ids: ["source", "destination"], circuit_pin_ids: ["destination"], route: { distance_km: 0, duration_min: 0, mode: "Flight", distance_display: "", duration_display: "" } },
+        { day: 2, label: "Day 2", color: "#e11d48", pin_ids: ["other"], route: { distance_km: 0, duration_min: 0, mode: "Walk", distance_display: "", duration_display: "" } },
+      ],
+      available_days: [1, 2],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+
+    const rendered = render(createElement(MapPanel, { routeFocusDay: 1, routeFocusToken: 1 }));
+
+    await waitFor(() => expect(fitBounds.mock.calls[fitBounds.mock.calls.length - 1]?.[0].points).toEqual([
+      { lat: 13.2, lng: 77.7 },
+      { lat: 24.6, lng: 73.9 },
+    ]));
+    rendered.unmount();
+    delete window.google;
+  });
+
+  it("limits a selected day to its own circuit and exposes the hotel return time", () => {
+    const hotel = { id: "udaipur-hotel", name: "Trident Udaipur", kind: "hotel", selected: true, day: 1, lat: 24.577, lng: 73.683, rating: null, address: "", photo: null, occurrences: [] };
+    const palace = { id: "udaipur-palace", name: "City Palace Udaipur", kind: "attraction", selected: true, day: 1, lat: 24.576, lng: 73.683, rating: null, address: "", photo: null, occurrences: [] };
+    const otherCityHotel = { id: "jodhpur-hotel", name: "Taj Hari Mahal Jodhpur", kind: "hotel", selected: true, day: 3, lat: 26.269, lng: 73.01, rating: null, address: "", photo: null, occurrences: [] };
+    const view = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [hotel, palace, otherCityHotel],
+      days: [{
+        day: 1,
+        label: "Day 1",
+        color: "#e11d48",
+        pin_ids: [hotel.id, palace.id, hotel.id],
+        route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" },
+        schedule: { start: "09:00", end: "21:30", duration_min: 750, duration_display: "12 hr 30 min", travel_duration_min: 20, travel_duration_display: "20 min", estimated: true },
+      }],
+      available_days: [1],
+      unscheduled_pin_ids: [otherCityHotel.id],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(pinsForDayCircuit(view, 1).map((pin) => pin.name)).toEqual([
+      "Trident Udaipur",
+      "City Palace Udaipur",
+      "Trident Udaipur",
+    ]);
+    expect(hotelReturnForDay(view, 1)).toEqual({
+      pin: hotel,
+      label: "Return · 21:30 est.",
+    });
+  });
+
+  it("restores All days after an externally focused day", async () => {
+    const fitBounds = vi.fn();
+    const markerClicks = new Map<string, () => void>();
+    const marker = vi.fn(function (options: { title?: string; icon?: { url?: string } }) {
+      return {
+        addListener: vi.fn((event: string, callback: () => void) => {
+          if (event === "click" && options.title) markerClicks.set(options.title, callback);
+        }),
+        setMap: vi.fn(),
+        setIcon: vi.fn(),
+        setZIndex: vi.fn(),
+      };
+    });
+    const polyline = vi.fn(function () { return { setMap: vi.fn() }; });
     const map = {
       addListener: vi.fn(() => ({ remove: vi.fn() })),
       fitBounds,
@@ -162,8 +879,8 @@ describe("map stop selection", () => {
     window.google = {
       maps: {
         Map: vi.fn(function () { return map; }),
-        Marker: vi.fn(function () { return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() }; }),
-        Polyline: vi.fn(function () { return { setMap: vi.fn() }; }),
+        Marker: marker,
+        Polyline: polyline,
         Size: vi.fn(function () {}),
         Point: vi.fn(function () {}),
         LatLngBounds: vi.fn(function () {
@@ -192,12 +909,13 @@ describe("map stop selection", () => {
       center: { lat: 15.2, lng: 73.2 },
       pins: [
         { id: "day-1-hotel", name: "North Hotel", kind: "hotel", selected: true, day: 1, lat: 16, lng: 74, rating: null, address: "", photo: null, occurrences: [{ day: 1, stop: 1, time: "" }] },
-        { id: "day-2-hotel", name: "South Hotel", kind: "hotel", selected: true, day: 2, lat: 15.1, lng: 73.1, rating: null, address: "", photo: null, occurrences: [{ day: 2, stop: 1, time: "" }] },
+        { id: "day-2-origin", name: "Udaipur Hotel", kind: "hotel", selected: true, day: 2, lat: 15.1, lng: 73.1, rating: null, address: "", photo: null, occurrences: [{ day: 2, stop: 1, time: "" }] },
+        { id: "day-2-destination", name: "Mount Abu Hotel", kind: "hotel", selected: true, day: 2, lat: 15.15, lng: 73.15, rating: null, address: "", photo: null, occurrences: [{ day: 2, stop: 2, time: "" }] },
         { id: "day-2-beach", name: "South Beach", kind: "attraction", selected: true, day: 2, lat: 15.2, lng: 73.2, rating: null, address: "", photo: null, occurrences: [{ day: 2, stop: 2, time: "" }] },
       ],
       days: [
         { day: 1, label: "Day 1", color: "#e11d48", pin_ids: ["day-1-hotel"], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
-        { day: 2, label: "Day 2", color: "#0d9488", pin_ids: ["day-2-hotel", "day-2-beach", "day-2-hotel"], route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" } },
+        { day: 2, label: "Day 2", context_name: "Udaipur to Mount Abu", color: "#0d9488", pin_ids: ["day-2-origin", "day-2-destination", "day-2-beach", "day-2-destination"], route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" } },
       ],
       available_days: [1, 2],
       unscheduled_pin_ids: [],
@@ -213,9 +931,297 @@ describe("map stop selection", () => {
     await waitFor(() => expect(fitBounds).toHaveBeenCalled());
     await waitFor(() => expect(fitBounds.mock.calls[fitBounds.mock.calls.length - 1]?.[0].points).toEqual([
       { lat: 15.1, lng: 73.1 },
+      { lat: 15.15, lng: 73.15 },
       { lat: 15.2, lng: 73.2 },
-      { lat: 15.1, lng: 73.1 },
     ]));
+    const markerIcon = (title: string) => marker.mock.calls
+      .map(([options]) => options)
+      .find((options) => options.title === title)?.icon?.url ?? "";
+    expect(decodeURIComponent(markerIcon("Udaipur Hotel")))
+      .toContain(">H1</text>");
+    expect(decodeURIComponent(markerIcon("Mount Abu Hotel")))
+      .toContain(">H2</text>");
+    expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
+      path: [{ lat: 15.1, lng: 73.1 }, { lat: 15.15, lng: 73.15 }],
+      strokeColor: "#0d9488",
+      strokeOpacity: 0,
+      icons: [{
+        icon: expect.objectContaining({ strokeColor: "#0d9488" }),
+        repeat: "10px",
+      }],
+    }));
+
+    act(() => markerClicks.get("Mount Abu Hotel")?.());
+    expect(await screen.findByText("Mount Abu Hotel")).toBeInTheDocument();
+    rendered.rerender(createElement(MapPanel, { circuitFocusDay: 2, circuitFocusToken: 2 }));
+    expect(await screen.findByText("Udaipur to Mount Abu")).toBeInTheDocument();
+
+    rendered.rerender(createElement(MapPanel, { circuitFocusToken: 3 }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
+    expect(decodeURIComponent(markerIcon("North Hotel")))
+      .toContain(">H</text>");
+    await waitFor(() => expect(fitBounds.mock.calls[fitBounds.mock.calls.length - 1]?.[0].points).toEqual([
+      { lat: 16, lng: 74 },
+      { lat: 15.1, lng: 73.1 },
+      { lat: 15.15, lng: 73.15 },
+      { lat: 15.2, lng: 73.2 },
+    ]));
+    rendered.unmount();
+    delete window.google;
+  });
+
+  it("keeps hook ordering stable when disabled map data arrives asynchronously", async () => {
+    fetchMapsConfigMock.mockResolvedValue({ enabled: false, key: "" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: false,
+      destination: "",
+      center: null,
+      pins: [],
+      days: [],
+      available_days: [],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+
+    render(createElement(MapPanel));
+
+    expect(await screen.findByText("The interactive map isn't configured.", { exact: false }))
+      .toBeInTheDocument();
+  });
+
+  it("defaults a newly selected trip to All days even when its day numbers overlap", async () => {
+    fetchMapsConfigMock.mockResolvedValue({ enabled: false, key: "" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Madurai",
+      center: null,
+      pins: [],
+      days: [
+        { day: 1, label: "Day 1", color: "#e11d48", pin_ids: [], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
+        { day: 2, label: "Day 2", color: "#0d9488", pin_ids: [], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
+      ],
+      available_days: [1, 2],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+
+    const rendered = render(createElement(MapPanel, { tripId: "old-trip" }));
+    await screen.findByRole("button", { name: "Day 2" });
+    fireEvent.click(screen.getByRole("button", { name: "Day 2" }));
+    expect(screen.getByRole("button", { name: "Day 2" })).toHaveClass("text-white");
+
+    rendered.rerender(createElement(MapPanel, { tripId: "rameshwaram-madurai" }));
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
+  });
+
+  it("shows arrival and departure days for legacy flight legs", async () => {
+    fetchMapsConfigMock.mockResolvedValue({ enabled: false, key: "" });
+    const airport = (id: string, day: number) => ({
+      id,
+      name: `${id.toUpperCase()} Airport`,
+      kind: "airport",
+      selected: true,
+      day,
+      lat: day,
+      lng: day,
+      rating: null,
+      address: "",
+      photo: null,
+      occurrences: [{ day, stop: 1, time: "09:00" }],
+    });
+    const flightRoute = {
+      distance_km: 1000,
+      duration_min: 120,
+      mode: "Flight",
+      distance_display: "1,000 km",
+      duration_display: "2 hr",
+    };
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [airport("blr", 1), airport("udr", 1), airport("jsa", 8)],
+      days: [
+        { day: 1, label: "Day 1", color: "#2563eb", pin_ids: ["blr", "udr"], route: flightRoute, legs: [{ ...flightRoute, from_pin_id: "blr", to_pin_id: "udr" }] },
+        { day: 2, label: "Day 2", color: "#e11d48", pin_ids: [], route: { ...flightRoute, mode: "Walk" }, legs: [] },
+        { day: 8, label: "Day 8", color: "#6b7280", pin_ids: ["jsa", "blr"], route: flightRoute, legs: [{ ...flightRoute, from_pin_id: "jsa", to_pin_id: "blr" }] },
+      ],
+      available_days: [1, 2, 8],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: null,
+    });
+
+    render(createElement(MapPanel, { filters: ["flight"] }));
+
+    expect(await screen.findByRole("button", { name: "Day 1" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Day 8" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Day 2" })).not.toBeInTheDocument();
+  });
+
+  it("draws all flight arcs and focuses a repeated airport alias on its requested day", async () => {
+    const panTo = vi.fn();
+    const map = {
+      addListener: vi.fn(() => ({ remove: vi.fn() })),
+      fitBounds: vi.fn(),
+      getZoom: vi.fn(() => 11),
+      panTo,
+      setZoom: vi.fn(),
+    };
+    const polyline = vi.fn(function (_options: Record<string, unknown>) {
+      return { setMap: vi.fn() };
+    });
+    const marker = vi.fn(function (_options: {
+      title?: string;
+      position?: { lat: number; lng: number };
+      icon?: { url?: string };
+    }) {
+      return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() };
+    });
+    window.google = {
+      maps: {
+        Map: vi.fn(function () { return map; }),
+        Marker: marker,
+        Polyline: polyline,
+        Size: vi.fn(function () {}),
+        Point: vi.fn(function () {}),
+        LatLngBounds: vi.fn(function () {
+          const points: Array<{ lat: number; lng: number }> = [];
+          return {
+            extend: (point: { lat: number; lng: number }) => points.push(point),
+            isEmpty: () => points.length === 0,
+          };
+        }),
+        places: {
+          Autocomplete: vi.fn(function () {
+            return {
+              addListener: vi.fn(() => ({ remove: vi.fn() })),
+              bindTo: vi.fn(),
+              unbindAll: vi.fn(),
+            };
+          }),
+        },
+      },
+    };
+    fetchMapsConfigMock.mockResolvedValue({ enabled: true, key: "test-key" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Rajasthan",
+      center: { lat: 21, lng: 74 },
+      pins: [
+        {
+          id: "blr",
+          name: "Kempegowda International Airport Bengaluru",
+          source_name: "Bangalore Airport",
+          kind: "airport",
+          selected: true,
+          day: 1,
+          lat: 13.1986,
+          lng: 77.7066,
+          rating: null,
+          address: "",
+          photo: null,
+          occurrences: [{ day: 1, stop: 1, time: "08:00" }, { day: 7, stop: 4, time: "" }],
+        },
+        { id: "udr", name: "Maharana Pratap Airport", source_name: "Udaipur Airport", kind: "airport", selected: true, day: 1, lat: 24.6177, lng: 73.8961, rating: null, address: "", photo: null, occurrences: [{ day: 1, stop: 3, time: "" }] },
+        { id: "jsa", name: "Jaisalmer Airport", source_name: "Jaisalmer Airport", kind: "airport", selected: true, day: 7, lat: 26.8887, lng: 70.8649, rating: null, address: "", photo: null, occurrences: [{ day: 7, stop: 2, time: "" }] },
+      ],
+      days: [
+        {
+          day: 1,
+          label: "Day 1",
+          color: "#e11d48",
+          pin_ids: ["blr", "udr"],
+          route: { distance_km: 1330, duration_min: 125, mode: "Flight", distance_display: "1,330 km", duration_display: "2 hr 5 min" },
+          legs: [{ from_pin_id: "blr", to_pin_id: "udr", distance_km: 1330, duration_min: 125, mode: "Flight", distance_display: "1,330 km", duration_display: "2 hr 5 min", intercity: true }],
+        },
+        {
+          day: 7,
+          label: "Day 7",
+          color: "#7c3aed",
+          pin_ids: ["jsa", "blr"],
+          route: { distance_km: 1450, duration_min: 140, mode: "Flight", distance_display: "1,450 km", duration_display: "2 hr 20 min" },
+          legs: [{ from_pin_id: "jsa", to_pin_id: "blr", distance_km: 1450, duration_min: 140, mode: "Flight", distance_display: "1,450 km", duration_display: "2 hr 20 min", intercity: true }],
+        },
+      ],
+      available_days: [1, 7],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+
+    const rendered = render(createElement(MapPanel));
+
+    await waitFor(() => expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
+      path: [{ lat: 13.1986, lng: 77.7066 }, { lat: 24.6177, lng: 73.8961 }],
+      strokeColor: "#2563eb",
+      strokeOpacity: 0,
+      icons: expect.arrayContaining([
+        expect.objectContaining({ offset: "50%", icon: expect.objectContaining({ fillColor: "#2563eb" }) }),
+      ]),
+    })));
+    expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
+      path: [{ lat: 26.8887, lng: 70.8649 }, { lat: 13.1986, lng: 77.7066 }],
+      strokeColor: "#2563eb",
+      strokeOpacity: 0,
+    }));
+
+    rendered.rerender(createElement(MapPanel, {
+      circuitFocusDay: 1,
+      circuitFocusToken: 1,
+    }));
+    await waitFor(() => expect(marker).toHaveBeenCalledWith(expect.objectContaining({
+      title: "1,330 km · 2 hr 5 min · Flight",
+    })));
+    const routeLabel = marker.mock.calls
+      .map(([options]) => options)
+      .find((options) => options.title === "1,330 km · 2 hr 5 min · Flight");
+    expect(routeLabel?.position).not.toEqual({
+      lat: (13.1986 + 24.6177) / 2,
+      lng: (77.7066 + 73.8961) / 2,
+    });
+
+    rendered.rerender(createElement(MapPanel));
+    fireEvent.click(screen.getByRole("button", { name: "All days" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
+    const routeLabelCount = marker.mock.calls
+      .map(([options]) => options)
+      .filter((options) => options.title === "1,330 km · 2 hr 5 min · Flight").length;
+    rendered.rerender(createElement(MapPanel, {
+      routeFocusDay: 1,
+      routeFocusToken: 1,
+    }));
+    await waitFor(() => expect(marker.mock.calls
+      .map(([options]) => options)
+      .filter((options) => options.title === "1,330 km · 2 hr 5 min · Flight")).toHaveLength(routeLabelCount + 1));
+    const routeFocusedLabels = marker.mock.calls
+      .map(([options]) => options)
+      .filter((options) => options.title === "1,330 km · 2 hr 5 min · Flight");
+    const routeFocusedLabel = routeFocusedLabels[routeFocusedLabels.length - 1];
+    expect(routeFocusedLabel?.position).not.toEqual({
+      lat: (13.1986 + 24.6177) / 2,
+      lng: (77.7066 + 73.8961) / 2,
+    });
+
+    rendered.rerender(createElement(MapPanel, {
+      focusName: "Bangalore Airport",
+      focusDay: 1,
+      focusToken: 1,
+    }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Day 1" })).toHaveClass("text-white"));
+    expect(panTo).toHaveBeenLastCalledWith({ lat: 13.1986, lng: 77.7066 });
+
+    rendered.rerender(createElement(MapPanel, {
+      focusName: "Bangalore Airport",
+      focusDay: 7,
+      focusToken: 2,
+    }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Day 7" })).toHaveClass("text-white"));
+    expect(panTo).toHaveBeenLastCalledWith({ lat: 13.1986, lng: 77.7066 });
+
     rendered.unmount();
     delete window.google;
   });
@@ -308,10 +1314,17 @@ describe("map stop selection", () => {
         pin_ids: [],
         route: {
           distance_km: 0,
-          duration_min: 0,
-          mode: "walk",
-          distance_display: "0 km",
-          duration_display: "0 min",
+          duration_min: 25,
+          mode: "car",
+          distance_display: "8 km",
+          duration_display: "25 min",
+        },
+        schedule: {
+          duration_min: 480,
+          duration_display: "8 hr",
+          start: "09:00",
+          end: "17:00",
+          estimated: true,
         },
       }],
       available_days: [1],
@@ -322,11 +1335,21 @@ describe("map stop selection", () => {
     const onSelect = vi.fn().mockResolvedValue(false);
     render(createElement(MapPanel, { onSelect }));
 
-    const input = await screen.findByPlaceholderText("Search places on this map…");
-    const day = screen.getByRole("combobox", { name: "Add stop to day" });
+    expect(await screen.findByText("Choose a day for schedule and route-only travel.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Day 1" }));
+    expect(screen.getByText("Schedule 8 hr, 09:00–17:00 est.")).toBeInTheDocument();
+    expect(screen.getByText("Travel 25 min, 8 km, car")).toBeInTheDocument();
+
+    const input = await screen.findByPlaceholderText("Search a place, or tap one on the map…");
+    expect(screen.queryByRole("combobox", { name: "Stop type (optional)" })).not.toBeInTheDocument();
     fireEvent.change(input, { target: { value: "North Market" } });
+    const stopType = screen.getByRole("combobox", { name: "Stop type (optional)" });
+    const day = screen.getByRole("combobox", { name: "Add stop to day" });
+    expect(stopType).toHaveValue("");
+    expect(stopType).toHaveTextContent("Type (optional)");
+    expect(day).toHaveValue("1");
     fireEvent.change(day, { target: { value: "1" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add stop" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add" }));
 
     await waitFor(() => expect(onSelect).toHaveBeenCalledWith(
       "attraction",
@@ -394,6 +1417,10 @@ describe("map stop selection", () => {
     await waitFor(() => expect(placeChanged).toBeTypeOf("function"));
     act(() => placeChanged?.());
 
+    const stopType = await screen.findByRole("combobox", { name: "Stop type (optional)" });
+    expect(stopType).toHaveValue("attraction");
+    expect(stopType).toHaveTextContent("Attraction · auto-filled");
+    expect(stopType).toHaveClass("bg-emerald-50");
     const day = await screen.findByRole("combobox", { name: "Add Dudhsagar Falls to day" });
     expect(day).toHaveValue("auto");
     expect(day).toHaveTextContent("Best day");

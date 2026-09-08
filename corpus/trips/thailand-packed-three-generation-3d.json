@@ -1,0 +1,213 @@
+{
+  "status": "draft",
+  "trip_id": "thailand_2027-01-13_2027-01-16",
+  "trip_number": 1,
+  "created_at": "2026-08-17T19:48:43.681246",
+  "destination": "Thailand",
+  "origin": "Chennai",
+  "departure_date": "2027-01-13",
+  "return_date": "2027-01-16",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Packed sightseeing, early starts, cover Bangkok and Krabi",
+  "planning_recommendation": {
+    "confidence": "medium",
+    "destination": "Thailand",
+    "estimated_planned_minutes": 990,
+    "evidence_place_count": 2,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "2 preference-matched places account for about 990 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-13",
+      "title": "Day 1 · Arrival in Bangkok",
+      "summary": "Arrive in Bangkok from Chennai, check in to hotel, explore key sights in the city center.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Bangkok",
+          "kind": "flight",
+          "time": "07:00",
+          "arrival_time": "11:30",
+          "duration_min": 270,
+          "note": "Morning flight, direct if possible"
+        },
+        {
+          "name": "Bangkok Hotel",
+          "kind": "hotel",
+          "note": "Check-in and drop bags"
+        },
+        {
+          "name": "Grand Palace",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 90,
+          "note": "Must-see royal complex"
+        },
+        {
+          "name": "Wat Pho",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 60,
+          "note": "Famous Reclining Buddha"
+        },
+        {
+          "name": "Asiatique The Riverfront",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 120,
+          "note": "Evening riverside market and dinner"
+        },
+        {
+          "name": "Bangkok Hotel",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-14",
+      "title": "Day 2 · Bangkok to Krabi",
+      "summary": "Morning sightseeing in Bangkok, then fly to Krabi. Afternoon beach and local sights.",
+      "stops": [
+        {
+          "name": "Wat Arun",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 60,
+          "note": "Iconic riverside temple"
+        },
+        {
+          "name": "Flight: Bangkok to Krabi",
+          "kind": "flight",
+          "time": "10:30",
+          "arrival_time": "12:00",
+          "duration_min": 90,
+          "note": "Mid-morning flight"
+        },
+        {
+          "name": "Bangkok Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "12:30"
+        },
+        {
+          "name": "Krabi Hotel",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "14:30"
+        },
+        {
+          "name": "Ao Nang Beach",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 120,
+          "note": "Relax and explore the beach"
+        },
+        {
+          "name": "Krabi Night Market",
+          "kind": "attraction",
+          "time": "19:00",
+          "duration_min": 120,
+          "note": "Local food and shopping"
+        },
+        {
+          "name": "Krabi Hotel",
+          "kind": "hotel",
+          "note": "Return for rest",
+          "time": "21:30"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-15",
+      "title": "Day 3 · Krabi Islands & Departure",
+      "summary": "Island-hopping tour from Krabi, return to hotel, fly back to Chennai.",
+      "stops": [
+        {
+          "name": "Krabi Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Four Islands Tour",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 360,
+          "note": "Visit Koh Poda, Chicken Island, Tup Island, Phra Nang Cave Beach"
+        },
+        {
+          "name": "Krabi Hotel",
+          "kind": "hotel",
+          "note": "Return, freshen up"
+        },
+        {
+          "name": "Flight: Krabi to Chennai",
+          "kind": "flight",
+          "time": "17:00",
+          "arrival_time": "20:30",
+          "duration_min": 210,
+          "note": "Evening flight, direct if possible"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T19:49:13.032613",
+  "id": "thailand_2027-01-13_2027-01-16",
+  "user_id": "corpus-thailand-packed-three-generation-3d"
+}

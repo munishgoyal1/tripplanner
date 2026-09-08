@@ -1,0 +1,416 @@
+{
+  "archive_no": 26,
+  "trip_id": "gujarat_2026-12-07_2026-12-12",
+  "user_id": "corpus-vegetarian-jain-gujarat",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:59:55Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T15:01:30Z",
+      "content_hash": "8f35e287ed5d6de4",
+      "plan": {
+        "status": "draft",
+        "trip_id": "gujarat_2026-12-07_2026-12-12",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:29:55.403677",
+        "destination": "Gujarat",
+        "origin": "Mumbai",
+        "departure_date": "2026-12-07",
+        "return_date": "2026-12-12",
+        "travelers": "2 adults",
+        "notes": "Strict Jain food throughout. Covering Ahmedabad and Kutch.",
+        "planning_recommendation": {
+          "confidence": "medium",
+          "destination": "Gujarat",
+          "estimated_planned_minutes": 210,
+          "evidence_place_count": 2,
+          "reasons": [
+            "The user's explicit 5-day duration is authoritative",
+            "2 preference-matched places account for about 210 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 5,
+          "recommended_range": [
+            1,
+            2
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2026-12-07",
+            "title": "Day 1 · Arrival in Ahmedabad",
+            "summary": "Arrive from Mumbai, check in, explore Sabarmati Riverfront and visit a Jain restaurant.",
+            "stops": [
+              {
+                "name": "Hotel (Ahmedabad)",
+                "kind": "hotel",
+                "note": "Check-in"
+              },
+              {
+                "name": "Sabarmati Riverfront",
+                "kind": "attraction",
+                "time": "15:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Jain Restaurant (Ahmedabad)",
+                "kind": "meal",
+                "time": "18:00",
+                "note": "Strict Jain dinner"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2026-12-08",
+            "title": "Day 2 · Ahmedabad Heritage",
+            "summary": "Visit heritage sites: Adalaj Stepwell, Akshardham Temple, and enjoy Jain meals.",
+            "stops": [
+              {
+                "name": "Hotel (Ahmedabad)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Adalaj Stepwell",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Akshardham Temple",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Jain Restaurant (Ahmedabad)",
+                "kind": "meal",
+                "time": "14:30",
+                "note": "Strict Jain lunch"
+              },
+              {
+                "name": "Manek Chowk (Jain food stalls)",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Strict Jain dinner"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-12-09",
+            "title": "Day 3 · Transfer to Kutch",
+            "summary": "Travel to Kutch, check in, visit local markets, and dine at a Jain restaurant.",
+            "stops": [
+              {
+                "name": "Drive: Ahmedabad to Kutch",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 360,
+                "distance_km": 400,
+                "note": "Private car or train"
+              },
+              {
+                "name": "Hotel (Ahmedabad)",
+                "kind": "hotel",
+                "note": "Checkout",
+                "time": "14:30"
+              },
+              {
+                "name": "Hotel (Kutch)",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "16:30"
+              },
+              {
+                "name": "Bhuj Market",
+                "kind": "attraction",
+                "time": "18:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Jain Restaurant (Kutch)",
+                "kind": "meal",
+                "time": "20:00",
+                "note": "Strict Jain dinner"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2026-12-10",
+            "title": "Day 4 · Kutch Exploration",
+            "summary": "Explore White Rann, Kalo Dungar, and enjoy Jain meals.",
+            "stops": [
+              {
+                "name": "Hotel (Kutch)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "White Rann of Kutch",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Kalo Dungar",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Jain Restaurant (Kutch)",
+                "kind": "meal",
+                "time": "14:30",
+                "note": "Strict Jain lunch"
+              },
+              {
+                "name": "Bhuj Palace",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Jain Restaurant (Kutch)",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Strict Jain dinner"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2026-12-11",
+            "title": "Day 5 · Return to Mumbai",
+            "summary": "Checkout, return journey to Mumbai, Jain meal en route.",
+            "stops": [
+              {
+                "name": "Hotel (Kutch)",
+                "kind": "hotel",
+                "note": "Checkout",
+                "time": "09:00"
+              },
+              {
+                "name": "Jain Restaurant (En route)",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Strict Jain lunch"
+              },
+              {
+                "name": "Drive: Kutch to Mumbai",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 720,
+                "distance_km": 900,
+                "note": "Private car or train"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2026-12-12",
+            "title": "Day 6 · Mumbai Arrival",
+            "summary": "Arrive in Mumbai, trip ends.",
+            "stops": [
+              {
+                "name": "Mumbai",
+                "kind": "other",
+                "time": "09:00",
+                "note": "Trip ends"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:31:30.629730",
+        "price_checks": [
+          {
+            "kind": "flights",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:31:29",
+            "expires_at": "2026-08-15T21:01:29"
+          },
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:31:30",
+            "expires_at": "2026-08-16T08:31:30"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:59:55Z",
+    "user_id": "corpus-vegetarian-jain-gujarat",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {}
+  },
+  "descriptor": {
+    "destination": "Gujarat",
+    "departure_date": "2026-12-07",
+    "return_date": "2026-12-12",
+    "nights": 5,
+    "month_year": "Dec 2026",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 0,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Gujarat",
+      "Day 1 · Arrival in Ahmedabad",
+      "Hotel (Ahmedabad)",
+      "Sabarmati Riverfront",
+      "Jain Restaurant (Ahmedabad)",
+      "Day 2 · Ahmedabad Heritage",
+      "Adalaj Stepwell",
+      "Akshardham Temple",
+      "Manek Chowk (Jain food stalls)",
+      "Day 3 · Transfer to Kutch",
+      "Drive: Ahmedabad to Kutch",
+      "Hotel (Kutch)",
+      "Bhuj Market",
+      "Jain Restaurant (Kutch)",
+      "Day 4 · Kutch Exploration",
+      "White Rann of Kutch",
+      "Kalo Dungar",
+      "Bhuj Palace",
+      "Day 5 · Return to Mumbai",
+      "Jain Restaurant (En route)",
+      "Drive: Kutch to Mumbai",
+      "Day 6 · Mumbai Arrival",
+      "Mumbai"
+    ],
+    "auto_summary": "5-night Gujarat, Dec 2026",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T15:01:30Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:59:55Z"
+    }
+  ]
+}

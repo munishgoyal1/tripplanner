@@ -1,0 +1,499 @@
+{
+  "status": "draft",
+  "trip_id": "seoul_2027-04-05_2027-04-12",
+  "trip_number": 1,
+  "created_at": "2026-08-17T18:41:20.444620",
+  "destination": "Seoul",
+  "origin": "Delhi",
+  "departure_date": "2027-04-05",
+  "return_date": "2027-04-12",
+  "travelers": "2 adults",
+  "notes": "Hotel and flight planning complete. Weather is typical for early April: cool, some rain at the start, then clear and warming up.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Seoul",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [
+    {
+      "option": 1,
+      "airline": "Nuitée Air",
+      "price": 12390.54,
+      "currency": "USD",
+      "departure_time": "2027-04-05T22:45:00",
+      "arrival_time": "2027-04-06T02:45:00",
+      "origin": "Delhi",
+      "destination": "Seoul",
+      "cabin_class": "business",
+      "stops": 0
+    }
+  ],
+  "selected_hotels": [
+    {
+      "name": "Banyan Tree Club & Spa Seoul",
+      "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+      "rating": 4.7,
+      "review_count": 3428,
+      "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+      "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-05",
+      "title": "Day 1 · Arrival in Seoul",
+      "summary": "Arrive in Seoul from Delhi, check into a premium hotel, and enjoy a relaxing evening exploring the neighborhood.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Seoul",
+          "kind": "flight",
+          "time": "09:00"
+        },
+        {
+          "name": "Incheon International Airport",
+          "kind": "transport",
+          "note": "Arrival from Delhi",
+          "time": "20:00"
+        },
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Check-in",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "22:00"
+        },
+        {
+          "name": "Myeongdong Shopping Street",
+          "kind": "attraction",
+          "time": "23:59",
+          "duration_min": 90,
+          "note": "Evening stroll and shopping"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-06",
+      "title": "Day 2 · Historic Seoul",
+      "summary": "Visit iconic palaces and traditional neighborhoods.",
+      "stops": [
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "09:00"
+        },
+        {
+          "name": "DMZ Tour",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 360,
+          "note": "Full-day guided tour"
+        },
+        {
+          "name": "Gyeongbokgung Palace",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 120,
+          "note": "Explore the historic palace"
+        },
+        {
+          "name": "Gangnam District",
+          "kind": "attraction",
+          "time": "20:00",
+          "duration_min": 90,
+          "note": "Trendy cafes and nightlife"
+        },
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "22:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-07",
+      "title": "Day 3 · Modern Seoul",
+      "summary": "Experience Seoul's modern side: towers, malls, and nightlife.",
+      "stops": [
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "09:00"
+        },
+        {
+          "name": "Seoul Forest",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Morning walk"
+        },
+        {
+          "name": "National Museum of Korea",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 120,
+          "note": "Korean history & art"
+        },
+        {
+          "name": "Bukchon Hanok Village",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "Walk through traditional houses"
+        },
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "17:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-04-08",
+      "title": "Day 4 · Culture & Cuisine",
+      "summary": "Explore museums and sample Korean cuisine.",
+      "stops": [
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "09:00"
+        },
+        {
+          "name": "Gwangjang Market",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90,
+          "note": "Street food lunch"
+        },
+        {
+          "name": "Insadong",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 90,
+          "note": "Art galleries and tea houses"
+        },
+        {
+          "name": "Apgujeong Rodeo Street",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 90,
+          "note": "Luxury shopping"
+        },
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "18:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-04-09",
+      "title": "Day 5 · Day Trip to DMZ",
+      "summary": "Guided excursion to the Demilitarized Zone (DMZ) and historic sites.",
+      "stops": [
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "09:00"
+        },
+        {
+          "name": "N Seoul Tower",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Panoramic city views"
+        },
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "13:00"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-04-10",
+      "title": "Day 6 · Parks & Shopping",
+      "summary": "Relax in Seoul's parks and enjoy upscale shopping.",
+      "stops": [
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "09:00"
+        },
+        {
+          "name": "Cheonggyecheon Stream",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Relax by the stream"
+        },
+        {
+          "name": "COEX Mall",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 120,
+          "note": "Shopping and aquarium"
+        },
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "15:00"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-04-11",
+      "title": "Day 7 · Leisure & Departure",
+      "summary": "Enjoy leisure time before departing Seoul.",
+      "stops": [
+        {
+          "name": "Banyan Tree Club & Spa Seoul",
+          "kind": "hotel",
+          "note": "Check-out",
+          "address": "60 Jangchungdan-ro, Jung District, Seoul, South Korea",
+          "rating": 4.7,
+          "review_count": 3428,
+          "website": "https://www.banyantree.com/south-korea/club-and-spa-seoul",
+          "place_id": "ChIJGR_sdB-jfDURARlu68lWR8M",
+          "time": "09:00"
+        },
+        {
+          "name": "Local cafe",
+          "kind": "meal",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Breakfast"
+        },
+        {
+          "name": "Flight: Seoul to Delhi",
+          "kind": "flight",
+          "time": "12:30"
+        },
+        {
+          "name": "Incheon International Airport",
+          "kind": "transport",
+          "note": "Depart for Delhi",
+          "time": "12:30"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "flights": {
+      "amount": 12390.54,
+      "currency": "USD",
+      "note": "Business class, round-trip for 2"
+    },
+    "hotel": {
+      "amount": 0,
+      "currency": "USD",
+      "note": "Premium hotel, rates unavailable"
+    }
+  },
+  "total_cost": 12390.54,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {
+    "destination": "Seoul",
+    "country": "South Korea",
+    "latitude": 37.566,
+    "longitude": 126.9784,
+    "source": "seasonal_estimate",
+    "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+    "days": [
+      {
+        "date": "2027-04-05",
+        "summary": "Rain",
+        "high_c": 15.9,
+        "low_c": 6.8,
+        "precip_mm": 4.1
+      },
+      {
+        "date": "2027-04-06",
+        "summary": "Light rain",
+        "high_c": 13.1,
+        "low_c": 5.5,
+        "precip_mm": 3.6
+      },
+      {
+        "date": "2027-04-07",
+        "summary": "Clear",
+        "high_c": 12.4,
+        "low_c": 1.5,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-04-08",
+        "summary": "Clear",
+        "high_c": 14.2,
+        "low_c": 2.8,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-04-09",
+        "summary": "Clear",
+        "high_c": 16.7,
+        "low_c": 4.1,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-04-10",
+        "summary": "Clear",
+        "high_c": 17.1,
+        "low_c": 5.2,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-04-11",
+        "summary": "Clear",
+        "high_c": 18.2,
+        "low_c": 6.7,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-04-12",
+        "summary": "Clear",
+        "high_c": 18.9,
+        "low_c": 7.2,
+        "precip_mm": 0.0
+      }
+    ],
+    "packing_advice": [
+      "Light jacket for cool evenings",
+      "Umbrella or rain jacket for first two days",
+      "Comfortable walking shoes"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T18:45:50.161979",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T18:45:16",
+      "expires_at": "2026-08-17T19:15:16"
+    }
+  ],
+  "id": "seoul_2027-04-05_2027-04-12",
+  "user_id": "corpus-seoul-premium-couple-7d"
+}

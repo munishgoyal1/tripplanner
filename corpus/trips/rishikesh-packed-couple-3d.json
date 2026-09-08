@@ -1,0 +1,245 @@
+{
+  "status": "draft",
+  "trip_id": "rishikesh_2027-03-02_2027-03-05",
+  "trip_number": 1,
+  "created_at": "2026-08-18T18:26:18.367657",
+  "destination": "Rishikesh",
+  "origin": "Delhi",
+  "departure_date": "2027-03-02",
+  "return_date": "2027-03-05",
+  "travelers": "2 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Rishikesh",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel Holy Vivasa",
+      "address": "19, Dehradun Rd, Adarsh Gram, Rishikesh, Uttarakhand 249201, India",
+      "rating": 4.8,
+      "review_count": 3261,
+      "website": "https://hotelholyvivasa.com/",
+      "place_id": "ChIJeacIhhEXCTkR1y2ZWTIzDmg"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-02",
+      "title": "Day 1 · Arrival in Rishikesh & Local Sights",
+      "summary": "Morning drive from Delhi to Rishikesh, check in at Hotel Holy Vivasa, explore Triveni Ghat, Bharat Mandir, and evening Ganga Aarti.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Rishikesh",
+          "kind": "transport",
+          "time": "06:00",
+          "duration_min": 360,
+          "distance_km": 240,
+          "note": "Private car or taxi, early start for maximum sightseeing"
+        },
+        {
+          "name": "Hotel Holy Vivasa",
+          "kind": "hotel",
+          "time": "12:20",
+          "note": "Check in and freshen up"
+        },
+        {
+          "name": "Triveni Ghat",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Bharat Mandir",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 45
+        },
+        {
+          "name": "Chotiwala Restaurant",
+          "kind": "meal",
+          "time": "16:15",
+          "duration_min": 60,
+          "note": "Famous riverside eatery for snacks/early dinner"
+        },
+        {
+          "name": "Ganga Aarti at Parmarth Niketan",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Don't miss the evening Aarti on the ghats"
+        },
+        {
+          "name": "Hotel Holy Vivasa",
+          "kind": "hotel",
+          "time": "19:45",
+          "note": "Overnight stay"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-03",
+      "title": "Day 2 · Adventure & Temples",
+      "summary": "Morning white water rafting, visit Lakshman Jhula, Ram Jhula, Beatles Ashram, and local cafes.",
+      "stops": [
+        {
+          "name": "Hotel Holy Vivasa",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Early breakfast"
+        },
+        {
+          "name": "White Water Rafting (Brahmapuri to Rishikesh)",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 180,
+          "note": "Book with a reputable operator"
+        },
+        {
+          "name": "Lakshman Jhula",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 30
+        },
+        {
+          "name": "Ram Jhula",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 30
+        },
+        {
+          "name": "Little Buddha Cafe",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Scenic lunch spot with river views"
+        },
+        {
+          "name": "The Beatles Ashram (Chaurasi Kutia)",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Hotel Holy Vivasa",
+          "kind": "hotel",
+          "time": "16:45",
+          "note": "Rest and freshen up"
+        },
+        {
+          "name": "Freedom Cafe",
+          "kind": "meal",
+          "time": "19:00",
+          "duration_min": 90,
+          "note": "Dinner with a view"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-04",
+      "title": "Day 3 · Waterfalls & Departure",
+      "summary": "Visit Neer Garh Waterfall, shopping at local markets, return drive to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel Holy Vivasa",
+          "kind": "hotel",
+          "time": "07:00",
+          "note": "Check out after early breakfast"
+        },
+        {
+          "name": "Neer Garh Waterfall",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 90,
+          "note": "Short trek and scenic spot"
+        },
+        {
+          "name": "Rishikesh Market (Lakshman Jhula Road)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 60,
+          "note": "Souvenir shopping"
+        },
+        {
+          "name": "Madras Cafe",
+          "kind": "meal",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "South Indian breakfast/lunch"
+        },
+        {
+          "name": "Drive: Rishikesh to Delhi",
+          "kind": "transport",
+          "time": "12:45",
+          "duration_min": 360,
+          "distance_km": 240,
+          "note": "Return by evening"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T18:34:43.012005",
+  "id": "rishikesh_2027-03-02_2027-03-05",
+  "user_id": "corpus-rishikesh-packed-couple-3d"
+}

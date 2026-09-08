@@ -1,0 +1,492 @@
+{
+  "status": "draft",
+  "trip_id": "rajasthan_2027-02-02_2027-02-10",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:27:25.270014",
+  "destination": "Rajasthan",
+  "origin": "Mumbai",
+  "departure_date": "2027-02-02",
+  "return_date": "2027-02-10",
+  "travelers": "2 adults",
+  "notes": "Road trip covering Jaipur, Jodhpur, Udaipur. Balanced pace, moderate budget, 3-star+ hotels.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Rajasthan",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 8-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 8,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "city": "Jaipur",
+      "name": "Twinstar Standard",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp6558f420",
+        "offer_id": "3gAWonJzkd4AEaRzcmlk2gElR01aREVNQlhHUTNUT05SWkdaU1RFTUJYR00zVElOUlJHWlNUTU5CV0dFM1RFTlJVUFFZU0dNUlFHSTNUQU1SUUdKNkRFTUJTRzRZREVNQlVQUlNXNFgyVktONkVTVFQ0SkZIRkU3QlNJRVlFRzdCVUdVWkRTN0RKS0JUVktTRDRHRTNUUU5SWUdBWkRHTlJTR1kzRFNUU1pPVlJTR01KWEdBWURHTVJZR1E0REFJWlhHUTRDMk1KWEdBWURHTVJZR1E0REE3Q09LSkRFNDdCU0dBWkRNTUJZR0VaVENNQlFHQjZEQzdDU0dFWVRNTUw0R0VaVEVNUlhHWTRDR1FTQ0VOSEZFUlNPRU1aREFNUldGVVlEUUxKUkdNUURDTUIyR0FZQ0ejcHJjy0DJ1dcKPXCkpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JurzIgVHdpbiBTdGFuZGFyZKNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJCicnSkTlJGTqRzaGlkqjE3MDAzMjg0ODCjc2lkAqNoaWSqbHA2NTU4ZjQyMKNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDItMDKiY2-qMjAyNy0wMi0wNKNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1Yjg1OTE2TXV5ajhQSFpzdG1BT1FQM1B6SnFiOXJIT3hmSKNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnDoWSmT1RIRVJToWHLQIMEzMzMzM2hY6NJTlKibHDAo2JrdAA="
+      },
+      "checkin": "2027-02-02",
+      "checkout": "2027-02-04",
+      "price_per_night": 3333,
+      "currency": "INR",
+      "guest_nationality": "IN",
+      "room_type": "Standard",
+      "rating": 3.7,
+      "reviews_count": 1200,
+      "address": "Jaipur City Center",
+      "amenities": [
+        "WiFi",
+        "Breakfast",
+        "Parking"
+      ]
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-02",
+      "title": "Day 1 · Mumbai to Jaipur",
+      "summary": "Depart Mumbai by car, drive to Jaipur. Check in and relax. Evening stroll in old Jaipur.",
+      "stops": [
+        {
+          "name": "Drive: Mumbai to Jaipur",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 660,
+          "distance_km": 1160,
+          "note": "Long drive, plan rest stops every 3-4 hours."
+        },
+        {
+          "name": "Hotel in Jaipur",
+          "kind": "hotel",
+          "note": "Check-in and rest."
+        },
+        {
+          "name": "Johari Bazaar",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 60,
+          "note": "Evening stroll and shopping."
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-03",
+      "title": "Day 2 · Jaipur Sightseeing",
+      "summary": "Explore Jaipur's top sights: Amber Fort, City Palace, Jantar Mantar, Hawa Mahal. Local cuisine for lunch and dinner.",
+      "stops": [
+        {
+          "name": "Hotel in Jaipur",
+          "kind": "hotel",
+          "note": "Start from hotel."
+        },
+        {
+          "name": "Amber Fort",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "City Palace",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Jantar Mantar",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hawa Mahal",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 45
+        },
+        {
+          "name": "Local restaurant Jaipur",
+          "kind": "meal",
+          "time": "17:00",
+          "note": "Dinner at a recommended spot."
+        },
+        {
+          "name": "Hotel in Jaipur",
+          "kind": "hotel",
+          "note": "Return to hotel."
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-04",
+      "title": "Day 3 · Jaipur to Jodhpur",
+      "summary": "Drive from Jaipur to Jodhpur. En route stop at Ajmer/Pushkar. Evening at leisure in Jodhpur.",
+      "stops": [
+        {
+          "name": "Drive: Jaipur to Ajmer",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 180,
+          "distance_km": 130,
+          "note": "Morning drive to Ajmer."
+        },
+        {
+          "name": "Drive: Ajmer to Pushkar",
+          "kind": "transport",
+          "time": "11:45",
+          "duration_min": 30,
+          "distance_km": 15,
+          "note": "Short drive to Pushkar."
+        },
+        {
+          "name": "Ajmer Sharif Dargah",
+          "kind": "attraction",
+          "time": "12:45",
+          "duration_min": 45
+        },
+        {
+          "name": "Drive: Pushkar to Ajmer",
+          "kind": "transport",
+          "time": "13:00",
+          "duration_min": 30,
+          "distance_km": 15,
+          "note": "Return to Ajmer for lunch."
+        },
+        {
+          "name": "Pushkar Lake",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 45
+        },
+        {
+          "name": "Drive: Ajmer to Jodhpur",
+          "kind": "transport",
+          "time": "14:30",
+          "duration_min": 180,
+          "distance_km": 210,
+          "note": "Afternoon drive to Jodhpur."
+        },
+        {
+          "name": "Hotel in Jaipur",
+          "kind": "hotel",
+          "note": "Checkout.",
+          "time": "18:00"
+        },
+        {
+          "name": "Local restaurant Ajmer",
+          "kind": "meal",
+          "time": "20:00",
+          "note": "Lunch break."
+        },
+        {
+          "name": "Hotel in Jodhpur",
+          "kind": "hotel",
+          "note": "Check-in and rest.",
+          "time": "22:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-05",
+      "title": "Day 4 · Jodhpur Sightseeing",
+      "summary": "Explore Mehrangarh Fort, Jaswant Thada, Umaid Bhawan Palace. Stroll in the old city and dinner at a local restaurant.",
+      "stops": [
+        {
+          "name": "Hotel in Jodhpur",
+          "kind": "hotel",
+          "note": "Start from hotel."
+        },
+        {
+          "name": "Mehrangarh Fort",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Jaswant Thada",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 45
+        },
+        {
+          "name": "Umaid Bhawan Palace",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Local restaurant Jodhpur",
+          "kind": "meal",
+          "time": "15:00",
+          "note": "Lunch at a recommended spot."
+        },
+        {
+          "name": "Clock Tower Market",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel in Jodhpur",
+          "kind": "hotel",
+          "note": "Return to hotel."
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-06",
+      "title": "Day 5 · Jodhpur to Udaipur",
+      "summary": "Drive from Jodhpur to Udaipur. En route stop at Ranakpur Temple. Evening at leisure in Udaipur.",
+      "stops": [
+        {
+          "name": "Drive: Jodhpur to Ranakpur",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "distance_km": 90,
+          "note": "Morning drive to Ranakpur."
+        },
+        {
+          "name": "Ranakpur Jain Temple",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Drive: Ranakpur to Udaipur",
+          "kind": "transport",
+          "time": "12:30",
+          "duration_min": 180,
+          "distance_km": 160,
+          "note": "Afternoon drive to Udaipur."
+        },
+        {
+          "name": "Hotel in Jodhpur",
+          "kind": "hotel",
+          "note": "Checkout.",
+          "time": "16:00"
+        },
+        {
+          "name": "Local restaurant Ranakpur",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Lunch break."
+        },
+        {
+          "name": "Hotel in Udaipur",
+          "kind": "hotel",
+          "note": "Check-in and rest.",
+          "time": "20:00"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-02-07",
+      "title": "Day 6 · Udaipur Sightseeing",
+      "summary": "Explore City Palace, Lake Pichola, Jagdish Temple, Bagore Ki Haveli. Dinner at a lakeside restaurant.",
+      "stops": [
+        {
+          "name": "Hotel in Udaipur",
+          "kind": "hotel",
+          "note": "Start from hotel."
+        },
+        {
+          "name": "City Palace Udaipur",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Jagdish Temple",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 45
+        },
+        {
+          "name": "Lake Pichola Boat Ride",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Bagore Ki Haveli",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Local restaurant Udaipur",
+          "kind": "meal",
+          "time": "17:00",
+          "note": "Dinner at a lakeside spot."
+        },
+        {
+          "name": "Hotel in Udaipur",
+          "kind": "hotel",
+          "note": "Return to hotel."
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-02-08",
+      "title": "Day 7 · Udaipur Leisure & Culture",
+      "summary": "Relax in Udaipur, visit Saheliyon Ki Bari, Shilpgram, and enjoy local shopping. Evening cultural show.",
+      "stops": [
+        {
+          "name": "Hotel in Udaipur",
+          "kind": "hotel",
+          "note": "Start from hotel."
+        },
+        {
+          "name": "Saheliyon Ki Bari",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Shilpgram",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Local restaurant Udaipur",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch at a recommended spot."
+        },
+        {
+          "name": "Local market Udaipur",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Bagore Ki Haveli Cultural Show",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Hotel in Udaipur",
+          "kind": "hotel",
+          "note": "Return to hotel."
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-02-09",
+      "title": "Day 8 · Udaipur to Mumbai",
+      "summary": "Drive back from Udaipur to Mumbai. Lunch en route. Trip ends.",
+      "stops": [
+        {
+          "name": "Hotel in Udaipur",
+          "kind": "hotel",
+          "note": "Checkout.",
+          "time": "09:00"
+        },
+        {
+          "name": "Local restaurant en route",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch break."
+        },
+        {
+          "name": "Drive: Udaipur to Mumbai",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 720,
+          "distance_km": 1200,
+          "note": "Long drive, plan rest stops every 3-4 hours."
+        }
+      ]
+    },
+    {
+      "day": 9,
+      "date": "2027-02-10",
+      "title": "Day 9 · Arrival Mumbai",
+      "summary": "Arrive in Mumbai, trip concludes.",
+      "stops": [
+        {
+          "name": "Mumbai",
+          "kind": "other",
+          "time": "09:00",
+          "note": "Trip ends."
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:29:41.717990",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:29:28",
+      "expires_at": "2026-08-16T07:29:28"
+    }
+  ],
+  "id": "rajasthan_2027-02-02_2027-02-10",
+  "user_id": "corpus-rajasthan-multicity"
+}

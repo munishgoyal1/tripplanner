@@ -1,0 +1,447 @@
+{
+  "status": "draft",
+  "trip_id": "malaysia_2027-07-16_2027-07-21",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:52:11.718498",
+  "destination": "Malaysia",
+  "origin": "Chennai",
+  "departure_date": "2027-07-16",
+  "return_date": "2027-07-21",
+  "travelers": "2 adults",
+  "notes": "Focus on local food experiences in Kuala Lumpur and Penang.",
+  "planning_recommendation": {
+    "confidence": "medium",
+    "destination": "Malaysia",
+    "estimated_planned_minutes": 1560,
+    "evidence_place_count": 4,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "4 preference-matched places account for about 1560 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      5,
+      7
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Twin Beds, Garden View",
+      "hotel_id": "lp1b3e9",
+      "address": "Twin Beds, Garden View, Kuala Lumpur",
+      "checkin": "2027-07-16",
+      "checkout": "2027-07-18",
+      "price_per_night": 220,
+      "currency": "MYR",
+      "provider": "liteapi",
+      "google_rating": 4.2,
+      "reviews_count": 1200
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-07-16",
+      "title": "Arrival in Kuala Lumpur",
+      "summary": "Arrive in Kuala Lumpur, check in to Twin Beds, Garden View hotel, explore Jalan Alor night market for local street food.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Kuala Lumpur",
+          "kind": "flight",
+          "time": "09:00",
+          "note": "Morning flight from Chennai"
+        },
+        {
+          "name": "Twin Beds, Garden View",
+          "kind": "hotel",
+          "note": "Check in and freshen up",
+          "time": "11:00"
+        },
+        {
+          "name": "Jalan Alor Night Market",
+          "kind": "attraction",
+          "time": "19:00",
+          "duration_min": 120,
+          "note": "Famous for street food"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-07-17",
+      "title": "Kuala Lumpur Food & Culture",
+      "summary": "Morning food tour, visit Petronas Towers, explore Central Market, dinner at a local restaurant.",
+      "stops": [
+        {
+          "name": "Twin Beds, Garden View",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "09:00"
+        },
+        {
+          "name": "Local Food Tour Kuala Lumpur",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 180,
+          "note": "Guided food walk"
+        },
+        {
+          "name": "Chew Jetty",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Khoo Kongsi Clan House",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Restoran Rebung Chef Ismail",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner with local Malay cuisine"
+        },
+        {
+          "name": "Twin Beds, Garden View",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "21:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-07-18",
+      "title": "Kuala Lumpur to Penang",
+      "summary": "Travel to Penang by morning flight, check in, evening food tour in George Town.",
+      "stops": [
+        {
+          "name": "Flight: Kuala Lumpur to Penang",
+          "kind": "flight",
+          "time": "10:00",
+          "note": "Morning flight"
+        },
+        {
+          "name": "Twin Beds, Garden View",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "12:00"
+        },
+        {
+          "name": "Petronas Twin Towers",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Twin Beds, Garden View",
+          "kind": "hotel",
+          "note": "Check in",
+          "hotel_id": "lp1b3e9",
+          "address": "Twin Beds, Garden View, Kuala Lumpur",
+          "checkin": "2027-07-16",
+          "checkout": "2027-07-18",
+          "price_per_night": 220,
+          "currency": "MYR",
+          "provider": "liteapi",
+          "google_rating": 4.2,
+          "reviews_count": 1200,
+          "time": "16:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-07-19",
+      "title": "Penang Heritage & Food",
+      "summary": "Explore heritage sites, local food markets, and enjoy Penang's famous street food.",
+      "stops": [
+        {
+          "name": "Twin Beds, Garden View",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "hotel_id": "lp1b3e9",
+          "address": "Twin Beds, Garden View, Kuala Lumpur",
+          "checkin": "2027-07-16",
+          "checkout": "2027-07-18",
+          "price_per_night": 220,
+          "currency": "MYR",
+          "provider": "liteapi",
+          "google_rating": 4.2,
+          "reviews_count": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "Central Market Kuala Lumpur",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Penang Peranakan Mansion",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Kek Lok Si Temple",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Penang Street Food Market",
+          "kind": "meal",
+          "time": "17:30",
+          "note": "Lunch at local market"
+        },
+        {
+          "name": "Teksen Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner at a top-rated local spot"
+        },
+        {
+          "name": "Twin Beds, Garden View",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "hotel_id": "lp1b3e9",
+          "address": "Twin Beds, Garden View, Kuala Lumpur",
+          "checkin": "2027-07-16",
+          "checkout": "2027-07-18",
+          "price_per_night": 220,
+          "currency": "MYR",
+          "provider": "liteapi",
+          "google_rating": 4.2,
+          "reviews_count": 1200,
+          "time": "21:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-07-20",
+      "title": "Penang Exploration & Return",
+      "summary": "Morning at leisure, visit Kek Lok Si Temple, return flight to Chennai.",
+      "stops": [
+        {
+          "name": "Twin Beds, Garden View",
+          "kind": "hotel",
+          "note": "Check out",
+          "hotel_id": "lp1b3e9",
+          "address": "Twin Beds, Garden View, Kuala Lumpur",
+          "checkin": "2027-07-16",
+          "checkout": "2027-07-18",
+          "price_per_night": 220,
+          "currency": "MYR",
+          "provider": "liteapi",
+          "google_rating": 4.2,
+          "reviews_count": 1200,
+          "time": "09:00"
+        },
+        {
+          "name": "George Town Street Food Tour",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 150,
+          "note": "Evening guided food tour"
+        },
+        {
+          "name": "Flight: Penang to Chennai",
+          "kind": "flight",
+          "time": "16:00",
+          "note": "Afternoon flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "MYR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:55:17.295091",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:52:58",
+      "expires_at": "2026-08-19T08:52:58"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:55:16",
+      "expires_at": "2026-08-18T21:25:16"
+    },
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-18T20:55:17",
+      "expires_at": "2026-08-18T21:25:17"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_kuala_lumpur_2027_07_16_2027_07_18",
+      "kind": "lodging",
+      "created_at": "2026-08-18T15:22:58.539235Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Kuala Lumpur",
+        "date": "2027-07-16"
+      },
+      "subject": "Stay in Kuala Lumpur",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_37085d8ddc32",
+      "options": [
+        {
+          "id": "opt_stay_37085d8ddc32",
+          "mode": null,
+          "label": "Hyatt Regency Kuantan Resort",
+          "detail": "2 Twin Beds, Garden View",
+          "price": {
+            "amount": 1009.15,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-16",
+            "checkout": "2027-07-18",
+            "room_name": "2 Twin Beds, Garden View",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Telok Chempedak",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1b3e9",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gE0R01aREVNQlhHUTNUT05SWkdaU1RFTUJXR0kzREtOUlVHNFpURVlaU0dBM0RPTlJSRzRaRE1OQldHVTNHS01SUUc0M0RNT0pXR1UzVE83QlJFTVpEQU1SWEdBM1RDTlQ0R0lZREVOWlFHNFlUUTdERk5aUFZLVTM0SkZISFlUS1pLSjZERVFKUUlONkRJTkpTSEY2R1NVREhLVkVIWU1KWEhBM1RBTlJXR1UzVElOUlNIQjJYTTIyU0VNWVRDTUpWSEVaU0dOWlVIQVdUQ01KUkdVNFRHN0NPS0pERTQ3QlNHQVpETU1CWUdFM0RDTUJRR0I2REM3Q1NHRVlUS01ENEdFWURBT0pSR1VSVkVUWkRKWkpFTVRSREdJWURFTlJOR0E0QzJNSldFQVlUQU9SUUdBUlGjcHJjy0CPiTMzMzMzpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JuuDIgVHdpbiBCZWRzLCBHYXJkZW4gVmlld6NvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJCicnSkTlJGTqRzaGlkpjExMTU5M6NzaWQCo2hpZKdscDFiM2U5o29jY5GBoWECo2N1cqNNWVKiZ26iSU6iY2mqMjAyNy0wNy0xNqJjb6oyMDI3LTA3LTE4o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTU3N2U3MDRGWnFkZHBCbmdzbzVjYWZtTkhSZExYTlM2dTQwo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnDoWSmT1RIRVJToWHLQFOCj1wo9cOhY6NNWVKibHDAo2JrdAA=",
+              "rate_id": "I5GVURCFJVBFQR2RGNKE6TSSLJDVUU2UIVGUEV2HJEZUIS2OKJKUONC2KRCVSWSTI5ATGRCPJZJFERZULJCE2TSCK5DVKM2HJNGVEUKHGQZUITKPJJLUOVJTKRHTOQSSIVGVURCBJVJFQR2BGNKEGTSUGRDUSWKEIVHFUUKHGRMVIUJXIRDE4WSQKZFVKMZUJJDEQSCZKRFVUS2KGZCEKUKKKFEU4NSEJFHEUU2IIY3EOU2VIREEWVSFJBMU2SSYJBATGVCBJZJFOR2VGNKESTSSKNEEEMSYJUZDEU2FJVMVIQ2NJJLEQRK2KNDU4WSVJBAVOVCDJVFFER2VGRKEON2DJ5FUURCFGQ3UEU2HIFNEITKNIJMUORJTIRBU2QSRI5BDMRCDG5BVGR2FLFKEWTKEGRDUKWKEIFHUUUSHKVJFMRKULJCEUWSKIVGVIUSEI5EVSRCFJZJE4R2BGRBTETKKK5CUCWKUIFHVEUKHIFJFC7BRGAYDSLRRGV6HYUSPPR6HY7BSEBKHO2LOEBBGKZDTFQQEOYLSMRSW4ICWNFSXO7BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T15:22:58.441336Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_8a0a1e7ec4da",
+          "mode": null,
+          "label": "Zenith Hotel Kuantan",
+          "detail": "TWIN DELUXE SUPERIOR",
+          "price": {
+            "amount": 1042.58,
+            "currency": "MYR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs 33 myr more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-07-16",
+            "checkout": "2027-07-18",
+            "room_name": "TWIN DELUXE SUPERIOR",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Jalan Putra Square 6, Putra Square",
+            "rating": 8.3,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp866ba",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzQyRE9OWldIRTNHS01SUUdZMkRNTkpXTU0zVEtOWllHWTJURU1CWEdNM1RLTlpRR1kyVE9NUldIRTNHTU5aU1BRWVNHTVJRR0kzVEFOWlJHWjZERU1CU0c0WURPTUpZUFJTVzRYMlZLTjZFU1RUNEpWTVZFN0JTSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOWlFHWTNES05aVUdZWkRRNUxXTk5KQ0dOSlZHQTJUUU5SREdFWURNTlJOR1UyVEFOSllHWjZGRVJTT1BRWkRBTVJYR0EzVENNSlJHVVlEQTdCUlBSSkRDTUpWR0I2RENNQlVHSTJUU0kyU0o0UlZFUlNPRU1aREFNUlhGVVlET0xKUkdFUURDTkoyR0FZQ0ejcHJjy0CQSlHrhR64pW9yX3ByywAAAAAAAAAApW9yX2Nty7-EeuFHrhR7omNty7-EeuFHrhR7o3BjZLMyMDI3LTA3LTE0IDAxOjU5OjAwonJ0o1JGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JutFRXSU4gREVMVVhFIFNVUEVSSU9So29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkoWhdLMyMDI3LTA3LTExIDE1OjAwOjAwoWHLQIYHMzMzMzOhY6NNWVKidHmmYW1vdW50onR6o0dNVIWhdLMyMDI3LTA3LTE0IDAxOjU5OjAwoWHLQJBKUeuFHrihY6NNWVKidHmmYW1vdW50onR6o0dNVKJydKNSRk6kc2hpZKY1NTA1ODajc2lkAqNoaWSnbHA4NjZiYaNvY2ORgaFhAqNjdXKjTVlSomduoklOomNpqjIwMjctMDctMTaiY2-qMjAyNy0wNy0xOKNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE1NzdlNzA0RlpxZGRwQm5nc281Y2FmbU5IUmRMWE5TNnU0MKNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpwqFkq1RvdXJpc20gZmVloWHLQDQFHrhR64WhY6NNWVKEoWnCoWSjVkFUoWHLQFTaPXCj1wqhY6NNWVKibHDAo2JrdAA=",
+              "rate_id": "I42DERCPJZNFOSCFGNDUWTKSKFDVSMSEJVHEUV2NJUZVIS2OLJMUOWJSKRCU2QSYI5GTGVCLJZNFCR2ZGJKE6TKSK5EEKM2HJVHFUU2QKFMVGR2NKJIUOSJTKRAU4WSSI5NDMRCFJVBFGRZULFCE6TKKLFIFEU2XGRMDEVSLJY3EKU2UKQ2EUVSNKZCTOQSTJFCVSRKHG5BFKR2VLJCFGN2EJJFUEVCWJNJUINCHIUZVIUKOLJIUOWJTIRFU4WSVI5MVURCRGVGFOTSOJJBUOTSKKZDUCMSUKFHFERCHIVMUITKOKJHEOVJSKRAU4SSZI5NDMRSFKJJU6UCRLJCECTKSLBDUCM2UINGUUUSHKVMUIQJXIJJFAUSKIRBU2SSWI5BDMRCDJVBFKR2JGJKFGSJSKNFDIUSWIVJFGT2FJVNEIQKNKJMEMVKZIRHUYSSSI5CVCRCDJZFDER2BLFBUO7BRGA2DELRVHB6DEMBSG4WTANZNGE2CAMBRHI2TSORQGB6FET34PR6HYVCXJFHCARCFJRKVQRJAKNKVARKSJFHVE7BQFYYDA7BNGAXDAML4PQWTALRQGF6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T15:22:58.441336Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 1009.15,
+        "delta": null,
+        "currency": "MYR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "malaysia_2027-07-16_2027-07-21",
+  "user_id": "corpus-malaysia-food-couple-5d"
+}

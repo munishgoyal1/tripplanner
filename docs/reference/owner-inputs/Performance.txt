@@ -1,0 +1,8 @@
+Performance IMprovements
+
+    the chat LLM takes long to come back. especially first trip plan is more than 1 minute and without appropirate messgaing to user
+    also later interactions are slow, that need to be surely improvced for better customer experience
+
+
+
+    

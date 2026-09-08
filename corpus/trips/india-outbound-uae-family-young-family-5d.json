@@ -1,0 +1,225 @@
+{
+  "status": "draft",
+  "trip_id": "dubai_2027-01-11_2027-01-16",
+  "trip_number": 1,
+  "created_at": "2026-08-25T20:32:14.732671",
+  "destination": "Dubai",
+  "origin": "Mumbai",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-01-11",
+  "return_date": "2027-01-16",
+  "travelers": "2 adults, 2 children (ages 6 and 10)",
+  "notes": "Indian passports. Focus on child-friendly attractions, practical meals, and one main area per day. Optional Abu Dhabi day trip.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Dubai",
+    "estimated_planned_minutes": 2199,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "8 preference-matched places account for about 2199 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      7,
+      9
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "",
+      "title": "Arrival & Downtown Dubai",
+      "summary": "** - Morning: Fly Mumbai → Dubai (direct flight, morning arrival) - Hotel check-in (suggest Downtown Dubai for convenience) - Afternoon: Dubai Mall (aquarium, VR Park, kid zones) - Evening: Burj Khalifa “At the Top” (pre-book sunset slot) - Dinner: S",
+      "stops": [
+        {
+          "name": "Morning: Fly Mumbai → Dubai (direct flight, morning arrival)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Hotel check-in (suggest Downtown Dubai for convenience)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon: Dubai Mall (aquarium, VR Park, kid zones)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Evening: Burj Khalifa “At the Top” (pre-book sunset slot)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Dinner: Social House (Dubai Mall, global cuisine, family-friendly)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Return to hotel",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "",
+      "title": "Atlantis Aquaventure & The Palm",
+      "summary": "** - Morning: Atlantis Aquaventure Waterpark (full day, slides & splash areas) - Lunch: Wavehouse Dubai (casual, games for kids) - Evening: The Pointe, Palm Jumeirah (fountains show, stroll) - Return to hotel",
+      "stops": [
+        {
+          "name": "Morning: Atlantis Aquaventure Waterpark (full day, slides & splash areas)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Lunch: Wavehouse Dubai (casual, games for kids)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Evening: The Pointe, Palm Jumeirah (fountains show, stroll)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Return to hotel",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "",
+      "title": "Desert Safari & Culture",
+      "summary": "** - Morning: Dubai Frame (city views) - Lunch: Al Safadi (Lebanese, kid-friendly) - Afternoon–Evening: Desert Safari (dune bashing, camel rides, sandboarding, BBQ dinner with show) - Return to hotel",
+      "stops": [
+        {
+          "name": "Morning: Dubai Frame (city views)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Lunch: Al Safadi (Lebanese, kid-friendly)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon–Evening: Desert Safari (dune bashing, camel rides, sandboarding, BBQ dinner with show)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Return to hotel",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "",
+      "title": "Dubai Marina, JBR Beach & Bluewaters",
+      "summary": "** - Morning: Dubai Marina Walk (scenic stroll, playgrounds) - Midday: JBR Beach (swimming, beach games) - Afternoon: Bluewaters Island (Ain Dubai, shops, entertainment) - Early Dinner: Eggspectation (JBR, family brunch/dinner) - Return to hotel",
+      "stops": [
+        {
+          "name": "Morning: Dubai Marina Walk (scenic stroll, playgrounds)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Midday: JBR Beach (swimming, beach games)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Afternoon: Bluewaters Island (Ain Dubai, shops, entertainment)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Early Dinner: Eggspectation (JBR, family brunch/dinner)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Return to hotel",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "",
+      "title": "Optional Abu Dhabi Day Trip OR IMG Worlds of Adventure",
+      "summary": "** - Option 1: Abu Dhabi (private/group tour) — Sheikh Zayed Grand Mosque, Louvre Abu Dhabi, Yas Island - Option 2: IMG Worlds of Adventure (Dubai’s largest indoor theme park) - Return to hotel",
+      "stops": [
+        {
+          "name": "Option 1: Abu Dhabi (private/group tour) — Sheikh Zayed Grand Mosque, Louvre Abu Dhabi, Yas Island",
+          "kind": "attraction"
+        },
+        {
+          "name": "Option 2: IMG Worlds of Adventure (Dubai’s largest indoor theme park)",
+          "kind": "attraction"
+        },
+        {
+          "name": "Return to hotel",
+          "kind": "attraction"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "",
+      "title": "Departure",
+      "summary": "** - Check out, transfer to Dubai Airport - Fly Dubai → Mumbai (direct midday/afternoon flight)  ---  **Key Notes & Next Steps** - No hotel is booked yet; recommend a 4-star family hotel in Downtown Dubai or Marina area with pool and breakfast. - All",
+      "stops": [
+        {
+          "name": "Key Notes & Next Steps",
+          "kind": "attraction"
+        },
+        {
+          "name": "Visa & Travel Advisory",
+          "kind": "attraction"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T20:36:15.623000",
+  "id": "dubai_2027-01-11_2027-01-16",
+  "user_id": "corpus-india-outbound-uae-family-young-family-5d-d5aa379832d9"
+}

@@ -1,0 +1,1820 @@
+{
+  "archive_no": 13,
+  "trip_id": "leh_ladakh_2027-07-01_2027-07-08",
+  "user_id": "corpus-ladakh-altitude",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:09:19Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T14:09:20Z",
+      "content_hash": "c01272c3f42ce152",
+      "plan": {
+        "status": "draft",
+        "trip_id": "leh_ladakh_2027-07-01_2027-07-08",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:39:19.966041",
+        "destination": "Leh Ladakh",
+        "origin": "Delhi",
+        "departure_date": "2027-07-01",
+        "return_date": "2027-07-08",
+        "travelers": "2 adults",
+        "notes": "Balanced pace, moderate budget, 3-star+ hotels, economy direct flights preferred. Acclimatisation days included.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Leh Ladakh",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 7-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 7,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:39:19.966061"
+      }
+    },
+    {
+      "at": "2026-08-15T14:10:25Z",
+      "content_hash": "60bedeb9476b7f60",
+      "plan": {
+        "status": "draft",
+        "trip_id": "leh_ladakh_2027-07-01_2027-07-08",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:39:19.966041",
+        "destination": "Leh Ladakh",
+        "origin": "Delhi",
+        "departure_date": "2027-07-01",
+        "return_date": "2027-07-08",
+        "travelers": "2 adults",
+        "notes": "Balanced pace, moderate budget, 3-star+ hotels, economy direct flights preferred. Acclimatisation days included.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Leh Ladakh",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 7-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 7,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-07-01",
+            "title": "Arrival in Leh & Acclimatisation",
+            "summary": "Fly from Delhi to Leh. Transfer to hotel. Rest and acclimatise to high altitude.",
+            "stops": [
+              {
+                "name": "Flight: Delhi to Leh",
+                "kind": "flight",
+                "time": "06:30",
+                "arrival_time": "08:00",
+                "note": "Morning direct flight, exact time TBC"
+              },
+              {
+                "name": "Hotel in Leh",
+                "kind": "hotel",
+                "note": "Check-in and rest"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-07-02",
+            "title": "Leh Local Sightseeing & Acclimatisation",
+            "summary": "Easy sightseeing in Leh town: Shanti Stupa, Leh Palace, local market. Light walking only.",
+            "stops": [
+              {
+                "name": "Hotel in Leh",
+                "kind": "hotel"
+              },
+              {
+                "name": "Shanti Stupa",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Leh Palace",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Leh Main Market",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Hotel in Leh",
+                "kind": "hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-07-03",
+            "title": "Leh – Sham Valley Day Trip",
+            "summary": "Scenic drive to Sham Valley: Hall of Fame, Magnetic Hill, Gurudwara Pathar Sahib, Sangam. Return to Leh.",
+            "stops": [
+              {
+                "name": "Hotel in Leh",
+                "kind": "hotel"
+              },
+              {
+                "name": "Hall of Fame",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Gurudwara Pathar Sahib",
+                "kind": "attraction",
+                "time": "10:30",
+                "duration_min": 45
+              },
+              {
+                "name": "Magnetic Hill",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 30
+              },
+              {
+                "name": "Sangam (Indus-Zanskar Confluence)",
+                "kind": "attraction",
+                "time": "13:00",
+                "duration_min": 45
+              },
+              {
+                "name": "Hotel in Leh",
+                "kind": "hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-07-04",
+            "title": "Leh to Nubra Valley via Khardung La",
+            "summary": "Drive over Khardung La (one of the world’s highest motorable passes) to Nubra Valley. Visit Diskit Monastery, Hunder sand dunes.",
+            "stops": [
+              {
+                "name": "Drive: Leh to Nubra Valley via Khardung La",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 300,
+                "distance_km": 120,
+                "note": "Scenic mountain drive with stops"
+              },
+              {
+                "name": "Hotel in Leh",
+                "kind": "hotel",
+                "time": "13:30"
+              },
+              {
+                "name": "Diskit Monastery",
+                "kind": "attraction",
+                "time": "15:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Hunder Sand Dunes",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel/Camp in Nubra Valley",
+                "kind": "hotel",
+                "time": "18:30"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-07-05",
+            "title": "Nubra Valley – Pangong Lake",
+            "summary": "Drive from Nubra to Pangong Lake via Shyok route. Enjoy the stunning lake views.",
+            "stops": [
+              {
+                "name": "Drive: Nubra Valley to Pangong Lake via Shyok",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 360,
+                "distance_km": 180,
+                "note": "Mountain drive, scenic stops"
+              },
+              {
+                "name": "Hotel/Camp in Nubra Valley",
+                "kind": "hotel",
+                "time": "14:30"
+              },
+              {
+                "name": "Pangong Lake",
+                "kind": "attraction",
+                "time": "16:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Camp/Hotel at Pangong Lake",
+                "kind": "hotel",
+                "time": "18:30"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-07-06",
+            "title": "Pangong Lake – Leh via Chang La",
+            "summary": "Return to Leh via Chang La pass. En route visit Hemis Monastery or Thiksey Monastery.",
+            "stops": [
+              {
+                "name": "Drive: Pangong Lake to Leh via Chang La",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 360,
+                "distance_km": 220,
+                "note": "Mountain drive, scenic stops"
+              },
+              {
+                "name": "Camp/Hotel at Pangong Lake",
+                "kind": "hotel",
+                "time": "14:30"
+              },
+              {
+                "name": "Thiksey Monastery",
+                "kind": "attraction",
+                "time": "16:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel in Leh",
+                "kind": "hotel",
+                "time": "18:00"
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "date": "2027-07-07",
+            "title": "Leh Leisure & Departure",
+            "summary": "Relax in Leh, last-minute shopping or sightseeing. Fly back to Delhi.",
+            "stops": [
+              {
+                "name": "Hotel in Leh",
+                "kind": "hotel"
+              },
+              {
+                "name": "Leh Main Market",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Flight: Leh to Delhi",
+                "kind": "flight",
+                "time": "12:00",
+                "arrival_time": "13:30",
+                "note": "Afternoon direct flight, exact time TBC"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:40:25.157960",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:40:25",
+            "expires_at": "2026-08-16T07:40:25"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T14:11:51Z",
+      "content_hash": "dde477194720ec09",
+      "plan": {
+        "status": "draft",
+        "trip_id": "leh_ladakh_2027-07-01_2027-07-08",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:39:19.966041",
+        "destination": "Leh Ladakh",
+        "origin": "Delhi",
+        "departure_date": "2027-07-01",
+        "return_date": "2027-07-08",
+        "travelers": "2 adults",
+        "notes": "Balanced pace, moderate budget, 3-star+ hotels, economy direct flights preferred. Acclimatisation days included.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Leh Ladakh",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 7-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 7,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "The Grand Dragon Ladakh",
+            "kind": "hotel",
+            "hotel_id": "lp3ae3d",
+            "address": "Sheynam, Old Leh Road, Leh, Ladakh, 194101",
+            "rating": 4.7,
+            "reviews": 1200,
+            "price_per_night": 12000,
+            "currency": "INR",
+            "checkin": "2027-07-01",
+            "checkout": "2027-07-04",
+            "note": "Top-rated, centrally located, excellent amenities"
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-07-01",
+            "title": "Arrival in Leh & Acclimatisation",
+            "summary": "Fly from Delhi to Leh. Transfer to hotel. Rest and acclimatise to high altitude.",
+            "stops": [
+              {
+                "name": "Flight: Delhi to Leh",
+                "kind": "flight",
+                "time": "06:30",
+                "arrival_time": "08:00",
+                "note": "Morning direct flight, exact time TBC"
+              },
+              {
+                "name": "The Grand Dragon Ladakh",
+                "kind": "hotel",
+                "note": "Check-in and rest"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-07-02",
+            "title": "Leh Local Sightseeing & Acclimatisation",
+            "summary": "Easy sightseeing in Leh town: Shanti Stupa, Leh Palace, local market. Light walking only.",
+            "stops": [
+              {
+                "name": "The Grand Dragon Ladakh",
+                "kind": "hotel"
+              },
+              {
+                "name": "Shanti Stupa",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Leh Palace",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60
+              },
+              {
+                "name": "The Tibetan Kitchen",
+                "kind": "meal",
+                "time": "13:00",
+                "duration_min": 60,
+                "note": "Top-rated Tibetan & Indian cuisine, 4.4★, 3.1k reviews"
+              },
+              {
+                "name": "Leh Main Market",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90
+              },
+              {
+                "name": "The Grand Dragon Ladakh",
+                "kind": "hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-07-03",
+            "title": "Leh – Sham Valley Day Trip",
+            "summary": "Scenic drive to Sham Valley: Hall of Fame, Magnetic Hill, Gurudwara Pathar Sahib, Sangam. Return to Leh.",
+            "stops": [
+              {
+                "name": "The Grand Dragon Ladakh",
+                "kind": "hotel"
+              },
+              {
+                "name": "Hall of Fame",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Gurudwara Pathar Sahib",
+                "kind": "attraction",
+                "time": "10:30",
+                "duration_min": 45
+              },
+              {
+                "name": "Magnetic Hill",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 30
+              },
+              {
+                "name": "Lamayuru Restaurant",
+                "kind": "meal",
+                "time": "13:00",
+                "duration_min": 60,
+                "note": "Popular for local and Israeli cuisine, 4.3★, 1.1k reviews"
+              },
+              {
+                "name": "Sangam (Indus-Zanskar Confluence)",
+                "kind": "attraction",
+                "time": "14:30",
+                "duration_min": 45
+              },
+              {
+                "name": "The Grand Dragon Ladakh",
+                "kind": "hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-07-04",
+            "title": "Leh to Nubra Valley via Khardung La",
+            "summary": "Drive over Khardung La (one of the world’s highest motorable passes) to Nubra Valley. Visit Diskit Monastery, Hunder sand dunes.",
+            "stops": [
+              {
+                "name": "Drive: Leh to Nubra Valley via Khardung La",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 300,
+                "distance_km": 120,
+                "note": "Scenic mountain drive with stops"
+              },
+              {
+                "name": "The Grand Dragon Ladakh",
+                "kind": "hotel",
+                "time": "13:30"
+              },
+              {
+                "name": "Diskit Monastery",
+                "kind": "attraction",
+                "time": "15:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Wazwan Planet Restaurant",
+                "kind": "meal",
+                "time": "17:00",
+                "duration_min": 60,
+                "note": "Best in Hunder, 4.5★, 420 reviews"
+              },
+              {
+                "name": "Hunder Sand Dunes",
+                "kind": "attraction",
+                "time": "18:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel/Camp in Nubra Valley",
+                "kind": "hotel",
+                "time": "20:00"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-07-05",
+            "title": "Nubra Valley – Pangong Lake",
+            "summary": "Drive from Nubra to Pangong Lake via Shyok route. Enjoy the stunning lake views.",
+            "stops": [
+              {
+                "name": "Drive: Nubra Valley to Pangong Lake via Shyok",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 360,
+                "distance_km": 180,
+                "note": "Mountain drive, scenic stops"
+              },
+              {
+                "name": "Hotel/Camp in Nubra Valley",
+                "kind": "hotel",
+                "time": "14:30"
+              },
+              {
+                "name": "Pangong Cafe",
+                "kind": "meal",
+                "time": "16:30",
+                "duration_min": 60,
+                "note": "Popular lakeside cafe, 4.1★, 359 reviews"
+              },
+              {
+                "name": "Pangong Lake",
+                "kind": "attraction",
+                "time": "18:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Camp/Hotel at Pangong Lake",
+                "kind": "hotel",
+                "time": "20:00"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-07-06",
+            "title": "Pangong Lake – Leh via Chang La",
+            "summary": "Return to Leh via Chang La pass. En route visit Hemis Monastery or Thiksey Monastery.",
+            "stops": [
+              {
+                "name": "Drive: Pangong Lake to Leh via Chang La",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 360,
+                "distance_km": 220,
+                "note": "Mountain drive, scenic stops"
+              },
+              {
+                "name": "Camp/Hotel at Pangong Lake",
+                "kind": "hotel",
+                "time": "14:30"
+              },
+              {
+                "name": "Tsas by Dolkhar",
+                "kind": "meal",
+                "time": "16:30",
+                "duration_min": 60,
+                "note": "Modern Ladakhi cuisine, 4.6★, 943 reviews"
+              },
+              {
+                "name": "Thiksey Monastery",
+                "kind": "attraction",
+                "time": "18:00",
+                "duration_min": 60
+              },
+              {
+                "name": "The Grand Dragon Ladakh",
+                "kind": "hotel",
+                "time": "19:30"
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "date": "2027-07-07",
+            "title": "Leh Leisure & Departure",
+            "summary": "Relax in Leh, last-minute shopping or sightseeing. Fly back to Delhi.",
+            "stops": [
+              {
+                "name": "The Grand Dragon Ladakh",
+                "kind": "hotel"
+              },
+              {
+                "name": "Leh Main Market",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Flight: Leh to Delhi",
+                "kind": "flight",
+                "time": "12:00",
+                "arrival_time": "13:30",
+                "note": "Afternoon direct flight, exact time TBC"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:41:51.164144",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:40:25",
+            "expires_at": "2026-08-16T07:40:25"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:10:32Z",
+    "user_id": "corpus-ladakh-altitude",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {
+      "shanti stupa|leh ladakh": {
+        "place_id": "ChIJ52QpNiXr_TgRqN0pZxJhBsk",
+        "name": "Shanti Stupa",
+        "address": "Leh Jammu and Kashmir, Leh, 194101",
+        "rating": 4.7,
+        "review_count": 7529,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Remote place of worship with a large golden statue of the Buddha, opened in 1991.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 8:00 PM",
+          "Tuesday: 8:00 AM – 8:00 PM",
+          "Wednesday: 8:00 AM – 8:00 PM",
+          "Thursday: 8:00 AM – 8:00 PM",
+          "Friday: 8:00 AM – 8:00 PM",
+          "Saturday: 8:00 AM – 8:00 PM",
+          "Sunday: 8:00 AM – 8:00 PM"
+        ],
+        "lat": 34.173619599999995,
+        "lng": 77.5749988,
+        "photo_refs": [
+          "places/ChIJ52QpNiXr_TgRqN0pZxJhBsk/photos/AWCwydjnWOGKKESD_lb5zPfOcSdPqDe5F4Mp6x2ZoviFUBAcQG-GK9URirOEQcLa-BCMd-yqAhi_ROHNcnoSaeOTcvsBrAWVypgQ9LxiBQuJoRfOBHlyy8xjVaJvtcIx4WniyvD7SGrMciKgQSm-8NZ2wFJbQMNn8dPecXxc2XtRwxDBcvBd8z4c7tvIAWgzVWzvZyOXIKvZLUzcSNsV4L3qpAMtDD4KIAA7iK_lg3scc2PQjE494D9jIuHqc33hEFShfyHRiwnZndtJf2wEGHNIFyizpNMFSA7wPIJHDAJk-05GVC-qX0c9oatO-AYrbpDWzXpfXdhHoMY8NUHerTTkajG3XXtY_ElKy4aAQH_-4Pavu90CSCTyZUxnou0PJDi2NKm5zgYijHzqlEDuQ9Gp45pO25Xcx5YNWyG39SFjGV0BFkktMtvxMx2Y-hTiQg",
+          "places/ChIJ52QpNiXr_TgRqN0pZxJhBsk/photos/AWCwydgaeJIdJXP4M1rExa8BWoOIoiYVW8Q7QMXNvdH59zv47UqDmVDB3TLyL1nUP4ZvCsEKfUea70_htSaFveqaHtVMHpgWELlCWDqkhG-E4pBjrBdmYhepJ86S2A7F7RZCLwTApdKtisCutC-zeyZTrFK8M5P_PXCrWQKKtPR8vklAj-xRDQXubB9eXmNifN92lmpt7_j-jtWfpPrxNICG3o7_fum_WiDjk_q6V0hqKLH3uRcySxNJ8j3BGDRtE1O64laB-7-N6_sKeYetWuNl3QjiLF8rR--kiI_2TEvg3dEKfg0pwo0gAMq_a_j6cLNxZ3eNM_Qq9tQpFz2t9-NXTiSgNZzIdUmM0ng4YUbW2C8_HtN-z5lHqGQBpqvyp77kqKTzdlZYdr0NGLpFe_Y7SAkWNmvv6VuOaUM1CFE_D6NyK50",
+          "places/ChIJ52QpNiXr_TgRqN0pZxJhBsk/photos/AWCwydgCLqy0afxCItK1B0mfXJx7um3vQGDiKQSdySEBf4Bf81-2rQCDhfW71SBak6wG03peR9DqhJ00DkhG9G-33fhBC5g0-xSixKTjWAHidzVjP3F0Qafzdy1mE9TgxcJoPqKfcQnMPOYayRXphauwJpOfG6pYvHsEcKZaKKU2omPP71c_6WsgmKeMGBiMo7wc1vpowxNasQ5iUptoIYFDEe0HCHJzFkwNhND-bK3XHzhRlqRy6HxOqc5-UhExZbbryjLZa30UaunsEqcgqUJ3zDrT3CU2_JHMaNBQcbEUV_TgWdaT2VXQY3vMvmPXJU5mAW5QLJrhVJcgCHv4_SSJetYJ8j6rCym90aUC4DiFuJV1NjNTyfxrsbwz2Vb05YDFxF2WnKSNXUA5Nrj9KacoaR8QKJ4tMipxLAVccHjUCJ_ZGQ",
+          "places/ChIJ52QpNiXr_TgRqN0pZxJhBsk/photos/AWCwydgobb_FeJGhE5mbv8IuVQhZuIrG1wJsZA_6uoTtcqvRRubDq0QTz4r2XezxI9tDgQ2IL2mKmajIDPSfYNwUCAXJomvaFAYEsRD8vkwG4Z0f5PhRnV6UYRrEgPHPt7tMLSKdOgMqdEu5ZcGvENjXoZhEARd3fQmuC-ynJqx30cC6g-F-L5_Epxesm3OneY00CpyofI3mPSzoJXQ2aYCGEhFu--J9bFi4YoZSw7X0NBvn-tLBBG_16Yd0y_XSMkCLlobKUWg-GAiCvBi_WP1W4HARCNkzaIlZTg22kIA30ptSGSXOG2Mi48MpVN7mRk63iQZu-S_U9tLFHJaBIiZMHRJLEzaSHk6-nfypoqlHnI0Gc2MsvRnYO09z_-xgc3jmnxqUDVymobPKgwxkU3AnwEwyAx6hoQ5RtYCxRRwmESZcPC9Rt3tiebz6dq-d5w_p",
+          "places/ChIJ52QpNiXr_TgRqN0pZxJhBsk/photos/AWCwydi4L3pbLnOMpndM473Rl6Rp2upn1wbXO0jBCA4MrTqXapPLlp2ycK9y5pfnABFwjt6mX1Mp1XjIMgl5vPUHZN_UN8zdHrVWZaBvADVJpPaZTHE-ZxFo32N4FIEBIIK2V6pcDFjGIupOkYAckjsUkosKZoNYE4-1CELE3Z0PH3DOyKmz90DTpcDsPO2Y6Ephj11i_nMq9L6J-3gW2dkaSffYmY3y_tt07Q4vKypEoh9R70sgrSl4RB-_b49HY2JrYwpV-WOEpUJaL0_ZOVmXP1fBY9BOXAMVlHb2zuzNcmddx4jbenUV1esHycsWjHFcZ8W1bg_bxHw4BJHab4MfkUdH3KJBhCpgKbNAC4ugqX8IVRso67HswbOhI64OKp2gasZ01pWHv3ljfIaMTpYs-N5RauV-ZnweGYMY90M_L2Q",
+          "places/ChIJ52QpNiXr_TgRqN0pZxJhBsk/photos/AWCwydjz0RM9ePv3mSIm5iy3BeufCF2yXwDUk4st-gD1miAW2ST2FUGQgEkzoYeq1B1eXIS36p4bYHBzFYZ3LgcPrt0FgLTvr431HZCRGFoPWWqIITV85EpE6n76g0tmaVGnDtEYFqlPTZ2Qo2NM7fs3JK4bF5MsP2Fm2Ao5tY-sNxHtWSY4jk_sborrolpJylnnatjksBdHGuznQziId5QjhzHTezugXq8k0BFznxS0wOkjBg5_NOzogVcUo_RKaL7Pdo8756hg951os7hBfHkA7UuqcIqwqOLczcwPEOIseArHvRVTLkE-CCAqP5G_JobfUBGq4_PQMUMRk8uxAO3IVIuIkF4pT-pPBdF39SrphIVUJJ4C_RTuFyV6_DKR8J3G3z3Da2Gk4mKCvgcZlU6_jf8E0EgFAF3p0S4zgwUdDpb5fVY",
+          "places/ChIJ52QpNiXr_TgRqN0pZxJhBsk/photos/AWCwydgsxGDUBF_MbLYM5RpxIeGDbDShXnx0ouQF0TzPCAQyyLypp8YbunQaFgujbb7rY1TxQD2ESqIOMRaYDngpGt8lWePMHAkgkMDOznTk6_ATmHpO3b9UaweQ9CiCDS-5M3lAHhgsZkeUDQn27hg8HEKVE_Sh5rS7T0KbnW3oYqf9qDVfeRNkWbiFw92wMbDBZfet3_UQfwqwoujk9zpunl-pn3v4FdOZk4e58yKb3XqPUNBfxufcKc_8Qd3b7Id-bxhUqbTVLVrESPFYhhgelmRkgfW5gt2Lu1NgadzWxyqNpKox-8Z88NpUcfITM4VkGaGTZvBwZitEJjhHrNHFO8GZP2YLA_NZUBdjW3DZnd4_tJrSodvnGdKBakrAJMzAAch35OnsAPHf2aBXP-vZLfun5E1_ThvrpHf3812Tm_hriQ",
+          "places/ChIJ52QpNiXr_TgRqN0pZxJhBsk/photos/AWCwydgBXr21Prju1N7PeC3KpyeF9pBy_z2OrMsxIZQ2iTX3EcQzfvooFFrbZVGiii_aa80faehOC1o6VZzITqjNsCgo1fda-5JlxgUIbiXZnmhmbJ_jj-M_kxEhjmDMnVtC92c1KcRUj1Pjoe1q7tvKOPLP6pcoHf5zZFux7IwR4l80AE8DcdFG5e40-Lva-ZZoT6lMwqc8hVerUUooB3X95Ce3_Bx79NJAfHxr_2fTioQr4bOUJgVA9eAMndXhoeGOv6S2HmpnMEBeW5Zeuabl1Z5oHw7jqjuNlCUuArSQ88AMNYVrkRDxFQ6o1-HYRkfWKHyFF7rgYmUTPTnulfMjnINpLFRQC0CC0j5X6xzmFlzkFab8gl5BDlRvY7n8oHjLBSSwxtUCIkkfnciCRJVPSbdcTsIb9bn3CpgbsBWEqhQ",
+          "places/ChIJ52QpNiXr_TgRqN0pZxJhBsk/photos/AWCwydg2O27rIneKDrykGKR8FOAW-wQenhYPJYik0jIZ09KrwzkvcA55mT2HFlmf6BwSsOYjNj__CnS4h-fNd-5YB8modbyJKzDCHLlKkHzkd0lOu9NzNQMmNee5MK12NhuiA5_A3ffM9230wkXgKJvo4DF8Prq3KKhOMVYhNLh8o3K9Awg4_wyChZhQICk7O7sOGA3bgipEU29K8tXMw_qBCM-DcB7DgaYnVd4juRuum2cHH-wbqxecVoPfxmrYS5YwGiewrpRmEHMWw4YkMhfz9JWmPNX5V8ZLU5ZoX6PFdcfJoYnzzgUadqN27Meyl7ckp_DkOXSvEjRViu1nmVoCCZAksSPnOfzpySylofmQYYCE1PogSqu2MpV1PVfDGIjGVZR4LWbobIOD8FS1J-xIS3uIZGGjYtXvCVTUbWb3ULkh3Cfr",
+          "places/ChIJ52QpNiXr_TgRqN0pZxJhBsk/photos/AWCwydi0J8fLi5_0xlgZuyHkc_q5a4CGVub5aAOQfx9_Xka9G2h77e2uNpwvJAjALmC2out-bv8py6dxuzzPiuLAeyaMtl2i5Dflexb9RrTvswaGOMJSo0Tin5wl8nnnRbsw8G2s62kif_GBpDlqdXw7kaZpk4q5kQE-eZ9bE70-tY60m1WJvq9D5mEPivpd098ux2LYNeuaI6HWyocFfLRyCByVQRZXodTMIPfm-g2sN-G-1PFgC3oF4iuVu2nq660Ry1apWrcagaqprSOutHJIHY6rKvDmkZsRNpYow2M58nJ0_uF4bm_adwql-QJ-MFf2Atjy8NGJiFhWS4Gb_gf0kE02kYIBViDt2sShsV5RUIlkmJ08PeqCihMxYudi3HDYQ7bHI33GW5TCw0EZdscAhPeJ66GWXdTdp5ahaatllnizv76L"
+        ],
+        "__at__": 1786803006.901698,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "This is an extremely peaceful and enchanting place. Visiting here brings a wonderful sense of calm and relaxation. It is an excellent destination to spend quality time with family.\n\nFrom this spot, one can enjoy a magnificent panoramic view of the entire city of Leh. The majestic mountains of Ladakh",
+            "author": "Abhinandan"
+          },
+          {
+            "rating": 5,
+            "text": "Beautiful white stupa with some of the best panoramic views of Leh you'll find. The Buddha statues and interior artwork are gorgeous, and the structure itself looks stunning against the mountain backdrop. Went around sunset and the whole place glows golden — highly recommend timing it that way. You ",
+            "author": "Asif Khan"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting the Shanti Stupa in **April 2026** was the highlight of my Leh trip. Arriving just as the season began to breathe life back into the valley, I found the experience to be a perfect blend of crisp winter remnants and the clear, blue promises of spring.\n## The Climb and the Atmosphere\nI chose ",
+            "author": "Parth Padhiyar"
+          },
+          {
+            "rating": 5,
+            "text": "Good place, situated on heights, wind is blazing very fast and tremendous. There are two ways to come - one via stairs other via bikes and cars. Short trek needed to reach here. Walk slow and steady to avoid breathing issues",
+            "author": "Paras arora"
+          },
+          {
+            "rating": 5,
+            "text": "Peaceful Place. View of Leh city from the top was good in evening. Spend 15-20 mints there and relax. In ladakh, there are multiple monasteries. You can skip it, if having time shortage and having plans to visit entire ladakh.",
+            "author": "SHIV DELHI"
+          }
+        ]
+      },
+      "leh palace|leh ladakh": {
+        "place_id": "ChIJlTKZDBXr_TgR5iejpYONGsQ",
+        "name": "Leh Palace",
+        "address": "Namgyal Hill Leh Jammu and Kashmir, Leh, 194101",
+        "rating": 4.4,
+        "review_count": 10787,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Former royal palace situated on top of a mountain, accessible by hike with picturesque city views.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:00 AM – 7:00 PM",
+          "Tuesday: 7:00 AM – 7:00 PM",
+          "Wednesday: 7:00 AM – 7:00 PM",
+          "Thursday: 7:00 AM – 7:00 PM",
+          "Friday: 7:00 AM – 7:00 PM",
+          "Saturday: 7:00 AM – 7:00 PM",
+          "Sunday: 7:00 AM – 7:00 PM"
+        ],
+        "lat": 34.1660308,
+        "lng": 77.5871575,
+        "photo_refs": [
+          "places/ChIJlTKZDBXr_TgR5iejpYONGsQ/photos/AWCwydhbxIz1u2TRwNEnj10BY_QwReGPy2OXA4FqqaD2Ti3403LdNLuHTwMZliyD8MJQl6s-yfGpSDU7M0anNv5GXKHJul4xEgAUdJMYaYsjz9Vf7yYtldEcXELGbnP5a07ea4SSPfHT5SHHWzOWAJjc5qsVlKl-cr0NlUyF135jaAIo6XdsHgLapd5l0pNR5uD2KqmDsoJ85C8-GOufS-cJuMZjB1N_OPGp-6cbGlGPwtLTYpkltmQk8Fa1bvpiPXif3f0ShNd_MEarhSMUDdpWTdKq0AVJFpwyYxoFMwJu6euk9ym-bma6Hoq9vCLcTpvrCEgTquuDqzs9i7AYncuVdLAlaVs35FY6a-l-IxOyz1DqZoqYMhawKi4f_5tL6HMvmpdRDMaAxe8pQBioDptxUITgQ24CNk3_sN7p3Zia1_V64g",
+          "places/ChIJlTKZDBXr_TgR5iejpYONGsQ/photos/AWCwydh6FluxCBsdnBHbX6yMlVab8d9x84cmV5tBq0Qs9kY0_Ab7M0G4-fRTYK4eTuhqu75b5uih_ywfnf9h0CW8KIc_sZoiqmbfe_Sv65dGzD9MK91itLKR0Nm_aL7cvcK6hh5UMxww36n2yvPBL37rXgRVC-l8fCsC99sRK-cKOioimXtqxnuRptE_W7bYihe-ilpVHXqxSD9e8Kn8geHA560uceJKbkPtDjXb67RIhDq7pB-CGu20UtvgesoHa-f30P1FtuLE7ZHKrVT4Mj5u6PcJPw0ykASUh0y9RZ0svjwKSMvFFUwohRn29cvpfTaNnvQh7w4O2Illxv3v3zYUoV3qNMa03IOqK3tka6v722vrldTK-yr3UTV04Q909CeqdY6RmSfYovEJQOwdatM5XtAr_b85ikjvl9He2FoTTeM",
+          "places/ChIJlTKZDBXr_TgR5iejpYONGsQ/photos/AWCwydi6bH-HnvdgA0XGE3x4j1zLKWmozO4NJjhlGpti9VJN4Twof1z2E5xnHGFfSO946R8rf4E__MkGAy2i6gwMclxwZJizc-vP7iIAwKMC4byo82hfV5a3t2yGrUhE-glayibujWoXX4yJcVwHfZCo3X8AG6ARthNp3Z3u3dMuM3xHIs-DJ2hMQvHed3KuWpKPv08F6YtnbzbL7lOa9uWgI-alviimIJpMSakO0_z7Cg25F-7HBI_FSg8IyLOvUb6rKMji-BAX0D8yz4bCYGOTYd8ZPILmTX7v6lbSjOzsitpUebjsfDa1LGEUngNZrFkCVwDEbgI7kos8tiRbT25T6prC_JLg0b5yau9OXHU595HTBCcSt3RsaU-8GqSk402CedYeu7OjuZVOUsgRsBtPAcd6KGRnY1A75eZnVLRAgLwzotmf",
+          "places/ChIJlTKZDBXr_TgR5iejpYONGsQ/photos/AWCwydh5G5JaEoB1tYXhvWAJjROOqPHwIqrZkaJbqw3PasVqmgb5byIVkQgOFWQ6f3p5EWZeTEzLw53u5eaA_aaVs3N03ZvRfsNZEjlM450LpFMrFt80xBwt5GC1CSOlIiDJdUUwwDI1IdUs2PegHshsvP0P2sfYeE68_j6y8u-ZeQth5wMhEsujiBCq8-qqcSoTgtHPP2eFk5k10ARBeicZ-snjDIgXaPpgSH8urqzjBlaY3OrEE6g_CBgy8sifKXvznyolcwQAlg1gLPwDMjZG5jYoJ9AJSci734-EG6mJJ4kFwIjiyzUVAwiUIgWxco1zTwb4Gvj8eXTFs9_l-WRGXeQRN3XcByd95rD7RcWfftxLpwDdfoKT_r9ukBWlDNQjVgxj0XZJn-5_BFMQnVuWnh9b7KkK3qM564LhG7IC5PiwPPl7",
+          "places/ChIJlTKZDBXr_TgR5iejpYONGsQ/photos/AWCwydhXxhrEpsPoA6SCcI1nSPpSyKmoEnnATzi-KqlgcV5_QXuA9eL8_cRRh763Oi6_Ctl_q_IHDioL60c7_Bca4tdR63jtM_CObNZr14g7uDIWrhnGwR-QV5o7Bp68DFb7QTsxsVxVRj92aKdMictrlXHLjNNmDhqSSe4QFxVG9OXbFP-mjiFI8YDWI8Sn7AFM4mooVtDcl1esC_YR3ncgRO2YYXvI-7pcC9m6Rrtf1-K0T_ZVrMSQR7mL_EMCgdNd7kdv5BoXzQQP5LqkPKbIXxHzqA0rNSNtrFLGGMnLO38ADAD3CRuwKGl8BdNx81gEaFpLiMK1cc8-eDFkMjr5gCcWQlKz36AP3uRTSsJx8MO5781PoTXSzAlsJhvEzA_UWDhqdR4M3OaIFxmj-8SgzkVcOln3WZmNlvXdfnagZdTIKzwG",
+          "places/ChIJlTKZDBXr_TgR5iejpYONGsQ/photos/AWCwydhZsVn8ngPWOgVgYeGhMuWOPxLLA1WeVttHe43hQkgDYQWG78KSFbzsr43BifrBi8p0BGJ2Npf5JVCacD_JJUcD8rn5c_DQAO2TP7HugGEw5DrCzuFXvCQPWVfwWoz9BbgGtBFoIyJu2t85E-3Xc7QtwEF_QJhkfbkroH-sq8W5W7ccpA8E8X6CwfszBqIG4kZh0i_eSsgZ6eBnamQ9zrmCzQbVqdMs5pgJ4uPi8EI1BcQd7jFvxeNDYNSdMZiVg5jgZu_ddvHH0-N8VNawEvZgZr54LnSW5wWksltnwR9RH5EbQZT-ZXAwAopOWXtBJOBh7FabwOWJi4BoBHixSTai1XFTe0KDe_BZN4riAclC-Sdp1ar-DJYD3SJv8bvqVGw6eBxI9urkKr4cDnx_Jn0AuY5mdm-YTWMz75qWK8ea2582",
+          "places/ChIJlTKZDBXr_TgR5iejpYONGsQ/photos/AWCwydjzmciNT1moWmmSS2lMwpZmXZlDJklHn3ovH5zmNKR4PyRGwxCfrHjs2cMxf4sb7b8rrqBMisNQY3s7L2HP-_cq6dIw_XQpsfxBLe-qb7OiV6nr6O-EYKN0b5uZILP0e28UwdREOh6SyS8paM63tHF472PvWzuhWkq3Fe85hiisd8rup1U_GmrI0BWIM6RcqF0ZOioxe1cGIcS3Gy1mrBKzsGDHhzVfdQ2mQZ3S-WAZ-nzKi_wBZyfvcymOaBtQVz6FZUAouv5V0i3cGonqBMEmhzZxb8NGUAHbfN-iDBdBWG6MYiXctQ5jjj7jJWQx9Fib9aBrEW1PO2tTxj4Du0FS4q-43FLAv9IuZD6l9I1oW9Y4bElm4coAKwehKp5ooHQtJo9BtREr480BqHSL4g9S6YvbHNFlnaHiGhCjPqQB7_lWrDc-sruzFRxJpg",
+          "places/ChIJlTKZDBXr_TgR5iejpYONGsQ/photos/AWCwydhsGwBf-M4fz0qPva67TmxlRbQsIL-msmHVOKspXqhn40WtmfFwCBt-hpf9n3Jszf8G7I2Zs29TNtgrXP16kq7ZEYXccKoCkgfLsJ7jgSt_PnkLOVmglHQ-WLAOIAtCWWSEJZ_sxhwW0czSlPiF-1gYomy6CFEZyZC_nbJX6Mbc3it47TNXazlVfksGUgNccFW3RajQY3C0qYlg4gX8cZtcHv72kobDdswJKaT1-DyLD0iGrPYmX3QpwcPpayxHijL79zQtXbeO-5z7lAN7bQGqKLa15mtIs8L5fYXyAC17gdqZecHl7xQoJeta3dj7DaTLvFnyEywwrVyjSgaSGG0T8HtQPQyHteUOUcl4z2LJoHudgszQ6MzjpBuqckQlSdIyCHOnROetiXc5gzJfvldvaZJhoLYMuhLD4ukpsoE",
+          "places/ChIJlTKZDBXr_TgR5iejpYONGsQ/photos/AWCwydgYM0kt3iMePWOe701rO0-ofeVQuxpNtp_8IBVMbEssJfye08ba8m9zKxbowEccviyOlQdBAs8fWXsBCH0Gu8yf_rKdSg1x4aF3gbsVu1LRezPwP1r7f2NyN77ckxlnyIqk_P4iXuNoJzU4K-1qcAEg1smfnhhwS3hVkNhPZIPXvkyNm2kU-aqBCxd6v0lrgsvVy3rH1zetiblPTjRI40Vif7fgTD1L1bxIIWKYSuwPhA9gP4iQBuMrDuKbbk6ppMVgj3xv5wq0589jVdbTjt2M5sTlo_FWMpQjv7lcUEuwbg9w2Y0oE3rZii59aIUJhWeXR6YLczu1Qzcy_vZE2fjaYRE5pC2gzD4PN2M0UXEi8S4HMBH50ujwzSrBfd61odnWOE_avAYfU289mprREFNNsqav7MTImJ50YpZUyMMzCr60NJFkLR8bso6kzA",
+          "places/ChIJlTKZDBXr_TgR5iejpYONGsQ/photos/AWCwydg2rrnerHMosxw5D5SDbtiTPGvCTMWMsvoD20_vGe9ak9_LmZO9c2GttcgNvAhs0vEZX2eVpY0Zx7lOkmhg03LuiVH2HDcDZbz6TjLu7NUs8eY5pjhYRazZU-iIeHfgH5I90i5USOxlRvryDPdS4d1lvnvOhyaDATJdkH3ghZQZsI83p-0Ulb6bDz-rjflZymHCY86tSqTJDY6MzPuOmyesTQHTsVz-m7NxaMevyM7tVgQAe8I12LUss3T2xOTry6adzmyvSaRtRPp0xHHnefRFAvt7MI4PUc5yGcnkEpAq4_AVl8UYeXx3mU17KdcHQYxn_FOJwtxtN2Z_fjt_R6tkatzMAISmQ3e6JWkNIEyqJGO8PEz720lbN2oXLxvwfbXcJFpwjjqUoqnm8SXd-1KvORxnaj_D2JCmOSNVBZJKcQ"
+        ],
+        "__at__": 1786803007.3508952,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Leh Palace is a must-visit landmark that beautifully reflects Ladakh’s royal history and Tibetan architecture. The nine-storey palace offers stunning panoramic views of Leh town and the surrounding mountains. Walking through its ancient corridors feels like stepping back in time. The rooftop view du",
+            "author": "Yash Bhandari"
+          },
+          {
+            "rating": 5,
+            "text": "Leh Palace is one of the must-visit landmarks in Leh and is often among the first places travelers explore while acclimatizing to the altitude. Visible from much of the town and the main market area, the palace dominates the skyline and serves as a reminder of Ladakh’s royal past.\n\nThe palace is wel",
+            "author": "Aravind Deivendran"
+          },
+          {
+            "rating": 5,
+            "text": "Stepping into the **Leh Palace** in April 2026 felt like walking directly into the pages of a Himalayan history book. Built in the 17th century by King Sengge Namgyal, this nine-story structure remains a towering symbol of Ladakh’s royal heritage. Visiting in the early spring offered a unique perspe",
+            "author": "Parth Padhiyar"
+          },
+          {
+            "rating": 3,
+            "text": "Leh Palace sits on a hill overlooking Leh town and offers spectacular 360° views of the city. The panorama from the top is truly beautiful. There is a small entry fee of ₹25 per person.\n\nThe palace is located very close to Leh’s main market. Vehicles can take you up to the palace parking lot; otherw",
+            "author": "Bijal Karani"
+          },
+          {
+            "rating": 5,
+            "text": "Very beautiful view of leh city from the seventh floor of leh palace., The Leh Palace is located very near the Shanti Stupa in Leh and is an Architectural Masterpiece & Engineering Feat of the Namgyal Dynasty. It has a Nice Gallery with Pictures that explain in detail all the features of this Wonder",
+            "author": "Shashank Gupta"
+          }
+        ]
+      },
+      "leh main market|leh ladakh": {
+        "place_id": "ChIJx8syIR7r_TgRh_nwz3rl3Bc",
+        "name": "Leh Main Market",
+        "address": "1st floor, Akbar Shopping Complex, Super Market, Leh, 194101",
+        "rating": 4.5,
+        "review_count": 5485,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 34.1636242,
+        "lng": 77.58552,
+        "photo_refs": [
+          "places/ChIJx8syIR7r_TgRh_nwz3rl3Bc/photos/AWCwydhhTymr4eYZ9zTl-hL_Rv9qC3jhDMPj1yCgthd2_inpH17ieNSG0d2ZCsH0XkH9qF-dIXZKaMeyMA1STVjiwsq8f4kdz7m2mOjiP_jtjy8_zL7Jw7PiPb5lxShhTTYkzfLbAUAyuwDDCJHf-_cdz4PZE5cu46boXQaykX-R1usnUkdogR5K3HqWyfllJRew60LaGpnnI2Pr96jRjJ-zeHEOFJcHNWogmkKG4iyUlXh1l1CQJmtFpJE7LgetRowl5ySC2B1CSbfkcro5ZxbkGSy4DIDawttPOvzbEYq2LvO7sWNF_t5AGSdg5GU5ggqgYxxn-c3IguiFYKDinb5GyQjcCNi3xh99iv8wO9XyJ6zQYlf_rP41i_l5q74t903Tpp-B71SkFgTYPtXde5c8K-okF5kVBCnwwvfLauofH2yo_iZZ",
+          "places/ChIJx8syIR7r_TgRh_nwz3rl3Bc/photos/AWCwydjMRcCQ-Upd6LRVr4000vD5szDdrc5fqKcVssbgDd235USmQbIH933hLr2JG1O-GmMN2V6asCUrBkQMZ7GfZd_oSoY_d9I3Z8250jsZ2uyVDZydMsX0O3iQ2FJQz_M7ltLWmWJ4XISrd5w5ueUNJjxK-8qdeFlwLyfpnedAxqFaaX5icTdYTuYXyRqOAIHos29RyB7vM5srP6LMG5_gy-FTB-XnBt65FYovsQRGqyrfLambcgfp4QyNeoIYEeafkRyRwKEMLm1Tdtir54TfbL6A_UhB1NqZUiA2KbXZ8HtoP4Kv4IECwqGJMPZwSS6IXWr6DF6bxZ5vL4rlgKZbzX6z1LmQz7KdRJr8xPgV_EPUIpTEIUKcMYfsnYkhUTFU_TFm0kW12H2wql8Gg2ieG7Boi5AYUC2D-TM70CeyRQ8yGCaVtkJ4K7gNsXs_lw8I",
+          "places/ChIJx8syIR7r_TgRh_nwz3rl3Bc/photos/AWCwydizCKXnvjMJA03LH4IPtOBo5aT_TJy_JZ9j_8pieDzqQS6weSvNfsCVedjIaBIcCRl9OyGFgcpvoWLh0Qm-V8LO3xfYuIhAtwHzufk1gnxI79jULaXqvcXdLIXpwiNn3WNwUL83ZWQvte8nQCYeXdTxRt7JyVEGJuWG1oPXwHg1aWB--P0EEa7kbJFOPZFWRwY_IQ2xbWmaGnMVNUHph-T6C2iSCRBvbl3FexWetpF7Y0WCfRL60b4YcjcPpAmU9rhLVc21sxZfCmQflIWeIplgRsotpBdX2obuEiFPPrJkZA2GTz5Q1nrshB_Ts3Q7VmHMbmz3761kQM6oomBr3vszTVA-s6Su5Jqm1qYPobnhkhfv2Dhdrw_I_PSpKdM7ZcqzlGgrTqHUqXoEQ4hpiMFnZNtJcnxUqUM5JKAZy_8o5Q",
+          "places/ChIJx8syIR7r_TgRh_nwz3rl3Bc/photos/AWCwydizxb0Cc36vD05ufEdFcX0vU3nscTiAQWjVycQgmhNomFaEi0ASsJ2-QO0p8YgY_4vKtg_QeZ7tMoKEHGdvgfAfVSMltIm8LfqB2tz0PvbgI6QFZviaEviVfGR0Zb-E3InoFRJ--kZdxDCmwJRpspho02xD5IRhTKyRa2f8PQpn1Vt-hgZJENA8Y9kMMRGrTKUGLEOdcc2x8gnNj9vEr2LoCp9riPr1lJ6s-ZJuYVudjeqZsBOAon26ynfFzBLZAYRXt82-OKSKeBQA00q-pT7bD_hQhvDev4KXRs5QreAn3myGE-l9BAiv0qp5sDHHrPb1tiNp5Qp3pEP9jKwhJHbC_3yYFfc1VV3GWA1HMu97eKJupqMwgfNwPN3JDzW_WPgae3kXjc2wFe_Y1E9sTQqPC8mAF8IAFTKj8E3Y1DBnrw",
+          "places/ChIJx8syIR7r_TgRh_nwz3rl3Bc/photos/AWCwydiQfgevVVoIggEW-JLPuc7HazjbAeLWbG2pF4or1ycp_QM-dx1-V3k2Uu85zjQN4hO-pzyY_HaOuS-dRmk_yFUOYm20XBq_w9_OFfdsGRhODAhEpoR2oA6PvvpeAmUNZBkLwB342_E5bgdc5bcvGEBGzNGlsT6mrpE0PzspNx-apHjdwGAaFeJouT1kb0NcGYzJd9cQVMwEJi2x7ARzXfF4WwnGJTY7Gi0035SX6azljywkbpLGQMHL5DeVIRxyP8s7E9ue_6Lofvf-q801iQU7u777H76A_kkLdHJ_qHGmZiCwRqp_1xqcZOaXg0TUgf6W0aGUTtyRQOlm402XwjadSO6jgXEFdbiHJYZ0Du6va8Ux_jWXZdfIE0HYgSEX8aCH27XuyzmWrvlRYW0tzwbyCXR58TBC9r7fh_5L9QIf-eNE",
+          "places/ChIJx8syIR7r_TgRh_nwz3rl3Bc/photos/AWCwydiGn7OG1U4okJD_iY33spRf0tf8WSUV0fyQo-u_s5KF0EfBVSOn-ddXA3Jh61y95pBdN7j2Jdo0xIeXYNUf1fyQUKzWc8eK6zs2JS3pAVjB4wIzAS33YJVIEM-GW6aHl3zcgLzM0wIVa6DpugBA7HBncvZAHSjyBHXEPXcj6mKRhXt9mHAGcxHK14PKtjY6AsygH2d8rBX5-uYjR4MULlazpuCjGgBdpdIEHFKIzLhb9BLihx-PNeQVrT4tOM5-fJT6-18gFHD7fRf1RK1UJnCdRTvAV3l9ck7kO2YCCcCk2znDie2DDB--TrXN3K7xosqYoAB9dP-LExyHKSHbuTpBoNdaFx1CThSr5L_ZzinoMzwTphCL7JvOZJVC7f77_9tiaYhA2_d8S6bP3yYCtUcjl_Mkq0jJX4sCpxZNYWHdPg",
+          "places/ChIJx8syIR7r_TgRh_nwz3rl3Bc/photos/AWCwydifCzGfl1GcLAHnRaEkYx7Ps_kUSFh9OGbioE7F7lQb9zeICJYUZffQRdMDcic1NVKi2V3KEDCKY5Dg6pCNa8dmSfg36eQr7oqsHlxz4_fnRHrCu5LbFq2QqiK_mxUDNQjMUNXGcwNyITh_Bf7LQq23xhubmuPLR7XQmLF_KM3nk0wRPDDxhzm1_6J1IW1JWNJHFv1y-gCs7yB9p9O8LPg7X7BjoQQ_yGLfVRTLQUbZ_GoCLhBSpYSngfziiF_hgnAo9ayvjg8H_aw6V90Ttd7org3xV6a6qdoFN1XeDv4S9GizjWZrT6e8T3PGImrLpmngwtXx-rsM9t4A5qjxgIGb0EnG4fBNALocXBkxB8B8ejSqexTpZ_ar0QeIce23P3xEikI6kl7ysELw_alLSPYhwy54odbi4-CEHtt-gYtbC_q1",
+          "places/ChIJx8syIR7r_TgRh_nwz3rl3Bc/photos/AWCwydiYmWlbadSuXxNwpSnotSP94BXk9t2eJLiT4wSFegQIdqRHjxBB3JFXQIiy10uHOvGYdWIFfnva7Z-WP4VjE2TrNs4_VYLQlZpN5gyVrYAzR0Po8Mwvn-0z4J6a-sy_lOWEMbjKtJSQm6wXPy--GqT2_6_k3aNx6w4DZh801raZFeqoAQuI0SH78zlmlXMyBpRuWCOxeuA0CVTNPf-pz3QMWPryj5dII_SkMM964nEKRhdCNaNEJfDbZXhEe_uenSgavtoKKqm3c2Iq48n8Z1gNv7ReOLNLE85hv10Wuz6Z_XpgfWlv8TXbIQFIJx6H9SpceOofldib7mSpZWZrrLPJlbiMddGcnKBx-QtacFJxI_K_2GtvqIcaXRK2Uogp59zYrg_5ZzSquCDMrgElP0M2rkysgPitkh3uuQYud4e5vA",
+          "places/ChIJx8syIR7r_TgRh_nwz3rl3Bc/photos/AWCwydhApFYZhSw3isDt76xH5jog-4epJYRjDmJPrmETyC3dzmsOLrw6Ma4D95g79gWdaDJafTvS-mF5w5d0JO2Kg_5HFsQGY_9lf2qm9Sg0sxUqGcpO0YvHU3-R-E6TwUZ-4VkbCgxPjTugveIq2qJKmHTsmtr22WxqzPix42AmHIdITA-uEt61idzXvImWRlNsTCEWVXjuvsswQzABc_uGXiRgg_o2Zii9xNDMtCt8Fq9PF6_DCqMYtoWXoS6M9En5c-O4O_alBNWu2NJN-3m8VorcHQehuaPbcCc3OxEVbumN3pl6K8BWHIrMYB9wJmZZf46pJyPcGKkTX8G57ZueBnZedDmk8vp_eQZC-nBtgWsKr4YjQxaPoiTJIQvvU7MyT8mIldw6N466uQNb7YkLeTuVpfXaluzM3dhdJI5X-TOtKA",
+          "places/ChIJx8syIR7r_TgRh_nwz3rl3Bc/photos/AWCwydjch9RC9ydfXONj3JvxujmaPWG0f-jeE_HPYZle8qsu9DwuOKCbOOic0X7zeUOfj_M39DH3Y73hFyf8lwQjIiW7zuHoKEsZsiR8-dzkGmdags3bIhwj8H_nBuBgm7TMpVnncl8mEee0_hUm3K0mkEmlWpULMvfGAjeAbNsc5Tfk0NNF3v1jVIo0BJVaJlXrO321zeTTKJ9P5Ecj4biOh0m0bE1Tp_N08obwkiWt1p_fga8Iy4ZcG0T-Fh0fp4-_ox1EV3CSqz9dp3BbWxdz3n9cCmtg7O0ePWF5uQd87QUq9N_EKa-dzkXdKtKU7uBLaFqkLjnih631FCl-XhPwZfjC1WAGyhZiJgRYYswVXbGTLHF7tsk0dVT1x8H1P6K7zXJC3plPbrkRsqZJfIupHiFTc4BmoStCTKhB5wbuMjvtCw"
+        ],
+        "__at__": 1786803007.893996,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Leh Market is one of the most enjoyable places to spend an evening in Leh. The main market street, along with its small lanes and side streets, is full of shops, cafés, and local businesses that give a glimpse into everyday life in Ladakh.\n\nIt’s a great place to shop for local specialties, including",
+            "author": "Aravind Deivendran"
+          },
+          {
+            "rating": 5,
+            "text": "Leh main market is the only place where tourist can go for some shopping / eating.\n\nThere are a lot of scope for pashmina/ garments and souveniers. There is a tibetian rufugee lane where yoy find all you magnets/windchains/jewellery, etc.\n\nThere are many eateries/cafes here. You will also find veget",
+            "author": "Taral Shah"
+          },
+          {
+            "rating": 5,
+            "text": "Leh Main Market is honestly one of the nicest places to spend time in Leh. I went there almost every evening during my trip and never really got bored. It is not only a shopping place, but also a good spot to walk around, eat something, sit for a while and enjoy the overall vibe of the city.\n\nThe ma",
+            "author": "Arvind Otta"
+          },
+          {
+            "rating": 5,
+            "text": "It is pedestrian-friendly heart of town with shops, cafes, souvenir stalls, local food, and evening street life. It's one of the most popular places for visitors to walk around, shop, and soak in the atmosphere",
+            "author": "Abhinandan"
+          },
+          {
+            "rating": 5,
+            "text": "One of the best Mall Road experiences you’ll find. The panoramic views, stunning scenery, and vibrant atmosphere speak for themselves. It’s the perfect place to relax, soak in the mountain vibes, and an excellent spot for acclimatization before heading to higher altitudes.",
+            "author": "Lakshika Patel"
+          }
+        ]
+      },
+      "hall of fame|leh ladakh": {
+        "place_id": "ChIJsY-KT6CU_TgRodFJ-lbe13M",
+        "name": "Hall of Fame,Leh",
+        "address": "Leh, 194101",
+        "rating": 4.8,
+        "review_count": 10775,
+        "price_level": null,
+        "website": "https://halloffameleh.com/",
+        "editorial_summary": "Run by the Indian Army, this museum/war memorial houses weapons, history exhibits & a souvenir shop.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 11:00 AM – 1:00 PM, 2:30 – 6:00 PM",
+          "Tuesday: 9:00 AM – 1:00 PM, 2:30 – 6:00 PM",
+          "Wednesday: 9:00 AM – 1:00 PM, 2:30 – 6:00 PM",
+          "Thursday: 9:00 AM – 1:00 PM, 2:30 – 6:00 PM",
+          "Friday: 9:00 AM – 1:00 PM, 2:30 – 6:00 PM",
+          "Saturday: 9:00 AM – 1:00 PM, 2:30 – 6:00 PM",
+          "Sunday: 9:00 AM – 1:00 PM, 2:30 – 6:00 PM"
+        ],
+        "lat": 34.1392194,
+        "lng": 77.5411991,
+        "photo_refs": [
+          "places/ChIJsY-KT6CU_TgRodFJ-lbe13M/photos/AWCwydjMfEw2eLkx1eVXV21h5bifMj4SqcGVz0cEmZMztxNemttFG7_sFFWlgq6SynR2Rb11qdCPHabp5DcsypaXg4ZUQJMEjgLvWUT3kQniZWAJMLG23-MvnA01UF6nmDheeLSoAVw7UUKEqQIFFUi6rrGo3i0E-0Rnl9otojeDvwCYImVvDPnixuMRmC4KROzSEIVZqrBM1DqG2_Lv1GC6kjm11y-P5sARLUmM7xZk8E7zabi5E7y6bKJPue4Uou-omH_-XirB5lLbTWyV2LZkjhDXtM3IEifx2qVYBF_ZQ8tOgNefdkZ1SBgC28i5-yHyDtNeZ54U8uyK39j-h-iCAfiUCtoKsmXaidjoI5qL4Bgt5XWPtZ9OTbWdbYgesCqHaTLOEkC00AC5Cqfg7zJta0YqI2LJl0cyvKMdd4rSYVk",
+          "places/ChIJsY-KT6CU_TgRodFJ-lbe13M/photos/AWCwydhbKaqwtUPjw2gKkUxgeiUe_4h1VoekLF5r5dV1hVvI8NoMA4WSBcBBGQLNCb5aDqIFgkfMXHAYhu4ZEz4cLW7LxNFVxmQ73Pe16ho8K41qv23XO8ZlZ8FAYyodUoS6C21pn4Fwsnfkw111UVxXDuHTJY_ukLUsClLMbIB3TtzusSvMOiGS9inpOfrsiYf5JBtLkQGnaNtjM7nu6tBfaBaNcxb4tG5yC3LvUySRsceJdPQ-bul9hI9JrEOLYJohW7fS-PTILcF6GAjiZwzT_l6q91w-70d9dDtDWzrcIaVMZ8vjrskzKOoM_1I0wGhFJRUrdQ1vVLN6k0L6EgeAzDwMXPafaloNM8KMVNtX5NrGWDmHrS7KIESXEI6qK5yQvq7GcwnqqjPIFPX0umSsoNMdCE_LAuj1iL---fpxrQcF_Yll",
+          "places/ChIJsY-KT6CU_TgRodFJ-lbe13M/photos/AWCwydiAm5pM9UibDtr5m0Jl8pmsbbI-9tEKe-mVzdoxdaa9TpIbqPb92v0yaaEN5o8b6bMRoD6iJBmLlS6N5zfi0uqoJ4UFFGjvRE__29tH-nsR1SQuNcI86Wxgg7OseePlVMFJRwWzoPOVIJtGYwjDGb1qYzw4eiykUshoH80q0qTYACEBbrLpOuUltH_dQJruofiPqIBFaTvfjJy9YMkgGqhdB9H1sNBDRDV0keggXf9AdyfATLQ5V8gXP_KlaI8KzQZinIFGly-OqahlAOO5HDrUgr361L0zutDvrR6TyTJw4OebDyc7CdsZQa9pqb35r94mMXMN7gpLDfyCZK2qLW8qEn5MHhbW0yot4qM4VMWvwyW5r6joPjkSg-t3YLlI3T8KuaQaaxQgU6Fdm66ybWpTGomu1rV1j-LZ1nbrpEI",
+          "places/ChIJsY-KT6CU_TgRodFJ-lbe13M/photos/AWCwydgXZEOwQsxOVWsyCyX5dwTxHmz8a6L1TQ6ruQs8z1Iv1fHxoxgKXSTyWBwbl6AdbpDGyzKUgJeloyY7O9eBH2z4ITdHLDnt5Yq4LAJtBXZTGEKM1jmuy9Yliex42zhzPkuahoYtNoZMXoCA4T9i9StiOCiqxupDzkBSt0cSGcQBPHwAY8ikQFwuUthF2h4vLh85PfHRFTQOp5B_loSZsMXijpE1pkSHNsDuBci6HP_LgLTPnxPEGmWAC9hlfbuwTKwi4kCSoiC3FNN2HcMFolL_ChZgmHTaup5qfQHD_i8V-eJvyJBXxgg6ks10QsidiIx8VQ2nn49S-jwWibfSDfFg9obRN9uKrC96y40P_yUUkVwwEqRfYNi4TB3Sqn9m-GVna1VKkqKVCWAm7KBmhais6k387O_s2XNzkeap1LftpwtS-yH13sg0an5VsRbD",
+          "places/ChIJsY-KT6CU_TgRodFJ-lbe13M/photos/AWCwydiBXlr4GN2jgc_E6SqPW0cpteEqrcBFgvutp-bv0SwNTly2N2agCp4un7ziECF4Tma-MBdLybO3vQTgPkLWt7DK_yCTJe2vzsk-bfTSWM4BKaNMPVh32bvYT2_YPkNGsFhKJnZYr0enIxS3cJEmJTuYrSM1c8x_aqcoAzxKFMcagF_XbO8lPcLZQiBFdHn0yKDwKnUMX_p2svxx1TXEUtT3qq9auKAXTi9DlJnKizjHPtNxdXh3Ek0MnoV-0nUTmncprIruu9FSjBg_Ru1FW1VdgLj2wg0jQO3U-OnInvdPJFN-V4px8tQ2rL0N9cpgPX1TdANIuuH6w4-LfSdU18ZDNK-gC7lyx_cu4iDzeol2b5i6OyumcTAUapRb2sqEFB0rc0JJWbDVyQzXdN6Gbj38p3fjizl-IIWeYwnjIDuVEGeGXq4hKVXdG3OKbg",
+          "places/ChIJsY-KT6CU_TgRodFJ-lbe13M/photos/AWCwydjcvWZk1Qa5n8XGPxJQPPlQY_ypPRVSHgoD7XF4w8y5sjZ25CAnxAH1dfSFOaUzu0GANs-Zj4DfQ7rgF0FlviE8HTkLWQgXmBqu53WE3SPEwdjvJLbnHBP5FaL2HVbZhRvJIVZvmvl41ZUd-voQW0okXBDLtcTKyb_Gg8evLHRfFfUByPeDvlVJZL7MVAtNwjUoCPXkgkhYSq1eCqWvVyjUvzOebkNem_4IqJcYe9WF2VedqDCqSxssIAjAvnmHZ5yhUKkhW9TB2RHPh2VL32oii7FT1oUOEeYEYTJFCctY6ufmfX1lReVdV3iNSnJCLXGI5SEdnoZuIY2ma-bKSDJE3SmvM9hsqsK8WEVOVXILPfGf5YcigirZo1OM18zmFv1XZMGJnLlaSiiIbVinDTHigaGP23w-3M1jjM7gvOi4gdAF",
+          "places/ChIJsY-KT6CU_TgRodFJ-lbe13M/photos/AWCwydjokJlchmpM-I-Y0-ZdkF2m5a1KX6AHKHBpNdfvjtbrqGUqspjmHLwC68KdrMCY4Zjc9I-J_m-Zc9Zvvyn_IWl7AJEPyFg7nRT3MYwf2ZSOV4X40hjQ7tbM_UxhnwNv8E4RSeDcxHGSj4vLJEmha8Rrex69acAdOAliNlSAyfm0LCwfXCHayI3vV9QrmHVYt-GQFmkoTW8R7mxbqT37ExwbAw35Cvr1L3wyE3YxE0LHqOemxYB-1Gb9RlJBPyxl_BzvQIPtWZZJ74BOHHSp5sCF3jJAWmjtXiMKizNVvrFp-T8_IgU2RQIWbxxFvt6ZaxuD97_VUvFVgQvOA05gog5DHtzfwDMPdy8p2eskGOvdUlBv3DHzWa-sYS7YW9Jl6SvJEMNoEYYqQkVcOIMx7rHqmMJ1gCcaRiQt9MkWAxtNCg",
+          "places/ChIJsY-KT6CU_TgRodFJ-lbe13M/photos/AWCwydjGwU0-PEXOwQ3r3Uoe75PQ88Z6xKmNeUrgBbLnYY9GGQzkvljTYdSHUm1xpwNYgj4V0kkau5el0AdI4WxkONkVeLrBNY-L2qPY36iZXwYZAkq3E9LeMQnAoWtFwmW1zNQG7HXKgdh07azYjlqIcqjzKE8mNWL5EcWpyvC55oNnhUJpCQ8gLXbH_ZPgRYGaNGBz7u5PSt26PfcEYTUgY2G9DjBdDmPf7EQQv7H0IRJsyQZATX2AmZ-rxWe5-swWthwaOU1wWkGPEE-jiwPvHsFwNH4_Bg83cy-XESG8qIKeF59GnIRoxvwWGA5qnbjeBz_KS2g68Np5OTYBj8Jjk5r_15MeY_-6VfM2f7WAZAvs_cNYCiolx-g_tzaoI2zyANRg1SZ1Av9HkssvnOJLJCpXKpA-aVycMhOyqbCc4T8",
+          "places/ChIJsY-KT6CU_TgRodFJ-lbe13M/photos/AWCwydgrVPXLj8z5GEv1wK23gROgbBN5zHyny-FViJ8pR58kjPU9ERRg8gL-4WW7QUhacPT_pyXRTcYx1_WIhAgoEFrcpfyuXh29T61buL0W162utKuplRsWTPYTje0jofe9u4--9c8iQpylpddDIynO2pHPh6Z9Os8mwYatuJny0jz03BbFhPQYyBfShrxhlkRjGREzg9_DHaVJjJQuETobBlfTUZQD-BvHklL8T5VLUbTjsTdPJr28m-1aQRevZOh35h_6lgWe-jquQSuqS1txRI3o6mKueXSSljsY07QXeH3kBRgi-WQfqIgQMCvGoO3Jz_2HNM6-6NRKthnWpOX7wd--16Doo0UnvX-Dxxrer1al06MCY_6W9917se-SuO9FQXmlyRGG9xfwe6glgYP64Zve_4CY3Axi3R748CC_Fo7l5vEw",
+          "places/ChIJsY-KT6CU_TgRodFJ-lbe13M/photos/AWCwydhfy0S03akJ7zqUn-PlCmLGvjzsejW1srwth9eysWF1KMgm8mMJzy5Run4r8b3KVtalTj6x_HyXsxuiRr5QrZz0E57t4MdjKRzerIRyVklihOWWlq_7wEFKof8FZ7P96kr8L3FAXcU11IiO8ZfXfSw64uzSP4QDFMTXXmCijj919pj2x_dRWHNY69Ay5HzRFe0-2EeGmC6EnThKQrWoT_z9vNVnRVjZYKzu0A8zYKa858H3QjQcJp5IyETizq7U9-0Y0uZSrLkD982mJqwwLe90bbc3GUsAyDgW8GoT303gih8iizmkqZJLxHrvX6C2eYeOBs-52gSMBwmUOKOJM4VIl-64nWks15cDPSrmFMw910CPxrPEkfYnXkY7cJ-U29ihJD_BCQRChAl2UMvlCqHQ4pP6waTW7WaXSvrcLsszqQ"
+        ],
+        "__at__": 1786803008.3383622,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Hall of Fame is one of the most meaningful places to visit in Leh. Maintained by the Indian Army, it beautifully showcases the courage, sacrifices, and history of India’s brave soldiers. The museum is well organized with war memorabilia, photographs, and inspiring stories that leave you feeling prou",
+            "author": "Yash Bhandari"
+          },
+          {
+            "rating": 5,
+            "text": "AI Mode\nAll\nImages\nVideos\nNews\nMaps\nShopping\nBooks\nFlights\nFinance\n\nThe Hall of Fame in Leh is a deeply moving museum maintained by the Indian Army. It stands as a proud reminder of the immense sacrifices made by our brave soldiers during the Kargil War and other historic conflicts. Every Indian cit",
+            "author": "Ninad Kothekar"
+          },
+          {
+            "rating": 5,
+            "text": "Wow, what an absolutely stunning and moving place! 🤩 Visiting here filled me with such immense pride and gave me a powerful glimpse into the incredibly challenging life of a soldier. An ex-defense personnel delivered the presentation, explaining the war so brilliantly and clearly. I got to see a fan",
+            "author": "Ankit Jain"
+          },
+          {
+            "rating": 5,
+            "text": "Hall of fame is a must visit in Leh. You can do it easily on the evening of your first day as you also need to acclimatise and going beyond Leh on the very first day is not advised. Here you will get a lot of info about Indo-Pak wars, how our soldiers fight and survive in extreme conditions. They al",
+            "author": "Nivedita Shukla"
+          },
+          {
+            "rating": 5,
+            "text": "Leh Ladakh is one of those places that stays with you long after you’ve left. The moment you arrive, the vast landscapes and crisp mountain air make you feel like you’ve stepped into a completely different world. Surrounded by rugged mountains and endless skies, everything feels शांत yet powerful.\n\n",
+            "author": "The Local Explorer"
+          }
+        ]
+      },
+      "gurudwara pathar sahib|leh ladakh": {
+        "place_id": "ChIJDx-90h2Y_TgRLcsyhi8ukYI",
+        "name": "Gurudwara Shri Pathar Sahib",
+        "address": "59RG+M8F, NH 1, Phey, 194107",
+        "rating": 4.8,
+        "review_count": 4464,
+        "price_level": null,
+        "website": "http://www.sikhiwiki.org/index.php/Gurdwara_Pathar_Sahib",
+        "editorial_summary": "High-altitude outpost connected to a Sikh religious legend, with mountain views & refreshments.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 4:15 AM – 8:30 PM",
+          "Tuesday: 4:15 AM – 8:30 PM",
+          "Wednesday: 4:15 AM – 8:30 PM",
+          "Thursday: 4:15 AM – 8:30 PM",
+          "Friday: 4:15 AM – 8:30 PM",
+          "Saturday: 4:15 AM – 8:30 PM",
+          "Sunday: 4:15 AM – 8:30 PM"
+        ],
+        "lat": 34.1916886,
+        "lng": 77.375787,
+        "photo_refs": [
+          "places/ChIJDx-90h2Y_TgRLcsyhi8ukYI/photos/AWCwydj5E1MntCyKSCulVs7xJ5V3QkanraKcE4bcvSrTg1f2wOgFg4tSLZJ_cV0OIIdkQCepLvXnRhAsN1AxarlxkYJA-G8ABf692vJRg20FKS7Pn69IfiMs36oLcZ7_4mBZIL_VQBU7do25KM7t6sZRTc90H2MYjfdqM4BRNV8Ju5GwbVnMskcjiH6B1BAcAO4XODL51z54zxUBcx3TUrlLbTBR1eIX_1p-DkilJ2MyFRfcltSrS6lN0OX-zCHVqEMjisqDhe0g2Bza31GjfjcIAA5U0qehacwY9IbXYHazZlYKljyspUxtvMQ4znujkL15DsMhuOKM_iThipJkOws0QuSZFoMSO30IbkzhBN-BiN3rZTaDII3m9LuXNu_n1S7D7Rdzm4U4_SO83k26b85-XkJR6Acn9Xx5zWe-JZZcWi8-Yw",
+          "places/ChIJDx-90h2Y_TgRLcsyhi8ukYI/photos/AWCwydhyRSoZVPKk8zTOPzy7LaX0Dki-_xm6XjMfryt7VJH5zhLBeqKgK0K3zeZbU52OHXbEmfDtuIFk1zs2GE59CYd2viVhofShQYED4onIpYa0CSXpV66OwmVEJ3di1RAai1Ff5ZalXiLHsFu7kP4cwOahR78wNrWNBcZbo8EElxLFa3yN_g2gJNYIsSNnP4CgoT4UnqT1f-fhLynTCMRMMAV9g3PMj8Q7fyOjKGVqrNVBYSl0MVmn47L3SADx2MnO2N0JK1bGohvMIP-igyr0O29AIKoG01vgg1A4_-DViXu8skIV5rQYDtpiL3uxR5OZ60_MSI3XUJa52XIkMyGi7NQD--r0J7ydj4aAcjNLhfixYN0PyKKsaBWu6IZKmg-snI9exZo4Zn_mYsbhXAUXSBjM0nQz7lzn0z5NEFn7Kfc",
+          "places/ChIJDx-90h2Y_TgRLcsyhi8ukYI/photos/AWCwydiYwrowczMyHvxfkQohrLJzyp6ZK_011ruzk9pKCrfChMcMjLhbzlYt89esRM5WSMAL641hD-Dzp8ODxksfE3u_P3sR7WrcIQ4tOZPSGFls6UGSeMpxmkwXpR1fiXQfRQmSbUpCTAazxVFX83CWQt5Q5Ifz19IoWH__d0aoN392_3icaqo_iz8UrtqNEwuNq4sbXOwmjTvf_AOUjyKVh2WHDRU7c9AwlOudJwFMI40c03Qg5gTilhODo_jMEYonbH0NRFMPaTmqXSaj70AdytsxrBI6uXmKd3EO34Wgp0nUhI5X1JGajUEyCm_IhHKIbiabb1a-c82NzE519__XEP97PaAWe_Uf2uIrMlzSQ292iJUhPFX03k_CFTJA16_1itZXIjMT17_Q3wNHyvC4Ku1kPtjiVsyiBRZabFky000EexrOoNu56n8uylcECzSn",
+          "places/ChIJDx-90h2Y_TgRLcsyhi8ukYI/photos/AWCwydgP5e-ZhZBxhHG2QxhaSKasgxluWcc96-nJubf5LAXIIiO3pG1xHKlkwciEq14AWVsYjZ-rjMcEU9RNvMnPBCwcsLRACGwYpWL5XKZdFzzKT2c2ZALhe0HO3kXhhJpc9tPVnBCMaAoZUAyZXTAcyv5B7J-B08ai6VKng9yolVrg7lTAMjy_wx7se_0NCifzjyZYowiIPwHkWR6lUvcCxG1js0XptmNyNO9KFH9LfBZifh7gHneyOJl4Hg60r9Gi9hcFSiS2YR9YdxwlEkw--c8J4oFwDynT9gFSTScceS65d4gUsSAzFBUqSjjQBGBKM61zqvBoJ6_bq-ZQjrEdQRBCG29j88lg2J2LPk7lQwZjMFbk-Oju99iuDRPv6SMSkwJWljGemLkManioqNPSELePa9UQUj0U5mPRK4P6r6H0vXAFSUGfqPYkwrTfVA",
+          "places/ChIJDx-90h2Y_TgRLcsyhi8ukYI/photos/AWCwydiSfyhw8nWcu4KfB-ttPdpONdVNlHZzui1lh_JBE-WuUSCeOtHPP230VffGTfPd1VeKPrk-GY4UvUezX7UA-UMBDXZyagYXDJuLsg9QFvYXYmeUEg_96Xl4HuLu9FXIjI_gleiRqEa89kIZwTzFLntqyqXJp9uL7GTqX1xIslu-qRFQXF3hS7UaQPh11tTyfVGexyDjkxl7UYhCUVTLZvvBM5pX-IB1y-q2Ad47-i-Iu_mHX9E9b34SUjYBHIckz3vefaWY4PIbIYlc4BGdDLOikJVFtfYPS8A9vYjShe_5ISRA04RyqZouZTlgBST5OpYbGBgSj23udWIjXrcBlAB-DZ8QZ16ZNV1jKVLCKUQYp0c8om1ZNGXFwBXAz_RtJqWh5YquZMRLRFQDCXGKFnUXGBkiH7or-saL3icrEvNCvg",
+          "places/ChIJDx-90h2Y_TgRLcsyhi8ukYI/photos/AWCwydiTly2TuihUIEu56KouNbEs7MuRRHd55r2hAZ9qY4jHoDXpChiyqVenfMDEWXxO2YxVNbDrqZeP6N6SfdJiIKltQMyAuHBClKKKwG-QzRVhFT6zEZR5fOhiYmexyI9uh9l_2eBa8LBqoAZzcnHSSCpysnHBlaZHGJFru_Z8E-iJ5BPgdpDJIzDuU1oy-tnZTPUGYR_xXe1_shCT7hgIeCSdc0qh29DI-bzzmgimHplUySUFcmKN8eSzda2lt5G1kbBvW_ErZXkv2gSjb3mXIHLiOg6Zy1ld3GFCJVsLOzXL8sD3xk2hKy6e0Vb2y-yLoDCWQDFpEKCtT3qV-zy7SE5rvz2iL59m_MGnJQ0UrDWDWq8VqOvQXHlDXSD78n7jBfF4KDMLLh0x4Yke_rf9k0I5_it1msap7oPXQdu75cXmDLKOrxTs987ZX9ISYw",
+          "places/ChIJDx-90h2Y_TgRLcsyhi8ukYI/photos/AWCwydiOz9swgXuYKZd16SWkEGQy9l4Ot7hYkhvoKsSAoRMBXVdwlNF_9vHC2KpRnMY4oqPjJqgXyyDYUmxEVlR1yYQMueUXhslJnpRXLNoDlv85g6Z76ISJEKinFQ3J9Bu915FRJbSK5tgLRBUZNd0_TmBoP7MB7DzgtztxBqxZopTRlrCkjB_DGX9BHpcmavkbn4IW3fd_e8Z6vcVE2yG5QpM09dGfsJMt5r4sNzjUhl7mkJLhgXTN6Ld5HdaY3Byd5XAf19sqGRcz_YnzdnLm-g_V21ymdNH7URG0_6ojmi0LlUVM7baEKkSFmDeZy8bbRS1rV62xfeXjfjbu3kWKZtCk5hP8453gXV3OFx5066VuhLdDuV_hLwZrGa8mTgJ9ljY57kAXF8GJ9rqM2XSQoKFNI8Y3p3DsPhKM0MURV-9baw",
+          "places/ChIJDx-90h2Y_TgRLcsyhi8ukYI/photos/AWCwydiuJjqdtDPy3pUFc711dxp78rlKYWJsYjbViEoQVCvjOgSL3O6ETqI4ROHxnUfNlU95ax9kPpd2lhpwML5OUMUCLc8JB3iLdAPbC8cXCrgVp4J4ouyp91omTkLu75gzVdhxkjQVOg7HbFUx_AtVywfOcFwqoMIKMVrnLWOx0Rs2PICEAdn2rlFd0dVc6WWTZzgmiBasAPmwmnNAzUmfTL3ox7AqQI4r9QrW_JhRw3iIGWyZEnVFmKWFQxnTTroEUqECNZRWL9b0915_7d7Npg5SrO2856uATPBwe4kySIqsEj5xnUquJzFqyQQ7mYbdq6oYQXtzjxGLKRRaotV9IfkmbgNT8WClcEKtvrsPKSiiZdiKA_xiwkYtNmegfNRd-w43Jsm4dXglsZgEv6tgDTBrflImMk1sKCaq9KJZSwrVoQ",
+          "places/ChIJDx-90h2Y_TgRLcsyhi8ukYI/photos/AWCwydgBFLVlbbGCOb3W7wNjTZdtErmroTrkR5i0aktyKKkpiqcyZ5N-Mh31Zca4S_m1dU1fpJh_13sxp5ixkZfmp3g_iPpB9I4ruObfHJRE8XloTw_84dRh4gu7k5V08sWy_BIfWcgVBTKLghYqXIzL0h1JEoM5Mxql4CUvDCDnx0lt7b-efjnJCT2vtTuhigM38z_v4NxKWkQ0JQuj-jFb1ecDE12l666vgCKkUZTf_bKSyTGHY_Cf-H3SoPQG42rA96E9HIo5DirQKlNEKEFBmpQnBUgOF6NL99LT4ds7zGJbEgNFEUg2kfJvU5_z9HLkYS7BvVqyCpmYRSHkA_5ipwJ93kNPa9vasTCmnQXuWiFvVl9aI3WG_iwD-AlFggcLC_AA1APtsxMX-cm65kikMG60uXzKo6R0PdjgolwwXjymuA",
+          "places/ChIJDx-90h2Y_TgRLcsyhi8ukYI/photos/AWCwydhnMy521D9A6CtOCiumryE9jHW8RAp59bhYrno7ebyoT_Fy1PvjxWp7pt8sM24taZ18O5rpdR311v_lHnovSU6I4Yr7ipSc9ZZv4V6iXY7JjGz8vuzN0DO4zxGBYx8b-9dJSdeT8RsZkmVWC3G5riTjp5yfccqJGlIpLd4vXXmypuduRbOD8iNoFbdFZxum778iVHeMHgCsVPW4eShh9Zi4da77xc7fFQu7vb1tJjBMgruLpvQAmD_D6776j-MVGOrBYjUsjyFukD9vw6O0o_9K0ZBNbVWmFFwEskug2lD8BwxbN6u8ftzH_RLixm3KfU_nz86hgBmi_jD1aIWC3Rb_hx_YD5F5yFbRd8ELbQii4EUHyUBqtfF0kEU2DqkbzO68Fg88tPa26Aq1ws1sv_Goh9YF8vGe2lOK69ilGpGq39uk"
+        ],
+        "__at__": 1786803008.752697,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The moment you enter the gurudwara, you can feel a very calm and positive energy around you. The place is surrounded by huge mountains and the view from outside is simply amazing. After travelling on the rough and long roads of Ladakh, stopping here gives both mental and physical peace.\nThe gurudwar",
+            "author": "Arvind Otta"
+          },
+          {
+            "rating": 5,
+            "text": "It's always peace n purity of soulful vibes at any Gurudwara Sahib. At Gurdwara Shri Pathar Sahib it's even unique, standing tall amidst towering mountains 🏔️🏔️ and holding heritage n stories from past, its serinity is at best. Was fortunate and blessed to have darshan at this Gurudwara.  The rock a",
+            "author": "Shiv Kumar Khilwani"
+          },
+          {
+            "rating": 5,
+            "text": "This is a most popular Gurudwara and people visit here even if they come to Leh directly or travel from Kargil to Leh.\n\nRemember to keep your belts, sun glasses in your vehicle. You need to remove your shoes and socks and then go inside after covering your head.\n\nYou need to wash your hands and foot",
+            "author": "Taral Shah"
+          },
+          {
+            "rating": 5,
+            "text": "Large Gurudwara on hilltop\nVery well maintained by military officials.\nMany people can visit together yet there is no congestion.\nThe langar and prasad offered are outstanding.",
+            "author": "Aindrila Samanta"
+          },
+          {
+            "rating": 5,
+            "text": "⭐⭐⭐⭐⭐\n\nA visit to Gurudwara Pathar Sahib is a truly peaceful and spiritual experience. Nestled amidst the majestic mountains of Ladakh, this sacred place offers an atmosphere of serenity, devotion, and positivity that touches every visitor.\n\nThe Gurudwara is beautifully maintained, exceptionally cle",
+            "author": "Manoj Joshi"
+          }
+        ]
+      },
+      "magnetic hill|leh ladakh": {
+        "place_id": "ChIJJ5tAoDiY_TgRLowcdS6koZM",
+        "name": "Magnetic Hill",
+        "address": "Magnetic Hill, 194107",
+        "rating": 4.4,
+        "review_count": 901,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Hilltop & novelty historic site where cars & water appear to move uphill against gravity.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 34.1763828,
+        "lng": 77.35505409999999,
+        "photo_refs": [
+          "places/ChIJJ5tAoDiY_TgRLowcdS6koZM/photos/AWCwydg_FfOwLbHSTUiehcwJ8yRSrrm_spCW61UPplPLFiG8XO0Zkw91fBorSMPbq0Q3uLLRynwOZjxWinLDlU0u3TxLymIqWC-rX70em5xl4C7RTn93Xk-28yiRx4907UjwTJliU2gXAH_lSE9UAfjHgqcRtciJlTSoWfMJmZGVdaTMWOlX_V-36A-aPqtCRX2Wmfow_bav9llLkStaEp9ucZYEWbAWtxX-PSbjW2vnkDWT9FvjDpEtjFDCfm_kj78ToAloHrWtlQDyWOvxjP1-eEetUXlw0pRmaHeaZAMtHlCMc1fky86K-DaGbtvy8Gew8s5oFK5dvHR_I8GoYQoVLvL8VQ5ye4na28WXaq1LPC8C2PENL4uWAVwJBOuBebVKolCK2VE3ye-ESoSXv7Z6UM0Tm0FGuSRDKVljIfhSPqAYNn0MSILS6QIsdrV_o-QQ",
+          "places/ChIJJ5tAoDiY_TgRLowcdS6koZM/photos/AWCwydg0zCdr5VEbE4brwBrfper7Mq-cGV2FTUYWFEcK-WrbL6Rb3HbzBX0nveFp1uO56mcHHO5_-BgXD4HRt6WIxd55VcmXaE8iXTsAPxhuCVohpnUe0WW--QkOUj1aOCJ8kRL1Q0g36CGSz0zQ8im1lVrF6XR_DsRK7EX0_-BKqxnmjgdxwr0HdRDWAlc9oqSHipcC9_xrEe1WioFgJpr8O_5eQ28QmGBT9J2lYhPolXk4eWXy_pLrRXWM76kL9Plt9x3L0iSkDyBOuaUzkfGWRNshfoWgA6Ex04N8o3iXVWssfEdCRllNF6i4UusV68xApHqD2la3u5QccKNysAk9kvqKYXAZMUet-Rwm0JzwNpQoewtiCt9jIXlGFc3uOQWeHxnLx4Y64cGsI20lt79WowmAiidYnGVfrbJ2Oo12YXjjGy-D",
+          "places/ChIJJ5tAoDiY_TgRLowcdS6koZM/photos/AWCwydjLY4xguSyfiqzHVIWBaruW6s_LOJ74sLr1UC-AWeuYVrl4bMH3lmwtAnZ4omiRd7q9xGCo15sOt5zaItQs2HbOdvbsyGmpgXrukxt9NOV02ymfYg73pxGnRWf75njWL4QsdYBpGHm-lb7kVXVYZqIpZGGfijB1TTgITR-30LxsDCf5te3wjTZpwyzIfNTGwuxaJQkDl-L7ZzWKf_v5PDL9zjzTTL0kXp2j9Vz0T0-GCpcdmHGyoOkv3WiA0EzDqicBzyszy-DcYWpxloD3tQVAaw4pYIWBsOOW8TVJk7Dzw1whUPTQwzjWLc6FLzKO9oNyHEgZ8jbttlPr7XIq_FLyJMGPzAdsEnkGyOJnSqfPpdbmEKADia3DIxVxoQXchiEMIkP0MAi6wsh1LPkWZVg69qzz6qj4eHMQuFBP0jk",
+          "places/ChIJJ5tAoDiY_TgRLowcdS6koZM/photos/AWCwydhPix2_oBjTWo8az09RwjAUZe_lUg-t-kmWMGbMHeLloNgGymERzizLXCn2T3WBPxlwe6CKfFA5CwVj0T5IcTQ9QEwftucWoEXS_EmjAKe-bprWEvERMSBAzkaiOZHv0hJTrOLEbdcccLY2L9YNb9KMhIIwS15GLtEEX2bbL_hRulaNDvxSY3gJtniFGg6ea662OqJoRwnU50xiTLAvk6hVvofDS5CphcPOasvZUdazNj6V_AERb2EqHl9hvnzzxzklgxZzz6bzwyyxYoPLOsquYQSsaghf32fsINZNy09DPjXNLQ351NuByAz-gYcrRfRYuNSDc7qW1-rJUTwlNr4vhwg0JcVQ7fZ7jPu_ZOOGp1R7enBwzs2XN1wYoEOjq2wwe3Xru2AlURb3YCSiwNqAcuqPCriiSicDvlAx1AFwwBq9",
+          "places/ChIJJ5tAoDiY_TgRLowcdS6koZM/photos/AWCwydg--lo3oOZNjrxbMiu1szzobILF0v3_izVxsAEY-H7WllaVrahZGWHddh1qdbKRm-970Ta79Q1InWzVtQAJDY16Euggjxl8fERRjVs_v6rdIxZR0qtmJs-jLxHXO6YlKjdIUJAY2ZeF3btGK4W1e3vIBLttnRi8dXNUde4vPm6IwGYK8vAHXl3oTipHmfLw8d48JSbdnyZpHN71bhSKI1JOajEQr1pKhlaDgoGDA2zYKw_1kFBfZa64DOtOzTkhuAEtQ7a5uIzoDNocqLGxlR42-pfmfgEH7lYlOZR8UNY9SYU5jBWIn995_iFZ3BCjc6LISZhCyhfa0ud5XYGIKi4SOh7LCEvUqetCRfMAnVQO_yYTkU-fyZ33kFALIOmJXnsDIo-7Emi6iKG2DWVrVcanirJaQK-nI6kKJwzLWigDQA",
+          "places/ChIJJ5tAoDiY_TgRLowcdS6koZM/photos/AWCwydh53pioRk-vI_Kfx_jM2BYEURnGZXS_RQB4CWNNa5ImXpCRjwS5VWNksHqS82pzG71ZPj8U0i96AyqMvLUn5okYVY1KwdG-qQ15mweuDPnURCGG0BsLaBZe6CBHDGoABacDSBZdt36PI-czCKCTZhBVxXwfUMqOWTtriCGg4bt5nE-M1qkEGwf3Nh7IGI1ZHLtKM-aeC6LyI_xZkxCqrYM0mVyfj4N2ndzcmCgyIDESa3SPuazI7MOHpFFPpx9wei9OFTjAqgUNauYVsMUKCk4eMpm04cfWGM2A8GapEVOfER17wNHH85aYiyZEaeX5G-jS1hJe2s4SGRzbTMKf5dIYPM-Fz_QE6VgcA4TRLtZzkZKLLPrb8iBB2CD4BrgqVCoGr81SOMikamccWxEuXJOW9krTzXfRt9vlcalEg0p2Cls5",
+          "places/ChIJJ5tAoDiY_TgRLowcdS6koZM/photos/AWCwydgFH7gHYe0yDKAa6jI-8x4bcG2xF6AdOxsK9pEPmcwWdjG2r4CQXt6jogm7FqzcmOwhFruxDOEBGNW5Bxtek-Ucome_E51NNCZdjopYekr8Aa9LQUq-2Yn3OMLkxsaFvsfYdaN2c_f3tqw6t8A4lguEON4Z30ilsCofk-FfHaVFaaK43GPBIiDn7hsIQ2SkBD9rmSEQjF9f8oxyfVQEyFLKxoYaR5xiUJapgpxsH9x0xdbWbBcb7HHhRAq0SDMJ_qZjA85VVZpgpSQW7igJ3s0OyuaneuM9tU2HYChI-EauOftatqZGNQt4XLpB_qkJdV8qC6IGtq7rxtFZ3upHws-L22gqoTROfEdmumCfTd28Ir9GwV9isL4oRvR2Ztilb5IuPwrvSi85RulQok7ZuHxIyyDI7ZTiZtyp0HkzRvU",
+          "places/ChIJJ5tAoDiY_TgRLowcdS6koZM/photos/AWCwydhVEFtzYKnu72ptVqZO44G7IwwvP-GAyuGBP55IdkVlQCV4-CvtFQVR78ey_oZhJxQRgd2_JihIhPv7fJGdlQntqWKOMiJmQuPuvFsr8DwEEYFp-sdAm9QlBElA6eV4D1XQNEriaPk1KMj-XcDKl_y3Q2tGjH0m2Sdn14oizPski7_g47yL_qn4TAjZSOgmzSaQleENec8hjd4Ot5GJtxtQ6Q1Ai67Oj5WyNveM91kAqV7d3u-FEtO4Y00fiibaIpmo_8JcjbJs3hyrrLeDeaJ-_equ1KLNYGgTUT36bVwudOiCL326j1XZe_JuTFPcrbMLXnzGDLsY9kYToxHog4x_15H8idCU6-M0oaQHMAVdQDJlGEUaSaKgGeE9HPyRijAOMSj8i-hWGTRB3PYzuCcOC62JUfA8RX-KW8AvnNUNaw",
+          "places/ChIJJ5tAoDiY_TgRLowcdS6koZM/photos/AWCwydje4wJFaHl0BMreSaIGFqsKpk6U6cakPmJyUwipZGcMCuV2Vktba2ow_Zx-o6NMSlWZzX5TT750jL8gunwWWPttR8W0HOBQGdZIYjCCv-ZZPc3vmmTo7Kdm-Ju2WoKZrLYfwEdQUjr8zX7yMzyzvVFGwMfZ0c5jORZIUuftZKwQ7DvS_hmyuoIMH6pHMVgOn-fINYn_a1gIucgt1AksiofWo_yTkbgrCcc-ZPUSEKjm1sEEhBXZ1W_MrmP3YgEG-zw8oqGRxVDhrtUHwCxcnr6OLRfa69tCqmoAt9azZIU7rt-ZX3iMcnCAn2epkNVIHhYnlcQoa0tlvPmq3Nn4tXN_I-onki4NvGVOOuUykTRHX8wAs9IxiDD5kgg3fLfz8T3Q61To33y5qdORkVe8wb2qQIpgwSkGYT16Ca2oG8hovflj",
+          "places/ChIJJ5tAoDiY_TgRLowcdS6koZM/photos/AWCwydg7umSZzU8HMKbWptBqT8GSdSoBzt5gUDORI9dTnuMYztJXHpNnyAuHHgfHsf8un_DgmcIWTgDJqWBqDEwf8FOekmKWCZ58DJA-UI_kd1nNNgG5lpMKd7z5J2TREq5AVtEApr_AuQacPZ0eCxT33f1L7e8-TFw63gJqFgk9BuPGdT8xNVQ-RwvOj7BT2yzQavhC6LtsOFsCvmhev1FDpY5yvvPC-O2ZbGODBlVWxDOeCLcfEszipSl_bfl-H-pl2JFXElf3Sq25SSNge7020orO35yYlryQgnvMua-iM9HGhBZqbGfvF6rert31bR7dgG7fjkZzFxmVsjk9fg7-lEkO2SeUSitlDXF-zQMNOSY1D_5ayERpbS3oY2gWNsTOnfOEtCWrk8uGdjG-odnXXN9miZWcWb6ouW6OhoPSiqk"
+        ],
+        "__at__": 1786803009.222949,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Visiting Magnetic Hill in Ladakh is a fascinating and surreal experience that definitely deserves a spot on every traveler's itinerary when exploring the Leh region. Located about thirty kilometers from Leh on the scenic Leh-Kargil-Srinagar National Highway, this specific stretch of road is world-fa",
+            "author": "Sergei Novikov (balicoach)"
+          },
+          {
+            "rating": 5,
+            "text": "Magnetic Hill in Leh, Ladakh, is a famous spot on the Leh-Kargil Highway where vehicles seem to roll uphill on their own, a phenomenon explained as an optical illusion where a downhill slope appears uphill due to surrounding terrain, though local legends speak of powerful magnetic forces or a gatewa",
+            "author": "Udaybhanu Sarkar"
+          },
+          {
+            "rating": 2,
+            "text": "Visited Magnetic Hill today — the so-called spot where your car is supposed to move uphill on its own, defying gravity. Like most people, I was curious and a bit excited to finally see this “anti-gravity” phenomenon that Leh is known for.\n\nBut to be honest, it was underwhelming.\n\nWe parked exactly o",
+            "author": "Utkersh Bora ubmuse"
+          },
+          {
+            "rating": 5,
+            "text": "While the magic of the Magnetic Hill is an optical illusion, it has not stopped the creation of myths and lore about this phenomenon. This is more folklore than theory; the locals hold belief that a path to heaven once existed here.A common myth suggests that there is a magnetic anomaly or powerful ",
+            "author": "manav"
+          },
+          {
+            "rating": 3,
+            "text": "I was disappointed with Magnetic Hill. The hype is far greater than the actual experience—it's just a roadside viewpoint with no real attraction. If you’re short on time, this is one place you can skip",
+            "author": "geetam sai charan"
+          }
+        ]
+      },
+      "sangam (indus-zanskar confluence)|leh ladakh": {
+        "place_id": "ChIJczqcYwGZ_TgRT952WgA0UYQ",
+        "name": "Confluence of Indus and Zanskar Rivers",
+        "address": "Nimmoo, 194107",
+        "rating": 4.7,
+        "review_count": 937,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 6:00 AM – 7:00 PM",
+          "Tuesday: 6:00 AM – 7:00 PM",
+          "Wednesday: 6:00 AM – 7:00 PM",
+          "Thursday: 6:00 AM – 7:00 PM",
+          "Friday: 6:00 AM – 7:00 PM",
+          "Saturday: 6:00 AM – 7:00 PM",
+          "Sunday: 6:00 AM – 7:00 PM"
+        ],
+        "lat": 34.165743299999995,
+        "lng": 77.3330149,
+        "photo_refs": [
+          "places/ChIJczqcYwGZ_TgRT952WgA0UYQ/photos/AWCwydgPQSgIKSmfkuUgOGXGhY3NO8LEIXSHSk9SWQhvwjsxiURuAhp9sFhlN_6Ho37dVZajiGDp48fv7kORBfJyh0MMuvKcMuAx7ngCmvVXsEIKOq4KC5PV1JX9JDiK5g_7k5O2DRfBmq8cW0PRtL4c-KVCm7rojCgOyZUrxfmyPQXAjCG4_Pdomnn6Ph2Hi_uwHsCXhLBYnQ9cHdc0bIioZfgsEMk8TB4z17z4NdwX4t_-sh701O7qGLW-CK4EVKH3t0UpcDa3YzUz6ebNjAGmJmx9xdqlvNmEdWdQVT2CGSPZg3BnC2ecZEVh9Q9-GaW6snBax9MdSaw8PiS9X_unOFkEZdgdnMdqAQy-5iw-VYAYScbvMGOXGcc-D_yDJb_z1Hx-NkE_-8c5iWgl22S__9JQG6F0Bv5RmtoJr_RetdWl7w",
+          "places/ChIJczqcYwGZ_TgRT952WgA0UYQ/photos/AWCwydjEiTs5phRnorJwP3n7FzOqSryl6xLsV9kufQcK6EvGV-wZlh1kn8dgIRWiO0Pn7NGY14X_km71KGv2eCJR-LdKiOCJ9Ksz7lAmaqPJpeqrcoOn_nrBtXuoOuk-_OxjvvfJmMBn5BxklkOlnsZP0pm6uPIMBh9RKZBfBP2UQmoCtGyxJ8Ib7MlY9_RsgF9ho6uHnkIiyEIrfDFw20uxohX9GUQw4eZrx1o0w0UriT5wKmLdaGUApmECE7tHCwRAWrlWNllVjzU-S5mkkAHFSgMVTOD_l4y7USeEbb4jREC8gpBOFXVqHrKoZg3ZkeHUrV_SJOaxf2_E0iGPac_obbNm3qSCDFhtyXFzl0280z-E6m7EMAwF3lrnIOCAoaX1d3ZIoIlBs-Jc0CBGV8yDlmwCMQicBj2SlPLSQ5ROdI-DMXY_",
+          "places/ChIJczqcYwGZ_TgRT952WgA0UYQ/photos/AWCwydjoN5xYQW6el9o081DyYGV3KouNSV5Jp2qvjgX9fRonyxTaiQtrADX3_UTRHG7ZPTRrVle_UsRctgWDGsBDaOs4nnK7d0Yq7nizcaivb9lVc_37r_4g9l_uUe1Y8FutAeQ9rFSH_SRoPo64_6838-teUlSM7KFx_Ok6U87dR404YPd0LTlCEzwaSyTyfYuFW3fFZhYsvzpqOewxU8R5IwnATGnKLEZlHtWZcW6BtFIePrm_Y10QK3EpZqJKckwY2f1kkqJgc-6G_NVLJTgU7tRafFraUtGyjqLPP4BCMbVGjEuWJ-O9uPxNVqkd7eReuLbVLZTfvrP1L53xzgQ0LlE57qJ6TZ1nMHP7oSOsCgiMZL1zZ2wcXEnICzON9sNJjDnmziKcfR1OItCZA5Kwo_9IqJp-za7xQdtQfJVaC3rFb0XoHIHRWx6EgUOg-MRi",
+          "places/ChIJczqcYwGZ_TgRT952WgA0UYQ/photos/AWCwydjADeQnblT_KzNxbu30ZILVHfr6uiN-OCz1Lp1jfBiDwVY3JR6qLtEAshxfFMhu6291hleeZ2Pt19WSFvggHZ1oJNyDGVUS6oB0JB9I6DB6Y_5BAgWDT9Xoy522ZC_Qk33SBnwm2JGvUtmEtgFD4nRZTY0nUFOjfpq0H8tQESxe7lVnUnEC6eRjMJKWXzAruURAgLDpyqBX-Q7NZ9s-FvJGdXGiUcywELH7X80ox6oeV5sBlfQ-K3C56u_CCRtm86BLi2WeUqzM6m4k-K12lefCNQBFzOck5fj6s1YNSc4aJe-8ggEIQRIwaeASBACUanaoKFJaF2lrL0zFqxcN9OerYLYf2baKF4mCdOPfWW7WnSECvg7cXfJrnzUgKx_yGRDuJ-GYNVIRoexIcDJnuYHiijB-3_s1ZcwCz4WCc8gvuzU",
+          "places/ChIJczqcYwGZ_TgRT952WgA0UYQ/photos/AWCwydgIZGp3sd0a-6LQ0J-VOoCFnqdYIde6pC6a3J_dvc0ry9UKtvGsH_fo8JFC-C0L5wINyINQDX9SCm_pdF_35UAKEiugWviLcJ8ShwPUbg0393_mzLcOkczUWGvjZKZmFdEm4COKeXy1M4cNNInczjqIB1FusL7gGFOdgVmvh0H1jDPi3rGfcvCTJtDc0pbdlexTOoL2cn-v9yvkqpmgpxKMG5btmKJ-vlTm3ZUVL7YUJVI8sWQvWl7c18eUjILrwBrIOKoghlXTg39KMagAXebQy6hibNoiEPZB7rtLLSwx9FB0qaIhd7fjZE-aDoUQFWfOtwh3i3DbVnXLNzK9Gr0kbPKo6Vb-CIO5L1o_p2ZgY8x8rCASJZfYYPkr1TKyHqqA9NlhzEK89TgEYVMnnb3glokrRM9gnqxeLA6f0smg0Unyfe5M_NLyMeckl9ID",
+          "places/ChIJczqcYwGZ_TgRT952WgA0UYQ/photos/AWCwydjkJ6ygWMxPMhZzchFYNda52aaOfAknoOFuicvl2xGODWBtSnWIkafyv4YMOsNKXqA7P7LkZLYi6EdmJ4vUQdzI-M1C777xiTfoIfsphBNnM5gHFzOA5rCx3BrMKz-6-dEdf8D5f8X8TFyJuLPArruhrZ-OkmaFcI4FYYCFztoyph98AkNKFN0qP_n1B49XcHHAzzQlVb5knUSArYH4CwY4vb8U_pSlN72wr7yoEJDtvpskfICDY69TSrO42bTgmHtGWgOtrLGok3uh1Fnm0pJz-nqpn1SMXoaFK9WTK3sAtPXRcx-jVixhpap3EbdbWHiIXMrwfSWfwc6o5EJ0cHbPqsb4tpaP_U2Z1wM_D5bKBIprSstvEC1ZiHrDuKKjl9EE3YWyCWD8BKoUvOWyZAvvU2vpoCTZVFpVTGEqZnnlh1di",
+          "places/ChIJczqcYwGZ_TgRT952WgA0UYQ/photos/AWCwydg8I_v3NehNJZz9cCWMEwauh06WU2nEOI2JKgu0GnUetTlYHZDMN2Sa5ZqtudB-MAp-ENQdsVySg8fyF5-Ds7ClIIBmKA2XFdm1VrT0op2UwgYRSaXCrxplBsQg0ROgdevciGUgzhhkNKTFZ4pamDfdoOeOkhLU2iNBOcruSRsh79-9VkHn8PFxR08_M2px9aSC2FDKjd1GFTpPvJ2iqWobd5OTBUgCj6yvpmudiSH03Zi1-37U1zHD17gLWjSkLO3J6bsFa4OUBJ7VuIQZjOQSXtTAlMscjKx4RwVI90JJOoe3xZlG4sOk2wSQFKOGj7_dLhzgJ3kJliPQ19_fcbh5YQk9Lrtk-S38hOHqsabkDx6ts2k9sFbc_5ofs0N9dTJzFk6mskEqtqSstYshK71ySUM5W2jHunVPT3iDAA0BG5KD",
+          "places/ChIJczqcYwGZ_TgRT952WgA0UYQ/photos/AWCwydjv7VHXIWfpgosNttmjidOJ1YwU3wGhFJVMhvKJCZydTIOwYao5tphc8SZ2RapUwdKSYVofzwtiejQ4IQ9pgp3gsEgUKRmNQBnh4ZBdV_9BGneqDERQKN-9fQtT8_V7flm6G6mWxfoK-QDK5-ENR6S8nt1nj6kOIRyLi97PsZWYfzdId4EALsxwH_HBc6vDBb5H1aQDlwameJCK5Bh5vXxmrZk-H4xq1ZJplDGqYWBn1XJ2ER5Ut3FhVnggQsuv3Vusnz6ulmfcy9b71zsxUt7LX_fXu0U2_SNz98317ITU1xCxNJ3G9twGmY_ygJcu-7bUK4ux6ZMZiUioApZve303Vqtw4EGCXWRaudP1OpQo9YJ15-SaI_2NDqj9uGm3kbfRiHHlozoAbWjFxs-Z57I0Ai7KJNGuxxRH9qkssK4j1How",
+          "places/ChIJczqcYwGZ_TgRT952WgA0UYQ/photos/AWCwydhboeC-ud-fLQXuyQHJw4XbtbNlHjT4Bqn8Fkz4UcmPfEwMQUs0FW7q41J9EgQlEKLVsKsPC6IXyVA8w3C4cmqvz64skG0E22gu6SGhyIKCwpKskTBgt1aQw0RgZSsOHIC7LFq64t_4nWXeAgF97Rg965ErPxyEAs2avGeeK_2N1V_ofZQLamEVK3JfjY-FRPB7szMV5CJZXiaRYGN3tnXMj0YIVYEG4gvj5meLaDtxaiNk0CM_qgi1pnABLUwMNvbxQ2M2aa4nMz_G-KwZfKLatwN7Apddev4bahNcwiKB9TzylQWjexBbUueKxz_XuT3hNuucD52osEGoSergzyeh1tYYeCtOANGJ3DT2jTGAJVuf7CgAwJZrlLZM7H7RMgvmpwgvYHKI7qt9Q2UNqwoqfqjQikM8ZnNVCtE3x60",
+          "places/ChIJczqcYwGZ_TgRT952WgA0UYQ/photos/AWCwydgkeL6VyYjmPMPTBVmUVmYuopbsFAnf1vKaOilIBuWlpspjeo_KGjxWgoe9XPUwADtnnaYionTkOYZg3vrhCzJxLc_uW0cgCZMCPNLWuDUl-6OX8vwn8tY3EHEA-E_rtKrkx80yqFiNEVSft3QfJ8HiTgkqs2RqfMba32zG0akQKJLbS4WUID8otp3LPUUl0T2uq_g0h71kmiGFV6IOtMf4wpahjzelolqUZ5gy6WmDp1pmDVl1YRT7jrh8TLNR3Aod69lt-HiUB0EJeakUVPu59dZwKraB2KyQsI0IEckfghZkshOdb9s2zqH66oJkrmSFSLOxm9KEzkz8sJwhoDdyIaxsbGax3lKcB2WWeCtDC5r2B9EdBeRwd0vVw54dJoL2tDYEKG8TnDkOua93F6B-pKJaGlkWJLDH4jeKtM2TRtQ"
+        ],
+        "__at__": 1786803009.607239,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Visited this place on the 7th April 2026\nBreathtaking view of the two rivers meeting & then flowing together  withh crystal clear water with shades of blue & green.",
+            "author": "Mario De Souza"
+          },
+          {
+            "rating": 4,
+            "text": "This place is a confluence of two rivers.\nThe views are very good with mountains all around.\nTher is a bungee jump place near to it.\nIt is about half hour drive from leh",
+            "author": "manish kumar"
+          },
+          {
+            "rating": 5,
+            "text": "Visited in mid October.\nMost beautiful place near Leh.\nAround 1/2 hour drive from Leh, on the way can see Gurudwara and magnetic hill.\n\nIt has one view point from above on the approach road. Most amazing view is from this place. One can sit on the bank of the river and sip a cup of hot coffee (pleas",
+            "author": "arun tirlapur"
+          },
+          {
+            "rating": 4,
+            "text": "Sangam is one of those rare places where nature quietly puts on a spectacular display. Watching the distinct waters of the Indus and Zanskar rivers meet against the backdrop of rugged mountains creates a scene that is both striking and peaceful. Depending on the season, the contrast between the colo",
+            "author": "Prabhupada Sarangi"
+          },
+          {
+            "rating": 4,
+            "text": "During our trip to Leh, we visited the top viewpoint first and then followed the road down to the actual confluence point on 13th September 2025. There is also a small café near the site, making it a comfortable stop.\nThe views were absolutely beautiful, with many visitors capturing photos of the st",
+            "author": "Ashish Mehar"
+          }
+        ]
+      },
+      "diskit monastery|leh ladakh": {
+        "place_id": "ChIJK8iTFgDL_TgRqS7DsMOrG8w",
+        "name": "Diskit Monastery",
+        "address": "GHV7+8GG, Diskit, 194401",
+        "rating": 4.8,
+        "review_count": 66,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 34.5412366,
+        "lng": 77.5605683,
+        "photo_refs": [
+          "places/ChIJK8iTFgDL_TgRqS7DsMOrG8w/photos/AWCwydin2JXNJT6hQHW2vVXygN-xyGvyb0qilxdFuIjCn-VEA4gzyjB5L8R7Pw_46JvFLooyW6crNVHN5enqCy-qRUIjjcsHJjivOojG01Afoq-OyrMpee8Zg23vnnLZSunmHpJkug-xW6Jwdj3oSVTh5IW4toI893zBA8Q89ch3TYtGPMKDoAjQrKqGpFdiowTEKCh3wio-q2B0qDm8wAJ99w99lJ1eJ5Ytn20Sh--N0fncneSxfIUlF2y01Ia1GM2UzkEWtmy-TmKzeOwLGHPIiEIuBwyvyS6wHuaouyWsJy5quoToKxLqoGJkrXRfSf-rmopaAaZKo7Ma3c4yPLl2qQ7pJ0vxTZfFjJ1GkjsH7QeJ_-cmPx5xUVZJT2oD5cDhoHdtcuOQLE_xvb88FD08bux81eu015A2_UUYl39-ppVt6w315XidM65BS9qweCDt",
+          "places/ChIJK8iTFgDL_TgRqS7DsMOrG8w/photos/AWCwydi4mXT8Tsl_pwmGHMckws1ylAYhuORrlwfBZS90UUYfhFVPxeeg0d4op7_KwyZrDGg9KlA0Q6B1sV-iutJSehNpKtSvMn2xfrZsOICB6xF-W55nEBdxX_FZvDSCxq9X1K3FehLIq_97086Mmx0iBURRcMmqYUuSn5Ue8FgLU173_pO7_K4WxxEnAxjV2H6TD0u36KyrE5UKgoAMJ12qMjkDcmwajYGxxDcKRvQZkhJZa34ysY8q854eebkzvXxX853Fhm4F2vx5rS4JfjmYGQQdWwUc5Jgqe-QyUY2c_Snif8cdGjLLt6cRByx70ERUalhjn1KKQnBgnFokqW7huQPpct87cUCPTQ7t8_6AJ1gMi7DDXDEHPT2PqDmxS_ToCxTBjhx3Zhjx566i7qZXn29LtTXXij-fmCVrO0RUTatvWTZwcHZ9OsGO5W_JNSaR",
+          "places/ChIJK8iTFgDL_TgRqS7DsMOrG8w/photos/AWCwydjnVI3blgUCuOhxVbDk22Cg7781h3mHEwMQqVjZJbf_ztddRUMyiPNUnOZzSl0saPqL0FC8qzXNkaOJO0uMGhzvsOH9VTcKq9DnaMOoYujhJaA-ll9UFbB1xtdqKLblaCT6ufM-yduF0H7CQTvVczazCDWEut9pVUJWoxogHt8xt2aGde2MWg-0cSmrUTFa__T1agmx3sGHpA9YIR_hB95P532w4Hn31h9HC4YlVUvMzJh2OvyEKfUt-QZ6xyEEhPn_hjEsWKoBdC6pLo0w8FuLHlSMaeSFIEZ63dgD9jn54sPgF5tvPZLHIXpKcNH4AeEgLb3K7sO_LC-2EXGJ59cvAzJKqm-_3PKuigpliJhCXWeYQsUAIkS2oPak-ZJ6uz_tdoOLF9cPgdxtoIN8jTNaaRi1J_ESAmu3QPuUibvbeeNw0e2CkWUu1Rj3fQ",
+          "places/ChIJK8iTFgDL_TgRqS7DsMOrG8w/photos/AWCwydidn17sN7ZY67o8jaxpj1haSBzIYkpQWRLtc_bWJIYLQuKnfvtGKHF0YJiAjo6dX6JOQFl0dAsWg99jtaSapR_ewWcU9jw2n8rEVjU0fMxvp71Jk84rfRRkf30Ai9VqW07dKK8MLoOSIk37IDvJPoThCjUYP5tkAscXZK_X53UImj3dnAc5e5F0t2b7NjRB568FV87D5qIlIFO84uaLyGvGcexHw8-RqnaTIR5fzP_ZS7_D6kGVl4p-nLIOqorwdDTbZ2x-c0w9WW6OZYOMihpPSX2-aj0KQ_x1fE1yUnNMF3Ew8IIRMuKlzgZocI1D_60IUnU4KxWnKieuDVvL9cp9n37HaLvc8I4_lDnXv3-QCrY8OtNhiqvYs2zTO8JVpcDrRgFsFhjBzkLvHEWpKq2NUOQxP4mxmof2HvJYMHe8-pc5maRIKjzXoyuZmA",
+          "places/ChIJK8iTFgDL_TgRqS7DsMOrG8w/photos/AWCwydiF5YI6ZS5PnaE0iSPfUmI2v-ASjYL-5gjtFnSwN3mguLKMvtHRJX2FR0UFrUHXOkjLV7j5C9WQbqgT-y9DxmPK14012lqI_B_6TdKVMQ05SHJl7l9-WvgmGnZfx4AHX4MuTolqOxBY2XQfXFu7Y9xJfE5eIs_kAmDCLoa8VraWC1vidDV2kzk3LBjurs0dKXGeMbO0XH_ZLJTxiLK3dOhWT0BzSXkimopU_rEoinjxaKgH-YWP5tceYKN0hpM0WijMlTrU4n4cQFFCrDy_-7Ts1wXIbjrQuO9J3rXb1BevZ7D2WjA-BfaF06xMYk4E7cd3HXvd1chdmwIq_WWIN7W9I6-rqj50Qrbt2xpgumrCT9II4Lh2FYd1U6OnLSXZiclr6onPsHwJfpamLyAIWY2FYMl-qeY1H21LvfxijujdIJ73GuFMaUTmHjoU-CD3",
+          "places/ChIJK8iTFgDL_TgRqS7DsMOrG8w/photos/AWCwydjdDzKYlZT6XWEE6ZwKLn4_EP7HUwRNQ-QzgbAZqvTSgfn_-6apUcqN7gB4mlJdOkOCklRpD-uX08def3N5yW6YmyVR4uxfZdeO0rskx72C7HmPvKk6ZXqs1-iqysd228jQvblsJulj_mGUMkEB7xfi72sDGnYrDp1kFklRoh6mLqIL8nEMHot6ZysoUOXrMZS6EIpfYCk7WV3jxJHNisQ-ak-fLQayoEnxwYVjO5wa3sxpXjDJIlX03V7Jl6YTVjQSye9-9d8V-zp8jEhdQWYPakxONU1e7CmU92_7wZR1kn1jola_dcJFbNFbop46jNgFUoSpxwd22dfJnWN31eyQWL_Tct79mjLn7XRPy9CWmi-bXhwHJCtOCRF1WNPyvm2Q0tEnrKAIqZtwSXymq0xUUOh6K9UNEcsFqX3KkQHC_6zpLlv99xvLKpm5Nw",
+          "places/ChIJK8iTFgDL_TgRqS7DsMOrG8w/photos/AWCwydhXmRcsGpxbJ1vGkJOaVTqYFxT48hanVWdILfEKwWiGQvrFCAEb78SBh7-yKzKBDfOjat8HYM0CcWQBkFHmDL9K7WBMTJgQZkJ6PQ6cW4tzUd_h-EAWyzeE_uCvr2yjetJ7fI4CuHRNpfx_WSnJVankj-T16uSBbmuRl3_hTwf5yF4IC1F_qzF0fOKstGDRM-_gluuTiHp-B3EXmTx5nicI_uY5oq7Q9h8a_t_kSgNtFO-Sc6hsUO8IQRsSyVg1PzZJ8IOY3SIh5ovkuHl-pl-7kLBuqmffM9hdLqUfID_rlmW-Z-CscC8dyTOpXai5RPIZqSfY6iNdu3-sVKnPL62H40G_j-qwhQPJMcI3rfIJxHb8rF_k3giO0-qgzPr3osyjWhZ3Iy_xAV6OJEP8mMc8jofI5CPZxL2uomQ4uLDxVClz2EIkiDeuuvTHqo5l",
+          "places/ChIJK8iTFgDL_TgRqS7DsMOrG8w/photos/AWCwydgYtRbtlwZwyP_saOTvvP2ORgwT8vrpwlI4we16p80vkuY7NSCdj5gKIuT_hg8N_b-yS3VLZDPK4ksCEiZroEX7o-nMk4l0njQ2OwcrVDRDRWFQlMOlGaCF68nzsFlEEkkGSpjlmkcL1aZkFG_Y_XDXvH81Y6_JLXCk_vc_1X3HYQ0pR8puTn5XMug_debKJ2IVs3fQdvrLw6eMLrBimNfQpsIA8Y91VcyBQnHBx3wDADfhrAoKFnFQvZ656A3AetIOkPOk9kssRG5k4eBwSnp9FaOYTLHHMHiMmuVlKhyfSe7s6U0vM_v9X5Rr_AlNqSaNYxlSIpVFa1JVt8F_hld1qmXHFUPweo85_3SgYehLNAov8DOO3dV93T_lbkPFnWYZu5jVuIIXlbR68nFYtLDT1lBLOgr8Ajfu0olPNvkHKaTU46tvROHPPcNrAuZE",
+          "places/ChIJK8iTFgDL_TgRqS7DsMOrG8w/photos/AWCwydibuypdustlJmh3yqXDDnu3jbZhH3-bR_-G3Ct8WRy329FEmnDJSbnbYWfiV1zcvjJwNYRaFX8ysIR9XQaPr9qr3VbOxIb_QxioO2DrN-5HAD5-eCDKU0XIaOess82-7d7yZl-l1QB4qPoD1PlZYhz6gWHNthTDMu4eYFR5tvp-PaAflbH5vqZuH0aNlt9aJE-k7UXAlm5MsnAEmJa20CT8xIAM2u69J6hdkeZf6knWub52v-xNMPJGMEjou1Gf14M8RCbdqmJaCcsJuQhlh1rgBYKSd_7NfN37fbUVb-Sq59eQfyCRLB0ceO5ANTQLnCuMsDdQ2yePKngdvYkxYqdPjolr0xwI7NGvxYrGdKHhS0aIvwnMza6CX7IemThVOjFCFkOcEUvrQBIC9dJ5a4vWYNtlUawxDpiFFG0IweCRiJMwTA9lY9Pe-SWj3TjD",
+          "places/ChIJK8iTFgDL_TgRqS7DsMOrG8w/photos/AWCwydjHsT0W7XQYgmSrHDWfw8hiClZjqg8F-SyoFsmoNf8F8ADn_z4QQkNRkmUvc2A4GayaDs-IQx5JSy5B0PuxQRtz8JXNXDq_l9-GRa30EIjfq06MHzR3NC7_usCPszfA3boxb6FSiSn8i5xwVYytSfuzDluW9UlgkePTskEg6P3wbmjgjLcYS6Puw6wpPB4uNfVBkWuMX9-LzT2A3wY7G1j0EkltBhHrvdgCpDywpP6oDt9KAU1sZiu79BZ0ThuOABzDqCiLeqw2YyTulzDAT08K-gOBYpwoipQ-Uf2cF127vqcwxdx_Pav_zzLXde_m3nUkZKhYbNwonqf4ikyuZE5ZTVGxJjJx_xWbPmGndQgVwagxtrDAXFAvp5YqvdPEKRmlDpN7TPSGpUarFZOLVBPAnpGu7tcys3savz8ArDAXV07TW53BiZQX4dcvNQ"
+        ],
+        "__at__": 1786803010.021167,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Diskit Monastery is one of the most impressive places to visit in Nubra Valley.\n\nThe massive Buddha statue stands beautifully in front of the monastery and can be seen from quite a distance.\n\nThe view from the top is amazing, with green fields on one side and the grey sandy landscape on the other.\n\n",
+            "author": "Sunil Khatri"
+          },
+          {
+            "rating": 5,
+            "text": "Another good monastery in Diskit. There are two places to visit, on the left is the big statue of Maitreya Buddha and right is the original monastery. One must visit the original one to find real view. There are many rooms build with rocks and wood. The temple at the top is very divine. Don't talk l",
+            "author": "SUVOJIT MAITY"
+          },
+          {
+            "rating": 5,
+            "text": "## A Spiritual Journey Above the Clouds: A Review of Diskit Monastery\nStanding at the edge of the rugged cliffs in Nubra Valley, **Diskit Monastery** is more than just a historic site; it is a profound spiritual experience that stays with you long after you leave. As the oldest and largest monastery",
+            "author": "Parth Padhiyar"
+          },
+          {
+            "rating": 5,
+            "text": "It is believed to be founded in the 14th century It is the oldest and largest Buddhist monastery in the Nubra Valley of Ladakh, India. Perched on a  cliff at 10,315 feet, it features a striking 106-foot Maitreya Buddha statue, panoramic valley views, and hosts the annual Dosmoche mask festival.Locat",
+            "author": "Vyomesh Sharma"
+          },
+          {
+            "rating": 5,
+            "text": "Nice peaceful place must visit ..",
+            "author": "Rital Gangadia"
+          }
+        ]
+      },
+      "hunder sand dunes|leh ladakh": {
+        "place_id": "ChIJOZgUw9S0_TgROnsSGecYY6M",
+        "name": "Hunder Sand Dunes",
+        "address": "Hunder Sand Dunes, Hunder 194401",
+        "rating": 4.6,
+        "review_count": 1534,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 34.5667578,
+        "lng": 77.5218127,
+        "photo_refs": [
+          "places/ChIJOZgUw9S0_TgROnsSGecYY6M/photos/AWCwydj_hC-MWd5_SlMmZapPdELm8R6eeDO6sl31JOYhIWnOKEyJxBYp4r42nitQn2YntZbt27BR3v6KGQuQFLhc73d5tqmslxDvxFN3qZDS46ioVJX2C1HizBTIJwoYgzfjFvP20g4G67BCRMTQQRVBC9AiW9AP8iuV4wz06r_KE2S_mUa7Xfb10mPDgJlI_peeWqi-wgLji0Wa9WTRJI7gBeMIVcFHHlJLF0h4XCxifhLese5Uf7JX3aTcRum0mhHCDou5J4gF5DMZsVvTrJ47bN015sBnplMLGXawBloCIKHCc6rOXFUwlKzejB50wxbkyha-Ad6eezIv5boCXTSw0EbipNQyZCYN1q_zq04Zr0MTJvG6_kSKhn5pL_kKdvmcXUDOXrfYtNEBhoFrQORvvWELA-wRrY_PpVDdaqVb6nE",
+          "places/ChIJOZgUw9S0_TgROnsSGecYY6M/photos/AWCwydhZ__aG4IN4I5064ykXY-2spXM-aY9ptF5uKZlsJ-dSM_B0t3YunEnYZ_FX2XvXIVMpjYJv2AKh2nkJJr_8pZV17Sg9CJrMffDikz2NfOd4zBVQs2yd0b1k5btVKCyVLb-vJ53_z6SyylcArHvcGqi94bkl_daTNAa-RsfCQgEgvaHvtoNCYO2Et_LFMIGeSlPltK8iGTUfbd5K8aQ5Go7cabM2HErqZ7gaxEbRirnY9UIj6lPvcCdqQE31lABrDtlFLCDuT1SS1uuNbI1bQGhUwRkxkvP4lCLDpE3elwq4zw15kYtgCZ5TuRPdUYfSz20G4dSqHp_qgrP_9Pygx6OdKbwqgn8yzDN_yg_0noBHQ7OHHHtg3M-yVuunYP0Z-YUHj4J3Ja4atYWGRXeJkuO89eF7tFk7zHbL80F2WPCBslQtM3bwsB2EAWWZETzl",
+          "places/ChIJOZgUw9S0_TgROnsSGecYY6M/photos/AWCwydjcA1rbcX1-_h9_tuVl8IUoXrLesuRHcOqEapHozMDgNkF8TW87BxfRnp2rTxuUcvH_Cs1Kdbut0I_FgeZZpQSthMJRLFhZRlhaSjfq0qnffYiyxtOdxAdiA9Rxa_IKWW6pBIWvyh0Yvw1qvTKOO93nPSJQINxBjQ9GWh2Up-Wl5fdowY3e5M1RgdMNqFDLZD54wxi1jhIuZbA_FOwzo3N_9deHrvMv9kwYucyMi0ZMd1jr37aaaOD2F8B9Cs2N1hKHTzY_Np1Nt8QVWng3YDIm21qJwmhtSKz6KEJznQZqCba1bg288tsxVVnEzCAV0TUFhRm7CaHOwLL8XkUg3C14916p5vKkyl4zRiAEUvFGQ-DFp9zyf0AAYHiwEgUDzCYaXlZ7uIPojldpdnse1W56zcD1yre8lbVfDGloQD6eSg",
+          "places/ChIJOZgUw9S0_TgROnsSGecYY6M/photos/AWCwydgCtsaAUQ5gT357yhi9sU6lK-DnfdhiyRVGYBOQtALtps5qGHvWSIw-KjPqbrSzdl3yrZgz30zpD8R62oWZm4hdc2qUIVrgaVDnEo_9ExUPtZJDdMn133FvfqP5P1LmOoNUVzTh8s_mdTvZjWZTZ2RrolnDFUeUXIOFnpKOzQCAPTAAGH-92wTNr19t7EvGKFM9pFhyGwW0Eir1M0HDpayrE11QY0m6dH1nj359PH-4uOsto5pZbRBk3ihhtII8V4KufoVn5ArO5ccnf4KDdXLqnpaHKKcC_pSZn29iu0wCuNS1DY0vzXwWKJamavIv4Pgu6US5-QcGXPqKOgZqAly08F3PRs5Rnq-0t6Zx3YUsWXYtOXnTsVKCm_XiGQPxU1PNTFDTuZGzpWOWhiaGtCH0_v4D4Dx23IiV42kjnuRksg",
+          "places/ChIJOZgUw9S0_TgROnsSGecYY6M/photos/AWCwydgzl5Ao361Wr3mzeCm59dLCe_Lqj3sdiWmja27UdwrRtssffG7DECj-lCtrVA28-1TtycvNA6OZVUJxRha7pWE5eiu3DgR3IbVU6k2yo3K68wyEfrexhJOrRf2koRgLaSCjpFg0L8haOP1CbfFfFmnexIIKeX-CUApyF958lNs0e_95TQmh-gxT8lfeqtFslRKCs-1j-Ft7qyW42dHOkCzeq-GkLF08dfg32W1IAYcLpQ8jKd1uAz8KPpB1BSDwQhiNukCV1TL0NhVR1gahliyfK3O6Fv4mnHNYMNN8sE1kbLe09wNf94fgQVoSOxXvCBi18gR58Maq60wuNSENrLK4iPvWDlMZpY-W7LHC6Uyh0BM6pYo9ENJBsjQ4M1EXRxjo82hlx4irji1cRBDe5bb9fZv-ssRPZfOpc7zh50dGOQ",
+          "places/ChIJOZgUw9S0_TgROnsSGecYY6M/photos/AWCwydhpdYSMg0cn70hJTH5E6WjHf4bxWlON6YaRbzW48QcIdE9yKL5sNPKnH0j9tjDJ_haHKnY3jEDaBCMmi2se6X5dGM0nQuyJrTGvgNL2D01bUqQSecOtG_5Da4hCECnx2PR9LvVo5Wt4b_0TlWxcvfi8lLxSajUl5mnle75-7dA3FZRIDT88TCawCw4S80mKWi_gf3hWaB7wLgIdy_uGImWrRLb7WQogO5AUq2TMvDIyECmzTOtlJsZWxz1t3iR0lsIIDmLPiWvN3_rRrcXw-QltabD2wxWpbo2eiH8ea43cslADWnh6_O13kZ8yFQVfqNYvG9c8NnEEHCLtpR3lKD8Yb9PTty1BZtPYCxj19SkD124N3YM4k9rsGVDbJUxKWzGIw343nHtXi2_TjQupgFr94Mk9fAyJhV16OlykNeeoow",
+          "places/ChIJOZgUw9S0_TgROnsSGecYY6M/photos/AWCwydghhBXbnVMqeW4EwvcFg1idyc11U2Ot32Up1bSsyhQx2lZWGo_FqkDL-J3J8dF5pDf7AF-62CVmi_ytUCcW9Jsj2QNjsQTcMGONUKrg6aPQ-ie-9_9n_Go1YCCO4DX1XyHACkJVFxrlnv9nhoCXk6-Pi7zGgf5_emXaMeWj27fFj9INf8vW_T36v0vUopx6K1qYlfzYOZyrTStqBEJJucQoN9GPzMM_coqWKW6zyumVjdQoCFOPgcZ-MdypCw_Jdv9eB9OEmsM4O_q5vS-JU6v190UDTzFe-2TsWm-3CwKZ_n_T0XCOeBHtTabDggRs5tBGJ4KdjkzOxPEh6kR6jrjT5Bl7LuaOWZZ0GpJVgaJsDh0gVuN1FFY7JNajMqgtvvNsU_TsqNzivFPSvfv6CRO-zKyE5LrvcoHLvx8t-jU_5w",
+          "places/ChIJOZgUw9S0_TgROnsSGecYY6M/photos/AWCwydg9VqR0ROl6GZbq4ottw8KubIzpCrJbIXOcCg5tVQLYmVk-2exWViFbTyQdckAJHABH3XYdu3476L6idWbv0LWbjbruPb4iuz57Ofeo6pPL45cWUW3-b6a6I09glb8PeSB8TyJ13h7giq1ub_ip8gCDf6zAZk55KMD-8c5mP_hPMa02ABmbPkEeGIyr7X1OQY-hY02ruJmBFedQNQ48zembVjfv2tDX9iFL7nW6u2vXz8Jt1yz7u9lgTjgrQWmOKZVMn4EyWdg4TnPttrlbu1ynmrAVwuqEw-jpwRS9KtKvS_wYMQU82CX-TXYsqW8juRsgRSY1Hubwx-3TA63C93zkI-XqFbGKu6DsVt2BN4zgJbgtX1e9-EY3TA8yHlHG_QvGYQHzz_sHcpJ9lClHM8_5QnVzUgNrUT_ssbL14oUD5v3M",
+          "places/ChIJOZgUw9S0_TgROnsSGecYY6M/photos/AWCwydixcjzzBXg3E2x_SuvhJ7CmOrtcSc5OXARHDHfdeNcnjM1LSEHymP25LgtiMu2wXY_2Gczbt7ZFpi_WVdlFWv0E50PaBwbwRi4hNPM8UEpH6dHY7cnhALEuq3AcGA2PjKpwdIZJ3h1V2KA2748zqHt5yZZuGztAPYlOwNXByjqeFU1KW8MMFNkxO158ntOS3RiUpQifAAk64OikcfWZVwdQcWOLj-Kv8UKQNbz6ay7qoUYDWvaRGR7e7Hk4uQ-cn9197dgGvHb-IX-J2wkIA4-c7uM5ddjuAQwTQXbXMV1Ru70xTjkOaAdG0ShNnYTm44Db8RZRnMFxrp6E_dv46fPs3P2dAtBQ1RjS4iP1c--gYZkWsSY8SGxM8cp9E78RkHbWBDVUjpiW8ggAzs7OcINw4OTXRgSfKtfIYtmGydJw7tbL",
+          "places/ChIJOZgUw9S0_TgROnsSGecYY6M/photos/AWCwydhjGCxnKvHIBmZ5E9Zq-gNs4RIDNeqd9mnpAqbOEdGiHK-ZNU7NFCP_4-RyAh9lR312ocLIhE4TsLFDG5o7lbxD_I7kMF2-wPPU6JnIcf98kzridbLH9avIuUzgzijkY34ZSNZR3xJz6AvKhZehBqX0HuviX42UEjMnry107Ai1u6dSsrmXPTVj35SwsUAAUcunKOIMEsqxwlTrHeu_-AaL9mANNUnhVlqAC_xLWeVrqcpbyh0rNuMAMb6tpC1YxMcRK3l3qAjM6OPPlN0NXf8bDmy_qgb6m06vBa3vbj1mA1Xg3lyHU042PStzoFs4Lq-RNr1sYi9P1i8s0i4RFE4gHtlwo5AYXbyntUTVYPXO9bWuHXycO7KSaBGSN_vfQsKDmVpyyQ75F-x70ZaShNs-pjdGVK68WbSUCtC8KmE"
+        ],
+        "__at__": 1786803010.403497,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "My first ride on a Bactrian camel. Sitting alone a camel for the first time,in the middle of a cold desert surrounded by mountains, felt both funny and magical.\nSand dunes beside towering mountains, icy winds flowing through a cold desert, and silence stretching endlessly, a place that felt unreal a",
+            "author": "Jay Jayaraman"
+          },
+          {
+            "rating": 3,
+            "text": "An overrated place. It is a small area with sand dunes (very small in comparison to dunes found in Rajasthan or other deserts), you can find double hump camels kept for camel ride. These camels are domesticated, and used for tourist activities. The area is not well managed, the camels are not in goo",
+            "author": "Mohammad Asif Khan"
+          },
+          {
+            "rating": 4,
+            "text": "Visited Hunder Sand dunes in Numbra Valley on 2026 April 8th\nin the afternoon before the crowds could come even though it was off season\nThe sand here is of grey colour.\nRugged mountains encircle this place\n\nThere are 2 rides a short one and a longer on\nwe chose the short, on on the double humped ca",
+            "author": "Mario De Souza"
+          },
+          {
+            "rating": 5,
+            "text": "Sand Dunes situated in  Nubra valley is a beautiful place to visit . It's about 10 km from the famous Diskit Monestry.  Hunder village  is the next place to visit. In Hunder there are many home stays and guest houses to stay. Here wr find double humped camels. You can enjoy the ride. The place is a ",
+            "author": "Vyomesh Sharma"
+          },
+          {
+            "rating": 5,
+            "text": "This is a must visit place in Hunder, Nubra. Here, you will see the double hump camels, and you can also take a ride, it costs 500/- per person. There are also other activities like - gun shooting, cultural performance, and ATV. The place is very peacful and the golden sands looks beautiful during t",
+            "author": "shrutiparna saha"
+          }
+        ]
+      },
+      "pangong lake|leh ladakh": {
+        "place_id": "ChIJlyoItmktADkRqRbAyOMXurc",
+        "name": "Pangong Tso",
+        "address": "Pangong Tso",
+        "rating": 4.8,
+        "review_count": 8714,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "This remote, closed-basin lake in the Himalayas features brackish water, migrating birds & more.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 33.7595131,
+        "lng": 78.66744039999999,
+        "photo_refs": [
+          "places/ChIJlyoItmktADkRqRbAyOMXurc/photos/AWCwydhHo4avPBke0aYrCUPNN8kSLfigCKISR-tX__FseN2rvGnEnymPTQ7-JG_IgNsRuSW4mxE_RoCcac_DaxgbHbg5ILYo8sLPDOn2G1B0E7PeDUBhKwVfc9j-leyVPLmCGQ9Q-El59FZXGUimagtar3ryMbKLY0mMZmFYek6NDINX3Je6YjWzhMldBJX164s6CMG7oNEAXgEAwbFR0z_QHZUhbiXRR1Yf1sgXuOct7YJDyEs9SaJiJWYWHRz9PfJ_XG8_WWxWkpoOkenioNeZ7fBy78KafG_g64atGkPZxhDgOSUAuMAfss4GS6dTOm1xj8A5xlJhKlXh1JHjrWHUrM369oCrdQyyN4xY_PIQvd_zU3qPy9Fc9x8FOmx_1N8Bfs5D5AB8x8hAR0Bepfxxacoqt5GcXbTiNSajSAGqrgzuLVOt",
+          "places/ChIJlyoItmktADkRqRbAyOMXurc/photos/AWCwydh2JX1Kd-NX5NIjO-jFNzjRg0ccRuils9dElQMRcjtYI65qXVJJ4-MrDmfcYdNNns0_VH2_lVQ9I0JmQbjCxE6BBmPjtmjTYlgv2IUx4oY3QB3QwDAgSvvFheV8eMd0wI8uBWXNK32wYX3d8XqPLzUccAIugF39sn1lMT8PUBcymv5fM2GLnwOarhSEk_8tc8QKVoVk-HbLW743IXFmw-hNtJE9xscz5a-li5mjdVpvywBQcy0Fw7Uyofqb2A7gbQwKb2vbcq6D1s5AZTx5eviKL6uuV-g1HPYEEKoGWe7WeFf0aHpcBQz8hLbkiX4Sb1Fcl76e4cUsDBKJZfuwqVKW4ulK4ExYHyCTV9UTwVuRXoXfFAj3boTCIXx3KEKTCXtwg0DTs0tlfr94jDX9Ueuc-y5VQLEDh__SG8O_bBg",
+          "places/ChIJlyoItmktADkRqRbAyOMXurc/photos/AWCwydjldVwKg92gKLSRijsGcfZw2A9RBVUfsGxizSu0R0eyhg8D8lQJCK1EbD-E65ZRGNixsWS_-d9CZsUnfUuFKZnHWjQP_L-YZVLCwCs1xid8YseCKHPkubLXYQc1iw8re6ZYBwvFB7mz-G1ihawwE3MuIq20HZHRZRWnGupsLJ5HQSjXzfr_NQpuzWVgb-Wjyf1l2JJqMrjNrRua2NcU7If1eTjv-R4suhEEISOF2oLGtZG922-A-5QrTTf9wGFLtG8LLzrYp3FkbeEbx09mxcQf0aKTl4rCR89GPuElO16GFvydqJ1PNgXFNog-I8d4vRjtc-UWW_vbbcNToRaXGBeuVCpIVjoQnvc14ojX0vxOPh0G0veYEzsnVuSEmboxeQRRDYnKjVFfGrLCaOjRamf6nQeUWKm7LVAbMWpL6uJj6KWY",
+          "places/ChIJlyoItmktADkRqRbAyOMXurc/photos/AWCwydj13RZHG6QBQ3iuUOQTLvBw7ZY091S9TNtF88HEQlxhPs2fy93MMsmy8vEpmReaJgcOcNv5PQqeapz4m6yFBsqQMkbCaqOV0fzz3zmTpqmlKXjq4fVt4_pQ0HCOR9FQBIEGqGmugQfvZH4wiv6pa_-OfxPgABLfafHFkE7Gooezpt89X3jbA7AcDDKusA0VsxkDPeRFBAO0qg5ZuCRph6GAYYuA0ok7WmvGBfTZNFF9dOwu2h-NHR2v523aATGhH87FCIx-SeJhB3H4dwJsFkef0L08R3JjDPeL62-gZoPLeZ7wwVOuKGZg-zw4k0_9VqGp6ZLwtAyjcFYFMDG4nFG8T49yvkUfzSu4uokddvW3MFx0ynqP0uUQqA1aAagJJ-3_SUo1laodNbfXf8FvLTuwalxteVd7TYevSdZLJw91QIne",
+          "places/ChIJlyoItmktADkRqRbAyOMXurc/photos/AWCwydhNfh5i3CyUNN5FvU60m-y-R3lVHJasFFNBP__mhtK3SlDXjJKsfkHZerJEmBc0gS7OzYxrYMad9HcMm4jDZw-t5hHsvg3sBEXyOEH0jWu1oKLVIcD-7WslRammnf9ve-VysU_rYEBPu3Fk5diT7JCyMk3g6RBnMeN1YywzuHk71U9-u6eHW_jgOl__FC7ge1_DabQ7q_5QUVA_HDQeOf5cmUea3NfgnfqwvLNOCBq3giW-agqFteshoYZhGe1gJNrl1-NsSJUVphb3SorXegtNaJaMVM-SLTkELb356E6AAl4qSp3Qh94g8giekKvYGlxCOCe6QjZJvcwFBSdgjRyObIYOd4RX04ygREQUCe4Nu99fkpMnLNEJDPaELruS85YX4M5A_SJ4pwI4-fynURYIEOvzROIu-ZGZLqZrLwbLwA",
+          "places/ChIJlyoItmktADkRqRbAyOMXurc/photos/AWCwydjn_cQAK2lxIhuo6cCHH6KMXApEop12YGLCTXH__Ppa8wGIYE8-ZxDXg45j2R8c_F29bZVVcTBjq49bHoyvslFBFVr0mUCAtITNS__w0ee54ZzYioIL0274gkB-RPe6HQASPy6KaSq4GHiKD1Ki-aqjwltYt9XhgIRLitTKQDs-vrMmPVn9opxFCD9dgiro2_cmEpQj6YPPLVDV7qGDn7sALSczRxn37jS_bPe0gvxgcw7TF_BPlNxLfDYUczaYfLJDXi7Ylk0EblXabmSvo6zf_1JmaNYETAC_0UC0sw0chehsMmZTldC6cu7TW4CLzBD1NDVnk--kBIPOplQgJ-9PUlY5F5JjSZVqdaT5qxhWqNFlmaZw5i58rBly-UrEml7b3MCQvqdwbxLV09Eosm8PQApnYHa7gfydYrLK-BxGRA",
+          "places/ChIJlyoItmktADkRqRbAyOMXurc/photos/AWCwydglDvZUTVfEgRpRk6BpLMZIUaPOrlcF6Wb3-IlHUe6Xa9ReSsOmJNKxYfxZ04UPN1_ab-umPFLEnhTx5vSuO6RKoPJy1I2rcK947LdEAx4RuFXXWPVA6jvEhGP5ZhqJwmOMkhaIiiF6nVGmH5jafwWWWTpTOdnotTLB2sd6GfqOj0RDDUmhpHSaEjlKjhlR4cmaTslYJh5dGFS98fgGaUorr4l7y_EYe2RCHjPqRtN3BVnW14zUnpR31X5KgPLYUwgn4LcXJ__ICYqhZMlR1E02Bv9d-vh_-Iwy3lUAux11GNB5Puh-HgdimxD3IIA6Wj_8Lv3Fh4QwJ_lJtDlIGAD6SpTzHJ6s8x9-7NsuBUBzCIObZIIm-TC7fnJB-VgPVgqG7pAx5HRh4GEXMx71zg1ErHXHzYwBapn_QFFuOLRmgQ",
+          "places/ChIJlyoItmktADkRqRbAyOMXurc/photos/AWCwydhxmQnibgNRU5vzFVGYMEPblo9nBdTgcP2zn8x_QfK_Vmp5-0xAABN4zHM4LKC2TiKJKd3uZEH05N9YtbDS3GKeGA3R0jsZFXhBHFxmFMI3kEYdz3vY9nWZNyfDzPvACItJxxsF7hCuefDDcG7QL_KAoP9C3t7oT9zKeQyEhx9wCvujFCzTzX2p3g6BVSYNBNRLy56tFEmpopMYVyNqcgwAcBtvodvkiIKucgXP6OkDF_5S6Nm1jT9Jf6NFOWww7Y_e0IK_HjwUOoHQEvREO05POV5OEKkzpAg3SE_OeoJ6RZKyvROdXUnsyf7H5mN_TNzmsAhYMQesoPY7FZLJFMCj3TEqdXMeFuDXSAbVEKQO6unJOnDypHie8AJcUfXpHy_A8dlRrvOnGc5OiSKTGJxQA7vwZ_eVA8LysXcduqhnaZwL",
+          "places/ChIJlyoItmktADkRqRbAyOMXurc/photos/AWCwydjzVKk2VqM8JjJQM0lDlUK7Kbc8j8tNI4jP-lgHcBVXvGQ0_AL1w3qGZ0MsEj0czBWgHwUKx2kFwa2Io9etKxTLfUEDeanQ7KwKfzUuYHCdP5XXW0i6ZxqArmFISRe7IQY5-BW_Mvk_5_K7Wf7lfAomGTL6Q7olm-eJzqiWX8wDa0fYvz-URCqLIpASpZJJBJsFkrK4b9jqYcAQgT4_jJ5DecTWy-2IeCO6G_x3jHtbtYg2Ve1Jw3IleXM1rzJtr2rp7ZiczMq7I3Gx43svqryKQUOtySa5J-zNRlRM7hcxfQN6f3MYqA1UCrkyQhbm4yBl_EciXFtxco0Pdw0gfZtDRpxhKc4eK9cj-fjiy6bTvDRJXh0hC4Svcg4kiRGLcojdevOHNBtiiLzKy-nxIrecmVP1qIfwWtGzSfS-M0YHEQ",
+          "places/ChIJlyoItmktADkRqRbAyOMXurc/photos/AWCwydhabf8p3O9tt31TMtz-0_F6gSRKXs6FrWcibhMX-4ohCkjQSMqR2w2sw0kkOpSpLvPJy_qVaTSsfogYgSyERFg8zFQIynbwkl3j2ZnERhguYzuW2VKnev_gr8-Sm512b1_GQPHeLphzhSl3lk7QkTfEEGdZ7E8OrdFkPr_EsYukAENuLbgm9-yKNijpSVBnjc5i7l_ma4Q5VC6AEkCzzgS36Uqymp9RZieanZDD0zdB5cvpEuq9guFIrA0xB7hVDxANnFUfNVVmc4WH3txI_i3g3HrGQi5_UMpRBHqMM5Nd-vff2L7xitvOJeUci_edq8ID9CqMaooLAJNWFc60SNfYwVYrN1kWtwcAIlGhLG_LNwos7DA47ZwcBtTXMHazgent7DAD3XqgxSc_1N3mfKIPYg-IkrjhFTc8u3cxQZgWWA"
+        ],
+        "__at__": 1786803010.786029,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Pangong Tak! 🤩 The pristine blue waters were a sight to behold, constantly shifting hues with the sunlight. 🏞️ Being surrounded by those magnificent snow-capped mountains made the whole experience so serene. Even with temperatures dropping to negative 5 at night, it was totally worth it for such bre",
+            "author": "Kundan Tribhuvane"
+          },
+          {
+            "rating": 5,
+            "text": "Pangong Lake (Pangong Tso) is a stunning, high-altitude saltwater lake in the Himalayas, spanning Ladakh (India) and Tibet (China), famous for its changing blue hues against barren mountains and snow peaks, located at over 14,000 ft (4,350m), offering serene beauty, stargazing, and a glimpse of rare",
+            "author": "Ramesh dhamala"
+          },
+          {
+            "rating": 5,
+            "text": "Visited dis beauty n got mesmerized by it... D stay at cottage was beautiful n d lake was mesmerizing.. d lake changes its colour all day long n whn u see it from ur own eyes u fall in love more n more .. a must visit place",
+            "author": "Fatema Amreliwala"
+          },
+          {
+            "rating": 5,
+            "text": "And there the Pangong Tso, the pristine blue water in the lap of dry Himalayas. There is the heart of Ladakh. There are multiple viewpoints where views are varied. Stay is costly beside the lake. Take accommodation on the other side of the road. Shooting spot before Spangmik is a must visit. Enjoy t",
+            "author": "SUVOJIT MAITY"
+          },
+          {
+            "rating": 5,
+            "text": "Pangong Lake is one of those places that almost everyone has seen in photographs, travel videos, and movies before arriving. Yet the first sight of it in person is still breathtaking. The scale is difficult to appreciate until you’re actually there. The lake stretches so far into the distance that e",
+            "author": "Aravind Deivendran"
+          }
+        ]
+      },
+      "thiksey monastery|leh ladakh": {
+        "place_id": "ChIJG3vDl-Tx_TgRSvq54UndDfw",
+        "name": "Thiksey Monastery",
+        "address": "Thiksey, 194201",
+        "rating": 4.7,
+        "review_count": 6464,
+        "price_level": null,
+        "website": "http://www.thiksay.org/",
+        "editorial_summary": "Large hilltop monastery from the mid 1400s, with temples, a nunnery & a variety of Buddhist art.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 34.0559137,
+        "lng": 77.6677625,
+        "photo_refs": [
+          "places/ChIJG3vDl-Tx_TgRSvq54UndDfw/photos/AWCwydgVUTUMtXGQSBmi7Mw_X8rbvwRtP7jE3ZGp05wThuCV4SIV7TVswlGhMV3EQ0A2Ua0B-mt0lm5z5AvIJm6EhZuHYBF3-Wg7mMXUK8hLedJezuvoqgajpFtLSr8Hnv8btveG6cnHcKpnmQx_OdtT06C2sgnbC_zbwmQwwc6z46AFWzNBXkObL2N7qm3e14ABiBA6xVxkP3pBiBWRTVB92Xin7QLRmPY8noQ0Ah7J9XHZMnlVguUnR4o1TSGJcHGxe0cztLJFLHhyisM49crj1F5Tk7KKfiMYHNZu17E4lC0zvojqWDxOImTuKSS0NqTD0WGYXRzE8zmfwdXwtXS2yuTeq4v8_5yYYen9CBXV1EexHk6AqZQ_1fJ6fgSwgCsr9Y7_dQIyq2gnetGN5A4oWVuuOdjDL9QOEAdfhV6vXxEEFaYZBQLu4JcJiFdVTGMA",
+          "places/ChIJG3vDl-Tx_TgRSvq54UndDfw/photos/AWCwydgnqpwTGOOjsdR6LVjvcd-QV0KRhxUpSFcMCxLC0PI7Kl5OTIji30z5pGwewjK6khKKLp3Psn5OF66FsoLwOR83y03OSckucCtjgIqWsZQNCtYfy3eCnCNg7ZGKzlDkh9CYmhMgRitah3dgJXEAo-eUKLkW3rxY79bh71uIREwXE7E3jpJkgktBkXpsr4txucfqr2-FfLKKbup824x-CV05rNAE7y52HVFqWqPJ_JE1Y0P_6w9oE-fEAkUYYSmN2MyBHEtL47pv8oMqy11mL9yDVFumaBvGqaj46WHsmW3G8U8XASUU0zN-4z5jZKKRv8pY-DkxYRHwU3Z_1ncp_SotELYGHca6UMJHpqpSZvU-m5D4cXsgtOwj2lmX9Z3E2JuCY4G9Cp0TbpyxhaunsVS7Aomv-XkVG5qQtotOto8",
+          "places/ChIJG3vDl-Tx_TgRSvq54UndDfw/photos/AWCwydimJE5CgxG4ENm0HV7Bjkr9P2FQgH2grQFI_wEIXVs8YGHCDdDvLNF7-HlFKM_yfPJWa-rujwSdCEsiDzYMx4P2r9_UL3OleK-39zVkW4o_2E3LE9G7zEncc3XqH1Pa8hdgrB7i-yWQ-mNJGQPh7eIIkytHEsLp3cIBc4RuBw4e3FPUdKjVr1cayG1pv2PUUJ1b1aRrCqZPpeTaJDpnDUooOKpPum6ZJNuA47dR4U1sr0ICfE8czhOVLLXj2jWcdfbYQYVCLPyMQgV_7t19F_UZ11G-udHeUrqYSB5mEGdnceiR2NuWGJmHyD9sjrjIP1fkScTZJmcwFq0qsHJ-i_CocC_mMG2WNe-WizrAQ6pzkgUhaKbha1pu6_zWeV89Xb2QhFWsHH0tpitMpyVrDoy965bjvDpvGtE7anMWYiRrNcE",
+          "places/ChIJG3vDl-Tx_TgRSvq54UndDfw/photos/AWCwydgh6vD-CN3h-mG05XRjnC-p7N8QhIPHMFiwKKKnbzc8ddemja28nuAPb-Tp_MsU2hoCOMypxLMrbMi4O-tU2gvoDy2sRfvc3Up7OSNSPPHzElZOHqJU1r3ZLPTaRvUnmU9EZZAYojB4i1goYwClf6t-rgJkOuzIbghm7j03bAjInOlM7I3iNobegKQUZvwvxwe7KaUWQt8oa2rcRm7k5JxDl75Eci3_8J3dNg4c5etNbWY8RaqbOBQgNJOierAMQ8kynM19-5_q-dyvwprKFNAPrPLuWLFNrE_uckqt1cwkWJDE0Ol5ZEHRdSWCLPxu8TPs4V7yh0CS_nOam3JhYmvHVVSrfR7A6BOGI_3X40bsb61RPHN6kHapLAvapaeyz1_tkkxtstA8rSNCVnqj8_ScJzdBP247X_A2KnPAoZclXw",
+          "places/ChIJG3vDl-Tx_TgRSvq54UndDfw/photos/AWCwydiTJOBy3CPlfnNS8SSveIhMr56lah4DYTRjBENSh-mMt9AShrTju94kdsPBOpCrj4qQLI1zQhvy7qD-ZyrD21pF9Md1qsueqQs5kr0iJngvam6bpaee2qTZT_NgZKImr-jQ0vc4zR38C_mHQrQxun4mxPRv3rsasrDkZ-n-iV0I_c-9H1J4BR1c7sHGDPplbzXgwASwJWMshot5JDAsNBrZZlBc4ZpUjMmlfygGmb7QrfKpWqVLGgfltEqoIzfNYoDm0JxOA_nH6_QyG6PUK6ta-FvKqLLsZ1lYc-xkKmjczUB0SIiUxtJrH5XIvzF7RJTWv0evq_BGRxBskXC3mx7v3DjW5i6Sfcn0kErGdVng3lZY2uwmrhdX_wELoYlnpTUEVzg1HV-bg6ZO0IA1MC3S9ojFXCeslegH_zSmOyA",
+          "places/ChIJG3vDl-Tx_TgRSvq54UndDfw/photos/AWCwydhUY9nmSdH4bfnq0xOTFswXpB9SXC1KofV-r9Wrx0O19j4nzeMdMl_V7jw-BntaREnRz1EmdXlF2atqMsJWDl8xeYFM_tgNHsSwoBefledDTrc4u1P-zh-k5EZCVCqTeXYN90gWiqswzEG1t3PGfuNmGGp2ChAt9NoQqK59jBx-1SMWPboOio4md8Am1261YWCS-teotLCJvkEY4r0E6C5k_7a9Ai1wquu030zb7FNlIaUrlT3C_Otak4kIlkaVvn8rbIBemcIpZGXUPAb8Nz1AOK0oAv9M3WaM39wn4FAolLXTqcanQeLHm4FqSayud0rSCwuzQBCLcmY-6o4QAik5XtbWbag3ZMe6h7kDE6XRwrSeiO1QOBwK11eRBp-KdLJMn2fXNkKxJLe3Gz-GC5mhSb1Ew6ztOe8a1VjMw4jzCg",
+          "places/ChIJG3vDl-Tx_TgRSvq54UndDfw/photos/AWCwydig5mtyOZyNq00mTzvlHssZftJqmBzwOP2Y32ywHZMmXQ9ny54ekSXvG6brD-AWSPhZNZGMXHsu2ig5mXMRl8InB7JgaWGuGRjyw0nJjJXeO7SWMTJ6eIqGPlNkSu4HcRK8CGQNb7c__qCLNsiqTV-dD8vFKQ0EYTEqJwP_5XsHjJQckUOI8GjYv909QGs47bPGOsFrAUBINxf1nJFrhUPYAkqXv67c37pZktd1q2OywqCKGSyKcHd3SRmJvzLkaCqmf-f1ICQoFTTeOrcuny2aw9TPBLGcxtK5Y7OXdGQ5AA_PM2K8hlPZJxcwH1JhoUHrq-usIDhLCipfr-g9KIELjWzCoWjtMUAYHlhJqL3jJINzaa_p0x7nPvtJeEX11UMr6Wxbw300rULjigcjYKjCTGx3P-QzmFwaRNCIl1HOdFGM",
+          "places/ChIJG3vDl-Tx_TgRSvq54UndDfw/photos/AWCwydhI_QQVd4EVhLPDwKAn_uVnZ0pvP7WNd2PZTAHnUVlBQ8nQw9axTTAEQkdw_l7bcJTcFtn8oNcRMHfc7RiOnuG_SSzD4PYhkGrknMLxjR-d_69wLn6h6zcDXz0v534ieyOxSg_licU4uSek2-56R8BQNpG9sgPy5F2GqZ51R64l2c6r5Vs2LzyjM6DfiEK6ZvjzNCJIcCKbu7ftP74w_RwFBdAj8HENH-WSmLx7dzbhYJUFs2Z-Agw48qURlfvQRUBTX6cpDXK6nHnvBoox6NN_FpD1NWtaNm7mIXekSy9s9RggXi0cvXACZmC1Oy3bkOfy8KLPswpfX3zepRoS7YMpILQVQdP4uxh1E4Bc-sDmccTMrmFPGjeTVUPtZKAdx-16TyONl-g7p-nbXk7mPnhjGeG9uYnfn8ZII5Ya-u2yow",
+          "places/ChIJG3vDl-Tx_TgRSvq54UndDfw/photos/AWCwydjeBDFxhgxW92DQapOWn43oPWiIdab51CR63XW87532RRA_5acKmnQ5JcUMZ6LCo4UmqAjZveyxNXcOV4kF9Cls6pJIRaoSDIxIUOw8Vc-G9om9rLQZ-9Pqf0xfeIirjNJ9u-OrbFThinazE_22PhSvssfICc7fXza7L62feS913xwBDZ2qMfB5QIgQvPfIAAd2ehpEIVJL5iFnR5pwa93WbCqsa6YSqmq8G_KKopvAc6V9mmR0DlAX00gNaoYnAm9iAdQ-78LKsjdjlYJ1Gl4lj4K1Ep67Lv-VMM2hE1rTROw3Ak6WbAzAGfLxKZ0men3IUzA5aAw52n3j42HOQxLN5vgS9-aEF1fIc68BZvaIpwFcvYcPTxqKvccF49Kv3T7eg1LEFuNFBR_aJ6J4kDFtno9fwaVivMB4N1egDk1kBA",
+          "places/ChIJG3vDl-Tx_TgRSvq54UndDfw/photos/AWCwydho-TvExiw26glaDcr0TQXFE4lio44ICoxadAsGiKYI3ODSJvNoh8uuKmBeLByg-054BD6XhbJdBR6RuswU29FwGPQxP5UEvo-Nizf-utZbYYgZ0YSR60l0ixSbMkm-1atfwvJ0hXPyaaQsVZTexZnhhZW0eAiTsyHH5ZAzKE9MNwDTwriZB-3eP_QhTUs7NtMj5ZMT90TNgVpLpePWM5M1GkmX1H-_TYwpseMV9Vn0Bjt9XK3X3VQWAbtwS92nG0-O0sM5fgaSW8F6NoeK6jkdDQVhBdxYBMiRyeIGnV6roN1zqZKiBNwn3_G0nDtb7Gp-YyGWBwANEdIt6PC8voVYj8ayBAoX1oS2CJszdMiacrsaBZvvxXfXnsj8j_HEPJ_ZlCarN0VPxbdEHI_atKu8q7NmQNrlPC4Ctx9auiqhhA"
+        ],
+        "__at__": 1786803011.131135,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "## Thiksey Monastery: The Potala of Ladakh\nOften referred to as the \"Mini Potala\" due to its striking resemblance to the Potala Palace in Lhasa, **Thiksey Monastery** is an architectural masterpiece and a spiritual beacon in the heart of Ladakh. Perched majestically on a craggy hill at an altitude o",
+            "author": "Parth Padhiyar"
+          },
+          {
+            "rating": 5,
+            "text": "Among all the places to visit around Leh, Thiksey Monastery stands out not just for its beauty, but for the sense of peace it brings.\nLocated about 20 km from Leh, the monastery sits gracefully on a hilltop, overlooking the Indus Valley. The drive itself is scenic, but the view from the monastery is",
+            "author": "Vishal Karan"
+          },
+          {
+            "rating": 5,
+            "text": "An unforgettable experience. Perched high above the valley, Thiksey Monastery offers magnificent views, rich Buddhist heritage, and a sense of calm that’s hard to describe. Take your time to explore every level.",
+            "author": "Shomik"
+          },
+          {
+            "rating": 5,
+            "text": "Thiksey Monastery is one of the most beautiful and peaceful places to visit in Ladakh. The monastery, perched on a hilltop, offers stunning panoramic views of the surrounding mountains and the Indus Valley. The architecture is magnificent, and the atmosphere is calm and spiritual.\n\nThe highlight of ",
+            "author": "Anand Nale"
+          },
+          {
+            "rating": 5,
+            "text": "Visited this monastery on a auspicious day! Very old monastery but it has been maintained well.  Clean restrooms and well guided by the monks. U shall visit allmany avatars or many idols of Buddhist religion.\n\nSituated on top of a hillock.\n\nCar parking available.  Softee icecreams, drinking water av",
+            "author": "Ashok Kumar"
+          }
+        ]
+      },
+      "drive: leh to nubra valley via khardung la|leh ladakh": {
+        "place_id": "ChIJjwHbTjbF_TgRS79QSUrKqwg",
+        "name": "Khardung La Pass 5359M Altitude Leh Ladakh",
+        "address": "CM33+RP6, Khardung, 194401",
+        "rating": 4.8,
+        "review_count": 2221,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 34.2786257,
+        "lng": 77.6046991,
+        "photo_refs": [
+          "places/ChIJjwHbTjbF_TgRS79QSUrKqwg/photos/AWCwydhSrSibeYdF_9TMC7nI_acxtUI89cyBvv0hk9vkUTHORNRDIXK92GA9ybmlLY5AzYF2loTuRefXpzJVi1G9MT62_RAwiPUZtad5hca2duu9k0sR9RgYN4wMdZelq8JK_cwrXBOLRORebfkj6MMi3NstFYrcSDnDg0ucp2pmCC1Bp99miZ8kRSdDD6xVG1NKmLSV_AHTCtZfABv_Fn6CGh1u6a_74Bx68N1Ry3d9Gy1UtEFWVHanc6mVs1NDq6mgRDAOGzr3jXKDEkQjlyL5-RF-SDZd9vXEvlfHnIF0voITK85EDPyVF4IJk4gWDdIW665LVQ5bCDs2QMio-z0eF3WxmSYrEhVcdpJ2RJIPdTIn03Ex2VzvuaezdM4d71ju5IFc9Cyak-YE6Yl2NRebj_m2iXUKXbef6_VvYw4braOx83lc5WuTOt-9h0dFJ8fg",
+          "places/ChIJjwHbTjbF_TgRS79QSUrKqwg/photos/AWCwydjvKlJz0bVxGK6rnqs3YDSux-DGcY6J_4S8bPSSC6GOTtV5xrPqGzh1HhRhITCYCWi5ksRI_0mEvwh7loQEaT_KDwOCZ6graYIaLyefBBtYn-L0JJnK8gRvreejHWUQpnJUSpnniERCoVK8OhEle1Ga_ZnpkQF0qqq8G6Vdyo0x_wHKnajxcW3jQlxqRZ7AyrpGPYqiDP7O3-iGWldUIMIu_W1btAScSsC2J-q1sewUxuf1kiZp8XTZajMNg2f6TzAZ85dVuX4NT8JbKqA34Wf6qlqtZeplCgWGqktI6WTnTEYGOypMqDuZ2u_kCjGh64J259_1a-wsVSXzIHbycjtkxXHtyjTimF-BPqU72nqZhdTqZkTxNRjUPQkzmpf8ucOhYkkWKf07c0qM0zRhDqLQtPKIUI9iI0omR8_OucnyZA",
+          "places/ChIJjwHbTjbF_TgRS79QSUrKqwg/photos/AWCwydjp98rsGKp-PTHv-ZXP_if9cWtFU15TXgcobwJEToJQ-WP7r8kmaptTBjI_vFdGFI5wATbP06GJfaW6oplgAsJ8PZ75wh7K6AkbA5zAw0cquberKvrgi5bBplIk2DX3epN52NLO0PhN1d-CplOdRvVJI1LW7ENf7Va8CmhtfQx0Xe1OXArZDwInoCPD9KtDfA0k7rkX0c1Md_I8flymIb6V9Y968G933HIPBsEjJBHcOsEkGyOBgj1WLuo3iEtK6KSMhmiAYSXvbbbjjanrelsfsgNFbBGsroc60ybXC4BrxO2GFNN2dx0UH5DPmYBmSFPvYzyGtFpSIZKOCCllrcVRlog3rpJ8rgWtlFz2VOJprbpW64OaCHm5jfvdJA83984QZ-GtJudh4Z0FmfKap32Hv7bNhfTzMbDWRPD5STY",
+          "places/ChIJjwHbTjbF_TgRS79QSUrKqwg/photos/AWCwydgVf_SUNtYP6ABOdVGRsd0FyLEAK3fA7cct4_w3ScHjdPUpVRQ82t1o1viTccV_K7encT82YaLri8yU_yxScCoQlalOJfo-syMDSZJyiC12jvVsFKSEcu2fbMM6nksClyQPYxsDNhRVe_QpVpOcqFI1jzoUkACT0YVFsAqiWkNAegKzFQSwgByCK_RjD1MgqldXFuXGN0O4h2mPO-K6NuHSOIbFClybxywHpy60lW_cTHFPAThvV5jV_LkQTQt25tpEwzITr7vH7dMsfe4K6oEubZN2RzOMnuUEEGQ9U_J8UOGjnE0CGYZtbiFNrQQhTDBEiyPytfFzXnG6tuXjpef-8sCZZy1oSFFaEFCQNtDZNKihFfP1yaM5zo2rdZmdESGJFLyhztZEVCzNL2mYToSZpzuMgldExHxMlZ97EQ4o0muh",
+          "places/ChIJjwHbTjbF_TgRS79QSUrKqwg/photos/AWCwydiSe4dcwWzi_-acnxwKj4UNekw-8Z5uYcegVKxLIBYEpbsllZq7ocTNZOmIISz93lX0qtU1lY6JIfitU1LkaCxOeMikDYGTQusf_EpGIdA2VvcleTIx9kg4flRxxq_AZuTBfO_L84xi-Jbev7B05rBH3GERW_0ospr-GVawfbUTud5GJpptSWCus7Ldt7u8ofJKffHNvu-kcuPcmjLxOEBt55GYDc0OBzOd7wVZatTXhhlHOSDvjMFpqhg1cYxmKwx444zPbTNRXZdn5yba2laniIkwb3E0i9_jRLeF9LTBla237kaohGO_iZk5D7IrRvvd98KGGQkufhS_ndRvfCQ5H6YXLFuyhGKi70S72tupdDbzBSjTGAiR088Hl_A5rDtqBPGjVE13z3GpGsuqxLKBAh8HnkcZB9cAiTyqVdCG-XPtInXDkyL5QzOAGQ",
+          "places/ChIJjwHbTjbF_TgRS79QSUrKqwg/photos/AWCwydjLRFlBKdB13yK7QZW8PQCD8Cxr8DpOAs2nk9dCNA0TIrtsYgUqSeVdapfL_-iVASDSeOflcOGo16-NxmqvzLuS56IMAfL3GR7oQPQ1C5hLgdbK2EqDEzMIMPCIfqtFZwqL62BRPCc_niEhpGwsCkxH3kUExpMpyOwgxsoywOv7G9JeMww-turbrUvSvSLy2bm_QLGr3JwQsD-uyWfh3v2I4U3lYI_vddenqjdmIH6FsyoMn8SsFz_GXrt-_6cV1_1VgW8H4iv88DgIw4yECJJaGZjNOxePezJrNxUZuPitDYJsvA8mYwqHRmgxaZ0SUokLCBFtqNE_V48c_PiCY_aHQf17acpTl6dT5c6Wjc2ENvNw68fXsHiWbK0nOB0tMaqTZ26nhYdOrXsQNXX9UqS0DWImmFypW-FrtpnaO28kSxy7",
+          "places/ChIJjwHbTjbF_TgRS79QSUrKqwg/photos/AWCwydiVTZ68QFjGr2pf7vvgssZUWFdQGp3Y6m-xR2l34FnT6qexJxbFT7kq6ua3IinMToGjpfK8fm_Jfs99y8qapeX8XnG0e3vvx7XI5NRl-1RCQmpcq1CfkY9AicV_Fm3nZhhgQea25zdYoin5KQwvxiO0zPn3Fc0DzH1KWbDjFexoXmW5Wijhkb1JgY4Z-iBLYRyzKlbOYQLq-Dn9A1Xu-uxWq1Z7725quPvTimjILR-JDBt-CLp6tjk1m_utetary7YVH7d_1GN0kG9ABoqredrM6pI32HEdie9obFRVBv8W-9F7sARsef-4rX8MoE9jQ_8aq98eY5Sx6D6btIDKjmRlDcVW0unt7QLzfW7GwW9pUYiIlCYV5j5C6u91YYukY4UjiH45CqRb-3Z-WT716CnIaGCCOpJxqd9ybGbOeR5c08U-SIE3tfIa_veYyg",
+          "places/ChIJjwHbTjbF_TgRS79QSUrKqwg/photos/AWCwydh6aSxz5Z9sDLoXNLt8eQ2MyXBAjbFNATzg5T8TyA8htDoolW9meGbUTDXvXlorSKPg6rYrzf3ALseTi72kZdez-33BwF4wdlNMjC_wPUU0f96P384VJfzneS0yBuZeHzR0Ws65-xQhcmknTsxYI8wlKxmRjsl5rKuuPQTynWnnfjzDV1OE3_zqmzfJuWlz9ZnddFFOd6l1wqt7BQXc7Y8q7dShUHL6fnbAuQi9GJNyOZdBByXXl0YMYe0Q0h41zPY9yp1Tes7ypi7Aimb-GsAzzBdOK_NXJ68sUOn5I_KCDerd73rqD1cLCqpSqsjGO8zCi_KsvmDFXLcRvjf-A9htmjMTALniVWLyapMIQq49kOaQUbLOiLTubu2BlWcgtwTVuzWLKeJyrrpNPvRDoUGWfgbSXe4Qb1ZLwsNgAcWRhg",
+          "places/ChIJjwHbTjbF_TgRS79QSUrKqwg/photos/AWCwydhAN4WuhzEDz9q4fzrG-aNjUd3SGDlnzNsaSNHg3BJ24caQxn56KRyZHq3jWACZljedWy2LS7MNjMtKOBeWBnCLch5zxuk9ZLaLklkdxAt8DZu4Sl37VLHHhKSRimqls6eR1qKIrqInUXgtjKFkcEybeS4ubL-wcn-9iEp-WO71Yle2XTuFCtK7ltvaCXaDRCr7VB_lzEnfPssu6PK14IpOnNg_m9yLeA1FZ_yh7-nE_P5WVWtYd_AISq_qwysAPY5Cdm1j1fXLW2sviD3KTRW0Uk2fRO-jukPzhWgzJ8hSfeL5rJwcGLbHkeNBy71ZkbOhVHNOhhli-DHKvxGvPgpTS28dTR-mrXwP1W2_wBq-zhix9n4SdntdTKUhIVFPO_eQkJTI9B05WNQpLlcq2f_YhQmxpeRXE8EEYBbjalWpXA",
+          "places/ChIJjwHbTjbF_TgRS79QSUrKqwg/photos/AWCwydg6ydkk7enY2acx576l2S7HQXODj2WIRnX8J-jZnHI0aEuFqzHEokHTS51fmrT8IfrjB9qJ4wQIwIxhQFyZ2xLRqoEM03iZOFDAZRYtblWXTtH6tBQwSchKqP0Z27-1DvLiNUoK4xMgxnfjbKuZ7_pH7qQeJeaxn7gcFqgDt7KXsdepkWHLFGMT3ZCl0UyCBtR33isGsFD10-6t8Y3g0tyzFkpIc4OJVW2xJBu2uEYSy3OigPsyvY2qGWnFC0YKEoxE2LZ0yBb5-4LD2Hi9tSM-jQaC0W6fvvJ14ccUpnxKjnkz2SnRV2X10cQztDT5hvglz1yECEOb3_BfnSO8RkHACM8bqZ8ElNCI2i0BI27Y4cEIbxyq35UN4_363dbBNKW0EItaJvwgJe4JPmgba-waWQTuz_KtQkH3yyj_R30"
+        ],
+        "__at__": 1786803011.634926,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Visiting Khardung La Pass was an unforgettable experience! Standing at one of the world's highest motorable passes, surrounded by snow-capped mountains and dramatic Himalayan landscapes, was truly awe-inspiring. The drive itself is an adventure, with breathtaking views at every turn.\n\nThe crisp moun",
+            "author": "Anand Nale"
+          },
+          {
+            "rating": 5,
+            "text": "Kharduhla pass is not an easy pass for bikers. It is very cold and it was highest motorable pass. For now the drive through it easy when no snow fall and rain.\n\nDue to 1st High altitude don't stay there man 15 minutes.\n\nThere are multiple food shops there when you goes down at rescue center.",
+            "author": "Prashant Kumar Sahu"
+          },
+          {
+            "rating": 5,
+            "text": "The Khardungla pass was earlier the highest motorable pass in the world.\n\nIt stands at an altitude of 18000+ feet and can be approached from Nubra and Leh.\n\nIt's approximately 40 kms from Leh town and can be reached within 2.5 hours from Leh.\n\nWhile going from Leh, South Pullu falls enroute which ha",
+            "author": "Mrigank Mehrotra"
+          },
+          {
+            "rating": 5,
+            "text": "This was just the most amazing experience ever!! I had been to 5000m before but never 5600m and actually felt okay. The sign says stay for 5 minutes but my friend was frozen to the bone so we stayed for an hour in the cafe and were okay!! Never forget by visit. 10/10 would recommend!!",
+            "author": "Matthew Cole"
+          },
+          {
+            "rating": 5,
+            "text": "Khardung La is an unforgettable experience—standing at one of the highest motorable roads in the world feels surreal. The views are absolutely breathtaking, with snow-capped mountains all around and crisp mountain air. The journey itself is thrilling and challenging, making it even more rewarding on",
+            "author": "Prithvi Ghanta"
+          }
+        ]
+      },
+      "hotel in leh|leh ladakh": {
+        "place_id": "ChIJreIhnHjr_TgRjs6OKE3NtXY",
+        "name": "Hotel Gyalpo Residency - A Mountain View Luxury Hotel in Leh",
+        "address": "Skara Rd, Leh, 194101",
+        "rating": 4.8,
+        "review_count": 376,
+        "price_level": null,
+        "website": "http://www.gyalporesidency.com/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 34.154100299999996,
+        "lng": 77.56683819999999,
+        "photo_refs": [
+          "places/ChIJreIhnHjr_TgRjs6OKE3NtXY/photos/AWCwydjADszgNE6weAi47349yUX06tSsvrDOV_xS7XE9QPVZUEcDKMQTi6uw4ovO13r8B8vI3W_7E46b1hxmrX2XIzQf9G8GTr2dG5rStAiuhrPdB4S6iJlj5KawPtDehi9TfBJsdbtk6Y91BjhY5Y5E9G08WkM2WypWLoAuNTmMdnL8wLmuda6BBYuIs2SefjJVBKDY-quNuQpps2wi19rs1LZdE6UkkOQ5ckvSi6igK94t-HcJf8MpfdbckUUALGTxPAbpNdgMF2tlnd_zXPBDrtMltMtmXWZq8j5_mivS0qO6GUdGSlo924PDgWFGouxdKo3hco2gVRInl-pL9VDUnb9Ym8E75PXPPPDt050oII5MMbIQsdmNsFlTTer7YUc6-2uEEx3eqX2-0nPkT4pQSTAzoWvrCyvVhdKUYu9FtrjjdIDPaH4OGq9oPDP1Yhc4",
+          "places/ChIJreIhnHjr_TgRjs6OKE3NtXY/photos/AWCwydiFgvhOO2pzWo-s9lH-gkNsz-ASHUKQuymZ-_vBbwP86GHKG1YYZwljBOwrpVdqpM_WPGnNAuWg_hIHRbsIvz9qtvGhV2_v5XN2srllDL7N1k6Kui8KoMfbTsWNKaeK2YinNfU6zmEK2wIf7BSPE8wAh-VJb7umuVTlVX_EMtiDtsmkcligx7qxuOGVQ3LvjLfaz86fE6vX9slmQhz_oPMVsUxtlxkpgZUfMVwtMwjnw6ILeVqTcI1kIr7tEpIQu4YG7CfB1b5tfaJsrObldxidabfPXtKIoS5H19NChFLkznOkAX6FKXWJWvHXqBQOsdMq0x-Wan_fsU0ButkeKlsWnQjnR5hao0wTAs9UoTzqmeMdhxlltGDvR-JQ1LYADozHgIHKr0Xc59kcyIWj99_IjPbAXKDFfZ6U443AidcmMBsx",
+          "places/ChIJreIhnHjr_TgRjs6OKE3NtXY/photos/AWCwydghr6xg4aIG1DLhlbDMWsUTlmQw3-rJgj_vsirbR53-6JnZftSXifR5zxu8nslThjKbgdz9nikG2RtgrPomxwCNVsMrFlbUQlO9z0QxTExd6FduM6szCBh9VYzS5feeD1pxN3xMEyulD1Bqozqhmv34FTMGxZqA4Q_auo4U8pdRcUFAQKWKCbGHxSLrohXSFn_vubtZzDn05MgzYcDPf5ADNK-MZEHjsQxapGgG75XAnYg3vGqaqlbGxoag-rMHPOkOpp3Nl-hZPYzeDzGgJL6ZJLIwKpUGwWwSRvuJyDPZkUN-NYh1Kd6kKmGQDqmP8A5Az4ASIyBjb9VqfpFNi1qe3lWDbcRyM8ZfSVk7NBjSqr9NgrttX6_PLnF5zGowL8BV3EjSJByc-wckG6q6PNrTFI1_tSfMC0IHKjh2Ad4",
+          "places/ChIJreIhnHjr_TgRjs6OKE3NtXY/photos/AWCwydiRPjXdbs2TnVwKlY1RzQ3QkR19kWh0knV_HlXbqpxl4tEfqzRDEXt-DW9AHXTg73M-GLbQFwDk3bkf8kur2mVh5D_RGza8Ro_kwwoYmfs7VRrtZoPgC_YmTWEKDecns_ewDH8LDS0kgBSj8qXGC5G3ukhvioJ8wf1DG5tCh72hBt00vxMdrm5aLPUGBQPp3Ck2BgIvRBxx0wq4rZ3ReXfHOu9f5WfGpIf9z8KkQ48CaLWOrUnhr7R2_DG6RQufk6FNjk5xyWu6hVbRG4dk2jY_yknkrDhBj3o1CbKw55AmYDfqawFMSeP3lOwBAe6krkqae7cimwA1N9A7PRAkFitPkXbZyMoRP9y1zoiq4Zsr6yIDibrB45w_SLiAfbZQ93gj5phIxll9vnsSiawFKzTZRFr2cLo2lXqwGcTbsE6pKDc8",
+          "places/ChIJreIhnHjr_TgRjs6OKE3NtXY/photos/AWCwydgQQti-xNJtlnG6cS2gowOHvBsyVYpR34Oi0vm7Mv6aDJ_GmKtePr9oB5_GY7rv6wka07W8EahYXaFtLvJuB7f8a4_sB8Qz9r9pTNd6Btmgf4aH-RESrhbr_blx741bWEaFkXkDnm98t-yVbV9nL_r89CuCu8wHMog37ZbntGcJSCRwuEcgnc6eU5n5guoG38kdrHVU1Iumxu61hNx7yOo8vnIT3ur1l4NmddV9VT1xK1_A6VAJJd14eokYHgKI-N545BTgMbW7TtyKcIssjJNP84RsOQ7ufaRkScYjbxsnF7fTcE423v_Y-NURLVXw-zcAXBua2bM3TT-3Jd3UTlmnTd3A_85gJeJjyQ-VYgKmuMTEoQMDbPmUdj5-Ns570TsmrPHuSju05M7s-TZcBc-u5dbOCLWLSfrYUsrR735lNblAAmp19WilkhwXc9ow",
+          "places/ChIJreIhnHjr_TgRjs6OKE3NtXY/photos/AWCwydiFUUAeDih1PCzGQ4gBZN8Cg8BtWFkkSKgwLgDduMUDZMigpCSPbsi58LyUFZdb_VDz8iaj1Ue7dNXcast6FQKKqk1rF3b63_VKmjkQ9OQxBCpX7cH-4c-omRfvkFHKZKT_iOj_F4DeKiwNlMkQiZbAienxnl-HucdO45dp4BqNvOPOHfKSM2DP0HgebHcOQHkrKU0xNJcEJ52IjHN8LKXhoJUwUq-g6W0Lyw7MmaCsQ-uyCdXe93o958T_S5TsaAeDNfCU0HTwNC3qKvYOVanoz-h8f7s8pqETvGbL-9lgwFBycyp7iol_KIwYjFDG0RoOyR0kZaxmazZcrIP1nu7LfGZwC4XVhX4Fcoiqh2oezP2vfgqYWczJnvruAKo4dexdg_v5CFIMQtKCEiWXudwcR0TJenEsCbOJ1widIkIhkoYR",
+          "places/ChIJreIhnHjr_TgRjs6OKE3NtXY/photos/AWCwydjoFOrYc3c1EdKhIw1idOvTa8pircKxkShjT-RjIdEaAvlPy32CSpVcpOicDLFXdwlDb1xcgV23yu5tEI62hyd4GeVgjMdUDKpyx95I5pld8Ke8XCfx6D-8WsBkBGYvlejvYnyrGLhd10FKJ7DmYEB0oNsOZS1QkUlH3rJARDu2nabJEv84qndTVH7W2EQGouzuIsS_AlOI7cntDkqR7Gyx5m2vyapKj3oFgwsIANbJfENVvvsMg5MQXE0pC6PMqDNOLiXP9HX6rG1DfP0Qc6Clqkw-c0w8tnzluJ8RsbRt88PhjCa7Ea-TuERYUo433Vp49Arf3jBdVbLDFLuK2ZLOvhIqhqth6s7Pzg0LFjJCpivL9AvX2-hDcjnWQKxVW8pdIh6yNAyvNijSEmfMAm4xkSVlT9WwWMn6AbVpt9R-53Uqh4xnZfvh67D-qHqE",
+          "places/ChIJreIhnHjr_TgRjs6OKE3NtXY/photos/AWCwydgjp6RgzkQE99HQ8sa_slj5dHGMUC_Fm5Goh_rGpgDv0oUIhGqTnznmk2caUNDEItQypX1BhcKWbagZpYuX2DeoTqHeV9SG5eBNeOf7JF5WbAlLYfcufSuh-Gjw5M3_Uu_4WPdbzmLNw0-ZgZcsDLdlKV7dcI0UiFKyBSzjijVaBZONc6uE8ZruEafl4mpo68Y3kZvME6JE_ez95k24ELDeNL9quUqWMiE7i0Hg-EVGFBL9UBY_ekfhIYBaoSBF3pu-QR_NQr_YT5tiUKUlmY1bALIlIJmsyzFwxA6ZN68gOnaJw76gYhTvGGGFG7fhGeh-e2nDbrHh82gEaUYUI77PmNJjwKJRi429efxMOvSWUystQylsu-MB4_pShaxsQb9FR9oseC7ZsxaI_wI46jGp1k5T3E1YWcXG54IkfoZfiA",
+          "places/ChIJreIhnHjr_TgRjs6OKE3NtXY/photos/AWCwydgJ95PXMQZRZvThA0MWt52o6PS-XpfWlC2dylKwbKGAamtR1U2c-izMt17Ay4BiI58tB51rOEq0ggHI70nU4i-hGxek64fj5zRTStiieW9Zdp1f-22fX77ezI_PmMWFWTQxZdD2i7j_CE_GnbyJTIPhTjHAYgMHZHE9EHmar3Ft_24xGrmvXi0QZNfWjDFhn2adA3ruAdO7UCPJjgnFqorb-JChyjodi_yrujOROXwI-xKHdLfGDXCOcGoop8CDIAllLFpJBvBPafSgWTppv0YEwSMOiLVIHuMADD2ieQY7VLq87Ii6om6H98qmm_RHV74tBatNYexnYl-COiSGHG3IW6z-z_-E6krhbFnavVsjKkSiI24kGRU19QCTr_gfuqNT7yecr1rwpw6XGJgisbEh3gJY-eqle9c5WL0Y0Grs4I0",
+          "places/ChIJreIhnHjr_TgRjs6OKE3NtXY/photos/AWCwydgz_2-3PyvyPztJ8exxaNuxeyYHCUSYxbWYSsVj5f6N6JdChGyAPY_ULILtOFnCIxU78-UYhmDrbCe5hxiiXXxTiLuf3rMB17w3DKSptomPGWspJ6MwRNAbSAOqjkDKHDYmFuTBvulkpwD__asUgKTp0s4l0xhsIC7O5f4k-F38GTnrN1KdiJ5ltQ5KOXNaL5hKuKmnAHe5Vp4KXh4seFN4PK6zyzFKY9-_w3V1At16-0_Akqb1SsqcLdMx-SKR3pQOIJGrKAsDlFMgcQUz-OqaAQ_qbyWySEHLGB85DzwyoI75AmPk802QE_MtwiojE9feX6pq7LmYgtgM0vme9mKOVeJ3wyoqqWiAECRTMYSJJRjWdqVYsERw5ZmjWjTm4biH0mjZ9E4zgAa59QSvPBCxw6y_95qz1e0296DuKJkmZR4"
+        ],
+        "__at__": 1786803012.1704462,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Our stay at Gyalpo Residency, Leh was one of the highlights of our Ladakh trip. From the moment we arrived until we checked out, we were treated with genuine warmth and exceptional hospitality.\n\nA heartfelt thank you to Mr. Anthony Gomez, the Hotel Manager, for personally ensuring that every aspect ",
+            "author": "Sunita Acharya"
+          },
+          {
+            "rating": 5,
+            "text": "⭐⭐⭐⭐⭐\n\nI had a wonderful stay at this hotel. Everything was amazing, from the rooms to the food. The food was delicious, the service was excellent, and all the staff members were so kind and welcoming.\n\nA special thanks to Manager Anthony Sir for being so warm and helpful throughout our stay. I also",
+            "author": "Gungun Mihani"
+          },
+          {
+            "rating": 5,
+            "text": "Gyalpo Residency was an experience in itself as we ended our trip with this accomodation. Absolutely top notch staff who helped us in every way to make our stay comfortable. The menu in breakfast as well as lunch was both quality and variety in items. From cold to hot dishes were served with benchma",
+            "author": "Harsh Raichura"
+          },
+          {
+            "rating": 5,
+            "text": "Had a wonderful stay at Hotel Gyalpo Residency, Leh. The hotel offers stunning snow-clad mountain views and is located in a quiet, peaceful part of Leh, which made the stay especially relaxing. The rooms were excellent—comfortable, well-kept, and very pleasant to return to after a day out.\n\nWhat sto",
+            "author": "Dhawal D"
+          },
+          {
+            "rating": 5,
+            "text": "We had stayed for 4 nights at Gyalpo in two blocks once when we reached Leh and later when we were returning.\nVery enjoyable, very heartwarming staff, superb location too just 10 minutes away from airport and 20 minutes away from market.\n4 star Luxury at affordable prices which was  a pleasant surpr",
+            "author": "Harigeet Menon"
+          }
+        ]
+      },
+      "hotel/camp in nubra valley|leh ladakh": {
+        "place_id": "ChIJcbt3MADr_TgRWd-MdwIwCL8",
+        "name": "Nubra Delight Camp And Resort",
+        "address": "Hunder, Nubra Valley, Leh Ladakh, Jammu and Kashmir Valley, India, 5H3G+2RM, Leh, 194101",
+        "rating": 4.7,
+        "review_count": 13,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 34.1525864,
+        "lng": 77.57705349999999,
+        "photo_refs": [
+          "places/ChIJcbt3MADr_TgRWd-MdwIwCL8/photos/AWCwydgbGknwinRUTo2snT7hwjuew8JteYmHfLwgLDNUYK2lX7eq2fGmCl1FsdrA3FHsaeF7BFIAdg7eSLjni6iRRrC25fI-KLywAMNxaHWBuZw8LjJtevo7P_FuCezQn8-TU-nRZ5GLaDnDpXXQe1K-6hTZnzPYpvXX--fftasWu-BpdnmeOGrBlzueUHTTA0en5u57QJR5MG-r44BuxoaYpi2Hbr8oYYsj-od79L2Q_fsBqLK4HIFJxO8Xc6By541W2Pr_V27fmQr64qHlx4o-W-PjzyrSWwUusV0ROzhbWI8Q-kLg5RYtoBLMwOM7saHEI3c0teRVCmchRZNsVvYBBAGiULpMgnaS8HHw1dlnftfJliF5MbganL_GR9aGwVgXJCs-SP2z5cDE32IuIIBJJ4fviR91_zq15LWOxWN1nqUI_2R4jReTFnyT5iQq-AmA",
+          "places/ChIJcbt3MADr_TgRWd-MdwIwCL8/photos/AWCwydjXC1NcYK-2oWMzMWC3jFC3KjHd3e7dEbldLcYeYrUBjkQaPEfccsEh-W1vIVTf_TsXxFToPq4SaUo5drIMQ-OOq7tthgoculQV9ZyWEL4zPOvD20sN_8DcuVkA7A-Nvx4loyDL7jUB8nox3U15_pDEXJjWJVumxN3ftk4Pq5dv72iYnMnIuOZ1JRCDMjs-GugLxpobixl0lQyyoJ8qL52sK62MNiSadyf3-V438FKKNKBLDt1p7soi8BNlzp4LuZnpWpyB9Sl3kwWhShZjMta0p8EImo5ec2vwgCLXhCyfIoxN4UyX6rt5MCSHjP1N5Wp_zOJ10w6Ew0JMRYq7-KHbwwzGh0-KyvSSiHsQcnA5tRWoeXJ8IDq_KZRDec3ZXEvMMWGjf6-wrRR_hEvPaLhwVoslqQoNDbQfFpwZcNTFLFhgJXIgMW8ZRaJREvVJ",
+          "places/ChIJcbt3MADr_TgRWd-MdwIwCL8/photos/AWCwydjKwFPkubqty-5hYtd5j7FVI51mY3_lXMUbLI__lcrShOWI9ITatEljuLL_MrZ5XGW3mevP6BFjU3WIGDHpBteVdygdmy2qE4FVHOq5TOy6IUSXJjGYE0bhb6H_zIoWJhXakkqhTHw1zkrvcISCfkiDP653L5nncKIVW81F2W5SDf5q7zh1OfLrN1UMwkI6Y1kic5YYu3LyUtPvEt8NsJbD0gwbvNamWvXFybrWGoRL9AS8P-cKtaDaESpisfvhuVjWBNL5CcKhNQ361WgO4fTuGKFbFgBp5uEx3XjFnFPyn44Bl_Loy_YlhvthVD7xM989oQis3J3nINwRDNd37TU5F2AxEcqQ897mLNUluKECgA5maGkVxtR33lcvaQibKcu5F7j-ufzDTOoEju83aZCK2LTQ-iYcJ1vsgLGBi8S5JTV0wRBL1-iyDLG8hE_i",
+          "places/ChIJcbt3MADr_TgRWd-MdwIwCL8/photos/AWCwydiOebiTygH9q0sWpUhD_C_AYL65gkNs7BONNNMseIPNG-RIFy8mMT2H4TajL7yQQclGwgkJhSEFISDP0rcRMRivpoNnLHitHqWHxW1MjPeZy3KHMvIs7UQCQdhovRF2Lt9BWJtQoVzivH_ORucokwC55XlN7Ib-V1fUCbA_r0Q2Q24uk4M40jX8Rfug8_yvItpURiLEBwSNEASQxL_jYR90Atvy08Zudi9JuofIPyLZkNY7BfBFgz-mEBzE248Ws-qXLmzhNICoP1l6doK6r0pTeJS1XD1p2FUcIqVg2qmIGBoJMRDgcdFz2RrUWATF9J4GHnHJNboVNwF50j3zDYOIu8JO3lTb7HXI_fJlHYp5PKm8-MkcEsurc7-7HGJ_wQNpjjIbqFSjODHWMTm_lhoJbSd_pyT7skaXNbT_uDDlmUo_-y9DBORyiDYGcg",
+          "places/ChIJcbt3MADr_TgRWd-MdwIwCL8/photos/AWCwydg77XZ9fj5M_f39VI4YnVG1b3dQTDk-yC_vOA_yXuvetq6gGiMWZgu0M7Pzh6-o68UUlOmpcGAk8CUXkV2TE0lSoHG2QDc7N7qmGCVtJA6yRn5Fyg5uWe9crRGL-Ao5cQIr6-6N6RWT0VfC1agC6XFVFltlzwS9Y1TqXQiXwVV4mGJJ3BpS7sxEaDhWe8OflO7-R5ndUGEYkEvRh15CJ6-uV13TE0B-I4OSY5CFBCgHUtPMCEnM_fi92JovpRGvX-GkUNx0gi_HOOOfeb7Vo8mdI4chBnmeJbkKCQtb8HDn0xYnk-zoT2S613mg43UycMJe9jPNPToyHbelcUIlEtnB9VJhVGhWI5qHW2yD4YPhvu51ppE8nmI_DJrtzhXE2f2mZtFNnWL4Ks9iKo4YjVM4ZhBeOYkKS9ILZ-9y9w5yKzr_xxJR2_Z8OqyCiQ",
+          "places/ChIJcbt3MADr_TgRWd-MdwIwCL8/photos/AWCwydjo49vgLKGngxBZeLCwOUOXHAhNjvJ1Kedg_Iptv6nfWWSXh7yPKcnXDqfus1JCp7Z3BPMrse1tDbXjrS67DGJpM8fkF-MtNEZNGhkmEVNBm2t3UFIAkJo4nR_2qzrQSyuY38yaJOiWBt7wZjhzGh8l3erayvHEoAcLFHPz3kfewpDiKNaUUhB-xsYVJPyQAAD5ykiSJOb-DL2tldU5TR4g5ryf8RIMIkctUyATNJ8Xbe5dPLvM6PQ2Wi-xV2VlXb5QOKcz8Xm4_mEwG-_pCRpbWisC6SKOhFekOJYNJpvCcHZGWtDf7fOiDbJq_PMpD68oYbUx2TQDIcPZeJ7Z0_GNVRzV42XXYQaoKQekYkUxw8o5MzgT86475TlyvBzFqiBqG6vmyCCL87XnE4qET2BI0Cye9XSGYYwT66wKSfhXV-5cc8AfiZXgaOp2Jg",
+          "places/ChIJcbt3MADr_TgRWd-MdwIwCL8/photos/AWCwydhrGCm9VpNolADnGWUnJzd8oUM5LqlAKMTE2j9YFF5Ic44xfiqzKVwNZI5uTJh5-ZQIR0Q9NW5KLMROhQUHeLed2ADp6HLcuiD5_zxLoqVL8VamjJXYuSQfU7u6KQ2UVsgUD0DZsDOTeT_lQDDKnt1aN1RbElxsl7oFm6B40fNiIvtuejI8LvxnYqOklT7ahygKOEtT7Sn2hNr6aK-PKYxEBJVjwbW4NW1kp0LQPjH3kD874H9lp5hJN0IzxZMvlDfOx9g3ZpyQ3eDnED2_ChSh3j57fn8KHz8UPV93nSDC6QJaiBhi7zSNFZbFGZyXJUN1mDtNH2qnBUBUdNqxDIbxEYuDRnpd75eObHk5pt3R---wg-YRgWPOvqJGTZTXQLvvsvnioNdrdMYiRzp0adYRDevMfT4udlpWWuKoj3M9HDYubypVJerAw3gpPy_2",
+          "places/ChIJcbt3MADr_TgRWd-MdwIwCL8/photos/AWCwydiokfY9ochzNHa8YFjXMnl6tUduWfDcsV-1IZ-Cbvbpp5G0zH4oy9T-SlkGDPLChbUIwMSGQ7XrVxisLq_5p-OKMr3Dj2S6jltA5OQL94tabOzJd2tVU8AUhFhN6BOuJlgJo1CzKiXvK35GiOxH0HH7Eb8yS_nd_b5FEM4zHtpEjONtr16T_hzW8nlDiHVY1szpk2l8gwIpp3Ri06jy5SFMr-LjN_PJm8RIK7lfCm-6J862dN8KWa8Vfc7d_fV2AI54vm3FRADfZa76ozzU6Rv82aM631ZPtjdchdvzLmmDgm6hDc9mDFeT8G6KYXMWv1ffkpxR2NvCrttWY2CZ4XoZYnXHGxpm6Qv1lChaTZjzsZmBBFTlB-hXDxdCBoQEBV-wlUuZnnDmecKTgn1_D2yUbFk7Jq349Gk6yq94MuWd3dnGSXSUXzHJGEZ0Kn1C",
+          "places/ChIJcbt3MADr_TgRWd-MdwIwCL8/photos/AWCwydgDZv8uXQk4haDm-TYpu-NmFg-fPAzsoHvoUsxX0R8nMI9nrQ7RaG6OBE0Jv_Vo_Pn_P4jGpLLMkrzJsr2R_ZRNgbH6-tAxBCSta5wMwfoGoU3tJyrIzLCFSD0hR1p7t64LZ1lRvLqdR4wupHVaOHGiPpFAChq351AfEL_uGxNAzg0ZIwsrun_XY5qVSVgCYlFmXCIna02UH5uiC0hBe8Q3L08WGUp8UuxItVsnPRNkRva4DOGXKdiP1HTCX_D2AooPtgzRNbu1wBZmCf3tRQ2ggCu28UcqTyt5Te9c0_PqcApQ4l6Tk_MD3go3fNPl-k5M2WUxV0SBbF03xamcqry-h84Yi2vDu_O9v7aQnTjyf1ltOTqlfyHYjEqM-t0rjxD-PmKoadNAp3UJZ60bYc5fvjdj53j3hpm_F95PqbyYkM7M9cAuvYD8rj51fw",
+          "places/ChIJcbt3MADr_TgRWd-MdwIwCL8/photos/AWCwydjSCrvim57v1QK81c7cH9q2S5BpTmC9RSFwtyeSLtY_Jw4RRhzfrNaiktbD7AztblHClL-p5qvtD4nF8fa1Pn1ztFL6v1JKl9bGh-q8WeqgwlFPF3PFSsICqvuiTaFSB1Iv7wDgQKzG8ENIYZYcCxIgdgAK0vGyq5OFXvMCs0N3NT2C65SkRw5FmUhkxDPO_KFl6PtlE3SElxumYKfaosWXYL0_BIYN98mIGpXEyOo6WJtQR2RhzeX5gixm2vzjU4VKjFvgMFwgKMZovZo4ZRFEu4EvdiOsvPgEZO5YFqy_glpZXJEAmy1dfcPCDCwainJ9JR9mcZ4w0AiOoC7WEJcU4hb0xywIjgxR3e5HWxYBqrRKn64Dj9cMVwCo7cdSIej5jc7K2WomoGzhMwQRjMAnCpIeuAAwwgTQL_ZXdRj_LIrK0qFmE0TkrQSR3Qpu"
+        ],
+        "__at__": 1786803013.073409,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "My stay was super pleasant. All the staff members, including the owner of the property, were very cooperative.\n\nI have also marked the property location on Google Maps for convenience. My only request would be to put a board at the entrance, as the name is written only on the wall and becomes visibl",
+            "author": "Safarwithbm"
+          },
+          {
+            "rating": 5,
+            "text": "Best hospitality good service tent are neat and clean",
+            "author": "Piyusha Yeole"
+          },
+          {
+            "rating": 5,
+            "text": "Best tent with proper facilities ❤️ ajay and staff are  good  tent are clean best hospitality  best food 🙏🏾❤️",
+            "author": "bharath raj"
+          },
+          {
+            "rating": 5,
+            "text": "Best stay in nubra , hotel was amazing, and the staff was very polite",
+            "author": "Farid Sameer"
+          },
+          {
+            "rating": 5,
+            "text": "Very good service and polite and respectful staff.\nSpecially Ajay and Rohit, Anku Arun\nLocation also good",
+            "author": "Baljeet Singh"
+          }
+        ]
+      },
+      "drive: nubra valley to pangong lake via shyok|leh ladakh": {
+        "__at__": 1786803013.4019022
+      },
+      "camp/hotel at pangong lake|leh ladakh": {
+        "place_id": "ChIJoS8q_MbZATkR2xUr1if-O5Y",
+        "name": "Pangong Retreat Camp",
+        "address": "Pangong Lake Road, Spangmik, 194101",
+        "rating": 4.1,
+        "review_count": 202,
+        "price_level": null,
+        "website": "http://www.pangongretreat.com/",
+        "editorial_summary": "Cosy permanent tents with en suite bathrooms in a simple, remote resort, plus dining & lake views.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 33.9056942,
+        "lng": 78.4555902,
+        "photo_refs": [
+          "places/ChIJoS8q_MbZATkR2xUr1if-O5Y/photos/AWCwydjMHTGAxMvSSHb1WLdkL0e5UxxwqpC2eG47Ghkusee42d2wqYbijMHczvg-3xR3tAOFwT_IdyVW7XnWwbJVesEVfaw4kEUADgtUOQWf5iFK_r3ZHuHZk9mkhsKyUtPtao_z-njt4VoDqLDrTuktyy2As-BgnbXUgLmCozdm1iF5RALDnTrIxjVOMhHo9uH40wNC7Hty8fMB08u0H4Gw4HL6bv3u76lovrBC5UL9hFaYkQCD8FiFak2ZhiMUTTXRWhAfsbG4OQwQvJBEN9EAgnpHlytFlDnJEHs_ebP5lylHszitEnjsSn4a5dycCzlMEbMjMyjmzAKXFX7gfxLRvGK7olkM53sG5tg2afBLpfRLt_C-4P6V2nOO3XjY7wrBpQILgDPc19sBsTEmoH0y8y4nrHSxkBnMbtOwX9DEw6PQY9gXo0gXEDimCEIf31Sk",
+          "places/ChIJoS8q_MbZATkR2xUr1if-O5Y/photos/AWCwydg-I6a-jCH7lXLsllvxoOoTtp7Vbpd-00CD4plgL2SJREhyTJPixuhGYznUJds1r0IyUEwfMYUzgvFkr7azxD9Wylk1OdLMj04YOX4xhKALnGJZXhPqnpjFq9uR8k_9RLTJs4E6pCDcvikujKGdHpplvT3mDA7V75rrZj5hZxsJQVdNYgdbsRx4pJnKJAlVrQjwrQUQyIhvJbMBicAyNvQeR-XK2DBKquDATZ3lJ5PipBI7P9yieSMhbDYXv0XXP7JaAelHMCWCUh2YT4rIVxBxelyRsDmjKd8yzzpNLDmx50H_fRKWb5k--XP10QLjcqZIKiFW5CLqaG4aTZe9umfOTuz1eKv0rzWpu3r--KwmTcK_JxaxTQwLNBcQBuiMksRot2Azmo3holQuy9HaZCmx-t-jyMARhMlERgdAEBrSNCfyjOVlRy-Ua2Fp1YA_",
+          "places/ChIJoS8q_MbZATkR2xUr1if-O5Y/photos/AWCwydiH69UJTeKOoF05XQBvWxxDh8LLp2bU8uBNP45GIdbt_Wf1Zq1AhjXe8RANUQeb4VIETNGr-PwnndTvVZSIPDV0qwjVaFiuZcXb0zQxgDscEkqtnel-v8uuDAlCe9ztFoMhH5MyarSJs9eLtxISvjz4XPu1LehrXn2pAn3MrJMMSGD8tWFm4dt2i2VxptvX9fCjTSdalEfbmq-Hs5n57_JC8JVxf1gQDUDn5BSoL1zBPVUWGTYPPlt8VoFq11InkzpP-oXhAkCYylu3th6gBNig917RlYBingbb--xUK8L1FiOncfiieSWVQGT27Ze6mnOPPyPTWGLz2Djou3dlju47KDgIIV_V-cN55NivPPoss3zbmiAynml9yj1o7fLWYehqC5BReboi4tBNKYUN5R9kzgkstqwztECnLzoaV9uD6AsKi2lVr0h-pSQshA",
+          "places/ChIJoS8q_MbZATkR2xUr1if-O5Y/photos/AWCwydgNjwO7ceKhEt0IIcocArtZSPIDJhcyJAzXCp0e4vDn7CaT_zSmwXAnTQim0JxGoOg-nBlC9q36MuCQFKu3wynCenwTXjLD3nxFPd8Lq45i42ZZPUDvlB6GEzdIwdlJFsXAoPEhG_KywuEH4pNrOuBCqXN4JDNUyr9oFQGb3NEe5b6_Wo5csAducTmoweY-u0xSyWaapqk24D7s6uQSjrddS83bxq9vDQ7qgzkTv62PEuUAlfn02zHdKsiOW74RqBY04mDXF-fR6Qrfbku1VENeFi8uLGqYiMGANbUSdmKUiG5_mRhjrQSCgTc98iQuSQiRwWFyq_O5eYxch4kXRZPWuFiTu7mBdPYaJ3EPRq5JF5aJOo1hy2XmvThsE51csYwTwkJTcFVlrsqcqap-_ZmEqLBIFn1PQOQHR6DVr04FwMukPnVSKUpyKW69TA",
+          "places/ChIJoS8q_MbZATkR2xUr1if-O5Y/photos/AWCwydg2u7X0AyctMvgA2wzphK3SV6i4fVRudCkNtpa-Nm73sI07S8GVjWiRva9YVKymiy3VylgS-g0EwTnqLuBDq7huPwOb6wuV51Fi6jH5HaVPHvMOR4CtZUqYN9SP3v5DMPbqrjvbkMO8kx59dooaAkFZhJCfq4lxmd-aSoYmn6MBh7khhILCegWjkWgf0Sw0I0vsXx7XzxdJulF6KyGwSErbRu8mH9LMF-F3ZylpscYa7kTJO8jD41brsuAzOZZseVgDsxzNnNPLYQ6Xi9fQyOQShT9cNCMJFUCi_ydXG-jL8wvxV2WpDQylPcGR6adX5aqt1Nl0oRo00hN5i7ta5FqXbn-1mfKpBBrWCMD8tCaWmuSGIlmoJnCHZ-vcu32Y3UxBRmOHJ8B3n6gjrZW-Eq05e-QM92fzd24LnRnsdEmZwDAoY_GZuTkPVF4EwPKO",
+          "places/ChIJoS8q_MbZATkR2xUr1if-O5Y/photos/AWCwydilBOVQnDsCAv19jhEWn68Bv1zAxlSDoV0Lc6zmMDEpu_jmhgFsy9qilT4Z9N2W3yZ3FVQN6aCXLr7VwR8m8-dA4Pxmz37GjZ_0rl6-0ZrfCFGn4zuupKVZgvedE20YU0g4kGlTHDawAWcz3qT3Jo5DhntHL_sZBGelyjaCnWMPSzjG9tceLycrfKtCAY2lbp3dBeCKJ_FX5R60NwPHyN8ptRzhTEwQWdRlfDNJVd3NpCDLJFlyp9Hk_kNdxxpcXoSkWBCYLCCHEZedBDV-urZlfn434KkLZeYJpyVNcrhLbTkOj2-h2cx8hrY-M4CAPxDs9JEI--mZLyC-WZmmM5K6XPQ2PFvQTk0_hYQvDahxXxl7mw3TPoWf5JESz0IIygEiEzXmHjxI280vvbbDSuqQwCD15ZeNVvg7hDIivYiVfacvzc0u07fqO-gtxi5U",
+          "places/ChIJoS8q_MbZATkR2xUr1if-O5Y/photos/AWCwydgH0C2VRKfz4SB_EVshJ4_lSsl1HhD9iE-2YscHZgYLTR5jGWuiea2OjAaL3R8EmtdsBTIZ7paqm4fKvr92OByUveLDMSGWQ0bRdFdp3LKYrZLJMIz_A9wlPzRZD72m66Y0vSuY5bgCHg10ZUtdAuo34Cg_CPlCPqqBu6E6Cx16WNHCqS8OCOTkl_bO0ZEvC9RW2IrcWVuMYrMna9qKjSIxu7wQR9ZgGt2OBaOOD0D8yrwwLdvg0FmncvMmpps5WqQGhMGLbdRKyWlKMAeDfzkoY7-cU9q4akM4JY_lU_WrlHxF3wa5hCrlq0jaBAPCy2pC9z6-xGLwgipbYCj1ZwRk-I7hq6w0SD4KNAhujWGW5bLnByWNhIcAGm7XPKz3KfOgSFW98wtw4XJVtG8SR3dbKFy3QrMHI9vrkU2zicFpr7GjVVFwqZYK-uXKy1K5",
+          "places/ChIJoS8q_MbZATkR2xUr1if-O5Y/photos/AWCwydhsbcez9O6vWqIaUflCX3b0UHxJXAgwH5M8sXb3_5FNccjY6K3OhfuqNiXCDbgEGJMhQpFG_chwdJnN6kqLLyCvO7oKz3r3HjsnLZf7waBMBhcgKCQn0gfZMmCQvF8QVgUJ54bXecpImiwZ5Y7fooZhHD2iZYciaDQUL2aeTu_9ccKCGNSP5W0B9RYPngx2Pad2Z3DPJEsyRAvhmxQv819tan1AKiHUXm7o9DhA2TWEtyOHajrlE811urtdVNEuhNAQYOxcYrEKPXof7_I05JmsyYH8FJWz-s8xyERobhfdiJFHKAOvsqpOzzYs9JIfmnyY7nxQsuPEVZvRchMJezH25rsI1UxKoebJgkC8-bcFHczBQNh4hAxK-N6WYpwfGinyy_L5kdpaY1djcTvFO4ureqe54VN5JlNu9ojFAHruNcfAM9gHnrb7ld2hWg",
+          "places/ChIJoS8q_MbZATkR2xUr1if-O5Y/photos/AWCwydh1o9pD9YDlUkIES5_Mh4WeU7HFxgWFV8vSDQZ53BAoy6-sv61wFmL8vTmzFheO0P5JtyqziGSgho9dCEWl1ZKt9QVRSr7RBNq6Im7TrGYw_qSeVa_eWro6CGn_vDCUsEpHx4c1tE-Zz7w3hEecWxjbia2IsOxas28gt7MegH9vuO-YDZoQbRQEPfqEBkmP_hVjU3AHT6KXaKADPl-rM_matGLtiOON8QHlhKwp3MjUvJpD5DaFQjUIAV9m3FsiJM0VXPzp4wXGmCWRyzpVir8CY-bXe_gyOSrlX-sgeaMAN__6mBMbF1NVRUNYmv9ai7w3vlNZC3hUl1gv-Tkr-rs1GStjAK72oFqNox6z8W7oaNdgR-Cw2oSlAevX21WLuU1Z6i-TLcQBvFyOG8UHcjx0nQghUaY7kWcnYLqH7zCgs23IgHqKiYhaTFSiHqv2",
+          "places/ChIJoS8q_MbZATkR2xUr1if-O5Y/photos/AWCwydiUodMXuj3BrDUWqCGetcTCpdXmchaWoNrbIolnFIy5TQf8xxffhqeYLl3psh2OCmzOEjhirDXF6377ai0JeT261EBpZbmHWLU-RAk8jGaqLSfUc7b4tsDhOz35z6qLxwsCxZVR9FSAv_SDvsu3P-ueXqfidoZ88I3IOvwKpefZbxV8JpY4-K7I5kKIp_aoRAlH1BrqoPWVALhE7AjNHVp5GLi_Uy4qfigjL3zLetovn-Z5Ghw00tHnNamShVSjDcIDKUxWAapoc19QmXMIEZ2qvZ8K_X4O15gXr6HBfDbvY3Y8jBizuZqXObZiSPYPk-2H08IUIFc52Djc0xX6Moe9ujb04Mfxovvpo5rNG65tUjMC-I_HydVUPr2-4BMvoPd8x_s2FeuUVjewVejxzWItjKoF-GWOBdRan3yr6mpZ392omfMPBQ1GZf5Ega9k"
+        ],
+        "__at__": 1786803014.081426,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "Staying at Pangong Retreat Camp was a unique experience that offered a glimpse of the raw and rugged beauty of Ladakh. However, it is important for future travelers to know what to expect before booking this property. This is not a luxury stay but rather a campsite designed for those who enjoy adven",
+            "author": "Dr. Amit Varshney"
+          },
+          {
+            "rating": 5,
+            "text": "Great property with an even better view. The staff was very polite and helpful. The food was really good especially the breakfast.",
+            "author": "vivek mohan"
+          },
+          {
+            "rating": 3,
+            "text": "What an adventure it was for us! We drove from Leh to Pangong and reached this retreat around 5:45 PM. We asked for a room, and luckily, there were some available. Another group of tourists had arrived around the same time as well.\n\nWe weren’t aware that there’s no regular electricity in the village",
+            "author": "Niha R"
+          },
+          {
+            "rating": 2,
+            "text": "Booked via Hotel.com. The staff and the manager did not have knowledge of the reservation. They offered another room category for the same price I booked when in actuality that room was inferior and cheaper to book. Additionally, the manager I spoke to based in Leh was EXTREMELY rude. He claimed the",
+            "author": "Dakait Khaini"
+          },
+          {
+            "rating": 4,
+            "text": "A very beautiful stay with a view of the Pangong lake. We took the premium cottage. The hotel has 22 rooms in total and very well placed. Would rate the service 9/10. They got us extra blankets, hot water bags and hot water to drink and for the washroom. The entire staff was kind and helpful. Howeve",
+            "author": "Drishti Vanvari"
+          }
+        ]
+      },
+      "drive: pangong lake to leh via chang la|leh ladakh": {
+        "place_id": "ChIJ_dJP4zMzADkRgxGDQmkzSR4",
+        "name": "Pangong Lake, Ladakh",
+        "address": "194101",
+        "rating": 4.9,
+        "review_count": 1224,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 33.934685699999996,
+        "lng": 78.4527888,
+        "photo_refs": [
+          "places/ChIJ_dJP4zMzADkRgxGDQmkzSR4/photos/AWCwydjz44feLkRlVUS25gYh0EwYzstj9hCdsTgoiE-UNPbiImsW0u50UIV7R2WRlPWLt4DYpWq5XZk99mnvPGclpUdEEg4VPmXhE0U0kjrGOCJBgCvhhdSV-GaJ3XHWlRpdj3mffaOhGi9Nzxe-CUs-rJdxLgAqFPxJenKKdeoZFuABTLVdK-rZP3FRE0jimkOUQkikYrOEkZnoqvNV_bzxqldHbzvrzKZLkXDu9X51JHDee3OFqGrQs_REzfl67Mqk5e5bdMkNQIbZKwFUpwQ-F9HZDppXvAAtvgYZFKWPWpqGQaQXa6mF-H3kgmyHRkgRXLNbTULTxbRO3Ydf8UlhW79CVIdTXqmuu7Vhc08K5X3hq1HZ6HREbdilRVPhU2ih_WKVqGqgKweot2ctB6kpi271fzWRlEU_T1iKnmv5MWnhSA",
+          "places/ChIJ_dJP4zMzADkRgxGDQmkzSR4/photos/AWCwydh5k8Gv_s_kS7Oxa0fMcT9aEwcEOUuMqno71Jzv4wEbnQDwigiJjv5fwVuwXnZDqhWdknaJ3DPfAJTGPWe2uFmuFoymR6_Ar5h7R-MJOXqCd3NGxe9MswyJ52zJsf67vc3KnB-bWZzT29QEmeknxrJ8sbbvb1U2QuNer7Sy6C3ZkWwaY73pANPfFQo4dfu4IaiLuCCSOIy_3XQlp4-Ton7dm5r5xMqAdTK1NC1RgNNOo1Flw0Kcb4vBTkGtE4oy7FGAN3IKvtai2qPAfWJj2_obTanCiW9DjC6UJB6q4NwhpbCm5PYsumsr39Z1kHfeRqF0pnAemjEjXhMdcdQtfTphpyIUBGT9iwNu8GX-Nt-tDWDpl6cVnbpg5yIhI_YsSdx1pcCwpuUve_GpC0W_RlxJ8vHW5f0f4UTwadHscgvQCA",
+          "places/ChIJ_dJP4zMzADkRgxGDQmkzSR4/photos/AWCwydhlaAOqzPEIkjlbMdbddzFLbcED3qpZo9ojdtkhLLte3DAFi1isEGEDkzc5SViKqSgaRp5f3J0rD4K-mCfjp3tYDPgCOiFYOF7P4SiQP3mxehZBbemEcjlQhuTEBurlRhHRtdJKx8g2_G8jPAt3qCmulBeH7rQOVYpT2N9TjoPq1J72vxlf_w9Q_Ge1sRWw_AYlW4chUdJMWVw9rQAQ0thooKB-JnXgValPjZrSmggUeIejRAII6C8eIfyX3cJy61PcwBleb_YhbPsqhzT604NA8Lb6W22zB1mb4cqj7pO9f8IUwN1Amma6u9uMWQfxkzggG9q2MGmqboPj8Lsd1yUaijLi-YgmZZ7hBVpTCib6AyZSzDyvrCzJ5xX-rPvJsARmNl5BPN67FXCuzl3AShwHWzcnBelYQVyngKav5aLU0w",
+          "places/ChIJ_dJP4zMzADkRgxGDQmkzSR4/photos/AWCwydjRoTmEHDC9Bqc0x34ceWli10dp4nhkIS_5tM_DNZKeFEzyCpl6Q7f3bZi438gG4Pctp1TJLsiU3W8RtDwAI_hwcwEDrpGP2c9O77dvN7cwLMg-fgt2wUZYs90AK38EkdoPI8BAPu3G1Y5WgIUXgw9PSA4Uk7UAhSKzqWu0xXP-xaDl0EZTr9wpBNiG9YnBWWLYKPY2cPVtCOWVmTta6SkuApX9Q6fASxj9jFC1Y2mqafTCxFWPdN8E_JHFRls0GHko2woizxe64BTFWBR-2Pua8461_ggydWf73dwZMXidRMGj5MYlRiI9ShpoXV4Q6h7do3EPO9cMUlyl7rySfaX18U2HtuwoyU90TDGtIDGFGuYlALwKrVrZXgmi1ibJ2mY9q1-kVk2A5LFboOmkJgcKQXzskA1fHb2skyQzgftmD7E2f1G2opR90I7GKA",
+          "places/ChIJ_dJP4zMzADkRgxGDQmkzSR4/photos/AWCwydj2EyvoZOtaJYMl06NEaIZ4hVmATuWp3rm9Y2oA8ygu8ZbjWoH39ul_pPJNmetHYFlVMZAQOEWYvba1h33bxtbQF3Unpwv3Ns12GuAikuNg7UkAvcMTglxAY0hW20EXCOsIHhFyyNnALdGd2veKcaNX1Iy0PqK8NkothH2VnQ0eZx9bTJX8GS-i2Ddq5TNlvQriwaMdQg40AyUlOqdIDW4Yb7hkuNaQYXtE8Q7Kt3yS68_7UYIRdT0RQOxQ7W_SLJ2ueQ019umReEYfjPNW6FUBQWL8LcMPNc9UAuKsPOvHTHB2OPWkFj83hLO4KERYi95s7aDJNN3fsOu4qPIxJDMYyGI9RKFaSoNwXHHGc_SoPlfn0PI9tXqAK8eTP9mGGsmzAtPIGyx0Z7vAYesbpeeBF7M7UwlWmpXYBGMX4C4",
+          "places/ChIJ_dJP4zMzADkRgxGDQmkzSR4/photos/AWCwydjd3vwykDV-G93cG5bbXvmV0y7nO7HBi7BFU9v68YApeJxQtQqaB6YYCb5NC3MrQMU5prr7mm6hZ6Vz0M9xY7MoD_xiQc6YuT5gc1qrjEuN6grhlb94bHeSucmVx1Q3yN6y06WRfKN5xXRnzQiX6cDmAXpGWsDGwWd6nhRO3fn96TeytEbu4tVKgcUHZGFzq-eZgeZcqVz-ljt_UYd1UOGfM8_WB6NIKlq44sXIV-kPbqz-GK0QDX2-7cyutbunYZJwz4aUiZatGsEA__p03Jme3JWjKvkitu51kUfRcFXf8M_Mvf-MeA2ujxZVesEupsxqrOkEEBPEp8vzUWa5xdVcUdLPGfdw5fJG3Ka-tR9jm87r_Su4OSZXtSVodzYnedhVuYXWQ-poJ5vCb0MjluC-xpx-XFhVE8h0SEqyrZLWls_HZ02i50ne8V9mAXir",
+          "places/ChIJ_dJP4zMzADkRgxGDQmkzSR4/photos/AWCwydhXYxOsRdx5sRJuxHQo51RIffHJ6jrNOsbCvwHoL6vB_hXFW-e8uzvcrqjynYYQJSvShRf2VKSlqYUVygpydSwSvbbfSQGH5fh9PgaUlmpuB-yujUr0al4Biy3bDQ8Iv1Fp4_OyQN3voCHxNkcQuulrCvLi1A0VESaarlKmd2N4a33tu-qgqBUsybSAjhQsfU1eVtDFmS7GZNvcErSHL9SGOKc11YLcvz2voChCgGekgVYZL-kiX76b6-AehNOX68PngG59IbXSS3lXo2vcuzMzw1yWAQWwuHzTLpePgGlrwUKTei39uLvREDwzYh4T40ZmpKkbU8dOu6zF8A88p0WlGoTHpVSoqohNPwPQWvvYGF7spbG4oTqvKA6lCLJ545bVxA_kmRF8YfQ9aLHdRfWuBZ5-wKXrfxblDDDolnWHfMhj",
+          "places/ChIJ_dJP4zMzADkRgxGDQmkzSR4/photos/AWCwydh5YKCOKZgiaJxhrzCUNEtqAkkypITX7Dk-Ws5UgmeVRTMtUrfEAoAuBy-odiZ-N1oSilS7xHhz4ql2QVwk_iztl5f1scMZxzC7mtkS20qjmPFkFlL_FncgItFNpLp0r_QUIK2i0hgDCeGd88ZAb9UyuE1NisxbXZpTxlgrZNoUUtD_Nzn0b8YKXLJreKS0CFHdmFPbljF2qMaylWT_8KJqqZNViCrYZOgDpZpEPMwhvwlKSsRl5uV4E0sgumjLaQpOOWzLl8Vz87OXsQSzy17LKRme6cHLzsWpavuyFKfaTSxyYvYyZItK_g8IxZ7a-8zwkRWSOeMH01KX6FQTcahvXgps7vlaGhQ2Yv_mAm0NHavut_o6UUG2GtBuVoxLFjX-XuIMzz460H0QpSDytLk1xDWX0iZhuwSV2izjrUk",
+          "places/ChIJ_dJP4zMzADkRgxGDQmkzSR4/photos/AWCwydiKFV1rE2XFwDZSIRbRRppk_0wwYMaLsdx_wGm4ibTgD-Ul7RUsc7pBxlyD8PDp9fH6TUHk7F3cRaR7Smdvlho85ECa1RxGYFoO2sMKG5vAQHT2EUV7PmIAiYKC-70mK_TkpliEqm6mRvte2aeg0fZ5ao-lAWvK4vXl9o8vRTGJdJTAfFRtVvXStrXi1BeDiK9JOZ8lG95fYJAPJjbxEut41Oxl9pApy2ABxgQMVbpe2YnPBQnhMn6t4VTDiE-BYi6YNfevI8waTxGPo8SJ0zczBbUn3eUHwzxo5q0FR3h5se6irwsRm7QXGCXyIO9SNXnGJTTD3c9GHayc8b_yJpyOBe-BJSno8PxUS9JVdyg7dPM5WrVtmeeM7mznxdKraH9oBXc2Bqax2vPw_bn-KIfEFe2pxRIecfsoW-kwRC2KWA",
+          "places/ChIJ_dJP4zMzADkRgxGDQmkzSR4/photos/AWCwydhpFonVwf1K-6RXNCMM3KzLNbKB7c5bMVj0luoiV6_UKWUJZX63_wdhcJlRXYkt9uyQhVlgkAO24gIj71P8NMACMTabAAKfcIvPOBvnL5_4A2_PJnNlXgSfjuf9mh-VSXdyphd2rmVOf-E5f8D5IiZlAVPG1HOB4lggYkCX7YC-5hYZzFxFLoMPGKNXq431UcWQliUZHB9UIUB74rfUTh1gdqaP3pQYy-ZVbTMBTcqQBi2Hv8OwH9S557op2Mix6soHSk87uTeYk-CknfIZ5L582WSyHP8ESTt2DBYjRicROIm1vbfomkVyMVVTZMnlNcXsQkFvxn8eR3KF0Yxe2ePU1pwqQLtavvFayWTxSi3BaeZlhby5XO_CsIHgAgXAgVuYj6rLumonGFyFZMRCvKTX1IfZILA-LNthsWU3700W-JzG"
+        ],
+        "__at__": 1786803014.812938,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Pangong Lake is one of the most beautiful places I have ever seen. It is located in the region of Ladakh and is famous for its crystal-clear blue water and breathtaking scenery.\n\nWhen I reached Pangong Lake, I was amazed by its beauty. The lake looked different shades of blue, changing colors with t",
+            "author": "Laltesh Chaudhary"
+          },
+          {
+            "rating": 5,
+            "text": "What a place. You would not just be mesmerized by the lake. Instead you will have a complete vibe of lake and mountains that surround it. You will feel like from some angles that this a different planet. The photos are heavenly here without any edits.\nThe lake stuns you the most for sure, because ca",
+            "author": "Wanderer"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent place to relax and meditate. Don't venture too deep in to the water. Lake has spiritual powers. Mesmerizing views during sunrise and sunset. 360 degree panoramic view is excellent . Very safe place for tourists. Lot of recreational activities near the lake. Enjoy your trip to Pangong lake.",
+            "author": "Travel Photographer"
+          },
+          {
+            "rating": 5,
+            "text": "A must visit lake in Ladakh region. Now the road from Leh to Pangong is excellent, it is a 3 to 3.5 hour drive from Leh via Changla Pass. Go till Merak village to witness the real beauty of this lake.",
+            "author": "Mohammad Asif Khan"
+          },
+          {
+            "rating": 5,
+            "text": "Pangong Lake is undoubtedly one of the most beautiful places in Ladakh and is absolutely worth visiting, even if only for a day trip. However, if you are planning an overnight stay, there are a few things you should know.\n\nMost camps and hotels around Pangong Lake do not have a regular electricity s",
+            "author": "Arjun Singh"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Leh Ladakh",
+    "departure_date": "2027-07-01",
+    "return_date": "2027-07-08",
+    "nights": 7,
+    "month_year": "Jul 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 1,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Leh Ladakh",
+      "The Grand Dragon Ladakh",
+      "Arrival in Leh & Acclimatisation",
+      "Flight: Delhi to Leh",
+      "Leh Local Sightseeing & Acclimatisation",
+      "Shanti Stupa",
+      "Leh Palace",
+      "The Tibetan Kitchen",
+      "Leh Main Market",
+      "Leh – Sham Valley Day Trip",
+      "Hall of Fame",
+      "Gurudwara Pathar Sahib",
+      "Magnetic Hill",
+      "Lamayuru Restaurant",
+      "Sangam (Indus-Zanskar Confluence)",
+      "Leh to Nubra Valley via Khardung La",
+      "Drive: Leh to Nubra Valley via Khardung La",
+      "Diskit Monastery",
+      "Wazwan Planet Restaurant",
+      "Hunder Sand Dunes",
+      "Hotel/Camp in Nubra Valley",
+      "Nubra Valley – Pangong Lake",
+      "Drive: Nubra Valley to Pangong Lake via Shyok",
+      "Pangong Cafe",
+      "Pangong Lake",
+      "Camp/Hotel at Pangong Lake",
+      "Pangong Lake – Leh via Chang La",
+      "Drive: Pangong Lake to Leh via Chang La",
+      "Tsas by Dolkhar",
+      "Thiksey Monastery",
+      "Leh Leisure & Departure",
+      "Flight: Leh to Delhi"
+    ],
+    "auto_summary": "7-night Leh Ladakh, Jul 2027, 1 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T14:11:51Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:09:20Z"
+    }
+  ]
+}

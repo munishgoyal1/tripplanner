@@ -1,0 +1,387 @@
+{
+  "status": "draft",
+  "trip_id": "istanbul_and_cappadocia_2027-05-10_2027-05-18",
+  "trip_number": 1,
+  "created_at": "2026-08-26T07:01:46.907447",
+  "destination": "Istanbul and Cappadocia",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-05-10",
+  "return_date": "2027-05-18",
+  "travelers": "Couple: 2 adults (Indian passports)",
+  "notes": "Hotel search for Istanbul (Sultanahmet, 3-4 star) returned no live rates. Will recommend a strong, preference-matched hotel based on local knowledge and reviews. Replace with live pricing when available.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Istanbul and Cappadocia",
+    "estimated_planned_minutes": 1316,
+    "evidence_place_count": 10,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 8-day duration is authoritative",
+      "10 preference-matched places account for about 1316 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 8,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-10",
+      "title": "Day 1 · Arrival in Istanbul",
+      "summary": "Arrive in Istanbul from Delhi. Transfer to hotel, settle in, and take a relaxed evening stroll in Sultanahmet Square.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Istanbul",
+          "kind": "flight",
+          "time": "06:00",
+          "arrival_time": "11:00",
+          "duration_min": 330,
+          "note": "Direct flight preferred"
+        },
+        {
+          "name": "Hotel in Sultanahmet (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Sultanahmet Square",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening stroll"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-11",
+      "title": "Day 2 · Historic Istanbul",
+      "summary": "Explore Istanbul’s most iconic historical sites: Hagia Sophia, Blue Mosque, and the Basilica Cistern. Enjoy local Turkish cuisine for lunch.",
+      "stops": [
+        {
+          "name": "Hotel in Sultanahmet (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Hagia Sophia",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Go early to avoid crowds"
+        },
+        {
+          "name": "Blue Mosque",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Basilica Cistern",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Local restaurant (TBD)",
+          "kind": "meal",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Hotel in Sultanahmet (TBD)",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-12",
+      "title": "Day 3 · Palaces & Bazaars",
+      "summary": "Visit Topkapi Palace, Grand Bazaar, and Spice Bazaar. Experience Istanbul’s vibrant market culture.",
+      "stops": [
+        {
+          "name": "Hotel in Sultanahmet (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Topkapi Palace",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 150
+        },
+        {
+          "name": "Grand Bazaar",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Spice Bazaar",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Local restaurant (TBD)",
+          "kind": "meal",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Late lunch"
+        },
+        {
+          "name": "Hotel in Sultanahmet (TBD)",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-13",
+      "title": "Day 4 · Bosphorus & Modern Istanbul",
+      "summary": "Take a Bosphorus cruise, visit Dolmabahçe Palace, and explore the lively Taksim area.",
+      "stops": [
+        {
+          "name": "Hotel in Sultanahmet (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Bosphorus Cruise",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Dolmabahçe Palace",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Taksim Square & Istiklal Street",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Local restaurant (TBD)",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 60,
+          "note": "Dinner"
+        },
+        {
+          "name": "Hotel in Sultanahmet (TBD)",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-05-14",
+      "title": "Day 5 · Fly to Cappadocia & Göreme",
+      "summary": "Morning flight to Cappadocia. Explore Göreme Open-Air Museum and local culture.",
+      "stops": [
+        {
+          "name": "Flight: Istanbul to Kayseri/Nevşehir",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "09:30",
+          "duration_min": 90,
+          "note": "Morning flight to Cappadocia"
+        },
+        {
+          "name": "Hotel in Sultanahmet (TBD)",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "10:00"
+        },
+        {
+          "name": "Hotel in Göreme (TBD)",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "12:00"
+        },
+        {
+          "name": "Göreme Open-Air Museum",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Local restaurant (TBD)",
+          "kind": "meal",
+          "time": "16:30",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Hotel in Göreme (TBD)",
+          "kind": "hotel",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-05-15",
+      "title": "Day 6 · Cappadocia Highlights",
+      "summary": "Experience a hot air balloon ride (early morning), visit Avanos pottery village, and explore Pasabag (Monks Valley).",
+      "stops": [
+        {
+          "name": "Hotel in Göreme (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Hot Air Balloon Ride",
+          "kind": "attraction",
+          "time": "05:00",
+          "duration_min": 180,
+          "note": "Early morning"
+        },
+        {
+          "name": "Avanos Pottery Workshop",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Pasabag (Monks Valley)",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Local restaurant (TBD)",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Hotel in Göreme (TBD)",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-05-16",
+      "title": "Day 7 · Underground Cities & Castles",
+      "summary": "Tour Kaymakli Underground City, Uchisar Castle, and enjoy a relaxed evening in Göreme.",
+      "stops": [
+        {
+          "name": "Hotel in Göreme (TBD)",
+          "kind": "hotel"
+        },
+        {
+          "name": "Kaymakli Underground City",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Uchisar Castle",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Local restaurant (TBD)",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Hotel in Göreme (TBD)",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-05-17",
+      "title": "Day 8 · Return to Istanbul & Departure",
+      "summary": "Fly back to Istanbul and connect to your flight to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel in Göreme (TBD)",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Flight: Kayseri/Nevşehir to Istanbul",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "10:30",
+          "duration_min": 90,
+          "note": "Morning flight"
+        },
+        {
+          "name": "Flight: Istanbul to Delhi",
+          "kind": "flight",
+          "time": "14:00",
+          "arrival_time": "23:00",
+          "duration_min": 330,
+          "note": "International return"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-26T07:03:55.013458",
+  "id": "istanbul_and_cappadocia_2027-05-10_2027-05-18",
+  "user_id": "corpus-india-outbound-turkey-heritage-couple-8d-bd9e42c95fa8"
+}

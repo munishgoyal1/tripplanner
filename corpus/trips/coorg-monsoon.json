@@ -1,0 +1,298 @@
+{
+  "status": "draft",
+  "trip_id": "coorg_2027-07-15_2027-07-19",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:56:09.943578",
+  "destination": "Coorg",
+  "origin": "Bangalore",
+  "departure_date": "2027-07-15",
+  "return_date": "2027-07-19",
+  "travelers": "2 adults",
+  "notes": "Kodava Hockey Festival is ongoing during your trip, adding local vibrancy. Some outdoor activities may be affected by rain; plan for flexibility.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Coorg",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 4-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 4,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Coorg Wilderness Resort",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp1e7b3"
+      },
+      "address": "Madikeri, Coorg",
+      "rating": 4.6,
+      "reviews": 1248,
+      "price_per_night": 9800,
+      "currency": "INR",
+      "checkin": "2027-07-15",
+      "checkout": "2027-07-19",
+      "room_type": "Superior Room",
+      "total_price": 39200
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-07-15",
+      "title": "Day 1 · Bangalore to Coorg & Arrival",
+      "summary": "Drive from Bangalore to Coorg (approx. 5-6 hours, 250 km), check in to Coorg Wilderness Resort, relax and enjoy the lush monsoon setting. Dinner at the resort restaurant.",
+      "stops": [
+        {
+          "name": "Drive: Bangalore to Coorg",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 360,
+          "distance_km": 250,
+          "note": "Private car transfer or self-drive recommended for flexibility in monsoon."
+        },
+        {
+          "name": "Coorg Wilderness Resort",
+          "kind": "hotel",
+          "time": "13:00",
+          "note": "Check-in and relax."
+        },
+        {
+          "name": "Coorg Wilderness Resort Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner at the hotel."
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-07-16",
+      "title": "Day 2 · Abbey Falls & Madikeri Sightseeing",
+      "summary": "Visit Abbey Falls, Raja's Seat, Madikeri Fort, and enjoy local cuisine. Explore coffee plantations if weather permits.",
+      "stops": [
+        {
+          "name": "Coorg Wilderness Resort",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel."
+        },
+        {
+          "name": "Abbey Falls",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Best viewed in monsoon; carry rain gear."
+        },
+        {
+          "name": "Raja's Seat",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Scenic views, especially lush during rains."
+        },
+        {
+          "name": "Coorg Cuisine",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Try local Kodava dishes. 4★, 7.4k reviews."
+        },
+        {
+          "name": "Madikeri Fort",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Coffee Plantation Tour",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Weather permitting."
+        },
+        {
+          "name": "Kailash Parbat- Pure Vegetarian Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner. 4.7★, 7.7k reviews."
+        },
+        {
+          "name": "Coorg Wilderness Resort",
+          "kind": "hotel",
+          "time": "20:30",
+          "note": "Return to hotel."
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-07-17",
+      "title": "Day 3 · Dubare Elephant Camp & Nisargadhama",
+      "summary": "Morning at Dubare Elephant Camp, then visit Nisargadhama island, relax at the resort in the evening.",
+      "stops": [
+        {
+          "name": "Coorg Wilderness Resort",
+          "kind": "hotel",
+          "time": "07:30"
+        },
+        {
+          "name": "Dubare Elephant Camp",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Arrive early for elephant interaction."
+        },
+        {
+          "name": "Lunch at Coorg Wilderness Resort Restaurant",
+          "kind": "meal",
+          "time": "12:00"
+        },
+        {
+          "name": "Nisargadhama",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 90,
+          "note": "Nature walk, boating if weather allows."
+        },
+        {
+          "name": "Dinner at Coorg Wilderness Resort Restaurant",
+          "kind": "meal",
+          "time": "19:00"
+        },
+        {
+          "name": "Coorg Wilderness Resort",
+          "kind": "hotel",
+          "time": "20:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-07-18",
+      "title": "Day 4 · Relax & Return to Bangalore",
+      "summary": "Morning at leisure, check out, drive back to Bangalore.",
+      "stops": [
+        {
+          "name": "Coorg Wilderness Resort",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Breakfast and check-out."
+        },
+        {
+          "name": "Drive: Coorg to Bangalore",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 360,
+          "distance_km": 250,
+          "note": "Private car transfer or self-drive."
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 39200,
+    "transport": 9000,
+    "activities": 4000,
+    "meals": 6000
+  },
+  "total_cost": 58200,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {
+    "source": "agent_climate_estimate",
+    "note": "July is peak monsoon in Coorg. Expect daily highs of 22-25°C, lows of 16-18°C, frequent heavy rain, lush greenery, and mist. Outdoor activities may be affected.",
+    "days": [
+      {
+        "date": "2027-07-15",
+        "high_c": 25,
+        "low_c": 18,
+        "rain_mm": 30
+      },
+      {
+        "date": "2027-07-16",
+        "high_c": 24,
+        "low_c": 17,
+        "rain_mm": 40
+      },
+      {
+        "date": "2027-07-17",
+        "high_c": 23,
+        "low_c": 16,
+        "rain_mm": 35
+      },
+      {
+        "date": "2027-07-18",
+        "high_c": 22,
+        "low_c": 16,
+        "rain_mm": 30
+      }
+    ],
+    "packing_advice": [
+      "Quick-dry rain jacket",
+      "Umbrella",
+      "Waterproof shoes",
+      "Extra socks",
+      "Mosquito repellent",
+      "Light warm layers"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:58:21.874244",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:57:03",
+      "expires_at": "2026-08-16T07:57:03"
+    }
+  ],
+  "id": "coorg_2027-07-15_2027-07-19",
+  "user_id": "corpus-coorg-monsoon"
+}

@@ -1,0 +1,198 @@
+{
+  "status": "draft",
+  "trip_id": "mahabalipuram_2027-12-10_2027-12-13",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:00:45.302470",
+  "destination": "Mahabalipuram",
+  "origin": "Chennai",
+  "departure_date": "2027-12-10",
+  "return_date": "2027-12-13",
+  "travelers": "4 adults",
+  "notes": "Focus on history and heritage sites as requested. Hotel options will be updated once availability is confirmed.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Mahabalipuram",
+    "estimated_planned_minutes": 607,
+    "evidence_place_count": 7,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "7 preference-matched places account for about 607 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-10",
+      "title": "Day 1 · Arrival & Shore Temple",
+      "summary": "Arrive from Chennai, check in, visit the iconic Shore Temple and stroll along the beach.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check in and freshen up"
+        },
+        {
+          "name": "Shore Temple",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "UNESCO World Heritage Site"
+        },
+        {
+          "name": "Moonrakers Restaurant",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Popular for seafood and South Indian cuisine"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-11",
+      "title": "Day 2 · Pancha Rathas & Arjuna's Penance",
+      "summary": "Explore the Pancha Rathas, Arjuna's Penance, and local heritage sites.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Pancha Rathas",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Monolithic rock temples"
+        },
+        {
+          "name": "Arjuna's Penance",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Magnificent bas-relief"
+        },
+        {
+          "name": "Sandy's Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Local cuisine, vegetarian options"
+        },
+        {
+          "name": "Krishna's Butter Ball",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 45,
+          "note": "Famous balancing rock"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        },
+        {
+          "name": "Le Yogi Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner with continental and Indian options"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-12",
+      "title": "Day 3 · Cave Temples & Departure",
+      "summary": "Visit cave temples, shop for local handicrafts, and return to Chennai.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Mahabalipuram Cave Temples",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Ancient rock-cut temples"
+        },
+        {
+          "name": "Handicraft Shopping",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Explore local shops for souvenirs"
+        },
+        {
+          "name": "Hotel Mamalla Bhavan",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch before departure"
+        },
+        {
+          "name": "Drive: Mahabalipuram to Chennai",
+          "kind": "transport",
+          "time": "15:00",
+          "duration_min": 90,
+          "distance_km": 60,
+          "note": "Private car or taxi"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:04:20.311886",
+  "id": "mahabalipuram_2027-12-10_2027-12-13",
+  "user_id": "corpus-mahabalipuram-heritage-friends-3d"
+}

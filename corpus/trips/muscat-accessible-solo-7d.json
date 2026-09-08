@@ -1,0 +1,328 @@
+{
+  "status": "draft",
+  "trip_id": "muscat_2027-12-11_2027-12-18",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:58:05.745098",
+  "destination": "Muscat",
+  "origin": "Hyderabad",
+  "departure_date": "2027-12-11",
+  "return_date": "2027-12-18",
+  "travelers": "1 adult (mobility: cannot manage long walks or stairs)",
+  "notes": "Accessibility: traveller cannot manage long walks or stairs. Prioritize hotels and activities with minimal walking and step-free access.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Muscat",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-12-11",
+      "title": "Day 1 · Arrival in Muscat",
+      "summary": "Arrive in Muscat from Hyderabad, transfer to hotel, relax and explore nearby accessible attractions.",
+      "stops": [
+        {
+          "name": "Flight: Hyderabad to Muscat",
+          "kind": "flight",
+          "time": "09:30",
+          "arrival_time": "12:00",
+          "duration_min": 210,
+          "note": "Direct flight, wheelchair assistance requested"
+        },
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Al Mouj Waterfront",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Accessible promenade near hotel"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-12-12",
+      "title": "Day 2 · Muscat City Tour",
+      "summary": "Explore Muscat’s main sights with accessible transport and minimal walking.",
+      "stops": [
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Sultan Qaboos Grand Mosque",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Wheelchair accessible, ramps available"
+        },
+        {
+          "name": "Lunch at The Restaurant at Kempinski",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Royal Opera House Muscat",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 60,
+          "note": "Elevator access, minimal stairs"
+        },
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-12-13",
+      "title": "Day 3 · Mutrah Corniche & Souq",
+      "summary": "Visit Mutrah Corniche and Souq, focusing on accessible areas and easy transport.",
+      "stops": [
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Mutrah Corniche",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60,
+          "note": "Flat promenade, wheelchair accessible"
+        },
+        {
+          "name": "Mutrah Souq (accessible section)",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Accessible entrance, avoid stairs"
+        },
+        {
+          "name": "Lunch at Bait Al Luban Restaurant",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Accessible seating"
+        },
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-12-14",
+      "title": "Day 4 · Museum & Beach Day",
+      "summary": "Visit a museum with elevator access and relax at a beach with accessible facilities.",
+      "stops": [
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "National Museum of Oman",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Elevator access, wheelchair friendly"
+        },
+        {
+          "name": "Lunch at Ubhar Restaurant",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Accessible seating"
+        },
+        {
+          "name": "Shatti Al Qurum Beach (accessible area)",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Accessible beach access, shaded seating"
+        },
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-12-15",
+      "title": "Day 5 · Day Trip to Nizwa (Accessible Sites)",
+      "summary": "Day trip to Nizwa, visiting accessible sites with private transport and minimal walking.",
+      "stops": [
+        {
+          "name": "Drive: Muscat to Nizwa",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 90,
+          "distance_km": 160,
+          "note": "Private accessible vehicle"
+        },
+        {
+          "name": "Nizwa Fort (accessible areas)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Accessible ground floor, avoid towers"
+        },
+        {
+          "name": "Lunch at Al Mandi Restaurant Nizwa",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Accessible seating"
+        },
+        {
+          "name": "Drive: Nizwa to Muscat",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 90,
+          "distance_km": 160,
+          "note": "Private accessible vehicle"
+        },
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "16:00"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-12-16",
+      "title": "Day 6 · Relaxation & Shopping",
+      "summary": "Enjoy a relaxing day at the hotel spa and accessible shopping mall.",
+      "stops": [
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Spa at Kempinski Hotel Muscat",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Accessible spa facilities"
+        },
+        {
+          "name": "Lunch at Zafran Restaurant, Oman Avenues Mall",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Accessible seating"
+        },
+        {
+          "name": "Oman Avenues Mall",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Wheelchair accessible, elevators available"
+        },
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-12-17",
+      "title": "Day 7 · Departure",
+      "summary": "Check out from hotel, transfer to Muscat airport for flight back to Hyderabad.",
+      "stops": [
+        {
+          "name": "Kempinski Hotel Muscat",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Flight: Muscat to Hyderabad",
+          "kind": "flight",
+          "time": "13:00",
+          "arrival_time": "15:30",
+          "duration_min": 210,
+          "note": "Wheelchair assistance requested"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:01:54.665422",
+  "id": "muscat_2027-12-11_2027-12-18",
+  "user_id": "corpus-muscat-accessible-solo-7d"
+}

@@ -1,0 +1,517 @@
+{
+  "archive_no": 22,
+  "trip_id": "meghalaya_2027-11-02_2027-11-08",
+  "user_id": "corpus-meghalaya-offbeat",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:46:14Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T14:46:14Z",
+      "content_hash": "94ad386b506aa35f",
+      "plan": {
+        "status": "draft",
+        "trip_id": "meghalaya_2027-11-02_2027-11-08",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:16:14.043048",
+        "destination": "Meghalaya",
+        "origin": "Guwahati",
+        "departure_date": "2027-11-02",
+        "return_date": "2027-11-08",
+        "travelers": "2 adults",
+        "notes": "Covering Shillong and Cherrapunji. Balanced pace, moderate budget, 3-star+ hotels, standard room.",
+        "planning_recommendation": {
+          "confidence": "high",
+          "destination": "Meghalaya",
+          "estimated_planned_minutes": 1875,
+          "evidence_place_count": 6,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 6-day duration is authoritative",
+            "6 preference-matched places account for about 1875 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 6,
+          "recommended_range": [
+            6,
+            8
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:16:14.043067"
+      }
+    },
+    {
+      "at": "2026-08-15T14:46:58Z",
+      "content_hash": "6d2613cd800f4777",
+      "plan": {
+        "status": "draft",
+        "trip_id": "meghalaya_2027-11-02_2027-11-08",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:16:14.043048",
+        "destination": "Meghalaya",
+        "origin": "Guwahati",
+        "departure_date": "2027-11-02",
+        "return_date": "2027-11-08",
+        "travelers": "2 adults",
+        "notes": "Covering Shillong and Cherrapunji. Balanced pace, moderate budget, 3-star+ hotels, standard room.",
+        "planning_recommendation": {
+          "confidence": "high",
+          "destination": "Meghalaya",
+          "estimated_planned_minutes": 1875,
+          "evidence_place_count": 6,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 6-day duration is authoritative",
+            "6 preference-matched places account for about 1875 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 6,
+          "recommended_range": [
+            6,
+            8
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-11-02",
+            "title": "Arrival in Guwahati & Transfer to Shillong",
+            "summary": "Arrive in Guwahati, drive to Shillong, check in and relax. Explore Police Bazaar in the evening.",
+            "stops": [
+              {
+                "name": "Guwahati Airport",
+                "kind": "transport",
+                "time": "10:00",
+                "note": "Arrival in Guwahati"
+              },
+              {
+                "name": "Drive: Guwahati to Shillong",
+                "kind": "transport",
+                "time": "11:00",
+                "duration_min": 210,
+                "distance_km": 100,
+                "note": "Scenic drive (approx. 3.5 hrs)"
+              },
+              {
+                "name": "Hotel in Shillong",
+                "kind": "hotel",
+                "time": "14:30",
+                "note": "Check-in and rest"
+              },
+              {
+                "name": "Police Bazaar",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90,
+                "note": "Evening stroll and shopping"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-11-03",
+            "title": "Shillong Sightseeing",
+            "summary": "Explore Shillong's highlights: Umiam Lake, Don Bosco Museum, Ward's Lake, and Elephant Falls.",
+            "stops": [
+              {
+                "name": "Hotel in Shillong",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Umiam Lake",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 90,
+                "note": "Boating and scenic views"
+              },
+              {
+                "name": "Don Bosco Museum",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Ward's Lake",
+                "kind": "attraction",
+                "time": "13:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Elephant Falls",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel in Shillong",
+                "kind": "hotel",
+                "time": "17:00",
+                "note": "Return and relax"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-11-04",
+            "title": "Shillong to Cherrapunji",
+            "summary": "Transfer to Cherrapunji with sightseeing en route: Mawphlang Sacred Grove and Mawsmai Cave.",
+            "stops": [
+              {
+                "name": "Drive: Shillong to Cherrapunji",
+                "kind": "transport",
+                "time": "08:30",
+                "duration_min": 120,
+                "distance_km": 54
+              },
+              {
+                "name": "Hotel in Shillong",
+                "kind": "hotel",
+                "time": "11:00",
+                "note": "Check out"
+              },
+              {
+                "name": "Mawphlang Sacred Grove",
+                "kind": "attraction",
+                "time": "13:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Mawsmai Cave",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel in Cherrapunji",
+                "kind": "hotel",
+                "time": "16:30",
+                "note": "Check-in and relax"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-11-05",
+            "title": "Cherrapunji Highlights",
+            "summary": "Visit Nohkalikai Falls, Seven Sisters Falls, and Arwah Cave. Evening at leisure.",
+            "stops": [
+              {
+                "name": "Hotel in Cherrapunji",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Nohkalikai Falls",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Seven Sisters Falls",
+                "kind": "attraction",
+                "time": "10:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Arwah Cave",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Hotel in Cherrapunji",
+                "kind": "hotel",
+                "time": "14:00",
+                "note": "Rest of the day at leisure"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-11-06",
+            "title": "Living Root Bridges & Mawsynram",
+            "summary": "Trek to the Living Root Bridges and visit Mawsynram, the wettest place on earth.",
+            "stops": [
+              {
+                "name": "Hotel in Cherrapunji",
+                "kind": "hotel",
+                "time": "07:00",
+                "note": "Early start"
+              },
+              {
+                "name": "Living Root Bridges",
+                "kind": "attraction",
+                "time": "08:00",
+                "duration_min": 180,
+                "note": "Trek (Double Decker Bridge)"
+              },
+              {
+                "name": "Mawsynram",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Hotel in Cherrapunji",
+                "kind": "hotel",
+                "time": "15:00",
+                "note": "Return and relax"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-11-07",
+            "title": "Return to Guwahati & Departure",
+            "summary": "Check out from Cherrapunji, drive back to Guwahati for onward journey.",
+            "stops": [
+              {
+                "name": "Hotel in Cherrapunji",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Check out"
+              },
+              {
+                "name": "Drive: Cherrapunji to Guwahati",
+                "kind": "transport",
+                "time": "08:30",
+                "duration_min": 300,
+                "distance_km": 150
+              },
+              {
+                "name": "Guwahati Airport",
+                "kind": "transport",
+                "time": "13:30",
+                "note": "Trip ends"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:16:58.905641"
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:46:58Z",
+    "user_id": "corpus-meghalaya-offbeat",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {}
+  },
+  "descriptor": {
+    "destination": "Meghalaya",
+    "departure_date": "2027-11-02",
+    "return_date": "2027-11-08",
+    "nights": 6,
+    "month_year": "Nov 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 0,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Meghalaya",
+      "Arrival in Guwahati & Transfer to Shillong",
+      "Guwahati Airport",
+      "Drive: Guwahati to Shillong",
+      "Hotel in Shillong",
+      "Police Bazaar",
+      "Shillong Sightseeing",
+      "Umiam Lake",
+      "Don Bosco Museum",
+      "Ward's Lake",
+      "Elephant Falls",
+      "Shillong to Cherrapunji",
+      "Drive: Shillong to Cherrapunji",
+      "Mawphlang Sacred Grove",
+      "Mawsmai Cave",
+      "Hotel in Cherrapunji",
+      "Cherrapunji Highlights",
+      "Nohkalikai Falls",
+      "Seven Sisters Falls",
+      "Arwah Cave",
+      "Living Root Bridges & Mawsynram",
+      "Living Root Bridges",
+      "Mawsynram",
+      "Return to Guwahati & Departure",
+      "Drive: Cherrapunji to Guwahati"
+    ],
+    "auto_summary": "6-night Meghalaya, Nov 2027",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T14:46:58Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:46:14Z"
+    }
+  ]
+}

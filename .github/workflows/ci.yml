@@ -1,0 +1,71 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: Install locked dependencies
+        run: uv sync --all-extras --locked
+      - name: Critical lint
+        # The established full Ruff policy has legacy style debt. Keep this
+        # merge gate focused on errors that can break execution; expand it as
+        # the existing backlog is resolved.
+        run: uv run ruff check --select E9,F63,F7,F82 src tests
+      - name: Test
+        run: uv run pytest -q
+
+  frontend:
+    name: Frontend checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20.19.0"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Type-check
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm run test:all
+      - name: Production build
+        run: npm run build
+
+  mobile:
+    name: Mobile type-check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20.19.0"
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Type-check
+        run: npm run typecheck

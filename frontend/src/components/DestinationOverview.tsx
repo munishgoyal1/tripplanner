@@ -10,14 +10,28 @@ interface Props {
 // "About the place" — an immersive hero gallery, a quick vibe summary distilled
 // from reviews and history, traveler quotes, and fresh good news.
 // We seed from the module cache so flipping between previously-loaded places
-// (e.g. Dubai → Paris → Dubai) is instant, and we keep the prior content visible
-// while the new destination loads so the panel never blanks out mid-switch.
+// (e.g. Dubai → Paris → Dubai) is instant. A refresh of the same destination
+// keeps its content on screen, but a different destination drops it: showing
+// another trip's hero photo after a switch reads as a broken switch.
 export default function DestinationOverview({ destination }: Props) {
   const [data, setData] = useState<Overview | null>(() =>
     destination ? getCachedOverview(destination) : null,
   );
   const [loading, setLoading] = useState(false);
   const [lb, setLb] = useState(-1);
+  const [shownDestination, setShownDestination] = useState(destination);
+
+  // Render-phase reset: an effect would let one frame paint the previous trip's
+  // hero photo and title, which is exactly what looked broken mid-switch. The
+  // tracker is state, not a ref — React can discard a concurrent render, and a
+  // mutated ref would then swallow the reset that was queued with it.
+  if (shownDestination.toLowerCase() !== destination.toLowerCase()) {
+    setShownDestination(destination);
+    const cached = destination ? getCachedOverview(destination) : null;
+    setData(cached);
+    setLoading(Boolean(destination) && !cached);
+    setLb(-1);
+  }
 
   useEffect(() => {
     if (!destination) {
@@ -30,7 +44,6 @@ export default function DestinationOverview({ destination }: Props) {
       setLoading(false);
       return;
     }
-    // Keep showing whatever's on screen while we fetch — no flash of empty.
     let cancelled = false;
     setLoading(true);
     fetchDestinationOverview(destination)
@@ -58,9 +71,6 @@ export default function DestinationOverview({ destination }: Props) {
     );
   }
   if (!data) return null;
-  // We may be showing a previous destination's data while the new one loads —
-  // dim slightly to hint a refresh is in flight without losing context.
-  const stale = loading && data.destination.toLowerCase() !== destination.toLowerCase();
 
   const hasContent =
     data.photos.length > 0 ||
@@ -74,7 +84,7 @@ export default function DestinationOverview({ destination }: Props) {
   return (
     <div
       className={`border-b border-slate-100 transition-opacity duration-300 ${
-        stale ? "opacity-70" : "opacity-100"
+        loading ? "opacity-70" : "opacity-100"
       }`}
     >
       {/* Immersive hero */}

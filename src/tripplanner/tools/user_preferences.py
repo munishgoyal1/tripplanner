@@ -10,14 +10,17 @@ preferences, dietary needs, and past trip history.
 
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import os
 import tempfile
+from collections.abc import Callable
 from pathlib import Path
+from threading import Lock
 from typing import Any
 
-from tripplanner import storage_cosmos
+from tripplanner import request_state, storage_cosmos
 from tripplanner.user_context import get_user_id
 
 log = logging.getLogger(__name__)
@@ -27,13 +30,20 @@ _PREFS_FILE = _PREFS_DIR / "user_preferences.json"
 
 _COSMOS_CONTAINER = "users"
 _PREFS_DOC_ID = "preferences"
+_COSMOS_WRITE_ATTEMPTS = 3
+_LOCAL_LOCKS: dict[str, Lock] = {}
+_LOCAL_LOCKS_GUARD = Lock()
 
 _DEFAULT_PREFS: dict[str, Any] = {
     # Who the user is (extracted passively from conversation)
     "profile": {
         "display_name": None,     # "Munish"
         "home_city": None,        # "Bengaluru"
+        "home_area": None,        # "Whitefield"
         "home_country": None,     # "India"
+        "display_region": None,   # Country or region used for presentation defaults
+        "display_language": "en", # Presentation language selected by the traveller
+        "passport_country": None,  # "Indian" — what they travel on, NOT where they live
         "age_band": None,         # "20-30" | "30-40" | "40-50" | "50-60" | "60+"
         "occupation": None,       # "software engineer" | "doctor" | ...
     },
@@ -55,6 +65,14 @@ _DEFAULT_PREFS: dict[str, Any] = {
         "pets": False,
     },
     "trip_style": "balanced",  # leisure | balanced | packed_sightseeing | adventure
+    "planning_preferences": {
+        "target_active_minutes_per_full_day": None,
+        "preferred_free_time_ratio": None,
+        "major_attractions_per_day": None,
+        "preferred_day_start": None,
+        "preferred_day_end": None,
+    },
+    "offer_benefits": [],
     "budget_level": "moderate",  # budget | moderate | premium | luxury
     "hotel_preferences": {
         "star_rating_min": 3,
@@ -68,6 +86,10 @@ _DEFAULT_PREFS: dict[str, Any] = {
         "open_to_trains": True,
         "open_to_rental_car": True,
         "open_to_bus": False,
+        "preferred_road_transport": None,  # own_car | taxi | either
+        "max_continuous_drive_min": None,
+        "road_break_duration_min": None,
+        "road_break_preferences": [],  # snack, meal, restroom, stretch, scenic
     },
     "food_preferences": {
         "dietary": [],  # vegetarian, vegan, halal, kosher, gluten-free
@@ -104,6 +126,7 @@ _DEFAULT_PREFS: dict[str, Any] = {
     # questions first. "interactive" means the agent may pause to ask for any
     # missing info it can't confidently infer (dates, companion count, budget).
     "planning_mode": "direct",
+    "display_currency": "USD",
     # Cheap digest of the durable signals the last summary was built from — lets
     # update_summary() skip the LLM call when nothing durable changed.
     "profile_summary_digest": "",}
@@ -119,6 +142,12 @@ def _resolve_prefs_path() -> Path:
     if uid == "local":
         return _PREFS_FILE
     return _PREFS_DIR / "users" / uid / "preferences.json"
+
+
+def _local_lock(path: Path) -> Lock:
+    key = str(path.resolve())
+    with _LOCAL_LOCKS_GUARD:
+        return _LOCAL_LOCKS.setdefault(key, Lock())
 
 
 def _read_json_file(path: Path) -> dict[str, Any] | None:
@@ -180,17 +209,22 @@ def _write_json_file_atomic(path: Path, data: dict[str, Any]) -> None:
 
 def load_preferences() -> dict[str, Any]:
     """Load preferences, merging with defaults for any missing keys."""
-    if storage_cosmos.is_enabled():
-        raw = storage_cosmos.read_doc(_COSMOS_CONTAINER, get_user_id(), _PREFS_DOC_ID)
-        if raw:
+    user_id = get_user_id()
+
+    def load() -> dict[str, Any]:
+        if storage_cosmos.is_enabled():
+            raw = storage_cosmos.read_doc(_COSMOS_CONTAINER, user_id, _PREFS_DOC_ID)
+            if raw:
+                return _deep_merge(_DEFAULT_PREFS, raw)
+            return json.loads(json.dumps(_DEFAULT_PREFS))
+
+        path = _resolve_prefs_path()
+        raw = _read_json_file(path)
+        if raw is not None:
             return _deep_merge(_DEFAULT_PREFS, raw)
         return json.loads(json.dumps(_DEFAULT_PREFS))
 
-    path = _resolve_prefs_path()
-    raw = _read_json_file(path)
-    if raw is not None:
-        return _deep_merge(_DEFAULT_PREFS, raw)
-    return json.loads(json.dumps(_DEFAULT_PREFS))
+    return request_state.get_or_load(("preferences", user_id), load)
 
 
 # Soft cap on free-form learned_notes so the list can't bloat the prompt
@@ -218,23 +252,216 @@ def _consolidate_learned_notes(notes: list[Any]) -> list[Any]:
     return deduped
 
 
+def _prepare_preferences(prefs: dict[str, Any]) -> dict[str, Any]:
+    prepared = copy.deepcopy(prefs)
+    if isinstance(prepared.get("learned_notes"), list):
+        prepared["learned_notes"] = _consolidate_learned_notes(
+            prepared["learned_notes"]
+        )
+    return prepared
+
+
+def adopt_missing_preferences(
+    current: dict[str, Any], incoming: dict[str, Any]
+) -> dict[str, Any]:
+    """Fill default-valued fields from another identity without replacing account data."""
+    explicit_fields = {str(value) for value in current.get("_explicit_fields") or []}
+    incoming_explicit_fields = {
+        str(value) for value in incoming.get("_explicit_fields") or []
+    }
+    adopted_explicit_fields: set[str] = set()
+
+    def merge_family_members(current_value: Any, incoming_value: Any) -> list[Any]:
+        from tripplanner.tools.preferences_merge import merge_family_member
+
+        members = copy.deepcopy(current_value) if isinstance(current_value, list) else []
+        index: dict[tuple[str, str], int] = {}
+        for member_index, member in enumerate(members):
+            if not isinstance(member, dict):
+                continue
+            relationship = str(member.get("relationship") or "").strip().lower()
+            name = str(member.get("name") or "").strip().lower()
+            if name:
+                index[(relationship, name)] = member_index
+        for incoming_member in incoming_value if isinstance(incoming_value, list) else []:
+            if not isinstance(incoming_member, dict):
+                if incoming_member not in members:
+                    members.append(copy.deepcopy(incoming_member))
+                continue
+            relationship = str(incoming_member.get("relationship") or "").strip().lower()
+            name = str(incoming_member.get("name") or "").strip().lower()
+            key = (relationship, name)
+            if name and key in index:
+                member_index = index[key]
+                members[member_index] = merge_family_member(
+                    members[member_index], incoming_member
+                )
+            else:
+                members.append(copy.deepcopy(incoming_member))
+                if name:
+                    index[key] = len(members) - 1
+        return members
+
+    def merge(
+        current_value: Any,
+        incoming_value: Any,
+        default_value: Any,
+        path: str = "",
+    ) -> Any:
+        if path in explicit_fields:
+            return copy.deepcopy(current_value)
+        if isinstance(default_value, dict):
+            current_dict = current_value if isinstance(current_value, dict) else {}
+            incoming_dict = incoming_value if isinstance(incoming_value, dict) else {}
+            return {
+                key: merge(
+                    current_dict.get(key),
+                    incoming_dict.get(key),
+                    default_child,
+                    f"{path}.{key}" if path else key,
+                )
+                for key, default_child in default_value.items()
+            } | {
+                key: copy.deepcopy(value)
+                for key, value in current_dict.items()
+                if key not in default_value
+            }
+        if isinstance(default_value, list):
+            current_list = current_value if isinstance(current_value, list) else []
+            incoming_list = incoming_value if isinstance(incoming_value, list) else []
+            if path == "family_members":
+                merged_list = merge_family_members(current_list, incoming_list)
+            else:
+                merged_list = copy.deepcopy(current_list)
+                for value in incoming_list:
+                    if value not in merged_list:
+                        merged_list.append(copy.deepcopy(value))
+            if path in incoming_explicit_fields and (
+                current_list == default_value or merged_list != current_list
+            ):
+                adopted_explicit_fields.add(path)
+            return merged_list
+        if current_value != default_value:
+            return copy.deepcopy(current_value)
+        if incoming_value != default_value:
+            if path in incoming_explicit_fields:
+                adopted_explicit_fields.add(path)
+            return copy.deepcopy(incoming_value)
+        if path in incoming_explicit_fields:
+            adopted_explicit_fields.add(path)
+        return copy.deepcopy(current_value)
+
+    merged = merge(current, incoming, _DEFAULT_PREFS)
+    merged["_explicit_fields"] = sorted(explicit_fields | adopted_explicit_fields)
+    return merged
+
+
+def mark_explicit_fields(preferences: dict[str, Any], fields: set[str]) -> None:
+    existing = {str(value) for value in preferences.get("_explicit_fields") or []}
+    preferences["_explicit_fields"] = sorted(existing | fields)
+
+
+def has_non_default_preferences(preferences: dict[str, Any]) -> bool:
+    """Whether an identity has durable preference data worth adopting."""
+    return bool(preferences.get("_explicit_fields")) or any(
+        preferences.get(key, copy.deepcopy(default)) != default
+        for key, default in _DEFAULT_PREFS.items()
+    )
+
+
 def save_preferences(prefs: dict[str, Any]) -> None:
-    """Persist preferences (Cosmos when configured, else local JSON)."""
-    if isinstance(prefs.get("learned_notes"), list):
-        prefs["learned_notes"] = _consolidate_learned_notes(prefs["learned_notes"])
+    """Replace the complete preference document with conflict detection."""
+    prepared = _prepare_preferences(prefs)
 
     if storage_cosmos.is_enabled():
-        storage_cosmos.upsert_doc(_COSMOS_CONTAINER, get_user_id(), _PREFS_DOC_ID, prefs)
+        user_id = get_user_id()
+        current = storage_cosmos.read_doc_versioned(
+            _COSMOS_CONTAINER, user_id, _PREFS_DOC_ID
+        )
+        if current is None:
+            storage_cosmos.create_doc_if_absent(
+                _COSMOS_CONTAINER, user_id, _PREFS_DOC_ID, prepared
+            )
+        else:
+            storage_cosmos.replace_doc_if_version(
+                _COSMOS_CONTAINER,
+                user_id,
+                _PREFS_DOC_ID,
+                prepared,
+                current.version,
+            )
+        request_state.store(("preferences", user_id), prepared)
         return
 
-    _write_json_file_atomic(_resolve_prefs_path(), prefs)
+    path = _resolve_prefs_path()
+    with _local_lock(path):
+        _write_json_file_atomic(path, prepared)
+    request_state.store(("preferences", get_user_id()), prepared)
+
+
+def mutate_preferences(
+    mutator: Callable[[dict[str, Any]], dict[str, Any] | None],
+) -> dict[str, Any]:
+    """Apply a preference mutation, replaying it after Cosmos write conflicts."""
+    if not storage_cosmos.is_enabled():
+        path = _resolve_prefs_path()
+        with _local_lock(path):
+            raw = _read_json_file(path)
+            current = (
+                _deep_merge(_DEFAULT_PREFS, raw)
+                if raw is not None
+                else copy.deepcopy(_DEFAULT_PREFS)
+            )
+            updated = mutator(current)
+            if updated is None:
+                return current
+            prepared = _prepare_preferences(updated)
+            _write_json_file_atomic(path, prepared)
+            request_state.store(("preferences", get_user_id()), prepared)
+            return prepared
+
+    user_id = get_user_id()
+    for attempt in range(_COSMOS_WRITE_ATTEMPTS):
+        versioned = storage_cosmos.read_doc_versioned(
+            _COSMOS_CONTAINER, user_id, _PREFS_DOC_ID
+        )
+        if versioned is None:
+            current = copy.deepcopy(_DEFAULT_PREFS)
+        else:
+            current = _deep_merge(_DEFAULT_PREFS, versioned.body)
+
+        updated = mutator(current)
+        if updated is None:
+            return current
+        prepared = _prepare_preferences(updated)
+
+        try:
+            if versioned is None:
+                storage_cosmos.create_doc_if_absent(
+                    _COSMOS_CONTAINER, user_id, _PREFS_DOC_ID, prepared
+                )
+            else:
+                storage_cosmos.replace_doc_if_version(
+                    _COSMOS_CONTAINER,
+                    user_id,
+                    _PREFS_DOC_ID,
+                    prepared,
+                    versioned.version,
+                )
+        except storage_cosmos.WriteConflictError:
+            if attempt == _COSMOS_WRITE_ATTEMPTS - 1:
+                raise
+            continue
+        request_state.store(("preferences", user_id), prepared)
+        return prepared
+
+    raise AssertionError("unreachable")
 
 
 def reset_preferences() -> dict[str, Any]:
     """Reset preferences to the default schema and persist."""
     fresh = json.loads(json.dumps(_DEFAULT_PREFS))
-    save_preferences(fresh)
-    return fresh
+    return mutate_preferences(lambda _current: fresh)
 
 
 def update_preferences(updates: dict[str, Any]) -> dict[str, Any]:
@@ -247,10 +474,7 @@ def update_preferences(updates: dict[str, Any]) -> dict[str, Any]:
     {"dietary": ["vegan"]}}`` can never wipe previously learned dietary needs.
     All other leaves keep replace-wins semantics.
     """
-    current = load_preferences()
-    merged = _deep_merge_additive(current, updates)
-    save_preferences(merged)
-    return merged
+    return mutate_preferences(lambda current: _deep_merge_additive(current, updates))
 
 
 def add_past_trip(
@@ -260,15 +484,18 @@ def add_past_trip(
     notes: str = "",
 ) -> dict[str, Any]:
     """Append a trip to history and save."""
-    prefs = load_preferences()
-    prefs["past_trips"].append({
+    entry = {
         "destination": destination,
         "dates": dates,
         "rating": rating,
         "notes": notes,
-    })
-    save_preferences(prefs)
-    return prefs
+    }
+
+    def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+        prefs["past_trips"] = list(prefs.get("past_trips") or []) + [entry]
+        return prefs
+
+    return mutate_preferences(apply)
 
 
 def update_past_trip_postmortem(
@@ -277,6 +504,8 @@ def update_past_trip_postmortem(
     what_worked: list[str] | None,
     what_didnt: list[str] | None,
     dates: str = "",
+    pace_feedback: str = "",
+    actual_active_minutes_per_full_day: int | None = None,
 ) -> dict[str, Any]:
     """Attach a structured post-mortem to a past trip.
 
@@ -286,42 +515,71 @@ def update_past_trip_postmortem(
     into learned_notes (source=stated) so future planning sessions can recall
     them via memory_recall without re-reading the full trip log.
     """
-    prefs = load_preferences()
-    trips = prefs.setdefault("past_trips", [])
-
-    target = None
     dest_l = (destination or "").strip().lower()
-    if dest_l:
-        for trip in reversed(trips):
-            if dest_l in str(trip.get("destination", "")).lower():
-                target = trip
-                break
-    if target is None:
-        target = {"destination": destination, "dates": dates, "rating": None, "notes": ""}
-        trips.append(target)
-
-    if rating is not None:
-        target["rating"] = rating
-    if dates:
-        target["dates"] = dates
     worked = [w.strip() for w in (what_worked or []) if isinstance(w, str) and w.strip()]
     didnt = [d.strip() for d in (what_didnt or []) if isinstance(d, str) and d.strip()]
-    if worked:
-        target["what_worked"] = worked
-    if didnt:
-        target["what_didnt"] = didnt
+    normalized_pace = str(pace_feedback or "").strip().lower()
+    if normalized_pace not in {"too_rushed", "just_right", "too_sparse"}:
+        normalized_pace = ""
+    active_minutes = (
+        max(180, min(600, actual_active_minutes_per_full_day))
+        if isinstance(actual_active_minutes_per_full_day, int)
+        and not isinstance(actual_active_minutes_per_full_day, bool)
+        else None
+    )
 
-    save_preferences(prefs)
+    def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+        from datetime import UTC, datetime
 
-    # Surface retrospective signals into learned_notes so memory_recall picks
-    # them up alongside other observations.
-    dest_label = destination or target.get("destination") or "this trip"
-    for w in worked:
-        add_learned_note(f"Liked on {dest_label} trip: {w}", source="stated")
-    for d in didnt:
-        add_learned_note(f"Disliked on {dest_label} trip: {d}", source="stated")
+        trips = prefs.setdefault("past_trips", [])
+        target = None
+        if dest_l:
+            for trip in reversed(trips):
+                if dest_l in str(trip.get("destination", "")).lower():
+                    target = trip
+                    break
+        if target is None:
+            target = {
+                "destination": destination,
+                "dates": dates,
+                "rating": None,
+                "notes": "",
+            }
+            trips.append(target)
 
-    return load_preferences()
+        if rating is not None:
+            target["rating"] = rating
+        if dates:
+            target["dates"] = dates
+        if worked:
+            target["what_worked"] = worked
+        if didnt:
+            target["what_didnt"] = didnt
+        if normalized_pace:
+            target["pace_feedback"] = normalized_pace
+        if active_minutes is not None:
+            target["actual_active_minutes_per_full_day"] = active_minutes
+
+        notes = list(prefs.get("learned_notes") or [])
+        seen = {
+            (entry.get("note") or "").strip().lower()
+            for entry in notes
+            if isinstance(entry, dict)
+        }
+        dest_label = destination or target.get("destination") or "this trip"
+        day = datetime.now(UTC).date().isoformat()
+        for note in [
+            *(f"Liked on {dest_label} trip: {item}" for item in worked),
+            *(f"Disliked on {dest_label} trip: {item}" for item in didnt),
+        ]:
+            if note.lower() in seen:
+                continue
+            seen.add(note.lower())
+            notes.append({"note": note, "source": "stated", "at": day})
+        prefs["learned_notes"] = notes
+        return prefs
+
+    return mutate_preferences(apply)
 
 
 def add_learned_note(note: str, source: str = "stated") -> dict[str, Any]:
@@ -332,18 +590,27 @@ def add_learned_note(note: str, source: str = "stated") -> dict[str, Any]:
     """
     from datetime import datetime, timezone
 
-    prefs = load_preferences()
-    existing = {n.get("note", "").strip().lower() for n in prefs.get("learned_notes", [])}
     cleaned = note.strip()
-    if cleaned.lower() in existing or not cleaned:
-        return prefs
-    prefs.setdefault("learned_notes", []).append({
+    if not cleaned:
+        return load_preferences()
+    entry = {
         "note": cleaned,
         "source": source if source in ("stated", "inferred") else "stated",
         "at": datetime.now(timezone.utc).date().isoformat(),
-    })
-    save_preferences(prefs)
-    return prefs
+    }
+
+    def apply(prefs: dict[str, Any]) -> dict[str, Any] | None:
+        existing = {
+            item.get("note", "").strip().lower()
+            for item in prefs.get("learned_notes", [])
+            if isinstance(item, dict)
+        }
+        if cleaned.lower() in existing:
+            return None
+        prefs.setdefault("learned_notes", []).append(entry)
+        return prefs
+
+    return mutate_preferences(apply)
 
 
 _VALID_RELATIONSHIPS = {
@@ -359,19 +626,20 @@ def update_profile(updates: dict[str, Any]) -> dict[str, Any]:
     as 'don't touch this field' rather than 'clear it' so the agent can call
     the tool with partial info safely.
     """
-    prefs = load_preferences()
-    profile = dict(prefs.get("profile") or {})
-    for key, val in updates.items():
-        if val is None:
-            continue
-        if isinstance(val, str):
-            val = val.strip()
-            if not val:
+    def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+        profile = dict(prefs.get("profile") or {})
+        for key, val in updates.items():
+            if val is None:
                 continue
-        profile[key] = val
-    prefs["profile"] = profile
-    save_preferences(prefs)
-    return prefs
+            if isinstance(val, str):
+                val = val.strip()
+                if not val:
+                    continue
+            profile[key] = val
+        prefs["profile"] = profile
+        return prefs
+
+    return mutate_preferences(apply)
 
 
 def upsert_family_member(
@@ -394,20 +662,11 @@ def upsert_family_member(
         rel = "other"
     nm = (name or "").strip() or None
 
-    prefs = load_preferences()
-    members = list(prefs.get("family_members") or [])
-
     def _key(m: dict[str, Any]) -> tuple[str, str]:
         return (
             (m.get("relationship") or "").strip().lower(),
             (m.get("name") or "").strip().lower(),
         )
-
-    target_key = (rel, (nm or "").lower())
-    existing_idx = next(
-        (i for i, m in enumerate(members) if _key(m) == target_key),
-        None,
-    )
 
     def _merge_list(old: list[str] | None, new: list[str] | None) -> list[str]:
         merged: list[str] = []
@@ -424,46 +683,134 @@ def upsert_family_member(
                 merged.append(cleaned)
         return merged
 
-    if existing_idx is not None:
-        member = dict(members[existing_idx])
-        if age is not None:
-            member["age"] = age
-        if dietary is not None:
-            member["dietary"] = _merge_list(member.get("dietary"), dietary)
-        if mobility is not None:
-            member["mobility"] = _merge_list(member.get("mobility"), mobility)
-        if interests is not None:
-            member["interests"] = _merge_list(member.get("interests"), interests)
-        if notes is not None and notes.strip():
-            member["notes"] = notes.strip()
-        members[existing_idx] = member
-    else:
-        members.append({
-            "relationship": rel,
-            "name": nm,
-            "age": age,
-            "dietary": _merge_list(None, dietary),
-            "mobility": _merge_list(None, mobility),
-            "interests": _merge_list(None, interests),
-            "notes": (notes or "").strip() or None,
-        })
+    def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+        members = list(prefs.get("family_members") or [])
+        target_key = (rel, (nm or "").lower())
+        existing_idx = next(
+            (i for i, member in enumerate(members) if _key(member) == target_key),
+            None,
+        )
 
-    prefs["family_members"] = members
-    save_preferences(prefs)
-    return prefs
+        if existing_idx is not None:
+            member = dict(members[existing_idx])
+            if age is not None:
+                member["age"] = age
+            if dietary is not None:
+                member["dietary"] = _merge_list(member.get("dietary"), dietary)
+            if mobility is not None:
+                member["mobility"] = _merge_list(member.get("mobility"), mobility)
+            if interests is not None:
+                member["interests"] = _merge_list(member.get("interests"), interests)
+            if notes is not None and notes.strip():
+                member["notes"] = notes.strip()
+            members[existing_idx] = member
+        else:
+            members.append({
+                "relationship": rel,
+                "name": nm,
+                "age": age,
+                "dietary": _merge_list(None, dietary),
+                "mobility": _merge_list(None, mobility),
+                "interests": _merge_list(None, interests),
+                "notes": (notes or "").strip() or None,
+            })
+
+        prefs["family_members"] = members
+        return prefs
+
+    return mutate_preferences(apply)
+
+
+def _family_member_key(relationship: str, name: str) -> tuple[str, str]:
+    return (relationship or "").strip().lower(), (name or "").strip().lower()
+
+
+def set_family_member(
+    *,
+    original_relationship: str | None,
+    original_name: str | None,
+    relationship: str,
+    name: str,
+    age: int | None,
+    dietary: list[str],
+    mobility: list[str],
+    interests: list[str],
+    notes: str,
+) -> dict[str, Any]:
+    """Add or fully replace one traveller's editable profile, keyed by (relationship, name).
+
+    Unlike ``upsert_family_member`` (additive chat learning), every field here
+    is set to exactly what the caller sent, since this backs a direct editing
+    UI where clearing a tag or renaming a person must take effect immediately.
+    """
+    rel = (relationship or "").strip().lower()
+    if rel not in _VALID_RELATIONSHIPS:
+        rel = "other"
+    original_key = (
+        _family_member_key(original_relationship, original_name or "")
+        if original_relationship
+        else None
+    )
+    member = {
+        "relationship": rel,
+        "name": (name or "").strip() or None,
+        "age": age,
+        "dietary": [t.strip() for t in dietary if t.strip()],
+        "mobility": [t.strip() for t in mobility if t.strip()],
+        "interests": [t.strip() for t in interests if t.strip()],
+        "notes": (notes or "").strip() or None,
+    }
+
+    def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+        members = list(prefs.get("family_members") or [])
+        target_index = None
+        if original_key is not None:
+            target_index = next(
+                (i for i, m in enumerate(members) if _family_member_key(m.get("relationship", ""), m.get("name") or "") == original_key),
+                None,
+            )
+        if target_index is not None:
+            members[target_index] = member
+        else:
+            members.append(member)
+        prefs["family_members"] = members
+        return prefs
+
+    return mutate_preferences(apply)
+
+
+def remove_family_member(relationship: str, name: str) -> dict[str, Any]:
+    """Remove one traveller, keyed by (relationship, name)."""
+    target_key = _family_member_key(relationship, name)
+
+    def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+        members = [
+            m for m in (prefs.get("family_members") or [])
+            if _family_member_key(m.get("relationship", ""), m.get("name") or "") != target_key
+        ]
+        prefs["family_members"] = members
+        return prefs
+
+    return mutate_preferences(apply)
+
 
 
 def _append_unique_str(field: str, item: str) -> dict[str, Any]:
     cleaned = (item or "").strip()
     if not cleaned:
         return load_preferences()
-    prefs = load_preferences()
-    bucket = list(prefs.get(field) or [])
-    if cleaned.lower() not in {x.strip().lower() for x in bucket if isinstance(x, str)}:
+
+    def apply(prefs: dict[str, Any]) -> dict[str, Any] | None:
+        bucket = list(prefs.get(field) or [])
+        if cleaned.lower() in {
+            value.strip().lower() for value in bucket if isinstance(value, str)
+        }:
+            return None
         bucket.append(cleaned)
         prefs[field] = bucket
-        save_preferences(prefs)
-    return prefs
+        return prefs
+
+    return mutate_preferences(apply)
 
 
 def add_interest(item: str) -> dict[str, Any]:
@@ -496,22 +843,14 @@ def add_trip_mention(
     if not dest:
         return load_preferences()
     when_norm = (when or "").strip() or None
-    sentiment_norm = sentiment if sentiment in ("positive", "negative", "mixed", "neutral") else "neutral"
+    sentiment_norm = (
+        sentiment
+        if sentiment in ("positive", "negative", "mixed", "neutral")
+        else "neutral"
+    )
     source_norm = source if source in ("stated", "inferred") else "stated"
 
-    prefs = load_preferences()
-    mentions = list(prefs.get("past_trip_mentions") or [])
     target_key = (dest.lower(), (when_norm or "").lower())
-    existing_idx = next(
-        (
-            i for i, m in enumerate(mentions)
-            if (
-                (m.get("destination") or "").strip().lower(),
-                (m.get("when") or "").strip().lower(),
-            ) == target_key
-        ),
-        None,
-    )
     entry = {
         "destination": dest,
         "when": when_norm,
@@ -521,14 +860,29 @@ def add_trip_mention(
         "source": source_norm,
         "at": datetime.now(timezone.utc).date().isoformat(),
     }
-    if existing_idx is not None:
-        merged = {**mentions[existing_idx], **{k: v for k, v in entry.items() if v not in (None, "")}}
-        mentions[existing_idx] = merged
-    else:
-        mentions.append(entry)
-    prefs["past_trip_mentions"] = mentions
-    save_preferences(prefs)
-    return prefs
+
+    def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+        mentions = list(prefs.get("past_trip_mentions") or [])
+        existing_idx = next(
+            (
+                index
+                for index, mention in enumerate(mentions)
+                if (
+                    (mention.get("destination") or "").strip().lower(),
+                    (mention.get("when") or "").strip().lower(),
+                ) == target_key
+            ),
+            None,
+        )
+        if existing_idx is not None:
+            nonempty = {key: value for key, value in entry.items() if value not in (None, "")}
+            mentions[existing_idx] = {**mentions[existing_idx], **nonempty}
+        else:
+            mentions.append(entry)
+        prefs["past_trip_mentions"] = mentions
+        return prefs
+
+    return mutate_preferences(apply)
 
 
 def _deep_merge(base: dict, override: dict) -> dict:

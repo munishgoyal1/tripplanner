@@ -1,0 +1,486 @@
+{
+  "status": "draft",
+  "trip_id": "darjeeling_2027-04-10_2027-04-15",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:44:01.988393",
+  "destination": "Darjeeling",
+  "origin": "Kolkata",
+  "departure_date": "2027-04-10",
+  "return_date": "2027-04-15",
+  "travelers": "1 adult",
+  "notes": "Prioritize local food experiences.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Darjeeling",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Deluxe Double Room at Hotel Valtin",
+      "address": "Near Mall Road, Darjeeling",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp53d9f",
+        "offer_id": "3gAWonJzkd4AEaRzcmlk2fpHWTJETU5KV01NM1RLTlpZR1kyVEVNQldHUTNHTU5aVkdZWkRNWVpXR1VaREFOWlNHWlRETVpSV01SNkRDSVpTR0FaRE9NQlVHRVlIWU1SUUdJM1RBTkJSR1Y2R0szUzdLVkpYWVNLT1BSRVU0VVQ0R0ZBVEFRMzRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHQTJUS01SWUc0M0RNTTJRSU5JVVdJWlRHUVpUSU5KVkVNWVRHTkJWRlVaVElNWlVHVTJYWVRTU0laSEhZVkNFUFFZWFlVUlJHQVpUTTdCVUdRNFRHTUpYR1lSVUVRUkRKWkpFTVRSREVNo3ByY8tA5fB4UeuFH6Vvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrJEZWx1eGUgRG91YmxlIFJvb22jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYzNDM0NTWjc2lkAqNoaWSnbHA1M2Q5ZqNvY2ORgaFhAaNjdXKjSU5SomduoklOomNpqjIwMjctMDQtMTCiY2-qMjAyNy0wNC0xNaNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE0Y2JhZDViRXlyZzhoT0dpQTJTVUVUQ1JOb01zc1RWQWJFdqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnDoWSjVkFUoWHLQLrFlwo9cKShY6NJTlKibHDAo2JrdAI="
+      },
+      "price_per_night": 3500,
+      "nights": 5,
+      "total_price": 17500,
+      "currency": "INR",
+      "google_rating": 4.4
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-10",
+      "title": "Arrival & Mall Road",
+      "summary": "Arrive in Darjeeling, check in, stroll Mall Road, sample momos and local tea.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Bagdogra",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "10:00",
+          "duration_min": 120,
+          "note": "Morning flight"
+        },
+        {
+          "name": "Drive: Bagdogra to Darjeeling",
+          "kind": "transport",
+          "time": "10:30",
+          "duration_min": 150,
+          "distance_km": 70,
+          "note": "Scenic drive with tea garden views"
+        },
+        {
+          "name": "Deluxe Double Room at Hotel Valtin",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Mall Road",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Kunga Restaurant",
+          "kind": "meal",
+          "time": "16:30",
+          "note": "Try Darjeeling momos and thukpa"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-11",
+      "title": "Tea Gardens & Local Cuisine",
+      "summary": "Visit Happy Valley Tea Estate, explore local food spots, enjoy Tibetan lunch.",
+      "stops": [
+        {
+          "name": "Deluxe Double Room at Hotel Valtin",
+          "kind": "hotel"
+        },
+        {
+          "name": "Happy Valley Tea Estate",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Nathmull's Tea Room",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Tea tasting"
+        },
+        {
+          "name": "The Park Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Tibetan lunch"
+        },
+        {
+          "name": "Chowrasta",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-12",
+      "title": "Tiger Hill Sunrise & Food Trail",
+      "summary": "Early sunrise at Tiger Hill, breakfast at Glenary's, local food trail.",
+      "stops": [
+        {
+          "name": "Tiger Hill",
+          "kind": "attraction",
+          "time": "05:00",
+          "duration_min": 90,
+          "note": "Sunrise"
+        },
+        {
+          "name": "Glenary's Bakery & Café",
+          "kind": "meal",
+          "time": "07:00",
+          "note": "Breakfast with a view"
+        },
+        {
+          "name": "Darjeeling Himalayan Railway",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 120,
+          "distance_km": 20,
+          "note": "Toy train heritage ride"
+        },
+        {
+          "name": "Deluxe Double Room at Hotel Valtin",
+          "kind": "hotel",
+          "time": "11:30"
+        },
+        {
+          "name": "Keventer's",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Local lunch"
+        },
+        {
+          "name": "Darjeeling Food Trail",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 120,
+          "note": "Guided walk to street food stalls"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-04-13",
+      "title": "Heritage & Nepali Cuisine",
+      "summary": "Explore Himalayan Mountaineering Institute, try Nepali cuisine, visit Peace Pagoda.",
+      "stops": [
+        {
+          "name": "Deluxe Double Room at Hotel Valtin",
+          "kind": "hotel"
+        },
+        {
+          "name": "Himalayan Mountaineering Institute",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Gatty's Café",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Nepali lunch"
+        },
+        {
+          "name": "Japanese Peace Pagoda",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-04-14",
+      "title": "Markets & Departure",
+      "summary": "Shop at local markets, enjoy a farewell meal, depart for Kolkata.",
+      "stops": [
+        {
+          "name": "Batasia Loop Market",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Drive: Darjeeling to Bagdogra",
+          "kind": "transport",
+          "time": "11:00",
+          "duration_min": 150,
+          "distance_km": 70,
+          "note": "Return drive"
+        },
+        {
+          "name": "Lunar Restaurant",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Farewell meal"
+        },
+        {
+          "name": "Flight: Bagdogra to Kolkata",
+          "kind": "flight",
+          "time": "15:00",
+          "arrival_time": "17:00",
+          "duration_min": 120,
+          "note": "Afternoon flight"
+        },
+        {
+          "name": "Deluxe Double Room at Hotel Valtin",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "17:30"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-04-15",
+      "title": "Return to Kolkata",
+      "summary": "Depart Darjeeling, travel back to Kolkata.",
+      "stops": [
+        {
+          "name": "Deluxe Double Room at Hotel Valtin",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Drive: Darjeeling to Kolkata",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 720,
+          "distance_km": 600,
+          "note": "Private car or shared taxi"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 17500,
+    "meals": 5000,
+    "activities": 3000,
+    "transport": 8000
+  },
+  "total_cost": 33500,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:49:40.311844",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T17:48:46",
+      "expires_at": "2026-08-19T05:48:46"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_darjeeling_2027_04_10_2027_04_15",
+      "kind": "lodging",
+      "created_at": "2026-08-18T12:18:46.365081Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Darjeeling",
+        "date": "2027-04-10"
+      },
+      "subject": "Stay in Darjeeling",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_eaf165937466",
+      "options": [
+        {
+          "id": "opt_stay_eaf165937466",
+          "mode": null,
+          "label": "Colosseum Boutique Hotel & Spa",
+          "detail": "Deluxe Double Room",
+          "price": {
+            "amount": 44931.76,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-04-10",
+            "checkout": "2027-04-15",
+            "room_name": "Deluxe Double Room",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "79 Haile Sealassie Road, Oysterbay",
+            "rating": 8.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp53d9f",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2fpHWTJETU5KV01NM1RLTlpZR1kyVEVNQldHUTNHTU5aVkdZWkRNWVpXR1VaREFOWlNHWlRETVpSV01SNkRDSVpTR0FaRE9NQlVHRVlIWU1SUUdJM1RBTkJSR1Y2R0szUzdLVkpYWVNLT1BSRVU0VVQ0R0ZBVEFRMzRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHQTJUS01SWUc0M0RNTTJRSU5JVVdJWlRHUVpUSU5KVkVNWVRHTkJWRlVaVElNWlVHVTJYWVRTU0laSEhZVkNFUFFZWFlVUlJHQVpUTTdCVUdRNFRHTUpYR1lSVUVRUkRKWkpFTVRSREVNo3ByY8tA5fB4UeuFH6Vvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrJEZWx1eGUgRG91YmxlIFJvb22jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYzNDM0NTWjc2lkAqNoaWSnbHA1M2Q5ZqNvY2ORgaFhAaNjdXKjSU5SomduoklOomNpqjIwMjctMDQtMTCiY2-qMjAyNy0wNC0xNaNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE0Y2JhZDViRXlyZzhoT0dpQTJTVUVUQ1JOb01zc1RWQWJFdqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnDoWSjVkFUoWHLQLrFlwo9cKShY6NJTlKibHDAo2JrdAI=",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEV2HKEZUOTKOLJLEOWK2IRGVSWSXI5KVURCBJZNFGR22KRCE2WSSK5GVENSEINEVUU2HIFNEIT2NIJKUORKZJBMU2USRI5ETGVCBJZBFER2WGZDUWM2TG5FVMSSYLFJUWT2QKJCVKNCVKQ2EORSBKRAVCMZUI5ITEVCFJ5GDITSGJFDU6VSLJFIFCWKUJ5HUEWCHIEZFIS2NKJMUONBTIRGU2MSRJFHESVKXJFNFIR2RLJKESTSKKZCU2WKUI5HEEVSGKVNFISKNLJKUOVJSLBMVIU2TJFNEQSCZKZBUKUCRLFMFSVKSKJDUCWSUJU3UEVKHKE2FIR2NJJMEOWKSKVCVCUSEJJNEURKNKRJEIRKNPQ2DIOJTGEXDONT4PRBES7D4PR6EIZLMOV4GKICEN52WE3DFEBJG633NPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T12:14:49.870232Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        },
+        {
+          "id": "opt_stay_afe4285d596a",
+          "mode": null,
+          "label": "Onomo Hotel Dar es Salaam",
+          "detail": "Standard Twin City View",
+          "price": {
+            "amount": 46824.93,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹1,893 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-04-10",
+            "checkout": "2027-04-15",
+            "room_name": "Standard Twin City View",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Ghana Avenue",
+            "rating": 8.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp76f13",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEvRzRaVE9OQldHRTNHS05SVUdZWVRPTVJXR1FaREFOWlVHNDNUTU9KV01VWkRBTlJUR1k0VE9OQlhIRVpEQU5aV0dZNFRNTkpYRzU2RENJWlNHQVpET01CVUdFWUhZTVJRR0kzVEFOQlJHVjZHSzNTN0tWSlhZU0tPUFJFVTRVVDRHRkFUQVEzNEdRMlRFT0w0TkZJR09WS0lQUVlUT09CWEdBMlRLTVJZRzQzRE1NMlFJTklVV0laVUhBM1RDT0JYRU0zRE1PSk5HUTRET01KWUc1NkZFUlNPUFFaREFNUlhHQTJEQU9CUkdBWURBN0JSUFJKRENNUlpHQjZESU5SWUdJMkRTTVpES0pIU0dVU0dKWVJURU1CU0c0V1RBTkJOR0E0Q0FNSlFISVlEQUlZo3ByY8tA5t0dwo9cKaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNC0wOSAxMDowMDowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrdTdGFuZGFyZCBUd2luIENpdHkgVmlld6NvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJKFoXSzMjAyNy0wNC0wOCAxMDowMDowMKFhy0DCSn64UeuFoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSFoXSzMjAyNy0wNC0wOSAxMDowMDowMKFhy0DCSn64UeuFoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmNDg3MTg3o3NpZAKjaGlkp2xwNzZmMTOjb2NjkYGhYQGjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA0LTEwomNvqjIwMjctMDQtMTWjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNGNiYWQ1YkV5cmc4aE9HaUEyU1VFVENSTm9Nc3NUVkFiRXajaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpw6FkqVNhbGVzIHRheKFhy0C7--4UeuFIoWOjSU5ShKFpw6FkuFNlcnZpY2UgY2hhcmdlICh0YXhhYmxlKaFhy0CHsmZmZmZmoWOjSU5SomxwwKNia3QE",
+              "rate_id": "I42FUVCPJZBFOR2FGNDUWTSSKVDVSWKUJ5GVEV2HKFNEIQKOLJKUONBTKRGU6SSXJVKVURCBJZJFIR2ZGRKE6TSCLBEEKWSEIFHFUV2HLE2FITKOJJMEONJWIRBUSWSTI5AVURCPJVBFKR2FLFEFSTKSKFDUSM2UIFHEEUSHKY3EOSZTKM3UWVSKLBMVGS2PKBJEKVJUKVKDIR2GIFKECUJTGRDVCMSUIVHUYNCOIZEUOT2WJNEVAUKZKRHU6QSYI5ATEVCLJVJFSRZUGNCE2TJSKFEU4SKVK5EVUVKIIEZVIQ2PIJMEKTJTIRGU6SSOI5ITIRCPJVFFSRZVGZDEKUSTJ5IFCWSEIFGVEWCHIEZEIQKPIJJEOQKZIRATOQSSKBJEURCDJVJFUR2CGZCESTSSLFDUSMSEKNGVURCLJJEFGR2VKNDUUWKSKRCU2QSTI42FOVCBJZBE4R2BGRBUCTKKKFEESWKEIFEVS7BUGY4DENBOHEZXYMRQGI3S2MBUFUYDSIBRGA5DAMB2GAYHYUSPPR6HY7CTORQW4ZDBOJSCAVDXNFXCAQ3JOR4SAVTJMV3XYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T12:14:49.870232Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        },
+        {
+          "id": "opt_stay_31d46d906b28",
+          "mode": null,
+          "label": "Element by Marriott Dar es Salaam",
+          "detail": "Standard Studio with 1 King Bed",
+          "price": {
+            "amount": 67854.89,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹22,923 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-04-10",
+            "checkout": "2027-04-15",
+            "room_name": "Standard Studio with 1 King Bed",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "55 Yacht Club Road",
+            "rating": 8.7,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp65576e88",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFXRzRaVE9OQldHRTNHS05SVUdZWVRPTVJXR1FaREFOWlRHNDJET05KV0dRM0RTTlRHR0lZRE9OWldIRTNUSU5SWUdJWURHTUpTR0EzR0VOUlpHWlNUTU5aU0dBM0RFTlJWR1kySFlNSkRHSVlERU5aUUdRWVRBN0JTR0FaRE9NQlVHRTJYWVpMT0w1S1ZHN0NKSlo2RVNUU1NQUVlVQ01DRFBRMkRLTVJaUFJVVkFaMlZKQjZEQ05aWUc0WURLTkpTSEEzVE1OUlRLQkJWQ1NaREdFM1RBTUJTR0k0RE9OQlVFTVlUU05SUkZVWVRPTUJRR0laRFFOWlVHUjZGRVJTT1BRWkRBTVJYR0EyREFOUlNHQVlEQTdCUlBSSkRDTUJaR0o2RE1OWllHVTJEUU9KRElKQkNHVVNHSllSVEVNQlNHNFdUQU5CTkdBM0NBTVJRSElZREFJWaNwcmPLQPCQ7j1wo9elb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkszIwMjctMDQtMDcgMTA6MDA6MDCicnSjUkZOo2JyZKJCSaRtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm6_U3RhbmRhcmQgU3R1ZGlvIHdpdGggMSBLaW5nIEJlZKNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJKFoXSzMjAyNy0wNC0wNiAyMDowMDowMKFhy0DKhOFHrhR7oWOjSU5SonR5pmFtb3VudKJ0eqNHTVSFoXSzMjAyNy0wNC0wNyAxMDowMDowMKFhy0DwkO49cKPXoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSqMTcwMDIyODc0NKNzaWQCo2hpZKpscDY1NTc2ZTg4o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNC0xMKJjb6oyMDI3LTA0LTE1o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTRjYmFkNWJFeXJnOGhPR2lBMlNVRVRDUk5vTXNzVFZBYkV2o2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4k4ShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0CqgXrhR64UoWOjSU5ShKFpwqFkqENpdHkgdGF4oWHLQIZkeuFHrhShY6NJTlKEoWnCoWSjVkFUoWHLQMfa8KPXCj2hY6NJTlKibHDAo2JrdAQ=",
+              "rate_id": "I42FUVCPJZBFOR2FGNDUWTSSKVDVSWKUJ5GVEV2HKFNEIQKOLJKEONBSIRHU4SSXI5ITGRCTJZKEOR2JLFCE6TS2K5EEKM2UJFHFEWKHJFMUIR2NJJJUOQJTI5CU4US2I5NFGVCNJZNFGR2BGNCEKTSSKZDVSMSILFGUURCHJFMUIRKOLJIUOUKZKRATOQSTI5AVURCPJVBFKR2FGJMFSWSMJ5GDKS2WI43UGSSKLI3EKU2UKNJVAUKZKVBU2Q2EKBITERCLJVJFUUCSKVLECWRSKZFEENSEINHFUWKHGRMUIS2OJJJUQQJTKRGU4USUJNBEEVSDKNNEIR2FGNKECTKCKNDUSNCEJ5HEEVKFJVMVIU2OKJJEMVKZKRHU2QSRI5EVURCRJZNFKR2SGZDEKUSTJ5IFCWSEIFGVEWCHIEZEIQKOKJJUOQKZIRATOQSSKBJEURCDJVBFUR2KGZCE2TS2LFDVKMSEKFHUURCJJJBEGR2VKNDUUWKSKRCU2QSTI42FOVCBJZBE4R2BGNBUCTKSKFEESWKEIFEVS7BWG44DKNBOHA4XYMRQGI3S2MBUFUYDOIBRGA5DAMB2GAYHYQSJPR6HY7CTORQW4ZDBOJSCAU3UOVSGS3ZAO5UXI2BAGEQEW2LOM4QEEZLEPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T12:14:49.870232Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 44931.76,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "darjeeling_2027-04-10_2027-04-15",
+  "user_id": "corpus-darjeeling-food-solo-5d"
+}

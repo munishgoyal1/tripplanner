@@ -5,10 +5,14 @@ describe("workspaceReducer", () => {
   it("does not change trip revision for focus-only navigation", () => {
     const next = workspaceReducer(initialWorkspaceState, {
       type: "focus",
-      place: { kind: "attraction", name: "Louvre Museum" },
+      focus: {
+        type: "place",
+        place: { kind: "attraction", name: "Louvre Museum" },
+        token: 1,
+      },
     });
 
-    expect(next.activePlace?.name).toBe("Louvre Museum");
+    expect(next.focus).toMatchObject({ type: "place", place: { name: "Louvre Museum" } });
     expect(next.tripRevision).toBe(0);
     expect(next.chatRevision).toBe(0);
   });
@@ -20,11 +24,15 @@ describe("workspaceReducer", () => {
     };
     const next = workspaceReducer(state, {
       type: "focus",
-      place: { kind: "attraction", name: "Seine cruise", day: 1, stop: 2 },
+      focus: {
+        type: "place",
+        place: { kind: "attraction", name: "Seine cruise", day: 1, stop: 2 },
+        token: 2,
+      },
     });
 
     expect(next.itineraryJump).toBeNull();
-    expect(next.activePlace?.name).toBe("Seine cruise");
+    expect(next.focus).toMatchObject({ type: "place", place: { name: "Seine cruise" } });
   });
 
   it("advances only trip content revision for a mutation", () => {
@@ -34,10 +42,10 @@ describe("workspaceReducer", () => {
     expect(next.chatRevision).toBe(0);
   });
 
-  it("clears place state and reloads all trip consumers on a switch", () => {
+  it("clears focus state and reloads all trip consumers on a switch", () => {
     const focused = {
       ...initialWorkspaceState,
-      activePlace: { kind: "hotel", name: "Hotel Regina" },
+      focus: { type: "circuit" as const, day: 2, token: 1 },
       itineraryJump: { day: 2, name: "Louvre Museum", token: 1 },
     };
     const next = workspaceReducer(focused, { type: "trip-changed", tripId: "paris-1" });
@@ -46,7 +54,7 @@ describe("workspaceReducer", () => {
       tripId: "paris-1",
       tripRevision: 1,
       chatRevision: 1,
-      activePlace: null,
+      focus: { type: "none" },
       itineraryJump: null,
     });
   });
@@ -54,7 +62,11 @@ describe("workspaceReducer", () => {
   it("keeps the general transcript when the first trip is created", () => {
     const focused = {
       ...initialWorkspaceState,
-      activePlace: { kind: "attraction", name: "Louvre Museum" },
+      focus: {
+        type: "place" as const,
+        place: { kind: "attraction", name: "Louvre Museum" },
+        token: 1,
+      },
       itineraryJump: { day: 2, name: "Louvre Museum", token: 1 },
     };
     const first = workspaceReducer(focused, {
@@ -67,7 +79,7 @@ describe("workspaceReducer", () => {
     });
 
     expect(first.chatRevision).toBe(0);
-    expect(first.activePlace).toBeNull();
+    expect(first.focus).toEqual({ type: "none" });
     expect(first.itineraryJump).toBeNull();
     expect(switched.chatRevision).toBe(1);
   });

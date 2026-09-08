@@ -1,0 +1,361 @@
+{
+  "status": "draft",
+  "trip_id": "bhutan_2027-10-16_2027-10-23",
+  "trip_number": 1,
+  "created_at": "2026-08-18T20:07:38.035951",
+  "destination": "Bhutan",
+  "origin": "Delhi",
+  "departure_date": "2027-10-16",
+  "return_date": "2027-10-23",
+  "travelers": "1 adult",
+  "notes": "Premium hotels throughout. Covering Thimphu and Paro.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Bhutan",
+    "estimated_planned_minutes": 2160,
+    "evidence_place_count": 6,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "6 preference-matched places account for about 2160 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      6,
+      8
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-16",
+      "title": "Day 1 · Arrival in Paro",
+      "summary": "Arrive in Paro from Delhi, transfer to hotel, relax and explore Paro town.",
+      "stops": [
+        {
+          "name": "Delhi International Airport",
+          "kind": "flight",
+          "time": "07:00",
+          "note": "Depart Delhi"
+        },
+        {
+          "name": "Paro International Airport",
+          "kind": "flight",
+          "time": "11:00",
+          "note": "Arrive Paro"
+        },
+        {
+          "name": "Uma Paro, COMO Hotels",
+          "kind": "hotel",
+          "note": "Check-in and relax"
+        },
+        {
+          "name": "Paro Town",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Explore local markets and cafes"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-17",
+      "title": "Day 2 · Paro Sightseeing",
+      "summary": "Visit Paro Dzong, National Museum, and enjoy premium dining.",
+      "stops": [
+        {
+          "name": "Uma Paro, COMO Hotels",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Paro Dzong",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "National Museum of Bhutan",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "My Kind of Place Paro",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Kyichu Lhakhang",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Uma Paro, COMO Hotels",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-18",
+      "title": "Day 3 · Tiger's Nest Monastery",
+      "summary": "Hike to Tiger's Nest Monastery, enjoy scenic views and local cuisine.",
+      "stops": [
+        {
+          "name": "Uma Paro, COMO Hotels",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Tiger's Nest Monastery",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 240,
+          "note": "Early morning hike"
+        },
+        {
+          "name": "Taktsang Cafeteria",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch with a view"
+        },
+        {
+          "name": "Uma Paro, COMO Hotels",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-19",
+      "title": "Day 4 · Transfer to Thimphu via Dochula Pass",
+      "summary": "Scenic drive to Thimphu via Dochula Pass, visit local attractions.",
+      "stops": [
+        {
+          "name": "Drive: Paro to Thimphu via Dochula Pass",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 150,
+          "distance_km": 65,
+          "note": "Scenic drive with stop at Dochula Pass"
+        },
+        {
+          "name": "Uma Paro, COMO Hotels",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "12:00"
+        },
+        {
+          "name": "Dochula Pass",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Zhiwa Ling Heritage, Thimphu",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "15:30"
+        },
+        {
+          "name": "Thimphu Town",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 90,
+          "note": "Explore city center"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-10-20",
+      "title": "Day 5 · Thimphu Sightseeing",
+      "summary": "Visit Buddha Dordenma, Memorial Chorten, and enjoy premium dining.",
+      "stops": [
+        {
+          "name": "Zhiwa Ling Heritage, Thimphu",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Buddha Dordenma",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Memorial Chorten",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "The Zone Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Folk Heritage Museum",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Zhiwa Ling Heritage, Thimphu",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-10-21",
+      "title": "Day 6 · Punakha Excursion",
+      "summary": "Day trip to Punakha, visit Punakha Dzong and enjoy riverside lunch.",
+      "stops": [
+        {
+          "name": "Drive: Thimphu to Punakha",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "distance_km": 70
+        },
+        {
+          "name": "Punakha Dzong",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Chimi Lhakhang",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Drive: Punakha to Thimphu",
+          "kind": "transport",
+          "time": "15:30",
+          "duration_min": 120,
+          "distance_km": 70
+        },
+        {
+          "name": "Zhiwa Ling Heritage, Thimphu",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "18:00"
+        },
+        {
+          "name": "Riverside Restaurant, Punakha",
+          "kind": "meal",
+          "time": "20:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Zhiwa Ling Heritage, Thimphu",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "22:00"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-10-22",
+      "title": "Day 7 · Departure from Thimphu to Paro & Fly Back",
+      "summary": "Return to Paro, fly back to Delhi.",
+      "stops": [
+        {
+          "name": "Drive: Thimphu to Paro",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 90,
+          "distance_km": 50
+        },
+        {
+          "name": "Paro International Airport",
+          "kind": "flight",
+          "time": "11:00",
+          "note": "Depart Paro"
+        },
+        {
+          "name": "Delhi International Airport",
+          "kind": "flight",
+          "time": "15:00",
+          "note": "Arrive Delhi"
+        },
+        {
+          "name": "Zhiwa Ling Heritage, Thimphu",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "17:00"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T20:08:51.671202",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T20:08:51",
+      "expires_at": "2026-08-19T08:08:51"
+    }
+  ],
+  "id": "bhutan_2027-10-16_2027-10-23",
+  "user_id": "corpus-bhutan-premium-solo-7d"
+}

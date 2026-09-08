@@ -1,0 +1,263 @@
+{
+  "status": "draft",
+  "trip_id": "goa_2027-02-05_2027-02-09",
+  "trip_number": 1,
+  "created_at": "2026-08-25T21:07:22.592496",
+  "destination": "Goa",
+  "origin": "Bangalore",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-02-05",
+  "return_date": "2027-02-09",
+  "travelers": "4 adult friends",
+  "notes": "Lively evenings and one special celebration experience requested. Domestic India trip.",
+  "planning_recommendation": {
+    "recommended_days": 4,
+    "anchor_experiences": [
+      {
+        "name": "Goa Beaches",
+        "duration_days": 1
+      },
+      {
+        "name": "Old Goa Heritage Tour",
+        "duration_days": 1
+      },
+      {
+        "name": "Nightlife & Clubs",
+        "duration_days": 1
+      },
+      {
+        "name": "Celebration Dinner or Beach Party",
+        "duration_days": 1
+      }
+    ],
+    "geographic_clusters": [
+      "North Goa",
+      "South Goa"
+    ],
+    "pace": "balanced",
+    "style": "friends",
+    "budget": "moderate"
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Vivanta Goa, Panaji",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp3a7f2",
+        "offer_id": "3gAWonJzkt4AEaRzcmlk2gF9RzQyRE9OWldNWVpEQU5SU0dZMlRNTkJYR0kzR01OVEdHWlNERU1CV0hFM0dLTlpVR1kyVE9NUldHTTNHTU5URkdaU1RNTkpXR00zVElOUlZHWTJERU1CV0c0M0RDTlpTR1kyRE1OSldNVVpEQU5aV0dZNFRNWVpXTU0zRENNUlFHNFpETVpSV01ZM0dJN0JSRU1aREFNUlhHQVpEQU5MNEdJWURFTlpRR0lZRFM3REZOWlBWS1UzNEpGSEhZU0tPS0o2RElRSlFJTVhUSVFKUUlONkRJTkpTSEY2R1NVREhLVkVIWU1KWEhBM1RNTlpTR0k0REdNUldHSlRISVVETEVNWkRHT0pXR0FaQ0dNSlNHWVpTMk1SVEhFM0RBTVQ0S0pERTQ3QlNHQVpET01CUkdJWVRDTkpRR0I2REM3Q1NHRVlUS01ENEhFM1RFTVpYR1laVE9JMkNJSVJWRVJTT0VNWkRBTVJYRlVZRENMSlNHRVFEQ05KMkdBWUNH"
+      }
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-05",
+      "title": "Arrival in Goa & Beach Sunset",
+      "summary": "Fly from Bangalore to Goa, check in to hotel, relax at the beach, and enjoy a lively evening at a beach shack.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Goa",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "10:30",
+          "duration_min": 90,
+          "note": "Morning flight"
+        },
+        {
+          "name": "Taj Vivanta Panaji",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Calangute Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Relax and enjoy the sunset"
+        },
+        {
+          "name": "Souza Lobo",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner at a lively beach shack with Goan music"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-06",
+      "title": "Old Goa Heritage & Nightlife",
+      "summary": "Explore Old Goa's churches and Latin Quarter, then experience Goa's vibrant nightlife.",
+      "stops": [
+        {
+          "name": "Taj Vivanta Panaji",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Basilica of Bom Jesus",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "UNESCO World Heritage Site"
+        },
+        {
+          "name": "Fontainhas Latin Quarter",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Walk through colorful Portuguese streets"
+        },
+        {
+          "name": "Mum's Kitchen",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Lunch with authentic Goan cuisine"
+        },
+        {
+          "name": "Taj Vivanta Panaji",
+          "kind": "hotel",
+          "note": "Rest and freshen up"
+        },
+        {
+          "name": "Tito's Club",
+          "kind": "attraction",
+          "time": "21:00",
+          "duration_min": 180,
+          "note": "Lively clubbing night in Baga"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-07",
+      "title": "Adventure & Special Celebration",
+      "summary": "Enjoy water sports at Baga Beach, then celebrate with a private sunset cruise and dinner.",
+      "stops": [
+        {
+          "name": "Taj Vivanta Panaji",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Baga Beach",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 180,
+          "note": "Water sports: parasailing, jet ski, banana boat"
+        },
+        {
+          "name": "Fat Fish",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Seafood lunch near Baga"
+        },
+        {
+          "name": "Taj Vivanta Panaji",
+          "kind": "hotel",
+          "note": "Rest and prepare for evening"
+        },
+        {
+          "name": "Mandovi River Private Sunset Cruise",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 90,
+          "note": "Special celebration: private boat with music and snacks"
+        },
+        {
+          "name": "Fisherman's Wharf Panaji",
+          "kind": "meal",
+          "time": "20:00",
+          "note": "Celebration dinner on the riverfront"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-08",
+      "title": "South Goa Leisure & Departure",
+      "summary": "Relax at Colva Beach, enjoy a farewell brunch, and fly back to Bangalore.",
+      "stops": [
+        {
+          "name": "Taj Vivanta Panaji",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Colva Beach",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 120,
+          "note": "Leisure morning at South Goa beach"
+        },
+        {
+          "name": "Martin's Corner",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Farewell brunch"
+        },
+        {
+          "name": "Flight: Goa to Bangalore",
+          "kind": "flight",
+          "time": "17:00",
+          "arrival_time": "18:30",
+          "duration_min": 90,
+          "note": "Evening flight home"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T21:08:48.331483",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-25T21:08:08",
+      "expires_at": "2026-08-26T09:08:08"
+    }
+  ],
+  "id": "goa_2027-02-05_2027-02-09",
+  "user_id": "corpus-india-goa-celebration-friends-4d-b5560852c668"
+}

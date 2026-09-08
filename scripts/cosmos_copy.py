@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import shutil
 import subprocess
 import time
 from collections.abc import Iterable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
@@ -16,13 +20,23 @@ from azure.cosmos import CosmosClient
 DEFAULT_CONTAINERS = (
     "users",
     "trips",
+    "documents",
     "places_cache",
     "shared_trips",
     "tool_cache",
     "audit_events",
+    "provider_usage",
+    "trip_feedback",
+    "public_demo_runs",
 )
 SYSTEM_FIELDS = {"_rid", "_self", "_etag", "_attachments", "_ts"}
 AUDIT_DEFAULT_TTL_SECONDS = 7_776_000
+EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS = {
+    "audit_events": 7_776_000,
+    "provider_usage": 7_776_000,
+}
+LIVE_DATABASE_NAMES = {"tripplanner-canary", "tripplanner-prod"}
+BACKUP_FORMAT_VERSION = 1
 
 
 @dataclass(frozen=True)
@@ -42,8 +56,10 @@ def _portable_item(
     item: dict[str, Any], container_name: str = "", *, now: int | None = None
 ) -> dict[str, Any]:
     portable = {key: value for key, value in item.items() if key not in SYSTEM_FIELDS}
-    if container_name == "audit_events" and "_ts" in item:
-        source_ttl = int(item.get("ttl", AUDIT_DEFAULT_TTL_SECONDS))
+    if container_name in EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS and "_ts" in item:
+        source_ttl = int(
+            item.get("ttl", EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS[container_name])
+        )
         if source_ttl == -1:
             portable["ttl"] = -1
         else:
@@ -63,8 +79,10 @@ def _verification_item(
 ) -> tuple[dict[str, Any], int | str | None]:
     portable = {key: value for key, value in item.items() if key not in SYSTEM_FIELDS}
     expires_at = None
-    if container_name == "audit_events":
-        ttl = int(portable.pop("ttl", AUDIT_DEFAULT_TTL_SECONDS))
+    if container_name in EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS:
+        ttl = int(
+            portable.pop("ttl", EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS[container_name])
+        )
         if ttl == -1:
             expires_at = "permanent"
         elif "_ts" in item:
@@ -99,25 +117,41 @@ def _equivalent_values(source: Any, target: Any) -> bool:
 
 
 def copy_container(
-    src_container: Any, dst_container: Any, container_name: str, *, dry_run: bool = False
+    src_container: Any,
+    dst_container: Any,
+    container_name: str,
+    *,
+    dry_run: bool = False,
+    workers: int = 1,
 ) -> int:
-    copied = 0
-    for item in _iter_all_items(src_container):
-        if not dry_run:
+    items = _iter_all_items(src_container)
+    if dry_run or workers == 1:
+        copied = 0
+        for item in items:
+            if not dry_run:
+                dst_container.upsert_item(_portable_item(item, container_name))
+            copied += 1
+    else:
+        def upsert(item: dict[str, Any]) -> None:
             dst_container.upsert_item(_portable_item(item, container_name))
-        copied += 1
+
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            copied = sum(1 for result in executor.map(upsert, items) if result is None)
     action = "would copy" if dry_run else "copied"
     print(f"Container {container_name}: {action} {copied} items")
     return copied
 
 
 def verify_container(src_container: Any, dst_container: Any, container_name: str) -> int:
-    if container_name == "audit_events" and hasattr(dst_container, "read"):
+    if container_name in EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS and hasattr(
+        dst_container, "read"
+    ):
         default_ttl = dst_container.read().get("defaultTtl")
-        if default_ttl != AUDIT_DEFAULT_TTL_SECONDS:
+        expected_ttl = EXPIRING_CONTAINER_DEFAULT_TTL_SECONDS[container_name]
+        if default_ttl != expected_ttl:
             raise RuntimeError(
-                "Container audit_events verification failed: "
-                f"defaultTtl={default_ttl}, expected={AUDIT_DEFAULT_TTL_SECONDS}"
+                f"Container {container_name} verification failed: "
+                f"defaultTtl={default_ttl}, expected={expected_ttl}"
             )
     source = _items_by_key(src_container, container_name)
     target = _items_by_key(dst_container, container_name)
@@ -129,6 +163,8 @@ def verify_container(src_container: Any, dst_container: Any, container_name: str
         target_body, target_expiry = target[key]
         if isinstance(source_expiry, int) and isinstance(target_expiry, int):
             expiry_changed = abs(source_expiry - target_expiry) > 5
+        elif source_expiry is None or target_expiry is None:
+            expiry_changed = False
         else:
             expiry_changed = source_expiry != target_expiry
         if not _equivalent_values(source_body, target_body) or expiry_changed:
@@ -160,6 +196,7 @@ def copy_cosmos(
     *,
     dry_run: bool = False,
     verify_only: bool = False,
+    workers: int = 1,
 ) -> int:
     if source == target:
         raise ValueError("Source and target Cosmos coordinates must be different.")
@@ -170,23 +207,272 @@ def copy_cosmos(
     existing_source = {
         container["id"] for container in src_database.list_containers()
     }
-    skipped = [name for name in containers if name not in existing_source]
-    for name in skipped:
-        print(f"Container {name}: skipped (absent on source database)")
-    containers = [name for name in containers if name in existing_source]
 
     total = 0
     for name in containers:
+        if name not in existing_source:
+            print(f"Container {name}: skipped because it is absent from the source database")
+            continue
         src_container = src_database.get_container_client(name)
         dst_container = dst_database.get_container_client(name)
         if not verify_only:
             total += copy_container(
-                src_container, dst_container, name, dry_run=dry_run
+                src_container, dst_container, name, dry_run=dry_run, workers=workers
             )
         if not dry_run:
             verify_container(src_container, dst_container, name)
 
     return total
+
+
+def _database_container_names(database: Any) -> set[str]:
+    return {str(container["id"]) for container in database.list_containers()}
+
+
+def _same_coordinates(source: CosmosConnection, target: CosmosConnection) -> bool:
+    return (
+        source.endpoint.rstrip("/").casefold() == target.endpoint.rstrip("/").casefold()
+        and source.database.casefold() == target.database.casefold()
+    )
+
+
+def _require_recovery_target(
+    source: CosmosConnection,
+    target: CosmosConnection,
+    source_database: Any,
+    target_database: Any,
+    containers: list[str],
+) -> None:
+    if _same_coordinates(source, target):
+        raise ValueError("Source and target Cosmos coordinates must be different.")
+    if set(containers) != set(DEFAULT_CONTAINERS) or len(containers) != len(
+        DEFAULT_CONTAINERS
+    ):
+        raise ValueError(
+            "Recovery drill requires exactly the eight default application containers."
+        )
+    if target.database.casefold() in LIVE_DATABASE_NAMES:
+        raise ValueError(
+            "Recovery drill target must not be a live canary or production database."
+        )
+    if not any(marker in target.database.casefold() for marker in ("recovery", "restore", "drill")):
+        raise ValueError(
+            "Recovery drill target database name must contain recovery, restore, or drill."
+        )
+
+    source_names = _database_container_names(source_database)
+    target_names = _database_container_names(target_database)
+    missing_source = sorted(set(containers) - source_names)
+    missing_target = sorted(set(containers) - target_names)
+    if missing_source or missing_target:
+        raise RuntimeError(
+            "Recovery drill requires every configured container: "
+            f"missing_source={missing_source}, missing_target={missing_target}"
+        )
+
+    nonempty = []
+    for name in containers:
+        target_container = target_database.get_container_client(name)
+        if next(iter(_iter_all_items(target_container)), None) is not None:
+            nonempty.append(name)
+    if nonempty:
+        raise RuntimeError(
+            "Recovery drill target must be empty before restore: "
+            f"nonempty_containers={sorted(nonempty)}"
+        )
+
+
+def _write_report(path: Path, report: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _backup_file_name(container_name: str) -> str:
+    return f"{container_name}.jsonl"
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def export_backup(
+    source: CosmosConnection,
+    backup_dir: Path,
+    containers: list[str],
+) -> dict[str, Any]:
+    """Export a portable backup artifact without storing source credentials."""
+    if set(containers) != set(DEFAULT_CONTAINERS) or len(containers) != len(
+        DEFAULT_CONTAINERS
+    ):
+        raise ValueError(
+            "Backup export requires exactly the eight default application containers."
+        )
+    if backup_dir.exists() and any(backup_dir.iterdir()):
+        raise ValueError("Backup directory must be empty or absent.")
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    source_database = _client(source).get_database_client(source.database)
+    missing = sorted(set(containers) - _database_container_names(source_database))
+    if missing:
+        raise RuntimeError(f"Backup source is missing required containers: {missing}")
+
+    exported_at = datetime.now(UTC)
+    container_manifest: dict[str, dict[str, Any]] = {}
+    for name in containers:
+        path = backup_dir / _backup_file_name(name)
+        count = 0
+        with path.open("w", encoding="utf-8", newline="\n") as stream:
+            for item in _iter_all_items(source_database.get_container_client(name)):
+                portable = _portable_item(item, name)
+                stream.write(
+                    json.dumps(portable, sort_keys=True, separators=(",", ":")) + "\n"
+                )
+                count += 1
+        container_manifest[name] = {
+            "file": path.name,
+            "items": count,
+            "sha256": _sha256(path),
+        }
+
+    manifest = {
+        "format_version": BACKUP_FORMAT_VERSION,
+        "exported_at": exported_at.isoformat(),
+        "source": {
+            "host": urlparse(source.endpoint).hostname,
+            "database": source.database,
+        },
+        "containers": container_manifest,
+        "total_items": sum(entry["items"] for entry in container_manifest.values()),
+    }
+    _write_report(backup_dir / "manifest.json", manifest)
+    return manifest
+
+
+def _load_backup(backup_dir: Path) -> tuple[dict[str, Any], dict[str, list[dict[str, Any]]]]:
+    manifest_path = backup_dir / "manifest.json"
+    if not manifest_path.is_file():
+        raise RuntimeError("Backup manifest.json is missing.")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("format_version") != BACKUP_FORMAT_VERSION:
+        raise RuntimeError("Unsupported backup format version.")
+    entries = manifest.get("containers") or {}
+    if set(entries) != set(DEFAULT_CONTAINERS):
+        raise RuntimeError("Backup manifest does not contain all application containers.")
+
+    items: dict[str, list[dict[str, Any]]] = {}
+    for name in DEFAULT_CONTAINERS:
+        entry = entries[name]
+        expected_file = _backup_file_name(name)
+        if entry.get("file") != expected_file:
+            raise RuntimeError(f"Backup file reference validation failed for {name}.")
+        path = backup_dir / expected_file
+        if not path.is_file() or _sha256(path) != entry.get("sha256"):
+            raise RuntimeError(f"Backup checksum verification failed for {name}.")
+        rows = [
+            json.loads(line)
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        if len(rows) != entry.get("items"):
+            raise RuntimeError(f"Backup item count verification failed for {name}.")
+        if any("id" not in row or "user_id" not in row for row in rows):
+            raise RuntimeError(f"Backup identity validation failed for {name}.")
+        items[name] = rows
+    return manifest, items
+
+
+def restore_backup(
+    backup_dir: Path,
+    target: CosmosConnection,
+) -> dict[str, Any]:
+    """Restore a verified artifact into an empty, isolated target database."""
+    started = datetime.now(UTC)
+    manifest, backup_items = _load_backup(backup_dir)
+    target_database = _client(target).get_database_client(target.database)
+    source_coordinates = manifest.get("source") or {}
+    source = CosmosConnection(
+        endpoint=f"https://{source_coordinates.get('host') or 'unknown'}",
+        key="",
+        database=str(source_coordinates.get("database") or ""),
+    )
+    source_database = BackupArtifactDatabase(backup_items)
+    _require_recovery_target(
+        source,
+        target,
+        source_database,
+        target_database,
+        list(DEFAULT_CONTAINERS),
+    )
+
+    counts: dict[str, int] = {}
+    for name, rows in backup_items.items():
+        target_container = target_database.get_container_client(name)
+        for row in rows:
+            target_container.upsert_item(row)
+        counts[name] = verify_container(
+            source_database.get_container_client(name), target_container, name
+        )
+
+    completed = datetime.now(UTC)
+    return {
+        "status": "passed",
+        "started_at": started.isoformat(),
+        "completed_at": completed.isoformat(),
+        "duration_seconds": round((completed - started).total_seconds(), 3),
+        "backup_exported_at": manifest["exported_at"],
+        "target": {
+            "host": urlparse(target.endpoint).hostname,
+            "database": target.database,
+        },
+        "containers": counts,
+        "restored_items": sum(counts.values()),
+        "verification": "checksum_and_exact_content",
+    }
+
+
+class BackupArtifactContainer:
+    def __init__(self, items: list[dict[str, Any]]) -> None:
+        self._items = items
+
+    def query_items(self, **_: Any) -> list[dict[str, Any]]:
+        return self._items
+
+
+class BackupArtifactDatabase:
+    def __init__(self, containers: dict[str, list[dict[str, Any]]]) -> None:
+        self._containers = containers
+
+    def list_containers(self) -> list[dict[str, str]]:
+        return [{"id": name} for name in self._containers]
+
+    def get_container_client(self, name: str) -> BackupArtifactContainer:
+        return BackupArtifactContainer(self._containers[name])
+
+
+def run_backup_recovery_drill(
+    source: CosmosConnection,
+    target: CosmosConnection,
+    backup_dir: Path,
+) -> dict[str, Any]:
+    """Export an offline artifact, restore it in isolation, and combine evidence."""
+    manifest = export_backup(source, backup_dir, list(DEFAULT_CONTAINERS))
+    restore = restore_backup(backup_dir, target)
+    return {
+        "status": "passed",
+        "backup": {
+            "exported_at": manifest["exported_at"],
+            "source": manifest["source"],
+            "containers": {
+                name: entry["items"] for name, entry in manifest["containers"].items()
+            },
+            "total_items": manifest["total_items"],
+            "manifest": str(backup_dir / "manifest.json"),
+        },
+        "restore": restore,
+    }
 
 
 def _az_output(*arguments: str) -> str:
@@ -202,7 +488,13 @@ def _az_output(*arguments: str) -> str:
     return result.stdout.strip()
 
 
-def _azure_connection(resource_group: str, account: str, database: str) -> CosmosConnection:
+def _azure_connection(
+    resource_group: str,
+    account: str,
+    database: str,
+    subscription: str | None = None,
+) -> CosmosConnection:
+    subscription_args = ("--subscription", subscription) if subscription else ()
     endpoint = _az_output(
         "cosmosdb",
         "show",
@@ -212,6 +504,7 @@ def _azure_connection(resource_group: str, account: str, database: str) -> Cosmo
         account,
         "--query",
         "documentEndpoint",
+        *subscription_args,
     )
     key = _az_output(
         "cosmosdb",
@@ -223,6 +516,7 @@ def _azure_connection(resource_group: str, account: str, database: str) -> Cosmo
         account,
         "--query",
         "primaryMasterKey",
+        *subscription_args,
     )
     return CosmosConnection(endpoint=endpoint, key=key, database=database)
 
@@ -233,9 +527,10 @@ def _connection_from_args(args: argparse.Namespace, prefix: str) -> CosmosConnec
     database = getattr(args, f"{prefix}_db")
     endpoint = getattr(args, f"{prefix}_endpoint")
     key = getattr(args, f"{prefix}_key")
+    subscription = getattr(args, f"{prefix}_subscription")
 
     if account and resource_group:
-        return _azure_connection(resource_group, account, database)
+        return _azure_connection(resource_group, account, database, subscription)
     if endpoint and key:
         return CosmosConnection(endpoint=endpoint, key=key, database=database)
     raise ValueError(
@@ -251,26 +546,73 @@ def parse_args() -> argparse.Namespace:
     for prefix in ("src", "dst"):
         parser.add_argument(f"--{prefix}-account")
         parser.add_argument(f"--{prefix}-resource-group")
+        parser.add_argument(f"--{prefix}-subscription")
         parser.add_argument(f"--{prefix}-endpoint")
         parser.add_argument(f"--{prefix}-key")
-        parser.add_argument(f"--{prefix}-db", required=True)
+        parser.add_argument(f"--{prefix}-db", required=prefix == "src")
     parser.add_argument("--containers", nargs="+", default=list(DEFAULT_CONTAINERS))
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--verify-only", action="store_true")
+    parser.add_argument("--workers", type=int, default=1)
+    parser.add_argument("--recovery-drill", action="store_true")
+    parser.add_argument("--export-only", action="store_true")
+    parser.add_argument("--backup-dir", type=Path)
+    parser.add_argument("--report-path", type=Path)
     parser.add_argument("--json", action="store_true", dest="json_output")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    workers = getattr(args, "workers", 1)
+    if workers < 1:
+        raise ValueError("--workers must be at least 1.")
     source = _connection_from_args(args, "src")
+    if args.export_only:
+        if args.dry_run or args.verify_only or args.recovery_drill:
+            raise ValueError(
+                "--export-only cannot be combined with dry-run, verify-only, or recovery-drill."
+            )
+        if not args.backup_dir:
+            raise ValueError("--export-only requires --backup-dir.")
+        if args.containers != list(DEFAULT_CONTAINERS):
+            raise ValueError("--export-only does not permit a partial container list.")
+        manifest = export_backup(source, args.backup_dir, list(DEFAULT_CONTAINERS))
+        if args.report_path:
+            _write_report(args.report_path, manifest)
+        print(
+            json.dumps(manifest, sort_keys=True)
+            if args.json_output
+            else json.dumps(manifest, indent=2)
+        )
+        return 0
+    if not args.dst_db:
+        raise ValueError("--dst-db is required unless --export-only is used.")
     target = _connection_from_args(args, "dst")
+    if args.recovery_drill:
+        if args.dry_run or args.verify_only:
+            raise ValueError("--recovery-drill cannot be combined with dry-run or verify-only.")
+        if not args.backup_dir:
+            raise ValueError("--recovery-drill requires --backup-dir.")
+        if args.containers != list(DEFAULT_CONTAINERS):
+            raise ValueError("--recovery-drill does not permit a partial container list.")
+        report = run_backup_recovery_drill(source, target, args.backup_dir)
+        if args.report_path:
+            _write_report(args.report_path, report)
+        output = (
+            json.dumps(report, sort_keys=True)
+            if args.json_output
+            else json.dumps(report, indent=2)
+        )
+        print(output)
+        return 0
     total = copy_cosmos(
         source,
         target,
         containers=args.containers,
         dry_run=args.dry_run,
         verify_only=args.verify_only,
+        workers=workers,
     )
     summary = {
         "copied": 0 if args.verify_only or args.dry_run else total,

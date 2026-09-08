@@ -43,6 +43,7 @@ def test_record_tool_call_tracks_errors_and_cache_hits():
     assert snap["foo"]["cache_hits"] == 1
     assert snap["foo"]["error_rate"] == round(1 / 3, 3)
     assert snap["foo"]["hit_rate"] == round(1 / 3, 3)
+    assert snap["foo"]["error_types"] == {"ValueError": 1}
 
 
 def test_tool_metrics_snapshot_returns_p50_and_p95():

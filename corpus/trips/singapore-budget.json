@@ -1,0 +1,371 @@
+{
+  "status": "draft",
+  "trip_id": "singapore_2027-06-04_2027-06-09",
+  "trip_number": 1,
+  "created_at": "2026-08-15T20:00:10.314177",
+  "destination": "Singapore",
+  "origin": "Chennai",
+  "departure_date": "2027-06-04",
+  "return_date": "2027-06-09",
+  "travelers": "2 adults",
+  "notes": "Tight budget: INR 90,000 total. Balanced itinerary. Economy flights, minimum 3-star hotel, prefer direct flights.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Singapore",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [
+    {
+      "option": 1,
+      "airline": "Duffel Airways",
+      "price": 470.4,
+      "currency": "USD",
+      "departure": "2027-06-04T02:19",
+      "arrival": "2027-06-04T09:17",
+      "origin": "Chennai",
+      "destination": "Singapore",
+      "return_departure": "2027-06-09T06:11",
+      "return_arrival": "2027-06-09T08:09",
+      "return_origin": "Singapore",
+      "return_destination": "Chennai",
+      "direct": true
+    }
+  ],
+  "selected_hotels": [
+    {
+      "name": "Hotel 81 Orchid",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp65547954"
+      },
+      "address": "21 Lorong 8 Geylang, Singapore",
+      "checkin": "2027-06-04",
+      "checkout": "2027-06-09",
+      "price_per_night": 3500,
+      "currency": "INR",
+      "total_price": 17500,
+      "star_rating": 3,
+      "google_rating": 3.7,
+      "google_reviews": 1877,
+      "notes": "Clean, basic, well-located for budget travelers"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-06-04",
+      "title": "Arrival in Singapore",
+      "summary": "Arrive from Chennai, check in to Hotel 81 Orchid, explore Little India, enjoy affordable dinner.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Singapore",
+          "kind": "flight",
+          "time": "07:00",
+          "arrival_time": "14:00",
+          "duration_min": 330
+        },
+        {
+          "name": "Hotel 81 Orchid",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Little India",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 60,
+          "note": "Walk and explore"
+        },
+        {
+          "name": "Komala Vilas",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Affordable Indian dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-06-05",
+      "title": "Marina Bay & Gardens",
+      "summary": "Visit Marina Bay, Gardens by the Bay, and enjoy affordable meals.",
+      "stops": [
+        {
+          "name": "Hotel 81 Orchid",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Marina Bay Sands (outside)",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Gardens by the Bay",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Satay by the Bay",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Budget lunch"
+        },
+        {
+          "name": "Merlion Park",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel 81 Orchid",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-06-06",
+      "title": "Sentosa Island Day",
+      "summary": "Explore Sentosa Island with free/low-cost attractions, beach time, and affordable meals.",
+      "stops": [
+        {
+          "name": "Hotel 81 Orchid",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Sentosa Island (beach)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Sentosa Boardwalk",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Good Old Days Sentosa",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Budget lunch"
+        },
+        {
+          "name": "Fort Siloso",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel 81 Orchid",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-06-07",
+      "title": "Cultural & Chinatown",
+      "summary": "Explore Chinatown, temples, and enjoy affordable local cuisine.",
+      "stops": [
+        {
+          "name": "Hotel 81 Orchid",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Chinatown",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Sri Mariamman Temple",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Maxwell Food Centre",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Budget lunch"
+        },
+        {
+          "name": "Hotel 81 Orchid",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-06-08",
+      "title": "Shopping & Departure",
+      "summary": "Last day: Bugis Street shopping, local lunch, check out, return flight.",
+      "stops": [
+        {
+          "name": "Hotel 81 Orchid",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Bugis Street",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Kopitiam Bugis",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Budget lunch"
+        },
+        {
+          "name": "Flight: Singapore to Chennai",
+          "kind": "flight",
+          "time": "15:00",
+          "arrival_time": "18:30",
+          "duration_min": 330
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "flights": 39300,
+    "hotel": 17500,
+    "meals": 5000,
+    "local_transport": 4000,
+    "attractions": 6000,
+    "misc": 3000
+  },
+  "total_cost": 69800,
+  "budget": 90000,
+  "currency": "INR",
+  "weather": {
+    "destination": "Singapore",
+    "country": "Singapore",
+    "latitude": 1.28967,
+    "longitude": 103.85007,
+    "source": "seasonal_estimate",
+    "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+    "days": [
+      {
+        "date": "2027-06-04",
+        "summary": "Light drizzle",
+        "high_c": 33.5,
+        "low_c": 27.7,
+        "precip_mm": 1.3
+      },
+      {
+        "date": "2027-06-05",
+        "summary": "Drizzle",
+        "high_c": 34.1,
+        "low_c": 25.9,
+        "precip_mm": 2.8
+      },
+      {
+        "date": "2027-06-06",
+        "summary": "Light drizzle",
+        "high_c": 33.8,
+        "low_c": 28.8,
+        "precip_mm": 0.5
+      },
+      {
+        "date": "2027-06-07",
+        "summary": "Light drizzle",
+        "high_c": 33.2,
+        "low_c": 27.6,
+        "precip_mm": 1.5
+      },
+      {
+        "date": "2027-06-08",
+        "summary": "Light drizzle",
+        "high_c": 33.3,
+        "low_c": 28.1,
+        "precip_mm": 1.1
+      }
+    ],
+    "packing_advice": [
+      "Pack a light rain jacket or umbrella.",
+      "Quick-dry clothes and sandals.",
+      "Carry sunscreen."
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [
+    "Tight budget: INR 90,000 total for 2 adults"
+  ],
+  "updated_at": "2026-08-15T20:02:12.237544",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T20:01:02",
+      "expires_at": "2026-08-16T08:01:02"
+    },
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-15T20:01:45",
+      "expires_at": "2026-08-15T20:31:45"
+    }
+  ],
+  "id": "singapore_2027-06-04_2027-06-09",
+  "user_id": "corpus-singapore-budget"
+}

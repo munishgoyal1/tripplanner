@@ -1,0 +1,331 @@
+{
+  "status": "draft",
+  "trip_id": "thailand_bangkok_krabi_2027-01-07_2027-01-14",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:28:18.103293",
+  "destination": "Thailand (Bangkok & Krabi)",
+  "origin": "Chennai",
+  "departure_date": "2027-01-07",
+  "return_date": "2027-01-14",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Premium hotels throughout. Family group includes grandparents.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Thailand",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-07",
+      "title": "Arrival in Bangkok",
+      "summary": "Arrive in Bangkok from Chennai, transfer to hotel, relax and explore nearby attractions.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Bangkok",
+          "kind": "flight",
+          "time": "09:00",
+          "duration_min": 210,
+          "note": "Morning flight, direct if possible"
+        },
+        {
+          "name": "Premium Hotel Bangkok",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Terminal 21 Shopping Mall",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Easy evening outing, shopping and dining"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-08",
+      "title": "Bangkok City Tour",
+      "summary": "Full-day guided tour of Bangkok's highlights including temples and river cruise.",
+      "stops": [
+        {
+          "name": "Premium Hotel Bangkok",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Grand Palace",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Must-see royal complex"
+        },
+        {
+          "name": "Wat Pho",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Famous Reclining Buddha"
+        },
+        {
+          "name": "Supanniga Eating Room",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 75,
+          "note": "Premium Thai lunch"
+        },
+        {
+          "name": "Wat Arun",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "Temple of Dawn, riverside views"
+        },
+        {
+          "name": "Asiatique The Riverfront",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 120,
+          "note": "Evening market, dining, and river views"
+        },
+        {
+          "name": "Premium Hotel Bangkok",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-09",
+      "title": "Bangkok Culture & Leisure",
+      "summary": "Explore Bangkok's modern and cultural attractions at a relaxed pace.",
+      "stops": [
+        {
+          "name": "Premium Hotel Bangkok",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "SEA LIFE Bangkok Ocean World",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Aquarium, great for families"
+        },
+        {
+          "name": "CentralWorld",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120,
+          "note": "Shopping and lunch options"
+        },
+        {
+          "name": "Baan Khanitha",
+          "kind": "meal",
+          "time": "14:30",
+          "duration_min": 75,
+          "note": "Fine Thai cuisine"
+        },
+        {
+          "name": "Jim Thompson House",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 90,
+          "note": "Historic Thai house and museum"
+        },
+        {
+          "name": "Premium Hotel Bangkok",
+          "kind": "hotel",
+          "note": "Return to hotel, evening at leisure"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-10",
+      "title": "Bangkok to Krabi",
+      "summary": "Fly to Krabi, check in to premium resort, relax at the beach.",
+      "stops": [
+        {
+          "name": "Flight: Bangkok to Krabi",
+          "kind": "flight",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Morning direct flight"
+        },
+        {
+          "name": "Premium Hotel Bangkok",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "12:00"
+        },
+        {
+          "name": "Premium Resort Krabi",
+          "kind": "hotel",
+          "note": "Check-in and relax",
+          "time": "14:00"
+        },
+        {
+          "name": "Ao Nang Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Beach time and sunset"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-01-11",
+      "title": "Krabi Islands Tour",
+      "summary": "Full-day 4 Islands tour by speedboat with snorkeling and lunch.",
+      "stops": [
+        {
+          "name": "Premium Resort Krabi",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "4 Islands Tour (Phra Nang, Chicken, Poda, Tup)",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 420,
+          "note": "Includes snorkeling, lunch on the beach"
+        },
+        {
+          "name": "Premium Resort Krabi",
+          "kind": "hotel",
+          "note": "Return to hotel, evening at leisure"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-01-12",
+      "title": "Krabi Nature & Culture",
+      "summary": "Explore Krabi's natural wonders and local culture.",
+      "stops": [
+        {
+          "name": "Premium Resort Krabi",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Emerald Pool & Hot Springs",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Relaxing natural pools"
+        },
+        {
+          "name": "Ruen Mai Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 75,
+          "note": "Highly rated local cuisine"
+        },
+        {
+          "name": "Tiger Cave Temple",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Cultural site with great views"
+        },
+        {
+          "name": "Premium Resort Krabi",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-01-13",
+      "title": "Leisure & Departure",
+      "summary": "Relax at resort, local shopping, return flight to Chennai.",
+      "stops": [
+        {
+          "name": "Premium Resort Krabi",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Ao Nang Village Market",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Souvenir shopping"
+        },
+        {
+          "name": "Flight: Krabi to Chennai (via Bangkok)",
+          "kind": "flight",
+          "time": "14:00",
+          "duration_min": 360,
+          "note": "Afternoon flight, likely via Bangkok"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:36:15.559670",
+  "id": "thailand_bangkok_krabi_2027-01-07_2027-01-14",
+  "user_id": "corpus-thailand-premium-three-generation-7d"
+}

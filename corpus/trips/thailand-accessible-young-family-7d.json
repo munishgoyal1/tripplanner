@@ -1,0 +1,461 @@
+{
+  "status": "draft",
+  "trip_id": "thailand_2027-01-04_2027-01-11",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:27:31.097772",
+  "destination": "Thailand",
+  "origin": "Chennai",
+  "departure_date": "2027-01-04",
+  "return_date": "2027-01-11",
+  "travelers": "2 adults and 2 children (ages 6 and 9)",
+  "notes": "Chosen currency: Thai Baht (THB) for all costs. Hotel search returned no live rates, so hotel options are based on typical 4-5 star accessible properties. Activities and meals are named for accessibility and family-friendliness. Times have been corrected for realistic transitions and durations.",
+  "planning_recommendation": {
+    "confidence": "medium",
+    "destination": "Thailand",
+    "estimated_planned_minutes": 1020,
+    "evidence_place_count": 2,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "2 preference-matched places account for about 1020 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "city": "Krabi",
+      "name": "Dusit Thani Krabi Beach Resort",
+      "address": "155 Moo 2, Nong Thale, Muang, Krabi 81180, Thailand",
+      "rating": 4.6,
+      "checkin": "2027-01-07",
+      "checkout": "2027-01-11",
+      "room_type": "Family Room",
+      "price_per_night": 6500,
+      "currency": "THB",
+      "accessible": true
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-04",
+      "title": "Arrival in Bangkok",
+      "summary": "Arrive in Bangkok from Chennai, transfer to hotel, easy evening exploration nearby.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Bangkok",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "14:30",
+          "duration_min": 330,
+          "note": "Direct flight, wheelchair assistance requested"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Terminal 21 Shopping Mall",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Accessible mall, easy walk, dinner options"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-05",
+      "title": "Bangkok Temples & River",
+      "summary": "Visit Wat Pho, Wat Arun, and enjoy a river cruise. Accessible transport arranged.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Wat Pho",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Wheelchair accessible"
+        },
+        {
+          "name": "Wat Arun",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Accessible by river ferry, minimal stairs"
+        },
+        {
+          "name": "Chao Phraya River Cruise",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 90,
+          "note": "Scenic, accessible boat"
+        },
+        {
+          "name": "Blue Elephant Restaurant",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Dinner, family-friendly, accessible"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-06",
+      "title": "Bangkok Family Fun",
+      "summary": "Explore SEA LIFE Bangkok Ocean World and Lumpini Park. Relaxed, accessible day.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "SEA LIFE Bangkok Ocean World",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Fully accessible, great for kids"
+        },
+        {
+          "name": "Lumpini Park",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Accessible paths, playground"
+        },
+        {
+          "name": "Savoey Restaurant",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Dinner, accessible, Thai cuisine"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-07",
+      "title": "Bangkok to Krabi",
+      "summary": "Fly to Krabi, transfer to hotel, beach relaxation.",
+      "stops": [
+        {
+          "name": "Flight: Bangkok to Krabi",
+          "kind": "flight",
+          "time": "10:00",
+          "arrival_time": "11:30",
+          "duration_min": 90,
+          "note": "Direct flight, wheelchair assistance requested"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "12:00"
+        },
+        {
+          "name": "Ao Nang Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Accessible beach area, family-friendly"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-01-08",
+      "title": "Krabi Island Tour",
+      "summary": "Accessible boat tour to nearby islands, gentle activities for all ages.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Accessible Island Boat Tour",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 240,
+          "note": "Private boat, minimal walking"
+        },
+        {
+          "name": "Lae Lay Grill",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Dinner, accessible, sea views"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-01-09",
+      "title": "Krabi Nature & Relaxation",
+      "summary": "Visit Emerald Pool (accessible), relax at hotel pool, easy evening stroll.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Emerald Pool",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Accessible boardwalks"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Afternoon pool time"
+        },
+        {
+          "name": "Carnivore Steak & Grill",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Dinner, accessible, family-friendly"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-01-10",
+      "title": "Krabi Departure",
+      "summary": "Check out, transfer to airport, fly back to Chennai.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Flight: Krabi to Chennai",
+          "kind": "flight",
+          "time": "12:00",
+          "arrival_time": "16:30",
+          "duration_min": 270,
+          "note": "Direct flight, wheelchair assistance requested"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-01-11",
+      "title": "Buffer/Extra Day",
+      "summary": "Extra day for flexibility or rest before departure.",
+      "stops": [
+        {
+          "name": "Dusit Thani Krabi Beach Resort",
+          "kind": "hotel",
+          "note": "Optional late checkout or rest",
+          "time": "09:00"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T19:35:18.027418",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T19:30:48",
+      "expires_at": "2026-08-19T07:30:48"
+    },
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-18T19:30:48",
+      "expires_at": "2026-08-18T20:00:48"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_krabi_2027_01_07_2027_01_11",
+      "kind": "lodging",
+      "created_at": "2026-08-18T14:00:48.313539Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Krabi",
+        "date": "2027-01-07"
+      },
+      "subject": "Stay in Krabi",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_5c5b87ebdb9e",
+      "options": [
+        {
+          "id": "opt_stay_5c5b87ebdb9e",
+          "mode": null,
+          "label": "Comfort Inn Clubarham",
+          "detail": "1 Queen Bed, 2 Single Beds, Nonsmoking",
+          "price": {
+            "amount": 12467.06,
+            "currency": "THB",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-07",
+            "checkout": "2027-01-11",
+            "room_name": "1 Queen Bed, 2 Single Beds, Nonsmoking",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "45 Murray Street",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp8fcc0",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFkR01ZVEVNQlhHRTNUS05SVkdZMlRNWkpTR0EzREVOUlZHWTJERVlaU0dBWlRFTVJRRzRaVE1PSldNVTNET05UREdZMlRFTUJXR0kzREtOUlVHNFpURVlaU0dBM0dLTlRHR1pTVE9NWldNUTNHTU5UQ0dZNFRNWkpXRzU2RENJWlNHQVpET01CUkdBM1hZTVJRR0kzVEFNSlJHRjZHSzNTN0tWSlhZU0tPUFJLRVFRVDRHSkFURVFaV0ZVNFhZTkJWR0k0WFkyS1FNNUtVUTdCUkc0NERPTUJXR0UzRElOSlpHTTNYR1JDMklFUlRLT0JZSEU0VEVJWldHWTRTMk5KWUhBNFRTTVQ0S0pERTQ3QlNHQVpET01CUkdBMlRDTUJRR0I2REM3Q1NHRVlURU0zNEdFWkRJTlJYR0EzQ0dVU1BFTkpFTVRSREdJWURFTlpOR0FZUzJNQlZFQVlUQU9SUUdBUlGjcHJjy0DIWYeuFHrhpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTAxLTA2IDEwOjAwOjAwonJ0o1JGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Ju2SYxIFF1ZWVuIEJlZCwgMiBTaW5nbGUgQmVkcywgTm9uc21va2luZ6NvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJKFoXSzMjAyNy0wMS0wNSAxMDowMDowMKFhy0CoWYo9cKPXoWOjVEhConR5pmFtb3VudKJ0eqNHTVSFoXSzMjAyNy0wMS0wNiAxMDowMDowMKFhy0DIWYeuFHrhoWOjVEhConR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmNTg4OTkyo3NpZAKjaGlkp2xwOGZjYzCjb2NjkYKhYQKhY5IGCaNjdXKjVEhComduoklOomNpqjIwMjctMDEtMDeiY2-qMjAyNy0wMS0xMaNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDE1MmNiMjBka0laVEFxU0JBcHJmS3VSUDAwSTdvRm1EZmVDaqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnDoWSpU2FsZXMgdGF4oWHLQJG4AAAAAAChY6NUSEKibHDAo2JrdAM=",
+              "rate_id": "I5GVSVCFJVBFQR2FGNKEWTSSKZDVSMSUJVNEUU2HIEZUIRKOKJLEOWJSIRCVSWSTI5AVUVCFJVJFCRZULJKE2T2KK5GVKM2EJ5HFIRCHLEZFIRKNIJLUOSJTIRFU4USVI42FUVCFLFNFGR2BGNDUWTSUI5DVUU2UJ5GVUV2NKEZUOTKOKRBUOWJUKRGVUSSXI42TMRCDJFNFGR2BLJCE6TKCKJDUCM2YLFGVEUKHJEZVIQKNJJJEORRWI5FTGUZXJNLEUWCZKNFU6UCSJNCVCUKUGRDUUQKUIVIVUV2GKU2FQWKOIJLEOSJULBMTES2RJU2UWVKRG5BFERZUGRCE6TKCK5DUKM2EJFHEUWSHJUZVQR2SIMZESRKSKRFU6QSZJBCTIVCFJFNFOR2ZGRJTETSKLFEECNCUKNGVINCLJJCEKNBXIJJUOQK2IRHU2QSSI5ATEVCDJVBFCR2CGZCEGN2DKNDUKWKUIVGTGNCHIVNEISKOKJMEOQJTINDVKU2QIVHEURKNKRJEIR2JLFCEKTS2JZDUCWKTGJGUEVSFIFMVIQKPKJIUOQKSKF6DCMRUGY3S4MBWPQZDAMRXFUYDCLJQGYQDCMB2GAYDUMBQPRJE67D4PR6DCICROVSWK3RAIJSWILBAGIQFG2LOM5WGKICCMVSHGLBAJZXW443NN5VWS3THPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T14:00:48.263852Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_efcb52f222e9",
+          "mode": null,
+          "label": "Murray Waters Motor Inn & Apartments",
+          "detail": "Two-Bedroom Apartment",
+          "price": {
+            "amount": 28107.96,
+            "currency": "THB",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs 15,641 thb more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-07",
+            "checkout": "2027-01-11",
+            "room_name": "Two-Bedroom Apartment",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "1 Keene Street",
+            "rating": 9.4,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp7ac9d",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEvRzQyRE9OWldNWVpHSU5SU0dZMlRNTkJYR0kzR01OVEdHWlNERU1CV0dFM1RBTlJSRzRaRE9OQldNUTNES05URkc0MkhZTUpER0lZREVOWlFHRVlETzdCU0dBWkRPTUJSR0VZWFlaTE9MNUtWRzdDSkpaNkZJU0NDUFFaRUNNU0RHWVdUUzdCVUdVWkRTN0RKS0JUVktTRDRHRTNUUU5aUUdZWVRNTkJWSEVaVE80MkVMSkFTR05KUUdJNFRJTUpER0VaVElOSk5HVVlERU9KVUdGNkZFUlNPUFFaREFNUlhHQVlUQU5CU0dJMlRTN0JSUFJKRENNQlRHWjZERU9CUkdBM1RTTlJES0pIU0dVU0dKWVJURU1CU0c0V1RBTUpOR0EyQ0FNUlNISTJUU0lZo3ByY8tA23L9cKPXCqVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wMS0wNCAyMjo1OTowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybrVUd28tQmVkcm9vbSBBcGFydG1lbnSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCRhaF0szIwMjctMDEtMDQgMjI6NTk6MDChYctA23L9cKPXCqFjo1RIQqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjUwMjk0MaNzaWQCo2hpZKdscDdhYzlko29jY5GCoWECoWOSBgmjY3Vyo1RIQqJnbqJJTqJjaaoyMDI3LTAxLTA3omNvqjIwMjctMDEtMTGjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNTJjYjIwZGtJWlRBcVNCQXByZkt1UlAwMEk3b0ZtRGZlQ2qjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpw6Fko1ZBVKFhy0Cj9lwo9cKPoWOjVEhComxwwKNia3QB",
+              "rate_id": "I42DERCPJZNFOTKZLJDUSTSSKNDVSMSUJVHEEWCHJEZUOTKOKRDUOWSTIRCU2QSXI5CTGVCBJZJFERZULJCE6TSCK5GVCM2EJNHFIRSHGQZEQWKNJJCEOSKZIRCU4WSRI5CVSRCPG5BFGR2BLJCE6TKCKJDUKWKYLFNEYT2MGVFVMRZXINFEUWRWIZEVGQ2DKBIVURKDJVJUIR2ZK5KFGN2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4WSRI5MVSVCNJZBFMSCFLJKE6NBSIVGEUQKTI5HEUUKHJE2FISKNJJCEORK2KREU4SSOI5KVSRCFJ5FFKR2GGZDEKUSTJ5IFCWSEIFGVEWCHIFMVIQKOIJJUOSJSKRJTOQSSKBJEURCDJVBFIR22GZCEKT2CKJDUCM2UKNHFERCLJJEFGR2VKNDUUWKSKRCU2QSTI42FOVCBJVFE4R2BGJBUCTKSKNEESMSUKNEVS7BSHAYTANZOHE3HYMRQGI3S2MBRFUYDIIBSGI5DKOJ2GAYHYUSPPR6HY7CUO5XS2QTFMRZG633NEBAXAYLSORWWK3TUPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T14:00:48.263852Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 12467.06,
+        "delta": null,
+        "currency": "THB"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "thailand_2027-01-04_2027-01-11",
+  "user_id": "corpus-thailand-accessible-young-family-7d"
+}

@@ -3,7 +3,40 @@ import { describe, expect, it, vi } from "vitest";
 import type { TripView } from "../types";
 import TripPanel from "./TripPanel";
 
+// The paged destination guide fetches its own data; stub it so TripPanel tests
+// stay focused on the panel's own behavior.
+vi.mock("./DestinationGuide", () => ({
+  default: ({
+    focus,
+    city,
+    kind,
+    query,
+    onCities,
+  }: {
+    focus?: { name?: string } | null;
+    city?: string;
+    kind?: string;
+    query?: string;
+    onCities?: (cities: string[]) => void;
+  }) => (
+    <div
+      data-testid="destination-guide"
+      data-focus={focus?.name ?? ""}
+      data-city={city ?? ""}
+      data-kind={kind ?? ""}
+      data-query={query ?? ""}
+    >
+      {onCities && (
+        <button type="button" onClick={() => onCities(["Nice", "Paris"])}>
+          report cities
+        </button>
+      )}
+    </div>
+  ),
+}));
+
 const view: TripView = {
+  trip_id: "paris-trip",
   has_trip: true,
   title: "Paris",
   destination: "Paris",
@@ -65,7 +98,7 @@ describe("TripPanel place removal", () => {
     expect(screen.queryByText("Itinerary refreshed.")).not.toBeInTheDocument();
   });
 
-  it("keeps alternatives compact when one place is focused", () => {
+  it("surfaces contextual alternatives through the destination guide when focused", () => {
     render(
       <TripPanel
         view={{
@@ -96,8 +129,13 @@ describe("TripPanel place removal", () => {
       />,
     );
 
-    expect(screen.getByText("More places")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Louvre Museum" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Eiffel Tower" })).toBeInTheDocument();
+    // The browse guide stays mounted (hidden) alongside the focused alternatives
+    // guide, so one of the guides carries the focused place's name.
+    const guides = screen.getAllByTestId("destination-guide");
+    expect(guides.some((guide) => guide.getAttribute("data-focus") === "Eiffel Tower")).toBe(true);
+    // The focused card shows only the focused place — alternatives (and their
+    // reviews) live in the guide, not inline.
     expect(screen.queryByText("Alternative review")).not.toBeInTheDocument();
   });
 
@@ -203,5 +241,140 @@ describe("TripPanel place removal", () => {
       "Eiffel Tower",
       { day: 3, stop: 1, all_occurrences: false },
     ));
+  });
+
+  it("offers the same add controls for a focused restaurant", () => {
+    const onSelect = vi.fn();
+    render(
+      <TripPanel
+        view={{
+          ...view,
+          focus: { kind: "restaurant", name: "Le Comptoir" },
+          items: [{ ...view.items[0], kind: "restaurant", name: "Le Comptoir", selected: false, occurrences: [] }],
+        }}
+        loading={false}
+        navList={[{ kind: "restaurant", name: "Le Comptoir" }]}
+        focusIndex={0}
+        onFocus={vi.fn()}
+        onClearFocus={vi.fn()}
+        onStep={vi.fn()}
+        onSelect={onSelect}
+        onDeselect={vi.fn()}
+        tripVersion={0}
+        onSwitched={vi.fn()}
+        hideSwitcher
+      />,
+    );
+
+    expect(screen.getByRole("combobox", { name: "Choose day to add Le Comptoir" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "+ Add to trip" }));
+    expect(onSelect).toHaveBeenCalledWith("restaurant", "Le Comptoir", undefined);
+  });
+
+  it("offers remove controls for a restaurant already in the trip", () => {
+    render(
+      <TripPanel
+        view={{
+          ...view,
+          focus: { kind: "restaurant", name: "Le Comptoir" },
+          items: [{
+            ...view.items[0],
+            kind: "restaurant",
+            name: "Le Comptoir",
+            selected: true,
+            occurrences: [{ day: 2, stop: 1, time: "20:00" }],
+          }],
+        }}
+        loading={false}
+        navList={[{ kind: "restaurant", name: "Le Comptoir" }]}
+        focusIndex={0}
+        onFocus={vi.fn()}
+        onClearFocus={vi.fn()}
+        onStep={vi.fn()}
+        onSelect={vi.fn()}
+        onDeselect={vi.fn()}
+        tripVersion={0}
+        onSwitched={vi.fn()}
+        hideSwitcher
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Remove Le Comptoir from trip" })).toBeInTheDocument();
+  });
+
+  it("keeps the place filters visible while focused and re-scoping returns to browsing", () => {
+    const onClearFocus = vi.fn();
+    render(
+      <TripPanel
+        view={view}
+        loading={false}
+        navList={[{ kind: "attraction", name: "Eiffel Tower" }]}
+        focusIndex={0}
+        onFocus={vi.fn()}
+        onClearFocus={onClearFocus}
+        onStep={vi.fn()}
+        onSelect={vi.fn()}
+        onDeselect={vi.fn()}
+        tripVersion={0}
+        onSwitched={vi.fn()}
+        hideSwitcher
+      />,
+    );
+
+    expect(screen.getByLabelText("Search all trip places")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "All places" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Food" }));
+    expect(onClearFocus).toHaveBeenCalled();
+  });
+
+  it("resets the guide scope when the trip changes", () => {
+    const props = {
+      loading: false,
+      navList: [],
+      focusIndex: -1,
+      onFocus: vi.fn(),
+      onClearFocus: vi.fn(),
+      onStep: vi.fn(),
+      onSelect: vi.fn(),
+      onDeselect: vi.fn(),
+      tripVersion: 0,
+      onSwitched: vi.fn(),
+      hideSwitcher: true,
+    };
+    const paris = { ...view, focus: null };
+    const { rerender } = render(<TripPanel view={paris} {...props} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "report cities" }));
+    fireEvent.click(screen.getByRole("button", { name: "Nice" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hotels" }));
+    fireEvent.change(screen.getByLabelText("Search all trip places"), {
+      target: { value: "museum" },
+    });
+
+    const scoped = screen.getByTestId("destination-guide");
+    expect(scoped).toHaveAttribute("data-city", "Nice");
+    expect(scoped).toHaveAttribute("data-kind", "hotel");
+    expect(scoped).toHaveAttribute("data-query", "museum");
+
+    rerender(
+      <TripPanel
+        view={{
+          ...paris,
+          trip_id: "rome-trip",
+          title: "Rome",
+          destination: "Rome",
+          overview: { ...paris.overview!, destination: "Rome" },
+        }}
+        {...props}
+      />,
+    );
+
+    const reset = screen.getByTestId("destination-guide");
+    expect(reset).toHaveAttribute("data-city", "all");
+    expect(reset).toHaveAttribute("data-kind", "highlights");
+    expect(reset).toHaveAttribute("data-query", "");
+    expect(screen.getByLabelText("Search all trip places")).toHaveValue("");
+    expect(screen.queryByRole("button", { name: "Nice" })).not.toBeInTheDocument();
   });
 });

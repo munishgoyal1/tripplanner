@@ -1,0 +1,274 @@
+{
+  "status": "draft",
+  "trip_id": "tirupati_2027-08-04_2027-08-07",
+  "trip_number": 1,
+  "created_at": "2026-08-25T21:24:27.942246",
+  "destination": "Tirupati",
+  "origin": "Hyderabad",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-08-04",
+  "return_date": "2027-08-07",
+  "travelers": "4 adults (including grandparents aged 68 and 72), 1 child (age 8)",
+  "notes": "Prioritize worship timings, temple access, modest pacing, and practical meals. Optional Chennai stop.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Tirupati",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Fortune Kences Hotel",
+      "city": "Tirupati",
+      "star_rating": 3,
+      "amenities": [
+        "wheelchair accessible",
+        "family rooms",
+        "restaurant"
+      ],
+      "address": "Renigunta Road, Tirupati",
+      "notes": "Best fit for accessibility and family needs"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-08-04",
+      "title": "Day 1 · Hyderabad to Tirupati · Arrival & Evening Darshan",
+      "summary": "Morning train from Hyderabad to Tirupati. Check in, rest, and visit Sri Padmavathi Ammavari Temple for evening darshan. Late lunch after check-in for comfort.",
+      "stops": [
+        {
+          "name": "Train: Hyderabad to Tirupati",
+          "kind": "transport",
+          "time": "06:00",
+          "duration_min": 480,
+          "note": "Direct train, comfortable for elderly"
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "note": "Check-in and freshen up (3-star, family friendly, accessible)"
+        },
+        {
+          "name": "Hotel Mayura",
+          "kind": "meal",
+          "time": "14:15",
+          "note": "Lunch on arrival"
+        },
+        {
+          "name": "Sri Padmavathi Ammavari Temple",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening darshan, less crowded"
+        },
+        {
+          "name": "Annapurna Vegetarian Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Simple South Indian dinner"
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "note": "Return for overnight"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-08-05",
+      "title": "Day 2 · Tirumala Main Temple & Sightseeing",
+      "summary": "Early morning visit to Sri Venkateswara Temple, breakfast, and relaxed sightseeing. Prioritize accessibility and meal breaks.",
+      "stops": [
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Sri Venkateswara Temple",
+          "kind": "attraction",
+          "time": "06:00",
+          "duration_min": 150,
+          "note": "Early morning darshan for less crowd, elderly-friendly"
+        },
+        {
+          "name": "Saravana Bhavan",
+          "kind": "meal",
+          "time": "09:00",
+          "note": "Breakfast"
+        },
+        {
+          "name": "Govindaraja Swamy Temple",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel Mayura",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch break"
+        },
+        {
+          "name": "Kapila Theertham",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Short walk, scenic waterfall temple"
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "note": "Rest/refresh"
+        },
+        {
+          "name": "Minerva Coffee Shop",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-08-06",
+      "title": "Day 3 · Optional Chennai Excursion or Leisure in Tirupati",
+      "summary": "Option 1: Day trip to Chennai for Kapaleeshwarar Temple and Marina Beach. Option 2: Leisure in Tirupati, local shopping, and relaxed meals.",
+      "stops": [
+        {
+          "name": "Car: Tirupati to Chennai (optional)",
+          "kind": "transport",
+          "time": "06:30",
+          "duration_min": 240,
+          "note": "Private car, comfortable for elderly"
+        },
+        {
+          "name": "Kapaleeshwarar Temple",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Accessible temple, elderly-friendly"
+        },
+        {
+          "name": "Murugan Idli Shop",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch in Chennai"
+        },
+        {
+          "name": "Marina Beach",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Short stroll, rest spots available"
+        },
+        {
+          "name": "Car: Chennai to Tirupati (optional)",
+          "kind": "transport",
+          "time": "16:00",
+          "duration_min": 240,
+          "note": "Return to Tirupati by evening"
+        },
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "20:30"
+        },
+        {
+          "name": "Andhra Meals Hotel",
+          "kind": "meal",
+          "time": "23:59",
+          "note": "Dinner in Tirupati"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-08-07",
+      "title": "Day 4 · Departure: Tirupati to Hyderabad",
+      "summary": "Breakfast, check-out, and return to Hyderabad by train. Lunch will be on the train after arrival in Hyderabad.",
+      "stops": [
+        {
+          "name": "Fortune Kences Hotel",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Sri Vari Hotel",
+          "kind": "meal",
+          "time": "08:00",
+          "note": "Breakfast"
+        },
+        {
+          "name": "Train: Tirupati to Hyderabad",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 480,
+          "note": "Direct train, comfortable for elderly"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T21:27:22.345497",
+  "id": "tirupati_2027-08-04_2027-08-07",
+  "user_id": "corpus-india-tirupati-pilgrimage-three-generation-3d-d86917b6177b"
+}

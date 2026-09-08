@@ -1,0 +1,371 @@
+{
+  "status": "draft",
+  "trip_id": "istanbul_2027-05-13_2027-05-18",
+  "trip_number": 1,
+  "created_at": "2026-08-18T18:44:51.795153",
+  "destination": "Istanbul",
+  "origin": "Delhi",
+  "departure_date": "2027-05-13",
+  "return_date": "2027-05-18",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "No major local events or holidays during your dates. Most days are mild, with some drizzle — pack a light rain jacket and umbrella.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Istanbul",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Sirkeci Mansion",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp1f7764",
+        "offer_id": "3gAWonJzkt4AEaRzcmlk2gE6R1lZVE9NQldHRTNURU5aVUdaU0RNTkpXTVUzVElNUlFHSlNERU1CVEdJWkRBTlJTR1kyVE1OQlhHSTNHTU5UR0daU0RPTTM0R0VSVEVNQlNHNFlES01KVFBRWkRBTVJYR0EyVENPRDRNVlhGNlZLVFBSRVU0N0NWS05DSFlOQ0JHRkJUUUxaVUlFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlpRR1U0RFNNWldHUTNER1kyV0o1M0NHTVJRR1laRENPQlFFTTNETU9KTkdJWURNTVJSSEFZSFlUU1NJWkhIWU1SUUdJM0RBT0JSR1lZVEFNQlFQUVlYWVVSUkdFMlRBN0JTSEVZRE1NWlhFTkpFNkkyT0tKREU0SVpTR0FaRE1MSlFIQVdUQ05SQUdFWURVTUJRRU2jcHJjy0CWtMKPXCj2pW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JutkFwYXJ0bWVudCAtIDIgQmVkcm9vbXOjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk7eABGkc3JpZNoBOkdZWVRPTUJXR0UzVEVOWlVHWlNETU5KV01VM1RJTVJRR0pTREVNQlRHSVpEQU5SU0dZMlRNTkJYR0kzR01OVEdHWlNET00zNEdJUlRFTUJTRzRZREtNSlRQUVpEQU1SWEdBMlRDT0Q0TVZYRjZWS1RQUkVVNDdDVktOQ0hZTkNCR0ZCVFFMWlVJRVlFRzdCVUdVWkRTN0RKS0JUVktTRDRHRTNUUU5aUUdVNERTTVpXR1EzREdZMldKNTNDR01SUUdZWkRDT0JRRU0zRE1PSk5HSVlETU1SUkhBWUhZVFNTSVpISFlNUlFHSTNEQU9CUkdZWVRBTUJRUFFZWFlVUlJHRTJUQTdCU0hFWURNTVpYRU5KRTZJMk9LSkRFNElaU0dBWkRNTEpRSEFXVENOUkFHRVlEVU1CUUVNo3ByY8tAlrTCj1wo9qVvcl9wcssAAAAAAA"
+      },
+      "address": "Taya Hatun Cad. No:5, Sirkeci, Istanbul",
+      "rating": 4.7,
+      "review_count": 1100,
+      "price_per_night": 320,
+      "currency": "USD",
+      "room_type": "Family Room",
+      "amenities": [
+        "Breakfast included",
+        "Pool",
+        "Spa",
+        "Central location"
+      ],
+      "notes": "Excellent location for sightseeing, family-friendly, accessible for elderly."
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-13",
+      "title": "Arrival in Istanbul",
+      "summary": "Fly from Delhi to Istanbul, transfer to Sirkeci Mansion, settle in and enjoy a welcome dinner at Pandeli Restaurant.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Istanbul",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "15:00",
+          "duration_min": 360,
+          "note": "Direct flight, economy class"
+        },
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Pandeli Restaurant",
+          "kind": "meal",
+          "time": "17:30",
+          "note": "Traditional Turkish cuisine, family-friendly"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-14",
+      "title": "Historic Istanbul & Food Tour",
+      "summary": "Explore Sultanahmet, visit iconic sites, and enjoy a guided street food tour.",
+      "stops": [
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Hagia Sophia",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Historic landmark"
+        },
+        {
+          "name": "Blue Mosque",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Accessible for seniors"
+        },
+        {
+          "name": "Sultanahmet Köftecisi",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Classic Turkish meatballs"
+        },
+        {
+          "name": "Topkapi Palace",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Palace tour"
+        },
+        {
+          "name": "Street Food Tour (TBD)",
+          "kind": "activity",
+          "time": "17:30",
+          "duration_min": 120,
+          "note": "Guided local food experience"
+        },
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-15",
+      "title": "Bosphorus Cruise & Local Eats",
+      "summary": "Morning cruise on the Bosphorus, visit spice market, sample local delicacies.",
+      "stops": [
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Bosphorus Cruise",
+          "kind": "activity",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Scenic cruise"
+        },
+        {
+          "name": "Spice Bazaar",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Local flavors"
+        },
+        {
+          "name": "Çiya Sofrası",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Regional Turkish specialties"
+        },
+        {
+          "name": "Galata Tower",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Panoramic city views"
+        },
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-16",
+      "title": "Asian Side & Culinary Exploration",
+      "summary": "Cross to Kadiköy, explore markets, enjoy local food and relaxed sightseeing.",
+      "stops": [
+        {
+          "name": "Ferry to Kadiköy",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 30,
+          "note": "Scenic ferry ride"
+        },
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "10:00"
+        },
+        {
+          "name": "Kadiköy Market",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Local produce & snacks"
+        },
+        {
+          "name": "Karaköy Lokantası",
+          "kind": "meal",
+          "time": "16:30",
+          "note": "Modern Turkish cuisine"
+        },
+        {
+          "name": "Moda Park",
+          "kind": "attraction",
+          "time": "18:30",
+          "duration_min": 60,
+          "note": "Relaxing stroll"
+        },
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "20:00"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-05-17",
+      "title": "Grand Bazaar & Departure",
+      "summary": "Visit Grand Bazaar, enjoy a farewell lunch, transfer to airport for flight back to Delhi.",
+      "stops": [
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Grand Bazaar",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Shopping & local snacks"
+        },
+        {
+          "name": "Balıkçı Sabahattin",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Seafood lunch"
+        },
+        {
+          "name": "Flight: Istanbul to Delhi",
+          "kind": "flight",
+          "time": "16:00",
+          "arrival_time": "23:00",
+          "duration_min": 420,
+          "note": "Direct flight, economy class"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {
+    "destination": "Istanbul",
+    "country": "Republic of Türkiye",
+    "latitude": 41.01384,
+    "longitude": 28.94966,
+    "source": "seasonal_estimate",
+    "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+    "days": [
+      {
+        "date": "2027-05-13",
+        "summary": "Light drizzle",
+        "high_c": 24.2,
+        "low_c": 16.3,
+        "precip_mm": 0.7
+      },
+      {
+        "date": "2027-05-14",
+        "summary": "Drizzle",
+        "high_c": 18.1,
+        "low_c": 12.6,
+        "precip_mm": 2.7
+      },
+      {
+        "date": "2027-05-15",
+        "summary": "Overcast",
+        "high_c": 19.3,
+        "low_c": 10.5,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-05-16",
+        "summary": "Partly cloudy",
+        "high_c": 22.7,
+        "low_c": 13.2,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-05-17",
+        "summary": "Sunny",
+        "high_c": 25.4,
+        "low_c": 15.4,
+        "precip_mm": 0.0
+      }
+    ],
+    "packing_advice": [
+      "Light rain jacket for drizzle days",
+      "Comfortable walking shoes",
+      "Umbrella",
+      "Layered clothing for variable temperatures"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T18:48:50.970578",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T18:45:42",
+      "expires_at": "2026-08-19T06:45:42"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T18:47:05",
+      "expires_at": "2026-08-18T19:17:05"
+    }
+  ],
+  "id": "istanbul_2027-05-13_2027-05-18",
+  "user_id": "corpus-istanbul-food-three-generation-5d"
+}

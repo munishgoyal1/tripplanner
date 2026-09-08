@@ -1,0 +1,2062 @@
+{
+  "archive_no": 19,
+  "trip_id": "switzerland_2027-09-10_2027-09-18",
+  "user_id": "corpus-swiss-luxury",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:34:01Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T14:34:50Z",
+      "content_hash": "551933de05c00865",
+      "plan": {
+        "status": "draft",
+        "trip_id": "switzerland_2027-09-10_2027-09-18",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:04:01.651093",
+        "destination": "Switzerland",
+        "origin": "Mumbai",
+        "departure_date": "2027-09-10",
+        "return_date": "2027-09-18",
+        "travelers": "2 adults",
+        "notes": "Premium hotels, include scenic train journeys (Glacier Express, Bernina Express, GoldenPass). Balanced sightseeing and leisure.",
+        "planning_recommendation": {
+          "confidence": "high",
+          "destination": "Switzerland",
+          "estimated_planned_minutes": 2976,
+          "evidence_place_count": 8,
+          "reasons": [
+            "The user's explicit 8-day duration is authoritative",
+            "8 preference-matched places account for about 2976 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 8,
+          "recommended_range": [
+            9,
+            11
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-09-10",
+            "title": "Arrival in Zurich",
+            "summary": "Arrive in Zurich from Mumbai. Check in to premium hotel. Explore Zurich Old Town and lake promenade.",
+            "stops": [
+              {
+                "name": "Flight: Mumbai to Zurich",
+                "kind": "flight",
+                "time": "07:00",
+                "arrival_time": "13:00",
+                "duration_min": 480
+              },
+              {
+                "name": "Baur au Lac",
+                "kind": "hotel",
+                "note": "Check-in to premium hotel"
+              },
+              {
+                "name": "Bahnhofstrasse",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Lake Zurich Promenade",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-09-11",
+            "title": "Zurich to Lucerne",
+            "summary": "Morning at Zurich. Scenic train to Lucerne. Explore Chapel Bridge and lakeside.",
+            "stops": [
+              {
+                "name": "Train: Zurich to Lucerne",
+                "kind": "transport",
+                "time": "10:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Baur au Lac",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "11:30"
+              },
+              {
+                "name": "Hotel Schweizerhof Luzern",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "13:30"
+              },
+              {
+                "name": "Chapel Bridge",
+                "kind": "attraction",
+                "time": "15:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Lake Lucerne",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-09-12",
+            "title": "Lucerne & Mount Pilatus",
+            "summary": "Day trip to Mount Pilatus with cable car. Evening at Lucerne Old Town.",
+            "stops": [
+              {
+                "name": "Hotel Schweizerhof Luzern",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Mount Pilatus",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 240
+              },
+              {
+                "name": "Lucerne Old Town",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Hotel Schweizerhof Luzern",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-09-13",
+            "title": "GoldenPass Train to Interlaken",
+            "summary": "Scenic GoldenPass train journey to Interlaken. Explore Interlaken town.",
+            "stops": [
+              {
+                "name": "GoldenPass Line: Lucerne to Interlaken",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Hotel Schweizerhof Luzern",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "11:30"
+              },
+              {
+                "name": "Victoria Jungfrau Grand Hotel & Spa",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "13:30"
+              },
+              {
+                "name": "Interlaken Town",
+                "kind": "attraction",
+                "time": "15:30",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-09-14",
+            "title": "Jungfrau Region",
+            "summary": "Day trip to Jungfraujoch (Top of Europe) by train. Return to Interlaken.",
+            "stops": [
+              {
+                "name": "Train: Interlaken to Jungfraujoch",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 150
+              },
+              {
+                "name": "Jungfraujoch",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 180
+              },
+              {
+                "name": "Train: Jungfraujoch to Interlaken",
+                "kind": "transport",
+                "time": "14:00",
+                "duration_min": 150
+              },
+              {
+                "name": "Victoria Jungfrau Grand Hotel & Spa",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "17:00"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-09-15",
+            "title": "Interlaken to Zermatt (Glacier Express)",
+            "summary": "Scenic Glacier Express train to Zermatt. Evening stroll in Zermatt village.",
+            "stops": [
+              {
+                "name": "Glacier Express: Interlaken to Zermatt",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 240
+              },
+              {
+                "name": "Victoria Jungfrau Grand Hotel & Spa",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "13:30"
+              },
+              {
+                "name": "Mont Cervin Palace",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "15:30"
+              },
+              {
+                "name": "Zermatt Village",
+                "kind": "attraction",
+                "time": "17:30",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "date": "2027-09-16",
+            "title": "Matterhorn & Gornergrat",
+            "summary": "Day trip to Matterhorn and Gornergrat by cogwheel train. Leisure evening in Zermatt.",
+            "stops": [
+              {
+                "name": "Gornergrat Bahn: Zermatt to Gornergrat",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Mont Cervin Palace",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "10:30"
+              },
+              {
+                "name": "Gornergrat",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Matterhorn Museum",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Mont Cervin Palace",
+                "kind": "hotel",
+                "note": "Return to hotel",
+                "time": "16:30"
+              }
+            ]
+          },
+          {
+            "day": 8,
+            "date": "2027-09-17",
+            "title": "Zermatt to Zurich & Departure",
+            "summary": "Morning in Zermatt. Train back to Zurich. Flight to Mumbai in evening.",
+            "stops": [
+              {
+                "name": "Mont Cervin Palace",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "09:00"
+              },
+              {
+                "name": "Baur au Lac",
+                "kind": "hotel",
+                "note": "Day use before departure",
+                "time": "11:00"
+              },
+              {
+                "name": "Train: Zermatt to Zurich",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 240
+              },
+              {
+                "name": "Flight: Zurich to Mumbai",
+                "kind": "flight",
+                "time": "19:00",
+                "arrival_time": "07:00",
+                "duration_min": 480
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:04:50.300752",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:04:50",
+            "expires_at": "2026-08-16T08:04:50"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T14:35:07Z",
+      "content_hash": "d461818d6f8c0b1c",
+      "plan": {
+        "status": "draft",
+        "trip_id": "switzerland_2027-09-10_2027-09-18",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:04:01.651093",
+        "destination": "Switzerland",
+        "origin": "Mumbai",
+        "departure_date": "2027-09-10",
+        "return_date": "2027-09-18",
+        "travelers": "2 adults",
+        "notes": "Premium hotels, include scenic train journeys (Glacier Express, Bernina Express, GoldenPass). Balanced sightseeing and leisure.",
+        "planning_recommendation": {
+          "confidence": "high",
+          "destination": "Switzerland",
+          "estimated_planned_minutes": 2976,
+          "evidence_place_count": 8,
+          "reasons": [
+            "The user's explicit 8-day duration is authoritative",
+            "8 preference-matched places account for about 2976 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 8,
+          "recommended_range": [
+            9,
+            11
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "city": "Zurich",
+            "name": "Baur au Lac",
+            "checkin": "2027-09-10",
+            "checkout": "2027-09-11",
+            "star_rating": 5,
+            "price_per_night": 1200,
+            "currency": "CHF",
+            "address": "Talstrasse 1, 8001 Zürich, Switzerland",
+            "google_rating": 4.7,
+            "reviews_count": 1100,
+            "amenities": [
+              "Lake view",
+              "Fine dining",
+              "Spa",
+              "Central location"
+            ],
+            "provider_ref": {
+              "hotel_id": "lp31ba5"
+            },
+            "note": "Flagship Zurich luxury, lakefront, top reviews"
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-09-10",
+            "title": "Arrival in Zurich",
+            "summary": "Arrive in Zurich from Mumbai. Check in to premium hotel. Explore Zurich Old Town and lake promenade.",
+            "stops": [
+              {
+                "name": "Flight: Mumbai to Zurich",
+                "kind": "flight",
+                "time": "07:00",
+                "arrival_time": "13:00",
+                "duration_min": 480
+              },
+              {
+                "name": "Baur au Lac",
+                "kind": "hotel",
+                "note": "Check-in to premium hotel"
+              },
+              {
+                "name": "Bahnhofstrasse",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Lake Zurich Promenade",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-09-11",
+            "title": "Zurich to Lucerne",
+            "summary": "Morning at Zurich. Scenic train to Lucerne. Explore Chapel Bridge and lakeside.",
+            "stops": [
+              {
+                "name": "Train: Zurich to Lucerne",
+                "kind": "transport",
+                "time": "10:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Baur au Lac",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "11:30"
+              },
+              {
+                "name": "Hotel Schweizerhof Luzern",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "13:30"
+              },
+              {
+                "name": "Chapel Bridge",
+                "kind": "attraction",
+                "time": "15:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Lake Lucerne",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-09-12",
+            "title": "Lucerne & Mount Pilatus",
+            "summary": "Day trip to Mount Pilatus with cable car. Evening at Lucerne Old Town.",
+            "stops": [
+              {
+                "name": "Hotel Schweizerhof Luzern",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Mount Pilatus",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 240
+              },
+              {
+                "name": "Lucerne Old Town",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Hotel Schweizerhof Luzern",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-09-13",
+            "title": "GoldenPass Train to Interlaken",
+            "summary": "Scenic GoldenPass train journey to Interlaken. Explore Interlaken town.",
+            "stops": [
+              {
+                "name": "GoldenPass Line: Lucerne to Interlaken",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Hotel Schweizerhof Luzern",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "11:30"
+              },
+              {
+                "name": "Victoria Jungfrau Grand Hotel & Spa",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "13:30"
+              },
+              {
+                "name": "Interlaken Town",
+                "kind": "attraction",
+                "time": "15:30",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-09-14",
+            "title": "Jungfrau Region",
+            "summary": "Day trip to Jungfraujoch (Top of Europe) by train. Return to Interlaken.",
+            "stops": [
+              {
+                "name": "Train: Interlaken to Jungfraujoch",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 150
+              },
+              {
+                "name": "Jungfraujoch",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 180
+              },
+              {
+                "name": "Train: Jungfraujoch to Interlaken",
+                "kind": "transport",
+                "time": "14:00",
+                "duration_min": 150
+              },
+              {
+                "name": "Victoria Jungfrau Grand Hotel & Spa",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "17:00"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-09-15",
+            "title": "Interlaken to Zermatt (Glacier Express)",
+            "summary": "Scenic Glacier Express train to Zermatt. Evening stroll in Zermatt village.",
+            "stops": [
+              {
+                "name": "Glacier Express: Interlaken to Zermatt",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 240
+              },
+              {
+                "name": "Victoria Jungfrau Grand Hotel & Spa",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "13:30"
+              },
+              {
+                "name": "Mont Cervin Palace",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "15:30"
+              },
+              {
+                "name": "Zermatt Village",
+                "kind": "attraction",
+                "time": "17:30",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "date": "2027-09-16",
+            "title": "Matterhorn & Gornergrat",
+            "summary": "Day trip to Matterhorn and Gornergrat by cogwheel train. Leisure evening in Zermatt.",
+            "stops": [
+              {
+                "name": "Gornergrat Bahn: Zermatt to Gornergrat",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Mont Cervin Palace",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "10:30"
+              },
+              {
+                "name": "Gornergrat",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Matterhorn Museum",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Mont Cervin Palace",
+                "kind": "hotel",
+                "note": "Return to hotel",
+                "time": "16:30"
+              }
+            ]
+          },
+          {
+            "day": 8,
+            "date": "2027-09-17",
+            "title": "Zermatt to Zurich & Departure",
+            "summary": "Morning in Zermatt. Train back to Zurich. Flight to Mumbai in evening.",
+            "stops": [
+              {
+                "name": "Mont Cervin Palace",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "09:00"
+              },
+              {
+                "name": "Baur au Lac",
+                "kind": "hotel",
+                "note": "Day use before departure",
+                "time": "11:00"
+              },
+              {
+                "name": "Train: Zermatt to Zurich",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 240
+              },
+              {
+                "name": "Flight: Zurich to Mumbai",
+                "kind": "flight",
+                "time": "19:00",
+                "arrival_time": "07:00",
+                "duration_min": 480
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "CHF",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:05:07.877220",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:04:50",
+            "expires_at": "2026-08-16T08:04:50"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:35:07Z",
+    "user_id": "corpus-swiss-luxury",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {
+        "hotel_rating_floor": {
+          "4": 1
+        }
+      },
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": "",
+      "_promoted_signals": {}
+    },
+    "places": {
+      "bahnhofstrasse|switzerland": {
+        "place_id": "ChIJlXK8LAcKkEcRZfxW7ORoH84",
+        "name": "Bahnhofstrasse",
+        "address": "Bahnhofstrasse, 8001 Zürich, Switzerland",
+        "rating": 4.7,
+        "review_count": 1150,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Upscale, central pedestrian & tram boulevard lined with many cafes & luxury designer boutiques.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 47.3717284,
+        "lng": 8.538556,
+        "photo_refs": [
+          "places/ChIJlXK8LAcKkEcRZfxW7ORoH84/photos/AWCwydgK40YiTlyO6aySRSk_7nPC4Niw2nw5hi0-waH0EdmGvTFQXg1XuZ2mXLtZDAqlaM_pQN5hObemvsKqT4PQTDhKGOVu20F0JDZZ0VQLUGIcFJOGS7lYMUbCs1QndMM8v5pY7A2XWIBGMVDXs-aasd1XTdUMTPNeUKw5jrfAOLQ_BOBJR57KYcemmz958Rf5-VBhqE8IZyx7a5SKIAJBJAQPZfgZwgxIMIJn2Ou5eFU5UWevYeRck7fZUubH6OMBMRrC6W5mGdGq0URvPbUpMDz3UM2TI2haWx0V0-rPXo9ziQ-jGBw9fwb9uOXhUjHlkC0NMoE83SqvVJmXtL2Y8sHJJvLh5MQF7YYcyCFcZCoOG9YYUU1fs2rU64Ny42ddRwiXjAPjtaM-CH9T5ZJHDjimSJN2hQszNllH1eNUZ5I",
+          "places/ChIJlXK8LAcKkEcRZfxW7ORoH84/photos/AWCwydjSpV45-py0mo4oYdKbdc9khmddnSKMzcwZ9TAGbS0c1ktk5WBw7A0JjykxMVhZvbTE6j_k_u8bMNdD-62itPINrKIWfZRXSYNT8KYTnTchxSt-IOkuqAsI_dcKF8hMn8g9t5_cBEsjwJMPYajCv2J32irj3ZuN0HIp98v4ydm2u_7fBFzcnLPVKx8q5TsBmvx63-O7cSozOGuWRfArl5QLEFgbcohMcX0Z4OcLiGJw_7rs814vIWqPiAd8sh3bGUmqMh-QOuSk8ZDFlB-lcL6Nk63iqQGBFU2_XE7JlUQ8c5oW7HLhMssNJdaOLjGOB97PXBKrDwA1riq1UjxPv0HZOjvcHLYq6lLNTFu-oB9v2KV22AbzqHpChSXenB6JJhxeSiSSGBZS5-e8rBq5amIWgCxm30giigrY-Z3F0DKiPw",
+          "places/ChIJlXK8LAcKkEcRZfxW7ORoH84/photos/AWCwydgrszdDcOTyn9ek1rJ9fzXsiIZF092fgPCmfrxzmG4xdtXQMC6nB2IiARs0bjN4lQJKG7bBbiOWPHitxR2eLEETJ_mrSWg3dgHHr5xlbN4Ivix_QXnRpJT9upLFYb7pO00844ML32oEuL5X33uMQEgtfVC9nvFuRShiTuMwNclvZ9fiWtVma1rwn9LkqpbtIfe2a5yTXAIdlDQ-rhn8fuaZnmJLNHQEq5UESb-ZK9A9QK6Dih2WWsttV-WD3vEa0HafjBv3dJRT916JD9TdPIISWBjFsiMBDDXJMX1burb5mNfdspVNAe2BjD3C8bpKH5EqHS1LLftdtS0jKxwdYFlozSAxmrov6DOFfDBt548iQGIuBv1-0t9HvPgBRAikqb0ixDQNCQZpfIg8amCfFXbaziX0fw_Ny3DFXMWa28DuywUb",
+          "places/ChIJlXK8LAcKkEcRZfxW7ORoH84/photos/AWCwydgPsCiUYX9lvmk9WG-AmhIm9w40372crKendqvj-3Rhid1mUPM1CyDsb_rKO4-PEiJjtpF6-C5OUOMgd6aNvXEtdzZ9BMv5U4Hg9ylNPd_tXh1x_NJmWcp9Um6r6Ss-lpQ9wKpuCi8eKVFIr2zIJDyHze0IAhGwQtRltrKBefVfxG7bHb-lRhAxU8D9ToiwRakWBaiNAyG6-sNiUQ5aVTjFd7YNdNTD3c7vJJQSipGC2vRKT_TKBPgmgeiA3QSTtL_56ZRC3jdaY2UsaI33iXRaAd6HXCmugy1PQYL5swvufWLL2odamFIm0NmtMAwOYNbl_M_9as2BtpVRvZ1Jnrr0_6RS2Xv34yExv6dG0GptPNf0Uk7TexehYBOqcKxNf9th-q2Af2mZo9b49ZhdD6IoTEUL8A3WSVDfUI5OhxV8FLo",
+          "places/ChIJlXK8LAcKkEcRZfxW7ORoH84/photos/AWCwydiCIee2WE7J6KZ3Ntx7jkXw7pw_a_LLArcgPBR6WySOFgWkn7T0vt2YlyzzlddFK_1wzksbLqpg6y6O1vKvL1Lymy4uQD9iGgmU6DSwiWW07Y_Mp6M2DchmAIDwbO7cbG46KHzwe2cYqpa2mlYBaCCcVuEeumPsDx5VRhjivbfpeNdi9HA7kl8GJupS_Gq533jJcF3B-RWirnegc7k5execA6Wtb2qtLtyeQcINwkp8vSEap8ui2nmPS4bWoqgvNkJfJyW0oYCWx3-rCqdAbZFN0PyJgnPRUhlH9YRx2YL4PjaodKh8bERIbZmRvkFVYTXcqSoBTSXr56OnribgF4B8OBRLxUbPFZpwQNJXb0IIuRmUWaL2sTfsxjKUzq9pXcXcGZnCjykMkWk1U2RibJKZGP0pDWnQX9XpryzkLwZrx9LrbzgBq3ibM1eRJw",
+          "places/ChIJlXK8LAcKkEcRZfxW7ORoH84/photos/AWCwydgbulxvKjHIy1RzCx7EoSvO9oyopGaNVy-FxB4IR-XDlDDbZdK85D7oUpk0ScCj5MpoeKU4LKe1W93yYIY0BBNCYpVWaFqHOxCu4NgD-JfTPnD_Yjy8xnOeI9vRfTccYICA_yNCnmETuHGtYTaTPPaTsiShFAHPz9oGSRQJIWDcKYIPP9XrBqf-AaF6X84IP0GFD4Ae0VLD6bN8z-uUToKXc_H9jL9OLFWnDRQL8bcJZWDUfzRs7mV_phfHl5Ru_Wf4RPOgBKk5Ea8BZNYHh0rG0vvzQboX6xirIjh3-Ge3fgqMN7c7bM_RMtmJOZp-Agc06a-ZC1I8NyFL-nHz-2CdrE7Gb6my9YUspoxjLw4BMxU323NDSwdL3m3vWUnCo6v8m18a3hdKEUvO40ZEtdDjGxW59KlcyQrtb0ZmFiC7Uw",
+          "places/ChIJlXK8LAcKkEcRZfxW7ORoH84/photos/AWCwydiqxu9v1xt9dmDkbFFQ-CLC520dgFhP6JXeAcrzZzNZushPl5Z4a1i9N2u2fcizXeJl-zGnOKW87upEpOVIUnHm8w2qt2kDrKj7-5LB9G26GFlfq8yLMLPvINvVkVdxVtEIlbdHxyHhvvDUjnUWn2tzV6D5Ugn9_uwW1iabsebf8ysIojAevnNz6z2k6zh0Qz_EgrL0j8IEqYAErePBs1CoMtNyhMO8oGgBH94n0R8kBF3WSjR8JjIi5Rm4xeXGC6J1K9Y2ZZVK9tZvOXXUpgQ-ctCqCdqBTIR-iRegfu5kLyAiLLnvFlHSHO-jcyWbCBrBJB5KQb8FfgFX1EBOxPcYlwWcF1FMF6nCv9WClEa-fCPg9oNteEDvvg6xWj5dMyGhPocvelhD8eW94t8dctjV8WYiUO0UH2moD21U8ug",
+          "places/ChIJlXK8LAcKkEcRZfxW7ORoH84/photos/AWCwydjVQrsmP9Nc594R0kmtZP4UVZSM8dZoInUjVUve3CjtOw7qtu7ucRKRK7sQxpq9eSm0d9Q11dL-TojM13NnAt3TbbHZVI1O6H8I4mF3QWrJJ9P2rmuhareqYlE5RBdUSYXXPkU-R3pYBW36IzvJ8UQkPOLWace_s4s8Tm60rnMMVunEoxMqs0fInl9PHhH7LaMOtY2w7IhIo2rTUNcgZacfTlVrFpP-09Ehn4AAjZVs2bXxmUr40Asgr9NK1dPEngCj7DKVCmySm-bPdhwiNBJQHGP6fmdUIlmHpL0cILkrY2xe6t3SJH3XBgs43Epj7feuFNJQ7FhzbKXmfT7IQjLGsqUMTQskGpPpwQ1iNusrRX0BWYMBXC-jztm8XwmH37G_YYvun_N1eJTnB3FXK5VLP-vvUYJhibQdLnCgH5jx6g",
+          "places/ChIJlXK8LAcKkEcRZfxW7ORoH84/photos/AWCwydhOug06Zm_mtW9C_nv0WyGCQkkQ-S_aAfZpMxg6KeuN69tQYS9Q8FRDPySDkLlhzd_YKQ8ag-pA9VBwhh4I-6Bioss61bfzVGoAysMJP_moqYWh7DlgfkcIHFp_DGxBwfwYXkSp8nGyFVRMnl-XMCd9KUZIA-HV8MHyX7VUNY8cNnb05OAmGC0E65dPIwim4KTABDfqduH9njFFheRRDboXDH51XE1WE_RfXuDozIO2RPCBE-WsoH1-j3CfjPtTfN7O4jEh4Q-CqydAGOrOiUoHuHEHK43zA9xHNa1RbhCJXf60GmrzzFu3QWwrzKa0y3jFXX-g0e4vJ0RfpV4PmgU2MZbdxckekhKel3g2CTPKjn10c-y2PP_onro5-mb7vPYD-opNmviErTkFgSTFAXlRx6wco8cQCt5ETBCUbIECr6exzmiqeNiTEZT9WQ",
+          "places/ChIJlXK8LAcKkEcRZfxW7ORoH84/photos/AWCwydhVSkBI0v1Zq1Gqms8GAhL3AVHjixNrmHO3UV3mOi0VU1GLbYDhGFxSUksVtsNX4iGNwx0VkHz--NRNacJSUpJwFwPgydwAkxzshWU1lxrCuLne2dNybqZyMJHgaWBKiRnzjbj-8GlLMTOd2U5YxeovioP4kiDYUIFrHLSKvgMuW0DE-9xE9sFvtrQz9RpGaeVnuZdVGtEXeSqqplGHDe-79WUIrLBblME9h8S99cEOyvttewTfPlBjyd54IzRCKZW4W11ioBwWRXCfiXMcYZpYIe6Mdga5EO3PvttifdETPrx8kPgnfGwmJZwxOus6FyGUah7K1e4wHI-5mHny0OZNKfVLyNLI0zLSbcHPfx6f5-3gWcmanhQiBi8M5a_Ya9Pm0bc7MOubjgSE5VsuWEQRIsPCukO5OZzNS-6cyFOmFN_Ynp4g7HSh6gZTwUe5"
+        ],
+        "__at__": 1786804474.515724,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Very nice street with a lot of beautiful old buildings historical buildings and shops form the usual ones to the upmarket luxury brands. It’s a nice atmosphere .",
+            "author": "Joerg Opitz"
+          },
+          {
+            "rating": 5,
+            "text": "Beautiful street for luxury shopping.",
+            "author": "T.L"
+          },
+          {
+            "rating": 5,
+            "text": "A busy area with many stores and showrooms",
+            "author": "Sumitava"
+          },
+          {
+            "rating": 5,
+            "text": "Famous shopping street in Zurich with a mix of luxury brands, department stores, cafes, and chocolate shops. Nice place for a walk even if you’re not shopping, especially with the clean streets and lively atmosphere.\n\nFun fact: Bahnhofstrasse was originally built on the site of Zurich’s old city wal",
+            "author": "Melvin J."
+          },
+          {
+            "rating": 5,
+            "text": "Very clean. A lot of shops. Big, put a lot of indications.",
+            "author": "TC"
+          }
+        ]
+      },
+      "lake zurich promenade|switzerland": {
+        "place_id": "ChIJPbEkxOEJkEcRhKwJoY3d0M8",
+        "name": "Seepromenade",
+        "address": "Mythenquai 301, 8038 Zürich, Switzerland",
+        "rating": 4.7,
+        "review_count": 285,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 47.350898099999995,
+        "lng": 8.5344944,
+        "photo_refs": [
+          "places/ChIJPbEkxOEJkEcRhKwJoY3d0M8/photos/AWCwydg5nzH6pF_Q1s6RtNv-EzoPbcAl9IGfqoSLBK3BOuWVtDmTs4k7Szn2dr7IPa-kG2dSVvBiYzezMofNAHq5wZoYjTK0zQvZw2MAmpMdzyH6cmc-QrAE5nQSXafeyZbZrMADDgJc4o7Nn-PsFT-vNNIOC3GhVbk-QR15CIK1ZmR0EpasgInNL5eJqzrwkt2vgjc92BZxLA1ullLnCiuQnqeEgJJUR96PBi7EtBI6DT26X2ZPVxI-Ssn3ItT3TRN3x_rAco6jAT7qucGyaUpnhPfCFilvRIlmBzxUZUvEvovbWEl1yQ1Y5QEKGbvkGQ_BMeag-_tANdSqE-nnDhCnkv0LY6pfYk9KDxyLa4pTkiO-uj4BXezewjqxhfCR2VsvN2-wzt_XKGEDBktbDPytMmO6YH5E_X_7HjBURJuW_tUpDNvd",
+          "places/ChIJPbEkxOEJkEcRhKwJoY3d0M8/photos/AWCwydjllFz-9ICaLj_sEbRI9A2sqQeRW25NBX0N02axnS4-QlL8OgBGEsjPr5SwIV_f5f0eeCp9BHvYW6Gz3kMr1jNKAKO22wGUkTkYkjqw6faxI9AyPyPMGIFf6sfhM1Ut7jhuzn2wsiHf9f_TcjDjhQdjhhfLwGNL0Bod4AjepAdfIV-qYkbTOpMmyRJ22Uh1wYeLKnff_amcp7Ip1aR-Zr9NFr8tl2X966jB0WbMzcpMEHRn13NvLzGXtDTrSevYcUSSGJ_gkS66F3aLzxCR0uqqWVRoDhrrR3XcFQ_z51m3bFaOe61ROufigL66Z_EVIaTVuwO1gxH49YPg5m99S6orMEsdw9IuCAaSnO3FP-N_yEzj1nr262GHhtw4G-h5wcnU2s--rm8nip7Wmf9sdlSh5VWSre8c8uB7wPBoQFw",
+          "places/ChIJPbEkxOEJkEcRhKwJoY3d0M8/photos/AWCwydh2vF6l3Z0Hnm6xQe9jMWAPdbn4jx4J9yFmKG8KhEO30vZfuRDl7tPIGV8mRyUP0d8s3QUdwLKNt4dIlc6UvY3kb7gyv3vQCTjrl2Ntr9C4JmN0elYvmxwGNVeGR3HcFHeHoUrrLVIIvwvzbOU8_TV1Y1EIDrbrehYK04-T5jH0LN-sgq0IL3O9YZlJg0NqZcgLouzZeyTpHi_FSj5GaeE494vKCIWPoIsQ16u-WeDYsSgzCKfvyILcThJw63ZDrTALAoLdL9Vyhgi6pbsuCYVCYr8e1PjhQnenwfybcXb38EjTYZQYqR4a-cTzk1F9omBd0Jxj6HPm_Bc34u3qap0daW-DVrzZ7LPvgDNHkXVl6agO8rb04B8J7eX2wOnznI7sozgpuGbcJIPBlD0WCuNtSruLE8fdHccTZODRZe-rOQ",
+          "places/ChIJPbEkxOEJkEcRhKwJoY3d0M8/photos/AWCwydhGcvgv90RbEVbU3qeVDIro76LbjHqQSt8Jl1VH9gCIsQWWSlb1jPNA4ghjYmmXRCa_NIRNCsdoNU3CG3lm98qDX2N86VGoeGGtCoE0WLZ4iIhygmb-IBDUYJGkfrT2FOxpS-4rpX-iEmKNFKoDODBqmwSK7N6YCWlQJ6bIbV34_NTgeXzsSWjKTaJSWD5h7KvJutSez4ex_ObHA5H9PIeeZZD7NcPu8-yIJvSraVul61VqiGAl7K1o3bxY397ar6TG3ejuP0GtwF2JWcRAk92k7nlqxV-znPY9Gs0VP4ba0HojLIPqPi7XFcEQFeK3CLEOzjZio9cZvcJAJMXulwtQKVWFFh4NPauTnj1h9tTzznG3CFP3hsrUpysVQJ4anbNFEj0agGhFYA1TRISKAkRPwyu2OoOkBlSRm5PQrv4",
+          "places/ChIJPbEkxOEJkEcRhKwJoY3d0M8/photos/AWCwydjbGjdpgclijD6GfxDMvLczjDGPdHoMMr2VIk-Q6D8NreJ6cUpV-hC-Rt89wHSum-tWWShz5nDhhbbirll6I27xj5lOCmL5AekO7siUi30xJPX0jGjO9fu2tmIODY6gzybjdWbutYtmfo8J7apN2RIfsgt2YNb6RIcospjIcu2LCcqnu6kdSeplnFcfYntyHji3HKuAGSbQFUXyO_jukZ-4emUCLO7r6oFmhycj3I6MOJNVnZ1n435-FlnT-SMdBd_NDbCHhOJNk0IFmIHYs5UcNyNBP4zqcRPlrSPWB6IDv0iwvgkLu3RQDkX_wkABmPCmn94dQsaWwKPusCjUf5ByS71aTc8dT0eFLaVHUOn9HNbLz-fgiWcHkHCWtqD_wU5KcztfPVNlhL9oWEvUojHg_2hnzrRCEs6rNXwEGiS0URTt",
+          "places/ChIJPbEkxOEJkEcRhKwJoY3d0M8/photos/AWCwydghHn3kOWri4XfA9JC9kT_B6zckKg2JMLwFNEFGaOQomAbT1C1ib0V-v2Hppg3tzU8Fkvp6yVqKr0eG8miMnbVWc7oleB7Ig6jUA-Aq6az3aEWTTL6MnJHOdAUf7V7Nm7hvjhEkU5tYV1DZtA84ecj-7avLhxSgAzBe5uTjlQCmap2cRmT5TsUAH0vpJQ63NbCHlZH6_TbUKh_UCMsUbB5y0fb_C7sEz9eky58pJQEnUr0AFqliTYRDIXWAvJSrjjuYX-uhQ0DkPwUN2M-SqIyI6d8gr8JkF-i4JN3369vDzq08uP3oZwo2VkDXoCyJO5UjxrGMb_u6P9K59umNLCJE038zorfkt3lplD4ISys4NSsmOGML17QY_QkS5JanXkKKyVQpmBsxTZfG7ABEZvp9RdCD9WyDC4UeepJVp-M",
+          "places/ChIJPbEkxOEJkEcRhKwJoY3d0M8/photos/AWCwydhiEWzK1LDiZkgfxTjBqObAIORdm2D_bxGVY4eI6kT4RB1xzKuYQYRYCvW3TFyRqZuOP-qJW6R_Nn5KOa-flfZ3VwuednlX-2t3_J7P6Siad8vUmRk-Cf1ODM6KJ4F_Pq-COwEt6RJEV2tRfHkD4YF4JaDfiAQMClwHVRTYdo8_CP-nLpj9MX5eD-VGyzD_zrb69m__wLIEn2zw8Elvvum4eZrU9UKGEVZvTElk3QJi1_KTlI1nDxu8Y1SRAs7P8xQx7DbJM__s3qxBgocKbpL8aNoI1RxiiiHrDNW9gSR0ZRC3v-l-Znuaoh44UD7i5dmNT7n3if95_bw4igBof8XJIEIJNkq80JZH2RrUtP1_uwREHZVnmd4j_EmKaddXGrG56f48usHfgReeDxBRIJO-u-OqtTxEwevCsG48zXgYR92i",
+          "places/ChIJPbEkxOEJkEcRhKwJoY3d0M8/photos/AWCwydiN64gFrQ9ZRo121ZodIC2e_JCHhkSVrjXCDLMZayVUrkzZ2RC3yfQXwWhem-XhxNb2CRyc6AH3zhZvCozJ_dBvHH8Sq7lZtOZe2_4UVPoNIoEKLcO4xa01s4z2LJfJZY77hiwHmp0GbmyJ8wKEZtX-YEXJQcZ7GvPTHpZN8bBqwp84cZXIgpltnFGAmU_guCMVimYAax-XO1ylvqo7h-cneeRuU2SutvJ_-F3HDBwfJPLbdKRefUtVf9gh_4t8X7Jpe8tmbp0EEqi2hZe4FwJ2CaiEqQ9Ko9Rdd5VVZfUWI8FNgquI-SERvZd1HjMLH-dPu7C_5yDOZgVRzZtAAu9GGJyrOgRohdGqw7RZIKCuPDzKCyV6sgKDQ5XNv7kYq7wkn5zHVuCHhZibUFFPyN7vnHlcwQJMsGMyfuiY0mRkAw",
+          "places/ChIJPbEkxOEJkEcRhKwJoY3d0M8/photos/AWCwydg3SWOglZY2UhaCk9alVjTlzf6rLi76F2EYylqZ4YV1ycaG41PO0bbuyN_6b-iz7KGQmjRUV3QFzhj3pc1qInTh8pJ6KSCp6syU9lp8dJnDazwMZ8ao_ATADnFm-ZcM0ip9H_P9kxN26LdZhakyn-zFIALq3X02UQWftW1U9CJD0EKXwWuMZ7RI8yZOyCwoQ2VNJ_rBfuhvOVydPpiMxWSYdVUKZ77N1dMedJ-2UtYeU8kOeqVbUWZH600Qnn2HDiwaCEdrBMmyJMLF_4rIj3-djtgcLkvoR2H3oqSTTrFECyvktDBiogjFvSC1cWrF4p2paI9uMHSzb3BskYUSoOvnS7tEha_8h9Kw2Xd5P_JwNwLbUdU2SwoKuxnYDXNAwtUDOb3EzgS8GTUjpRSWQeCRnix0OuZdhNBWP4fYLbwq2A",
+          "places/ChIJPbEkxOEJkEcRhKwJoY3d0M8/photos/AWCwydh_ZfpqJpq1yZP69P3MmIkVqFB_GLCHPXfNF057dVBatdfNYCY4HEk-Ngt0y90X2U-9dhH_StDO4FfgzOAuqw5zNtOgsyWMDMuR-W8nE8jm_Or48dCWEEOEGdKiZ8cMNhSBtAumxcH30UylQP8WQ0ucbhCqN0kbs9SHUXvBQGKypL56sxA2iyHC-gauN_eSh8d333fXIc58NnD7bRTcnbhBcN0wTIKcsojEjfHBhL_Tt8nvf7tQnblXrWmCSpODHhSVszwJOi2f0UsvFFkEVKmGJsmHzbulYJpbiLyW3ssj1MftqNBMFvNKupe_5REuCYNI9ncmwNVK0WQBY2LxtS3Po1fElxHXWdw3ipKaUltKBRtuerfAc8AXcBciMBtgbehV6UO7JT7t10t1LnPB7i8ye4GvNhP4K-MjigNWK6Q"
+        ],
+        "__at__": 1786804474.8954601,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A scroll through my photo archives just unearthed this memory of Lake Zurich's stunning Seepromenade from 2016! I had a short stopover in Zurich, and my friend who was living there brought me on a quick city tour.\n\nWalking along the Seepromenade was an absolute delight. The water was stunningly clea",
+            "author": "Josephine W"
+          },
+          {
+            "rating": 5,
+            "text": "I strongly recommend to visit this place early in the morning.  We got up at 7am to walk here to watch the sunrise.  The sun is very beautiful.  very fresh air.  you can also see a lot of activities here like running and fishing even swimming.",
+            "author": "nam pham"
+          },
+          {
+            "rating": 4,
+            "text": "Cool quiet calm serene. Gorgeous evening to spend at this place",
+            "author": "Sheelan Chawathe"
+          },
+          {
+            "rating": 4,
+            "text": "Wonderful place to stop & relax on the way to Zurich.",
+            "author": "Ryan Nguyen"
+          },
+          {
+            "rating": 5,
+            "text": "One of the best places",
+            "author": "Aaryan vatsa"
+          }
+        ]
+      },
+      "chapel bridge|switzerland": {
+        "place_id": "ChIJ5cLMMJ_7j0cRNw7SwdMQsCA",
+        "name": "Chapel Bridge",
+        "address": "Kapellbrücke, 6002 Luzern, Switzerland",
+        "rating": 4.7,
+        "review_count": 36737,
+        "price_level": null,
+        "website": "https://www.luzern.com/de/stadt/sehenswuerdigkeiten/top-sehenswuerdigkeiten/kapellbruecke",
+        "editorial_summary": "Landmark 1300s wooden bridge with grand stone water tower & a roof decorated with 17th-century art.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 47.051648899999996,
+        "lng": 8.307535099999999,
+        "photo_refs": [
+          "places/ChIJ5cLMMJ_7j0cRNw7SwdMQsCA/photos/AWCwydjU2Y8pZRe1EuBgBfWx9eMHtEdJhS9FknFPR0wQERvh2xIOqjwF2kI0XbtxDSW-bRj0CKwJ1pNeNFawrQf39jKaEmetyOSlqapGxIF1ljDdbmoob4-bNc-4tDdqN3jXRJcXPANHzlIDeiJl3Y3OJQTfYdey6XYeAP-ER8zy2nxRUlOniHbDqGbnd5g7wHETTDJtZraX97exlqZoN04eJUTBlB0C7q1Pdfra5BfTAIPGWrSIScXk_MlIzd5x1KL3qEvgTb6YM5-t0ThHSXXc_VWKyIAuHtGAkBKuUd22uUq4tcbfdLda6Mgee5WduYeBu_Ff15q5OsfviuDrZIItmEFA6IkWMW_iZQAlj-bqzI08jZO9RcNlPvBbTLkxPpKv4g9c1y4JB491XVA19vMM9b623lPpDLAR529sAMCvHzIUhg",
+          "places/ChIJ5cLMMJ_7j0cRNw7SwdMQsCA/photos/AWCwydj2VheAu_xQ6RXYzAont0of1nZtDDKmrotoywBWILrKaZ_IUg2HE9giU7gvM_Lxk21jZrTVVORPfc_VrxmkbS9gNkU_1o_y7JBoHM9Z2_1q7n4Ix_wi5XfjV4-3pEC-FUgMnABIlIY-2HDYQcsh-skzTPzxcBN_hdiCfXRneJwunFpEpPmPJGzkYJaCNFmowy9syQfiPf3uk5QjZOzltDRZbDs94aHcWo0OxkGoBF9cdrD_LrK9AXH4PDl7J3u9vd6dYmIhGaC-w3IcPENaC6TptdNm5zZksql6afcpO0ESTov5a2yJ-6pQqlk4Lj2lLUw9QsBh9mTIDk8I8d9nj-G85EznV3obrHB_p8GiE2edq-RJZBfonPWisLT606LOIWhzamjSPTD2dttL9PGXbE1-UZWEFwjM3gZIvbettJBFxKS9qceF6j9c5B9Yexmi",
+          "places/ChIJ5cLMMJ_7j0cRNw7SwdMQsCA/photos/AWCwydjkRu65F1FO8FedcR1CG-JuzqEOv9N29DsnD-V_KoRLit5VqM-Imlm-30nXyKz1O2QDwQrL5SJ8xQyd5cnBtjDjOZmP73DWF56ZhtMER3ohuxEDnhj58jH-2ZGb0JXh360CbGvP3laDuQyPVQO3lwYlthNOdn8-XTBTGbgqcS9v670evS-pCGubz0p2xrd2kVybQF6uTmMxOBD0-qegk-k87ZiZ4SzYMiPEYYfx9F6RLYYQbXlHVVr-jd2FC_nxvq5uc26cqYuOIvPrsWSZ3iCXwkdPsrNk_49Z7x7X45IyOsani0Upq_QF158m1_-zHYgFpSKULX1k5ZaWhov6VbEw4YX-8YuxiA3YuDhCrlCyTk1qgWCqdxPX48ZH0kCEsqV_wizCrllB4tYDOj_HaVu3fdBwn6Mu0W7w3mHc5JtA1HPy",
+          "places/ChIJ5cLMMJ_7j0cRNw7SwdMQsCA/photos/AWCwydhhQl9JzpD8UvFwAV_PT00dzEYz4lnwuV-iu7-Qa3Qnvxx2EPr0bKYGs7CVqAJaJDN7pIQhynhbTYdPtD-ap9TUlraCWFHM1LFgAwmaN1d8THkxvQa-sU47D1M2ZcKYI1fcyf5Vmq3MizVMXZj7ZcPGqwWe1EUmJpd66MRMpkXgeukiRK9AaEJ23c9p9E2MIjGUdxwToJ8srS_6dao6Uu88SZGszI5CB0N-b7ValEyMPsVmj91jLbR7d4gQzLXcjrQ8wrn8OIZo8fgX_zoxQZIk_3A2lC31pVeX6ZYWVtsfDwMIT1Rg4AteO3vItHqs0VhAYzhdB6alihK_C_Tc_YPT41Os4ThM9YR73jY5GemO7eYMVMP9hkmYORRzoLNUVm9zqlmmM5kdZY0JfryG3gb0iv2AHRrlWCGgFY1rOzW23kWRlXz-Pks2DomoJw",
+          "places/ChIJ5cLMMJ_7j0cRNw7SwdMQsCA/photos/AWCwydhx4rsIAtvxzAAcplLcVQlRTH1IgLPg4JRXsfrs-XIykHvEASFHTYejUkGtbGeLFNFkeagPMGGgdS4TMsAxLBcFuFQNvkl8YiT-xA0tJexyZDHCJ-YV5LkUq7R8Wg0sLFy2wixpN2RMqI7eBK5YMSZm9Vw2gz7AnbtYIYeQSo9GXMpIE88QhJknv0N-vKK1y4m-kFWPhdrmomYpkxf9nwxYHknPRCjyhjSYWi_CxPPaEAzF2WZaDYzc6ULNxHhU7WwsH7G8Eg1DniRhLXmYAWK4HKX8ZNlZALwIMWj08XbgeXoPl-7C_qma7M3fOecrny9wFgk0o4AllXBBR9eQGwzLlH5amDQcYGYld7Mtfo67BJdJQTmYErXuTJGKjOEGfwvKsMw8KCTmaGg1cVP-4dt9CyBRQ4-yzvgM9Ov53pIpvFdZ",
+          "places/ChIJ5cLMMJ_7j0cRNw7SwdMQsCA/photos/AWCwydiPsRAcsH_M-et3a2MV0nYBpBBdBiBK7TwxZUOdaAA_WRFIwyXMe0ezJAy-l9sCK6icl6ZoIJqjIq5XLaMjHu1B7xYXxFsXe1qOBzTnj7xlU3QPefJ8LJaVVDt4hJ5ls-RlSvHZ3kVZCSvEiswIcaNPQeZEceTbuC6Tl3vgs_c-wHg3IPrBw4-kKoH65Oj7glaakGgwBrawP9AHK3KKjaJng2NPavakNcxJhI8ZQiNeibgJRavQsVnIUsiSF2GSXF1aGldIIg82iSA10gpHH7jyyQFgE29eeypHon3-Pmcqx148fMNgRPc2WBwuQ-jLsCsv7Sw_9StDfPO73LwiUxLsNBZbtRTKCXN5ZNntOP8uYOaMECvY6OtAyySbwMA8ygnmTHIN_SpwdVmbKRgqxGU_UffaqKu6SmFJgzZenepUKYKAfPppA2LphbmAyaA2",
+          "places/ChIJ5cLMMJ_7j0cRNw7SwdMQsCA/photos/AWCwydjLH9ZsF0UAtNOaZnHPz6GaZx0PwTn7bhH6cZHLIIItrq2MG-kJhwfSQ7BSYOH5q9Tzivy5IFueeKm-VOGbYDG6rsz0kqxMzTDQ5DS48yTPb0ILEAmFg8z58gikxD68EzZztT2Kq6tW2nWGwrf55-oGU_sntPcyflKc56IfaPoxYc552oCIPDleut7rFMBt2wGh1lVzwUv6M2L0FQ976_Ms29p_r8kJgSJHOykYtLubz_-ZnQ0sb2yRnwMl0lvUXf1KaBplhH9RU8qKfbx46OHO6qMKW5vNqWVPuINZz1H8yvPpTNzJt_OCjmpmmzu_3eQOn1N-zGOo6FeMgAm_hW-nQduFX6LsSSwO8Ti8Q5_p0WemhOL-vEptRYNYH9hGihHay068oVxMtzykR9vhOtYaVwmIxVvxbNARN4N7ze1p3ko",
+          "places/ChIJ5cLMMJ_7j0cRNw7SwdMQsCA/photos/AWCwydi0JYvQ8-bEwpOrj5deSHiQ24GUMccWWqJWsulhUfSUdPi1d8ekgyjBMeydQ2LYoVuScy3I7vcKRFI_1tdDctLMLm3Ty6x6RdxKGq5_5GrQNbJAhHrn9ENNCZi0CgPi_UNppndTuyeZNa6PUvB5Zg9roYIFuJuVB3ZwcW2qi8qCLfCVU-aclvZZYSy9IPkclu600GkTfw6C9iZ9KcQerzrpw7jEeCaVIfm9vgt5rVMTFytHsQsOSTkqU6-vKZWghckv3ZF7PVUJYAY0hcx8VYbUaAvPT4kzizTr0dJ9kjClBGQVj_mRcl57ns4Ho-s_jRJybx1rOtruezpvjXCPnsO5gHNAURXhKXQqY3W2syGL1vVUMAFr9yBYjFXISIaeLt0nl45JX5Idw2RW_Cl1C6s4Dqt-b_-wjTPq3tuieRDtdQ",
+          "places/ChIJ5cLMMJ_7j0cRNw7SwdMQsCA/photos/AWCwydhvwVwlwPjKha7VNZfr_oJqvxaLb6H4P2uTKCPdjo5c68iJFkssmxhlmch5_IybnUxgVYf7VfmfZSup6WQbgVOcbWIdKEFtoSuZrxE4ijyhCS2OTZxI-D3CMYYzIdQg2sqUyw64qhuqpABpPv9IyMF-v9WqQx1xwHE61itiYgwMlmeBmNqBnmpD3Fo4t0zxXm4FTIC-PrAmeoJw9RcuvbQ7MmrGM4_5OIUP-kW0wep6XzlX49YEPLORSpSOldCVXWZo91t_x7jV3C7zuKzM5rq-ELPh1wInNMBTYOrX2aYPbgU63syt13IavNoZQiudDu6a7h8ybBcc6lp8y5MkUBIJIMvDH7a2xAJbpFyNrlDvBo_2SoHNYnW9YpqTkWCYAc_IfP_gu3fv-ON9XRv1QH-wLtMj_EMhzRsnIB3EhcY4zsT2",
+          "places/ChIJ5cLMMJ_7j0cRNw7SwdMQsCA/photos/AWCwydh2yYj2tgJ-oEtTGYBA_ng9VF3LvR8l4SLOWkeblbEBhyTy0daDNnBi-28WJoU1Hhj9w4pgyyXcK3_XgvEgBagFQBhexjgk2BBons6W_pKt2elQ0kkTqtaZ_XSBOCRZTw3C48af_kU32O0t9hk_zy-FRY7r472pH2_Fdmk_oZjt1ZbSVhRfuVkBZvwN6KKGcZBPl7h4qSBMnjLuNqzgK6UsSxzZxgUUVG5wKw5KvGLRGYeRiFjeCbyrUjv8Bh9j4ewzfwZ41fdO6kNA8cg3xx56rkFDQrX630O8fPdCfknJ4GbzJz18bv0dJQo8wBjgp7eF594LIooDg3OtFFNO_yJDFvaSdV106545yylQ33SfFdAYl9NdOrLdMtWjoJrheNNDMS8Ns0hK2wBH9Le6AqI97ewN7sfoeHJ4ho6DaRGK3i1jDP4wMQrEIYOxfFKl"
+        ],
+        "__at__": 1786804475.365917,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "This is the iconic 14th-century wooden bridge that spans the Reuss River in Lucern. Widely considered the oldest covered wooden bridge in Europe and the oldest surviving truss bridge in the world, the bridge is 205 metres in length, sits charmingly above the rivers waters, providing a remarkable cro",
+            "author": "BradinHK"
+          },
+          {
+            "rating": 5,
+            "text": "Walked along the bridge last week while visiting Lucerne. We had a wonderful experience visiting the Chapel Bridge. It was a beautiful experience and the entire setting felt almost magical. The iconic wooden bridge, with its charming roof and historic paintings, reflected perfectly in the calm water",
+            "author": "D G BERA"
+          },
+          {
+            "rating": 5,
+            "text": "A magical and iconic landmark!\nWalking across the Kapellbrücke (Chapel Bridge) is an absolute must when visiting Lucerne. This historic wooden bridge is incredibly well-preserved, and the 17th-century paintings under the roof add such a unique and fascinating touch to the experience. The views of th",
+            "author": "Murat Kurnaz"
+          },
+          {
+            "rating": 5,
+            "text": "Chapel Bridge is one of the most iconic and charming landmarks in Luzern. The wooden bridge with its historic paintings feels like stepping back in time, and the flower decorations along the sides make it especially beautiful for photos. 🌉🌸\n\nWalking across it is quick but very scenic, with lovely vi",
+            "author": "Prab Kaur"
+          },
+          {
+            "rating": 5,
+            "text": "Lucerne’s most iconic landmark absolutely lives up to the hype. The bridge is beautiful both inside and out, and I really enjoyed learning about its history and the painted triangular panels beneath the roof. Knowing that much of the bridge had to be rebuilt after the devastating 1993 fire made me a",
+            "author": "Vyshnavi Vennelakanti"
+          }
+        ]
+      },
+      "lake lucerne|switzerland": {
+        "place_id": "ChIJzwVhkyNYhUcRcBULwbU0C6Y",
+        "name": "Lake Lucerne",
+        "address": "Lake Lucerne, Switzerland",
+        "rating": 4.8,
+        "review_count": 1840,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Boat trips take visitors across this fourth-largest lake in Switzerland, with grand mountain views.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 47.013640099999996,
+        "lng": 8.4371598,
+        "photo_refs": [
+          "places/ChIJzwVhkyNYhUcRcBULwbU0C6Y/photos/AWCwydixOoCZ0CNZ2pbGC_RZYlbzXmXB3MypWg4XRxTMwJepIB-D9C3WGqlBJDC9S5cqMf8OIkpEQ2BsXo3rw9PDbm5jTuhB3mH-2ojBAq1ZmLQdBjoBrZ17e8_B71P-L0aJwG3zF1wURHzkgYCQ76qQdmuNvEpXpw3K8R11MkWXf1FWksFq0wwCBlc3nqsryDSteOJZj7gw73os4VwzoHqdDrZHBfB3Z8J868BxvV_Hqdl-hC6EHRB9reoIL7BCJWxXP5X0B-cspLVp8JyzgLiQYKFBU-2WfykHQAoXM1PLrsenQVL2t9ecJES7hkLx1tb2AVLZHOvP4rQu_drybcPraRNaGCr10O194qfcKSc8_KYYemv_QKVkcd5iXJNaE8XAr3p0uFPi8n-mbFOTNsUUJHTtUKgR-n0CqOIKuqJKM6MfWb1R3YghAFHq_5OP2A",
+          "places/ChIJzwVhkyNYhUcRcBULwbU0C6Y/photos/AWCwydgt1E-eYboZLQcA0JxTDfvA9xNzfNF2HBEVOGq6ICjrYkuuiHtEd5WIzU0veWBIsQ03ANu-As7iEEn4U_IZvPM2ojQog6udRsVu-w-2grA321Up1xNlIoPvCtoWl2h8MYAochMCVdMsSb7QhtD4R0ooB2AZF4zLMyr0FJJ4rYtURR5zxYfRyaznouRllN743Tx1qhZUQFBU8jsPWUjq1gBjZSwQ0_K20RXv-ab-VceUCvTx4BLjNmIYzKblPBYj71ZM2Hsyf9tv4O82JCdTLHmkTf9vBVR2sET9RkjqQbWWMexkCBzSyKjb3jS4zI5zJfaBFPa_pcTvMR9tdyTK3P-QkOkEJW6gGaUCXuQKS03GMpPTOk9QrkubmwNo3GBr1MBuF8Ctw0a94UPZFcCYsQq6mi7HImlE1Wf0Rg06cr7vFxPCHyXsrZGyHC2EwA",
+          "places/ChIJzwVhkyNYhUcRcBULwbU0C6Y/photos/AWCwydhQW1Eow96WJOtLO9BKLa9zBbVTHYoR-RdxuzFf0-ZuhD9JECE2iSHizwp2jibUJQFxfoLu9Au5NujmoyFanSbHbhkJwltHU5-taLRJS1cl1q-22iMRvUlOtRhSgShlu7Cc67J5j2twkaFcbkiIRMmEwwhpkxWKnsnNCHrUmOefP0xpb6nIF_Ar-TjyqxD7XGEL9S1gSo2U9DCFD8vagctSTEUu7IHIxQABCmK-BG4-Jp9PFcX3Y6AfCbKu20UaR_2viZsmHeZLqcTak2iji4v4cL_8w2lJTmzPfQoQllzgQZo-uTF4owUzfbxCy1turAerbb8aHSJSuo4m_TuvTaQ81fsaOqpDG-7bc6K6D3u6LEcDPIdRCf2SzOZUjDfmsN5Iotr16nC_RhLFKJLH8wgGjVXdEXr118ixBLfbGsvQhGrDU3Mnjku8Nblpe8P9",
+          "places/ChIJzwVhkyNYhUcRcBULwbU0C6Y/photos/AWCwydixXWF11e5WasBdsK81w_22IW55q9_FyUlRW5CdlRmGd7fp18t0AmWCv1diz2DcvDP2q0kOqeiio5rCELe989mIualkU4_SVBr3igr-ALloCeZYIkC7FMNCZQBH7a4AQRkVWOcq4h26zlU-iNQAgurM9gOMI5Wb_kqyy8XMhOPSQoZHTcm4JEAHgiR0E70_iv4LxCYhrK66_2K1R5kG5kJoXpFvJcPX17nS9wfV50DFdTP3j1hL7_G9RGQUWWZZMzh-tUhfk4zqUgtD1lkysPRcRfZcZJTAFEb7xI3b1STUzolluMnyfBEHkLm1FVF-1AhX57BMjlokraMFE6PvdUrDYltbtyYHCJmmFu3q7Mlj4JDpfu8rUV9CxaWSWYtzVadkpAR7lfd_XMEFzFRb6xlv_rPpcZ1EiVPsdn-S7DOTWQ",
+          "places/ChIJzwVhkyNYhUcRcBULwbU0C6Y/photos/AWCwydiMMmsE6_iPb8NqS-4zyTKw6_6rH-aGzAF2wLCf_5MVBlMOQQmhkkShZBp_PR5Utm7AO0SS8Dtp1p1qw57-pcO4t0aFxcWL4Z4M70VDU9cvoSxCcj_w1QwbTLwCmp1e5dNVYCjmXJuV--x4qZH_V2VS1B6hldEDorfd_69LLtjrMkkLz-5SE56463tuF_E-NGPJFulXu1ar1bIjqw6iKdipMq4tRw65cxPiUuxEvk8iEWEIDN22xjhdHWC3A3qWYbTYto9iPTL5RsEbffSWOTq5CUo2R4BqqUtDUG1Ock0YBwIRp_1Q1MmbJQhIOCo2aFk2sDOBHl2enZi_UlHAWsTq5MHHnZWfX9zLwIbqkT4-0EOvxwRhksC_9AKm5K9LPzKLSe3QDJ7zgbDyt1tcpb9lBXiYhSUSvv7HXx9DjqOftXg7zvX5-gRBdipomfmk",
+          "places/ChIJzwVhkyNYhUcRcBULwbU0C6Y/photos/AWCwydhu-yNK7vcxd9Xg8f8WzpkBtTbPmetPAbf3cqMZ1zKl91tCjR_G3nnUs_0Q8vwdWokwZBnlnAHni-ME4j5ah8em_Flk-ViOCYbtWl32RNYaSi5uv6AOVX6oOx-hl7rdbGQu7NCmir746CgpEJcxFMnWFTzWZYP5r6dlgFwziQ6CVqPaRNnE1aXrVY2CeqysQro-A32P_LdSADhXS_XZzjn1PJyX1mXp5Mh18cPDkLSf4ZTwWTBjXnNk4cES4fXYKxHkMjrRazjkXcxcJiz_lIZODQnom9h9n5YbZn4V40E-pZyJdtisaU-_8hWdYSdzOXbLhnh3J8h0JipCBlGpqNJtSmFHbNywltthJWF16CTCMUot9-D8WjwWDIa68WPeZWLFro3S8mKFR7HYJuXoftjVnUYJZu9w31zHWczFTi0uhQ",
+          "places/ChIJzwVhkyNYhUcRcBULwbU0C6Y/photos/AWCwydjk8z1WkJcLvzdvZdC9MDYy0jSivhdL-Dimdk15bGzLh_kjlopjWuoAvp_QPGGf5Lq9-b25s7vhrS32Nt_kwj1L4zvtKl6vlSWRlOBswenVxfwNDcjhGiTJKQmvhcplN_HSstO-ivyhjTKnjHOZNt18SemrFRrBUF9iVUj-4h6j-xwkl-GYxOIGm0rtHEGAizdgJ8jyQAKNv_tOiKTTbsVzf7PnOxu_hOArPtDSSh85E_BM0xRaDKVdyRUOgl425_rkieXKl6v0cIgD7WeyBcOt-LBKYTag1bXtzZAqPPF3TU99vOQP_r9kvh3LR88Tt2-ilaR_w1SZ11muGTZ9PNPzxGluzz85nuJeDCgWGqe47_tmy4JZcHPuUYo5SFpNCnK1d-UWjk7Aznk8fV7ENj56-6Rblw44dnyKut9q0_1pVC5L",
+          "places/ChIJzwVhkyNYhUcRcBULwbU0C6Y/photos/AWCwydgEuxDud2PylTrJXFZjj2cW90QhYUxDHXZXEzNkRccm1yjBB2j9vNM27uFTsNqFNiFOnBYFYKo-HiHeHQq1CX-GbxLWTIDrDOPZWB6W9PZS8SDpRpg7p0can_yMfsuv15SvBi_FhoKuFpdX939z7Q5n_CEJThMXx2NZqJ4NbzZMgVseDj54y6xv2PavLfujfZkTMxcnaIymoD5Psv_bSsUCs06V0Wf8KMGz3ZwkthbsN6oLmuEO5msL2S5t_Ai8YHaxw5GihsNaA2rIhQPpmABTXouYnfT3PkAnsXRzToDHrmPAxblzZ730vC6B_QavIDEFzSYl16jEAUrcSOsqTQ_6KeZpUN6HqgYTIXSk-n62hW_zV5QgVAqqSQPL-Jgd7-twnvXSq5SYKQqg5ElYX-lEvnkeeisr-OjFG2WsIGF4gg",
+          "places/ChIJzwVhkyNYhUcRcBULwbU0C6Y/photos/AWCwydjfv4xKRmhRFYb-3nicxWFpwxbCE232rrXhOKD8qiEIITXFjLHTRVGoaL9MYSXHbd1DTD3mAPSxIMkIoJGnHydK2v8ksAOVkKiHtayQPMYRF6bEQLXK-0tSJpp-N1-2OAbMCre03KbK_P7BO-1h456iVhPwRi5dCuX1wxipNLrqYEe9RrFTYy0xQ5gM2z9HmiShPKtlCTATRST-R6zyf8pSMdUOp1Q4kucAXRS0A2wJxm4Jb0wMXmCKQyyY-VszroOE1-F7pCb4chxaIYnpUYIbF0aEYyUgKBvnojYfPhmtHF2ZuZImfOmz7hB-8OYc68UQZ-p6QpztrJmtAiXmnvDzREC7XFucad91L85IDPa5VHsaJNKVvg0pI8h1bG-lRrkVy7ly6Th499EuygcD-TLqJfwNlmf_AISCv1BBO2pm_ibh",
+          "places/ChIJzwVhkyNYhUcRcBULwbU0C6Y/photos/AWCwydgHaugwXLt9g9lzsZgBZW4WCOS98BqqNJDH5SFsH-EbGckdO98mhKguzMGvIRBjvtZ6Teu0nMPI1YTVnhC9Dq-BmyC4MDVhgqvpIj-I6d2JyY_tC_C6UdKppX98rgjcKmDX6r5Fi8CQeY32In5AvpMRUKutQpSnjTYqthDAbr3MksY65_HyiVIGO6T8TPw4nAGSL6LlWMfwIS_81AsdeXJcu5PnFDsZuhbyHIlSQJuzHUAkR_OPC7aG7ZB1tEyaw01SvpW47uVWlvvoW8rSSJ46cw4CE0LanUbOMsHal_8QPmcHoHwojtlaj3hYcc9w3ZhX7qlQ1ICMWthuLn5vTVsBBaWXsTahEdLgkUvIs83QZkaZfFi_-6CsPZrp7UOhN55LX2_0vYH_RgNfQIrgNaoRZZGeUQk0JWsBTNy7Vycs2adXziI-5rfn2TKmDw"
+        ],
+        "__at__": 1786804475.834327,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Visited on today. lake located in central Switzerland, the fourth largest in the country. Known for its stunning mountain scenery and historic lakeside towns..",
+            "author": "D G BERA"
+          },
+          {
+            "rating": 5,
+            "text": "Lake Lucerne was undoubtedly one of the highlights of my summer trip to Switzerland. During my visit to Lucerne, I took an evening cruise on the lake, and it turned out to be an absolutely unforgettable experience.\n\nSurrounded by majestic mountains, charming lakeside villages, and lush green landsca",
+            "author": "Anilkumar Karimbanakkal"
+          },
+          {
+            "rating": 5,
+            "text": "Lake Lucerne is one of the most beautiful lakes in Switzerland, with crystal-clear water, mountain views, and charming towns along the shore. The scenery is dramatic but also very peaceful, especially with the Alps rising directly around the lake.\n\nThe lake has a strong historical atmosphere as well",
+            "author": "Swarnajit Chatterjee"
+          },
+          {
+            "rating": 5,
+            "text": "While going to Mount Pilatus, we took a boat ride from Lucerne Station till Alpnachstad. This one hour ride was totally awesome. Due to autumn the weather was excellent. One could see Pilatus and Rigi from down. The crystal clear blue water was very calm. The boat stopped at 4/5 piers on the way. Th",
+            "author": "Balkrishna Shroff"
+          },
+          {
+            "rating": 5,
+            "text": "One of the highlights of my Switzerland trip was cruising on Lake Lucerne aboard the MS Bürgenstock.\n\nThe journey offered postcard-perfect views of pristine Swiss mountains, crystal-clear waters, and a beautiful perspective of Lucerne’s iconic Chapel Bridge. The cruise itself was comfortable, relaxi",
+            "author": "Mustafa Sutarwala"
+          }
+        ]
+      },
+      "mount pilatus|switzerland": {
+        "place_id": "ChIJPbgAuhTwj0cREOvEQPqZL3Q",
+        "name": "Mount Pilatus",
+        "address": "Mount Pilatus, 6010 Alpnach, Switzerland",
+        "rating": 4.8,
+        "review_count": 4599,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Mountain peak with a restaurant, hotel & sweeping views reached by cable cars, gondolas & a railway.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 46.9794705,
+        "lng": 8.2548011,
+        "photo_refs": [
+          "places/ChIJPbgAuhTwj0cREOvEQPqZL3Q/photos/AWCwydi6lNF-sRpgtr3sSN8bRVYQddjjokLxxVFMP0C9ECh4tjYX5qFPQRyjtAl5qUZxCejKA1zdGPNWpZ2ylpuMtSPuNOf9IooY5-NbE7xQCS4tH6BOussgRz1QesiFSmanLP9gXc8D5YczHw2813eUMVeeZ0xaqZqfySpJ_Tr8ThNcZDJBwyV9X6SuMZyKsj_ojplCv6pgGZYcgTFg3591puFnjNfhYXRoEC9fyTtwhPCX6BASaZONlOP3fApsHDOpPDQAygeJmoC9sWCs0fOhZbsE0KGFQPAlKNascD96kTDJATGxJkSbLgMkX0C6cBZNuwwtFeYOmpKCeZYs2w17C9-7V7H-PCQjjJVmhJDn-6_FYpVz0-hup9EZHAY4iRZIi6MPz65xPHU-mDCfTJzzH_LaFVEBbX4MHLmpwG02IOn_p4XDR7JqhoOQOtAMLqWQ",
+          "places/ChIJPbgAuhTwj0cREOvEQPqZL3Q/photos/AWCwydjY97bCs1CiJsRRiEYGFD9ujEVrD9a4HtRJmgvsR68rQ_jAJUkbrO92DK07t_7Kx7E1gUijtvfaXcmKfcOMyV9pc1-S19PdEtY0P5QZa6IweEy8KB2yCZNKTizOr7xtEsTDRAAMp2um0tM-tOt1kUg7nt-d6BBmrqd26syzU-Iw9oucxCzyYALGD3awEshfWV3lAQ-Xf6_D5gB2HDaFDHgR-CnlJFwwfowKedZNmawTvf_ODEsjOH3JCRm6cWsT7CBHx4uxnlZrtvozwH66HScY7Zy7wlgi6-MmLcyothxa2i47c-NMtemZ2FSr32wuNQyIvE5_IWwTNTqVP7rUUlbpjLL0wXzC7gN8uRrIUjeprZkPaLdFhTGX0Fp59V-rKnvjo0-7pjjDQ3kAR0ViRrWiBIWZ8eq2WqnjqPwQP5rp8KRu2dgxNAau7zepHA",
+          "places/ChIJPbgAuhTwj0cREOvEQPqZL3Q/photos/AWCwydhSzMGWhQ8bjkWlgUdM7HPXW0sBG4v3atXJRPvlv_up3yRxdTQeobm00gtMY3WyHZ9WdUTckORGKrOIaDYGDbI3864e-fYHglR2eJ346e9ptVCBrI59YAWR-qZNjQ452xU_9hl0YEllx8eE-dy8X_syW5B4GzhHqvrZqeF5kOAx7yPgik5ABibbDZrlaN8d-nAIrg6oNCujo3r8CLcn4kqsGvqPXvwBj_QXEI5hHTR96s3-RELaBqpjTb1WLFGkymp0s28GYxCJsB2omZLp6EywH3OcaEL4SIZkj2fPuCaCGHtpsfQnCLy0PVifzx9uZGhIwxUQytv4o8bJoxaKG1RjIR31Ao59N_lvp9AXVxO-PneCDYFKPlRbU-tSmGDP4yK1zw9afkzKpAb8Lf6VDbA1lugIW6pVxmFNc0UizGc",
+          "places/ChIJPbgAuhTwj0cREOvEQPqZL3Q/photos/AWCwydg2SAAlduOjlSplWYsjuOgdAs061rLXLlgLV8sOLnrrxoJKYIqtsIwgy623slOLPM6SkdgbB78sul3fdepRX9-xw9qvox9Oojx2XGgDjII-jG5rrVZMV3rIBaKI5UDIHoWCLM5AJNn1wa_0Srtd9oOpmpE_o3uizoEm1J8_3WcegEJGU4B-AF90t_Xbc1ifsmqBmGheDzxHbgnTPjz5xKA8UQW2kF3USnT_ygTPkbZEgzXIZLBm_5fMj0nD4i8_7LuwW2fQMdkjrPL16BZ3DnH3zSWIs3Ka8cX7QnnCewPV35MBh7L3fFXu6fAPNes99aYSdm09w4hyiI1YW5OPWMksclaTD8mN7-6StEVvQ6brnBgFPqNZYn5_sxa1we63xvuZne61p4RF-IkY_B6YCXWBSvUSyTN_eVPVrjP6Lh1_QQ",
+          "places/ChIJPbgAuhTwj0cREOvEQPqZL3Q/photos/AWCwydiHzQbRzEuTIcwWs1f00C1O5mQQ7ARTVjBDqiERWv5OXOgt-CwgceCqHpp68LjU6ehf-cwvF_MID0r0k--WxZulNBkml64STUS7bfT0u0OhLP48rkr64ff1XjhcHcRSlc9iC9tojrCMs77iyxhawVWCfrdPinnarivtenTadXoh_owIGeyxQyK5QfkYREugNHMjL2pYpRdK-01Gr5O6y4EX_hiusFjt3fyiye2C_I_ClVZoB2p_GmerMhPTETMNwnpVUzL7gnJX-Y223F08ZcZ0XdjFy5PFlm0bSHu477meenI_4OPcgqJAGnTRQYxonhj61NVDPy7AiQZBOj_P4XhRm5qDEHotDLGS3kAT7jOoRiIzgksE-S2vpOI2iky-hDViNPWnnkCIZiiS5Qk0mXML4GqFkNTkOaWTGVsdEnDQPMXJQtjNa4e9-S4wmzTk",
+          "places/ChIJPbgAuhTwj0cREOvEQPqZL3Q/photos/AWCwydhPdz1SlIU_3kO9VQXDfLEgcjeePZ-q3-6sX7vBxqusAboxqwABnhQdCW-rEWq9TGyAX0UglzLRN3X6jfjxOAruyLpv8SFd9r77VRSqzaZ2XteJMB6IIkBQZtzD7rnJS8PTEX8MIkpit1aycmGnivly-FuTuZzOCDdqTBqZCqm8GJ8wydzp0s2LXjpw7w9L0Aux0Uj4WSMrBZirkdAu8ulZ9snZcqcHfqMhkvwu_akmac569uA-v-_EWFS7ecf6x-SnSxnDhl4tG58n6HsoMCGUrUy9PEpSJcD27Nis6vnTtu5CIa73-w621PVyLmkdH9SwaI_nXYPJgrNGDOoyeUgl-wXAtB36h99REUE45k16NMoFrfA67kxfqLoTZEYkx_LQxjLYe4p6ymEHH2pUbmZDp6V6Fz9ca3bVDCrf2qnR_9992HRwsQ_dw2uB3cGZ",
+          "places/ChIJPbgAuhTwj0cREOvEQPqZL3Q/photos/AWCwydg_GGwOoaPlqp9_kMW2ZwZ1jLCQaVI5fp48uzNLNTVh6XoMV-OnGlyOwisDK067ADeb5IRLmqTklN9i27uLGchBXUN3R54kiaMpMTVjAOIQsciVjQp1bCiZc6LjBo-kz4ezAbaNl5MI6LbgTVtzkD7gUoCux0LuUjEP5VAatbXBZHEAbf76-znXgYUYlChqnLtoSvdOjoAotTWtwvUrXMti4XwBS6GRw3jzQ6fPcyqzYEhhgSy75uZzEHLI-a7qUImlw4ZuqrP06DKW6OSoQna8iAzrKWR_U-Ja6aNLDaSO_Ro2rMTi9-s9idgInO9Qnd06mT2-ISdzm6pPDjQXFZUzgw9_Djqr6FjKziaJuM3p39PPLghgBZdjAz0lBA71E2Ru-pKD1_rQPRC4qDgP1RmtMrm-z6XU_cFytQDFvPJ1lKA",
+          "places/ChIJPbgAuhTwj0cREOvEQPqZL3Q/photos/AWCwydil-zgWDWdxIAihkg2mo7YGGVptMRbr_l6fS5-zULPFfQHGczexV3VeXf0OihqkHLWXR4lZhLAQ_AwBPegK-4g5XBu75uy24BjXH9yZalDjREiGQoDoik3b7G16lg2ryzRI4D0hfuW7YVanHTskefV4OJx0yCcMbWrfjI6CFfyQ1D_zrrHnwTXMOP65QF-TiFcZMaDTvkHI2wtPcOW3dtuGHZ9m2hT8yXZN28UGw1cmkurXrdAZadP2vv3vsSLimua2hMLDFyhH15UU3guGXB5fofa2t4B_k0OwWoTi07eq-8k8vmmFoq8GW32DrLHw-QqywTnNRWZqxDv2y0K6U8W6IFbUS9UiHS5k4YqwSD5a2LVDVsdGVUcfZg6fx4cB6Fl70BVgBcA5B9nhV8N2PY5jkFvHyv1wlPi8kSkepUif4ng",
+          "places/ChIJPbgAuhTwj0cREOvEQPqZL3Q/photos/AWCwydjFG-g1MYBsuWQj1Tu9U7Kv4EWgAZMmpJfPdARNckprGLTDmVmS-DKXXv-cW_8cogdsrhexQwj_2OcpegmBgu299nX2vXV_yfDIUpT-zqWh7M50Pdg0CA7MJaRaixVL7glckHOyiEVqdI-9SsL5MEuS7GWv8vxVbFKp3072r2gqvMOUNVP__icQVeAn5lr4ZPqMLMsopMv5zWJ7lToD3vcowg9VbT6qu8YP95KQywxDNEIe__LmEzE5IVRUgQ2weBZDwR7oV3FPbTk_izesyndOPgLKbs6Y3MtX9yXHvoa71pS2Grsh0c8AFlWhomqg4XKBGTaZNu4j028mrz4d1FJ2D7md0spk9HNZtfNv3de-t-k2ATNYP6nVdtQIAa4pjazs-MmRPTHyU5_cudVbHcSxbB-LY1thE0_qYLd9wv2BZQrD",
+          "places/ChIJPbgAuhTwj0cREOvEQPqZL3Q/photos/AWCwydjrjo8BiukRsIZv_RgMgLCe31E_aNOPMPGriDETHVwOl3E9jIK95r9QcpM_ofJPXeND7zS5nnORXTUEmagkIMJ-zmr-9FndmcGfPtIyOuN3i4QEH9cNTushZDSZ-XplQWL2HgJ8k8B9Y-_wdmc8j7f_x0SPK-RL0zxKtnPiAB6EuaQVKd_Alwj3339oaODb2rNCfMq4CUmVH-p9JLL4FFwxXGN19Q8hkrwzhU8rYuEpWN11i42h3Ch7rCDedYc2cDNFHAllB9s41kZMX8THGlv7yZdGV2iHROiwIllh9gzKDuCqDLplKtOIpOMqes1ZxUPv_I2yv9HP8D0OV4_Zo6iJX-2ypKbfmm_JsC3kEJ-_bx7wIYtotvcmXfLtuahDt4yOdSUyhb82CliQN_IjOpZaifDM4ymZ8o_2_8JpGaXGR7GbBgsKo_K7viMJT3oZ"
+        ],
+        "__at__": 1786804476.282392,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Great place to go and visit while in Switzerland.  I would recommend going to top and coming down to do rope and other activities as kids preferred that more.",
+            "author": "Pardeep Singh"
+          },
+          {
+            "rating": 5,
+            "text": "Beautiful, great views, and cooler temps.  Views were awesome.  We did the Golden Tour.  Do the toboggan run if possible.  So much fun.  Did get busy so go early.  Food at top was OK.",
+            "author": "Jonathan Cartney"
+          },
+          {
+            "rating": 5,
+            "text": "Stunning place to visit, highly recommended. We stayed in Lucerne, got free bus to the entrance.  Gondola up, train down and boat back. Recommended this way and search for gold round trip.",
+            "author": "M W (Smoke)"
+          },
+          {
+            "rating": 5,
+            "text": "Mount Pilatus was easily one of the highlights of our trip to Switzerland.\n\nIf I could give one piece of advice, buy your tickets ahead of time and arrive right when they open. We were among the first people on the gondola, and as we started our ascent, we looked back and watched the line grow to at",
+            "author": "Alex Holzhauer"
+          },
+          {
+            "rating": 4,
+            "text": "LITERALLY peak\n\nThe boat ride there is very relaxing as well as the little train you take to go up.\n\nI think the 2 gondolas (the big and little one) you take to go down are the best part (besides the views obviously)",
+            "author": "Luiza"
+          }
+        ]
+      },
+      "lucerne old town|switzerland": {
+        "place_id": "ChIJeXNUeSr6j0cRr1KZQNEq8K4",
+        "name": "Lucerne",
+        "address": "Lucerne, Switzerland",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "http://www.luzern.ch/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 47.050168199999995,
+        "lng": 8.3093072,
+        "photo_refs": [
+          "places/ChIJeXNUeSr6j0cRr1KZQNEq8K4/photos/AWCwydjeZpYvx_PGugiFb_YlwSkho3PZ2ec1KxGvN03fznh8ZxZ8ERqg7mKc3s4S7YZ7HJLBe5MCalX90vllkALuAAvGTT9oxIk_PvD8sooY4MTyPcCdXnxGDyrS1WJD_Q-OkRd5TwQjYPgvWMJErmQXEOli1eFzUBtAan382rjpxJzD46GBnBGHY1zjZXeKf7fV1xAtKRwACxRMepnId-fPHMF-CZJSWSlNNxEc7roKwEiWydSICdglEMJ6ln48OiQcA-5Yv3fDx9_3BQZrYwO8zK8dmUkxcvMYvK8BjVBs8lBr4rNkh53koeOR2DEmOnPOckyGHRumRN75VAp6gZycNUolFMo6hgp2tlVxzhdvIIl41xA4QFcr13jAZfsxvcVFRg4nf5eFv72lgYMR9ZOb1M-SR0x_1lJEXsu3x0hsf2KjiuVh",
+          "places/ChIJeXNUeSr6j0cRr1KZQNEq8K4/photos/AWCwydh1SqiJLR6QtKWwu_WjJ4zaxUUp5_xRwpzO_pOnmvUSIf7olLkk3CSOB3H5kdLlDQyvTz6MkznEFqdC-6yU3XKT0JYP-7YCQjqUIbLQsuR8BS2jxo6RCggIMrF7wUGxbEVp92ax_Qjm1r5_0HjdPdw6etj3xEpVHTyWq9OSh88_RtKfQk1nhIk0AyzOqA51Mb4hm6nSKmD14QTrB4ygL-aeC0wM2NH0564IS7B8kckShG3wgnfGbSDXHCPYdqOzjWILwSUHPbEMPLkTjh4nx-7sYjwzHd5e6BPy8y2IeNiyvMsZutcwb28WIdjBc2yJ6JnOj7jbxoat65cszAebaTym_2y4ZolRVrTdML169RowZUpqvMClpvtz5CTzwN-kD8V5MTrbdNmsDXkzv3SYZg9QYeP23FE1HaZa653V4w4",
+          "places/ChIJeXNUeSr6j0cRr1KZQNEq8K4/photos/AWCwydgHE2KuAlhJo6AeipyKhXiwVE3TcaibLVVQMYj47eRBgOyjdV4sfM0GW-LmZT6nk4pheOe-50WsXmVeOZ-VCS6OxheoPTVooriI5vaVCq5eHIKz-RXlrRn_CF-HfxukZfTq8YDmgI-I2VNBUx7MENker_iL9mVf6mhZygrLaGPPbAOg7cyDTrXIxwpPUou_1z_xDz1IH7GKvy_S1b9shrEYLByC0VbThF8bR2Y5rY84rhGAryQgKYSwiEN8ADn8DWKbowU_pN_kxM66o9axeGWu55kt-H65h7IoSEDBoqsIJGFxNgmgOo1JPcsER_cune1SfZP_uq3duHPCT0J0TqaNs6876UxgqwvkqX7O-MG91pgfrpRlNtNUFSJPEjp44qAT_lB_ZKnkDOCxr7LbJFULcoRsYT3E8DOvOFDlutOz6qw",
+          "places/ChIJeXNUeSr6j0cRr1KZQNEq8K4/photos/AWCwydj2hauDLq_spAv2axkmDQWLvDRpz3TYhNLHTpxAv4CBtlhIcHE5vP6Ndn2n4AUVajmB4LdxB8l2URD-02c2ZjxX-e-4zQpcHsfIKLQdtdLRFtuzWVm3DZtt2zxs1AWIajq8hDSEZzfUeqVkpo0_gIpzGAzdwh0-Ou4Moy7E7ZiT3jXiNgUWkwVBOioX7-djFHwZlCZzsqvWT0kkx3XO0f4F7EnkhQEDEVUxZfzCLpzN94vT5Vo_WgEp8_Y1VH_0naGnP-88fYoLgu3b48lKR3Dvpwx4jXooh1sldWYEtJ74jHV0LWuh8rkKH5cawwkhYS1ClRXaVJDsCSQI3MgrVHocTbq95g8zyw-wgr1_nNCojFLz1sCcV-iHy7eAyPan_LbuPWmtsG5D4xbhZsMc9oosNzyYSKWFNJxxe3wMXerQjw",
+          "places/ChIJeXNUeSr6j0cRr1KZQNEq8K4/photos/AWCwydgYmorsO4uEvO0msWqCG75ld8zFWH-FVEhaQnQsJx8eFdDqsEymp1KEXMI8UDBR5HjzU_pVKqdBc9LoAfmEyBvIWXa9Xwp-vPpmUvfQqt0ECmUPahr95-k3yI77TbEyzUPUPvhd-izhYEz7cuyXNL2zDSXH55dmCZyo2O2XCFyONBz6Zq2OueFVrMAQQhFDHZl2n0247wF_vmX-aUaI531HwC4CzkzI2iGSIDny2peTmKO4ca_QzQpgY4jB69wA-AOHF8mVnpJnonOTJtDxE1LHQ00_xeI6HW1XrdgfVPM6hsoVQPiMfWAV_KZmNCsNcx0wvZcJNc3zhGa8pMlRW3jpwm-AP_pWjMmhxHrfIFrtI_G8IU-lP0GGiHVE48zTdENhHalpC-egdW3a6bit81ApBg2FDUWPL7vwC0ed_KlDPA",
+          "places/ChIJeXNUeSr6j0cRr1KZQNEq8K4/photos/AWCwydgiWzqUCBZUiybGFaPFYkbQ_2kLQEi70nWXE61NVksCjgKA7ZE5ZEpuogYGB71wqzeXMsqKcWBS3PR9rcS39QoUZ_QvlJ4TWjwkSYQCHlXZN8rIWhizBZYmesudoM4-Ixb9y2eKyTybijHLJbBBO2YCMzw1dULyOBKdBKN-jPNXX6R6NpM-nVqYF0AFQlSYKs4ndZkI7c-TPS1PhHU5wtuj2lkJGTNVADyzIQvgIv07R7fH96Rvt6S7Oh-2P0uZYkXVk7kOnuQdvgAvfhwGqM0KjxyPX6nvTAewbo8DkZLerzSlNeLebnnZJy_P5BnE20RaopFH_9R0vOviRU5cmOpxm_VwOYYXqPD3EfAhjrsvJVoV7cowMIc3EcCxZf1YFvSDhGxMjlPeO1Q2bMvgNXDlgMxmYOw1GRzgT0zwCpUGZn2n",
+          "places/ChIJeXNUeSr6j0cRr1KZQNEq8K4/photos/AWCwydiLZQEKYrR7SK7xic3io0DpjFG29u5Eo7yDJwASiiMufcAJIqkRNrbeT0NRANs6MYpS1IRZyQHi7Yi6FlKW9GsV-9avdphRW27GhilY19NFNkOxD0MpkikghSA4dj4amm32vE1UPh-hSFjMSz0vd5dJBmh0I7ldvmDzpKYBSXxEPOM4V_sBuupQFwGf8XLMbLF0RASVkYfs4JR9mZX3ZWD81310M5fjuaDxOGdjRXtdjk8LqwdjdqqQVnxVbPSMnxxR1YqsfIZTrsLgEWEr5_wNIkropfyhzazH4PPIzB53enSeVgO2oAvjW6kqjGNmHpHTUJ1qmxiaDkapHXc71Hm6CgUBOTjhNwZwUSLCW0u7FgLEEqDgM5agjJD7TxAD6CJ1hZb5vpsrvK5BLtUz3QKfFLkwjpwG0VpljyM1pF3rr31Y",
+          "places/ChIJeXNUeSr6j0cRr1KZQNEq8K4/photos/AWCwydiUUbYDipNAzXyOF33yNqJNxpl1kKl9KSccTcutnH6KvGgMUX4fQT6gEnq49CHdk4wmE_z5BUpQtfvMZ5Qa5v_yGzWUoVPdSUVbNedoteluooEs4s4bZIbOZVOTsCfESjXGbUX-Rof4Uim5JljvPsi8QG8S8HnNJZBp4PEH9p8K7Ctvu8B0GbRKlvWaojJLxt43IED0SgBr8Ccnaudg1Mj6tH-u9bjyhw8-aOhaPAGK99jCQCMH3iZ8fiBrAC95jlEQBGrxC6-hw6ClFTKVDuMnvXi0q_NICrp377lr8o_1UwrhVcFvCoT5s-tHw6SIDX9iF5MG8jRdZqIVDpPfNNvHaWDQukVSB2S8ei5g0VP83nckbZ9HP5a1y6wcv7NVuXfCMpQ0A0-MmZ-L9uKPB9AanJdI7mxdZiNLSVCPNRwjK1uY",
+          "places/ChIJeXNUeSr6j0cRr1KZQNEq8K4/photos/AWCwydgqraFCslhRFL-xIyKHHxBSWAEwyXDLiyvQMsomnishzM-WLttG580w1o06c_w6oXnl-avLAoUFaB6rT1lB6iDlndjCOnqtOORb819a1yuV2o48VJmXiB8k8LUqaD3HLTjWvDUAtxCzMLZKxW5LJ-Jhd-sSDyTQfBHHufiI4svcwzXXLonflkDg2NYlUHq9oiSPHoGTeAYCWQiCdYZZLLIdJ3-qKePGOd8dnPEUZzPLk08QKcxw8rxR1X5HSixMvSoOMA4WKYXfhgoOhHuMd2or4Dl62LQnz4Kp8XlWAupWdDgARI4ZxB738XFZWRbfNbwaMFMBqX4kLf2w_siNZ84XoSB_f6Hm25Z00k1WMDRuWJR80ziPXPqL0lGN8n4tc4B74JwpNQSkHZ83-otwLtdD8b17liEMp8UYgErXezw",
+          "places/ChIJeXNUeSr6j0cRr1KZQNEq8K4/photos/AWCwydiFSXYzNDTY7N2iAV-YJHXwZhIagl7BTRvWJgUu3xzSEZoku-_XMFS1UKol5CrCTPgO4TIsX9dMwyk0yjdP1FBJyt4_SX2vjSF7jwCKNhRX8a6jvy43FF2EkvkgyAC5kiBv7Zdykc447LzzanQZ9j8DDvvgw2NAJfGjrisX8sFDbc0-oqb3rkyPh2E-5GGJ8Bdoccro0e8dA4kbin83_IHHpaPYkzv0mvD0UCj59HeVKdYUIe9Og8lJ0SGC4F_mOYQdX4x_Kw7lFXAVLpAa81HGt9bWFso6dl6myJ34T3sTHbiqEZ60iZot_Rzim9MRVYakviEamnnT1wDESjnLNDiWTIH9AaBchgeujjr0yowH0i8ZpWoBRzQRWay-jRJ_7-LStZQVoMa0RsQVMNqtGFQ52VWFpiHkSPVRkIXUjZxzzg"
+        ],
+        "__at__": 1786804476.644723,
+        "reviews": []
+      },
+      "interlaken town|switzerland": {
+        "place_id": "ChIJBRqSMWqZUxQRAL4CTPEaEZw",
+        "name": "Interlaken",
+        "address": "3800 Interlaken, Switzerland",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "http://www.interlaken-gemeinde.ch/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 46.686348100000004,
+        "lng": 7.8632048999999995,
+        "photo_refs": [
+          "places/ChIJBRqSMWqZUxQRAL4CTPEaEZw/photos/AWCwydjQzgssHV2mh0wVTVdbJYG-VgUlHLhwOpowm5AgfgheUnMom81bgL6n3lY1fRuIbEEVyy3bv8mvTQvhOTaH_YeJUSJiMjGZyyd1aaD1jW8UD3gayiN6tuhsSSFrsEPL1fW-oeHTER0dWR9x-xpoonWdJJ4it1fIJZqMpnugLEg5LPNqSLWfpeiHFeb60X2jWPR3PzRbY_3eOtd31v8M9jjfPANol1qilL2xKTRNzcVz1Z-1x0evqONLv2GeEuyBB7pKvbJAgyhl1VkzrWyJ_R9QyVIbzA_8Rv4YYPaClx7qZWacche34YD_9RDcTMw1Njt257qXj3Ve_yoiqNjRab5EfSvO33I_ecEpHnzUovX6PU2Csa31-ceckoFqp41ZQ8wvXi5VFh7RgqjxaI0qLgfnPhcaz47d71YZcA_EK6wB6MA",
+          "places/ChIJBRqSMWqZUxQRAL4CTPEaEZw/photos/AWCwydhaZf15NYoo0gTZjTGYYE3ir5Vlggd-2iD7bpu5JIs-ssW42DqIzaf-YfNyhm5PXgcG2mQtiq1OZ3Ex_OHaVN23uGrr_CvrDHyScPqqDFo7wh9bxKmGcVUNePxwd0r2-FAuRmwtBqVCBInNGNn8fs5HdS0-TbhiSoUBjGRw9LvzE70rW-8x7kI6q2qWFrf7Xzg5rmmQBPTXBCM1qMepQWggRYZwodrcBj4GJKfmw8074SAlPwJIrajULGnTLE7aSlle6O9XWqFoGyBgf5ihKjewHJzsaE-x8-JbFz5AGvKcDFW3B02qzo6TWpdLA0m4pdbugHMR-aG3dZG6c_D40Wf2ZyaFZcCLakqfTPJxBZ_dZZJmaTAdDcXZv8ysBqrC12jT2RJuLEGQKK11zJ_u0oEaCZRs3YmjVisxXJb764Gfdurn",
+          "places/ChIJBRqSMWqZUxQRAL4CTPEaEZw/photos/AWCwydh8JnU4s84yE6DFkRlfbwa6uRpwIvNDA1PqT29JbGt2uW7f0TPftvbb5PafBPEDmct-Me0OFKwE2oM07UkiibXh9Ilie6aTAtzmHax0qJLyEWalIjpKCOdUQAG9_lX4qRt7NxpBKsR4zqU-960YgHXB0R-ixpQsPYLea-qbWyTMiOFR6ZZ29XlDsZH8K4AE4IAOVUsZSyP8sP4lxu1gb58SRwAlFGjR1wNVhT43HqrWQ7NufHPfsET3TnuRN6HVDaVwdaP0jJOA3DcLxLq6SMUjOBXDV3WPeuSK4q-9NYxA9k4wd35Gdi1_jzsLqJjg-Ffg-dNwnUBSP7rrYdXQ8r1UeZ98SohgmTRpqMHM5O4JBUmpcjHmHZQE-dog0hgFvvfyUF2jKNNf_-GRjbc2daZGOCtgLYxNTkrcaDqUpdb6sg",
+          "places/ChIJBRqSMWqZUxQRAL4CTPEaEZw/photos/AWCwydgdhrurblbk1H3C3Wa2V1vNJovMy6BQfWru8C-vvfBP7vrCw5CXJUdpWamwt4m7sgoqKmhVwov0S8keBvdnBYoW48BW9v6YCB-wA4PP68Ji8ywQeWo5zxbxYrzcHaPOzJM5a0Yh7RfWwQmt3-XAh1KwkunQqJYJ7ZrKQQQofnwnAaUXKlP8yShiX7tAQfiGBPsXrQ2fQABedgesqFno2_3V0V1PFX9uwbLKyyhHx9GjcgSRxpViGaWylegP4fHia6AVzuqB3M7lKIAsYlPyXTuGy3PoEYTQ5uMGF4Bf3YrhFMTr_IKiUfYXaYy9d-RXKsaESHkzJ1nDEglJ4YoOxrEt6tvwgcVD9rIXyYwyAsTfYFl-dkZbThVsd53pUGfdCTHKI0LS0qwzib6sfswAPECYotq8t5rsRgPGfkg1vYc3Qg",
+          "places/ChIJBRqSMWqZUxQRAL4CTPEaEZw/photos/AWCwydgTkNK9oXm5JGXRSIw7R5ALQVLxajiquB8Wl8MfXSPwU4PsP11njSMVwKwgCLtRFZ833Dfz4wX1Iv1tmzEvOPNaHaYpkbgdaymgyYuTSo416wcw2t_Lns29DzY8xsU4jdOJuMSfKkB7Z3kISkEbwmPvjg0u7lfWmQSRFffjNhHqIoalh3EyIGxTLUXg8AQtgqtAFtl-5nKBb0a47txKyha8JVqVFuRAfHSP7rN03XfYEqZIP3A3G4GSbO4b-rwI7uPCYLXvcxmXTWcASTgG-UgFzaoe6Ckk0UsJHX0EvhZSjqDHw8PxJfOOV_0wNWPnLUPlgObuAV4jbL_343w6YZpzhkSMULcVHre7tnH6usK7yPq0bvhyRtP6W86Wq8oaguoUzi6yurK0rT0JqrwU1VpjXPxE21KnFUBafJwopTUTvA",
+          "places/ChIJBRqSMWqZUxQRAL4CTPEaEZw/photos/AWCwydg_qplGxfsYAIWzbdohZkTxK8gp7qPjayXVEUPvBBI3rxji-Gexf9p01VoRXjf-mH3OY6sfF5LPsatX6LkCwoyWOf_ltpebvGRSeOT5YKKjDAd6K0k-LJyaS8ZxfDpwNtxKK6uHiIapH6eZkEWCV0Po447pCyewyRnQQqRu0YwcgrBFMwpl4NpF7nQe4YncJ3qS-NipjOe5L83ZkS8tmUgZDqJaiW3EK3jc9inO512xJK5y0F_EsY8jpBnvolWnhLzwd1gfZ_9XY_XNtZ3tjesxWcigOPIWw4IhX8UrbvffJnL0sxbd170CkPyjBcc7cFHNb65L8QdjzTB8AbNMa3O6J24yFGnypjoky3Oyf53z3JrAgXcd7P9K6b5NdkuqesuvjTOfQX-J3uhUQCZTlLKih29x36yUONjMHKHYLiQaSg",
+          "places/ChIJBRqSMWqZUxQRAL4CTPEaEZw/photos/AWCwydj6z4Xm6reeZdizMBP6cPiKUVn5CH1z0aDWEw2JgLJyykYL42MsZgmrmeRoaKQ15v3egKhZgcdeByYa9fKokMrZmu9bozzE6i6tQNiAipEG1cpu8xJUNjJDdej6vcxWMToprcAxBixcY-r4m0u1aDwg-1QGMqeQsKRk2QbVpNyVsxRUl9GWwrjhc3PHg3d5YdNv910Zst5orrmzS1pqqs8elVbaFjxYWurlmMVO8A8BZPBAi18E5Bgb2_pksBZjQoqMe744nW9dmcoRLknAS2YnxJZkJvzTg8rfJRcmGX-xegDLiQrJulE0wJT3GAOqgo0SVRBLibRnGFKpGsLFcFRpNFmNw4X_3ZAb1WP5L3kG0LZmFrn2WCK6B5n-M38OiW4F1OaYhPGZLI5WYYQrPSghK16sK1BWRhfkP135W4A",
+          "places/ChIJBRqSMWqZUxQRAL4CTPEaEZw/photos/AWCwydhhPf5XrhT9hfoQj9GNzHoNM8p65ewcjJOgUei8M4JAPeZjZFkDmQUnO64Sn3g7TpvvJM-cYpja3f54inJwh8MhxeELkeQ5Z0SlhHJRu0uG4yLwCi8k_W2IWr4AMVZvmcvoDY9XsaNzztRB30_U5e7KRp7Tsd1VAqfi1_Wnyacmi6pbICZccvnQLtFlWjRg5EH2mSXIdD49BXoiJDiknXHojHyJZhtF3R9ByqA9Z_AFi5IQIFDFmdhwN8zw43KXoNDZYQj_les0y7VWtWSqxoRRID1bowni_XPMFR1jT20Sb9nEo9PMvxUjmQXoTNc_Ut0SMFNbrXtzx1Lzqs33uBD0nzbvDG97jscPR_1BqAk1T33XwAKr-G6mPgWLqe22m8lYqlLmq6S02EEzMlnHKF_DI27tSnBU2-ncSYAbuIOV-w",
+          "places/ChIJBRqSMWqZUxQRAL4CTPEaEZw/photos/AWCwydgkk8vAEF3i7ca8NXrF9rHDk_MDv2swGbNJXz5MW1Ks5qbyJpk_M8Td-5aalQM27m6PkEJJBILffUXPZui-OAM8B9aE0kFAjw79v28msKuJCIMrWNeJmXJKzCNfDbq94cFOfdaW-FCG_wJLgf_JYajB7-_3UZnijyEgZpsJZoVdA-OLtrh1o034pHIIg1nE-JhLyu9vMuc7a-c3Hw275cgBnbOLQosmrGwiwW4ciTwSEClGd6BH1RLcvI35LOhgEB_oac-NbYEhO85oZlXLHhEQlxKsZV4J7jEqgY26lsFHATrTud1iL9gepAEnC0ymv-KuGgM3ns_hRnL7Tp0zc5v2Va73jPEGrOx5HfjzNUwvkRZvDXgeKnamF_fyqF2XBQdaJFqnJzlhSOixFqekwhqzaStm_ztNvHY2rwdbzzFb1QI",
+          "places/ChIJBRqSMWqZUxQRAL4CTPEaEZw/photos/AWCwydjuYzMNVsnh4TXR_6Sd7fixQGxqfIBMyq_V-IRIwvS8TxVqvdld6Ptl3jpJoSuxNt6d7SwMHRIeNxKLB8T4afhsMOqGF3j9hhP7OBe3JGSIkIeox4mJ7MpOw2vtzQA6ocJ5LBrvrJMTjRr0HrX4wm4i5bKLxgMns4ZkdMdt3eQ9yZVtKGm3gEujxmTjSfvEx3bKblafIiqeqglVPq9rCw5S-mMzGOJy-wWPKkq5ffTkEG8h4dkrOANrOty-kVVyCwebk__syYQj9BeYwoLlyinPtOZEYNdtOoO8zLVy0mevYPp1ZMDS5YETYxKLRxQqoQTHgsXe7UiwnpzpKiVfi1-Tuc-LLt2FnCQVrK_3P84OkwleDEjv5TDRtfdztDZkelAHiA3ODVMmjV41NZf8R0IXK1o4vBV-VdbGB6xg_UpMnw"
+        ],
+        "__at__": 1786804476.9334452,
+        "reviews": []
+      },
+      "jungfraujoch|switzerland": {
+        "place_id": "ChIJ5bMOBCiej0cR63mRLDgOics",
+        "name": "Jungfraujoch",
+        "address": "Jungfraujoch, 3801 Lauterbrunnen, Switzerland",
+        "rating": 4.5,
+        "review_count": 3048,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "The highest railway in Europe takes visitors to this glacier saddle with shops & an observatory.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 46.5482766,
+        "lng": 7.9806434,
+        "photo_refs": [
+          "places/ChIJ5bMOBCiej0cR63mRLDgOics/photos/AWCwydhdp57CK34pu9QVi7sQdKcHB0qRiGPkpRD349tR_yx8p4SOMumGzgESRMyJnXJXWEJMqTP0l1GfjOd0VkM49b4eRj5RDDIIVP5dYGH-JWBb9iJjjRhcLekG7nhtSgYytQG4CHj44yvN1BTQfWpZYDxNzjtiZvboUhfgK4hspoTeEHdkIogK09Hy7Sfvqh-h6WACA7o9UNoXd_mh8mUejNln0eb8ao3S5lrYRpP8VpCybfrk0GoSRlGW-O4pqppNuKuwLJCPiwo_HX5WqMDz_OsT2bCADnKMUffvEEeTe3k6b63UaOuq8YzfWKHo3U5QfhWM7vN4u_soU5gQt72Zs1HYOiHSZ1mwsGCwborZePkw6lkJ5Uq-TMD5kl6k97WJiLrOlgnOnjM93MOANj-zeoEf8pw2FGHLCPzyt0PxIiAaem_a_IjMkoebMQzW5DG5",
+          "places/ChIJ5bMOBCiej0cR63mRLDgOics/photos/AWCwydiKyXsZlMr11wca1wqP6CfXEnqTCZ5EZVvZYt-Zl7EWPCN7_azVaVnIbPUsM6E4vIlWx08WRkUmU-HnF0eeZ7AVP5UaYd3whL8wUSZb87r7Lvy2exsrU7jXEU-erdOYHzZMcTMYEqqdO8pyTJw37zTw19BUuCZPkePTXcnUKmdZyW5vY5xXDE-1BCn8bNFdyQ3yC9buOj_oFj3nRD-yOmCH9FbgmzWLMwxwQilxA0b099Nma5jIZV5qtBgkSdDpqZluK3CxjuLIWXXbboHA2Fe0J5TQ7Wvg7LMEjAhmDiScM_ISeyj12RJ5f0Pchu68-WhSOyMDt1dUE8DpwctpSvb_tTpbBWeRldKxw0wCgbFnohQFATPR0P_saywCwMDmpFk-o3Ccs2_cDcYPbovdcHDHB_FnOoSa3ICftltA0oVi3rGkjWKCL_Wtqywx8kNr",
+          "places/ChIJ5bMOBCiej0cR63mRLDgOics/photos/AWCwydgzNfeouPK8KmWo2V3dV5qNzZtEAYMk8gB81wYBh4mPdFqEhztnhBh6MQocoAm6TAEszSZqUxP0s-2T5JPqFu0R-G-kDyaiJ7uWVN7oHN5XOPCxYZ3u-D2bzOIdZ7G8mweVEdPFEgxWNMJ0GHfpO7Ipj7PTNzZ-toz_p1v_ZLFlpoXhz-pL9hZ9tWY8XSpQHhn9dUjSX5YzypG6pvWgrBusWrH8KmN8nXruwpN9i9_XLQEt-gWz9PBu8q3-veVKt1v57Tkm0Ioi-ygCgnIVPScvKax5cedqDTEbA2m-By_QELQ_PXT-3AKmam4TtH3SFK9QA60sb2K0svM2H5zr2pUtCixhDygVSo-e-YHfsLeguzyfKtGXRj1MtikXEpsJOBMFHsPpOuFlhXXNas7uy_Y8JAiMXXZOasaXmGYV7u9zFw",
+          "places/ChIJ5bMOBCiej0cR63mRLDgOics/photos/AWCwydiJD827-Xp9jGv7RhDJGEDHGLEzQdfEPZqF6hULcDMNRTCaiO0O68QCLpUS1k1P9NPfUljrJYR3OgQFTx60G4-6-k5FbI3a3jfWeiJctxTGO5juZGIIPuKZlRQhHHnUWNk8Deu-s2oWlR6PNXt7BpHlUDyrVBpuZj8Es1aRoyH9_ISLhRQUL0LBS-m36s8XocUlePul60mO8jMtUGukdmi2K5c4eDy2nwxAkxv0WbA6Yy5-R37LItId-DoX323u8Y0KbiduwLwnb6HekjltFxOGNS-13D1ry40ckGstaFQO6IKEuUq7-Ub_l0jHVbi4rXvL2ktqdcKpCxWMlB2x3ZcVaNV8LYPYPqp3QIUhjiNRdTgaygU7c7skzpjv8__87yTO-QUDr_EcdZv8rGkGwu_3a6G8TK2T5d-IghA64l0qtrlTZ4QraLY4-zs38qWy",
+          "places/ChIJ5bMOBCiej0cR63mRLDgOics/photos/AWCwydjfqWwAv7_ji2AFG_SIIHEOh5Vq5sk7mL7vj_yHQ6cnN9d-MjFStFyCWfs8Cd6aWH2XKwpg8O_xXmtselrpwT5PeWNPwXgWu34N8u7V3zDYqRvyZuuWo4Hp5mm8L033nmooBRt9OgNSWLzWjBHppQ2P3ThzKGBzNy2Lu2qXKrk1TNY3b3CoJ2QajuaZ9L7QI6dcIl6-NqcZklm_zzPR-6rVvm2warFFsV8z8XpuL32EjfGMdtV0_eP03UMRwpQ8fAPiUcjwrdvGPbg3ArBB3jz-Ob5gzj5P6EJXK_AiQDww5H8naiBX1LfrUGjxpNINKqmAaPHk3s_X6pzK-CleE7Hczfw9CxYX4G6Yw2bpnjTlIf0JeMmElLb7K_r-8rgRAVEWZLh2k7chUPd7eLgb0a5M27kjecnP-zLBalizxVYu8GMdY2FseW5smth-SA",
+          "places/ChIJ5bMOBCiej0cR63mRLDgOics/photos/AWCwydjtj-4sHOHQYJomyEIqGVyd2zLf_kv0o5CavVa0CT-809C7viyGVh-5-vsnTGbJetzSNVU00EfX69XRIW5rrNqrLGDKSwhheiirwv3KunfMeX-Dy2RTiKWvRf1mBIFGyoPgRjI6FEqdKiSGkFylstkxhSdJqBxY4ArIcSrVK0E4sHEHyp4nLWvvDEcI8VlFyKzD1NDm2bVMbpmcLvALu4Sanm-6JtBYB5yhv9JsrEjsqxd-PQ4r_0iqMs53M7SgK3boIbDG7BiGAj_UUvqUx94lmM1joKoYc7IIutebMDsoYCaOHZtPFPQG6U7EKV4F-_c-6mNHNOMZRCR4PM1QtPb6JccSdSwOehfIcg2iiYT3MQvoD8HJ-GQd9BHbaF2YyHgyDl9VTFkacCUNCOebHOg16buBjaBISFvi0plO2ts",
+          "places/ChIJ5bMOBCiej0cR63mRLDgOics/photos/AWCwydhcty3j3hK9Hwt0QhEa_iFe3qobdpFlHyPhuhK6ztapnsIsAHViHZiWniXqjK47z1GS7vI0wuzB9BAAuluKQND-AOYJPS63uGlNzJqeRWuWYBxc-Ht8snbtzO2Sd0zjvl7_IgJwpsDnln-TEVlK5NpGZQUK2LxO_oXlZkk6GMwfhTr7GFe-V9Ios6RLup-aZpF9rHr2qCoe6uGu9X70TJXk87-iEbv6kC7hbFNm-Bv14tSsjo5h4dFHsNPyGYZOdzghXWZY0ctu5DggNW9vpXTf8Oun62skJORgClOl5Y20JTaAAR_9Bq0fxDvfP30eSHNC22ukbjr5Ayq0AwkH3XgIChQpfWyG2UV9-U9APbY2HIFWg4r5rrv7R1UnklSD6uKurp-IGans6GJWYMK9xxFUW72tBlPVaMR5rMjlxrwSZPbozP274cocmdwVXw",
+          "places/ChIJ5bMOBCiej0cR63mRLDgOics/photos/AWCwydiluJbTNui3s2sRuPDUK1ftDgPTt76o0k224j7lnvXVeWIuMbEdbB1k0bMN3Ndm3LatSn0k9fQymD-jXsie2vYRsHPI7mIGSM2nCmqhPK0k4LwNB0hoPnhyVV0BQGNQWkHX1bRujPbQIHwSFx17hj7BIxi-M_MLjRqsJnKSFL0FUGmZDrz5qbc7DXm1oDJJKppV62l56go6AxyuzcggfVcFxvU38jovIRN6J1k54MJ3EfpBkeEzth4sNSU2gZO2UUCsE5uEMakdKAlTHcnWg-vfjb4Ny36Lfc_jSD5pmTrFwsnxyTUuhETPhhc9sgGhW1zx6IzyAV1QcloDpR72376eK9nm14x_EYtceJBsaviKcF_DKaRJ97dFLiiEmpGLj-_CBjVOtV3mgIroXA95nwphTIYmVrbbPQE5Wp22kCKolp6k",
+          "places/ChIJ5bMOBCiej0cR63mRLDgOics/photos/AWCwydhphPVvBuRopGmswpQiLLwgCamjE693bVAa0qu0INdldzQELlJ2XOTbOhB94_XR8rxijj_7gHOE6qsdC-WITkhU2pYChO3xb7WFQjQvjnSY6YbLVq50rZPSjj2FOPDhcAuTN1ArG3sF-dfgEgOOGEyZDma-FDLk6dJi5Ct6Vht2A4n0otK7P8HXNYLZ3fvg3KLJqCMx0U5Yfo1WQ1bnOeeyCh4e0go7Q6jkIzo7I7z5LSghgQv2vvgHcM8SpgNmYqUZtQz5eMLNMsVKSsUcyQOPX5RcqvUR0qw_qTGy7RqHETIP-1YoxbliLKz0PhNAMx9SgQrW5k3pQVnUnTOh6NWFMs_A_I3PJ-DJpTjKgT1l9OuvKN3J50MiJQN-0utEDk-mZuNfLA7e_KczU6wM1-apl8tq3O1IOkhik80-ZXKrOL0s",
+          "places/ChIJ5bMOBCiej0cR63mRLDgOics/photos/AWCwydhQLTKnTzYP-l9T5ViCjeKFErfTuytLzhj9giORONOKLG31xLMg9At6yF3d3RkasfQg1s7LKCk87U3UOjoMfMoj1HEp8wGSlNyPPmZfs5WGMPlhVsfnnSeR-Hx87GTGJjB9ZUC-dgsPTbhXoxLZIh-Vtxw3rTFy0Jxray4d_jjfMvUC3UqIeZloeBeBh7ZM-gZCBhEbuTbs3sRQWWUw0wNJyHX7iIrIH_4eirIuriAzMAP_PNuPua4GX0t286L7THUXdJZuWbYoTsq5XqXnbDQZaKUmfWa9tNUaLALBLJtIg5IhOUgL6-or4z3PjD7fOFl5msiqJ7O1BHg5h0ftsWwaZmBGAMM21hXWlAM6zr0oL1s2tFod32dvrEeXYFpHD7-u7BvJSQMsvo5GzNPw9nzmmoSS19KLQm9Owc3G8sHtP6hF"
+        ],
+        "__at__": 1786804477.245949,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "Superb view and very nice experience. We purchased the tickets (you went there all the way not for nothing right) not having checked the prices in advance before we went to Interlaken in the first place.  We payed € 603,- for two returntickets. (!!!!)  That is taking the train through the mountain a",
+            "author": "Roger de Puysseleire"
+          },
+          {
+            "rating": 5,
+            "text": "Jungfraujoch – Top of Europe is truly one of the best attractions we have ever visited. From Grindelwald Terminal, we took the Eiger Express, which took about 20 minutes to reach Eigergletscher Station. The views from the cable car were absolutely spectacular and worth the trip on their own. From Ei",
+            "author": "Dry Gin"
+          },
+          {
+            "rating": 4,
+            "text": "The journey up to Jungfraujoch was an absolutely beautiful one that I would recommend. These pictures are from late March 2026.\n\nWe began our day in Grindelwald, travelling up to Jungfraujoch via the cable carts at Grindelwald Terminal. There are two options when it comes to getting to the mountain ",
+            "author": "Ellie"
+          },
+          {
+            "rating": 5,
+            "text": "Top of Europe must visit in Swizerland trip and coldest place in Switzerland and all Europe\nHigh altitude\nCable car and needed to go there and must watch lindit choclate factory\n360 observattery on top of that",
+            "author": "sandeep ghatge"
+          },
+          {
+            "rating": 3,
+            "text": "Great engineering feat, but look for alternatives if you want better value.\n\n​The journey up to Jungfraujoch is quite expensive, though you are paying for the impressive mountain railway infrastructure. There is a lot to do at the top—summer snow activities, an Ice Palace, and great photo spots for ",
+            "author": "Tammy Yang"
+          }
+        ]
+      },
+      "zermatt village|switzerland": {
+        "place_id": "ChIJzeUuKaI1j0cRcG8ZQIj_AAQ",
+        "name": "Zermatt",
+        "address": "3920 Zermatt, Switzerland",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "http://www.zermatt.ch/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 46.0207133,
+        "lng": 7.749117000000001,
+        "photo_refs": [
+          "places/ChIJzeUuKaI1j0cRcG8ZQIj_AAQ/photos/AWCwydh5rvuBPhqWU_XGDHsmrEbv9900bIUnhqKONxvFAavJsbHrouYN2k_6BfJnaUXtd1tiAI6ssA2iC7wQ9ETm8EokmXDqttXv8E7T0vHWfiAhTof2-BSSUckZGZtfPHFKHFbGqkF4lI_mI8Waqv3AIzow3LksNU3hChnEq64A_5h5bVtlRWM0MjuLEkzfDGy1cWvwnxdZuvjzj4XQmU76Yt6OjQKKQPcfTSfh61TmoZXFOMHj8b_IqpJbnV5SbiGC1cOd-4osfzEm3oIj3kvnJEjowrTqIelbOlP8WHbFAjx2Ncorad2YxURvkEs8I6BKL8tlZwafmEReCmH_qXPfgW_tsvYPNboxC_CCAkSo-RbTthVsE99UoznqXPk5_1iNvLaZOKCDdoM_2CCROjFrIBQuby7cCE5U-rgXq47qjgunYA",
+          "places/ChIJzeUuKaI1j0cRcG8ZQIj_AAQ/photos/AWCwydg3t2VS6Az_mrzNU-QK_ZeOfJjWrfRW85hBW4xnn68HbLgmN2TfgaLSdl8Cmuw-9gRjSwU5OSXEia5PxQLmh6IFku-ji3IWJ8VGNerCpIrCl3limhsBOoO5gm2r8xX4Uj4Siz8yHxkbtKKRRxa0EAoYmF4S-bxXtNkF_gaHT0FsgicgHbPAN0epYTT-kWmL8wU6BCr165Xo3Rlhn-2hRotkII4Wc1U16njSKt41cbDXp29sOdNad8hodFgEP_CcnLbFcNCC0aNu4UseXwMPNGbmP_G5HDV15R0ZhbLNpMsayN3uEfZoJfxB8kOulR4Pw2RVAYIc9oPZ_Vljrvp2AE6COtUIQRNNaVKQegXotFmUZhSQ_LI84D3m_YuO-OYdQemp4AfgHtOg_DV0c0KOiVzzqbiZQ01y78Ah56CoXpn-8w",
+          "places/ChIJzeUuKaI1j0cRcG8ZQIj_AAQ/photos/AWCwydiQ_Y74TmnXcfsge9Oqb3z6SqyT9PU-NUamM6mBoz0ozslCaFp_PZjxeIS5And0riWysglTdOCwVwG5msVRJDISiO-4C63Riu23zzB6PmpbLsoTRVvSvAGiLacpQt3m1ft726_1mC944Zp2F4Y3lNaLFeJpD9gsiLJtzyx66daCjt42BOSmAsu5lATLH1vQS-uRbHgZbND5ZsS8YASkh_9rXQ2D6OSlROhhvf9A1_KGcck_W8EKC2iaswlPOrXF8bQ8Y_lageVxRHgY9sMbCPU0q0sGVq5nfQuTZBem8rCSsPXzxdARDBt3Ssx_rUjMNcWEnUNL0fIS_904udkqhBWHqFUwp5G8wedqbNcCkp-quR1Qw2TuSf24ipJnBF5j8aPehyamf90GmAbSzVw3hqwm_zr_8mEmI0IVBoaa6i2-cVCS",
+          "places/ChIJzeUuKaI1j0cRcG8ZQIj_AAQ/photos/AWCwydiOXGG-MH6d1gqng2ivOTMJR98LG1TeTG49oGaqSr0tIbZtabV13uyE852d2-h0VqQaHpqcSNrOrW0MvyleglYetN7hascxWxQ-0Lc9GdFPlMEfwhQdaDFSMXVVRfakXb3nhd8BCPEQCDp4kNbewUf3eOWzmiUdRjkLHnbO-Lt7jDXEtX3jHs_kuQjexzIG-4hMb1Vl0XacZc08z0ZWOfpPP-opw8_J9E19fPmbLECCbWwBcFbysvVDvJfiNMjjp72hzrUcCOmSsh_hh2Ktr2REKGKuwP3zJPqtR8NbS_TszwZFQMxWdlwyYfQc9Gs5DdezrekDltmjqJs-Q4Tz694RHfLdyDKSPrzyMgjDBtPN554MmiwA-Z_3069PVCj08jEo8PqDt0C98rXRYYRodJz2riFZY361cFB3P2kV7vU",
+          "places/ChIJzeUuKaI1j0cRcG8ZQIj_AAQ/photos/AWCwydjkzmq565CgMNWcbVMh77-jsglcLfmYN7OLbY86cEo4v8FLvARRw15TaDmKiGiH3lxBIh25n_WAH3VHoGpvalKd3Co6iQiejgSaRy3_takJRzrVHE3QMY-CfBkWHwG_tfmMbQa3dsoCvKqxCMV2E1w4iXCcmJQNmSdpIxkRp-tcC7dykwzSNXVBzdPDrnGdBvUlp3lgqDrcdKUGIkoHb-l_NrPq1uCfWUyunR8nHZWK0VEehA-KHvljCoy-PZiXVAarTzqGuvhYDkgDp1FNQnvwZtMHaXnON8pI-UGJMPfCBivrjmjdum7N-QWRCfnmTkaOwqu8QroTcR0j43pPGfx0vKazqUQoVbL1WfU5kVmeLgtuVLhU5t0AV_nMtfIHDpdPwd9uzf6MPb_nosvikgbYheLHnvulKePix0Ku5hmMAA",
+          "places/ChIJzeUuKaI1j0cRcG8ZQIj_AAQ/photos/AWCwydie2nTSLt4dCclCbGjzaYYsL2wSw8DNJGj3NXg5-ALeGqYH9he4FcIADkAZDaAQT7_KTAdyF_KfmWkpGspVwFCqW72W9NJvFEpkZ22VPVJo1QAXHCc-XEUJxjEiW_z-z7iFpeTX5RE366ybQEDIInWwMjVnKZ_yrDFHBF3Gu_y3DzcFC4cC44gZ-ivQb___mMBjYnFuEdgXJXao0JcPhqsbb5_sokEJqBHCmIiNWnDRtUYYaYV5iEJkROJ6eZarYiOAXrVG2wG8BRl2cl5Gu0aRz0CQVFnNxEC-HVaqTYF46Hb8R-y4iTV1Sajca88NVtFmnr8as8NplB8fYQ0ytuZP9Eg4M1MLPdGbl1g2_LTSKWH3AHvbWcr1k0xtLWSIjKZF8iMC-gQFeRh3fOlephMmzUngx_6ZWpmmda6LkCCrIA",
+          "places/ChIJzeUuKaI1j0cRcG8ZQIj_AAQ/photos/AWCwydgeLHEWM5NYy23uSETLgFSHaHrIxzRSUzQQT3a-rYFjFAv_3_XmUBwvR0xanIQD5YuCzVjuiTGK4uP1JIgU7KvzVshEpZBsjskEDq9PGW3_6FpM-J1DEyT8rH8zpVzoPU9Rmez5rpBZGCuUk4PU9VEMlg3siVTHf3N0L2dSgSvLDgBEMsxcHshgqFqg8WFcp4DvQGPQL-vjJ8exKJIkgfVGXO7I3LqPmMgadtAQqBUnzsM1Nhk4wo2svEIisR2mIY2PpLO8Y1eVh2ZnAoJFuCX0fpP2PY75Mhl4D7xtErlWZbLL4qweLuSwcjREbZeYqekx6NvqkPymFnkNmeY4APVBGQZkp9TlGcTy4xcQKmRSPi84Y2CUMQ2ULiHkWw9iIFQgMlBVuKxE2_WhkGPkrKjaDddEucDOhCYxuvbAMKGjOlNT",
+          "places/ChIJzeUuKaI1j0cRcG8ZQIj_AAQ/photos/AWCwydiwbonW9MSps-UXEY2pKVbPgCdW8NdVSPTqpfkr5_-YXNaGcru7bvIVcb20hNhGRXHpkGxfrk1I62lPfB_EMaaAvPsliQx51w7qzyzBs1wShn2AlLP0FYSIbrLSUuebi_FLPcep87gcQbfxApQCS9x6NhoNSmFGCLgGDsrs6--hkdzds_aIRD6OtvhsLHXs79IYOYjHGBeFvnDS6QfepQv0mSQmrZXhGVPAsYHRPOfyMK72wnINwsTT57oNeQCu_MtGmJvA-FvjgaGnLbwrTdNH6mIL_aSVyh6o8q1bo_IlFj5zbFqFu_V_De18Npa_m1vD6eob3vJWhX_e9UOfq_GYLKDM6qVNgAIiwkBCxpj_3GpzI0iK_SoERxR9E3UtFuTzI9lJc9GsdzQNtYFwHsYC93FHvbRcU2PYjun-p9j7fw",
+          "places/ChIJzeUuKaI1j0cRcG8ZQIj_AAQ/photos/AWCwydgDHJxidcOLQQbvGUtLse6kaYRZE3ADIyzWXBAis83NNQ6A0gZxVUyR81E2cnVy1YfZTW4UfwFxAEk1dIitLQWjystzI9jEKRPjC2EvU4feoh-3y-yv4I5QMSmg0VjD8eJX1e-ufSr6P_mOq3qSzB8hIgsjHyM0BB2p2YdemsqfJibCY4FsE2hCkS28qj3pHZailupYgu_o4kuWWqw9NttXXmEG0xo8-zcTcqR6I4mRo9NV0n5cxuiRkWpLW_DcGgbQL1Mowk0CeCidsY-2jcvVeQszQ4BGnPpTGJBl4X3IbgJbiQLKPQ3I-JFuf5bePY1QBuS6Rx9XjivLA7F2uQeegin1kD81kN3Qep1Pdoz65VIgUhLLSfAoWxNWpaCdD01cN1eh7bwzvb2LF3bGOucC4FkiNBj3bfKGTa3swTRZpBXf",
+          "places/ChIJzeUuKaI1j0cRcG8ZQIj_AAQ/photos/AWCwydjqAwgs0cnsFRH-EB03JGmO551C-KUS4iiaxlqpwJtiHeovuAFXxOcUmx8cA3U7GazVHbHkfh4Y7Cbo-AkoTs8M1ICHPteQK5sJQDFK78sB9eUJzdmX0GjB4WoudtowgOWLROg2CQVuzrAt4n3jQOnbyjzzV_WpPjj7qRILrpih2A6ZQx_b_oyn26vD75F0Ttaeh7iz85eHDsaR9c8NVEGP_nVbqjcCLAzBRMmkoJpAkhRdHY0ZRtfOcmqfdA9ahUSnL-9V7Nm1zdu3N2g4n_Zz6uLtYrCMdTMDfvuv8jOP4Kqo76-O9FUZrTOcCxbdCENqPgSUQw_6qFLaVpnQdpxOcbfIqQ8bzNughgUwTKbZwVMwgMytarQ31lZpmk-A8WbI-OxvXUJFxSBH-eJNX1iPmnPNUPH3KJWFmy-tmH4"
+        ],
+        "__at__": 1786804477.7182798,
+        "reviews": []
+      },
+      "gornergrat|switzerland": {
+        "place_id": "ChIJVfyhzmFKj0cR20qfUM89CqU",
+        "name": "Gornergrat",
+        "address": "Gornergrat, 3920 Zermatt, Switzerland",
+        "rating": 4.9,
+        "review_count": 977,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Rocky ridge reached via a cog railway & offering views of the Matterhorn & the Gorner Glacier.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 45.983475899999995,
+        "lng": 7.784680099999999,
+        "photo_refs": [
+          "places/ChIJVfyhzmFKj0cR20qfUM89CqU/photos/AWCwydh51hh_SHDOrVzJ4Ap120b7a1tbqNz6Zfzrf78AwwxXWeMruivyak31MWBmszZjpNZCDsraIzPCe8HYAO0qXeu57V7Zv0BvPAMFpcFdaCJ6kMU5mInkK9OpdqjESdbAhK6QkgBF3PDIhcl0ntqo7RKIFYzB6NK0dJlTkl3cPn-z7qgfrIMKwJZS7zsjzg8dEjvXClM23S00PgXKxImhFXgTYC4viiTXhtBlBHKK5uI066i6O6soTpnuwVCmWayuajzyUXfBVa4CtNyRT2QopOJYMG-9xdmvyGMvyPKd2TRkeuYls7EimAs-duiXe2UoAeFn45b8yEwnwKWjLP1oGdEup5XVqIC3FkjuZcIgV0KLM7hIn2Bunj5BYKsM_SUWF57_FuWIDz3ElPoZuOlm8MrPY8O6g6kK1_zjakkNsQIhLnd9HvjoDOFR83TGKW7P",
+          "places/ChIJVfyhzmFKj0cR20qfUM89CqU/photos/AWCwydjbnplINSlYlgthXJcyu0iweln53GaimHr2Ad4iRadn_zRbvk42hq5hSTRaCAt3hHQKUpCggcmwmjN25j5N43pAO_5aor2Z4P_vxKG0ZJR6LHNB7PqBvmJT4i_XlvA9yxonRuqE8yBHE0nLLjpWAsWLNgDo8QZWAIacaY_0dmn5kcp_ncx_ZBQCGDV-2a-y2LewxP2lFfzHJAx4zK9PttGFWRhJY1KTJI-99UuZ-R8PvE35XMsMug2NyHlMNiASJypg_oDCzeQyOGNkOjb2qqkg0VMN4T6I6WJO8jMJVhxEQK8Z_Na3HllmhiNLSGMzU9pZWsWBQQ86Lp8SUU2dxJTOmX3yWWX8vYwxn-LVqU2X5iZkiP97LzbbhUyaDMcJGoLwntUVTxC4nl29ApqvkRzxbwviFVOlVeTjvzeJ-W4MVoY",
+          "places/ChIJVfyhzmFKj0cR20qfUM89CqU/photos/AWCwydjjfx6yFQdY0iYBIQkQmPT1CgmRPhH6tec7eza8RVu1mnkWs1kh4miur8Wt_OF7aGSlNfPQNCYxONsCktGagQ86patEoDJYCpUAJjyKbZUNF4EMVuUNZ7X_yo9awO5IoN1jRWJpJ2L93HFvW-r6Ic-iLQn2PMt5s6a7VLuMF_6-E4xYtXp2G5h2mmG2t7Htbpbh4E8ndKBDT-GwRK_ImcSCv5cR4eOEMuLM_ss1HkCcl2QkyxW9kdEISsMSthBqWCHdwFegYYShL8Ar0aZgMBwkRzJ5qm7bxhwOqJFavLOmq3ts-mEnirG-6xjzlNtLz6mzD9gnVrcuu43OVuQR-eobrhAsjmuTUMNWuAVV6ajOeTEMK44bsyoQ03P_IUNLzS-XLwU3UOT4qzeW2hf9Cfe4vWq0e30HVI9Or_6n7p_WDw",
+          "places/ChIJVfyhzmFKj0cR20qfUM89CqU/photos/AWCwydj341RHkl4je96CHSHQWe0KdiyHTaqAX1jprRl9hjAzp6EVhpZyKykTUqfnDnqRgdc5wBnfe2CNI130nOxdypyAQRlXx_K6B5nuxqap5JNi5jngBWLJllaf3SPCKP31vr1MqAc-4NlXh1tp5qYBkzbls0WjCbtblld24E_ZR21-K6kVA0GTe3PXbcz47-waC_n0dLvPJUpZZYbQZD35I_Cd0tTQOD_--pYbB5LBPKqjDdNIinWGMyTkXEXhecTe-8kxvhY09DWK_shBwKFjPfMY_6xRe9laPGObe6AwAYD7PyVmPrL_S53gl1Bg7AniKZZlt1Uw_Y_uVOYRV3PS1RwTe26rRzbh3FkIZw_novVQqWwhUVA38se5p6TcBYpUsuWHKcPP2HLEpYvphvn1hmVNJPQDRU5vPIJIULpZCn8unMJx",
+          "places/ChIJVfyhzmFKj0cR20qfUM89CqU/photos/AWCwydjALl7QCOVDnyfHsPaTh4FoMbezjsz1-85lgUTGJ8MQKTHJAMNfQ16umJZ92LfKE1LljyacFZiEFZsbmsrRbls0dMQ4qg5ZXt9urS765JK4dPKR0XtjSJR7jBGn7HJnJ1AQbg59M1sDWoIgOW8fD4uqOn431R8D-tl99hxYVpTg2yadVbnlx_P17_vAOgl8DpKh2ROnV8xmmPODViaj4W8lI3Nq3NhXtXRoIE1SVBGg81sqzxqLNjqRByFKX25IWVpPbbLnBaY4xR2B9Si_5PKOXNs4IKbOzIJLrPRabaKH89TRokfPdeY0Dzv51kAcX2-F-MWwbrAYyxUmGoh-ZGpgcMudbOj3RHnANP2-rL8p59UXo8E7iTMxCrmcXqXCwIn9uKq_HRIQcqGcbqeBynvDAZpnZ7xYh8l0_uQhrN4-5Ag1",
+          "places/ChIJVfyhzmFKj0cR20qfUM89CqU/photos/AWCwydg_Ca5iFtMArPf_fg6RomuLDRM6XVkiiaPASg6TSJGQtjh9dKFgp2canEJQ71NZ7QPuIaNxoBsTs8JbDVOoMcs41d29a0qs0bOE2LzLaySCC0dJkvqAHymJ9aKgR9cc9lzr_e6ogelupguKb1IXLoCJq3RYsR_-A9f8a8wDSBNJzhvj2li9Rxwb-mn40n_dXMIcmR9geQRtGKKpTFhBL6qYqtAuAbEX0OcPSzHULVSBv9vCk0E4iDgJlnjjNspTsUyFjDwl0lbTFgmhSZF7rMIXupc4JzOlOr4_t_aoSHuVbtEMYOrMWaQLZhsSdV4svu7H8JBBNzwV_-OCzJ9WSvQMuYh4IjBJWysU8-_rgf8eBJgB7e_9u52S-uHGpVeV8z9lHBNSMoQJWJLC2T7uCXQW_2Zz9zksEqJ4jLLJaI2x5dQ",
+          "places/ChIJVfyhzmFKj0cR20qfUM89CqU/photos/AWCwydhDpOxwukWVInpBoU5-486hGfzoCruDFvj2folOZobTozYq-0QTFqYkZGMHjshvuq1Q1s1PHBTUvPx2YPX_FC0PHmGRFZnLP4hhKsS-qydCfoZ1thodPIMR5xyng9nB0ryjE92cikDNQakjpDDxVdTOQbfDfZ4bCgXq8NBqd-7ftkZb3tTBnWfGEcWlPDK1VZYigSQ2vofll3Tn967n3KtYJ7HMqCu8XyqCkYIqZA2hzG-HVVtpXnL7b4MJ5atRSSf-qQRThVwRf9BYscDYaCuTqlk3uyX1qK0KMelkgeQaJargOISNfiEJI-zWyJ-F3liDft81qn3cH02qBg9hCBe74UpijjGzpS9JTu6PylWnHVLw0f2nYx4CUA1EWpV2HwizWJ7hrmLLiNEWoyRaNuFscLM96b_OfezA8Jvk7ek3P4A0",
+          "places/ChIJVfyhzmFKj0cR20qfUM89CqU/photos/AWCwydhkE1o5yj0FCQHQSjlwSx5RG4Zit49XTAy54p62gm6dGRdH-kalqVjhZilps8Abq0ur_rENVyXhWUvFiJkYhOxXZqQk4oGxsj-k1SWIMEopIBSFjmfOFFAvIrXZ2N0E1dcZ2EjC5qKWhpDN5ymM-TJitn_pgjRU9-iMbUaH9vC8LlVLeUDtaO6qhFayd8iu6hJShSj-sIZrpztP33bMmUBxX71u8IyLRm9LN7zyM2didYLCTee-oOUIH48lV4WmKs2-H3jF2tLyQHCLwyU7Wh-UeIDzRi9a7NeDtHjwEgzHcsrqLcHlc3Q6UHa6-RoZG0YBVtnkmZZl-gWiHNfmiIPh9KczQgxi-D0xHd2ugTKDQhmH2v6x3jnKF8MmnkBp40zqkeCL-jOXbWeVLJ1Qb519TT-kxVy6kQGN1KCIJYRcBw",
+          "places/ChIJVfyhzmFKj0cR20qfUM89CqU/photos/AWCwydgkYEKxZuPfq0iqA1Uw6Ol3qDAZ85yzKnH3nBQfO5r_H2N65bO28B8Y4w3tLGzR8xutYQfZLWQkCvgzMMrUFA_d4ls_odP1kg_BTHGE5FU2UBNnoRIsx4G7-1Vd6JiamhTAJcL2Ix1N-GCazNAgU9q-3ZbAkGEMb8Guu4LKwI_vx1L9A8pn9cnAJGZlXoKPQrKt_iQwI87pL8DYgxfqdFrF-0vM8NKdCK1Y4yO1tra_ypZEZyg79EvrNeS4sadviln1BRAhxmHAc_e2zQUO2KqUG43pN2i0huruRTdE0fKR4b9mhS6DpRK-jLg5bwI2UF3R-3i99BCVM0m3b3cNBrgUwMl4OJyYjrAkDQUqxNB1RE-N9R8RvEv0YWLyrm1O_wogr63cLo5wiIhbxHf-Sb_dPwo6pwV4Y_plfQGjViRAflw",
+          "places/ChIJVfyhzmFKj0cR20qfUM89CqU/photos/AWCwydijEI6k3QyrKMzEdYVYAaiufQqrlA2mHYHte1FTuDic7ql7yFyrsw0uPHCPz-8ZFDDD7iZsJTUL85BiUE5Fa_unWgqocgxXoKI5SAViP2qIJlR2-2boVUrMZmKO8QEn0UjsORxLVvhhShzpPfkYvm73e7kLUr-uJJlaarba5vez8jcdLz-OtgdnlSxPmF-DuwbzE0_Ojv1YjIPRxf7huihQFXarx9rY5xtlV8JUnyAomQ3LCFXJHfQbtUoW47Pp819JNGwJowhAjRq9idN07K4H4OoVO_InuQ5RzvvO237_LMC6EhPgbkDURPhuXCVc69aaC5s8X06mBZysdWxmXI0LmVbmW8a2DoM5FpNv2aY9uiQRjD3fxdPIVTDze2-7tbbES5vENMoND40r0DfL0fFPZA0dGAt71D2Izu__Gi3453tZZlH9lp13YLa4ZSpx"
+        ],
+        "__at__": 1786804478.039125,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "On a clear sunny day, a definite must do, cannot recommend highly enough, the train ride alone is very good and some of the best views you will see of Matterhorn.",
+            "author": "Aminalone"
+          },
+          {
+            "rating": 5,
+            "text": "Gornergrat rack railway is a must see especially if the cloud cover is high or non existent. The views of the Matterhorn are to die for.\nYou can get half price tickets if you have an SBB travel card. Check it out.\nWe did a speedy return with 15 minutes at the top and got the next train down...its po",
+            "author": "B How"
+          },
+          {
+            "rating": 5,
+            "text": "Gornergrat: A View That Stays With You Forever\n\nGornergrat is one of those places that makes you stop, breathe, and realize how small you are in the best possible way. The moment the cogwheel train begins its climb from Zermatt, you feel like you’re entering another world — one where glaciers stretc",
+            "author": "Galina Georgieva"
+          },
+          {
+            "rating": 5,
+            "text": "Took the first train at 7am. Had very clear sky with only few people on top. Decide to walk down from gornegrat to rotenboden, thinking will be easy route. Initially a bit regret as bringing 2 kids without proper winter shoes and almost lost as no proper signage. Luckily open google map and follow t",
+            "author": "Ng J"
+          },
+          {
+            "rating": 5,
+            "text": "I don’t think I will ever recover from this place, it was majestic and beautiful! I love every bits of view I saw, you have to take train but it’s worth the experience, it was unreal and felt like a fairytale. 100% recommend",
+            "author": "Ika Dian Aruna"
+          }
+        ]
+      },
+      "matterhorn museum|switzerland": {
+        "place_id": "ChIJ8V8PAEA0j0cRqWdo_MMxw2g",
+        "name": "Matterhorn Museum - Zermatlantis",
+        "address": "Kirchpl. 11, 3920 Zermatt, Switzerland",
+        "rating": 4.5,
+        "review_count": 1450,
+        "price_level": null,
+        "website": "http://www.matterhornmuseum.ch/",
+        "editorial_summary": "Unique museum featuring exhibits on regional history & the mountaineers who climbed the Matterhorn.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 2:00 – 6:00 PM",
+          "Tuesday: 2:00 – 6:00 PM",
+          "Wednesday: 2:00 – 6:00 PM",
+          "Thursday: 2:00 – 6:00 PM",
+          "Friday: 2:00 – 6:00 PM",
+          "Saturday: 2:00 – 6:00 PM",
+          "Sunday: 2:00 – 6:00 PM"
+        ],
+        "lat": 46.0197538,
+        "lng": 7.746431800000001,
+        "photo_refs": [
+          "places/ChIJ8V8PAEA0j0cRqWdo_MMxw2g/photos/AWCwydj-dztbm_xuMa3AtUKeGtBEZjTx7ntQ5savHEL04t2MRMzLF52LHhanYJN4VtS5uSS_IACnAIlAHcHAph_6Pt5GDI6203gXlnKC8G01EIK5nGR0ertRdSwrEI7110_as29y3_L-TsuFF03TgPU60VhFNHxMiBu5kxMH60CuI9UAvyFKSpiMXs0dAoOv9BsGmbdrVGB7vvEfVqmMM08yZBrwWTqPt_AvTv43lt91kqvpRrzRkO-Xnw-GB1p-Hfyf6VjR79YgFszG1wQQEF9T5EIGmcv2ZDLrUC5BkUJVFlS_F91QBSwrgfz6faD55QVGedTBAFeeRBicwRZRSYOlfaT8Ba7jYHOPKnfLNzSVTL7rIcrtaJJ3LGicTQtVhBJqf_FIe1dBPpoejuOnrn5HDjOR5zqZtfCRvpGDZXxHJdar-e3q",
+          "places/ChIJ8V8PAEA0j0cRqWdo_MMxw2g/photos/AWCwydg_z9I3PkcZhCRL8rG7TgZ6rkjkXZ7QUR7iHGuG34NNoNFNpwyEDvl3gjvZrX6uWJcMkoJMrp-Dc8-_rNCaDldVDTNfnAyC8O9mrEqlyhJGe0DG0pFfnRrTxLNxH13XDwVJ4UoQ0VcoTHK7zxpq2fl5meH--uimCCiscJPrXStBK0vknEaLW5h7wQidOWIdchozf9Gj6gNaNCKvwUrPJEc30OSdJHjrZvXBe7aY9iEHtJgnqjkCFHwietEKGFaK6xYkJKTNydNrXWe6YaN3KxeBDFX9JNiwyr0jeXtm-NzP_KmDC8aEke51yarU6tDi9u2A0AwE9_GSAjvrmqM99zNjWPwEBNVelwhhCKH3QJxgseaFg_0Cf-P8IE8f16mSzIppDPdZdQjXdAHPEX_H5nPWXKpz6CrP64ddBH5U-14Ylz9S",
+          "places/ChIJ8V8PAEA0j0cRqWdo_MMxw2g/photos/AWCwydgFtx5D9iBmUheGCw4MVZjIYhnTZTDUTrPeN-AVaY3FinOVIzxUEV8aHmQIdksxTv3XL6CqsYywX7_GbE_SlMmQkAZ6314e77D-ViJ8m9iNOqKNJRf9sr_0GuoXX-WxCEdvKBIdwmydkOFopUWDlf-NdPMKWxk0MvHnC5qbmA-Oe9BCCJIlHr4wT4z8Lh9Vvjr7r2BI3GjR5ZGHWYTpJt6wzN0d807xvEk4yQDPZB0BqvjowX4F_mCcKi7-axBpVYQksubzQqzZ63oPWWxsh3y6xo-0Zbr2H0suJ7khbkNdT1Tlz5I2txeQNxNeND-5GhxDHbYlLMSjs4zfFV4YcSaSMHwdi9Od8w2ORVP_q7pZgXzxRgKPhxWBe3xUTqRLRlYUbVXoBX4PlbIaQm7Ordx-eDX2uMjp0fjOO-zW4pk",
+          "places/ChIJ8V8PAEA0j0cRqWdo_MMxw2g/photos/AWCwydgn3xc1IdiNAo9Zv8tdQeNZGIpydVta91gO9Qm2HlXpXfJgsOBbBWk_uv9ZHqSXl0dGKl2jMkfhn6LzvSwYmQ2gI1NFDmPlJe_MMUogb11HfFCM464yq7TdiPwLmihluxyYhvJcppJfYS1J0D255xZjMlBpfdFvEYmA6HJWuerRGFN00bnM2MYpNDLwfxTSfEfZLiQRpmocH88k8Cnp9_mY_z60N8uo7Nal8OBvfGErpWJwQG6simGvQYPrtQsyD-XHt1f0s90g6ceHmPdQQPdN08gthXnM4ZEXF0UKnVpZmIFevSm9Bk9758A71ytxNP_UJVYhbz26stmCTiqYeo7M3tLa8wTjChGtDTSzsHOqxkXPHcGZwmuOtyzRt3HoPJjYcD1Ta8ur4y7LTNkwTTFzjbqerZGl2f11sL1km7iKruR6",
+          "places/ChIJ8V8PAEA0j0cRqWdo_MMxw2g/photos/AWCwydjfZn2RBu0JTznCYVtelcU2MHas_9jUblAwosy92cvrnOtmUfaN2f-LHzK7-19de_UlML0MWdfDlrODniSWohJwnmzyqQjzAn-8o0cfMhAkqMf0a1Nt3AAEQrqPcixpwFnHC-gNnHBdl7KE6wS8bHEhmvzDmh1JKy4Yy3jLqYcJNHfY3RevaZGgaY2dHNfZ7yhVk89zr2oGik_63gxOEv39Q_ra10AnCTN5j62bIuDp2Z9AtIO0sxTK73nNf25e8W-OBOeeemb3LWsKAzXAs4pK4bWYSUbOt1I2dWvFcLRgm17rXupkT-hPfbYANNhGLLi3DCy1wOGevwy8vMk48djUSPy7s1S7KyweWDRMLnXhbN_kHek68ytUk8KW5VK_a6XL9NcpGLTNJ-ytDP3TUI6AlB9YOfCPW1SyRdyn8sKWfA",
+          "places/ChIJ8V8PAEA0j0cRqWdo_MMxw2g/photos/AWCwydhXMID_K_glAT94QeqdJln9rc0kL1moJr9e2Fq8IfnZROdUDDmd8Um-YNdPVysuRjz5i8VakyXrbZ56oRyPUkZdBWO304x60uFeRbTiaYCiDL5AV1LcLkYakzNEs7trUIOvnFQwadGPz5EY7GhDaZ_jWi0unu5RqF8PZFaezST-8OQsoAGPZ274dl4HdxLU4QX4KkH7B8RFUXU0CjUryDOErTGD_ufrspgyAJNjBh9h1nyTfC6TVz9EGOK0pAJzVpYiaB0RYzhfh39K_X4F7DccZvTzOzjd0RWKl_aHX_FGhOx_Lk_QKIpr6-Db5KY5WZ6eoBSYwkpo9XmvodsXRv63N2UWw1ZTPgkINklw7o6rhCgOdZtZ54c3owFaM_HYijBxOH0jl_DjtWbNUMREog_WfIbIkzjEYkh-gFp1LJU",
+          "places/ChIJ8V8PAEA0j0cRqWdo_MMxw2g/photos/AWCwydh__KdZSdH5IjY_aRr2FTsz_9gHrGmrfxVQxaxaolN0MPW9waDoKQiVJOP8Y6v3vmyu9622kev6bbSAzgRhUCf7ke5XCxR7KEUuqOxL2nZXjfWMsS6On8Rl9nz2wfpP-MP7aOj2Hp5MWO-V0eSQdVcL1eAo0HvXtJb6MyJEfSvcz1C7D1K6x4L-2BPebW4Bw1B9i0rzD1tUsWETcHNiCfM0mSN88AU5_lCP3Qj8VOF6x-hz6WEroL3dcNaKCQ2gpvcIv6JeSlXukfyfHpG2IYrAa-ipvhpeZxWYkU2r8TYhC14GYFiLVepf-20P2VyF08IoasjVinkmJAsL2Wtyyb-f0ikTN9zpLpoDwAFIF3YU3ZyvN6OVCI8bZ_Rfl8yqniFX0z2EZxaySELeOWdzle4flgoIeaX1gApOUfpF64jgJc0_",
+          "places/ChIJ8V8PAEA0j0cRqWdo_MMxw2g/photos/AWCwydjV4w-ZnNsLbaXshBAd4jIPNMqlj2kQCrHtmE7ayPErFXeXdHhml8uZcoLmI63N4Zbsydy9Xdu8Ux_sHLxfZvuz7Nbm97xZuy7Ho1p90amnAh07StnaLpPoUktPfuIX1CencEFzAIiPzZRKAmUIrCt7sVodTlIP8yaOFNSizz8h9jFlW57y6Oxy22c4sO9kwlcYdeCTlUrkRHPu5NFkI1azP1Y-PbFhazPdPCk1G91aNktDA_aMBrD2zS_xaZ31wBKOyS-czAO-jYQeMjq9upNDrYU1_v3DqNKZK-ISZhnqVX99IdYiMAx--eHlaTDaxBcj2tfLOSgEFs0A4Qc-XU1SHNtLRDhZrfA7LeRCMO48MrYlwJ4fXTSKzfDQ1ByAksSOrUNiGJ5L_8eYSG42-d6gq8-f4Wwlu4D2fcNVVPCij38q",
+          "places/ChIJ8V8PAEA0j0cRqWdo_MMxw2g/photos/AWCwydhXpUwb7Ca0V7uKKVS1pgqb9Gc0VNjUgWRJ2mjXa6XaKUWfHDdYWcLQcleoGIWglzGWn2yTahhpCfk3WI_JGaduG23t-3o_2NmvcSe8kv9UdcV4qK2k5QxPPIbzVtI3x0rk_dRBbfftUZGrUPjKtZAw-0oxRi9se1KpuKaaTppjZskKkldeJXRVO03hf6sHVo-3kto8Guo54zrAAGYB_TjAZJMVXHCkPOvgig-jefvZFrOGSmCR58tIS9ofPp64SXGiJ2JjIU5_6Xw5VEBWG1HtVS4IeFEjxE5r5VivDan28xNxW8f2wk4SJc61qCHopBN8e6nrpFvcRHMFIKaq8vwntne3wOAkdGFQmcutmnmkiBDQBP8ugZK6zEdlG5wdhvEdnbmkPLEHzuxj0vKJrbfsgJyAIeNFK_6wmMLuAfe_AgM",
+          "places/ChIJ8V8PAEA0j0cRqWdo_MMxw2g/photos/AWCwydgGOjiCP-WX5XoozT6Hww0NnCMi8ztFaIhtLpcI5rOo5EomOUTKoU9-1cWRKaQZj9ExupqO7Ay4fA3aklcVBJ92cU1Iy1b9uSUMiWqskSVyZkyuLEmDwqu67e8S8FPJIBX7tNsvgUK8Qre4k0FI_Re1E_-cofZ1Q6TuQ5SqM7o2B5JGQ8fwi0Mn6MdCho_SEK2weeRxf2Q7AkukwN7TEtwGoh1v0hKiuFP8EEew53IxITUPzpV14eVfYsB6uUFsAbjfQf-6XMbjsXGEKzMaHbmA_rn9aAfanDNh_aQ-CU_IaBHDQgp9KK1QonNxXx3RfSQSjp4py7vcdceoRbPu_xGjMEfBAPoMX9QzjgnVwQ7G0VWf9b4Fgfevi03Btgccgo8UxeKTvSAbtmWKJSH33aqE6Q8Pc6OkHkdtOiucCTYkVA"
+        ],
+        "__at__": 1786804478.523417,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The Matterhorn Museum is well worth visiting if you’re spending time in Zermatt.\n\nLocated in the center of town near St. Mauritius Church, the museum does a great job showcasing the history of Zermatt and its connection to the Matterhorn. One of the things I liked most was that it doesn’t feel like ",
+            "author": "Aaron Linsdau Thriller Author"
+          },
+          {
+            "rating": 5,
+            "text": "We visited the Matterhorn Museum - Zermatlantis during our trip to Zermatt, and it was such an interesting experience. The museum beautifully tells the history of the Matterhorn, old village life, and the story of the first mountain climbers. It felt very unique and well designed, especially the und",
+            "author": "TechCE"
+          },
+          {
+            "rating": 5,
+            "text": "​⭐️⭐️⭐️⭐️⭐️ A Fascinating Dive into Zermatt’s History!\n\n​If you are spending any time in Zermatt, the Matterhorn Museum (Zermatlantis) is an absolute must-visit. Tucked beneath a modern glass pyramid right in the center of town, this subterranean museum completely transports you back in time to give",
+            "author": "Alywin Chan"
+          },
+          {
+            "rating": 5,
+            "text": "Surprisingly excellent small museum about Zermatt and the Matterhorn. A lot of material, well laid out and easy to read. The pinball (?) machine behind the wall on the left near the stairs is fun to find and am still not sure what it is doing there.",
+            "author": "Charles de Segundo"
+          },
+          {
+            "rating": 5,
+            "text": "A museum that takes you back in time. When Zermatt was a completely rural village, without tourism. And the people of that time were struggling to conquer the peaks of the Alps like the Matterhorn!",
+            "author": "ΧΡΗΣΤΟΣ ΕΜΜΑΝΟΥΗΛΙΔΗΣ"
+          }
+        ]
+      },
+      "flight: mumbai to zurich|switzerland": {
+        "__at__": 1786804478.842885
+      },
+      "train: zurich to lucerne|switzerland": {
+        "place_id": "ChIJQW4OzAgKkEcRp1KMX7aYxvU",
+        "name": "Zürich HB",
+        "address": "Bahnhofplatz, 8001 Zürich, Switzerland",
+        "rating": 4.4,
+        "review_count": 6388,
+        "price_level": null,
+        "website": "https://www.sbb.ch/de/bahnhof-services/am-bahnhof/bahnhoefe/shopville-zuerich-hauptbahnhof.html",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 47.3780356,
+        "lng": 8.5403767,
+        "photo_refs": [
+          "places/ChIJQW4OzAgKkEcRp1KMX7aYxvU/photos/AWCwydi9nNuWZCYET0Sz5fi5vD4sYsSdOQaEyJ_GjP6nlWVCVMz3yjC6wVtQv80fMWAReN1D-fIqTsxbV5SOcGZnD8rc4yatDA5vnvebwsqUZI7FxoZN8DPVhYZ3Xrg823GPkZCqERw1xZcUhTWAltFdpCumTiNlLbNwnlLM_9AGVcPe0edAIZ1lJfacC1mcz9K84fFS7MDPn2um0DhVEGnLEWV4Bkxst-_pMBh7Y-3BykgPNICeZqrbTdsF231hG2H1bGidw5vIQUYbQ2Mx24Dj6Ln9VsAeC6GsLIYP7aVRRtLDIxAVaqU6rptqmFNKFUmlxYanl6pcUlh8evrhoF_uvOTHN-H1kR5tNInKH2DVpt0yONv2CwGlRGilDe4kok7cng3aE-YeCgM4jVrDu43I4uMGRQZa17dosMC2Bl4nJ4gVcQ8OU0emHn8xwDkfbNw9",
+          "places/ChIJQW4OzAgKkEcRp1KMX7aYxvU/photos/AWCwydgOWvSAe9q_IfRkbZP_oioaIuiPNzU4fFS1qCuqMqkVY95uQK9tASfCupKRM_oXOCrfvOsgG-k7VWQ6QD7zI6SJ27zMKnHVWaHX8VMhWtwTBqfXXUv3WxezxPY1WDEpLLju32ItpYeX-NP9xwlOrxW2RyKkDjtXXDeOrUU8b7JkmjGEY9ldL66B9K0crjSUBpBT1E4VADesfFwLUXDksoKWNn4bRTbc8WH0r7hFHGIfFpW0WOgK-DRj7x8hiRYKmfIr8dYcN94Fiz9b2DLtvXiAYGgmYRQbqXiJ-WX69NQH0T6jLIqHcPHCPRyATAIIw0meB2hkGt2vCMly_cFwXqVy8qf_Dos1eIWubkwZhS0ZVv4-8CJ2cqlhwHS7zDrObAx8gQs1SudGuBNBrlWZjTYZq8vGYF3JOOleOPV50MQp7g",
+          "places/ChIJQW4OzAgKkEcRp1KMX7aYxvU/photos/AWCwydjgsRTMPcOK3btMVkKLRLHYgnIfJkwmFM-C9ZOvrDESs6qWulpzHUDvNZE7A_gc3MyFf9MWvtS5ia0udB2V_PUhciIyG5nkUW-j0TQAZ6KyXlWCTn5rVz6cMQOkhx51JbiD6C7t1vPxP_Navs2qIb6-t2CE1_Cu5oF_oe0ftndgwssXA7JAoCUBM5c_D9fqLdOiprAeamm2GWSLYiTIeKPRFFIZeO05k8lJJ6zfhMzQj9r1_XDCK4sKCpW9Wq5A0JwJZHewN7RnJXHEnywBYL2ysVFfr79UoMtUaLzLFSqoZgfNVDLUZPnYz6omEq29HyZWx7sXVQ_tr2YJwn_pHjwU-6zh9DWHhAq5-ctgq9cPi0vEi0dbwv4F97QEblx3-p-UuDFPL-P3yHI90jVgUYhJDm0L2IRiFRjuGzqgTxv7T3wqGh7QtHKTTp9zGw",
+          "places/ChIJQW4OzAgKkEcRp1KMX7aYxvU/photos/AWCwydiWIi4MDLLMyNWx7BZdbJOZETPux9pZQVv8YjLePsOWvCw6e2E9Sb1BtPeTvq33IpmpFkbAYdIaCj4tGFK8abq6s4cF_lYRpLvsvCx79Qk4VW43EK31RekA_sBK7yx0uMl8NupCwfZAsG3SW8x7wNg6UkuCuO-7UHwCY3EytWfgoLeEPcC1ux9zGEi6yWUAj8ffhpeOGpBuPmG4_ary4V68de1DMWqD6CEyMb7RWcM2xju81C3ZeQeNjH-gbHGZO4L98CBLrsi4PIlxT89gfyfmd3Gd57qZVoOAc9bYhZmtfRnGB4MHfJ0F0mZTTZok2LBM6-D_Lg4P3_46mttCv-nl5TseNzOl5LINIvyHP1wX8xPX_WxxBScmOkLufjfZ06beHuUI3qO5S_IdhfdalztzEDc6JQ9eZke0fsS97Sgd4wev",
+          "places/ChIJQW4OzAgKkEcRp1KMX7aYxvU/photos/AWCwydgMYvSjRkjIvteUk1JL0tDc0JJayWoRTRYRrBS-smDmqkJ-G6Yxip97LjsXUpcoeG04lpYTqhtSK5K4-c917Ynvst4WyBmoqWG1-NaaD0RxuVWs6Hfl_sD6Vrzetd-1Dsa3A8UG0Qbmr2scEo1e0cAhSWDIPTnlP3Wg7XmuPSBnhztCbcsuI05_7sTrWBzaDcIC2zuYd1Og3a5FuWKhuSAyRkuW0wnK41rcQrW9CZ-YTCe9Tp9dJdxMnoa-g9JsvTwK9sMsQPR3_5n8KtBr5X4iFCHaPOhijfOWeTn4hkS8rUcxS2E3qJy5nfRhgtcI3kP9e96-u1y1DhupXUFX-ldF6LPnlyNCuwKgJjspRYukrxNJvflspB9_TT8iu2VRxfJAw6RowJNDEQ2jtcCjKHCj1wkcd29qFGu6wv-sM0LCu349",
+          "places/ChIJQW4OzAgKkEcRp1KMX7aYxvU/photos/AWCwydhk3DpSwp51hjYp1mchUgTRE8fNLaXnottH57iwl65grYYpeEktkzWHflpg2zOS9p7zm5RIiUliX2MjfIhuAG8OQZ1KSj8DLV1Ueg9xol23vsC42XjnCweB5zfAegU5f2teeNE2m5KhyNDW_sGoGaiN0Hn54ywLGV1whn3OESe5zsk6XYdRdRMbRNzppOt5GMG0Ipx8FChHmbJn2qEXmYbkgW6z5iWCBR0MWnpD0WcXfKJ_uOhYtzRVjUQLvBp5Fq06D7_lwBTK3fFIHzt7m79eFUtt2H-GbNlb5ZpDz1RDNkJDmXfCzk3aD6i1DDQIOabNB9H828HD30s8Eor4Mi4cRchcInLFYUPpCuxUaOrxOVnaWX4YPicLMtLqXEjtsAElK2A_A0GU1vLfbTUHe3N2tsokVigsyRusRbE9y_SVvoRQ",
+          "places/ChIJQW4OzAgKkEcRp1KMX7aYxvU/photos/AWCwydie_bbYUwP6uXoSX3HaVjPiLWu9ffEoIPIeg3Dg6I9sW6jWRgiXjz_x0NBsztSqbM-se6k22gVJ62FWClW3GhON72DxZIOphz2ksrfBVZhmbVLnWes1bkqd4nF1QZDTg6kNBRgHpWiJ6YcFEO8mE9KDB9Y-XayzcIt_2Y43_ManyBiJW5gnP2u7MKrd3lfCIU-9DKOHIuRYJPO-FyCH9Zbx_-1SRhyBSn-zDy-jOtALCypiBrFDpepkeZknPAs039i31D-pkdv0UgID9eK3_ORUOaGU8I4-tEHWnKkuDECwFcyxsCthU69Cf1nMUghmKZz7TR2bzx2skvtXnmRG_i4_3IFaDvoYbz2INJW47B0olUCYyk4da0ZLhu9VnOKoBtr7UkYXaPRugz-k4e0f3RgDXuled8saDB58GCFBJktSaLc",
+          "places/ChIJQW4OzAgKkEcRp1KMX7aYxvU/photos/AWCwydgn4YiQx6I8ZHMfuFmp11DeDO1uvaEuiLebabeGGhxU3iiBBl-uZOGKsD5sOgLJsPAqe2Xj9_JwzkCX3FVyPBGp7NY3aIuvOJutqc3u18zNJWLPewHdBLXAfTpTjxtMpJC9aqfjpKDylKKhBn1ac7N38EwiFOkCwZCCR6yVyuJIjsJKaWZLYpSiWf4vFyyjzes-z-uQ41km8dWxZeTw4LKHDs6yHHyneV6leKMt3EFJBi1eMLMAI4tXuhBKzJt2_UbE7ed5Yi6CUUOMYa_oFG9maWfLpBvnTJdAdBhQPC-xlMKsN17LDw0VSOjz6vLDLMlNC1XAaGa0I7trqxfVYizOm7YN8m-6EsAqfnzN0DlTkFDrd_FT28i8OH19OJ1i5z7KoN1q4PUXFn7QNXV5RcnN9sVGB9_QqIuyJYK-DfZTxhg",
+          "places/ChIJQW4OzAgKkEcRp1KMX7aYxvU/photos/AWCwydgvT7Ok_iA29XORzAwy4n2rEfnfNMoKnlQ91rUUuvDFkCu8A-1NEKsNE9B0B2Rc44o3qaqppg8vREYSRPf-T6k2DPNvqibm83gRH8cOGwOcR9QKMff5bUXYgUkme0SIpawL2zLQp5aEppiHPi5lHueYxrYh6oitU4S6Z0HI8HTq_fivx4MMxtrX1uyWLjZuG2KIGO1QzlB3X9iDdzKfuCo6mwKMe8ty0rQ6kCCzFCSCWsgrRCz24pztzsZtiMPVo-QWq9rv7xNvv-Q-h9sdKNGXbhsvKdlqjbs6y33NGbJmuiVqe1_GwibLsQhrHWGtQ5XlMUfZIg9TJWHJZWFCXnFw-lnnjPeZ6G8QdQMWQrRkiSQIx9no4DZa3a_bZZprfK2yCWUSvyhZ1TfY61RMf66Od18QnZKxeNGsZiGZhKjqFmgN",
+          "places/ChIJQW4OzAgKkEcRp1KMX7aYxvU/photos/AWCwydgrKeLc1MluCBSsBB3D3kboU_AETYAE2lQsPdtP97NAuHHpDH2akzTrPnvbHRikX7C5V9kmlO3W86pqe5BNlWBuIG5RBa_Lz_IV2gj-Mhl6HIdtCIHFc_MkfsmRsxvAEcLGjV630Mh-Pm3CNsjkpTfG1qQqT0lEBBoOC8lDpPtCzgXiOPS6ZN0xxH93IOPdOxfOoc7WAyY9Sg0KheXzEBARSXCjH3hpm2w3y9gcd1GjQL6CcMheSupV7hvgemyDx476REInN711Xk8WJWXDg8hx7K7hAKFE6oJgd-UKIMx1xsjWl57oyWG43R-4VNhCBlsr2mf2sojCcYdkcinYnJLTk1Cm10g6xZDEA2NOaeuBOQGn02d9pL5ijh7wzOdAI9tvxmXfCxrHgPoBISpyIuUHXacUlEQzJabUDBaWEG8r-A"
+        ],
+        "__at__": 1786804479.144597,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "It's a massive central station with large number of trains including local and European trains terminating in this place. The station also has massive numbers of shops underground and very easy to navigate.  Externally it is also being renovated without much disruptions.",
+            "author": "Jyoti Bhattacharjee"
+          },
+          {
+            "rating": 5,
+            "text": "The train station that was it's own little city. Favorite station of the 5 we passed through. This was beginning of our 2 week vacation and wasn't sure how everything worked. They had a very helpful service desk that spoke English explained what I needed to do. Was a great first station to get feel ",
+            "author": "Sami Turnbull"
+          },
+          {
+            "rating": 4,
+            "text": "Visited yesterday while returning back to Netherlands from Switzerland. It is the main train hub in Zurich, Switzerland. The station is spacious with two parts,one for train operation and the other  shopping area. Several food booths with regional menus to serve visitors, there are hot wine booths f",
+            "author": "D G BERA"
+          },
+          {
+            "rating": 4,
+            "text": "Huge railway station with trains to everywhere. Plenty of shopping both inside and outside the station. Possibly improve signage as I heard several people who were clueless how to find their platform/train or simply exit the station. Otherwise impressive.",
+            "author": "Paul Miller"
+          },
+          {
+            "rating": 5,
+            "text": "🚆 First Impressions\nI arrived at Zürich HB and immediately noticed how large, clean, and extremely well organized the station is. It feels like a central hub that connects everything seamlessly.\n\n🧭 Navigation & Efficiency\nDespite its size, I found it surprisingly easy to navigate. Signage is clear, ",
+            "author": "Ravi Singh"
+          }
+        ]
+      },
+      "baur au lac|switzerland": {
+        "place_id": "ChIJZcrzZBcLkEcROaEB21geaZk",
+        "name": "Baur au Lac",
+        "address": "Talstrasse 1, 8001 Zürich, Switzerland",
+        "rating": 4.6,
+        "review_count": 1910,
+        "price_level": null,
+        "website": "https://www.bauraulac.ch/",
+        "editorial_summary": "Swanky rooms & suites in a grand, luxe 1844 hotel offering 4 posh restaurants & canal views.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 47.367301,
+        "lng": 8.539371000000001,
+        "photo_refs": [
+          "places/ChIJZcrzZBcLkEcROaEB21geaZk/photos/AWCwydhRGGVd5FWOvk8LQRCpZ5yI6Z8M5KzlxubyS2UCdpPUWILm0JXtJ0wpo5buP8mfhfnH_qCQbyEoaa2dWJbMHjWwL28mC08aiCr_5h52IxRsIGt7tALllklM4kSeU4LJoE_2G66JeQCaVDFrZ6IMJkOKTx7U7t2VhiES6EdV4YMW9631HHbTq1FAcFrabnpr0YelV5iobeCrKTjzMLTL_yN2BJhGWXW94vnv9tCbk_kuq4H5e8KSUzYBYp-oZvK30541SRJtZhim24JbWDXEk8DuIP8Jfj0B2WSh44Q5lpBsEQ-iSdd9gEQMuxlvth-KZk9JGy_IflDaGesSgsUtsALuG1HQo-gX5giyE77f6gdsv-AOvF-3Yx3u_sDtmAjjGfyU57XkKdVgnfdsbaovUc57fv5oiM8Vqi7tFEVDp8PX0Q",
+          "places/ChIJZcrzZBcLkEcROaEB21geaZk/photos/AWCwydiTL01YdzYUtKGknp2_Matlo8l9Z548jPPa6JO4QUoAjB-iL35jhB_HYKlMCLrX75f_mG4ZcfAICqbT3eYx3IRKQJiN08cd99o_yt0v5IcXyc58oWatyfQRzA5QYYvgooiVcQ3SLZgLOKeYWZ22fOX5T2qBZANvVWwnZReZm2UkNxQy70taPRJQTeRXMt3I3rarmG89eHrPc2fPwy9UbYhcdU8pfg4HFvRafFpYKCNKGPnFOCPq0WTV_9qowRNwu1mB6ht0xypoiDT_MLtuyUyW5XvVGfWvLC7zNOAGg3dgcOmW3pGom1UV7IWxxwdexHTwyTUUkrZUrP0nCFP5Fm8uCZMbooMKigQoY5UUreEQeMSiQmGdOqDJsbPbRmxKcRgs_jmQSSnphJjNRhVDfkk-19Fa9_YxXwH4Kfm3A--h-fc8QJOLiQUOz4Jn7qjn",
+          "places/ChIJZcrzZBcLkEcROaEB21geaZk/photos/AWCwydhQMsIOzkOyRQfaHqIqmsyAFtFDwOrN6RT2QhQh2X1k6QI_ty0ZDREpIQuLbq6gf60ThAm5fRu-lycJmPka18Zrl2bYR9EuYvjAsH_97urazacL67BKdRVQoLvBy6UOK9V28RlkVNPvPJlmlVmt4khJDzmJoU4IrLGS47vRP8zYM6w0BFTMYEVOc06-q11xX3CEOhKCFKqCyU2B1N1tJRPGhPUpD8AKQi9OqYlvJj0s1zLSUzeHLA3K74ZScLu4tJbFRmSDHibGqzbkEjemFPnqugtZatHgXnOF6ghw8XKiYnrm9W3CysArQ50lJCN7Ja5w8fmQylGzBNjNsTSIDTSLx6IHIXE0v_KKCfHSOHS2nbEVobxqzDsKKZ1qiMfwc2j6nL71wUm9XTwgOzs6iXyXTV49sJDsVs-tnwzFB_WVx83q",
+          "places/ChIJZcrzZBcLkEcROaEB21geaZk/photos/AWCwydiUYD2p9gKHYq8C8y0H2HRAwsCbu_juRmqxSe7F4U1SOjejWVkg43DqYN01JJanUvtoaTbXo8T0QX8ztyiFhYurZbywOwCUKz_0ZSVOInuynNHuGbDOdkrcRm9Tgmcg3nKK_eluSd4AA2--aOm692gPkmyT47UcLF8iiCEuvNBeog6cLu3PgAcQWiSEABkpvqlyCzzOrNkXd7b2E6Y6SAyzqZV6FMLmofvhTcEEa_qz4TAAd1LQDF0hs2buMA2rlSL_Cm-4X5sqc1mQQ1mSwoAIPvuWjR5_pqn5j461716fpvHNbyTbe5nxQyMnwsYv39ySlVB6Rgso3KfQs5FFYshDw51TLfXNDYX1XYfqPXBImuj7NuhI45pFU5hkKal-kqpanncqykEds-v7OtxR9dFTzUJrMNLVfPdTMBZVNjOZXa1B",
+          "places/ChIJZcrzZBcLkEcROaEB21geaZk/photos/AWCwydg-WaAvqjWAvbbJ4XQc-TkZpaR97u33KK_l-KEVlfEYxowBLjCiXZqusEMmNo2LH2ZDRCfu0qydxYDzxat1RY8NkE5AVsdYe7J-9b15_EPYQUFJPNh5I2W7dll5SMnN4am8MxLNnsrWtgwUvTcsQ-LJStszPxPE24dl1QeWxHF3hxwOziDLCgFEDCvtj8ulMenSE7RWoYU2Nd9r1VT01YE9wNhJXsJt3vONAqDB9fEbfBZTD2MjEUU_XDqK-0VJQM9RVCrtCOnWQE92MoG8Lo8Lst4Jfb1uuhA8j_tzhFKK3SU23f1C4Doo20iNOXDw-za-r3VSz414PZmOxEhmevexXCw-8FPQ620qjKzoWyWdc5twxRHz3640UYgFdZG8ZByFtCLODjCSzPILSQFOQx6Vc78JMMAA-R2BzbuV4fnI2LGU",
+          "places/ChIJZcrzZBcLkEcROaEB21geaZk/photos/AWCwydhEGiHkk0W0jQi5SXLLjppYysOAnL6ZM41EZmXCThiqnp_-IxlAOGa3Iqmn0-hswlAUpGPzJyURfWMeKZS4rKHXqLiVlx5KHsfe24bqH2n3hLacF-sVpkRkuWYG8hVlnkkmv8VW5Q6jJIGz8u3o06HwcjGSOFrCsfC67rItRrPwczppD9EjZegIhUqtTl2KZF1tF2ZHUq2Bcb8h0fSu2ZywPpExU5AXuK9HdXOjDP-jEK308AVcz71EGPF9VzGPgtuOlLKceIwUGj75axfY-aaXBGlSyB7XXPiVgTIXwX25vmQfJ5uq4MOelZ1gSeC_u04mSkrpGKBga9YD0AUhJ8ICqZGhmVzC4BPv11emKqunEwSNBICPzFXZDinMcvzYZq2at55whg0QslafDLiZdVvIZAK_K-qeMebOVamkM6MWFg",
+          "places/ChIJZcrzZBcLkEcROaEB21geaZk/photos/AWCwydgtuTC8qo-JuHeCFAybmmQSqGE3c3ydR4Q6b_ndXisRIagdV_u8vYRXoivybCNNt68GoF5ibcu4YJPdP2Sc0PZOB5SA9y4-jgpi8tuyy-yynLfQP7S_V1ItblQxObcM1mBSrxZawq9m02wWUtdSHmRJG5mVMI6X4Sp_YK9s2_fhcZOBvVOzE_F-UPzZGWc1Rklwa1or_dlkYyrLDauN7LqeOVcnuMHinyQ7Libi1xtVQbvSUuwV1q8GC7HmHzVoimQ6EKbQAlmcIYa14yhIk0j0W6DKR_a7QdVNC2haueriBSsLFDvOJPZ92NVb1FdElMZakYOlo-COVQ81Y9crQeTaRvNcUZsjqeaUacqGod6AKO006nKhOvD7QEzVeGRYOkqp7eHRy6x0BSlidVqVExhWbCHBtK4aFPLhNb28F9IDAw",
+          "places/ChIJZcrzZBcLkEcROaEB21geaZk/photos/AWCwydgkT-EbSxOdokP365H3wvqg194hU5w09brt7GueuIv7oeT3pVTG7gUX1v2cGhu-VYXl8OADgNPu2zpN0CkWiDzEBObuTaNRJ6wtZU2OA4h4e9nEiMoXZMDLNpsBVUex_JfY-w9U9CS9265wVCO_RJXpI9TCp9qFfsBmjvCKVjof7sJbnVYvZeiAk6AM4PjPLBHZu24PMiHKShi9zs5spXUgKSW77iBUCiI24clYwcflbv2rxsSzloi8ef_SVKj2Y9bRGSjVM6v0LmaX0rRq1b_XF85tLcVtaSBNmSktBsY3KbonXWFoRepBR4UGzGloG8JjFrM80w_ilNnfOGe959w6GGMzHz6FTgbYPokRirIMUqnOKq3Li2n_tHAjyF1bYm2Tp8bI0qVpxF4vApfl0Eq6zmtE_CkNRPrL9bznVFwH7utL",
+          "places/ChIJZcrzZBcLkEcROaEB21geaZk/photos/AWCwydii0-X90uo_EFHVg8nhF-TjFOtH7LkgjMuDS6nFugmyVJ2RaLufc2f42GXGttjokiIMVK33fT3nrAH_nkyzbuVpUh7xTSq2cehrwz2IgUqm7C6yM8CvbUQBV5wlJM1hZxn5__QZLNgqJTxeMerUGldgeJckO6z6rv340RXPlC1QuMdHBcBvBB6cwb8T2uaGsYNeI4jor_YVYPLNYBqGjXmH3AcxlO2rOFu9MXVQO76p_t4R8kTsEF7CprE24KTb0Uko1DkzCCSB0PlwZYRFG_LcjgLx1WNkUO7X_Y-nCGwKpFEam1IZTxwQVZzizdg8g7ZcjDmRskM99d7PiwmBV2FS1Ae9ZmSa3Ee3aZhJesF2mK-7qPpyXJXbhlOlFBAXw52K1wiV6eVv1_EutDLl3El0w2_GEZMHfwwu3csdftAWu3so",
+          "places/ChIJZcrzZBcLkEcROaEB21geaZk/photos/AWCwydgNC2azwE41B4kppRgEmDvf7_G3PgPfoAk_xyeC0q4gTMA3o66UZ0-pw9cunUtM7dVoxF6BgQJr2keZpYnGVCOa5TJrXqIAC_P23_sNR1T5E8dFIkB2okYuhmc0MssYBoRwSiym8_GlPJyZanLMhta-4wJDVJa9bevAkFMNMkQzuzT9ztS8n9spiCG4BZvoxSE_Ir4oPjWq7lWqOne3gn0w2AaiE_vTZpWCmboyVIU7BGKN-fpN7GjhKJX197_riUwNv0zf6sD3fMABpXJAKvwjGmgY5nMefRi9osOrsJmr0VOM6UFNPCM8Z4fhRjjkO4yQFTifqhv2IAizrZJkuyt3C7uiT2fhpNXbXLXlfzYqP_ih9fdN_mlR4AaFhXmAO1_mH8_Y5myhf-JXQ8wwckq4Pmv-hwgJwH4zgv5cH9q_ag"
+        ],
+        "__at__": 1786804479.4952111,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "What an incredible hotel!\nFirst and foremost I just want to highlight the team and the service they deliver. The people at the reception are super helpful, the housekeeping team is very friendly, the door men welcome you with a smile and the team at Marguita always have a good joke at hand. You real",
+            "author": "Annina Ulrich"
+          },
+          {
+            "rating": 5,
+            "text": "Thank you so much to the whole team for such a wonderful stay. Everything was perfect! I particularly appreciated how kind and thoughtful the team was, and how they always anticipated anything we might need. Breakfast by the garden was a true highlight too.",
+            "author": "Phaedra Letrou"
+          },
+          {
+            "rating": 5,
+            "text": "Visited for afternoon tea on a Saturday and overall had a very enjoyable experience. The staff handled dietary requirements particularly well. Gluten-free and dairy-free options were provided without hesitation, including sandwiches, sweets, and scones, which was much appreciated.\n\nThe atmosphere is",
+            "author": "Sophie"
+          },
+          {
+            "rating": 5,
+            "text": "Our stay at Baur au Lac was truly exceptional from beginning to end. From the moment we arrived, you could feel the special atmosphere of the place and the level of care they give to their guests.\n\nThe staff were incredibly kind, professional and discreet. Everything worked effortlessly and naturall",
+            "author": "Larisa Nagel - Poskovic"
+          },
+          {
+            "rating": 5,
+            "text": "I have just concluded a four-night stay at Baur au Lac, and I want to share both what was extraordinary and one practical concern for future guests.\nThe service across every department was, without exaggeration, impeccable. From the moment I arrived, I was struck by the consistency of excellence acr",
+            "author": "Jacqueline Louise"
+          }
+        ]
+      },
+      "hotel schweizerhof luzern|switzerland": {
+        "place_id": "ChIJM9INXpn7j0cRoFBqV7M9-m4",
+        "name": "Hotel Schweizerhof Luzern",
+        "address": "Schweizerhofquai 3, 6002 Luzern, Switzerland",
+        "rating": 4.6,
+        "review_count": 2790,
+        "price_level": null,
+        "website": "https://www.schweizerhof-luzern.ch/",
+        "editorial_summary": "Posh quarters in a refined lodging with a sophisticated restaurant, a sleek lounge & a wellness spa.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 47.0543857,
+        "lng": 8.3102433,
+        "photo_refs": [
+          "places/ChIJM9INXpn7j0cRoFBqV7M9-m4/photos/AWCwydiPXBKTT9H83x-LUtrSxwLCquxmvNiP47xYk5ST7B6c-OHVeTz3HB_5NO91RZczb1WprTsk_LP307E_n6Anksce-rf99T9Ekv6Cyiqo8NsuilJVB60K8o3Pn3yzdCAORm4jgywYuEvaIGAamJCE_KqJknK3Y1xDGsBzaeCLz0uG8p9cQntJOy2EImkLEUhf9d8vnnyWJX1dXStC0jbK1yoGNhvFW0QbEsxQpQbMBLVeWbcuEEwKtysTcwCTSRymnTnTS9MaoDPQ1vCwGX8jz9vXZABAvE0276_wxiDICZDP9ALEjnt1LCPOBkeC4rBcmxgKXNUk-VvOPFO3FifmdRnaSaGT1q2AQcWjh83ZBUQwDxd9e01HjvX6q2GJ0s1obEOlKbptDjh4o7BJbfDngpwaQ0f344utRuoyXuZIt-cNm_Vx",
+          "places/ChIJM9INXpn7j0cRoFBqV7M9-m4/photos/AWCwydhkV8LRz-SzEfOI_jYutXoATrXx8vprN41Ic9JF4Sw5FSipbK_rtLYPbCgnpsiljH93VyEzzAYP-YyoWrISIvYsH821kM161uZigw3NJc44pJEG6ep5h1RU-3dlNGsEi_K6BpNvVT9ztGlCyK7bh7ywfdQMDOEXvB8b3qSQs6m40C6aj-_xcgB4-7qJOLD7Pk898QqWoBddLfh-XNcqCVG4J-og8p5rEELo8LsufZ46X16IEiRT7maPwSrrRZn81Q4aT4b1mvR6H14I7d9MK6k5F2evEJyiLlI27gUupFv0N225SxFvPoXM4cTrQoHuHqXVpot8zk8jgoPyYzyv0cjc_9QxjVdDV_gRJfwFQzCtxU3wQ3K6HeLzgFQdbHwXeotWQlLh7qssG6rWZ7_egRPT980p3g-H38R_HIpV8oY3t-6huDPWUNxYZx8euA",
+          "places/ChIJM9INXpn7j0cRoFBqV7M9-m4/photos/AWCwydgnR7rqgNvoFPvJjArDT5E9nEUwsRYHYVhxfkM4484wspSRwFv6-t2bbBproao3x7BhgDQgojFOx9X0bVMSYTnmTLi9D-UIew0FFtZTXnESuTDd4Gj4Zv_XznnkndmYB4_8CqDLc2QccOoNWaPvNIrmoDJ2pggqOE2Dx9EXOugDxu3jx9RuCC3UMRp4X7kpRiXXcWIiykQ-DNYbRZVl6NmkpvEY5i_x13qRkjzDxFnsUjfqFrqS3bHi1y8CfZvzXnOO99UAJOCcail_KLbLwR1xYc95i0KkezmhFo2XGnnye3YuYe22K6f1rMm2QPcr4hwP-ZtFr-BenBhPJjI8adyUa7q7rBrrZTAE_fErTJtAUmdKfaTaGqzRk0z6q0QfulRGuuF-Jq-Ogvlf_BUlw_EYxVLjMMcevTt-hBqq-hm9VTUnmlQjBis52o_7Ju4m",
+          "places/ChIJM9INXpn7j0cRoFBqV7M9-m4/photos/AWCwydhHgifzxiLOJmG9oFzUAqQx_KwVESIvKIx1b2A6URM0ILBcQigUJo5XSA4estcbQf28y0YpizaMfNDgywDI_m4c65FBmvQQu_RJLaA8h92nxlAEnwpPDtBtw4PNYZkT_o2r4dPny5SK39Q5bPkhDa-o1UBHBR0IfDYsQjCTWPJiSPEL3lVhKe26U7-FfH_b9d23lOLra1bA9w4qX-Jr7cr8Cc1iy7nBXuQY2aWvOj2efwtaHq1WBTqIw-YbGKNH0aGPiOCtUYTPpFNXL-TorBDMPZDG-VeGgn0Sq9exMKdiOh6zIxGIHvaT2Ye9I524zIm9dnsmbv8VVQC2zYSwfsAh-CtWY3HR-pkJGb-bmyvReG7Zwu-uVWtLLtP1K4gXd-jA5KC4Y1ga6Hkex-mx8ler5601NepKG9PpubmMf-dqI2NOwEMxJyy6-2XQ2qsF",
+          "places/ChIJM9INXpn7j0cRoFBqV7M9-m4/photos/AWCwydgDGjJMto8uz0B1bWfqVD0GEXLm_02KFIkHxi5VAPq020GSkI_H2HW9h9vVSLlEiIHonD8Y9jknjZJLgZFkC6mcvp2WmIueC_9-S9f-yht2WntP36MDDSZkTgL1vfJSGKjaqaX7MDgbudYdQxRiCN8fLMR9lAp9slEYf2zoiMAQX9rN5Of0PMo5xnwOq1JTqYejnw_Q-jX_cK-9aUveKApwNArdQrWSkrjtmsC47SGJzAabcwtYO3KffgkuTR4UYCn9GUkNG1ptDFp2dtQAZo3PVc2chnUEKKfi8GGeqsbBsjKy5Q3rK0Rha-AKt0G5lSPfIubsg91k-Bh-qne4CDerFfhISI4tu25B_ZD9EHn7n_z1E4peVPYIs48DO7RMxwfYm1h6fM0ejPWbkXxRCD2UzAfGtP9lmkF9h5nhjOZIM9aMpEg5nFWvbiJGzQda",
+          "places/ChIJM9INXpn7j0cRoFBqV7M9-m4/photos/AWCwydgMd0BzyqLnk3b98DUMEKkjhNJTevB03iBWnr5E_aofxi0f-HkpWKEm03b0FkXlfJ-zChERbgKi6Uv86i7EQwlQu93lnElDjjHF5KkbWdZSSZ3UUDuR5bq7cV1ds0fJZFMtCS6e6750RYpKBk9nX9h51xZsS5qHQNMz2pHA9zxyMQEMa6sC0A6OXRAP1KfG97ppzeVKpjXAPX-mpKCtOsTyhHCwZlSYo3iEVR91gbacfr797XttHdyByqjsthVf_pPgzv8Z37-CMoAPjSzUigqCn_VJooJNy_hSpoS286sZ-OpB-iISQm5xHp7ZY71FwfXdgUZyy1xPVn7AJAr55If_bTm-te-jFa6SkV2AeyLSckSLbjgNTn3LKHRBD1bIYpGqP7_33y6CEZeMHfb6yyxR8o8aALn1S2-KK7QJkuDq1f7wpgafAJ3Fhl4_eKbh",
+          "places/ChIJM9INXpn7j0cRoFBqV7M9-m4/photos/AWCwydiIyUUoPMI7mY83_sYbcj4o3cSrnJpzsA9E4rnFMLNndLkaeS0iwTpo3oyikLM3mIyWFxuBgvkkdkrH0VSIFIdIGPLVXeey3wX9_tDtqx_FE5qsVMjMJaV9yTKUGZhG085dPA_cfXnlTlDevRlcJOpJ3o1MHDWRHq3RrThcW017QSH73HczgqtPt7jv1T6MR5RL9zUm8I8OyASQUhURpBnUL9x3v-JkwGf6Ylb1X5W087_PoTDL8gBK20lE-FkNkVXtExdkLXb0q5rMaDN7M0rgNwo4AXji21Wsebm9vmbil-XprpXrKaUJhMpVyvl8T6H43-N5CNnR0p9nygIhFJw_l3TiUKhAtKLdhblDpOD_Lt66Kz79qsKTk0-5Pjvmz_waB2124xOqzUod5JC8dPuSuLoeRa_BU7NzCVjmuwBrkg",
+          "places/ChIJM9INXpn7j0cRoFBqV7M9-m4/photos/AWCwydgL2udQN9hSURA6R_2PCc8JM8kaMPx0bmdJuc9VnDVy9pobRu26hGrVAviLQSXO4vJxZj5RZMtEHiTLd3hlKaRmYskEK3QK_FzG2-3LV7_QjlmFrUfepnYsQxhGKl6OXdcmZdDNY1qJ0Pvw_n8BCRBcbaStCD4TjefBwyqtwjUjMEWUCT1IZ30wpy9jk_ekLEECjcZ0fi1DxeROtddK5pI4Q9Q7e5DUTLpM3EtK5nGJSj90HzklnJ6bYLAyNivyAAAJHG5NqAul2tcVGadIJ3CiCVxt2OtSoLTjhIPBSes1ymNnrjXt_Nup82dQjufgcsWAFT2X-THTpbDxnO-NMOIxWhOfShV_FMyrizUJkqTYYVBU0VChp71UNqcl2ejPkJTVYWLTTPNOXRCFPwkNeuCpHk3qZUTbTxQUComKZI_vcg",
+          "places/ChIJM9INXpn7j0cRoFBqV7M9-m4/photos/AWCwydjGg7F9VF79FNZnDcK8zQzjp_LcBbgUo4wEsOmxfiI1MeELiP8G-2J9fex3rGCArxQoKxsqB64MfqaMrc7JOPoYyZNPbCsJdRZ4LAYGhnnBBiT7yXU0MCTxVtqMDRIhOyxoWBW3Ma281vfYB3Kha_JAvJ45v-W7kCR9ObwYPBjIqjwFvSZhSGpt7LSQHsC0QAkHSvIE4ZbJzmjnrzaZwsRino-5FaN7B6gnTTsglXGKYv38tdDg-lZgiQTj5rU4it7MqG2l5_WUfEWMTXe7jdTRpbmz0Q2QyGzEB7gH11aCcIbw-FkUC8KV0F-BFu11EhWumHmbLX515ALeSyHO3MAhVCgSh80mtWlR8OAL3kwd4OmZmmOdbXYtGbXtyVfWwn-0f6qMqlXvng_HDd76UZAfen6PRJRzbZcE5mxiyIB4wQY",
+          "places/ChIJM9INXpn7j0cRoFBqV7M9-m4/photos/AWCwydjqCI-rgHNdNYKPSd6_ry-BF3XRsa-Sp8cCrKlvVpJwawDUdUx4EMiHVv0FpTO9a9dJq7k6sHQIZl9Cq-cG8OaEK8Xr-99vo_ojamivlBC_ve-k_YQUhZ3gYtDGtcqf73Qtz6grwF3fa6vsjHRzELjdqfeVjvf8sOG5CQ31vRjhqG8UQeESK-BmGTW8Aml3Ots3oa8OJ2us3EQluF9278BbPyW9Z55ItxpbGpfi4is81ETI69adZc-D7KWljPqb2cYMx7x6fvkpwrPG-Eqclejuds2umUdaIFczbHprA5N58i0md8QjjlB8UaN8R4_NL1dzWkcCJsKkhJbyoEUIy2mGL76BwlFJImtqZbLuIhB7X7HMlkpMWcDXwArQsIl832vffWe1lnOQYeWl8tFlxjUf13g2kCDAK2swgpICsvbB0BfAayHa9iX2TIiWqoIZ"
+        ],
+        "__at__": 1786804480.0500858,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We stayed at Hotel Schweizerhof for three nights in January and it was absolutely beautiful. It was an easy walk to the hotel from the train station and the staff were lovely. When we checked in the concierge showed us around the hotel and to our room.  We had an extremely comfortable suite with a g",
+            "author": "Alex Morgan"
+          },
+          {
+            "rating": 5,
+            "text": "This hotel fully lives up to its 5-star rating! Highly recommend going out of your way to stay here. The staff went the extra mile to make everything easy and accommodating; they helped with our bags and took them to our room, gave us local restaurant and tourist recommendations that took the expect",
+            "author": "Lila G"
+          },
+          {
+            "rating": 5,
+            "text": "Stay date: March 15-17, 2026-post cruise stay with Amawaterways.\nOur group and I, had a wonderful stay at the beautiful Hotel Schweizerhof in Lucerne. The location is absolutely perfect—right by the lake and within easy walking distance to the old town, shops, and restaurants. It made exploring the ",
+            "author": "Elpha Cuachon"
+          },
+          {
+            "rating": 5,
+            "text": "Indulgence, the best word for a hotel located at possibly the best location on earth.  Situated on the shore of Lake Lucerne and facing the Swiss Alps.  Surrounded by Mid Evil churches, streets and market streets, it is near the Train station and supported by an amazing public transit system.  But d",
+            "author": "Faron Schultz"
+          },
+          {
+            "rating": 5,
+            "text": "Hotel Schweizerhof Luzern, a historic five-star hotel, is located in Lucerne, Switzerland.\n\nThe building with the dome visible to the right of the hotel is the Hofkirche St. Leodegar (Church of St. Leodegar), a major landmark in Lucerne.\n\nIt is situated directly on the shores of Lake Lucerne, specif",
+            "author": "Neeru Das"
+          }
+        ]
+      },
+      "goldenpass line: lucerne to interlaken|switzerland": {
+        "place_id": "ChIJpTKrrxubjkcRmSSMJAYQSug",
+        "name": "Golden Pass Railway",
+        "address": "Rue de la Gare 22, 1820 Montreux, Switzerland",
+        "rating": 4.5,
+        "review_count": 3208,
+        "price_level": null,
+        "website": "https://mob.ch/",
+        "editorial_summary": "Classic railway coach line offering upscale travel experiences through verdant countryside.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 12:00 PM, 1:30 – 4:30 PM",
+          "Tuesday: 8:00 AM – 12:00 PM, 1:30 – 4:30 PM",
+          "Wednesday: 8:00 AM – 12:00 PM, 1:30 – 4:30 PM",
+          "Thursday: 8:00 AM – 12:00 PM, 1:30 – 4:30 PM",
+          "Friday: 8:00 AM – 12:00 PM, 1:30 – 4:30 PM",
+          "Saturday: 8:00 AM – 12:00 PM, 1:30 – 4:30 PM",
+          "Sunday: 8:00 AM – 12:00 PM, 1:30 – 4:30 PM"
+        ],
+        "lat": 46.436114499999995,
+        "lng": 6.9101452,
+        "photo_refs": [
+          "places/ChIJpTKrrxubjkcRmSSMJAYQSug/photos/AWCwydguU2pfLWzIJxgdgBHbbF-Gp8WKEs6Uf_wGsQ-sigdgIUWtR9vRjt_Bjwwy-ry9NZnEKaJJRNIOH8xgHp5Fm0hZ6X9X8byAEJ7LbK3mQeqNhmIH_ZZjozh63dAgbJGLd5vpove_FnO_raMQA9emw1I6eAumW4xfh1BMFcjSJbcBqVLmw2ShPH0sJqHZ2APQpxuk-E6p-oTFyvFKhR1fYM0kYFHVoBcBB8UBehJjgYGrrtP2gRAbV4CW9Sak3FUqjhkWhUCm-mUHx5Is3e48kmp_TENJi5-rvGVeQi6sGMhf3omikfryT8Eqex8QKBsYF0dxJPEcvBqRXZQKo5bO9XW7O2WDXaW3EYLx3ZSg2Ml82x1Uwrmg0OKPh951qlaFsY4uKU7-WeqhA_YxiBZw5_hg4M4EeKafXwXqE8ow3l5lKQ",
+          "places/ChIJpTKrrxubjkcRmSSMJAYQSug/photos/AWCwydhNzDQDjUaGRDV52tQdjyCzKxbULaryb6PFq-af3fKZZMZXBfWcvbBNFVXlGqgmP2_ahe1chCJDe2NaDLg7v0x1Jk0HAW_WCzHo5MZNNZmNkIOpM9UacNZm4cFUE4Tv5M_NHIGF6thw3td2pEAFmDhKAXJMwWOziwJZ9q1HD_4IHFwb8CHxGEvwlAJ1DLW3tzPim8olYxOD9kJx7aK6P0fi0sMkLFD7vxYbYkD17kpqQ-EmhFV1uPDv1oVTkne7-2F7npzGlKnVi7uyRtmCle-u6gUu0pm7mJx5ZhK6VddblnywtySNL_fb9-s1psv3c5kPhBl8d7RtaCGIBK-Dv4uFG8pYbPYYwuufp_opt5qsA95PBJjl58G6pEX-Z2zK8git_6-EO7IEEd25P5qNsV9w3qEG2G_z5tQGFyrO5KZhTA",
+          "places/ChIJpTKrrxubjkcRmSSMJAYQSug/photos/AWCwydgO7Nl3QjW_k8r70HBiN-HEws0oaH-16z8Uw8XGtFMTXM6TBD8fRP2bP1fn9okXUA0xu6EaWQv4u4yXBXCx8pIL9bKqpaTJ-vuLsJYhssttq5F36f2P_IG5K2Ggfm0uKNISQb0Z0w66wd0S51TYz-3L_Xf1qt_VklBHiZuSI8HxUmvSRQrhn3LGjme9hHO_LvxG5Al-CJfzApDMSJnfUjb_WxoTQEPlVSXftEQIXwm-lu8jbbi1BblDRIOiO3l6MTgp_mZr_KfPXo4njQju8bq9KPNl446lHAJ93yumJn9sla6b3eCBaI58EyOLOdk-FRW2xwJcrZWp0aMDcnYNHChAzWbPgECL9XWcQL58mUxHVgneHL_aGfNXpr5go_AJzHqDi86v-eZKujJWWCSzdOgOajMNwLtIgDIwPZDMJKQE14g",
+          "places/ChIJpTKrrxubjkcRmSSMJAYQSug/photos/AWCwydj0ZZBfo7LOeJVXaPQmaVvQy9N8q6wMloNmlQnGDPDXqbJuPlx5ArFdAMFnJfLDA5qBjKwONDFdzIydTvoSwD7uFQlRlolozb4VtyZXLiQtmKhLP3P6g9UcxShLHSKhH13BFJ9cn9vStPknEoVyA4dee528M4NixBMzZymWIEfhY1QzZuLGRGR3tUJQOQq0_mqk4B3gvoSwacPKihwdpNQ1fhjSrFqAW9tLZIhW7tiE7VWfvk0IZsW8rIp_Dhd0eYEcY6dQMXArS4AQO91uXU-VPZXfqiAlro2TYvj5P46tNirWb4mmwRHAtkcIo53tv6_biWaYMC6ZpMw6Xa_FUTmHBb3NHXcI3HyFk-ziJsqN0ta-6ZcCYNQyCVBh4Ekl2ByBISORZtGqTQrqYO5O4NW_ae_KU7mbgmEsCYxrhO8vHvxY",
+          "places/ChIJpTKrrxubjkcRmSSMJAYQSug/photos/AWCwydjxOLfpQJv35VcmvwgaFYPuVAXdZ4u6PCT0Qf-j9hGYHyrD94BhLrfLH9SyOWokRwVfpV-jLEag-8piswcZqu-A92XHVRoimuIdYrMkhFi5Hs44KLlX5BKfmKiyGy77s7cA5b1K4lxSunicx7mg9Wj1CPTQ-GuP-WqV9uo8TE9onZG5use92RP6hyplePmGO6a-0Ekn0GdyuAOUy3lSuiYsvTbJq653BJpcHgr7mi2n9O2PoEUL6PS9IgOGQQYZn9d2uAlqo48bzGfCn9hLFzn5o7NzzfoZJVwippwwysVux_7ThSYf0j4JNlev4eykiNBGKqHtCpjScI8GCKkC3NiiTdhSLkGJ202CKh3HybZJUxnSiYPuXf7X2xpJd4yH2HPolWkX5RwA3IQ3OrLH1nN8jMZzU0A8xOejzOCL4Rgj46uN",
+          "places/ChIJpTKrrxubjkcRmSSMJAYQSug/photos/AWCwydgluqobKN3-26lubjDjs0AHcFtc45api-cWTnaWe3r5UJ9465K2470UbAu5R7j4gxao_cqUuGeChYYLOujhyelWMnQrVIPegWoozhqX5TjWyg7ZH4TDZfs9a2fKI395ohHBBAa-mROE_mZQpofhOqBQ0zZ9Ct7cDZ8GWxq45vetcqN6kHwMz4C_m8yZyfrhx4qI50LaGDOPq7AhGZPiOjDs8N2rmw24K57v_IVElOBOlkqlHODIZIOELl5jHxdo70nXEOadwieQN6tU-2_2E-_tnPLcWPInuYlzfa6FYQuUhog7TkQgsfSTrNR0g9cgBgdXOj8z5C9X0BYYfEyXtqtOo1iVgu6MgL7q_k4pv9q7p0QHh6rA0GSHo2xvK8U8zW3P93tKo1AOKQ0J2Gz2Fuxo5uUTkPexOiZqPCxBl92qug",
+          "places/ChIJpTKrrxubjkcRmSSMJAYQSug/photos/AWCwydhA_astUshWKIx7-z4a_1xK30N-CnsAz10RZcjKX0EySAPV6tR0kGjysDFbuXGPdbYYyleP5fXmb7_hFkF75f-O0T2N2h7Pv9hxwdSMhEww-6O7fkYvnkWENlecRAUUWRrjXdjY_c2WvfC2ufCXg0_mBhklshl0VF9sFrtnx2ku2Slrq1GSQhM32OwFSzN0u4SlPTyzEfwb2bKbwsDr-Hivp9rSo_ZruHZnPpzS0O_xYmNLeVnlg4r-yb9-iermSAzHwUHXJ1njqLXSnEYN3cBhjyspGTjTH1Ov1gsm4u2oJGxkTOOtqdgmyFI50X2fI0Rs7v5VP9qBG96RL5-NPC1z9BHxk0wL6P27C5F263aGWR_0ju96ycuFY6z8vYC616WkDMcmbSN8Ftahl9IDBhzFfrgx4-rWMgBlDQL_uKfdoO624jhnJ53Q6R_1yml4",
+          "places/ChIJpTKrrxubjkcRmSSMJAYQSug/photos/AWCwydi6JY1PSxYe2FP9p7u92E2o8oWztCpr0yLB8T8HMwMzAAtJtUuMKdgihV7HCbE1DInG9AbWHIpdmgyJLdDTez1KJbE6YKehhvao7r73iZ6JSy60_I4BLJykZf6G9YI5gd9DaX8Wiu_RlpPJcgTNOlfvbkOhRnVVEBSO_7P_lYeOtn-MW7s7wRCOcNRv8sILoI7w4n5nhEsHUBWo1BwrfXHy4AkiyR4dFsXjr88zrxOq7rTlU3RbmaOqrGM5N8uNgKXAPbO8W3vhFYo8UedavdzcoYK5M9rfcjKWSJPggBhUAauvwomYwuD65GXknXI8nuJn_wwKY1di2ZKrcOG2tAnG9ocdxBegYMofH81B00yirOlXWna2pAC3GlXSNHW52SRWRLEMrtBeImvlZBGjuu27TWZQlCoztONJLo2oqUNwdw",
+          "places/ChIJpTKrrxubjkcRmSSMJAYQSug/photos/AWCwydiUPV_Id9aLhL65qE-iWzhQPDQu9odrDbZU4m9PrLj-CSCR-6lGud_RXTXIN7ZTcpP_Mp291dFrCtALxbA--HevykG9uvTnk_lg2WjD-68XN9y1iV1Kpi8D_0_LYt_mBEpWBbv1vGDphoByWCt42aRVTIgLdpOGMNYl_77oCTRrjoHH5wkOWvsJ58m2ZujTBjeT8tOI9bqfk_EuGryA06iuP4-5W_Z-DwwYPQLkpaXx9sf-kNo8fKtFsx62TSM0zoTbFXVMZLbsR7QcLlP_1QbgMnWuySPTsu79k3BG7z02gXgZyS67tShyVeztzLZzsANvAemJBmJYYZEbAD7AuuegCzNN5yuC-3TUC3u4euMBH2ePRUtnSRIbAwHMhuuiNQVsFfV0jDzfh1x35SrYh7fKX_SD2ELtMT6zUkg1wlzAGixp",
+          "places/ChIJpTKrrxubjkcRmSSMJAYQSug/photos/AWCwydgUPD5tWmqSWZ4UsPZXZJAWIPVODCuf8CXA8timhDCCdyuyYriHVMXk1UXj4Swg0DWO49sTItl-FYUGBnNJBon9x-eswCD4WC4gbS0PRYia3_hT0un91SqXP49X62P1nGOsGbAeBYnRBYh95b2dIbfHfVnvWNkka5zIJEguV1FEMcgsvPr7XyWy31-dm7nm3K0179ZfOKXeuYj7oFxYWiybQmtdhDRi7cbh9bDPLH4Yy9bUr3F0dlTJGdsPcqV1FC2emRr39zxX54RHCjPwh89bhVL6rWgvCPlHnUvWNA9Ag1kQ7VIAA-rJtxDFn_jlgaFqEzbrqoaryzWy0hrrfeSjIRxXMbSRCVxH04TlL8cGqsd1AZVx4sm7v30BNCE3_pCH9oY4DALwps1tHZHpHU8QRb0NZu0MIH3ZZcyUaCzXYk4"
+        ],
+        "__at__": 1786804480.492801,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Great train, first class was lovely. Prestige class didn't seem worth the extra cost since the windows are the same size and the seats are not so much more comfortable. Fantastic views all around, good selection in the onboard dining, would be great if they had some way to order straight to your sea",
+            "author": "Hussain"
+          },
+          {
+            "rating": 5,
+            "text": "October, sunny everyday was unexpected and was a awesome trip, highly worth it.  If you want scenery, the whole country is your postcard!! Jaw dropping views on views!!",
+            "author": "Aminalone"
+          },
+          {
+            "rating": 5,
+            "text": "I don’t know which part I should start because the entire trip is full of beautiful views and stunning small towns the ride is very comfortable and I am very sure that every season has its own charm we did it late May and to us it looked perfect definitely recommend to everyone.",
+            "author": "Kyan Parsi"
+          },
+          {
+            "rating": 5,
+            "text": "The GoldenPass Belle Époque ride was an absolute highlight of our trip. The vintage-style carriages, elegant interiors, and large windows created a charming and nostalgic atmosphere from the moment we boarded. The scenic journey was stunning throughout, offering beautiful views of lakes, mountains, ",
+            "author": "Leonis Minoris"
+          },
+          {
+            "rating": 5,
+            "text": "We sat Prestige class for a smooth and scenic ride from Montreux to Interlaken.  Sandro was our server and was attentive, friendly and educational.  The views cannot be beat and this train was an excellent experience.",
+            "author": "JoLynn Posey"
+          }
+        ]
+      },
+      "victoria jungfrau grand hotel & spa|switzerland": {
+        "place_id": "ChIJjwi_1Zukj0cRsEg812G5gUk",
+        "name": "Victoria-Jungfrau Grand Hotel & Spa",
+        "address": "Höheweg 41, 3800 Interlaken, Switzerland",
+        "rating": 4.6,
+        "review_count": 2894,
+        "price_level": null,
+        "website": "http://www.victoria-jungfrau.ch/",
+        "editorial_summary": "Swanky rooms & suites in an elegant hotel with 2 refined restaurants, a bar, a spa & an indoor pool.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 46.6866541,
+        "lng": 7.8573855,
+        "photo_refs": [
+          "places/ChIJjwi_1Zukj0cRsEg812G5gUk/photos/AWCwydhFKmirsPLWN8SAInKysHrJdrDA2V-lxLRktiAiwo50eTzo9bsdFAPyUAlQxb2Tdo8RCPYLHXUG6tK84ClrdtVqSGqe6eVgDMJHC-9usKzvuiIuRsAbJ0C-QegasYIYR3BEB2nevpJCHLx_XNtY0JufcLBbjbsD8eto4_llLKIIQKWInSCxZeuYmGdvWkF0MFHp1PcXnnDVbANaK88QinlKBDdzzaurqPy-2Ps1r6vZFCrIx5OhUMv4p8D96jzVApSTxkVH46dr-KFtvrRVFN9H95txG0dhS0M-8bADgpoB6cwWgVGMz1cMx7eQkVyW65ksXKZxqhbgqXQiV5GnzlnGCe0dTqCFPetymmbHitn4-uEMYy2aviHyavz8s_FX2qITIR1c4Ptk78797IZs3nKhKn2eA3goDUyALoFsU5J0mQ",
+          "places/ChIJjwi_1Zukj0cRsEg812G5gUk/photos/AWCwydjI-XpTk-b26CRZcW3xJJhCeRCFnc1mlkWoZdKz6g5kmHCY7gQpHYtyrnpVknSONdnBspg4XlyyO-xUxYtvFkxmRxi04RQpxOOY1uElgIfGiLOAvm4nxYh0QQW6zHIjqOljWHckDUQD8loGE5qgOr30A3zAbPG_GFxk4YNspemtS1Du3ukP4ZN0DtFurB0R88CHIt2S___cqRZDqCYPhzGRXH8VX0XZEVk7r5ZCLxlJTH-2efxrOaVFJmZip75pLS-uaqqIvUpUVeeA1wK6g8mrAEvjMTlSViRNHqPgRe7vRp3dKvzf1B5Q2d_ighp2NKFuUWFK6gTpWsRcrFqa1p78PWMXOTWXccCZcRFRxYFvqms3AztEEkYMwYtC91PPY66SUV-OfzDl-K8Puug0fWFs0FrskB_DsmYErw9vKMQAqg",
+          "places/ChIJjwi_1Zukj0cRsEg812G5gUk/photos/AWCwydij1azPrZvUj52Gka0rGx9YyYxUHsaVYPs8y-n3p0-6wqkH3AFix_drnrs9K9fqlo6V4I3HdNJDgN4EY9vWOm0vWONJqwLtptPQTOtTX6mS-6FPx3EBRdh8Ur2wsqMA7pzi-pj5HbSJYgK7IY2deBkwgNoTfU6PxZXO4T1hJ7fo7IpFc0n8D-7gjpRLm5CAth5ggDGK5n9_XIMkDIL_hZxvGbxD1OrXNNDd2jL4eyPDZiDfjXU8UnVQAMHWJ095Rp-OIKDfVO93B9ZjAuEb3vtq1kaQ7YL5BpHqMLgTF8pN_qGx5SSrQo95k1U9ERAhh1_DNCHBS8tQ2frCViVwQv1PguoqFRpEJ8l69AljRIhB7v3SRv0fA82KA-7O2twYvogtyGXNBr9X1HBtz4GZVnhbv5p_ITm_xkU6pEcIoPpzptK6",
+          "places/ChIJjwi_1Zukj0cRsEg812G5gUk/photos/AWCwydhKgVasWajzv4GqbgDnM32zRxE4kgRRo68cHtpEJnRTsT2bqyQyBOZ5tB5ajrTQKqoI0ZSHMkPwk2QCxWTK0ghIun378If6zXUGzPKnruUbFx2m7htfX2vGtRAqs7qWLs_ephBJUXyxMfHVOJ8ASRbiHco_Je8yTH201IzwKe06Dy5s0seWuFKAuUm18KofxG_0xxJ2M8hrTwJM27zsqb-H3x6dsPJvFeUKQ-aOcnQqx2SYbaVPj5J2Rc213UaqsCmisrFXIQuUgk0lmRR4Z4_3ArhhHzrTMQL1qiSSBPPEnF15m0OKgU_d-YkBrBSJ4-wBZrV-IIWQnOFY6ChJCW_gn67yOb5w4XzikBFjnOsDeddsRZQmMERoheioGyjm6aPc9VLpBAxP0lzWhXXbiF2F-V3jxwXPAaUhk_P9X0TyoQXW",
+          "places/ChIJjwi_1Zukj0cRsEg812G5gUk/photos/AWCwydgjtV47bfDjhqHmUskJvQhMfAURZQaby9xdZdGj-Mjogs1-Yko2wKx4Q4gd_ew5ZKTyj7FnZLQ8K9UNm7euJs4yUSF9kbCHH7waT4SQof0Ewz8DvGU9IYrs30mRnGyCzlWWhPTvi5y7AFDx0i00_enFV4SXJvM9pg8cySA534lRV-AqjtpHymCV6bfLWzrIifIh4zC-5RFL3TsSiD_5e4coRapqMEq8KqxUOgttBupFwoZoxEWuogu0Ac0LsiLqGtOuk2W6fTYka5DZrKiMl2KefzbSTtr5OQaW-bvOPevgkJQejXapv2_C0Q2HO96QItKnwr2nEI9eZ_WL8wR6nkjr7QgvZaFuFFxaOrYnCUwseAWuDSoNPiOmpFqh9swBqchRsw5UCsMIlKT_VvplxxoKDIbf_-hs4iP8ze-_-2k53g0k",
+          "places/ChIJjwi_1Zukj0cRsEg812G5gUk/photos/AWCwydgmrngUZS5fdw6hsefYJ-lvzzaxPKJVgssY18qdVx_xyTPTniNDmG1xyCc456206yjduGcbye6Y3bCnUmKwujgC5Lb7nq8jp30YY0QEJZIoXRspqd67Gb8Yd8qvrVWKyFOOtfa7urFa4LkDv76wuB5QKeR7jTJJgNmy_y1PesEGOvVj3ezHv04rbJ8oOM3vPMA3qc1NIX5390bbDcE9zSWhWB_qZnZnG0zwWUso1sUK25JvTOHsJpXHk2alfqupO0-z42CJOsrbsJZpLQBMQWSqXDmQy9DafKWPnjkwe1ndfQ-LR8qa0jRzypJsGC3kyJrCq1I_8NaBx8uddv4dJT8QWJD0HB_77yFrmTI4v1CeNDIcL4U22XRMNkiKusXB-Vy7wXBCiCpHr3WD2qtwPXudkZ1p_HsxNl-3C2e3XaYOBA",
+          "places/ChIJjwi_1Zukj0cRsEg812G5gUk/photos/AWCwydhEszLVF_1kkTSl_28ZZp7h4YVv-fRU-c6JqbzrgB_urgps-naWAL7Y_uhsmiJEKdQXxYDIulj-wtQqIEyBvgYmVyJmdU3us3hNW2np5N2N40aACMTaeewouL4wt9ZvPodEMb2kANKSz7-c2WGYE_QB3KpdjOZWQfe4bapgGKkdKwZaesL-wdry-abmJAfY9M1Wx1omUdEXXYRntFlKIhNYb_saEsntjHv_rD8RCtPTtASRtFtQD9CXIopY-L9DECBloClfJNFZLS4clVWrvltHZj4g-Pc5hqcsIhxmbuEAqiUfHH8MqMmEBRCR4HZ9Vx0McmYhI2AjXt1AOaVmr_xy8o-hHRPbAtkHfRS2YvrO8fhde7mixjGzn4IGTUuFJACc_ea-KBduBtAXZBexSh9fHA1ispPo3UkyxhmKXgbMTg",
+          "places/ChIJjwi_1Zukj0cRsEg812G5gUk/photos/AWCwydhM_b-efyxJcH_D5KuSHu8YSolqP2MI9WUyqCjtaKZfH_i5hblheaomR-20grnsgKcEABiFBto1twDgdRxnOzk-ou7kDZSc5dP2z5vmqLyd1dPJe4KglfyJsWnxuXhJMCiNRFwtnIcRJme8jbmAPRihSN__3YmdzS4a8SM4wy7TbwxXF0k12VCdFtlnsgqkPk9WqpGcGdpRxijQV4D5-CnM9LomT9dMrn4HsjTQ_t44m8mexGmkKaspWO_g8sXRmsRsTRPfkyv6hFDyT0EtSW0iXo_botXszs8WRGRt7QBxJCp9xesNKSFG8iWke6XQHKWjlb48IgmWvpnwCsWYH0h68ZxhMol0tpirXYI3ypR_HScZgZ-8Wng4lWcOHpKEGrlIDXXLevXur4Ql6gooJqJ3qXAzeKpyO51FePCOUhE",
+          "places/ChIJjwi_1Zukj0cRsEg812G5gUk/photos/AWCwydhb6t-UMAswKBg_jf0AdzWi8YArQB8w0vk06zotfy806-kZxVyCA6glZaEu2r4z1ij8M-KQATsyn1u6vWwfZnBl4MDyxC-DTRvHm5LnVaVrudUg9_lIRhunx5xXlKf2TtXimtf9uwAA6X_nmU9-rfh8Ik5eL8I4c-ocko1FXp6T-3xEiz2M-x3S1VyxaZelWgig28BYRQaIEtPc8yzdNrNHh5FWK5oG9omjLkg6Nyfdsi-iQWQiOrq9XUi8xz4mQE5irjHjzOEjmUgV5gnZfaJk5Y18IotLlSfFpoJLjmpWKx75t8J_cHbqEoeKig7l9uux32xyemBNC0joCrioS4CjmHG4fx38lA3NVuu7TsQTrOgZd98GyxHacodZ6CaXx7guQ-ReDwsgBk8kM4hYEE1cMumMsSb4ivsepA2nMkLh1A",
+          "places/ChIJjwi_1Zukj0cRsEg812G5gUk/photos/AWCwydhsHV-Q4iRE_SvBrw6jsOb4odasR4M9z3MAk51-togWNxu7wyablFMLSzDGlIqQNQ43sOQ-FkUM_vhSpok2bq-0hyQtLpdEodnNKEr2xwj331B2QjpfG4swhhiNPBv5pNPn8eGxw05L59uujhYXW8XQinF7m6TMxJTZyvZr6wo3Orpn7Ip03WBlaiBl4ASRfY5MCAlKfsnvLCoFls2Ix75FSamHmomZ18JT3B3I_gqF2saPmPA7zF4RCSYf-1dvj4zh79FPTgvBTmWKauNgpKKGUazyYcsxK7vFyMiFuEQNQDHViQp6TZBuDKpdw2kmGmt3HmyzDptRO5egaZLfGyPRhBiLJxNx2sRTLYGqM6jtqykmGQOVwTalQ2ggYrX8SyE78vkUBu6lVrab4VmbYvcFuSjfqyajyNAX_fRAgsSax8M"
+        ],
+        "__at__": 1786804481.126192,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Absolutely amazing experience at this hotel! The spa was incredible. The staff were all extremely friendly and helpful. The rooms were beautifully designed. Special shout out to Chantale at the concierge desk! We went to her frequently for recommendations and she was very detailed in her responses t",
+            "author": "Hitesh Mantena"
+          },
+          {
+            "rating": 5,
+            "text": "Victoria Jungfrau Grand Hotel & Spa was an exceptional place to stay. From the moment we arrived, everything felt welcoming and well-organized. We were immediately offered access to the sauna and spa, which set the tone for a relaxing stay.\nThe rooms were spotless, pristine, and very spacious—clearl",
+            "author": "Rao GV"
+          },
+          {
+            "rating": 5,
+            "text": "I recently stayed at Victoria-Jungfrau Grand Hotel & Spa in Interlaken and had a wonderful experience. The staff were incredibly friendly, making me feel welcome from the moment I arrived.\n\nThe breakfast was excellent with a huge variety of fresh options including eggs to order.  The view of Jungfra",
+            "author": "Lisa Ribeiro"
+          },
+          {
+            "rating": 5,
+            "text": "Our stay at the Victoria-Jungfrau Grand Hotel & Spa was truly exceptional from start to finish.\nThe room was beautiful, spacious, impeccably clean, and offered stunning views. The balcony was one of the highlights of our stay, providing a perfect place to relax and enjoy the breathtaking surrounding",
+            "author": "Hassan Al"
+          },
+          {
+            "rating": 5,
+            "text": "By far the best hotel I have ever stayed in. This was not my first visit, and it definitely won’t be my last. I always choose to book this hotel whenever I come to Interlaken, and some of the staff even remember us.\n\nI truly love the atmosphere and the services. The staff are always cheerful, welcom",
+            "author": "Sdra Shahin"
+          }
+        ]
+      },
+      "train: interlaken to jungfraujoch|switzerland": {
+        "place_id": "ChIJISNLgyeej0cRkSxye45YaJw",
+        "name": "Jungfraujoch",
+        "address": "3801 Fieschertal, Switzerland",
+        "rating": 4.4,
+        "review_count": 339,
+        "price_level": null,
+        "website": "https://www.jungfrau.ch/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 46.547467999999995,
+        "lng": 7.982085,
+        "photo_refs": [
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydjqC21Z1ujyo6761KTQgqLgUxPXJqb6oC0bg1ZOdpoQUYsP4ePP98KFie3qHOnnDoyMELTr99fql3KN0RiAilP0xYg_Nb2McDTQ67816adl4ssgU-0dIGXgNd70lIaQbKYlr54pig3g98jkbeYuzTw7r36bK7K03waOr3xVlX8iXJ0TVuKBqJCDuuHhcYHSzODqAOeNax2Js5_NMhOvPA6KyMYi-ilO3xVkYC-bhLJpC1rD16M405F4mo7imFvR2k5ADc_7_lhc4YidjM13bbV5qwmz9x5R0PAME4ItAxEC_56M_Rb-JJlxwFLu_5blEAcSXpSM7GcNkxJ-orAP16UnW1z9wJzMpZ2NXZpHDzshXD52pRJUpxmNTRgH_XjIUzWq-sYLsiqMMkS91_WkSGKpjBJkeGbVDlr2fEirCCQmghEzWyOmy9CeFPxBBvc1",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydj7hnaUgFkPLgQ-ibFL0L7ylX_lw9X25NbVFdwrP1e0siB_IM5qjQt7INyV5Wgqy6mCEjN2h3qKxKnkLUe_Vcb1TALYVU1WogjBSPCgRHd0llDADp3sP8l5hNMIghW-ljWze4MmRfvdk3L0fKx_P6jjAjQCRcUf0TflzTUsSv6awmCej0_5VfvoN0AeNd--tWIf6CpUHpkcJ5Fsj7c5Ed7Q34JVeIZigDU5F7jcG1bKo7GHEEp10VtjvNuZHC-RHWx7C1H9NJdvEoredJSla6ilJgmtI9wcM0GgsTMFj9dXhc4Uj2kkDVeHBOZ6iJEiGzwtUI7oxPLvF_nQ_deJfqR7RLYZkKLsvsVYPfwC4ZSlkjYlh7Yh2QiX3WHJNyH-Uy4wX0_KEOWdYkMB6lOQFJylFIbeUwyJDIZSUL8cVXxavg",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydjRQLX2fDJ7wogGOLILiYtpaldV2YCJoULgFJK_qo8jnai9gFxHFq5hjkqqzj07UP8nVQfNTqihVZu8GxZ8csIMyrOhSSved4W7Sjdu0lJUw7lp_4_Hyk4RdGO96kQ0wsVx2rRgIMzjYe5jc2ZPfvYFTAMYr_Gl7KKU2w5gw3SqmY79cRnkN2xI8aolM7znNA1TbyoCc_I0d5Y2em-Obp8eU9Bf6z2s7xPiQnGCYVpBHT1EFj7ugQOnaxon0eXxSSTrERv9SP3sP41s2mTmICiXD0sOWcA5ZvEE-QcyrAuopWg-R_PWDg_Q-lbLu5L2Enezc_Qun0adme951rBucCtWFuIRH5uZcehOWteHzAvYXReT3grZLipZ48_ngeiCARHy7GgSQGyWoHvb4YnlbDrY70G0fRZauinm2mLgHGQqihs",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydiIrEWJ5cChUNeQpwfpN3sTsEZlY4dmoX3poWAs006eyANmTNrdvf_3xrSX_fwSECvxN7vWK9LwC12N-Gs5lN1GvsutjpQ68RAb5StvH8k-oaGMKcJKapZCHGZZIvmWHabt9q833943_myb5EN3Im4g8uaya3Ijq9jFVyKYABaji5QxEjejXE3oqRt6catdfMlRNylHQvq2ZB6HU3TTmncq4Xk2pPZOoSwtphfE6yovjUMgzhTHDQyLnPXBRQ9Dt-2_8_B3ZE5k1AQvkSO7d_SZIQXpYTd-AUvITCDePqjiWNegG5C_56AMPKb7TgCkraRVNZizvcok-PQqwb43gBguagNJmBwMpIj0p4GwS3LVWIQFXOxByQD70r-MR3WpWp8AYS9i398priYxvrY6KVIie8tzzeqYezrjqkQJh2kJo31W",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydhhax0-yNmTjNStJscKQHKK7xKecsjJV3x99DyUuvqma30ZR6oJ_-faU9LlLAu7AotFUChH3o4vaxmn8cNhh2Pc5eK8BL7QAzoN33wHUBFXn9E8-RGFZZgbP7Hje9X0EWBH1fHXfdBKqRcgLer8SnxyLMSII5LAHP2TRJh6aQqzrnjJgRfA3PW-L4CusKg8ugUHlsaTPGqJMsRZNYrI5FEvv3fU--oxH5BHh9w_4EowrW34Xc3rlgXPJI3AxbSOLY_aebJcc_VvH9EkTnCwn8pla7z1zGXJb0kTPSFvSj4uoQZLFK3jFdaisQsKw6ZQCEhxGgjPSjMkACwIpTQduhvLMnPgQqFQaBJjO5HZqCpRSQvSnqXatgqsn-gbnpDTkzAVkm82x70uol3reo2ew6aZTwmpT0es9sXYR3G96Ch7HOmw",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydjTvZcmNbK6Kk_cPvpng7L1dHKrZ9UzkdNujdiMbVPm3jg-APoQMzfr3kGChGsIMyUZuswCLPprLsinQfxbf5g2ih1XYPcb-4co9eYK0u1Roen0MtaFE4aBqfmuiE8XMDusAutgt4ST-pFqjenhyhabqtJDOu1JjljOy3IylJcDb_C05c6I8FrivJjQS7BMqmoozcuXf5UGbmNNm2QOT1cinpOa-0wUg_v6-UUitcCaJCAwEFzCXF8GDfM1SyG8hJGy_22VX_EvQT-pCU0XEJNP4FZQzVu5-HTwi8BgzS2mqQ7YzqPIuQw5-gLaVxNP92yVVyE3QvESAUf1CrEewQSVoQsVLVG_TKdzKp1MWV2MJLil65E8oCQOvgbwr3wbSr4r3NjKH8uont1CG2znUCDrjf1-STP8Z-Fc8st3Ze8",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydhh5UXLYlU_qPnyVXX6ae6IJ5UcNmiSrQS6Eo0GjdDEWJWLMzzP0p0QbNXP7BuLsHs0IYFsRrnGWcAaLLJvM5N-nIzG5r1_0BgG65WtHqx6RRO0EO-FZY4WkRVsGllk_Kegsy_aWGxEEFavrBGdg68uMZ7w-BK-rgAsWqEVRE7Mrf_kROKS_PHuRPtmmrXiwrOqMRnB3_qH7sB9arSs2811VK-zq4ygk7XoxnPm8fip0ux9LxjGrhJxwGpf8qBjQcFogQIfDOLtLKFdElVyngv7yQXZqNxWh5DSmHH_wX4piXHyq-Og7Z2dV8eE_LXOWcjcTHHH-QXEtZA3WcwUOFH0WCFApH0hhlTCvvcqn7HuPI111NwtVcDJMQXThhCDo7AyKJ_7rThVoHtEoaPpxxFE6uEEggw5pRc9w2WXcysuw1U_pwKNSmr_Oc8HUA",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydhD2r__PmjQxc7tjcc42OOc2Si3sDgEzhN9mB12bQd66hBTlGwI5JsmGZ1wqzkwi_hu2LW9boAZ2JlAOrKYL52wCwg0zv0g3CuWGOFm3hIfgFCnL2ZaSWNI1oSfvD2UR1mgOPSjzKLka-Wv5Lq_nto36WL80jNhlY4wQLcKdHI_oryPNM-YPJEzuHGu9VsMGg4BPiWJrZa7XYKYQ7CIVfV824Z-104m0h9bMtThN8xPfzuaG7n8AqSQkeBqStV-3tX4aqDM1lz-xVuaDOlFw83X13u12i0HsR2nGAt3U2SNjyoT91XomroWcWMlkj92DL80hUj38HB68Zk_Ll5AfdJ2K5NC0atgq8othMQnZ6QQyajcuBHQYFluKae0mUA1koDgRnMnZqnSQmE8eCKoOxXd0J3ipBsGJHCfiEang8kf9Ef7",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydjr-iQhPNtLqXUre0YHF76yUU1aZtT9KxfIAoZrHwMA2FkKDhb7bHPAjk8SD_5ETymoTp1lrsNoQW_FCFXH438B6rU1jMyeN6WdvFazuy0NrqSeuoEM4DHuZA-M_b7wsILPTvqKCHj5IoRBOxb2nB5ci4yNOi3xvUHFMiUYRW4aKz7ZR9tgiA_xzh8xF14_SK1ZVlrsz2IXZMExeaIGZsD4Zen2CJU1gxaZiFSLBntcDivmCADvGUJe-HhPKr63FG5Djme7TLcX0RvbuyL7MTkAs3MgY9AaTCcmGjzDJNQdOtdwj6z9Q5Zbp9RLTvjZntT5P9_5Z8nzW5txX3uNJ9kV-qscTC3rBt2nakhv38X3pFxABl7j2udN6T_XemoAC67OWx_YDP9qlDUFsNIiJjHUn8VetuzY_2Fqh2c58lMutw",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydg4XzR0dcy7nlcRURwJOTe2vDhkV-0UcS36a5FuMHFCTaq9-lddwRUTlUaTc2TBTMG31ig5pOgRsk7_avjTdPRywOUVGzaw4EJsD70ZB9w6h6wEoe12bNXHQMFMzghx2FwQAnXKup_mjVKcQB50we43csjQSHRt2mvjqrrKKMqUpuuIUfcax6rQJE3RwRRtWfsAJW1sM018eNZ6DeUAG_iU3cYQHSfxlKjvZqhEFEsPvc2rXfiLsC9Uj8xU28WprBbazGlOJMQY_BksVu_OOnoKgZ3QlPny9Z76qhWNnD8PkDEU5Zn_0QmRlmxahUS5cYXgDw1kRf8dHVIdrRl5Oi2JoG8EryoZe5Hahht4f49-ep1Kf6F0MZMKWzaH_izE6hVwipA2H-rEWjvgi82xz7vExYlNeqob5GzSl7ktu5G6YA"
+        ],
+        "__at__": 1786804481.536514,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "Amazing views but much of the top and mid station walks were closed due to avalanche risk. Like much of Switzerland it is ridiculously expensive and there are much better alpine experiences without the cost. Cable car was magnificent with views across the face of the Eiger but in reality the train i",
+            "author": "Rod Stubley"
+          },
+          {
+            "rating": 3,
+            "text": "The journey and the money it cost is not worth it. Way better hikes and views to spend your time on in Switzerland.",
+            "author": "Italia Perez"
+          },
+          {
+            "rating": 4,
+            "text": "Jungfraujoch Station is an extraordinary engineering achievement, built deep inside a mountain beneath glaciers. The journey is expensive but offers a once-in-a-lifetime experience, with breathtaking alpine scenery. Travelers should take time to acclimatize to the high altitude and bring sunglasses ",
+            "author": "Hr Department"
+          },
+          {
+            "rating": 5,
+            "text": "The Jungfraujoch train station at the top of Europe is impeccably clean, well‑organized, and efficient. The signage is clear, and the staff are friendly and helpful. Your arrival feels seamless as you disembark into high‑altitude wonder—truly a top‑notch gateway.",
+            "author": "Abdelmonem Jamal"
+          },
+          {
+            "rating": 4,
+            "text": "This is a good place to come with easy cable car/tram , but still very expensive though.\nmy advice is to check weather and dont buy the ticket in advance.",
+            "author": "Michael Lim"
+          }
+        ]
+      },
+      "train: jungfraujoch to interlaken|switzerland": {
+        "place_id": "ChIJISNLgyeej0cRkSxye45YaJw",
+        "name": "Jungfraujoch",
+        "address": "3801 Fieschertal, Switzerland",
+        "rating": 4.4,
+        "review_count": 339,
+        "price_level": null,
+        "website": "https://www.jungfrau.ch/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 46.547467999999995,
+        "lng": 7.982085,
+        "photo_refs": [
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydgFd27E1IMdR6GNCR8xIS7-0ZI_HGB49kPTyqC9OyztJGxCgEMWi2GVLOKHUxTzUU1yqVbJ0SlJLWa0CUh5GFBhUWv4UhWJeCm77NsSA-c0bMK3arYmBFe6BiPYh5lSZyhbdvvimAknKkLcXJPBTDK9uXsd1pLdGm8rjqze7RPKSI4XikX0MPyFAFaZ35rOSftAB5XHUgjNUME7mzBVnylyO0Z0pfDz2GvX_f-JUCrE3f5POMg6a7JWoSRGhsFZO4y0c_4dBv9P6AVN3QSUyv79j-3b8BCzfcvMQo5u-R3tezk4zMIifI6WKgkHdcohHK4PIumFiIS8okzzxXDuaWttyUAdBuR1nKi1L-yRdOzPWKjyyEFxzVARntIn3yxyqlgvM3-ZIwTpBiajmzGAMLKBx6h8HzMOtzjl0UZrbcSXqMEsuML3I3VcTh3Y6b7b",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydhMY3NAxG3KADd8Q3gaewGUD0dCc1S1R6GAA_n1ZiOKifEAUDwcLyxzMjsANSydOm_Yss9E_P4CPh5YAD0RS3sgFVWgatBR2BYFh5XuTYq0E04Nou7hAtYGbow4LgFLglGOUWwLBifdHC6yL47rpcnXU6O8T9iA2Bmct7UY6LNY1KGtAF3jNnP1LKSIbFy5gsWvMxwTO0wC99gBC3RqEhtgp0-k3yGsLn1pJCDSsHKYLmXKhCptnqpXikG2ZxiR2iNvrV_B5NH_dqZEKYCBsW7UMW6nLZzeIQL94ryOHyR5COakrcDJnCYP-vNqNgQbxpVk7REXMyXL6HWMuEhsOVM0tzkIX6KLaYh6i7UdnL6Nru-E111bZ64SRe-IRfSVBeAfa_TsdBuVykeIMPXbS6rBvTrTStRqSQlajkhzT1bySA",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydgBTmX7Q3kpEpnmWKgbsLxNJa3qAX0PNR0hrMQ44eBACwxbZDC2Ij-a6hbeFuKub_j4x6G_1A7x-qp1dcIdntEeDImR78ms6dpd6crrkUR6m4f3H9iblYGa1DkyCfwZ894wfM1HNqN0JqV17osq7b_ZsXWHGD-wPeFv1_uY0PBTRNhiihffvq0llR5D0k1krNLbXHqrImWsRZ8byTAuzQ4hUYqmivp8HmExXD-gA-gYAVfZmAf-RhdYcbmqutiFJ33-d1AJwlYF8P0AtLHijcpvhiwculfX6ZXZxpjZx8h2AnrflhR9km84eDVg_x1Q7LFygHUSegqVIxlqSE8iXWae6e-NIaVaLUfIjpF5MM9WdqaUDNwFCxu_5EdtzAJ5SdPhbVyoR8peHrzfNhLoIacjMZLefv_J5jVTfQmtR6C-Gk0",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydhcIQsb4U9QO24NLQ0XFh2mTc-HTvgZgpTS7jG0zVShmcHSBpM7ckGLlfBiopzq9JiGsg0m1L1cGv9QZ9oV7JLyGn6lzF45UI6EnlGqSi2TjgUhQNeV5RiYqsH-nYLaCHH1MgS0fJojpJhV8VTAvsZu2xGqnZQEIsAfdroTZfu9sFgY65V28DkCB9l5fePpP7Ml489ChWiTF-La6azapfdbRg6T1pBMQCOsdJBTAo0uaaDSSxZwy14SF0KpUAo2e6BGd8BrtMLHgnl89N1zTJCg3cBm-oqSeD5uldZeffKMolAUZgAXZipfUkvhhv8Yygzh8QxPjcB0Oz3BAa7FreFwKvYrI9HfxeaD_iS8JLH71ZJgyWGIzJr8X_sNNZ-isBS7Xi265tBMYrxEv07iZOu6JIhZkpY0YuoEqlhhHWYep1Oe",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydhTYyxi8R35P2dmNI7dRC5HWYlxx-LQocwfNSTIVuryAl8bJQa2Q9P6raI3AZzBIEj_Md0GZ_KWqoj8b2FDmYpaxhOhPb_MpDgN-O10t4hKzNNZMWbOYLO-SPnf_kRP1YSFQHli-ZJElMOFXAxaY3Kn20HRRCB_cFS-kP8SizIVKyyveXrt5Spn_cR3c3xqpIABPw-lUc3IeQx3AcP1aM_iSdiLk9HamBoUlksTyovwUelhq2TBGEelpI1MsN2Imwh_yidoFgKFywMNRJqrUb5PFIqIODD4ID47hNhMaH_O1ZuP-Xkmu1d6VjFZcg-Y4pXFU-jyMs8idbq10AOd98WswVZob8JTiDtyZpEDBdbRBpjHb3_NEPhnD1Nni0PUzAkdZDWg6-PvKxQGuqU0FV3ZHqxAwhY8HTg3hAN4nBTiHXg-",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydgbHtXgDQGmWk8d4qPl81wTbdfvdSJtPupMHvgiINPPbK6iryUNwj3OJY7TpoGOCKurrzHDou4NHo2ZvS7HzJ3qm9dKlk8z-6eFJ0yDuOKJyGflbXUbwvNoD-nZrCpOSHezm-XOmeRZUfgXCRLybtaxIKRZgMOynwXE-DKxujTfAU4oTO4RYkFwVUle-JdeKGQfU8E-ziGvBXP0lHddPLTCH3pVlYsL_nW--LKf5PmW4cX2eSfxlDlBkWlycXm1F0IsBp8nMWAAjVpcz6cwHschD3XeJOffhpyIi1_AeU2JAPTt6EiKh7j05sG5Fk8T-c7aQNX88385hh5fZxXp_bo2bOXZB_Ucok_aVRLiKFROdoZ-X0U6HU-x2R0LDe3mZhx8OsQtE4duTi6Ah1rW3zN5lmkZePkA3v317br2FCU",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydjd8shasFIbLBFIMOWomAG6kRMdeEejVS4JW02PAHstTTYoTQGrZd1XdY9yZqFW8VpwKqsFM3UWCLo7qEKsco5uYBgPYnBRfp2S3YSbf9jK4eV7nwqjyubUPqnQR-GehFifkCFgNe88FfXxsRAQge6hOUg7m3rSdPHdP5uOyncWg51gv-g4yFJB9s6YOEMRv3P_IFX6_7THb___NLeEnWhIF8ou2C3Q4zJFlfHFL2iebIKH0h4Xi3vfU91vbYUmo-mhNZUxHrxoKCBzd5X0TFGdhETY9SDDY0FWdaxWXBq0AYn27J6h9Z0EekWiLO4B8sY56GDPwCNo2ILnAxcisc14KriL004niWy8twEl5D-rOODGvyFWFc8AYvszmulxYUJ-TGDAxwV4e8Rc57NJHXcTVNompxPxDnoBhaMDbiAqTbBtYE-uefH-xoa7ig",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydhiiVZVCRpm8CsK0Gl6pqpfX9Vre7PpgewgPL-VrkEzwqRHqpvuOBbovm4Re8UBM3IPO_iW5fQdbwoDHWHHGdWwQlKvNWrfqDHcHu_cE-UCp2eKb7YE_ayHwFC8gsHegxdgaEonQmGIXUj5lB6FmYcQc8ALQMD9vBSI5RTOCSBoZMV2Fo4qpBYM1gLxnqP2fJYHYm8XhjKdS-c_923PdQgZ0_1JMtzyYgvUh4ECBthv_zndSrru6Ij9RX_fgX9vM4wpRz2sf2L62EvQR-Sx1RGRbPtxlKROFAmrED_-Dg7MOkAVFdWACAixvmvVTW9l2ONcbqPTZyo_ZlWwTNJCmWRJ0eG-M0bg2qJM1OHrU1do4Fbif0LdWNYZE1Fbt5FLeBYZj1M9oxLZPxuWJtSd0hBW5pc-_deiePyiJ9IaVWiTD7y4",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydgayyndfpq-NPclwsVeDl46Fb97R7Jw5Tnib7U7OIIec3HJkI5DjN0a_xOykmjMHPjL4M1UUndAq6S5rDregH0g2ACiw1z17TfWynDvDDDeXST5XXW7UvssdDjg4NTRTlNh9P8LnQgkYtc7DlnOFjxW_60zAP538WZ61SnmpJWekNiAB8yzGViRc4D28Nwa6QQWZT6k6XG8SJAXnykktpw6I9motnRtE02o93cISUlKhhBe6rUMJUYos662gUzgcpf070oyFeItkH1hR2JjBrMADkqDSGPaiHJVvzkr9mmPI1ZziF4ws141O4bmqAb6lkdJvd_dqA6k5kv29atmuBLebAktOLO1ntzT5Z_Q5TTF60BnJ1fidD9efImKTd-3nmabDEFfDSlr1ko0VdJi7GPVZsekwrEWYvyfhkqxB4OKNw",
+          "places/ChIJISNLgyeej0cRkSxye45YaJw/photos/AWCwydhfDT_d4NxSVviHqhlyTqmPE2hIhFdpa_wS8Oy7tIeCsoGqfgNDq9ZjRzPjv8L2dYOQmFDhXJGVqt9FwL5Dzvi9OZoMWdTZCXgBLgne7XcS1TcT-YwsaPUUy8HKWsNmgc_x4nvD9MjdsjE52ndopoYg12ZzAIo2RpfhzaFpBsCmmdoU9xi6ju_btnJlEk5SMUaCbPSUO9F2vndYrYzqJnA752lamNAyozU-17eITdsktMXVFyCH6X2D-A6anyVEF9v5uv3Of44hVmp4ZXF9mdl_gfeizfP80Uqj-NLMK6__7cHCYn3BhL9iKJ50C21XDgzQrDPGHgm0PT4_4cZIfIjzjQ4-3ZzJkFbtKMZT-l5oH9bP0mMI7BOu_noB5vsXENAr9c3q8a1xKO_DPhMb0IzekYg8zs7X3sOzk_9bdj4V0g"
+        ],
+        "__at__": 1786804481.9002419,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "Amazing views but much of the top and mid station walks were closed due to avalanche risk. Like much of Switzerland it is ridiculously expensive and there are much better alpine experiences without the cost. Cable car was magnificent with views across the face of the Eiger but in reality the train i",
+            "author": "Rod Stubley"
+          },
+          {
+            "rating": 3,
+            "text": "The journey and the money it cost is not worth it. Way better hikes and views to spend your time on in Switzerland.",
+            "author": "Italia Perez"
+          },
+          {
+            "rating": 4,
+            "text": "Jungfraujoch Station is an extraordinary engineering achievement, built deep inside a mountain beneath glaciers. The journey is expensive but offers a once-in-a-lifetime experience, with breathtaking alpine scenery. Travelers should take time to acclimatize to the high altitude and bring sunglasses ",
+            "author": "Hr Department"
+          },
+          {
+            "rating": 5,
+            "text": "The Jungfraujoch train station at the top of Europe is impeccably clean, well‑organized, and efficient. The signage is clear, and the staff are friendly and helpful. Your arrival feels seamless as you disembark into high‑altitude wonder—truly a top‑notch gateway.",
+            "author": "Abdelmonem Jamal"
+          },
+          {
+            "rating": 4,
+            "text": "This is a good place to come with easy cable car/tram , but still very expensive though.\nmy advice is to check weather and dont buy the ticket in advance.",
+            "author": "Michael Lim"
+          }
+        ]
+      },
+      "glacier express: interlaken to zermatt|switzerland": {
+        "place_id": "ChIJW78sotZuj0cRpIZOD2LTstE",
+        "name": "Glacier Express",
+        "address": "Bahnhof, 6490 Andermatt, Switzerland",
+        "rating": 4.2,
+        "review_count": 695,
+        "price_level": null,
+        "website": "http://www.glacierexpress.ch/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 5:00 PM",
+          "Tuesday: 8:00 AM – 5:00 PM",
+          "Wednesday: 8:00 AM – 5:00 PM",
+          "Thursday: 8:00 AM – 5:00 PM",
+          "Friday: 8:00 AM – 5:00 PM",
+          "Saturday: 8:00 AM – 4:00 PM",
+          "Sunday: 8:00 AM – 4:00 PM"
+        ],
+        "lat": 46.6370205,
+        "lng": 8.5933548,
+        "photo_refs": [
+          "places/ChIJW78sotZuj0cRpIZOD2LTstE/photos/AWCwydggzTd_6PJpRLWG7Lfpir846BAsZj_d62nxRlqoLoi-z9nx9O7dX6vTntTMssGYhPfynQ47EAKT0j1POowQJDF10NI1eyen_sgEYc-2u1GeSRq8R2orznliIZI7QCqgFJOSBQBog1QMyk6IjBsSAQvp6DBdIcLNVh-3cckSzqnMBCHq3reCl7omdGgjNOd6VBSnnwDRv5HkRYTDBd-h_2b1PYZuTKjchUgDYgFKu9nTDSgQAZqFNHh2kLAfuWFewc7OsQIDKPbrS6JNtcbQfBGjuAw4PxczgT4ESKRuBXfoUZKf2GkyNg-6towANY4x4WDa7qN5d7T1f4W1ytjXngeDvVM3ZEDG0sOs1nlMKiTm7u3KQStxwlnL5EWkM0sCMcsMVWdviuD1LemJCkm-bD0gvfqS7vVCMe8B8iFdXUkX2Q",
+          "places/ChIJW78sotZuj0cRpIZOD2LTstE/photos/AWCwydjrx-7TVUEpi67HExcYu_QxilkdIx9PjWxlul0BpgBtFlosR2MiggQ7mwnln4eK2UovV6kEejSgw_tVWyHtm086hWJSENTbSxhF40kJZszLoboTe2ke92Ns7Vw_qrAHubUlB9UN5phte_xg7x2O1JgCgguFEczY5I6JE9xl4lIa-gmV6uYbXYK5656ONeIQR5wCXTNflIJWFm351q5PdqLiBfPrTI5o9ICgemojNWUO7ylCbkDOXOdGgbRph2vAjqlTQUMClr24Ua2qpV9-HdsbEZIzdOGuTXlael1U-0JsqkLBqSqHmNXubvFuuvm0NeNvPRNqQhW_f_K1-CRU6Y3gy2INQkKqKiMjLH6ZOkCfMvB-m1hWJsYmjnjVPHcqF0Rz5BRNxaRtiCTBbEFZA2i_KMspgs0_jRwdnzwRLo8PTg",
+          "places/ChIJW78sotZuj0cRpIZOD2LTstE/photos/AWCwydgui9RFTELJfbXoPZyFFHemOINflv7-euCu5oqve9zZHAYyhdGWGdMlkv31VZhaTNwuSoQTNT-fGnj6xn8PGe-eAii74wLfFFMn9x5jE_jtsX91ZCZp1BLtSbglc6KKOB4AREtJxPyYYOSATrSk67BLI1dw786dRB0OciS8bQGnkeWJ7jI7AngBVJzQs2w1ejzq_R7kFbCuZqI5EOKA4WF4nzDUraWdmGheEABrHh8B0vm7DbGGvLqUvdjumUPu5ouJXr95lrHtPU_tZdOt16eA38cPFy35Pa_obUKUDrpleHa1jU8qkZ2jxrLUA4JzvozOngH5l4DygRKaJXboMEEut4M-3fHQkubwWkjgE50pUoZD8xs79lNGMfO7NftbA7CB7ksva93SwqSy8j6doUjYjDbwe_YAqBDRoi_bWNSKKw",
+          "places/ChIJW78sotZuj0cRpIZOD2LTstE/photos/AWCwydgCYxf_qpzeBSRkvwlMtIIiLQKSgDigNdUXb-2hGu1zPQr4AJNRnxYx0VCBBQxCd_UKnHjOthPwJK1mpkUXA0t3XsUnvouwZ-ABxMWAO_f9S0mXj-nZilFFR6XbM2pgF3rw7EFY8JMoNjIDEjgGenP8fI7ObW-eGrkFFkWDCQP56CMbgZATFabLsWaqOck8eh_xYbTE46I01Ifie7nLiABKjByviA8kfRKS0RMqWMYJ6G74txhPYBKma_u4TBKTI4oM-kNCGgdKWFa3opBfHH3sGwIO3e5AxjC6bXLLaXp5JB6aDm0As-oJIXJDyj8ngF93dZ0xP_lx64zm5rweXqfdhl5NOefrw0pKcCzmKiT12PIrbqfnHhwywYJBc0kmBKgASSmrjZoatDhit1xBBlFaeBGjzQ1IMvKibzwsQvE",
+          "places/ChIJW78sotZuj0cRpIZOD2LTstE/photos/AWCwydjO7bqqfIVbVFdrXZRzr4gyDrJDGgfDf7Qbb4-y4X5PbBThjfXYqUZF_XRJ8lPirbplLCkrTm9-KCUd5sTHASRz2WdnH47XAwR3wCZr-5yFpFiw0nIadfLbEAr6mus59B1EatIMQuAONUo7VYy48AnYid-f5PPtXePcrsfTnvLW5XHgK3He7bPwgFsUtKjwd7XWBsQZ4Rxd-iO98CvlFW8LTjOApexTYwqjZbuIgEiD8gBzSarTcJeuhowYOZEDHateE84oHfOseKruOWxkkNsRKNT8XzzmhO70lSQsAnq62RNevB_YB_sxqke9Ar2bSzQoLfwyO1jrXVh8zkFUV9dqVhntNW2lu43VP3MspXZhItP_rW1KothBUWFdFuUZE5MLlTRvG_GEL_gUGphQbmFX_e_pG5qQrCqGhRF-iTd3uJjbrACAJb5JzD3d4Q",
+          "places/ChIJW78sotZuj0cRpIZOD2LTstE/photos/AWCwydhvGmqfMO41H4V56CvCy_3WPXIkxwee08ZIFa6l-GCI4LUxZwWaubgxbCsy9U8ytVqaklP0EqY1WXVPDclBaqcdeEJ7u7IbT8Mcsc1RnLKuNWvRETqWC_9tNSibi5yLMJeEirvwx2CLoxvoyEmdtWASSn_5f1IcB9q9tev2nmP91KynKGnhpMPLD0LPN83RuYLl8enWDxI2A6ckUs8JNjzz4cSX-JvMP_goH16W0AImLGRAFq8FiHk0R1uHllm9oU6iNWNqUk5KTEhduY0qJkvgO9SVMkVPqcNbra_O93KQeTbBG7t2DGZarwAb96RhjgIMMhHQ54K-BdOGw8_u5vY6A3FEmI-DKo3X8FAnKXgCN4AJyQh85gnvZfKx23gmPSvwLFYa3WmXXyEx8hNfZydLwpd-2XVVcqtvHlTfpnPvaA",
+          "places/ChIJW78sotZuj0cRpIZOD2LTstE/photos/AWCwydirke0XRiAlhp_D7tZl1uIEY6CtD-l_gN6TQWInXf-HGqPt5RaD8ak8-NX6VIMKBITqdjG7APOxpLFZA6D9UOfjaQWuSS6Rx7rZQVY3qnVSvTiibtr454mjPOhbMWOaxWlC_qhHKvR2qXQcJQb7oAQOGHvZ4P2rCKbo60LA9ulSvvezc6C_q9fDwRMqPHbmSuufXYQ5fGMCXxb32g0xRKCpsNmrg_5eZ86tEJW8FxOuaKmn93pA5xYKF4FvtK6o-2TkbQblfhMf47FVUj-ZFIZLrj-cRJHjukeXo4RyPJc8Q30bFtxxBx15Q6_H_OlGcQ1ha0qtVelGEUNGym4TLrSGPHRY17c-frpupx98VxK3rluB13mN0wKtons9gXEIDKS13pC6qgY-cv6sNi2NqBCm1zH3no2l0JLlea9LVRp4aQ",
+          "places/ChIJW78sotZuj0cRpIZOD2LTstE/photos/AWCwydg36RHx-onZam4CZ5I6Nh5FZI-tyqfcCuKW4k3cf33KUoGRY-jy5XCa-uPKFJD_3Fhcewd7vv15fgY945M6IdhbUZqlXhx_8PB5sQu45cdLUAcW1WVLlEO3-t-jrLDbsAQ3mYs9kZ0ctsqCQzvWFq3XuJ6uzBg6j1k-9eQotFipUFEGL7sQ1a5pkeCuzdlFEEL85qsFXFmnmQ3Zbi8Uz8ZvwuL_HIhq3CF1l2HjkdpYwVwj9sXtXXoxXSrXlEqqmhM3aGolx-lD_H0YiYvq3raOLC_RrH_fEtZ-YFLGclbjb5vmGQqK56ae2ASQUW65v2M-maogXnZTymEt2hvM_zgo0wZN93byPLLlHBVGDPlCgkYgdRTaqH4lhQ4Bz4X69qDyf-nWNPBWLPgLMNayxRwK9oZ5S77BF5zmSLcuAIidvlzsY0KfFpjHw7-YbtQ_",
+          "places/ChIJW78sotZuj0cRpIZOD2LTstE/photos/AWCwydhkh3ocbv0e_qWrL1rslfSHKKacLKW7zP6u37A1n3TqaIvpq0j_af8sekwVxpqO_WmpXjE2jMpgoNvKmG3vsETuCDFDGbLx8SZe93VRchoJXhxnsSjJWwp8KaCvsF4UXNjbBzeKZJdpussMYEsAYuXMm2L6B1EFu2uRUdAA0uDdKU8nFuQM-f9dsHV-7Xba03yDNuEmAHx4_ly5qsv9ODFwKTyOyB8rYVoVo_ObanzCz-mMAKDyflyxHj6JjYt_zskk9pEO2A4aagGVj0DrpdGEv1mVgsKxNJ7boIGYsbzLn1DuyqOJVH2GmGgsgYYHYqg-sYG3lDoy-GMqMoc6jZlb8bNp6ZC3gR7AkVZv4vt4zOMJNAhFZkfUhqYHyi1ptUMZYdv74fT3vPB96RwAaqkU9Ltmf8cIvmiNluQr0wDERwjg8P9EnXi9g5Jjqj5C",
+          "places/ChIJW78sotZuj0cRpIZOD2LTstE/photos/AWCwydg02f5fafKlUofxDyKIwTL9YhVm3Iz_yx2aTWK4CDpLS4v_-JQk0yQWo9yxnKXuS1dBkleDl2DUZjn5rwj69sHup_Xmbl7xfYd0m9guQ8TjZFHwOGrFUU9sJx5006YeibKLB19RYpNS0fbggPETojr4kdOTQUaZedBNnqTJl2ZYvaFnu3aZ6nc9kMZhxCotB9ArUn8gTvUgXuOp_v0dqx5BF-ghuZ9xS6qHxVkcRPNKvJO0tIWrdgrHjgPuWagcVTRF5an0PX7eSqqC3v_yK7zz82lA61a9V3UUPEGJiYOrrFRHjd_h0Ts2i9IvkOSHnsh6NvsdRJB0JjGR6IQazk7_JOITL6ow8X-x7lnC-UBOg_hh-Y016WdSOITbQ0ylUBSjLGso2_2l-GfyTGZ9ZIBpbopE-4EhxjsPBQVHTPaa3w"
+        ],
+        "__at__": 1786804482.224451,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The Glacier Express was truly one of the highlights of our Switzerland trip and completely lived up to its reputation as the world’s slowest express train. The journey was incredibly comfortable, with large panoramic windows offering uninterrupted views of the breathtaking Swiss Alps.\n\nWhat made the",
+            "author": "Venki Jayaraman"
+          },
+          {
+            "rating": 5,
+            "text": "Honestly, such a unique experience.\n\nThe train is very comfortable and super clean, and those panoramic windows really make it — you can see everything without missing a thing.\n\nIt’s about an eight-hour ride through mountains and rivers, with constantly changing scenery. It honestly feels a bit magi",
+            "author": "J g"
+          },
+          {
+            "rating": 5,
+            "text": "We went from Zermatt to Chur, departing at 8:50am on April 3 and it was the best train ride of my life. Really pretty scenery, we saw forests, rivers, \"canyons\", green valleys, snow, passed inside a ski station and saw people skiing, bridges and a lot of other interesting stuff. We went for the 3 co",
+            "author": "Eduardo Antunes da Cunha"
+          },
+          {
+            "rating": 4,
+            "text": "Travelled Zermatt to Chur. A beautiful train ride through the mountains, made more charming with at seat drinks service, an audio guide sharing history at some stops, and meals served at seat too.\n\nService was occasionally disorganised and unfortunately some passengers insisted on playing music and ",
+            "author": "Jess R"
+          },
+          {
+            "rating": 5,
+            "text": "6 Stars if it were possible.  Excellence Class does exactly what it says on the tin. Go on treat yourself. It's AMAZING! A once in a lifetime thing. Unforgettable, incredible...... I could exhaust the dictionary and still be looking for a word that does it justice.  From the very start it's special.",
+            "author": "Dick McBill"
+          }
+        ]
+      },
+      "mont cervin palace|switzerland": {
+        "place_id": "ChIJIYjXKN81j0cRAWvL2M6PPbc",
+        "name": "Mont Cervin Palace",
+        "address": "Bahnhofstrasse 31, 3920 Zermatt, Switzerland",
+        "rating": 4.7,
+        "review_count": 549,
+        "price_level": null,
+        "website": "http://www.montcervinpalace.ch/",
+        "editorial_summary": "Plush alpine property offering 3 restaurants & 1 bar, plus a spa, saunas & an indoor pool.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 46.021130299999996,
+        "lng": 7.747161500000001,
+        "photo_refs": [
+          "places/ChIJIYjXKN81j0cRAWvL2M6PPbc/photos/AWCwydhb8ohqcxLPrO7uJbnXTLd-wXHENFztrHTGAYmtvXp4q-qojMR1SeB1mphIIP16-8SwRqqYL6mMT6YCWPFsVFhGCXoOC-_GOdCa8J4XlziVUIa47FuBEjyayD23YBE_a1-Ir_F9jzuagbc60gFpJOpa2PjT6UPs7wI8BXKYzxH3w6rFIR9rQfXr3sU_5Ig0XPJGVkK-cngIiJ0poRpxD7y_HLjWv_pyoNowRO07kuql1QY6ZKkLg7BAav5T6l27DOc1IYJNAvTz3_g4y7oHKC84h7sNsNpStcQjdh-DPrNnSj4YK_qLA6BPVnKF8jo1onMQsHl5B3dX1XK6maafJdMY-NgrdqKnXlpqYNKDFBAImR85Ct7hryDf-z5vXJ0Za2MsTCVRZKltcFbRKYuKxJk3ute6LaVf1hW7hYLFIoLuP_U",
+          "places/ChIJIYjXKN81j0cRAWvL2M6PPbc/photos/AWCwydgITIfdLT89hMn1ihSlcALABMYuqDNvLOsuFXmthNNRiYs7KSAhxARiVrlJKLK2DH0Xnw3PITN0-IseAXC8s0gXsU4jWlOqXB_HNj8zAEqDkPfVwFwgxsneGZiJNu6JE_MxRzLj4pcbDRl7qGpwJzHv8eAvYlWud_4c6v_gFXFsODGZ4TizzhI5yfVmDop3PaY7_PNlhQIiHotxAAU9_Yy6l5U66P2KtfeziZwlSj7F4-AsKZ34ue_JyHWdDDP7kE5nJvPZR09ZsK79Cicz30E4T5QfJHUQGtl4WrNW548poo6CqiaftOWZmJ_srzW-cCJBpiYJf2EbeN9wGQVrqAe8noBPjYRar4Se2kX1v_5GP9nJw9IraWGk7PgnOp7W7EeDxie8ArcNtDn2-GVj5qDCH9z-x_EYzCct5mN3WzSABAA",
+          "places/ChIJIYjXKN81j0cRAWvL2M6PPbc/photos/AWCwydgdZm7WylCX-kPK95yX4viLz4HMo_USPUo046xPcA1vjbm7Bc-L9ThbrdHLZCMpZM0mtGiSdx6kuxSVKkBtGDKqMlI8h0ZuE3rSgSW4kPMc2Zvc4V_URklfnNLs-rBtBpqxNlPaRb_OTWhR5nA_US0TqnskJfujxRncqP0cbzMYLC_o6pe15FC6EHaBaVWRU1_hgRCVmD8jaE1ty9iFfsYZqROlfGkdYnkHS49cIY_H1C6uY1VVNIQky2iqS14b9FJuLX2WDJOkrZLBgfkz4thkpj6YMEyMueFJKDTdO7zKkL8uaLkwjU5bYWiu3IsFhnDnyQHsh25xqUrBrNVomR14KlRH8SBLJiFSnOsiqpslY5w_h4kpcuz8caxBXQY5BupBi96kFVX012Qhns-rkfPSJg6WHFdvwQkyDkr20GQwU04M",
+          "places/ChIJIYjXKN81j0cRAWvL2M6PPbc/photos/AWCwydiqk7PMAhMXvtDrcM1uL-66LRr5q-5BtbQNMkoCejipa9Dz7UeSDNfPYvtWFZM3D5618bNb2J4lUZMbKRpVRtOX8DHSn1aY5lpkSi47a09yawKXud3tQBRx2zyK8wc12DVFLWWpNDRXIq5JZwZnxFM4sLTPMCXobUBquEY3SomwCE03nca-L2FWm9qkJ9G-1xWtUPKHu2p__GdpP_XpkeFC1EdtZJBH3Z8th62So3Hus17cYTIh6KGa8ZwipHleH0p3eywM5yBfRd21IydcdN1i8CFNM_odDs7TsynXhbG3DZoKDgCf5eMyIC2-SVRuYnMTae9vPXTy0eAtN4PX4nzXOXrYi5q0gOpPe5S69hQ_WdtE-MKO1gRiI2a8aTicKCka9dblr7qcUVntfyWFx8emeJetM1cZs1EH1Iwd620tDMtY",
+          "places/ChIJIYjXKN81j0cRAWvL2M6PPbc/photos/AWCwydi8uTI4CzjnRVAscpDpwkZtCMuSO9AkOWERvMAMxv-5DQQa3wd-IixCTI-KOOwoiPF5SWcLOGmid1MQuvc7yEQXklJ-Sai7Y57aZe_pm-QACzCmmoLzd_GDz2LOnFgh4bpzo0Y4G1kyn21vm8c0p19vlzOtxcT5PkX_W5AuyhItOKSpx7JP_wMzcDg0uhK9pBXjPlQLih8NrgYIKW_tg55NkuqfenW3ktI-lAI9jnfCc85EQvibpj2ltkdVsqWwsUyrVSFbGOvuKo8SiW3xJJearuHy90ZvAICuW0nTvYRVHMiNZkhEO6S5xmctWw_cdfqBB8KENnum72x_S3l8D6FvmIlgq8rAEGIdTbU_Z8P2Vr9WghzwcYTYXOmAPtkFS68T1-1b8DAIcPnePEQ88Ow_NDNBpjofB69mlRbtGiBs2A",
+          "places/ChIJIYjXKN81j0cRAWvL2M6PPbc/photos/AWCwydhJn1Zcj0SIb9DQHaI2Y8iULuJuiIQoPzTMh4LRIIwO2Z1B8RqQruaL97OVSkdlb9LArQV_p77PknJHlRCPHqW2XAarknoL-qaCU3BHXjdOZ8K1g5676CzfvzbjL3omvzIySrn5IPev0tqqIHLLbGhwIa53dbgtQ_BIwr2VXF8MbaBA_oaoKxrRBsUAI7aVQBsJ2FmwGHG1Fnsd7PUUyjqawIv38IO1Q2EoWN3e_awTNcA3TQ_KDg8bbhpBAOndPe0owppESw1ZYPfjWlwfr_jl1fTWT0Cgjxqs34E7jmDz3lioyS68MJimV3-_BH_82NCIznhcrf9KcWi5UJEgKGjutABFXkQ66Z40dbLSulX0V6PiFqWuI5wBPNGQAKjZKpJSaUPd-gnUlL1I02EJAagcwLZlKOl6szbKLv2Z851yFIbh",
+          "places/ChIJIYjXKN81j0cRAWvL2M6PPbc/photos/AWCwydgpu65sURLFDmNPD2JIOrDnQxtIatirmY05iznTPyAYdSfGqAEOQXyEIeeSJYZg4SYyXktFc3Xtws5Ahxnq-d7akbWVJfYtrHT8bqew3BSsQ4iDyQ8BFpvX48RrckFJbsOfjwyVRlyNg7CBAufy6KGbr1GWoEh7P0yzNxNGGs8DodlGmN4PN43enJvyZPWplOV15X12qcMBPYMRLhpayrbI4vOqTvCqaz3JKBbxhUA_9XOq8YW8gS7ShWFGLSN3YWx5LRpZFYxqI_7oRD_Ob6I-ohOBuIyDvNlQDjobrnhAoU-5YxfnF_PifQCEIaPKMOiyS7ioEnNGluMICScTl3VgU-Gy-fXaDcBp5ciK-026NmE63NbAX9B58oi1JDH7j6sjf1ho49zQn4rBi8BZRhPU3dREdImlkH-WuGbJoXI",
+          "places/ChIJIYjXKN81j0cRAWvL2M6PPbc/photos/AWCwydgeW5sAHolMMJEx1IqKorQw9DDfZUD5Nu-CYJUUSBYVPk_1zUG1TFOm5OGJh2oYOJaBxJrmD127MAzuyEv6ZmIWnPoWY7fazoPEWmwjWmM90hv4STz0fwxquyubpuvdoyptC0qEt89YjJZjH1BzvfB5JTVocJjQpm2fOabqT95bGxIn9cjEHE9Q1Ik7c0-zfdzdFDrpQfPvXRqd3IWvXhtgTZXcJ0pDNo5vR2BX6T_E-J-wA4C0km9bi6gPVkGdFXfT1XmaoMTkO04frjLHOe4svb_7ocA80nvSqiLJVOY7kYqz4a_vxAYBZAXihkIvXUJfJL8BLYs1U6GW3kh8dGQPVfxNvTHL26dscIEqKQ6X-9WDkadB__DoFqMomUiF0x--NswzlVQSCBh91zfAfKP8RgGkTki4JBXqL_16i1ezpw",
+          "places/ChIJIYjXKN81j0cRAWvL2M6PPbc/photos/AWCwydhi_o4N266hnkKUarMfFTRnwWnjjRwzjrQ-j9Z-GOkHpfI34oIUWKUIFmVwnEXK43D49rpeRryQpgbd1jL2lpJ6DG2mJ_6RMuLFUTRki8FJ3SeNiOCBSYlpCnD2wqhFcFOcv5UdpXu_jkw1ShiEX1vkPiJWJ1bAUAT9Y71d2SMepJh-azqbHzAX8y776h-kRJXT4cVaHDRgTF9ZydFduoQ1gxHBd4iazxcsPrBY0LYnX0BcD-KOoSmFxCD1OKrAXuJxQiqPFW7pU1EOqT9oqBtMjkRUojilRvyaYZuzh0IkqC80HqrOULdGm1wz8Vsvm9PGzLtcUOSy5iyTK_dbptsX2d2tbqKllUxq-npM8WWhLdkgx9TQMC9cFMAQyd3MP3G5e67yoeOltUDqG4vUqj5nboI0_Z6MF64PchsJ3kxOPt6s",
+          "places/ChIJIYjXKN81j0cRAWvL2M6PPbc/photos/AWCwydhyox8Hr3dOoDfQEtEnHQ6LD2oyM-MtXso1f5ZCCVq7OR2tWngmNnRE7dV-Ha_P12Tq523F03hH5RjA5gBDCY6kEXMxIYFL1lcPkwGiEy2rivCPykp5U3MPe3n5BehoQyL3_G1CU5C5lmjXl4uwai26NmLQPHpBNGETBk5Wu-XycSeiqi4X4fAWuNyipYS_uMdK47P_q0b11PP3S7vz99ii_McPtrY4LxFXDdnAL86Vrv1s1AAFhXoA8gPTE7BdjxKzJdyyjf1Vqo0IxK2K490ZaOhMAwS8x5iF_TRxucdRw7WdtJRdYRBb6JEcqZ2a93zGsBqpLIDaO6KQ4eHeUWloyOvlUxDV8ugRPVmqKm6BojsZXlpVPFwTAf4Xd7WHrFehBguc3IRye10wuXQlAo9u99E5U0oSZBceFwAmu1E"
+        ],
+        "__at__": 1786804482.6381829,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "One of the best hotels I’ve ever stayed at anywhere in the world. They picked us up at the train station and shuttle this over. Everything was ready. Our room was ready early. They also welcomed us with a nice bottle of champagne and some other little goodies. the restaurant was great. The breakfast",
+            "author": "Michael Dorantes"
+          },
+          {
+            "rating": 5,
+            "text": "This hotel is beautiful. The staff and attention to detail is perfection. There is not AC, but I don’t believe many places have AC in that area (if any).  It was about a 10-15min walk to the gondola for the Matterhorn.  We had two room. One was a suite with a balcony facing the Matterhorn. Gorgeous ",
+            "author": "Kat"
+          },
+          {
+            "rating": 5,
+            "text": "Although we originally booked the Hotel Monte Rosa, an unexpected emergency required us to be relocated to the Mont Cervin Palace. While we were disappointed at first, it ended up being one of the best hotel experiences we’ve ever had.\n\nFrom the moment we arrived, every member of the staff made us f",
+            "author": "Bridgerswa"
+          },
+          {
+            "rating": 5,
+            "text": "We had an excellent time at this hotel and would recommend to anyone visiting Zermatt and wanting a luxury experience. We utilized Amex Fine Hotels & Resorts and they recognized it and they gave us all the benefits of the program.\n\nAll members of the staff are very attentive and welcoming. The pool ",
+            "author": "Jacob Webb"
+          },
+          {
+            "rating": 5,
+            "text": "Everything about this place is fantastic. I took my wife here on a part of a 17-day Switzerland trip. The concierge service was phenomenal. The reception desk was friendly. They were able to accommodate practically every need from our perspective.While there were a couple of minor issues with the sp",
+            "author": "Blake Ramsey"
+          }
+        ]
+      },
+      "gornergrat bahn: zermatt to gornergrat|switzerland": {
+        "place_id": "ChIJZzoi-HU2j0cRnkCC5sgBTwU",
+        "name": "Gornergrat Railway",
+        "address": "Bahnhofpl. 1, 3920 Zermatt, Switzerland",
+        "rating": 4.7,
+        "review_count": 5660,
+        "price_level": null,
+        "website": "https://www.gornergrat.ch/",
+        "editorial_summary": "This Alpine railway rises 10,000 feet & passes through wildlife-rich terrain with glaciers & lakes.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 7:30 AM – 6:30 PM",
+          "Tuesday: 7:30 AM – 6:30 PM",
+          "Wednesday: 7:30 AM – 6:30 PM",
+          "Thursday: 7:30 AM – 6:30 PM",
+          "Friday: 7:30 AM – 6:30 PM",
+          "Saturday: 7:30 AM – 6:30 PM",
+          "Sunday: 7:30 AM – 6:30 PM"
+        ],
+        "lat": 46.0239501,
+        "lng": 7.7484824,
+        "photo_refs": [
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydgPJLVzhNW3idZ5aFj2EQbntOqLkEnlfVy8YMJPQwQNJOzMSUqb0bDmpu7HmT9X-AQ7-xcdzpoAJ3j-mxFnX7mxztfl9Ji0wiYF01FUt7TXNwswot-1Fcf5EQfvLsuZTa02V11D3NJSZCGWZq8h-vFROdonD2Z8AEOxRHP9uz3sM7AG0rJiqfqU02TCT47ZpgSuYso1f9cUCY31hnqIF3DitvWpaBCCUJfESPTbqcuHwy5hk16vnjfX9jIhnmXzuXX7newhpi9ZcmRUkxFsEWQt2_Al_GORJ1b3fZYqYB71jtDnc3lY5JUSSBnvFYh1S2tPTWqFoQqL03XlTxQgM2yCAPOAf_SS-KGybkhTqMzb9JQu0HOcBOMi298V7EvTI0n06wT61N3s9l3SXKMvZeJz4bo0DXoI_9kePPtVTPHhm_S3",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydgn6jdsOs9HQ5ww0B1fgctI9PfY32ht4jk7fSkGkfvhHsjTrsPenruaI7wsj_GmORpo4jDOgLf6eTBlvxCfMr-rW1IHM6TI9tJzF087aVhJ6uFkbCr_zPARFEKxD8XTdt2X3-fKqJQZVZealwy_x3NZ83IOG51ncSk1DHIV06492mquUNXcZVe8YQPCEBewkJlIiA9CJ5Dx4R8mgcEJzodYEBmw1KvYl6UgGwB92fxw50aWX1UZ3N8zwkaUrR0GvFdBvymAzppHYVJgOo-KLrx11tObaK7GRh50Kwo7FFb9DZwVP8rGclHgIaoZKYYOmUCx1m48I1TLra5Q81pU_GP8QtgGi9gqWIo5ia2hnYg4Yi-22NSPLv11qqAu8ds8aVC4cCYszPlbXf1x6LWPVHqD-OX64H_3_xG3Sjv6b9NBJLOq",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydjpA4dAum5v8LA8o2lRoiPOWEz4tznaC21aLn2CKL2O4_hoe9AYY8zInF67FdBkYgHTJARe-yyziPqlYEtD4URaR1IgVILu3bzgl146RhMSQLcHnXG4wSM5RxeWWhDZ__cDiGUy3xcEvweiH9jaOv3arfdiNKUijnCkEptVBsdlGA-LlfHCW2aWZCjz7Njm1EZmmiosl3zWEUEcsoqC_OK5-a6iqsXUDxkT3WB3erUwsVnJTikIOZFkxMmRq6AG2VYqyTGa0-sdwo3F4WrutzoGxFRXA3lY8kOiH34_uXRnk6NQzqnOvOzIQ7uYw9qUvSKubExRqf-jDH5hGR_t-yBTxUJQkbF3jJMjCbsG3mG0GIu0yAXMmzUvPdjBRjNJ9HWCzxT-BCXTDPsmO5djgjfGGiFbz9W1rWlbXNMMzSHPxQ",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydg4p10wRtJhoBrcmXmBGLhC2pcKTSMC5LcufdZwo110dm9zNvo4nEtGz1cVY8j2Yk5nxAEIzB_P9uuSM4SI_N5VD1DSkt4z1KRBZqgs2MTz8C66bAgbWc0l1wtaVf45iq2912qt1yE-5OujPo18Q9jZ8Epl1zPUDORt6IRBI3xd3o_v-v7E4_q7S2fn7QK5vdcse5B94Z03wOyHeZZhUl4_FjDO-9Arptsjuh0ikPevK3jiy9lut0Zo5w4NDmx9ZFQ0AXoa7qJCPE4mkACe7yblHdqH9eezqigdN4sJxiHbG6M3jTJt8nxVGr8KurtnruMST4ay0FRkm7wUNb5vUMAWXhO-oKA6141JtdM67O4PnQnYkToI6ppg7tPZk-KcrSR0L45EkJRW0GCBuJqnuH66xjQPXIZo4xuT2xc7-wZTVV8IdmP8iGqsstmruy06",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydimRQao8KGSCACmiRJDvBAaK4TCuuoDmV5HzMHAh9ySUvoJg7HbByhz1ozOXURRMjWyv-PApoGjTuzkWYSeeqv0NsgFsD5JU0M_osCF0xOdpUQ7WG9ucdS5GTUDw5KUvGwUnMK63Ncv_qPGkUgDQhXwuWI28tg3quGjBTw75Updew9tc8Fv1Isb67nv1Qn-3Dq4fGn4t7ZPZ3QB9mrNrMVQIWLMVExr4Nlf0bUUJ98Vd4qRW-UcJLzUDFzTsYJR1RFxqzafPmMTjuB0A1UgQThtYvKBq1ZkgM8e-h8kooLMxyRKrfzAv1Tbf4XTaTaNA8nTKWVsru0eIoA7kr_-QU8YaOJV0ATechmRVE5rH7VIHGX_2Cmei7mIjDYYAyACH4lpVbaoKVewOsW7hrDkGPOVNDMC2keW8PiVdSB3dnDFwdDr",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydg5LnPM6myggut9mnwXgKpTf3FV_2xXyWP9srTcdySkN_1ruqYmdKnMnoDbzn9KB4Lo2QmecHUTNwDOLp6bsHtaVt97jfdwrkTM9DenPd_ev8gLnzRkxj6ftlvhI5yTctMGr927PuRMqz-wsT3Z5oNZHyonCc11XvayOO8C2Ns1_omoNptjUJxwtZeoCSIRoZTwoAaCvniO1eNABnaMTbW8DaZ7lXJe5RZ8FR_Dl-j5WoFuPyDnfRZjSkyQjHvpmGBqCSH7RteyBR6Mzxdi6EHNtna8p_2bmdaeIfG1zjDnw_ZEnXWAkjSBbAoOk9pYOIrH2Ko20K2DRLhRT8QYFhKHlEQ8IoejQkIHCEpZHlcHgwKXN1i3bfogXGDAtBk92Vk0yEaOiFpPD_BkeO9rqB2P3Nud9xH6LKq6NKl-7LmfRg",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydjxV-I_KOuls82F1xp3RVczNJy4_VMrkmzPHp2J5W-jWxMqO2tVVsSHDOhFIcBnxaQKuKx1ZnlshMLh_94AdC6qwQlF3N2HqjLoS8hIn_1SAZwf7Gd1marXCHFrp49pFJOnmqRtp_Nh3V1-FRPF6WvVqO0IPc9nlcxaDk2xgfg6en2bTq6ZfQY9ixc8Nr3tuhOwWWZ3A6trdGpTOk5ofliKncM3nTHnBqOvXO-4vEZ_bU2UALAfimHoMcDBn_vhTczWW_d-zPkbgn6zoMnKcfvBtbxZfqDNtpYRKZBWA1QUwwubrrh9e5pi_LQ81-b-pniO-7NMJ0DoVzDRxIJHIoVPKcxRxBMQgYp6YTVjttblUwgjDagLNxiuPLlbTUbg7D8Gf6y63k8MUYWijLOLxozLnzJ4PdJiiOlYsUEmCt41pAJmNk4jdrhXTRA4Mac9",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydinxJhcrVQHfLTsdWB0JNqRdAnWUDOoSav_DP2RFyeKoOLVhYhkKsetszDXaPmS7LF4X5gxNLvyLgA0T14W3P9Pw-eG7_2u6htOgemGegLHaIkoJMWJNP8EiVaSexyd6pqm9R4A_ynPaEblEqjuw08cBHC72abHmnccI2-MjuUqFIG5aGvq3hkBl_Tf7XqAKXYbNbzzJAfEBlQ9Cd1j_Yc-Yz851KwrWvDGS_C1yHzHg6LMmmRm9ogAHypKeeNtoiOmHgHtI8dUbtzhE0you9zerDg16iofYmxhaCWSGvPnmAHELm9UOaOIU5pAuQRanCUfVizCDJOK_0Pr-n_SrlbxwiJ6AYlSWkEm18PSW8NrNrH1Z9FUl71EVysVWhUQ53JJ8z92THPHRHgHP-5nVaYsOJOnV0-ZfsIXpBrjFncX3g",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydhD6LcsTkbk0T896wkPPsI6dYY7gSacX4hDnxb3ZsJH7FMlV1_1R9nEpXG8u78kCtToUscZjL5btCnpPF6qF2lQeIn9ER4Q8Pgf5jLk2S6lNBT1Cy5bN8GLvfuj5TpCdHUzRZnw2qy_rxU6wss181Q-f8Z7YUwgCDPyU2D00qZ5yf_jXlxcR8LefseiWfquuwzJLUeX2j7p51atwP8EHCSC6x-trB1tdozAOxzJ-RrWVCBH2iPbXOOoSoH93dwmE85ADU2yCdPp19eISoegXtk0Jun8xNv_PxmyjlIXDUtNu5rqVc8S0QEe82ebv-bkBf_aoRN9funUbOJ8lDShLqe46PQjkxPezuSvD2GLlxoVk458fZBFC6ZhylpAoNTEtrW8J2q_DtpT-fybRbtEfOhyVmZEpkU_8xBK-5ffmwQ",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydij9jw26WhRI1HsYu5Su6L7fQUdPhifVNhHz0ykXJNB4QIhooP1n0s8awTFclmkcOvzzwiXQyyWFDzu9oxTvsUMd8y_DYcMZXsoDO7TYzfnhFcBmsk1ACKquo-J9V7RsMszSNcyDjcz8Gka_bKsPgqt-2r6Zc0XrGoer3bx-GWw5h7sQlY-tmfknRgBEBe9YU9b1qpJ4-HY0_mTb84OvArc5sVAJxreIvOtzuOGZl8bEvf5shcYx1RgIIs4ofkw4rfzCYroaWwpAMeC5AuN6Y1eZsqKG721x6NeQ07YhSy2ZF0F9QeXNDZGMPunsbOM50K-cOWv9W24HkOysGvw0jMB3RcZrqg6m0Cz4lQEzovYAo9ikN7Qivd9BCwj79cn_K1jLmSXDlPlkxXDHbnNC03jO0zUDZM3NIYar04xx9zCdkfZqUl7C2j3YwBJEyZV"
+        ],
+        "__at__": 1786804483.126249,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Beautiful mountain with breathtaking views. You can reach the summit by either train or cable car. We took the train, which took about 20–25 minutes to reach the top. For the best views on the train, sit on the right side when going up and the left side when coming back down. This gives you spectacu",
+            "author": "Shahbaz Salehi"
+          },
+          {
+            "rating": 5,
+            "text": "An amazing experience and one I will never forget. Yes it’s not cheap at around £125 but worth every penny in my opinion. The views of the Matterhorn were off the scale and you can hop on and off at the different stations to see more. Highly recommended.",
+            "author": "Welsh Lad"
+          },
+          {
+            "rating": 5,
+            "text": "What a memorable experience!\nTotally worth it. We got lucky we booked it on a day that it we were able to see the beauty of Mt Zermatt.\n\nAmazing views on our way to Gornergrat!\nEnjoyable train ride and great spots to take a picture and collect amazing memories while in Zermatt!\n\nYou can purchase Pri",
+            "author": "Christopher U"
+          },
+          {
+            "rating": 5,
+            "text": "Would recommend the priority pass specially on the weekends. While going up, please sit on the right side to get better views of the mattethorn. However, the left side also has views of beautiful slopes and mountain ranges. The entire journey takes about 30-35 mins. Some windows(not all) can be open",
+            "author": "Madhur Bhargava"
+          },
+          {
+            "rating": 5,
+            "text": "Although we visited on a misty old day, this was still a very special experience. The train is Europe's highest open-air cogwheel train and as we sat in comfort, slowly climbed nearly 1,500 vertical metres from  Zermatt. The views from each side were amazing, especially those of the Matterhorn itsel",
+            "author": "Maxi's reviews"
+          }
+        ]
+      },
+      "train: zermatt to zurich|switzerland": {
+        "place_id": "ChIJZzoi-HU2j0cRnkCC5sgBTwU",
+        "name": "Gornergrat Railway",
+        "address": "Bahnhofpl. 1, 3920 Zermatt, Switzerland",
+        "rating": 4.7,
+        "review_count": 5660,
+        "price_level": null,
+        "website": "https://www.gornergrat.ch/",
+        "editorial_summary": "This Alpine railway rises 10,000 feet & passes through wildlife-rich terrain with glaciers & lakes.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 7:30 AM – 6:30 PM",
+          "Tuesday: 7:30 AM – 6:30 PM",
+          "Wednesday: 7:30 AM – 6:30 PM",
+          "Thursday: 7:30 AM – 6:30 PM",
+          "Friday: 7:30 AM – 6:30 PM",
+          "Saturday: 7:30 AM – 6:30 PM",
+          "Sunday: 7:30 AM – 6:30 PM"
+        ],
+        "lat": 46.0239501,
+        "lng": 7.7484824,
+        "photo_refs": [
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydiJDBt32qzN8dkjdQHwzkS9w3-3X1kvWREdH6StRFx7z8tqA-noAmE7_GSTmXQWQC6N9tF8S9R9Be8zEIyHEO-Ne3XOKgt_V_yI34HTms0gvvA8ANykjGVDFbg7yPQvc4yCOwCn5gI6c26t9IryhfsRrKf9jfY5wLx_ShbBP4BXc34QYVspoLQh2u5Jg1t1C3UJ4FnZ1ew75U-BogY-O8o0AeWnslLYS5LsKJ0oAFsoosWLXqnX21D_CI9oHyfviMv142Y32FkRCrpFODGnk2oBwWSvgoUqIXbmh8EIl68VLt0JhS63BktNNaAaB5yCnOUNZHT5ot5N_u-ryC0DE-z5mlgFcB8zSSgcCURBO24b3WfPcKEE8RlA5Hilv_mnysk4mXPy0NGbvglpkrI3A6G5Tk3rHUOrq3irianwCo-A3fXU",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydjrOduxugKd1B93lEcOoAPQJEByOXdBCRh1M5TYSXLB27Mbu6QY2lVQc4yWVsxatsfY9dVVI3Z_xSsMeYHhA1qUJknqKsGs8MOVxhRJ6D4EWPG4olYoCvwqOZZkORPwhwAyfi4YDHzqXghA4nVJb_Kb_zN5-ygkY8wUArPWGqi1UFZ6Sh8TO7cXZZj8oHWQJaNFJ1CXTDnOv-GDyBSwJNL2fzXp7wpzsurqIZLXcaASnwuArtaNnSFki4UD0SabTyai88xocRIaaz1gmMjVDKecuUfLoM1wJqK9NhAPpzEeff43X4gxU939DHyUn0tHDwTZ9urnEeaA9qYzR_yKqzIN81IBgBXSW1QiXLbX1yvAwjgdSKfEloDcuDdCQHisXYyFUyLqiPVe_IyXOavGw5EOl5ojIwiGjrdtLWMGZMRYaRpk",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydgVzcPBRY8KRpDg6DBHJrmQmklSdyqCP4r0AOhXc9b6xxY1SaF5WfckXjTuciEXkHm_q-hZ7HqKdL2lbdiSiftXvqRb7L7dN9LEwikG4hNq3W6wrS5qlFcsXSGO-cEOiC9r0qh655TFSNZifZnJvM3KOfmXQRRHaMjcfNcYzsQRnplz2D7HES1FqRENYpadpJW5fINxTdWah7RmybCUWnjSza-dRSIlrv_UiEx-HreWr8wZmL926SrDmCoCv2t42r9H9W33WGddAMDmS1emfJjuU8iwUNKlnO0qu4qeYT9cVCeF3cx_wPxR5WGVVpJEe45OMP1EtHZRsOaygKeiBu4W_yvmqrP3GcPItvLLib1V4lLnMdRb6xYjuOc7_xtrLK7u-0zGJqDo4_yi88Eyl4qM_uWiIjcu0-DDZSkBxLkS0g",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydgvNRErTF1O4jfvYiaLFPFpr2kjkC-VAKVoaN225pEtdUK2rAaSje9BdqLCKizITBa25Rx1ZNwV7CAOrudn9egK2YA3VyPlStLnXRn8SVoBp0qMQZIuDQz1GhN2mKNrtTcMWFj_gl1Rm-bb-d4TwZlxch02PBZyG9BzFX4dqXRxwLGheqGLGe0k83Cu0wkw8vVfM0d8zLaBk3RvC7pCAuZfOInZ4-uU764rVEZUySiLCEwvwktH5dwm_k4Oz3lYzOhNSlS4ZByGy6Rlzd-91pmIGGnT0wKJOEdf1kU1dX9MyKH9m76HwtOHPj49761WL4f3hvAHmRTgQopDDxxnPYW7_hldUiXW_BwqJzmW9Az_sW5ntZK9_XxZATnvYwPyCrW2r4cKD8IlV91dTDkQ7bda4EMAxZgTnWqKMjpi46EptlD8nhurRmgZ7Gar3vdM",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydgk1Z3z3nT8pjWp5q6IAkET7n_i7qfUtLfk2YCDse0Xam-0OzGTL2xe-DkxzlJxgyJNyB1oWsD0Kw3bbQU6F60flI-iEb5FUIcvp4Ml0T5PfQ0t3OsYtZJ_i41vvPnYMiC6ovznyIT9FRUd5ZFRSjkQnUoAoL9bBpa6Gr4LmQ1xwOm1_SC_E_tmwZdeJoBcRH5VsJJnJ2MzlG_MRnOsmJYTlZIpYaL28CBosS-jSfhiWUkxfYgkgP1kCFJZW-2NVKijQNx51uVEVRGt9OQPUAxtWZLeuYRQi6AxTXUlBQZ0aDlFae2KmiyD9Gd1NMbt_Jms0KHXHt4taQKlLDR82oA7_JkyoT_FhpArjzZL8fKpaDIxKGgpJqsrVZ6PGHQnFKhKf3dC0kMHaGFJ8ideCcTuJatRow7svDkXZXKTJ3xWRZes",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydgbXan7jB-S-WKTJOzVH7CYiDldJPMPokIFbeYKhOi2co0t30U-NYSczYrJ3j_gyMWPm9EUoa7jy8RAWir9JBJztzC8Gg3UmKmZ-UsFSGUbfxF-u9EFz8B6MW9-OhYH2-5VMlqrZP8Fy1QyeVl37HtoNdD9NFMdn5OkmQmvNIJg-Exb85Wb9kuWPh3fc251KMRtpe_IB0RDVfwoOdF80RCiF39fiVSulau6_XFtHYrqQ_D6zPWNFoUq-B_VITDCF3ei-XjXRImJumr6NoupT9xVpqMjCJ5ZxChMb2IQJpq2BSp3M-4KmZFQhVKtPgXdSH7EEETetzldsq5cKb5OMVcPvSJqdK2LO-Yl0YVXqtMEskdLDyO_fX4rEOKlSdHyHtqlsDtIEct3NonMxzGeVWeCby1JvD5UtF5X5jY9y58Bgg",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydjgZRMPUfI09_Wg9UTx3-gm7fiyGn5Hi4tFeNdW1H-8NX_IALbDz4MAfM2M9bsXGqgau4948wcnox2oNzY77K1S_yyIa42EX4rnosR2AfxlrTmXU0ZUXENFbgoFxtrUKet4waxPwxfDm4lZnnrSjF5AqOMZqsYq-MKvt_drc_mwUTA5CR0MdMGC6tJZ9h73Js7M6dFpCEjDyhqY0tmDtzQIz2dsi_MPTIpgqt0Z3dvclwLLl95w31NWtFbR-U66Nw45aehR-aKAN269vEwZFmSWYwupv0ZFEn5cLLue4aEa28obR3vaFNePLT4bDXOa8UJLC2LGKrAR-ryL59RslYMWTnUcX1MYlpgpa_KhAoHCy5M5JxcIvVHfyXIux1Bwo6cvVOk7GdpFn3lOFeWDbqirkhLn_h2J_OwtkNx-8y_NSYmF07swACAddHf9FuRb",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydhszlF-wrQ-8r8TuEcFNvEI_o2IzZxcSyZr6gnho3TxhC9E8P8re_ps_oSJY9LiG1CuetugCDsdZeQhw-9_qAoxDpDVy8x3j7yP18GIROBr9byhhpP8C_--ylXRashXArKdq7scZ4qEykmTkmVXuxkCkAFY79k4zV0rCJZAHnEHaufjyw22_waWlsFvla6odp-up2BPLJKQd2A0jnbZFwln99GUjT4USrmf3r2shiOtYsTKh4XhbMjqxwDilVhfCEQ2cYos528LI0j7lkvC3mxaNI9WLc3vv96-BlBlIzxVGgWhfh2yOpJkjOsdR1zmlMIp79-Q1es5I97eYsFkRMuxlL9_ihxgNkfOkCatB14GKb7RvJ2dLHbf3abQ1KOGfLXKlriM8BOowoiiijZ7AS-kvE31o8dfFxOPtCU21r-JAA",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydhuyWasyPdTP_sjChxKZ1ASgbYn2eYe3DYFZi328DKmWO1b0xkeqIkM4NdweK5YPzlAa7EYnbZVpRmrH2on4vJI1SpnwIvsg6_IzYpr4_KosmRVDNmAmw-f3dalj1w59KPsIE2W0dNjQq1B-LDNvRsMjOnUO6sSD0kiCEnAfutOnJa_8zyuaCJM9Z1_qEhjhOvBjF0CmWhU3nhJaRYJIvpY-48kYtVduChm95AyzS38F304JenLTz-ux4zE3TdiV60e9zhdb-w2vnq_RbQnAoKk2sz5HA0YAIVTeSqxE_02IP3nuWJtFZmqMxvCJgdcBDvKIfvjie0rVJRCrn--apu0DaJzGTuT0h_4q8q2BXUCKtnTeP0_JBmQGJQtbLhT-yITIU9MFAiN1wG7ggYCcftTGR2Y06gPP6dKrEF2XJI",
+          "places/ChIJZzoi-HU2j0cRnkCC5sgBTwU/photos/AWCwydgT9rj-7f7TGOOfh0kElk8yRgj5FPefA0_IDH_VOoBjNzo5rI4aDaz-uexoo36v52oyA8qz7a8Y4tcPDZ6hd7zemMZLnBXTFlzXbSqVD9aebTtR2oia19q406XhXm9kmKLwD9bQL0DqTlK8hW10DisTM2Ar2EYktK7yZ8FwRdkBzrI-o3slvnsg75kD9k70UaxpH0af-eHos8HIDN3p9YNjznzN_wnnBQJF_tgTn9fxDe9xX-2JIG7utySEE_uiLE1BP0BzV6xk-lLerzM_c5cVwjuRI83K_zEj6f7nejtrbiPx33-VdlI4WqhHbOkQey3-oNpPHXRZqEf9HFL3rB_TBAbGo8U7VdGE4Wsvv7D-upcwKfw5fra0ODCHZoWxijm8YMoyVO0cm1LXsphHoUY3vXt1Dsu2dVjNavTc6bp-1ZZwo7KEDbEn61Ne13Gt"
+        ],
+        "__at__": 1786804483.5597792,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Beautiful mountain with breathtaking views. You can reach the summit by either train or cable car. We took the train, which took about 20–25 minutes to reach the top. For the best views on the train, sit on the right side when going up and the left side when coming back down. This gives you spectacu",
+            "author": "Shahbaz Salehi"
+          },
+          {
+            "rating": 5,
+            "text": "An amazing experience and one I will never forget. Yes it’s not cheap at around £125 but worth every penny in my opinion. The views of the Matterhorn were off the scale and you can hop on and off at the different stations to see more. Highly recommended.",
+            "author": "Welsh Lad"
+          },
+          {
+            "rating": 5,
+            "text": "What a memorable experience!\nTotally worth it. We got lucky we booked it on a day that it we were able to see the beauty of Mt Zermatt.\n\nAmazing views on our way to Gornergrat!\nEnjoyable train ride and great spots to take a picture and collect amazing memories while in Zermatt!\n\nYou can purchase Pri",
+            "author": "Christopher U"
+          },
+          {
+            "rating": 5,
+            "text": "Would recommend the priority pass specially on the weekends. While going up, please sit on the right side to get better views of the mattethorn. However, the left side also has views of beautiful slopes and mountain ranges. The entire journey takes about 30-35 mins. Some windows(not all) can be open",
+            "author": "Madhur Bhargava"
+          },
+          {
+            "rating": 5,
+            "text": "Although we visited on a misty old day, this was still a very special experience. The train is Europe's highest open-air cogwheel train and as we sat in comfort, slowly climbed nearly 1,500 vertical metres from  Zermatt. The views from each side were amazing, especially those of the Matterhorn itsel",
+            "author": "Maxi's reviews"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Switzerland",
+    "departure_date": "2027-09-10",
+    "return_date": "2027-09-18",
+    "nights": 8,
+    "month_year": "Sep 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 1,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Switzerland",
+      "Zurich",
+      "Baur au Lac",
+      "Arrival in Zurich",
+      "Flight: Mumbai to Zurich",
+      "Bahnhofstrasse",
+      "Lake Zurich Promenade",
+      "Zurich to Lucerne",
+      "Train: Zurich to Lucerne",
+      "Hotel Schweizerhof Luzern",
+      "Chapel Bridge",
+      "Lake Lucerne",
+      "Lucerne & Mount Pilatus",
+      "Mount Pilatus",
+      "Lucerne Old Town",
+      "GoldenPass Train to Interlaken",
+      "GoldenPass Line: Lucerne to Interlaken",
+      "Victoria Jungfrau Grand Hotel & Spa",
+      "Interlaken Town",
+      "Jungfrau Region",
+      "Train: Interlaken to Jungfraujoch",
+      "Jungfraujoch",
+      "Train: Jungfraujoch to Interlaken",
+      "Interlaken to Zermatt (Glacier Express)",
+      "Glacier Express: Interlaken to Zermatt",
+      "Mont Cervin Palace",
+      "Zermatt Village",
+      "Matterhorn & Gornergrat",
+      "Gornergrat Bahn: Zermatt to Gornergrat",
+      "Gornergrat",
+      "Matterhorn Museum",
+      "Zermatt to Zurich & Departure",
+      "Train: Zermatt to Zurich",
+      "Flight: Zurich to Mumbai"
+    ],
+    "auto_summary": "8-night Switzerland, Sep 2027, 1 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T14:35:07Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:34:01Z"
+    }
+  ]
+}

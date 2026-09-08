@@ -1,0 +1,3 @@
+Canary: https://canary-app-zcebxnuakdwnu.ashysea-d232f837.eastus2.azurecontainerapps.io
+Prod: https://prod-app-f3ddjudq2rdt4.redglacier-42f3888f.eastus2.azurecontainerapps.io
+d fev dd

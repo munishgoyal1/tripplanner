@@ -53,7 +53,6 @@ from langchain_core.tools import BaseTool
 
 from tripplanner.user_context import get_user_id
 
-
 # Tools that mutate persistent state — never read/write cache directly.
 _STATEFUL_TOOLS: frozenset[str] = frozenset(
     {
@@ -120,10 +119,11 @@ _CACHE_POLICIES: dict[str, CachePolicy] = {
     "recall_relevant_memory": CachePolicy(scope=_USER_SCOPE, ttl_seconds=60),
 
     # Highly volatile inventory/pricing/search.
-    "search_flights_duffel": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=5 * 60),
+    "search_flights_duffel": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=60),
+    "verify_flight_offer": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=30),
     "search_flights": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=5 * 60),
-    "search_hotels": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
-    "search_activities": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
+    "search_hotels": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=60),
+    "search_activities": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=60),
     "search_points_of_interest": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
     "search_places_with_reviews": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
     "nearby_restaurants": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
@@ -139,8 +139,29 @@ _CACHE_POLICIES: dict[str, CachePolicy] = {
     "optimize_day_route": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=6 * 60 * 60),
 }
 
+_GOOGLE_TTL_SETTINGS: dict[str, str] = {
+    "search_places_with_reviews": "google_places_search_cache_ttl_sec",
+    "nearby_restaurants": "google_places_search_cache_ttl_sec",
+    "get_place_reviews": "google_places_reviews_cache_ttl_sec",
+    "check_place_hours": "google_places_hours_cache_ttl_sec",
+}
+
+_VOLATILE_TOOLS: frozenset[str] = frozenset(
+    {
+        "search_flights_duffel",
+        "verify_flight_offer",
+        "search_flights",
+        "search_hotels",
+        "search_activities",
+        "get_weather_forecast",
+        "find_local_events",
+        "check_place_hours",
+        "web_search",
+    }
+)
+
 # Per-process LRU when Cosmos is unavailable.
-_LOCAL_CACHE: "OrderedDict[str, tuple[float, str]]" = OrderedDict()
+_LOCAL_CACHE: OrderedDict[str, tuple[float, str]] = OrderedDict()
 _LOCAL_MAX = 256
 
 
@@ -175,7 +196,7 @@ def _cache_key(tool_name: str, args: dict[str, Any] | None, *, scope: str) -> st
     We include the tool name in the digest to avoid any chance of a
     cross-tool collision; the doc id then doubles as a debug label.
     """
-    blob = f"{tool_name}|{_canonical_args(args, scope=scope)}".encode("utf-8")
+    blob = f"{tool_name}|{_canonical_args(args, scope=scope)}".encode()
     digest = hashlib.sha256(blob).hexdigest()[:32]
     return f"{tool_name}-{digest}"
 
@@ -183,7 +204,8 @@ def _cache_key(tool_name: str, args: dict[str, Any] | None, *, scope: str) -> st
 def _resolve_policy(tool_name: str) -> CachePolicy | None:
     if tool_name in _STATEFUL_TOOLS:
         return None
-    return _CACHE_POLICIES.get(tool_name, CachePolicy(scope=_USER_SCOPE, ttl_seconds=_DEFAULT_TTL_SECONDS))
+    default = CachePolicy(scope=_USER_SCOPE, ttl_seconds=_DEFAULT_TTL_SECONDS)
+    return _CACHE_POLICIES.get(tool_name, default)
 
 
 def _resolve_user_partition(scope: str, user_id: str) -> str:
@@ -202,32 +224,46 @@ def _coerce_result(result: Any) -> str:
         return str(result)
 
 
+def _valid_cosmos_result(doc: dict[str, Any] | None) -> str | None:
+    if not doc:
+        return None
+    expires_at = float(doc.get("expires_at", 0))
+    if expires_at != -1 and expires_at <= time.time():
+        return None
+    return doc.get("result")
+
+
 def _cosmos_get(user_id: str, key: str) -> str | None:
     from tripplanner import storage_cosmos
 
     doc = storage_cosmos.read_doc("tool_cache", user_id, key)
-    if not doc:
-        return None
-    if float(doc.get("expires_at", 0)) <= time.time():
+    result = _valid_cosmos_result(doc)
+    if doc and result is None:
         # Lazy expiry: delete and miss.
         try:
             storage_cosmos.delete_doc("tool_cache", user_id, key)
         except Exception:
             # Best-effort cleanup; a stale row is fine, we'll skip it.
             pass
-        return None
-    return doc.get("result")
+    return result
 
 
-def _cosmos_set(user_id: str, key: str, value: str, ttl: int) -> None:
+def _cache_body(value: str, ttl: int) -> dict[str, Any]:
+    cached_at = time.time()
+    return {
+        "result": value,
+        "cached_at": cached_at,
+        "expires_at": -1 if ttl == -1 else cached_at + ttl,
+        **({"ttl": -1} if ttl == -1 else {}),
+    }
+
+
+def _cosmos_set(user_id: str, key: str, value: str, ttl: int) -> dict[str, Any]:
     from tripplanner import storage_cosmos
 
-    storage_cosmos.upsert_doc(
-        "tool_cache",
-        user_id,
-        key,
-        {"result": value, "expires_at": time.time() + ttl},
-    )
+    body = _cache_body(value, ttl)
+    storage_cosmos.upsert_doc("tool_cache", user_id, key, body)
+    return body
 
 
 def _local_get(user_id: str, key: str) -> str | None:
@@ -245,7 +281,8 @@ def _local_get(user_id: str, key: str) -> str | None:
 
 def _local_set(user_id: str, key: str, value: str, ttl: int) -> None:
     full = f"{user_id}|{key}"
-    _LOCAL_CACHE[full] = (time.time() + ttl, value)
+    expires_at = float("inf") if ttl == -1 else time.time() + ttl
+    _LOCAL_CACHE[full] = (expires_at, value)
     _LOCAL_CACHE.move_to_end(full)
     while len(_LOCAL_CACHE) > _LOCAL_MAX:
         _LOCAL_CACHE.popitem(last=False)
@@ -259,16 +296,37 @@ def cache_lookup(tool_name: str, args: dict[str, Any] | None) -> str | None:
     user_id = get_user_id() or "local"
     partition = _resolve_user_partition(policy.scope, user_id)
     key = _cache_key(tool_name, args, scope=policy.scope)
+    local = _local_get(partition, key)
+    if local is not None:
+        return local
     # Prefer Cosmos when available so cache survives container restarts.
     try:
         from tripplanner import storage_cosmos
 
         if storage_cosmos.is_enabled():
-            return _cosmos_get(partition, key)
+            primary = _cosmos_get(partition, key)
+            if primary is not None:
+                return primary
     except Exception:
         # Cosmos can fail (network, perm); fall back to local cache.
         pass
-    return _local_get(partition, key)
+    if partition == _GLOBAL_USER_ID:
+        from tripplanner import secondary_cache
+
+        secondary_doc = secondary_cache.read_doc("tool_cache", key)
+        secondary = _valid_cosmos_result(secondary_doc)
+        if secondary is not None:
+            try:
+                from tripplanner import storage_cosmos
+
+                if storage_cosmos.is_enabled():
+                    storage_cosmos.upsert_doc(
+                        "tool_cache", partition, key, secondary_doc
+                    )
+            except Exception:
+                pass
+            return secondary
+    return None
 
 
 def cache_store(
@@ -285,17 +343,37 @@ def cache_store(
     partition = _resolve_user_partition(policy.scope, user_id)
     key = _cache_key(tool_name, args, scope=policy.scope)
     value = _coerce_result(result)
-    ttl_seconds = ttl if ttl is not None else policy.ttl_seconds
+    from tripplanner.config import get_settings
+
+    settings = get_settings()
+    configured_ttl = getattr(
+        settings,
+        _GOOGLE_TTL_SETTINGS.get(tool_name, ""),
+        policy.ttl_seconds,
+    )
+    requested_ttl = ttl if ttl is not None else configured_ttl
+    ttl_seconds = (
+        settings.volatile_cache_ttl(requested_ttl)
+        if tool_name in _VOLATILE_TOOLS
+        else settings.stable_cache_ttl(requested_ttl)
+    )
+    body = _cache_body(value, ttl_seconds)
+    primary_stored = False
     try:
         from tripplanner import storage_cosmos
 
         if storage_cosmos.is_enabled():
-            _cosmos_set(partition, key, value, ttl_seconds)
-            return
+            storage_cosmos.upsert_doc("tool_cache", partition, key, body)
+            primary_stored = True
     except Exception:
         # Fall through to local cache on any Cosmos failure.
         pass
-    _local_set(partition, key, value, ttl_seconds)
+    if partition == _GLOBAL_USER_ID:
+        from tripplanner import secondary_cache
+
+        secondary_cache.schedule_merge_write("tool_cache", key, body)
+    if not primary_stored:
+        _local_set(partition, key, value, ttl_seconds)
 
 
 def clear_local_cache() -> None:
@@ -344,7 +422,7 @@ def wrap_tools_with_cache(tools: list[BaseTool]) -> list[BaseTool]:
     return wrapped
 
 
-def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
+def _build_cached_copy(tool: BaseTool, structured_tool: Any) -> BaseTool:
     """Return a new StructuredTool that wraps ``tool`` with cache lookup."""
     original_invoke = tool.invoke
     tool_name = tool.name
@@ -365,12 +443,13 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
         cache_args = dict(kwargs)
         if args:
             cache_args["__pos"] = list(args)
+        refresh = cache_args.pop("refresh", False) is True
 
         started = time.time()
         user_id = get_user_id() or "local"
         cache_scope = policy.scope if policy else "stateful"
 
-        hit = cache_lookup(tool_name, cache_args)
+        hit = None if refresh else cache_lookup(tool_name, cache_args)
         if hit is not None:
             record_tool_call(
                 tool_name,
@@ -410,10 +489,11 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
             _invalidate_user_scoped_cache(user_id)
             return result
 
-        cache_store(tool_name, cache_args, result, ttl=policy.ttl_seconds)
+        if not refresh:
+            cache_store(tool_name, cache_args, result, ttl=policy.ttl_seconds)
         return result
 
-    return StructuredTool.from_function(
+    return structured_tool.from_function(
         func=cached_func,
         name=tool.name,
         description=tool.description,

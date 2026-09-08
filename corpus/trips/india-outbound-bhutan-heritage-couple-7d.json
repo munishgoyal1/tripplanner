@@ -1,0 +1,386 @@
+{
+  "status": "draft",
+  "trip_id": "thimphu_punakha_paro_2027-10-02_2027-10-09",
+  "trip_number": 1,
+  "created_at": "2026-08-26T07:19:14.005442",
+  "destination": "Thimphu, Punakha, Paro",
+  "origin": "Kolkata",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-10-02",
+  "return_date": "2027-10-09",
+  "travelers": "Couple: 2 adults, Indian passports",
+  "notes": "Hotel search for Thimphu returned no live rates; will recommend well-rated properties based on knowledge and update when live rates are available. Continuing with concrete property names for itinerary.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Thimphu, Punakha, Paro",
+    "estimated_planned_minutes": 1052,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "8 preference-matched places account for about 1052 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-02",
+      "title": "Day 1 · Arrival in Paro, Transfer to Thimphu",
+      "summary": "Arrive in Paro from Kolkata, transfer to Thimphu by road, check in and explore Thimphu's Clock Tower Square.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Paro",
+          "kind": "flight",
+          "note": "Morning flight, scenic Himalayan views"
+        },
+        {
+          "name": "Drive: Paro to Thimphu",
+          "kind": "transport",
+          "duration_min": 90,
+          "distance_km": 50,
+          "note": "Private car transfer"
+        },
+        {
+          "name": "Hotel in Thimphu",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Clock Tower Square",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Leisurely walk and orientation"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-03",
+      "title": "Day 2 · Thimphu: Dzongs & Museums",
+      "summary": "Explore Thimphu's rich heritage: Tashichho Dzong, Folk Heritage Museum, National Library, and local market.",
+      "stops": [
+        {
+          "name": "Hotel in Thimphu",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Tashichho Dzong",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Seat of Bhutan's government"
+        },
+        {
+          "name": "Folk Heritage Museum",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Traditional Bhutanese life"
+        },
+        {
+          "name": "National Library of Bhutan",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Ancient manuscripts"
+        },
+        {
+          "name": "Centenary Farmers Market",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Local produce and crafts"
+        },
+        {
+          "name": "Hotel in Thimphu",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-04",
+      "title": "Day 3 · Thimphu: Culture & Handicrafts",
+      "summary": "Delve into Bhutanese culture: Textile Museum, Buddha Dordenma, and handicrafts bazaar.",
+      "stops": [
+        {
+          "name": "Hotel in Thimphu",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "National Textile Museum",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Bhutanese weaving traditions"
+        },
+        {
+          "name": "Buddha Dordenma Statue",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Iconic hilltop Buddha"
+        },
+        {
+          "name": "Handicrafts Emporium",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Authentic Bhutanese crafts"
+        },
+        {
+          "name": "Simply Bhutan Museum",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Interactive cultural experience"
+        },
+        {
+          "name": "Hotel in Thimphu",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-05",
+      "title": "Day 4 · Dochula Pass & Transfer to Punakha",
+      "summary": "Scenic drive to Punakha via Dochula Pass, visit Chimi Lhakhang.",
+      "stops": [
+        {
+          "name": "Hotel in Thimphu",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Dochula Pass",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60,
+          "note": "108 memorial chortens, panoramic views"
+        },
+        {
+          "name": "Drive: Dochula to Punakha",
+          "kind": "transport",
+          "duration_min": 150,
+          "distance_km": 85,
+          "note": "Mountain road, scenic stops"
+        },
+        {
+          "name": "Chimi Lhakhang",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Temple of Fertility"
+        },
+        {
+          "name": "Hotel in Punakha",
+          "kind": "hotel",
+          "note": "Check-in and relax"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-10-06",
+      "title": "Day 5 · Punakha Dzong & Local Life",
+      "summary": "Visit Punakha Dzong, Suspension Bridge, and explore riverside villages.",
+      "stops": [
+        {
+          "name": "Hotel in Punakha",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Punakha Dzong",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Historic fortress-monastery"
+        },
+        {
+          "name": "Punakha Suspension Bridge",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 45,
+          "note": "Scenic walk"
+        },
+        {
+          "name": "Khuru Village",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Experience rural Bhutanese life"
+        },
+        {
+          "name": "Hotel in Punakha",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-10-07",
+      "title": "Day 6 · Transfer to Paro, Kyichu Lhakhang",
+      "summary": "Drive to Paro, visit Kyichu Lhakhang and Paro town.",
+      "stops": [
+        {
+          "name": "Hotel in Punakha",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Drive: Punakha to Paro",
+          "kind": "transport",
+          "duration_min": 210,
+          "distance_km": 125,
+          "note": "Private car transfer"
+        },
+        {
+          "name": "Kyichu Lhakhang",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Ancient temple"
+        },
+        {
+          "name": "Hotel in Paro",
+          "kind": "hotel",
+          "note": "Check-in and relax"
+        },
+        {
+          "name": "Paro Town",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Explore local shops and cafes"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-10-08",
+      "title": "Day 7 · Paro: Museums & Dzongs",
+      "summary": "Discover Paro's highlights: National Museum, Rinpung Dzong, and farewell dinner.",
+      "stops": [
+        {
+          "name": "Hotel in Paro",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "National Museum of Bhutan",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Artifacts and history"
+        },
+        {
+          "name": "Rinpung Dzong",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Iconic fortress"
+        },
+        {
+          "name": "Lunch at a local restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Traditional Bhutanese cuisine"
+        },
+        {
+          "name": "Paro Market",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Souvenirs and crafts"
+        },
+        {
+          "name": "Hotel in Paro",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-10-09",
+      "title": "Day 8 · Departure from Paro",
+      "summary": "Check out and fly back to Kolkata.",
+      "stops": [
+        {
+          "name": "Hotel in Paro",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Flight: Paro to Kolkata",
+          "kind": "flight",
+          "note": "Return journey"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-26T07:20:44.441440",
+  "id": "thimphu_punakha_paro_2027-10-02_2027-10-09",
+  "user_id": "corpus-india-outbound-bhutan-heritage-couple-7d-74da4d51e18e"
+}

@@ -1,0 +1,325 @@
+{
+  "status": "draft",
+  "trip_id": "rishikesh_and_mussoorie_2027-03-07_2027-03-12",
+  "trip_number": 1,
+  "created_at": "2026-08-25T22:32:49.144825",
+  "destination": "Rishikesh and Mussoorie",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-03-07",
+  "return_date": "2027-03-12",
+  "travelers": "4 adult friends",
+  "notes": "Focus on scenery, wildlife, and practical outdoor experiences. Domestic India trip. Moderate budget, balanced pace, 3-star+ hotels, open to trains and rental cars, no dietary restrictions.",
+  "planning_recommendation": {
+    "recommended_days": 5,
+    "anchor_experiences": [
+      {
+        "name": "River rafting in Rishikesh",
+        "duration_days": 1
+      },
+      {
+        "name": "Rajaji National Park safari",
+        "duration_days": 1
+      },
+      {
+        "name": "Ganga Aarti at Triveni Ghat",
+        "duration_days": 0.5
+      },
+      {
+        "name": "Kunjapuri Sunrise Trek",
+        "duration_days": 0.5
+      },
+      {
+        "name": "Mussoorie Mall Road & Camel's Back Road walk",
+        "duration_days": 1
+      },
+      {
+        "name": "Kempty Falls & Company Garden",
+        "duration_days": 1
+      }
+    ],
+    "geographic_clusters": [
+      {
+        "name": "Rishikesh",
+        "days": 2.5
+      },
+      {
+        "name": "Mussoorie",
+        "days": 2.5
+      }
+    ],
+    "reasoning": "A 5-day itinerary allows for immersive outdoor activities and scenic exploration in both Rishikesh and Mussoorie, including wildlife, river, and mountain experiences, with practical travel times from Delhi."
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-07",
+      "title": "Day 1 · Delhi to Rishikesh · Arrival",
+      "summary": "Depart from Delhi in the morning by private car. Arrive in Rishikesh by afternoon, check in to a scenic riverside hotel, and enjoy the Ganga Aarti at Triveni Ghat in the evening.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Rishikesh",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 360,
+          "distance_km": 240,
+          "note": "Private car, 6 hours with a breakfast stop"
+        },
+        {
+          "name": "Aloha On The Ganges",
+          "kind": "hotel",
+          "note": "Check-in, riverside views"
+        },
+        {
+          "name": "Lunch at The Sitting Elephant",
+          "kind": "meal",
+          "time": "13:30"
+        },
+        {
+          "name": "Triveni Ghat",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Evening Ganga Aarti"
+        },
+        {
+          "name": "Dinner at Chotiwala Restaurant",
+          "kind": "meal",
+          "time": "20:00"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-08",
+      "title": "Day 2 · River Rafting & Wildlife Safari",
+      "summary": "Morning river rafting on the Ganges, then return for a late breakfast and lunch at the hotel. Afternoon safari in Rajaji National Park. Evening at leisure by the river.",
+      "stops": [
+        {
+          "name": "Aloha On The Ganges",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "River Rafting (Shivpuri to Rishikesh)",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 180,
+          "note": "Book with Red Chilli Adventure"
+        },
+        {
+          "name": "Breakfast & Lunch at hotel",
+          "kind": "meal",
+          "time": "11:30"
+        },
+        {
+          "name": "Rajaji National Park Safari (Chilla Range)",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 180,
+          "note": "Jeep safari, wildlife spotting"
+        },
+        {
+          "name": "Aloha On The Ganges",
+          "kind": "hotel",
+          "note": "Return, relax by the river"
+        },
+        {
+          "name": "Dinner at Freedom Café",
+          "kind": "meal",
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-09",
+      "title": "Day 3 · Kunjapuri Sunrise Trek & Transfer to Mussoorie",
+      "summary": "Early morning trek to Kunjapuri Temple for sunrise, return to hotel, then drive to Mussoorie. Check in and explore Mall Road in the evening.",
+      "stops": [
+        {
+          "name": "Kunjapuri Sunrise Trek",
+          "kind": "attraction",
+          "time": "05:00",
+          "duration_min": 180,
+          "note": "Guided trek, panoramic views"
+        },
+        {
+          "name": "Breakfast at hotel",
+          "kind": "meal",
+          "time": "08:30"
+        },
+        {
+          "name": "Drive: Rishikesh to Mussoorie",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 300,
+          "distance_km": 80,
+          "note": "Private car, 5 hours with a scenic stop"
+        },
+        {
+          "name": "Aloha On The Ganges",
+          "kind": "hotel",
+          "note": "Start early",
+          "time": "15:30"
+        },
+        {
+          "name": "JW Marriott Mussoorie Walnut Grove Resort & Spa",
+          "kind": "hotel",
+          "note": "Check-in, mountain views",
+          "time": "17:30"
+        },
+        {
+          "name": "Lunch at JW Marriott Mussoorie",
+          "kind": "meal",
+          "time": "19:30"
+        },
+        {
+          "name": "Mall Road & Camel's Back Road Walk",
+          "kind": "attraction",
+          "time": "21:30",
+          "duration_min": 120,
+          "note": "Explore, shop, enjoy sunset"
+        },
+        {
+          "name": "Dinner at Kalsang Restaurant",
+          "kind": "meal",
+          "time": "23:59"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-03-10",
+      "title": "Day 4 · Mussoorie Waterfalls & Gardens",
+      "summary": "Visit Kempty Falls, Company Garden, and enjoy the mountain scenery. Leisurely evening in Mussoorie.",
+      "stops": [
+        {
+          "name": "JW Marriott Mussoorie Walnut Grove Resort & Spa",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Breakfast at JW Marriott",
+          "kind": "meal",
+          "time": "08:00"
+        },
+        {
+          "name": "Kempty Falls",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Scenic waterfall, photography"
+        },
+        {
+          "name": "Lunch at Little Llama Café",
+          "kind": "meal",
+          "time": "12:00"
+        },
+        {
+          "name": "Company Garden",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Botanical gardens, boating"
+        },
+        {
+          "name": "JW Marriott Mussoorie Walnut Grove Resort & Spa",
+          "kind": "hotel",
+          "note": "Return, relax"
+        },
+        {
+          "name": "Dinner at Urban Turban Bistro",
+          "kind": "meal",
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-03-11",
+      "title": "Day 5 · Mussoorie to Delhi · Departure",
+      "summary": "Check out, drive to Khatauli for lunch, then continue to Delhi. Trip concludes.",
+      "stops": [
+        {
+          "name": "JW Marriott Mussoorie Walnut Grove Resort & Spa",
+          "kind": "hotel",
+          "note": "Check-out",
+          "time": "09:00"
+        },
+        {
+          "name": "Breakfast at JW Marriott",
+          "kind": "meal",
+          "time": "11:00"
+        },
+        {
+          "name": "Lunch at Cheetal Grand, Khatauli",
+          "kind": "meal",
+          "time": "16:30"
+        },
+        {
+          "name": "Drive: Mussoorie to Khatauli",
+          "kind": "transport",
+          "time": "09:30",
+          "duration_min": 420,
+          "distance_km": 250,
+          "note": "Private car, 7 hours with stops"
+        },
+        {
+          "name": "Drive: Khatauli to Delhi",
+          "kind": "transport",
+          "time": "18:00",
+          "duration_min": 120,
+          "distance_km": 90,
+          "note": "Final leg to Delhi, 2 hours"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T22:36:33.068630",
+  "id": "rishikesh_and_mussoorie_2027-03-07_2027-03-12",
+  "user_id": "corpus-india-uttarakhand-nature-friends-5d-49d4014ba3cc"
+}

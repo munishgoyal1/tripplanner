@@ -1,0 +1,351 @@
+{
+  "status": "draft",
+  "trip_id": "istanbul_2027-05-03_2027-05-06",
+  "trip_number": 1,
+  "created_at": "2026-08-16T19:16:40.495209",
+  "destination": "Istanbul",
+  "origin": "Delhi",
+  "departure_date": "2027-05-03",
+  "return_date": "2027-05-06",
+  "travelers": "4 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Istanbul",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "CVK Park Bosphorus Hotel Istanbul",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp655855b7"
+      },
+      "address": "Gümüşsuyu Mah. İnönü Cad. No:8, 34437 Beyoğlu/Istanbul, Turkey",
+      "star_rating": 5,
+      "price_per_night": 420,
+      "currency": "USD",
+      "google_rating": 4.6,
+      "review_count": 3400
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-03",
+      "title": "Day 1 · Arrival & Sultanahmet",
+      "summary": "Arrive in Istanbul, check in to the CVK Park Bosphorus Hotel, explore Hagia Sophia and Blue Mosque, and enjoy a welcome dinner.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Istanbul",
+          "kind": "flight",
+          "time": "06:00",
+          "arrival_time": "12:00",
+          "duration_min": 360,
+          "note": "Morning flight, direct or 1-stop"
+        },
+        {
+          "name": "CVK Park Bosphorus Hotel Istanbul",
+          "kind": "hotel",
+          "note": "Check-in to premium hotel"
+        },
+        {
+          "name": "Hagia Sophia",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Blue Mosque",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Matbah Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Welcome dinner with Ottoman cuisine"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-04",
+      "title": "Day 2 · Bosphorus & Grand Bazaar",
+      "summary": "Morning Bosphorus cruise, visit Topkapi Palace, shop at Grand Bazaar, and dine at a top-rated restaurant.",
+      "stops": [
+        {
+          "name": "CVK Park Bosphorus Hotel Istanbul",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Bosphorus Cruise",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Topkapi Palace",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Pandeli Restaurant",
+          "kind": "meal",
+          "time": "14:30",
+          "note": "Lunch inside the Spice Bazaar"
+        },
+        {
+          "name": "Grand Bazaar",
+          "kind": "attraction",
+          "time": "16:15",
+          "duration_min": 90
+        },
+        {
+          "name": "Mikla Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner with city views"
+        },
+        {
+          "name": "CVK Park Bosphorus Hotel Istanbul",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-05",
+      "title": "Day 3 · Modern Istanbul & Departure",
+      "summary": "Explore Galata Tower, stroll along Istiklal Street, lunch at a trendy bistro, and depart for the airport.",
+      "stops": [
+        {
+          "name": "CVK Park Bosphorus Hotel Istanbul",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Galata Tower",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Istiklal Street",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Nevizade Street Bistro",
+          "kind": "meal",
+          "time": "13:15",
+          "note": "Lunch"
+        },
+        {
+          "name": "Flight: Istanbul to Delhi",
+          "kind": "flight",
+          "time": "16:00",
+          "arrival_time": "23:00",
+          "duration_min": 420,
+          "note": "Afternoon flight, direct or 1-stop"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T19:19:08.076923",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-16T19:18:22",
+      "expires_at": "2026-08-17T07:18:22"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-16T19:19:08",
+      "expires_at": "2026-08-16T19:49:08"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_istanbul_2027_05_03_2027_05_06",
+      "kind": "lodging",
+      "created_at": "2026-08-16T13:48:22.368322Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Istanbul",
+        "date": "2027-05-03"
+      },
+      "subject": "Stay in Istanbul",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_61ce308c9c3a",
+      "options": [
+        {
+          "id": "opt_stay_61ce308c9c3a",
+          "mode": null,
+          "label": "Hampton By Hilton Istanbul Airport, Arnavutkoy",
+          "detail": "TWIN ROOM",
+          "price": {
+            "amount": 1447.5,
+            "currency": "USD",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-03",
+            "checkout": "2027-05-06",
+            "room_name": "TWIN ROOM",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Mehmet Akif Ersoy Mah. Gorele Sk.",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp655855b7",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gEaRzQyRE9OWldIRTNHS01SUUc0WkRNWlJXTVkzR0k3QlJFTVpEQU1SWEdBMlRBTTM0R0lZREVOWlFHVVlETTdERk5aUFZLVTM0SkZISFlWS1RJUjZESVFKUUlNWFRJUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFPQllHQTRUTU1aVkhCTkdVVVNJRU1ZVE9NQlFHSTRET09KU0c0UlRDTlpWR0FXVENOWlFHQVpEUU5aWkdJM1hZVFNTSVpISFlNUlFHSTNEQU9CUkdNWVRBTUJRUFFZWFlVUlJHRTJUQTdCUkdRMkRPTkpRRU5CRUVJMk9LSkRFNElaU0dBWkRNTEpRSEFXVENNWkFHRVlEVU1CUUVNo3ByY8tAhp4AAAAAAKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqlUV0lOIFJPT02jb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk7eABGkc3JpZNoBGkc0MkRPTlpXSEUzR0tNUlFHNFpETVpSV01ZM0dJN0JTRU1aREFNUlhHQTJUQU0zNEdJWURFTlpRR1VZRE03REZOWlBWS1UzNEpGSEhZVktUSVI2RElRSlFJTVhUSVFKUUlONkRJTkpTSEY2R1NVREhLVkVIWU1KWEhBM0RRT0JZR0E0VE1NWlZIQk5HVVVTSUVNWVRPTUJRR0k0RE9PSlNHNFJUQ05aVkdBV1RDTlpRR0FaRFFOWlpHSTNYWVRTU0laSEhZTVJRR0kzREFPQlJHTVlUQU1CUVBRWVhZVVJSR0UyVEE3QlJHUTJET05KUUVOQkVFSTJPS0pERTRJWlNHQVpETUxKUUhBV1RDTVpBR0VZRFVNQlFFTaNwcmPLQIaeAAAAAAClb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJCSaRtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm6pVFdJTiBST09No29jbgKkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDI4NzkyN6NzaWQCo2hpZKpscDY1NTg1NWI3o29jY5KBoWEEgaFhBKNjdXKjVVNEomduoklOomNpqjIwMjctMDUtMDOiY2-qMjAyNy0wNS0wNqNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDBhZDQ4YTRjN2FnMmw1VVBvbktIOUhPUUpnMU5KaDZZaFMyaKNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpwqFko1ZBVKFhy0BCGFHrhR64oWOjVVNEhKFpwqFkrmdvdmVybm1lbnQgdGF4oWHLQAz1wo9cKPahY6NVU0SibHDAo2JrdAI=",
+              "rate_id": "I42DERCPJZNFOSCFGNDUWTKSKFDTIWSEJVNFEV2NLEZUOSJXIJJEKTK2IRAU2USYI5ATEVCBJUZTIR2JLFCEKTS2KFDVKWKEJU3UIRSOLJIFMS2VGM2EURSIJBMVMS2UJFJDMRCJKFFFCSKNLBKESUKKKFEU4NSEJFHEUU2IIY3EOU2VIREEWVSFJBMU2SSYJBATGRCRJ5BFSR2BGRKE2TK2KZEEETSHKVKVGSKFJVMVIT2NIJIUOSJUIRHU6SSTI42FEVCDJZNFMR2BK5KEGTS2KFDUCWSEKFHFUWSHJEZVQWKUKNJUSWSIJBMU2USRI5ETGRCBJ5BFER2NLFKECTKCKFIFCWKYLFKVEUSHIUZFIQJXIJJEOUJSIRHU4SSRIVHEERKFJEZE6S2KIRCTISK2KNDUCWSEJVGEUUKIIFLVIQ2NLJAUORKZIRKU2QSRIVGXYNZSGMXDONL4PRBES7D4PR6FIV2JJYQFET2PJV6DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-16T13:48:22.256360Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_297becf157a1",
+          "mode": null,
+          "label": "Radisson Residences Vadistanbul",
+          "detail": "Apartment - One Bedroom",
+          "price": {
+            "amount": 1561.62,
+            "currency": "USD",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs $114 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-03",
+            "checkout": "2027-05-06",
+            "room_name": "Apartment - One Bedroom",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Ayazağa Mahallesi Kemerburgaz Caddesi 6A No:7V/101 Sarıyer",
+            "rating": 9.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1f7764",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gE8R1lZVE9NQldHRTNURU5aVUdaU0RNTkpXTVUzVElNUlFHSlNERU1CV01ZM0dLTlJWR0lZRE1NUldHVTNESU5aU0daVERNWlJXTVI2RENJWlNHQVpET01CVkdBWlhZTVJRR0kzVEFOSlFHWjZHSzNTN0tWSlhZU0tPUFJLVkdSRDRHUkFUQVFaUEdSQVRBUTM0R1EyVEVPTDRORklHT1ZLSVBRWVRPT0JXSEE0RFFNQlpHWVpUS09DMk5KSkVRSVpTR0EzREVNSllHQVJUT05CUkZVWkRBTlJTR0U0REE3Q09LSkRFNDdCU0dBWkRNTUJZR0UyRENNQlFHQjZEQzdDU0dFWVRLTUQ0R0UyVE1NSldHSVJWRVRaREpaSkVNVFJER0lZREVOUk5HQTRDMk1KVUVBWVRBT1JRR0FSUaNwcmPLQIhmeuFHrhSlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm63QXBhcnRtZW50IC0gT25lIEJlZHJvb22jb2NuAqRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk7eABGkc3JpZNoBPEdZWVRPTUJXR0UzVEVOWlVHWlNETU5KV01VM1RJTVJRR0pTREVNQldNWTNHS05SVkdJWURNTVJXR1UzRElOWlNHWlRETVpSV01SNkRFSVpTR0FaRE9NQlZHQVpYWU1SUUdJM1RBTkpRR1o2R0szUzdLVkpYWVNLT1BSS1ZHUkQ0R1JBVEFRWlBHUkFUQVEzNEdRMlRFT0w0TkZJR09WS0lQUVlUT09CV0hBNERRTUJaR1laVEtPQzJOSkpFUUlaU0dBM0RFTUpZR0FSVE9OQlJGVVpEQU5SU0dFNERBN0NPS0pERTQ3QlNHQVpETU1CWUdFMkRDTUJRR0I2REM3Q1NHRVlUS01ENEdFMlRNTUpXR0lSVkVUWkRKWkpFTVRSREdJWURFTlJOR0E0QzJNSlVFQVlUQU9SUUdBUlGjcHJjy0CIZnrhR64UpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jut0FwYXJ0bWVudCAtIE9uZSBCZWRyb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMjA2MjE4MKNzaWQCo2hpZKhscDFmNzc2NKNvY2OSgaFhBIGhYQSjY3Vyo1VTRKJnbqJJTqJjaaoyMDI3LTA1LTAzomNvqjIwMjctMDUtMDajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwYWQ0OGE0YzdhZzJsNVVQb25LSDlIT1FKZzFOSmg2WWhTMmijaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZKNWQVShYctAQXMzMzMzM6Fjo1VTRIShacOhZLFBY2NvbW1vZGF0aW9uIFRheKFhy0AbrhR64UeuoWOjVVNEomxwwKNia3QF",
+              "rate_id": "I5MVSVCPJVBFOR2FGNKEKTS2KVDVUU2EJVHEUV2NKUZVISKNKJIUOSSTIRCU2QSXJVMTGR2LJZJFMR2JLFCE2TKSK5DVKM2EJFHFUU2HLJKEITK2KJLU2URWIRBUSWSTI5AVURCPJVBFMR2BLJMFSTKSKFDUSM2UIFHEUUKHLI3EOSZTKM3UWVSKLBMVGS2PKBJEWVSHKJCDIR2SIFKECUK2KBDVEQKUIFITGNCHKEZFIRKPJQ2E4RSJI5HVMS2JKBIVSVCPJ5BFOSCBGRCFCTKCLJDVSWSUJNHUGMSOJJFEKUKJLJJUOQJTIRCU2SSZI5AVEVCPJZBFERSVLJCECTSSKNDUKNCEIE3UGT2LJJCEKNBXIJJUOQK2IRGU2QSZI5CTERCDJVBFCR2CGZCEGN2DKNDUKWKUJNGUINCHIUZFITKNJJLUOSKSKZCVIWSEJJNEURKNKRJEIR2JLFCEKTSSJZDUCNCDGJGUUVKFIFMVIQKPKJIUOQKSKF6DOOBQFY4DC7D4KJHXY7D4PRAXAYLSORWWK3TUEAWSAT3OMUQEEZLEOJXW63L4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-16T13:48:22.256360Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 1447.5,
+        "delta": null,
+        "currency": "USD"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "istanbul_2027-05-03_2027-05-06",
+  "user_id": "corpus-istanbul-premium-friends-3d"
+}

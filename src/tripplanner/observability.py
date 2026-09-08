@@ -35,7 +35,11 @@ import os
 import re
 import sys
 import threading
+import time
 import uuid
+from collections.abc import Iterator
+from contextlib import contextmanager
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Any
 
@@ -132,6 +136,68 @@ def hash_user_id(user_id: str | None) -> str:
     return f"u_{digest[:12]}"
 
 
+def model_rate_limit_fields(error: BaseException, deployment: str) -> dict[str, Any]:
+    """Return a strict whitelist of safe Azure OpenAI 429 metadata."""
+    if type(error).__name__ != "RateLimitError":
+        return {}
+
+    response = getattr(error, "response", None)
+    headers = getattr(response, "headers", {}) or {}
+
+    def header_int(name: str) -> int | None:
+        try:
+            value = headers.get(name)
+            return max(0, int(float(value))) if value is not None else None
+        except (TypeError, ValueError):
+            return None
+
+    remaining_requests = header_int("x-ratelimit-remaining-requests")
+    remaining_tokens = header_int("x-ratelimit-remaining-tokens")
+    retry_after_ms = header_int("retry-after-ms")
+    if retry_after_ms is None:
+        retry_after_seconds = header_int("retry-after")
+        retry_after_ms = retry_after_seconds * 1000 if retry_after_seconds is not None else None
+
+    if remaining_tokens == 0 and remaining_requests == 0:
+        scope = "tokens_and_requests"
+    elif remaining_tokens == 0 or (
+        remaining_tokens is not None
+        and remaining_requests is not None
+        and remaining_requests > 0
+    ):
+        scope = "tokens"
+    elif remaining_requests == 0:
+        scope = "requests"
+    else:
+        scope = "unknown"
+
+    status_code = getattr(error, "status_code", None) or getattr(
+        response, "status_code", None
+    )
+    code = getattr(error, "code", None)
+    safe_code = (
+        str(code)
+        if code is not None and re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", str(code))
+        else None
+    )
+    fields: dict[str, Any] = {
+        "model_provider": "azure_openai",
+        "model_deployment": deployment,
+        "rate_limit_scope": scope,
+    }
+    if isinstance(status_code, int):
+        fields["provider_status"] = status_code
+    if safe_code:
+        fields["provider_error_code"] = safe_code
+    if retry_after_ms is not None:
+        fields["retry_after_ms"] = retry_after_ms
+    if remaining_requests is not None:
+        fields["remaining_requests"] = remaining_requests
+    if remaining_tokens is not None:
+        fields["remaining_tokens"] = remaining_tokens
+    return fields
+
+
 # ---------------------------------------------------------------------------
 # logging.Filter / Formatter
 # ---------------------------------------------------------------------------
@@ -195,7 +261,7 @@ class JsonFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:  # noqa: D401
         base: dict[str, Any] = {
-            "ts": _dt.datetime.fromtimestamp(record.created, _dt.timezone.utc)
+            "ts": _dt.datetime.fromtimestamp(record.created, _dt.UTC)
             .isoformat(timespec="milliseconds")
             .replace("+00:00", "Z"),
             "level": record.levelname,
@@ -214,7 +280,7 @@ class JsonFormatter(logging.Formatter):
             else:
                 base[key] = redact_value(value)
         if record.exc_info:
-            base["exc"] = self.formatException(record.exc_info)
+            base["exc"] = redact_text(self.formatException(record.exc_info))
         return json.dumps(base, default=str, ensure_ascii=False)
 
 
@@ -223,7 +289,7 @@ class _TextFormatterWithPid(logging.Formatter):
     logger name and the level. Used in local dev mode."""
 
     def format(self, record: logging.LogRecord) -> str:  # noqa: D401
-        ts = _dt.datetime.fromtimestamp(record.created, _dt.timezone.utc).strftime("%H:%M:%S")
+        ts = _dt.datetime.fromtimestamp(record.created, _dt.UTC).strftime("%H:%M:%S")
         return f"{ts} {record.levelname:<5} {record.name}: {record.getMessage()}"
 
 
@@ -250,6 +316,7 @@ def setup_logging(force: bool = False) -> None:
     Environment knobs:
       - ``LOG_LEVEL``  (default ``INFO``)
       - ``LOG_JSON``   (``1`` / ``0``; auto-on when ``_is_hosted()``)
+            - ``APP_LOG_PATH`` (optional rotating PII-safe JSON file for local analysis)
     """
     global _SETUP_DONE
     with _SETUP_LOCK:
@@ -267,11 +334,27 @@ def setup_logging(force: bool = False) -> None:
         # Reset existing handlers so reconfigures (e.g. tests) take effect.
         for h in list(root.handlers):
             root.removeHandler(h)
+            h.close()
         handler = logging.StreamHandler(sys.stdout)
         handler.setLevel(level)
         handler.addFilter(PiiRedactingFilter())
         handler.setFormatter(JsonFormatter() if use_json else _TextFormatterWithPid())
         root.addHandler(handler)
+
+        app_log_path = os.environ.get("APP_LOG_PATH")
+        if app_log_path:
+            path = Path(app_log_path)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            file_handler = RotatingFileHandler(
+                path,
+                maxBytes=5_000_000,
+                backupCount=2,
+                encoding="utf-8",
+            )
+            file_handler.setLevel(level)
+            file_handler.addFilter(PiiRedactingFilter())
+            file_handler.setFormatter(JsonFormatter())
+            root.addHandler(file_handler)
         root.setLevel(level)
 
         # Quiet some noisy third-party loggers in normal mode.
@@ -286,6 +369,19 @@ def setup_logging(force: bool = False) -> None:
 # ---------------------------------------------------------------------------
 
 _APP_EVENT_LOGGER = logging.getLogger("tripplanner.event")
+_EVENT_OBSERVERS_LOCK = threading.Lock()
+_EVENT_OBSERVERS: list[Any] = []
+
+
+def add_event_observer(observer: Any) -> None:
+    with _EVENT_OBSERVERS_LOCK:
+        _EVENT_OBSERVERS.append(observer)
+
+
+def remove_event_observer(observer: Any) -> None:
+    with _EVENT_OBSERVERS_LOCK:
+        if observer in _EVENT_OBSERVERS:
+            _EVENT_OBSERVERS.remove(observer)
 
 
 def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
@@ -301,6 +397,17 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
         app_event("tool_call", user_id, tool="search_flights_duffel",
                   status="ok", ms=842)
     """
+    from tripplanner.validation.harness.context import current_context
+
+    context = current_context()
+    if context is not None:
+        fields = {**context.event_fields(), **fields}
+    try:
+        from tripplanner.usage_attribution import current_attribution
+
+        fields = {**current_attribution().fields(), **fields}
+    except Exception:
+        pass
     safe: dict[str, Any] = {}
     for k, v in fields.items():
         if k.lower() in _SENSITIVE_FIELDS:
@@ -309,7 +416,47 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
             safe[k] = redact_value(v)
     safe["user_id"] = user_id  # JsonFormatter hashes this
     safe["event_kind"] = kind
+    try:
+        from tripplanner.usage_attribution import append_current_event
+
+        append_current_event(kind, safe)
+    except Exception:
+        pass
+    with _EVENT_OBSERVERS_LOCK:
+        observers = tuple(_EVENT_OBSERVERS)
+    for observer in observers:
+        try:
+            observer(kind, safe)
+        except Exception:
+            continue
     _APP_EVENT_LOGGER.info("event %s", kind, extra=safe)
+
+
+@contextmanager
+def timed_operation(kind: str, operation: str, **fields: Any) -> Iterator[None]:
+    """Emit one content-free terminal duration event for an operation."""
+    started = time.perf_counter()
+    status = "ok"
+    error = None
+    try:
+        yield
+    except Exception as exc:
+        status = "error"
+        error = type(exc).__name__
+        raise
+    finally:
+        duration_ms = round((time.perf_counter() - started) * 1000, 2)
+        from tripplanner.ops_metrics import record_operation
+
+        record_operation(kind, operation, status, duration_ms)
+        app_event(
+            kind,
+            operation=operation,
+            status=status,
+            ms=duration_ms,
+            **({"error": error} if error else {}),
+            **fields,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -364,7 +511,7 @@ def audit_event(kind: str, user_id: str | None, **fields: Any) -> None:
     """
     rec: dict[str, Any] = {
         "id": str(uuid.uuid4()),
-        "ts": _dt.datetime.now(_dt.timezone.utc)
+        "ts": _dt.datetime.now(_dt.UTC)
         .isoformat(timespec="milliseconds")
         .replace("+00:00", "Z"),
         "kind": kind,
@@ -434,11 +581,15 @@ def record_tool_call(
                 "cache_hits": 0,
                 "total_ms": 0.0,
                 "recent_ms": [],
+                "error_types": {},
             },
         )
         m["calls"] += 1
         if status == "error":
             m["errors"] += 1
+            if error:
+                error_types: dict[str, int] = m["error_types"]
+                error_types[error] = error_types.get(error, 0) + 1
         if cache_hit:
             m["cache_hits"] += 1
         # We still record latency on errors so a slow-failing tool surfaces.
@@ -488,6 +639,9 @@ def tool_metrics_snapshot() -> dict[str, dict[str, Any]]:
                 "avg_ms": round(m["total_ms"] / calls, 2) if calls else 0.0,
                 "p50_ms": _percentile(recent_sorted, 50),
                 "p95_ms": _percentile(recent_sorted, 95),
+                "error_types": dict(
+                    sorted(m["error_types"].items(), key=lambda item: item[1], reverse=True)[:5]
+                ),
             }
     return out
 

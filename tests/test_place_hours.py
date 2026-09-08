@@ -8,17 +8,26 @@ from types import SimpleNamespace
 
 import pytest
 
+from tripplanner.places_budget import places_budget_scope
 from tripplanner.tools import place_hours
 
 
 @pytest.fixture
 def _configured(monkeypatch):
+    place_hours._PLACE_HOURS_CACHE.clear()
     monkeypatch.setattr(place_hours, "is_configured", lambda: True)
     monkeypatch.setattr(
         place_hours,
         "get_settings",
-        lambda: SimpleNamespace(google_places_api_key="test-key"),
+        lambda: SimpleNamespace(
+            google_places_api_key="test-key",
+            google_places_hours_cache_ttl_sec=7200,
+        ),
     )
+    with places_budget_scope("user_interaction") as budget:
+        budget.limits["review_details"] = 10
+        yield
+    place_hours._PLACE_HOURS_CACHE.clear()
 
 
 def _mk_response(payload):
@@ -82,7 +91,36 @@ def test_is_open_at_empty_periods_returns_false():
 def test_check_place_hours_not_configured(monkeypatch):
     monkeypatch.setattr(place_hours, "is_configured", lambda: False)
     out = place_hours.check_place_hours.invoke({"place_id": "X", "when_iso": ""})
-    assert "not configured" in out.lower()
+    assert "disabled or not configured" in out.lower()
+
+
+def test_check_place_hours_denies_unscoped_provider_call(monkeypatch):
+    monkeypatch.setattr(place_hours, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        place_hours.http_client,
+        "get",
+        lambda *args, **kwargs: pytest.fail("unscoped provider call"),
+    )
+
+    out = place_hours.check_place_hours.invoke({"place_id": "X", "when_iso": ""})
+
+    assert "not authorized" in out.lower()
+
+
+def test_place_hours_requires_flag_and_key(monkeypatch):
+    monkeypatch.setattr(
+        place_hours,
+        "get_settings",
+        lambda: SimpleNamespace(enable_google_places=False, google_places_api_key="copied-key"),
+    )
+    assert not place_hours.is_configured()
+
+    monkeypatch.setattr(
+        place_hours,
+        "get_settings",
+        lambda: SimpleNamespace(enable_google_places=True, google_places_api_key="test-key"),
+    )
+    assert place_hours.is_configured()
 
 
 def test_check_place_hours_returns_schedule_without_when(_configured, monkeypatch):
@@ -103,7 +141,7 @@ def test_check_place_hours_returns_schedule_without_when(_configured, monkeypatc
             ],
         },
     }
-    monkeypatch.setattr(place_hours.httpx, "get", lambda *a, **k: _mk_response(payload))
+    monkeypatch.setattr(place_hours.http_client, "get", lambda *a, **k: _mk_response(payload))
     out = json.loads(place_hours.check_place_hours.invoke({"place_id": "P1"}))
     assert out["name"] == "Louvre"
     assert out["business_status"] == "OPERATIONAL"
@@ -126,7 +164,7 @@ def test_check_place_hours_open_verdict(_configured, monkeypatch):
             ],
         },
     }
-    monkeypatch.setattr(place_hours.httpx, "get", lambda *a, **k: _mk_response(payload))
+    monkeypatch.setattr(place_hours.http_client, "get", lambda *a, **k: _mk_response(payload))
 
     # Monday noon → open
     open_out = json.loads(
@@ -147,6 +185,27 @@ def test_check_place_hours_open_verdict(_configured, monkeypatch):
     assert closed_out["requested_weekday"] == "Tuesday"
 
 
+def test_check_place_hours_reuses_cached_provider_response(_configured, monkeypatch):
+    calls = []
+    payload = {
+        "id": "P1",
+        "displayName": {"text": "Louvre"},
+        "businessStatus": "OPERATIONAL",
+        "regularOpeningHours": {"weekdayDescriptions": [], "periods": []},
+    }
+
+    def fake_get(*args, **kwargs):
+        calls.append(args[0])
+        return _mk_response(payload)
+
+    monkeypatch.setattr(place_hours.http_client, "get", fake_get)
+
+    place_hours.check_place_hours.invoke({"place_id": "P1"})
+    place_hours.check_place_hours.invoke({"place_id": "P1", "when_iso": "2026-07-13"})
+
+    assert len(calls) == 1
+
+
 def test_check_place_hours_permanent_closure_warning(_configured, monkeypatch):
     payload = {
         "id": "P1",
@@ -154,7 +213,7 @@ def test_check_place_hours_permanent_closure_warning(_configured, monkeypatch):
         "businessStatus": "CLOSED_PERMANENTLY",
         "regularOpeningHours": {"weekdayDescriptions": [], "periods": []},
     }
-    monkeypatch.setattr(place_hours.httpx, "get", lambda *a, **k: _mk_response(payload))
+    monkeypatch.setattr(place_hours.http_client, "get", lambda *a, **k: _mk_response(payload))
     out = json.loads(
         place_hours.check_place_hours.invoke(
             {"place_id": "P1", "when_iso": "2026-07-14T12:00"}
@@ -172,7 +231,7 @@ def test_check_place_hours_invalid_when_iso(_configured, monkeypatch):
         "businessStatus": "OPERATIONAL",
         "regularOpeningHours": {"weekdayDescriptions": [], "periods": []},
     }
-    monkeypatch.setattr(place_hours.httpx, "get", lambda *a, **k: _mk_response(payload))
+    monkeypatch.setattr(place_hours.http_client, "get", lambda *a, **k: _mk_response(payload))
     out = json.loads(
         place_hours.check_place_hours.invoke({"place_id": "P1", "when_iso": "garbage"})
     )
@@ -182,7 +241,7 @@ def test_check_place_hours_invalid_when_iso(_configured, monkeypatch):
 def test_check_place_hours_sends_correct_field_mask(_configured, monkeypatch):
     captured = {}
 
-    def fake_get(url, *, headers, timeout):
+    def fake_get(url, *, headers):
         captured["url"] = url
         captured["headers"] = headers
         return _mk_response(
@@ -194,7 +253,7 @@ def test_check_place_hours_sends_correct_field_mask(_configured, monkeypatch):
             }
         )
 
-    monkeypatch.setattr(place_hours.httpx, "get", fake_get)
+    monkeypatch.setattr(place_hours.http_client, "get", fake_get)
     place_hours.check_place_hours.invoke({"place_id": "P1"})
     assert captured["url"].endswith("/places/P1")
     assert "regularOpeningHours.periods" in captured["headers"]["X-Goog-FieldMask"]

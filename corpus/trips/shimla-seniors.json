@@ -1,0 +1,318 @@
+{
+  "status": "draft",
+  "trip_id": "shimla_2027-05-05_2027-05-10",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:34:33.228465",
+  "destination": "Shimla",
+  "origin": "Delhi",
+  "departure_date": "2027-05-05",
+  "return_date": "2027-05-10",
+  "travelers": "2 adults and parents aged 72 and 68 (father uses walking stick, avoid long walks)",
+  "notes": "Father uses walking stick, avoid long walks. Moderate budget, balanced pace, prefer 3-star+ hotels.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Shimla",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "hotel_id": "lp63334",
+      "name": "Wing Ocean View",
+      "address": "Victory Tunnel, Shimla",
+      "rating": 4.1,
+      "price_per_night": 5200,
+      "currency": "INR",
+      "checkin": "2027-05-05",
+      "checkout": "2027-05-10",
+      "amenities": [
+        "Elevator",
+        "Wheelchair access",
+        "Restaurant",
+        "Breakfast",
+        "Central location"
+      ],
+      "note": "Accessible, centrally located, highly rated for elderly guests"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-05",
+      "title": "Delhi to Shimla & Check-in",
+      "summary": "Drive from Delhi to Shimla with accessible meal stops and check-in at a centrally located, accessible hotel.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Shimla",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 480,
+          "distance_km": 350,
+          "note": "Private car with rest stops"
+        },
+        {
+          "name": "Haveli, Karnal",
+          "kind": "meal",
+          "time": "10:00",
+          "duration_min": 45,
+          "note": "Accessible meal stop"
+        },
+        {
+          "name": "Timber Trail, Parwanoo",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Accessible meal stop"
+        },
+        {
+          "name": "Hotel (Shimla, accessible)",
+          "kind": "hotel",
+          "time": "16:30",
+          "note": "Centrally located, accessible hotel"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-06",
+      "title": "Shimla Heritage & Mall Road",
+      "summary": "Explore Shimla's accessible heritage spots and Mall Road at a gentle pace.",
+      "stops": [
+        {
+          "name": "Hotel (Shimla, accessible)",
+          "kind": "hotel",
+          "time": "09:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "The Ridge, Shimla",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 60,
+          "note": "Flat, accessible area"
+        },
+        {
+          "name": "Christ Church, Shimla",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 45,
+          "note": "Minimal stairs, benches available"
+        },
+        {
+          "name": "Indian Coffee House, Shimla",
+          "kind": "meal",
+          "time": "12:45",
+          "duration_min": 60,
+          "note": "Accessible lunch"
+        },
+        {
+          "name": "Mall Road, Shimla",
+          "kind": "attraction",
+          "time": "14:15",
+          "duration_min": 60,
+          "note": "Gentle stroll, benches for rest"
+        },
+        {
+          "name": "Hotel (Shimla, accessible)",
+          "kind": "hotel",
+          "time": "15:45",
+          "note": "Return to hotel for rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-07",
+      "title": "Kufri Excursion (Scenic Drive)",
+      "summary": "Scenic drive to Kufri with accessible nature park and lunch, then return to Shimla.",
+      "stops": [
+        {
+          "name": "Drive: Shimla to Kufri",
+          "kind": "transport",
+          "time": "09:15",
+          "duration_min": 45,
+          "distance_km": 16,
+          "note": "Private car"
+        },
+        {
+          "name": "Hotel (Shimla, accessible)",
+          "kind": "hotel",
+          "time": "10:30",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Drive: Kufri to Shimla",
+          "kind": "transport",
+          "time": "13:30",
+          "duration_min": 45,
+          "distance_km": 16,
+          "note": "Private car"
+        },
+        {
+          "name": "Himalayan Nature Park, Kufri",
+          "kind": "attraction",
+          "time": "14:45",
+          "duration_min": 75,
+          "note": "Wheelchair-friendly, benches"
+        },
+        {
+          "name": "The Retreat, Kufri",
+          "kind": "meal",
+          "time": "16:30",
+          "duration_min": 60,
+          "note": "Accessible lunch"
+        },
+        {
+          "name": "Hotel (Shimla, accessible)",
+          "kind": "hotel",
+          "time": "18:00",
+          "note": "Return to hotel for rest"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-08",
+      "title": "Viceregal Lodge & Relaxation",
+      "summary": "Visit Viceregal Lodge and Annandale Army Heritage Museum, both accessible, with time for rest.",
+      "stops": [
+        {
+          "name": "Hotel (Shimla, accessible)",
+          "kind": "hotel",
+          "time": "09:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Viceregal Lodge, Shimla",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Wheelchair access available"
+        },
+        {
+          "name": "Ashiana & Goofa, Shimla",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Accessible lunch"
+        },
+        {
+          "name": "Annandale Army Heritage Museum",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Minimal walking, benches available"
+        },
+        {
+          "name": "Hotel (Shimla, accessible)",
+          "kind": "hotel",
+          "time": "15:00",
+          "note": "Return to hotel for rest"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-05-09",
+      "title": "Shimla to Delhi & Departure",
+      "summary": "Drive back to Delhi with accessible meal stops.",
+      "stops": [
+        {
+          "name": "Hotel (Shimla, accessible)",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Check out from hotel"
+        },
+        {
+          "name": "Timber Trail, Parwanoo",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Accessible meal stop"
+        },
+        {
+          "name": "Haveli, Karnal",
+          "kind": "meal",
+          "time": "15:30",
+          "duration_min": 45,
+          "note": "Accessible meal stop"
+        },
+        {
+          "name": "Drive: Shimla to Delhi",
+          "kind": "transport",
+          "time": "08:30",
+          "duration_min": 480,
+          "distance_km": 350,
+          "note": "Private car with rest stops"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T10:51:46.446877",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-16T10:51:43",
+      "expires_at": "2026-08-16T22:51:43"
+    }
+  ],
+  "id": "shimla_2027-05-05_2027-05-10",
+  "user_id": "corpus-shimla-seniors"
+}

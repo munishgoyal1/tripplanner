@@ -4,6 +4,7 @@ from typing import Any
 
 from tripplanner.tools import trip_planner
 from tripplanner.web import trip_view
+from tripplanner.web.workspace_payload import build_workspace_payload
 
 
 def _stop_name(stop: Any) -> str:
@@ -38,6 +39,52 @@ def build_view(focus: dict[str, str] | None = None) -> dict[str, Any]:
     return trip_view.build_view(trip_planner.load_active_trip_dict(), focus)
 
 
+def build_budget_what_if() -> dict[str, Any]:
+    from tripplanner.decisions.budget_what_if import build_budget_what_if as build
+
+    return build(trip_planner.load_active_trip_dict())
+
+
+def apply_decision_overrides(
+    changes: list[dict[str, Any]], *, expected_updated_at: str = ""
+) -> dict[str, Any]:
+    return trip_planner.apply_decision_overrides(
+        changes, expected_updated_at=expected_updated_at
+    )
+
+
+def warm_guide() -> None:
+    """Background warm of the destination-guide dataset for the active trip."""
+    trip_view.warm_guide(trip_planner.load_active_trip_dict())
+
+
+def warm_view_items() -> None:
+    """Background warm of the trip-panel gallery for the active trip."""
+    trip_view.warm_view_items(trip_planner.load_active_trip_dict())
+
+
+def paged_places(
+    *,
+    city: str | None = None,
+    kind: str | None = None,
+    query: str | None = None,
+    cursor: str | None = None,
+    limit: int = 6,
+    focus_name: str | None = None,
+    focus_kind: str | None = None,
+) -> dict[str, Any]:
+    return trip_view.paged_places(
+        trip_planner.load_active_trip_dict(),
+        city=city,
+        kind=kind,
+        query=query,
+        cursor=cursor,
+        limit=limit,
+        focus_name=focus_name,
+        focus_kind=focus_kind,
+    )
+
+
 def build_map() -> dict[str, Any]:
     return trip_view.build_map_view(trip_planner.load_active_trip_dict())
 
@@ -45,6 +92,23 @@ def build_map() -> dict[str, Any]:
 def build_itinerary() -> dict[str, Any]:
     return trip_view.build_itinerary(trip_planner.load_active_trip_dict())
 
+
+def build_verification() -> dict[str, Any]:
+    from tripplanner.web import trip_verification
+
+    return trip_verification.build_verification(trip_planner.load_active_trip_dict())
+
+
+def refresh_facts(*, expected_updated_at: str = "") -> dict[str, Any]:
+    return trip_planner.refresh_active_trip_facts(expected_updated_at=expected_updated_at)
+
+
+def recheck_prices(*, expected_updated_at: str = "") -> dict[str, Any]:
+    return trip_planner.recheck_active_trip_prices(expected_updated_at=expected_updated_at)
+
+
+def repair_trip(*, expected_updated_at: str = "") -> dict[str, Any]:
+    return trip_planner.repair_active_trip(expected_updated_at=expected_updated_at)
 
 def select(
     kind: str,
@@ -160,8 +224,57 @@ def set_stop_booked(day: int, name: str, booked: bool) -> dict[str, Any]:
     return {"ok": ok, "itinerary": build_itinerary()}
 
 
+def confirm_stop_place(name: str) -> dict[str, Any]:
+    """Accept the map's candidate for a stop and return the redrawn map."""
+    ok = trip_planner.confirm_stop_place(name)
+    return {"ok": ok, "map": build_map()}
+
+
+def override_decision(
+    decision_id: str,
+    option_id: str | None,
+    *,
+    expected_updated_at: str = "",
+) -> dict[str, Any]:
+    """Overrule a recorded comparison, or undo that overrule.
+
+    Returns the whole trip in one response so the workspace takes a single
+    coherent update rather than re-fetching each panel.
+    """
+    outcome = trip_planner.apply_decision_override(
+        decision_id, option_id, expected_updated_at=expected_updated_at
+    )
+    plan = trip_planner.load_active_trip_dict()
+    return {
+        **outcome,
+        "view": trip_view.build_view(plan, None),
+        "itinerary": trip_view.build_itinerary(plan),
+    }
+
+
+def activate_trip(trip_id: str) -> Any:
+    """Flip the active trip. Kept minimal so the workspace lock is held briefly."""
+    return trip_planner.switch_active_trip(trip_id)
+
+
+def workspace_payload(
+    plan: Any,
+    focus: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    # One payload for every panel. The plan is already loaded here, so the map
+    # and itinerary cost no extra reads and all three panels swap together
+    # instead of each fetching its own copy and settling one after another.
+    return build_workspace_payload(plan, focus)
+
+
+def active_workspace_payload(
+    focus: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    return workspace_payload(trip_planner.load_active_trip_dict(), focus)
+
+
 def switch_trip(trip_id: str) -> dict[str, Any]:
-    plan = trip_planner.switch_active_trip(trip_id)
+    plan = activate_trip(trip_id)
     if plan is None:
         return {"ok": False, "error": "trip not found"}
-    return {"ok": True, "view": trip_view.build_view(plan, None)}
+    return workspace_payload(plan)

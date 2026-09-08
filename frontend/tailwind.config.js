@@ -4,30 +4,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#1f2937",
-        muted: "#6b7280",
-        // Airbnb-ish warm coral as the primary action, with a deep teal accent
-        // for secondary moments (focus, selection, links). Both stay AA-legible
-        // on white.
+        ink: "#10324a",
+        muted: "#557687",
         brand: {
-          DEFAULT: "#e11d48",
-          50: "#fff1f3",
-          100: "#ffe0e6",
-          500: "#e11d48",
-          600: "#be123c",
-          700: "#9f1239",
+          DEFAULT: "#d63c75",
+          50: "#fff2f7",
+          100: "#fce1eb",
+          500: "#d63c75",
+          600: "#b92d62",
+          700: "#96244f",
         },
         accent: {
-          DEFAULT: "#0f766e",
-          50: "#f0fdfa",
-          500: "#0f766e",
-          600: "#115e59",
+          DEFAULT: "#0877b9",
+          50: "#eef9fc",
+          500: "#0877b9",
+          600: "#07649b",
         },
-        surface: "#fafaf9",
+        surface: "#f7fbfa",
       },
       fontFamily: {
         sans: [
-          "Inter",
+          "Space Grotesk",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",
@@ -36,7 +33,7 @@ export default {
           "sans-serif",
         ],
         display: [
-          "Fraunces",
+          "Newsreader",
           "ui-serif",
           "Georgia",
           "Cambria",

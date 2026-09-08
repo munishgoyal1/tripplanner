@@ -1,0 +1,239 @@
+{
+  "status": "draft",
+  "trip_id": "rome_and_florence_2027-09-11_2027-09-14",
+  "trip_number": 1,
+  "created_at": "2026-08-17T19:30:20.871917",
+  "destination": "Rome and Florence",
+  "origin": "Mumbai",
+  "departure_date": "2027-09-11",
+  "return_date": "2027-09-14",
+  "travelers": "2 adults, 2 children (ages 6 and 9)",
+  "notes": "One traveller cannot manage long walks or stairs. Accessibility needs: short walks, no stairs.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Rome and Florence",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-09-11",
+      "title": "Day 1 · Arrival in Rome",
+      "summary": "Arrive in Rome from Mumbai, check in to accessible hotel, gentle evening stroll near hotel.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Rome",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "14:00",
+          "duration_min": 540,
+          "note": "Direct or shortest available, economy class"
+        },
+        {
+          "name": "Accessible Hotel Rome",
+          "kind": "hotel",
+          "note": "Check-in, centrally located, wheelchair accessible"
+        },
+        {
+          "name": "Lunch at Ristorante Santa Cristina al Quirinale",
+          "kind": "meal",
+          "time": "15:00",
+          "note": "Family-friendly, accessible"
+        },
+        {
+          "name": "Piazza Navona",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Flat area, easy access"
+        },
+        {
+          "name": "Dinner at Ristorante Santa Cristina al Quirinale",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Family-friendly, accessible"
+        },
+        {
+          "name": "Accessible Hotel Rome",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-09-12",
+      "title": "Day 2 · Rome Sightseeing",
+      "summary": "Explore Rome's highlights with accessible transport, avoiding stairs and long walks.",
+      "stops": [
+        {
+          "name": "Accessible Hotel Rome",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Colosseum (Accessible Tour)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Wheelchair accessible, elevator available"
+        },
+        {
+          "name": "Lunch at Trattoria Pennestri",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Accessible, Italian cuisine"
+        },
+        {
+          "name": "Pantheon",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Flat entry, accessible"
+        },
+        {
+          "name": "Trevi Fountain",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 45,
+          "note": "Flat area, easy access"
+        },
+        {
+          "name": "Accessible Hotel Rome",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-09-13",
+      "title": "Day 3 · Florence Day Trip",
+      "summary": "Day trip to Florence by accessible train, visit family-friendly and accessible sites.",
+      "stops": [
+        {
+          "name": "Train: Rome to Florence (Frecciarossa)",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 90,
+          "note": "Wheelchair accessible, reserved seats"
+        },
+        {
+          "name": "Florence Cathedral (Duomo, accessible)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 60,
+          "note": "Accessible entrance, no stairs"
+        },
+        {
+          "name": "Lunch at Trattoria ZaZa",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Accessible, family-friendly"
+        },
+        {
+          "name": "Piazza della Signoria",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 45,
+          "note": "Flat area, easy access"
+        },
+        {
+          "name": "Train: Florence to Rome (Frecciarossa)",
+          "kind": "transport",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "Wheelchair accessible, reserved seats"
+        },
+        {
+          "name": "Accessible Hotel Rome",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "17:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-09-14",
+      "title": "Day 4 · Departure",
+      "summary": "Check out from hotel, transfer to Rome airport, fly back to Mumbai.",
+      "stops": [
+        {
+          "name": "Accessible Hotel Rome",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Flight: Rome to Mumbai",
+          "kind": "flight",
+          "time": "10:00",
+          "arrival_time": "23:00",
+          "duration_min": 780,
+          "note": "Direct or shortest available, economy class"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T19:31:59.955346",
+  "id": "rome_and_florence_2027-09-11_2027-09-14",
+  "user_id": "corpus-rome-accessible-young-family-3d"
+}

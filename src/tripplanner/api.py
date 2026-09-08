@@ -12,6 +12,9 @@ Endpoints
 * ``POST /chat/stream``  — Server-Sent Events: tokens + tool steps in real time.
 * ``GET  /trip/view``    — the trip-panel view-model JSON.
 * ``POST /trip/select``  — add a hotel/attraction to the active trip.
+* ``GET  /documents``    — stored traveller document fields (never the file).
+* ``POST /documents/extract`` — propose fields from a photo or pasted text.
+* ``GET  /trip/documents/readiness`` — deterministic paperwork checks for the trip.
 * ``GET  /health``       — liveness probe.
 
 Per-user conversation history is kept in a small in-memory store keyed by the
@@ -28,22 +31,83 @@ import json
 import os
 import re
 import time
+from collections.abc import AsyncIterator
+from contextlib import nullcontext
 from typing import Any, Literal
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
-from pydantic import BaseModel
+from fastapi.responses import JSONResponse, StreamingResponse
+from langchain_core.messages import BaseMessage, ToolMessage
+from langgraph.errors import GraphRecursionError
+from starlette.background import BackgroundTask
 
 from tripplanner import config as _config  # noqa: F401  -- import triggers load_dotenv()
-from tripplanner.observability import app_event, setup_logging
-from tripplanner.web import oauth
+from tripplanner import graph_policy
+from tripplanner.api_contracts import (
+    ChatRequest,
+    ChatResponse,
+)
+from tripplanner.chat_interactions import extract_input_request
+from tripplanner.chat_turn import (
+    AdmittedTurn,
+    ChatTurnCoordinator,
+    ChatTurnDependencies,
+    TurnTerminal,
+)
+from tripplanner.decisions.receipts import ReceiptLog
+from tripplanner.observability import app_event, model_rate_limit_fields, setup_logging
+from tripplanner.request_limits import (
+    acquire_chat,
+    acquire_replay_access,
+    check_replay_lookup,
+    release_chat,
+    release_replay_access,
+)
+from tripplanner.request_state import request_state_scope
+from tripplanner.trip_repository import TripConflictError
+from tripplanner.user_context import set_user_id
+from tripplanner.web.account_http import router as account_router
+from tripplanner.web.http_context import (
+    mobile_auth_redirect as _mobile_auth_redirect,  # noqa: F401
+)
+from tripplanner.web.http_context import (
+    set_request_user as _set_request_user,
+)
+from tripplanner.web.ops_http import router as ops_router
+from tripplanner.web.runtime_routes import router as runtime_router
+from tripplanner.web.trip_http import router as trip_router
 
 setup_logging()
 
 app = FastAPI(title="Personal Assistant API", version="0.1.0")
+
+
+@app.exception_handler(TripConflictError)
+async def _trip_conflict_handler(
+    _request: Request, exc: TripConflictError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=409,
+        content={
+            "detail": "This trip changed while your update was being saved. Refresh and retry.",
+            "error": "trip_conflict",
+            "message": str(exc),
+        },
+    )
+
+# LangGraph counts every node, so a flat 24 cut the turn off at exactly the step
+# where the policy forces the still-owed first itinerary save, leaving a created
+# trip with no days. Keep the graceful policy budget the binding limit and this
+# a backstop: each phase costs an agent node plus a tool node, plus a final
+# reply node and enough completion headroom for a hotel-provider fallback followed
+# by the required post-research persistence pass.
+_CHAT_GRAPH_RECURSION_LIMIT = 2 * (
+    graph_policy.MAX_TOOL_PHASES_PER_TURN
+    + graph_policy.MAX_INITIAL_ITINERARY_UPDATES
+    + graph_policy.MAX_POST_RESEARCH_UPDATES
+    + 2
+) + 2
 
 # CORS — the SPA runs on a different origin in dev (Vite :5173). Override the
 # allowed origins in production via WEB_ALLOWED_ORIGINS (comma-separated).
@@ -62,6 +126,68 @@ app.add_middleware(
 )
 
 
+def _ran_tools(messages: list[Any], since: int) -> dict[str, list[str]]:
+    """Tool names this turn ran, for the saved assistant message to carry.
+
+    The graph's tool messages are dropped when a turn is persisted, so a policy
+    that spans turns -- whether the trip kickoff was ever asked -- would other-
+    wise re-decide from scratch every time and never clear.
+    """
+    names: list[str] = []
+    for message in list(messages)[since:]:
+        for call in getattr(message, "tool_calls", None) or []:
+            name = call.get("name") if isinstance(call, dict) else getattr(call, "name", None)
+            if name and name not in names:
+                names.append(str(name))
+    return {graph_policy.RAN_TOOLS_KEY: names} if names else {}
+
+
+def _rate_limit_response(exc: BaseException) -> JSONResponse | None:
+    """A provider throttle is the caller going too fast, not a server fault.
+
+    Returned as 500 it looked like a crash, so callers that already back off on
+    429 -- the corpus builder among them -- discarded the request instead.
+    """
+    from tripplanner.observability import model_rate_limit_fields
+
+    fields = model_rate_limit_fields(exc, "")
+    if not fields:
+        return None
+    retry_ms = fields.get("retry_after_ms")
+    seconds = max(1, round((retry_ms or 60_000) / 1000))
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "The model is busy right now. Try again shortly."},
+        headers={"Retry-After": str(seconds)},
+    )
+
+
+def _best_effort_plan_reply() -> tuple[str, int]:
+    from tripplanner.tools.trip_planner import (
+        load_active_trip_dict,
+        planning_completion_gaps,
+    )
+
+    try:
+        trip = load_active_trip_dict() or {}
+        gaps = planning_completion_gaps(trip)
+    except Exception:
+        trip = {}
+        gaps = []
+    destination = str(trip.get("destination") or "your trip").strip()
+    itinerary = trip.get("day_wise_itinerary")
+    if not isinstance(itinerary, list) or not itinerary:
+        return (
+            "Planning reached its safety limit before a usable itinerary was saved. "
+            "Please retry with a shorter trip scope.",
+            len(gaps),
+        )
+    reply = f"I saved the best available {destination} itinerary."
+    if gaps:
+        reply += " It is usable, but these details still need refinement: " + " ".join(gaps)
+    return reply, len(gaps)
+
+
 @app.middleware("http")
 async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-untyped-def]
     """Let the SPA call ``/api/...`` in production the same way it does in dev.
@@ -75,7 +201,47 @@ async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-unt
         request.scope["path"] = "/"
     elif path.startswith("/api/"):
         request.scope["path"] = path[4:]
-    return await call_next(request)
+    started_at = time.monotonic()
+    status_code = 500
+    from tripplanner.usage_attribution import usage_scope
+
+    interaction_id = request.headers.get("x-request-id", "")
+    from tripplanner.places_budget import PaidProviderPurpose, places_budget_scope
+
+    purpose: PaidProviderPurpose = (
+        "corpus_generation"
+        if request.headers.get("x-tripplanner-paid-provider-purpose") == "corpus_generation"
+        else "user_interaction"
+    )
+    provider_scope = (
+        nullcontext() if os.environ.get("PYTEST_CURRENT_TEST") else places_budget_scope(purpose)
+    )
+    try:
+        with request_state_scope():
+            with provider_scope:
+                if request.scope.get("path") == "/chat/stream":
+                    response = await call_next(request)
+                else:
+                    with usage_scope(
+                        "user_action",
+                        interaction_id=interaction_id,
+                        route=f"{request.method} {request.scope.get('path', '')}",
+                    ):
+                        response = await call_next(request)
+        status_code = response.status_code
+        return response
+    finally:
+        from tripplanner.ops_metrics import record_request
+
+        route = request.scope.get("route")
+        route_path = getattr(route, "path", None) or "unmatched"
+        if not str(route_path).startswith("/ops/"):
+            record_request(
+                request.method,
+                str(route_path),
+                status_code,
+                (time.monotonic() - started_at) * 1000,
+            )
 
 # Per-user chat history is persisted per active trip via ``web.chat_store`` so
 # the conversation + itinerary summary survive a browser refresh and follow
@@ -90,7 +256,85 @@ def _load_chat() -> tuple[str | None, list[BaseMessage]]:
     return tid, chat_store.load(tid)
 
 
-def _save_chat(tid_before: str | None, history: list[BaseMessage]) -> str | None:
+def _load_chat_request(
+    request_id: str | None,
+) -> tuple[str | None, list[BaseMessage], dict[str, str] | None]:
+    """Load retry-aware history and any already completed operation result."""
+    from tripplanner.tools.trip_planner import active_trip_id
+    from tripplanner.web import chat_store
+
+    tid = active_trip_id()
+    chat_store.reconcile_general(tid)
+    replay = chat_store.completed_operation(tid, request_id)
+    return tid, chat_store.load_for_request(tid, request_id), replay
+
+
+def _completed_chat_request(request_id: str | None) -> dict[str, str] | None:
+    from tripplanner.web import chat_store
+
+    return chat_store.completed_request(request_id)
+
+
+async def _reserve_conversation(req: ChatRequest, user_id: str, history: list[BaseMessage]) -> None:
+    from tripplanner import conversation_limits
+    from tripplanner.tools.trip_planner import load_active_trip_dict
+
+    active_trip = await asyncio.to_thread(load_active_trip_dict) or {}
+    category = conversation_limits.classify_conversation(history, req.message, active_trip)
+    await asyncio.to_thread(
+        conversation_limits.reserve,
+        category,
+        user_id=user_id,
+        request_id=req.request_id,
+    )
+
+
+def _conversation_limit_response(exc: BaseException) -> JSONResponse:
+    from tripplanner.conversation_limits import ConversationLimitError
+
+    if isinstance(exc, ConversationLimitError):
+        detail = exc.as_detail()
+        reset = (
+            f" It resets at {exc.resets_at}."
+            if exc.resets_at
+            else " It does not reset automatically."
+        )
+        detail["message"] = (
+            "This environment has reached its conversation planning limit."
+            f"{reset} Saved trips and preferences are unchanged."
+        )
+        return JSONResponse(status_code=429, content=detail)
+    return JSONResponse(
+        status_code=503,
+        content={
+            "code": "conversation_limit_unavailable",
+            "message": "Conversation cost controls are unavailable. Please retry shortly.",
+        },
+    )
+
+
+async def _repair_completed_chat(
+    request_id: str | None, replay: dict[str, str]
+) -> None:
+    if not request_id:
+        return
+    from tripplanner.web import chat_store
+
+    try:
+        await asyncio.to_thread(chat_store.ensure_completed_turn, request_id, replay)
+    except Exception as exc:
+        app_event("api_chat_replay_repair_error", error=type(exc).__name__)
+
+
+def _save_chat(
+    tid_before: str | None,
+    base_history: list[BaseMessage],
+    completed_turn: list[BaseMessage],
+    request_id: str | None = None,
+    completed: bool = True,
+    agent: str = "trip",
+    turn_seconds: int | None = None,
+) -> str | None:
     """Persist the turn under the trip that's active *after* the turn.
 
     Handles three transitions (see ``chat_store.persist_turn``): no change,
@@ -105,20 +349,33 @@ def _save_chat(tid_before: str | None, history: list[BaseMessage]) -> str | None
     tid_after = active_trip_id()
 
     carryover = ""
+    origin_prompt = ""
     is_switch = (
         tid_before is not None
         and tid_after is not None
         and tid_after != tid_before
     )
-    if is_switch and not chat_store.transcript(tid_after) and len(history) >= 2:
+    if is_switch and not chat_store.transcript(tid_after):
         # Brand-new destination chat: distil portable context from the prior
         # conversation so the fresh chat isn't cold. Best-effort (LLM).
         prev_dest = trip_planner.saved_trip_destination(tid_before or "")
         active = trip_planner.load_active_trip_dict() or {}
         new_dest = str(active.get("destination") or "")
-        carryover = chat_carryover.distill(history[:-2], prev_dest, new_dest)
+        carryover = chat_carryover.distill(base_history, prev_dest, new_dest)
+        origin_prompt = chat_store.originating_request(base_history, new_dest)
 
-    return chat_store.persist_turn(tid_before, tid_after, history, carryover)
+    return chat_store.persist_turn(
+        tid_before,
+        tid_after,
+        base_history,
+        completed_turn,
+        carryover,
+        origin_prompt=origin_prompt,
+        request_id=request_id,
+        completed=completed,
+        agent=agent,
+        turn_seconds=turn_seconds,
+    )
 
 
 # Fire-and-forget passive-learning sweeps. Keep strong refs so the event loop
@@ -135,14 +392,15 @@ def _schedule_learning_sweep(user_id: str, message: str) -> None:
     """
     def _worker() -> None:
         from tripplanner.tools import passive_learning, profile_summary
-        from tripplanner.user_context import set_user_id
+        from tripplanner.usage_attribution import usage_scope
 
         set_user_id(user_id)
-        passive_learning.learn_from_message(message)
-        # Refresh the system-authored profile summary. Gated internally by a
-        # durable-facts digest, so this is a no-op (no LLM call) when nothing
-        # durable changed — including trip-scoped one-offs.
-        profile_summary.update_summary()
+        with usage_scope("agent_background", route="passive_learning"):
+            passive_learning.learn_from_message(message)
+            # Refresh the system-authored profile summary. Gated internally by a
+            # durable-facts digest, so this is a no-op (no LLM call) when nothing
+            # durable changed — including trip-scoped one-offs.
+            profile_summary.update_summary()
 
     try:
         task = asyncio.create_task(asyncio.to_thread(_worker))
@@ -153,149 +411,268 @@ def _schedule_learning_sweep(user_id: str, message: str) -> None:
         _worker()
 
 
-class ChatRequest(BaseModel):
-    message: str
-    user_id: str = "local"
-    proposal_only: bool = False
+def _record_chat_operation(
+    started: float,
+    *,
+    user_id: str,
+    transport: Literal["json", "sse"],
+    outcome: Literal[
+        "completed", "replayed", "capped", "conversation_limited", "rate_limited", "error"
+    ],
+    error: str | None = None,
+    exception: BaseException | None = None,
+    tool_calls: int = 0,
+) -> None:
+    error_name = error or (type(exception).__name__ if exception else None)
+    model_fields = (
+        model_rate_limit_fields(exception, _config.get_settings().azure_openai_deployment)
+        if exception
+        else {}
+    )
+    app_event(
+        "chat_operation",
+        user_id=user_id,
+        transport=transport,
+        outcome=outcome,
+        duration_ms=round((time.monotonic() - started) * 1000, 2),
+        **({"error": error_name} if error_name else {}),
+        **model_fields,
+    )
+    from tripplanner.ops_metrics import record_chat_turn
+
+    record_chat_turn(
+        user_id,
+        outcome,
+        (time.monotonic() - started) * 1000,
+        tool_calls=tool_calls,
+    )
 
 
-class ChatResponse(BaseModel):
-    reply: str
-    agent: str
-    trip_id: str | None = None
+def _record_chat_error(
+    started: float,
+    *,
+    user_id: str,
+    transport: Literal["json", "sse"],
+    exc: BaseException,
+) -> None:
+    """Record an admission/setup failure before it propagates to the client."""
+    _record_chat_operation(
+        started,
+        user_id=user_id,
+        transport=transport,
+        outcome="error",
+        error=type(exc).__name__,
+    )
 
 
-class SelectRequest(BaseModel):
-    kind: str
-    name: str
-    user_id: str = "local"
-    start_day: int | None = None
-    end_day: int | None = None
-    day: int | None = None
-    source_day: int | None = None
-    source_stop: int | None = None
-    replace_stay: bool = True
+def _record_chat_phase(
+    started: float,
+    *,
+    transport: Literal["json", "sse"],
+    phase: Literal["admission", "finalization"],
+    status: Literal["ok", "error"] = "ok",
+) -> None:
+    duration_ms = round((time.monotonic() - started) * 1000, 2)
+    app_event(
+        "chat_phase",
+        transport=transport,
+        operation=phase,
+        status=status,
+        ms=duration_ms,
+    )
+    from tripplanner.ops_metrics import record_operation
+
+    record_operation("chat_phase", f"{transport}.{phase}", status, duration_ms)
 
 
-class DeselectRequest(BaseModel):
-    kind: str
-    name: str
-    user_id: str = "local"
-    day: int | None = None
-    stop: int | None = None
-    all_occurrences: bool = True
+def _chat_turn_coordinator(
+    req: ChatRequest,
+    request: Request,
+    user_id: str,
+    transport: Literal["json", "sse"],
+) -> ChatTurnCoordinator:
+    from tripplanner import usage
 
-
-class TripIdRequest(BaseModel):
-    trip_id: str
-    user_id: str = "local"
-
-
-class UserRequest(BaseModel):
-    user_id: str = "local"
-
-
-class StopBookedRequest(BaseModel):
-    day: int
-    name: str
-    booked: bool
-    user_id: str = "local"
-
-
-class PreferencesRequest(BaseModel):
-    user_id: str = "local"
-    # Editable subset of the structured preferences. All optional — only
-    # provided keys are merged (additive, never wiping unspecified fields).
-    display_name: str | None = None
-    home_city: str | None = None
-    home_country: str | None = None
-    trip_style: str | None = None
-    budget_level: str | None = None
-    flight_class: str | None = None
-    prefer_direct_flights: bool | None = None
-    hotel_star_rating_min: int | None = None
-    dietary: list[str] | None = None
-    interests: list[str] | None = None
-    dislikes: list[str] | None = None
-    # Free-text "About me" blurb. When provided and changed, the backend runs
-    # the LLM extractor and additively overlays the structured fields it finds.
-    about_me: str | None = None
-    # System-authored profile summary. When provided, it's stored verbatim
-    # (user correction / reset via empty string); not the same as about_me.
-    profile_summary: str | None = None
-
-
-class PrivacyActionRequest(BaseModel):
-    user_id: str = "local"
-    action: Literal["delete_trip_history", "clear_all_data", "delete_account"]
-    # For destructive actions we require explicit typed confirmation text.
-    confirm_text: str = ""
-
-
-class GuestMigrateRequest(BaseModel):
-    user_id: str  # the authenticated identity to migrate INTO
-    guest_id: str  # the guest web-<uuid> identity to migrate FROM
-
-
-class ExportEmailRequest(BaseModel):
-    user_id: str = "local"
-    email: str
-    include_photos: bool = True
-    include_map_circuit: bool = True
-    template: Literal["minimal", "detailed", "family"] = "detailed"
+    return ChatTurnCoordinator(
+        ChatTurnDependencies(
+            acquire_replay=lambda _user_id: acquire_replay_access(user_id),
+            release_replay=release_replay_access,
+            check_replay=lambda: check_replay_lookup(request, user_id),
+            completed_request=_completed_chat_request,
+            repair_completed=_repair_completed_chat,
+            acquire_chat=lambda: acquire_chat(request, user_id),
+            release_chat=release_chat,
+            load_request=_load_chat_request,
+            over_cap=usage.is_over_cap,
+            cap_message=usage.cap_message,
+            reserve=lambda history: _reserve_conversation(req, user_id, history),
+            limit_response=_conversation_limit_response,
+            save_chat=_save_chat,
+            auto_persist_needed=_should_auto_persist_itinerary,
+            auto_persist=_auto_persist_itinerary,
+            schedule_learning=_schedule_learning_sweep,
+            record_operation=_record_chat_operation,
+            record_phase=_record_chat_phase,
+            event=app_event,
+        )
+    )
 
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat(req: ChatRequest) -> ChatResponse:
+async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONResponse:
     from tripplanner.graph import app_graph
-    from tripplanner.usage import cap_message, is_over_cap
-    from tripplanner.user_context import set_user_id
+    from tripplanner.places_budget import places_budget_scope
 
-    set_user_id(req.user_id)
+    started = time.monotonic()
+    header_request_id = request.headers.get("x-request-id", "")
+    if header_request_id and req.request_id and header_request_id != req.request_id:
+        raise HTTPException(status_code=422, detail="Request IDs in header and body must match.")
+    request_id = req.request_id or header_request_id
+    user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_request", length=len(req.message), words=len(req.message.split()))
 
-    over, usage = is_over_cap(req.user_id)
-    if over:
-        msg = cap_message(usage)
-        app_event("api_chat_capped", cost_usd=usage.get("cost_usd"))
-        return ChatResponse(reply=msg, agent="cap")
+    coordinator = _chat_turn_coordinator(req, request, user_id, "json")
+    try:
+        turn = await coordinator.admit(
+            started=started,
+            transport="json",
+            user_id=user_id,
+            request_id=request_id,
+            message=req.message,
+        )
+        if isinstance(turn, TurnTerminal):
+            if turn.response is not None:
+                return turn.response
+            return ChatResponse(
+                reply=turn.reply,
+                agent=turn.agent,
+                trip_id=turn.trip_id,
+            )
+        assert isinstance(turn, AdmittedTurn)
+        budget_exhausted = False
+        try:
+            from tripplanner.usage_attribution import annotate_current_batch, usage_scope
 
-    history_tid, history = await asyncio.to_thread(_load_chat)
-    history.append(HumanMessage(content=req.message))
-    result = await asyncio.to_thread(
-        app_graph.invoke,
-        {
-            "messages": history,
-            "current_agent": "",
-            "proposal_only": req.proposal_only,
-        },
-    )
+            with usage_scope(
+                "user_trip",
+                interaction_id=request_id,
+                trip_id=turn.history_trip_id or "",
+                route="POST /chat",
+                interaction_kind="trip_update" if turn.history_trip_id else "new_trip",
+            ) as usage_attribution:
+                try:
+                    with places_budget_scope("user_interaction"):
+                        result = await asyncio.to_thread(
+                            app_graph.invoke,
+                            {
+                                "messages": turn.history,
+                                "current_agent": "",
+                                "proposal_only": req.proposal_only,
+                            },
+                            config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
+                        )
+                finally:
+                    if not turn.history_trip_id:
+                        from tripplanner.tools.trip_planner import active_trip_id
 
-    reply = ""
-    for msg in reversed(result["messages"]):
-        if hasattr(msg, "content") and msg.content and msg.type == "ai":
-            reply = msg.content
-            break
-    # Hallucination critic: log unverified prices/times/URLs as telemetry only
-    # (internal QA signal — not surfaced to the user to avoid noisy footers).
-    from tripplanner.hallucination_critic import critique
+                        annotate_current_batch(
+                            interaction_id=usage_attribution.interaction_id,
+                            trip_id=await asyncio.to_thread(active_trip_id) or "",
+                        )
+        except GraphRecursionError:
+            # Native and scripted clients use this path; without the same
+            # handling the SSE path has, an exhausted turn raised a 500 and the
+            # freshly created trip was left with no itinerary and no answer.
+            budget_exhausted = True
+            result = {"messages": list(turn.history), "current_agent": "trip"}
+        except Exception as exc:
+            await coordinator.persist_interrupted(
+                turn,
+                message=req.message,
+                partial_reply="",
+                error=exc,
+                tool_names=set(),
+            )
+            throttled = _rate_limit_response(exc)
+            if throttled is not None:
+                _record_chat_operation(
+                    started, user_id=user_id, transport="json", outcome="rate_limited"
+                )
+                return throttled
+            raise
 
-    issues = critique(reply, result.get("messages", []))
-    if issues:
-        app_event("hallucination_critic", issues=len(issues), claims=issues)
-    history.append(AIMessage(content=reply))
-    tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
-    if not req.proposal_only:
-        _schedule_learning_sweep(req.user_id, req.message)
+        if budget_exhausted:
+            reply, gap_count = await asyncio.to_thread(_best_effort_plan_reply)
+            app_event("api_chat_budget_exhausted", completion_gap_count=gap_count)
+        else:
+            reply = ""
+            for msg in reversed(result["messages"]):
+                if hasattr(msg, "content") and msg.content and msg.type == "ai":
+                    reply = msg.content
+                    break
+            from tripplanner.hallucination_critic import critique
 
-    app_event("api_chat_response", reply_length=len(reply))
-    return ChatResponse(
-        reply=reply, agent=result.get("current_agent", "unknown"), trip_id=tid_after
-    )
+            issues = critique(reply, result.get("messages", []))
+            if issues:
+                app_event("hallucination_critic", issues=len(issues), claims=issues)
+
+        turn_tools = set(_ran_tools(result.get("messages") or [], len(turn.history)).get(
+            graph_policy.RAN_TOOLS_KEY, []
+        ))
+        agent = result.get("current_agent", "unknown")
+        completion = await coordinator.finalize(
+            turn,
+            message=req.message,
+            reply=reply,
+            agent=agent,
+            tool_names=turn_tools,
+            additional_kwargs=_ran_tools(result.get("messages") or [], len(turn.history)),
+            proposal_only=req.proposal_only,
+        )
+        app_event("api_chat_response", reply_length=len(reply))
+        return ChatResponse(
+            reply=completion.reply, agent=completion.agent, trip_id=completion.trip_id
+        )
+    except Exception as exc:
+        _record_chat_operation(
+            started,
+            user_id=user_id,
+            transport="json",
+            outcome="error",
+            exception=exc,
+        )
+        raise
+    finally:
+        if "turn" in locals():
+            await coordinator.close(turn)
 
 
 def _sse(event: str, data: dict[str, Any]) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+def _elapsed_clock(started: float) -> str:
+    """Where in the turn this happened, so a replay can be read like a log."""
+    seconds = max(int(time.monotonic() - started), 0)
+    return f"{seconds // 60}:{seconds % 60:02d}"
+
+
+# Proxies must not buffer or cache an event stream, or the SPA sees the whole
+# turn arrive at once instead of token by token.
+_SSE_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+
+
+async def _sse_replay_stream(replay: dict[str, Any]) -> AsyncIterator[str]:
+    """Re-emit an already-completed turn as a single-token event stream."""
+    yield _sse("token", {"text": replay["reply"]})
+    yield _sse(
+        "done",
+        {
+            "reply": replay["reply"],
+            "agent": replay["agent"],
+            "trip_id": replay["trip_id"] or None,
+        },
+    )
 
 
 def _summarize_tool_input(raw: Any, max_len: int = 160) -> str:
@@ -336,9 +713,10 @@ _DAY_HDR = re.compile(
     r"(?:\s*[-\u2013\u2014:·]\s*([^\n\*]{0,80}))?",
 )
 _BOLD = re.compile(r"\*\*([^\*\n]{3,60})\*\*")
+_BULLET = re.compile(r"(?m)^\s*[-*]\s+([^\n]{3,100})")
 
 
-def _auto_persist_itinerary(reply: str) -> None:
+def _auto_persist_itinerary(reply: str) -> bool:
     """If the agent's reply describes a multi-day itinerary but never called
     update_trip_plan, parse a minimal structure and persist it directly so the
     Itinerary panel is never left blank.
@@ -348,9 +726,9 @@ def _auto_persist_itinerary(reply: str) -> None:
     """
     matches = list(_DAY_HDR.finditer(reply))
     if len(matches) < 2:
-        return  # not a day-wise reply
+        return False
 
-    from tripplanner.tools.trip_planner import update_trip_plan as _utp
+    from tripplanner.tools import trip_planner
 
     days: list[dict[str, Any]] = []
     for i, m in enumerate(matches):
@@ -362,10 +740,12 @@ def _auto_persist_itinerary(reply: str) -> None:
         chunk = reply[start:end].strip()
         # Collect bolded place names as stops (agent usually bolds them)
         stop_names = _BOLD.findall(chunk)
+        if not stop_names:
+            stop_names = _BULLET.findall(chunk)
         stops = [
-            {"name": n.strip(), "kind": "attraction"}
+            {"name": n.strip().strip("*_ "), "kind": "attraction"}
             for n in dict.fromkeys(stop_names)  # dedup, preserve order
-            if n.strip()
+            if n.strip().strip("*_ ")
         ][:6]
         days.append({
             "day": day_num,
@@ -376,13 +756,37 @@ def _auto_persist_itinerary(reply: str) -> None:
         })
 
     try:
-        _utp.invoke({"updates_json": json.dumps({"day_wise_itinerary": days})})
+        result = trip_planner.update_trip_plan.invoke(
+            {"updates_json": json.dumps({"day_wise_itinerary": days})}
+        )
+        active = trip_planner.load_active_trip_dict() or {}
+        persisted = bool(active.get("day_wise_itinerary"))
+        app_event(
+            "itinerary_auto_persist",
+            persisted=persisted,
+            result_error=str(result).lstrip().startswith("Error:"),
+            recovered_days=len(days),
+        )
+        return persisted
+    except Exception as exc:
+        app_event("itinerary_auto_persist_failed", error=type(exc).__name__)
+        return False
+
+
+def _should_auto_persist_itinerary(tool_names_called: set[str]) -> bool:
+    if not {"create_trip_plan", "update_trip_plan"}.intersection(tool_names_called):
+        return False
+    from tripplanner.tools import trip_planner
+
+    try:
+        active = trip_planner.load_active_trip_dict() or {}
     except Exception:
-        pass  # best-effort; never crash the response path
+        return False
+    return not active.get("day_wise_itinerary")
 
 
 @app.post("/chat/stream")
-async def chat_stream(req: ChatRequest) -> StreamingResponse:
+async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     """Stream the agent turn as Server-Sent Events.
 
     Emits ``token`` (assistant text deltas), ``tool`` (tool start/end), then a
@@ -390,47 +794,87 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
     tool-progress over a plain HTTP stream.
     """
     from tripplanner.graph import app_graph
-    from tripplanner.usage import cap_message, is_over_cap
-    from tripplanner.user_context import set_user_id
+    from tripplanner.places_budget import places_budget_scope
 
-    set_user_id(req.user_id)
+    started = time.monotonic()
+    header_request_id = request.headers.get("x-request-id", "")
+    if header_request_id and req.request_id and header_request_id != req.request_id:
+        raise HTTPException(status_code=422, detail="Request IDs in header and body must match.")
+    request_id = req.request_id or header_request_id
+    user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_stream_request", length=len(req.message))
 
-    over, usage = is_over_cap(req.user_id)
-    if over:
-        msg = cap_message(usage)
-        app_event("api_chat_stream_capped", cost_usd=usage.get("cost_usd"))
-
-        async def _capped():
-            yield _sse("token", {"text": msg})
-            yield _sse("done", {"reply": msg, "agent": "cap"})
-
-        return StreamingResponse(
-            _capped(),
-            media_type="text/event-stream",
-            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    coordinator = _chat_turn_coordinator(req, request, user_id, "sse")
+    try:
+        turn = await coordinator.admit(
+            started=started,
+            transport="sse",
+            user_id=user_id,
+            request_id=request_id,
+            message=req.message,
         )
-
-    history_tid, history = await asyncio.to_thread(_load_chat)
-    history.append(HumanMessage(content=req.message))
+        if isinstance(turn, TurnTerminal):
+            if turn.response is not None:
+                return turn.response
+            terminal = {
+                "reply": turn.reply,
+                "agent": turn.agent,
+                "trip_id": turn.trip_id or "",
+            }
+            return StreamingResponse(
+                _sse_replay_stream(terminal),
+                media_type="text/event-stream",
+                headers=_SSE_HEADERS,
+            )
+        assert isinstance(turn, AdmittedTurn)
+    except Exception as exc:
+        _record_chat_error(started, user_id=user_id, transport="sse", exc=exc)
+        raise
 
     async def gen():
+        from tripplanner.usage_attribution import annotate_current_batch, usage_scope
+
         reply_parts: list[str] = []
         tool_starts: dict[str, float] = {}
         # Capture tool message outputs so we can fact-check the agent's final
         # reply against them (hallucination critic).
         tool_outputs: list[ToolMessage] = []
         tool_names_called: set[str] = set()  # track which tools fired this turn
+        receipts = ReceiptLog()
         yield _sse("progress", {"stage": "thinking"})
         try:
-            async for ev in app_graph.astream_events(
-                {
-                    "messages": history,
-                    "current_agent": "",
-                    "proposal_only": req.proposal_only,
-                },
-                version="v2",
-            ):
+            async def budgeted_events():
+                with usage_scope(
+                    "user_trip",
+                    interaction_id=request_id,
+                    trip_id=turn.history_trip_id or "",
+                    route="POST /chat/stream",
+                    interaction_kind=(
+                        "trip_update" if turn.history_trip_id else "new_trip"
+                    ),
+                ) as usage_attribution:
+                    try:
+                        with places_budget_scope("user_interaction"):
+                            async for event in app_graph.astream_events(
+                                {
+                                    "messages": turn.history,
+                                    "current_agent": "",
+                                    "proposal_only": req.proposal_only,
+                                },
+                                config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
+                                version="v2",
+                            ):
+                                yield event
+                    finally:
+                        if not turn.history_trip_id:
+                            from tripplanner.tools.trip_planner import active_trip_id
+
+                            annotate_current_batch(
+                                interaction_id=usage_attribution.interaction_id,
+                                trip_id=await asyncio.to_thread(active_trip_id) or "",
+                            )
+
+            async for ev in budgeted_events():
                 kind = ev.get("event")
                 name = ev.get("name", "")
                 run_id = ev.get("run_id", "")
@@ -451,12 +895,25 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
                         "args": args_preview,
                     })
                 elif kind == "on_tool_end":
-                    started = tool_starts.pop(run_id, None)
-                    duration_ms = int((time.monotonic() - started) * 1000) if started else None
+                    tool_started = tool_starts.pop(run_id, None)
+                    duration_ms = (
+                        int((time.monotonic() - tool_started) * 1000)
+                        if tool_started
+                        else None
+                    )
                     payload: dict[str, Any] = {"name": name, "phase": "end"}
                     if duration_ms is not None:
                         payload["duration_ms"] = duration_ms
                     output = data.get("output")
+                    input_request = extract_input_request(output)
+                    if input_request is not None:
+                        yield _sse("input_request", input_request)
+                    elif name == "request_trip_input":
+                        # Without this the card simply never appears and nothing says why.
+                        app_event(
+                            "api_chat_input_request_rejected",
+                            detail=str(getattr(output, "content", output))[:200],
+                        )
                     if output is not None:
                         # ToolNode wraps the result in a ToolMessage; the raw
                         # @tool may also surface a plain string.
@@ -469,7 +926,28 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
                                     ToolMessage(content=content, tool_call_id=name)
                                 )
                     yield _sse("tool", payload)
+                    tool_text = (
+                        output if isinstance(output, str) else getattr(output, "content", "")
+                    )
+                    receipt = receipts.add(name, tool_text)
+                    if receipt is not None:
+                        yield _sse(
+                            "receipt",
+                            {
+                                "seq": receipts.count,
+                                "at": _elapsed_clock(started),
+                                **receipt.as_dict(),
+                            },
+                        )
                     yield _sse("progress", {"stage": "reviewing"})
+        except GraphRecursionError:
+            reply, gap_count = await asyncio.to_thread(_best_effort_plan_reply)
+            app_event(
+                "api_chat_stream_budget_exhausted",
+                completion_gap_count=gap_count,
+            )
+            reply_parts.append(reply)
+            yield _sse("token", {"text": reply})
         except Exception as exc:  # surface a clean error to the client
             app_event("api_chat_stream_error", error=type(exc).__name__)
             # Persist whatever we have so a tool side-effect during the turn
@@ -477,12 +955,28 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
             # orphaned — otherwise the active trip exists with an empty chat
             # that vanishes on refresh.
             partial = "".join(reply_parts)
-            history.append(AIMessage(content=partial or "(interrupted)"))
-            try:
-                _save_chat(history_tid, history)
-            except Exception:
-                pass
-            yield _sse("error", {"message": "The assistant hit an error. Please retry."})
+            partial_save_failed = not await coordinator.persist_interrupted(
+                turn,
+                message=req.message,
+                partial_reply=partial,
+                error=exc,
+                tool_names=tool_names_called,
+            )
+            _record_chat_operation(
+                started,
+                user_id=user_id,
+                transport="sse",
+                outcome="error",
+                exception=exc,
+                tool_calls=len(tool_names_called),
+            )
+            message = "The assistant hit an error. Please retry."
+            if partial_save_failed:
+                message = (
+                    "The assistant hit an error, and the interrupted conversation could not "
+                    "be saved. Trip changes may still have been applied. Please retry."
+                )
+            yield _sse("error", {"message": message})
             return
 
         reply = "".join(reply_parts)
@@ -494,932 +988,91 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         issues = critique(reply, tool_outputs)
         if issues:
             app_event("hallucination_critic", issues=len(issues), claims=issues)
-        history.append(AIMessage(content=reply))
-        # Safety net: if the agent described a day-wise itinerary but never
-        # called update_trip_plan, parse the reply and persist it directly so
-        # the Itinerary panel is never left blank.
-        if not req.proposal_only and "update_trip_plan" not in tool_names_called:
-            await asyncio.to_thread(_auto_persist_itinerary, reply)
-        tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
-        if not req.proposal_only:
-            _schedule_learning_sweep(req.user_id, req.message)
+        try:
+            completion = await coordinator.finalize(
+                turn,
+                message=req.message,
+                reply=reply,
+                agent="trip",
+                tool_names=tool_names_called,
+                additional_kwargs=(
+                    {graph_policy.RAN_TOOLS_KEY: sorted(tool_names_called)}
+                    if tool_names_called
+                    else {}
+                ),
+                proposal_only=req.proposal_only,
+            )
+        except Exception as exc:
+            app_event("api_chat_stream_save_error", error=type(exc).__name__)
+            _record_chat_operation(
+                started,
+                user_id=user_id,
+                transport="sse",
+                outcome="error",
+                error=type(exc).__name__,
+                tool_calls=len(tool_names_called),
+            )
+            yield _sse(
+                "error",
+                {
+                    "message": (
+                        "The reply completed but its transcript could not be saved. "
+                        "Please retry."
+                    )
+                },
+            )
+            return
         app_event("api_chat_stream_done", reply_length=len(reply))
-        yield _sse("done", {"reply": reply, "agent": "trip", "trip_id": tid_after})
+        yield _sse(
+            "done",
+            {
+                "reply": completion.reply,
+                "agent": completion.agent,
+                "trip_id": completion.trip_id,
+            },
+        )
+
+    async def attributed_gen():
+        from tripplanner.usage_attribution import usage_scope
+
+        with usage_scope(
+            "user_trip",
+            interaction_id=request_id,
+            trip_id=turn.history_trip_id or "",
+            route="POST /chat/stream",
+            interaction_kind="trip_update" if turn.history_trip_id else "new_trip",
+        ):
+            async for event in gen():
+                yield event
 
     return StreamingResponse(
-        gen(),
+        attributed_gen(),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        headers=_SSE_HEADERS,
+        background=BackgroundTask(coordinator.close, turn),
     )
 
 
 @app.get("/chat/history")
-async def chat_history(user_id: str = "local", trip_id: str = "") -> dict:
+async def chat_history(request: Request, user_id: str = "local", trip_id: str = "") -> dict:
     """The persisted transcript for the user's *currently active* trip.
 
     Lets the SPA restore the conversation + itinerary summary after a refresh,
     and load the right conversation when the user switches saved trips.
     """
-    from tripplanner.user_context import set_user_id
     from tripplanner.tools.trip_planner import active_trip_id
     from tripplanner.web import chat_store
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     tid = trip_id.strip() or await asyncio.to_thread(active_trip_id) or ""
     rows = await asyncio.to_thread(chat_store.transcript, tid)
     return {"trip_id": tid, "messages": rows}
 
 
-@app.get("/trip/view")
-async def trip_view_endpoint(
-    user_id: str = "local", focus_kind: str = "", focus_name: str = ""
-) -> dict:
-    """Frontend-agnostic trip-panel view-model. ``focus_kind``/``focus_name``
-    optionally zoom one item."""
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_operations
-
-    set_user_id(user_id)
-    focus = {"kind": focus_kind, "name": focus_name} if focus_name else None
-    return await asyncio.to_thread(trip_operations.build_view, focus)
-
-
-@app.get("/maps/config")
-async def maps_config_endpoint() -> dict:
-    """Expose whether the interactive map is enabled + its browser key.
-
-    The key is a referrer-restricted browser key (see ``config.py``); returning
-    it here is the standard pattern for the Maps JavaScript API. Empty key →
-    ``enabled: false`` and the SPA hides the map panel.
-    """
-    from tripplanner.config import get_settings
-
-    key = get_settings().google_maps_browser_key or ""
-    return {"enabled": bool(key), "key": key}
-
-
-@app.get("/trip/map")
-async def trip_map_endpoint(user_id: str = "local") -> dict:
-    """Interactive-map view-model: geocoded, day-tagged pins + route bands."""
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_operations
-
-    set_user_id(user_id)
-    return await asyncio.to_thread(trip_operations.build_map)
-
-
-@app.get("/destination/overview")
-async def destination_overview_endpoint(
-    destination: str = "", user_id: str = "local", news: bool = True
-) -> dict:
-    """Destination-level overview (photos, key attractions, reviews, news).
-
-    When ``destination`` is omitted, falls back to the active trip's
-    destination so the SPA can show "about the place" before any selections.
-    """
-    from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_view
-
-    set_user_id(user_id)
-    if not destination:
-        trip = trip_planner.load_active_trip_dict()
-        destination = str((trip or {}).get("destination") or "")
-    return await asyncio.to_thread(
-        trip_view.build_destination_overview, destination, include_news=news
-    )
-
-
-
-@app.post("/trip/select")
-async def trip_select(req: SelectRequest) -> dict:
-    """Add a hotel/attraction to the active trip (the SPA's 'Add to trip')."""
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_operations
-
-    set_user_id(req.user_id)
-    return await asyncio.to_thread(
-        trip_operations.select,
-        req.kind,
-        req.name,
-        start_day=req.start_day,
-        end_day=req.end_day,
-        day=req.day,
-        source_day=req.source_day,
-        source_stop=req.source_stop,
-        replace_stay=req.replace_stay,
-    )
-
-
-@app.post("/trip/deselect")
-async def trip_deselect(req: DeselectRequest) -> dict:
-    """Remove a hotel/attraction from the active trip (the SPA's 'Remove')."""
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_operations
-
-    set_user_id(req.user_id)
-    return await asyncio.to_thread(
-        trip_operations.deselect,
-        req.kind,
-        req.name,
-        day=req.day,
-        stop=req.stop,
-        all_occurrences=req.all_occurrences,
-    )
-
-
-@app.get("/trip/itinerary")
-async def trip_itinerary_endpoint(user_id: str = "local") -> dict:
-    """Structured day-by-day itinerary view-model (the Itinerary tab)."""
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_operations
-
-    set_user_id(user_id)
-    return await asyncio.to_thread(trip_operations.build_itinerary)
-
-
-@app.post("/trip/stop/booked")
-async def trip_stop_booked(req: StopBookedRequest) -> dict:
-    """Toggle one itinerary stop's booked flag (the Itinerary checkbox)."""
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_operations
-
-    set_user_id(req.user_id)
-    return await asyncio.to_thread(
-        trip_operations.set_stop_booked, req.day, req.name, req.booked
-    )
-
-
-@app.get("/trips")
-async def trips_list(user_id: str = "local") -> dict:
-    """All saved trips for the user (the SPA's 'My trips' switcher)."""
-    from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
-
-    set_user_id(user_id)
-    trips = await asyncio.to_thread(trip_planner.list_saved_trips)
-    return {"trips": trips}
-
-
-@app.post("/trips/switch")
-async def trips_switch(req: TripIdRequest) -> dict:
-    """Make a saved trip active (auto-saving whatever was active) and return
-    the refreshed trip-panel view."""
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_operations
-
-    set_user_id(req.user_id)
-    return await asyncio.to_thread(trip_operations.switch_trip, req.trip_id)
-
-
-@app.post("/trips/delete")
-async def trips_delete(req: TripIdRequest) -> dict:
-    """Delete a single saved trip AND its chat history; returns the refreshed
-    saved-trips list."""
-    from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import chat_store
-
-    set_user_id(req.user_id)
-    await asyncio.to_thread(trip_planner.delete_saved_trip, req.trip_id)
-    # Also erase that trip's persisted conversation so no orphaned data lingers.
-    await asyncio.to_thread(chat_store.clear, req.trip_id)
-    trips = await asyncio.to_thread(trip_planner.list_saved_trips)
-    return {"ok": True, "trips": trips}
-
-
-@app.post("/trip/new")
-async def trip_new(req: UserRequest) -> dict:
-    """Start a fresh planning chat: clear the active trip + the general chat
-    bucket so the next conversation begins clean. Saved trips are untouched."""
-    from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import chat_store
-
-    set_user_id(req.user_id)
-    await asyncio.to_thread(trip_planner.start_new_trip)
-    await asyncio.to_thread(chat_store.clear, None)
-    return {"ok": True}
-
-
-
-@app.get("/trip/export.ics")
-async def trip_export_ics(user_id: str = "local") -> Response:
-    """Download the active trip as an iCalendar (.ics) file."""
-    from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web.ics_export import build_ics
-
-    set_user_id(user_id)
-    plan = trip_planner.load_active_trip_dict()
-    body = build_ics(plan)
-    dest = ((plan or {}).get("destination") or "trip").lower()
-    safe = "".join(c if c.isalnum() else "-" for c in dest).strip("-") or "trip"
-    return Response(
-        content=body,
-        media_type="text/calendar",
-        headers={"Content-Disposition": f'attachment; filename="{safe}.ics"'},
-    )
-
-
-@app.get("/trip/export/print")
-async def trip_export_print(
-    user_id: str = "local",
-    include_photos: str = "1",
-    include_map_circuit: str = "1",
-    template: str = "detailed",
-    auto_print: str = "0",
-) -> Response:
-    """Return a print-ready HTML itinerary suitable for Save-as-PDF."""
-    from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web.itinerary_export import build_export_html, parse_export_bool
-
-    set_user_id(user_id)
-    plan = trip_planner.load_active_trip_dict()
-    html = build_export_html(
-        plan,
-        include_photos=parse_export_bool(include_photos, default=True),
-        include_map_circuit=parse_export_bool(include_map_circuit, default=True),
-        template=template,
-        auto_print=parse_export_bool(auto_print, default=False),
-    )
-    return Response(content=html, media_type="text/html; charset=utf-8")
-
-
-@app.get("/trip/export.pdf")
-async def trip_export_pdf(
-    user_id: str = "local",
-    template: str = "detailed",
-    include_photos: str = "1",
-    include_map_circuit: str = "1",
-) -> Response:
-    """Return a downloadable itinerary PDF generated server-side."""
-    from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
-
-    set_user_id(user_id)
-    plan = trip_planner.load_active_trip_dict()
-    if not plan:
-        return JSONResponse({"error": "no active trip"}, status_code=404)
-
-    try:
-        from tripplanner.web.itinerary_export import parse_export_bool
-        from tripplanner.web.itinerary_pdf import build_itinerary_pdf_bytes
-
-        pdf_bytes = build_itinerary_pdf_bytes(
-            plan,
-            template=template,
-            include_photos=parse_export_bool(include_photos, default=True),
-            include_map_circuit=parse_export_bool(include_map_circuit, default=True),
-        )
-    except ImportError:
-        return JSONResponse(
-            {
-                "error": "pdf_renderer_not_installed",
-                "message": "Install reportlab to enable direct PDF download.",
-            },
-            status_code=503,
-        )
-
-    dest = str(plan.get("destination") or "trip").strip().lower()
-    safe = "".join(c if c.isalnum() else "-" for c in dest).strip("-") or "trip"
-    return Response(
-        content=pdf_bytes,
-        media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{safe}-itinerary.pdf"'},
-    )
-
-
-@app.post("/trip/export/email")
-async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
-    """Send the itinerary export to an email address (SMTP when configured).
-
-    If SMTP is not configured, returns a `mailto:` fallback so the frontend can
-    open the user's mail client with a prefilled subject/body.
-    """
-    from email.message import EmailMessage
-    from urllib.parse import quote
-    import smtplib
-
-    from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web.itinerary_export import build_export_html
-    from tripplanner.web.share import mint_for_active_trip
-
-    set_user_id(req.user_id)
-    plan = trip_planner.load_active_trip_dict()
-    if not plan:
-        return {"ok": False, "error": "no_active_trip", "message": "No active trip to export."}
-
-    # Share / continue-planning link.
-    token = mint_for_active_trip()
-    share_url = f"{str(request.base_url).rstrip('/')}/trip/shared/{token}" if token else ""
-
-    html = build_export_html(
-        plan,
-        include_photos=bool(req.include_photos),
-        include_map_circuit=bool(req.include_map_circuit),
-        template=req.template,
-        auto_print=False,
-        share_url=share_url,
-    )
-    destination = str(plan.get("destination") or "Trip")
-    subject = f"{destination} itinerary export"
-
-    plain = (
-        f"Your trip itinerary for {destination} is attached as HTML.\n"
-        "Open it in a browser and Print → Save as PDF for a carry-along copy.\n"
-        + (
-            f"\nContinue planning or share this trip:\n{share_url}\n"
-            if share_url
-            else ""
-        )
-    )
-
-    # Azure-first path: ACS Email (stays inside Azure cost/account boundary).
-    acs_conn = os.getenv("AZURE_COMMUNICATION_CONNECTION_STRING", "").strip()
-    acs_sender = os.getenv("AZURE_COMMUNICATION_EMAIL_SENDER", "").strip()
-    if acs_conn and acs_sender:
-        try:
-            from azure.communication.email import EmailClient
-
-            client = EmailClient.from_connection_string(acs_conn)
-            message = {
-                "senderAddress": acs_sender,
-                "recipients": {"to": [{"address": req.email}]},
-                "content": {
-                    "subject": subject,
-                    "plainText": plain,
-                    "html": html,
-                },
-            }
-            poller = client.begin_send(message)
-            poller.result()
-            app_event("api_trip_export_email_sent", destination=destination, provider="acs")
-            return {"ok": True, "message": f"Itinerary sent to {req.email}."}
-        except Exception as exc:
-            app_event("api_trip_export_email_error", error=type(exc).__name__, provider="acs")
-
-    smtp_host = os.getenv("SMTP_HOST", "").strip()
-    smtp_port = int(os.getenv("SMTP_PORT", "587") or "587")
-    smtp_user = os.getenv("SMTP_USER", "").strip()
-    smtp_pass = os.getenv("SMTP_PASSWORD", "").strip()
-    smtp_from = os.getenv("SMTP_FROM", smtp_user or "").strip()
-    smtp_tls = os.getenv("SMTP_USE_TLS", "1").strip().lower() not in {"0", "false", "no"}
-
-    if not smtp_host or not smtp_from:
-        body = quote(
-            plain + ("\n(Email sending is not configured on this server.)"),
-            safe="",
-        )
-        return {
-            "ok": False,
-            "error": "email_not_configured",
-            "mailto": f"mailto:{quote(req.email, safe='')}?subject={quote(subject, safe='')}&body={body}",
-            "message": "SMTP is not configured; opened mail client fallback.",
-        }
-
-    msg = EmailMessage()
-    msg["Subject"] = subject
-    msg["From"] = smtp_from
-    msg["To"] = req.email
-    msg.set_content(plain)
-    msg.add_alternative(html, subtype="html")
-    msg.add_attachment(
-        html.encode("utf-8"),
-        maintype="text",
-        subtype="html",
-        filename="trip-itinerary.html",
-    )
-
-    try:
-        with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as smtp:
-            if smtp_tls:
-                smtp.starttls()
-            if smtp_user:
-                smtp.login(smtp_user, smtp_pass)
-            smtp.send_message(msg)
-    except Exception as exc:
-        app_event("api_trip_export_email_error", error=type(exc).__name__)
-        return {"ok": False, "error": "email_send_failed", "message": "Could not send email."}
-
-    app_event("api_trip_export_email_sent", destination=destination)
-    return {"ok": True, "message": f"Itinerary sent to {req.email}."}
-
-
-@app.post("/trip/share")
-async def trip_share(req: SelectRequest, request: Request) -> dict:
-    """Mint an opaque read-only share token for the active trip.
-
-    Re-using ``SelectRequest`` only for its ``user_id`` field — ``kind``/``name``
-    are ignored. Returns ``{token, url}`` or ``{error}`` if no active plan.
-    """
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web.share import mint_for_active_trip
-
-    set_user_id(req.user_id)
-    token = mint_for_active_trip()
-    if not token:
-        return {"error": "no active trip to share"}
-    base = str(request.base_url).rstrip("/")
-    return {"token": token, "url": f"{base}/trip/shared/{token}"}
-
-
-@app.get("/trip/shared/{token}")
-async def trip_shared_view(token: str, request: Request) -> Response:
-    """Public read-only HTML snapshot of a shared trip plan."""
-    from tripplanner.web.share import render_public_html
-
-    base = str(request.base_url).rstrip("/")
-    html = render_public_html(token, current_origin=base)
-    if html is None:
-        return JSONResponse(
-            {"error": "invalid or expired share link"}, status_code=404
-        )
-    return Response(content=html, media_type="text/html; charset=utf-8")
-
-
-@app.get("/trip/shared/{token}.json")
-async def trip_shared_json(token: str) -> dict:
-    """Public JSON payload for a shared snapshot."""
-    from tripplanner.web.share import resolve
-
-    snapshot = resolve(token)
-    if snapshot is None:
-        return JSONResponse({"error": "invalid or expired share link"}, status_code=404)
-    return snapshot
-
-
-@app.post("/trip/shared/{token}/import")
-async def trip_shared_import(token: str, req: UserRequest) -> dict:
-    """Import a shared snapshot into the caller's own editable trip space."""
-    from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import share, trip_view
-
-    snapshot = share.resolve(token)
-    if snapshot is None:
-        return JSONResponse({"error": "invalid or expired share link"}, status_code=404)
-    set_user_id(req.user_id)
-    imported = trip_planner.import_shared_trip_snapshot(snapshot.get("plan") or {})
-    return {"ok": True, "view": trip_view.build_view(imported, None)}
-
-
-@app.get("/preferences")
-async def get_preferences(user_id: str = "local") -> dict:
-    """Return the editable subset of the user's saved preferences (for the
-    SPA settings panel)."""
-    from tripplanner.tools import user_preferences as prefs_store
-    from tripplanner.user_context import set_user_id
-
-    set_user_id(user_id)
-    prefs = prefs_store.load_preferences()
-    profile = prefs.get("profile") or {}
-    transport = prefs.get("transport_preferences") or {}
-    hotel = prefs.get("hotel_preferences") or {}
-    food = prefs.get("food_preferences") or {}
-    return {
-        "display_name": profile.get("display_name") or "",
-        "home_city": profile.get("home_city") or "",
-        "home_country": profile.get("home_country") or "",
-        "trip_style": prefs.get("trip_style") or "",
-        "budget_level": prefs.get("budget_level") or "",
-        "flight_class": transport.get("flight_class") or "",
-        "prefer_direct_flights": bool(transport.get("prefer_direct_flights", True)),
-        "hotel_star_rating_min": int(hotel.get("star_rating_min") or 3),
-        "dietary": list(food.get("dietary") or []),
-        "interests": list(prefs.get("interests") or []),
-        "dislikes": list(prefs.get("dislikes") or []),
-        "about_me": prefs.get("about_me") or "",
-        "profile_summary": prefs.get("profile_summary") or "",
-        "profile_summary_updated_at": prefs.get("profile_summary_updated_at"),
-    }
-
-
-@app.post("/preferences")
-async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
-    """Merge the provided preference fields and persist them (additive — only
-    keys present in the request are written)."""
-    from tripplanner.tools import preferences_merge
-    from tripplanner.tools import user_preferences as prefs_store
-    from tripplanner.user_context import set_user_id
-
-    set_user_id(req.user_id)
-    prefs = prefs_store.load_preferences()
-    profile = dict(prefs.get("profile") or {})
-    transport = dict(prefs.get("transport_preferences") or {})
-    hotel = dict(prefs.get("hotel_preferences") or {})
-    food = dict(prefs.get("food_preferences") or {})
-
-    if req.display_name is not None:
-        profile["display_name"] = req.display_name.strip() or None
-    if req.home_city is not None:
-        profile["home_city"] = req.home_city.strip() or None
-    if req.home_country is not None:
-        profile["home_country"] = req.home_country.strip() or None
-    if req.trip_style is not None:
-        prefs["trip_style"] = req.trip_style or None
-    if req.budget_level is not None:
-        prefs["budget_level"] = req.budget_level or None
-    if req.flight_class is not None:
-        transport["flight_class"] = req.flight_class or None
-    if req.prefer_direct_flights is not None:
-        transport["prefer_direct_flights"] = req.prefer_direct_flights
-    if req.hotel_star_rating_min is not None:
-        hotel["star_rating_min"] = max(1, min(5, int(req.hotel_star_rating_min)))
-    if req.dietary is not None:
-        food["dietary"] = [d.strip() for d in req.dietary if d.strip()]
-    if req.interests is not None:
-        prefs["interests"] = [d.strip() for d in req.interests if d.strip()]
-    if req.dislikes is not None:
-        prefs["dislikes"] = [d.strip() for d in req.dislikes if d.strip()]
-
-    prefs["profile"] = profile
-    prefs["transport_preferences"] = transport
-    prefs["hotel_preferences"] = hotel
-    prefs["food_preferences"] = food
-
-    # Free-text About-me: extract structured fields and overlay additively
-    # (shared logic in preferences_merge).
-    extracted_keys: list[str] = []
-    if req.about_me is not None:
-        prefs, extracted_keys = preferences_merge.apply_about_me(prefs, req.about_me)
-
-    prefs_store.save_preferences(prefs)
-
-    # User-corrected / reset profile summary is stored verbatim (and stamps the
-    # current digest so the background sweep won't immediately overwrite it).
-    if req.profile_summary is not None:
-        from tripplanner.tools import profile_summary as profile_summary_mod
-
-        profile_summary_mod.set_summary(req.profile_summary)
-
-    app_event("api_preferences_saved")
-    return {"ok": True, "about_me_extracted": extracted_keys}
-
-
-@app.post("/profile/summary/regenerate")
-async def regenerate_profile_summary(req: SelectRequest) -> dict:
-    """Force a fresh LLM-authored profile summary for the user.
-
-    Re-uses ``SelectRequest`` only for ``user_id`` (``kind``/``name`` ignored).
-    Returns the new ``profile_summary`` (may be empty if there's nothing durable
-    to summarize or the model is unavailable).
-    """
-    from tripplanner.tools import profile_summary as profile_summary_mod
-    from tripplanner.user_context import set_user_id
-
-    set_user_id(req.user_id)
-    summary = profile_summary_mod.update_summary(force=True)
-    app_event("api_profile_summary_regenerated")
-    return {"ok": True, "profile_summary": summary}
-
-@app.post("/account/privacy")
-async def account_privacy_action(req: PrivacyActionRequest) -> dict:
-    """Run user-requested privacy actions (GDPR-style controls).
-
-    Supported actions:
-    - ``delete_trip_history``: remove all saved/active trips and chat history.
-    - ``clear_all_data``: delete trips/chats + reset preferences + clear usage/cache.
-    - ``delete_account``: same as clear-all; identity provider account remains external.
-    """
-    from tripplanner.tools import trip_planner
-    from tripplanner.tools import user_preferences as prefs_store
-    from tripplanner.usage import clear_usage
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import chat_store
-    import tripplanner.tools_cache as tools_cache
-
-    set_user_id(req.user_id)
-
-    if req.action in {"clear_all_data", "delete_account"}:
-        if req.confirm_text.strip().upper() != "DELETE":
-            return {
-                "ok": False,
-                "error": "confirmation_required",
-                "message": "Type DELETE to confirm this action.",
-            }
-
-    deleted_trips = await asyncio.to_thread(trip_planner.clear_all_trip_history)
-    deleted_chats = await asyncio.to_thread(chat_store.clear_all)
-
-    deleted_usage = 0
-    deleted_cache = 0
-    reset_prefs = False
-
-    if req.action in {"clear_all_data", "delete_account"}:
-        await asyncio.to_thread(prefs_store.reset_preferences)
-        reset_prefs = True
-        deleted_usage = await asyncio.to_thread(clear_usage, req.user_id)
-        deleted_cache = await asyncio.to_thread(tools_cache.clear_cache_for_user, req.user_id)
-
-    app_event(
-        "api_privacy_action",
-        action=req.action,
-        deleted_trips=deleted_trips,
-        deleted_chats=deleted_chats,
-        deleted_usage=deleted_usage,
-        deleted_cache=deleted_cache,
-    )
-
-    return {
-        "ok": True,
-        "action": req.action,
-        "deleted_trips": deleted_trips,
-        "deleted_chats": deleted_chats,
-        "deleted_usage": deleted_usage,
-        "deleted_cache": deleted_cache,
-        "preferences_reset": reset_prefs,
-        "message": (
-            "Trip history deleted."
-            if req.action == "delete_trip_history"
-            else "All app data cleared for this account."
-        ),
-    }
-
-
-@app.post("/account/migrate-guest")
-async def account_migrate_guest(req: GuestMigrateRequest) -> dict:
-    """Copy trips and preferences from a guest (web-*) identity into an
-    authenticated account.
-
-    Called once after Google OAuth sign-in when the browser had existing guest
-    data. Safe to call multiple times — already-migrated trips are skipped.
-    Returns {ok, copied_trips, skipped_trips, copied_prefs}.
-    """
-    from tripplanner.tools import trip_planner, user_preferences as prefs_store
-    from tripplanner.user_context import set_user_id
-    from tripplanner.web import chat_store
-
-    guest_id = (req.guest_id or "").strip()
-    auth_id = (req.user_id or "").strip()
-    if not guest_id.startswith("web-") or not auth_id:
-        return {"ok": False, "error": "invalid_ids"}
-
-    # ── 1. Copy saved trips from guest into authenticated user ──────────────
-    set_user_id(guest_id)
-    guest_trips = await asyncio.to_thread(trip_planner.list_saved_trips)
-
-    set_user_id(auth_id)
-    auth_trips = await asyncio.to_thread(trip_planner.list_saved_trips)
-    auth_trip_ids = {t["trip_id"] for t in auth_trips}
-
-    copied_trips = 0
-    skipped_trips = 0
-    for summary in guest_trips:
-        tid = summary.get("trip_id")
-        if not tid or tid in auth_trip_ids:
-            skipped_trips += 1
-            continue
-        # Load the full plan from the guest store.
-        set_user_id(guest_id)
-        full_plan = await asyncio.to_thread(trip_planner._load_history_trip, tid)
-        if not full_plan:
-            skipped_trips += 1
-            continue
-        # Write it into the authenticated user's store.
-        set_user_id(auth_id)
-        await asyncio.to_thread(trip_planner._mirror_to_history, full_plan)
-        copied_trips += 1
-
-    # ── 2. Copy preferences if the authenticated user has none yet ──────────
-    set_user_id(auth_id)
-    auth_prefs = prefs_store.load_preferences()
-    copied_prefs = False
-    if not auth_prefs.get("about_me") and not auth_prefs.get("interests"):
-        set_user_id(guest_id)
-        guest_prefs = prefs_store.load_preferences()
-        if guest_prefs.get("about_me") or guest_prefs.get("interests"):
-            set_user_id(auth_id)
-            prefs_store.save_preferences(guest_prefs)
-            copied_prefs = True
-
-    # ── 3. Copy the active trip (if guest has one and auth user has none) ───
-    set_user_id(guest_id)
-    guest_active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
-    set_user_id(auth_id)
-    auth_active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
-    copied_chat = False
-    if guest_active and not auth_active:
-        await asyncio.to_thread(trip_planner._save_active_trip, guest_active)
-
-    # ── 4. Copy the active trip's chat so the conversation isn't lost ───────
-    guest_active_id = (guest_active or {}).get("trip_id")
-    auth_active_id = (auth_active or {}).get("trip_id")
-    # Copy only if we just imported the active trip (auth had none before).
-    if guest_active_id and not auth_active:
-        set_user_id(guest_id)
-        guest_msgs = await asyncio.to_thread(chat_store.load, guest_active_id)
-        if not guest_msgs:
-            # Fall back to the general bucket (pre-trip conversation).
-            guest_msgs = await asyncio.to_thread(chat_store.load, None)
-        if guest_msgs:
-            set_user_id(auth_id)
-            await asyncio.to_thread(chat_store.save, guest_active_id, guest_msgs)
-            copied_chat = True
-
-    app_event(
-        "api_guest_migrate",
-        copied_trips=copied_trips,
-        skipped_trips=skipped_trips,
-        copied_prefs=copied_prefs,
-        copied_chat=copied_chat,
-    )
-    return {
-        "ok": True,
-        "copied_trips": copied_trips,
-        "skipped_trips": skipped_trips,
-        "copied_prefs": copied_prefs,
-        "copied_chat": copied_chat,
-    }
-
-
-@app.get("/account/guest-data-summary")
-async def account_guest_data_summary(user_id: str) -> dict:
-    """How much data does a guest (web-*) account have?
-
-    Called by the frontend after OAuth login to decide whether to offer
-    the guest-import banner.
-    """
-    from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
-
-    guest_id = (user_id or "").strip()
-    if not guest_id.startswith("web-"):
-        return {"has_data": False, "trip_count": 0}
-    set_user_id(guest_id)
-    trips = await asyncio.to_thread(trip_planner.list_saved_trips)
-    active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
-    count = len(trips) + (1 if active and not trips else 0)
-    return {"has_data": count > 0, "trip_count": count}
-
-
-# ---------------------------------------------------------------------------
-# Google OAuth — standalone HMAC-signed session cookie. Degrades gracefully:
-# when OAUTH_GOOGLE_CLIENT_ID etc. are unset, /auth/me reports
-# {authenticated: false} and the SPA falls back to name/anon.
-# ---------------------------------------------------------------------------
-def _secure_cookie(request: Request) -> bool:
-    return oauth.redirect_uri(str(request.base_url)).startswith("https://")
-
-
-@app.get("/auth/config")
-async def auth_config(request: Request) -> dict:
-    """Tells the SPA whether to show the 'Sign in with Google' button, and
-    surfaces the exact redirect URI the backend will hand to Google — copy
-    this verbatim into the Google Cloud Console 'Authorized redirect URIs'
-    list to avoid redirect_uri_mismatch."""
-    return {
-        "google": oauth.is_enabled(),
-        "redirect_uri": oauth.redirect_uri(str(request.base_url)),
-    }
-
-
-@app.get("/auth/me")
-async def auth_me(request: Request) -> dict:
-    """Return the signed-in identity (from the session cookie) or anonymous."""
-    session = oauth.read_session(request.cookies.get(oauth.SESSION_COOKIE))
-    if not session:
-        return {"authenticated": False}
-    return {"authenticated": True, **session}
-
-
-@app.get("/auth/mobile/session")
-async def auth_mobile_session(token: str = "") -> Response:
-    """Validate a signed OAuth session returned to the native app."""
-    session = oauth.read_session(token)
-    if not session:
-        return JSONResponse({"authenticated": False}, status_code=401)
-    return JSONResponse({"authenticated": True, **session})
-
-
-def _mobile_auth_redirect(target: str, token: str) -> str | None:
-    parsed = urlsplit(target)
-    if parsed.scheme not in {"tripplanner", "exp"}:
-        return None
-    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
-    query["session"] = token
-    return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, urlencode(query), parsed.fragment))
-
-
-@app.get("/auth/login/google")
-async def auth_login_google(request: Request, redirect: str = "/") -> RedirectResponse:
-    """Kick off the authorization-code flow → redirect the browser to Google."""
-    if not oauth.is_enabled():
-        return RedirectResponse(redirect or "/", status_code=302)
-    callback = oauth.redirect_uri(str(request.base_url))
-    url, state_token = oauth.build_authorize_url(callback, redirect or "/")
-    res = RedirectResponse(url, status_code=302)
-    res.set_cookie(
-        "mg_oauth_state",
-        state_token,
-        max_age=600,
-        httponly=True,
-        samesite="lax",
-        secure=_secure_cookie(request),
-        path="/",
-    )
-    return res
-
-
-@app.get("/auth/callback/google")
-async def auth_callback_google(
-    request: Request, code: str = "", state: str = "", error: str = ""
-) -> RedirectResponse:
-    """Google redirects here with ?code. Exchange it, set the session cookie,
-    then bounce back to the SPA path the user started from."""
-    post_login = oauth.verify_state(request.cookies.get("mg_oauth_state"), state)
-    if error or not code or post_login is None:
-        app_event("api_oauth_callback_rejected", reason=error or "bad_state")
-        res = RedirectResponse("/?auth=failed", status_code=302)
-        res.delete_cookie("mg_oauth_state", path="/")
-        return res
-
-    callback = oauth.redirect_uri(str(request.base_url))
-    try:
-        profile = await oauth.exchange_code(code, callback)
-    except Exception as exc:
-        app_event("api_oauth_exchange_error", error=type(exc).__name__)
-        res = RedirectResponse("/?auth=failed", status_code=302)
-        res.delete_cookie("mg_oauth_state", path="/")
-        return res
-
-    identifier = profile["identifier"]
-    # Seed the display name on first login.
-    try:
-        from tripplanner.tools import user_preferences as prefs_store
-        from tripplanner.user_context import set_user_id
-
-        set_user_id(identifier)
-        prefs = prefs_store.load_preferences()
-        profile_blob = dict(prefs.get("profile") or {})
-        if not profile_blob.get("display_name") and profile.get("name"):
-            profile_blob["display_name"] = profile["name"].split()[0]
-            prefs["profile"] = profile_blob
-            prefs_store.save_preferences(prefs)
-    except Exception:
-        pass  # profile seeding is best-effort; never block login
-
-    app_event("api_oauth_login", provider="google")
-    token = oauth.make_session_token(
-        identifier, profile.get("name", ""), profile.get("email", ""), profile.get("picture", "")
-    )
-    res = RedirectResponse(_mobile_auth_redirect(post_login, token) or post_login or "/", status_code=302)
-    res.delete_cookie("mg_oauth_state", path="/")
-    res.set_cookie(
-        oauth.SESSION_COOKIE,
-        token,
-        max_age=30 * 24 * 60 * 60,
-        httponly=True,
-        samesite="lax",
-        secure=_secure_cookie(request),
-        path="/",
-    )
-    return res
-
-
-@app.post("/auth/logout")
-async def auth_logout() -> JSONResponse:
-    res = JSONResponse({"ok": True})
-    res.delete_cookie(oauth.SESSION_COOKIE, path="/")
-    return res
-
-
-@app.get("/health")
-async def health() -> dict:
-    return {"status": "ok"}
-
-
-@app.get("/metrics/tools")
-async def metrics_tools() -> dict:
-    """Return per-tool latency + error + cache-hit counters.
-
-    In-process only — accumulated for the lifetime of the current container.
-    Intended for live introspection during a session; long-horizon data lives
-    in Log Analytics via the structured ``tool_call`` events.
-    """
-    from tripplanner.observability import tool_metrics_snapshot
-
-    return {"tools": tool_metrics_snapshot()}
-
-
-@app.get("/usage")
-async def usage_for_user(user_id: str = "local") -> dict:
-    """Return this month's LLM token + cost usage for ``user_id`` and the cap."""
-    from tripplanner.usage import get_cap_usd, get_usage, is_over_cap
-
-    over, doc = is_over_cap(user_id)
-    return {
-        "user_id": user_id,
-        "month": doc.get("month"),
-        "prompt_tokens": doc.get("prompt_tokens", 0),
-        "completion_tokens": doc.get("completion_tokens", 0),
-        "calls": doc.get("calls", 0),
-        "cost_usd": round(float(doc.get("cost_usd", 0.0)), 4),
-        "cap_usd": get_cap_usd(),
-        "over_cap": over,
-    }
+app.include_router(runtime_router)
+app.include_router(trip_router)
+app.include_router(account_router)
+app.include_router(ops_router)
 
 
 # ---------------------------------------------------------------------------
@@ -1454,4 +1107,3 @@ if (_SPA_DIST / "index.html").is_file():
         if target.is_file():
             return FileResponse(str(target))
         return FileResponse(str(_SPA_DIST / "index.html"))
-

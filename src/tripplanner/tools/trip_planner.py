@@ -12,43 +12,98 @@ from __future__ import annotations
 
 import json
 import re
+from copy import deepcopy
 from datetime import datetime
 from functools import wraps
-from pathlib import Path
 from threading import RLock
 from typing import Any
 
 from langchain_core.tools import tool
 
 from tripplanner import storage_cosmos
+from tripplanner.decisions.provenance import make_check, record_check
+from tripplanner.decisions.rules import money
+from tripplanner.decisions.store import upsert_decision
 from tripplanner.json_store import atomic_write_json
+from tripplanner.tools import trip_history
 from tripplanner.tools.finalize_critic import critique as _critique_finalized
+from tripplanner.tools.itinerary_edit import (  # noqa: F401
+    _day_entry_and_stops,
+    _fit_plan_to_departure,
+    _fit_stops_before_leg,
+    _infer_stop_time,
+    _is_leg,
+    _make_stop,
+    _move_to_another_day,
+    _newly_broken,
+    _pacing_text,
+    _place_selected_stop,
+    _reads_as_journey,
+    _rebalance_day,
+    _reflow_unbooked_attractions,
+    _remove_candidate,
+    _repair_known_closed_days,
+    _repair_known_opening_hours,
+    _repair_temporal_infeasibility,
+    _restore_undeclared_legs,
+    _retime_stops_in_order,
+    _settle_around_legs,
+    _settle_plan_legs,
+)
+from tripplanner.tools.trip_common import (  # noqa: F401
+    _HOTEL_PLACEHOLDER_RE,
+    _MAX_DAY_DISTANCE_KM,
+    _MAX_DAY_DURATION_MIN,
+    _MAX_DAY_STOPS,
+    _MEAL_PLACEHOLDER_RE,
+    _canonical_place_kind,
+    _coords_from_summary,
+    _day_stats,
+    _fmt_hhmm,
+    _haversine_km,
+    _is_place_kind,
+    _parse_hhmm,
+    _stop_kind,
+    _stop_name,
+    _style_caps,
+    _summary_for_place,
+    unnamed_lodging,
+)
 from tripplanner.tools.trip_diff import diff_plans, format_diff
+from tripplanner.tools.trip_guard import (
+    diff_stops,
+    receipt,
+    unexpected_changes,
+    validate_plan,
+)
+from tripplanner.tools.trip_validation import (  # noqa: F401
+    _dietary_preferences,
+    _empty_itinerary_day_warnings,
+    _hotel_destination_errors,
+    _hotel_selection_warnings,
+    _itinerary_hotel_locations,
+    _itinerary_time_errors,
+    _restaurant_itinerary_warnings,
+    _round_trip_transport_warnings,
+    assess_itinerary_change,
+    core_planning_completion_gaps,
+    finalization_gaps,
+    has_structured_itinerary,
+    persistence_sanity_errors,
+    planning_completion_gaps,
+)
 from tripplanner.tools.user_preferences import add_past_trip, load_preferences
 from tripplanner.user_context import get_user_id
-from tripplanner.web import places_cache
+from tripplanner.web import places_cache  # noqa: F401  (test monkeypatch target)
 
-_TRIPS_DIR = Path.home() / ".tripplanner"
-_ACTIVE_TRIP_FILE = _TRIPS_DIR / "active_trip.json"
-_TRIP_HISTORY_DIR = _TRIPS_DIR / "trips"
+_TRIPS_DIR = trip_history._TRIPS_DIR
+_ACTIVE_TRIP_FILE = trip_history._ACTIVE_TRIP_FILE
+_TRIP_HISTORY_DIR = trip_history._TRIP_HISTORY_DIR
 
 _COSMOS_USERS_CONTAINER = "users"
 _COSMOS_TRIPS_CONTAINER = "trips"
 _ACTIVE_TRIP_DOC_ID = "active_trip"
-_MAX_DAY_STOPS = 5
-_MAX_DAY_DISTANCE_KM = 18.0
-_MAX_DAY_DURATION_MIN = 360
 _MUTATION_LOCKS = tuple(RLock() for _ in range(64))
-_MEAL_PLACEHOLDER_RE = re.compile(
-    r"\b(tbd|to be decided|restaurant option|restaurant recommendation|"
-    r"lunch stop|dinner stop|breakfast stop|meal stop)\b",
-    re.I,
-)
-_HOTEL_PLACEHOLDER_RE = re.compile(
-    r"\b(tbd|to be decided|hotel option|hotel recommendation|"
-    r"accommodation option|accommodation recommendation)\b",
-    re.I,
-)
 
 
 def _serialized_mutation(func):
@@ -61,800 +116,110 @@ def _serialized_mutation(func):
     return wrapped
 
 
-def _slugify(text: str) -> str:
-    """Filesystem/Cosmos-safe slug for a destination name."""
-    slug = re.sub(r"[^a-z0-9]+", "_", (text or "").lower()).strip("_")
-    return slug or "trip"
-
-
-def _compute_trip_id(plan: dict[str, Any]) -> str:
-    """Stable id encoding destination + date range.
-
-    Two plannings for the SAME place over the SAME dates share an id (so they
-    merge/resume); a different duration or different dates yields a different id
-    (so they're kept as separate, date-tagged trips) — exactly the owner's rule.
-    """
-    slug = _slugify(str(plan.get("destination") or "trip"))
-    dep = (str(plan.get("departure_date") or "").strip()) or "nodate"
-    ret = (str(plan.get("return_date") or "").strip()) or "nodate"
-    return f"{slug}_{dep}_{ret}"
-
-
-
-def _resolve_active_trip_path() -> Path:
-    uid = get_user_id()
-    if uid == "local":
-        return _ACTIVE_TRIP_FILE
-    return _TRIPS_DIR / "users" / uid / "active_trip.json"
-
-
-def _resolve_trip_history_dir() -> Path:
-    uid = get_user_id()
-    if uid == "local":
-        return _TRIP_HISTORY_DIR
-    return _TRIPS_DIR / "users" / uid / "trips"
-
-
-def _ensure_dirs() -> None:
-    _resolve_active_trip_path().parent.mkdir(parents=True, exist_ok=True)
-    _resolve_trip_history_dir().mkdir(parents=True, exist_ok=True)
-
-
-def _is_place_kind(kind: str) -> bool:
-    return kind in {"hotel", "attraction", "meal"}
-
-
-def _canonical_place_kind(kind: str) -> str:
-    if kind == "hotel":
-        return "hotel"
-    if kind in {"meal", "restaurant"}:
-        return "meal"
-    return "attraction"
-
-
-def _summary_for_place(name: str, destination: str) -> dict[str, Any]:
-    info = places_cache.get_summary(name, destination) or {}
-    return info if isinstance(info, dict) else {}
-
-
-def _coords_from_summary(summary: dict[str, Any]) -> tuple[float, float] | None:
-    lat = summary.get("lat")
-    lng = summary.get("lng")
-    if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
-        return float(lat), float(lng)
-    return None
-
-
-def _haversine_km(a: tuple[float, float], b: tuple[float, float]) -> float:
-    from math import asin, cos, radians, sin, sqrt
-
-    lat1, lng1 = radians(a[0]), radians(a[1])
-    lat2, lng2 = radians(b[0]), radians(b[1])
-    dlat = lat2 - lat1
-    dlng = lng2 - lng1
-    h = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlng / 2) ** 2
-    return 6371.0 * 2 * asin(sqrt(h))
-
-
-def _stop_name(raw: Any) -> str:
-    if isinstance(raw, dict):
-        return str(raw.get("name") or "").strip()
-    return str(raw or "").strip()
-
-
-def _stop_kind(raw: Any, default_kind: str = "attraction") -> str:
-    if isinstance(raw, dict):
-        kind = str(raw.get("kind") or "").strip().lower()
-        if kind == "restaurant":
-            return "meal"
-        if kind in {"hotel", "attraction", "meal", "transport", "flight", "other"}:
-            return kind
-    return _canonical_place_kind(default_kind)
-
-
-def _restaurant_itinerary_warnings(itinerary: Any) -> list[str]:
-    warnings: list[str] = []
-    if not isinstance(itinerary, list):
-        return warnings
-    for index, day in enumerate(itinerary):
-        if not isinstance(day, dict):
-            continue
-        day_num = day.get("day") if isinstance(day.get("day"), int) else index + 1
-        raw_stops = day.get("stops")
-        stops: list[Any] = raw_stops if isinstance(raw_stops, list) else []
-        place_count = sum(1 for stop in stops if _stop_kind(stop) == "attraction")
-        meal_stops = [stop for stop in stops if _stop_kind(stop) == "meal"]
-        placeholders = [
-            _stop_name(stop)
-            for stop in meal_stops
-            if not _stop_name(stop) or _MEAL_PLACEHOLDER_RE.search(_stop_name(stop))
-        ]
-        if placeholders:
-            warnings.append(f"Day {day_num} has a meal placeholder instead of a named restaurant.")
-        elif place_count >= 2 and not meal_stops:
-            warnings.append(f"Day {day_num} has multiple activities but no named restaurant stop.")
-    return warnings
-
-
-def _empty_itinerary_day_warnings(itinerary: Any) -> list[str]:
-    warnings: list[str] = []
-    if not isinstance(itinerary, list):
-        return warnings
-    for index, day in enumerate(itinerary):
-        if not isinstance(day, dict):
-            continue
-        day_num = day.get("day") if isinstance(day.get("day"), int) else index + 1
-        raw_stops = day.get("stops")
-        stops: list[Any] = raw_stops if isinstance(raw_stops, list) else []
-        kinds = {_stop_kind(stop) for stop in stops}
-        if not kinds.intersection({"attraction", "meal"}) and not kinds.intersection(
-            {"flight", "transport"}
-        ):
-            warnings.append(f"Day {day_num} has no planned places beyond the hotel.")
-    return warnings
-
-
-def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
-    warnings: list[str] = []
-    hotels = plan.get("selected_hotels")
-    if isinstance(hotels, list) and not hotels:
-        warnings.append("No concrete hotel is selected.")
-
-    itinerary = plan.get("day_wise_itinerary")
-    if not isinstance(itinerary, list):
-        return warnings
-    placeholder_days: list[str] = []
-    for index, day in enumerate(itinerary):
-        if not isinstance(day, dict):
-            continue
-        raw_stops = day.get("stops")
-        stops = raw_stops if isinstance(raw_stops, list) else []
-        if any(
-            _stop_kind(stop) == "hotel"
-            and _HOTEL_PLACEHOLDER_RE.search(_stop_name(stop))
-            for stop in stops
-        ):
-            day_num = day.get("day") if isinstance(day.get("day"), int) else index + 1
-            placeholder_days.append(str(day_num))
-    if placeholder_days:
-        warnings.append(
-            f"Hotel placeholders remain on Day(s) {', '.join(placeholder_days)}."
-        )
-    return warnings
-
-
-def _make_stop(name: str, kind: str, summary: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "name": name,
-        "kind": _canonical_place_kind(kind),
-        "time": str(summary.get("time") or "").strip(),
-        "duration_min": summary.get("duration_min")
-        if isinstance(summary.get("duration_min"), (int, float))
-        else None,
-        "note": str(summary.get("editorial_summary") or summary.get("note") or "").strip(),
-        "booked": bool(summary.get("booked")),
-        "selected": True,
-    }
-
-
-def _parse_hhmm(value: str) -> int | None:
-    text = str(value or "").strip()
-    m = re.match(r"^(\d{1,2}):(\d{2})$", text)
-    if not m:
-        return None
-    hh = int(m.group(1))
-    mm = int(m.group(2))
-    if hh < 0 or hh > 23 or mm < 0 or mm > 59:
-        return None
-    return hh * 60 + mm
-
-
-def _fmt_hhmm(minutes: int) -> str:
-    m = max(0, min(minutes, 23 * 60 + 59))
-    return f"{m // 60:02d}:{m % 60:02d}"
-
-
-def _itinerary_time_errors(itinerary: Any) -> list[str]:
-    errors: list[str] = []
-    if not isinstance(itinerary, list):
-        return errors
-    for day_index, entry in enumerate(itinerary):
-        if not isinstance(entry, dict):
-            continue
-        day = entry.get("day") if isinstance(entry.get("day"), int) else day_index + 1
-        stops = entry.get("stops") if isinstance(entry.get("stops"), list) else []
-        previous_time: int | None = None
-        previous_duration: int | None = None
-        previous_name = ""
-        for stop in stops:
-            if _stop_kind(stop) in {"hotel", "flight", "transport"} or not isinstance(stop, dict):
-                continue
-            value = str(stop.get("time") or "").strip()
-            if not value:
-                continue
-            current_time = _parse_hhmm(value)
-            name = _stop_name(stop) or "unnamed stop"
-            if current_time is None:
-                errors.append(f"Day {day} has an invalid time '{value}' for {name}; use HH:MM.")
-                continue
-            minimum_time = previous_time
-            if minimum_time is not None and previous_duration is not None:
-                minimum_time += previous_duration + 30
-            if minimum_time is not None and current_time < minimum_time:
-                errors.append(
-                    f"Day {day} is not chronological: {name} at {value} must be after "
-                    f"{previous_name} at {_fmt_hhmm(previous_time)}"
-                    + (
-                        f" and its visit/transfer time (not before {_fmt_hhmm(minimum_time)})."
-                        if previous_duration is not None
-                        else "."
-                    )
-                )
-            previous_time = current_time
-            duration = stop.get("duration_min")
-            previous_duration = (
-                max(15, int(duration)) if isinstance(duration, (int, float)) else None
-            )
-            previous_name = name
-    return errors
-
-
-def _retime_stops_in_order(stops: list[Any]) -> None:
-    previous_end: int | None = None
-    for stop in stops:
-        if not isinstance(stop, dict):
-            continue
-        current = _parse_hhmm(str(stop.get("time") or ""))
-        if current is None:
-            current = previous_end + 30 if previous_end is not None else 9 * 60
-        elif previous_end is not None:
-            current = max(current, previous_end + 30)
-        stop["time"] = _fmt_hhmm(current)
-        duration = stop.get("duration_min")
-        previous_end = current + (
-            max(15, int(duration)) if isinstance(duration, (int, float)) else 90
-        )
-
-
-def _infer_stop_time(stops: list[Any], insert_at: int, kind: str) -> str:
-    """Infer a sensible HH:MM slot for a new stop when time is missing.
-
-    Uses neighboring timed stops when available (midpoint), otherwise offsets
-    from nearest known neighbor; falls back to a stable day anchor.
-    """
-    prev_time: int | None = None
-    next_time: int | None = None
-
-    for i in range(insert_at - 1, -1, -1):
-        raw = stops[i]
-        if isinstance(raw, dict):
-            t = _parse_hhmm(str(raw.get("time") or ""))
-            if t is not None:
-                prev_time = t
-                break
-
-    for i in range(insert_at, len(stops)):
-        raw = stops[i]
-        if isinstance(raw, dict):
-            t = _parse_hhmm(str(raw.get("time") or ""))
-            if t is not None:
-                next_time = t
-                break
-
-    if prev_time is not None and next_time is not None and next_time > prev_time:
-        return _fmt_hhmm((prev_time + next_time) // 2)
-    if prev_time is not None:
-        return _fmt_hhmm(min(prev_time + 120, 22 * 60))
-    if next_time is not None:
-        return _fmt_hhmm(max(next_time - 120, 8 * 60))
-
-    # Stable defaults when no context exists.
-    if kind == "hotel":
-        return "15:00"
-    return "11:00"
-
-
-def _style_caps(plan: dict[str, Any] | None) -> tuple[int, int, float]:
-    """Per-day fullness caps tuned to the trip's style.
-
-    A trip tagged ``relaxed``/``leisure`` should feel unhurried, so it packs
-    fewer stops and less driving per day before the rebalancer trims a
-    low-value stop; a ``packed`` style tolerates more. Returns
-    ``(max_stops, max_duration_min, max_distance_km)``.
-    """
-    style = str((plan or {}).get("trip_style") or "").strip().lower()
-    if style in {"relaxed", "leisure"}:
-        return (4, 300, 14.0)
-    if style in {"packed", "packed_sightseeing", "adventure", "adventurous"}:
-        return (6, 420, 22.0)
-    return (_MAX_DAY_STOPS, _MAX_DAY_DURATION_MIN, _MAX_DAY_DISTANCE_KM)
-
-
-def _day_stats(
-    day: dict[str, Any],
-    destination: str,
-    caps: tuple[int, int, float] | None = None,
-) -> dict[str, Any]:
-    stops = day.get("stops") if isinstance(day.get("stops"), list) else []
-    coords: list[tuple[float, float]] = []
-    selected_attractions = 0
-    booked = 0
-    duration = 0
-    for raw in stops:
-        name = _stop_name(raw)
-        if not name:
-            continue
-        kind = _stop_kind(raw)
-        summary = _summary_for_place(name, destination)
-        coords_value = _coords_from_summary(summary)
-        if coords_value:
-            coords.append(coords_value)
-        if kind == "attraction":
-            selected_attractions += 1
-        if isinstance(raw, dict) and raw.get("booked"):
-            booked += 1
-        dur = raw.get("duration_min") if isinstance(raw, dict) else None
-        if isinstance(dur, (int, float)):
-            duration += int(dur)
-        elif kind == "hotel":
-            duration += 45
-        else:
-            duration += 90
-
-    route_km = 0.0
-    for idx in range(1, len(coords)):
-        route_km += _haversine_km(coords[idx - 1], coords[idx])
-
-    max_stops, max_duration, max_km = caps or (
-        _MAX_DAY_STOPS,
-        _MAX_DAY_DURATION_MIN,
-        _MAX_DAY_DISTANCE_KM,
-    )
-    return {
-        "count": len(stops),
-        "selected_attractions": selected_attractions,
-        "booked": booked,
-        "duration_min": duration,
-        "route_km": route_km,
-        "packed": len(stops) >= max_stops or duration >= max_duration or route_km >= max_km,
-    }
-
-
-def assess_itinerary_change(
-    plan: dict[str, Any],
-    *,
-    action: str,
-    name: str,
-    days: list[int] | None = None,
-) -> dict[str, Any] | None:
-    """Return a material post-mutation concern that merits planner review."""
-    itinerary = plan.get("day_wise_itinerary") or []
-    destination = str(plan.get("destination") or "")
-    max_stops, max_duration, max_km = _style_caps(plan)
-    requested_days = set(days or [])
-    concerns: list[tuple[int, int, str]] = []
-
-    for day_index, entry in enumerate(itinerary):
-        if not isinstance(entry, dict):
-            continue
-        day = int(entry.get("day") or day_index + 1)
-        if requested_days and day not in requested_days:
-            continue
-        stops = entry.get("stops") if isinstance(entry.get("stops"), list) else []
-        planned = [
-            stop for stop in stops
-            if _stop_kind(stop) in {"attraction", "meal", "restaurant", "other"}
-        ]
-        planned_duration = sum(
-            int(stop.get("duration_min"))
-            if isinstance(stop, dict) and isinstance(stop.get("duration_min"), (int, float))
-            else 90
-            for stop in planned
-        )
-        attraction_count = sum(_stop_kind(stop) in {"attraction", "other"} for stop in planned)
-        has_meal = any(_stop_kind(stop) in {"meal", "restaurant"} for stop in planned)
-        stats = _day_stats(entry, destination, (99, max_duration, max_km))
-        planned_cap = max(2, max_stops - 1)
-        reasons: list[str] = []
-        severity = 0
-        if len(planned) > planned_cap:
-            reasons.append(f"{len(planned)} planned places")
-            severity += 3
-        if planned_duration > max_duration:
-            hours = planned_duration / 60
-            reasons.append(f"about {hours:.1f} hours of planned stops")
-            severity += 2
-        if stats["route_km"] > max_km:
-            reasons.append(f"roughly {stats['route_km']:.0f} km between stops")
-            severity += 2
-        if action == "removed" and not planned:
-            reasons.append("no non-stay places remaining")
-            severity += 3
-        elif attraction_count >= 3 and not has_meal:
-            reasons.append("no named meal stop")
-            severity += 1
-        if reasons:
-            concerns.append((severity, day, ", ".join(reasons)))
-
-    if not concerns:
-        return None
-
-    _, day, reason = max(concerns, key=lambda item: (item[0], -item[1]))
-    if "no non-stay places" in reason:
-        summary = f"Day {day} is now empty apart from the stay."
-    else:
-        summary = f"Day {day} may feel crowded: {reason}."
-    prompt = (
-        f"Review my recent itinerary change: I {action} {name}. {summary} "
-        "Explain the most important trade-off and propose up to three practical options. "
-        "Do not change the itinerary or call any mutation tool until I explicitly approve an option."
-    )
-    return {
-        "severity": "warning",
-        "day": day,
-        "summary": summary,
-        "prompt": prompt,
-    }
-
-
-def _closest_insert_index(stops: list[Any], name: str, destination: str) -> int:
-    coords = _coords_from_summary(_summary_for_place(name, destination))
-    if not coords:
-        return len(stops)
-    best_idx = len(stops)
-    best_dist: float | None = None
-    for idx, raw in enumerate(stops):
-        stop_name = _stop_name(raw)
-        if not stop_name:
-            continue
-        stop_coords = _coords_from_summary(_summary_for_place(stop_name, destination))
-        if not stop_coords:
-            continue
-        dist = _haversine_km(coords, stop_coords)
-        if best_dist is None or dist < best_dist:
-            best_dist = dist
-            best_idx = idx + 1
-    return best_idx
-
-
-def _remove_candidate(day: dict[str, Any], destination: str, new_name: str) -> dict[str, Any] | None:
-    stops = day.get("stops") if isinstance(day.get("stops"), list) else []
-    candidates: list[tuple[float, int, dict[str, Any]]] = []
-    for idx, raw in enumerate(stops):
-        if not isinstance(raw, dict):
-            continue
-        name = _stop_name(raw)
-        if not name or name.lower() == new_name.lower():
-            continue
-        if raw.get("booked"):
-            continue
-        kind = _stop_kind(raw)
-        if kind not in {"attraction", "other"}:
-            continue
-        summary = _summary_for_place(name, destination)
-        coords = _coords_from_summary(summary)
-        rating = summary.get("rating")
-        score = 0.0
-        if coords:
-            center = coords
-            distances = []
-            for other in stops:
-                other_name = _stop_name(other)
-                if other_name and other_name.lower() != name.lower():
-                    other_coords = _coords_from_summary(_summary_for_place(other_name, destination))
-                    if other_coords:
-                        distances.append(_haversine_km(center, other_coords))
-            score += sum(distances) / max(len(distances), 1)
-        score += 10.0 if kind == "other" else 0.0
-        score += (5.0 - float(rating)) if isinstance(rating, (int, float)) else 1.5
-        candidates.append((score, idx, raw))
-    if not candidates:
-        return None
-    _, idx, raw = max(candidates, key=lambda t: (t[0], -t[1]))
-    return {"index": idx, "stop": raw}
-
-
-def _rebalance_day(plan: dict[str, Any], day_index: int, new_name: str, new_kind: str) -> list[str]:
-    alerts: list[str] = []
-    itinerary = plan.get("day_wise_itinerary") or []
-    if day_index < 0 or day_index >= len(itinerary):
-        return alerts
-    day = itinerary[day_index]
-    if not isinstance(day, dict):
-        return alerts
-    destination = str(plan.get("destination") or "")
-    stats = _day_stats(day, destination, _style_caps(plan))
-    if not stats["packed"]:
-        return alerts
-    removal = _remove_candidate(day, destination, new_name)
-    if not removal:
-        alerts.append(
-            f"Day {day_index + 1} is getting full; I added {new_name} but couldn't find a safe stop to remove automatically."
-        )
-        return alerts
-    stops = day.get("stops") if isinstance(day.get("stops"), list) else []
-    removed = stops.pop(removal["index"])
-    removed_name = _stop_name(removed)
-    alerts.append(
-        f"Day {day_index + 1} was packed, so I added {new_name} and removed {removed_name} to keep the route comfortable."
-    )
-    # Keep the trip's selected buckets consistent with the itinerary.
-    if isinstance(removed, dict):
-        bucket = "selected_hotels" if _stop_kind(removed) == "hotel" else "selected_activities"
-        plan[bucket] = [
-            item
-            for item in (plan.get(bucket) or [])
-            if str(item.get("name") or "").strip().lower() != removed_name.lower()
-        ]
-    return alerts
-
-
-def _place_selected_stop(
-    plan: dict[str, Any],
-    kind: str,
-    name: str,
-    preferred_day: int | None = None,
-    source_day: int | None = None,
-    source_stop: int | None = None,
-) -> tuple[list[str], dict[str, Any] | None, bool]:
-    alerts: list[str] = []
-    destination = str(plan.get("destination") or "")
-    itinerary = plan.get("day_wise_itinerary") or []
-    if not itinerary:
-        if preferred_day is not None:
-            return (
-                [
-                    f"Day {preferred_day} is not available yet because the itinerary has no structured days. Choose Best day, or create the day-by-day itinerary first."
-                ],
-                None,
-                False,
-            )
-        alerts.append(
-            f"{name} was saved. Your assistant will slot it into a day-by-day plan once the itinerary is structured."
-        )
-        return alerts, None, True
-
-    summary = _summary_for_place(name, destination)
-    stop_kind = _canonical_place_kind(kind)
-    stop = _make_stop(name, stop_kind, summary)
-    requested_idx: int | None = None
-    available_days: list[int] = []
-    for idx, day in enumerate(itinerary):
-        if not isinstance(day, dict):
-            continue
-        logical_day = int(day.get("day") or idx + 1)
-        available_days.append(logical_day)
-        if preferred_day == logical_day:
-            requested_idx = idx
-    if preferred_day is not None and requested_idx is None:
-        choices = ", ".join(f"Day {day}" for day in available_days)
-        alternative = f" Choose {choices}, or Best day." if choices else " Choose Best day."
-        return [f"Day {preferred_day} is not available.{alternative}"], None, False
-
-    existing: tuple[int, int, Any] | None = None
-    for day_index, day in enumerate(itinerary):
-        stops = day.get("stops") if isinstance(day, dict) and isinstance(day.get("stops"), list) else []
-        logical_day = int(day.get("day") or day_index + 1) if isinstance(day, dict) else day_index + 1
-        for stop_index, raw in enumerate(stops):
-            if _stop_name(raw).lower() != name.lower():
-                continue
-            if source_day is not None and logical_day != source_day:
-                continue
-            if source_stop is not None and stop_index + 1 != source_stop:
-                continue
-            existing = (day_index, stop_index, raw)
-            break
-        if existing:
-            break
-
-    if (source_day is not None or source_stop is not None) and existing is None:
-        return (
-            [f"That {name} occurrence changed before it could be moved. Refresh and choose it again."],
-            None,
-            False,
-        )
-
-    if existing:
-        existing_day_idx, existing_stop_idx, raw = existing
-        existing_day = itinerary[existing_day_idx]
-        existing_day_num = int(existing_day.get("day") or existing_day_idx + 1)
-        if requested_idx is None or requested_idx == existing_day_idx:
-            existing_stops = existing_day.get("stops") or []
-            if isinstance(raw, dict):
-                raw.update(stop)
-            else:
-                existing_stops[existing_stop_idx] = stop
-            placement = {
-                "day": existing_day_num,
-                "stop": existing_stop_idx + 1,
-                "name": name,
-            }
-            alerts.append(
-                f"{name} is already on Day {existing_day_num}; I refreshed its details."
-            )
-            return alerts, placement, True
-        if isinstance(raw, dict) and raw.get("booked"):
-            return (
-                [
-                    f"{name} is booked on Day {existing_day_num}, so I did not move it to Day {preferred_day}. Keep Day {existing_day_num}, or unbook it and choose Day {preferred_day} again."
-                ],
-                None,
-                False,
-            )
-        target_day = itinerary[requested_idx]
-        target_stops = (
-            target_day.get("stops")
-            if isinstance(target_day, dict) and isinstance(target_day.get("stops"), list)
-            else []
-        )
-        if any(_stop_name(candidate).lower() == name.lower() for candidate in target_stops):
-            return (
-                [f"{name} is already on Day {preferred_day}. Choose a different day."],
-                None,
-                False,
-            )
-        existing_stops = existing_day.get("stops") or []
-        existing_stops.pop(existing_stop_idx)
-        if isinstance(raw, dict):
-            raw.update(stop)
-            stop = raw
-
-    best_idx = requested_idx or 0
-    if preferred_day is None:
-        best_score: float | None = None
-        for idx, day in enumerate(itinerary):
-            if not isinstance(day, dict):
-                continue
-            stats = _day_stats(day, destination)
-            stops = day.get("stops") if isinstance(day.get("stops"), list) else []
-            stop_names = [n for n in (_stop_name(s) for s in stops) if n]
-            score = stats["route_km"] * 2.5 + stats["count"] * 18 + stats["duration_min"] * 0.35
-            if not stop_names:
-                score -= 30
-            if kind == "hotel":
-                score += 45 if any(
-                    _stop_kind(s) == "hotel" for s in stops if isinstance(s, dict)
-                ) else 0
-            if best_score is None or score < best_score:
-                best_score = score
-                best_idx = idx
-
-    day = itinerary[best_idx]
-    stops = day.setdefault("stops", []) if isinstance(day, dict) else []
-
-    insert_at = _closest_insert_index(stops, name, destination)
-    if insert_at >= len(stops):
-        stops.append(stop)
-    else:
-        stops.insert(insert_at, stop)
-
-    if not str(stop.get("time") or "").strip():
-        stop["time"] = _infer_stop_time(stops, insert_at, stop_kind)
-
-    placed_day = int(day.get("day") or best_idx + 1)
-    action = "moved" if existing else "placed"
-    alerts.append(f"I {action} {name} to Day {placed_day} in stop {insert_at + 1}.")
-    return (
-        alerts,
-        {"day": placed_day, "stop": insert_at + 1, "name": name},
-        True,
-    )
-
-
-def _day_entry_and_stops(itinerary: list[Any], day_num: int) -> tuple[dict[str, Any] | None, list[Any]]:
-    if day_num <= 0:
-        return None, []
-    for idx, entry in enumerate(itinerary):
-        if not isinstance(entry, dict):
-            continue
-        raw_day = entry.get("day")
-        current = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
-        if current != day_num:
-            continue
-        stops = entry.get("stops")
-        if not isinstance(stops, list):
-            stops = []
-            entry["stops"] = stops
-        return entry, stops
-    return None, []
-
-
-def _reflow_unbooked_attractions(plan: dict[str, Any]) -> bool:
-    """Regroup mutable place stops around the current per-day hotel anchors."""
-    itinerary = plan.get("day_wise_itinerary") or []
-    days = [day for day in itinerary if isinstance(day, dict)]
-    if not days:
+_compute_trip_id = trip_history.compute_trip_id
+_resolve_active_trip_path = trip_history.resolve_active_trip_path
+_resolve_trip_history_dir = trip_history.resolve_trip_history_dir
+_ensure_dirs = trip_history.ensure_dirs
+
+
+def _sync_replaced_hotel_anchors(
+    plan: dict[str, Any], previous_hotels: Any, selected_hotels: Any
+) -> bool:
+    if not isinstance(previous_hotels, list) or not isinstance(selected_hotels, list):
         return False
 
-    destination = str(plan.get("destination") or "")
-    movable: list[tuple[int, Any]] = []
-    fixed_by_day: list[list[Any]] = []
-    anchors: list[tuple[float, float] | None] = []
-    for day_index, day in enumerate(days):
-        fixed: list[Any] = []
-        anchor: tuple[float, float] | None = None
-        raw_stops = day.get("stops")
-        stops: list[Any] = raw_stops if isinstance(raw_stops, list) else []
-        for stop in stops:
-            kind = _stop_kind(stop)
-            booked = isinstance(stop, dict) and bool(stop.get("booked"))
-            if kind == "attraction" and not booked:
-                movable.append((day_index, stop))
+    def by_name(hotels: list[Any]) -> dict[str, dict[str, Any]]:
+        result: dict[str, dict[str, Any]] = {}
+        for hotel in hotels:
+            if not isinstance(hotel, dict):
                 continue
-            fixed.append(stop)
-            if kind == "hotel" and anchor is None:
-                anchor = _coords_from_summary(
-                    _summary_for_place(_stop_name(stop), destination)
-                )
-        fixed_by_day.append(fixed)
-        anchors.append(anchor)
+            name = _stop_name(hotel) or str(hotel.get("hotel_name") or "").strip()
+            if name:
+                result[name.lower()] = hotel
+        return result
 
-    if not movable:
-        return False
+    previous = by_name(previous_hotels)
+    selected = by_name(selected_hotels)
+    removed = previous.keys() - selected.keys()
+    added = selected.keys() - previous.keys()
+    replacements: dict[str, dict[str, Any]] = {}
+    if len(removed) == 1 and len(added) == 1:
+        replacements[next(iter(removed))] = selected[next(iter(added))]
+    selected_values = list(selected.values())
+    placeholder_replacement = selected_values[0] if len(selected_values) == 1 else None
+    lodging_locations = _itinerary_hotel_locations(plan)
+    destination = str(plan.get("destination") or "").strip().lower()
+    if destination:
+        lodging_locations = lodging_locations | {destination} | {
+            part.strip()
+            for part in re.split(r"[,&/()]| and ", destination)
+            if part.strip()
+        }
 
-    stop_coords = {
-        id(stop): _coords_from_summary(_summary_for_place(_stop_name(stop), destination))
-        for _, stop in movable
-    }
-    assignments: list[list[Any]] = [[] for _ in days]
-    target_sizes = [len(movable) // len(days) for _ in days]
-    for index in range(len(movable) % len(days)):
-        target_sizes[index] += 1
+    def explicit_locations(value: dict[str, Any]) -> set[str]:
+        return {
+            str(value.get(key) or "").strip().lower()
+            for key in ("destination", "city", "location")
+            if str(value.get(key) or "").strip()
+        }
 
-    for original_day, stop in movable:
-        coords = stop_coords[id(stop)]
-        available = [index for index, size in enumerate(target_sizes) if len(assignments[index]) < size]
-        if not available:
-            available = list(range(len(days)))
-
-        def score(day_index: int) -> tuple[float, int, int]:
-            anchor = anchors[day_index]
-            if coords and anchor:
-                distance = _haversine_km(coords, anchor)
-            else:
-                distance = abs(day_index - original_day) * 5.0
-            return (distance, len(assignments[day_index]), day_index)
-
-        assignments[min(available, key=score)].append(stop)
+    def specific_locations(value: dict[str, Any]) -> set[str]:
+        specific = {
+            str(value.get(key) or "").strip().lower()
+            for key in ("city", "location")
+            if str(value.get(key) or "").strip()
+        }
+        return specific or explicit_locations(value)
 
     changed = False
-    for day_index, day in enumerate(days):
-        ordered: list[Any] = []
-        remaining = assignments[day_index][:]
-        current = anchors[day_index]
-        while remaining:
-            with_coords = [stop for stop in remaining if stop_coords[id(stop)] is not None]
-            if current is None or not with_coords:
-                ordered.extend(remaining)
-                break
-            next_stop = min(
-                with_coords,
-                key=lambda stop: _haversine_km(current, stop_coords[id(stop)]),  # type: ignore[arg-type]
+    for day in plan.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict) or not isinstance(day.get("stops"), list):
+            continue
+        for index, stop in enumerate(day["stops"]):
+            if _stop_kind(stop) != "hotel":
+                continue
+            stop_name = _stop_name(stop)
+            replacement = replacements.get(stop_name.lower())
+            is_placeholder = _HOTEL_PLACEHOLDER_RE.search(stop_name) or unnamed_lodging(
+                stop_name, lodging_locations
             )
-            remaining.remove(next_stop)
-            ordered.append(next_stop)
-            current = stop_coords[id(next_stop)]
-
-        fixed = fixed_by_day[day_index]
-        hotels = [stop for stop in fixed if _stop_kind(stop) == "hotel"]
-        fixed_middle = [stop for stop in fixed if _stop_kind(stop) != "hotel"]
-        middle = ordered + fixed_middle
-        if middle and all(
-            isinstance(stop, dict)
-            and _parse_hhmm(str(stop.get("time") or "")) is not None
-            for stop in middle
-        ):
-            middle.sort(key=lambda stop: _parse_hhmm(str(stop.get("time") or "")) or 0)
-        _retime_stops_in_order(middle)
-        next_stops = ([hotels[0]] if hotels else []) + middle
-        if len(hotels) > 1:
-            next_stops.append(hotels[-1])
-        previous_names = [_stop_name(stop) for stop in day.get("stops") or []]
-        next_names = [_stop_name(stop) for stop in next_stops]
-        if previous_names != next_names:
+            if replacement is None and is_placeholder:
+                anchor_text = stop_name.lower()
+                anchor_locations = specific_locations(day) | {
+                    location
+                    for location in lodging_locations
+                    if re.search(rf"\b{re.escape(location)}\b", anchor_text)
+                }
+                location_matches = [
+                    hotel
+                    for hotel in selected_values
+                    if any(
+                        anchor in hotel_location or hotel_location in anchor
+                        for anchor in anchor_locations
+                        for hotel_location in specific_locations(hotel)
+                    )
+                ]
+                if len(location_matches) == 1:
+                    replacement = location_matches[0]
+                elif placeholder_replacement is not None:
+                    replacement_locations = explicit_locations(placeholder_replacement)
+                    if (
+                        not anchor_locations
+                        or not replacement_locations
+                        or anchor_locations & replacement_locations
+                    ):
+                        replacement = placeholder_replacement
+            if replacement is None:
+                continue
+            replacement_name = _stop_name(replacement) or str(
+                replacement.get("hotel_name") or ""
+            ).strip()
+            next_stop = dict(stop) if isinstance(stop, dict) else {}
+            next_stop.update(replacement)
+            next_stop["name"] = replacement_name
+            next_stop["kind"] = "hotel"
+            day["stops"][index] = next_stop
             changed = True
-        day["stops"] = next_stops
-
     return changed
 
 
@@ -996,14 +361,60 @@ def add_hotel_stay(
 
 
 def _load_active_trip() -> dict[str, Any] | None:
-    if storage_cosmos.is_enabled():
-        return storage_cosmos.read_doc(
-            _COSMOS_USERS_CONTAINER, get_user_id(), _ACTIVE_TRIP_DOC_ID
-        )
-    path = _resolve_active_trip_path()
-    if path.exists():
-        return json.loads(path.read_text(encoding="utf-8"))
-    return None
+    return trip_history.load_active_trip()
+
+
+def _normalize_hotel_endpoints(plan: dict[str, Any]) -> bool:
+    """Keep one meaningful return stay and make a hotel-only departure actionable."""
+    itinerary = plan.get("day_wise_itinerary")
+    if not isinstance(itinerary, list):
+        return False
+
+    changed = False
+    days = [day for day in itinerary if isinstance(day, dict)]
+    for day in days:
+        stops = day.get("stops")
+        if not isinstance(stops, list):
+            continue
+        normalized: list[Any] = []
+        for stop in stops:
+            if (
+                normalized
+                and _stop_kind(stop) == "hotel"
+                and _stop_kind(normalized[-1]) == "hotel"
+                and _stop_name(stop).casefold()
+                == _stop_name(normalized[-1]).casefold()
+            ):
+                previous = normalized[-1]
+                if isinstance(previous, dict) and not str(previous.get("note") or "").strip():
+                    previous["note"] = "Return to hotel"
+                changed = True
+                continue
+            normalized.append(stop)
+        if len(normalized) != len(stops):
+            day["stops"] = normalized
+            stops = normalized
+        if (
+            len(stops) == 1
+            and _stop_kind(stops[0]) == "hotel"
+            and "check" in f"{day.get('title') or ''} {day.get('summary') or ''}"
+            .casefold()
+        ):
+            stop = stops[0]
+            if isinstance(stop, dict):
+                if not str(stop.get("time") or "").strip():
+                    stop["time"] = "11:00"
+                    changed = True
+                if (
+                    not str(stop.get("note") or "").strip()
+                    or str(stop.get("note")).casefold() == "check-out"
+                ):
+                    stop["note"] = (
+                        "Check out by 11:00 (confirm with your hotel). "
+                        "Leave bags with reception if your onward departure is later."
+                    )
+                    changed = True
+    return changed
 
 
 def load_active_trip_dict() -> dict[str, Any] | None:
@@ -1087,6 +498,8 @@ def add_selection(
         if already_selected
         else f"Added {name} to your trip."
     ]
+    before = deepcopy(plan)
+    declared = {name}
     placement: dict[str, Any] | None = None
     if _is_place_kind(kind):
         placement_alerts, placement, placed = _place_selected_stop(
@@ -1097,16 +510,25 @@ def add_selection(
         alerts.extend(placement_alerts)
         if not already_selected:
             bucket.append(item)
-        if preferred_day is None and _reflow_unbooked_attractions(plan):
+        if preferred_day is None and _reflow_unbooked_attractions(plan, {name}):
             alerts.append("Rebalanced unbooked itinerary stops around the updated trip.")
         canonical_kind = _canonical_place_kind(kind)
         if canonical_kind == "attraction" and preferred_day is None:
             itinerary = plan.get("day_wise_itinerary") or []
             for day_index in range(len(itinerary)):
                 alerts.extend(_rebalance_day(plan, day_index, name, canonical_kind))
-            _reflow_unbooked_attractions(plan)
+            _reflow_unbooked_attractions(plan, {name})
     elif not already_selected:
         bucket.append(item)
+    restored = _restore_undeclared_legs(before, plan, declared)
+    if restored:
+        alerts.append(
+            "Kept " + ", ".join(restored) + " — that leg was not part of this change."
+        )
+    stray = unexpected_changes(diff_stops(before, plan), declared)
+    if stray:
+        alerts.append("Fitting that in also had a knock-on effect. " + receipt(stray))
+    alerts.extend(_newly_broken(before, plan))
     _save_active_trip(plan)
     return {"ok": True, "alerts": alerts, "trip": plan, "placement": placement}
 
@@ -1131,6 +553,8 @@ def remove_selection(
         return False
     target = str(name or "").strip().lower()
     if not target:
+        return False
+    if kind == "hotel" and not all_occurrences:
         return False
     key = "selected_hotels" if kind == "hotel" else "selected_activities"
     bucket = plan.get(key) or []
@@ -1237,104 +661,285 @@ def set_stop_booked(day: int, name: str, booked: bool) -> bool:
     return False
 
 
+def confirm_stop_place(name: str) -> bool:
+    """Bind an itinerary stop to the place the provider found for it.
+
+    The map offers a candidate when a stop resolves to a differently-named
+    place; agreeing to it is what makes that pin appear, and it stays agreed to
+    on later builds. Resolution happens here rather than from the request so a
+    binding can only ever be what the map actually offered.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return False
+    target = str(name or "").strip()
+    if not target:
+        return False
+    details = places_cache.get_details(target, str(plan.get("destination") or "")) or {}
+    if details.get("lat") is None or details.get("lng") is None:
+        return False
+    bindings = plan.get("place_bindings")
+    if not isinstance(bindings, dict):
+        bindings = {}
+        plan["place_bindings"] = bindings
+    bindings[target.lower()] = {
+        "name": str(details.get("name") or target),
+        "place_id": details.get("place_id"),
+        "lat": details.get("lat"),
+        "lng": details.get("lng"),
+        "address": details.get("address") or "",
+    }
+    _save_active_trip(plan)
+    return True
+
+
 def _save_active_trip(plan: dict[str, Any]) -> None:
-    # Stamp a stable id + freshness so the trip can live in history and be
-    # listed / resumed later. Every save mirrors to the trips collection so
-    # in-progress drafts are never lost when the user switches trips.
+    # Stamp a stable id + freshness on the canonical saved-trip document.
     if not plan.get("trip_id"):
         plan["trip_id"] = _compute_trip_id(plan)
+    _normalize_hotel_endpoints(plan)
     plan["updated_at"] = datetime.now().isoformat()
 
+    trip_history.persist_active_trip(plan)
+
+
+@_serialized_mutation
+def restore_inspection_trip(plan: dict[str, Any], user_id: str) -> dict[str, Any]:
+    """Persist an audit artifact for local read-only inspection without archiving it."""
+    restored = deepcopy(plan)
+    restored["user_id"] = user_id
+    if not restored.get("trip_id"):
+        restored["trip_id"] = _compute_trip_id(restored)
+    _normalize_hotel_endpoints(restored)
+    restored["updated_at"] = datetime.now().isoformat()
+    trip_id = str(restored["trip_id"])
     if storage_cosmos.is_enabled():
         storage_cosmos.upsert_doc(
-            _COSMOS_USERS_CONTAINER, get_user_id(), _ACTIVE_TRIP_DOC_ID, plan
+            _COSMOS_USERS_CONTAINER, user_id, _ACTIVE_TRIP_DOC_ID, restored
         )
+        storage_cosmos.upsert_doc(_COSMOS_TRIPS_CONTAINER, user_id, trip_id, restored)
     else:
         _ensure_dirs()
-        atomic_write_json(_resolve_active_trip_path(), plan, indent=2)
-    _mirror_to_history(plan)
+        atomic_write_json(_resolve_active_trip_path(), restored, indent=2)
+        atomic_write_json(_resolve_trip_history_dir() / f"{trip_id}.json", restored, indent=2)
+    return restored
 
 
-def _mirror_to_history(plan: dict[str, Any]) -> None:
-    """Persist the plan into the per-user trips collection under its trip_id."""
-    tid = plan.get("trip_id")
-    if not tid:
-        return
-    if storage_cosmos.is_enabled():
-        storage_cosmos.upsert_doc(_COSMOS_TRIPS_CONTAINER, get_user_id(), tid, plan)
-        return
-    _ensure_dirs()
-    atomic_write_json(_resolve_trip_history_dir() / f"{tid}.json", plan, indent=2)
+@_serialized_mutation
+def record_trip_decision(decision) -> bool:
+    """Attach a recorded comparison to the active trip.
+
+    Non-tool: decisions ride inside the trip document so a plan and the reasoning
+    behind it can never be loaded from two different writes.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return False
+    upsert_decision(plan, decision)
+    _save_active_trip(plan)
+    return True
 
 
-def _load_history_trip(trip_id: str) -> dict[str, Any] | None:
-    """Load a single saved trip by its trip_id, or ``None``."""
-    if not trip_id:
-        return None
-    if storage_cosmos.is_enabled():
-        return storage_cosmos.read_doc(_COSMOS_TRIPS_CONTAINER, get_user_id(), trip_id)
-    path = _resolve_trip_history_dir() / f"{trip_id}.json"
-    if path.exists():
-        try:
-            return json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            return None
-    return None
+@_serialized_mutation
+def record_price_check(kind: str, provider: str) -> bool:
+    """Note that we looked at a live source, so the plan can say when.
+
+    Non-tool. Silently does nothing without an active trip: a search before a
+    trip exists has nothing to be provenance for.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return False
+    record_check(plan, make_check(kind, provider))
+    _save_active_trip(plan)
+    return True
 
 
-def _all_history_trips() -> list[dict[str, Any]]:
-    """Every saved trip for the current user (raw plan dicts)."""
-    if storage_cosmos.is_enabled():
-        return storage_cosmos.query_docs(_COSMOS_TRIPS_CONTAINER, get_user_id())
-    history_dir = _resolve_trip_history_dir()
-    history_dir.mkdir(parents=True, exist_ok=True)
-    out: list[dict[str, Any]] = []
-    for f in history_dir.glob("*.json"):
-        try:
-            out.append(json.loads(f.read_text(encoding="utf-8")))
-        except json.JSONDecodeError:
-            continue
-    return out
+@_serialized_mutation
+def apply_decision_override(
+    decision_id: str, option_id: str | None, *, expected_updated_at: str = ""
+) -> dict[str, Any]:
+    """Switch the plan onto a traveller's chosen option, or undo that switch.
+
+    ``option_id`` of ``None`` restores the agent's own choice. A non-empty
+    ``expected_updated_at`` that no longer matches means another window already
+    moved this trip, so nothing is written.
+    """
+    from tripplanner.decisions.apply import apply_override, restore
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+        }
+    result = (
+        apply_override(plan, decision_id, option_id)
+        if option_id
+        else restore(plan, decision_id)
+    )
+    if result.ok:
+        _save_active_trip(plan)
+    return {"stale": False, **result.as_dict()}
 
 
-def _trip_summary(plan: dict[str, Any], active_id: str | None) -> dict[str, Any]:
-    """Compact, UI-friendly descriptor for one saved trip."""
-    tid = plan.get("trip_id") or _compute_trip_id(plan)
+@_serialized_mutation
+def apply_decision_overrides(
+    changes: list[dict[str, Any]], *, expected_updated_at: str = ""
+) -> dict[str, Any]:
+    """Apply several decision changes atomically against one trip revision."""
+    from tripplanner.decisions.apply import apply_override, restore
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+            "results": [],
+        }
+    if not changes:
+        return {
+            "ok": False,
+            "stale": False,
+            "message": "No budget changes were supplied.",
+            "results": [],
+        }
+
+    candidate = deepcopy(plan)
+    results = []
+    for change in changes:
+        decision_id = str(change.get("decision_id") or "")
+        option_id = change.get("option_id")
+        result = (
+            restore(candidate, decision_id)
+            if option_id in (None, "")
+            else apply_override(candidate, decision_id, str(option_id))
+        )
+        results.append(result.as_dict())
+        if not result.ok:
+            return {
+                "ok": False,
+                "stale": False,
+                "message": (
+                    "No changes were saved because one or more choices could not be applied."
+                ),
+                "failed_change": {"decision_id": decision_id, "option_id": option_id},
+                "results": results,
+            }
+
+    _save_active_trip(candidate)
+    total_delta = round(sum(float(result.get("delta") or 0) for result in results), 2)
     return {
-        "trip_id": tid,
-        "destination": str(plan.get("destination") or ""),
-        "departure_date": str(plan.get("departure_date") or ""),
-        "return_date": str(plan.get("return_date") or ""),
-        "status": str(plan.get("status") or "draft"),
-        "total_cost": plan.get("total_cost") or 0,
-        "currency": str(plan.get("currency") or ""),
-        "counts": {
-            "flights": len(plan.get("selected_flights") or []),
-            "hotels": len(plan.get("selected_hotels") or []),
-            "activities": len(plan.get("selected_activities") or []),
-        },
-        "updated_at": str(plan.get("updated_at") or plan.get("created_at") or ""),
-        "is_active": bool(active_id) and tid == active_id,
+        "ok": True,
+        "stale": False,
+        "message": f"Applied {len(results)} budget changes together.",
+        "results": results,
+        "total_cost": candidate.get("total_cost"),
+        "delta": total_delta,
+        "currency": str(candidate.get("currency") or "EUR"),
     }
 
 
-def list_saved_trips() -> list[dict[str, Any]]:
-    """All saved trips as compact descriptors, most-recently-updated first.
+@_serialized_mutation
+def repair_active_trip(*, expected_updated_at: str = "") -> dict[str, Any]:
+    """Rearrange the planner's own stops until the saved trip reads correctly."""
+    from tripplanner.web import trip_repair
 
-    Non-tool: powers the SPA's "My trips" switcher and the resume flow.
-    """
-    active = _load_active_trip()
-    active_id = (active or {}).get("trip_id") if active else None
-    summaries = [_trip_summary(p, active_id) for p in _all_history_trips()]
-    summaries.sort(key=lambda t: t["updated_at"], reverse=True)
-    return summaries
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+        }
+
+    outcome = trip_repair.repair(plan)
+    if outcome["changed"]:
+        _save_active_trip(outcome["plan"])
+    return {
+        "ok": True,
+        "stale": False,
+        "changed": outcome["changed"],
+        "message": (
+            " ".join(outcome["sentences"])
+            if outcome["changed"]
+            else "Nothing to rearrange; the plan is already the best I can make it."
+        ),
+        "moves": outcome["moves"],
+        "blocked": outcome["blocked"],
+        "before": outcome["before"],
+        "after": outcome["after"],
+    }
 
 
-def saved_trip_destination(trip_id: str) -> str:
-    """Destination name of a saved trip, or ``""``. Non-tool helper for chat
-    carryover phrasing when the user switches plans mid-conversation."""
-    plan = _load_history_trip(trip_id)
-    return str((plan or {}).get("destination") or "") if plan else ""
+@_serialized_mutation
+def refresh_active_trip_facts(*, expected_updated_at: str = "") -> dict[str, Any]:
+    """Recheck itinerary place facts and persist the resulting observation."""
+    from tripplanner.web import trip_freshness
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+        }
+    outcome = trip_freshness.refresh(plan)
+    _save_active_trip(outcome["plan"])
+    return {
+        "ok": True,
+        "stale": False,
+        "message": "Rechecked the itinerary's place facts.",
+        **{key: value for key, value in outcome.items() if key != "plan"},
+    }
+
+
+@_serialized_mutation
+def recheck_active_trip_prices(*, expected_updated_at: str = "") -> dict[str, Any]:
+    """Explicitly refresh stale quote evidence without changing trip selections."""
+    from tripplanner.decisions.price_recheck import recheck_prices
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+        }
+    outcome = recheck_prices(plan)
+    if outcome["results"]:
+        _save_active_trip(outcome["plan"])
+    return {
+        "ok": True,
+        "stale": False,
+        "message": (
+            "Rechecked the trip's stale provider prices."
+            if outcome["results"]
+            else "No stale finalized-trip prices need rechecking."
+        ),
+        "results": outcome["results"],
+        "rechecked": outcome["rechecked"],
+    }
+
+
+_mirror_to_history = trip_history.mirror_to_history
+_load_history_trip = trip_history.load_history_trip
+_all_history_trips = trip_history.all_history_trips
+_next_trip_number = trip_history._next_trip_number
+list_saved_trips = trip_history.list_saved_trips
+saved_trip_destination = trip_history.saved_trip_destination
 
 
 @_serialized_mutation
@@ -1347,20 +952,19 @@ def switch_active_trip(trip_id: str) -> dict[str, Any] | None:
     plan = _load_history_trip(trip_id)
     if not plan:
         return None
-    _save_active_trip(plan)
+    trip_history.activate_trip(plan)
     return plan
 
 
 @_serialized_mutation
 def delete_saved_trip(trip_id: str) -> bool:
     """Delete a saved trip; clears the active pointer if it was active."""
-    if not trip_id:
+    from tripplanner.web import trip_feedback
+
+    if not trip_history.delete_saved_trip(trip_id):
         return False
     active = _load_active_trip()
-    if storage_cosmos.is_enabled():
-        storage_cosmos.delete_doc(_COSMOS_TRIPS_CONTAINER, get_user_id(), trip_id)
-    else:
-        (_resolve_trip_history_dir() / f"{trip_id}.json").unlink(missing_ok=True)
+    trip_feedback.delete_for_trip(trip_id)
     if active and active.get("trip_id") == trip_id:
         _delete_active_trip()
     return True
@@ -1369,22 +973,65 @@ def delete_saved_trip(trip_id: str) -> bool:
 @_serialized_mutation
 def clear_all_trip_history() -> int:
     """Delete all saved trips for the current user and clear active trip."""
-    if storage_cosmos.is_enabled():
-        deleted = storage_cosmos.delete_docs(_COSMOS_TRIPS_CONTAINER, get_user_id())
-        _delete_active_trip()
-        return deleted
+    from tripplanner.web import trip_feedback
 
-    deleted = 0
-    history_dir = _resolve_trip_history_dir()
-    history_dir.mkdir(parents=True, exist_ok=True)
-    for path in history_dir.glob("*.json"):
-        try:
-            path.unlink(missing_ok=True)
-            deleted += 1
-        except OSError:
-            continue
+    deleted = trip_history.clear_all_trip_history()
+    trip_feedback.clear()
     _delete_active_trip()
     return deleted
+
+
+@_serialized_mutation
+def record_trip_feedback(
+    *,
+    feedback_id: str | None,
+    sentiment: str | None,
+    rating: int | None,
+    comment: str | None,
+    surface: str,
+    client: str,
+) -> dict[str, Any] | None:
+    """Append feedback for the active trip and update its lightweight rollup."""
+    from tripplanner.web import trip_feedback
+
+    plan = _load_active_trip()
+    if not plan or not plan.get("trip_id"):
+        return None
+    current_rollup = plan.get("feedback")
+    rollup = dict(current_rollup) if isinstance(current_rollup, dict) else {}
+    submission = (
+        trip_feedback.amend(
+            feedback_id,
+            trip_id=str(plan["trip_id"]),
+            rating=rating,
+            comment=comment,
+        )
+        if feedback_id
+        else trip_feedback.append(
+            trip_id=str(plan["trip_id"]),
+            trip_revision=str(plan.get("updated_at") or ""),
+            sentiment=sentiment,
+            rating=rating,
+            comment=comment,
+            surface=surface,
+            client=client,
+            identified=get_user_id() != "local" and not get_user_id().startswith("guest-"),
+        )
+    )
+    if submission is None:
+        return None
+    count = int(rollup.get("count") or 0) + (0 if feedback_id else 1)
+    rollup.update(
+        {
+            "count": count,
+            "last_at": submission["created_at"],
+            "last_rating": submission.get("rating"),
+            "last_sentiment": submission.get("sentiment"),
+        }
+    )
+    plan["feedback"] = rollup
+    _save_active_trip(plan)
+    return {**rollup, "feedback_id": submission["feedback_id"]}
 
 
 @_serialized_mutation
@@ -1419,12 +1066,52 @@ def import_shared_trip_snapshot(plan: dict[str, Any]) -> dict[str, Any]:
 
 
 def _delete_active_trip() -> None:
-    if storage_cosmos.is_enabled():
-        storage_cosmos.delete_doc(
-            _COSMOS_USERS_CONTAINER, get_user_id(), _ACTIVE_TRIP_DOC_ID
-        )
-        return
-    _resolve_active_trip_path().unlink(missing_ok=True)
+    trip_history.delete_active_trip()
+
+
+# What a reset keeps: where you are going, when, who with, and what you told us
+# you like. Everything else is the plan, and the plan is what you are throwing
+# away. Starting over should not mean typing your dates in again.
+_RESET_KEEPS = frozenset(
+    {
+        "trip_id",
+        "revision",
+        "created_at",
+        "destination",
+        "origin",
+        "travel_scope",
+        "departure_date",
+        "return_date",
+        "travelers",
+        "notes",
+        "budget",
+        "currency",
+        "preferences_snapshot",
+        "planning_recommendation",
+        "trip_constraints",
+        "visa",
+    }
+)
+
+
+@_serialized_mutation
+def reset_active_trip() -> dict[str, Any] | None:
+    """Empty the active trip's plan while keeping its brief.
+
+    Non-tool: called by the "Reset" button. Returns the emptied plan, or
+    ``None`` when there is nothing active to reset.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return None
+    fresh = {key: value for key, value in plan.items() if key in _RESET_KEEPS}
+    fresh["status"] = "draft"
+    fresh["day_wise_itinerary"] = []
+    fresh["selected_flights"] = []
+    fresh["selected_hotels"] = []
+    fresh["selected_activities"] = []
+    _save_active_trip(fresh)
+    return fresh
 
 
 @tool
@@ -1434,8 +1121,10 @@ def create_trip_plan(
     departure_date: str,
     return_date: str,
     origin: str = "",
+    travel_scope: str = "",
     travelers_summary: str = "",
     notes: str = "",
+    planning_recommendation_json: str = "",
 ) -> str:
     """Create a new trip plan draft. Call this to start planning a trip.
 
@@ -1444,10 +1133,42 @@ def create_trip_plan(
         departure_date: YYYY-MM-DD.
         return_date: YYYY-MM-DD.
         origin: Departure city (defaults from preferences if not provided).
-        travelers_summary: e.g. '2 adults, 1 child (age 5)'.
+        travel_scope: "round_trip" when planning travel from the origin, or
+            "destination_only" when the traveller will arrange their own way there.
+        travelers_summary: Name everyone travelling, e.g. 'Munish, Priya, and
+            Aarav (5)'. Names matter: per-traveller passport and visa checks
+            only run for people this text names. Fall back to counts
+            ('2 adults, 1 child (age 5)') only when you do not know the names.
         notes: Any special requirements or notes.
+        planning_recommendation_json: Complete JSON returned by recommend_trip_duration.
     """
     prefs = load_preferences()
+    travel_scope = travel_scope.strip().lower()
+    if travel_scope not in {"", "round_trip", "destination_only"}:
+        return "Error: travel_scope must be round_trip or destination_only."
+    origin_supplied = bool(origin.strip())
+    profile = prefs.get("profile") or {}
+    if travel_scope == "destination_only":
+        origin = ""
+    elif not origin_supplied:
+        home_city = str(profile.get("home_city") or "").strip()
+        home_area = str(profile.get("home_area") or "").strip()
+        origin = (
+            f"{home_area}, {home_city}"
+            if home_area and home_city and home_city.casefold() not in home_area.casefold()
+            else home_area or home_city
+        )
+    if not travel_scope and origin:
+        travel_scope = "round_trip"
+    planning_recommendation: dict[str, Any] | None = None
+    if planning_recommendation_json:
+        try:
+            parsed_recommendation = json.loads(planning_recommendation_json)
+        except json.JSONDecodeError:
+            return "Error: planning_recommendation_json must be valid JSON."
+        if not isinstance(parsed_recommendation, dict):
+            return "Error: planning_recommendation_json must be a JSON object."
+        planning_recommendation = parsed_recommendation
     fam = prefs["family"]
     if not travelers_summary:
         travelers_summary = f"{fam['adults']} adults"
@@ -1468,8 +1189,10 @@ def create_trip_plan(
     )
     existing = _load_history_trip(trip_id)
     if existing:
-        if origin:
+        if origin_supplied or not str(existing.get("origin") or "").strip():
             existing["origin"] = origin
+        if travel_scope:
+            existing["travel_scope"] = travel_scope
         if notes:
             existing["notes"] = notes
         if travelers_summary:
@@ -1492,15 +1215,19 @@ def create_trip_plan(
     plan: dict[str, Any] = {
         "status": "draft",
         "trip_id": trip_id,
+        "trip_number": _next_trip_number(),
         "created_at": datetime.now().isoformat(),
         "destination": destination,
         "origin": origin,
+        "travel_scope": travel_scope,
         "departure_date": departure_date,
         "return_date": return_date,
         "travelers": travelers_summary,
         "notes": notes,
+        "planning_recommendation": planning_recommendation,
         "preferences_snapshot": {
             "trip_style": prefs["trip_style"],
+            "planning_preferences": prefs.get("planning_preferences") or {},
             "budget_level": prefs["budget_level"],
             "hotel_preferences": prefs["hotel_preferences"],
             "transport_preferences": prefs["transport_preferences"],
@@ -1514,6 +1241,10 @@ def create_trip_plan(
         "total_cost": 0,
         "budget": 0,
         "currency": "",
+        "weather": {},
+        # What check_visa_requirements found for this trip, so the answer
+        # survives the conversation it was given in.
+        "visa": {},
         # One-off constraints/exceptions that apply to THIS trip only (e.g.
         # "3-star is fine just this time"). They never leak into durable prefs.
         "trip_constraints": [],
@@ -1536,6 +1267,108 @@ def get_trip_plan() -> str:
     return json.dumps(plan, indent=2)
 
 
+def _itinerary_day_number(day: Any) -> int | None:
+    if not isinstance(day, dict):
+        return None
+    try:
+        return int(day.get("day"))
+    except (TypeError, ValueError):
+        return None
+
+
+def _merge_itinerary_days(
+    existing: list[Any], incoming: list[Any]
+) -> tuple[list[Any], bool]:
+    """Fold a partial ``day_wise_itinerary`` update into the saved itinerary.
+
+    The tool contract asks for the whole itinerary on every update, but a
+    single-stop edit ("swap the Indore hotel") often comes back carrying only
+    the day that changed. Assigning that wholesale silently deletes every other
+    day, so a strict subset of already-planned day numbers is merged in place
+    instead. A full resubmit, an added day, or a renumbered itinerary still
+    replaces the list.
+    """
+    if not existing or not incoming:
+        return incoming, False
+    incoming_numbers = [_itinerary_day_number(day) for day in incoming]
+    if any(number is None for number in incoming_numbers):
+        return incoming, False
+    if len(incoming) >= len(existing):
+        return incoming, False
+    existing_numbers = {_itinerary_day_number(day) for day in existing}
+    if not set(incoming_numbers).issubset(existing_numbers):
+        return incoming, False
+    replacements = dict(zip(incoming_numbers, incoming))
+    merged = [
+        replacements.get(_itinerary_day_number(day), day) for day in existing
+    ]
+    return merged, True
+
+
+def _journey_matches(stop: Any, origin: str, destination: str) -> bool:
+    if _stop_kind(stop) not in {"flight", "transport"}:
+        return False
+    name = re.sub(r"[^a-z0-9]+", " ", _stop_name(stop).casefold()).strip()
+    source = re.sub(r"[^a-z0-9]+", " ", origin.casefold()).strip()
+    target = re.sub(r"[^a-z0-9]+", " ", destination.casefold()).strip()
+    source_index = name.find(source)
+    return source_index >= 0 and name.find(target, source_index + len(source)) > source_index
+
+
+def _ensure_selected_flight_legs(plan: dict[str, Any], previous_origin: str = "") -> list[str]:
+    if not plan.get("selected_flights"):
+        return []
+    origin = str(plan.get("origin") or "").strip()
+    destination = str(plan.get("destination") or "").strip()
+    itinerary = plan.get("day_wise_itinerary")
+    if not origin or not destination or origin.casefold() == destination.casefold() or not itinerary:
+        return []
+    days = [day for day in itinerary if isinstance(day, dict)]
+    if not days:
+        return []
+
+    added: list[str] = []
+    first_stops = days[0].setdefault("stops", [])
+    last_stops = days[-1].setdefault("stops", [])
+    if previous_origin and previous_origin.casefold() != origin.casefold():
+        for stops, source, target in (
+            (first_stops, previous_origin, destination),
+            (last_stops, destination, previous_origin),
+        ):
+            if not isinstance(stops, list):
+                continue
+            for stop in stops:
+                if not isinstance(stop, dict) or not _journey_matches(stop, source, target):
+                    continue
+                stop["name"] = re.sub(
+                    re.escape(previous_origin), origin, _stop_name(stop), count=1,
+                    flags=re.IGNORECASE,
+                )
+                added.append(str(stop["name"]))
+    if isinstance(first_stops, list) and not any(
+        _journey_matches(stop, origin, destination) for stop in first_stops
+    ):
+        outbound = {"name": f"Flight: {origin} to {destination}", "kind": "flight"}
+        hotel_index = next(
+            (index for index, stop in enumerate(first_stops) if _stop_kind(stop) == "hotel"),
+            len(first_stops),
+        )
+        first_stops.insert(hotel_index, outbound)
+        added.append(outbound["name"])
+
+    if isinstance(last_stops, list) and not any(
+        _journey_matches(stop, destination, origin) for stop in last_stops
+    ):
+        inbound = {"name": f"Flight: {destination} to {origin}", "kind": "flight"}
+        hotel_indexes = [
+            index for index, stop in enumerate(last_stops) if _stop_kind(stop) == "hotel"
+        ]
+        insert_at = hotel_indexes[-1] + 1 if hotel_indexes else len(last_stops)
+        last_stops.insert(insert_at, inbound)
+        added.append(inbound["name"])
+    return added
+
+
 @tool
 @_serialized_mutation
 def update_trip_plan(updates_json: str) -> str:
@@ -1548,16 +1381,30 @@ def update_trip_plan(updates_json: str) -> str:
     - day_wise_itinerary: list of day plans
     - cost_breakdown: dict of cost items
     - total_cost: number
-    - budget: number — the user's total budget for THIS trip (drives the live
-      budget meter in the UI; set it as soon as the user states a budget)
+        - budget: {"amount": number, "currency": ISO code, "owner": "user"} - the
+            user's total budget for THIS trip. Set only from an explicit user target.
     - currency: ISO code of the sticky display currency ("INR", "USD", "EUR",
       ...) — set it once when you pick the plan's currency so every surface
       (including the budget meter) shows the same symbol
+        - weather: normalized get_weather_forecast result with source, note, days,
+            and optional packing_advice. If Open-Meteo fails completely, use source
+            "agent_climate_estimate" and clearly label monthly climate knowledge.
     - notes: string
     - trip_constraints: list of strings — one-off exceptions/constraints that
       apply to THIS trip ONLY (e.g. "3-star hotel is fine just for this trip",
       "OK with one connection this time"). Use this for anything the user says
       is a one-time exception; NEVER save such one-offs to durable preferences.
+    - travel_scope: "round_trip" when you are planning the journey there and
+      back, or "destination_only" when the user says they will arrange getting
+      there themselves. Set it as soon as the user answers, so the trip stops
+      being asked for an origin it does not need.
+    - visa: what check_visa_requirements found, so it outlives the chat. Shape:
+      {"passport_country": "Indian", "destination_country": "Mexico",
+       "status": "required" | "e_visa" | "on_arrival" | "visa_free" | "unclear",
+       "processing_days_typical": 21, "official_url": "https://...",
+       "source_domain": "gob.mx", "checked_on": "YYYY-MM-DD", "note": "one line"}
+      Use 0 for processing_days_typical when no source states one — never
+      estimate it, because it drives a deadline warning.
 
     Example: '{"selected_flights": [{"option": 1, "airline": "IndiGo", "price": 8500}]}'
     """
@@ -1570,8 +1417,85 @@ def update_trip_plan(updates_json: str) -> str:
     except json.JSONDecodeError:
         return "Error: invalid JSON."
 
+    if "day_wise_itinerary" in updates and not has_structured_itinerary(updates):
+        return (
+            "Error: day_wise_itinerary must contain the full structured itinerary "
+            "with a stops list for every day. The saved itinerary was not changed."
+        )
+
+    validation_plan = dict(plan)
+    if isinstance(updates.get("day_wise_itinerary"), list):
+        validation_plan["day_wise_itinerary"] = [
+            *(plan.get("day_wise_itinerary") or []),
+            *updates["day_wise_itinerary"],
+        ]
+    hotel_destination_errors = _hotel_destination_errors(
+        str(plan.get("destination") or ""),
+        updates.get("selected_hotels"),
+        _itinerary_hotel_locations(validation_plan),
+    )
+    if hotel_destination_errors:
+        return (
+            "Error: hotel location must match the active trip destination. "
+            + " ".join(hotel_destination_errors)
+            + " Search again using the active trip destination and resubmit the full update."
+        )
+
+    allowed_keys = {
+        "selected_flights", "selected_hotels", "selected_activities",
+        "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
+        "origin", "budget", "currency", "weather", "trip_constraints",
+        "visa", "travel_scope",
+    }
+    before = json.loads(json.dumps(plan))  # deep copy for diff
+    merged_partial_itinerary = False
+    for key, val in updates.items():
+        if key in allowed_keys:
+            if key == "budget":
+                if isinstance(val, int | float) and not isinstance(val, bool):
+                    val = {
+                        "amount": val,
+                        "currency": str(updates.get("currency") or plan.get("currency") or "INR"),
+                        "owner": "user",
+                        "updated_at": datetime.now().isoformat(),
+                    }
+                elif isinstance(val, dict):
+                    val = {
+                        **val,
+                        "currency": str(
+                            val.get("currency")
+                            or updates.get("currency")
+                            or plan.get("currency")
+                            or "INR"
+                        ),
+                        "owner": "user",
+                        "updated_at": datetime.now().isoformat(),
+                    }
+            if key == "selected_hotels" and isinstance(val, list):
+                lodging_locations = _itinerary_hotel_locations(validation_plan)
+                destination = str(plan.get("destination") or "").strip().lower()
+                if destination:
+                    lodging_locations = lodging_locations | {destination} | {
+                        part.strip()
+                        for part in re.split(r"[,&/()]| and ", destination)
+                        if part.strip()
+                    }
+                val = [
+                    hotel
+                    for hotel in val
+                    if not _HOTEL_PLACEHOLDER_RE.search(_stop_name(hotel))
+                    and not unnamed_lodging(_stop_name(hotel), lodging_locations)
+                ]
+            if key == "day_wise_itinerary" and isinstance(val, list):
+                val, merged_partial_itinerary = _merge_itinerary_days(
+                    plan.get("day_wise_itinerary") or [], val
+                )
+            plan[key] = val
+
+    resettled_days: list[int] = []
     if "day_wise_itinerary" in updates:
-        time_errors = _itinerary_time_errors(updates.get("day_wise_itinerary"))
+        resettled_days = _fit_plan_to_departure(plan)
+        time_errors = _itinerary_time_errors(plan.get("day_wise_itinerary"))
         if time_errors:
             return (
                 "Error: itinerary times must increase in circuit order. "
@@ -1579,29 +1503,149 @@ def update_trip_plan(updates_json: str) -> str:
                 + " Resubmit the full corrected day_wise_itinerary."
             )
 
-    allowed_keys = {
-        "selected_flights", "selected_hotels", "selected_activities",
-        "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
-        "origin", "budget", "currency", "trip_constraints",
-    }
-    before = json.loads(json.dumps(plan))  # deep copy for diff
-    for key, val in updates.items():
-        if key in allowed_keys:
-            if key == "selected_hotels" and isinstance(val, list):
-                val = [
-                    hotel
-                    for hotel in val
-                    if not _HOTEL_PLACEHOLDER_RE.search(_stop_name(hotel))
-                ]
-            plan[key] = val
+    if {"selected_hotels", "day_wise_itinerary"}.intersection(updates) and (
+        _sync_replaced_hotel_anchors(
+            plan,
+            before.get("selected_hotels"),
+            plan.get("selected_hotels"),
+        )
+    ):
+        _reflow_unbooked_attractions(plan)
+    if "selected_hotels" in updates:
+        from tripplanner.decisions.lodging import reconcile_selected_lodging
 
+        reconcile_selected_lodging(plan)
+    if "selected_flights" in updates:
+        from tripplanner.decisions.flights import reconcile_selected_flight
+
+        reconcile_selected_flight(plan)
+
+    added_flight_legs = []
+    if {"origin", "selected_flights"}.intersection(updates):
+        added_flight_legs = _ensure_selected_flight_legs(
+            plan, str(before.get("origin") or "")
+        )
+
+    # Only a declared change to the flights may remove a leg. Swapping a hotel
+    # or resubmitting one day of the itinerary may not.
+    declared_legs: set[str] = set()
+    if "selected_flights" in updates:
+        declared_legs = {
+            _stop_name(leg)
+            for leg in (before.get("selected_flights") or [])
+            if _stop_name(leg)
+        }
+    restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
+
+    resettled_days = list(dict.fromkeys([*resettled_days, *_settle_plan_legs(plan)]))
+    closed_day_repairs = _repair_known_closed_days(plan)
+    opening_hours_repairs = _repair_known_opening_hours(plan)
+    feasibility_repairs = _repair_temporal_infeasibility(plan)
+    violations = validate_plan(plan)
+    calendar_errors = [
+        violation.message for violation in violations if violation.code == "I14"
+    ]
+    if "day_wise_itinerary" in updates and calendar_errors:
+        return (
+            "Error: itinerary days must stay within this trip's own departure and "
+            "return dates. " + " ".join(calendar_errors) + " This looks like it "
+            "belongs to a different trip. If you meant to plan a different "
+            "destination or date range, call create_trip_plan instead of "
+            "update_trip_plan. The saved itinerary was not changed."
+        )
+    closed_day_errors = [
+        violation.message for violation in violations if violation.code == "I11"
+    ]
+    if "day_wise_itinerary" in updates and closed_day_errors:
+        return (
+            "Error: itinerary visits on known closed weekdays cannot be saved. "
+            + " ".join(closed_day_errors)
+            + " Move them to days when they are open and resubmit the full "
+            "day_wise_itinerary. The saved itinerary was not changed."
+        )
+    availability_errors = [
+        violation.message for violation in violations if violation.code == "I12"
+    ]
+    if availability_errors:
+        return (
+            "Error: itinerary places reported closed for business cannot be saved. "
+            + " ".join(availability_errors)
+            + " Replace them with places that are still operating and resubmit the full "
+            "day_wise_itinerary. The saved itinerary was not changed."
+        )
+    envelope_errors = [violation.message for violation in violations if violation.code == "I1"]
+    if envelope_errors:
+        return (
+            "Error: itinerary stops must stay within the trip arrival and departure times. "
+            + " ".join(envelope_errors)
+            + " Resubmit the full corrected day_wise_itinerary. "
+            "The saved itinerary was not changed."
+        )
+    # Rejecting here discarded the turn's only copy of the itinerary, so a plan that
+    # was merely incomplete ended up saved as no plan at all.
+    sanity_errors = persistence_sanity_errors(plan)
     _save_active_trip(plan)
-    restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))
+    broken_invariants = _newly_broken(before, plan)
+    restaurant_warnings = _restaurant_itinerary_warnings(
+        plan.get("day_wise_itinerary"),
+        cities=_itinerary_hotel_locations(plan),
+        dietary=_dietary_preferences(plan),
+    )
     empty_day_warnings = _empty_itinerary_day_warnings(plan.get("day_wise_itinerary"))
+    transport_warnings = _round_trip_transport_warnings(plan)
     hotel_warnings = _hotel_selection_warnings(plan)
     warning_text = ""
+    if sanity_errors:
+        warning_text += (
+            "\nThe itinerary was saved but is not yet consistent: "
+            + " ".join(sanity_errors[:5])
+            + " Replan the affected journey or day as a whole and resubmit the full "
+            "day_wise_itinerary. Do not report the trip as planned while this stands."
+        )
+    if restored_legs:
+        warning_text += (
+            "\nKept "
+            + ", ".join(restored_legs)
+            + ": this update did not declare a change to the flights, so the leg was "
+            "restored. Send selected_flights when you mean to change travel."
+        )
+    if added_flight_legs:
+        warning_text += "\nAdded missing trip legs: " + ", ".join(added_flight_legs) + "."
+    if resettled_days:
+        warning_text += (
+            "\nReordered Day "
+            + ", ".join(str(day) for day in resettled_days)
+            + " so each journey opens or closes its day."
+        )
+    if closed_day_repairs:
+        warning_text += "\nAdjusted known closed-day visits before saving: " + " ".join(
+            closed_day_repairs
+        )
+    if opening_hours_repairs:
+        warning_text += (
+            "\nAdjusted visits to fit known opening hours before saving: "
+            + " ".join(opening_hours_repairs)
+        )
+    if feasibility_repairs:
+        warning_text += "\nAdjusted travel-infeasible visit times before saving: " + " ".join(
+            feasibility_repairs
+        )
+    if broken_invariants:
+        warning_text += (
+            "\nThis change broke the itinerary: "
+            + " ".join(broken_invariants)
+            + " Replan the affected day or days as a whole — move, retime, or drop the "
+            "stops that no longer fit — and resubmit the full day_wise_itinerary. Do not "
+            "report the trip as updated while this stands."
+        )
+    if merged_partial_itinerary:
+        warning_text += (
+            "\nPartial itinerary update merged: only the days you sent were replaced, "
+            "the other planned days were kept. Send the full day_wise_itinerary when "
+            "you mean to change the shape of the trip."
+        )
     if restaurant_warnings:
-        warning_text = (
+        warning_text += (
             "\nRestaurant planning incomplete: "
             + " ".join(restaurant_warnings)
             + " Call nearby_restaurants, choose preference-matched options, and update "
@@ -1614,20 +1658,27 @@ def update_trip_plan(updates_json: str) -> str:
             + " Restore concrete attractions or named restaurants on those days and "
             "resubmit the full day_wise_itinerary before finishing."
         )
+    if transport_warnings:
+        warning_text += (
+            "\nRound-trip transport planning incomplete: "
+            + " ".join(transport_warnings)
+            + " Add the explicit inter-city journey stops in itinerary order and "
+            "resubmit the full day_wise_itinerary before finishing."
+        )
     if hotel_warnings:
         warning_text += (
             "\nHotel planning incomplete: "
             + " ".join(hotel_warnings)
             + " Call search_hotels, choose the best preference-matched real option by "
-            "default, verify it with search_places_with_reviews, and replace every hotel "
-            "placeholder before finishing."
+            "default, verify it with search_places_with_reviews, and replace every generic "
+            "or placeholder hotel label before finishing."
         )
     bullets = diff_plans(before, plan)
     if not bullets:
         return f"Trip plan updated (no material changes). Status: {plan['status']}{warning_text}"
     return (
         f"Trip plan updated. Status: {plan['status']}\n"
-        f"What changed:\n{format_diff(bullets)}{warning_text}"
+        f"What changed:\n{format_diff(bullets)}{warning_text}{_pacing_text(plan)}"
     )
 
 
@@ -1646,6 +1697,15 @@ def finalize_trip() -> str:
         return (
             "Cannot finalize: no flights or hotels selected yet. "
             "Search and select options first."
+        )
+
+    gaps = finalization_gaps(plan)
+    if gaps:
+        reasons = "\n".join(f"- {gap}" for gap in gaps)
+        return (
+            "Cannot finalize: this trip is not ready for booking.\n"
+            f"{reasons}\n"
+            "Resolve these gaps and try finalizing again."
         )
 
     plan["status"] = "finalized"
@@ -1687,10 +1747,17 @@ def finalize_trip() -> str:
         lines.append("")
 
     if plan["cost_breakdown"]:
+        plan_currency = str(plan.get("currency") or "INR")
         lines.append("  COST BREAKDOWN:")
         for item, cost in plan["cost_breakdown"].items():
-            lines.append(f"    {item}: ₹{cost:,.0f}" if isinstance(cost, (int, float)) else f"    {item}: {cost}")
-        lines.append(f"\n  TOTAL ESTIMATED COST: ₹{plan.get('total_cost', 0):,.0f}")
+            lines.append(
+                f"    {item}: {money(cost, plan_currency)}"
+                if isinstance(cost, (int, float))
+                else f"    {item}: {cost}"
+            )
+        lines.append(
+            f"\n  TOTAL ESTIMATED COST: {money(plan.get('total_cost', 0) or 0, plan_currency)}"
+        )
     lines.append(f"\n{'='*60}")
     lines.append("  Status: FINALIZED — ready for booking")
     lines.append("  Say 'execute' to proceed with bookings.")
@@ -1854,4 +1921,3 @@ def resume_trip(destination: str = "", trip_id: str = "") -> str:
         f"{c['hotels']} hotel(s), {c['activities']} activity(ies). "
         f"Continuing where you left off."
     )
-

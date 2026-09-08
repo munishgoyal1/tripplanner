@@ -1,0 +1,351 @@
+{
+  "status": "draft",
+  "trip_id": "bali_2027-11-12_2027-11-19",
+  "trip_number": 1,
+  "created_at": "2026-08-15T20:12:03.578971",
+  "destination": "Bali",
+  "origin": "Bangalore",
+  "departure_date": "2027-11-12",
+  "return_date": "2027-11-19",
+  "travelers": "2 adults (honeymoon)",
+  "notes": "Romantic hotels and sunset views requested. Honeymoon trip.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Bali",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "THE HAVEN Bali Seminyak",
+      "city": "Bali",
+      "checkin": "2027-11-12",
+      "checkout": "2027-11-15",
+      "star_rating": 4,
+      "romantic": true,
+      "google_rating": 4.7,
+      "reviews_count": 8920,
+      "address": "Jl. Raya Seminyak No.500, Seminyak, Bali"
+    },
+    {
+      "name": "Mulia Resort - Nusa Dua, Bali",
+      "city": "Bali",
+      "checkin": "2027-11-15",
+      "checkout": "2027-11-19",
+      "star_rating": 5,
+      "romantic": true,
+      "google_rating": 4.6,
+      "reviews_count": 9250,
+      "address": "Kawasan Sawangan, Nusa Dua, Bali"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-12",
+      "title": "Arrival in Bali · Romantic Welcome",
+      "summary": "Arrive in Bali, private transfer to a romantic resort in Seminyak. Sunset beach walk and candlelight dinner.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Bali (Denpasar)",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "17:00",
+          "note": "Choose a morning flight for best arrival time."
+        },
+        {
+          "name": "THE HAVEN Bali Seminyak",
+          "kind": "hotel",
+          "note": "Check-in and freshen up. 4.7★, 8,920 reviews, romantic hotel in Seminyak."
+        },
+        {
+          "name": "La Lucciola",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Beachfront candlelight dinner with sunset views."
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-13",
+      "title": "Ubud Culture & Rice Terraces",
+      "summary": "Explore Ubud's art, culture, and iconic rice terraces. Romantic lunch with jungle views.",
+      "stops": [
+        {
+          "name": "THE HAVEN Bali Seminyak",
+          "kind": "hotel",
+          "note": "Start from hotel."
+        },
+        {
+          "name": "Tegalalang Rice Terrace",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Stroll the terraces and take photos."
+        },
+        {
+          "name": "Cretya Ubud",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch with jungle views."
+        },
+        {
+          "name": "Ubud Palace",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Explore Balinese royal heritage."
+        },
+        {
+          "name": "THE HAVEN Bali Seminyak",
+          "kind": "hotel",
+          "note": "Return to hotel."
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-14",
+      "title": "Beach Day & Spa Indulgence",
+      "summary": "Relax on Seminyak Beach, enjoy a couple's spa, and sunset cocktails.",
+      "stops": [
+        {
+          "name": "THE HAVEN Bali Seminyak",
+          "kind": "hotel"
+        },
+        {
+          "name": "Seminyak Beach",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Relax on the sand."
+        },
+        {
+          "name": "Prana Spa",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Couple's spa treatment."
+        },
+        {
+          "name": "Potato Head Beach Club",
+          "kind": "meal",
+          "time": "17:30",
+          "note": "Sunset cocktails and dinner."
+        },
+        {
+          "name": "THE HAVEN Bali Seminyak",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-15",
+      "title": "Nusa Dua Relaxation & Water Sports",
+      "summary": "Transfer to Nusa Dua. Enjoy water sports, white sand beaches, and a romantic seafood dinner.",
+      "stops": [
+        {
+          "name": "Transfer: Seminyak to Nusa Dua",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 60,
+          "note": "Private car transfer."
+        },
+        {
+          "name": "THE HAVEN Bali Seminyak",
+          "kind": "hotel",
+          "time": "10:30"
+        },
+        {
+          "name": "Nusa Dua Beach",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 120,
+          "note": "Relax or try water sports."
+        },
+        {
+          "name": "Bumbu Bali",
+          "kind": "meal",
+          "time": "15:00",
+          "note": "Authentic Balinese cuisine."
+        },
+        {
+          "name": "Mulia Resort - Nusa Dua, Bali",
+          "kind": "hotel",
+          "note": "Check-in and relax. 4.6★, 9,250 reviews, romantic resort in Nusa Dua.",
+          "time": "17:00"
+        },
+        {
+          "name": "Kayuputi Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Fine dining with ocean views."
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-16",
+      "title": "Uluwatu Temple & Sunset Kecak Dance",
+      "summary": "Visit Uluwatu Temple, enjoy cliffside views, and watch the famous Kecak dance at sunset.",
+      "stops": [
+        {
+          "name": "Mulia Resort - Nusa Dua, Bali",
+          "kind": "hotel"
+        },
+        {
+          "name": "Uluwatu Temple",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Cliffside temple with ocean views."
+        },
+        {
+          "name": "Sundara Beach Club",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch with a view."
+        },
+        {
+          "name": "Kecak Dance at Uluwatu",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 90,
+          "note": "Sunset performance."
+        },
+        {
+          "name": "Mulia Resort - Nusa Dua, Bali",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-11-17",
+      "title": "Lembongan Island Day Trip",
+      "summary": "Take a day trip to Nusa Lembongan for snorkeling, beach time, and a romantic seaside lunch.",
+      "stops": [
+        {
+          "name": "Ferry: Bali to Nusa Lembongan",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 60,
+          "note": "Morning ferry to the island."
+        },
+        {
+          "name": "Dream Beach, Nusa Lembongan",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Beach time and snorkeling."
+        },
+        {
+          "name": "The Deck Cafe & Bar",
+          "kind": "meal",
+          "time": "12:30",
+          "note": "Lunch with ocean views."
+        },
+        {
+          "name": "Ferry: Nusa Lembongan to Bali",
+          "kind": "transport",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Return to Bali."
+        },
+        {
+          "name": "Mulia Resort - Nusa Dua, Bali",
+          "kind": "hotel",
+          "time": "17:30",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-11-18",
+      "title": "Leisure & Departure",
+      "summary": "Enjoy a leisurely morning, last swim, and transfer to airport for flight home.",
+      "stops": [
+        {
+          "name": "Mulia Resort - Nusa Dua, Bali",
+          "kind": "hotel"
+        },
+        {
+          "name": "Nusa Dua Beach",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Final swim or beach walk."
+        },
+        {
+          "name": "Flight: Bali (Denpasar) to Bangalore",
+          "kind": "flight",
+          "time": "15:00",
+          "arrival_time": "20:00",
+          "note": "Afternoon/evening flight home."
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T20:14:19.232142",
+  "id": "bali_2027-11-12_2027-11-19",
+  "user_id": "corpus-bali-honeymoon"
+}

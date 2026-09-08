@@ -1,0 +1,565 @@
+{
+  "status": "draft",
+  "trip_id": "delhi_agra_jaipur_2027-02-15_2027-02-20",
+  "trip_number": 1,
+  "created_at": "2026-08-25T20:28:38.829467",
+  "destination": "Delhi, Agra, Jaipur",
+  "origin": "Bangalore",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-02-15",
+  "return_date": "2027-02-20",
+  "travelers": "Couple: 2 adults",
+  "notes": "Focus on history, architecture, museums, and local culture.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Delhi, Agra, Jaipur",
+    "estimated_planned_minutes": 930,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "8 preference-matched places account for about 930 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "city": "Delhi",
+      "name": "The Park New Delhi",
+      "address": "15 Parliament Street, Connaught Place, New Delhi, 110001",
+      "checkin": "2027-02-15",
+      "checkout": "2027-02-17",
+      "star_rating": 5,
+      "price_per_night": 7900,
+      "currency": "INR",
+      "total_price": 15800,
+      "google_rating": 4.1,
+      "google_reviews": 12800,
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp2cf3e"
+      }
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-15",
+      "title": "Day 1 · Arrival in Delhi & Old Delhi Sights",
+      "summary": "Fly from Bangalore to Delhi, check in to hotel, and explore Old Delhi's historic core including the Red Fort and Jama Masjid.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Delhi",
+          "kind": "flight",
+          "time": "07:00",
+          "arrival_time": "09:40",
+          "duration_min": 160,
+          "note": "Morning direct flight"
+        },
+        {
+          "name": "The Park New Delhi",
+          "kind": "hotel",
+          "note": "Check-in and freshen up",
+          "city": "Delhi",
+          "address": "15 Parliament Street, Connaught Place, New Delhi, 110001",
+          "checkin": "2027-02-15",
+          "checkout": "2027-02-17",
+          "star_rating": 5,
+          "price_per_night": 7900,
+          "currency": "INR",
+          "total_price": 15800,
+          "google_rating": 4.1,
+          "google_reviews": 12800,
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp2cf3e"
+          },
+          "time": "10:10"
+        },
+        {
+          "name": "Red Fort",
+          "kind": "attraction",
+          "time": "12:10",
+          "duration_min": 120,
+          "note": "UNESCO World Heritage Site"
+        },
+        {
+          "name": "Jama Masjid",
+          "kind": "attraction",
+          "time": "14:40",
+          "duration_min": 60,
+          "note": "One of India's largest mosques"
+        },
+        {
+          "name": "Chandni Chowk",
+          "kind": "attraction",
+          "time": "16:10",
+          "duration_min": 60,
+          "note": "Explore the bazaar and street food"
+        },
+        {
+          "name": "The Park New Delhi",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "city": "Delhi",
+          "address": "15 Parliament Street, Connaught Place, New Delhi, 110001",
+          "checkin": "2027-02-15",
+          "checkout": "2027-02-17",
+          "star_rating": 5,
+          "price_per_night": 7900,
+          "currency": "INR",
+          "total_price": 15800,
+          "google_rating": 4.1,
+          "google_reviews": 12800,
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp2cf3e"
+          },
+          "time": "17:40"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-16",
+      "title": "Day 2 · New Delhi: Museums & Monuments",
+      "summary": "Visit Delhi's top museums and monuments including India Gate, National Museum, and Qutub Minar.",
+      "stops": [
+        {
+          "name": "The Park New Delhi",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "city": "Delhi",
+          "address": "15 Parliament Street, Connaught Place, New Delhi, 110001",
+          "checkin": "2027-02-15",
+          "checkout": "2027-02-17",
+          "star_rating": 5,
+          "price_per_night": 7900,
+          "currency": "INR",
+          "total_price": 15800,
+          "google_rating": 4.1,
+          "google_reviews": 12800,
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp2cf3e"
+          },
+          "time": "09:00"
+        },
+        {
+          "name": "India Gate & Rajpath",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "War memorial and ceremonial boulevard"
+        },
+        {
+          "name": "National Museum, Delhi",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90,
+          "note": "India's premier history museum"
+        },
+        {
+          "name": "Qutub Minar",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 90,
+          "note": "Tallest brick minaret in the world"
+        },
+        {
+          "name": "Lodhi Gardens",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 60,
+          "note": "Historic gardens with tombs"
+        },
+        {
+          "name": "The Park New Delhi",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "city": "Delhi",
+          "address": "15 Parliament Street, Connaught Place, New Delhi, 110001",
+          "checkin": "2027-02-15",
+          "checkout": "2027-02-17",
+          "star_rating": 5,
+          "price_per_night": 7900,
+          "currency": "INR",
+          "total_price": 15800,
+          "google_rating": 4.1,
+          "google_reviews": 12800,
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp2cf3e"
+          },
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-17",
+      "title": "Day 3 · Agra: Taj Mahal & Agra Fort",
+      "summary": "Morning train to Agra. Visit the Taj Mahal, Agra Fort, and Mehtab Bagh for sunset views.",
+      "stops": [
+        {
+          "name": "Train: Delhi to Agra",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 120,
+          "note": "Morning Gatimaan Express"
+        },
+        {
+          "name": "The Park New Delhi",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "09:30",
+          "city": "Delhi",
+          "address": "15 Parliament Street, Connaught Place, New Delhi, 110001",
+          "checkin": "2027-02-15",
+          "checkout": "2027-02-17",
+          "star_rating": 5,
+          "price_per_night": 7900,
+          "currency": "INR",
+          "total_price": 15800,
+          "google_rating": 4.1,
+          "google_reviews": 12800,
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp2cf3e"
+          }
+        },
+        {
+          "name": "Taj Mahal",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 120,
+          "note": "Go early to avoid crowds"
+        },
+        {
+          "name": "Agra Fort",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "UNESCO World Heritage Site"
+        },
+        {
+          "name": "Mehtab Bagh",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 60,
+          "note": "Sunset view of Taj Mahal"
+        },
+        {
+          "name": "Hotel in Agra",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-18",
+      "title": "Day 4 · Jaipur: Amber Fort & City Palace",
+      "summary": "Morning drive to Jaipur. Explore Amber Fort, City Palace, and Hawa Mahal.",
+      "stops": [
+        {
+          "name": "Drive: Agra to Jaipur",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 270,
+          "distance_km": 240,
+          "note": "Private car with comfort break"
+        },
+        {
+          "name": "Hotel in Agra",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "12:00"
+        },
+        {
+          "name": "Amber Fort",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Hilltop fort with stunning views"
+        },
+        {
+          "name": "City Palace & Museum, Jaipur",
+          "kind": "attraction",
+          "time": "18:30",
+          "duration_min": 90,
+          "note": "History and royal artifacts"
+        },
+        {
+          "name": "Hawa Mahal",
+          "kind": "attraction",
+          "time": "20:30",
+          "duration_min": 45,
+          "note": "Iconic pink facade"
+        },
+        {
+          "name": "Hotel in Jaipur",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "time": "21:45"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-19",
+      "title": "Day 5 · Jaipur: Local Culture & Return to Bangalore",
+      "summary": "Explore Jaipur's local culture, markets, and Albert Hall Museum. Evening flight to Bangalore.",
+      "stops": [
+        {
+          "name": "Hotel in Jaipur",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "09:00"
+        },
+        {
+          "name": "Albert Hall Museum",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Jaipur's oldest museum"
+        },
+        {
+          "name": "Johari Bazaar",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Famous for jewelry and crafts"
+        },
+        {
+          "name": "Lunch at LMB (Laxmi Misthan Bhandar)",
+          "kind": "meal",
+          "time": "14:30",
+          "duration_min": 60,
+          "note": "Iconic Rajasthani restaurant"
+        },
+        {
+          "name": "Hotel in Jaipur",
+          "kind": "hotel",
+          "note": "Collect bags",
+          "time": "16:00"
+        },
+        {
+          "name": "Flight: Jaipur to Bangalore",
+          "kind": "flight",
+          "time": "16:00",
+          "arrival_time": "18:30",
+          "duration_min": 150,
+          "note": "Evening direct flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T20:29:26.007105",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-25T20:29:21",
+      "expires_at": "2026-08-26T08:29:21"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_delhi_2027_02_15_2027_02_17",
+      "kind": "lodging",
+      "created_at": "2026-08-25T14:59:21.252888Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Delhi",
+        "date": "2027-02-15"
+      },
+      "subject": "Stay in Delhi",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_ca4fc23639ab",
+      "options": [
+        {
+          "id": "opt_stay_ca4fc23639ab",
+          "mode": null,
+          "label": "Radisson Blu Plaza Delhi Airport",
+          "detail": "Room SUPERIOR",
+          "price": {
+            "amount": 56711.19,
+            "currency": "INR",
+            "basis": "per_party",
+            "taxes": null,
+            "fees": null,
+            "due_at_property": null,
+            "all_in": null,
+            "mandatory_costs_complete": null,
+            "excluded": [],
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-02-15",
+            "checkout": "2027-02-17",
+            "room_name": "Room SUPERIOR",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "National Highway #8 Opp International Airport Near Mahipalpur Extension",
+            "rating": 9.4,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp2cf3e",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEQRzRaRE1aUldNWTNHSU1SUUc0WlRPTkpYR0EzREtOWlNHWTRUTVpSWEdKNkRDSVpTR0FaRE9NQlNHRTJYWU1SUUdJM1RBTVJSRzU2R0szUzdLVkpYWVNLT1BSRVU0VVQ0R0pBVEFRMzRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNEU09KVkdVMkRRTUtJTkpSWEtJWlJIQTJEQ01SV0VNWVRBTlJURlVZVFFOQlJHSTNIWVVTR0paNkRFTUJTRzRZREVNQlVHRVlER01ENEdGNkZFTUpSR1VZSFlOSldHNFlUQ01KWkVOQkVFSTJTSVpIQ0dNUlFHSTNTMk1CU0ZVWURJSUJSR0E1REdNQkSjcHJjy0DrsOYUeuFIpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZLMyMDI3LTAyLTA0IDEwOjMwOjAwonJ0o1JGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JurVJvb20gU1VQRVJJT1Kjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCRhaF0szIwMjctMDItMDQgMTA6MzA6MDChYctA67DmFHrhSKFjo0lOUqJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjE4NDEyNqNzaWQCo2hpZKdscDJjZjNlo29jY5GBoWECo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMi0xNaJjb6oyMDI3LTAyLTE3o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMzk2ZWMzNmVNM1Rad1BUWG9hQ3A1aFdLOFpDMHZqWG9XTjZLo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWS3UHJvcGVydHkgc2VydmljZSBjaGFyZ2WhYctAqpVXCj1wpKFjo0lOUoShacKhZLRHb29kcyAmIHNlcnZpY2VzIHRheKFhy0DBuCPXCj1xoWOjSU5SomxwwKNia3QG",
+              "rate_id": "I42FURCNLJJFOTKZGNDUSTKSKFDTIWSUJ5HEUWCHIEZUIS2OLJJUOWJUKRGVUUSYI5FDMRCDJFNFGR2BLJCE6TKCKNDUKMSYLFGVEUKHJEZVIQKNKJJEONJWI5FTGUZXJNLEUWCZKNFU6UCSIVKTIVKUGRDUUQKUIFITGNCHKEZFIRKPJQ2E4RSJI5HVMS2JKBIVSVCPJ5BFQR2ZGNCFGT2KKZDVKMSEKFGUWSKOJJJFQS2JLJJEQQJSIRBU2USXIVGVSVCBJZJFIRSVLFKFCTSCKJDUSM2ILFKVGR2KLI3EIRKNIJJUONCZIRCU2QSVI5CVSRCHJVCDIR2GGZDEKTKKKJDVKWKILFHEUV2HGRMVIQ2NJJNEKTSCIVCUSMSTJFNEQQ2HJVJFCR2JGNJTETKCKNDFKWKEJFEUEUSHIE2UIR2NIJCHYNJWG4YTCLRRHF6DEMBSG4WTAMRNGA2CAMJQHIZTAORQGB6EESL4PR6HYUTPN5WSAU2VKBCVESKPKJ6DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            },
+            "search_context": {
+              "destination": "Delhi",
+              "adults_per_room": 2,
+              "rooms": 1,
+              "children_ages": [],
+              "guest_nationality": "IN",
+              "refundable_only": false
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-25T14:59:21.196133Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_c7c8e69524e8",
+          "mode": null,
+          "label": "Shangri-La Eros New Delhi",
+          "detail": "Deluxe Room 1 King",
+          "price": {
+            "amount": 72560.74,
+            "currency": "INR",
+            "basis": "per_party",
+            "taxes": null,
+            "fees": null,
+            "due_at_property": null,
+            "all_in": null,
+            "mandatory_costs_complete": null,
+            "excluded": [],
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹15,850 more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-02-15",
+            "checkout": "2027-02-17",
+            "room_name": "Deluxe Room 1 King",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "19 Ashoka Road, Connaught Place",
+            "rating": 9,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp3b450",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEkR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNERU1CVEdFWkRBTlRDR1k0VE1aSldHNTZEQ0laU0dBWkRPTUJTR0UyWFlNUlFHSTNUQU1SUkc1NkdLM1M3S1ZKWFlTS09QUkVVNFVUNEdKQVRBUTM0R1EyVEVPTDRORklHT1ZLSVBRWVRPT0JYR1kzRFNPSlZHVTJEUU1LSU5KUlhLSVpTR1FaRE9OUllFTVlUQU5SVEZVWkRJTVJYR1k0SFlUU1NJWkhIWU1SUUdJM0RBT0JTR1FZRElOSlpQUVlYWVVSUkdFMlRBN0JYR0kyVE1NQlhHUVJWRVRaREpaSkVNVFJER0lZREVOUk5HQTRDMk1SVUVBWURJT1JWSEVSUaNwcmPLQPG3C9cKPXGlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm6yRGVsdXhlIFJvb20gMSBLaW5no29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmMjQyNzY4o3NpZAKjaGlkp2xwM2I0NTCjb2NjkYGhYQKjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTAyLTE1omNvqjIwMjctMDItMTejZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTZlYzM2ZU0zVFp3UFRYb2FDcDVoV0s4WkMwdmpYb1dONkujaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4kYShacKhZLRHb29kcyAmIHNlcnZpY2VzIHRheKFhy0DWiz64UeuFoWOjSU5SomxwwKNia3QE",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHJEZUOTKOKRDUOWSTIRCU2QSUI5CVURCBJZKEGR2ZGRKE2WSKK5DTKNSEINEVUU2HIFNEIT2NIJJUORJSLBMU2USRI5ETGVCBJVJFERZVGZDUWM2TG5FVMSSYLFJUWT2QKJCVKNCVKQ2EOSSBKRAVCMZUI5ITEVCFJ5GDITSGJFDU6VSLJFIFCWKUJ5HUEWCHLEZUIU2PJJLEOVJSIRIU2S2JJZFFEWCLJFNFGR2RLJCE6TSSLFCU2WKUIFHFEVCGKVNEISKNKJMEOWJUJBMVIU2TJFNEQSCZJVJFCR2JGNCECT2CKNDVCWKEJFHEUWSQKFMVQWKVKJJEORJSKRATOQSYI5ETEVCNJVBFQR2RKJLEKVC2IRFFUSSFJVKFERCHJFMUIRKOKJHEOQJUIMZE2USVIVAVSRCJJ5JFMSCFKJIXYNZSGU3DALRXGR6HYUSPPR6HY7CEMVWHK6DFEBJG633NEAYSAS3JNZTXYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            },
+            "search_context": {
+              "destination": "Delhi",
+              "adults_per_room": 2,
+              "rooms": 1,
+              "children_ages": [],
+              "guest_nationality": "IN",
+              "refundable_only": false
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-25T14:59:21.196133Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 56711.19,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "delhi_agra_jaipur_2027-02-15_2027-02-20",
+  "user_id": "corpus-india-golden-triangle-heritage-couple-5d-7787578bbda6"
+}

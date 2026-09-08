@@ -1,0 +1,1335 @@
+{
+  "archive_no": 6,
+  "trip_id": "goa_2027-03-10_2027-03-14",
+  "user_id": "corpus-goa-relaxed",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T13:40:21Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T13:41:26Z",
+      "content_hash": "1e344f9a2c448d24",
+      "plan": {
+        "status": "draft",
+        "trip_id": "goa_2027-03-10_2027-03-14",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:10:21.045377",
+        "destination": "Goa",
+        "origin": "Bangalore",
+        "departure_date": "2027-03-10",
+        "return_date": "2027-03-14",
+        "travelers": "2 adults",
+        "notes": "Relaxed pace, focus on beaches and good food.",
+        "planning_recommendation": {
+          "confidence": "high",
+          "destination": "Goa",
+          "estimated_planned_minutes": 1128,
+          "evidence_place_count": 7,
+          "reasons": [
+            "The user's explicit 4-day duration is authoritative",
+            "7 preference-matched places account for about 1128 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-03-10",
+            "title": "Arrival & North Goa Beach Walk",
+            "summary": "Arrive in Goa, check in to your hotel, unwind with a gentle walk along Baga Beach, and enjoy a beachside dinner.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-in and freshen up"
+              },
+              {
+                "name": "Baga Beach",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 120,
+                "note": "Relax and stroll"
+              },
+              {
+                "name": "Beachside dining (TBD)",
+                "kind": "meal",
+                "time": "19:00",
+                "duration_min": 90,
+                "note": "Local Goan cuisine"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-03-11",
+            "title": "Candolim & Fort Aguada Sunset",
+            "summary": "Spend the morning at Candolim Beach, enjoy a leisurely lunch, and visit Fort Aguada for sunset views.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Candolim Beach",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 120,
+                "note": "Swim & sunbathe"
+              },
+              {
+                "name": "Lunch (TBD)",
+                "kind": "meal",
+                "time": "13:00",
+                "duration_min": 90,
+                "note": "Try Goan seafood"
+              },
+              {
+                "name": "Fort Aguada",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90,
+                "note": "Sunset views"
+              },
+              {
+                "name": "Dinner (TBD)",
+                "kind": "meal",
+                "time": "19:30",
+                "duration_min": 90,
+                "note": "Relaxed evening meal"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-03-12",
+            "title": "South Goa & Palolem Beach",
+            "summary": "Head to South Goa for a relaxed day at Palolem Beach, with beachside lunch and evening free time.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Palolem Beach",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 180,
+                "note": "Relax, swim, enjoy the scenery"
+              },
+              {
+                "name": "Beachside lunch (TBD)",
+                "kind": "meal",
+                "time": "14:30",
+                "duration_min": 90,
+                "note": "Local specialties"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "time": "18:00",
+                "note": "Return and unwind"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-03-13",
+            "title": "Anjuna Beach & Departure",
+            "summary": "Enjoy a slow morning at Anjuna Beach, sample brunch, and depart for Bangalore in the afternoon.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check out"
+              },
+              {
+                "name": "Anjuna Beach",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 120,
+                "note": "Final beach stroll"
+              },
+              {
+                "name": "Brunch (TBD)",
+                "kind": "meal",
+                "time": "12:30",
+                "duration_min": 90,
+                "note": "Cafe by the beach"
+              },
+              {
+                "name": "Flight: Goa to Bangalore (TBD)",
+                "kind": "flight",
+                "time": "15:00",
+                "duration_min": 120,
+                "note": "Return journey"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:11:26.805393",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:10:53",
+            "expires_at": "2026-08-16T07:10:53"
+          },
+          {
+            "kind": "flights",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:11:26",
+            "expires_at": "2026-08-15T19:41:26"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T13:41:59Z",
+      "content_hash": "31c6efff6b160145",
+      "plan": {
+        "status": "draft",
+        "trip_id": "goa_2027-03-10_2027-03-14",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:10:21.045377",
+        "destination": "Goa",
+        "origin": "Bangalore",
+        "departure_date": "2027-03-10",
+        "return_date": "2027-03-14",
+        "travelers": "2 adults",
+        "notes": "Relaxed pace, focus on beaches and good food.",
+        "planning_recommendation": {
+          "confidence": "high",
+          "destination": "Goa",
+          "estimated_planned_minutes": 1128,
+          "evidence_place_count": 7,
+          "reasons": [
+            "The user's explicit 4-day duration is authoritative",
+            "7 preference-matched places account for about 1128 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [
+          {
+            "option": 1,
+            "airline": "Nuitée Air",
+            "price": 29581.8,
+            "currency": "INR",
+            "provider": "liteapi",
+            "provider_ref": {
+              "offer_id": "h6NwaWTZJDAxYTAwNWE3LWQzZDItNzAwNC1iNDRjLWE4NmM3MDQ3NTVlYqJ0cMtA3ONzMzMzM6JtdcsAAAAAAAAAAKJtZMsAAAAAAAAAAKNjdXKjSU5So3VpZM4ABdEaoWyShKFvo0JMUqJkZaNHT0miZGGqMjAyNy0wMy0xMKJkaahPVVRCT1VORIShb6NHT0miZGWjQkxSomRhqjIwMjctMDMtMTSiZGmnSU5CT1VORA==",
+              "journey_key": "f7ded929ef215e2d"
+            },
+            "departure": "2027-03-10T19:45:00",
+            "arrival": "2027-03-10T21:06:00",
+            "origin": "Kempegowda International Airport Bengaluru",
+            "destination": "Goa Dabolim International Airport",
+            "return_departure": "2027-03-14T06:55:00",
+            "return_arrival": "2027-03-14T08:21:00"
+          }
+        ],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-03-10",
+            "title": "Arrival & North Goa Beach Walk",
+            "summary": "Arrive in Goa, check in to your hotel, unwind with a gentle walk along Baga Beach, and enjoy a beachside dinner.",
+            "stops": [
+              {
+                "name": "Flight: Bangalore to Goa",
+                "kind": "flight"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-in and freshen up"
+              },
+              {
+                "name": "Baga Beach",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 120,
+                "note": "Relax and stroll"
+              },
+              {
+                "name": "Beachside dining (TBD)",
+                "kind": "meal",
+                "time": "19:00",
+                "duration_min": 90,
+                "note": "Local Goan cuisine"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-03-11",
+            "title": "Candolim & Fort Aguada Sunset",
+            "summary": "Spend the morning at Candolim Beach, enjoy a leisurely lunch, and visit Fort Aguada for sunset views.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Candolim Beach",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 120,
+                "note": "Swim & sunbathe"
+              },
+              {
+                "name": "Lunch (TBD)",
+                "kind": "meal",
+                "time": "13:00",
+                "duration_min": 90,
+                "note": "Try Goan seafood"
+              },
+              {
+                "name": "Fort Aguada",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90,
+                "note": "Sunset views"
+              },
+              {
+                "name": "Dinner (TBD)",
+                "kind": "meal",
+                "time": "19:30",
+                "duration_min": 90,
+                "note": "Relaxed evening meal"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-03-12",
+            "title": "South Goa & Palolem Beach",
+            "summary": "Head to South Goa for a relaxed day at Palolem Beach, with beachside lunch and evening free time.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Palolem Beach",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 180,
+                "note": "Relax, swim, enjoy the scenery"
+              },
+              {
+                "name": "Beachside lunch (TBD)",
+                "kind": "meal",
+                "time": "14:30",
+                "duration_min": 90,
+                "note": "Local specialties"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "time": "18:00",
+                "note": "Return and unwind"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-03-13",
+            "title": "Anjuna Beach & Departure",
+            "summary": "Enjoy a slow morning at Anjuna Beach, sample brunch, and depart for Bangalore in the afternoon.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check out"
+              },
+              {
+                "name": "Anjuna Beach",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 120,
+                "note": "Final beach stroll"
+              },
+              {
+                "name": "Brunch (TBD)",
+                "kind": "meal",
+                "time": "12:30",
+                "duration_min": 90,
+                "note": "Cafe by the beach"
+              },
+              {
+                "name": "Flight: Goa to Bangalore (TBD)",
+                "kind": "flight",
+                "time": "15:00",
+                "duration_min": 120,
+                "note": "Return journey"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:11:59.436510",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:10:53",
+            "expires_at": "2026-08-16T07:10:53"
+          },
+          {
+            "kind": "flights",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:11:26",
+            "expires_at": "2026-08-15T19:41:26"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T13:41:59Z",
+    "user_id": "corpus-goa-relaxed",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {
+        "flight_class": {
+          "economy": 1
+        }
+      },
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": "",
+      "_promoted_signals": {}
+    },
+    "places": {
+      "hotel (tbd)|pondicherry": {
+        "place_id": "ChIJd-8MryxiUzoR51gb948YN4o",
+        "name": "The Promenade",
+        "address": "23, Goubert Ave, White Town, Puducherry, 605001, India",
+        "rating": 4.2,
+        "review_count": 5803,
+        "price_level": null,
+        "website": "https://www.sarovarhotels.com/the-promenade-pondicherry/",
+        "editorial_summary": "Modern hotel offering 2 restaurants, plus a terrace, an outdoor pool & bay views.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 11.933294,
+        "lng": 79.835729,
+        "photo_refs": [
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydifTFwwJaKLMRLaNslv5WrRK8oMjb_abmjV2qWOuNSS_bX5pEPrF3OBcJq3QRc5eHWMw36J4O-URdGEQOdfeu9dF27iUGbcve8lBgIohnVNdJQxsUSGW7hQ3M_cADM9Nq5v52_Zr7tjAAa5GoKULaW1rnLCrtIrFE32yoCikS7EmfuotnF8V8rNMy0_DntevIoulF4pH5EXp_bMNwcuNU6gpLjiNfRqP7vvYz-iSOUcyHGw5hbK7u8PTX9R9mbkcAGCgzQWFzc_MdeSA7Xzr6g3OGqVQRhosBK8_-5J-M7cYQBANsS7S6_ejoJWctxJZvhs7vstIuRMi61V-hCFwjHmWhzcIAjYGdfHVfdEX7FOFOcmItWe_-Xv2L82Dp8zW4AHrI_2mDNEmfrJDiBmskYaBn8LfFtJKR9-5ds",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydir0mofNmYHn_KrxZAn4bVRHmuyxXepHEYvt60YJZ0rZUNfHR_30rq6QZe5SaXw2F_1cFLKNhZ9kgJLZR5yjAKRCNvCLYerECvFbSxGYHuMMFTGFk60nllp8Zv5_ULBCq7r3BI2Bbfv56QnQ8NNFzx7rOW-2unrPUZF1urwkzQ6zhHvMOTyH2onuwkVXg_Bp2cDBpXV6a9dpA3sDA0NfV68zSeP2cvcWKrKglaytPkCwoUVBf5M8y9XXGIpaHBMdJTHlCqZqqmWrVbiOmwzdVd3TprD0-baVbj5OFQRQG1e5dGKrlQdxXb3YIum_HYD6Lgw3dD-_RODOvJPs50-zSUw_FykrZ1nf2YoFmOx6uqOBPv6KtOv9Cu1_o10QfOdbVgcMDzmze9lFOvFbFR7rzqodbI4ogZTen5kbpfJqNJVRg",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydgXSbQJ_pUaZigUXJl-Pc49_7R_d0xJtoR8rOS3b7uQcZx7XucGfUXPlrdawL8ULcSCzbiKFIqJH2KrTedrL787_UecfccqnHx3XDoVP88N0hHXDB3wfeYSkXfSFH3vfh6Ec9ALpQfTPlUCxZLbFeVOXTIyLSXc-IbZb_jdoWSi1glV84QncVnx5PvbibvfGLxfHTlNha8LMlE8MFsC0HLarKxLVMBdBgMteCh3NHoVk4vo3OZQ3pKLxy0jXSDu1DMbDZphN6g4eARjKG9A3IAdZl8zcQGvhoT315L90ZVDH5GKdUkK4dgax3MhUEJ3Inc2k9XlwhKOCKmDpNXq__O0LqyxJ9HlUxh5DVuZZ77_UEDAyuGvzGJnPFn6m-OXYtGwrEjtCqoPHzMde5dcTaTK4cvpBwf-lbF5qMT_p5fcZg",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydh_F_ZPf8JUcen0cKxL8l7z-v6K8Lr6RA3X4pzuBkLINPNpk967L9qLKyRQN7cKSmCvKFFRuax2hBHXSAt7ZukQ02i0xD9q39xFaOkCt0Ub35tKZd1C_qvlHX6TIQgmN5TfbDdQah-K4T7yal-I0-cB9AeknPiGfgwNWnYv65VRYShd-qkoq38Lh1_DYqtYaEmqYtaWG1GtiG0_RU2nJhroELj1e4QAYHauAM0FJ-TO_ESsQFZpPi6F6I6bRnGJEkRIgpMvuoVC_KjJS8xBfMMIzn7JE9GrACkCkw3LrXgINKQm_i-u8d0ig2hFmVRnNnICBbsdYxGrSGVFjcTCgsKM1tzjAhRK-bsy5rsDm0dG79numwQajzCJ4o5Sv1fzDSOr5c94Mpds-L7eZnWjcXwqYpnmc9Q1iPSjkeVH_28",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydgBdrAGUvXRyOCLrAyjV3WlfJ6oitUFqmxJet0eZmxM_H4GZ_j6mJfIREqdjqwE14e_YNBknmSY0NOf8rGHoV4vFf_kWMP60kWcE_fMXloVDYRfpoOIEjd1QBfw2EAIyy3_4hND6lRvTUe73dABfm8iKyaMu9tswdu5UCPIoblTxoPaSqFnXcGdis0jcfs5LYxz7IjzoRE3cJBDrSqzRQ_5chpMGe_MTKvdwMLkjR4mBmAYOiCce2FVicGHXeZEHnsXXND7vGcF_aLVL1NchJm2O0ntehjmSABW-tm8SxKrW6YX3nFkVvANi0nKHpM_VBnIkWvi-eT_70OQviyDkt-z8FjvKw6AwUytNicLAu-UB0yHp2WdBwB0w-shhAxYCd0fRKVzSrKDjR_3Klmqd44eqGZbFkIRnVyjJNAo-ckY4A",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhfKbCZE57vXULIj0GYPOiEF9qJDtVmyo4hHGvEbcH3nGwty8rx1NzenGPesSS3ghNGeq4hYB1bR3a9UD6zn5AqYnXwlk2vngfO1vsjBrz7tW0GMdggW30RflxqOg7aJxFEpMcHQ7pGXo82bHXVwcelhx0XYxKVU7zHFfXT7rNsjaCG_UvHKHBZH5510okn86zddKM-OSMooHoE9lHHQ4IOeNZfMj82i5_LuJ5IANFlEdeJ-XGVINTdYEILw3YTSPgzUKbR7iSp9bXsrAn7vSnLRSLa0Bk4M8jkan7rTSfwz2jGNaNGS3wMnDK1U1y98-0tX_cC3GzoJZ4RBf_DHAz6jtxxDN39kd8NOBt2Xl0VEWSYbnDs2DQudjN78YNJLXN4252AZX8xAU9Q7tYOrxiG5-7WK64fAw2WuVKuTjGwLQ",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhKAgCHcwWoKF4L1EhFlHX_l7pRxoMmyo45trbVy-mC9YmWJ_tBURAu7FRjiUHhBBAp3Pw0NTL3pMZ8qsfMucqfyu3OnzFZ5G7qb0TcGYUsq5o5cAd6nYt3h5CoG__O9yEct1Yczq4qPOg4W7axEhNVEnmMG_c4rHqjg0g_0M3QR_4JmaM_fnYnJwkdtcwYIRKAu_C0QMU6kannedRHdQuDG4vyAiZk7W5Y-ZBVINdwuxGyuzK-fFIdY0dZnXcOl1S38lCJ8HqqaL3qQoZ7_SAn_orw1HIeBYAlbyDsyvWW-9wqUPzfJymcMZiJTCWvreTcDycSUAn-bNLFzxLNOS8Ywq8sAYgiSKzkgQzU4cO8EbwQMb4GPTpBNqKE5GwzdGpFelb43HVDnDQjO5Bh_E8f-OvCjIdQNvJtmFw9_CU",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydhbBOiz0MBGcUgP5mURGs-GbyWkPFBRvpKHnDcTMUYXatsSGOQIvhwNwXOW8fsn-Tn0W9hWLLh4xOOOEdSzPXi76PCd-p1xpOs1S_m7qD72_yTbV22g2WtUozbXeWm0aGU9BP0gj7gdVkD2lW6WNFUBNqLX7jPYinTcGN24uOMgVpAD-wiaDMr0r91RToREesXjIQXDshY128EwasMqkzF1Fp0v4DX4ddNaaVzBNScWuVVmWbMLgLVZ7Wgx5egsAMpCKdGZJ6vWAt9cFLniFlcNu5D2YPiU2sDyQP5uqAGq_vlA1ORwqsbNPHR3-09hSvFwQbtrUZCSzDPJ0IvBWBrM4Da46JL0cSJK_I64ODD7ulkjVAdwQp1ZXfxFOShWDU5oZTHCAzq4T-xBzGBglyYbTEN7rVno52BdCVw0EoE",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydiqWB4wqDQQE3GB9zS0Uzk5lIn46CN7nkfcVpxxlYcXjNbRVtn3kqTqs_8ElBIpoac5T8BA0DgyOO5NSGsOQRKPBMQFk54nIGVEmWPuROcZrfbgW2r8APx7uMXCNWnACeoPIjpRNZN2Ertez3wjHR6AgXpZrJ1FO6jQiqO6VMRoPVXnEtXKJYZ9yfQGkUwiMD56pRZiPbWH8NPp0aLRoZNK5EnpfU5A-HdKIvjBvbjkWGyzpnAk61FG7hRMmEMwwZALccQoxhcSDf7L0cU-ihH4tZL1XSePOclf9rCDZfRjoMIKdc8F1-tjYhUHQdVoTtfPDfgQokbe3q6bpMLLGOKjAYeRFSdO-T5cAh8oLAVwOi7S9y1vLOya43G8IMVg61qwVdydpOEupymX5NIcoIUSMD5aZsb-TBrVku-fgNnJBUcj",
+          "places/ChIJd-8MryxiUzoR51gb948YN4o/photos/AWCwydj0zyIb68eWqUa95x_HnIFH-sFzUql74xVY9WcYCbvJacD2n0SbOoA6te3uhcbqlCQ-jFz4rJ0au7yzEJ0BqEzn_tSNUUrePt4fQpEzWMOWIckLPub2tu1D7MM9MFHayYs4dvyLlLUe_qclTjuXqAQx3Kb6aAE6jgNLorBxdmXFXs3xAERjalB3teX_t83HHTPNjiMNyAOQl3q6fngCujB4vpVuqfyhDwJXZ6znNuuzMDsk6zEseA5PZIPer0uN2P9NXmH0XBSYEPuwPhzVpUIazGfdcde83nKg0iOs1Zh47R3GIe_xwuLqaszzYXLIOsAehwj7515wyQuBSds8G6rjPRSId0GCvtc48exQw4lra1E-jb9P9EMcZxfN7FRBxf09d0qXpjyCdMhzUxNWs8MZPrYZezKgoun1jryvvTqKIQjX"
+        ],
+        "__at__": 1786798953.440507,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We stayed for one day in the sea facing premium room and didn’t feel like going anywhere else, the view was so good. The room itself was well maintained and very clean.\nCheck-in was super smooth and Zara Haider and Prabu were extremely helpful from airport pickup booking to room extension and helped",
+            "author": "Shyam Bhat"
+          },
+          {
+            "rating": 5,
+            "text": "We had an excellent two-day stay at The Promenade Hotel, Pondicherry. Our experience was truly memorable, thanks to the warm hospitality and outstanding service provided by the entire team.\n\nThe room was comfortable, well-maintained, and made our stay very pleasant. A special appreciation to the che",
+            "author": "Abirami C"
+          },
+          {
+            "rating": 4,
+            "text": "I stayed at The Promenade for one night. The location is great just on the seafront promenade as well as being in the French quarter so you can walk the streets easily to visit. All the staff are great, very friendly and provide a top service. The guest manager in the restaurant makes the effort in ",
+            "author": "Christopher Woods"
+          },
+          {
+            "rating": 5,
+            "text": "Had a wonderful stay at The Promenade Pondicherry.  Beautiful hotel with best location and service.\nRecommend if visiting Pondicherry. White town is beautiful and we covered every bit of it by walk.\nSpecial thanks to Bikram for his wonderful hospitality.  Their spa also was very relaxing and recomme",
+            "author": "prina sodhi"
+          },
+          {
+            "rating": 4,
+            "text": "Stayed there in May end and hotel is on nice location with nice staff overall. People address your needs and make sure that stay is comfortable. Special mention to GM Shubhi who made sure that our stay is comfortable and going out of the way to do that as well. Food is good and location is right on ",
+            "author": "Mudit Agarwal"
+          }
+        ]
+      },
+      "baga beach|goa": {
+        "place_id": "ChIJ_96h2BzqvzsR4ME17sBmcLo",
+        "name": "Baga Beach",
+        "address": "Baga Beach, Goa, India",
+        "rating": 4.4,
+        "review_count": 41655,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Busy beach & recreation area with water sports, eateries, bars, nightspots & a festive atmosphere.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 15.5552787,
+        "lng": 73.7517307,
+        "photo_refs": [
+          "places/ChIJ_96h2BzqvzsR4ME17sBmcLo/photos/AWCwydjdvOo7ka8zo3yO-dxCM4P7Ttv6rxa1D4t91ZP0nr3W-zquh8e3axn1xqYYAUg64kWtRMy9snxNsWzFpG8NI4kLotsGvuPCn70vyGhwiqiJ8aNwwpzRaSHzny-sctaaCz9jgwKnRkfZ1GRCSfSr2AayTrkF32m0J98jotROjc7gqeIUz_ACMPfet0tJX00L84g3V2jmpmEv6MZHYaTLrG0XkopchydbZJ_4VcJML_93N1R2Kk5pO_YC1wy9p4xF_eQC2hWySCfkApTnBv0q7MWkktnLpErEZWmEbPYK0L-8sJQVaf96Dn8Vs02yl7W2EFg5VA8vR04U4IuAHXq446esWyZ8-H6U31h58ZcpRiGK1tWXFxieKBWkwWF9bkDjbzN11vysf4VajLpTJIoWb69JV2SDvTIdIkP5nlP6biEWkg",
+          "places/ChIJ_96h2BzqvzsR4ME17sBmcLo/photos/AWCwydhEyn4xQC3RvFr6JOwKDii64qb4EWPrulFAAPdi0J7ef7Qbwam4Y8mX0ELlYp5mAMFsHID9UW8BcvkRqRb2Rdo4kNC82jaT1kvJKxU8q9WZT5FLTEWrdpKIHTm_ITTtkY5t4tCAsnZlZiI3MfeoMQZfEwbercyp4mQRbpcbDzkAPwr51yK0RuwKX1vP96SoeUjNeO9NHBYMj0E4osB2GPRULO7NT2AseO_0EedeFV2w6iBUtIE9ecHBJYh7tpvazNdAam5xfDu28Hn66NY49KUkog-fGZgS7FAvYxNI1nKa8h1yLRt2tdO3eUbuN4L-oB2_gxMBrUckaVN7WTq27zqDzhqR2qL2Bvlmy5fVIuZ2oIdohieZnyS-QDl4ajBXYN4u5BzxfO9QJDy66OXl_6EjvQml9B0ENwoFJZ-qXly7reE",
+          "places/ChIJ_96h2BzqvzsR4ME17sBmcLo/photos/AWCwydgRdl2kVZGqVP-RV1m5RNQoiqZjqaEb1jzunUXiSZtTsWMdX3EdoiZVjr0SUJ2j507OpPfZUBnwfopD5bh2hmc1f1FfeAE5RBgRwD0oPXmlE-wFTDjvpDyvcV1A9uPfpiLdDqZl074azcl8vxrVVvKvy7JI4P6vMYF3SuWYbTaKVw2-uUv56sDbIHKnNSlpZ4Tm49KpqxmPc1V2zbJ0cNPte37d2-mEaiCBoawq-PnU61J5nW9GzOLEVG6R6sQxs9-F9vm1EJlgAqfcmikg8TH1gfgcseb9aqicnjxBcwcuJw5eDts_kjkDsVLT4b8I7Z02UTefzfroTkvavEHo1xA0Uf-F4KnQxHTAzJhiWp7GMPGFBix-cyUR_xvrVMiII2jnPNJhVFAc0H__zEv25UbAQ-PfTaVZbcnZUW2ZmivkUg",
+          "places/ChIJ_96h2BzqvzsR4ME17sBmcLo/photos/AWCwydigQ2cWbis7hLoQwAx3aRjaAvvzsxHDrmoBku041iZm3boIiLeXqeDbC12SqUCtoCtxqNKbSP15Arl_Zg7gZiuAziTRkz7D4nhBjAEVkVCU8_91li7TxJG3r5_zhs1tpIHpDa4cvRY6HBQCRiZLiHoJO6PlB8_rNgEQ7PtTNpEoeBA5suuMDg3QQAROm2gnNraqBZqob2ICl-m6LXJzldt1pLT4ZNdKCqkjhfT2yc5nE3C_SEtohhs5DZl3y1rkLFch4T0OrIQy7BhbOLZtYGf9F_RWoEVBRRQM2yXSDIryRfBbKDPtKmuAd0HfdB4zK3_287RlgST1pAga0hZLwjYFb44kFhzRE3ly5Z6W86HZchGrHRGym9ZPa41Y0i3yCM2txJq6700s8hj60ybJbpnudJc7zbpb9ASCWUVIEMSn0Q",
+          "places/ChIJ_96h2BzqvzsR4ME17sBmcLo/photos/AWCwydixJerWenk4B5MIejmqa5vcNZa5hPoVVO2137YQuwYPmzDxBTJ2NnBRgg4ZDZDwQ_czx4-plznzWzO6nfVDZ2Whp2tT1pxXzGBQ7u1PbDY6aYWyXPqZ59G8VclMKpDryPVnD9wpJjJEiEhvNNR9QgqG8SJave50uFdX9HDFNOxzedgzcxWgiIV_34cTa4ycgEFLIwiIqBts9UdUwpYXUYO7Ufs3SDZlpsHDZVAI-rYvLnIEW7rZZB0JnIvY12oFfbUffNGjAvLvw2lZKVEa6_ryiW0NrhiG7hGDaQIrhEu7-Ui4BN9J3VI-JKaGL9OKRDL8izveBefZHyBBlQy2dNLQMmKKpLmS5dlIugE8D0U2okFPqEqEztd9u04bq9nO3lVEjrJZwulpk9W9fUoQp1RCZDQOd8F08nn35BPBqJ1oVqiwwz1vvzpxr8YjLyAK",
+          "places/ChIJ_96h2BzqvzsR4ME17sBmcLo/photos/AWCwydjt2_TClRHySD7mS1OT6S7ToVNpx5jDD0_yMrTYQBkSTITe-MX3hl5uCEf9xSaqSopzkSjxtziSvT9IRkqS7tCCk3Z8nprRlNqHaJKVYbjHTqcZ2O00Cy2R6tX-oodD3WdI3GpTCjUpDCtAulZskwDCTMR4wFreriMiEziQSTDt-zM5L1d4SepEvb1WvjKfNi--6u7-gRPIHPsXDEZltGLeSVf8wtfSksKqZJvyK4zEoMnpjGNqf_1h9_1po81ASqESg0kMXIGI-FoZ_b26v0UEozELTJYcglJSx_hLgfB4LbQyQOCAt0fA2ZitbUeLMjSypf4sWuIHM2f7WlemFYnU85tfRrYoQCka5Yq1NvZS_puL8FHUTEpXZkX74b8E3dJDD6Em8GW-yeVaHLrO1Q-Hhgvw0cg-8d_u8Oz6DwHuN28X",
+          "places/ChIJ_96h2BzqvzsR4ME17sBmcLo/photos/AWCwydgeYYNjq68FOydWMPoRh3Fgeo2D-iNSFIX1Ry669jeCyPE3VfTwvvV-lqO8pA2f0g0XGgcm7jolqEAQEMjajh0kcxewodBD6vF9qXr6c5pHmF4YlDngz-tV80663XLqpRS1ujvDD6LsFzPCmspkPyhKuSgcfR5wrfjfCUkISVaR8WUn8i-X9BELrK5lSTMWWhYi1346dl0iafDYdUnhYTgzan6JY_8fOvnsid4Nb-Me_O7m-6S3cL3fB2XlDYTej3kmNv2_c9BwTqzIKAaQPSxdk9PpHkdTSsktK5qicJaHkoULqbPKWbWoLuZIE6mMvpLlwD9slfS--1J_qdC7Gqljtk3Q_Ndl2DB1Xm1u0ZkQoOLgPI7zYVCv0hc1WJx36A-slspKXCXc9ng5rvbSUn3XzLz3ouog03q3n6Q_1V7rQQ",
+          "places/ChIJ_96h2BzqvzsR4ME17sBmcLo/photos/AWCwydjPIoPWvy5h9oe-J3X15e3QA7Y-N24PNl_GPNgdlD73y9CAAC4E9DCHXpzzjGQ8dBvJjxZkR6fn-LCcXa2VGxvDPAawbZR3sZXWNJj1WyEYzQD0JRHb_AEDGOWM6aB9yzHLRY5EAS0fwjIXSGIqquQJQTgoF9aWgRHAH-hWVZkhDsid6o6sHoNZ_qfy9jlcsCblGJ8i-BhhFXGAnoFSm1MEgDAAPk9GxgXB6A7jhuu-XDPqCriuB_4Q6odXlucJyo1B2b0k_DMUD_Gwy4RhmWszzOG9ZlaiBVs1hlhyBc3pB4CQ2Vb23Lw3gVopYcuinc-5U28Dc3ajHJK9UJOLORuPqcxsqMjvI83ra8f_h2uq4T10wZa3Uy-QZTspLOoH07fLoNQ4q8v06e2j40qGwQ8UzonYssZGIIYab_0ttE23qtI",
+          "places/ChIJ_96h2BzqvzsR4ME17sBmcLo/photos/AWCwydjIBMUJ7F6OqlmN8G9FL-5XjaL5WEH7YgGh2DaxvAu6t2TFC7dignak43F8_EsCtYnfkAC0GOvvMbpqKhZSPvWR9EhrfSYO3uSiGvIGXDxo4jEE8U35k_SLM6AGdv049hti_t9gp1HUBYkVOyavwaO-K9qDwoxT3Es6odUgzNNRbJtaoAr-BOSv5BsCeksqt-ccFwL7XihAzcwkxhRN9vpWxImxVU7u6H5Kp9hLLp_nP9Vbihhq56g5AJql0FAlroR3Zag91Vz2XLSnm8MHkE_sDeZ-brLTCB7R4Nm4Ovdqgkj5LQj8qBIYdg7I6rdMcuBG5zCAQGf0kyNoxjrNxiUYGaxHsNS0proRTw-CeU80gRSNDjdqEc50ezYfPi7l4ABGyyeNYNV25P2pdCQnv3ocvI0ipQ4hSeDgsgBIRHbwOFY",
+          "places/ChIJ_96h2BzqvzsR4ME17sBmcLo/photos/AWCwydg3RMjH_tXaw2k03O49mR55TxjzFWWfgWqIs7NfXRdAk2mYPiNIS4B8_pr2Lezlq-22SekE8_Ze6I6sjBV2MriuaJdeQNNJ32rNJFv83Ik7suW77UGCBMxU866KxeBb4SJEVhOUl2h4XrjPSwTxyX9NmryzJl56FYLLYpRmk3CWlxAK01WFlwlR9n4fmcRAvR9vi8sNsPoeizmVBaXEIc7amSILAGhhD3IKMVZOM-R8csIdLyvwMzHrK2kjtbr5HI38q2mGFzZw46zvw2KYUUuBVCIcKWhqbGvnxcL4I-TbIWYqZcewRQNTU8XObp8fuXzJ35HJJD0J9FtzuwnfhCq4aIaVXyR1LonS8tQ_bWRhUUPRB1FHZ1Ob3FBe6_IaGMg-9tQQeRGq8-xdVq_YoZYxd_NDTVMRfnJG3vcOIfa3Tg"
+        ],
+        "__at__": 1786616360.9980822,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Baga Beach is one of Goa’s most vibrant and lively beaches. The golden sand, beautiful sea views, water sports, and energetic nightlife make it a great place to relax and have fun. Perfect for families, friends, and couples looking to enjoy the true beach vibe of Goa.",
+            "author": "Madhav Kankhar"
+          },
+          {
+            "rating": 5,
+            "text": "Very Crowded beach in North Goa i see🏖️.\n\nBest for night life near beach 🌟. In this sea 🌊 we can go for Water Ride activities like Banana Ride, Parasailing and Jet-ski ride.\n\nHere also available of beach food and also drinks 🍷. Also best arrangements of Seat near beach to take soft Sunlight 🏖️.\n\nSun",
+            "author": "MITEN THAKAR"
+          },
+          {
+            "rating": 2,
+            "text": "The beach is quite crowded, with many dogs roaming around—some even barking and approaching visitors, which can feel uncomfortable. Additionally, the presence of persistent vendors is quite irritating, making it difficult to enjoy a peaceful experience.",
+            "author": "Muhsin"
+          },
+          {
+            "rating": 4,
+            "text": "Baga Beach one of the famous Goan beaches and it is perfect for partygoers with lots of music, food, and water sports activities. However, it’s quite crowded and not recommended for those looking for a calm or secluded beach experience.",
+            "author": "Ali"
+          },
+          {
+            "rating": 5,
+            "text": "Baga Beach is the beating heart of North Goa, offering an electrifying mix of energetic day activities and vibrant nightlife. While it can get quite crowded, it is the perfect spot for those who want a lively, non-stop holiday experience right on the Arabian Sea.",
+            "author": "Omkar Pujare"
+          }
+        ]
+      },
+      "beachside dining (tbd)|goa": {
+        "place_id": "ChIJOQejFlbBvzsR3EZOTaSKqDk",
+        "name": "Tereza Beach House",
+        "address": "787, Nerul - Reis Margos Rd, Nerul, Goa 403114, India",
+        "rating": 4.3,
+        "review_count": 759,
+        "price_level": null,
+        "website": "https://terezabeachhouse.com/?utm_source=google&utm_medium=organic&utm_campaign=gmb_listing&utm_content=profile_link",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 11:30 AM – 11:15 PM",
+          "Tuesday: Closed",
+          "Wednesday: 11:30 AM – 11:15 PM",
+          "Thursday: 11:30 AM – 11:15 PM",
+          "Friday: 11:30 AM – 11:15 PM",
+          "Saturday: 11:30 AM – 11:15 PM",
+          "Sunday: 11:30 AM – 11:15 PM"
+        ],
+        "lat": 15.499931700000001,
+        "lng": 73.79251430000001,
+        "photo_refs": [
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydhos7TtQFZP8s6lv55pQ5NYyceiPngANvygYPbrW6F3MW4z1gQ_c3auxax4ycEctcG64BILJh6Z0cEjmg5lDma3-KbmTLHzphahoT8AVqBljR7_bGu8BdihkUlgEnD-hNjVvTRay-XwYdGQVrcCP1IdtfgPDet5922Z9SDjQHvAjIlQ4fmrdxeyMBFc7ybl2kS3bkue-IG_-bxUfG-xbSG2ysm6TtODyYytZ0ClovpUw4wBO_QWwKUhry2IHrqZkuR_huWOrVV_tjgmOp-ATj9XoOUNBgbxAfw1Lztt6xGnXCDVDZ2ytFlOZQBLwKjDEvWWjGW7kGqzo0VbQeKemcOX-0JmiUT-ioUXI7V9o0HEe8gLXxjLuqp14-2RapRqVEMkAUq264r714RKtwW293kQLAuWkuZuTHCSP1h1kQs7hg",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydjXeCZ4kTQNbuC-owGHbWBCDN_WTEbwmSmt25TKQPTcJLlL-aqWiOH453tOXlY0tCHkr89RgHR-cNHBJSvRs-9RlYbDKHR8YP14wz9SGneJJTVvZcFMNTKN03i3B5enlvDYrLscoEFupPH1A8OTdwcfhymGIawWby2OYISMJslwi3zvjav2xd_545tRwmbS8A_po0q_jlwz4_wTxtKTH51t5Zvm-9VHm4IzASU7cwGjl390ysE2LlJD2x8bVYsQXQrEcZu9dpguIIWTEpGWz0L1MsvmxZ9B8znYube16H1V4kk3wBiEpIrvEc80Xpi6wK5DNfbL39-pNlU-EFDwyXOsdDiU4l8vrAJVxgK9AAJNjgfiZeZ-ofJzhr9Tb3muK024vzG7QF92EtxGeeqtRur9YIWorlqHMjatyxGKnS2bSUI",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydiiJ-BnUyk2I2qzHHZb7Z0nIgkod9Kzyq2XlFJE8wqE6yzbgpIFYCSwyrDffhqFINOestbCXhiO5duV35JRDjcRWy-ajUnIddl9SBsC2dgH0CnSGm0EuaqSGtVkzMTWYjdAfeYhFL1UtYuwgUys0jntzF7tPQIPJxBhOPem05S8p6g7P721bl0c0XgXrkymvBDnKoPXDnFu69QRhSMR0tA2sJ7i3KXbahv1Ed_j6vrc-JWjaKQCx-1JASEDmm3Kel8YRTPYSoKO2ldgiZa6guxOgV8_e-uTjEBvv6t_9dt-xDoPk4X9kKibXBUyxAGPWEHQ8KoZePZZqBewxdesQp897NkJEHeXSr1gQdjhc5ipPsfZ-lUOB0aeH2rEsfbjZpo2B2kAmYpcu0FWwYeu_hRg_3kPB_82NKu9ax-CLo9Pbw1g2ZmR1ujUNBLzjZiB",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydjd0dbrKnq2xUpMb_YrF0XB7KOPA9rTUWnagnThcyRxXkTPpZv_DMcxQ85kkaJZadl92bOvLxuaJIg2v1xSQXxHHmhBRc2A06dx3AQb5G0CmkVGaxLhwOYGlh34PZJjn6kE0yw_SMVw7RZsm00rN9gk3iDsYhPh2eWNURmqXtLuUkjHiqyS-SPRM1lM9xL4YP4QG_jffknYQQKUW4G1M8XMTiQEg-P2YXHwQl7OyE6iE5f4JkGyoQaii_aKLnsy_d9BlA_9qgGCw8HqiOXGacdAoWTZK3xKzfU6Z7abT0th-VhqOensRsfX1zyLevkJ9P-dh6sUqjXLK7XgQvAaYyiDZwGLyLi0d7DU8Y3eFxPmkjIWtp3-4Han2qBAFwNz6hH3OX5i8FdwvyDwCAMMz1HHEr32O236cMZ6iveFjIUUWvdmpNr3lQOxilVcSutL",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydiDAp8wJ1_YgSKCOj9AlRml7Az0r9xmqPz-3FVZ4azOENQn7NyVirETWUnORHDVFk8O4jgbM-0PDOXHakCmIgON4tXqujn8NqlZHEwsteu48N8bXwIGptiCF4oYUIB7dk0_XaRmc7Zq9zN5FUqjBTNO-XuLt1wLuy9qZx5lF3ZddBtJHOwtpUnzsWlC2c_bFeEi8memJVCT58ffjDPOCosHnLerUGrRoeOXbT49GvIEovaV0-tR-M27ooHUs8S4dk0hsYvZqGUur7bn7WsbKMZoQT9idCL0phaps5r8qGaU4tE9f9VKUixevDYn4w3JVvAB9plhUKhesl4Zj8rvOYlwmaBkyigkCbNWlNnej7fpy54tadLjbL0tPyL7wsIvX0J6HC6dGrCTEF-8PvMucvKct2J_-doOfNDjADN3OYINC4mIoUCumn5IgMmntK-M",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydgI5SaCMDLuiQhsMNPLPOq-3dB1BVc7fMif9RlooYgS4b6iIwol3pnnXa1Gy4BRcTt623W-Go8O2Jd2MJJYlZkEI7nEmqBQtrh-BXGqQKTn1rh-tnaAEsxgFExPyxh_gsXeRv5xgg1ti2G17mDq8tCiRG3q2fVYSNZSUFBnx-u-ZQDgYxPdMx4zuxUIa9a8dOugSBpBfONikOfBIaB43fWdYVLyAvaMoH2eMLBoeniH00xbcmlNAx_lVSJl0_GQDZbJVD5Cm9y7BEVpCQOsxsrBuASpoR4BO4De93zk6Pqo1B0SDWkzNraYZBC2kwmsuymLzDwDKiujpMFrGxY2MVjQUu-6zdCAr_mZ-3-biw-3joykjeYVOzLq3m502z0fIgzbIAvbdk7DDyyM7ql_5PjHI1iE_at4Kco0lndvOEScWQPdHRTbvnMRG6Q6nRhR",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydi38LwF7_iQNbG_Ba1R5qhpxTWDFTro3hp2XrNFGVzI_Wu9wfp0Yfv_rfzr_xO8oX-DniUdUH4_Tg665Hl1_kNdmlx-4lYs-8wRPt53bfo-mQTEvfcN5jeMOQm7AyRcsAsYVm-BrCR4tZnI3Sp7doHFtz1YNiHGLgWoX5In_xqwYSwPb42Nlpb5QmX7HHEMpJwdY2TeFEEx9Oon-6qRrxXVR8sheeQF5kjquBJ8KOct9pEYbu0bMHF5FDLWzFSX_XKeM2zBAfKDMO5dcQbLfVWwM8LDKz6c9T9Hpx0VTOJsc97sQFVk1iHQK5TJD05vBFtjPlnGeapxCLZVHn6oO6l-ugVEB0d6bPt3DVUxey7asDPhYxI0fyx_Fwe5qhiEy6lyTRU9Ks4Xn9nBJF_G93XGDDIsAzfK-V9PDOokeQdT5_Yo1BkA2oeyWlFF7w",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydhh6zS34BbE9pbYAHCiScluZP3TVI7htxR3GqrqOZ0kw8tKH4KrvIfbJWDz0V4tVZGx6wVrSluoAuULJdgNUAcFnVUi0ntBWPajyF4JBg6sinwDABcwyqidC3Ej9OgxiUZpmA5po84UPU7LoI1jvv5-4RIUFj77SF-05XGbDpOK9R4VbWyJaVxjIaPO-mWdQSzkkEiNP6-v8-_OmbpRfklSzYjxbYEHMwG4xOPJsuAR74dk8N0oPJX6Qy4QHY6UegRTH3zmd4MtUrUtO3Qm6BH1LDVsPulR59GiyukHZCr4d4DekLjkg6FQuPLFRUJ6YUhKt14sdr-RCXbjFrHpFezYHEo9jMlkYbg6yfKt8B73IWbMKdaBCmZszFBZ5XIDowtNUMRb87Y8L0c0vpq57ThHyxUlGART1DW2CU5IGGsIwsHG",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydgkCk-bArHFbOognrf37wTteDfO_FLADi-aWB3EaXBEsoJc3qMXd4IxAmx67C3C8ro6NKa-hhTlL9BqiAUsl5wJ-rnLy5PoC7_r6NJZBZAi6RLhlPMLxmqvyX4AfimCFBLe07UKCZE00i3lqIjWF0h9GtZ8WiDEtwpfsaOxX0l18i4mUGhKdPSMdIIbupIUR47fFY-JUuWlEbUqNg2UQ_19yACrTX75JFR4fmgbT5iltkxOGSXyIeG_DAvnnowBGFjhlbqqwB8ucrY1S9bRuM80vDIGuj6vH7aWL2p5QF7TG-8rTCjbUYkBZBwCzHyh4Nal1Ky4xdemraTcHitVsZHfPlX6LLqmqDSCLu_Mm64GpaFe4KyXPcBI4mTpm-5shUiDHkJprhsNdwDo9oTVeXZJ8mC0liNJj2MVbK1LEmx3GsRTIwpjK1gOzh0Fzw",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydhnTBcp0C1LilXWOofrBgwwW0Ik22pTeOm96cGRg8_RmIFBrU0z4Eh-HPLNeqxl7aPyAHS_3oOXg1B1kek0sdGbrItZIBJfvXwQjc6lrCC1e08gMOje2B_eyyo31K5lxX-KwmIpCQlu0tyJg9dz1KVwyAvcWbSahrDuTGbN7gezBUTpRVyiv_len_UMx-PmwsfEEJbbKFd_ZoL_xicHsC8e6metDnNA4OrmxpbCP4QvWcSImUSUdASC-aWVk8DtvRTTVkLtQYc-U-s6p4LYxkMmXMv_YI8SPHFFkeTnB7JOYG1R2bQw7GwgYl-tmmFTzOdMp8jJ8Ieu1wjhmd9cw2yytXZqDvogRBg6_f6KlZn9nk8OhSeK2NM7hUR20qifxhnLVRBfv8LraI-5Sk_5VrU33ZTW3aM2GKkkA4nLIfo"
+        ],
+        "__at__": 1786801227.6394439,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A wonderful overall experience - the kind of place that gets everything right.\n\nThe food is superb, and if you order nothing else, make sure the Grilled Vegetable Focaccia Sandwich is on your table. It genuinely stood out above everything, and that's saying something given how good the rest of the m",
+            "author": "Mukund Rathi"
+          },
+          {
+            "rating": 5,
+            "text": "I recently visited this lovely beachside cafe and I simply had to leave a review. The experience was incredible from start to finish!\nIf you’re looking for a spot that perfectly blends delicious food with a relaxing atmosphere, this is it. The vibe here is exactly what you want from a beach cafe—chi",
+            "author": "syed mohsin"
+          },
+          {
+            "rating": 4,
+            "text": "Worth it for the vibe, not the drinks\n\nVibe:\nQuaint, calm, and right by the water. Sunset here hits beautifully, with a mix of table seating and relaxed beach chairs that open straight onto the sand.\n\nOrder this: Picante - simple, well-balanced, and the safer bet on the menu.\n\nSkip:\nGrilled Pineappl",
+            "author": "Worth It or Not"
+          },
+          {
+            "rating": 5,
+            "text": "Had visited on last minute for birthday celebration on 24 December. They arranged a cute pumpkin 🎃 cake with creativity. The place has good atmosphere a beach in front and beach side candel light dinner 🍽 They can improve their service time but taste and ambiance is quality 👌",
+            "author": "Ronson Lobo"
+          },
+          {
+            "rating": 5,
+            "text": "Absolutely loved this beachside gem in Goa! The vibe is perfect — sea breeze and sunset views that make you want to stay for hours. Both veg and non-veg options are top-notch, which is rare to find done so well together.\n\nTheir Avocado Sweet Potato Bites are a must-try — easily the star of the menu!",
+            "author": "Yash"
+          }
+        ]
+      },
+      "candolim beach|goa": {
+        "place_id": "ChIJv9F7IjzBvzsR70r6HmyML_o",
+        "name": "Candolim Beach",
+        "address": "Candolim Beach Rd, Candolim, Goa 403515, India",
+        "rating": 4.5,
+        "review_count": 47764,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Sunset views & parasailing on a sandy shore with shacks for beer & seafood, plus a nearby market.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 15.517974899999999,
+        "lng": 73.76261219999999,
+        "photo_refs": [
+          "places/ChIJv9F7IjzBvzsR70r6HmyML_o/photos/AWCwydiV1OQ1UljGcvQfgVfvEKuaU_XvrQQZ6LVCv5efLetbFB9UMYa7W-QzjFpNgcokS6sPKRYV5FGdg5pu7NqkSllZJEhMJTgQ4HZA8ZzkSRd3WyOJ3RcWXNbn4VGceEukyPZqzqcA8E3floN4JJ78r5QY7DOmnzL9SYfv25qzxN9FHpHTz8bWz20nlGVQyvlun11bWOypbM-o6GWwI29Ec0ap0HmBAa7kea6d39VmXcheMChXdlBTdp_8YB633tgdJA3AsyRRZOJAeBGV4NhW6K7aC_I55lq3wmtq9T9yGf6iiOzWuRU9MDBw8DaHu7GoRS8PRYQoyktpFwDSdkU9z9zIExSoZKYvMjNQg7Sf-dPHoYQUSRknNPRO3hyvIYUcFCO9aqkf-Tvgi5W2UE6ZXlM4aG1aX2YDj9D8UfVwDLV92593mf90YHKXWS94YC0p",
+          "places/ChIJv9F7IjzBvzsR70r6HmyML_o/photos/AWCwydjvjfHu1mix9iECBjsDOuYim5u3jZN3uQ3qDBFiqMmWuzST3ZSPoc5nVt3P4GDcMHlQxMU6I0Oi9TbibrV5fr8Ft4-WSlwms3gFX0Jbm0W-xys6qx5x7_w7T0joMzpdzFTv3q-8eLgUsDlnj603MusxvmKaeNfZANhrygKMIP-VzJmHgrM-puO4cLmia2VJcgOHEwqVWRgJVnf4k3OMpGFtWLxL0MuwIePaX5iQ5IGp7e6GGcF8MbqO-rGrHKHq_7_R_HzHh_McKqsC7qvHMOue9xjuTAT3Ov71L2mFn9duFqMBRIyKM98G-zhfW9Y-A6kebfXDuQ_QPui-3l0CU3QRA7DdEyJFiZ6bDu1lAGC9_6YC3wcNUFLoCOPhPpBHKElzTY8aJBfwyjYhb2jjV7fQ6XhGarVf1E5IJKgaoYkJ5Ss",
+          "places/ChIJv9F7IjzBvzsR70r6HmyML_o/photos/AWCwydg6iPPnvm1K2gXgKGzZDGGGkHmbN611RT0luYJ7Hw4ZUwcnM6A0X9QzBLJEuhaFQjaGlCrHbe4pdv7llfWz8ik4I8THjLyef4D39j_xGYXG0ne6qt5tPMXIjFVXEhB1MrlM7kCXvuZNlIx6zsRAsuo9Wr3X9tpkKjSK03tOipTSaSj5MoaqcOtDiuvghLLsK1OOI686fJv75nea8jJWlCvuLrLWyk1jEMKTYf4uBgxkxyovHf69rkoIEKxrmMRm_R5x6PicPaTmOfJI1JV61AvgbsTae8IEGIxwF-xUrlqSvZRdlqBluZFpjU7GmwZvtKpr71Xdig1Gqut8dXIDZKfLrb551zN6Ct3AjTwA0xJdfFxqGWahl6zjQUwrhaYZPrkAI5vXw1sMi7xDHCMWMUL1b0Nhl9RuYSijtGYaOvM",
+          "places/ChIJv9F7IjzBvzsR70r6HmyML_o/photos/AWCwydh-LREBCJHvcx6f4SYeyrfMWP9Uz7FMu5tMDATGEbxiV7bzWmEW424x1bqPedx6kMH47Ki8lr7arwEI46APKo7undzL5bNs_04_onLGaC1cz1EiykSw13R3Qd00l7fv2pYo8KTC6v0rknGyBp0Q0Kh1bsUleJxsht4TxBd5sWRFpclJ5USBgr-ofaAO5NBhskSG8tw7lIvuHEOknA9Xk0YUJRbulzv-QCwRUmRCdNmglcgJw71y-KF2JInLD1KQiJhfKFYl6mKZsWNKyoBXRZIiNiZ6CiMLsZgj0pV8sFx_Bfb26uD7TvHNf_A-T3whLDj6bbs-ciosz7k2yVKHblfEWqk0P-tprkuTrnzxsj4TXx7iMWLs-wyAwf7W19NbWJp1m7S5yVqU2lpQVTHBN-iH1qDm4I1QMqiMwesoPPrymqg",
+          "places/ChIJv9F7IjzBvzsR70r6HmyML_o/photos/AWCwydjbYJe2aKzJdBkaDdhNxGKMpViS2yN4_0FtJOALUMS9JzsbsHfviSXk6OtMQZyJZsIEHlgM07Ln1A9eLWH_LyRSsV6mtQh8Vdthgp9CfDxP-nUT1aLXPj7-Ml2ZuErixDnaNnLt4P3RtXhuDDeyV3JYFBm6s0LFsrP-FY0MIgc2rWCby-YsLbIUzOKu8KG8PhN4wZ2SyeR2mxqku72LvBrlgNpaFt_9UGYXH4V3rLJkM6ktYWqVSNK3TjPkqweq0FkhLk5spPKbUbb-81vsA8BSMJb68Ud-XZ-Cl-CrvJeuS4DVkjKNd_0s3MWM8W5f8uzya1-qJVvJ7iPtdz0QTIjUjE9R3sDaoSnU8z2-dARy5ll6PETXQTV2XoiKfpcxdSxQJRgyNUP5NtRL9boVzue6EqOz_QDuq1_B1xLfJGnqEg",
+          "places/ChIJv9F7IjzBvzsR70r6HmyML_o/photos/AWCwydjwB8uBv34PdysIjJYTR_aEU9Hu-3sEXBPJjE-ds-klmYTisKWpT27ypS7Z5kgblJ5Eg2WB7M-38U3j_UnawECp4eDohPYIvtNMZk91yuPqTFGTJYboNAEVpGon5vPy9c7Sx7HLVbuMikcY15eGYePY_YsFvMnHRxEt_Vhx3GTEYE87_aJ-sQfw5XNz11VE_1H5GVNj3zccN6EvCv-UfsuvBpm1Xlhvh44obNlbU4T_08wE7sIPAU__FsS33FsR7UkOjYJ47ScJ8VZ-gjczQFI71En6S832-45PeFT49ybw_PuAV0W7A-zwMSV23aC3ayEwxgI_nAUxZ7kUWG0QoNd5Xa5754lbWZ1dW4ojl0Wjv-dRkLYBydqHvBQ7TmbVI0Wod6BnEcANFKADIzBgUhHv1GsC_a_YGG0HDmHOukjbcA",
+          "places/ChIJv9F7IjzBvzsR70r6HmyML_o/photos/AWCwydhHhNA82qsHdHkUkDu_qodALMnvQRj5xOZLfAPx-Ywn2wxZXyt-pJKffQmYP-8h8jxHxxfMEgWw5HgmsweCDdK0Z8FLvOztdOiEVvA-rMfGNn_5lCCjuyrrbniILqg2qlmrdFNmwMb4IuF-MHfYGvAoXwKSRnIj2BiN-LkT408Byf961rEQYH81wKP-Grn6CCzASE9bLoDhoakfojfHnlu9E-CyMQwD3W-GrHu95V_duzh_umjodXm88B_KxAJ73J5aJWToenOVPFIZ5GKS0KquZlqq1AMPNqm3noZAFjBz3miOKjTboQikLJRZt0_5QShE36BbWhBUvVSotm0Hpz9kdbrAwJLuiOM8B48eO9EzQmpCqV5V7QDQHJ7VqiLhCvtUOym76zmz-dovByS0BtLsVexgl9nyhVrAB5OD6GHKVWl53l8aF7fBBsGCMw",
+          "places/ChIJv9F7IjzBvzsR70r6HmyML_o/photos/AWCwydgASpke8_SIqRUAAmHAArtgQQkJ8vlkeYdOItBTQhOqHTdwC6Wzij59-tVHJFXTXECx4o6Ptv4aecXfRlIGzQP_cK6TY3hgxUybTSzDvcSfwkr82jvZ1OCay4Zdp50iUmt9ZkNtKHgb1sBH9s5W5vnlReZfWkyEYXSHPnXhoaHKxs7ZtPY7Vh_P63HVryKjPe7_Z0I7xu_Vy2yTEnMlAm86xGYLLFU6paPrUHna_4cSwNBq2Ixd5Ip8-IoM3okuMIAmiKxPY5PfvzeEMknsaxuLNVDXwHd9wI2BlWartrtH-yaN4AJDaEdA9dIV440KwPWrmKjW6LM7fB_QU13IhEXK5ACsNPwKMrbTN8QVYByENDdRjgv1Hnx2pLNGFknG8U7InjRd-HkaCEDNCtdSIWz4HuKK_0e1QaPATnj_yxE",
+          "places/ChIJv9F7IjzBvzsR70r6HmyML_o/photos/AWCwydiyhoGHyQpXgYZtg0cNrUBqNZjOd1z3FA8NBGH82xIIqL5pdhdIWBERa4uZDjncpI32M7fMrgI9PJb1KmxkCHP1hPI9wD2O_ijnuyRuiBW85csmc4xlxKn3QhPyHEJUR0fMYBw7Mpi5cAvRxjdEU2tCTPtYSlAg9nm0PRle6bNMAEDsaeExpb66AmMWwz1wlNYIUf6Uuy3bK7U3SEyaImqOB41HBVWSuvaP_rUDzFhh7THT9SaNZxciAT2RhZbKCuRvTjNP5bzdtj3LCPetZs38kBLq4AJX6vf2x-OknRse-dLsUT43xBkwexP2IDHhwML6h42kAbJKEUyLM_fwKYqSGOZtcge5GvrtO8J7Mb_1bEQ7qKM3CSJARJ1jUWXaWMnCekuqyzdn-jvM1ZLHjMR6BhqGlbwllC1Vypdiwmem8Q",
+          "places/ChIJv9F7IjzBvzsR70r6HmyML_o/photos/AWCwydhxFfwsQf93ar5PUtkKyzlKsTcyc9DxtsuHjcZ_hb2BBy79c6YA4F127E8QHBUP3wbYtt3Ehkgan-fZythxfpe39-McyL0bJPgI7ygEQdSPbc9o-5tTi26wdZYnqv2ffHs7FbCZ4wihfCAppytc7CS_mavPNOr-TPuHtgIooy3jQnZB8TG9eQeaJntf23SUU7jq4gecRBeIwZVwJfaz-oXQNKfhsq3RA0p-BDxrfmjW2HXDh8r116BPf9-qaNN5llp7ynSQPPPVo_fUTM54gxREH-1kwccLHmxrRoY2b5dPVTTvw3DV-0_v1ajo3YyB2nvkbF7O4ov5tFcxpT3plB2Jk3BnLmlmUryNOzWkU0O3xS6TX--kvLG_u4tH0ArfYLgAzyaqS-QftRtW96hKEryqbZLzdhEYBV2Brl8M86A"
+        ],
+        "__at__": 1786801228.2600808,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The beach here is comparatively small and does not have too many commercial facilities or cafés around, but that is exactly what makes it special. It is peaceful, calm, and perfect for people who want to relax away from crowded tourist spots. The quiet atmosphere, soothing beach vibes, and natural b",
+            "author": "Renu Ameta"
+          },
+          {
+            "rating": 5,
+            "text": "The beach offered an absolutely unforgettable experience, especially when the sun went down and the nightlife came alive. There’s something magical about being there at night—the cool breeze, the soothing sound of waves, and the vibrant yet relaxing atmosphere all come together perfectly.\nOne of the",
+            "author": "Rashmi Bind"
+          },
+          {
+            "rating": 5,
+            "text": "Very nice n clean beach. Soft sand , clean area. So very good place to enjoy waters. Sunset view is also good. Many shacks to enjoy good and drinks. There is one area for coast guard who controls crowd to some extent. Good to have a guard onsite.",
+            "author": "Amit Kulkarni"
+          },
+          {
+            "rating": 5,
+            "text": "Our visit to Candolim Beach was one of the best experiences during our North Goa trip. We explored many beaches in North Goa, but Candolim Beach stood out as the cleanest, most peaceful, and well-maintained among all of them.\nWe visited during sunset, and the view was absolutely beautiful. The golde",
+            "author": "WanderFrame"
+          },
+          {
+            "rating": 5,
+            "text": "One of the best beaches visited in Goa during the weekdays. Not many people and alot of Parking space\n\nThe parking does cost alot if you bring a car and there is also a small beach market right outside if anyone wants to shop and also alot of shack and restaurant to eat from on the beach.\n\nI'd highl",
+            "author": "thehavoc"
+          }
+        ]
+      },
+      "lunch (tbd)|goa": {
+        "place_id": "ChIJK0U4GYnBvzsR5FYa2C4fj30",
+        "name": "DPB - The Rooftop Bar",
+        "address": "Taj Cidade de Goa Horizon, Plateau, Dona Paula, Vainguinim Beach, Panaji, Durgavado, Goa 403004, India",
+        "rating": 5,
+        "review_count": 16,
+        "price_level": "PRICE_LEVEL_VERY_EXPENSIVE",
+        "website": "https://www.tajhotels.com/en-in/hotels/taj-cidade-de-goa-horizon/restaurants/dpb",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Closed",
+          "Tuesday: 5:00 PM – 4:00 AM",
+          "Wednesday: 5:00 PM – 4:00 AM",
+          "Thursday: 5:00 PM – 4:00 AM",
+          "Friday: 5:00 PM – 4:00 AM",
+          "Saturday: 5:00 PM – 4:00 AM",
+          "Sunday: 5:00 PM – 4:00 AM"
+        ],
+        "lat": 15.4572497,
+        "lng": 73.8118018,
+        "photo_refs": [
+          "places/ChIJK0U4GYnBvzsR5FYa2C4fj30/photos/AWCwydh0pr6YlkV9ana196rvxQAwd9YAjIRG5sVyBeKtFILV-lpC8T4SxGSZLEbFF1kHyBZ5qDOs7hMaWGzwelQcq-7vRUeSe3Wqx__v0JK8RYcK2xlEOU4QtGjfPov9xlV7eX9drLk-H27AnZZmcKFTIwK280MEPAdgh2kJakLlkBkcWe7e3NoJKfkrMl2hK4HgeJgk2bLuYTCOZU-w6VndLnAiGchX0jSN473kkoDdzQ0ape6IUvP45A-JJAyrJJg8NchPTNkug95uw5o0Q9jNxN-G8vWrYAbto-sHrE_g03J1RVcaM7mdnUm-x1rd-ZWxiI8QabcfgPVAyzgdRn_F8e1XA5QiCqoXrM8v0ZwlNS-k0EkQNFOQrEC9kT7Lg36GNJAQVtyv7ohTlKb9A-n_zz5Fvln_FLOglyV9DWBkoJXHVQ",
+          "places/ChIJK0U4GYnBvzsR5FYa2C4fj30/photos/AWCwydgjDoXthLbqmsdKDhJE1uRwxTf0mdbFMret3NQf-d7871kUv3Nht5ktgOIdierWaYxkgzfQw7dceEzryNDkqSdNyWLaX_pWwq3wkQ8LsklV5Ilk18HciN2wM2d4rUfRQV1xSRG270xMoMS-4diB9RC8PJucojPCkKLdDs56Uqu-4_ZCS-Dj_j2RjQgWA2DoaFPMGIHQKccl4H4zQGILytFy7dDA1tdymo0vClMhYoCF6N6rsjC3ecNotM5ypXofI3fgSjljgFR5USUuuXGE-6O7JGvo7UgM4Ac0Q_dmH_bx8neZvXC1PN5kOY888iuuoRf5bEtAH4iIYpytxmw_79QMTK5zQYsq86h4nveNenAYrHTWEddd-vUtQ4iLFfg0KFZPeanq2iuFlj9LAUlRvqm6yhlNvG51YIXl7meHi10xelMO6LCcSiQFZ8APig",
+          "places/ChIJK0U4GYnBvzsR5FYa2C4fj30/photos/AWCwydih_bqEVnHrULsFZHBVK4mSsd9chypDz-lfy4C-X_Ws8z-JTPzheKCKpCxkntQo_Z5nJgKeqBZ_gA5UD4KnczweleDvPzh_1AhVN259-ezfmJZ5KxTNTv12NI3YG-pWEMnPagYPw0DfdaXMNdI6cR8Dpj3fWOsHQW0G80mPLyb32Z80ly5wZOsDOcOabkTuG_I6dHE-LAJ20IqkMurABKSyiBs9r1wiGFBwomuvfKh71TMJI1-7w8uf_Z7M1AMZuHb3dBYovyaNyn2sXF8xCQCXj0bMTY-E2xKMGHWKJ46LxyBY-4C4sFLfS-L3KuSimn8rrMyseCIlun6D2UUsnq5WVv8rtgVKyuA9KQblQLgvh6IndzcK_ctps-quI0CwikaIMVm2MvN-zDNvOo-3soar8r6_cu1ZPvDDr16vM4xLsHiiVr_BS3dxaWsJ0g",
+          "places/ChIJK0U4GYnBvzsR5FYa2C4fj30/photos/AWCwydigUIkx61L-lqHYq8irpcqwfqHZptDKpp4se4teG8ksoEkxgkNV3cRM0azdUfKjE53toI8klQ7ylQb-OZ3ZNCo4ROi1y6jHTCYXrdB63iU0G47dn3ZD_6gFhkEb_8MqzF7dLc6OtifWw57tKh5hCTUDEnD1G0GAvKyATICO5jWexwUApHv8ygXDBl15Q4WUe9c-4vJtOeKczhXQL-hjhnJMc9d64gL0ALnUDOS60YdlN5_v0g7jScSvIOHqIicXz_xP2rCPbI7PLVl24ZkjaZ_Y7XnDR2g_CWfntMVFHhyvA48Ft3eOA4Os1POcrXySXtlV9eiUUigUuaSZrc_IPunU9YenEiOgAahECuOOyW371BqwpT8gy-FHhBcNYYuXnB5Juu9hcK7QKD8NzczqD9gv4ccKq0ka8bD2ji3--X_9vYoWbZY7nBYcgssEJlsT",
+          "places/ChIJK0U4GYnBvzsR5FYa2C4fj30/photos/AWCwydhLkSjIgUjZqTaDaHO4FsxZNhwErcNMoc8d1y7_SdqHM0Oqz2xViiQkE2EsuSbA8PB9vOVz-Dp_xfPtwjRaM4RXW45UI1oy7lCPYBt8EX06zZqJuAKIRXolGCkgVe9pNcYUvRF2izR4UDtpJyQJEq_tJ_mt7zDFoCw3m-Xoqss3wVYGOHiBep6qZVdSVdBLlaZNqGAK0ow3PsBMjB5XGQzwTv-yYJEESa4xBsnVWU1_03M2Px2Rth_re7anaBKg7TiCiDdVs7kGVwBkxbZdCZuqSEIb6Ngu0k9nEPqDHBjFNXVucLP4M_HTL-BSizQidnk5zEyEpOun2_Zo_toAMM3dQl4d7Yz_DnZehwHhA9Ge4eLVA3W1uCJz0XjMcYx_j_xeIxnTfpRbk2LyZLmZjWiCLOSMdAVAMrmmgDTeIHc",
+          "places/ChIJK0U4GYnBvzsR5FYa2C4fj30/photos/AWCwydhFfhbEO0xCi78IxM73XU8h7MJp0AqTI40eYJESCZ2lU_z_60ojKcLCM3qt1psValzZWCELcCsv28-AZXtT-AijHKJL-fKHAlUzI3dLxxY15ssOdcOV7TOmGm7FVLj3hu_RrtquB0i_z0fAYsgoXJefmgB8aYPwMHPFaxXDxD163dpNE33nPE0jm1Wlq2S8Tf11XZjwlWNnubYzWzRn4VfE_cRNXqfvDXLJ6tvMUCyIFUcVOdmIY1bf_pqPlVP9xikxbkcKM6AhLdb_BY_n9ZpjfZbXH-POAMegUj_LzUNSK2IAkv_rxSae1q54l8q02wb8vwfP3HCakv1AxiFmOnQIPCBCQ5SQ27deu3PRF2Rjsxvu6PxiUT5qUlOGoIOlH1TKJPfI2-Wr_8bYDwTAr8sz-so3ZZ6cxaB-JsZJ-89inqGhOgtGcc-elKF_OtF7",
+          "places/ChIJK0U4GYnBvzsR5FYa2C4fj30/photos/AWCwydjXnH-TooWRKBVJcK-ekKPUj0rpOtQ-PvWwmCwhaFoYwVDQMIlKFyN3q9mtbMrY6f6eNZbRhcjE7AR1RSNmNYULoa3-sgJAmLecce7Z-L7f-PjylYYcLwXaAswn23YBK_BTPCItrfk9Kzr0nLmgMF0UdWIgp3ol-O3-019u-mGQ4gWZPn7b0VXV-0SRIuL8tZMKHybVb3mvtQ6CbIzOEAaRWk5Vs1_oJChUvR7KH1LyoQk5hFDiRoH3MB2msjI2KGzmQS6ScAweuLcVwn0NCYL2QmtIbUFebwBBG_J3anDQkZYKLIJ5ccsk2K1R8Gvd4Vs7nAZCC6L9FN0UL-I4x1fyhQB5Dxy9k2Xr7zSRBGBbtRAL-wHRZ777_77PLJD2j5hAqMWwMQulhVXtXYJhVICs8V5xWrgouK3Dc1ANumAyCtfzptIQ8zQjneW5VR8i",
+          "places/ChIJK0U4GYnBvzsR5FYa2C4fj30/photos/AWCwydidNKBgPL7LhIrw-NitdDj8czYm-cuW2HtBIkTUDB0PbkHl31B_q8C5bZV0znzBSLNj1sD2kmXsGDWbUKSYQqT8UQUrjoojuDLV3QK5mjzGQOKfPSnZNfwjRnij4ct7hUzBxgzrWevvGj5tMQOWByAHf6T3MRuwDed9YVjZx2qEzeF4BahTl9reHsxirzx2cfsft_MyyuA19p9WjUexvaAJEiBdSbc-mZqFJ0C6lKIJgNPxVAxNL2SL1wK7Tcl6xIcAxIVkhcMq-md6RreyFyNRcKmQybgh7jkobVET3mgTo09_1K7NX-RfPdYhZNyjoCmWuLZObh_KHQHI3d-dQ40Iai2pUhkhonieOph2fLBK9ZhatQxilMdWgH0tI2mKTG_x5N4z8y9OnkpP-kdOlMSZYXyUcdm4WeRNgujBzs9YMIpnujBVCXSZq4VrYXai",
+          "places/ChIJK0U4GYnBvzsR5FYa2C4fj30/photos/AWCwydhqiHpItdLxkJZcyk_KP62GRcXxKSOkSJcBvAyfCmZbNXHyqmZg-RnAr5zAWeqiApe8z5utL0Kw1yjrrWowBgF6bmUbVks5cpB3hjeIwoJ8Gvp5wuPTW31K28udbdcxV4GT4uieOZ5TJpYGP7ZdPpEU-V72YPH3a35WQZGsIi1bCIVV9olsiHQDs1L2TRrqMrs9S4ITkdqgkKRS7N2t6RC8TSoAvlDNYVrrLqucBMPIwV0YwcOaRE9kpaJH1LNG7xxZ8ZGfUPNWWWDV-WtyuTLUDAMBfxHTLcGcwv92l8jhUX-Ams7du9uLGNN34Fa5rkTturfkH9rpxTYQDvNSJtsFDe4t88Lf34SacbUnseqDnCTuI7nyy5g26qVgcCA1CRvKo0Oop7FjWb3wO0Pdz2GHn6LA71AlTYlmYZ_5vguBDg",
+          "places/ChIJK0U4GYnBvzsR5FYa2C4fj30/photos/AWCwydhHAHh96DmIIiDDGK5-_uPfE8K9eplzjPd9ltVOum7geErjJfe10k7VxvXvomJBMvE8vdLxt4-GB6npgWt0mPLQbkb-KKz4eHASIw-R5j1KIltY76xNUqnvbAuqdCVRo8wCw9J3mLNbhEGhI0gGinGhSY8CUAPQh7uPunrNEwmey7NJFk-IbdtCi00lOaRRAnWUOsac-POq-otKRJV2ugdGE1H_l0aOyjS0dc8Fz-HLziJGKtzx1AqMj-PTuo6SQS6JQO5YoEMDeLiGpO_ZfMXjkR8wi9sBEyED3sBeJdVVOSG-tIW-6Dm5CLGAyq06FqlBAniizCfS-zMpxkE-p8MJAqvv8kx74u1tGYWR14gx9tXpQNpcBmRk0nBozfaQJ34VhwP08obbV-07B-THXYHW4DJrZhnbsTGyoW3C2zDT0AeTSV8Um_cC5imxUgA0"
+        ],
+        "__at__": 1786801228.869688,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "One of the best sundowner spot in the city of Panjim.. ❤️\n\nWe had a truly wonderful evening at DPB. The food was exceptional, the chicken gyoza was absolutely delicious, the cumin pepper chicken tenders were incredibly flavorful—each bite flavoured with bold spices. And the Baileys chocolate delight",
+            "author": "sneha palyekar"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing for small cozy intimate milestone celebrations like birthdays, promotions and dream job offers!",
+            "author": "Sanchita Banerjee Rodrigues"
+          },
+          {
+            "rating": 5,
+            "text": "Great experience. Amazing food, such sweet and helpful staff, and amazing atmosphere. Plus my favorite part was the music!! The DJ was so good and the ambience made by the music was 5/5",
+            "author": "Rashmi"
+          },
+          {
+            "rating": 5,
+            "text": "The greatest of all time bartenders and mixologists who are just the friendliest and literally the best people ever. Generally the hospitality business they just want to serve but these men Especially Sid want to take care of you!! I was there on my birthday with my wife and we were just looking for",
+            "author": "S. Vijaychander Iyer"
+          },
+          {
+            "rating": 5,
+            "text": "Perfect service, mainly great staff\nWe stayed in Taj from April 13th to 17th and daily we use to go to DPB.\nGreat place and mainly great service by staff.",
+            "author": "Varun RN"
+          }
+        ]
+      },
+      "fort aguada|goa": {
+        "place_id": "ChIJa72MxnXBvzsRHHtpszB2g6M",
+        "name": "Fort Aguada",
+        "address": "Fort Aguada Rd, Aguada Fort Area, Candolim, Goa 403515, India",
+        "rating": 4.2,
+        "review_count": 111149,
+        "price_level": null,
+        "website": "https://goa-tourism.com/siteseeing/fort-aguada/",
+        "editorial_summary": "1612 Portuguese fortress offering ocean views & an abandoned lighthouse erected in 1864.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 9:30 AM – 6:00 PM",
+          "Tuesday: 9:30 AM – 6:00 PM",
+          "Wednesday: 9:30 AM – 6:00 PM",
+          "Thursday: 9:30 AM – 6:00 PM",
+          "Friday: 9:30 AM – 6:00 PM",
+          "Saturday: 9:30 AM – 6:00 PM",
+          "Sunday: 9:30 AM – 6:00 PM"
+        ],
+        "lat": 15.4922519,
+        "lng": 73.77374619999999,
+        "photo_refs": [
+          "places/ChIJa72MxnXBvzsRHHtpszB2g6M/photos/AWCwydj-z0Luvkm4S5adq9TJujBVUeMzn2L3TGAVEPjZUsRo_4WQ47UeVoClpb9O6BTm9bhiPo4o4ogs4AH-hqDZLFV9aYv5v5NpqM_JHhRp70uhDcJOdBc3k1J5GdFbkmXwA1Yo0pzZZKA5HR1HgbQ9TYoHo-II--Wf9_uIkxy8IkpM8-c6au0HgdgP9WPR-qhWWhCVWBWmb0zNGAzJgE-34yVbD7YHXcGEsKXASvw7Aiy4ARvK2GyZda6OlVZ-17ZVUrFVQ96CxLJIMF2et_iW2R7Ih5Shk1SExU7rlAp_qVZdC-x1ZvuKkzmwXACMyUcalS0UWUY2HEzvEma6oN4SL0chfq7VPLz04L54Xq-iE8IqwxVhsuietr4QnEv2syEi3W22KH0xsT5j8V_r-D4HLAk1B5Z42XYkgomNa-iSgxLMng",
+          "places/ChIJa72MxnXBvzsRHHtpszB2g6M/photos/AWCwydg0j4QUMPBhdu_BnnqlYB2dlYc3fEew9rgaOLMnB6sqRD16j-rsv_4Vt5-X8Ls5YjqKOEzBs3bCH4rxmIu-J7ttXav9ufaxtzuknG8alO4fBAavLHMKoX3kVkyl6UEPYxgZRKgJZoRSyhYBId4cs6Ne4GL2Y375KOPQl_ECuM9ds9MuyFyjtqdsNZ5WXLb5NMsZpUCbnkULSBZSiG-5CEqfsY5RPue4oizCJxEZiG2RBx4OrfaRSX0m6fO-L2om1Fycx7UwJ-R3rJiwQPxuJFC0RHshPRDQ6ZtGjdMXvO455evY5HjbcscN5fWYhyH22hdLsqdQCs2GNIZy1QGx-fbVHfBNfqfg6dpQ3LTXrqRrz95inEnfXKviKic15VW9iWte4iLH6l-nhfoUReoR-n9sc2bGIGyr7k6N5QzND9nJFzZ4O5JbfMgDtBER5Q",
+          "places/ChIJa72MxnXBvzsRHHtpszB2g6M/photos/AWCwydhJoz4jHnHS_CVYYrUQHsh31MN6Lhz5otORi79EQAheAtmZOBbuZPS11fKjQmC6ZqKS1M95DX4jKZwY6si5i8WzIGDb9KSoyzRCt5TUcSvzPpzhiKIiSisff0X7KEy04-0om6ELwZtOC6naj3FgYpgQ-NSDYgQdtnZGqT2pN3Kp41rF8gTQ4J2z8g8vENeZ7DifsLolcDjE1EUo9eA-CEchB_LKuUSi_YdhlTsXSD7bexsJOCeJfd42FwfuXu_G5evLWZ0EucSPZEJSVmhL8LPd4H0KpzMxHMzRFPlGq4ZcBeMaVGMLsJeQ5BUuxlApfDC7eyxbAuygh9PyFQzcgrNAftXa7tuHekx4y1LDHOdZrJITT5bByCq5r6TW5-sszW9vCv4uzkwi8CF9EUYcQ20cnu855LNK6CWjtNau8sk1_w",
+          "places/ChIJa72MxnXBvzsRHHtpszB2g6M/photos/AWCwydiCxeMMtu8qhPmAEo_OfTocpcKizA-LQUb9pu8wQOdBldLXl24OROc-7-ytlmtDTNgiFmfqAZmaA6ikvmfhxTHGE8OvK-LjNhyt7GdzbqdQcB1A7bko7iCg4tvJDQBzORQgbjLFl4gALcTLE_2YOO86uAEdnvcjupIkRPv0gWJhhQ0rBArE_VOLvdbQSeVRxYphidklVRlvJNyfxRWPf7kLJP6J6bboMiZspJdY2x3M5SkK5MCErnciSUDH23s-V6lBq1g2Hw-fnY4_jcn66yizKPpLGdLdSk3BNxgbAxBfoxBXMneEPuNk8qCWN0r5OKPhM6S8Iz_yhIpSOqbAoimP2v6tqn8P6-wbK5URBi5UtimEdYNXZO4B5czYCviCgew0Fr3Jci6sXquldSfpTfQ90OwRa9GcxP_a3VDvbpjUIle6",
+          "places/ChIJa72MxnXBvzsRHHtpszB2g6M/photos/AWCwydgIKSvIPtV6Ws5Y6Rpbs2hrvz8ddboP_n2JB4P3c0c92A1WnpujocTKZLVdz5G-PnmsCzJTa0zZkNcjlZDV46CahbmxlTKLxLTW2yK22yOqz1RM8p0U3oiWxasZagQansRsxt6uJaaCADUWU3DEKYXortkkmFJhNab4XNPvdTpMKQ7_FFdYj-e0jX6HGjpMp3-7Hmyv_sd6UY4uylxlYvkra33x1TCJtwDYI-pSeZaQmcyAIsOAxz3Qi_NUmEN-ootwM3sNcu7gPDA1I1W_ccQIB7ms7yK3YljGX3FfWA3bPszv6o3RHRg9sYFYkATa6KbfCJ7NyuXwZjtAHesjW31XiZVptHv22aV0rjppBVOkcwILojtfpeYmzQNnmS2jf6AJDOtmnvO-kzHgzL_JUUcl_blLtJuqt4e1LerRE_0ETlFBO285tY7yUFtbjA",
+          "places/ChIJa72MxnXBvzsRHHtpszB2g6M/photos/AWCwydjAp5kk0PaQamILNez38FaeD8HCTpemLONfNUpgaK-sV5wrYDEfmctFeasX8jXWVzjlsUD8FNVhXdy2Jmz5yEYlk0_aSxdmsu41MzorPY3uNEULHx4W4Td2KyRoKzRybGUgjdDYV0EdJoKBTwna-NsgVALuGiF7kzz3yYgh52HQ7uJ7zwpX_GNSsllPzVPebkOrhl9pPTlGb6lwbTH5ZBFwHaz5xDxyTpiMYkIbAAzVu0lsquT12T-TJ2xk7n0FC3MG1u5Cvt79bx1uCrvZPu8KMDmmmIjJ5i-pvMtLebMWK-6heDE125kREufZLgvFHq3OYXtX6sB8Q1jx94Z6lb3fXeg6dASZnrLDcbg46GkFpZoOeBqIByHhkKxtIWpIGi20llOWNu4Z29WuxKNhHfj7qX_5vTxMlN8td7xZXSq65A",
+          "places/ChIJa72MxnXBvzsRHHtpszB2g6M/photos/AWCwydjGBzZkRGSmhQdzbjeC3PGm8m3Vs76noxUcHB5A5MXcc1686iurGyrqqB4WeC8hkGYzxYV85E7xfykFeJ54aDfhZJqVnywbQiEYwHlVKNieM2QeahF0omXFWf_a3WLE8zPkXJDENC3biiCTfYKqs2K3tYV2u7xqcZbVx_hPsblJjwjNbS1jouZTSZ9MN4KA7NMkJlmUPzcemCUfLnjEycM3pxIH_W9ljDUZMdMQSrHNR2j8vkA0-WonIcsy3hfwpxTRNmuGZXA8tE3xQHi1USxtz9njya3t3bWinvvN3Wb-PGWxS2NIXBdjoDMikQR9nz3XYEDKBipr2vUklm52obM9SZPj8oH0jkb1AnIdDOhVGriwfgRKQNqy2qw9_5xAAS5BmT-vg9zNEAKLAbwsNL0hDqIB7UNuA9tVS3sNr-0",
+          "places/ChIJa72MxnXBvzsRHHtpszB2g6M/photos/AWCwydhmLYlfp9Ot9ANo2xvMWj1kasrB4bUjCVk2BJwwXo0_4pkZxiU1SOJ8HwZBGk0SV2iUxTNzQReAwZXpfe8yfECJ84xLES6Mo2CieByDK27Y_HjrLVkQGlVcNhXFW83cPGm62_LGZmBE59Af_xrLUkoFuCVwSjYmB7j7fHMzGiocsV63ysH9lYyQz42iXH7kMKAeMWP-cjMYM8dCWSLErYUUCYUYcAwKgUCK4gGCrK-1MqvVKVg-6eIx5HfaVfq2jqAD-_Ew5y9TTZnUIHWknJKaRH0GMD_3Wzqq0nGUN1zz9NBL_1hrI43C3zSBa12slsSIHsmsJMA3DAZXlcLzcB4FW1OOKLOtz1PSogyDl580hYEcXFvEjKlBDTFUNpxI43DuMZNMR7C-T6BeCuE7dRISDQMgCCodYMX0XxdHI25o8Di4bNCsjCQk1UlLaQX5",
+          "places/ChIJa72MxnXBvzsRHHtpszB2g6M/photos/AWCwydiP_w9mRfB40PbHLgUBc-KouFGD_tab9gDeaSR62F3Gbco832UgPUcTpCRRRtvXVNnqWN1XmR3WO-4_3FVxnaVuANjNLX7q0cfEufrUhzdNnKDB4x1j7LKwkIg1rUcRqVTcdbRVYQUAjziSvNj8-9jLysHN-wgX91EYxE6nqd8qDJCsfQu2LGZZSgb_RXzBYPhBeE9z_yu8GpwrfOlVVjO_HKcUraTPpsfoLKY9FESLLf1Lj00fT-Uw5npaEAhUhRwF1fgYPPTE6ckLKuj7Clnt4aA6NjSE_jD-vE4Y0UNFHna41rOo0w44T6p7waq4OirGdHCilV8dc-OavNZtwrYjHZ6KEe1tjCkxI4nD8HivA2V0Sq97By7A5PXm0Bjq1pTThqXNmMayn5EKBr6rlXtvv-ZHhMfpkNsXAUklhcbk1RYB",
+          "places/ChIJa72MxnXBvzsRHHtpszB2g6M/photos/AWCwydg1iD2uNB-rz45GVWSyyO81cbENuEs1IeekJt7jPugd21cEkY_GUPE3Ej8kIahnCoslOAbP8i6RB0ANTcjdgotXcO3TaJgDxzdBYs_lRLo1wzN4yfGN1DdQH3L2fiv_M-PXTHUxn2bzJUF4AtVN7Ui3nGpYezIaq8U5omalcNoF0PJEP5osbIYGlzqq2TP0AmtzjhptMppXdDBUV7VX2SvOwoWRuRxP09ZizV9L6cTstoS8uXkCWsd7tUgxwIHiRPgPdmkuHKiuZ5ggXBCW1zasHaupSReGQll3IdaxGBzpIc0XpLViPiiUGdZlmiEXTNIJI1ypCDP0tMjw-B78DlCPLe-f1C2Klz7nHVJYAOuf8s-XFK38VVyCHdE-0hmNg1KOr5tPCmTm8ljJRDsJ7jzLzjjnpPCQFuDZLs6YQL4"
+        ],
+        "__at__": 1786616434.5210292,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Aguada Fort is a really nice mix of history, great views, and a chill vibe. Perched on a hill overlooking the Arabian Sea, this old Portuguese fort gives you some of the best views in North Goa. The well-kept architecture and massive stone walls really show its history and make it a cool place to ch",
+            "author": "prasad bethamalla"
+          },
+          {
+            "rating": 4,
+            "text": "Fort Aguada is one of Goa's most famous historical landmarks, offering a perfect blend of history, architecture, and breathtaking views of the Arabian Sea. Built by the Portuguese in 1612, the fort was constructed to protect Goa from Dutch and Maratha invasions. Its name comes from the Portuguese wo",
+            "author": "Yashonil Patidar"
+          },
+          {
+            "rating": 5,
+            "text": "An absolute must-visit landmark in Goa! Built back in 1612, this fort is remarkably well-preserved. I loved exploring the ancient ramparts, seeing the massive underground freshwater cistern, and checking out the historic lighthouse. The views of the Mandovi River meeting the Arabian Sea are breathta",
+            "author": "Chandan R"
+          },
+          {
+            "rating": 4,
+            "text": "Aguada Fort is one of the most beautiful places to visit in Goa. I spent almost two hours exploring the fort, and the breathtaking sea views made it completely worth it. The old walls and historic architecture give the place a unique charm, while the famous scene from Dil Chahta Hai makes the visit ",
+            "author": "chetan yamger"
+          },
+          {
+            "rating": 5,
+            "text": "Was impressed by its rich history and stunning sea views. The massive underground water tank that once supplied fresh water to ships is fascinating, and the old lighthouse adds to the fort’s charm. Also learned that part of the fort served as a jail where Goan freedom fighters were imprisoned during",
+            "author": "Sai Santosh"
+          }
+        ]
+      },
+      "dinner (tbd)|goa": {
+        "place_id": "ChIJhV0szmrrvzsRSKbWPlFUqjI",
+        "name": "The Tanjore Tiffin Room, Goa",
+        "address": "1111, Road, near Orchard Stores, near Corporation Bank, Mazal Waddo, Anjuna, Arpora, Goa 403509, India",
+        "rating": 4.5,
+        "review_count": 773,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 12:00 PM – 12:00 AM",
+          "Tuesday: 12:00 PM – 12:00 AM",
+          "Wednesday: 12:00 PM – 12:00 AM",
+          "Thursday: 12:00 PM – 12:00 AM",
+          "Friday: 12:00 PM – 12:00 AM",
+          "Saturday: 12:00 PM – 12:00 AM",
+          "Sunday: 12:00 PM – 12:00 AM"
+        ],
+        "lat": 15.581519599999998,
+        "lng": 73.7531207,
+        "photo_refs": [
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydjQBFMgu2nk-FLbyDVSUCjfAm82dJjzCmmZU99CNsof77-s8VLTaVbv-NfypMRiKbfkwCgb7bylFDgS9dfEgTbQ9ei-ceMwjoF5vN0RIal3LWG0RIh7Pu8-YUEYAQpuRlhnfQqdudXBUEZ7R8T2rKAlw7ZQj3nCL3sPcKdcMTDJtNbGUhONCLo_bR8jxgVzXwhNZyCg3uG8GSwjlZW2nPrFF4OiFju-5S0jub20Waqr26hOyjPCdeDWPNT4yBValWckadZixyfz3Wj4mWa43OAoYoEY-jeJ01qI7D264Vsjfel63Ld2bMbRNTvtlN6TczdPIWXvtHfTfILVci1q8hpqeTyAPskSAXTIjJBvYQ6Z2kjefpKhb-aMJIzGkqBIhSCtFdvCKUYJnpwLrCiTS5sX3PzdGa78umNdAakk-X3VKg",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydgKS9Zwm84yLo5HkWZwxQNAsuA-ciCpYza00JBl8w8mAMstpy9fVqj2B7Vthp3qwznGrWXTnXZg6szFL2u7AtIJfQIJYlgMzjeeWEC_hv-s6XVhkjr2YA8jnfz9NH3H-8lyOPfW2TAQ_HS3zkji29z_KN5273cYEVbhDV8ASeH6XcccQMFT5DNrxaBLGfJJYlUSBEnlv-GfKlTUuad5uTpDCAe1aAWo_XHTUbXegEW36gitJjhr1LODaEzMp6ULgAcqha79Qgjjil3kQrDz3C51PIepTTCD9_MDFYLpZ4FxSapDz6qn62qPX6wn5bf_vI0iCv_JpO9-fKToIPAjpe-GId-_iBtWE8svUb0m8Ds8iE9BdqJYL0Q2meTcOoG8EUXTwLHpJhy_XALPrY7eo1pcTElVkU5Xb47pCwjp9HftGZ8",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydhtnWitzoxvy_sy56TdLc_p0XLoReR0QaIe23unleKS-EjtPrYVtm2OFiTiKluCiEQAvR-Pe1P94Dqi2valbsY6Ba2q1q_3580MdT_SCeL--P3pbEU4QsqJYVlsusb2f5q1P9vf5cmX4I5EuiCEQqkEH6d2wwibnP5cPzdZHLRMlD2CuxqohIRNJNmI6BYecUOVamsU5cuqPsy_GzDbKWLKJjGg2WFZur1Dkpq9gYRyigPVfVhMzd6VYN3oyN6_0hFs6_Wd5LvFj-qk_ZFuAp3i5p_58PGYCD_vYWO3skyCsDhkFq9of7c4-zDOg16rmCnU710x5yVmzXPCnakFzSbSQuWwUnnEfVCBaTvS9PzdcvSsbQdmPJ6oBPya74N3MgjyLqSYaMwU7v1ycxdHLUMB8vEC1e7MhsxVxpQXdONwgojPeqK6dWBAEZuD0ige",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydhQOjk3By6Vov_cttU6RzzQfdwNlRSmAY6xRQjTOidgOZ21_NklucBWRZ6eKn7GuH5iCKGoHYmDPyFZlReX-LzbwNB4lh61TfnZv_M-k7vYrdaxxRl0Vygh4hEzW7_vTsxv4BT-9mqjtAaX_BpPIsQS59UN37mmydTEeKWOuFSsQMDhbCu3uR4EiM4th9382MbOuaT_-qQgPi5L-bgzR6S1qFW1t8XYwJic0Kco15HGFeIzuYJxujPdgMEeUOU6ZjgDPScUil2j-mvCLxGbIo5ofib2ntyPwF-0UnopD-NV98qNdKuatBySCf32EnAIJ8QS7Bhxd0acBxT9X4Z3En6iXsYd0B0eB9TareTvtNrJ5a0QGA5govVxjUbKsK7FNn7nqqFyTIN9nnGCvbzuBBXjSmdy68ndtW0u5LifH6i9f7SQ9CRGnEYImtURgamW",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydgSUwd1yjKxykWqohlv77qvpYQpS50mnvjeEM4n5SEk0GQN2KeOgnn46IIb0wOqQN3kvp6HkxqrAgUjCFtTuBMl9RORXhmuN4bsV6P5DgBo-3Owwqsv3C5MLbcCnintrlAC3icPGwu3uWqJY0EzyI6sDo46-qgHMidyhsZGOEUfiXzXVtO-pxsru1kebWgq1F6PM1L8IcwJpRcAfKCjkL-bb_VpZezddzys0I_bnU0C-eR_fKE2lap-D3Ejr-s8UBxAqVpMTuRHXWP1uxpDE0f8yewkiQDsUsTZ34wprjDC39LtcyxP72Spriwe_LmWQsqPL1UJw2JOYw2rlA57xeaX_a-tEpFxQC67f4CzdMqarBZHzEfdWH6pyUX0MewOHX1xPEbj_1FzibzpxAfoSmUqohmzqlCowRCcfU3PJI-33kY8DtWklbcJ_Tn3Kzfi",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydgcPU0Q82i720Whf9IkmuU5fLJCLXQDeKEv9bVUIns32-yg7zskrhZcMy59myqszvPMOeD3KYzLQRkwR-Nv9nHIX8nFWLUY4bi_7Fcrev4sDP2BxffAGi4yUwRpJUzb2E-7O_ByOb4DJORl2sQ5vvHCgEJhkYRxwmqOX5nwSlVYdYDgeMmRHlwnL7OQfSp9M3U9Wks1ZAgewhJlAvsuMjesIf5IdcZrsVZt_n3oGMXgaodW9Td7XBjlDVnT7S-khWS9TUJkuVX68-YbxL99UmWokF_q_PNC6m-afqL3a-G8DQZMWqbWEii21SVFAnVHND9LoVrz_ZPCtJOa9SSNmjTVlTGwcOGMJJ4_A4Ha08dzdqr-p1jQuR1EuXYcw9LJck1_aJpVGpMWORY8h4UjBSrTg5xfxsxSEsWb1Sqa_qZqp3AakPKzAwG34a027Mz9",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydhWpXfTXJuyQer1h9pjMR9wnF51NfpOShlu_VX5aojzlE5ArT25DzV267nY4NixhcAnzYhJSisrIj7Rjf6Mi7KV5ygHErR-rxMuMLENDDKq7kkvbYvm4f66R6arJIcISUrNAQ9W-ijzXKgYy20xCDSMJ0eARu4oyscnf7j4K1s5eSOxwiRg7XfurY1JBkdeIVSEWW8qt9HPM0DOkaN2aDZwia8KSewj0luvy87AiBM_CoAZrK-00u4xfpZxj8siVvd6aCREqM_xr9pQjqMxJENkYmSgTDrgsW2DlyHdqK6XqYamY6uQzjWHqWfTgRKyJ2pPvDJ6aTTO0iJPfBiuuml2nbH8PxJosr3-boC5nllcFTDYRmsD7S5Ldmey77QZuzW4STpz7ydh1epBWyzgJVEhE6SXbRMj61Ln2ee5H7rAHuAhRo__yz4_sgO0Fg",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydiynqCA19s6KfOkCn_kqH8qeb1mp8HS7wQOSRrXikNoUfi2b2WUSDK1hQGlS-_nu-_9O4OTx5j9lWF8a1LnBZCoU3O1_lfd5o6F73xcAOOnxuPdox7h5K-mpBc7rNkwndXLhxrHhU7t6thKZSY_2tHWTVA2LdKJ4CXgYxo4ccb9yL_coVQTykPlefF-T5V179yQ6srunolgY65CrI7OxbO6rS6pribnF3Qw9kFJbgrA7CQ6aHdZgWZPCStZnDvBDG9afU2hncZ0wQf_bAxAdm2oc7_dTcwvJ6-36tr8X6ieexRQHZtcpes5MS9OCpcBDK6jhli1xDdpcwozegM5YAT19uYoOcVDQTMCH140tXIGEqf2C5WEJoMSvjmEtFB_Sk4i17sKuf7si-HcZViO5a1bIuYt9_oSFujVYYLGDh7vPcflZfPpCN582fiJfA",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydh3y191e69YOFEnbEydDBzcM-RVp5hg490n20PJNOhJozxNq-flA5OKiYLief4upwSNky_c1kGfbYhzT9heKR096ILuZpvhCQb9BEaLZjTvpMv4Fa7kL9eVDegyga3Eq-FWe5Dyx9TWAXaTgMIIRppduXUBMQu6lZqpnmaCsllPgX-KRWB-OodDdk-oQGfKm3jqwvgl-kRlf76mbRJXKf2pihAyKusx3tWDHVOXQxet1HyJ_vbMMTtgPGuCxzmVD9-CgC_ntOOUchFQKMoobmScYYZMSiM8dvTwQeXRAN7fPMm0DjjcfRd9bJMNl_xNf1Fzk3a1e7mqI_uXoYPGpqVj-VUr0sM4WE3_VA1ttNbBjKBFma_APb_YzJctyeUwFgy2lmkwTW9kf89Kx6sj0BwB6TzRpNgp78VsNlpFPqjpITB1nbXy25IooNUitcL3",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydgUB8bvHllZkmvNoYufkjYJ59m4Re0PwG05hNIMURU0z3TLHjPcLANKR05rC7duhMxfjfWW5xBeHpXgyhnAerK_L5yYVLdNVgTIKj1B3H4Rh8wmzOQiPmED8moDYed1W7X2LEmp27V_qfqPPhS3Fxyct9LlJWT6P7Qn1Ak8kFjqOOEbLBvSpK4Rswg5ObTY9TM7RTbxs7hPZl6KWzMCfG4XqijETRh8G4c3g4aXHwGcrhQ-i5XTkC39sIcEBjOsJkmIRmF5QQr9Hsg19I2Q-h4ZFSqjvgPC8Gh2PUVhJYc6DALxcFDflpBXn3uiaScCSmRBoLrah1VfpG-mIBtzIQBK04APqjerry3DZJ-R1UTjMXfFpR0KJFlIghXeRhiapqYWokekRJVtx1WFpwufu4dwSRk3qz76-lTu0DbmkNRpkvSpWzkjiZflvHrvUlOW"
+        ],
+        "__at__": 1786801229.2913768,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "A paradise for every South Indian food lover! The food was absolutely mind-blowing and hit all the right spots. As someone who loves South Indian cuisine, I was beyond satisfied with everything they had to offer.\n\nThe cocktails are a little on the expensive side, which is probably the only downside,",
+            "author": "Harshitha Siyal"
+          },
+          {
+            "rating": 5,
+            "text": "We went to Tanjore Tiffin for brunch and it completely lived up to the hype. The vibe, the ambience, every little detail of the place felt warm and inviting.\n\nThe food here is truly an experience. Before the main course, they serve tasting samples of the curries and rice so you can pick your favouri",
+            "author": "Pankhurie Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "Tanjore Tiffin Room completely changed how I look at South Indian food, especially after four years of heavy, sharp spices in Hyderabad. Here, the curries have a deep, rich body, and every dish feels like it was made with real heart. The whole place feels warm and welcoming, from the beautiful vibe ",
+            "author": "Shreshth Vats"
+          },
+          {
+            "rating": 5,
+            "text": "We had a great experience at Tanjore Tiffin Room. The food was fantastic, full of flavor, and beautifully prepared. A special mention goes to our server, Soniya, who was incredibly helpful and accommodating in customizing several dishes to suit our vegan dietary requirements. She was attentive, frie",
+            "author": "Sassy Sonal"
+          },
+          {
+            "rating": 5,
+            "text": "Tanjore Kitchen is a wonderful place for anyone who appreciates authentic South Indian cuisine. From the moment we walked in, we were welcomed with warm hospitality and a pleasant atmosphere that made the dining experience even more enjoyable.\n\nThe food was absolutely outstanding, with every dish sh",
+            "author": "Saiel Kumarjuvekar"
+          }
+        ]
+      },
+      "palolem beach|goa": {
+        "place_id": "ChIJuwJb0FFFvjsR9bsPS33GGx4",
+        "name": "Palolem Beach",
+        "address": "Palolem Beach, Goa, India",
+        "rating": 4.6,
+        "review_count": 29992,
+        "price_level": null,
+        "website": "http://www.palolem-beach.com/",
+        "editorial_summary": "Uncrowded stretch of white sand with calm waters, a restaurant and silent disco music parties.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 15.009964799999995,
+        "lng": 74.02321859999999,
+        "photo_refs": [
+          "places/ChIJuwJb0FFFvjsR9bsPS33GGx4/photos/AWCwydiQem_sWRLUe0TtexQOanSkNzkEMtGeLN4v2USGsJMPMLGBwiJJkGddUrOGNZ4upfpXeezxggfrW9ac23FvgqxDcmkrol0GWUNz39lk_x3y7S590_aYGgFsxbDiu8rVUe7hWRFvRQSjaHSpqtxT-33XQ79w_uu0d6zITogOJvI3AG-xH4pvrDzc1nIv9UquDq0qRI4awKJfBeqpPJYLfUVcij0fLS_St_pJp88L1jpiyAGsIEAmcyIcCx3b3_DCm64W7PPmdgzS9INUK2z_EMyYlkhK8P6tGuTTNKkqXu__Wwl4vaVQQxEp85TkE3IT36SXbb3meiEypo99Rq7p-sa6h_pq4S8KdWAhKtxQn_6wTwOsaZtFCGIEFfp7zUNkRYwK6z8R-hQug0qyRg8uNlcS-HEBMPA3anyykk8Czwg",
+          "places/ChIJuwJb0FFFvjsR9bsPS33GGx4/photos/AWCwydjV0jXcqkhVJkcXwsQSL4Q3rhG5vS4yMpqVJYOmFaobFOGGfO7DQ1Q94N1tqA5q-qpOPIM9P6pgKykBF31YLwtUFcwK5lqCYU1yNAhFZcxyiLskq7R1_UqYxgLgidxTSGwWJsqLqi7hdTRnQY_czuyPspUTWr-eyqPI81p8F6hv8kfaFMUWI2mpwAdHEjNwVpVPlTBVhLCRptvNYFPe6kubaLFAhWFmzTTU6bemZBWhoANXO-hG_G5WfYijZlQX-lxHh3sAHrnMEP7TWS_QvUHTvXfD2-9czwpYnuj0WWzdzB6zT2BNaEDfym3Acgzv1_D08h7DYKKbUXluryipGDkvJDULyZCsSEzYktAVoIR9C6CcFzPIm7fnADC9asjswdhrIzeiRw32dsxp0-rAnjtWZgyAGvf94j4JxByo3WpT-w",
+          "places/ChIJuwJb0FFFvjsR9bsPS33GGx4/photos/AWCwydi7sOESbVe3fNZW6HZx5c6KCHLzYLf0oIlV_z8v3Yk5wv71XFT-KSzUrdJQ8zbfb6QAzO_JBWNQ4utc4rYizrM-Up_eOzSFQ_PN4_cma80_knJkA-EPGxYkcPFzi0R3pgH6Ur_Cd4sHHPzlbC8_HMi_AUfHKK2gbCbEgY6RQ1ytTLj10N3PFDpGp2cWwjAAdQ8LUrNizSuxSlKbbE5tQGFP-c4DW7YdsZwrt-MdbHgjmqn2EpbaHfa-Qxkn6xe_J8gbs5Ve9gOcaLdEfn-BmGH0Cb_no60FjbkJtyf1qxhygwWKVI8v97bQXg_GrTAeetjERCP4ohl5rG6wHvdPczAQ1cQenxOCKziZbCJPerm-jJKADsrXII6FRRSpjLZPSjhMxvO2a_VI3qRNHx8pctcAr6HdyYfvHN5-5yACnRddP2Q4",
+          "places/ChIJuwJb0FFFvjsR9bsPS33GGx4/photos/AWCwydjrp1gpxI8rGcgXJrxJ_reBmqx6LgjoOd_fWic64eH2e-4ae66bJbUToiVCmEtOfwktDgc4_uPN0oCRODLJZh1Q0L_XfQ96-_YIf-_FMHlFvN-hl8odVvHGR4lCojSJ7wUisdpmLUrwaU6ZfNTncsOoYuXX8ayDCAGGWB1YRIDdpkfl4ZcUldjPLGTkP1lA9w4rFoB-fP3ATF02WFxOXz78LB2a4dFiFgADocTg2cBAS6J7UfO8VljCGAzwf0I91gobVU_2Nny-CmgQGrBzwwwDBKLkwXONpek9cbhHgcknSIdRnVJJj7p9W-26wr8KHUdgl5DzSfOOeKzFar-wDWAN6vKuWS1UdVf5u8jb_hBNaNGgujZ4OT2xZVjD4E_I9Ll-lUYTnrT1jeQsuhD5__pf10KjKu9MKJP8adzrqkcTMTCa",
+          "places/ChIJuwJb0FFFvjsR9bsPS33GGx4/photos/AWCwydireCb9J60KYu89grZGcBRXApozaDekxlVvB4opH5LQN4aSgI491SWJSPh_xLCSh-upcTAtRoSXi1IvYcLHLgY8TVMgdbqy0KLAwa7_VZzbdmKSScFUhlth314P_5kub1V82Z_9bEHL1uzreq9IT1uRXUQBSkdUaWYhiZnmNw8YWpjjO--sd9y1Xlpa3CXywSK1tYdWW8Pz8Gq-_H_iTDizYubTDpaa4TaZoJkjSN4o0t285BHes0K_KdB8qegqWDU-hkuyWOhEwilUNWyrLTIHNtJZwNZLbqbpbDpwE05mH4Ypz3ZrvUkj_9eNx3cymgp-r_2VJz6RPrOiHq_RFHX0QXmT8f9WfPfi-uWAiKeLMGyjjrdqtRYVleDbSils8x9oOCBA3wAYiFE7-r-QX4uN0SpHpbtc4fKjnQZANC0MtQ",
+          "places/ChIJuwJb0FFFvjsR9bsPS33GGx4/photos/AWCwydjQtWFNdj-6KsuVvvhzTTxhOdnHZTuuWNKcvLQsU0iINOJOSRnnBt35RcVzZFD4h6xnp1Ya69-DcPGOOXhHsO_f2jTfYEFXgaLEDMzQjQJw44KmeKGwz92n6D_R2Im9epnHOVd5IXXLGGBjjpqYtIHGYeuSg4o8XSZCOn7ByWAUuWYJXoMBYcgNWWYrNM9sJFaQMQ93h1fzOa6ORcqQCkLWvj6XwtMHt1rAUhU1VF-58tXVaZVZ6QvSXTUBV0LXGhUu7LxSTIW6K3XzJCGrXgX2TrZ6K_e_hlfsZRNA8ODgDjt1gpvjtQ8OXc3DX-trXVzvzpk940Sp65yudipRbNEdoo20rh9YJeVzmqaj7QV3Js2BFetwBgTsAe_PzbG6jZx3RZqHTcpkalCl5cILLYgUkhrIH-dybUmOcsn8d9a3qw",
+          "places/ChIJuwJb0FFFvjsR9bsPS33GGx4/photos/AWCwydj2IERgWsz4ROP-ZxlnPQ2RwvVbymUKvH8dWWLL-zwlEdv9mRph3_BfWzGGt5BcnKho4wgyTwIXsO-OnSf_5iq-fBVhrU4ZCy1LrJjJL6oH9PQk2dZ_TdvW6wA12_KoQHGknb5m6u501JxdfRnOzAhBNIE80ud85S6IW0ks7zJFeb_XWa1iP6ogTB0Ii3fkMNHexdMAjxwSHAG04_Ufcw_LlyiPk_H0FwL_es7FF4DaESo6UAz2EdAVJuFYVfnx1gRXLwMd8z2MbX7Su2L6dye-EFqb8_hJz6xFylrYkqJ9n8u3Qok4-S3BR-Owb2hRwAXmn3Aez3pxZE8cDdRnUx9hGdIU0qgnv8wuGeMPaGVOwIfl9QW-4JzkFUYzYsouBrhD6Z-FU6bOKZXx6Un0M-jeqYHDH2vPOCF4tgom9-eIWBz1",
+          "places/ChIJuwJb0FFFvjsR9bsPS33GGx4/photos/AWCwydihQMO1ejTC3g4Az-T6-Nzv69cDSFpaHGunKXIAhQorg7HrjMcIp7aA5LRlqihn6CZ1F7XYrKTQcjBTn4t9IagZO_EhNNlUyWSHl1EdCEYJHpZVsApXXoIgs5NYVhoeTQPD8JynJ1M9YIFS23zER9yGMwaO5ZC0M9wP7-_qi_J7beQbnAZ0cr90fa944hZD5IL5Ip7DsQ9fTCKY3EiRRuE9Ps0mrDpa0BFbwMdYPimwWimfPuNPbeWZz2VH4ls1KlqbMM5HSCMUE7t6yehI8M85p9wj8tfDh7pJdDyaVdPtR_Lt2os86YpeHb9_ZkaENPbdOoiIKECmMahfpCg7_Pr7A5qSxAMKLaXNKxldFhcl0KTzpvkrId8UsA4ycSqUH0Vk5Mnv-nffMGyEfuDAaDv2V2KgYkLstBH3IH__G2EEyS0a",
+          "places/ChIJuwJb0FFFvjsR9bsPS33GGx4/photos/AWCwydhSOgCY997c9hmrUbMeKnQOUd71-XpJwF__npdudcKBIUmu6JJCDpeiSBxJXwlWDvk8oUUxDZP5ktXkCS9xOugOZ4p4YKCZ8yZzIHdzXWdpcTCcZutlvu4aUeX4NTp1-sciAbeQ5blbsdarXQXvIylsykWboo8sq4lVfZXHBz7XjfU9I7NhNWL5QmHweMfmewBvmmDk0HPCn1qzusP1sA4Gxu6JaC_m8gEZQOQlaT4VIu8PuQqCNr5_S098roKwjSssPkXTNXtLq4tGqCBv4mFNZcVQioaAqJlXmP3qrLrWMJ5QM3PN7cR5l61wy1v6DXKST_aG1Gr_Fwt7Agjpg_vFWGQtf1HLSpXeOe4DWRS-mcD8LqwHEKEQzeKHSfrQD23y3AiAV7S_QNUUzSHA3QgWMlZoOyQz18CQDZPoitSlsiNhfNq7ZIFBNe9A_8HK",
+          "places/ChIJuwJb0FFFvjsR9bsPS33GGx4/photos/AWCwydjlwAZjviz3aszm7tR5ah3HulxqqDJ2y93E6T0_wIiPKh8fw6FZhzGzg5Youg8NsgN3-sISFhhs31WevQysQrVSh_hNA3Uyx6l9ShKSN2bsMksuqcttQnSZQWmOmCNRg_zJJMJGbu1qUbgQH5VPRM968l7svO3Ogo8sdbEF9SJ-52JpZWeLkJsKcaIFzF_b57qrO4KzWDQI6f1omDp-NfnLoBiQixgR22f_j5Z8dr9nHgaWOpMP9sdb8y1NXK_jYoHvNoiVNa3lDiMeGVSqcGbIiw3mPwmy_H2xMNtkdC2oAVo0a-TawyBVROVJcJ3ub81mtqtDB0MMuwx9LVfXk33FQ3As3GgXQqN3TYvm28N8CgOrAelyvWpD3XxZsaTy8Vi9MbOI_V_jrp-8nRrOSXnN0ffzJkq5Xl9Z2LMJ0F5PYQ"
+        ],
+        "__at__": 1786616364.9637609,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Palolem Beach is one of the most beautiful and family-friendly beaches in South Goa. The long stretch of soft golden sand, calm waters, and clean surroundings make it a perfect place to relax and spend quality time with family. Kids will love playing along the wide shoreline while adults can enjoy t",
+            "author": "Travel Mark"
+          },
+          {
+            "rating": 5,
+            "text": "Beautiful beach. Lovely blue water. High waves. While boating I even saw a dolphin 🐬 best experience. The turtle rock,  butterfly beach everything was just amazing.",
+            "author": "Shiela Gracias"
+          },
+          {
+            "rating": 5,
+            "text": "Visited Palolem Beach early in the morning around 8 AM, and it was a great experience. The beach was calm, clean, and not crowded at all, which made it very peaceful. Overall, a beautiful beach to spend some quiet time and enjoy nature.",
+            "author": "Vaishnavi M"
+          },
+          {
+            "rating": 5,
+            "text": "A long beach with many friendly dogs. You will find people chilling and playing Volleyball or football there. If you park near the beach, you will have to pay Rs.50 for scooty.\n\nWould recommend walking on this beach late night. It is a good experience and you can watch night sky with shinning stars.",
+            "author": "Mr. Maru"
+          },
+          {
+            "rating": 5,
+            "text": "Palolem Beach is one of the most beautiful beaches in South Goa. Clean shores, calm waters, stunning sunsets, and a peaceful atmosphere make it a perfect place to relax and unwind. A must-visit destination for anyone exploring Goa!",
+            "author": "Yash Yadav"
+          }
+        ]
+      },
+      "beachside lunch (tbd)|goa": {
+        "place_id": "ChIJOQejFlbBvzsR3EZOTaSKqDk",
+        "name": "Tereza Beach House",
+        "address": "787, Nerul - Reis Margos Rd, Nerul, Goa 403114, India",
+        "rating": 4.3,
+        "review_count": 759,
+        "price_level": null,
+        "website": "https://terezabeachhouse.com/?utm_source=google&utm_medium=organic&utm_campaign=gmb_listing&utm_content=profile_link",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 11:30 AM – 11:15 PM",
+          "Tuesday: Closed",
+          "Wednesday: 11:30 AM – 11:15 PM",
+          "Thursday: 11:30 AM – 11:15 PM",
+          "Friday: 11:30 AM – 11:15 PM",
+          "Saturday: 11:30 AM – 11:15 PM",
+          "Sunday: 11:30 AM – 11:15 PM"
+        ],
+        "lat": 15.499931700000001,
+        "lng": 73.79251430000001,
+        "photo_refs": [
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydj4GOp3KqWhkOUYPC4fBsyQuB3-oqU4OwOl77RKoVONalDQGlPp4vbBemwjzbS1xf0rFrO0EsbrN1dON1Z3QbwXQKiufG4t5cofGHN-P6qmd04H4uMTyIKdGnQTLMAofKtIgo4iGr9p_zvJDTWEhsEBRxsG8IttoWd_PhXgbEp9Qlf90bbEKwS1oHPmyd20b72KFE5V87xbYyMIxokGCluALRMtXUgEqXNSe-mOfPe6cdoIeMsh073Tv4NG0am78Lmw3igAg_-rJ4hUPJoz2wB6QKYgsjn_xGnFAQOY51gktGH1kbdx5juu1CRj5X02ziZsji54FTXlBZManQ_NcPlmzVCDiPvWFiyeXs0zm_LGtZBgv85Tu_QQOiCvJtQUcdyHBewfjJn4hJXthHBAxxSunYa9qL1B2dfUnB53OBCFrg",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydgZX65Pdor3ZAE-Urq5FS6NzYy9VwCXa8PlKzra-19LWeLnsKp0_gdQLaWIQuOe4nzZ05jx_QF43pe_W-JW2pCh0HXOruAbgJe1U812Xb8_1tO9C--0d4OPriif2OZt0Z_84wuPtzuU5HSFEjErZqjqbaqsWKM56RA6r58TCtavAx9VBt0b7xKihQ7XOrvRRhTp_kYlh45atsBYv3eLAvbNiEUP0Jt3wyPGKB6Ky7TS3kSigHcUz_tZYLh4NHdBZifWwtBoSmUC8yVk6lfq2Zfd9ULuum2hE3AW3Hh4m5aqrE97ciVSrMpEKb5Hq4sQioGJXBqLk8k2AzTOPbNKG_0AttWl7sqhRVkW6LviCP3SaRDcqt8WVi2fRX14RUy_bqaG9fRfj2s6mXeiFx3etlGKayZcFEJFKjpi878TgcwkvGs",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydgV79TeFl7Ht9w2Qznd4tZ8bhIgvznfMSWjGXRLdrNaOaodvdUMusN9JDLvpuiwudE6Uq7lfpr93C-25YfHyUXuSa12HOw04NreU_qTq-DAh7OWT8-Ua145qPpBN7Sg0GF4mlU1Ns1zywLIthFJAYP72GakgAWdXPrfosmRgeh9sVkkhVnlzgdqHa52tRgyh07H8mhwv15NficMcC_QQyYReqtSbi_lAq4MngANDmENEdz2YBmRzuaqhKkweIQvphMJWoupiVkO_GYzhyMdN36aY-mCsMjdo5lf7e02Bazf0QGimAxtbtk99RFzaTtXY95FQ06rz7uLf2xUjEqF5BwA5Swz1TWnnCFQH6vVi6fqE7lqmmTz9igCnzoSU_DWWkb1jZ0AtWwE5JGkLMvX5lBqeWbj2ncvxJPSV_94R4i644FcBnvcUxwsPIFuAQCK",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydhYRdGRhKdrL9ewezKjbltLnEMI8-coDErV4gTV1ixaD2ZFHgWfMh7Tv9is_QMtvvKZejq0XWCt0Rr3izn7n31HpJc8APzZIn-qv6-UL_IyuqGQQ4JnfWH2sv8axHrNAbGuJHhuQCZPW8lrdDZMQ_mBZGLCc1m1DmRnpkYv1QUIY0JZdTU_F7U_qPFVUnis8cnfonTtm1pvMFBgKr_a7dO6R_l_ezQfYUCmhJErQzUqLnzvYRoQ10a2Mibunwi0j7L4m56SQjToVlsAUqyzuIvyE8BjqTyfK1WKVliu7gnieJketmkIMoqekbefM8bvWY2pDp0glSPFoUK4ztkR4wTy93bLRFTiD2IKZkxYrDV1sz8adeX7N2GUi6_IY1ZgNkyTrZG_1dmw1KpSQlE6Bb4X5sWjmJmneWxcf1mkGqaPQEAnP1KSzxKXWc7Xq-dj",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydg_rgd8t8KBmzrD_A-AgpO4SLpsFHflWkVmE0DVzRdwwcaY8g-TMGS_ZbrpM3AN4YfVVRZlGtKDexgP5mcBgca42gQXKjdMNygJaGzdXtWYR7rKm2hrg6QIKovGgr5cr6j9-UfY03X4hGobv4Ydd-WCjaoDOeahY-93CcXrlX8B9vxKCJuOYpi-xgY7UPsFdpTDulLwQIlGMRMYCK76fzYcdo1hPR9v9OJEP32_BjmfjYjJ8gZpFlXcektX5BwYhNou9W1Kg1eS3awOHMe9eICDVrti6I5PUq40-kASpISzRBtI7F44Prh75NDeISFnVI7NRZJ3-aXH1oq47NPhAJlxOOPKnB4I9SsbfBSzfirUwwl2H6OsI6Ri53zmYYblnPhyK7PuVmh4_OqX7YvuPEPfQjdAaWMhyqNmEKQP-_Lnf_LljTbKMqZSP8lBs00a",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydhZkoGY4b26ACrDmSdaF-ubw6cxhc0MUpumW9EJHyIhG07N9kJRWal8Lo8ovxO-oyn-xWx0guQsa5sdHWZGIgUxXMclASvqJHE8wQEn8aXlokDWb1B-xQ-D4FnE82BhZkQxEFUdobhX1WpV3bChMc2MQ80XQ6Zmnuc4kkcNlsdNsrk5QZ1d-SAt1NLRzOXiMpOfsBV88b1uiOpBdQCdsEF31DU3iGmEpl77F1NKF4LDKguF_YASo_ZxCaTaGX37CrWUB0N3YqUxUJ0eE9jl5KfCY4f6k0dlJrhKi2x4OIzxR6zExYxTuNVJsW2W-3Mtiqz2IEzQfvDUcDlWbJwNYNTIDZ5p9U-SsyEUKDTVK2YR3JHjK9Kn-qCFFm6Utel8K-wOG7bZze4nMagY1AJGB9vStJKse-g1ZfbKmgUowYGRA28SPTsaX1hdgecXz5g0",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydhed0uzFO6Olz07fz1E7edN-2dPHnwTU5REfCXmOcBK7gEW2n-MBWc4UMIU2CRW651DDN7l-jj2oZE48qVe5G-uGGTh1BboVe390T4Uw98SJemtCc5HG8nD7ZoSHOhJCiwomWuwNypPfD55ulRS-nzIh9c-3ZI9xjiO-ga6DQNiTJbIHwM6a3W8OESwC5Xl-11vLzwbvQbZCvSDcWFf0Iw-o62fGhRpnR1L2imTZQLVgun28HEBQMFuKs_lwTz8uJFU44-qWDK31dTsTttBUje7DeDrBsolx91BVT6F-fE2jqBXqQ_0BHuDndmUJLuk0_heZ95eWRTvssuYz1niKYIN_hRRqTDo0P8Ab7tvJt5Tz37BdPHVprGQDEZL-4IECMjw2YedjJc7Q2QbokuLf3nI3OinHaT5yxdTORFOKsI8KxdNe0i6mQOun-g9Eg",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydgSgcNmA5_fW-zYuvIegBabxV4zgylfF0TkkRSS0y-xyuiUGFz2qHrUcJoMTmMa3z6Ohw0-rflv5rIrCCC5UbVNemBn0rY-epHHgvbWgLFMTqSkR56AfyyGqaEgxK0FbaRCTizPbrHd90IrokAHITAgUnbxT-vFV-7Q3MDVY2Y14R9q62QBu9OsXrtC8QrsrqJcEN14GQX8uwk7IFpak1XkbBCPEOJh-dIoCfBgagHe74SJ8bkfHjghXjAGn8jOalxoA_gD_Agwa5EWsehXItNbPAkFQw35EQ1Fu3QBFGqY_P123AhaxxeNauJtBW-ej2p2IaiBzQpm2l--2Hk_EyBiDfcZ4VTi8r-AKyzt3ovRXn80OqZxZnQtSCzrEe2lT94Gylau6laqt9XkjuyT8HtH1tjDrCe70o_H6unFYz7zgR_d",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydidyYH-_xBe0gPRUpYBB2E2tpdyl5ycZ89sGJfJUWBljroGOYsCnAxrxnrvIJoCgpsp2bcgdkNr_VYejefKrzHM29GXPfZn_cNn1BSA6feW1-UjTBezQOCkpTCclYa2IvfW1YYcSxLwgy2hAAVfEQPcOBbmrH7OpJ-uM03_NrvKXOAYhxlovxLI00TeCfMvYUzP0PwlzMb-7pQCH8Vsfh3ZYa7vnlD43-MetWn8jmUXPKP-H-54ST5efa4QzmA500gq2_ZeIYFbZIsxNiVAi9DdZQv7X7HBVaXJNQi3ACe4EiVCkMczSFkBdi89NYstxPO1nbhGeEqmfZ1-zVlec6hn4HNqr6qv9Y3WLS3cPZPr1XqrU8Mb2ht7P60mtlqfZFdBY8XRIMNc0IvZrRQhh7krklmQRBmRRgy31jn_iFsMgRtzAyk50N0Se2UxWg",
+          "places/ChIJOQejFlbBvzsR3EZOTaSKqDk/photos/AWCwydhzy_0PD9BFf8gWWRzCckoYTALCVTKDtirSaKX8RQzDtL6Xou5WkNRlugHnPXpwzEyO1U-LHwEpK3k_L35RmwmIemDULmZYvtyzS5c5ECWeXkveKRxG7wa1NNm7c8dlA6VzKvgq80GKtwp7vEu3-MLj3aE0yO82MepIB27zotMffDi7kDGJgFBiAF_HVAzo8jyhYtGu2DVFkBfDdtTvzK8-mUSLOPsaT1OXp6fi_VC6BFPQAz24HYbS3ec1IjQ-jts0fDEGibwPlrmkJZ6HJsoyXkZACMYARw44Ux1nphO-ezKrvvtdCOnondUzOfupI1pLxde1JmV3aLDZdwb1VrQ5u4uPF6lO3r8uL_D1wvh3rwFuyvyEmcvWt3XFb0630-3dNG-Qm6-xaWqWpQlfBfzgLqXaibpTKiHXSWpa1eE"
+        ],
+        "__at__": 1786801229.741029,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A wonderful overall experience - the kind of place that gets everything right.\n\nThe food is superb, and if you order nothing else, make sure the Grilled Vegetable Focaccia Sandwich is on your table. It genuinely stood out above everything, and that's saying something given how good the rest of the m",
+            "author": "Mukund Rathi"
+          },
+          {
+            "rating": 5,
+            "text": "I recently visited this lovely beachside cafe and I simply had to leave a review. The experience was incredible from start to finish!\nIf you’re looking for a spot that perfectly blends delicious food with a relaxing atmosphere, this is it. The vibe here is exactly what you want from a beach cafe—chi",
+            "author": "syed mohsin"
+          },
+          {
+            "rating": 4,
+            "text": "Worth it for the vibe, not the drinks\n\nVibe:\nQuaint, calm, and right by the water. Sunset here hits beautifully, with a mix of table seating and relaxed beach chairs that open straight onto the sand.\n\nOrder this: Picante - simple, well-balanced, and the safer bet on the menu.\n\nSkip:\nGrilled Pineappl",
+            "author": "Worth It or Not"
+          },
+          {
+            "rating": 5,
+            "text": "Had visited on last minute for birthday celebration on 24 December. They arranged a cute pumpkin 🎃 cake with creativity. The place has good atmosphere a beach in front and beach side candel light dinner 🍽 They can improve their service time but taste and ambiance is quality 👌",
+            "author": "Ronson Lobo"
+          },
+          {
+            "rating": 5,
+            "text": "Absolutely loved this beachside gem in Goa! The vibe is perfect — sea breeze and sunset views that make you want to stay for hours. Both veg and non-veg options are top-notch, which is rare to find done so well together.\n\nTheir Avocado Sweet Potato Bites are a must-try — easily the star of the menu!",
+            "author": "Yash"
+          }
+        ]
+      },
+      "anjuna beach|goa": {
+        "place_id": "ChIJmQGrEY_pvzsRof_MwgLMd9c",
+        "name": "Anjuna Beach",
+        "address": "Anjuna Beach, Anjuna, Goa 403509, India",
+        "rating": 4.4,
+        "review_count": 21771,
+        "price_level": null,
+        "website": "http://joebanana.net/",
+        "editorial_summary": "Popular tourist beach providing activities such as parasailing, jet ski & banana boat rentals.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 15.573349700000001,
+        "lng": 73.74097809999999,
+        "photo_refs": [
+          "places/ChIJmQGrEY_pvzsRof_MwgLMd9c/photos/AWCwydjAQjfxrQXajNyq-WD3YutncL_RYD2AyKXno-HYQtHSqALJ_20C1weuuyD50QT5tu_MznkLPwdIbBW8M90SLKp6btbFLtadCismp7yZOPi3AHT4RNatMvuLqosWSFMkbyWb5J6YXf_4Z40Rgej9mgB_wd9hZblzi9uHz8mmKIDBCwR90kY7aJFJZRLMOGbx-KdBNoMFH8NHS3hA_20Dog-cbWVY7jeM4za5cwU7Dz5pHdqplvdjBNmYk5GzACa0GEOb9lEwtvGhv8Fgkk9LrI4euKR4mQthd5EDbdr2W6e78n51zoadp3nH0IxBO-HmAWglrSPuMySQK7TLLKHXB7RIyVlLdFMc6CQ0Cm5JyH_qWxhDeADcZUUlIjsYPDv09CwKz80mjDCQtiAnXs7irx_bruObQqYK7G0m0Q6jeONTvQ",
+          "places/ChIJmQGrEY_pvzsRof_MwgLMd9c/photos/AWCwydjC5Uxv-pPI-UYegfsEqC6seFuMVJcyl3MNZ0Po1WHQI49yGA4157cbGyfF9DpyzMnIg5yb18Z-tetHeUjhqSXLdsrGaukgkuJeJ2yOO_fdikLgsatZcuiEg9YjC3Wfu9-qCEetBI6Y60loGLVnzOWJmDDkwj7RO3igFpmRBpPKvN1PQ39zLWYzECKQ-ern8-YNbuYwm_-7xaAZLWrLSGNatLlDN9Wvs-BCv5UarAi6NqJ_lvyzzxrTLOgJbjZ4pIYz9vy4CXj5zu9MERfZT700GLTaUfWayA9bj-JHo1uGTRi-w8nyl-HzPR4_111I6QbE9RDJeJzTQR-6ufdW4-WDKl30CFwaVIYH-gMMlGDOsGPg-j7k2yD3c3ObK0MsJutmyn8VDX5Bu4CNI6D0ijGRq5AgmUZBhcvkQ-6BdkU",
+          "places/ChIJmQGrEY_pvzsRof_MwgLMd9c/photos/AWCwydipkorZ6qrqIS2CyaT2wC51paXcm_o0193mreCUC4kCH_phl3SVBqbeQBgBZAEdJhbIS3JkylLjNwVkuSqIlLS-_R_v3eJvmBtRf-EbwtnhMX6SpzRRBqKJSHBi4yZl9xBKHd86icM2rjSCOeDX3dlwjY_irZAGhX2Br6K-ligphXG4nnw9zmDkMZQ3RSAkIxANjPeW7Kq-4fFVmz0sM8IIKxCeJ6Ew8XQnq3gGnT7evQQxpSA6tZKwM39j4O4_a3W9X83Hm6lWr5jmaDf6VluFw_ZkwJVWjyfIwCZoAPuhZH4AKXEIGvXayYLPyJhF5qUv9m3QQHsqL8CgwhcIbhUdt-MeWGwvQ2MwW17On_ToHNAvlToXo6OgswPQkPUF7PgJzPprdcgfBwdJ2ExjWSbZbRvdfmLan_KgzvL_ms8",
+          "places/ChIJmQGrEY_pvzsRof_MwgLMd9c/photos/AWCwydjjZZBU3AwolQ9RpOncr5pxOaRsHW6knQS_FNMkQ68YAiZmanpL7gpTNqAnimLdEruPqGoIwRwqi0-RzcLqOcR0hrPpGf1t5e0DQf_uR7O3OXdEEjvRM2Mns4Okx7EWcc517lhlt5kZ4C0DhSvE5LFtrpEpRPqgCyejTDTjxX24CzVfKNyvUBL9yN5an5MARuJD9mJ4fd9Ji_yIN6ZJFFbvhF3KUyng1CuKukLVcz4pKZSuzhq1TAoLJQL7_IbvjI62CcM67LkDklF88DS5qpPyHjkeeLJp1Ij-FHkTItqMvgy4wPcUDPXc_g02r1097M0DrUDEfZapuEgkaD6H__hL9vm4X_8ni4ZY6fAQXacQ8bHJUp0Ld-VFEp5zW2KMcHAwFc0xaA4iTxUj4nDQgkMkECTkIZfMh10zaYnKkUzVrw",
+          "places/ChIJmQGrEY_pvzsRof_MwgLMd9c/photos/AWCwydjdh9r-70GFbxKrl-teIrdieFHQaFon36yrwnWVDB8qVd71G7KXoMCaxKKdsrAAABWuOT2WKslEnUSwMBjqu4SPuS06BoVB3yF8jQrBjeoIYMBuxfX60Mn_z2bn7h-wi6WOAjuGwGUgjuL3HYSnknassmR294rGgpHsGj9c-bChqRYXKtJffYMfD7I177KHKitxeEajrpo6dkx5XeiOxOI0_4ql1Bqco1MfU2pjmplUXrlV1gnaQ7EFVAiXhKEQhaznHELxL1vrQAR1NFo7N1bKcME-mV-K1CwxRwzQjydUjp_YTCuPurqKvKoh2XfpSY_EPzyJJU6caWuPEZjLQ3bFMYzAqaWCCcC9M1K-8OO5d1gYGQIrjvoiyXaFrF8aA8rf4HKSPkyMZw7HLbc-Nexjl7rJKOgMu4CRWBZjnXxBcQ",
+          "places/ChIJmQGrEY_pvzsRof_MwgLMd9c/photos/AWCwydhjj4oWgw37QeB7EDC5yna19tgPKYIGKoHmaG3krXchg3cnh5TgCMmYvFCuaNZoApY7HXpFptd-rb4oo9sjIs7ztOLHhcGIhS3Kyb6MxKCO5P8ZIaIVUbktIPRksmOA9wfCSyXwYPJiH0qlQWitPY9WfMAIfPuI0NqDxxOyy8JFz-EtYzI-KnYtjlWgBLMylTNuI7uMA4z8kqtGklgLzyx2GC2_gPb9TEVU7nVPLRxivL0DBLzmfF7McynUwJmqN9y1Fl90lXDrLWVPQMkmRACdvrhd2urRTmlOveMl7lva0I7Z0avx7LKfL8IZNiT51pOqcLw27tGsu8xoiRhXL7vPOBH9uP_akVTMbtcGGl6kjkXTEeh78hfYyAExhXYQq0f9O10KsQgskQto1HWSIOiZ8ygmzZbMLa3IWFtQBNWIl-zT",
+          "places/ChIJmQGrEY_pvzsRof_MwgLMd9c/photos/AWCwydizKNoyzG2MMCmxJz5iYFOCVSD63wN8j0eu9oxN3Es53K0-1VJKEWYg-HHRGzZn9hrQebKq0mrhFmNq4i3CaJmyVHxyCXuFE6mY7IgY0dpRZH23CfjWsolEYC6n_Ll-MZ0-4AGuWDY6UzhF58iNmUAQ5Lda8U6PX8NmNH_NhHm7e2TxutsjbxpjNLV-I6rWRtsZgB5TT2uIUdt5nxU4aCMubbkcCgh_fcedo_nH-d960-JIuk5nn0sy8QrtU8cg-K_gSjaiHI8r56WYUdjIr-5g2idixrn45FDljWk4gOSeZWrh8AqQ7raRcpaBqrUUxoibeJMYtVfd4OHNpb1qEDj69Qns46oxlQ2hgd5GgbCJAm3-Uy86MFBbVjY4lDbav8GTFZGgo4jhxTAicb7IY9yxvIjRaNigMGWeX_qfarsEDg",
+          "places/ChIJmQGrEY_pvzsRof_MwgLMd9c/photos/AWCwydi17mnwxb_XlkB7hL1Rxq_mq29BqacjAwSPWUDMrj3rPTuSM1g84NCsXLcflaptlokRyvX-bKus-KxwDdg1ylbhaG3Qp21K-8TDijFugrzJr3w7fac82Ah-gEL_I2bx1H2X79sRmcRdbBiWoJxbZQ81u9Z7qVwcggyqJeT1CEYoS-5SjTO5H9H1WFnj1QHQwbsu37exVaA9nolppLciB1lzAm6RJWUNjtDPMKPPVzNQ0Fb10R1sJs0gK_b5tAR2n7aZmzSfz5C1GVLGnq3dDy7pXKhAWr1vaTWafnYEzEq4ATbewvPyrjJsV1OgbJUCnCUeSJzHzBWVqnV8uPrmpeCj60JgKngWBKk6topoLQirf34gFOuPVlx3LA0pPR6RAzSAtmac9gSROfbLI-_tR8TbxMijvfEzIgUkZyZsYYoAHJ1D",
+          "places/ChIJmQGrEY_pvzsRof_MwgLMd9c/photos/AWCwydjrODaRcTQOHlx2g5dlF5tTq3FiiWADIDdFMspYWlhcMbdkWKo6rLQp17pVKGaCMgk6X57_ztCf9OqsahjmhVEqIYkiGgo6wmUgOV6ynK6se7Nqe4bNOtqxH884JUQ6IU_snwz05lHWJyFVDpJo3tZXnNmb6cPnUDMopWkXk2k7Qn0iVThGOQVKKyWg-ujUouaDSZ3oS2ORDmQsFmRzLg-X4jz-H6sXR-OrcWSryGspwqhXzYTf5W8WLgDy6QpqfnJtEyOU2V_9VnpjEQxTfR_HMMKs_f3tWNTVGhMgVq271byB2bOD-rfYbpylXLyvjHrFcXVPvPKDLwXDFtkHfqzyN8vnBpt6ts6QGAHw0_c_-lLQhYDztDPsdRGeLPWnHuSv3pIowOohlJOfIMujWcUIteOJljcMvYySTeC8ykXpDK5-75CRWlTW-VmHplwr",
+          "places/ChIJmQGrEY_pvzsRof_MwgLMd9c/photos/AWCwydj9a2Z6ddXF6ho7Vdv2WTKPj81gnQJkUazWatGP6m7Hdi_ZEhREgC4si0Nt_rIb9Vr8dZNyle15LpX-HFyxFf1HqoxdCfpXBp75EHliazHcc6LkxtnU3KOWfe15YpxiCy4MKIfXNsvZPe_3EjB3gD2_S-4eaknEBHtXiojRzN7jigeHYzRUj3B-wu_CE3GLkWo8je1kLpJwy-2Qt88k8ew8FctSWFy_82PezBzAOjvhtZhaV1LTZAjOz1DCLNQ8lU8bTkCjrUOaB_6vGc-Di6Z8nNQkqI6XeGftTWhkfSMZ125Jrpf6B5S-1kWdmNDdkvh_qyD-I0BJsVKwIvL0HtbD8S7yVVJ-p1iZ6HUV5VkwZb1OGNfwRrHXhhrZsYZdIjFbjXuxhCmPX3YXfEruH0SYK85Gfy2atlrggS7P8ottw9z_"
+        ],
+        "__at__": 1786801230.0435998,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "I visited Anjuna Beach during the rainy season, and it was a completely different experience from what I had expected. Usually, Anjuna is one of the most happening beaches in Goa, filled with tourists and activities. But during my visit, it was much less crowded, which made it even more peaceful and",
+            "author": "Rachita C"
+          },
+          {
+            "rating": 5,
+            "text": "Anjuna Beach in North Goa is a lively coastal spot known for its iconic rocky outlines, and the famous Wednesday flea market, but we don't attend the flea market because we went there in a week day.\n\nWe went there on a scuty, the scenic view of the road was so beautiful.\n\nPlace is not very crowded a",
+            "author": "Partha S Mondal"
+          },
+          {
+            "rating": 4,
+            "text": "Great beach with a lively vibe and beautiful sunset views. The atmosphere was fun, and there were plenty of cafes and activities nearby. It can get a bit crowded, but overall it’s a wonderful place to relax and enjoy the beach experience.",
+            "author": "Explorer"
+          },
+          {
+            "rating": 5,
+            "text": "Anjuna Beach has amazing vibes, beautiful sunsets, and perfect spots for photos 📸🔥.\n\nClean, lively, and a must-visit place in Goa 💙",
+            "author": "Kishor Gadge"
+          },
+          {
+            "rating": 4,
+            "text": "Anjuna Beach – Skip the Flea Market, Enjoy the Sunset Instead*\n\nWe actually went to Anjuna only for the famous Wednesday Flea Market, but the beach ended up being the real highlight.\n\n*1. Good spot for evening* – Less chaotic than Baga/Calangute. The crowd thins out by 5 PM and it gets really peacef",
+            "author": "Dinesh Kumar Arumugam"
+          }
+        ]
+      },
+      "brunch (tbd)|goa": {
+        "place_id": "ChIJhV0szmrrvzsRSKbWPlFUqjI",
+        "name": "The Tanjore Tiffin Room, Goa",
+        "address": "1111, Road, near Orchard Stores, near Corporation Bank, Mazal Waddo, Anjuna, Arpora, Goa 403509, India",
+        "rating": 4.5,
+        "review_count": 773,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 12:00 PM – 12:00 AM",
+          "Tuesday: 12:00 PM – 12:00 AM",
+          "Wednesday: 12:00 PM – 12:00 AM",
+          "Thursday: 12:00 PM – 12:00 AM",
+          "Friday: 12:00 PM – 12:00 AM",
+          "Saturday: 12:00 PM – 12:00 AM",
+          "Sunday: 12:00 PM – 12:00 AM"
+        ],
+        "lat": 15.581519599999998,
+        "lng": 73.7531207,
+        "photo_refs": [
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydhCwaPzNgHk47mydqZ72j_zQHDQp8qr8_10nC3dwz2I_sHtxdsZtcQKXiMF_6mY3buo8_oFlKkf_WnX7Cp65Q50y7rQryqaXbg0QCkrm7FMAH2fu4ezetr1wGxV9i5WVnHomLPCHlPr1SALVl2Fs674yECHzHXb5kVChy6MD-JTvsf-VvvwlG5Y63X7MaDX1qbD3ChUAfxHy0eq1a9_f35hueCT4f9-prQyIUDI-LKMSFy4a123UHv_Na_jKCGz7-kh81uT8zyTc59IO2ZuV0G5-HRoL4BycphaV_Sp6td3KzBvIShGyOMFUKSPVVXZl-4BF9KN-KQ5DoXlHBgtskKrqrMZ3v3WptD6aeR07asGwiH7Jm9saQOAFt3zqnl1gPr5akKjFJTgflECvmZUqBKgjS9twASJPVagEG5dCceTQw",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydgSDSQfrZEiuMOgcpELRma32M80nyUf8trMHKfDKpZFZtjaqpP-Mm2Zl5sEZoPeLoBpAKdBqJ0K6CksgDYw6Xb-DmcwoUHTFN7S0O0MFi6rgRmVWrOTrogQjct9wNEXYY2tJ1cOwO_FCpazCC4vjPNGkXVIpwDpXv_jS5lZfGEmeHgEh5pNHF8V9d8SBnVaHfzPx8IirVwuI5DKTRJY_2gRg5leUYNGD-lWqoeq-At4-4JbofFQ8TPdh_RIcInf65dFI_CJx7UuBgzwIQ4OMr8drcGQhOkCB074kWMVYy5URLi-cdLumXCo-6RuPu3_G50CtSioZ5FvqoSBMNz8jbz887OwDf_UiBEJHEnPIyQeL9In3mDfLM8oAdc_q766RRmfuixVpxG1MsmiUt5Jvlno538Tz-BEMl4d4fXJZEzPEq4",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydgqTBEk9zuCaJiUmmwTiL0dQ1w2eaYvEh80SerfCdd_ThsXFJ6GnjzRLPNEr8YyMdsDFbkjGOGbhhIseBXXIWd0RqNwLbtiNak9Rkop94boz1xKy1--C8cjSnV1OA8QGtZR2k1zqZ_nSso2a2s18CQqK3FHSMJcK77HYk0mW1XaEzVDb5RmW7vKtPzB0etk7Y0QSFuY5h4psOdPN04ZkZTGxbCODtTFK4ejKUtMCwhoCBb_5oEWgzsAFWVtw0Wtz7x107hE4JUb-elHeBpX_EFaJrFvgAcTTKGlqRVlMrO5H4-mmku04mC58Jaefr4aTFsMD6QF_B89_p8JTANhS_SG4BKGFsrjiutHvaYwph-AExQ-u_UthZ64cWkGUNKRVmCo9t7iHgvTXIAh1-ut_ZI7g-1znYvMEB05oOsaAU-eEVIgpAa9vSidhu9vVTwX",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydhHEERasowBqk19eyxkFJ5QWIva1hpvvoHNsJrSt6QdBcnwAsI7UEjBhjY6Lk7ApYomCcruRpgTH9_yjp4UvYi1f99106mPHf8IBKDordpRPgkffAloHvlBvwHwx2O-INTRoJ7icw2cU_WIpwo81q_coA8-8G5Hqf6jgsICeQpS-P0EkF-VHlrEdVScH4DiSupKVCSCgjT5ZPwLBsYxO98QWx0OfGa-UgAA_iDRTlVge_I7TuSp8e2U4zVVWre_3P3L1tc_1oW89B8RNUKKka1ZPfdX_fWncK-WzHm2TgdpNrB1CRF_Ay_jQh7khlkJwODMT6eH2Z0Vuy086pAUbInMV4v0mJiiSQocDd4i48hXVr4EtLSCmJjVdTbqjohchv_JSw6nw1-A4WI8aoIp1qAzSxahPuydhcvrpg-8L4uROkCIRG2_C38M6R7zWSEA",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydhGu9505i8rsWkKMwNypgpGbDHr-6a-u2sJsZDgQI0j6ypIJjONgW9L21q2RYEvI4RDru-1GhnxfUncVDXUKdzr-tAX5PQtp44AJOP_BT-tfX-34kDfdX_4geQeBB9rhlwzIX3tZUUdQfySdALEemyCIbtyXxkhe4fosFYl6fEdtmbWfF_VasWp7znuYJL_ScmSBfZiZSd4pVW6pXB5gTZtigkA0orUEJ2dLG_-qLx9K-aboyP8QgxuRJuWspIKStUKSNQyOCeOPkIBP_kVsxV-UADxywpPAUEhuttDGeOOOmISrE2bKQF4HBdz03dm2yqu6VASFITxRmMo8vBiTr7hVkz4aHuHLVPpttwCdlI_t3ufX-GgrmwWhTMiIx1N9zFED3BCW_KtABFrIxhJb0sePClxv5HFOuvk7Vj14G5-7djWALcpuz8NveSPAkYD",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydiwgJnDnagoxPyDn_MHKFCkPfKYZs1N7PF0SA0dYpXqNwdVNhasVLhv_oKtloyahVZYwmp--ik3nmVjVXcjnnU-uwnDKvwaF2CGVPwyiBzbxwRq617qbQxrkUiQYt4mRdCOpkAE4X0wUu0hmkMTzKpt4mDpPJjezyNVddg-mh_U81n4j_M8hNUuGfyKYhC0S6DmB7CPUV68QWRBaCqkgGqa2Y-ZxB2uZW60ErOOB_P2dZyPcXQPgJ4HLCKEBv_eOThRD4c22iSsze-vrGiGRu9YGx1O9WCMfN6XL2L7NyTH8b65HKLtG-EGSkzfxb9Gl0IYphArz8ubA7js57Yo3WTHIxYet2fYGjqKDv-bz2VYNGwMgJM1CzcZNC5SijLthE35F_CUZLMEAi35-EQfS-saayKvMHA1JeVylWe659kRPhxY2mAcExaG7af3Vt2y",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydgjQaKnGwKX5bdJ8pqzWw4Tdl6-kuD4aCypvw_6TgKZcdcxo1Xt1rlEXSI2NBPOS1k_XK_ILVG3z7iBoxsQT8Vw1-p9pCGInqmbp3w2nuSmyGVfxglq166nuADDp_1JMRG6zXTdMbRtl7ylAMp3-OxXguMELnoinUV13DPTicX1ru7QuaBRlwuvOrkyQOQPPItBTYh_kEtUjBwDRcFeOKhMwaHg6B_BY2JoHnmHGD-kfdXI3FI-g7-5rbsXjGFX_2bJKcwZLbRhgPfe07GWSwy8NYV6ETbPBSw6WODBjGb9H3TBQLAMoQZJ_ymoD6pslz8ozq3m0sXIKNn0e3gwoanxaterj19oXnqw1jLD5wrxqo4qAwnWZsgNqMiszik9-KKII3aBM-71XX0av5mriMTsnlVX2i3QH-3EHWr-VEk7jvGDoMk6MgFt-fb16A",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydguutymvdriHKhkHNvhMxCTtg2NKnSr0aRnl2C2xMnVdBVcLXvYUBPtXa38FHUUMwXOzWmqTeRAPVQ4npI2nea5F2U5PkTqjRMgxuB9aYSJClaoZSS9mTLAw_HF57kpivPohAusGrA3X8x1hSWNeCwgPewu_D-4DZh-aR9m1qbUGLYkT_OAQrWBNQQDbTYUwP8M7SBhnF3wK-uP8c5PI12bkKlf2gCAETH25vaWHc63BQNeaBD-mTUHhi8kZyAPborNalFPU9uNSIvVJQVR5S7NWF29cOatVscMqdk0xFovehDctKi1n6dyTJcwKelQHPHClZRO93Q0JQGvkDdRU9PV2YXWdSauuBApQT-DeaHfbUjGOdQIxobQy0z6Deamx0_91AEv2P8ckEg56bv1MVCimvAHVm6f7aKiv5TLahsDmapfvYE3deRimtYSMg",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydgwalzQFslwfXjnMNpwhAk3qwYc_yNQWGjcBhW41Ej7mE1EsvQ07ZDDfoNdPoIi51LQis3Zgch5YnE912c5b4ZJkqsKq1lvHAvStLa3uzOe6Z-cagWC-pioVi-CaYiuwLYSb5Z6hYpsy10mo7RyM53s2NwCoq4Bfc7YkZyUG5Ref0xi77meBN7MHB5gLyDT7LEJi2ZD2ZxogbrwLw3vQM0e_8-SzF4VOOS-9Ht0YXL9VMH7h2hXxQC_NfGKikJ38k2e8N79rTkOHe1asxk-YYT7Pf8DU28qIn9ZQHRlhmhhxrLo_BhM2IXEBFopopOQAYbt15LO_qO9v38v00dbmdwdIX1_UkaTeejUQzhySmPt2zFc9c3XuyOhoHSsY6R0uOGk-3_QfGCJBAcJi9z_LxzorUmqtrfAhb8DngtwfXdnX1poHN-fNBzTO6HYyksY",
+          "places/ChIJhV0szmrrvzsRSKbWPlFUqjI/photos/AWCwydhc8pT7L0gS7nNKuO3w4cCije6_0dmQQScgTvH4Qaz14BsdK1ImMvADlBHFQmeRGZbWOAEPwT5WP7bEOWzmavxTwc1ho9EO87fN1kpgBGz0iUDFGMJU7Ze1dz4kskmx_IA8vnLm0xooxIL52HVv6rClMjGSfuKO9UEprT2wCyQDKSXY228pRcO1Ae6C2ZDQTXf2GIXv_0qQjgPfcZgVP-5BjTBrDSFWXQBq5BBlQnFKnj510wwcbHJrYdxUXGXUxLlmIhbezkE42kAxHNtzPsG39SNj45sMspOGOD7nH9r8ydlhgGN2anExnHZwIbQnnVjJ3Y0nXdg5tFwDImfNh__nZ42ldSZfD7dY1j674pjt0-rUrJ4_XmbGrnMiZWExjmjsahTYq7SvMnDlsMba2L8iNG7qAVk-Z3UqprcEBZyqOb2Bl8OdNuSZkgQmEhTw"
+        ],
+        "__at__": 1786801230.5790021,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "A paradise for every South Indian food lover! The food was absolutely mind-blowing and hit all the right spots. As someone who loves South Indian cuisine, I was beyond satisfied with everything they had to offer.\n\nThe cocktails are a little on the expensive side, which is probably the only downside,",
+            "author": "Harshitha Siyal"
+          },
+          {
+            "rating": 5,
+            "text": "We went to Tanjore Tiffin for brunch and it completely lived up to the hype. The vibe, the ambience, every little detail of the place felt warm and inviting.\n\nThe food here is truly an experience. Before the main course, they serve tasting samples of the curries and rice so you can pick your favouri",
+            "author": "Pankhurie Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "Tanjore Tiffin Room completely changed how I look at South Indian food, especially after four years of heavy, sharp spices in Hyderabad. Here, the curries have a deep, rich body, and every dish feels like it was made with real heart. The whole place feels warm and welcoming, from the beautiful vibe ",
+            "author": "Shreshth Vats"
+          },
+          {
+            "rating": 5,
+            "text": "We had a great experience at Tanjore Tiffin Room. The food was fantastic, full of flavor, and beautifully prepared. A special mention goes to our server, Soniya, who was incredibly helpful and accommodating in customizing several dishes to suit our vegan dietary requirements. She was attentive, frie",
+            "author": "Sassy Sonal"
+          },
+          {
+            "rating": 5,
+            "text": "Tanjore Kitchen is a wonderful place for anyone who appreciates authentic South Indian cuisine. From the moment we walked in, we were welcomed with warm hospitality and a pleasant atmosphere that made the dining experience even more enjoyable.\n\nThe food was absolutely outstanding, with every dish sh",
+            "author": "Saiel Kumarjuvekar"
+          }
+        ]
+      },
+      "hotel (tbd)|goa": {
+        "place_id": "ChIJ53KYH8nrvzsRtWmk8og8o8s",
+        "name": "Hacienda De Bastora, Goa, amã Stays & Trails",
+        "address": "House No. 29/29C, 29/30C & 29/31C, Survey No. 133/1, D & 133/1-B, Xell Bastora Rd, Xell, Balbot, Bastora, Goa 403507, India",
+        "rating": 4.8,
+        "review_count": 28,
+        "price_level": null,
+        "website": "https://www.amastaysandtrails.com/en-in/hacienda-de-bastora-goa/?utm_source=Organic&utm_medium=GMB_Local",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 15.577680700000002,
+        "lng": 73.81502499999999,
+        "photo_refs": [
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydjXHOpArjiebZv7Wbcq9T8SM1yIXMnNcB1awJqW9X7ZO_U7ZHCbEmRfRKvgnwFwhEXQOmRjn3JyepxQCNmKwxLChtfGSQr5sPsnto3MXf_qRYx8Y-2cHfwoyxk4z0ASZt4KEHgDWVoDxc5fM5Du1vH_2vJVR6W3HcV0-hma0w6fhj5y_vdv_x6PXTVPWn2VBbhqRDNug-XcwLg6mYK-xY4GnadTod5GB8hR2yrchsa-N6YDeM_oflnTAh-voSIBOX_-3za38OL_nGqv4NEVyNhn_msryAg2Qgrp6cW8aFIEvoWqiSnfkeeoD8k1_325wghJUTTR7RFDeQWWP08BFd5Ak90jE_gBz8UizcexoeDAtFGEIgYkBwdwvr0UpUnqO8l7JfgxDf61nlwwz3uChwSafFgdYlE4UAfVY-Qz3qybrg",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydjc8Sr4-0LL8k8QSjmoWoRAoOhTJaI-AtuC88LQ_KIT4rmmmL_KDaq_Clp_KQ-VEz2Y6sNTk9K81CEsCfknNn8kSGRCQs-3DnW78LmwKTowxSLNo7tmVG50fpA72jUB6WWL_TO_ceff2FqQmauRqcvdFEozwvYHyv48M2n_9h98GrJAxyfo42V_I7MJvgfzAs8r53wyLLd9nKvSUcfwXjfNW-tMxe2ibZRNvgGjmBbTRCn0FY5OlogPptgyuraMEfh__u9fjoLmks6xI-ZyRWrfVHBd4vyytbfeRRHBlFPbMWIL36BmvVJSw7bmLk6jlBRVfd0MyI_UELIgiF7iKpAaGQ3rRJk3GDktP4qya4OA2vkzUiZIfAnnJDwlBieL94VnYSTdTwrRkOxXxP30afiOODN98bLflxNSTaWQYGCx71jZ",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwyditvBIAbpqT_t5wOYsWiKQgCL5iiuJBGQ6rh7iRGJmM-Y9ydiuqVhxRImPxIzgjNnPzUEZGRbpFmrM65gvCL7Q-detJutKE1bXu8xzlj7V6WkRCZimwcbRYe_OLZc2KmRH2eJJ8jDoEJGpnMYcpBJS32EeHTPWwU4zBlk0b5ziNw5TwkkBfzRfIBG1YEkXWWBYs43-ZTAs_OHP6aP2jGg3RVNAMzaUt7Em9cV4AELUld37vYno_IdXYKs_FJmyye0LBsPPE_IieDsEBx1aL1nkLhjOcGNFgxaKJmqtaeCRwlOJarXye6ikmhpdItO5c-lx2GxWucrFafDI2s-F9PHQYtBy-CxU2jpmGT9HuM0N6QNKeOhKqZepRG0-Tw-lCMsiVqHBU3Y424pqSynDn6K1Jk2fnnSIzJp1fqZ6Q0T5wSg",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydga3pRGEB1QPcUvCD5hDtyWTDS9uo2zA4Azh6cVQhsm4HkaNlMzGi6BZMnaAKi8K44A8Jikq1Dx6h0A_UayWeWncsx5NFl9COxeToGocDfMFzWrqWFFBeKPuCqoRf6V9I2DnV_TYScedXriHymdGG5iUnA1F3DpD70uinfMlGirvg_A5sE7TTbznG3fw5cVsVLPlaI10iK0DLnL2WyUQNdOHlX3KydAmTTWFdpQ5aPJzTubAol8yPyo4nCWCSJ7Y34oC9EhQF-tnQZewuxew1yKoDTUg8sbIutnF00Opw2ii3m46vkUJqTyehWCJ2EWvmJH_hfznvhaQ8KKsiJWstj2csvcRf9P6IjmJyIbqFdo1m3NpCrP_Py1w-WNLBuJiujtIkXZSIJ_W86yzBY0CiBW2_zJ_DzE3jrdfosYedkMHg",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydgdpMcZ15UeNJud2slJSBeaZj-N-08dDYL5HKc44H12Mg37AskKBvtwI8CirswTW7V6yyRftIHjhJudJ356KDTPO6TBOTC_LInrk0HvNn9WO7dgQMvA_X6ivyCyuvXmNVyW7SrGwby5kUlyRJ_WYuR6HsX-1TJrKVZ6ZY3sG9wi-sCJxBaxIvAvoyVwPyJWUt6dO-xgLCNgNoEq2Wtexb5B873BO2CFgRtjlo8lKSNdg9MTQKrOGhlTWLT-LWW8UmKlVi3oxvVIMX86w9JsnrDV-5EY8p3CvEV2wHwUYvc-e11L_Lf0mSeBZxhMwXRmRFPrj_rM9AWhodydDCQNm3k8bLDIR3c9gLU2BU9mQPjcqV2c8MkPR7l4dtI8Yfxs93FS7K7-N2fHHd1jq31IkDsvzy7UVo_XnVXu8ynqPLXHEpBE",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydg98LhzOfcronbdnc0Jhwi22npYWMya3kWbMzo8CXEsp6JuBWHfn3rNXnD49NvOabfkcS9Y3x1VUlQH3i8_FnMseeonKW2m-6ncMcKt0-hO4LssQvfA4Mi1_WFyvmVrULFfA9kJNklySdBRChpQK2Hqf2592Fcoty2S3SArGU71UsceLOVOMrolsWyfwgApemrAuLnmCp68gSZtp_Ed1oP53ovWScEdrAbuVz9Trg-AlQmW0FfElEsqQqp1KVFL0NwfyN4sJttXJ-7Mv3kIJvi4QKivZFTqrA2BCXybp5D47Cvy0sNweMLOfe1B6hR_k6woqnclCyBRXSDV81rWVAR5Xa8qm3ZAPH_sE7IDxyajQgXfWEKayI4-m5z1pxRa7_8j_Xqs5BGfc0mM9d9ZftyZ1uNeCdjaOTTackUzvUAdjA",
+          "places/ChIJ53KYH8nrvzsRtWmk8og8o8s/photos/AWCwydglT1dB020onoB-x0kJ2Iudaw9fMIiCwx6lbNlngS6bUFCjmBpHIzccd774_udNzr6unX4WO5k-c2hlVRna50LviOfxKZ8IWmJ4_7NFnBX3qt3Pak3EUIp2RN18k4wYeifpKW-wuIWyW-gjpc6YqfKRL7p39vGRbkxamXSlVpt82NJFDBv0x-7OEj5vAWDozO8O6Eskri1hnJz0TGKXfLeDmWdxc3IJq6FMdmHgZZVoyxCfLyLAV-qQ6yaGtCbtXopW7Z7orLAZSMxwjm5DcFJ2lqFZCauXXlUVYE8sJF1iD-qAZ492gOZIYkc94exQaX_9G1xf5jK2aOgBA04GI-cQVv4xt5oCcxYg-kgb0uErVsppr6EVU2NyKhWJo3YhaSMOS2xC-jt0eq0-UXzCv3vdnpFg_FLIjO2ENzVvjRRVtg"
+        ],
+        "__at__": 1786801231.838101,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "One of the beautiful villa stay one can have!\nVery well maintained, neat and classy.\nChef afrid’s food were top notch, Nirmal and team really made the stay very special.",
+            "author": "adarsh j a"
+          },
+          {
+            "rating": 5,
+            "text": "The property is a labour of love - beautiful restoration which has ensured a delicate balance of luxury, comfort, and aesthetics.\n\nPerhaps the best 5* place we have stayed in the country for a group holiday - can host up to  10 guests.\n\nVery centrally located in North Goa - while we didn’t feel the ",
+            "author": "A Chandra"
+          },
+          {
+            "rating": 5,
+            "text": "Had an amazing stay at this beautiful property. The place is ensconced in a  lush natural setting in the village of Bastora.  The varied vegetation, sourced from around the world and planted here, lends a charming quality to the resort. The suites are luxuriously appointed and the villas have everyt",
+            "author": "Natasha Grewal"
+          },
+          {
+            "rating": 5,
+            "text": "No words to describe the beauty of this villa. Impeccably done interiors - all facilities required and the most impeccable service and stay! Nirmal, Vikas and Ashish took super good care of us. And the chef was also fabulous.\nHaving your own private spa, gym and dining spaces was just fab. Coupled w",
+            "author": "Veda Dhaul"
+          },
+          {
+            "rating": 5,
+            "text": "Great service, very sweet and friendly staff, food was amazing would def recommend for ultimate luxury. Rooms are huge heated jacuzzi is great to relax in and the gym is fully equipped if you want to burn those calories after all the delicious food. Big shout out to the bar tender Peter his cocktail",
+            "author": "Malvika Shroff"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Goa",
+    "departure_date": "2027-03-10",
+    "return_date": "2027-03-14",
+    "nights": 4,
+    "month_year": "Mar 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 1,
+      "hotels": 0,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Goa",
+      "Nuitée Air",
+      "Goa Dabolim International Airport",
+      "Arrival & North Goa Beach Walk",
+      "Flight: Bangalore to Goa",
+      "Hotel (TBD)",
+      "Baga Beach",
+      "Beachside dining (TBD)",
+      "Candolim & Fort Aguada Sunset",
+      "Candolim Beach",
+      "Lunch (TBD)",
+      "Fort Aguada",
+      "Dinner (TBD)",
+      "South Goa & Palolem Beach",
+      "Palolem Beach",
+      "Beachside lunch (TBD)",
+      "Anjuna Beach & Departure",
+      "Anjuna Beach",
+      "Brunch (TBD)",
+      "Flight: Goa to Bangalore (TBD)"
+    ],
+    "auto_summary": "4-night Goa, Mar 2027, 1 flights",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T13:41:59Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T13:40:21Z"
+    }
+  ]
+}

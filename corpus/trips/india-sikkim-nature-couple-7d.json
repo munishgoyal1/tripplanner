@@ -1,0 +1,383 @@
+{
+  "status": "draft",
+  "trip_id": "gangtok_and_north_sikkim_2027-10-06_2027-10-13",
+  "trip_number": 1,
+  "created_at": "2026-08-26T07:14:03.296386",
+  "destination": "Gangtok and North Sikkim",
+  "origin": "Kolkata",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-10-06",
+  "return_date": "2027-10-13",
+  "travelers": "Couple: 2 adults, 0 children",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Gangtok and North Sikkim",
+    "estimated_planned_minutes": 3147,
+    "evidence_place_count": 9,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "9 preference-matched places account for about 3147 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      9,
+      11
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-06",
+      "title": "Day 1 · Kolkata to Gangtok",
+      "summary": "Fly from Kolkata to Bagdogra, then transfer by road to Gangtok. Check in and relax with a stroll along MG Marg.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Bagdogra",
+          "kind": "flight",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Morning flight, actual time TBC"
+        },
+        {
+          "name": "Drive: Bagdogra to Gangtok",
+          "kind": "transport",
+          "time": "11:00",
+          "duration_min": 300,
+          "note": "Scenic drive through Teesta valley"
+        },
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "MG Marg",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Evening stroll and dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-07",
+      "title": "Day 2 · Gangtok Local Sights & Wildlife",
+      "summary": "Explore Gangtok's key sights and visit Himalayan Zoological Park for wildlife viewing.",
+      "stops": [
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Tashi View Point",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 60,
+          "note": "Panoramic Himalayan views"
+        },
+        {
+          "name": "Himalayan Zoological Park",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Wildlife spotting"
+        },
+        {
+          "name": "Namgyal Institute of Tibetology",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Cultural insight"
+        },
+        {
+          "name": "Enchey Monastery",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "MG Marg",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Dinner at a local restaurant"
+        },
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-08",
+      "title": "Day 3 · Tsomgo Lake & Nathula Pass",
+      "summary": "Day trip to Tsomgo Lake and Nathula Pass for high-altitude scenery and border views.",
+      "stops": [
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Start early"
+        },
+        {
+          "name": "Tsomgo Lake",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 90,
+          "note": "Scenic lake, yak rides"
+        },
+        {
+          "name": "Nathula Pass",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Indo-China border (permit required)"
+        },
+        {
+          "name": "Baba Harbhajan Singh Temple",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Lunch stop (local dhaba)",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Return by late afternoon"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-09",
+      "title": "Day 4 · Gangtok to Lachen (North Sikkim)",
+      "summary": "Scenic drive to Lachen, stopping at waterfalls and viewpoints. Check in and relax.",
+      "stops": [
+        {
+          "name": "Seven Sisters Waterfall",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 30,
+          "note": "Photo stop en route"
+        },
+        {
+          "name": "Lunch stop (Mangan)",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Drive: Mangan to Lachen",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 195,
+          "note": "Continue to Lachen after lunch"
+        },
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "17:45"
+        },
+        {
+          "name": "Lachen",
+          "kind": "hotel",
+          "time": "19:45",
+          "note": "Check-in and rest"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-10-10",
+      "title": "Day 5 · Gurudongmar Lake",
+      "summary": "Early drive to Gurudongmar Lake, one of the world's highest lakes. Return to Lachen.",
+      "stops": [
+        {
+          "name": "Drive: Lachen to Gurudongmar Lake",
+          "kind": "transport",
+          "time": "05:00",
+          "duration_min": 180,
+          "note": "High-altitude drive"
+        },
+        {
+          "name": "Lachen",
+          "kind": "hotel",
+          "note": "Start early",
+          "time": "08:30"
+        },
+        {
+          "name": "Gurudongmar Lake",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Photography & scenery"
+        },
+        {
+          "name": "Lunch stop (local)",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Lachen",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "time": "14:00"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-10-11",
+      "title": "Day 6 · Lachen to Lachung & Yumthang Valley",
+      "summary": "Transfer to Lachung, then visit Yumthang Valley and Zero Point for alpine scenery.",
+      "stops": [
+        {
+          "name": "Drive: Lachen to Lachung",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Lachen",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "10:30"
+        },
+        {
+          "name": "Lachung",
+          "kind": "hotel",
+          "time": "12:30",
+          "note": "Check-in"
+        },
+        {
+          "name": "Yumthang Valley",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 90,
+          "note": "Valley of Flowers"
+        },
+        {
+          "name": "Zero Point",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 90,
+          "note": "Snowy landscapes"
+        },
+        {
+          "name": "Lunch stop (local)",
+          "kind": "meal",
+          "time": "18:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Lachung",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "time": "20:00"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-10-12",
+      "title": "Day 7 · Lachung to Gangtok & Return to Kolkata",
+      "summary": "Drive back to Gangtok, then transfer to Bagdogra for your return flight to Kolkata.",
+      "stops": [
+        {
+          "name": "Lachung",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "09:00"
+        },
+        {
+          "name": "Lunch stop (Gangtok)",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Drive: Lachung to Gangtok",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 300,
+          "note": "Scenic return"
+        },
+        {
+          "name": "Drive: Gangtok to Bagdogra",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 300
+        },
+        {
+          "name": "Flight: Bagdogra to Kolkata",
+          "kind": "flight",
+          "time": "19:30",
+          "duration_min": 90,
+          "note": "Evening flight, actual time TBC"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-26T07:16:49.241637",
+  "id": "gangtok_and_north_sikkim_2027-10-06_2027-10-13",
+  "user_id": "corpus-india-sikkim-nature-couple-7d-08745d6f9557"
+}

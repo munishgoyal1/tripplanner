@@ -1,13 +1,20 @@
-import { BedDouble, CalendarDays, CheckCircle2, Compass, Plane, Users } from "lucide-react";
+import { BedDouble, CalendarDays, CheckCircle2, Compass, Plane, RefreshCw } from "lucide-react";
+import { useState } from "react";
 import type { Budget, TripOverview } from "../types";
+import { recheckPrices } from "../api";
+import WeatherIcon from "./WeatherIcon";
+import { formatDate, formatSourceAmount, useDisplayPreferences, type DisplayCurrency } from "../lib/displayPreferences";
 
 interface Props {
   overview: TripOverview;
   booked?: number;
   stops?: number;
+  active?: boolean;
+  onAllDaysMap?: () => void;
+  onTripChanged?: () => void | Promise<void>;
 }
 
-function BudgetSummary({ budget }: { budget: Budget }) {
+function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCurrency: DisplayCurrency }) {
   const hasTarget = budget.target != null && budget.target > 0;
   const pct = budget.pct_used ?? 0;
   const tone = budget.over_budget ? "bg-rose-500" : pct >= 80 ? "bg-amber-400" : "bg-emerald-500";
@@ -17,13 +24,25 @@ function BudgetSummary({ budget }: { budget: Budget }) {
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="text-[10px] font-semibold uppercase text-slate-400">Trip spend</p>
+          {budget.estimated && (
+            <>
+              <p className="text-[10px] text-amber-700">
+                Final total not confirmed · {budget.all_in_coverage_pct ?? 0}% all-in coverage
+              </p>
+              {!!budget.required_unknown?.length && (
+                <p className="mt-0.5 max-w-64 text-[10px] leading-snug text-slate-500">
+                  Check: {budget.required_unknown.join("; ")}
+                </p>
+              )}
+            </>
+          )}
           <p className="mt-0.5 text-base font-semibold text-ink">
-            {budget.spent_display}
-            {hasTarget && <span className="text-xs font-normal text-slate-400"> / {budget.target_display}</span>}
+            {formatSourceAmount(budget.spent, budget.currency, displayCurrency)}
+            {hasTarget && <span className="text-xs font-normal text-slate-400"> / {formatSourceAmount(budget.target ?? 0, budget.currency, displayCurrency)}</span>}
           </p>
         </div>
         <p className="text-right text-xs text-slate-500">
-          {budget.per_traveler_display} <span className="text-slate-400">per traveler</span>
+          {formatSourceAmount(budget.per_traveler, budget.currency, displayCurrency)} <span className="text-slate-400">per traveler</span>
         </p>
       </div>
       {hasTarget && (
@@ -33,17 +52,32 @@ function BudgetSummary({ budget }: { budget: Budget }) {
           </div>
           <div className="mt-1 flex justify-between text-[11px] text-slate-500">
             <span className={budget.over_budget ? "font-medium text-rose-700" : ""}>
-              {budget.remaining_display} {budget.over_budget ? "over" : "left"}
+              {budget.remaining != null ? formatSourceAmount(Math.abs(budget.remaining), budget.currency, displayCurrency) : ""} {budget.over_budget ? "over" : "left"}
             </span>
             <span>{pct}% used</span>
           </div>
         </>
       )}
+      {budget.all_in_spent != null && (
+        <p className="mt-1.5 text-[11px] font-medium text-emerald-700">
+          Confirmed all-in: {formatSourceAmount(budget.all_in_spent, budget.currency, displayCurrency)}
+        </p>
+      )}
     </div>
   );
 }
 
-export default function TripSnapshot({ overview, booked, stops }: Props) {
+export default function TripSnapshot({
+  overview,
+  booked,
+  stops,
+  active = false,
+  onAllDaysMap,
+  onTripChanged,
+}: Props) {
+  const { currency } = useDisplayPreferences();
+  const [rechecking, setRechecking] = useState(false);
+  const [recheckOutcome, setRecheckOutcome] = useState("");
   const statusTone = overview.status === "booked"
     ? "bg-brand/10 text-brand ring-brand/20"
     : overview.status === "finalized"
@@ -55,10 +89,62 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
     { label: "places", value: overview.counts.activities, icon: Compass },
     { label: overview.counts.flights === 1 ? "flight" : "flights", value: overview.counts.flights, icon: Plane },
   ];
-  const dateRange = [overview.departure_date, overview.return_date].filter(Boolean).join(" - ");
+  const dateRange = [overview.departure_date, overview.return_date].filter(Boolean).map((date) => formatDate(date)).join(" - ");
+  const travelersLabel = `${overview.travelers} ${Number(overview.travelers) === 1 ? "traveler" : "travelers"}`;
+  const costEvidence = overview.cost_evidence ?? null;
+  const remainingStops = stops != null && booked != null ? Math.max(stops - booked, 0) : null;
+  const readinessPct = stops ? Math.round(((booked ?? 0) / stops) * 100) : 0;
+  const tripSummary = overview.notes.trim() || [
+    overview.counts.days > 0 ? `${overview.counts.days}-day` : "Planned",
+    overview.destination,
+    `trip for ${travelersLabel}`,
+    overview.counts.activities > 0
+      ? `with ${overview.counts.activities} planned ${overview.counts.activities === 1 ? "place" : "places"}.`
+      : "with itinerary details still being planned.",
+  ].filter(Boolean).join(" ");
+
+  async function runPriceRecheck() {
+    setRechecking(true);
+    setRecheckOutcome("");
+    try {
+      const result = await recheckPrices();
+      const changed = result.results.filter((row) => row.delta != null && row.delta !== 0).length;
+      const unavailable = result.results.filter((row) => row.status !== "live").length;
+      setRecheckOutcome(
+        changed > 0
+          ? `Rechecked ${result.rechecked}; ${changed} price${changed === 1 ? "" : "s"} changed.`
+          : unavailable > 0
+            ? `Rechecked ${result.rechecked}; ${unavailable} could not be confirmed.`
+            : result.message,
+      );
+      await onTripChanged?.();
+    } catch {
+      setRecheckOutcome("Could not recheck prices just now.");
+    } finally {
+      setRechecking(false);
+    }
+  }
 
   return (
-    <section aria-label="Trip snapshot" className="border-b border-slate-200 bg-white px-4 py-4">
+    <section
+      aria-label="Trip snapshot"
+      aria-current={active ? "true" : undefined}
+      tabIndex={onAllDaysMap ? 0 : undefined}
+      onClick={onAllDaysMap}
+      onKeyDown={(event) => {
+        if (!onAllDaysMap || (event.key !== "Enter" && event.key !== " ")) return;
+        event.preventDefault();
+        onAllDaysMap();
+      }}
+      className={`border-b px-4 py-4 transition ${
+        active
+          ? "border-brand/30 bg-brand/5 ring-inset ring-2 ring-brand/20"
+          : onAllDaysMap
+            ? "cursor-pointer border-slate-200 bg-white hover:bg-slate-50"
+            : "border-slate-200 bg-white"
+      }`}
+      title={onAllDaysMap ? "Show all itinerary days on map" : undefined}
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase text-brand">Trip snapshot</p>
@@ -66,41 +152,108 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
             {overview.destination || "Your trip"}
           </h1>
           <p className="mt-1 truncate text-xs text-slate-500">
-            {[overview.origin && `From ${overview.origin}`, dateRange].filter(Boolean).join(" · ")}
+            {[overview.origin && `From ${overview.origin}`, dateRange, travelersLabel].filter(Boolean).join(" · ")}
           </p>
         </div>
         <div className="shrink-0 text-right">
           <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ${statusTone}`}>
             {overview.status}
           </span>
-          {overview.total_cost_display && (
-            <p className="mt-1.5 text-sm font-semibold text-ink">{overview.total_cost_display}</p>
+          {overview.total_cost != null && (
+            <p className="mt-1.5 text-sm font-semibold text-ink">{formatSourceAmount(overview.total_cost, overview.budget?.currency || "USD", currency)}</p>
           )}
+          {costEvidence?.summary && (
+            <p
+              className={`mt-0.5 text-[10px] font-medium ${
+                costEvidence.complete ? "text-emerald-700" : "text-amber-700"
+              }`}
+              title={
+                costEvidence.complete
+                  ? "Every item is backed by a current provider quote."
+                  : "Some items are not backed by a current provider quote."
+              }
+            >
+              {costEvidence.summary}
+            </p>
+          )}
+          {!!overview.price_rechecks?.length && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                void runPriceRecheck();
+              }}
+              disabled={rechecking}
+              className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold text-brand disabled:opacity-60"
+            >
+              <RefreshCw className={`h-3 w-3 ${rechecking ? "animate-spin" : ""}`} aria-hidden />
+              {rechecking ? "Rechecking prices…" : "Recheck prices"}
+            </button>
+          )}
+          {recheckOutcome && <p className="mt-1 max-w-52 text-[10px] text-slate-600">{recheckOutcome}</p>}
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-4 divide-x divide-slate-200 border-y border-slate-200 py-2.5">
+      <p className="mt-3 text-sm leading-relaxed text-slate-600">{tripSummary}</p>
+
+      {stops != null && booked != null && (
+        <div className="mt-3 border-t border-slate-200 pt-3">
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <span className="inline-flex items-center gap-1.5 font-semibold text-ink">
+              <CheckCircle2 size={13} className="text-emerald-600" aria-hidden />
+              {booked} of {stops} ready
+            </span>
+            <span className={remainingStops ? "text-amber-700" : "text-emerald-700"}>
+              {remainingStops ? `${remainingStops} need booking` : "All confirmed"}
+            </span>
+          </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100" aria-label={`${readinessPct}% of stops ready`}>
+            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${readinessPct}%` }} />
+          </div>
+        </div>
+      )}
+
+      <div className="mt-3 grid grid-cols-4 divide-x divide-slate-200 border-y border-slate-200 py-1.5">
         {countFacts.map(({ label, value, icon: Icon }) => (
-          <div key={label} aria-label={`${value} ${label}`} className="min-w-0 px-2 first:pl-0 last:pr-0">
-            <div className="flex items-center gap-1.5 text-slate-400">
-              <Icon size={13} aria-hidden />
-              <span className="truncate text-[10px] uppercase">{label}</span>
-            </div>
-            <p className="mt-0.5 text-base font-semibold tabular-nums text-ink">{value}</p>
+          <div key={label} aria-label={`${value} ${label}`} className="flex min-w-0 items-center justify-center gap-1 px-1.5">
+            <Icon size={12} className="shrink-0 text-slate-400" aria-hidden />
+            <p className="text-xs font-semibold tabular-nums text-ink">{value}</p>
+            <span className="truncate text-[9px] font-medium uppercase text-slate-400">{label}</span>
           </div>
         ))}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600">
-        <span className="inline-flex items-center gap-1.5">
-          <Users size={13} className="text-slate-400" aria-hidden />
-          {overview.travelers} {Number(overview.travelers) === 1 ? "traveler" : "travelers"}
-        </span>
-        {stops != null && booked != null && (
-          <span className="inline-flex items-center gap-1.5">
-            <CheckCircle2 size={13} className="text-slate-400" aria-hidden />
-            {booked}/{stops} stops booked
-          </span>
+      <div className="mt-3 border-t border-slate-200 pt-3">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-[10px] font-semibold uppercase text-slate-400">Weather</p>
+          {overview.weather && (
+            <span className="text-[10px] font-medium text-slate-500">{overview.weather.source_label}</span>
+          )}
+        </div>
+        {overview.weather ? (
+          <>
+          <div className="mt-2 flex flex-wrap gap-1.5" aria-label={`${overview.weather.source_label} weather summary`}>
+            {overview.weather.days.map((day, index) => (
+              <span
+                key={day.date}
+                className="inline-flex h-7 items-center gap-1 rounded-md bg-sky-50 px-2 text-[11px] font-medium text-slate-700 ring-1 ring-sky-100"
+                title={`${day.date}: ${day.summary}${day.precip_probability_pct != null ? `, ${day.precip_probability_pct}% precipitation` : ""}`}
+              >
+                <span className="text-sky-700"><WeatherIcon condition={day.condition} size={14} /></span>
+                <span>D{index + 1}</span>
+                {day.high_c != null && <span className="tabular-nums">{Math.round(day.high_c)}°</span>}
+              </span>
+            ))}
+          </div>
+          {overview.weather.packing_advice.length > 0 && (
+            <p className="mt-2 text-xs leading-relaxed text-slate-600">
+              <span className="font-semibold text-slate-700">Pack:</span>{" "}
+              {overview.weather.packing_advice.join(". ")}.
+            </p>
+          )}
+          </>
+        ) : (
+          <p className="mt-2 text-xs text-slate-500">Forecast unavailable for this trip.</p>
         )}
       </div>
 
@@ -115,7 +268,7 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
           {overview.constraints.join(" · ")}
         </p>
       )}
-      {overview.budget && <div className="mt-3"><BudgetSummary budget={overview.budget} /></div>}
+      {overview.budget && <div className="mt-3"><BudgetSummary budget={overview.budget} displayCurrency={currency} /></div>}
     </section>
   );
 }

@@ -19,9 +19,11 @@ def _reset_state(monkeypatch):
     """
     tools_cache.clear_local_cache()
     user_context.set_user_id("alice")
-    from tripplanner import storage_cosmos
+    from tripplanner import secondary_cache, storage_cosmos
 
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
+    monkeypatch.setattr(secondary_cache, "read_doc", lambda *_args: None)
+    monkeypatch.setattr(secondary_cache, "schedule_merge_write", lambda *_args: None)
     yield
     tools_cache.clear_local_cache()
     user_context.set_user_id("local")
@@ -40,6 +42,63 @@ def test_cache_lookup_returns_none_for_miss():
 def test_cache_store_then_lookup_returns_value():
     tools_cache.cache_store("web_search", {"q": "x"}, "first hit")
     assert tools_cache.cache_lookup("web_search", {"q": "x"}) == "first hit"
+
+
+def test_google_tool_cache_uses_places_specific_ttl(monkeypatch):
+    from tripplanner.config import get_settings
+
+    captured: list[int] = []
+    monkeypatch.setattr(
+        tools_cache,
+        "_local_set",
+        lambda _user_id, _key, _value, ttl: captured.append(ttl),
+    )
+    monkeypatch.setattr(
+        get_settings(),
+        "google_places_search_cache_ttl_sec",
+        86400,
+    )
+
+    tools_cache.cache_store("search_places_with_reviews", {"query": "Paris"}, "result")
+
+    assert captured == [86400]
+
+
+def test_stable_and_volatile_tool_results_use_separate_forever_flags(monkeypatch):
+    from tripplanner.config import get_settings
+
+    captured: list[int] = []
+    monkeypatch.setattr(
+        tools_cache,
+        "_local_set",
+        lambda _user_id, _key, _value, ttl: captured.append(ttl),
+    )
+    settings = get_settings()
+    monkeypatch.setattr(settings, "cache_stable_forever", True)
+    monkeypatch.setattr(settings, "cache_volatile_forever", False)
+
+    tools_cache.cache_store("get_place_reviews", {"place_id": "p"}, "stable")
+    tools_cache.cache_store("get_weather_forecast", {"city": "Paris"}, "volatile")
+
+    assert captured == [-1, settings.cache_ttl(90 * 60)]
+
+
+def test_forever_tool_entry_opts_out_of_cosmos_container_ttl(monkeypatch):
+    from tripplanner import storage_cosmos
+
+    captured: list[dict] = []
+    monkeypatch.setattr(tools_cache.time, "time", lambda: 1234.0)
+    monkeypatch.setattr(
+        storage_cosmos,
+        "upsert_doc",
+        lambda _container, _partition, _key, body: captured.append(body),
+    )
+
+    tools_cache._cosmos_set("_global_", "place-key", "value", -1)
+
+    assert captured == [
+        {"result": "value", "cached_at": 1234.0, "expires_at": -1, "ttl": -1}
+    ]
 
 
 def test_stateful_tools_are_never_cached():
@@ -77,6 +136,85 @@ def test_global_cache_shares_across_users():
     assert tools_cache.cache_lookup("web_search", {"query": "paris"}) == "global-hit"
 
 
+def test_global_primary_miss_uses_and_promotes_secondary(monkeypatch):
+    from tripplanner import secondary_cache, storage_cosmos
+
+    primary: dict[str, dict] = {}
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(
+        storage_cosmos,
+        "read_doc",
+        lambda _container, _partition, key: primary.get(key),
+    )
+    monkeypatch.setattr(
+        storage_cosmos,
+        "upsert_doc",
+        lambda _container, _partition, key, body: primary.__setitem__(key, body),
+    )
+    key = tools_cache._cache_key("web_search", {"query": "paris"}, scope="global")
+    original_cached_at = time.time() - 10
+    monkeypatch.setattr(
+        secondary_cache,
+        "read_doc",
+        lambda _container, requested_key: {
+            "result": "central-hit",
+            "cached_at": original_cached_at,
+            "expires_at": time.time() + 300,
+        }
+        if requested_key == key
+        else None,
+    )
+
+    assert tools_cache.cache_lookup("web_search", {"query": "paris"}) == "central-hit"
+    assert primary[key]["cached_at"] == original_cached_at
+
+
+def test_user_scoped_tools_never_use_secondary(monkeypatch):
+    from tripplanner import secondary_cache
+
+    calls: list[str] = []
+    monkeypatch.setattr(
+        secondary_cache,
+        "read_doc",
+        lambda _container, key: calls.append(key),
+    )
+    monkeypatch.setattr(
+        secondary_cache,
+        "schedule_merge_write",
+        lambda _container, key, _body: calls.append(key),
+    )
+
+    assert tools_cache.cache_lookup("get_trip_plan", {}) is None
+    tools_cache.cache_store("get_trip_plan", {}, "private")
+
+    assert calls == []
+
+
+def test_newer_local_fallback_precedes_older_secondary(monkeypatch):
+    from tripplanner import secondary_cache, storage_cosmos
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(
+        storage_cosmos,
+        "upsert_doc",
+        lambda *_args: (_ for _ in ()).throw(RuntimeError("primary offline")),
+    )
+    monkeypatch.setattr(storage_cosmos, "read_doc", lambda *_args: None)
+    monkeypatch.setattr(
+        secondary_cache,
+        "read_doc",
+        lambda *_args: {
+            "result": "older-central",
+            "cached_at": time.time() - 60,
+            "expires_at": time.time() + 60,
+        },
+    )
+
+    tools_cache.cache_store("web_search", {"query": "paris"}, "fresh-local")
+
+    assert tools_cache.cache_lookup("web_search", {"query": "paris"}) == "fresh-local"
+
+
 def test_global_cache_key_normalizes_case_and_whitespace():
     tools_cache.cache_store("web_search", {"query": "  Paris  "}, "normalized")
     assert tools_cache.cache_lookup("web_search", {"query": "paris"}) == "normalized"
@@ -105,6 +243,24 @@ def test_wrap_tools_calls_underlying_once_per_unique_arg_set():
     assert calls["n"] == 1
     # Different args → fresh call.
     assert wrapped.invoke({"query": "rome"}) == "results for rome"
+    assert calls["n"] == 2
+
+
+def test_refresh_bypasses_lookup_and_does_not_store_result():
+    calls = {"n": 0}
+
+    @tool
+    def search_hotels(city: str, refresh: bool = False) -> str:
+        """Return a changing hotel quote for refresh-cache testing."""
+        calls["n"] += 1
+        return f"quote-{calls['n']}"
+
+    [wrapped] = tools_cache.wrap_tools_with_cache([search_hotels])
+
+    assert wrapped.invoke({"city": "Paris"}) == "quote-1"
+    assert wrapped.invoke({"city": "Paris"}) == "quote-1"
+    assert wrapped.invoke({"city": "Paris", "refresh": True}) == "quote-2"
+    assert wrapped.invoke({"city": "Paris"}) == "quote-1"
     assert calls["n"] == 2
 
 

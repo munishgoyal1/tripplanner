@@ -1,0 +1,279 @@
+# Local dev cheat sheet
+
+One page. Stick this on a second monitor.
+
+---
+
+## TL;DR - interactive testing
+
+Open <http://localhost:5173> for the app or
+<http://127.0.0.1:5175/catalog.html> for UX Labs in your regular browser
+(Chrome / Edge / Firefox). The primary workspace owns `dev-spa.ps1`, stale-port
+cleanup, startup, restarts after runtime changes, and health checks for manual
+testing. Each sandbox has its own port slot, so its lifecycle cannot disturb the
+primary stack.
+
+## Platform support policy
+
+Tripplanner supports Windows and macOS for core application development. Core
+means machine setup, dependency restore, VS Code and Copilot configuration,
+Python/frontend/mobile build and test commands, and sandboxed feature worktrees.
+Application code and shared developer engines should remain platform-neutral.
+
+Support is evidence-based rather than assumed:
+
+| Workflow | Windows | macOS |
+| --- | --- | --- |
+| Setup, dependencies, VS Code/Copilot | Verified | Installer and configuration available; host smoke pending |
+| Python, frontend, and mobile build/test | Verified | Supported through standard Python/npm commands; host smoke pending |
+| Sandboxed feature worktrees and windows | Verified | Setup and launchers available; host smoke pending |
+| Full `dev-spa.ps1` local stack | Verified | Not yet qualified; Windows process and `npm.cmd` hooks remain |
+| Sandbox lifecycle and `.cmd` convenience launchers | Verified | Not currently supported |
+| iOS simulator/build tooling | Not available | macOS/Xcode only |
+| Azure release scripts | Verified release environment | PowerShell may run, but macOS release is not qualified |
+
+The maintenance rule is not “duplicate every script.” Prefer one
+cross-platform PowerShell 7, Python, Node.js, or Docker implementation and add
+small `.cmd` or `.command` entry points only where the operating system needs
+one. A change to a core workflow must preserve both platforms or explicitly
+update this matrix and provide a fallback. Platform-specific capabilities such
+as Xcode and Windows process management remain scoped to their native platform.
+
+Linux remains the container and CI runtime, not a supported interactive
+developer workstation.
+
+## Sandbox-first development
+
+The default workflow uses the primary workspace on `master` plus one fresh,
+task-named sandbox for each isolated feature. Create, serve, update, promote, or
+discard it through the sandbox launchers. A sandbox begins at `origin/master` and
+returns to `master` only through its validated promotion flow.
+
+To synchronize primary `master` and start the canonical stack, double-click
+`scripts/win/user/run/Run-Latest-Master.cmd` or run the VS Code task **Tripplanner: Run Latest Master**.
+Use `scripts/win/user/sync/Sync-Sbxs-FromMaster.cmd` to update every registered
+sandbox, or pass `<sandbox>` to update only one.
+
+Use these launchers by outcome:
+
+| Launcher | Purpose |
+| --- | --- |
+| `scripts/win/user/run/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
+| `scripts/win/user/run/Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start the canonical `dev-spa.ps1` stack. |
+| `scripts/win/user/sync/Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`; without an argument update every registered sandbox, or update only the selected sandbox. |
+| `scripts/win/user/sync/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync; without an argument merge every sandbox into `master`, or merge only the selected sandbox, then level all sandboxes. Requires typing `APPROVE_SANDBOX_TO_MASTER`. |
+| `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
+
+Every launcher writes a transcript to `logs/last-run/<script>.log` in the primary
+checkout, shared by all worktrees. The two previous runs are kept alongside it as
+`<script>.1.log` and `<script>.2.log`, so a failure can be compared against the
+run before it; `logs/last-run/runs.log` indexes every run.
+
+---
+
+## Why `dev-spa.ps1`?
+
+It is the canonical local entrypoint for the current React SPA and FastAPI
+backend. Hot reload is off by default, so backend edits do not interrupt an
+in-progress chat. MasterAgent invokes it in a dedicated background session and passes
+`-Watch` only when live reload is intentionally useful.
+
+## Modes at a glance
+
+| Script | Use when | Hot reload |
+|---|---|---|
+| `.\scripts\dev\dev-spa.ps1` | Local emulator, backend, SPA, and UX Labs | Off |
+| `.\scripts\dev\dev-spa.ps1 -Watch` | Active code editing | On |
+| `.\scripts\dev\dev-spa.ps1 -BackendOnly` | API only | Off |
+| `.\scripts\dev\dev-spa.ps1 -FrontendOnly` | SPA and UX Labs only | Off |
+| `.\scripts\dev\dev-spa.ps1 -NoLabs` | Regular stack without UX Labs | Off |
+| `.\scripts\dev\dev-spa.ps1 -CosmosBackend azure` | Isolated Azure local database | Off |
+| `.\scripts\dev\dev-spa.ps1 -UseCanaryData` | Explicit canary-data troubleshooting | Off |
+
+---
+
+## Observability
+
+Two completely separate log streams. Both are auto-wired from
+`tripplanner.observability` and start with `setup_logging()` at the top of
+each entrypoint (`web/app.py`, `api.py`, `cli.py`).
+
+### Stream 1 — App log (sanitized, public-readable)
+
+- **Local dev**: human-friendly text on stdout (`HH:MM:SS LEVEL logger: msg`).
+- **Local diagnostics**: rotating PII-safe JSON at the primary checkout's
+  `logs/diagnostics/local-app.jsonl` (5 MB plus two backups). Git worktrees use
+  this same shared path, so any VS Code instance can run
+  `.\scripts\analyze-errors.ps1 -Environment local -Hours 24`.
+- **Hosted (Container Apps)**: one-line JSON to stdout, auto-shipped to the
+  Log Analytics workspace provisioned by `infra/main.bicep`.
+- **What's sanitized before anything is written**:
+  - Emails (`<email>`), phones (`<phone>`), IPv4s (`<ip>`), credit cards
+    (`<card>`), Bearer tokens (`Bearer <token>`), `api_key=…` / `token=…` /
+    `password=…` patterns (`<redacted>`).
+  - `user_id` is replaced with a SHA-256 prefix `u_<12hex>` (stable for
+    correlation, irreversible).
+  - Reserved field names like `content`, `email`, `phone`, `name`,
+    `display_name`, `query`, `text`, `message`, `destination`, `passport`,
+    `dob`, etc. are dropped to `"<redacted>"` so the app log never carries
+    the actual user message body or trip details.
+
+Key structured events emitted from the FastAPI application:
+
+| `event_kind` | Fields |
+|---|---|
+| `api_chat_request` / `api_chat_stream_request` | sanitized request size |
+| `chat_operation` | `transport`, terminal `outcome`, `duration_ms`, optional exception class |
+| `tool_call` | `tool`, `status`, `ms`, `cache_hit` |
+| `usage_recorded` | model, token counts, estimated cost |
+| `api_oauth_login` | `provider` (no email / no name) |
+
+The production reliability objectives, low-volume interpretation, release
+response, and copy-paste KQL live in
+[operations-slos.md](../operations/operations-slos.md).
+
+KQL example once the container is running on Azure:
+
+```kql
+ContainerAppConsoleLogs_CL
+| where ContainerAppName_s startswith "tripplanner-app-"
+| extend e = parse_json(Log_s)
+| where tostring(e.event_kind) == "tool_call"
+| summarize p95_ms = percentile(tolong(e.ms), 95), n = count()
+        by tool = tostring(e.tool)
+| order by n desc
+```
+
+### Stream 2 — Audit log (restricted, contains raw values)
+
+For the rare cases where you need the actual user input (e.g. compliance
+review, dataset curation), there's a separate sink that **never** touches
+stdout:
+
+- **Local dev**: appended as JSON Lines to
+  `~/.tripplanner/audit/<YYYY-MM-DD>.jsonl`.
+- **Hosted**: written to the Cosmos DB container `audit_events` (partition
+  key `/user_id`, `defaultTtl = 90 days` so PII auto-expires).
+
+Events that go here:
+
+| `kind` | Fields |
+|---|---|
+| `oauth_login` | `provider`, raw `name`, raw `email` |
+| `user_message` | raw `content` — only when `AUDIT_USER_MESSAGES=1` |
+
+`audit_event` writes are best-effort: if Cosmos is unreachable, the call
+falls back to the local JSONL file and a single WARNING is emitted to the
+app log. A failed audit write never blocks a user request.
+
+Querying the audit container from the Azure Portal → Cosmos → `audit_events`
+→ Items / Query:
+
+```sql
+SELECT TOP 50 c.ts, c.kind, c.content
+FROM c
+WHERE c.user_id = 'google-12345'
+  AND c.kind = 'user_message'
+ORDER BY c.ts DESC
+```
+
+### Env switches
+
+| Var | Default | Effect |
+|---|---|---|
+| `LOG_LEVEL` | `INFO` | Standard Python log level. |
+| `LOG_JSON` | unset locally / `1` in Bicep | Emit JSON instead of text on stdout. |
+| `APP_LOG_PATH` | primary checkout `logs/diagnostics/local-app.jsonl` | Override the rotating PII-safe local JSON path. |
+| `AUDIT_USER_MESSAGES` | unset (off) | When `1`, persist raw message bodies to the audit sink. **Opt-in.** |
+
+Bicep exposes `auditUserMessages` (default `false`) so the same opt-in is
+visible at deploy time.
+
+---
+
+## Keyboard cheat sheet
+
+| When you want to... | Where | Keys |
+|---|---|---|
+| Stop the dev server                | dev-server terminal | `Ctrl+C` |
+| Restart the dev server             | dev-server terminal | `↑` then `Enter` |
+| Refresh page (use new backend code) | browser tab        | `F5` *(or `Ctrl+R`)* |
+| Force-drop browser cache too       | browser tab         | `Ctrl+Shift+R` *(only if F5 shows stale UI)* |
+| Cancel a long-running request      | browser            | Click the **Stop** button in the chat composer |
+| Copy text from terminal            | terminal           | Mouse-select, then `Enter` *(not Ctrl+C — that kills the server!)* |
+
+> **`Ctrl+C` is for the TERMINAL.** In the browser it just copies selected text.
+
+---
+
+## How the agent debugs without screenshots
+
+The shared local JSON log retains sanitized failures independently of the VS Code
+window that started the stack. Tell the agent "saving failed" or "got an error on
+/profile" and it can run the analyzer or inspect the surrounding JSONL records
+without relying on one terminal's scrollback.
+
+You only need screenshots for:
+
+- Visual / CSS issues (something looks wrong, not broken)
+- Pointing at one specific message in a long chat
+- Anything the agent can't infer from the trace
+
+---
+
+## First-time setup
+
+```powershell
+.\scripts\setup-dev-machine.ps1
+```
+
+This installs missing Windows prerequisites with `winget`, restores pinned
+Python and frontend dependencies, preserves an existing `.env`, and verifies a
+frontend production build. Add `-IncludeMobile` for Expo dependencies. Account
+login and provider secrets remain manual.
+
+After that, every session is just `.\scripts\dev\dev-spa.ps1`.
+
+---
+
+## Run tests
+
+```powershell
+# Select the tests owned by the current change and explain why.
+python scripts/dev/test_selection.py --base origin/master
+
+# Complete publication gate.
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+Run the selector's commands during iteration. See
+[`testing.md`](testing.md) for exact test nodes, expected-behavior selection,
+frontend commands, and publication tiers. Test counts and duration vary with the
+selected boundary and are deliberately not hardcoded here.
+
+---
+
+## Where data lives
+
+| Mode | Preferences | Active trip | Archived trips |
+|---|---|---|---|
+| Local *(default)* | `~\.tripplanner\users\<id>\preferences.json` | `~\.tripplanner\users\<id>\active_trip.json` | `~\.tripplanner\users\<id>\trips\` |
+| Azure local *(explicit)* | Cosmos `users` container | Cosmos `users/active_trip` doc | Cosmos `trips` container |
+
+Delete the local files to start fresh; the server will recreate them on the
+next save.
+
+---
+
+## Other useful commands
+
+```powershell
+# CLI mode (no browser)
+.\.venv\Scripts\python.exe -m tripplanner.cli
+
+# FastAPI mode (curl-friendly, no browser UI)
+.\.venv\Scripts\python.exe -m tripplanner.api
+
+# Tail user's persisted prefs as JSON
+Get-Content "$env:USERPROFILE\.tripplanner\users\guest-*\preferences.json" | ConvertFrom-Json
+```

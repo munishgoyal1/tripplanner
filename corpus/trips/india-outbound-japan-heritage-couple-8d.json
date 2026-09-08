@@ -1,0 +1,666 @@
+{
+  "status": "draft",
+  "trip_id": "tokyo_kyoto_osaka_2027-04-18_2027-04-26",
+  "trip_number": 1,
+  "created_at": "2026-08-25T22:27:08.401574",
+  "destination": "Tokyo, Kyoto, Osaka",
+  "origin": "Delhi",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-04-18",
+  "return_date": "2027-04-26",
+  "travelers": "Couple: 2 adults, Indian passports",
+  "notes": "Focus on history, architecture, museums, and local culture.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Tokyo, Kyoto, Osaka",
+    "estimated_planned_minutes": 1116,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 8-day duration is authoritative",
+      "8 preference-matched places account for about 1116 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 8,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "city": "Tokyo",
+      "name": "Hotel Niwa Tokyo",
+      "address": "1-1-16 Misaki-cho, Chiyoda-ku, Tokyo 101-0061, Japan",
+      "star_rating": 4,
+      "price_per_night": 18000,
+      "currency": "INR",
+      "checkin": "2027-04-18",
+      "checkout": "2027-04-21",
+      "rooms": 1,
+      "adults": 2,
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp6555ad8e"
+      },
+      "google_rating": 4.5,
+      "google_reviews": 3200
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-18",
+      "title": "Day 1 · Arrival in Tokyo",
+      "summary": "Arrive in Tokyo from Delhi. Transfer to Hotel Niwa Tokyo, check in, and explore the local neighborhood for an easy start.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Tokyo",
+          "kind": "flight",
+          "time": "06:00",
+          "arrival_time": "17:00",
+          "duration_min": 540,
+          "note": "Overnight or early morning flight, time placeholder"
+        },
+        {
+          "name": "Hotel Niwa Tokyo",
+          "kind": "hotel",
+          "note": "Check in and freshen up"
+        },
+        {
+          "name": "Asakusa neighborhood",
+          "kind": "attraction",
+          "time": "18:30",
+          "duration_min": 90,
+          "note": "Evening stroll, local dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-19",
+      "title": "Day 2 · Tokyo: History & Culture",
+      "summary": "Explore Tokyo’s top historical and cultural sites including Senso-ji Temple and the Tokyo National Museum.",
+      "stops": [
+        {
+          "name": "Hotel Niwa Tokyo",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Senso-ji Temple",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Tokyo’s oldest temple"
+        },
+        {
+          "name": "Tokyo National Museum",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 180,
+          "note": "Japan’s premier museum of art and history"
+        },
+        {
+          "name": "Ueno Park",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Stroll through the park"
+        },
+        {
+          "name": "Local restaurant (Ueno)",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Dinner with local cuisine"
+        },
+        {
+          "name": "Hotel Niwa Tokyo",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-20",
+      "title": "Day 3 · Tokyo: Imperial & Modern",
+      "summary": "Visit the Imperial Palace, Meiji Shrine, and explore modern Tokyo in Shibuya.",
+      "stops": [
+        {
+          "name": "Hotel Niwa Tokyo",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Imperial Palace",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Historic gardens and palace exterior"
+        },
+        {
+          "name": "Meiji Shrine",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Shinto shrine in a forested park"
+        },
+        {
+          "name": "Shibuya Crossing",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Iconic urban scene"
+        },
+        {
+          "name": "Local restaurant (Shibuya)",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Dinner with local cuisine"
+        },
+        {
+          "name": "Hotel Niwa Tokyo",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-04-21",
+      "title": "Day 4 · Tokyo to Kyoto: Temples & Gion",
+      "summary": "Take a morning Shinkansen to Kyoto. Visit Fushimi Inari Taisha and explore the Gion district.",
+      "stops": [
+        {
+          "name": "Shinkansen: Tokyo to Kyoto",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 150,
+          "note": "Bullet train, reserved seats"
+        },
+        {
+          "name": "Hotel Niwa Tokyo",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "11:00"
+        },
+        {
+          "name": "Hotel Granvia Kyoto",
+          "kind": "hotel",
+          "note": "Check in and drop bags",
+          "time": "13:00"
+        },
+        {
+          "name": "Fushimi Inari Taisha",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Famous torii gates"
+        },
+        {
+          "name": "Gion District",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 90,
+          "note": "Historic geisha district"
+        },
+        {
+          "name": "Local restaurant (Gion)",
+          "kind": "meal",
+          "time": "19:30",
+          "duration_min": 90,
+          "note": "Dinner with local cuisine"
+        },
+        {
+          "name": "Hotel Granvia Kyoto",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "21:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-04-22",
+      "title": "Day 5 · Kyoto: Golden Pavilion & Castles",
+      "summary": "Visit Kinkaku-ji (Golden Pavilion), Nijo Castle, and the Kyoto International Manga Museum.",
+      "stops": [
+        {
+          "name": "Hotel Granvia Kyoto",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kinkaku-ji (Golden Pavilion)",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Iconic Zen temple"
+        },
+        {
+          "name": "Nijo Castle",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Historic shogun residence"
+        },
+        {
+          "name": "Kyoto International Manga Museum",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Japanese manga culture"
+        },
+        {
+          "name": "Local restaurant (Central Kyoto)",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Dinner with local cuisine"
+        },
+        {
+          "name": "Hotel Granvia Kyoto",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-04-23",
+      "title": "Day 6 · Kyoto to Osaka: Castles & Culture",
+      "summary": "Travel to Osaka, visit Osaka Castle and Shitenno-ji Temple, and explore Dotonbori in the evening.",
+      "stops": [
+        {
+          "name": "Train: Kyoto to Osaka",
+          "kind": "transport",
+          "time": "08:30",
+          "duration_min": 30,
+          "note": "Rapid train"
+        },
+        {
+          "name": "Hotel Granvia Kyoto",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "09:30"
+        },
+        {
+          "name": "Swissôtel Nankai Osaka",
+          "kind": "hotel",
+          "note": "Check in and drop bags",
+          "time": "11:30"
+        },
+        {
+          "name": "Osaka Castle",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 120,
+          "note": "Famous historic castle"
+        },
+        {
+          "name": "Shitenno-ji Temple",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Japan’s oldest Buddhist temple"
+        },
+        {
+          "name": "Dotonbori District",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Vibrant food and entertainment area"
+        },
+        {
+          "name": "Local restaurant (Dotonbori)",
+          "kind": "meal",
+          "time": "20:00",
+          "duration_min": 90,
+          "note": "Dinner with local cuisine"
+        },
+        {
+          "name": "Swissôtel Nankai Osaka",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "22:00"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-04-24",
+      "title": "Day 7 · Osaka: Museums & Modern Life",
+      "summary": "Explore the Osaka Museum of History, Umeda Sky Building, and local shopping streets.",
+      "stops": [
+        {
+          "name": "Swissôtel Nankai Osaka",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Osaka Museum of History",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "History and city views"
+        },
+        {
+          "name": "Umeda Sky Building",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Modern architecture and observation deck"
+        },
+        {
+          "name": "Shinsaibashi Shopping Street",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Famous shopping arcade"
+        },
+        {
+          "name": "Local restaurant (Umeda)",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Dinner with local cuisine"
+        },
+        {
+          "name": "Swissôtel Nankai Osaka",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-04-25",
+      "title": "Day 8 · Departure from Osaka",
+      "summary": "Check out, transfer to Kansai Airport, and fly back to Delhi.",
+      "stops": [
+        {
+          "name": "Swissôtel Nankai Osaka",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Kansai International Airport",
+          "kind": "transport",
+          "time": "07:30",
+          "duration_min": 120,
+          "note": "Airport transfer, 2 hours before flight"
+        },
+        {
+          "name": "Flight: Osaka to Delhi",
+          "kind": "flight",
+          "time": "09:30",
+          "arrival_time": "16:00",
+          "duration_min": 480,
+          "note": "Return flight, time placeholder"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T22:28:40.981793",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-25T22:28:02",
+      "expires_at": "2026-08-26T10:28:02"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_tokyo_2027_04_18_2027_04_21",
+      "kind": "lodging",
+      "created_at": "2026-08-25T16:58:03.045851Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Tokyo",
+        "date": "2027-04-18"
+      },
+      "subject": "Stay in Tokyo",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_aca1d69d41d3",
+      "options": [
+        {
+          "id": "opt_stay_aca1d69d41d3",
+          "mode": null,
+          "label": "Villa Fontaine Grand Haneda Airport - Directly connected to Haneda Airport Terminal 3",
+          "detail": "Moderate Double room (full double bed) (queen size bed)",
+          "price": {
+            "amount": 44524.35,
+            "currency": "INR",
+            "basis": "per_party",
+            "taxes": null,
+            "fees": null,
+            "due_at_property": null,
+            "all_in": null,
+            "mandatory_costs_complete": null,
+            "excluded": [],
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-04-18",
+            "checkout": "2027-04-21",
+            "room_name": "Moderate Double room (full double bed) (queen size bed)",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Ota-ku Haneda Airport 2-7-1",
+            "rating": 8.7,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp6555ad8e",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gGnR1pTRE1aUldHUTNES05aU0dZWVRPTkJXR1VaREFOUlVHWlRET05KV0dJM0dHTlJWR0lZRE9NUldNWTNHTU5URUdJWURFT0JXR1kzVEtOVERHWlJURU1CV0dRM0dNTlpWR1laRE1ZWldHVVpEQU5SU0dZMlRNTkJTSEVaREFNUllHNFlUT05KV0dVM0RLTlRGR0lZRE9NWldIRTNXQ05SVkdJWURNTVJXR1UzRElNUlpQUVlTR01SUUdJM1RBTkJSSEI2REVNQlNHNFlESU1SUlBSU1c0WDJWS042RVNUVDRKRkhGRTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlpXRzQzVEFOWldHRVpERVRTRU1aWlNHTUpYR0FZRENNSlRIQVlETUlaUkdJM0RNTEpSRzRZREFNSlJHTTREQU5UNEpaSkVNVFQ0R0lZREVOUlFIQVpER01KUUdBWUhZTUw0S0lZVENOSlFQUTJESU5KU0dRWlRLSTJTSjRSVTRVU0dKWVJURU1CU0dZV1RBT0JOR0laU0FNSlFISVlEQUlZo3ByY8tA5b2LMzMzM6Vvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybtk3TW9kZXJhdGUgRG91YmxlIHJvb20gKGZ1bGwgZG91YmxlIGJlZCkgKHF1ZWVuIHNpemUgYmVkKaNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJCicnSkTlJGTqRzaGlkqjE3MDAxMTM4MDajc2lkAqNoaWSqbHA2NTU1YWQ4ZaNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDQtMTiiY2-qMjAyNy0wNC0yMaNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDM5ZGI2YTYyZFVYS21RV1FSNWxlNWJiVmtUM2VGS0YwMUFmR6Npc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpw6Fko1RheKFhy0CuXHrhR64UoWOjSU5ShKFpwqFkqUhvdGVsIEZlZaFhy0B2kR64UeuFoWOjSU5SomxwwKNia3QB",
+              "rate_id": "I5NFGRCNLJJFOR2RGNCEWTS2KNDVSWKUJ5HEEV2HKVNEIQKOKJKUOWSUIRHU4SSXI5ETGR2HJZJFMR2JLFCE6TKSK5GVSM2HJVHFIRKHJFMUIRKPIJLUOWJTKRFU4VCEI5NFEVCFJVBFOR2RGNDU2TS2KZDVSWSEJVMVUV2HKVNEIQKOKJJUOWJSKRGU4QSTJBCVURCBJVJFSRZULFKE6TSKK5DVKM2EJNHFIRSHJFMUIT2NLJLUQRJTK5BU4USWI5EVSRCNJVJFOR2VGNCESTKSLJIFCWKTI5GVEUKHJEZVIQKOIJJEQQRWIRCU2QSTI42FSRCJJVJFEUCSKNLTIWBSKZFU4NSFKNKFINCKIZEEMRJXIJJUSRKZIVDTOQSVI5KVURCTG5CEUS2CKRLEWU2EGRDUKM2UKFHFUV2HGQZVIQKOLJLUORK2IRCVIU2FJVNFUU2HJVFFQR2BLFCEGTKKKREECWKEJVEVUUSHJEZUITKMJJJEONCZIRAU2SSSI5GTIRCBJZKDISS2JJCU2VCUGRDUSWKEIVHFEUKIIFNEIR2NJJIUOQKZJBMU2TBUJNEVSVCDJZFFCUCRGJCESTSKKNDVCWSUJNETEU2KGRJFKNCVKNDUUWKSKRCU2QSTI5MVOVCBJ5BE4R2JLJJUCTKKKFEESWKEIFEVS7BUGQ2TENBOGM2XY7CSJ56HY7D4JVXWIZLSMF2GKICEN52WE3DFEBZG633NEAUGM5LMNQQGI33VMJWGKIDCMVSCSIBIOF2WKZLOEBZWS6TFEBRGKZBJPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            },
+            "search_context": {
+              "destination": "Tokyo",
+              "adults_per_room": 2,
+              "rooms": 1,
+              "children_ages": [],
+              "guest_nationality": "IN",
+              "refundable_only": false
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-25T16:58:02.981866Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_279f3f737d6a",
+          "mode": null,
+          "label": "Tokyo Bay Shiomi Prince Hotel",
+          "detail": "TWIN SUPERIOR",
+          "price": {
+            "amount": 47270.77,
+            "currency": "INR",
+            "basis": "per_party",
+            "taxes": null,
+            "fees": null,
+            "due_at_property": null,
+            "all_in": null,
+            "mandatory_costs_complete": null,
+            "excluded": [],
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹2,746 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-04-18",
+            "checkout": "2027-04-21",
+            "room_name": "TWIN SUPERIOR",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Koto-ku Shiomi 2-8-16",
+            "rating": 9.1,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp65560928",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEgRzQyRE9OWldIRTNHS01SUUc0WlRPTkpYR0EzREtOWlNHWTRUTVpSWEdKNkRDSVpTR0FaRE9NQlVHRTRIWU1SUUdJM1RBTkJTR0Y2R0szUzdLVkpYWVNLT1BSRVU0VVQ0R0pBVEFRMzRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUT01CWEdZWVRFTVNPSVJUSEdJWlJHNFlEQU1KVEc0WkRLTlJER0VaRE1OUk5HRTNUQU1CUkdNM1RFTkpXUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ05CWkdGNkRJTlpTRzRZRE9OWkRLSkhTR1RTU0laSENHTVJRR0kzQzJNQllGVVpERUlCUkdBNURBTUJEo3ByY8tA5xTYo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybq1UV0lOIFNVUEVSSU9So29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDEzNzI1NqNzaWQCo2hpZKpscDY1NTYwOTI4o29jY5GBoWECo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNC0xOKJjb6oyMDI3LTA0LTIxo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMzlkYjZhNjJkVVhLbVFXUVI1bGU1YmJWa1QzZUZLRjAxQWZHo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0C4ATMzMzMzoWOjSU5ShKFpwqFko1ZBVKFhy0CydxR64UeuoWOjSU5SomxwwKNia3QG",
+              "rate_id": "I42DERCPJZNFOSCFGNDUWTKSKFDTIWSUJ5HEUWCHIEZUIS2OLJJUOWJUKRGVUUSYI5FDMRCDJFNFGR2BLJCE6TKCKVDUKNCILFGVEUKHJEZVIQKOIJJUORRWI5FTGUZXJNLEUWCZKNFU6UCSIVKTIVKUGRDUUQKUIFITGNCHKEZFIRKPJQ2E4RSJI5HVMS2JKBIVSVCPJ5BFQR2ZGNKE6TKCLBDVSWKUIVGVGT2JKJKEQR2JLJJEONCZIRAU2SSUI42FURCLJZJEIR2FLJCE2TSSJZDUKM2UIFGUEUSHJUZVIRKOJJLVAUSIIZCVEU2PKBIVURCBJVJFOR2BGRCEKTKSKJDUCWKEIE3UEUSQKJFEIQ2OIJNEORRWIREU4WSTI42FSRCPJZNEIS2KJBJUOVCTKNEVUSCDI5GVEUKHJEZUGMSNIJMUMVK2IRCUSQSSI5ATKRCBJVBEI7BUG4ZDOMBOG43XY7CSJ56HY7D4KRLUSTRAKNKVARKSJFHVE7BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            },
+            "search_context": {
+              "destination": "Tokyo",
+              "adults_per_room": 2,
+              "rooms": 1,
+              "children_ages": [],
+              "guest_nationality": "IN",
+              "refundable_only": false
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-25T16:58:02.981866Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_6ef2b1d831dd",
+          "mode": null,
+          "label": "THE BLOSSOM HIBIYA",
+          "detail": "Double Bed - Nonsmoking Superior Room",
+          "price": {
+            "amount": 93237.57,
+            "currency": "INR",
+            "basis": "per_party",
+            "taxes": null,
+            "fees": null,
+            "due_at_property": null,
+            "all_in": null,
+            "mandatory_costs_complete": null,
+            "excluded": [],
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹48,713 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-04-18",
+            "checkout": "2027-04-21",
+            "room_name": "Double Bed - Nonsmoking Superior Room",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Minato-ku Shinbashi 1-1-13",
+            "rating": 9.1,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1db0a1",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFfR1kyRE1aUlhHVTNERU5UREdZMlRFTUJXR0kzREtOUlVHSVlERVpCU0dBM0dLTlRHR1pTVE9NWldNUTNHTU5UQ0dZNFRNWkpXRzRaREFOWlRHNDJUT01CV0dVM1RFTlJaR1pURE9NUlNHQTNURU5UR0daVERNWkQ0R0VSVEVNQlNHNFlESU1KWVBRWkRBTVJYR0EyREVNTDRNVlhGNlZLVFBSRVU0N0NKSlpKSFlNU0JHQkJYWU5CVkdJNFhZMktRTTVLVVE3QlJHNDRET05SWEc0WURPTlJSR0laRTRSREdPTVJUQ09KVUdVM1RNTUpER0k0REVMSlJIRTJES05aV0dGNkZFUlNPUFFaREFNUlhHQTJEQ05CUkdBWURBN0JSUFJKRENNSlZHQjZEU01aU0dNM1RLTlpES0pIU0dVU0dKWVJURU1CU0c0V1RBTkJOR0UyQ0FNSlFISVlEQUlZo3ByY8tA9sNZHrhR7KVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wNC0xNyAxMDowMDowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtklRG91YmxlIEJlZCAtIE5vbnNtb2tpbmcgU3VwZXJpb3IgUm9vbaNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJOFoXSzMjAyNy0wNC0xNCAxMDowMDowMKFhy0C5fwUeuFHsoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSFoXSzMjAyNy0wNC0xNiAxMDowMDowMKFhy0DQY6euFHrhoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSFoXSzMjAyNy0wNC0xNyAxMDowMDowMKFhy0D2w1keuFHsoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSnMTk0NTc2MaNzaWQCo2hpZKhscDFkYjBhMaNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDQtMTiiY2-qMjAyNy0wNC0yMaNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDM5ZGI2YTYyZFVYS21RV1FSNWxlNWJiVmtUM2VGS0YwMUFmR6Npc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpw6FkvSQxMDUuMzMgVVNEIHBlciByb29tIHBlciBzdGF5oWHLQMSIC4UeuFKhY6NJTlKibHDAo2JrdAc=",
+              "rate_id": "I5MTERCNLJJFQR2VGNCEKTSUIRDVSMSUIVGUEV2HJEZUIS2OKJKUOSKZIRCVUQSTI5ATGR2LJZKEOR22KNKE6TK2K5GVCM2HJVHFIQ2HLE2FITK2JJLUONC2IRAU4WSUI42DEVCPJVBFOR2VGNKEKTSSLJDVUVCEJ5GVEU2HIEZVIRKOKRDUOWSUIRGVURBUI5CVEVCFJVBFGRZULFCESTKKLFIFCWSEIFGVEWCHIEZEIRKNJQ2E2VSYIY3FMS2UKBJEKVJUG5BUUSS2JJEFSTKTIJDUEQSYLFHEEVSHJE2FQWJSJNIU2NKLKVITOQSSI42DIRCPJZJFQRZULFCE6TSSKJDUSWSFGRJEIR2PJVJFIQ2PJJKUOVJTKRGU2SSEI5ETIRCFJRFFESCFGJCEWTS2K5DUMNSGIVJFGT2QKFNEIQKNKJMEOQJSIRBU4QSSI5AVSRCBG5BFEUCSJJCEGTKKKZDUENSEKNGVUU2HJUZVIS2OLJCEWSSIKNDVKU2HJJMVEVCFJVBFGRZUK5KECTSCJZDUKMSDIFGUUUKIJFMUIQKJLF6DSMZSGM3S4NJXPQZDAMRXFUYDILJRG4QDCMB2GAYDUMBQPRJE67D4PR6EI33VMJWGKICCMVSCALJAJZXW443NN5VWS3THEBJXK4DFOJUW64RAKJXW63L4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            },
+            "search_context": {
+              "destination": "Tokyo",
+              "adults_per_room": 2,
+              "rooms": 1,
+              "children_ages": [],
+              "guest_nationality": "IN",
+              "refundable_only": false
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-25T16:58:02.981866Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 44524.35,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "tokyo_kyoto_osaka_2027-04-18_2027-04-26",
+  "user_id": "corpus-india-outbound-japan-heritage-couple-8d-8211f9e3cb7d"
+}

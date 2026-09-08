@@ -1,0 +1,9 @@
+ContainerAppConsoleLogs_CL
+| extend event = parse_json(Log_s)
+| extend
+    event_kind = tostring(event.event_kind),
+    outcome = tostring(event.outcome),
+    duration_ms = todouble(event.duration_ms)
+| where event_kind == "chat_operation" and outcome in ("completed", "error", "rate_limited")
+| summarize Samples = count(), P95DurationMs = percentile(duration_ms, 95)
+| where Samples >= 5 and P95DurationMs > 120000

@@ -4,8 +4,10 @@ import type {
   Itinerary,
   MapView,
   SavedTrip,
+  SelectItemOptions,
   TripView,
 } from '@tripplanner/client';
+import { LatestRequestGate, SerializedMutationQueue } from '@tripplanner/client';
 import {
   createContext,
   type PropsWithChildren,
@@ -13,6 +15,7 @@ import {
   useContext,
   useEffect,
   useReducer,
+  useRef,
   useState,
 } from 'react';
 
@@ -24,6 +27,10 @@ import {
   type MobileAccount,
 } from '@/lib/tripplanner';
 
+import { tripErrorMessage } from './trip-provider-utils';
+import { useSavedTripLifecycle } from './use-saved-trip-lifecycle';
+import { useTripMutations } from './use-trip-mutations';
+
 interface TripContextValue {
   view: TripView | null;
   itinerary: Itinerary | null;
@@ -33,28 +40,26 @@ interface TripContextValue {
   loading: boolean;
   sending: boolean;
   error: string | null;
+  canRetryMessage: boolean;
   revision: number;
   account: MobileAccount | null;
   refresh: () => Promise<void>;
   switchTrip: (tripId: string) => Promise<void>;
   startNewTrip: () => Promise<void>;
   sendMessage: (message: string) => Promise<void>;
+  retryMessage: () => Promise<void>;
   removePlace: (
     kind: string,
     name: string,
     options?: DeselectItemOptions,
   ) => Promise<void>;
-  addPlace: (kind: string, name: string) => Promise<void>;
+  addPlace: (kind: string, name: string, options?: SelectItemOptions) => Promise<void>;
   setBooked: (day: number, name: string, booked: boolean) => Promise<void>;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
 const TripContext = createContext<TripContextValue | null>(null);
-
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Something went wrong.';
-}
 
 export function TripProvider({ children }: PropsWithChildren) {
   const [view, setView] = useState<TripView | null>(null);
@@ -65,20 +70,29 @@ export function TripProvider({ children }: PropsWithChildren) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [failedMessage, setFailedMessage] = useState<{
+    message: string;
+    requestId: string;
+    rowCount: number;
+  } | null>(null);
   const [revision, bumpRevision] = useReducer((value: number) => value + 1, 0);
   const [account, setAccount] = useState<MobileAccount | null>(null);
+  const [mutationQueue] = useState(() => new SerializedMutationQueue());
+  const refreshRequests = useRef(new LatestRequestGate());
 
   const refresh = useCallback(async () => {
+    const request = refreshRequests.current.start();
     setLoading(true);
     setError(null);
     try {
       const results = await Promise.allSettled([
-        tripplannerClient.fetchTripView(),
-        tripplannerClient.fetchItinerary(),
-        tripplannerClient.fetchMapView(),
-        tripplannerClient.fetchSavedTrips(),
-        tripplannerClient.fetchChatHistory(),
+        tripplannerClient.fetchTripView(undefined, request.signal),
+        tripplannerClient.fetchItinerary(request.signal),
+        tripplannerClient.fetchMapView(request.signal),
+        tripplannerClient.fetchSavedTrips(request.signal),
+        tripplannerClient.fetchChatHistory(undefined, request.signal),
       ]);
+      if (!request.isCurrent()) return;
       const [nextView, nextItinerary, nextMap, nextTrips, history] = results;
       if (nextView.status === 'fulfilled') setView(nextView.value);
       if (nextItinerary.status === 'fulfilled') setItinerary(nextItinerary.value);
@@ -92,77 +106,87 @@ export function TripProvider({ children }: PropsWithChildren) {
       }
       bumpRevision();
     } catch (caught) {
-      setError(errorMessage(caught));
+      if (request.isCurrent()) setError(tripErrorMessage(caught));
     } finally {
-      setLoading(false);
+      if (request.isCurrent()) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     void getMobileAccount().then(setAccount);
     void refresh();
+    return () => refreshRequests.current.abort();
   }, [refresh]);
 
-  const signIn = useCallback(async () => {
+  const signIn = useCallback(() => {
     setLoading(true);
     setError(null);
-    try {
-      setAccount(await loginWithGoogle());
+    setFailedMessage(null);
+    return mutationQueue.run(async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        setAccount(await loginWithGoogle());
+        await refresh();
+      } catch (caught) {
+        setError(tripErrorMessage(caught));
+        setLoading(false);
+      }
+    });
+  }, [mutationQueue, refresh]);
+
+  const signOut = useCallback(() => {
+    setFailedMessage(null);
+    return mutationQueue.run(async () => {
+      await logoutMobile();
+      setAccount(null);
+      setView(null);
+      setItinerary(null);
+      setMap(null);
+      setTrips([]);
+      setMessages([]);
       await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-      setLoading(false);
-    }
-  }, [refresh]);
+    });
+  }, [mutationQueue, refresh]);
 
-  const signOut = useCallback(async () => {
-    await logoutMobile();
-    setAccount(null);
-    setView(null);
-    setItinerary(null);
-    setMap(null);
-    setTrips([]);
-    setMessages([]);
-    await refresh();
-  }, [refresh]);
+  const clearFailedMessage = useCallback(() => setFailedMessage(null), []);
+  const { switchTrip, startNewTrip } = useSavedTripLifecycle({
+    mutationQueue,
+    refresh,
+    clearFailedMessage,
+    setError,
+    setLoading,
+  });
 
-  const switchTrip = useCallback(async (tripId: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await tripplannerClient.switchTrip(tripId);
-      await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-      setLoading(false);
-    }
-  }, [refresh]);
-
-  const startNewTrip = useCallback(async () => {
-    setLoading(true);
-    try {
-      await tripplannerClient.startNewTrip();
-      await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-      setLoading(false);
-    }
-  }, [refresh]);
-
-  const sendMessage = useCallback(async (message: string) => {
+  const runMessage = useCallback(async (
+    message: string,
+    requestId: string,
+    retryRows = 0,
+  ) => {
     const trimmed = message.trim();
     if (!trimmed || sending) return;
     setSending(true);
     setError(null);
-    setMessages((current) => [...current, { role: 'user', text: trimmed }]);
+    setFailedMessage(null);
+    setMessages((current) => [
+      ...(retryRows ? current.slice(0, -retryRows) : current),
+      { role: 'user', text: trimmed },
+    ]);
     let streamed = '';
+    let hasAssistantDraft = false;
     try {
       await tripplannerClient.streamChat(trimmed, {
         onToken: (token) => {
           streamed += token;
           setMessages((current) => {
-            const withoutDraft = current.filter((item) => item.role !== 'assistant' || item.text !== streamed.slice(0, -token.length));
-            return [...withoutDraft, { role: 'assistant', text: streamed }];
+            if (!hasAssistantDraft) {
+              hasAssistantDraft = true;
+              return [...current, { role: 'assistant', text: streamed }];
+            }
+            return [
+              ...current.slice(0, -1),
+              { role: 'assistant', text: streamed },
+            ];
           });
         },
         onTool: () => undefined,
@@ -175,47 +199,42 @@ export function TripProvider({ children }: PropsWithChildren) {
         onError: (messageText) => {
           throw new Error(messageText);
         },
-      });
+      }, { requestId });
       await refresh();
     } catch (caught) {
-      setError(errorMessage(caught));
+      setError(tripErrorMessage(caught));
+      setFailedMessage({
+        message: trimmed,
+        requestId,
+        rowCount: hasAssistantDraft ? 2 : 1,
+      });
     } finally {
       setSending(false);
     }
   }, [refresh, sending]);
 
-  const removePlace = useCallback(async (
-    kind: string,
-    name: string,
-    options?: DeselectItemOptions,
-  ) => {
-    try {
-      const result = await tripplannerClient.deselectItem(kind, name, options);
-      setView(result.view);
-      await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-    }
-  }, [refresh]);
+  const sendMessage = useCallback(
+    (message: string) => runMessage(message, crypto.randomUUID()),
+    [runMessage],
+  );
 
-  const addPlace = useCallback(async (kind: string, name: string) => {
-    try {
-      const result = await tripplannerClient.selectItem(kind, name);
-      setView(result.view);
-      await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-    }
-  }, [refresh]);
+  const retryMessage = useCallback(async () => {
+    if (!failedMessage) return;
+    await runMessage(
+      failedMessage.message,
+      failedMessage.requestId,
+      failedMessage.rowCount,
+    );
+  }, [failedMessage, runMessage]);
 
-  const setBooked = useCallback(async (day: number, name: string, booked: boolean) => {
-    try {
-      setItinerary(await tripplannerClient.setStopBooked(day, name, booked));
-      bumpRevision();
-    } catch (caught) {
-      setError(errorMessage(caught));
-    }
-  }, []);
+  const { removePlace, addPlace, setBooked } = useTripMutations({
+    mutationQueue,
+    refresh,
+    clearFailedMessage,
+    setError,
+    setItinerary,
+    setView,
+  });
 
   return (
     <TripContext.Provider value={{
@@ -227,12 +246,14 @@ export function TripProvider({ children }: PropsWithChildren) {
       loading,
       sending,
       error,
+      canRetryMessage: failedMessage !== null,
       revision,
       account,
       refresh,
       switchTrip,
       startNewTrip,
       sendMessage,
+      retryMessage,
       removePlace,
       addPlace,
       setBooked,

@@ -6,7 +6,7 @@ import { palette } from '@/constants/tripplanner-theme';
 import { useTrip } from '@/providers/trip-provider';
 
 export default function AssistantScreen() {
-  const { error, messages, refresh, sendMessage, sending, view } = useTrip();
+  const { canRetryMessage, error, messages, retryMessage, sendMessage, sending, view } = useTrip();
   const [draft, setDraft] = useState('');
   const submit = () => {
     const message = draft.trim();
@@ -19,7 +19,17 @@ export default function AssistantScreen() {
     <SafeAreaView edges={['top']} style={styles.safe}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={82} style={styles.keyboard}>
         <View style={styles.header}><Text style={styles.title}>Assistant</Text><Text style={styles.subtitle}>{view?.destination || 'Plan a complete trip'}</Text></View>
-        {error ? <Pressable onPress={() => void refresh()} style={styles.error}><Text style={styles.errorText}>{error} Tap to retry.</Text></Pressable> : null}
+        {error ? (
+          <Pressable
+            disabled={!canRetryMessage}
+            onPress={() => void retryMessage()}
+            style={styles.error}
+          >
+            <Text style={styles.errorText}>
+              {error}{canRetryMessage ? ' Tap to retry request.' : ''}
+            </Text>
+          </Pressable>
+        ) : null}
         <FlatList
           data={messages}
           keyExtractor={(_, index) => String(index)}

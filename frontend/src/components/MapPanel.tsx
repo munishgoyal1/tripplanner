@@ -1,242 +1,91 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Plus } from "lucide-react";
-import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
-import type { MapAirport, MapView, MapPin } from "../types";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, ChevronUp, Plus, Route, Search, X } from "lucide-react";
+import { fetchMapView, fetchMapsConfig, confirmStopPlace, type DeselectItemOptions, type SelectItemOptions } from "../api";
+import type { MapAirport, MapView, MapPin, UnmappedStop } from "../types";
+import UnmappedStopsPanel, { loudStops } from "./UnmappedStopsPanel";
+import { publishUnmappedStops } from "../lib/unmappedStops";
+import { dismissNotice, notify } from "../lib/notices";
+import { filterMapView, type ItineraryFilter } from "../lib/itineraryFilters";
+import { focusedDayForPin, focusNameForPin, pinMatchesFocus } from "./map/focusMatching";
+import { mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
+import { loadGoogleMaps } from "./map/googleMapsLoader";
+import { clearMapOverlays, synchronizeMapOverlays } from "./map/overlaySync";
+import {
+  capCircuitZoom,
+  fitDayCircuit,
+  fitDayRoute,
+  fitRoadCircuit,
+  syncPinMarkerFocus,
+  zoomToPin,
+  type PinMarkerEntry,
+} from "./map/viewportSync";
+import {
+  hotelLabelsForDay,
+  mapContextForRoadCircuit,
+  mapContextForScope,
+  pinsForDayRoute,
+  visitOrdersForDay,
+} from "./map/routeDerivations";
 import PlaceTripActions from "./PlaceTripActions";
+import {
+  isAirportTarget,
+  isInspectableMapPin,
+  isJourneyTerminal,
+  scheduleMapOverlayDraw,
+} from "./map/mapInspect";
 
-// Google Maps JS isn't typed (we don't ship @types/google.maps), so we lean on
-// `any` for the map objects. The browser key is referrer-restricted server-side.
-declare global {
-  interface Window {
-    google?: any;
-    __gmapsReady__?: () => void;
-  }
-}
-
-let loaderPromise: Promise<any> | null = null;
-
-function loadGoogleMaps(key: string): Promise<any> {
-  if (window.google?.maps?.places) return Promise.resolve(window.google);
-  if (window.google?.maps?.importLibrary) {
-    return window.google.maps.importLibrary("places").then(() => window.google);
-  }
-  if (loaderPromise) return loaderPromise;
-  loaderPromise = new Promise((resolve, reject) => {
-    window.__gmapsReady__ = () => resolve(window.google);
-    const s = document.createElement("script");
-    s.src =
-      `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}` +
-      `&callback=__gmapsReady__&libraries=places&loading=async&v=weekly`;
-    s.async = true;
-    s.onerror = () => {
-      loaderPromise = null;
-      reject(new Error("Failed to load Google Maps"));
-    };
-    document.head.appendChild(s);
-  });
-  return loaderPromise;
-}
-
-// Teardrop pin as an SVG data URL, tinted per day, with a number label baked in.
-export function pinIcon(color: string, label: string, focused = false): string {
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
-  <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-      fill="${color}" stroke="white" stroke-width="2"/>
-    <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
-      stroke="white" stroke-width="${focused ? 2 : 0}"/>
-  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="14"
-        font-weight="700" text-anchor="middle" fill="${focused ? "white" : color}">${label}</text>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-export function formatLegLabel(leg: { distance_display: string; duration_display: string }): string {
-  return `${leg.distance_display} · ${leg.duration_display}`;
-}
-
-function routeLegIcon(label: string, color: string): string {
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="112" height="26" viewBox="0 0 112 26">
-  <rect x="1" y="1" width="110" height="24" rx="12" fill="white" fill-opacity="0.94"
-        stroke="${color}" stroke-opacity="0.35"/>
-  <text x="56" y="17" font-family="Inter,Arial,sans-serif" font-size="10"
-        font-weight="600" text-anchor="middle" fill="#475569">${label}</text>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-const AIRPORT_COLOR = "#0f172a";
-const HOTEL_COLOR = "#334155"; // slate — distinct from the day palette
-const SUGGEST_COLOR = "#94a3b8";
-
-function airportIcon(): string {
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
-  <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-        fill="${AIRPORT_COLOR}" stroke="white" stroke-width="2"/>
-  <text x="17" y="22" font-size="15" text-anchor="middle">${"\u2708"}</text>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-// Hotel/lodging pin — a lettered teardrop ("H") in slate so a place you're
-// staying reads differently from a day-numbered attraction.
-export function hotelIcon(focused = false): string {
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
-  <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-        fill="${HOTEL_COLOR}" stroke="white" stroke-width="2"/>
-    <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
-      stroke="white" stroke-width="${focused ? 2 : 0}"/>
-  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
-        font-weight="700" text-anchor="middle" fill="${focused ? "white" : HOTEL_COLOR}">H</text>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-// A small filled dot for un-scheduled "suggested" places — present but quiet
-// so it doesn't compete with the numbered day pins.
-function dotIcon(color: string, focused = false): string {
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-  <circle cx="9" cy="9" r="6" fill="${color}" stroke="${focused ? "#0f172a" : "white"}" stroke-width="${focused ? 3 : 2}"/>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-function isAirportTarget(pin: MapPin | MapAirport): pin is MapAirport {
-  return pin.id === "airport";
-}
-
-export function placeNameMatches(candidate: string, focusName: string): boolean {
-  const normalize = (value: string) => value
-    .normalize("NFKD")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-  const normalizedCandidate = normalize(candidate);
-  const normalizedFocus = normalize(focusName);
-  if (!normalizedCandidate || !normalizedFocus) return false;
-  return normalizedCandidate === normalizedFocus
-    || normalizedCandidate.includes(normalizedFocus)
-    || normalizedFocus.includes(normalizedCandidate)
-    || normalizedFocus.split(" ").every((token) => normalizedCandidate.split(" ").includes(token));
-}
-
-export function focusedDayForPin(pin: MapPin, focusDay?: number): number | null {
-  return focusDay && pin.occurrences.some((occurrence) => occurrence.day === focusDay)
-    ? focusDay
-    : pin.day;
-}
-
-export function visitOrdersForDay(view: MapView, dayNumber: number): Map<string, number> {
-  const day = view.days.find((candidate) => candidate.day === dayNumber);
-  const pins = (day?.pin_ids ?? [])
-    .map((id) => view.pins.find((candidate) => candidate.id === id))
-    .filter((pin): pin is MapPin => !!pin && pin.kind !== "hotel");
-  const ordered = [...new Map(pins.map((pin) => [pin.id, pin])).values()].sort((left, right) => {
-    const leftStop = left.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
-    const rightStop = right.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
-    return (leftStop ?? Number.MAX_SAFE_INTEGER) - (rightStop ?? Number.MAX_SAFE_INTEGER);
-  });
-  return new Map(ordered.map((pin, index) => [pin.id, index + 1]));
-}
-
-export function pinMatchesFocus(pin: MapPin, focusName?: string | null, focusDay?: number): boolean {
-  if (!focusName || !placeNameMatches(pin.name, focusName)) return false;
-  return focusDay == null || pin.occurrences.some((occurrence) => occurrence.day === focusDay);
-}
-
-interface PinMarkerEntry {
-  pin: MapPin;
-  marker: any;
-  normalIcon: any;
-  focusedIcon: any;
-  baseZIndex: number;
-}
-
-export function syncPinMarkerFocus(
-  entries: PinMarkerEntry[],
-  focusName?: string | null,
-  focusDay?: number,
-): void {
-  entries.forEach(({ pin, marker, normalIcon, focusedIcon, baseZIndex }) => {
-    const focused = pinMatchesFocus(pin, focusName, focusDay);
-    marker.setIcon(focused ? focusedIcon : normalIcon);
-    marker.setZIndex(focused ? 1400 : baseZIndex);
-  });
-}
-
-export function kindForGooglePlace(types: string[] | undefined): "attraction" | "hotel" | "meal" {
-  if (types?.some((type) => type === "lodging" || type === "hotel")) return "hotel";
-  if (types?.some((type) => type === "restaurant" || type === "meal_takeaway")) return "meal";
-  return "attraction";
-}
-
-export function mapPinFromGooglePlace(place: any): MapPin | null {
-  const name = String(place?.name || "").trim();
-  const location = place?.geometry?.location;
-  const lat = typeof location?.lat === "function" ? location.lat() : location?.lat;
-  const lng = typeof location?.lng === "function" ? location.lng() : location?.lng;
-  if (!name || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-  let photo: string | null = null;
-  try {
-    photo = place.photos?.[0]?.getUrl?.({ maxWidth: 800 }) ?? null;
-  } catch {
-    photo = null;
-  }
-  return {
-    id: `candidate:${String(place.place_id || name).trim().toLowerCase()}`,
-    name,
-    kind: kindForGooglePlace(place.types),
-    selected: false,
-    day: null,
-    lat,
-    lng,
-    rating: typeof place.rating === "number" ? place.rating : null,
-    address: String(place.formatted_address || ""),
-    photo,
-    occurrences: [],
-  };
-}
-
-export function optionsForStopDay(day: string): SelectItemOptions | undefined {
-  const parsed = Number(day);
-  return day !== "auto" && Number.isInteger(parsed) && parsed > 0 ? { day: parsed } : undefined;
-}
-
-export function fitDayCircuit(google: any, map: any, view: MapView, dayNumber: number): boolean {
-  const day = view.days.find((candidate) => candidate.day === dayNumber);
-  if (!day) return false;
-  const pins = day.pin_ids
-    .map((id) => view.pins.find((pin) => pin.id === id))
-    .filter((pin): pin is MapPin => !!pin);
-  if (pins.length === 0) return false;
-  const bounds = new google.maps.LatLngBounds();
-  pins.forEach((pin) => bounds.extend({ lat: pin.lat, lng: pin.lng }));
-  map.fitBounds(bounds, 64);
-  return true;
-}
-
-export function capCircuitZoom(map: any): void {
-  if ((map.getZoom() ?? 0) > 14) map.setZoom(14);
-}
-
+export { focusedDayForPin, focusNameForPin, pinMatchesFocus, placeNameMatches } from "./map/focusMatching";
+export { kindForGooglePlace, mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
+export { airportIcon, hotelIcon, pinIcon } from "./map/mapIcons";
+export { isInspectableMapPin, scheduleMapOverlayDraw } from "./map/mapInspect";
+export {
+  formatLegLabel,
+  hotelLabelsForDay,
+  hotelReturnForDay,
+  mapContextForRoadCircuit,
+  mapContextForScope,
+  pinsForDayCircuit,
+  pinsForDayRoute,
+  routePathForPinIds,
+  routeStyleForLeg,
+  visitOrdersForDay,
+} from "./map/routeDerivations";
+export {
+  capCircuitZoom,
+  fitDayCircuit,
+  fitDayRoute,
+  fitDriveCircuit,
+  fitRoadCircuit,
+  syncPinMarkerFocus,
+  zoomToPin,
+} from "./map/viewportSync";
 
 interface Props {
+  filters?: readonly ItineraryFilter[];
   /** Bump to refetch the map after the trip changes. */
   reloadToken?: number;
+  /** Stable identity used to reset a newly selected trip to All days. */
+  tripId?: string | null;
+  /** Map view-model handed over by a trip switch; consumed once, then refetches. */
+  seed?: MapView | null;
   /** When set, highlight the pin with this name (filter to its day, pan, open info). */
   focusName?: string | null;
   /** Exact itinerary occurrence day for repeated places such as a multi-day hotel. */
   focusDay?: number;
+  /** Exact itinerary stop position for repeated or similarly named places. */
+  focusStop?: number;
   /** Changes for every focus request, including repeated clicks on the same stop. */
   focusToken?: number;
   /** Itinerary day whose complete circuit should be framed. */
   circuitFocusDay?: number;
   /** Changes for every circuit framing request, including repeated clicks. */
   circuitFocusToken?: number;
+  /** Itinerary day whose complete inter-city route should be framed. */
+  routeFocusDay?: number;
+  /** Exact persisted drive circuit whose stops and legs should be framed. */
+  routeFocusId?: string;
+  /** Changes for every route framing request, including repeated clicks. */
+  routeFocusToken?: number;
   /** User clicked a pin and wants other sections synced to that place. */
   onPinFocus?: (kind: string, name: string, day?: number, stop?: number) => void;
   /** User selected a day filter and wants the itinerary synced to that day. */
@@ -257,19 +106,29 @@ interface Props {
   ) => void | Promise<boolean>;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect }: Props) {
-  const [view, setView] = useState<MapView | null>(null);
+function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect }: Props) {
+  const [sourceView, setView] = useState<MapView | null>(null);
+  const [confirmingStop, setConfirmingStop] = useState<string | null>(null);
+  const view = useMemo(
+    () => sourceView ? filterMapView(sourceView, filters) : null,
+    [sourceView, filters],
+  );
   const [key, setKey] = useState<string | null>(null);
+    const [placesEnabled, setPlacesEnabled] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeDay, setActiveDay] = useState<number | null>(null); // null = all days
   const [selectedPin, setSelectedPin] = useState<MapPin | MapAirport | null>(null);
+  const [contextScope, setContextScope] = useState<number | "all" | null>(null);
   const [candidatePin, setCandidatePin] = useState<MapPin | null>(null);
   const [newStopName, setNewStopName] = useState("");
-  const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel" | "meal">("attraction");
+  const [newStopKind, setNewStopKind] = useState<"" | "attraction" | "hotel" | "meal">("");
+  const [stopKindAutoFilled, setStopKindAutoFilled] = useState(false);
   const [newStopDay, setNewStopDay] = useState("auto");
   const [addingStop, setAddingStop] = useState(false);
   const [retryToken, setRetryToken] = useState(0);
+  const [sequenceOpen, setSequenceOpen] = useState(false);
 
   const mapEl = useRef<HTMLDivElement>(null);
   const stopInputRef = useRef<HTMLInputElement>(null);
@@ -278,20 +137,59 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   const autocompleteRef = useRef<any>(null);
   const autocompleteListenerRef = useRef<any>(null);
   const mapClickListenerRef = useRef<any>(null);
+  const placesServiceRef = useRef<any>(null);
   const circuitZoomTimerRef = useRef<number | null>(null);
   const overlaysRef = useRef<any[]>([]); // markers + polylines to clear on redraw
   const pinMarkersRef = useRef<PinMarkerEntry[]>([]);
-  const focusRef = useRef({ name: focusName, day: focusDay });
-  focusRef.current = { name: focusName, day: focusDay };
+  const focusRef = useRef({ name: focusName, day: focusDay, stop: focusStop });
+  focusRef.current = { name: focusName, day: focusDay, stop: focusStop };
   // A pin the itinerary asked us to zoom into. Applied inside draw() so a
   // redraw (e.g. lazy map mount or day-filter change) can't fight the zoom by
   // re-running fitBounds. Survives the async map init.
   const pendingFocusRef = useRef<MapPin | MapAirport | null>(null);
-  const pendingCircuitFocusRef = useRef<number | null>(null);
+  const pendingRouteFocusRef = useRef<{ day: number; circuitId?: string } | null>(null);
+  const previousTripIdRef = useRef(tripId);
+  const seedRef = useRef(seed);
+  seedRef.current = seed;
+  const consumedSeedRef = useRef<MapView | null>(null);
+  const configLoadedRef = useRef(false);
+  const filterKey = filters.join(",");
+  const previousFilterKeyRef = useRef(filterKey);
 
   useEffect(() => {
     onPinFocusRef.current = onPinFocus;
   }, [onPinFocus]);
+
+  useEffect(() => {
+    if (previousTripIdRef.current === tripId) return;
+    previousTripIdRef.current = tripId;
+    pendingFocusRef.current = null;
+    pendingRouteFocusRef.current = null;
+    // Drop the outgoing trip's geometry immediately. Keeping it on screen while
+    // the new trip loaded made the map look like it had switched to the wrong
+    // trip for as long as the request took.
+    clearMapOverlays(overlaysRef.current);
+    overlaysRef.current = [];
+    pinMarkersRef.current = [];
+    setView(null);
+    setActiveDay(null);
+    setSelectedPin(null);
+    setContextScope(null);
+    setCandidatePin(null);
+    setNewStopDay("auto");
+  }, [tripId]);
+
+  useEffect(() => {
+    if (previousFilterKeyRef.current === filterKey) return;
+    previousFilterKeyRef.current = filterKey;
+    pendingFocusRef.current = null;
+    pendingRouteFocusRef.current = null;
+    setActiveDay(null);
+    setSelectedPin(null);
+    setContextScope("all");
+    setCandidatePin(null);
+    setNewStopDay("auto");
+  }, [filterKey]);
 
   const populateStopFromGooglePlace = useCallback(
     (place: any) => {
@@ -299,11 +197,45 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       if (!candidate) return;
       setNewStopName(candidate.name);
       setNewStopKind(candidate.kind as "attraction" | "hotel" | "meal");
+      setStopKindAutoFilled(true);
       setCandidatePin(candidate);
       setSelectedPin(candidate);
+      setContextScope(null);
       pendingFocusRef.current = candidate;
       onPinFocusRef.current?.(candidate.kind, candidate.name);
       stopInputRef.current?.focus();
+    },
+    []
+  );
+
+  // Preview a place that isn't one of the trip's pins (a guide/discovery click)
+  // as a candidate marker, so not-in-trip items surface on the map exactly like
+  // in-trip selections do. Looks the place up via Places, biased to the trip area.
+  const previewPlaceOnMap = useCallback(
+    (name: string, bias?: { lat: number; lng: number } | null) => {
+      const service = placesServiceRef.current;
+      const map = mapRef.current;
+      const google = window.google;
+      if (!service || !map || !google?.maps?.places) return;
+      const requested = name.trim().toLowerCase();
+      service.findPlaceFromQuery(
+        {
+          query: name,
+          fields: ["place_id", "name", "types", "geometry", "formatted_address", "rating", "photos"],
+          ...(bias ? { locationBias: bias } : {}),
+        },
+        (results: any[], status: string) => {
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !results?.length) return;
+          // Ignore a stale response if focus moved on while we were fetching.
+          if (focusRef.current.name?.trim().toLowerCase() !== requested) return;
+          const candidate = mapPinFromGooglePlace(results[0]);
+          if (!candidate) return;
+          setContextScope(null);
+          setCandidatePin(candidate);
+          setSelectedPin(candidate);
+          pendingFocusRef.current = candidate;
+        }
+      );
     },
     []
   );
@@ -312,14 +244,31 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   useEffect(() => {
     let cancelled = false;
     const controller = new AbortController();
+    // A trip switch already returned this panel's view-model. Use it instead of
+    // asking the server to rebuild the same thing a second time.
+    const seeded = seedRef.current;
+    if (seeded && seeded !== consumedSeedRef.current) {
+      consumedSeedRef.current = seeded;
+      if (configLoadedRef.current) {
+        setView(seeded);
+        setError(null);
+        setLoading(false);
+        return;
+      }
+    }
     (async () => {
       setLoading(true);
       setError(null);
       try {
-        const [cfg, mv] = await Promise.all([fetchMapsConfig(), fetchMapView(controller.signal)]);
+        const [cfg, mv] = await Promise.all([
+          fetchMapsConfig(),
+          seeded ? Promise.resolve(seeded) : fetchMapView(controller.signal),
+        ]);
         if (cancelled) return;
         setView(mv);
         setKey(cfg.enabled ? cfg.key : null);
+        setPlacesEnabled(cfg.enabled && cfg.places_enabled);
+        configLoadedRef.current = true;
       } catch (requestError) {
         if (!cancelled && !(requestError instanceof DOMException && requestError.name === "AbortError")) {
           setError("Could not load the map.");
@@ -332,7 +281,9 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       cancelled = true;
       controller.abort();
     };
-  }, [reloadToken, retryToken]);
+    // tripId participates so the eager clear above always has a matching
+    // reload, even when the caller switches trips without bumping reloadToken.
+  }, [reloadToken, retryToken, tripId]);
 
   useEffect(() => {
     if (!view) return;
@@ -353,7 +304,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   useEffect(() => {
     if (!key || !view?.enabled || !mapEl.current || mapRef.current) return;
     let cancelled = false;
-    loadGoogleMaps(key)
+    loadGoogleMaps(key, placesEnabled)
       .then((google) => {
         if (cancelled || !mapEl.current) return;
         mapRef.current = new google.maps.Map(mapEl.current, {
@@ -377,6 +328,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
         }
         if (google.maps.places?.PlacesService) {
           const placesService = new google.maps.places.PlacesService(mapRef.current);
+          placesServiceRef.current = placesService;
           mapClickListenerRef.current = mapRef.current.addListener("click", (event: any) => {
             if (!event.placeId) return;
             event.stop?.();
@@ -393,7 +345,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
             );
           });
         }
-        draw();
+        setMapReady(true);
       })
       .catch(() => {
         if (!cancelled) setError("Could not load Google Maps. Check the browser key.");
@@ -404,7 +356,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     // `draw` is intentionally omitted: it's called once here to paint the
     // initial overlays, then the dedicated redraw effect keeps it in sync.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, view?.enabled, view?.center, populateStopFromGooglePlace]);
+  }, [key, placesEnabled, view?.enabled, view?.center, populateStopFromGooglePlace]);
 
   // Drop the stale map instance if the component is torn down, so a remount
   // (e.g. toggling "Show map") rebinds to a fresh container instead of an
@@ -420,6 +372,9 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       if (circuitZoomTimerRef.current !== null) {
         window.clearTimeout(circuitZoomTimerRef.current);
       }
+      clearMapOverlays(overlaysRef.current);
+      overlaysRef.current = [];
+      pinMarkersRef.current = [];
       mapRef.current = null;
     };
   }, []);
@@ -429,212 +384,54 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     const google = window.google;
     const map = mapRef.current;
     if (!google || !map || !view) return;
-
-    overlaysRef.current.forEach((o) => o.setMap(null));
-    overlaysRef.current = [];
-    pinMarkersRef.current = [];
-
-    const dayColor = new Map<number, string>();
-    view.days.forEach((d) => dayColor.set(d.day, d.color));
-    const visitOrderByPinId = new Map<string, number>();
-    const orderDays = activeDay == null
-      ? view.days
-      : view.days.filter((day) => day.day === activeDay);
-    orderDays.forEach((d) => {
-      visitOrdersForDay(view, d.day).forEach((order, id) => {
-        if (!visitOrderByPinId.has(id)) visitOrderByPinId.set(id, order);
-      });
-    });
-
-    const activeDayPinIds = new Set(
-      activeDay === null
-        ? []
-        : view.days.find((day) => day.day === activeDay)?.pin_ids ?? []
-    );
-    const visible = (p: MapPin) =>
-      p.kind === "hotel" || activeDay === null || activeDayPinIds.has(p.id);
-    const bounds = new google.maps.LatLngBounds();
-    let any = false;
-
-    const pinById = new Map(view.pins.map((p) => [p.id, p] as const));
-    const currentFocus = focusRef.current;
-
-    for (const p of view.pins) {
-      if (!visible(p)) continue;
-      // Choose a marker style: hotels get a slate "H" pin (always shown),
-      // day-scheduled places get a bold numbered teardrop in their day color,
-      // and un-scheduled suggestions get a quiet dot.
-      const focused = pinMatchesFocus(p, currentFocus.name, currentFocus.day);
-      const visitOrder = visitOrderByPinId.get(p.id);
-      const markerDay = activeDay !== null && activeDayPinIds.has(p.id) ? activeDay : p.day;
-      const iconFor = (isFocused: boolean) => {
-        if (p.kind === "hotel") return {
-          url: hotelIcon(isFocused),
-          scaledSize: new google.maps.Size(34, 44),
-          anchor: new google.maps.Point(17, 44),
-        };
-        if (markerDay && visitOrder) {
-          const color = dayColor.get(markerDay) || "#64748b";
-          return {
-            url: pinIcon(color, String(visitOrder), isFocused),
-            scaledSize: new google.maps.Size(34, 44),
-            anchor: new google.maps.Point(17, 44),
-          };
-        }
-        return {
-          url: dotIcon(p.selected ? "#0d9488" : SUGGEST_COLOR, isFocused),
-          scaledSize: new google.maps.Size(isFocused ? 24 : 18, isFocused ? 24 : 18),
-          anchor: new google.maps.Point(isFocused ? 12 : 9, isFocused ? 12 : 9),
-        };
-      };
-      const normalIcon = iconFor(false);
-      const focusedIcon = iconFor(true);
-      const baseZIndex = p.selected ? 1000 : p.day ? 600 : 400;
-      const marker = new google.maps.Marker({
-        position: { lat: p.lat, lng: p.lng },
-        map,
-        title: p.name,
-        icon: focused ? focusedIcon : normalIcon,
-        zIndex: focused ? 1400 : baseZIndex,
-      });
-      marker.addListener("click", () => {
+    const result = synchronizeMapOverlays({
+      google,
+      map,
+      view,
+      suppressFallbackRoutes: filters.length > 0,
+      activeDay,
+      activeRouteCircuitId: routeFocusDay === activeDay ? routeFocusId : null,
+      candidatePin,
+      focus: focusRef.current,
+      pendingFocus: pendingFocusRef.current,
+      pendingRouteFocus: pendingRouteFocusRef.current,
+      previousOverlays: overlaysRef.current,
+      previousPinMarkers: pinMarkersRef.current,
+      onPinClick: (pin) => {
         setCandidatePin(null);
-        if (["hotel", "attraction", "meal", "restaurant"].includes(p.kind)) {
-          const occurrence = p.occurrences.find(
-            (candidate) => candidate.day === (activeDay ?? p.day),
-          ) ?? p.occurrences[0];
-          onPinFocusRef.current?.(p.kind, p.name, occurrence?.day, occurrence?.stop);
+        if (isInspectableMapPin(pin)) {
+          const occurrence = pin.occurrences.find(
+            (candidate) => candidate.day === (activeDay ?? pin.day),
+          ) ?? pin.occurrences[0];
+          onPinFocusRef.current?.(
+            pin.kind,
+            focusNameForPin(pin),
+            occurrence?.day ?? activeDay ?? pin.day ?? undefined,
+            occurrence?.stop,
+          );
         }
-        setSelectedPin(p);
-      });
-      pinMarkersRef.current.push({ pin: p, marker, normalIcon, focusedIcon, baseZIndex });
-      overlaysRef.current.push(marker);
-      bounds.extend({ lat: p.lat, lng: p.lng });
-      any = true;
-    }
-
-    if (candidatePin) {
-      const marker = new google.maps.Marker({
-        position: { lat: candidatePin.lat, lng: candidatePin.lng },
-        map,
-        title: candidatePin.name,
-        icon: {
-          url: dotIcon("#e11d48"),
-          scaledSize: new google.maps.Size(24, 24),
-          anchor: new google.maps.Point(12, 12),
-        },
-        zIndex: 1200,
-      });
-      marker.addListener("click", () => {
-        setSelectedPin(candidatePin);
-        onPinFocusRef.current?.(candidatePin.kind, candidatePin.name);
-      });
-      overlaysRef.current.push(marker);
-      bounds.extend({ lat: candidatePin.lat, lng: candidatePin.lng });
-      any = true;
-    }
-
-    // Airport pin (always shown for context).
-    if (view.airport) {
-      const a = view.airport;
-      const marker = new google.maps.Marker({
-        position: { lat: a.lat, lng: a.lng },
-        map,
-        title: a.name,
-        icon: {
-          url: airportIcon(),
-          scaledSize: new google.maps.Size(34, 44),
-          anchor: new google.maps.Point(17, 44),
-        },
-        zIndex: 200,
-      });
-      marker.addListener("click", () => {
-        setSelectedPin(a);
-      });
-      overlaysRef.current.push(marker);
-      // Only include airport in bounds when viewing all days (for context);
-      // when a specific day is selected, omit it so fitBounds zooms to day pins only.
-      if (activeDay === null) {
-        bounds.extend({ lat: a.lat, lng: a.lng });
-        any = true;
-      }
-    }
-
-    // Geodesic route lines connecting each day's stops in order. (Straight
-    // arcs, not road directions, to avoid the billed Directions API.)
-    for (const d of view.days) {
-      if (activeDay !== null && d.day !== activeDay) continue;
-      const path = d.pin_ids
-        .map((id) => pinById.get(id))
-        .filter((p): p is MapPin => !!p)
-        .map((p) => ({ lat: p.lat, lng: p.lng }));
-      if (path.length < 2) continue;
-      const line = new google.maps.Polyline({
-        path,
-        geodesic: true,
-        strokeColor: d.color,
-        strokeOpacity: 0.85,
-        strokeWeight: 3,
-        map,
-      });
-      overlaysRef.current.push(line);
-
-      if (activeDay === d.day) {
-        for (const leg of d.legs ?? []) {
-          const start = pinById.get(leg.from_pin_id);
-          const end = pinById.get(leg.to_pin_id);
-          if (!start || !end) continue;
-          const label = formatLegLabel(leg);
-          const marker = new google.maps.Marker({
-            position: {
-              lat: (start.lat + end.lat) / 2,
-              lng: (start.lng + end.lng) / 2,
-            },
-            map,
-            clickable: false,
-            title: `${label} · ${leg.mode}`,
-            icon: {
-              url: routeLegIcon(label, d.color),
-              scaledSize: new google.maps.Size(112, 26),
-              anchor: new google.maps.Point(56, 13),
-            },
-            zIndex: 500,
-          });
-          overlaysRef.current.push(marker);
-        }
-      }
-    }
-
-    // If the itinerary asked to focus a pin, zoom into it instead of fitting
-    // all bounds — and do it here so a redraw can't undo the zoom.
-    const circuitDay = pendingCircuitFocusRef.current;
-    const focus = pendingFocusRef.current;
-    if (focus) {
-      map.panTo({ lat: focus.lat, lng: focus.lng });
-      map.setZoom(15);
-      pendingFocusRef.current = null;
-      if (isAirportTarget(focus)) {
-        setSelectedPin(focus);
-      } else {
-        setSelectedPin(focus);
-      }
-    } else if (circuitDay && fitDayCircuit(google, map, view, circuitDay)) {
-      pendingCircuitFocusRef.current = null;
-      if (circuitZoomTimerRef.current !== null) {
-        window.clearTimeout(circuitZoomTimerRef.current);
-      }
-      circuitZoomTimerRef.current = window.setTimeout(() => {
-        capCircuitZoom(map);
-        circuitZoomTimerRef.current = null;
-      }, 1200);
-    } else if (any && !bounds.isEmpty()) {
-      map.fitBounds(bounds, 64);
-    }
-  }, [view, activeDay, candidatePin]);
+        if (isJourneyTerminal(pin)) zoomToPin(map, pin);
+        setSelectedPin(pin);
+      },
+      onCandidateClick: (pin) => {
+        setSelectedPin(pin);
+        onPinFocusRef.current?.(pin.kind, pin.name);
+      },
+      onAirportClick: (airport) => {
+        zoomToPin(map, airport);
+        setSelectedPin(airport);
+      },
+    });
+    overlaysRef.current = result.overlays;
+    pinMarkersRef.current = result.pinMarkers;
+    if (result.consumedPendingFocus) pendingFocusRef.current = null;
+    if (result.consumedPendingRouteFocus) pendingRouteFocusRef.current = null;
+    if (result.focusedPin) setSelectedPin(result.focusedPin);
+  }, [view, filters.length, activeDay, candidatePin, routeFocusDay, routeFocusId]);
 
   useEffect(() => {
-    draw();
-  }, [draw]);
+    return scheduleMapOverlayDraw(draw);
+  }, [draw, mapReady]);
 
   // ---- focus a pin by name (driven from the itinerary tab) -----------------
   // Same-day changes update existing marker icons immediately. If the target
@@ -649,17 +446,23 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       syncPinMarkerFocus(pinMarkersRef.current);
       return;
     }
-    pendingCircuitFocusRef.current = null;
+    pendingRouteFocusRef.current = null;
     const normalizedFocus = focusName.trim().toLowerCase();
-    let target: MapPin | MapAirport | undefined = view.pins.find((p) =>
-      placeNameMatches(p.name, focusName)
+    let target: MapPin | MapAirport | undefined = view.pins.find((pin) =>
+      pinMatchesFocus(pin, focusName, focusDay, focusStop)
     );
     // Check airport if not found in pins
     if (!target && view.airport && view.airport.name.trim().toLowerCase() === normalizedFocus) {
       target = view.airport;
     }
-    if (!target) return;
+    if (!target) {
+      // Not a trip pin — preview it on the map as a candidate marker so guide /
+      // discovery clicks synchronize to the map like in-trip selections do.
+      previewPlaceOnMap(focusName, view.center ?? null);
+      return;
+    }
     pendingFocusRef.current = target;
+    setContextScope(null);
     const clearingCandidate = candidatePin !== null;
     setCandidatePin(null);
     // Reveal the pin's day so it isn't filtered out. Changing activeDay
@@ -671,19 +474,30 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       setActiveDay(day);
       return;
     }
-    syncPinMarkerFocus(pinMarkersRef.current, focusName, focusDay);
+    syncPinMarkerFocus(pinMarkersRef.current, focusName, focusDay, focusStop);
     const map = mapRef.current;
-    map?.panTo({ lat: target.lat, lng: target.lng });
-    map?.setZoom(15);
+    if (map) zoomToPin(map, target);
     setSelectedPin(target);
     if (map && !clearingCandidate) pendingFocusRef.current = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusName, focusDay, focusToken, view]);
+  }, [focusName, focusDay, focusStop, focusToken, view]);
 
   useEffect(() => {
-    if (!view || !circuitFocusDay || circuitFocusToken === 0) return;
+    if (!view || circuitFocusToken === 0) return;
     pendingFocusRef.current = null;
-    pendingCircuitFocusRef.current = circuitFocusDay;
+    pendingRouteFocusRef.current = null;
+    if (!circuitFocusDay) {
+      if (circuitZoomTimerRef.current !== null) {
+        window.clearTimeout(circuitZoomTimerRef.current);
+        circuitZoomTimerRef.current = null;
+      }
+      setSelectedPin(null);
+      setContextScope("all");
+      setActiveDay(null);
+      return;
+    }
+    setSelectedPin(null);
+    setContextScope(circuitFocusDay);
     if (activeDay !== circuitFocusDay) {
       setActiveDay(circuitFocusDay);
       return;
@@ -691,9 +505,8 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
 
     const google = window.google;
     const map = mapRef.current;
-    if (!google || !map) return;
+    if (!mapReady || !google || !map) return;
     if (!fitDayCircuit(google, map, view, circuitFocusDay)) return;
-    pendingCircuitFocusRef.current = null;
     if (circuitZoomTimerRef.current !== null) {
       window.clearTimeout(circuitZoomTimerRef.current);
     }
@@ -701,10 +514,34 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       capCircuitZoom(map);
       circuitZoomTimerRef.current = null;
     }, 1200);
-  }, [activeDay, circuitFocusDay, circuitFocusToken, view]);
+  }, [activeDay, circuitFocusDay, circuitFocusToken, mapReady, view]);
+
+  useEffect(() => {
+    if (!view || !routeFocusDay || routeFocusToken === 0) {
+      pendingRouteFocusRef.current = null;
+      return;
+    }
+    pendingFocusRef.current = null;
+    pendingRouteFocusRef.current = { day: routeFocusDay, circuitId: routeFocusId };
+    setSelectedPin(null);
+    setContextScope(routeFocusDay);
+    if (activeDay !== routeFocusDay) {
+      setActiveDay(routeFocusDay);
+      return;
+    }
+    const google = window.google;
+    const map = mapRef.current;
+    const fitted = google && map
+      ? (!!routeFocusId && fitRoadCircuit(google, map, view, routeFocusId))
+        || fitDayRoute(google, map, view, routeFocusDay)
+      : false;
+    if (fitted) {
+      pendingRouteFocusRef.current = null;
+    }
+  }, [activeDay, routeFocusDay, routeFocusId, routeFocusToken, view]);
 
   const isPlacePin = (p: MapPin | MapAirport | null): p is MapPin => {
-    return !!p && !isAirportTarget(p);
+    return !!p && !isAirportTarget(p) && !isJourneyTerminal(p);
   };
 
   const handleAddStop = async () => {
@@ -713,14 +550,44 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     setAddingStop(true);
     try {
       const added = await onSelect?.(
-        newStopKind,
+        newStopKind || "attraction",
         name,
         optionsForStopDay(newStopDay),
       );
-      if (added !== false) setNewStopName("");
+      if (added !== false) {
+        setNewStopName("");
+        setNewStopKind("");
+        setStopKindAutoFilled(false);
+      }
     } finally {
       setAddingStop(false);
     }
+  };
+
+  const clearComposer = () => {
+    setNewStopName("");
+    setNewStopKind("");
+    setStopKindAutoFilled(false);
+    setCandidatePin(null);
+    setSelectedPin((pin) => (pin?.id.startsWith("candidate:") ? null : pin));
+    stopInputRef.current?.focus();
+  };
+
+  // A sequence card stands in for its pin, so it focuses the itinerary and the
+  // map exactly like clicking that pin does.
+  const handleSequenceSelect = (pin: MapPin) => {
+    setCandidatePin(null);
+    const occurrence = pin.occurrences.find(
+      (candidate) => candidate.day === (activeDay ?? pin.day),
+    ) ?? pin.occurrences[0];
+    onPinFocusRef.current?.(
+      pin.kind,
+      focusNameForPin(pin),
+      occurrence?.day ?? activeDay ?? pin.day ?? undefined,
+      occurrence?.stop,
+    );
+    if (mapRef.current) zoomToPin(mapRef.current, pin);
+    setSelectedPin(pin);
   };
 
   const handleAddSelected = async () => {
@@ -736,6 +603,31 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       setAddingStop(false);
     }
   };
+
+  const unmappedStops = useMemo(() => view?.unmapped_stops ?? [], [view]);
+
+  // Only an anchor interrupts: a stay or terminal missing from the map is the
+  // day's shape gone, not a cosmetic gap.
+  useEffect(() => {
+    publishUnmappedStops(unmappedStops);
+    const anchors = loudStops(unmappedStops);
+    if (!anchors.length) {
+      dismissNotice("map-unmapped-anchor");
+      return;
+    }
+    const [first] = anchors;
+    notify({
+      id: "map-unmapped-anchor",
+      tone: "decision",
+      message:
+        anchors.length === 1
+          ? `${first.name} isn't on the map`
+          : `${anchors.length} key stops aren't on the map`,
+      detail: first.candidate
+        ? `The map found “${first.candidate.name}” instead. Open the map to accept it or fix the stop.`
+        : "Open the map to see which stops could not be placed.",
+    });
+  }, [unmappedStops]);
 
   // ---- render --------------------------------------------------------------
   // "Not configured" is a terminal state — no map will ever mount, so it's safe
@@ -764,6 +656,87 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
           : null;
   const activeDayObj =
     view && activeDay != null ? view.days.find((d) => d.day === activeDay) : null;
+  // The composer stays a plain search field until a place is named, so the
+  // resting dock states what it does instead of promising a form.
+  const composerOpen = newStopName.trim().length > 0 || candidatePin != null;
+  const sequencePins = view && activeDay != null ? pinsForDayRoute(view, activeDay) : [];
+  const sequenceOrders = view && activeDay != null ? visitOrdersForDay(view, activeDay) : null;
+  const sequenceHotels = view && activeDay != null ? hotelLabelsForDay(view, activeDay) : null;
+  const selectedMapContext = view
+    ? routeFocusId && routeFocusDay === activeDay
+      ? mapContextForRoadCircuit(view, routeFocusId) ?? mapContextForScope(view, contextScope)
+      : mapContextForScope(view, contextScope)
+    : null;
+  const scheduleLabel = selectedMapContext
+    && "scheduleLabel" in selectedMapContext
+    && typeof selectedMapContext.scheduleLabel === "string"
+    ? selectedMapContext.scheduleLabel
+    : "Schedule";
+  const travelLabel = selectedMapContext
+    && "travelLabel" in selectedMapContext
+    && typeof selectedMapContext.travelLabel === "string"
+    ? selectedMapContext.travelLabel
+    : "Travel";
+  const dayScopeControls = view ? (
+    <div className="flex min-w-0 items-center gap-1 overflow-x-auto" aria-label="Map day scope">
+      <button
+        type="button"
+        onClick={() => {
+          if (circuitZoomTimerRef.current !== null) {
+            window.clearTimeout(circuitZoomTimerRef.current);
+            circuitZoomTimerRef.current = null;
+          }
+          pendingFocusRef.current = null;
+          pendingRouteFocusRef.current = null;
+          setActiveDay(null);
+          setSelectedPin(null);
+          setContextScope("all");
+          setNewStopDay("auto");
+          onAllDaysFocus?.();
+        }}
+        className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold transition ${
+          activeDay === null ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"
+        }`}
+      >
+        All days
+      </button>
+      {view.days.map((day) => (
+        <button
+          key={day.day}
+          type="button"
+          onClick={() => {
+            if (circuitZoomTimerRef.current !== null) {
+              window.clearTimeout(circuitZoomTimerRef.current);
+              circuitZoomTimerRef.current = null;
+            }
+            pendingFocusRef.current = null;
+            pendingRouteFocusRef.current = null;
+            setActiveDay(day.day);
+            setSelectedPin(null);
+            setContextScope(day.day);
+            setNewStopDay(String(day.day));
+            onDayFocus?.(day.day);
+          }}
+          className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold transition ${
+            activeDay === day.day ? "text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"
+          }`}
+          style={activeDay === day.day ? { backgroundColor: day.color } : undefined}
+        >
+          {day.label}
+        </button>
+      ))}
+    </div>
+  ) : null;
+
+  const handleConfirmStopPlace = async (stop: UnmappedStop) => {    setConfirmingStop(stop.name);
+    try {
+      setView(await confirmStopPlace(stop.name));
+    } catch {
+      setRetryToken((token) => token + 1);
+    } finally {
+      setConfirmingStop(null);
+    }
+  };
 
   return (
     <div className="relative flex h-full flex-col">
@@ -777,122 +750,31 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
           )}
         </div>
       )}
-      <div className="border-b border-slate-100 px-3 py-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <select
-            value={newStopKind}
-            onChange={(e) => setNewStopKind((e.target.value as "attraction" | "hotel") || "attraction")}
-            className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600"
-            title="Choose stop type"
-          >
-            <option value="attraction">Attraction</option>
-            <option value="hotel">Hotel</option>
-            <option value="meal">Restaurant</option>
-          </select>
-          <input
-            ref={stopInputRef}
-            type="text"
-            value={newStopName}
-            onChange={(e) => setNewStopName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") void handleAddStop();
-            }}
-            className="min-w-[9rem] flex-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400"
-            placeholder="Search places on this map…"
-            title="Search Google Maps places near the current map view"
-          />
-          {view && view.days.length > 0 && (
-            <select
-              value={newStopDay}
-              onChange={(event) => setNewStopDay(event.target.value)}
-              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600"
-              title="Choose which itinerary day receives this stop"
-              aria-label="Add stop to day"
-            >
-              <option value="auto">Best day</option>
-              {view.days.map((day) => (
-                <option key={day.day} value={day.day}>Day {day.day}</option>
-              ))}
-            </select>
-          )}
-          <button
-            type="button"
-            onClick={handleAddStop}
-            disabled={!newStopName.trim() || addingStop}
-            className="inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Plus className="h-3.5 w-3.5" aria-hidden />
-            {addingStop ? "Adding…" : "Add stop"}
-          </button>
-        </div>
-      </div>
-      {/* Day filter chips */}
-      {view && view.days.length > 0 && (
-        <div className="border-b border-slate-100 px-3 py-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => {
-                if (circuitZoomTimerRef.current !== null) {
-                  window.clearTimeout(circuitZoomTimerRef.current);
-                  circuitZoomTimerRef.current = null;
-                }
-                pendingFocusRef.current = null;
-                pendingCircuitFocusRef.current = null;
-                setActiveDay(null);
-                setSelectedPin(null);
-                setNewStopDay("auto");
-                onAllDaysFocus?.();
-              }}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                activeDay === null ? "bg-ink text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              All days
-            </button>
-            {view.days.map((d) => (
-              <button
-                key={d.day}
-                type="button"
-                onClick={() => {
-                  if (circuitZoomTimerRef.current !== null) {
-                    window.clearTimeout(circuitZoomTimerRef.current);
-                    circuitZoomTimerRef.current = null;
-                  }
-                  setActiveDay(d.day);
-                  setNewStopDay(String(d.day));
-                  onDayFocus?.(d.day);
-                }}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
-                  activeDay === d.day ? "text-white" : "text-slate-700 hover:opacity-80"
-                }`}
-                style={
-                  activeDay === d.day
-                    ? { backgroundColor: d.color }
-                    : { backgroundColor: `${d.color}22` }
-                }
-              >
-                <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: d.color }}
-                  aria-hidden
-                />
-                {d.label}
-              </button>
-            ))}
-          </div>
-          <div className="mt-1 text-[11px] text-slate-500">
-            {activeDayObj
-              ? `${activeDayObj.label} route: ${activeDayObj.route.distance_display} · ${activeDayObj.route.duration_display} · ${activeDayObj.route.mode} (estimated)`
-              : "Select a day to view route distance, travel time, and mode."}
-          </div>
-        </div>
-      )}
       <div className="relative min-h-0 flex-1">
         <div ref={mapEl} className="h-full w-full" />
+        {!selectedPin && selectedMapContext && (
+          <aside className="pointer-events-auto absolute right-3 top-3 z-20 w-[18.5rem] rounded-md border border-slate-200 bg-white/95 p-3 shadow-pop backdrop-blur">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase text-brand">{selectedMapContext.label}</p>
+                <p className="truncate text-sm font-semibold text-ink">{selectedMapContext.title}</p>
+                <p className="mt-1 text-[11px] text-slate-600">{scheduleLabel} {selectedMapContext.schedule}</p>
+                <p className="text-[11px] text-slate-600">{travelLabel} {selectedMapContext.travel}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setContextScope(null)}
+                className="grid h-7 w-7 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+          </aside>
+        )}
         {selectedPin && (
           <aside className="pointer-events-auto absolute right-3 top-3 z-20 w-[18.5rem] rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-pop backdrop-blur">
-            {isPlacePin(selectedPin) && selectedPin.photo && (
+            {isInspectableMapPin(selectedPin) && selectedPin.photo && (
               <img
                 src={selectedPin.photo}
                 alt={selectedPin.name}
@@ -902,10 +784,10 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-ink">{selectedPin.name}</p>
-                {isPlacePin(selectedPin) && selectedPin.rating ? (
+                {isInspectableMapPin(selectedPin) && selectedPin.rating ? (
                   <p className="text-xs text-slate-500">★ {selectedPin.rating}</p>
                 ) : null}
-                {isPlacePin(selectedPin) && selectedPin.address ? (
+                {isInspectableMapPin(selectedPin) && selectedPin.address ? (
                   <p className="mt-0.5 line-clamp-2 text-[11px] text-slate-500">{selectedPin.address}</p>
                 ) : null}
               </div>
@@ -977,16 +859,216 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
                 )}
               </div>
             ) : (
-              <p className="mt-2 text-xs text-slate-500">Arrival airport context pin</p>
+              <p className="mt-2 text-xs text-slate-500">Travel terminal in this day's journey</p>
             )}
           </aside>
         )}
         {overlay && (
           <div className="absolute inset-0 grid place-items-center bg-white/85 p-6 text-center">
-            <div className={`max-w-xs text-sm ${overlay.tone}`}>{overlay.text}</div>
+            <div className={`max-w-xs text-sm ${overlay.tone}`}>
+              <p>{overlay.text}</p>
+              {error && !view && (
+                <button type="button" onClick={() => setRetryToken((token) => token + 1)} className="mt-2 font-semibold text-brand underline">
+                  Retry
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
+      {view && (
+        <div className="shrink-0 border-t border-slate-200 bg-white/95" aria-label="Map commands">
+          <div className="px-3 py-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative min-w-[9rem] flex-1">
+                <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
+                <input
+                  ref={stopInputRef}
+                  type="text"
+                  value={newStopName}
+                  onChange={(event) => {
+                    setNewStopName(event.target.value);
+                    if (stopKindAutoFilled) {
+                      setNewStopKind("");
+                      setStopKindAutoFilled(false);
+                    }
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") void handleAddStop();
+                  }}
+                  className="w-full rounded-md border border-slate-200 py-1.5 pl-8 pr-8 text-xs text-slate-700 placeholder:text-slate-400"
+                  placeholder="Search a place, or tap one on the map…"
+                  title="Search Google Maps places near the current map view"
+                />
+                {newStopName && (
+                  <button
+                    type="button"
+                    onClick={clearComposer}
+                    className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                    title="Clear the search"
+                    aria-label="Clear the search"
+                  >
+                    <X className="h-3 w-3" aria-hidden />
+                  </button>
+                )}
+              </div>
+              {composerOpen ? (
+                <>
+                  {candidatePin?.rating ? (
+                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                      ★ {candidatePin.rating}
+                    </span>
+                  ) : null}
+                  <select
+                    value={newStopKind}
+                    onChange={(event) => {
+                      setNewStopKind(event.target.value as "" | "attraction" | "hotel" | "meal");
+                      setStopKindAutoFilled(false);
+                    }}
+                    className={`rounded-md border px-3 py-1.5 text-xs ${stopKindAutoFilled ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-500"}`}
+                    title={stopKindAutoFilled ? "Type auto-filled from Google; change it if needed" : "Stop type is optional"}
+                    aria-label="Stop type (optional)"
+                  >
+                    <option value="">Type (optional)</option>
+                    <option value="attraction">Attraction{stopKindAutoFilled && newStopKind === "attraction" ? " · auto-filled" : ""}</option>
+                    <option value="hotel">Hotel{stopKindAutoFilled && newStopKind === "hotel" ? " · auto-filled" : ""}</option>
+                    <option value="meal">Restaurant{stopKindAutoFilled && newStopKind === "meal" ? " · auto-filled" : ""}</option>
+                  </select>
+                  {view.days.length > 0 && (
+                    <select
+                      value={newStopDay}
+                      onChange={(event) => setNewStopDay(event.target.value)}
+                      className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600"
+                      title="Choose which itinerary day receives this stop"
+                      aria-label="Add stop to day"
+                    >
+                      <option value="auto">Best day</option>
+                      {view.days.map((day) => (
+                        <option key={day.day} value={day.day}>Day {day.day}</option>
+                      ))}
+                    </select>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleAddStop}
+                    disabled={!newStopName.trim() || addingStop}
+                    className="inline-flex items-center gap-1 rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Plus className="h-3.5 w-3.5" aria-hidden />
+                    {addingStop ? "Adding…" : "Add"}
+                  </button>
+                </>
+              ) : (
+                <span className="hidden shrink-0 pr-1 text-[11px] text-slate-400 md:inline">
+                  or tap a place on the map
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 border-t border-slate-100 px-3 py-1.5">
+            {dayScopeControls}
+            <button
+              type="button"
+              onClick={() => setSequenceOpen((open) => !open)}
+              aria-pressed={sequenceOpen}
+              disabled={sequencePins.length === 0}
+              className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition disabled:opacity-40 ${
+                sequenceOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"
+              }`}
+              title="The day's stop order also lives in the itinerary pane"
+            >
+              <Route className="h-3 w-3" aria-hidden />
+              Sequence
+              {sequenceOpen
+                ? <ChevronDown className="h-3 w-3" aria-hidden />
+                : <ChevronUp className="h-3 w-3" aria-hidden />}
+            </button>
+          </div>
+          <div className="flex min-h-6 items-center gap-1.5 border-t border-slate-100 px-3 py-1 text-[10px] text-slate-500">
+            {activeDayObj ? (
+              <>
+                <span className="font-semibold text-slate-700">{activeDayObj.label}</span>
+                <span aria-hidden>·</span>
+                <span>Schedule {activeDayObj.schedule?.duration_display || "unavailable"}{activeDayObj.schedule?.start && activeDayObj.schedule?.end ? `, ${activeDayObj.schedule.start}–${activeDayObj.schedule.end}${activeDayObj.schedule.estimated ? " est." : ""}` : ""}</span>
+                <span aria-hidden>·</span>
+                <span>Travel {activeDayObj.route.duration_display}, {activeDayObj.route.distance_display}, {activeDayObj.route.mode}</span>
+              </>
+            ) : (
+              <span>Choose a day for schedule and route-only travel.</span>
+            )}
+          </div>
+          {sequenceOpen && activeDayObj && sequencePins.length > 0 && (
+            <ol
+              className="flex items-stretch gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2"
+              aria-label={`${activeDayObj.label} stop sequence`}
+            >
+              {sequencePins.map((pin, index) => {
+                const previous = index > 0 ? sequencePins[index - 1] : null;
+                const leg = previous
+                  ? activeDayObj.legs?.find(
+                    (candidate) =>
+                      candidate.from_pin_id === previous.id && candidate.to_pin_id === pin.id,
+                  )
+                  : null;
+                const occurrences = pin.occurrences.filter(
+                  (occurrence) => occurrence.day === activeDayObj.day,
+                );
+                const occurrence = index === sequencePins.length - 1 && occurrences.length > 1
+                  ? occurrences[occurrences.length - 1]
+                  : occurrences[0];
+                const marker = sequenceOrders?.get(pin.id)
+                  ?? sequenceHotels?.get(pin.id)
+                  ?? "•";
+                const selected = selectedPin?.id === pin.id;
+                return (
+                  <li key={`${pin.id}-${index}`} className="flex shrink-0 items-center gap-1">
+                    {leg && (
+                      <span className="whitespace-nowrap px-1 text-[10px] font-medium text-accent">
+                        {leg.duration_display}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleSequenceSelect(pin)}
+                      className={`flex min-w-[7.5rem] max-w-[11rem] items-center gap-1.5 rounded-md border px-2 py-1.5 text-left transition ${
+                        selected
+                          ? "border-transparent bg-ink text-white"
+                          : "border-slate-200 bg-white hover:border-slate-300"
+                      }`}
+                    >
+                      <span
+                        className="grid h-5 w-5 shrink-0 place-items-center rounded-full border text-[10px] font-bold"
+                        style={{
+                          borderColor: activeDayObj.color,
+                          color: selected ? "#fff" : activeDayObj.color,
+                        }}
+                      >
+                        {marker}
+                      </span>
+                      <span className="min-w-0">
+                        {occurrence?.time && (
+                          <span className={`block text-[10px] tabular-nums ${selected ? "text-white/70" : "text-slate-400"}`}>
+                            {occurrence.time}
+                          </span>
+                        )}
+                        <span className="block truncate text-[11px] font-semibold">{pin.name}</span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </div>
+      )}
+      <UnmappedStopsPanel
+        stops={unmappedStops}
+        onConfirm={handleConfirmStopPlace}
+        onFocus={(stop) => onPinFocus?.(stop.kind, stop.name, stop.day ?? undefined)}
+        busyName={confirmingStop}
+      />
     </div>
   );
 }
+
+export default memo(MapPanel);

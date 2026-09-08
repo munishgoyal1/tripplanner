@@ -102,6 +102,37 @@ def test_conditional_replace_uses_version_and_copies_body(monkeypatch) -> None:
     }
 
 
+def test_conditional_create_copies_body(monkeypatch) -> None:
+    captured = {}
+
+    class FakeContainer:
+        def create_item(self, **kwargs):
+            captured.update(kwargs)
+
+    body = {"destination": "Goa"}
+    monkeypatch.setattr(storage_cosmos, "_container", lambda _: FakeContainer())
+
+    storage_cosmos.create_doc_if_absent("users", "user-1", "active_trip", body)
+
+    assert body == {"destination": "Goa"}
+    assert captured["body"] == {
+        "destination": "Goa",
+        "id": "active_trip",
+        "user_id": "user-1",
+    }
+
+
+def test_conditional_create_maps_existing_document(monkeypatch) -> None:
+    class FakeContainer:
+        def create_item(self, **kwargs):
+            raise CosmosHttpResponseError(status_code=409, message="already exists")
+
+    monkeypatch.setattr(storage_cosmos, "_container", lambda _: FakeContainer())
+
+    with pytest.raises(storage_cosmos.WriteConflictError, match="was created"):
+        storage_cosmos.create_doc_if_absent("users", "user-1", "active_trip", {})
+
+
 def test_conditional_replace_maps_precondition_failure(monkeypatch) -> None:
     class FakeContainer:
         def replace_item(self, **kwargs):
@@ -112,4 +143,35 @@ def test_conditional_replace_maps_precondition_failure(monkeypatch) -> None:
     with pytest.raises(storage_cosmos.WriteConflictError, match="changed"):
         storage_cosmos.replace_doc_if_version(
             "users", "user-1", "active_trip", {}, '"stale"'
+        )
+
+
+def test_conditional_delete_uses_version(monkeypatch) -> None:
+    captured = {}
+
+    class FakeContainer:
+        def delete_item(self, **kwargs):
+            captured.update(kwargs)
+
+    monkeypatch.setattr(storage_cosmos, "_container", lambda _: FakeContainer())
+
+    storage_cosmos.delete_doc_if_version(
+        "users", "user-1", "active_trip", '"version-7"'
+    )
+
+    assert captured["item"] == "active_trip"
+    assert captured["partition_key"] == "user-1"
+    assert captured["etag"] == '"version-7"'
+
+
+def test_conditional_delete_maps_precondition_failure(monkeypatch) -> None:
+    class FakeContainer:
+        def delete_item(self, **kwargs):
+            raise CosmosHttpResponseError(status_code=412, message="precondition failed")
+
+    monkeypatch.setattr(storage_cosmos, "_container", lambda _: FakeContainer())
+
+    with pytest.raises(storage_cosmos.WriteConflictError, match="changed"):
+        storage_cosmos.delete_doc_if_version(
+            "users", "user-1", "active_trip", '"stale"'
         )

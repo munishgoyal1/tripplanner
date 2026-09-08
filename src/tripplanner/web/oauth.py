@@ -87,6 +87,10 @@ def is_enabled() -> bool:
     return bool(_client_id() and _client_secret() and _secret())
 
 
+def signing_enabled() -> bool:
+    return bool(_secret())
+
+
 def _secret() -> bytes:
     raw = os.environ.get("CHAINLIT_AUTH_SECRET") or os.environ.get("WEB_SESSION_SECRET")
     return raw.encode("utf-8") if raw else b""
@@ -144,9 +148,22 @@ def make_session_token(identifier: str, name: str, email: str, picture: str) -> 
     return _sign(
         {
             "sub": identifier,
+            "kind": "user",
             "name": name,
             "email": email,
             "picture": picture,
+            "exp": int(time.time()) + _SESSION_MAX_AGE,
+        }
+    )
+
+
+def make_guest_token(identifier: str) -> str:
+    if not identifier.startswith(("web-", "mobile-")):
+        raise ValueError("Guest identifiers must use a guest prefix.")
+    return _sign(
+        {
+            "sub": identifier,
+            "kind": "guest",
             "exp": int(time.time()) + _SESSION_MAX_AGE,
         }
     )
@@ -162,6 +179,7 @@ def read_session(token: str | None) -> dict[str, Any] | None:
         "display_name": payload.get("name") or "",
         "email": payload.get("email") or "",
         "picture": payload.get("picture") or "",
+        "session_kind": payload.get("kind") or "user",
     }
 
 

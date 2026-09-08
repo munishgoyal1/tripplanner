@@ -1,0 +1,427 @@
+{
+  "status": "draft",
+  "trip_id": "sri_lanka_2027-08-04_2027-08-13",
+  "trip_number": 1,
+  "created_at": "2026-08-15T20:21:48.006300",
+  "destination": "Sri Lanka",
+  "origin": "Bangalore",
+  "departure_date": "2027-08-04",
+  "return_date": "2027-08-13",
+  "travelers": "2 adults",
+  "notes": "Covering Colombo, Kandy, and Galle. Balanced pace, moderate budget, 3-star+ hotels, economy flights, prefer direct flights, open to trains and rental car.",
+  "planning_recommendation": {
+    "confidence": "medium",
+    "destination": "Sri Lanka",
+    "estimated_planned_minutes": 330,
+    "evidence_place_count": 3,
+    "reasons": [
+      "The user's explicit 9-day duration is authoritative",
+      "3 preference-matched places account for about 330 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 9,
+    "recommended_range": [
+      1,
+      2
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-08-04",
+      "title": "Arrival in Colombo",
+      "summary": "Fly from Bangalore to Colombo. Arrive, transfer to hotel, relax and explore Colombo city center.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Colombo",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "11:00",
+          "duration_min": 180,
+          "note": "Morning flight to Sri Lanka"
+        },
+        {
+          "name": "Colombo Hotel",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Galle Face Green",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening stroll by the sea"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-08-05",
+      "title": "Colombo City Tour",
+      "summary": "Explore Colombo's highlights including temples, markets, and colonial sites.",
+      "stops": [
+        {
+          "name": "Colombo Hotel",
+          "kind": "hotel"
+        },
+        {
+          "name": "Gangaramaya Temple",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Pettah Market",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Dutch Hospital Shopping Precinct",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Ministry of Crab",
+          "kind": "meal",
+          "time": "19:00",
+          "duration_min": 90,
+          "note": "Dinner at a top seafood restaurant"
+        },
+        {
+          "name": "Colombo Hotel",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-08-06",
+      "title": "Transfer to Kandy via Pinnawala",
+      "summary": "Travel to Kandy with a stop at Pinnawala Elephant Orphanage. Adjusted timings for realistic travel.",
+      "stops": [
+        {
+          "name": "Drive: Colombo to Pinnawala",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "distance_km": 90,
+          "note": "Private car or train"
+        },
+        {
+          "name": "Pinnawala Elephant Orphanage",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Lunch at Pinnawala Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Lunch break near orphanage"
+        },
+        {
+          "name": "Drive: Pinnawala to Kandy",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 90,
+          "distance_km": 45
+        },
+        {
+          "name": "Colombo Hotel",
+          "kind": "hotel",
+          "time": "16:00"
+        },
+        {
+          "name": "Kandy Hotel",
+          "kind": "hotel",
+          "note": "Check-in and relax",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-08-07",
+      "title": "Kandy Sightseeing",
+      "summary": "Discover Kandy's cultural and natural highlights.",
+      "stops": [
+        {
+          "name": "Kandy Hotel",
+          "kind": "hotel"
+        },
+        {
+          "name": "Temple of the Sacred Tooth Relic",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Royal Botanical Gardens, Peradeniya",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Kandy Lake",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "The Empire Cafe",
+          "kind": "meal",
+          "time": "19:00",
+          "duration_min": 90,
+          "note": "Dinner in central Kandy"
+        },
+        {
+          "name": "Kandy Hotel",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-08-08",
+      "title": "Day Trip: Knuckles Range or Tea Plantations",
+      "summary": "Excursion to Knuckles Mountain Range or a tea plantation near Kandy. Added lunch stop for completeness.",
+      "stops": [
+        {
+          "name": "Kandy Hotel",
+          "kind": "hotel"
+        },
+        {
+          "name": "Knuckles Mountain Range",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 240,
+          "note": "Guided hike or scenic drive"
+        },
+        {
+          "name": "Lunch at Huna Cafe",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Local lunch near Knuckles"
+        },
+        {
+          "name": "Tea Factory Visit",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 120,
+          "note": "Tour and tasting"
+        },
+        {
+          "name": "Kandy Hotel",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-08-09",
+      "title": "Transfer to Galle via Train or Car",
+      "summary": "Travel from Kandy to Galle. Adjusted timings for realistic travel.",
+      "stops": [
+        {
+          "name": "Train: Kandy to Galle",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 360,
+          "distance_km": 220,
+          "note": "Scenic train or private car"
+        },
+        {
+          "name": "Kandy Hotel",
+          "kind": "hotel",
+          "time": "14:30"
+        },
+        {
+          "name": "Lunch at Galle Cafe",
+          "kind": "meal",
+          "time": "16:30",
+          "duration_min": 60,
+          "note": "Lunch after arrival"
+        },
+        {
+          "name": "Galle Hotel",
+          "kind": "hotel",
+          "note": "Check-in and relax",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-08-10",
+      "title": "Galle Fort & Old Town",
+      "summary": "Explore the UNESCO-listed Galle Fort and nearby attractions.",
+      "stops": [
+        {
+          "name": "Galle Hotel",
+          "kind": "hotel"
+        },
+        {
+          "name": "Galle Fort",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Dutch Reformed Church",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Pedlar's Inn Cafe",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Lunch in the old town"
+        },
+        {
+          "name": "Flag Rock Bastion",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Galle Hotel",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-08-11",
+      "title": "Beach Day: Unawatuna or Hikkaduwa",
+      "summary": "Relax at one of the southern beaches near Galle.",
+      "stops": [
+        {
+          "name": "Galle Hotel",
+          "kind": "hotel"
+        },
+        {
+          "name": "Unawatuna Beach",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 180,
+          "note": "Swimming and relaxation"
+        },
+        {
+          "name": "Kingfisher Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 90,
+          "note": "Beachfront lunch"
+        },
+        {
+          "name": "Galle Hotel",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 9,
+      "date": "2027-08-12",
+      "title": "Return to Colombo & Departure",
+      "summary": "Travel back to Colombo, last-minute shopping, and fly back to Bangalore. Adjusted timings for realistic travel.",
+      "stops": [
+        {
+          "name": "Galle Hotel",
+          "kind": "hotel",
+          "time": "09:00"
+        },
+        {
+          "name": "Colombo City Centre Mall",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Shopping and lunch"
+        },
+        {
+          "name": "Drive: Galle to Colombo",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 150,
+          "distance_km": 120,
+          "note": "Private car or train"
+        },
+        {
+          "name": "Flight: Colombo to Bangalore",
+          "kind": "flight",
+          "time": "17:00",
+          "arrival_time": "19:00",
+          "duration_min": 180,
+          "note": "Evening flight home"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T20:24:56.140760",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T20:24:51",
+      "expires_at": "2026-08-16T08:24:51"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T20:24:56",
+      "expires_at": "2026-08-15T20:54:56"
+    }
+  ],
+  "id": "sri_lanka_2027-08-04_2027-08-13",
+  "user_id": "corpus-srilanka-multicountry"
+}

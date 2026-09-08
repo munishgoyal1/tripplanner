@@ -11,7 +11,6 @@ module cosmosData './modules/cosmos-data.bicep' = {
     accountName: cosmosAccountName
     location: location
     databaseNames: [
-      'tripplanner-local'
       'tripplanner-canary'
       'tripplanner-prod'
     ]

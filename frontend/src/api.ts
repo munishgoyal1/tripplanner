@@ -1,266 +1,260 @@
-import type { TripView, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary } from "./types";
+import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary, PlaceGuidePage, TripFreshnessResult, TripPriceRecheckResult, TripRepairResult, TripVerification, TripWorkspaceView } from "./types";
 import {
-  TripplannerClient,
   type DeselectItemOptions,
   type SelectItemOptions,
   type SelectionPlacement,
+  type StreamHandlers,
+  type StreamOptions,
 } from "@tripplanner/client";
+import { BASE, apiFetch, getUserId, sharedClient } from "./auth/authSession";
 
-const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+export {
+  fetchAuthConfig,
+  fetchGuestDataSummary,
+  getDisplayName,
+  getUserId,
+  isAnonymousUser,
+  loginWithGoogle,
+  logoutGoogle,
+  migrateGuestData,
+  signIn,
+  signOut,
+  syncAuth,
+} from "./auth/authSession";
+export type { AuthSession } from "./auth/authSession";
 
 function ensureOk(response: Response, action: string): void {
-  if (!response.ok) throw new Error(`${action} (${response.status}).`);
-}
-
-// Stable per-browser identity so trip state + chat history follow the user
-// across reloads. The backend keys conversation memory and trip storage by it.
-export function getUserId(): string {
-  const KEY = "tripplanner_user_id";
-  let id = localStorage.getItem(KEY);
-  if (!id) {
-    id = `web-${crypto.randomUUID()}`;
-    localStorage.setItem(KEY, id);
-  }
-  return id;
-}
-
-const sharedClient = new TripplannerClient(BASE, getUserId);
-
-// Whether the current identity is the anonymous, per-browser one (vs. a name
-// the user explicitly signed in with). Used to show "Sign in" vs the name.
-export function isAnonymousUser(): boolean {
-  return getUserId().startsWith("web-");
-}
-
-// Sign in by claiming a stable identity. The same name on another device
-// resolves to the same id, so preferences and trips follow the user. Passing
-// "local" shares state with the CLI for convenient local testing.
-export function signIn(name: string): string {
-  const trimmed = name.trim();
-  const id =
-    trimmed.toLowerCase() === "local"
-      ? "local"
-      : `user-${trimmed.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")}`;
-  localStorage.setItem("tripplanner_user_id", id);
-  localStorage.setItem("tripplanner_display_name", trimmed);
-  return id;
-}
-
-export function signOut(): void {
-  localStorage.removeItem("tripplanner_user_id");
-  localStorage.removeItem("tripplanner_display_name");
-}
-
-export function getDisplayName(): string {
-  return localStorage.getItem("tripplanner_display_name") || "";
-}
-
-// ---------------------------------------------------------------------------
-// Google OAuth. The backend owns the redirect dance and drops a signed,
-// HttpOnly session cookie; here we just (a) ask whether it's configured,
-// (b) read the current session, and (c) kick off / tear down login. When a
-// Google session exists we mirror its user_id into localStorage so every
-// existing param-based call (chat, trip, preferences) uses the Google identity
-// — the `google-<sub>` id is stable across devices.
-// ---------------------------------------------------------------------------
-export interface AuthSession {
-  authenticated: boolean;
-  user_id?: string;
-  display_name?: string;
-  email?: string;
-  picture?: string;
-}
-
-export async function fetchAuthConfig(): Promise<{ google: boolean; redirect_uri?: string }> {
-  try {
-    const res = await fetch(`${BASE}/auth/config`);
-    return res.json();
-  } catch {
-    return { google: false };
-  }
-}
-
-// Reads the session cookie. If authenticated, mirrors the identity into
-// localStorage so the rest of the app picks it up transparently.
-// Returns both the session and the identity that was active BEFORE the mirror
-// (so callers can offer to migrate guest data or reset stale UI state when a
-// sign-in just occurred).
-export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string; prev_user_id?: string }> {
-  try {
-    const res = await fetch(`${BASE}/auth/me`, { credentials: "include" });
-    const session: AuthSession = await res.json();
-    if (session.authenticated && session.user_id) {
-      const prevId = localStorage.getItem("tripplanner_user_id") ?? "";
-      const guestId = prevId.startsWith("web-") ? prevId : undefined;
-      localStorage.setItem("tripplanner_user_id", session.user_id);
-      if (session.display_name) {
-        localStorage.setItem("tripplanner_display_name", session.display_name);
-      }
-      return { ...session, prev_guest_id: guestId, prev_user_id: prevId || undefined };
-    }
-    return session;
-  } catch {
-    return { authenticated: false };
-  }
-}
-
-/** Ask the server how much data a guest (web-*) account has. */
-export async function fetchGuestDataSummary(guestId: string): Promise<{ has_data: boolean; trip_count: number }> {
-  try {
-    const res = await fetch(`${BASE}/account/guest-data-summary?user_id=${encodeURIComponent(guestId)}`);
-    return res.json();
-  } catch {
-    return { has_data: false, trip_count: 0 };
-  }
-}
-
-/** Migrate trips and preferences from a guest identity into the authenticated account. */
-export async function migrateGuestData(
-  authUserId: string,
-  guestId: string
-): Promise<{ ok: boolean; copied_trips: number; copied_prefs: boolean }> {
-  try {
-    const res = await fetch(`${BASE}/account/migrate-guest`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: authUserId, guest_id: guestId }),
+  if (!response.ok) {
+    throw Object.assign(new Error(`${action} (${response.status}).`), {
+      status: response.status,
     });
-    return res.json();
-  } catch {
-    return { ok: false, copied_trips: 0, copied_prefs: false };
   }
 }
 
-export function loginWithGoogle(): void {
-  const back = window.location.pathname + window.location.search;
-  window.location.href = `${BASE}/auth/login/google?redirect=${encodeURIComponent(back)}`;
+export type { StreamHandlers, StreamOptions } from "@tripplanner/client";
+
+export interface OpsMetricRow {
+  calls: number;
+  errors: number;
+  p50_ms: number;
+  p95_ms: number;
+  p90_ms?: number;
 }
 
-export async function logoutGoogle(): Promise<void> {
-  try {
-    await fetch(`${BASE}/auth/logout`, { method: "POST", credentials: "include" });
-  } catch {
-    /* ignore */
-  }
-  signOut();
+export interface OpsUsageRollup {
+  environment?: string;
+  initiator?: string;
+  trip_id?: string;
+  trip_name?: string;
+  interaction_kind?: "new_trip" | "trip_update" | "other" | "unattributed";
+  provider?: string;
+  service?: string;
+  operation?: string;
+  sku_class?: string;
+  interaction_id?: string;
+  calls: number;
+  avoided_calls: number;
+  cache_hits?: number;
+  failures: number;
+  estimated_cost_usd: number;
+  estimated_savings_usd: number;
+  unknown_cost_calls: number;
+  prompt_tokens: number;
+  completion_tokens: number;
 }
 
-export interface ToolEventExtras {
-  args?: string;
-  duration_ms?: number;
+export interface OpsOverview {
+  generated_at: string;
+  uptime_seconds: number;
+  reporting_period: {
+    days: number;
+    start_date: string;
+    end_date: string;
+  };
+  business_activity: {
+    visitors: number;
+    page_counts: Record<string, number>;
+    new_trips: number;
+    existing_trip_updates: number;
+    chat_turns: number;
+  };
+  trip_insights: Array<{
+    user_id: string;
+    trip_id: string;
+    title: string;
+    places_requested: string;
+    created_at: string;
+    updated_at: string;
+    first_build_seconds: number | null;
+    iterations: number;
+    chat_turns: number;
+    feedback: string;
+  }>;
+  infra: {
+    cosmos: {
+      enabled: boolean;
+      database: string;
+      containers: Array<{ name: string; records: number; default_ttl: number | null }>;
+    };
+    configuration: Array<{ category: string; name: string; value: string }>;
+  };
+  business: {
+    new_trips: Record<"today" | "7d" | "30d", number>;
+    active_trips: Record<"today" | "7d" | "30d", number>;
+    chat_requests: number;
+    iterations: number;
+    inventory: {
+      trips: number;
+      flights: number;
+      hotels: number;
+      activities: number;
+    };
+  };
+  product: {
+    events: number;
+    sessions: number;
+    users: number;
+    engagement_seconds: number;
+    activities: Record<string, number>;
+    funnel: Record<"page_view" | "planning_started" | "trip_created" | "planning_completed", number>;
+    drop_offs: Record<string, number>;
+    countries: Record<string, number>;
+    sources: Record<string, number>;
+  };
+  chat_turns: {
+    calls: number;
+    completed: number;
+    errors: number;
+    distinct_users: number;
+    p50_ms: number;
+    p95_ms: number;
+    tool_calls: number;
+    avg_tools_per_turn: number;
+    outcomes: Record<string, number>;
+  };
+  requests: OpsMetricRow & {
+    by_route: Record<string, OpsMetricRow>;
+    error_statuses: Record<string, number>;
+  };
+  models: OpsMetricRow & {
+    recent: Array<{ model: string; status: string; duration_ms: number; at: number }>;
+  };
+  usage: {
+    month: string;
+    model_calls: number;
+    prompt_tokens: number;
+    completion_tokens: number;
+    cost_usd: number;
+  };
+  conversation_limits: Record<"daily" | "weekly" | "lifetime", {
+    key: string;
+    resets_at: string | null;
+    categories: Record<"new_trip" | "existing_trip_turn", {
+      used: number;
+      limit: number;
+      remaining: number | null;
+    }>;
+  }>;
+  tools: Record<string, OpsMetricRow & {
+    cache_hits: number;
+    hit_rate: number;
+    avg_ms: number;
+    error_types: Record<string, number>;
+  }>;
+  providers: Record<string, {
+    calls: number;
+    successes: number;
+    failures: number;
+    failure_rate: number;
+    avg_ms: number;
+  }>;
+  provider_usage: {
+    period_days: number;
+    since: string;
+    start_date: string;
+    end_date: string;
+    pricing: {
+      catalog_version: string;
+      basis: string;
+      currency: "USD";
+    };
+    totals: OpsUsageRollup;
+    trip_costs: Record<"new_trip" | "trip_update", {
+      interactions: number;
+      trips: number;
+      calls: number;
+      estimated_cost_usd: number;
+      average_estimated_cost_usd: number;
+      unknown_cost_interactions: number;
+    }> & {
+      infrastructure: {
+        allocation_status: "not_allocated";
+        basis: string;
+      };
+    };
+    by_initiator: OpsUsageRollup[];
+    by_interaction_kind: OpsUsageRollup[];
+    by_provider_total: OpsUsageRollup[];
+    by_service: OpsUsageRollup[];
+    cache_effectiveness: {
+      provider_calls: number;
+      cache_hits: number;
+      requests: number;
+      provider_call_rate: number;
+      cache_hit_rate: number;
+      estimated_savings_usd: number;
+      by_dataset: Array<{
+        dataset: string;
+        provider_calls: number;
+        cache_hits: number;
+        requests: number;
+        hit_rate: number;
+        estimated_savings_usd: number;
+      }>;
+    };
+    by_trip: OpsUsageRollup[];
+    by_provider: OpsUsageRollup[];
+    by_operation: OpsUsageRollup[];
+    by_interaction: OpsUsageRollup[];
+  };
+  cache: {
+    configured: boolean;
+    backend: "redis" | "memory";
+    redis_connected: boolean;
+    fallback_active: boolean;
+    memory_entries: number;
+    redis_entries: number;
+    redis_bytes: number;
+    redis_stats_truncated: boolean;
+  };
 }
 
-export interface StreamHandlers {
-  onToken: (text: string) => void;
-  onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
-  onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
-  onDone: (reply: string, tripId?: string) => void;
-  onError: (message: string) => void;
+export async function fetchOpsOverview(
+  days = 30,
+  signal?: AbortSignal,
+  startDate?: string,
+  endDate?: string,
+): Promise<OpsOverview> {
+  const params = new URLSearchParams({ days: String(days) });
+  if (startDate) params.set("start_date", startDate);
+  if (endDate) params.set("end_date", endDate);
+  const response = await apiFetch(`${BASE}/ops/overview?${params}`, { signal });
+  ensureOk(response, "Operations overview unavailable");
+  return response.json() as Promise<OpsOverview>;
 }
 
-// POST /chat/stream and parse the Server-Sent Events stream incrementally.
 export async function streamChat(
   message: string,
-  h: StreamHandlers,
-  options: { proposalOnly?: boolean } = {},
+  handlers: StreamHandlers,
+  options: StreamOptions = {},
 ): Promise<void> {
-  const res = await fetch(`${BASE}/chat/stream`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message,
-      user_id: getUserId(),
-      proposal_only: options.proposalOnly ?? false,
-    }),
-  });
-  if (!res.ok) {
-    let message = `Chat request failed (${res.status}).`;
-    try {
-      const data = (await res.json()) as { detail?: string; message?: string };
-      message = data.message || data.detail || message;
-    } catch {
-      // Keep the status-based fallback for non-JSON responses.
-    }
-    throw new Error(message);
-  }
-  if (!res.body) {
-    throw new Error("No response stream from server.");
-  }
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let terminalEvent = false;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-
-    // SSE frames are separated by a blank line.
-    const frames = buffer.split("\n\n");
-    buffer = frames.pop() ?? "";
-    for (const frame of frames) {
-      const ev = parseFrame(frame);
-      if (!ev) continue;
-      if (ev.event === "done" || ev.event === "error") terminalEvent = true;
-      dispatch(ev.event, ev.data, h);
-    }
-  }
-  const finalFrame = parseFrame(buffer);
-  if (finalFrame) {
-    if (finalFrame.event === "done" || finalFrame.event === "error") terminalEvent = true;
-    dispatch(finalFrame.event, finalFrame.data, h);
-  }
-  if (!terminalEvent) {
-    throw new Error("The response stream ended before the reply completed.");
-  }
-}
-
-function parseFrame(frame: string): { event: string; data: any } | null {
-  let event = "message";
-  let data = "";
-  for (const line of frame.split("\n")) {
-    if (line.startsWith("event:")) event = line.slice(6).trim();
-    else if (line.startsWith("data:")) data += line.slice(5).trim();
-  }
-  if (!data) return null;
-  try {
-    return { event, data: JSON.parse(data) };
-  } catch {
-    return null;
-  }
-}
-
-function dispatch(event: string, data: any, h: StreamHandlers): void {
-  switch (event) {
-    case "token":
-      h.onToken(data.text ?? "");
-      break;
-    case "tool":
-      h.onTool(data.name ?? "", data.phase ?? "start", {
-        args: typeof data.args === "string" ? data.args : undefined,
-        duration_ms: typeof data.duration_ms === "number" ? data.duration_ms : undefined,
-      });
-      break;
-    case "progress":
-      if (["thinking", "reviewing", "saving"].includes(data.stage)) {
-        h.onProgress?.(data.stage);
-      }
-      break;
-    case "done":
-      h.onDone(data.reply ?? "", typeof data.trip_id === "string" ? data.trip_id : undefined);
-      break;
-    case "error":
-      h.onError(data.message ?? "Unknown error.");
-      break;
-  }
+  return sharedClient.streamChat(message, handlers, options);
 }
 
 /** Restore the persisted transcript for a trip (or the current active trip). */
 export async function fetchChatHistory(
   tripId?: string
-): Promise<{ role: "user" | "assistant"; text: string }[]> {
+): Promise<{ role: "user" | "assistant"; text: string; ts?: number; seconds?: number }[]> {
   try {
     return await sharedClient.fetchChatHistory(tripId);
   } catch {
@@ -271,8 +265,24 @@ export async function fetchChatHistory(
 export async function fetchTripView(focus?: {
   kind: string;
   name: string;
+  day?: number;
+  stop?: number;
 }, signal?: AbortSignal): Promise<TripView> {
   return sharedClient.fetchTripView(focus, signal);
+}
+
+export async function fetchPlaceGuide(
+  opts: {
+    city?: string;
+    kind?: string;
+    query?: string;
+    cursor?: string | null;
+    limit?: number;
+    focus?: { kind: string; name: string } | null;
+  } = {},
+  signal?: AbortSignal,
+): Promise<PlaceGuidePage> {
+  return sharedClient.fetchPlaceGuide(opts, signal);
 }
 
 export type { DeselectItemOptions, SelectItemOptions, SelectionPlacement };
@@ -293,19 +303,58 @@ export async function deselectItem(
   return sharedClient.deselectItem(kind, name, options);
 }
 
+/** Take a different option on a recorded comparison. */
+export async function overrideDecision(
+  decisionId: string,
+  optionId: string,
+  updatedAt?: string | null,
+): Promise<DecisionApplyResult> {
+  return sharedClient.overrideDecision(decisionId, optionId, updatedAt);
+}
+
+/** Put the agent's own choice back. */
+export async function restoreDecision(
+  decisionId: string,
+  updatedAt?: string | null,
+): Promise<DecisionApplyResult> {
+  return sharedClient.restoreDecision(decisionId, updatedAt);
+}
+
 /** List the user's saved trips (the "My trips" switcher). */
 export async function fetchSavedTrips(): Promise<SavedTrip[]> {
   return sharedClient.fetchSavedTrips();
 }
 
-/** Make a saved trip active (auto-saving whatever was active). */
-export async function switchTrip(tripId: string): Promise<TripView | null> {
+/** Load every planner panel from one active-trip snapshot. */
+export async function fetchWorkspace(
+  focus?: { kind: string; name: string; day?: number; stop?: number },
+  signal?: AbortSignal,
+): Promise<TripWorkspaceView> {
+  return sharedClient.fetchWorkspace(focus, signal);
+}
+
+/** Make a saved trip active (auto-saving whatever was active). Returns every
+ * panel's view-model so the workspace swaps in one atomic update. */
+export async function switchTrip(tripId: string): Promise<TripWorkspaceView | null> {
   return sharedClient.switchTrip(tripId);
+}
+
+/** Restore an immutable audit artifact into its local read-only inspection workspace. */
+export async function openAuditRecord(recordId: string): Promise<TripWorkspaceView | null> {
+  const res = await apiFetch(`${BASE}/debug/audit/open`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ record_id: recordId, user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not open the audited trip");
+  const json = await res.json();
+  if (!json.ok || !json.view) return null;
+  return { view: json.view, map: json.map ?? null, itinerary: json.itinerary ?? null };
 }
 
 /** Delete a saved trip; returns the refreshed saved-trips list. */
 export async function deleteTrip(tripId: string): Promise<SavedTrip[]> {
-  const res = await fetch(`${BASE}/trips/delete`, {
+  const res = await apiFetch(`${BASE}/trips/delete`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ trip_id: tripId, user_id: getUserId() }),
@@ -315,9 +364,48 @@ export async function deleteTrip(tripId: string): Promise<SavedTrip[]> {
   return (json.trips ?? []) as SavedTrip[];
 }
 
+export interface TripFeedbackRollup {
+  count: number;
+  feedback_id?: string;
+  last_at?: string | null;
+  last_rating?: number | null;
+  last_sentiment?: "up" | "down" | null;
+}
+
+export async function submitTripFeedback(feedback: {
+  feedback_id?: string;
+  sentiment?: "up" | "down";
+  rating?: number;
+  comment?: string;
+  client?: "web" | "mobile";
+}): Promise<TripFeedbackRollup> {
+  const res = await apiFetch(`${BASE}/trip/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...feedback, user_id: getUserId(), surface: "toolbar-pill" }),
+  });
+  ensureOk(res, "Could not save feedback");
+  const json = await res.json();
+  return json.feedback as TripFeedbackRollup;
+}
+
 /** Start a fresh planning chat: clear the active trip + general chat bucket. */
 export async function startNewTrip(): Promise<void> {
   return sharedClient.startNewTrip();
+}
+
+/** Empty the active trip's plan but keep its destination, dates and people.
+ * Returns every panel's view-model so the workspace swaps in one update. */
+export async function resetTrip(): Promise<TripWorkspaceView | null> {
+  const res = await apiFetch(`${BASE}/trip/reset`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not reset the trip");
+  const json = await res.json();
+  if (!json.ok || !json.view) return null;
+  return { view: json.view, map: json.map ?? null, itinerary: json.itinerary ?? null };
 }
 
 /** Build the URL that downloads the active trip as an .ics calendar file. */
@@ -392,8 +480,9 @@ export interface EmailExportResult {
 export async function emailTripExport(
   email: string,
   options: ExportOptions,
+  requestId: string,
 ): Promise<EmailExportResult> {
-  const res = await fetch(`${BASE}/trip/export/email`, {
+  const res = await apiFetch(`${BASE}/trip/export/email`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -402,10 +491,12 @@ export async function emailTripExport(
       include_photos: options.include_photos,
       include_map_circuit: options.include_map_circuit,
       template: options.template,
+      request_id: requestId,
     }),
   });
-  ensureOk(res, "Could not email the itinerary");
-  return res.json();
+  const result = await res.json() as EmailExportResult;
+  if (!res.ok && !result.error) throw new Error(`Could not email the itinerary (${res.status}).`);
+  return result;
 }
 
 /**
@@ -413,7 +504,7 @@ export async function emailTripExport(
  * (origin + path) that anyone can open without logging in. Throws on failure.
  */
 export async function shareActiveTrip(): Promise<string> {
-  const res = await fetch(`${BASE}/trip/share`, {
+  const res = await apiFetch(`${BASE}/trip/share`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: getUserId(), kind: "share", name: "share" }),
@@ -427,7 +518,7 @@ export async function shareActiveTrip(): Promise<string> {
 }
 
 export async function importSharedTrip(token: string): Promise<TripView> {
-  const res = await fetch(`${BASE}/trip/shared/${encodeURIComponent(token)}/import`, {
+  const res = await apiFetch(`${BASE}/trip/shared/${encodeURIComponent(token)}/import`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: getUserId() }),
@@ -439,10 +530,25 @@ export async function importSharedTrip(token: string): Promise<TripView> {
   return json.view as TripView;
 }
 
+export interface FamilyMember {
+  relationship: "self" | "spouse" | "partner" | "child" | "parent" | "sibling" | "friend" | "other";
+  name?: string;
+  age?: number;
+  dietary?: string[];
+  mobility?: string[];
+  interests?: string[];
+  notes?: string;
+}
+
 export interface Preferences {
   display_name: string;
   home_city: string;
+
   home_country: string;
+  display_region?: string;
+  display_language?: string;
+  display_currency?: string;
+  display_currency_configured?: boolean;
   trip_style: string;
   budget_level: string;
   flight_class: string;
@@ -456,39 +562,121 @@ export interface Preferences {
   profile_summary_updated_at?: string | null;
   /** "direct" = jump straight to full plan (default); "interactive" = agent may ask questions first */
   planning_mode: "direct" | "interactive";
+  /** Read-only: collected passively from chat, not editable through the settings save path. */
+  family_members?: FamilyMember[];
 }
 
 export async function fetchPreferences(): Promise<Preferences> {
   const params = new URLSearchParams({ user_id: getUserId() });
-  const res = await fetch(`${BASE}/preferences?${params.toString()}`);
+  const res = await apiFetch(`${BASE}/preferences?${params.toString()}`);
   ensureOk(res, "Could not load preferences");
   return res.json();
+}
+
+/** A fact chat noticed that is waiting for the user to confirm or decline. */
+export interface ProfileSuggestion {
+  id: string;
+  kind: "preference" | "family_member" | "note";
+  label: string;
+  summary: string;
+  detail: string;
+  provenance: string;
+  source_text: string;
+  created_at: string;
+}
+
+export async function fetchProfileSuggestions(): Promise<ProfileSuggestion[]> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  const res = await apiFetch(`${BASE}/profile/suggestions?${params.toString()}`);
+  ensureOk(res, "Could not load profile suggestions");
+  const data = await res.json();
+  return data.suggestions ?? [];
+}
+
+export async function resolveProfileSuggestion(
+  id: string,
+  action: "save" | "dismiss",
+): Promise<ProfileSuggestion[]> {
+  const res = await apiFetch(`${BASE}/profile/suggestions/${encodeURIComponent(id)}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not update that suggestion");
+  const data = await res.json();
+  return data.suggestions ?? [];
+}
+
+export interface FamilyMemberEdit {
+  original_relationship?: string;
+  original_name?: string;
+  relationship: FamilyMember["relationship"];
+  name: string;
+  age: number | null;
+  dietary: string[];
+  mobility: string[];
+  interests: string[];
+  notes: string;
+}
+
+export async function saveFamilyMember(edit: FamilyMemberEdit): Promise<FamilyMember[]> {
+  const res = await apiFetch(`${BASE}/profile/family`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...edit, user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not save that traveller");
+  const data = await res.json();
+  return data.family_members ?? [];
+}
+
+export async function removeFamilyMember(relationship: string, name: string): Promise<FamilyMember[]> {
+  const res = await apiFetch(`${BASE}/profile/family/remove`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ relationship, name, user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not remove that traveller");
+  const data = await res.json();
+  return data.family_members ?? [];
 }
 
 export interface SavePrefsResult {
   ok: boolean;
   about_me_extracted: string[];
+  summary_conflict?: boolean;
 }
 
-export async function savePreferences(prefs: Preferences): Promise<SavePrefsResult> {
-  const res = await fetch(`${BASE}/preferences`, {
+export async function savePreferences(
+  updates: Partial<Preferences>,
+): Promise<SavePrefsResult> {
+  const res = await apiFetch(`${BASE}/preferences`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...prefs, user_id: getUserId() }),
+    body: JSON.stringify({ ...updates, user_id: getUserId() }),
   });
+  if (res.status === 409) {
+    return { ok: false, about_me_extracted: [], summary_conflict: true };
+  }
   ensureOk(res, "Could not save preferences");
   return res.json();
 }
 
-export async function regenerateProfileSummary(): Promise<string> {
-  const res = await fetch(`${BASE}/profile/summary/regenerate`, {
+export async function regenerateProfileSummary(): Promise<{
+  profile_summary: string;
+  profile_summary_updated_at: string | null;
+}> {
+  const res = await apiFetch(`${BASE}/profile/summary/regenerate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ kind: "", name: "", user_id: getUserId() }),
   });
   ensureOk(res, "Could not regenerate the profile summary");
   const data = await res.json();
-  return (data && data.profile_summary) || "";
+  return {
+    profile_summary: (data && data.profile_summary) || "",
+    profile_summary_updated_at: data?.profile_summary_updated_at ?? null,
+  };
 }
 
 export type PrivacyAction = "delete_trip_history" | "clear_all_data" | "delete_account";
@@ -509,7 +697,7 @@ export async function runPrivacyAction(
   action: PrivacyAction,
   confirmText = "",
 ): Promise<PrivacyActionResult> {
-  const res = await fetch(`${BASE}/account/privacy`, {
+  const res = await apiFetch(`${BASE}/account/privacy`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: getUserId(), action, confirm_text: confirmText }),
@@ -558,7 +746,7 @@ export async function fetchDestinationOverview(
 
   const params = new URLSearchParams({ user_id: getUserId(), news: String(news) });
   if (destination) params.set("destination", destination);
-  const req = fetch(`${BASE}/destination/overview?${params.toString()}`)
+  const req = apiFetch(`${BASE}/destination/overview?${params.toString()}`)
     .then((res) => {
       ensureOk(res, "Could not load destination details");
       return res.json() as Promise<DestinationOverview>;
@@ -589,7 +777,7 @@ export async function fetchMapsConfig(): Promise<MapsConfig> {
     const res = await fetch(`${BASE}/maps/config`);
     mapsConfigCache = (await res.json()) as MapsConfig;
   } catch {
-    mapsConfigCache = { enabled: false, key: "" };
+    mapsConfigCache = { enabled: false, places_enabled: false, key: "" };
   }
   return mapsConfigCache;
 }
@@ -603,6 +791,26 @@ export async function fetchItinerary(signal?: AbortSignal): Promise<Itinerary> {
   return sharedClient.fetchItinerary(signal);
 }
 
+/** What the planner checked on this trip, and what it could not check. */
+export async function fetchVerification(signal?: AbortSignal): Promise<TripVerification> {
+  return sharedClient.fetchVerification(signal);
+}
+
+/** Refresh place facts and report material changes since the last check. */
+export async function refreshVerification(updatedAt = ""): Promise<TripFreshnessResult> {
+  return sharedClient.refreshVerification(updatedAt);
+}
+
+/** Explicitly refresh stale finalized-trip quotes without changing selections. */
+export async function recheckPrices(updatedAt = ""): Promise<TripPriceRecheckResult> {
+  return sharedClient.recheckPrices(updatedAt);
+}
+
+/** Rearrange the planner's own stops until the saved trip reads correctly. */
+export async function repairTrip(updatedAt = ""): Promise<TripRepairResult> {
+  return sharedClient.repairTrip(updatedAt);
+}
+
 /** Toggle one itinerary stop's booked flag; returns the refreshed itinerary. */
 export async function setStopBooked(
   day: number,
@@ -611,4 +819,169 @@ export async function setStopBooked(
 ): Promise<Itinerary> {
   return sharedClient.setStopBooked(day, name, booked);
 }
+
+/** Accept the map's candidate place for a stop; returns the redrawn map. */
+export async function confirmStopPlace(name: string): Promise<MapView> {
+  return sharedClient.confirmStopPlace(name);
+}
+
+// ---------------------------------------------------------------------------
+// Travel documents. The server keeps the fields a document contained, never
+// the document. Nothing here uploads a file for storage: the bytes are read
+// once by /documents/extract and discarded with the request.
+// ---------------------------------------------------------------------------
+
+export type DocumentKind =
+  | "passport"
+  | "visa"
+  | "insurance"
+  | "vaccination"
+  | "licence"
+  | "idp"
+  | "loyalty";
+
+export interface TravelDocument {
+  id: string;
+  scope: "traveler" | "trip";
+  type: DocumentKind;
+  status: string;
+  traveller_key: string;
+  traveller_name: string;
+  trip_id: string | null;
+  fields: Record<string, string | number>;
+  provenance: {
+    source_kind: "manual" | "image" | "text";
+    confidence: number;
+    confirmed_by_user: boolean;
+    captured_at: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DocumentsResponse {
+  documents: TravelDocument[];
+  type_labels: Record<string, string>;
+}
+
+export interface ProposedField {
+  key: string;
+  label: string;
+  value: string | number;
+  masked: boolean;
+  confidence: number;
+}
+
+export interface ExtractionResult {
+  type: DocumentKind;
+  source_kind: "image" | "text";
+  fields: ProposedField[];
+}
+
+export interface ReadinessCheck {
+  id: string;
+  severity: "blocker" | "warning" | "ok";
+  traveller_key: string;
+  traveller_name: string;
+  title: string;
+  detail: string;
+  rule: string;
+  origin: "computed";
+  action: string;
+}
+
+export interface DocumentReadiness {
+  destination?: string;
+  travellers?: { key: string; name: string; relationship: string }[];
+  checks: ReadinessCheck[];
+  blockers: number;
+  warnings: number;
+  badge: string;
+  badge_tone?: "blocker" | "warning" | "";
+  origin_country?: string;
+  destination_country?: string;
+  crosses_border?: boolean;
+  reason?: string;
+}
+
+export async function fetchTravelDocuments(): Promise<DocumentsResponse> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  const res = await apiFetch(`${BASE}/documents?${params.toString()}`);
+  ensureOk(res, "Could not load your document details");
+  return res.json();
+}
+
+/** Read one document and get field proposals back. Stores nothing. */
+export async function extractTravelDocument(
+  type: DocumentKind,
+  input: { contentBase64?: string; text?: string },
+): Promise<ExtractionResult> {
+  const res = await apiFetch(`${BASE}/documents/extract`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_id: getUserId(),
+      type,
+      content_base64: input.contentBase64 ?? "",
+      text: input.text ?? "",
+    }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || !json.ok) {
+    throw new Error(json.message || "The document could not be read.");
+  }
+  return json as ExtractionResult;
+}
+
+export async function saveTravelDocument(record: {
+  id?: string;
+  type: DocumentKind;
+  traveller_key: string;
+  traveller_name: string;
+  fields: Record<string, string | number>;
+  provenance?: Partial<TravelDocument["provenance"]>;
+}): Promise<TravelDocument> {
+  const res = await apiFetch(`${BASE}/documents`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...record, id: record.id ?? "", user_id: getUserId() }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || !json.ok) {
+    throw new Error(json.message || "Could not save these details.");
+  }
+  return json.document as TravelDocument;
+}
+
+export async function deleteTravelDocument(id: string): Promise<boolean> {
+  const res = await apiFetch(`${BASE}/documents/delete`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not delete that detail");
+  const json = await res.json();
+  return Boolean(json.ok);
+}
+
+export async function clearTravelDocuments(): Promise<number> {
+  const res = await apiFetch(`${BASE}/documents/clear`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not delete your document details");
+  const json = await res.json();
+  return Number(json.deleted || 0);
+}
+
+export async function fetchDocumentReadiness(
+  signal?: AbortSignal,
+): Promise<DocumentReadiness> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  const res = await apiFetch(`${BASE}/trip/documents/readiness?${params.toString()}`, { signal });
+  ensureOk(res, "Could not check this trip's documents");
+  return res.json();
+}
+
 

@@ -1,0 +1,510 @@
+from __future__ import annotations
+
+import pytest
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+
+from tripplanner import graph as graph_mod
+from tripplanner.graph import _trip_creation_tool_choice, _trip_kickoff_tool_choice
+
+
+@pytest.fixture(autouse=True)
+def _no_active_trip(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(graph_mod, "load_active_trip_dict", lambda: None)
+
+
+def _tool_message(name: str) -> AIMessage:
+    return AIMessage(content="", tool_calls=[{"name": name, "args": {}, "id": name}])
+
+
+def test_new_paris_trip_loads_preferences_before_kickoff() -> None:
+    messages = [HumanMessage(content="Plan Paris from Delhi for five days in October")]
+
+    assert _trip_kickoff_tool_choice(messages) == "get_travel_preferences"
+
+
+def test_new_paris_trip_forces_prefilled_kickoff_after_preferences() -> None:
+    messages = [
+        HumanMessage(content="Plan Paris from Delhi for five days in October"),
+        _tool_message("get_travel_preferences"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) == "recommend_trip_duration"
+
+
+def test_direct_mode_collects_missing_party_composition_after_duration_advice() -> None:
+    messages = [
+        HumanMessage(content="Plan Paris from Delhi for five days in October"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+
+
+@pytest.mark.parametrize(
+    "trip_prompt",
+    [
+        "Plan Paris from Delhi for 2 adults and 1 child",
+        "Plan a solo Paris trip from Delhi",
+        "Plan a Paris trip for a couple from Delhi",
+    ],
+)
+def test_direct_mode_skips_review_when_party_is_explicit(trip_prompt: str) -> None:
+    messages = [
+        HumanMessage(content=trip_prompt),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) is None
+
+
+def test_direct_mode_collects_missing_origin_even_when_party_is_explicit() -> None:
+    messages = [
+        HumanMessage(content="Plan a solo Paris trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+
+
+def test_direct_mode_accepts_explicit_self_arranged_arrival() -> None:
+    messages = [
+        HumanMessage(content="Plan a solo Paris trip; I'll arrange my own way there"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) is None
+
+
+def test_saved_home_city_satisfies_the_origin_review() -> None:
+    messages = [
+        HumanMessage(content="Plan a solo Paris trip"),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "get_travel_preferences", "args": {}, "id": "prefs"}],
+        ),
+        ToolMessage(
+            content='{"profile": {"home_city": "Bengaluru"}}',
+            tool_call_id="prefs",
+        ),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) is None
+
+
+def test_adult_count_alone_still_collects_the_trip_relationship() -> None:
+    messages = [
+        HumanMessage(content="Plan a Kashmir trip for 2 adults"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+
+
+def test_interactive_mode_forces_the_prefilled_review_before_planning() -> None:
+    messages = [
+        HumanMessage(content="Plan a Chennai trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages, interactive=True) == "request_trip_input"
+
+
+def test_interactive_kickoff_is_asked_once_and_then_yields_to_creation() -> None:
+    messages = [
+        HumanMessage(content="Plan a Chennai trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+        _tool_message("request_trip_input"),
+        HumanMessage(content="Use these choices for this trip: 4 days from Bengaluru"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages, interactive=True) is None
+
+
+def test_kickoff_is_not_repeated_after_user_answers() -> None:
+    messages = [
+        HumanMessage(content="Plan Paris from Delhi for five days in October"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+        _tool_message("request_trip_input"),
+        HumanMessage(content="Use these choices for this trip: relaxed pace"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) is None
+
+
+def test_non_planning_conversation_has_no_kickoff() -> None:
+    assert _trip_kickoff_tool_choice([HumanMessage(content="Hello")]) is None
+
+
+def test_active_trip_follow_up_has_no_kickoff(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "Paris"},
+    )
+
+    assert _trip_kickoff_tool_choice(
+        [HumanMessage(content="Make my Paris trip more relaxed")]
+    ) is None
+
+
+def test_explicit_destination_switch_requires_new_trip(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London"},
+    )
+
+    assert _trip_creation_tool_choice(
+        [HumanMessage(content="plan a trip to hawaii")]
+    ) == "create_trip_plan"
+
+
+def test_destination_switch_asks_the_kickoff_before_creating(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "Mussoorie"},
+    )
+
+    assert _trip_kickoff_tool_choice(
+        [HumanMessage(content="plan a trip to dehradun")]
+    ) == "get_travel_preferences"
+
+
+def test_destination_switch_collects_missing_party_after_duration_advice(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "Mussoorie"},
+    )
+    messages = [
+        HumanMessage(content="plan a trip to dehradun"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+
+
+def test_same_destination_follow_up_still_has_no_kickoff(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "Dehradun"},
+    )
+
+    assert _trip_kickoff_tool_choice(
+        [HumanMessage(content="plan my trip to Dehradun in more detail")]
+    ) is None
+
+
+def test_day_trip_switch_has_no_kickoff(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London"},
+    )
+
+    assert _trip_kickoff_tool_choice(
+        [HumanMessage(content="Plan a day trip to Oxford")]
+    ) is None
+
+
+def test_active_trip_explicit_new_trip_starts_fresh_kickoff(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "Paris"},
+    )
+
+    assert _trip_kickoff_tool_choice(
+        [HumanMessage(content="Create a separate new Hawaii trip")]
+    ) == "get_travel_preferences"
+
+
+def test_active_destination_follow_up_does_not_create_trip(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London"},
+    )
+
+    assert _trip_creation_tool_choice(
+        [HumanMessage(content="Plan my trip to London in more detail")]
+    ) is None
+
+
+def test_day_trip_does_not_replace_active_trip(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London"},
+    )
+
+    assert _trip_creation_tool_choice(
+        [HumanMessage(content="Plan a day trip to Oxford")]
+    ) is None
+
+
+def test_trip_agent_forces_the_prefilled_kickoff_in_interactive_mode(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    messages = [
+        HumanMessage(content="Plan a Chennai trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="")
+
+    class FakeModel:
+        def bind_tools(self, tools: list, **options: object) -> FakeBoundModel:
+            bound_options["tools"] = [tool.name for tool in tools]
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_interactive_trip_questions", lambda: True)
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+
+    graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound_options["tool_choice"] == "request_trip_input"
+    assert bound_options["tools"] == ["request_trip_input"]
+
+
+def test_trip_agent_keeps_a_forced_origin_review_in_direct_mode(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    messages = [
+        HumanMessage(content="Plan a solo Chennai trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="")
+
+    class FakeModel:
+        def bind_tools(self, tools: list, **options: object) -> FakeBoundModel:
+            bound_options["tools"] = [tool.name for tool in tools]
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_interactive_trip_questions", lambda: False)
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+
+    graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound_options["tool_choice"] == "request_trip_input"
+    assert bound_options["tools"] == ["request_trip_input"]
+
+
+def test_trip_agent_waits_for_the_kickoff_answer_before_planning(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    messages = [
+        HumanMessage(content="Plan a Chennai trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+        _tool_message("request_trip_input"),
+    ]
+    bound = {"called": False}
+
+    class FakeModel:
+        def bind_tools(self, *_args: object, **_options: object) -> object:
+            bound["called"] = True
+            raise AssertionError("no tool may be bound while the review is unanswered")
+
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="Which city are you travelling from?")
+
+    monkeypatch.setattr(graph_mod, "_interactive_trip_questions", lambda: True)
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+
+    result = graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound["called"] is False
+    assert "travelling from" in result["messages"][0].content
+
+
+def test_trip_agent_forces_creation_after_kickoff_answer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    messages = [
+        HumanMessage(content="Create a separate new Hawaii trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+        _tool_message("request_trip_input"),
+        HumanMessage(content="Use these choices and build it"),
+    ]
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="")
+
+    class FakeModel:
+        def bind_tools(self, tools: list, **options: object) -> FakeBoundModel:
+            bound_options["tools"] = [tool.name for tool in tools]
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "load_active_trip_dict", lambda: {"destination": "Paris"})
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+
+    graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound_options["tool_choice"] == "create_trip_plan"
+    assert bound_options["tools"] == ["create_trip_plan"]
+
+
+def test_new_trip_intent_preempts_incomplete_active_trip_gate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    messages = [HumanMessage(content="Create a separate new Hawaii trip")]
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="")
+
+    class FakeModel:
+        def bind_tools(self, tools: list, **options: object) -> FakeBoundModel:
+            bound_options["tools"] = [tool.name for tool in tools]
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "load_active_trip_dict", lambda: {
+        "destination": "Paris",
+        "day_wise_itinerary": [],
+    })
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+
+    graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound_options["tool_choice"] == "get_travel_preferences"
+    assert bound_options["tools"] == ["get_travel_preferences"]
+
+
+@pytest.mark.parametrize(
+    ("messages", "expected"),
+    [
+        ([HumanMessage(content="Plan a Paris trip")], "get_travel_preferences"),
+        (
+            [
+                HumanMessage(content="Plan a Paris trip"),
+                _tool_message("get_travel_preferences"),
+            ],
+            "recommend_trip_duration",
+        ),
+        (
+            [
+                HumanMessage(content="Plan a Paris trip"),
+                _tool_message("get_travel_preferences"),
+                _tool_message("recommend_trip_duration"),
+            ],
+            "request_trip_input",
+        ),
+    ],
+)
+def test_trip_agent_forces_kickoff_tool(
+    monkeypatch: pytest.MonkeyPatch,
+    messages: list,
+    expected: str | None,
+) -> None:
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="")
+
+    class FakeModel:
+        def bind_tools(self, _tools: list, **options: object) -> FakeBoundModel:
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(graph_mod, "select_tools", lambda *_args, **_kwargs: [])
+
+    graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    if expected is None:
+        assert "tool_choice" not in bound_options
+    else:
+        assert bound_options["tool_choice"] == expected
+
+
+def test_direct_mode_hides_the_optional_input_tool(monkeypatch: pytest.MonkeyPatch) -> None:
+    bound_tools: list[str] = []
+
+    class FakeBoundModel:
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="")
+
+    class FakeModel:
+        def bind_tools(self, tools: list, **_options: object) -> FakeBoundModel:
+            bound_tools.extend(tool.name for tool in tools)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(graph_mod, "_interactive_trip_questions", lambda: False)
+
+    graph_mod.trip_agent({
+        "messages": [
+            HumanMessage(content="Plan a solo Paris trip from Delhi"),
+            _tool_message("get_travel_preferences"),
+            _tool_message("recommend_trip_duration"),
+        ],
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert "request_trip_input" not in bound_tools

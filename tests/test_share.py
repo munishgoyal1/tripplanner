@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from tripplanner import user_context
-from tripplanner.tools import trip_planner
+from tripplanner.tools import trip_history, trip_planner
 from tripplanner.web import share
 
 
@@ -17,6 +17,9 @@ def _isolate_storage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(trip_planner, "_TRIPS_DIR", tmp_path / ".tripplanner")
     monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", tmp_path / ".tripplanner" / "active_trip.json")
     monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", tmp_path / ".tripplanner" / "trips")
+    monkeypatch.setattr(trip_history, "_TRIPS_DIR", tmp_path / ".tripplanner")
+    monkeypatch.setattr(trip_history, "_ACTIVE_TRIP_FILE", tmp_path / ".tripplanner" / "active_trip.json")
+    monkeypatch.setattr(trip_history, "_TRIP_HISTORY_DIR", tmp_path / ".tripplanner" / "trips")
     monkeypatch.setenv("WEB_SESSION_SECRET", "test-secret-pin")
     user_context.set_user_id("alice")
     yield
@@ -143,4 +146,167 @@ def test_import_shared_snapshot_creates_active_trip_for_viewer() -> None:
     assert active["summary"] == "family copy"
     assert active["imported_from_share"] is True
     assert active["trip_id"] == imported["trip_id"]
+
+
+def _decision(**extra) -> dict:
+    decision = {
+        "id": "dec_transport_lisbon_porto_2026_10_02",
+        "kind": "transport_mode",
+        "subject": "Lisbon to Porto",
+        "scope": {"day": 2, "from_place": "Lisbon", "to_place": "Porto"},
+        "rule": {"code": "door_to_door_time", "text": "Fastest door to door."},
+        "chosen_option_id": "opt_train",
+        "priced": "full",
+        "options": [
+            {
+                "id": "opt_train",
+                "mode": "train",
+                "label": "Train",
+                "price": {"amount": 32.0, "currency": "EUR"},
+                "priced": True,
+                "duration_estimated": False,
+                "day_cost": 41.0,
+                "provider_ref": "off_0000AbC",
+                "source": {
+                    "provider": "Rail Europe",
+                    "checked_at": "2026-09-15T08:00:00",
+                    "confidence": "live",
+                    "url": "https://rail.example/booking?apikey=secret",
+                },
+            },
+            {
+                "id": "opt_flight",
+                "mode": "flight",
+                "label": "Flight",
+                "price": {"amount": 118.0, "currency": "EUR"},
+                "priced": True,
+                "rejected_because": "Two hours slower once airport time is counted.",
+                "source": {
+                    "provider": "Duffel",
+                    "checked_at": "2026-09-15T08:00:00",
+                    "url": "https://duffel.example/offer/1",
+                },
+            },
+        ],
+    }
+    decision.update(extra)
+    return decision
+
+
+def test_sanitized_decision_keeps_the_reasoning_and_drops_the_plumbing() -> None:
+    [public] = share.sanitize_decisions([_decision()])
+    assert public["rule_text"] == "Fastest door to door."
+    assert "rule" not in public
+    train = public["options"][0]
+    assert "provider_ref" not in train
+    assert "day_cost" not in train
+    assert train["duration_estimated"] is False
+    assert train["source"]["provider"] == "Rail Europe"
+
+
+def test_sanitized_decision_drops_a_keyed_url_and_keeps_a_plain_one() -> None:
+    [public] = share.sanitize_decisions([_decision()])
+    assert public["options"][0]["source"].get("url", "") == ""
+    assert public["options"][1]["source"]["url"] == "https://duffel.example/offer/1"
+
+
+def test_sanitized_decision_shows_the_overruled_choice_not_the_agent_one() -> None:
+    overruled = _decision(
+        state="overruled",
+        override={"option_id": "opt_flight", "at": "2026-09-16T09:00:00"},
+    )
+    [public] = share.sanitize_decisions([overruled])
+    assert public["chosen_option_id"] == "opt_flight"
+
+
+def test_shared_plan_carries_decisions_and_price_checks() -> None:
+    _write_active(
+        _make_plan(
+            decisions=[_decision()],
+            price_checks=[
+                {
+                    "kind": "flights",
+                    "provider": "Duffel",
+                    "checked_at": "2026-09-15T08:00:00",
+                    "expires_at": "2026-09-15T08:30:00",
+                }
+            ],
+        )
+    )
+    resolved = share.resolve(share.mint_for_active_trip())
+    assert resolved is not None
+    public = resolved["plan"]
+    assert public["decisions"][0]["subject"] == "Lisbon to Porto"
+    assert public["price_checks"][0]["provider"] == "Duffel"
+
+
+def test_shared_stay_drops_opaque_provider_references_at_every_level() -> None:
+    plan = _make_plan(
+        selected_hotels=[
+            {
+                "name": "Memmo Alfama",
+                "provider_ref": {"hotel_id": "hotel-42", "rate_id": "rate-7"},
+                "source": {"provider": "LiteAPI", "checked_at": "2026-09-15T08:00:00"},
+            }
+        ],
+        decisions=[
+            _decision(
+                kind="lodging",
+                options=[
+                    {
+                        "id": "opt_memmo",
+                        "mode": None,
+                        "label": "Memmo Alfama",
+                        "price": {"amount": 640, "currency": "EUR"},
+                        "lodging": {
+                            "room_name": "River view king",
+                            "provider_ref": {"hotel_id": "hotel-42", "rate_id": "rate-7"},
+                        },
+                    }
+                ],
+            )
+        ],
+    )
+
+    public = share.sanitize_plan(plan)
+
+    assert "provider_ref" not in public["selected_hotels"][0]
+    assert "provider_ref" not in public["decisions"][0]["options"][0]["lodging"]
+    assert public["selected_hotels"][0]["source"]["provider"] == "LiteAPI"
+
+
+def test_shared_flight_drops_opaque_provider_references_at_every_level() -> None:
+    plan = _make_plan(
+        selected_flights=[
+            {
+                "airline": "Air India",
+                "provider_ref": {"offer_id": "off-direct"},
+                "source": {"provider": "Duffel", "checked_at": "2026-09-15T08:00:00"},
+            }
+        ],
+        decisions=[
+            _decision(
+                kind="flight",
+                options=[
+                    {
+                        "id": "opt_direct",
+                        "mode": "flight",
+                        "label": "Air India",
+                        "price": {"amount": 900, "currency": "USD"},
+                        "flight": {
+                            "origin": "DEL",
+                            "destination": "LHR",
+                            "provider_ref": {"offer_id": "off-direct"},
+                        },
+                    }
+                ],
+            )
+        ],
+    )
+
+    public = share.sanitize_plan(plan)
+
+    assert "provider_ref" not in public["selected_flights"][0]
+    assert "provider_ref" not in public["decisions"][0]["options"][0]["flight"]
+    assert public["selected_flights"][0]["source"]["provider"] == "Duffel"
 

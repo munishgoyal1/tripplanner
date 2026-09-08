@@ -1,0 +1,311 @@
+{
+  "status": "draft",
+  "trip_id": "maldives_2027-02-17_2027-02-24",
+  "trip_number": 1,
+  "created_at": "2026-08-17T18:50:06.994521",
+  "destination": "Maldives",
+  "origin": "Bangalore",
+  "departure_date": "2027-02-17",
+  "return_date": "2027-02-24",
+  "travelers": "2 adults (one with limited mobility; cannot manage long walks or stairs)",
+  "notes": "Draft itinerary for Maldives trip (17–24 Feb 2027) from Bangalore for 2 adults, one with limited mobility. Accessible activities, moderate budget, balanced pace. Currency: USD. Hotel and restaurant research pending due to provider error; will update with real options as soon as available.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Maldives",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the resort scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-17",
+      "title": "Day 1 · Arrival in Maldives",
+      "summary": "Arrive in Maldives from Bangalore. Transfer to resort hotel. Settle in and enjoy a relaxing evening.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Malé",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "12:30",
+          "duration_min": 210,
+          "note": "Direct flight, wheelchair assistance requested"
+        },
+        {
+          "name": "Resort Transfer",
+          "kind": "transport",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Accessible transfer arranged"
+        },
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and relax"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-18",
+      "title": "Day 2 · Relaxation & Beach",
+      "summary": "Enjoy a leisurely breakfast, relax on the beach, and explore accessible resort facilities.",
+      "stops": [
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Beach Area (Accessible)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Wheelchair accessible pathways"
+        },
+        {
+          "name": "Resort Restaurant (TBD)",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch with sea view"
+        },
+        {
+          "name": "Spa (Accessible)",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Accessible spa treatment"
+        },
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-19",
+      "title": "Day 3 · Island Excursion",
+      "summary": "Take a short, accessible excursion to a nearby island. Enjoy sightseeing and local culture.",
+      "stops": [
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Island Excursion (Accessible)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 180,
+          "note": "Short boat ride, accessible facilities"
+        },
+        {
+          "name": "Local Restaurant (Accessible)",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch on the island"
+        },
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-20",
+      "title": "Day 4 · Water Activities",
+      "summary": "Try accessible water activities (snorkeling, glass-bottom boat). Afternoon at leisure.",
+      "stops": [
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Accessible Water Activities",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Snorkeling, glass-bottom boat, with assistance"
+        },
+        {
+          "name": "Resort Restaurant (TBD)",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch at resort"
+        },
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Afternoon at leisure"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-21",
+      "title": "Day 5 · Malé City Tour",
+      "summary": "Accessible guided tour of Malé city: visit local markets and historical sites.",
+      "stops": [
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Malé City Tour (Accessible)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 180,
+          "note": "Guided tour with accessible transport"
+        },
+        {
+          "name": "Local Restaurant (Accessible)",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch in Malé"
+        },
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-02-22",
+      "title": "Day 6 · Leisure & Resort Activities",
+      "summary": "Enjoy resort amenities: accessible pool, games, and sunset dinner.",
+      "stops": [
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Accessible Pool",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Pool with ramp access"
+        },
+        {
+          "name": "Resort Restaurant (TBD)",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch at resort"
+        },
+        {
+          "name": "Resort Activities (Accessible)",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Games & entertainment"
+        },
+        {
+          "name": "Resort Restaurant (TBD)",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Sunset dinner"
+        },
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-02-23",
+      "title": "Day 7 · Departure",
+      "summary": "Check out, transfer to airport, fly back to Bangalore.",
+      "stops": [
+        {
+          "name": "Resort Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Resort Transfer",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 60,
+          "note": "Accessible transfer arranged"
+        },
+        {
+          "name": "Flight: Malé to Bangalore",
+          "kind": "flight",
+          "time": "11:30",
+          "arrival_time": "15:00",
+          "duration_min": 210,
+          "note": "Direct flight, wheelchair assistance requested"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T18:51:32.989411",
+  "id": "maldives_2027-02-17_2027-02-24",
+  "user_id": "corpus-maldives-accessible-couple-7d"
+}

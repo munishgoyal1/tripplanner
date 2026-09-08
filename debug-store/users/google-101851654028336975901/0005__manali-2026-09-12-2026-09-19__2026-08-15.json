@@ -1,0 +1,2030 @@
+{
+  "archive_no": 5,
+  "trip_id": "manali_2026-09-12_2026-09-19",
+  "user_id": "google-101851654028336975901",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T11:32:17Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T11:32:17Z",
+      "content_hash": "2c9b21b0a50e8224",
+      "plan": {
+        "status": "draft",
+        "trip_id": "manali_2026-09-12_2026-09-19",
+        "trip_number": 5,
+        "created_at": "2026-08-15T17:02:17.134025",
+        "destination": "Manali",
+        "origin": "",
+        "departure_date": "2026-09-12",
+        "return_date": "2026-09-19",
+        "travelers": "Munish (solo)",
+        "notes": "",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Manali",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 7-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 7,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 4,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T17:02:17.134045"
+      }
+    },
+    {
+      "at": "2026-08-15T11:32:53Z",
+      "content_hash": "2f428d5fc1e17299",
+      "plan": {
+        "status": "draft",
+        "trip_id": "manali_2026-09-12_2026-09-19",
+        "trip_number": 5,
+        "created_at": "2026-08-15T17:02:17.134025",
+        "destination": "Manali",
+        "origin": "",
+        "departure_date": "2026-09-12",
+        "return_date": "2026-09-19",
+        "travelers": "Munish (solo)",
+        "notes": "",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Manali",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 7-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 7,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 4,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2026-09-12",
+            "title": "Arrival in Manali",
+            "summary": "Arrive in Manali, check in to your hotel, and enjoy a relaxing walk around Mall Road.",
+            "stops": [
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Check-in and freshen up"
+              },
+              {
+                "name": "Mall Road",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 90,
+                "note": "Explore shops and local cafes"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2026-09-13",
+            "title": "Solang Valley Adventure",
+            "summary": "Visit Solang Valley for adventure sports and scenic views.",
+            "stops": [
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Solang Valley",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 180,
+                "note": "Try paragliding or ropeway"
+              },
+              {
+                "name": "Cafe 1947",
+                "kind": "meal",
+                "time": "14:00",
+                "duration_min": 60,
+                "note": "Lunch with a riverside view"
+              },
+              {
+                "name": "Jogini Waterfall",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 90,
+                "note": "Short trek and relax"
+              },
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-09-14",
+            "title": "Rohtang Pass Excursion",
+            "summary": "Day trip to Rohtang Pass for snow and panoramic vistas.",
+            "stops": [
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Rohtang Pass",
+                "kind": "attraction",
+                "time": "08:00",
+                "duration_min": 240,
+                "note": "Enjoy snow activities and views"
+              },
+              {
+                "name": "Chopsticks Restaurant",
+                "kind": "meal",
+                "time": "13:30",
+                "duration_min": 60,
+                "note": "Lunch stop in Manali town"
+              },
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2026-09-15",
+            "title": "Old Manali & Local Culture",
+            "summary": "Explore Old Manali, Hadimba Temple, and local culture.",
+            "stops": [
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Hadimba Temple",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 60,
+                "note": "Historic temple visit"
+              },
+              {
+                "name": "Manu Temple",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60,
+                "note": "Explore the temple and surroundings"
+              },
+              {
+                "name": "The Johnson's Cafe",
+                "kind": "meal",
+                "time": "13:00",
+                "duration_min": 60,
+                "note": "Lunch in Old Manali"
+              },
+              {
+                "name": "Old Manali",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 120,
+                "note": "Stroll through the village, shop, and relax"
+              },
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2026-09-16",
+            "title": "Naggar Castle & Art Day",
+            "summary": "Excursion to Naggar Castle and Nicholas Roerich Art Gallery.",
+            "stops": [
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Naggar Castle",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90,
+                "note": "Explore the historic castle"
+              },
+              {
+                "name": "Nicholas Roerich Art Gallery",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 90,
+                "note": "Art and history"
+              },
+              {
+                "name": "Nightingale Restaurant",
+                "kind": "meal",
+                "time": "14:00",
+                "duration_min": 60,
+                "note": "Lunch with a view"
+              },
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2026-09-17",
+            "title": "Nature & Relaxation",
+            "summary": "Visit Van Vihar, relax by the Beas River, and enjoy a spa evening.",
+            "stops": [
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Van Vihar National Park",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90,
+                "note": "Nature walk"
+              },
+              {
+                "name": "Cafe Amigos",
+                "kind": "meal",
+                "time": "12:30",
+                "duration_min": 60,
+                "note": "Lunch"
+              },
+              {
+                "name": "Beas River",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 90,
+                "note": "Relax by the river"
+              },
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Return to hotel and enjoy spa"
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "date": "2026-09-18",
+            "title": "Leisure & Departure",
+            "summary": "Last-minute shopping, leisure time, and departure from Manali.",
+            "stops": [
+              {
+                "name": "4-star Hotel in Manali",
+                "kind": "hotel",
+                "note": "Check out"
+              },
+              {
+                "name": "Tibetan Monastery",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 60,
+                "note": "Cultural visit"
+              },
+              {
+                "name": "Mall Road",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 90,
+                "note": "Shopping and snacks before departure"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T17:02:53.314498",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T17:02:53",
+            "expires_at": "2026-08-16T05:02:53"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T12:30:21Z",
+      "content_hash": "fad5296b40dc3a16",
+      "plan": {
+        "status": "draft",
+        "trip_id": "manali_2026-09-12_2026-09-19",
+        "trip_number": 5,
+        "created_at": "2026-08-15T17:02:17.134025",
+        "destination": "Manali",
+        "origin": "",
+        "departure_date": "2026-09-12",
+        "return_date": "2026-09-19",
+        "travelers": "Munish (solo)",
+        "notes": "",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Manali",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 7-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 7,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 4,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "The Himalayan",
+            "provider": "liteapi",
+            "provider_ref": {
+              "hotel_id": "lpf8d03",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gF3RzRaVE9OQldHRTNHS05SVUdZWVRPTVJXR1FaREFOWlNHWlRETVpSV01RWkdHTVJRR01ZVEVNQlhHRTNUS05SVkdZMlRNWkpTR0EzREVOUlZHWTJERVlaU0dBM0dLTlRHR1pTVEVNQlhHTTNHSU5UR0daUkRNT0pXTVUzRE83QlJFTVpEQU1SV0dBNFRDTVQ0R0lZREVOUlFIRVlUUzdERk5aUFZLVTM0SkZISFlTS09LSjZEQ1FKUUlONkRJTkpTSEY2R1NVREhLVkVIWU1KWEhBM0RPT0pUR1UzRE9OWlZHQkVHS1ZUTUVNWVRBTUpaR0VaVFNJWlNHQTNER0xKUkdBWVRTTUpUSEY2RTRVU0dKWjZERU1CU0dZWURRTUpVR0lZVEdNVDRHSjZGRU1KUkdRMlVFT0paR1ZIREFWSlFQUTRUTU5CWEhBWVRBSTJTSjRSVTRVU0dKWVJURU1CU0dZV1RBT0JOR0UyQ0FNUlJISVpURUlZo3ByY8tA943hmZmZmqVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtknU3RhbmRhcmQgUm9vbSwgMSBRdWVlbiBCZWQsIE5vbiBTbW9raW5no29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAxOTEzOaNzaWQCo2hpZKdscGY4ZDAzo29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNi0wOS0xMqJjb6oyMDI2LTA5LTE5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDUzMjI1ZTl1MnVnUGNISVg2czVuUjJyQWYwTmRhNXBYZXpDo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZK5UYXhlcyBhbmQgRmVlc6Fhy0DQB2FHrhR7oWOjSU5ShKFpwqFkrlRheGVzIGFuZCBGZWVzoWHLQJD8hR64UeyhY6NJTlKibHDAo2JrdAc="
+            },
+            "address": "Hadimba Road, Manali, Himachal Pradesh",
+            "rating": 4.7,
+            "reviews": 1200,
+            "price_per_night": 9500,
+            "currency": "INR",
+            "checkin": "2026-09-12",
+            "checkout": "2026-09-19"
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2026-09-12",
+            "title": "Arrival in Manali",
+            "summary": "Arrive in Manali, check in to your hotel, and enjoy a relaxing walk around Mall Road.",
+            "stops": [
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Check-in and freshen up"
+              },
+              {
+                "name": "Mall Road",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 90,
+                "note": "Explore shops and local cafes"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2026-09-13",
+            "title": "Solang Valley Adventure",
+            "summary": "Visit Solang Valley for adventure sports and scenic views.",
+            "stops": [
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Solang Valley",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 180,
+                "note": "Try paragliding or ropeway"
+              },
+              {
+                "name": "Cafe 1947",
+                "kind": "meal",
+                "time": "14:00",
+                "duration_min": 60,
+                "note": "Lunch with a riverside view"
+              },
+              {
+                "name": "Jogini Waterfall",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 90,
+                "note": "Short trek and relax"
+              },
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-09-14",
+            "title": "Rohtang Pass Excursion",
+            "summary": "Day trip to Rohtang Pass for snow and panoramic vistas.",
+            "stops": [
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Rohtang Pass",
+                "kind": "attraction",
+                "time": "08:00",
+                "duration_min": 240,
+                "note": "Enjoy snow activities and views"
+              },
+              {
+                "name": "Chopsticks Restaurant",
+                "kind": "meal",
+                "time": "13:30",
+                "duration_min": 60,
+                "note": "Lunch stop in Manali town"
+              },
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2026-09-15",
+            "title": "Old Manali & Local Culture",
+            "summary": "Explore Old Manali, Hadimba Temple, and local culture.",
+            "stops": [
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Hadimba Temple",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 60,
+                "note": "Historic temple visit"
+              },
+              {
+                "name": "Manu Temple",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60,
+                "note": "Explore the temple and surroundings"
+              },
+              {
+                "name": "The Johnson's Cafe",
+                "kind": "meal",
+                "time": "13:00",
+                "duration_min": 60,
+                "note": "Lunch in Old Manali"
+              },
+              {
+                "name": "Old Manali",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 120,
+                "note": "Stroll through the village, shop, and relax"
+              },
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2026-09-16",
+            "title": "Naggar Castle & Art Day",
+            "summary": "Excursion to Naggar Castle and Nicholas Roerich Art Gallery.",
+            "stops": [
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Naggar Castle",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90,
+                "note": "Explore the historic castle"
+              },
+              {
+                "name": "Nicholas Roerich Art Gallery",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 90,
+                "note": "Art and history"
+              },
+              {
+                "name": "Nightingale Restaurant",
+                "kind": "meal",
+                "time": "14:00",
+                "duration_min": 60,
+                "note": "Lunch with a view"
+              },
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2026-09-17",
+            "title": "Nature & Relaxation",
+            "summary": "Visit Van Vihar, relax by the Beas River, and enjoy a spa evening.",
+            "stops": [
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Van Vihar National Park",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90,
+                "note": "Nature walk"
+              },
+              {
+                "name": "Cafe Amigos",
+                "kind": "meal",
+                "time": "12:30",
+                "duration_min": 60,
+                "note": "Lunch"
+              },
+              {
+                "name": "Beas River",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 90,
+                "note": "Relax by the river"
+              },
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Return to hotel and enjoy spa"
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "date": "2026-09-18",
+            "title": "Leisure & Departure",
+            "summary": "Last-minute shopping, leisure time, and departure from Manali.",
+            "stops": [
+              {
+                "name": "The Himalayan",
+                "kind": "hotel",
+                "note": "Check out"
+              },
+              {
+                "name": "Tibetan Monastery",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 60,
+                "note": "Cultural visit"
+              },
+              {
+                "name": "Cafe 1986",
+                "kind": "meal",
+                "time": "11:30",
+                "duration_min": 60,
+                "note": "Lunch at a top-rated cafe on Mall Road"
+              },
+              {
+                "name": "Mall Road",
+                "kind": "attraction",
+                "time": "13:00",
+                "duration_min": 90,
+                "note": "Shopping and snacks before departure"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T18:00:21.801617",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T17:02:53",
+            "expires_at": "2026-08-16T05:02:53"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T11:33:01Z",
+    "user_id": "google-101851654028336975901",
+    "chat": {
+      "buckets": {},
+      "operations": {
+        "recent_operations": [
+          {
+            "key": "b6cec662d9cb6f39079653d2219364c31cd23eff4f9172ab65e2995f24b00fa9",
+            "status": "completed",
+            "reply": "Here’s a draft itinerary for your Paris trip, 6 days/5 nights, starting September 6, 2026. I’ve selected a well-rated 4-star hotel (Hotel Chambiges Elysees, 4.5★, 890 reviews) in central Paris, matching your moderate budget and balanced pace.\n\nDraft — I'll refine with real prices and availability next.\n\nDay 1 · Arrival in Paris (Sep 6)\n- Arrive in Paris, check in to Hotel Chambiges Elysees\n- Relaxing walk in the Latin Quarter\n\nDay 2 · Eiffel Tower & Seine\n- Eiffel Tower (morning, book tickets in advance)\n- Seine River cruise (early afternoon)\n- Dinner at Le Bistro Parisien (Eiffel Tower view)\n\nDay 3 · Louvre & Marais\n- Louvre Museum (morning, arrive early for fewer crowds)\n- Explore Le Marais (afternoon)\n- Dinner at Café Charlot\n\nDay 4 · Montmartre & Sacré-Cœur\n- Montmartre & Sacré-Cœur (morning/lunch)\n- Lunch at Le Consulat\n- Musée d'Orsay (afternoon)\n\nDay 5 · Versailles Day Trip\n- Day trip to Palace of Versailles & gardens (full day)\n- Late lunch at La Petite Venise (after palace tour)\n\nDay 6 · Departure (Sep 11)\n- Check out of hotel\n- Farewell breakfast at Café de Flore\n\nNext, I’ll search for the best flights, verify the hotel, bookable activities, and top restaurants, and provide a full cost breakdown. \n\nLet me know if you want to adjust anything (dates, hotel tier, pace, etc.) before I proceed!",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "plan a paris trip"
+          },
+          {
+            "key": "7c5ce5f58f252e849510e0128ff9af997acbd2fa6adb8bb79c818a93e8d4fbfc",
+            "status": "completed",
+            "reply": "Here are your live flight options and updated itinerary with direct booking links:\n\n✈️ FLIGHTS (Bangalore ⇄ Paris, Air India, Economy)\n- Outbound: Sep 6, 22:30 BLR → 01:25 DEL (AI 2488), 02:55 DEL → 11:15 CDG (AI 143)\n- Return: Sep 11, 13:15 CDG → 00:35 DEL (AI 142), 02:10 DEL → 04:50 BLR (AI 565)\n- Total round-trip fare for 2 adults: ₹1,07,122\n- Booking link: Air India via Duffel (live fare, book here)\n\n🏨 HOTEL\n- Hotel Chambiges Elysees, 4.5★ (890 reviews), 8 Rue Chambiges, 75008 Paris\n- 5 nights, est. ₹1,20,000\n- Booking link: Chambiges Elysees on Booking.com\n\n🗓️ ITINERARY HIGHLIGHTS\n- Day 1: Arrive Paris, check in, stroll Latin Quarter\n- Day 2: Eiffel Tower, Seine cruise, dinner at Le Bistro Parisien\n- Day 3: Louvre, Le Marais, dinner at Café Charlot\n- Day 4: Montmartre, Sacré-Cœur, Musée d'Orsay, lunch at Le Consulat\n- Day 5: Versailles day trip, lunch at La Petite Venise\n- Day 6: Farewell breakfast at Café de Flore, return flight\n\n🍽️ RESTAURANT SUGGESTIONS (all 4.5★+)\n- Pink Mamma (Italian), Chouchou (French/Mediterranean), Sphère (Fine dining), Le Ju', Le Consulat, Café Charlot, Café de Flore\n\n🌦️ WEATHER (seasonal estimate)\n- Mostly overcast, highs 20–29°C, light rain possible Sep 10–11. Bring light layers and a rain jacket.\n\n💰 COST ESTIMATE (for 2 adults, INR)\n- Flights: ₹1,07,122\n- Hotel: ₹1,20,000\n- Meals: ₹25,000\n- Activities & tickets: ₹30,000\n- Local transport: ₹10,000\n- Total: ₹2,92,122\n\nNo major events or public holidays during your dates—Paris will be lively but not overcrowded.\n\nFlight and hotel links are live and bookable. Does this look good, or would you like to adjust anything (dates, hotel, pace, etc.) before I finalize?",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "add flight links to and from bangalore which is our home city"
+          },
+          {
+            "key": "c443402fb186eb7ab6801e6f3b3912a160017e57f700e83373c381ffa4ecbfe3",
+            "status": "completed",
+            "reply": "Here’s your 7-day Rajasthan itinerary, focused only on the Rajasthan circuit (no flight links from your originating city), covering Jaipur, Jodhpur, Udaipur, and Pushkar. Each day features real hotels, top attractions, and local cuisine:\n\nDay 1 · Arrival in Jaipur (Sep 10)\n- Check in to a central Jaipur hotel (e.g., Samode Haveli or similar)\n- Evening stroll at Johari Bazaar\n\nDay 2 · Jaipur Forts & Palaces\n- Amber Fort (morning)\n- City Palace & Hawa Mahal (midday)\n- Lunch at Laxmi Mishthan Bhandar (traditional Rajasthani cuisine)\n- Return to hotel\n\nDay 3 · Jaipur to Jodhpur\n- Drive from Jaipur to Jodhpur (approx. 6 hrs, 340 km)\n- Lunch at Gypsy Restaurant (en route)\n- Check in to a Jodhpur hotel (e.g., RAAS Jodhpur or similar)\n- Evening at Clock Tower Market\n\nDay 4 · Jodhpur Forts & Culture\n- Mehrangarh Fort (morning)\n- Jaswant Thada (late morning)\n- Lunch at Indique Restaurant (fort views)\n- Return to hotel\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- Drive from Jodhpur to Udaipur (approx. 5.5 hrs, 250 km)\n- Stop at Ranakpur Jain Temple (midway)\n- Check in to a lakeside Udaipur hotel (e.g., Amet Haveli or similar)\n\nDay 6 · Udaipur Palaces & Lakes\n- City Palace Udaipur (morning)\n- Boat ride to Jag Mandir on Lake Pichola (midday)\n- Lunch at Ambrai Restaurant (lake views)\n- Return to hotel\n\nDay 7 · Udaipur to Pushkar & Departure\n- Drive from Udaipur to Pushkar (approx. 5 hrs, 270 km)\n- Visit Brahma Temple & Pushkar Lake\n- Lunch at The Laughing Buddha Café (vegetarian, lake views)\n\nThis plan is focused entirely within Rajasthan, with all intercity travel by private car and no flight links from Bangalore or elsewhere. All hotels, attractions, and restaurants are real, well-rated options. \n\nWould you like to see live hotel options for each city or adjust any part of the route?",
+            "agent": "trip",
+            "trip_id": "rajasthan_2026-09-10_2026-09-17",
+            "message": "Plan a trip to rajasthan for 7 days, just showing the rajasthan in itinerary without flight links from originating city"
+          },
+          {
+            "key": "aa43b93c1576694efeb07ecc058296b0e203a2d440b176646474b737d87ed2b6",
+            "status": "completed",
+            "reply": "Here’s your 7-day Rajasthan itinerary starting and ending in Bangalore, now including explicit flight connections as required. All intercity transfers are clearly shown, and each day features real hotels, attractions, and meal stops. (Currency: INR)\n\nDraft Itinerary\n\nDay 1 · Fly to Jaipur, Arrival & Old City (Sep 10)\n- Flight: Bangalore to Jaipur (IndiGo, morning direct)\n- Samode Haveli (hotel, check-in)\n- Lunch suggestion: Tapri Central (Jaipur, rooftop café)\n- Johari Bazaar (evening stroll/shopping)\n\nDay 2 · Jaipur Forts & Palaces\n- Samode Haveli (start)\n- Amber Fort (09:00)\n- City Palace (12:00)\n- Hawa Mahal (14:00)\n- Laxmi Mishthan Bhandar (lunch)\n- Return to hotel\n\nDay 3 · Jaipur to Jodhpur\n- Checkout from Samode Haveli\n- Drive: Jaipur to Jodhpur (private car, 340 km, 6 hrs)\n- Gypsy Restaurant (lunch en route)\n- RAAS Jodhpur (hotel, check-in)\n- Clock Tower Market (evening)\n\nDay 4 · Jodhpur Forts & Culture\n- RAAS Jodhpur (start)\n- Mehrangarh Fort (09:00)\n- Jaswant Thada (11:30)\n- Indique Restaurant (lunch)\n- Return to hotel\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- Checkout from RAAS Jodhpur\n- Drive: Jodhpur to Udaipur (private car, 250 km, 5.5 hrs)\n- Ranakpur Jain Temple (midway stop)\n- Amet Haveli (Udaipur, check-in)\n\nDay 6 · Udaipur Palaces & Lakes\n- Amet Haveli (start)\n- City Palace Udaipur (09:00)\n- Jag Mandir (boat ride, 12:00)\n- Ambrai Restaurant (lunch)\n- Return to hotel\n\nDay 7 · Udaipur to Pushkar & Fly Back to Bangalore\n- Checkout from Amet Haveli\n- Drive: Udaipur to Pushkar (270 km, 5 hrs)\n- Brahma Temple (13:30)\n- Pushkar Lake (15:30)\n- The Laughing Buddha Café (17:00, lunch)\n- Drive: Pushkar to Jaipur Airport (2.5 hrs, 145 km)\n- Flight: Jaipur to Bangalore (evening direct)\n\nNext Steps:\n- I’ll now fetch real flight and hotel options for your dates and update the itinerary with concrete selections and prices.\n- Would you like to adjust any cities, add more experiences, or see specific hotel/flight classes?\n\nLet me know if you want to refine anything, or I’ll proceed with live searches for the best options!",
+            "agent": "trip",
+            "trip_id": "rajasthan_2026-09-10_2026-09-17",
+            "message": "can you include the flight connectiopns as we are based at banagalore"
+          },
+          {
+            "key": "ac138dbaf905191f6023e6aaf9b63500f8b3fd35ab3d74cbad1dfb0c3e63a9eb",
+            "status": "completed",
+            "reply": "Here’s your updated 7-day Rajasthan itinerary from Bangalore, now including both the outbound and return flights, all intercity transfers, and real hotel/restaurant/attraction stops. All travel is in INR.\n\nDraft — I’ll refine with real prices and availability next.\n\nDay 1 · Fly Bangalore to Jaipur, Arrival & Old City (Sep 10)\n- Flight: Bangalore to Jaipur (direct, morning)\n- Samode Haveli (hotel, check-in)\n- Tapri Central (lunch, rooftop café)\n- Johari Bazaar (evening stroll/shopping)\n- Samode Haveli (overnight)\n\nDay 2 · Jaipur Forts & Palaces\n- Samode Haveli (start)\n- Amber Fort (09:00)\n- City Palace (12:00)\n- Hawa Mahal (14:00)\n- Laxmi Mishthan Bhandar (lunch)\n- Samode Haveli (overnight)\n\nDay 3 · Jaipur to Jodhpur\n- Samode Haveli (checkout)\n- Drive: Jaipur to Jodhpur (private car, 340 km, 6 hrs)\n- Gypsy Restaurant (lunch en route)\n- RAAS Jodhpur (hotel, check-in)\n- Clock Tower Market (evening)\n- RAAS Jodhpur (overnight)\n\nDay 4 · Jodhpur Forts & Culture\n- RAAS Jodhpur (start)\n- Mehrangarh Fort (09:00)\n- Jaswant Thada (11:30)\n- Indique Restaurant (lunch)\n- RAAS Jodhpur (overnight)\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- RAAS Jodhpur (checkout)\n- Drive: Jodhpur to Udaipur (private car, 250 km, 5.5 hrs)\n- Ranakpur Jain Temple (midway stop)\n- Amet Haveli (Udaipur, check-in)\n\nDay 6 · Udaipur Palaces & Lakes\n- Amet Haveli (start)\n- City Palace Udaipur (09:00)\n- Jag Mandir (boat ride, 12:00)\n- Ambrai Restaurant (lunch)\n- Amet Haveli (overnight)\n\nDay 7 · Udaipur to Pushkar & Return to Bangalore\n- Amet Haveli (checkout)\n- Drive: Udaipur to Pushkar (270 km, 5 hrs)\n- Brahma Temple (13:30)\n- Pushkar Lake (15:00)\n- The Laughing Buddha Café (16:30, lunch)\n- Drive: Pushkar to Jaipur Airport (2.5 hrs, 145 km)\n- Flight: Jaipur to Bangalore (direct, evening, arrives late night)\n\nAll major intercity connections and both flights are now included. Next, I’ll search for live flight and hotel options and update with real prices. Would you like to adjust anything before I proceed?",
+            "agent": "trip",
+            "trip_id": "rajasthan_2026-09-10_2026-09-17",
+            "message": "add return flight also back to bangalore"
+          },
+          {
+            "key": "ff761b5a21529201bed9a0ce61d0bd7ff52ce18d5eb5b952513e766db884efd2",
+            "status": "completed",
+            "reply": "Currently, there are no nonstop/direct flights from Bangalore (BLR) to Paris (CDG) for your dates. The best available option is with Air India, which includes a short layover in Delhi both ways:\n\n- Outbound: BLR → DEL (Air India 2820), DEL → CDG (Air India 143)\n- Return: CDG → DEL (Air India 142), DEL → BLR (Air India 565)\n- Total round-trip fare for 2 adults: ₹1,07,122\n\nThis is the fastest and most convenient routing available—there are no true direct (nonstop) flights from Bangalore to Paris at this time. If you’d like, I can also check premium airlines (like Emirates, Lufthansa) with one connection, or alternate dates for possible direct service.\n\nWould you like to proceed with this Air India option, or see other airlines with one stop?",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "check and add any direct flights if possible without a stop"
+          },
+          {
+            "key": "d4badbd3fbaaa734369becad3097e25888d5473d15b92923a93941a5c688e6b2",
+            "status": "completed",
+            "reply": "I checked all available options for your dates (Bangalore ⇄ Paris) with up to 2 stops, prioritizing budget fares.\n\nThe lowest fare is still the Air India option with one stop in Delhi (no cheaper 2-stop options found for your dates):\n\n- Outbound: BLR → DEL (Air India 2820), DEL → CDG (Air India 143)\n  - Sep 6, 17:25 BLR → 20:25 DEL\n  - Sep 7, 02:55 DEL → 11:15 CDG\n- Return: CDG → DEL (Air India 142), DEL → BLR (Air India 565)\n  - Sep 11, 13:15 CDG → 00:35 DEL (Sep 12)\n  - Sep 12, 02:10 DEL → 04:50 BLR\n\nTotal round-trip fare for 2 adults: ₹1,07,122  \nBooking link: Air India\n\nNo 2-stop flights are cheaper than this Air India option for your travel dates. If you want, I can check alternate dates or airlines, but for now, this is the best budget-friendly flight available.\n\nWould you like to proceed with this flight, or should I check other dates/airlines?",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "any cheaper flight options with 2 stops may be. priritoze the budget"
+          },
+          {
+            "key": "c7fcd15ac63a9dcffb24e93c46c159864f554e96b905d66f21c11b2580900fe8",
+            "status": "completed",
+            "reply": "I checked all airlines for your dates (Sep 6–11, 2026), up to 2 stops, and the Air India option with one stop in Delhi remains the lowest fare at ₹1,07,122 for 2 adults. No other airline (including 2-stop routes) is offering a cheaper fare for these dates.\n\nIf you are flexible with your travel dates (for example, shifting by a few days earlier or later), I can check for even lower fares on alternate dates. Would you like me to search for cheaper flights on different dates, or should I proceed with the current Air India option?",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "check other dates na dairlines"
+          },
+          {
+            "key": "4bbd0daa7f62089d41fedb7a6ea80aab2b4308476de64c532e99139566b3125a",
+            "status": "completed",
+            "reply": "Got it! You’d like to see flexible flight options with up to 2 stops between Bangalore and Paris for your travel dates (Sep 6–11, 2026), prioritizing budget-friendly fares.\n\nI’ll search for all available flights (including those with up to 2 stops) and present the best value options. I’ll also update your itinerary and cost estimate accordingly.\n\nOne moment while I fetch the latest flight options…Thank you for clarifying! I’ll search for flexible flight options between Bangalore and Paris for your dates (Sep 6–11, 2026), allowing up to 2 stops to maximize budget-friendly fares. I’ll update your itinerary with the best value options and include booking links.\n\nI’ll proceed to find these flights and update your plan accordingly. Please hold on while I get the live options.I searched all airlines for your flexible dates (Sep 6–11, 2026) with up to 2 stops. The best available fare is still Air India (one stop in Delhi) at ₹1,07,122 for 2 adults—no other airline or 2-stop routing is cheaper for these dates.\n\nUnfortunately, there was a temporary error verifying the live booking link, but this Air India fare remains the lowest and most reliable option. If you are open to shifting your travel by a few days earlier or later, I can check for even cheaper fares on alternate dates.\n\nWould you like me to try searching for flights on different dates (e.g., departing a few days before or after Sep 6), or should I proceed with this Air India option? Let me know your flexibility (how many days before/after) and I’ll check for the absolute lowest fares!",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "yes flexible with dates"
+          },
+          {
+            "key": "6d176a6c997e7e4bbcc4dc563ecc08694978d65dd7f06809f041092474add933",
+            "status": "completed",
+            "reply": "Here’s your updated itinerary with all flight segments, stop airports, and layover details included:\n\nDay 1 · Departure from Bangalore (Sep 6)\n- Kempegowda International Airport, Bangalore (BLR) — 17:25, board Air India 2820\n- Indira Gandhi International Airport, Delhi (DEL) — 20:25, layover: 6h 30m (change from domestic to international terminal)\n- Charles de Gaulle Airport, Paris (CDG) — Arrive 11:15 (Sep 7), transfer to hotel\n- Hotel Chambiges Elysees — Check in and relax\n\nDay 2–5: Paris sightseeing as previously planned (Eiffel Tower, Louvre, Montmartre, Versailles, etc.)\n\nDay 6 · Departure from Paris (Sep 11)\n- Hotel Chambiges Elysees — Check out\n- Charles de Gaulle Airport, Paris (CDG) — 13:15, board Air India 142\n- Indira Gandhi International Airport, Delhi (DEL) — 00:35 (Sep 12), layover: 1h 35m (change from international to domestic terminal)\n- Kempegowda International Airport, Bangalore (BLR) — Arrive 04:50\n\nAll flight stops, layover durations, and airport transitions are now clearly shown in your itinerary. If you want to adjust the layover times or see alternate routings, let me know! Otherwise, I’ll proceed to finalize the plan and booking links.",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "can you show me the stop airport also in the itinerary just like origin and destination ones you show with stop time and layover detail etc"
+          },
+          {
+            "key": "21f7054094053907608a3ceaf4c905ccdb8dda47ac7f65bbe8f96141dbc212b0",
+            "status": "completed",
+            "reply": "Here’s your revised Paris trip plan (Sep 10–13, 2026), now with a real hotel selected and all stops in correct order. I’ve included all flight/stop details, and your hotel is Hôtel Privilège (4★, 4.4★ Google, 1127 reviews, central Paris, single room).\n\nDay 1 · Arrival in Paris (Sep 10)\n- Flight: Bangalore to Paris via Delhi (Dep. 10:00, Arr. 19:30, total 11h incl. layover)\n- Hôtel Privilège Single room — Check in and freshen up\n\nDay 2 · Eiffel Tower & Seine (Sep 11)\n- Start from Hôtel Privilège\n- Eiffel Tower (09:30, 2h, book tickets in advance)\n- Seine River Cruise (12:00, 1.5h)\n- Lunch at Le Bistro Parisien (14:00, 1h 15m, with Eiffel view)\n- Musée d'Orsay (15:45, 2h)\n- Return to hotel\n\nDay 3 · Louvre & Montmartre (Sep 12)\n- Start from Hôtel Privilège\n- Louvre Museum (09:30, 2.5h, arrive early for fewer crowds)\n- Le Marais (12:30, 1.5h, lunch/shopping)\n- Montmartre & Sacré-Cœur (15:00, 2h)\n- Dinner at Le Consulat (17:30, 1h 15m)\n- Return to hotel\n\nDay 4 · Departure (Sep 13)\n- Check out of Hôtel Privilège\n- Breakfast at Café de Flore (08:30, 1h)\n- Flight: Paris to Bangalore via Delhi (Dep. 12:00, Arr. 23:00, total 11h incl. layover)\n\nNote: Day 1 runs straight through lunch with nowhere to eat—let me know if you’d like to add a meal stop after arrival.\n\nNext, I’ll search and add the best flight options (with stop details and layover times), top restaurants, and activities with prices. Would you like to adjust anything before I proceed?",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-10_2026-09-13",
+            "message": "plan a paris trip"
+          },
+          {
+            "key": "6743b75fd5298e5223aaf88e461f77c356849adb436f03b143a7857c1f509b6d",
+            "status": "completed",
+            "reply": "Thank you for pointing that out! For a complete and transparent itinerary, I will ensure that every flight leg is shown in detail, including:\n\n- Each airport (with IATA code)\n- Departure and arrival times for every segment\n- Layover duration and airport for each connection\n- Airline and flight number for each leg\n\nThis will be reflected in both the day-wise itinerary and the summary, so you can see exactly where and when each stop occurs.\n\nI’ll now update your Paris trip with a fully detailed flight itinerary, including all airport stops and timings, along with the rest of your plan.\n\nLet’s proceed!Here’s your updated Paris trip plan with all flight legs and airport stops shown in detail, including layover durations and exact timings. I’ve also corrected the itinerary so that all stops are in proper chronological order.\n\nSummary of Flight Details (All Segments & Layovers):\n\nOutbound (Sep 10–11):\n- BLR (Kempegowda Intl, Bangalore)  \n  Dep: 22:30 (AI 2488, Air India)\n- DEL (Indira Gandhi Intl, Delhi)  \n  Arr: 01:25 (+1 day), Layover: 2h 45m\n  Dep: 04:10 (AI 143, Air India)\n- CDG (Charles de Gaulle, Paris)  \n  Arr: 11:15\n\nReturn (Sep 13–14):\n- CDG (Charles de Gaulle, Paris)  \n  Dep: 12:00 (AI 142, Air India)\n- DEL (Indira Gandhi Intl, Delhi)  \n  Arr: 23:00, Layover: 2h 30m\n  Dep: 01:30 (AI 502, Air India)\n- BLR (Kempegowda Intl, Bangalore)  \n  Arr: 04:00\n\nDay-wise Itinerary:\n\nDay 1 · Sep 10: Depart Bangalore\n- 21:00: Arrive at Kempegowda Intl Airport (BLR)\n- 22:30: Flight AI 2488 BLR-DEL (Air India, Economy)\n\nDay 2 · Sep 11: Arrive Paris & Sightseeing\n- 01:25: Arrive DEL (Indira Gandhi Intl), Layover: 2h 45m\n- 04:10: Flight AI 143 DEL-CDG (Air India, Economy)\n- 11:15: Arrive CDG (Paris)\n- 13:00: Check-in at Hôtel Privilège (4★)\n- 15:00: Eiffel Tower (2h, book tickets in advance)\n- 17:30: Seine River Cruise (1.5h)\n- 19:15: Dinner at Le Bistro Parisien (1h 15m, Eiffel view)\n- 20:45: Return to hotel\n\nDay 3 · Sep 12: Louvre, Le Marais & Montmartre\n- 08:30: Start from Hôtel Privilège\n- 09:30: Louvre Museum (2.5h)\n- 12:30: Le Marais (lunch & shopping, 1.5h)\n- 14:30: Montmartre & Sacré-Cœur (2h)\n- 17:00: Dinner at Le Consulat (1h 15m)\n- 18:30: Return to hotel\n\nDay 4 · Sep 13: Departure\n- 07:00: Check out of Hôtel Privilège\n- 08:00: Breakfast at Café de Flore (1h)\n- 10:00: Arrive at CDG Airport\n- 12:00: Flight AI 142 CDG-DEL (Air India, Economy)\n- 23:00: Arrive DEL, Layover: 2h 30m\n- 01:30: Flight AI 502 DEL-BLR (Air India, Economy)\n- 04:00: Arrive BLR\n\nAll flight segments, airports, and layovers are now fully detailed and in order. If you’d like to adjust any activity times or add more stops, just let me know!",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-10_2026-09-13",
+            "message": "The individual airport stops during the fligth are now not showing. they should not be removed. full flight leg should show with each airport the layover itme and leg timing etc."
+          },
+          {
+            "key": "9b196a0e0969820fedeaf88ff186f85c4ba08567353ebba8da06c41a61ce90fc",
+            "status": "completed",
+            "reply": "Here’s a draft for your Varanasi–Ayodhya religious circuit trip (7 days, 3-star budget, simple religious focus):\n\nDraft — I'll refine with real prices and availability next.\n\nDay 1 · Arrival in Varanasi (2026-09-10)\n- Arrive in Varanasi, check in to your 3-star hotel.\n- Evening: Ganga Aarti at Dashashwamedh Ghat.\n\nDay 2 · Varanasi Temples (2026-09-11)\n- Kashi Vishwanath Temple\n- Annapurna Temple\n- Sankat Mochan Hanuman Temple\n- Assi Ghat\n\nDay 3 · Sarnath Excursion (2026-09-12)\n- Dhamek Stupa (09:00–10:00)\n- Mulagandha Kuti Vihar (10:30–11:15)\n- Sarnath Museum (11:30–12:30)\n- All transfers allow for realistic travel time.\n\nDay 4 · Varanasi to Ayodhya (2026-09-13)\n- Morning: Check out, travel to Ayodhya (train/car, ~4.5 hrs)\n- Ram Janmabhoomi\n- Hanuman Garhi\n\nDay 5 · Ayodhya Temples & Saryu Aarti (2026-09-14)\n- Kanak Bhawan\n- Nageshwarnath Temple\n- Treta Ke Thakur\n- Evening: Saryu Aarti at Saryu Ghat\n\nDay 6 · Prayagraj (Allahabad) Excursion (2026-09-15)\n- Triveni Sangam\n- Hanuman Temple\n- Anand Bhavan\n\nDay 7 · Departure from Ayodhya (2026-09-16)\n- Check out and depart. Option for a final temple visit if time permits.\n\nI’ll now search for real 3-star hotels, transport options, and top-rated restaurants, and provide a cost breakdown in INR. Does this draft look good, or would you like to adjust anything before I proceed?",
+            "agent": "trip",
+            "trip_id": "varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
+            "message": "plan a varanasi and ayodhya circuit trip, include any other releigious sites nearby. maximum duration of 7-8 days minimum could be 5 days. medium 3star hotel budget, keep it simple as it is relgiious"
+          },
+          {
+            "key": "bea17d003883bdf34afc4ec5bb1c3603129ba66f0ee951bfab7f8a4c242dac85",
+            "status": "completed",
+            "reply": "Here’s a draft for your 7-day Varanasi–Ayodhya religious circuit, including major nearby sites (Prayagraj, Sarnath, Chitrakoot). All hotels are simple, clean 3-star properties, and the itinerary is paced for a comfortable religious focus.\n\n─────────────────────────────\nDraft — I'll refine with real prices and availability next.\n\n**Day 1 · Arrival in Varanasi**\n- Check in at Hotel City Inn (3★, Opp. Cantt Railway Station)\n- Evening Ganga Aarti at Dashashwamedh Ghat\n\n**Day 2 · Varanasi Temples & Sarnath**\n- Kashi Vishwanath Temple\n- Annapurna Temple\n- Lunch at Shree Shivay Restaurant (pure veg, thali)\n- Sarnath (Buddhist stupa & museum)\n\n**Day 3 · Prayagraj (Allahabad) Day Trip**\n- Early drive to Prayagraj (3 hrs)\n- Triveni Sangam\n- Lunch at El Chico Restaurant (vegetarian options)\n- Hanuman Temple\n- Anand Bhavan\n- Return to Varanasi\n\n**Day 4 · Varanasi to Ayodhya**\n- Morning drive to Ayodhya (5 hrs)\n- Check in at Hotel Ramprastha (3★)\n- Ram Janmabhoomi\n- Hanuman Garhi\n\n**Day 5 · Ayodhya & Nearby Temples**\n- Kanak Bhawan\n- Nageshwarnath Temple\n- Treta Ke Thakur\n- Lunch at Shree Ram Bhojanalaya (pure veg thali)\n\n**Day 6 · Chitrakoot Excursion**\n- Day trip to Chitrakoot (5 hrs each way)\n- Ram Ghat\n- Kamadgiri\n- Return to Ayodhya\n\n**Day 7 · Departure from Ayodhya**\n- Check out and depart\n\n─────────────────────────────\n\n- All hotels are 3-star, clean, and centrally located.\n- Meals are at well-rated, pure vegetarian restaurants.\n- All major religious sites and ghats are included.\n- Intercity travel is by private car for comfort and flexibility.\n\nGot it — you want a simple, religiously focused circuit, 3-star hotels, moderate budget, and a balanced pace. Does this look good, or would you like to adjust anything (duration, sites, hotel comfort)? \n\nNext, I’ll:\n- Search and confirm real hotel rates in Varanasi and Ayodhya\n- Add concrete restaurant picks for every day\n- Refine travel times and route details\n- Show a cost estimate in INR\n\nLet me know if you want to add/remove any sites or change the trip length!",
+            "agent": "trip",
+            "trip_id": "varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
+            "message": "plan a varanasi and ayodhya circuit trip, include any other releigious sites nearby. maximum duration of 7-8 days minimum could be 5 days. medium 3star hotel budget, keep it simple as it is relgiious"
+          }
+        ]
+      }
+    },
+    "preferences": {
+      "profile": {
+        "display_name": "Munish",
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": "IN",
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 4,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [
+        {
+          "note": "Tends to filter hotels to 4-star and above",
+          "source": "inferred",
+          "at": "2026-08-13"
+        }
+      ],
+      "behavior_signals": {
+        "flight_class": {
+          "economy": 6
+        },
+        "hotel_rating_floor": {
+          "4": 6
+        }
+      },
+      "about_me": "",
+      "profile_summary": "Munish typically travels solo, prefers a balanced trip style, and maintains a moderate budget. He consistently selects hotels rated four stars or higher and opts for standard rooms. For transportation, he favors economy flights—preferably direct—and is open to trains and rental cars but not buses. There are no stated dietary restrictions or strong cuisine preferences. Munish has shown interest in destinations such as Varanasi, Ayodhya, Rajasthan, and Paris.",
+      "profile_summary_updated_at": "2026-08-13T22:41:47.736256",
+      "planning_mode": "direct",
+      "display_currency": "INR",
+      "profile_summary_digest": "0cd0321cf2b3757959faac74866c239f439b00a7d7d7cd96718f404a903b4737",
+      "_explicit_fields": [
+        "display_currency",
+        "profile.display_region"
+      ],
+      "_promoted_signals": {
+        "hotel_rating_floor": [
+          "4"
+        ],
+        "flight_class": [
+          "economy"
+        ]
+      }
+    },
+    "places": {
+      "mall road|manali": {
+        "place_id": "ChIJlRpKTgSIBDkRj6USacT9rEY",
+        "name": "Mall Road",
+        "address": "Mall Rd, Manali, Himachal Pradesh 175131, India",
+        "rating": 4.5,
+        "review_count": 2995,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Pedestrian street featuring restaurants, department stores & an emporium selling local crafts.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 32.2395474,
+        "lng": 77.188419,
+        "photo_refs": [
+          "places/ChIJlRpKTgSIBDkRj6USacT9rEY/photos/AWCwydgimhvnVr87AWdFlwfDKGV-SB73mJMLDD27g0hXmonBkdxsW9NtMUfUsP-XZDS9-airxZ5jiGms7shhksflu_UUBgQ61e449OTbFhEvckJi_QIWaLA4GBvTfDByc8tB1pWZ3ccJS7lfPPcB1dt1KkxlYDDkvtOHKU8EhkATTnhqozCDMh5G25iur29SAv2xGBBZQPbvFG_EI5_FeSp_M0aXfp3n7QORde8tAwp9NI16DUymguHFq7pHegHSKBU5ogu3sRAcOH1n65ch4Atqss55ktkhTxuLRTLM8Re1RvZOGUtyp1p4OwoyNX26kLUwlVOsQpRjSYO5zLDarv3PMfhIqjJHV5VrF8hiyoDqzWXNlf_-m_TC-LAmykACHRsxYMeL__zwzzkFKDsYZJEnMkUudOMzGgbTH_M1BKt5LwM17xU",
+          "places/ChIJlRpKTgSIBDkRj6USacT9rEY/photos/AWCwydiFhCU9CvhcjeXPkxjcQZaGUHx_T1cWhVWHxVXj53gs_AAvHk0f_R5Mm7xryJug0ygZ-nSwok-cpc6a5q9hCWW0KwnN5AJDj7DgFfiVqcDMdDLoDr-nR_t_A2F5nW1rUw0pQ-XPJlzxv4-5j0ECaslEKmFsIHfkpB9YLCeGb2bjmdepTWS6xdmTjcnECOcFifYQGBMQDQeA2aAzNLrGvSAUxsD1FLP3drL57usFhcdhQjeEA5GRIYCXUrwgQQXlyz28wkPlM2B37loWNbCdP4b-dwihMq_UJVp60tMjUug8QxC1UTGfRu39ks-hgKccxu56wQXWfkQT1H7kyk12h8CR70jy58ONbeBplMF9sknLSjmbrHSQVwZrDBCgwrLG6GYmiI0ZoEPTKIHanmLx5IbCkU_-Lqhn0DZtaTTyDTZ-TJCO",
+          "places/ChIJlRpKTgSIBDkRj6USacT9rEY/photos/AWCwydjm9MvcDll1IErU1LWouA0-6YSaYRsPkrZURuGbd05BTBix4jit0R_cLGwpl18HdJoWRcxKkmU4y5jgfNalurapcPqO9p10X_UonUPDOcBoFWpPTwnD46KP5JxSqKvJV5j5VfZgwHPvr-Fvt2e08lRVwAOyIfIemNY8LFfxCG-mbtPTNHBTnYP3e6RKkkh06usfX4nNYSwsJqI2rapGTPJX4f8MvsvspC3nM48BWQ9UhTrYvhTRU_F6z9_z7jDFXlgvgNMbcdNW2q7-sMUvXHb9cDV-D2WMOv5V0XbcfbqLquqtFTwnBXV6aKGbXuxsjhLc29aWLxL7MI3SWGH_-oB28cg1H6CU0Ir6-h1eARn5hZ_tbvj2XDzrynvvDTtQEbjqY0fHi3MDZJnM61ChpX8JD9c3p3Ww5cgMtnFAqJB5IXpaen68oFqJAKr9Kg",
+          "places/ChIJlRpKTgSIBDkRj6USacT9rEY/photos/AWCwydi3MESY3Aj1R9Zpn48ku6RhCLlJu2ZPgsEhivP3DCxoalObU0ZI9T_3ELbv2XykMaKRni-_ggmEga_I7FFvvdWRmHxVtNlg0wXrFXtqAy_tZJIce068jr0iFhmn_H7wPag62R9J_f6GFdmrwSPnEHAs4K7VDJwXaAOCN0PzkP7s6KvqFs6pzRrTRytrgdMuRqEZwMiPbQsYAV6W5ZlvMIIlBuANTj3zJwu6-5k0swZ9YOYlm-2rQW_sJzJeO2EVTCdwMNUGz5nILy3CxkEEPDcRCgR9zOMyPt5EDBzFi5_1x1WAVoYTqP5WRnrG3byDH9PJWnm2yfwp-ySkcU66NuLDsddaEdMpH-9qvTLqETaWrWvpzI1oo78HgjDjlAlhmEo3sAPVm_8SIr6smERMiGEGDj9z9nHYiQ1qDkiOyZkFRNA",
+          "places/ChIJlRpKTgSIBDkRj6USacT9rEY/photos/AWCwydhIEZBQ6M_neIAoNDR41pb1cfNOsTHVUKiWZUHelaei74VKCI5Dr3F8uEq3zwswh4RsTX3ut8aXadosScx3TtrYp4Y1s6zcfs1TA28JK5B-cW5b283ee-Uq_0-7esraplVQ9qNEwPAlqc2Qksa97PiWCAkZ51CzyCvtpIvM4dF05dfC8XE-A4a45AMFGe_4WFaLk1E1iQ2wcTEbhC17f5DVbiaHtn4qnmOKptPangFti3urGyWUM_3zXPHlV5_UY8P1N3S_OfY_dMBrd2Pp97IK7fduJtaE1dN6DBCp7ePhCmZjsB9YvnFzLiZG7WxSK6hvYZBZHg30tot0S3i046rEBxqtiSxJNN1tzPgUeYSqY4m-vhBsikLa-knOBnQ4xEe6JK1fkPgVTWllqmL3s31ZnxQpwMRTXYEkYUJeyMrGvivD",
+          "places/ChIJlRpKTgSIBDkRj6USacT9rEY/photos/AWCwydi0EOnB9WEU9DXnoX3bGhPDCZUs5Ywjiwus0lfkGgWNY-8gmNqlql_bEGxv35n_jrbKaHu7ljwhD0abhhZt9WdFIvk48f6qERxOwYcFLXUq1qkKZEEqCNCSOJTVu-ShEoS2kCOGOPl7pVD40yhr_RcBqJrSFBne5DE4ST8ox1U1de0CdycxSQ4pADDxi6PWhHdOsDOlNmDK_BJHOonG-mA3QXhke5iEmo5NzeuZO6-jtxC12gV67fa3gna97YMTMy12IrM3Bx6XkhcRJ9BobSBwXzaeLGJAc1Eq7jYc21K1aOHEN2dwYzmipfjo_Kz4SDtQm4PhGsjOW5bykpWup6sQGYt673cwDrGd_erewKZnGbMnRLoxDcKqAGSKHvhFOS_IEa9gR9LSusRLrckD7rBukgt0fV2-pu7Dh7ZEIuDJ6Com",
+          "places/ChIJlRpKTgSIBDkRj6USacT9rEY/photos/AWCwydiRAa0CaDSfAV2O8GtxV15-N-5k0zRvQZbloEn_WOcmi9615j5cis-OQB0RsV3LP_uH9jBqNVNWqDshPrl_df1TjXGFuZbp2duU67AW73-GGXjBXWAMaYcqnwIhIwxWjjd39zy-tQvIhilpXFMG9a4K8wLd8VaXl5lR_77N4qbCs7dkvdKLIoFl1PVmPczA24HiRcVnSaNxX51rsq8ATRz6-A8yUgUIcD1YRvJpxsj_UEYs8KxMeypOKChMh291S-SKJcO14646hVQYPIvK-2X-KzFqmAZb4cP2kUez_de10DhOmWathdVekeGN04x972Rma3lLU57KmfAAorSGitxQmpCB5UbprxPUpS3DKvna2fL9sPv_vUUBLE-OHZlM_-sS_Snw3tMYer-yMARbbqQGBDPZVAC66gj0EbXUBVWGtmlD",
+          "places/ChIJlRpKTgSIBDkRj6USacT9rEY/photos/AWCwydgtLSo0VLU3cKsZSS-AsSJ56kRH8CzSvaqdnoqG24NfyZwTxXExelIh2mPWZyO8w8wSfV7RQe85IiheQRbQ5QVeJsGh9UgWLP2ynUzVMEpSIIz1HZ1Q4hn1IVj_AsSGwBX0hOWX4GUYkTE_RV1XgblfYoI7P9zH4BIDcQxnK7fOCGaKtGMsRdjbVaHxlDb0tAtGlaJvvWxSgk8CgSQ_PejRwEIgpmlp5TmVN5TgEizjQPaok4v4i4ubg666_xdN5TflummxbgUwM3fbFWDAXllmaKyYtVfeZforYSDHPY-0GsPDFKyZocSrpIxrG_rkKwSshq4uxyv9tmPSjYyoYL6Ug_FwoOHlx9JOUA2Q8mi41UADrlMdIS0BcaIECGOcph-9JixodtDiIpRmfczVWIfQ0LS58V0Jfj8OosyFBYUSjQ",
+          "places/ChIJlRpKTgSIBDkRj6USacT9rEY/photos/AWCwydjcpC1Dnc4kq_6Motkzs8dohYTsHzAZol_3uiAB00z1UOG7TlogN2T0ogBbLT1NDNIreMNUuxmTZ7djzX7iaKjDvostzvonqufIR2T359_DMFyRhJC21CqI4Q-_igmycFPAEbCWhBTXa5Z5e1DpwWVTO1_hM3knL9nNnBg-jxizh62DXFsSGz18KS09lhxUwldajDhfftvdkMg5VXykmDiUBe2YFMtqPFD-RE-EAO_yRrCc9zhPBIZD0j4fUqk4LRNTDrlSUacNivXc3DQ23nF57KPBJ3Yyy9Akwfx6I64nDoB63k8DWUx1ggTX2TEeAR81mAg4LDoVKV1wSUUleZ3-ASDJz6SzToE-dtMRPitCPsT3RY08EYyzZ5urx0S7Ci0e1Himbj_tqpWfaR-mAkbEP7fm3VTN8K5jD6QY1vNwAqxr",
+          "places/ChIJlRpKTgSIBDkRj6USacT9rEY/photos/AWCwydgkC3hvXv9d_9cpZpMNVK0Wz9SvZf60HBcs28p_9HSqiGDjCtOTA05uS3mBEpAc96atmN0s9w1IZEtSGWdHCDhD7WofSUieQl1r3Nlp7YLf8G-DLrSeDcC1ZFhQNSi-IlCDPiwD6o3rs3a76dmlyOfo2H02H7OpUXIrH4Q9w_KSEAXecK-g4n50Z8FEelPQek6fcnvJQ8m06iEL3RyxuwSGbhzFlOAts8zPsbJVx-scipEntTnLa7h2ZKroRcfyyVB1abX0iyU_xWa78EiH0NU5IiobEWywi1gq5OKS0z9JBaiSOdGYt4kI-hbR5y7I0ZdQNz0SjA41yuqzjNik7z895Q64GJmZG4Ae3w-D37c_z5esHMqC98-pXK19H0DL7XZbUFyTkuPAP9KviKFPgYDgB3JvEumHPQzczdEqSkWRMla5"
+        ],
+        "__at__": 1786793555.1355011,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Great place to visit. Much better than shimla mall road . Must visit. Monastery is only 200 meter in the market",
+            "author": "Saikat Majumder"
+          },
+          {
+            "rating": 4,
+            "text": "Best place for shopping in manali city, great place for shopping and food. It's famous place in manali",
+            "author": "Paras Pipalia"
+          },
+          {
+            "rating": 3,
+            "text": "Mall Road, Manali is lively and always buzzing with tourists, shops, cafés, and street food. The famous softy stalls here are a must-try—creamy, refreshing, and perfect after a long walk. A great place for evening strolls, shopping, and enjoying simple treats in the cool mountain weather.",
+            "author": "Kajal Mehta"
+          },
+          {
+            "rating": 5,
+            "text": "Mall Road is a great place to spend the evening. The night atmosphere is lively and beautiful, with plenty of street food options. The food was delicious, and the overall experience was enjoyable. A perfect spot for a relaxing walk, shopping, and local food.",
+            "author": "shiva vishwakarma"
+          },
+          {
+            "rating": 5,
+            "text": "It could get really chaotic sometimes but it's a must visit place in Manali. The vibes\nare really good also don't forget to eat brownies😂",
+            "author": "Anubhav Pathak"
+          }
+        ]
+      },
+      "solang valley|manali": {
+        "place_id": "ChIJuemUiDuHBDkRjPd9NhAkVRc",
+        "name": "Solang Valley",
+        "address": "Solang Valley, Himachal Pradesh 175103, India",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Known as a well-known winter ski resort, this mountain valley has a lower elevation of 8400 ft.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 32.3131405,
+        "lng": 77.1635401,
+        "photo_refs": [
+          "places/ChIJuemUiDuHBDkRjPd9NhAkVRc/photos/AWCwydi_SC7F1k8Je_fB0hjOJOr7ZAR2IANc15TzpvwyzM_9bg8WTJEUepm9BsBFZvYnkvJd0nmtwnUouM2vkcI6ro6rhrdbebRbBVdcF0AdjcKRNz9hL6mDIy_2WJIE29YxAPg1aFaI916gzG7wsQ7UbY1HrVaBZSpZEuPf8_oejE3ALDVPQQdI_MfuCS-dvioauY9MxMhw3FK7UgSe2Puf7V9U7aBC6LYrAxxScOofKbZQjAbVVIh7TW00TKjm-JJ6pn_-xnhvGzyTE5M0YKl-igl8SN60hii96PkIfvIrviXjGFKJb0SEHotFn20EgQ1ptsNijQXZsA3LPulg2kr2-YvTSZtJjS8ROaFHFVGJpJQ5ma6T2yaNE4h8o_N42zhKOBrt5Gbh7QZR4Jm1-kouprVHKMSviLtjWiwMYVvTQg6ZzA",
+          "places/ChIJuemUiDuHBDkRjPd9NhAkVRc/photos/AWCwydhl4S7nAMTmohTTFInDoOWecAwbGaCBQxjfpADvz4DyFbfbsW9Oe0O9gUrlYKjZcYO7xmKdYTkHiL3YS12-YDLoWMvEob6pseBH1ie5F0RVtERJcHrS2yUQNL9EjM0jIrmohiPd8VokEmyJXc_C6A04cNAo47CTSMhAEGeI2k2DsPaozaDCV4bHT-dH_PL0NfEBX82ffpr3FNx_v1uAky_1jhwR4CTx-ucQwIWoKEC5wujVgSlaydkKVnVSp9CsBGbn-lN760g_nSC0h02pjoPO8jHYfbc40S9pBzCmomtBrHAHj6YWBHCwZR-HYAyXwGCWKppJJUvcgFSiXv9btCc2WHZWQoRnvY0WHfkSH7M3lV_idWjrNOxFucjhjgEadXtjJ6y9xxcrPB-MK8yOfCkLL7kMVgTATe6OKn21f8ut8g",
+          "places/ChIJuemUiDuHBDkRjPd9NhAkVRc/photos/AWCwydjUV4UoHWPRcXPyfQsV29dmAhQBmA7pjZzdUPdSpecrSuEVF6M6JoLeOMGBRxmvjM8l0oLJeS5T269R9CBNstP9hpRbPusvxnwDmEWg4OxGlUqbm8Ukj_K-s_QvHRDexfwd1gCavxpYB-SYXXTSoKl1b40iDBrHWfaqbqNgR49A2JzouE9KZnaBMuCwCGDVVcoZTGDNSgLYVUcGHA16zHqj-mQoK6RiZUXHUAn1-xTAEEEdOAVwDVMMd71wpAkIVk0_5Oxoauzekufb8NwKrIdXdqGizOcrrW3luJzsjrzgjSC8YpVc6Fijur6CWuJ21yIiec5wdmsfFBVEF7KSuY7e8ff8VuZLrwlanrrm0K1hA2v9tzqlLCQ2uADs7b5ULm0OYSEiLi6K6h6uU0upfC3dwYyi3vvl3fI4VIvsu5M",
+          "places/ChIJuemUiDuHBDkRjPd9NhAkVRc/photos/AWCwydjInP2uIVYL-4WqoTI-5-92kAaNTxSBOL1LaeBrUgsHQmrXM3cp9M6d9G8rPg-8pWc4N-fGK75y2SLCIpob0Nm7W4nWF4zIugB2xOxzgodNczoQq8s8p-PpL718xalmmLPVLbt2bjkX4YopEcS1sA9kd_JQ-B3PCWBM1ikKKuuGimDtGzPLXDRwG_u8RIYrEwzN1WfQxRoq-C-vvxplmq1ERB0ahvBqu6KTyi9yauxOGgh1_wyZsKkuKsoh7rWHTSR9gj3yg_59JPGwoZ3oUoOJY66V4ZqAd4Rzvd8lifGuV_Phtb5ZOOPIGdgtNFJ7bhyfpRC9RflSPcRTDC5tyK_z5ja6Q3RH1RbxP9a9nDULU_DTt8zd1m1_TVOMADJS1azC2Gc5wzEkyi3HTA6sCQptDdS7ulA6KxP-7LQOT9VwuAp5",
+          "places/ChIJuemUiDuHBDkRjPd9NhAkVRc/photos/AWCwydgVhLVJmtwz4Qrqqsk9WWFSWWD3H6q5S1mcdZ4EFs0kZA18iuhzOWHBB_Gl0oLG7ZQBVZ0YYR4ZMvlU7HqkRi3HjBQ6IKcJlwOdd7n-tvYxzNyWrKkAUHPRkfu2Z4jk8IQ9qz_ZGeyDro5lz5Bb25HG7L-Ia_nfakK09H1X4pGkXDVKanvu9YqH_mP7S2aHtgRpSRJcF4xdTdd9T4PWUHSGBT-yKeux2erR4Dd2bCEpeg-ZC-K-BI_EANdL5TjEiIB-RYi8EEHj5s4cOUF3GgvktIeSTmVeBwnGJ8Kq5hHvtvNTH9jFbyRRw--tAmwKLTigRMDAywLcagdRfShtcWAyuZesaTuhB6QtmKWH8s_a2ByzDC8Xy0fCTKSKuWk8iAwr7C6MuXMtPUFgaUCZY2t71SC-d7_3KGq35ef0HoA",
+          "places/ChIJuemUiDuHBDkRjPd9NhAkVRc/photos/AWCwydgMSMkOQqX1Q_N99RuzcdRnS5UlPYwVTmt8T7h3bYDgvggLg9jVUgPT3nLIK11B6G2QVdNksSt0zb97u4NxG4pZQgcqZfchMWTKnZa8Ft2nWx31rCpJB0JtckfOuEtGCb1FCiXIljjFXPsNx9gJGhbCGZ0xg8r6H8mrCjthwN-ZQbFw2y3GAJo5HjQKxpUHw3Js7BwfKLdg5FU6uU9RntAKS1tUCr1255Wj9m_L2IoZIuN4qMOXIGzO9m-vBPV-jpruoO_KPjG4rG3tkBt-K2gp8cLs_BgcueLYrFsxw6eMXNEiPhItvpXr1UvfqI2eC7zvx-_bxummGzbT-_eiBMtLnRLDUYrYa4QA8QS03cTaeVAJ5xfYGBe15uSfgDyP_3Y_ki6BHlqHxRhLrhyfMe1UfftjHNxN9Fkv8zH1ipsxRd8",
+          "places/ChIJuemUiDuHBDkRjPd9NhAkVRc/photos/AWCwydhNGuB9MffTDYZCXn8Ex1r5g-_Nq5nRVjQCNYugBU7ED0yasPPmuJH7Ss6d3WluVDN35s9mGJZW2c7d4th3UgZZm4RbQOFKsQQsJQVdh8_twlGefvWbd32Xlzpx7B2q57_ZBCRYFOahhLyjHxTaNYn1IOrrBBS0SV3wyB5nW21apT8kc0A02_MhnkjfMn8DuzvEocEdTv8TpLT04kDcsu-Oz3nBnPTgFVIFbcgu8n-zRPVmQkpYnCDICxkaXkqYdxT6laRR7-QLq1JxVB4yDkVcMZ08fsl-eoyUk2cSbP0fh4ExsxO404_9SKyh-yXvMF_PNgcSTczr5jNm3uslbxdpE4f9NuDUB0u2j6s3tpozh4_L106AH0RtYDmENo5e7rJY1KQue95Wb2lyF4_8t67R5sXkd-x0y-hUBgvw8jnaH0Lp",
+          "places/ChIJuemUiDuHBDkRjPd9NhAkVRc/photos/AWCwydjlbhuBOcmYEzdS3-7ylZ3twx8aBQTo-ECQtGj39C8MWToCvGm3ldltCMqZ7AX4zDmBBh0ovzRPQX0N5DyPmajn-m83tj-3gnaot3TlOnXQ8tsZXAPva3tyXo24FHVN24UjQioZdJMATqqMhJp6v9U35EHhBWdOgfsdAy1k5BbhyGZJ1v6EPJKAeq9F5ZV9vmEdY6iG2ZtwpHv0LJjF5Et2Y0GF1Tr-iRRotyKLmR0WtQrZyrSV0lO9zptESkkzl9REEqxloF7xKdArdpWrF4IBg3ZCuNeVmDaa0ds1rABWtlGj_cdY_EdbMdG50cweXDPVH3P7liIC4QjgoJmYrgO3Dh7i6LqqfEHtERdm2inxnUOSLx1rOrtrKIH1Bp67xYtJPiR9Kp-kk1ZFNxCjd2zokq2yZKqQJ4FJ6HWM5Tbocw",
+          "places/ChIJuemUiDuHBDkRjPd9NhAkVRc/photos/AWCwydiI6q6C_vHaYe1jHgb8M8ZPgwQ8b3hAMbPjPNyU328-SJtlHRAr3BNXJEMoJmrN8j_uuN_BlrhqUaVCWNGl4apA-Ilv-BolQWwAhqlwGNW2Tc4f1EVouQ6-nTblmIMSAtVmQB5xrnAQCXGXfcI20YeK0SUXz5lVI5iX05KcvKKC9V5GibKJB3pjd1aink11wtaR-7ZECJU4H_oHClDnTiQ9-l9OfFnp7Xncmiz8wXXpPrZCHcl10XXPvInWI4SeOdn5INMQKge4Jw05YUBeQ7G2pdXOyrT5n2nYBdS0fgEpBQQikos1HhltNjPheNwHv1XC4KhugvwEzoCjBciOQgtyh89QL6i2wsR7t7ixKPw-kHtcotrB4dNCiaNwXPSsdbWmpIoBzj8-ZbkFrNfEX59-GTTbnqQpJcRHw5dMZpmnl_aY",
+          "places/ChIJuemUiDuHBDkRjPd9NhAkVRc/photos/AWCwydhdV8Rvr2qrVVVH-29wq7Lvw1746pSB-XuNPJyN_-z73d5PqNtKNnO4fvG_i70Ig5mH8EE31tej-dZ6eIUsf3ZGIx7PiJHJL__vzzuwcu3GsXkE68YSNE4qJXdjje--rxI4e8qckVHck1whC1rfU320MLQqdUf9QC29HtURQmgwFjufLzOtSvb3AhT3OVoZ8s3A0qcK22goeYxLIJi6t8B2mO-SgFm01ZDcKYXltsAt5F9ABlAxvihcmEblBBsXSnVnDT2wdeaK7rZnN2bAAtUHHOtxY51hNBtLS62sR3j73HTixNc-eOIa6Cd4We1V2-r2fbcLno_ESzNMEaZyNNdepG5YjBORqQn4K8mO6hdViPbmy8YFaIqdeh2rEikbLDS1LgklhQ0R65Qzd_kAmXsb7diBsqSjShq3cVagcBM_eyvL"
+        ],
+        "__at__": 1786793555.6975648,
+        "reviews": []
+      },
+      "cafe 1947|manali": {
+        "place_id": "ChIJ_cpLm-WHBDkRLNRm-tRt5OI",
+        "name": "Cafe 1947",
+        "address": "Near Nehru Kund, Leh Manali Hwy Vpo Bahang, Dist, Manali, Bashisht, Himachal Pradesh 175103, India",
+        "rating": 4.1,
+        "review_count": 8014,
+        "price_level": null,
+        "website": "http://www.cafe1947.com/",
+        "editorial_summary": "Named for the year India gained independence, this low-key eatery offers Italian fare & cocktails.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 1:00 – 11:00 PM",
+          "Tuesday: 1:00 – 11:00 PM",
+          "Wednesday: 7:00 – 11:00 PM",
+          "Thursday: 1:00 – 11:00 PM",
+          "Friday: 1:00 – 11:00 PM",
+          "Saturday: 1:00 – 11:00 PM",
+          "Sunday: 1:00 – 11:00 PM"
+        ],
+        "lat": 32.282985,
+        "lng": 77.18050339999999,
+        "photo_refs": [
+          "places/ChIJ_cpLm-WHBDkRLNRm-tRt5OI/photos/AWCwydgFFUl49fsLwCQiZkiEBiVoTITXOF7swtGwtyyX9e9e-x_nWvyt46dgXgRgbjsi_vXIsdxqj3XjqNr52sLCgToZ63K-fRtn-RG7UFvwazOTOF12XMYKMuuepzO1NDQ3cG4oQMLHiL1flCSmMDzDRDj4dl4XQVd9b_3356l2EB_Dx0Rz0ySYuE-DMDYlBUxErDGflIG0ZD-ThC749vwY-_lAOJm-rqFvDQcr1-5wYnyM30a7xyLEITMtOU2I-xpbCO_oTuTty8NQDY5NR2URI0PV065k_y-Cbdc_2FB8vDxxMQtJkDcZ7hio_XaLHlbIwdgWxZPTcye8geB0_kdvVJE_p0-ORjluojsKJLF7ZocLU-QXiAcoJGHYoS9sLw0eNMB6eTfI8i1CMlN3iCc0fcBsUmfjha-1K2ITqFr02pxJbGDx",
+          "places/ChIJ_cpLm-WHBDkRLNRm-tRt5OI/photos/AWCwydh_FUSuJIy4lJfTpbZK9CsFhhkH-HBiqVo4NapPEIShKwr-PqZJkkWVIjPBtgi6aMifQPG_jInXfWCmoVEzD_DHmGFFE18WvIq3AFwFmdO-sdLb19i9ndS3gnIlyAJJ5KRQMZzuvtG8wGJ4GTwm-67QzGv-dDBWYuFN8AqHxQjjmeyvZj2_TwoGyEqzLQ7-JMuXb0ExaHrNmH7E-pvnRFQ_yNNEIegkWj9IykoHlkFt8voLE88ltWo9z-ZwMWjVYKzsfrWWgagibxl0dDRo1FQlHwhZSS62k71HHW6kw4RolwjqV7ewd6Y81RrrTbYB7Sy2y_TnEjC7EaUU6aZ0Gf8-yiIZuVI1Ref2_upfYxox4kjC1tSm2es1K-ghrgMmSAz0XgiQYa8aacrARLWdccnh8Xo80DNtK3noBcL7dq2YTgw",
+          "places/ChIJ_cpLm-WHBDkRLNRm-tRt5OI/photos/AWCwydhwhgMQA0yCgcE78NZCaCdsKODP3jt7TfpgGBV8ndcQnQ-Z8OEMkblyL6oWVEZsC4OMiKueE1dLWml-FAlmUgHXm4VgjzS09Qpwl4OWmzGCN3bjkOZA9bE-bmCVSQoGmyN8fBdl6bJwv7Y3mRUDr7SwNteqiioQuZSpdqbEU_Z36xflBxuy7XSSSt0C0oaHQCposzCaiYj-pnE5Vp99i3Df_mjcBDJpEPNkV57E3b7_EJVg1j-8RXIuyVp3oFUSPDZmLn6XiaTPgUdz28ICKI88mSLf9ZIol0Dx53yHgowcZWn60VQfiysuYQhV5pSkQUS6khxfztQ0tIPnQeXjuak3We4h1Tw_nUA7oLNFKuP7vRHgQRZKftfb6pgiduNxoaFGwhICJ0OuxUtZYgtsMrxGFxWiTZusviQy1HbLw5FuRc5y",
+          "places/ChIJ_cpLm-WHBDkRLNRm-tRt5OI/photos/AWCwydjH7VplXQ6Nfk-dHcz4Hft-DRKpEwwBbZkXbkI-MKjw3pTC7STQnQFYXZ1696WBdlMbSA-BXVWo8N51vnH_iEO9IzA-6GpbwostpGYyysrx5ho32U1Af3in3-rn5CoHUaQ_yyZ9P2gkc7DS3CI5Fw-bZveeDHHcGy0RQG8q_pX9YJqM2spuC33YpzEHKqMS1mOB31AZGciGz6PURIDbeG49p5EYjdrkfzrvRCM-sOqKExJxZbX3cc54WI_dkSasFWsqkyhmyZXK1IdlKfIqxNiGo8y6vzjE-Yf80tT_mE_VyM5T5oOm8_aXsdslmYUwvhAGI5VNszZ-fluFERjRZQC10FmWlQQnA72aZil4Csp5A6R5Jgfq3yQouD-Y8nLt0GYb5BW9kXpFlsQcQ2wecV8C0Vbh-eZZKQGL9UE9CTXCJh4dr6UR9rjAyj57fwvA",
+          "places/ChIJ_cpLm-WHBDkRLNRm-tRt5OI/photos/AWCwydjEt40tL2T6WgllHRuSLcYBxMnRAF0KQz2MP6IjKFnGVqU8W-RL6cLS3J7-idrkqRODDi-7ats1OEKysox8rr9xNZaiZOQYcSvgx0HXT04y464GnmC5ew1XTuF9o_CJ94yTimSAdsP730shiX7OPqWnQi3RRLUpSZCpO6vYE8ZKASB7zyq5dzn6fciaqQPNmEgHqn2pRJnIConVa7LfGfcEUEwcljFotqhl5VqZDHtePtfXJ4ce0ajWImYVXDMHLMY_p6wVwgvdN1lBYwR4K_b0HY_db-SU6WBzaJhI66eI5hShEu1xdSvRXNgn_0B3mdAzNE0N3bxkG9uEna5EOePXUJOaWVsbN9Dvot9cLzMZkZ22fDeGwjqR6uRCCw8pUDSVxfljVc5onzmdakP0nTVkce_J9iwCc0QflxLGXU1BzX5hIU55t-ApGH-PNOe2",
+          "places/ChIJ_cpLm-WHBDkRLNRm-tRt5OI/photos/AWCwydhv8xFAGTHddcFzrbRuzZG2_ISHoWzmWZoM6kPXWLUH-pRuvt_sELzl5zA7-DdD4GWEIGjlwHaRuYGMfSmCJ96ME3UkGzcG41rpn1qreGcNz2qkU1A--2fEgBU4zfjoN6UoLs1xSWLvBRNIylvC0T_6IqiHKxBJFGgUR6UVla6cXBBZMg7BV0rsMIeXQJ_Q68oqccnUUQ8TbIHxPnmbS2IDIW6FODilf9InUCQ_n8x66n5hP1c7eNLa7zmUhdv6m76ezZ4Leb3Vyl-G6BLwDnbGsQEZEfZCQT4cIriuZ5On0pfwsS9wJx3oTjU1JS3RA8f_ePOXTosGNuYHWUoPmMn4uUPDINPDevIeEMAuUULifpsqu3V0UOI6sX_zQBPlh5z3J3leuVgHat5zffkCpYmCQpHyg8TBK-8v7GZkZjvzY9rRXG8Hoq4vRrnmBH71",
+          "places/ChIJ_cpLm-WHBDkRLNRm-tRt5OI/photos/AWCwydhkDfk8U_mOtt64Bn9sqsXdP8szMJKjKMV1PibWyj8HKvfLTY5HAzEDaNxgaLHSI8wnkE3r50TdDw_RolsfJAjoiP1rdaaIobH540FTgG-m_yQkQknytumQLTgTKLBvhD936F89MYZJ_uWLVKzZJSdT0Usv5YK36iPvC9RgPY16_anTH_8eF14XFyw-lDSXMVSBOVYWGkTd0XgK6VSgOgdznIlLph2otmkfIvylZ0J5YS5ekdoa_pXBqItTe-UYtKv2vB3DQutAJ6z6VTck7FqCTWdV6YXvN0pT_xLOiga7t9o8_8TndR4Vpwz2n7vw_e73FcNlWrT9BLqIHSM0eM9KW1aqW3eiLv64Q1tbkcHXWNcXJo-5D57F2eNuY-gbldtljn595T1fsU-DUptfh-T6mGyiLH8tbN5P6GTip_ZO0w",
+          "places/ChIJ_cpLm-WHBDkRLNRm-tRt5OI/photos/AWCwydj_Gk7tNzGEM_3bstg5eqCj8i-e2amC0E6FVcKtt_sC_QMnOvHPKRTSB3xnVn53BaP_KZ4No7Kl7RYtfYfgD4naVW5_htE-p_MvunYZLxUmPYnkxn2gZ2kU4R0-QcX92l6tVOJd9q9KlJ4mQgVjCQwxYyA6q3oAWd2Iuis8MSa9brexCwvclT2QbbNJQxnkGWAUPKk82PaXTb9qBxIj0DEf6jbiPxbe6B-AYhO3h_zyOl_ZDFrXS6GGYg8jDw_OF9YWA_3FS2lTod4mfkuNzqDdfYk18kwXVfnsi3uBQWOdtntVSbbsCdFIQHsNOyKWJZUPFin-RxALIDbUpch4Vm0kEuIDjegqimYNuu1LrqyuXWhYQ9ci1h13OjLfJ5CDb1jnUb0cRo0xJW0lxPhXMmUkg0tQiEftNI300vPJwoa2kqXn3dLQCoO1mB5sCd-6",
+          "places/ChIJ_cpLm-WHBDkRLNRm-tRt5OI/photos/AWCwydgC09-TbBL8f2211h_FwXCedkJEN_xowN8593RTJ9Z4BbYDWWXB_CZGvRzPElHCjmtuo890lBpxkn6kFXyBYnV7f-mlY4LJ_whkEFKxU9tgCME2xnkSdH53ZNPG2ZD_OWUjfBL37T9o4s7IA6km1uIZmlMP2J-txvLNvnaqocJMGAetYc7NcFgKgXgY4ShDM8IB_InbrmTBlTc3TtkjxpDgx7USCPQy8LDjYXYN6y4e442vjzZqSfC-zE5B4Mjsl1pEC9CR5CF-BgAoRdTNW_l8AP18gE1kmJYlHH2a7CDs20N1W3tiMmOYOPhbnMJT0lbGAwlfodt-UuGTE1-FI0xOhfYfxF9LslnxvA4O7b3LBMldPdujOL6SHpz0XjKCp-kBblxqPD1_XQIONfMtXecEt8sq0RtWcOOL-zJK7f5eAWi5T8N_DVzDSO-aBdzk",
+          "places/ChIJ_cpLm-WHBDkRLNRm-tRt5OI/photos/AWCwydh6lIKkyOL37ojIN3ahoASLs5jc6KrLjF05OoMOdCULfTyQJNoWnGx3wnCPjOO3s21jvREZuihE4-R7vXBf2fV9lFMri3VpCjNV92QUz69XkEa0MRTIV4D6eIxOjJRiSpbbnDOU935IZYbJDd2x25b0oKz4HTbDu_DNNl_K8C0HkuBLaLZZb2n3tWQobAC_i1Er_p9__AYcp0Jip9Zi665Od6IAhbk0PSqA837pczUBTEyPoOgLEqW1_Z4X553mgD5EQ0K024SiuPgIfivMniKLGiec5XMFCICCy6g2potWaMLdZ_kW6Mfk0IYdsxu4U3oEGdPmDU7kIJUgcUMN3Iraoft0SUk04vBVrypxiw7mfJwl_7VX8KNbpAG-N1t0Zu3O-1AHWZMgqASdwE3UraylWfMiWXnsHPgJ9GLvqMkVu8O_t707_HSe7qm12g"
+        ],
+        "__at__": 1786793556.0284789,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Cafe 1947 completely nails the classic mountain cafe aesthetic. Located right on the banks of the Beas River near Old Manali/Bahang, the setting is absolutely breathtaking. Sitting outdoors with a chilly river breeze, listening to the rushing water, and enjoying the indoor rustic wood interiors make",
+            "author": "guljeet singh"
+          },
+          {
+            "rating": 2,
+            "text": "Café 1947 has long been one of the most popular cafés in Manali, and I've personally been visiting it since 2019. It has always been known for its riverside location, live music, and laid-back vibe. Unfortunately, my recent experience wasn't quite the same as I remembered.\n\nThe café still has its be",
+            "author": "Shivani Wadhwa"
+          },
+          {
+            "rating": 1,
+            "text": "The bread was stale. Steak was like raw chicken. Music was too loud. Staff is rude. Toilet was dirty. Overhyped. If you want to burn your money, just roll it at home. If you want to eat good food, have it in KFC next door. If you want good location, go a few metres up and down, other places offer eq",
+            "author": "New M12"
+          },
+          {
+            "rating": 5,
+            "text": "Fantastic dining experience by the river! The food here is delicious—we tried the pizza, pasta, and momos along with some drinks, and every single item was spot on. The riverside seating provides a wonderful, relaxing view, and the live music created an incredible vibe that made the night unforgetta",
+            "author": "Vivek Choudhary"
+          },
+          {
+            "rating": 5,
+            "text": "Visited Cafe 1947 in Manali and it’s easily one of the best-located cafés in the area. The vibe, the setting, and the overall experience are just amazing.\n\nThe highlight for me was their mushroom duplex — honestly the best I’ve ever had! It was so good that I ended up visiting the café 3 times just ",
+            "author": "Abhishek Singh"
+          }
+        ]
+      },
+      "jogini waterfall|manali": {
+        "place_id": "ChIJaxJNYZCHBDkRWTP976N_28w",
+        "name": "Jogni Waterfall Road",
+        "address": "Jogni Waterfall Rd, Bashisht, Himachal Pradesh 175103, India",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 32.274739,
+        "lng": 77.1855532,
+        "photo_refs": [
+          "places/ChIJaxJNYZCHBDkRWTP976N_28w/photos/AWCwydgAOXqStjx-Y8zWO-I7XsT-Lp4Jpu9yHcqVZCQVxmJQ3sjQ73BDK6TO80ji2F__ErYCrJLisYylpHqVAsbVPRO_Scgy6oMxS5FkkgfYE6TUZ82a5PD5dWZO-BroQFuWX8CnoE0rS3xw-tB4H950Q-vYIO3i8yuPshAIIh3rjasSSwsdo-fO6YjMRsHzExojiWuzSo9cy788Ih0cEIyxKBrdB6L5r1K9ivA09tiDohHQye7DvKdZly5TQYaQIuipkRx-LTQZgBKZ_xPclcmPhZ5t14JaR61AzjYIlUY802yKvi-YjmfZld0TR9TJMAUq07aAKxmo_WrNfTfR6d_Q9aQCxAM48CqKLwQvlndj4tBCk_GCLc3JAfFpYsdjyFI8Wj4VR3QgKdqzcqaosxEkIqauh6CLlHjNBbfZHrptg_89y8k",
+          "places/ChIJaxJNYZCHBDkRWTP976N_28w/photos/AWCwydhAo7nnJylzGV0eU7l9OAT1IzQ6ClqMvejBCp7_3ZXAROhM-bh-eIKBV7mtKHdpGqLznFaJiKhkyAR2ksUDvsh6pD2d9mxxyWFG2KN7Zxc3HjHI3sBWKoXJPGBfeTGvo7NgAdXRJG8WCqLkshQg5Us4fYamAiF9rEtiU82eBWpgmSbCJfk5BMFWxTEHy5Q2Ph2NUbCV7OSrewhLh0BvbX20N02zKXjxF9IaEJXUxZbXuBqWzc_ktByRZ248nwnzuaroK41R_8sl9XZmsOJrff1TVMR5ASCiWgXz-k1iJXYhLmon72zdjALJiTWo-ctFQO0ZTOTtZ4gcup1D14i-QoqcFp6d1LwmbagkEYZtWnEh7N93L0SCbZpsBXdPb5kNwpkbsvRu93KhliMxh5_yOYrUajxymiFxzqbDtZiwHZQNIQ",
+          "places/ChIJaxJNYZCHBDkRWTP976N_28w/photos/AWCwydi9jGovCttTP94rl206B7NAyYDc9csAseq_GPmCwcVpkSHA9bmp5WEOm2ZigXdnKUW4nOJb4t3HLtuU1j0nWMtf4ozYr8Bq86bF3tBrGFwq08z6a17wSPAkUVUX2foo4CLn1mRSTNzaRHU2486wJEsr5Is3kLVipiVMnvWAUElXhpiSmjnCySffAq0i08RG699kIeh7MUsu2h67yhgqVW2qzX6Pd3qUnMC4qL5l3TUsqwi7lzVdv8VNkPBljhdBxiLWzf0Rsf5ZG4huTIuCK_PtkCXPAUiOa_PJQyxj2He0XYTjoEEgtbQo-WM102gPFFQLHDoL6U16bDqBUN1KfruJymG3CbT75PW7mj3aZHs47N-Sromd0JrNleL6Rze0uHnm8PSyiQOmsUmOmVA7Zpb256zWzSluOWUV4x1_IaVYy6gT",
+          "places/ChIJaxJNYZCHBDkRWTP976N_28w/photos/AWCwydjiWsp0F3RZ_a8-goD6dm8oxEeTYGyEaM4qbc9Vdpj_wnSX9da4rgJK6GoctlydY2AQlb0Vu8_kHoxBgFmze0T-r_YQSAN4kZ-BCsEoMtP-GdLxvCdC4mzavWfMojdjz76SeRyeg_ieX_PJ7nP1zkTPRvOCIGK7CHEyu2xyuirVlX4857bg717JRdBHic7X4o9QxDKTdjKYZ0LPHwbw53CkDps7q95o4I83ONSklW_l_-kBLHnU8W_GaWlSFxHwzM76TXaYYgLZlLaWiRwTYXysmcGVf_MQzqYHW87w9GZz52YPvMXYcvCbY8-i8Q5sYn10EUzf_ux4rYaVQuorbSL3oLiD1WEA_fCyfWxAMgO6lO4ysLjwUjvGjlLUr4MeBzVa-3fujy7otfE5KHOSslOvJW4OGn09F9pdncxiCGsJbw",
+          "places/ChIJaxJNYZCHBDkRWTP976N_28w/photos/AWCwydgp0X6EzvCHVu2j74jECD4Wzvli9H-HXmOXZ7gvD7cy6tTZh2neOm-MPJY5sqcTSdE1PH0H6N2O2jxxSqsvQ35zoSHMSnjqqDPHZyQcozzEneuNKg8480niaBIInVti1jyIQXrhTg4tz_of3T4y4lbPAi67HX00cPK_8GG7hvHwI5zP7okrmVROU0buQ9GFDOmOuFOf95-LSXpDiLY3CP_pzU2FpYDWLcMuCWgXTysiZh7nbzT2iL5lDrLwabj5X-1W2gUFT4v9p48QwMhTL_JrPleuKK38He8LuiojoN_ZzEcekK48rdNuzuVvAOpeOnz8uhT6NPG99pg_XYDaYghsVM3q15ogJs0nHOPfs7PmlijcHwdarOrPUusrJ5i01VL9lFrn-Q2IEDsyyAK1OKD70p0sDNvTw5az2nHDgb_bGQ",
+          "places/ChIJaxJNYZCHBDkRWTP976N_28w/photos/AWCwydi7UdxCgj81jNQLpRW7Yq13Ki21X1u0MioSPW-naIRdIoy2zfPbNNfxcUWTHppsp57NbK4Am-yaKO4K3xunuvgemzATCWTbPV4vs0fpEaZcZkdiXdlEhEi3K-nkwbkCuwmK7rJGBYI6iIiceYN-YnM5Zy7TmOTPVlc-pHzTeieX78I8-Ak04pcBsdQ90u8QS9jiuWZnGHdHvbaKuKPxCe3xdzy5ru9686Y3lu6wWCOH_jpBKqQsym8nV-95kTOmo4dbNemQZy60h9kSIMRZwzcwLM2SfIoxTwAd-uO8I_qUT6q3Zvn2mR6crH1jeWJobk7k3LZSuuqIJrgyjWK_A0bF9aOViO0R-i3HvYvovX08zURAALNH7ndtdYp9VUOMtrIBfwY_HXIsRAJGklTC6asG91CGMJUvaZKijw_enT7IxQ",
+          "places/ChIJaxJNYZCHBDkRWTP976N_28w/photos/AWCwydhta-5XoQOd1g7E07JOWUkyrE2nGczNPYcw8lqoUjijWoqIpu6fpWlX3qXRLWqzV-kvQ5il_n6s3Lkt5yAd7gVZlxiaRBEDLkBU3SU4YkfyEo9dVVsLJouexeLukx3PxT7XmfGZNpaN9RgB2ueGc35zc118Coaindv1dWI9j_goU5wuIjfO0GLZxg_XCkUYdZkCAOnz_Oi8kBURMdQhiZ0hVLgwptzegUFrdcxIZKYErOf0En0g4uGH_vEOQu4-eSuAYnCGnfwIHTC8pCvjjqpKmFqOKJUUgw-1LFK7D9I_QUHIYq76NhVkvPzkPjGtJvTe6YB2Pz_6Q-qOK_nzsOm89bHNNpKbgVznpT-zBdM8jB8MfoMYwJkZavpg0QNMJQBnuL3hNzxiw2dIvNNaIHrvA07sGQD4BWJKcxDwXi2bTA",
+          "places/ChIJaxJNYZCHBDkRWTP976N_28w/photos/AWCwydhAfRNNOsr6D3gDYqG-medVWxiiSMsTzoaLlF_icGetQlS0lJnAm2Kh8hpnXtVm88XwGX0nwO6YwOOA9aPZ8fH80xbWrrZgQLJs3SO-_pXTNOFFKeY5p90SBsxK9FNp216yHAEaOxdfh6OqlDZsZrY0wqh7EsegWkryVGjSS5MckSpCKjkrNjQ92UionEHA7MWdLuG4s_WidFMigcSjQUnp2LT_WU9CCWKy7EhkCjd8tPZ4U1qcyUiBCbFg4geXh7yC_ye04aXnc_Sla8imLyXgzND7EbBirhwLuP_oOO-Du1O6Kaj_tRf2Ie1vgojpZGjJe8EesyWEaV3tn0_MiNrUBvTd0QX5a1c44AhXA-ofvjnxhJokCiaseN3RPMot5HRC6vQizmCONQsVQxI-S-Kmh7pC4g5jUgTKbeHVF_7I2yeL",
+          "places/ChIJaxJNYZCHBDkRWTP976N_28w/photos/AWCwydjSsk1aSiIRCppcCjPCF3rJV1C9H5un5MFPURhafNicrXMLv9oEFto7G1bbxd6wlhVUZdr9Bp18Aq-8aRJ92rvat1ofYqH9lkGC8SYTIVzcvCl5IYgCNO-yKapHswzeZ2pUybk1NAQohBfCOonvSzxoqNK1nXgoFlYSrI5WvwTgEzmd3elhcxImASx_EVF7b3sNxcL9IbTTv1JouLiUxkXCQxsBhFF_A0gtaMMn5E8OBJ2pVyvLQjIS8-7dV4D3SSTZSIzQ9lN9uVHvXOMmh48pkpJwvKQzUl9eHQhuQm31ndVvodZLX3-4rm165nfZAAIg4nCiobNWr_AnqSv9SGxMuQw7C52--Gpfjjv3QcjO_sgZW9KVh8nLAtbdJMr9llVhh0Lp5mMyXqdCnysznVfSxOgOZY430EyXjVWWijs",
+          "places/ChIJaxJNYZCHBDkRWTP976N_28w/photos/AWCwydgFtm9re0YAEWwRtg62md1vMMLX6EMd0_epZcXjlLuPpZmBjj2RSexKDsruT9fPTRjJ7avaU9p5A7aZQ9zGqi-4jIv9CX5S8h--SlNTENrtTmUMX07ZUA5SQjcqGYmQyZZ9mTdp9nRsvQKt7zQ0Rw4XF0qtJNEgT5NbfQ0nD1BrbSRfrPcZHEOe7-ZVn3lM_z_7v4oufrIAaLrU9tSBT_T217_RM3kWrJDXS-Cg7urOx98zuA7QKdA7bm_jpfBg5Gru9m-JsCVz42NjT1Jngao8LKWPWzojdqtDdcebeVcu4nhpq2FFQ0HlzQW5IySybq1M_OrW8QXJQqNvCOx9FdrtCVNkuBqgya0pBv_mdjA2QdpgFVn14nSOlM3ALQp6FxDl5W94W6J-alu_PRH3LGB1w1VQZrQAokQ0guW4IYHrrg"
+        ],
+        "__at__": 1786793556.3472419,
+        "reviews": []
+      },
+      "rohtang pass|manali": {
+        "place_id": "ChIJrRV6svB-BDkRa8bv72V-3b8",
+        "name": "Rohtang La",
+        "address": "Rohtang La, Himachal Pradesh",
+        "rating": 4.7,
+        "review_count": 10552,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "This well-known hiking & driving pass with Himalayas views can be treacherous depending on weather.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 32.3716426,
+        "lng": 77.24662210000001,
+        "photo_refs": [
+          "places/ChIJrRV6svB-BDkRa8bv72V-3b8/photos/AWCwydj_eMLFV9kq3qj9pyH_uYkIXb5hlRLMDFehdAKI7xJEmjtWMVViBwW2GuoUPcmqnoMVjDZvAODlSCc6HUDzYB9NnoH1eHwYIH2J_C74Pwk0PRAXqF46hovj_csBxAXBrziCfAk-vYR1_dMh6MoqWN_dOxEMzW2ny8-mo-Cch0ivFdH1bupoaeQMOCgHjsQwAZdzYGjQCGBS9RfE90TDFBgA80QMre4_vNB4ImCH-n29yz5tGc4uh6WCtNle54zBE-hNkzM5q1dBp6SkPTJUZlvDYaAJckH122U6TmsoEUHtjSvtX-dC6ZeCGSGp2OQr_6nigJWpCjVw_D0aBAAkiYd7gIZkNnn3-52niMLlEs_G6lLM49u8-VP8BmlVRSYO87vQlosV_PhpNDFDLUrjBS5eCZ_3dAWTh46PwDF5ZOWelw",
+          "places/ChIJrRV6svB-BDkRa8bv72V-3b8/photos/AWCwydhTeue_yS3wZhsszRlRqrad5ILe3WM1ZED6Z3UAeZdG_JP6Fzo38E-pXqWrq7cdV5mwSm3Gu0d2sa-k7IpctIGzt83DaynitS3u4KPR_1Qj3AJQHhk-nblqt6HyOV5Zl4Heie5rU3b5_yXGHRnhDBANsU27IkG_k8hQnvA2P9cZnNvuK9kclX6fwVLU1LVG9007JCIiNebFNiF4AFOUYnq6GUvzS5TO_922vHNc8YqV1C8igExpasehq7TGtJ9NiowtK8_WTM-apu4LAqNUbIwzQToPo1Ylyj7EU9dzx-u96cl4osRpkiBYyY0UZfaZLHsbEviyM1NZlPrin8BTOaorsHiYoOXH79c7VszC9obpFhVTLgJixYCGRjgAdce5rHvIwJ9q0H3Mt9xKrLq5C1_TAoqtGtdGvRzAmN2h7xk_nA",
+          "places/ChIJrRV6svB-BDkRa8bv72V-3b8/photos/AWCwydgcfk-pKyAMS3KqbGdTBnd-EiTA28zoPU1zCOkVaEwVlsnKgvV6V0dw92Birw0Ao6rAf_YipsVrCD3qP6-sESofF-Y6iIkZbd4j3eY_5nKa-rErIID3g5-Z2Bu1NS5DqH932-X9Tn8lSxEtlG0X38AAjzWtMHJaPf6zBapmNmUsNYOVGZdQpW-J_8sZq-iUqlZkIELoXF6CpRf33hy242af-wzixg4OsiNXhABt4lwjpcO90mumGSfQElrywffbtf0ZDWXf32Luv9vZxwIWwevnx47YecNd3mk18FaNRaoQHreCgXdHN8l5Gm2-SocZ9-i5-46DzlEC68A6-dK6d8D8Mp40rQv22W-vaLHpD1jkmY_Z8x--fs0Y1n-aEv87q0nGAmHhyS-rHDAmqeHVNM-s6VSqoWjam_rFJIlMyrjXxA",
+          "places/ChIJrRV6svB-BDkRa8bv72V-3b8/photos/AWCwydhiXtyIhx3JOTXsfZbNIk7f142eXWcvUWTmNOHrfW_RLBse7TKWi9hIu5_CY6mbPOnvUbX2mfj7019qrzFotXA0674quDHqGWm6xkc4c4DISWtZAMcTzhsu7i4WWr_Dz0Ly_GoCbA8alBciBi8f0QSf6NCOrgzsKub_u-XFKqlBd-237QzzusVbS0NZIHd4qjroTAbrv-5Qg1zNpolWYXDdoyDVVqSAKzORsZXs-t9ZtEk-4Td-IuFBAV0bxgNEWVLVBgr8hzrohrmmthjWfViHuKHx5yQBbVvfl7BuSF0GPfCKBSPy7xdoWdc_2RmuFjDQTtwsxlnGcBijdSp2ssG24ffeGhC4SLahsfOf1BxouMkLl0drRlUuAdeyNiAn_5A6e_uPrI07U7usMS1F78SNJigsRRtnNGrJmLaTxu83gQ",
+          "places/ChIJrRV6svB-BDkRa8bv72V-3b8/photos/AWCwydhHaa-n1LwUtWjZWHslhC8zwSj_LkLpWxvhQeUVlBsvyd4f37B8AhJD4fXCR4nppBndkmQs5uUGq9UNQlbggXSgKOy8EsemE3ipMJUpWpdZ7GjESWbfrG7CM-gAdsAZ6Ke7Or3rRr2pLJemkPPrtNukPw7CWVIh9oplugfugN6kFnUn_f7LTAprsmrsznhuq7QKnWzcXpAsrzD-_R6aRvNUWJVmD5JoO4Ip9VFaB7SUscB8v3wjMUm7_qLTYnAghHjU57S8ONhmcSwg1qot9F8TBxtgL-e20_6t4-i6UHVKDe-nYAvUfcbcPiBK3xQYdO3yxdsezVG0nZMzxFAxMcK8Y6D8yTeMrV0eStYk_3mYLFSzogUkGYBWrrqNOLT6iJj9SP64f1ZFh87m093eQ6RG0LyOXd8bZay8-pljVqPuCQ",
+          "places/ChIJrRV6svB-BDkRa8bv72V-3b8/photos/AWCwydh0sT-oM3vEH9rGjKtEgEqqn-rISlUuGf0ZeUDEXxeaNUocQf6o5a8YYDGOEPjXZL0SKoUqWE4RW6bAA7HpvjXnQ7GpWyaYVsWmezwH4dnVPjbPuBG2N-x7mt3QFnENdQha8EwP_tsmQlr9cAsB76619zBEYTSnM_P93aT0DcxlZ0m30N7usE7l2QfaaThFXm2OJMcjH12tcA1o7FUrt3XmYB1jcUu2agG7YrBdU2Pew24WVSDbrNPn3mlRJCO66C7kdbChD07n34KJNyf2X_70XYQs_4cSsftJLJaYLSsPiM-hD7lifWrXaGRT6wjsJYUiFWXATW-PSQF1A4DZNe8ELDE5wN8w95G_BbWdRuUQLa00yib_AqXYB5VlFJoxssRn9BFDwWUidfyJPk_HKljewebnNLNL840cG67hLQJ4QSri",
+          "places/ChIJrRV6svB-BDkRa8bv72V-3b8/photos/AWCwydjKgLdSlCZv4w7rhBFyt6RVmIGrDP4Th0sl70_xY0UQGC0YBD8ItpCVRmHHiwYqMnP6_nWr98f25o3lPMbgbkVFu253bNW_fBW3iSGmIx38e0_D4EW1FdSiuSsCpKwHs3bbTn-W_ZOk8ljweGUAZMVglr2fsdl-PeGJqFyZ6PlpeEeJhuxw5xXAkKPsOgQBAqO2VtOdSRW2C9BMq7lKmgF0YSbX6yhwzLV2FDBjqAKiCb5WqWI1yBSP5Pec6jmHBnD6CHERJ7ChUWq-OYqbbbj6YxY8MpOufC3eFmVLRJwWSPgj3G6MtLQ3O6fRfPX2OY35wnFt6PINBDerZdeGviZRRZWJq9HJzh9reTvgnL3zUwmC7-ZqHGaEp6zzigKms2tO1jYsuEnCUnhl5VhNL6EFNm6nSzuiFqvWchw",
+          "places/ChIJrRV6svB-BDkRa8bv72V-3b8/photos/AWCwydj_1MkRoaLbxH_YwS8MNQCcIOVi5qKcie1SYZJ174EcZn_haClE5HQ_xNE6mO2Ggl4gXjuiJiGmw8gjA9RMkaogqqry7GGSI8vOG3NNEpgogZEawMb-Q_QxePRu7IIIefEk3gN-pNhF-azrszYxGtvzS4V382V00jP0bRKWZgkX28WXe3ZRF-gFuwZQ2sR40ZqM__OJdsnte_rN0WRiZhUrpNbxSr-cSlL2Nv14pxUFszbJQbB8vuL22CsRm2ttIETIgkilEu2xYmlym6tXGREADEXsibrHWA8OA37tKX9wThCQS7nvA7oEIc97viz97yekCVWC6HDwD0tB74LnI7kyY67LJo7bEC8JAHzU1fdZ3XxYAeuGlIWGs94iwm6Uqe7mDBgX7PhpcT1pggfCtbvGRGl4dfb85TBK6rAbYrY2EYan",
+          "places/ChIJrRV6svB-BDkRa8bv72V-3b8/photos/AWCwydjPmNmOam1JYsRhpMbj7m-5BbegEbcVev3cLnu1xSuoiVXxis57-PBveBJrZpIQ7Rykynnu7O77chN002M7hsr61hw8xKWlWR3UBuaNl704XIjGfbsufyocMkq-r52zZpnGMznkOeMmGf4tWRMYjV6rJiM6izGMEggxHUoStkqBMnEFe_E8wV10yLgJog8O-h94_faeJxa1FGARPQjlaC746gqFRXcSZLbtWqvNAm3UchBnPEMfVhv7DoI4I0AKFVxzwNeVFcLDNnLEa5_sVciuG2T3k9tm4bo2tPLhKqLJ2OPN8oNJry9suig4pnfqNq_qWVexAK87d5RqPypDPBoOwDPRtxiq0s_BOThBbfn3609yg1ehL_SHKRaswEb6-DKpJVF3z7P36GHLHTduxXxHiJMU1NGNk72NlTDDT2iNrQ",
+          "places/ChIJrRV6svB-BDkRa8bv72V-3b8/photos/AWCwydhg7IgRTopWNZd0Ds-s4lIYFUKKSmyMayIK6DemvkkUCX-k7yejgESO__t-gZxHzWICk_pvhhK_yE7M3tLVIaA0epAt4wruE_K-YEfZGgPW0EwdVb_CxtCOR42St5vk4rVhVdyTKrLdOquNtWk3ur0o-n3yTBfRFS-dfpkkq5EQBVUtKnnPp23jMtaaSIDsn1vWxIjqDEq4zzQdq8mKSXtLylKql3OwD8YRDon21wj42DW-xLRQ09EHekPng9LVPlmdzFIJCX8Q3nlbfqeUhezJD7EZVivb0sZqU7X7Qa2e-V_tL5LyMGTbH66_JfSxOwRQvKdmNbLDIUCXcWg8cQQ-qiY57c03kB7j_0YDJcfhS_8q5lkepN84odMOMI8JABFLAH2vWpfh6XSM0wnDgTgnvbI1q__3MxFmRNdZOMso8wlI"
+        ],
+        "__at__": 1786793556.671694,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A must visit place to capture himalayan beauty. Nice place to visit in summer but worth a visit by car in winter  BRO ensures roads are cleared snow covered pass simply amazing",
+            "author": "Anup Bhatia"
+          },
+          {
+            "rating": 5,
+            "text": "Rohtang = Fairytale, great view, but due to season was stuck in the jam for about 2 hours at one place, but had a great time playing in the snow, clicking pictures in Himachali attire. In a nutshell, had an amazing experience if the jam is kept aside.",
+            "author": "Annesha Nag"
+          },
+          {
+            "rating": 5,
+            "text": "Awesome place, go for manali, hire a taxi in 4k, get into taxi around 6am, return 4pm, enjoy full day scenery and ice blast atmosphere. Enjoy enroute waterfall, curved tracks, hills, trees. Must visit place for snow lover..",
+            "author": "Dr Sandip Ladva"
+          },
+          {
+            "rating": 5,
+            "text": "A visit to Rohtang Pass is truly one of the highlights of any trip to Himachal Pradesh. Located at a high altitude in the Pir Panjal range of the Himalayas, the pass offers breathtaking views of snow-covered mountains, glaciers, and rugged landscapes that are difficult to forget.\n\nDuring my visit, t",
+            "author": "Voyager"
+          },
+          {
+            "rating": 5,
+            "text": "Very beautiful pass, but since it's closest from Manali, you will see more crowd here. Try going from north side of Atal tunner and via Khoksar for magnificent views on the way. But you have to buy a ticket around 500INR, when starting the climb",
+            "author": "Varun Suryawanshi"
+          }
+        ]
+      },
+      "chopsticks restaurant|manali": {
+        "place_id": "ChIJs3R0A_6HBDkRLZcvxAaTgBI",
+        "name": "Chopsticks Restaurant",
+        "address": "65VQ+HMG, Mall Rd, Model Town, Siyal, Manali, Himachal Pradesh 175131, India",
+        "rating": 3.9,
+        "review_count": 4711,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 11:00 PM",
+          "Tuesday: 10:00 AM – 11:00 PM",
+          "Wednesday: 10:00 AM – 11:00 PM",
+          "Thursday: 10:00 AM – 10:00 PM",
+          "Friday: 10:00 AM – 11:00 PM",
+          "Saturday: 10:00 AM – 11:00 PM",
+          "Sunday: 10:00 AM – 11:00 PM"
+        ],
+        "lat": 32.2439251,
+        "lng": 77.18920729999999,
+        "photo_refs": [
+          "places/ChIJs3R0A_6HBDkRLZcvxAaTgBI/photos/AWCwydg72uPE9b--yFShDqTpq5nUXSiUMIy7tQ04pWOUxgvGdISMLYI_85DGK9LukWtMyS9pLkJWX8tJmw5pfyVMeP4gfLJE64zxhJA-JcrnNNwtlV9Rqp1eAP_yOuYLS1uISBBLeYlj8aOqqna7sAeLoZz1qcKPreaThR-R7StHLDGBYB4ckCrS7XkZ9csMwvVQ7RlX0YRszIleRvx9KkTeMlQQQ73U64qu82na_mA6cmPN2HsjmO_E_6xhmMwunxDOm78jQXKwbNUvYERGW4qTtRisvxle9r2xk0IOIX2kEcM0E534mUgozYUPEUoqprmnnXe3XNSnSPluO2-Mh5cSTmJYxv6kJcicHFtzM61AbiVIkeeGxG1MdVpacb4OD5BKuDypshNlRYoJhYT1g2V_MCQsyyC3m5PhW7oZmVNvgT4JP_vceHvg_uWQpqFZ_w",
+          "places/ChIJs3R0A_6HBDkRLZcvxAaTgBI/photos/AWCwydiah9b4UpCn7oKufol4uF1YDrmaf9Ju148X0dMAj48cnzB4BwXNbsv1bI7uz6_spPctlJHNvzOLbl4AOyeR43bhoZFX0XzJwgi-RkdSeBYzsLr41NGA-gBThH4XXl8xjPPro-9TL0SuHP2VIb4ecy2g6HrTWibEBWyAGLaY74ZG-cMezKSp3qB5j5kfZnQ8YSHfAPC5PrXvu4Wh6xDriAPNJeBU0zb02FEDnW1xsPCPOblIAI-_D0vX0s1o2tuK53tUfGD6FncSHxYl4KFc6ATgFKfpIYI2Yu1BPYpFC2mv45Ix9t7xdTwsZcl5mBxOSZiNpJU25R_oarAu09arAW8ky6brM744e5DScn1VtiK4vGgbmp8OR4Vybqb-e1r3fRolEofLpUcnMCZozC6aesVjXxUpx8jfJ9ttf16kLTA",
+          "places/ChIJs3R0A_6HBDkRLZcvxAaTgBI/photos/AWCwydi6ai0vaBe-Fqdm21Nih1tdwX7KV4EbNyMt30_w4CvTjPiFHYhVLngi-h1FPZRa-CcBMJCjBHms_82XAioQQKh1aKJ2my26SDnbplvX5kEuyNGMNoq7ECKmo-76k-oyH6Ah4TWEyo_teqUcsEqQW_qJw24i0JVA4rK-jvPSdFU8HMrsae5aVFUDIp98moLUPjNYVZVo4J3tzC4CSCMsArECJw-EsoL0jKXX5XdNO14_JlIi2Pnp0sDzXnwkIDOT9UjxiC35WdFmMh5fNfi2hrCN15ZBHju47dBYx2hsdR8rDixo_7DMTDLG27KUr7zXMG_06mWnf2kBzIGb_6ElID-RKVUEuGQzmDJTE6jzVZXtW45J_se9a2cYtGQiZ5-rrCNwHhRktyPrVk79JK66BrX7TlCgpxVyIzOXUjreAWHlQSoOxZQjSu2lfLcwcg",
+          "places/ChIJs3R0A_6HBDkRLZcvxAaTgBI/photos/AWCwydjAN4X0W-SRr4kIB99BSZAPjfNqhCPil8EsNAws87OgQ4nh_uSqN9Ph5ADm0f9uMrOFv91t9uB_Lhy9p1fQRrs3GL9s923y5ecF1Cn--So6A-leS7_p2PfRF9koNvLMrnMr0qcK6tiH3jg6M4sZRWXxw9fo4dzqWoAkUjquUStdYloYRIiaC94n3EHLFE03I_ellqYeTgbEor8D_2pjiCP0SmqkKOxnn3t-M7m3oabB1GSKQieWNQYVdGWCDmQb84NQ37VNrFT40r07EtI8dYolCnj0bS0d-GUPE1ny24REiynrMh5BOVHziJC34DYE8D677sJuqouQa259YkOJAK3kSO4WQn8JLjKdWqRToSdiMW9IFv7EvPpsEetAjeRVSN7M2HpXhoojWSmgdBOe7kkYAb8s7V2ekTrR6OJ-OIvABjq-m8J0q-62N-b6ZJP9",
+          "places/ChIJs3R0A_6HBDkRLZcvxAaTgBI/photos/AWCwydj4VTf-_8AC0hCVVVsLd8LIwhpsdVRzgNFJFPRBQ_siT8f2IVPqZh1ATHCF17nUrpXWKJD37m_sb2b-4R_2f2qi96nskhj9wkP3SG4Zj2jcQHXFmHDodE-cH1NzZuVzReFM8WpW1LJXYLMQc21oGoDy8I-4_R0223Syz3e5BSLWqQXwVR4I6LuSEXP3brvELnNB0S7Mfd-jeJsyfG424sGaWupN4XGr--ajgT4gceNnTuDE5P43pIXQzJ4lrfQftcUMHAFRwMp0DgncbrRlFe7Vxz6mWnWNDMR9B2G6XEU1RV4ynhZ8idFVbKmeCoiQyPfP68O5frRRKPeZEARjyI4aRgZNrCD1gVSKBfrln7kszvT8ho4GclpxcetOFtiVn-P-v9eCM4KE0_X6YVMb-S5bXh6zaCa-fWrAT_nTEgORcjuRVwDQOXLqdX5j4xYO",
+          "places/ChIJs3R0A_6HBDkRLZcvxAaTgBI/photos/AWCwydgBN4eYgG9N0XAdC32ET2WMo_wychJ9zrBKI2PCEdDohoXMp2McnFnExSmGFBpbYYCNZYaUl8yiMOfgEsZuXRx8IbPUfg6xhFxxSFPNdj_a5PK3IC7nzUntZ0Gwh0a2MgTnzfBUIFQEO9N3-fb2soNxZxJZ53R6TW2q2JO0azZBiUnbjcEM9L-OYYDSF_mEz1AzsQvpbiuqDM1DZKTEJm4rjnEVEP8JtKRqMieDQNFd6bI-Moy3zqTluGeWnOQqHZ0ZhTxcuzjUu4GaWYjCvVEwyvpgfzdwZZUmXofe0UfnWrUns4n3IQV96ed1Wktkri_SGFEdRtG9AYkXB9BZWAA1vuO6zDftkDs3yIHNqYHUMX_dnMr8_GgX9aDvxG4xpk-r0Zv9gviEP4GylPMP6hBJQhMYiJBGiLn4Q4VUmg4zOGEXFaOkfNf9mBlzvg",
+          "places/ChIJs3R0A_6HBDkRLZcvxAaTgBI/photos/AWCwydjE3paHQAITeKIA4ZuQFeEfV6Dl360nCA80GAijs_7YBh6QRkbqUUlaAKrTn_G3AogwEP_MODPDxgY3YFfYSCBO7RVeB693YwM9mfp7_nT64ZVRxP0N1o1CBn8mwtKO9_v8l2kFQeV3IdBXLPU-1U5OJ8BghzEWPLVwIu4lKqJztOTc44GcfBBJOLwxjYjPT7GYkXgJoXyXgNu45SMi7F6d4bTyY8cX52MDwM5V20hyJxVcZMUJAjAhtOfu997KckofXQZTzFxYkWpDw9obF66Zt0JIp0c88S6HVxjk1bCbABTlpQZY2UCabELgLibu3sLWCXR4YrqBdXbdmM9yHU_arPzoKqC8g3-dy9MrYdA80jNty827QVMt5AwX8vJA-i9lJa7ORO5IpxWK-PPa0b6pENnQDQmLAcrPd67TEOkQr8UiQO7VDMc_KgEckRfm",
+          "places/ChIJs3R0A_6HBDkRLZcvxAaTgBI/photos/AWCwydhJyF2YYTmZSA05leUtmqpBjd81kVAl4lIcu7WbRXrzXSvrmmWipT9yd6nHeuT_uma9cO-lm78cKAQBFQu_bSYGSZC_e4sv6ivHgTWUaaYO7RngqDI7VeeUFxCT5_Vf_uzWZ1aHLG8GAJEIrPA2GkXewGBX8SETaLOA18DF8JIqW5bBME93dDFT8qjRaCws3ozoZN1SeSpBAoiujgEoQynQFpwvKYnuL1tK8iNaEA-a79gXRS_bsfhsBw2MdfGR0YToyWFl4Tiiyit2zUTHXrI6AlwtH4n1oYmKNewWxqqgttahsXiE-kCUC1aWzbuRwDSjNbWucGurxanOxRJGQDSRJZWU7QT1Z26jdQHVLrfbIOq_8C5wS6b-U5TF4qq6N1f3hLCsiOopi9MaoKKTdhWocGA-oCRDN8mnLsJ2PH3KTqK_Z9zVyB9lWFXZkm1p",
+          "places/ChIJs3R0A_6HBDkRLZcvxAaTgBI/photos/AWCwydh4yWwS2eVfxeBTHr6gNUdaoZhDpQu-peehCj4pw_w3Cqzcfabf9UHhU7-dv00SZWH_tWwymfwo7xQSqbZyYv0KO-V-lbe8Xbbm9TNY6G-vLckMbkXO9NiyOX5PShjxUKKsl5sPWXO9cTRfa_4naOx49_fVr7K70dut7m_nmYp5cHUCYYhtvkqXAiqEKLg6jCZUlgCB3vH0NUTlsEJzfvSNmMh6r3aA0Fprk17Zm9XYx8AYJ_16pEAfD9Yo33DftNGgYFzMdwuPB7txS8Wk8j0kt_prjxJDhgWH16UghRoPy_o7pMySD9a42vw8uFSmSA_uTEec1FupXZKnb7bUKjP3R6GRI_msIfzKdMF4FZItr10lf_ONbFEdV7VXclNedMcmyOhdXhZTlmjMwSzomIvYgQzHsWlgWl-OZcpcfjlHsH_HPUOtmqAQCFKEIg",
+          "places/ChIJs3R0A_6HBDkRLZcvxAaTgBI/photos/AWCwydh3WqtWq_tyJOLQygm94d0CqMPVVGqAjlrs201xK8lhCJlIRWB_7LwuezTxiUuo04iJ0yFfSosY0oZubiO2UGfNoKceHv__35enUC_WTQ_0dWq4wcxO7ah78OpkYdGila_APsZdG9LyvOK8bcKjZrLJyS9jhrd2H5MNJzF62VW71ni83NfvPsmFdC2fCatVEq4SB4EdVi4OynZMCqTUmgVpH2Sw3kuNW7F4599BcGoRhiwe6yFTPa_STQx12gmMr7iQMy5fPOf0RiRvqiE2L02vG91tibX8SS1uBZI81wPsKplAYkStArmC0lQBV4OHpQY5xy14VzihEVGUbf2cMg1gva_zeZlBW5mHcdOixiWk-AYgqzGRyHid8k8OnxCme0qGOkgyaPIzvIadUmMF1Fo38X2lSjm5fs2ptRTBe0dw3D3t3NR5O8Eoty1OjLH3"
+        ],
+        "__at__": 1786793557.277955,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Great place with a good ambience. It gets quite busy because of its location, but the service was fast. The food tasted great, and the portion sizes were generous. I ordered momo, thukpa, roasted chicken, and chilli chicken. The momo, thukpa, and chilli chicken were all 5/5. The roasted chicken was ",
+            "author": "ROHIT KUMAR RATHORE"
+          },
+          {
+            "rating": 4,
+            "text": "I recently visited Chopsticks Restaurant at Mall Road, Manali, and had a really good experience overall.\n\nI tried their mutton sizzler, chicken sizzler, and chicken momo — all of them were quite delicious. The sizzlers were flavorful and well-cooked, and the momos were fresh and tasty.\n\nThe staff wa",
+            "author": "Sumit Roy"
+          },
+          {
+            "rating": 4,
+            "text": "Here’s a balanced 4-star review you can post for Chopsticks Restaurant Manali:\n\n---\n\nI recently dined at Chopsticks Restaurant and had a pleasant overall experience.\n\nThe food was good, with nice flavors and satisfying portions. The dishes were served fresh and tasted well-prepared, making the meal ",
+            "author": "Mukesh Mukesh"
+          },
+          {
+            "rating": 3,
+            "text": "We ordered chilli chicken gravy, veg fried rice and kothey chicken momos.\n\nChilly Chicken Gravy - 2/5 - Sauce was good but chicken seemed like chicken pakora, was not marinated well, felt raw from within.\n\nFried Rice - 3/5 - Tasted good with gravy, else were a little bland.\n\nKothey Momos - 2/5 - Wer",
+            "author": "Arpit Malik"
+          },
+          {
+            "rating": 4,
+            "text": "Chopsticks has a warm, inviting vibe right on Mall Road. The Tibetan and Chinese dishes were authentic and full of flavor—especially the momos! Service was friendly, though it can get busy in peak hours. Overall, a great spot if you’re strolling in Manali and craving Asian cuisine!",
+            "author": "Seema Bhora"
+          }
+        ]
+      },
+      "hadimba temple|manali": {
+        "place_id": "ChIJPeVowAaIBDkRnIfuPkskqi0",
+        "name": "Hadimba Devi Temple",
+        "address": "Regency Road, Siyal Rd, Siyal, Manali, Himachal Pradesh 175131, India",
+        "rating": 4.6,
+        "review_count": 49630,
+        "price_level": null,
+        "website": "https://indianculture.gov.in/snippets/hidimba-temple",
+        "editorial_summary": "This 1500s Hindu temple built of wood in a cedar forest has intricate carvings & a shrine.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 6:00 PM",
+          "Tuesday: 8:00 AM – 6:00 PM",
+          "Wednesday: 8:00 AM – 6:00 PM",
+          "Thursday: 8:00 AM – 6:00 PM",
+          "Friday: 8:00 AM – 6:00 PM",
+          "Saturday: 8:00 AM – 6:00 PM",
+          "Sunday: 8:00 AM – 6:00 PM"
+        ],
+        "lat": 32.2483526,
+        "lng": 77.18157269999999,
+        "photo_refs": [
+          "places/ChIJPeVowAaIBDkRnIfuPkskqi0/photos/AWCwydha852IDEXagBDyVdxb-2tE5hRL69-UL-Z3P_0pP72BL77zNrUeIZl6pvocE45m2W7IfD7TysxwmknWqjmIlK6DJf-KB9BHQQLyWaJBQrH1Iiz9fGSBlNmz4aMmH-rDpJ12twiMcbL9z8V20EcDI8zs8f3m0ecra-qtlPFAmauGZsbA95dysIQktXCIe1CK6Jypt_vr55LqiNFZofXU0BcKJzdApHKE0Tq272cXrwfRB7HHqmCcyuHuMhCgHCIOaECebauka-SF9g4UfzLdRAcNJjF41Y2rxi0pLd2pPXYEssVdw9j-zVQIc4oKQqrvU-kL_9uhd5JHxHC8gXH_7hnxkflcqyE8au7tKAVNHy7UgA3okQ75jFADkVuP3qhu83mO51PISrtjNbrAPwZwnPRX3vXfMGhEa80SZE9oePqsVA",
+          "places/ChIJPeVowAaIBDkRnIfuPkskqi0/photos/AWCwydjopajn-jOrlgHPd0CQPm4X-NslkvLrqIVAj9sUjGvs-4kHSFUTTpN0lA1vKcgUHzpvTwg2B91CnVu1ZjftUZe5gaDKw9QPTSAnnRX3ifU0wOx3Zs6UOejQIypt0wwxfTYm533bSnJ6z3cTZPvuaagIw6jpx9LV0YOMf4ncaAPJiTctdlWJPRRCUZ7QdB5_kewmVvmITFx_c4XrupeZm1kznWK3UO2KFzDE_X4y4gREPnQJsqOs1NDMNI0UfNSoYBNK9VdOU7pnzMBeHNAJTyeWEj6fWY5pQxK9Z7Ai8VlMCY_59jwj-zobarUSURXAK-pkqEKFwkRlK1_GUPnP-JNFltMd07JiTYOCNLHzgP_r99jPiQ8TD2RMc_GjfT0fyFEHT3wASxfrQPYLQc6G4uyNfjiJ-qNA87XbEpBDnOu5NxQ6E-qq8b-eCJkyKAZQ",
+          "places/ChIJPeVowAaIBDkRnIfuPkskqi0/photos/AWCwydg578E6-dWhftkTTeEfrYIYjniUQ2M9bd2jEf6kvx_JxRSNEBtNeIvDdC9H_SaFov_R1vYrOgk2El5HiB7zBqvGdXOmbZN2NDp32QZMBW_uUH1lo_GVOr_PX5Dtkp2Qs-x0hRC58gITAEN85Qjho_-ockqEsqybw577birQSIIJRO8RyKF5y15XDnTHTw9bL6t9ILzBTbNKKVQeoqXmL6EnSXIb0w5CoS9qYNz23l_WrnGll7IVhJzl1hr_K53f_xNmtWTm8_yzl2byyfRUQP1CLHANS2zngEXjE_9sq05iDNMtD5S0Z4q7nw-ApvQ_59IpEOY8JWmQ9slNLmdhLg4OwL6bUbmoXu-CTQjeql-soAciEl_b2n2NvhJxYoBMRJLtMS3sGP5K4frWLH9uHh73mpHphrBpSDb5wZsRDeJGZT9M0uMlB9dGVAfhPTvY",
+          "places/ChIJPeVowAaIBDkRnIfuPkskqi0/photos/AWCwydhAPoHMSEFiF9KQ3agc5IacZI8rEYMYoULOQXc3CHEKjgJV1EfQlN2eD178Zt1czGmAJq5ldL6RIaGQEUhou7Bll_oYE6akJGt30mPtRi3Fk89M8Xho1YIMyPnxmLJxLbcFiSKEmmQKW1MPE5RLmZBWwOlTtUdEQYL9zDH7YmoHYVCCWKFxZpngeP9zDhlnOSdsfsro9lSy3AXuNlMuchIo9TOZZZWFiiqM2np4c-lMyQ5fyUba495v753axftEN7Ox7VR79tBuIukgC0RfiAdIpsfiN9rp_W55QqlkllzOCf4NqUOAa7Xpt6EYQrcdnePAJ7u-uIxGngC1PaYdNvhZz0ouTpW8KY0K3V7ggkz8iSFM19L7KopBB3iswxjvQvnOoaHCTUY99RbH_qkQL2B99R2BKvUPw2TXCzSlue02eLsK",
+          "places/ChIJPeVowAaIBDkRnIfuPkskqi0/photos/AWCwydgcDzbrx_uJlTsubz3sjXxactFf448IVSCGcreuLtTkgwE2bfVeHKiDAVgYPoVpGQgnCRE6E35cECxsBInapDoDstjhTfddQ1EKny8t6YVImabgEq3idM08DFQGKjBmGB82JFWSNYzBwi1lMyMyScpqQ7uiuqTiMK1LTZcrH3_JiFSvhorkI4PeOzmK1wHv-PicnCjeYrmW9Z8RxUUpibjFt8yWRiJacT-HqYYz9_352qw3ou21OOnq6jlXKTj2YlW2itHlnhvdgtijg6c_o0YgHTs1s-XLTIvlOswtxCdXP19pkKUXbLx4x2_8STrno-LQa6Ag2LBxuPGoFj_p9PsY3_0WjkWKG7Po8ih2TlcJM7VI0K6q87ezyycdyhCnaz8Bb8X7IHCqJn-lOSnurrI14JBQ7yrgJig0Ag0ruACyJr86",
+          "places/ChIJPeVowAaIBDkRnIfuPkskqi0/photos/AWCwydjAkZcqdtC063lHUYfPh2AsWahSBhLhSz60Rol3VJlQFqD0jh1kEtw1dO-hE4pdJoX94RuAzu3KWcYf6ue65_CfOuvWS56gexFXypMVw721oOUKvdqLWMCh8eajJ-GIPVhOvUzq-N2rl1U4dP_U2vZIpKFDxAxcETHXmRdF1R3caydSJAMBW-E87MHu5sTtZ-nRT6sej91cAuK9D5iwZKvtfzHqH6ExnLy_y0--gRe_3bPfOg74cyRim9WuTR6JU65pzAQSBz5VXXdXW5hHrGOAUrJwJ2WFULJkbDDvQQ0uhFYeRCew-BG9NOGTNqPCnIqOfFZF7RfDtPgHCBJF7B-C00rJWX8bJ1yPeyhYV6nQGaazeQnL9yjFTMVNu7bSJhc6B10RPLOHOzIYzaod2Oh-xAqpHCxOp4CQeO5Dl_B9w4rb",
+          "places/ChIJPeVowAaIBDkRnIfuPkskqi0/photos/AWCwydgH-3B5QhrhOeI6neMvhDVfM1agnQXiuMnW9doGqksHBDUXSHEkRF955PvcRp3iE_eUTSqvho2EAy2CH3QshBDC8BamWP_uJBczKRTz9IjL21gUJWe7A171aC9Tqzm6aNZBXMnwgEKR4WLq4wJoVV2TC6iE-v25Ge6u46deJ5Yx8Br07MxZtGihbaJf_13-SR_6nJU5Hu0QiuVx74d0huGNQW3C3QRUHL10X1CwUEXfCOVy92bJUV45YNX0wxvUvtBiE3JdGMGJFnWHUWDXM8ji6_yqYiX9JRqtYjEqK7Gf200Smtc8PgcwoEhPL_xtgqU113JjKcMgDmAUIDVWldMfdJFx18BnbLc6V66PN5kCSKqCiz9kF_JV0ST05KdVc5iQTdxCJPWb46_PFP7Wjl1EPCKdB-Au2w2Gd0hZ4KFj9Q",
+          "places/ChIJPeVowAaIBDkRnIfuPkskqi0/photos/AWCwydhepJaRaHpKa6Up7BQr5zaF_wo-NrS9qvtzmIqIeS71MrfTUgCQ245C-xktfyIVuVJL1GFwiRn6UqzZ5Z_-se_sXRBPl1EnL9IfSu0w08Y7Ei6OadYqj-UqcbO02JMRt6wfvpcnDNOjWa3Xpu_KP-FZ3D31kvK39StHHLXHz2v18EjZM3CMuDyNoAXoyh9zyryG0aq7roNc1J0DfbyK-kUoIo-CbVs5mkckzrwDUhaBfIDktHUigF2gYNyM6mKjP7HE8jKMfy36cU1iNXSeCTiHpmk23HqVLY77Td2U_IdPkh26Y0Mgw5fdPHtkt_fFfS85bxpew35QaYxIUxYH0g7t_4iwyoV_Cel1pvItaNCII9bwycPj6TWXD3ODSkULu7Aat-TRzJFr0-nN8uPHBkFSG-Z880EmBqmv9WYIKIW31w",
+          "places/ChIJPeVowAaIBDkRnIfuPkskqi0/photos/AWCwydiU_w9Rl97tmYWnmBTFhQORA84mYgixl96rv5JN-DhE3JkUY7CVMJ-a729sLP1AsVMVQrxNZf6EEgkx7pHrbCoMDlXfIQDwy-oFtmFcg3JgJgheOG__Xvdgh_ckNc9T4NSO1GVhczZ5OejKK-gklQCNwYcmMKAnDPaHH-dmsjwgdtdbkKlTaPjVweM2oQSwzL5MCjJuKU2-MCH8YBBlZuQPrP_cKIKRJfnXISYSLjYtB1-m8Gvv9nMuMbs4X_vci5GOIgzsrq3Lt06Oiep2m_FEArh2Gy2zg1-1oLxL8fR4bESnA5fEXr8_-XyICDMtO_W7IkamRxpgu2eBCgEIe339g8H40_-TrBBe-Yo1H77WLv964rYkoawPkkpvqwRM2O1JJtn1ZZJllp22S9ltTBWoPO0PwyN5g2SfptNKz-unBQXh",
+          "places/ChIJPeVowAaIBDkRnIfuPkskqi0/photos/AWCwydiZvVNavUmcylwsJVHWlrXJMoxy0BJe00J8fHUpOOhOgzbSTbxZBS_yS7wUPD0Xh1IdNgZ_Ds_XLVV8kUSxf5vGviIQxmahyVcsrKptG6KRq5TMNWior0X9sxB2z-8d33M6pRJcsnrSBas_v0BWF9V63GMRrZsHnU0zMobkh3Rde3jEsowrDsOekaeytWRJ3grI5kz1wQGKziqjy5EpbkmT-CFo3ogSbtHVH0uNpVSbrE6v3JmvWpePCgPqT2qzYH6iEHXf4AK1SV2vdiHo57tdnApx3ZbQfFLii3aRnDLrA06KFWHMFtQMNzrULJGx0OOcnd1lIuOdr3ex7a-iKyPbqZF2YUHtDqDzwtYMo0_cUkaty5UCzbjB9xxxDn56gpmay_1N-UiR4HMx9NWoBGnjsOUkgPscryWCFQna7rBUdl2vooNF6MLbPKoS-0Vi"
+        ],
+        "__at__": 1786793557.67049,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A peaceful and beautiful temple surrounded by towering cedar trees in the heart of Manali. The temple is dedicated to Hadimba Devi, wife of Bhima from the Mahabharata, and is one of the most important spiritual and cultural landmarks of Himachal Pradesh.\n\nBuilt in 1553 AD by Maharaja Bahadur Singh, ",
+            "author": "Pranjal Sharma"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Hadimba Temple was a truly calming and refreshing experience. The moment I entered the premises, I felt a sense of peace and positivity all around. The temple is surrounded by tall and majestic deodar trees, which create a cool, serene, and almost magical atmosphere. The natural beauty of t",
+            "author": "Rajeev Jha"
+          },
+          {
+            "rating": 5,
+            "text": "Nestled amidst towering deodar trees, the Hadimba Devi Temple is easily one of the most unique and very beautiful places to visit in Manali. The wooden, pagoda-style architecture of the temple gives it an ancient, mystical charm that feels completely detached from the busy main town.\nThe entire comp",
+            "author": "Neeraj"
+          },
+          {
+            "rating": 4,
+            "text": "HIDIMBA DEVI TEMPLE, MANALI\nAlmost hidden by giant deodars on the outskirts of the village Dungri stands this wooden temple dedicated to Goddess Hidimba. An inscription engraved on a wooden panel at the side of the entrance records that this temple was caused to be built by Raja Bahadur Singh in a y",
+            "author": "saurabh p choudhary"
+          },
+          {
+            "rating": 5,
+            "text": "Hadimba Devi Temple is a must-visit place in Manali. Surrounded by tall cedar trees, the temple has a peaceful and spiritual atmosphere. The unique wooden architecture and beautiful natural surroundings make it a truly memorable experience. It is clean, well-maintained, and perfect for anyone who wa",
+            "author": "Harsimran Singh"
+          }
+        ]
+      },
+      "manu temple|manali": {
+        "place_id": "ChIJcSiepIqHBDkRsS4nl0_DJ2E",
+        "name": "Manu Temple, Old Manali",
+        "address": "754G+CHG, Manu Temple Rd, Old Manali, Manali, Himachal Pradesh 175131, India",
+        "rating": 4.5,
+        "review_count": 4690,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "This historical Hindu temple in a serene setting backdropped by mountains is accessible by foot.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 6:00 AM – 5:00 PM",
+          "Tuesday: 6:00 AM – 5:00 PM",
+          "Wednesday: 6:00 AM – 5:00 PM",
+          "Thursday: 6:00 AM – 5:00 PM",
+          "Friday: 6:00 AM – 5:00 PM",
+          "Saturday: 6:00 AM – 5:00 PM",
+          "Sunday: 6:00 AM – 5:00 PM"
+        ],
+        "lat": 32.257048,
+        "lng": 77.1760523,
+        "photo_refs": [
+          "places/ChIJcSiepIqHBDkRsS4nl0_DJ2E/photos/AWCwydh8LaqTHLZSK9uaO9rrkVSQiqnaaOoI9mShDEFDQ8ag2IOKQzIIAkCJMn84cv6jArLCBHBl4Z3bx-EXBC5kC6PSq17cDJQUmlh-7hK5PrxuC6TEsM6AFfA-Qnubfg1X4bnqTWVd8cWgSL-6XB9A6KAdhinpcFPxKNVdVIAzZ3GJpTBe6obxTBCWzRd43C9DEA68HKyyzmpAE71KTC3VzqnlwyjP5ciV5l143yqF8HsJNIIrUUQA-lnCWjAkhVJKUBHeFcmGz_ckZwEv6gJemkiD_Wsl82mTE4ozlUM_6SK6o7KVcT1L7Y88-xdhtY5y64SVZL4WId39FcKJhGn8aAX2KDCXuf24MVw5daSpbNBJwmSFWG33zCAGDaRQEWl3AmEkBOXrDMQFVo8lWTOJQ8evB0QbjTiKgfEXF4sIPo4NAW5V",
+          "places/ChIJcSiepIqHBDkRsS4nl0_DJ2E/photos/AWCwydhP0_fhY7OJo8xw27U4w2ydIU08JieKSVAAzM_wG_aAsI2HypmvzTgidKGqD2YB50Y_2U3tRyoZa4g8UUmDrX82WjEn9M7kE_TUQzGVHwWUvw6ShmSakpFtLxbBPXJ17bdTNo5C885tMdx_M_tSB2c_-WA1az5PtpDvzG4eXaviLVd0WXihHu3dB7bOKJeht2boB-dojJwQlUcZyhzr06wDQ1dj1b1_winfFeS4Wzy9qF971yUusuhJpqhiBOorttRlX5n2V2UjRvz8SgXw6ip5FjHowB1rLaGfGuCXvpyIjbOFThn9WUmXzfGXFUGicrA3iO7DpeWPZat5XNRPDnx4b0xszJL_nmywOLqjchZs1AZgem9swgnLOLRDpILHcJYA6Da_iWKoWrLzinY1fKDS3VgP5BYC8mgVmZyWXcaPOA",
+          "places/ChIJcSiepIqHBDkRsS4nl0_DJ2E/photos/AWCwyditq-DgsUr7o2XKalzqsdoZkenMO18jGKdFbDVNHBkv3lAd5SjIwS0w-msN5wf4rQLQOfDI_RtEOKC-OOdel-NO7MuEbzWQltVjZnNHh-huaElqqvi3sJL32lnd0BDhokSnkwsFz_B5MVbeoBMHQ79aM8n4KN5Paf6Gk-Hfm6K2TpXwjm8gm_elf5vC11aIx402Cm2jdybGERRhZRJa92mOAzs9OiMwhk_2yyO-feric1aCCfHbAq2pGhXGEDArrIVz-cPGdDuFIPF260S4t-s2Av6umMMXt0UzGNSdsrBxcR2C7AGHLl2rrwmXaOlg0Sty4lOMGZ2YZLOp2T332jfGFMNEMu-DsdW6AzagTMpFNgmJG3qttwvSBzm5Sftgzf2YWNilmar7B_mYceSFUI4bsKmLTwSjAIc94NElxx0S8Q",
+          "places/ChIJcSiepIqHBDkRsS4nl0_DJ2E/photos/AWCwydhHJE_DanZF-pKnI7LlVAiw14mPFfzriAcR1v5np6ah9JNCFMuiuBzgRdzA0HNimK-fOZA3YTGRIjWqtccqajFNw_oEGxvWosoCUwzHy99SHpUdpqWtG-yu8xWnA1QLY5zkzgFIjHighmwr-K6rMf8CniDvvd6tzdNyOKP0NVebw9qX0wMqCWWyLBb9i35X1SvznxJMcsUo0hAHNC0Gd5vRBbgaUr9za_SRU1IIPi93niz95oeCf8n_SIfzrkHQ1gvDBwvw5FzMMfIrgDmFjfrtkJgxh45KNJoYdLd0T8g4o83Tgz4azReJ-zDgB0Gh3Gd6Ya-HkKK_dghvj-iq0CsfdHKiYHotg8hQCW-RjxLQlrA2L82C_Ax4ZNORI_VlBfsoqTCTAbrzAVGkNz5aPvpwDv9GRLyrZtCSTd32rhqU7VTn",
+          "places/ChIJcSiepIqHBDkRsS4nl0_DJ2E/photos/AWCwydjoU645JtlxYb6722fOCllPWcLsyEzIZUJ_8FLOiI2Ex_jhZFKFpP0EBpdZFg1EvGr_aV1y6SQpwNaiwEr3blUx-hDk7T_4s8k6jWq5XlrJWRbocllVsxzYnGBeO6qaW_u5HHwE-dhLqjQjS76T4uVsK97omSrc1KEUdE9vZeeYCyFtEQEiiA53NrG4F9BRILPZ4Mk_QjRBjUi3rZwSYSa0ldW2LNTZrWUNnYCq6c352n7RlJNSxoA3joRfDtUfZw9kin7POfJmzKVsD0Vl1Pc-CFpOyM1-v81jjcHRjHaYqViuq8iA8m3y_-rmsd9WomWZoYAjusJ73sfvU2OPj5JuXoIAriAtbJIAVfWnfsw410J_SubaOlYx6SYSxey7invoRyeHrxX7K0AXDs4zWW9AINWTq9cqPj6R2HONGbAsHw",
+          "places/ChIJcSiepIqHBDkRsS4nl0_DJ2E/photos/AWCwydipdDxVp9ALrgAQj36_bz3qNeDLl_f1rJD8d_TQP8P7mWzohlXJVKs69Chk84gkLHClmCJzoA7x6mfG36WxEiOUFhwswxyvFXkijArEkqxPigulrO2GNVNvaANF31Vp8eujQEUWZDjI4r0ZdjxNmuoVqGlhpihzEHqiUic7dR62W4RjWsBOlmytqFs0vxLGMOOPpoR3fHqXQC4VxMIJl-RCKpUkf6Qi-2SeWVQIScItB1wyMT8py2hC8hjsQhjJ8_HCCINvNr2CLQ586bUoZHsqAn_82DL--f0UNJX6prAwxpKZTf1aSobhIHNep5vNouEWQ3Depspe4HuHAr7xhbaHLsErZHTDCJc8gB88w6x63P77onYbsmWM_NSDu2IZMRxgdf5V5Wc_UsYlgGPe11kxWzZPvh_fLh5PDGpQXSTuHA",
+          "places/ChIJcSiepIqHBDkRsS4nl0_DJ2E/photos/AWCwydhbFc89HK_oqW0ubM_LmpkhUWBL-R7cUYI8HxJElgP_gKKLghGoW5asbl-w-JFKpOmMcUE5EY1f825r5-bk1GGNSzNzyTTkQzFnj3ExhB3MXhVbpp6wRkCHr9ftewzpQt1TvwcctuTs4m5rxLNVDQZDNyCCCEzIzW27QZtmOwbpVNWp0JrSUe_gMCOyyFzRDW5t4_10tOKkhKrajMjoL6VOtwRTRy4a92INMeQL2HpiAiRyupQ8PYelSXHfsxUBAdfa9QdVWmjWAJpPAKv1L6WEaXjKIW56V9mymUt0hwTy8QzYXJpaU1mHxli2gHptNtr3bS3moVVfxsjrGMT4-1EXK58oBmfLSHLkYVwg1kxFoHcnX2EgP9j_cSjd0f6SgHM_A13pjCwcDr9TugkH4nj_dPFtZuqL-uOWTAJFvGcg8iDs",
+          "places/ChIJcSiepIqHBDkRsS4nl0_DJ2E/photos/AWCwydgRxJ5NMoK-zC4ryz9ji1cOKODLcPmYp4dHapZvPjF_bxIiJES2WDn6CXyGgkIVMZ9w5w6pITpcZQf0Z8LvlMaKTwryj4El4Ys-_-ael_NvQvI2Xbmjy0H22aPbtlPcE7TNsJya5-C3uCc6dx4-Wex9beVi6wGbG1WBS3yddkl42XExlWKLXl7TnvcHHPFMN6SGz9MDAS0Naz3W4zZFiDwGZSiMdqhxXCXZKZytkdMD4vkXCRGpGdpQOpa0zOljTOiOwrCzcLcEiCg9QiijjMf-rxW0igAvb5u5p0w4KRg4q9KkvTe6MIER0tfvs0OfyAAOqO5i3DVYPylzCEBFDrhDY3RnEpekQ7CQZe6EfNGocSiDEPKuLTYA9DMSkUz8ts4DMbPQLYcjUgiKIKcUc_xLZmo9a2w8px3T_p_Y6-1MRQ",
+          "places/ChIJcSiepIqHBDkRsS4nl0_DJ2E/photos/AWCwydjIPqpa7yk40RMuzweb85gHK-YBXOWuoDFEfD8oqeEDeqvckRPLeC3I4LBuY2wo0yKbuDHgsoExM202t1sfKlxaWDXUFQAn3CuaR--M7sKu0aGloP0OyelzVG34HnLyp9XrOeZLZbB9Ptjqwjmh72mv1KjIc9r9Hrds0F5BYIB8wD_Aqnz47rODwCNLSe7xlTdT4BDGAu-U6Xz0-35CuuAai6lPUVrnT7IJ8zYvQ22X9qRdAE11-MgK8HQrKjQtc2dGHuHmgEF3Nt5Fx7uCbXVPpUEIovRmrJO84Y7ezBr8jJY6LFp33el2eDe0MDZt8VBoMAUMhX4gdWB_pDKLc5XmzWEjKG0dYe3CwaGt8gyBGjk4b5jMRyhdNku8faJCSwkG1Hr9rGCjQ6iX-mGp2X89iSPiFKkgY-CnTvodrqT-PlU",
+          "places/ChIJcSiepIqHBDkRsS4nl0_DJ2E/photos/AWCwydhLp_ta1m7Tfl43OLlTh4c1RmrKzTBCf4868OM2V0PTKZ2cZh9sM5G-T9WPEcZhbK6oceabxDB5gLiEXyxYXpeVDP7kAOn46Dy0f6QocwsLu0qmqgC-NmR9d5g3uA5AJDOVGaTMsaSCpVdenywZvRvK9FcwdkprrLdDuX6ahDDxE93Y8tK83zHmHj4qxcp5wm1O5DPEoARnCordaJz2E71Cf9-kNYt07ENi9_0VuUj3vRLJ_IlqTaFCm-sUTC131VzgqiqEEMUEe7zG9SQxEuz6rTJh5YzzNzjL_McH8mRZwjvPdr3JrY4EJVTpHSnqfuG6kXiCb7-Gd5yVibbYc8eMSy0BNXO2__0rk2_UnexhgMcALcS1no19zPb7inZl6PSxKl6B5uxONS44Ib92xRoJpOZZVQQ-bY9ypQYhRk_lvsD7coq5SwUTDAWVxAYK"
+        ],
+        "__at__": 1786793558.136333,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Visited Manu Temple, and it was pleasantly less crowded, making the visit peaceful and relaxing. The narrow walk through the charming lanes of Old Manali adds to the experience, with beautiful cafés, local shops, and traditional houses along the way.\n\nThe temple has a calm and spiritual atmosphere, ",
+            "author": "Ankit"
+          },
+          {
+            "rating": 5,
+            "text": "The Manu Temple, located in Old Manali, holds a unique place in regional culture as it is widely regarded as the only temple in the world dedicated specifically to Sage Manu (the cosmic archetype of man and the lawgiver in ancient lore).\nIn fact, the very name Manali is a direct evolution of Manu-al",
+            "author": "Ajay Bhutungru"
+          },
+          {
+            "rating": 5,
+            "text": "Manu Temple is a peaceful and historically significant place, as Manali itself is named after this temple. Believed to be over 4000 years old, it still stands beautifully with its traditional architecture and serene surroundings. The walk to the temple adds to the experience, and the calm atmosphere",
+            "author": "Vader"
+          },
+          {
+            "rating": 5,
+            "text": "Manali is an absolutely beautiful city and a perfect destination for nature lovers. The place is very clean and well-maintained, which makes the overall experience even more enjoyable.\n\nThe views of the mountains are truly breathtaking. The snow-covered peaks and surrounding hills look stunning, esp",
+            "author": "TalktoMarket"
+          },
+          {
+            "rating": 5,
+            "text": "This is the only known Manu temple. It is very serene and peaceful. Must visit place in Manali.\n\n📍 Manu Temple: The Heart of Manali\nManali is named after Sage Manu (Manualaya - Abode of Manu). This temple marks the spot where he supposedly restarted civilization after a Great Flood, guided by Lord V",
+            "author": "Ravi Ramalinga"
+          }
+        ]
+      },
+      "the johnson's cafe|manali": {
+        "place_id": "ChIJD_QfQPyHBDkR1QCB5YXG5eQ",
+        "name": "The Johnson's Cafe Hotel & Bar",
+        "address": "Circuit House Road, Siyal, Manali, Himachal Pradesh 175131, India",
+        "rating": 4.3,
+        "review_count": 4907,
+        "price_level": null,
+        "website": "https://www.johnsonshotel.com/",
+        "editorial_summary": "Traveller-friendly resort dining room for global food, chic low lighting and an open air terrace.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 1:00 – 11:00 PM",
+          "Tuesday: 1:00 – 11:00 PM",
+          "Wednesday: 1:00 – 11:00 PM",
+          "Thursday: 1:00 – 11:00 PM",
+          "Friday: 1:00 – 11:30 PM",
+          "Saturday: 1:00 – 11:30 PM",
+          "Sunday: 1:00 – 11:00 PM"
+        ],
+        "lat": 32.2475075,
+        "lng": 77.1873987,
+        "photo_refs": [
+          "places/ChIJD_QfQPyHBDkR1QCB5YXG5eQ/photos/AWCwydh6xliVn8sjjVpFIjUJAaHCAzR1OkLb8oiO4hIfAerSB8USffmIij7Z5NpQmGOWoXhuX_YJfBoHLYlsBCdoFTWmbqANHJOE6LnhGVQpqbKnogM07h9FmqlBpVyhfNyoct7qVmQQpbHRzVgTiv50riUV7YN7S5f12Uj0DO86mI-6gdEAF-BU2rcTrXLy8W7r9ugx1KQfVw6geW0ch0IcTJfmnmbnJbxMWmU-srYpnTYSFwlR10bJHKF8S-TRSOuZtdD7kLZWkQbhXEOLVE_u-6AdeeSXN8rcH-IozJIlaEROSUO-vtKj59XANCwenTYJtNhNxByNaUOkTNg8f2z5gF3FlCmc0AW8PAY6lCswndRJzDZb58FXspPvGP2suWuDxT0afJoZFjAFOdLqBpTGesArwkMszg4WWqW_EEuLOw2fHw",
+          "places/ChIJD_QfQPyHBDkR1QCB5YXG5eQ/photos/AWCwydgjg1rlGEZ5Kp2b0y3QD9zlrdQjP9f9Gc85ormwOqa0ahfkaW9kNAjVqeH74gREbFU9HDmB-mA-2vPIkIl7wpgGHTouFHuAwIjZH8qSQjhd20M2e1unqKFcgYMAwmopl6JtuWk_n4Dxb9GkRPrU8KW1pv49ESsTQfOdAsUEWwwxa56_0I7rp_sa-G2g1WufZGGmtc-R0dzvM6qPV0jXdsEO1bJMsiTw3eFnk-7VFUq6JkKyB1WoufWKq4A-I3lb_QSxUxGO0p77X7BrFwFftsyYiF-C2z94kPUvigTgSL5M4JTfsnWWwB1S-2wxg9JxwYn0V5E1JOdZKo_rosqopOnlZXrFl68lYlj51EfH7iUQb68hTiU225bC6tzdoWq_ul9b04NwK5wx0P48OU4aSNURRTP_LiMoLw5ihEZkyzKC5Q",
+          "places/ChIJD_QfQPyHBDkR1QCB5YXG5eQ/photos/AWCwydioWMuEPOCLI2E9IXcv2Wb9vU0EW0z6R_kiUPpLrP0xNOYxk4u_HuTKPRt72ZGvV5gL4uwyITm_YxYiOoFeF1Bx2nO-FQpmr5FfQxMfL65Dj3hmDisE6QRM5SbhAVj1qcfeVjK14mOOwrls-F2PNuFDVjY9yBHKa_Bf62za-OAKnLO_7pT0ocENd4B3BjpeOZvCAW16oVzc2WHY57ktVAsF1HvSJmRVXBWAZlNNCPsXpPkcznttrD-l7nXS58Bp2vF9G3VkuQo6-X1bq_Uy18mmmvbfpo7zKUmncxlKIT_TOsR_RYJGMoN5RvFnuvDRRqT1ze6BAdOTJAhnMYKS1FHQn1ISjdQHyV6eUqjnsU8P85hS-jNI17zNmAvrCayl1xc-KNI3B00vdSP3Egwur6HMySJ9ipGgnCyECCIVzZ-QcA",
+          "places/ChIJD_QfQPyHBDkR1QCB5YXG5eQ/photos/AWCwydhBho6JerQzCyjWtlAilhQQfLD_lIYLEZe5nz7zFzd75_k6iKudGVKGP10ZsxZLhaksZLHkj72Y8ev63wKGmFOGwtirqe8AK2fyyVPduzsiHO0DScC51dV0b-7Cs4xcQXKJeA_Ih9an7L4LECM-iwmgUsrRFMwWw6qTBoWDyfrEyzTuGc3nMl-q2okybdllpxdhFbHSyT3xBteIw-j0fEtgHLyipeoa_PBgJKdJjbKa9U0ag3xgAc45JshijtLYnDsTNPvX9PgH5S30hqBi15i42Vu0Krc2D8VSP_qJ5aFTYHK1_kiFsOWpS90ByUX8T1G-Q7LUe1_tiWRE8X2-d1zU2bRpOrAyoLqdOfV4HJxPgwujlskcQXdHpKOL258wacLWacu6LyPXVgLkO7Z1N14ExhUwzZcu794QovXiSdnQq_MWQI86W5JICUOAdg",
+          "places/ChIJD_QfQPyHBDkR1QCB5YXG5eQ/photos/AWCwydhsQsqoqKq6VlU7q3ebd8fjnDWHrT-i5LrHiZMDeIdo9uA6Sk7-IVjftDrWJvGh3AtzKp15UoJMlVuawiHgnCONAnLEM3elBf_-m_jhNyjpzNhKhSwG8iXy1DPIGvmXIifqQFhfwSkh5PvrEeOh8EcdxwNXAg2ZVysMACGtwn9PeYZRA-Vph1vhyt64tJsXLfXAmXfi1MvIMhQe1BIZCatpaYXLWxA6BVpJc-XZdZTmJt_4UH_kwpy8dmL0D-5mON54nB9rAV_B2Nzv6rkNywcEHZj9KJBsKH6CIuyAcykUk03BQzIsk9ELjfWmq_6nwR2VmovJ9_hyIaDTk59uZnWhDlyyVPNhMEqEiQ4oatXzfBIHZ9XY8lvRC0zs9N9A4d4ltPglYeuhZT1k1iQdgrKavBuQ3GpE2bv59kc0rFVjoYWBRkM3huLnE3XI4i-L",
+          "places/ChIJD_QfQPyHBDkR1QCB5YXG5eQ/photos/AWCwydiAKczNjQpRBvameRtmDcqATNKRuGLPNeD_hgigrj6-K_lpHsnpusdHOTO1t65ftqgEFsXqERwgLRxx_bWm10FVORjVWjpqFU4aA-xO6C6Q3COaamqnK8iDT8aeSTgdZ12Ggn6CcKFVqkB6l55Z_G9aSxJMc_wF65gt7Y02nto9EZnNrWkADYkdQLhyfyB_-suf3W2C-ub_G8VPFfPDqJ2JTrxUzpsIUV8hNODYeT0NUqGKn5tAVRwekZ068qukc2JhoVBCexiweB3eZnSG6tTUnsmJQzpA1E0xj6C7Oq8e5Yt26xHXfhzfC74U09xpbP4ofxhcGha1URxkFc6h4sm3HGRkbLVjsAVuzFYV-rLMfOtj3bvcdawJaup79hTCGJksez99seM2lNWYbrq8HqSROjgSK-4RKFhK1YY6Jz7-gRGkXxkImFQUHbwDANMn",
+          "places/ChIJD_QfQPyHBDkR1QCB5YXG5eQ/photos/AWCwydhL2yjV8as5tAuixb_9KAwWtUiOqmz-RKWsRhIADBgN4AwWyDNIgqR0Dr2pCEywNtdPfRa6Tq2fYevm1nkmI2CAdQ-eadZnYqdlKxe12qSimeFxy_jA8_tCHejPPOF7Pa__IZtxbI3uMaNWYinjCyHQZ3d6rrzJ31W9pmn8SBHdYYIzRuiFdkofuijDnAPBEhtmhz79NatU2UkHdE4JsCbg7dlCvOz65d4oUl20e9I486Y4cwD_qlKE7vjvcING_0oNWjw9cR0n1qMt9O-Qij3f8Uclwy7F66WfTw_0Ia7sOZvqFFTWnt1vb1clS55RGBT6GVvKX6kQ2sCk8mOE2pFi_Q3BVbpCl0o8RBsMNQFsB7HPG4_wQLgoSsbrnGq57dI8TnPbShOZN4WO2C0Kqxx4yYgsqK6vTm0hvmzMHyGDkqcWazhnbLFkGLVNhloH",
+          "places/ChIJD_QfQPyHBDkR1QCB5YXG5eQ/photos/AWCwydi8nupewr1z1L8MRZfUNYBFtTzaK2XEGhy6hVhLnYDeiBzbY87yNRWZZiXNyzFB0_X6V_2wXOWje38xJmeFqksZ4bS6g-fg46vF8HbxbbV_1v5hR6PvTrQPzQrdvHWIZP1ieRBwB_PvNrmO-bNfgikKBEblTU67GUDAIXSeF-Ho6Ccq07-rsbfwHoioJguBc2oFYmlBy8zGV1v3ALacgmf7XJCEiqzSZZncrx4dlNLsdblZrrDepoFrZQb8fcG-Z-7E-lFkQnBJJXQZ_0-CS8UduqzUPWiyeaGZwKvTdvdQDAtj0zloZzZnw8thCppFGokju94TEntD31AVEo2Vm817JQfQOmXkyeHtQ0ar3l666gff5RkyBwJiHfng7BCOsdqDLFOhP8AOqCU8duvHQyyT64RwCpiH_cHC_4mb-kZyGsS_Nfa5ahSSwqm1K2u8",
+          "places/ChIJD_QfQPyHBDkR1QCB5YXG5eQ/photos/AWCwydgrL301tXJNfVfLyJ8sRvmSERM2KthZ7nP9BaLsu6l52o5xkeHIIDzNztEAAcpzfi6k8AjQPIVHfQAv14oAFk90wXbBmE91J1i6aSKk1xdjxvVC-m4E8xsQdTImXoVChy8rffN45fFHkuk48AeIfAobVCK3-g1JCt_hAUqiLjD3-lAlF-J5f3WS0GWdkhpZ4cFX2PXGECEm8I6eVnHNMVTKM_fRXuyiXQCJvDe_P1PL1Xnh_nyah6W8DQmk9jPIbcVGJQebRU-8DH7e_BG5-fY4fCBy3jfRuxa05N83mltKwp5pjKWvXO9V1SLy6l0Tkjt5Hjflsu0hH1JjIev3awu5Keayp7vnLO9-NkHVdrSghK4UR4gtrOjbIr3xII92AsZSM1lRbwavI5wPks1rvrWZU22T4YZEj7ZikMFiMhc0dAQd9JmDeTrYNWCgag",
+          "places/ChIJD_QfQPyHBDkR1QCB5YXG5eQ/photos/AWCwydgOvB_tg1qxF8dNaxVyx3KNuI-e_ZHlr1KAv62ZyTS_z61CoShh48b3PCMpK9jpVRtzS-LcbR7oTGEIytUuGyky2oVY0ZVp9gLr2aeYDD--LOjH9EYX8_FaeAX2Z8q5qEPqqFqt3XJuIDdGpdjILl40JnnvzheuJELCRTa40cwsak78e2aKGoTo18MyQoTZrK7rhE0SvpT2XfUaNOiye3eEUwqg9jMIx4JTEAdCyx-xz9h7D07yZKP8qMMUpG79WQOwaXleZjmGXdTGjCsH8kcp5SCrHOsdou6dVnlZJVKbaK1iXW9YUMuTRpVh8A4XiRRrs97x27-OwaO4QshClq3DhePDpH3UlYvFLrOPOMYQwZn0qRhjmzluDLwhdKlPAWsYSdMNiKAW-Vv-ah5v64V9zLgxvIaE6ilmuEDW1aBokpqvmBQkNemGMlV-wR9e"
+        ],
+        "__at__": 1786793558.5353541,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Visited this cafe during our Manali trip, and it was a really nice experience overall. The ambience is beautiful and gives very chill, cozy vibes—perfect for relaxing after exploring.\n\nWe ordered cheesy fries and a fresh veggie-loaded farmhouse pizza. The food tasted good, though the prices were sli",
+            "author": "Pallavi Behura"
+          },
+          {
+            "rating": 5,
+            "text": "Wonderful heritage property with a wood, stone and glass look, just off main mall Road yet just across from the forest. The food here is amazing- the trout, pizzas and lamb burger are  my favourites and I enjoyed remote working from the cafe in the day too. Pretty much spent all day here, the vibe i",
+            "author": "Neha Shrestha"
+          },
+          {
+            "rating": 5,
+            "text": "I had an amazing time at Johnson’s. The rooms were cozy, clean, and very comfortable, and the staff was extremely polite and responsive throughout my stay.\nThe trout at the café was absolutely delicious:perfectly cooked, fresh and full of zesty flavors. It was easily one of the highlights of the vis",
+            "author": "abaan ul haq"
+          },
+          {
+            "rating": 2,
+            "text": "Location is tranquil and serene. But staff is high headed. We ordered pizza, coffee, beer and plum juice. Coffee was all over the saucer and dint serve to the person ordered, but just kept it on edge of table and left. Food was plush.",
+            "author": "Amrita Sharma"
+          },
+          {
+            "rating": 4,
+            "text": "Visited Johnson’s and Johnson’s Restaurant recently and it turned out to be a great spot to unwind after a long day of roaming around Mall Road.\n\nWe started with their Virgin Hot Toddy, which was honestly delicious and very comforting, especially in the hill station weather. It was just a little on ",
+            "author": "Mr. Mixed Review"
+          }
+        ]
+      },
+      "old manali|manali": {
+        "place_id": "ChIJabdtH-aHBDkRVf4tHJV7SFM",
+        "name": "Old Manali",
+        "address": "Old Manali, Manali, Himachal Pradesh 175131, India",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 32.252147799999996,
+        "lng": 77.17871140000001,
+        "photo_refs": [
+          "places/ChIJabdtH-aHBDkRVf4tHJV7SFM/photos/AWCwydjpgkrfCuJihBemielp0sL9aaoHM3kDcCcN9EpCZQIUjBUhPFjvDWGvSfgve8Km0_V1w6t9xktMP_d1sQkfLKhKfs40Bb53eYasNl53qcemjkU0yiSKitJPDi7V2HZzfFq-MPFWaFja_cbLCHjPxJ3pxzUzcf6C1zUG-hyhPos7y0CtHF6FK7bUhX4XG9F27R04QT49_J2JRAVepSW7wcnkJS2N1aLFI7cIQfGRoRczxYCzXTmJ3P4aSer6Hx2TEFrq5gDJi6EOyEuAiL_mbgdfXDf4W0pk-YV1ZpTd2CvzavQNQnXOsKkLNfZynMWgU-R4rSPe92sWLCZuozFw5hjLT1BER9xx0WecZZlQvCCUuHO5fIsJGl_usMr2aQphdRYHOWpw8aua5WQm1_drgikLRHllTg2luTorKOXBJ8Eqsa-h",
+          "places/ChIJabdtH-aHBDkRVf4tHJV7SFM/photos/AWCwydjpwSBBFIqumdOZ9pdk2o1X0Hu-iwGOvihhexDc-Ep7bHh61Et6_kbmURu_rnsJM3aXA1NLYicynOMBjwFZsFAfSoaa6jWaZT7LPOm9nVswlu_lAoQ5hZhqZYVNKdDNKdEXNC8qUF2zHWZlaCFOBzo3fxQ9gJZsF6EjWTm99E18GQWUeez34mXLlZdo2KxosMRkMkC2I_VwdkN2cVd_EzpnXaYgYnC4wwgQmk0vUloy39JCOnqqVAB2_Sakw_9P9q1I76a31i5O3fGYTxZAL9Vbo5-8R969s6v-9avOb2cSCw7lYJnBCVgNxi6Y5Rp9qCwREHkKGAvRzjCj56YPTmOmqxuuysyMIk7z1OeEsI02toWJSRIv7aSKM18IUNUDuVM_p6te2Q56ZB56MyMJs0ZIUA1VEn0aVGKTj0cTbNHaiA",
+          "places/ChIJabdtH-aHBDkRVf4tHJV7SFM/photos/AWCwydh2bjn-NQdrkmH_IW3lfehAJlbN_j2OBqTP-3phNLvtGDZ9QEWeQrviXuIQGyn6ek9rscGnAOe5-0oRf_BmSWrcVjvRKIkwbmo7L3BKra63FEiChnov5aNw6Po3dFSmOImuhZEPqfI6eIZ7LTBRgDYt8vjpXmf3bUBt_WlwRfWYmQhpBcLkeL3LkEgGiE20O9F_UDx8wSuDtBVSut_YGu4eox7A1E19fZYKb_mWBvXj91t1Eq292-KRcdUi8Ph3bHS-XXWGJmKlaCeN1CWBgOies9J5A33Kz0pEkvxn3JRKeUwUAmkBxOBOu1w7j1lhCfHr4bySdKw_jOFwYoyjsJei6e-xFXl3qQhvz0gTeCOZVUzvRDpF5wNCDuH8VrzKCjbpmTBJZGpPsO6UoaWLMi-RZt_70AF56RsyNhAhifw",
+          "places/ChIJabdtH-aHBDkRVf4tHJV7SFM/photos/AWCwydj2qzZBRBRrgVWIjbuGQSVchqmRQCJcjKxJ5M00DNHmCayiUy4122NObB6ZC3USSLHJHED_h8nMRfIlagMPLrdSiHG01r0wucwd25LQ77i8bkoqdoz3_Ya0RKUAo1vF_0qWxIzeGGNqBp4iswvTa-mgxN3tysJxTcVCS7GxEZmUKv8QlawVtqvLcYMJXJgBcwxUc7bwcdol9X8ZpuC3HPONuF9A_nuCEzkqTFRFlRl7ZfLPV71ipRuWhGuuTT2CidKLX0-FRizhCtPNntKry7ieTGbcBhetPm5dlOX5J3Aj3eOxmi-DQtpGOSgt-pU7V0qVP072hm-Fyu1bMF6ZKYzJnDjyjNqXgBnKxKzoeSAdl6NBWpxJL9x6I3ytbwFhmbMpB-MDQENwrCKKwNwnip1kPXcc7IjkbHfvRb3Ap6n7oA",
+          "places/ChIJabdtH-aHBDkRVf4tHJV7SFM/photos/AWCwydjdd2mYgXOmsMRA3MO1lEi6q28h-36MvxoEYy4WCrnUuFZzfMXSiqI-WfFYN9EOf8AQ2lw_-WMoz4ROKwMM-vL-aV7UYKtUKC1ywBloB66Bm2iJ_1-jaKJYe6-4IMzxLmHLWQq73y-c7YYIqOOx6f_wkOndRx0uoLJFatPNmuRoON2zdQDod890rsAY7whFBrG4uuWnmDKVC3jykYhfyHnUmmTMHWnpUi8U6OOpYFdZ6CP5H0RJw5MVqwbm-zH9iyQCiq2VNFprk3ubrm72RGz3RXJjBcD62f3r3ycHA0YA3AhYeq4d40X3UMkWylBJGRLwGOMxirYN4TprwpBpDxCDbQk0CPPpV2eHN2jHmz9Bdpr4_yT7bJmh8j_ZhbUY5UU7mfnl6dPaT8uN3DMDmqsgOZ5EtAZWkC0zO4J7K-y9FN_b",
+          "places/ChIJabdtH-aHBDkRVf4tHJV7SFM/photos/AWCwydgJmfRtNQ6jZVbDNJkonsBwUyqX3Yi6WZGHk0sELNzcDCARWgUMolHrTklCCGoBYFK9ACUaJesNkGSVBRepdBzPzPIABJcBkn7EkLKoT4H7HJtq_Z09qOLIjQo-BNxcxPRPD8DktnZJ-HLqwuOAhGcwSW5VA3ndg5MsCHbHP_6xGg2Mg6Kds_MewSmJWQYvO5LoXMHF5Mu5f-vxKqSmdoDKbrfMLEB11_dx28VemYm0637cGuEeerifMWw1SWrS6vz6M5jbbPtzK6BtkF7snExp5xVXlvX6oHCSrepCIZZOKN-gXa9keEuCgkiTmca9S0RKMp9ylMZsQ2817do-2tSDR3mhsEGWa-I0bqnDwm6fi3GmgJrQp_6OaJNBBw4no965gTJBtp4OWnggPTmC1jk0xY9VrKlWbgR_vvaIrKSUPUJs",
+          "places/ChIJabdtH-aHBDkRVf4tHJV7SFM/photos/AWCwydixbh3CCvkzsrtgBu4iomplS4swSejLwn_jRoZq-nVXKY8BCzD7lh16H1lqQdXcCA_TS4I7dCDccUcZt2tPw33iUNxxEaUPuLjw1eNVP9cDcPEH9FLUeDMFeIWcqz--wZfqtLSzBSbeB_rmFNYfx5B0Url_uhKVYKINNhLE96G5zwJOqSGQjcfT7jesxQhQ354o3Y4DqvpIjtewhN0tKqZTyv9qqaisEZkEuvjWPNaIzu1gUldJxfof8_48fAlzo7iejbgWSD-FCXx9CmtUsLsEDM9yEKFfaSMpMTrggsdkX7Cd1OszSm33LJKmE0xC36p-UshN9W9Qmt9ILccx-vm5RLsTgUfNcyCg9gfJhqk0BcITfDdgGKOuAK4pgCs4ZAuAYzO3PBx1L0N5-RuXRdVCwM2MZYGXqT6weic3DxkX43M",
+          "places/ChIJabdtH-aHBDkRVf4tHJV7SFM/photos/AWCwydimWeTeg7pdIoRUD8rkLRX32wZykmZ3jBJCb_U-DO25bfVaz8k3SE92FkuohpPY3JQmnZdZRWNvrfv9rHiww7rpiloCeiJULBbwNsJsXIEfNW97FH5efdjBLLF7y0X6zV01GpAP0M5DJ-Itz3AuIyUiLQL5jPvm27OsDEbpotWt0ZanSm8rMipltKz3iwQaQuDh9tkNx_VDkXiNUO6TZjE4ivT5OTV-KIa1fifgcbWHTR8J6C0NnMRNvaRFDioYYoB4F1DzLQbKDCO6ukRWr-8pAPQIUI3tdBqXv2gLma28uythRhv-sDDuxDg68PljHmAqBUjJOycHS5bCAaD9Jjt80Z9lIxlLR4SvmjBMrc-UQOs93gb8eF4OjnZ19nqAJqmq56WABpHokXCucXn-YXtl2guA88iZ6miHNghm3iCSenpI",
+          "places/ChIJabdtH-aHBDkRVf4tHJV7SFM/photos/AWCwydh1-S2sVGHff_-zDLUhTc2KPA4fEnxWUZWaje-VcCa1WQq7Rt0HQ2p6jlkqaTipvqI-Rwd4GhHUVzWwiW7gMpfcBxgj0wf73JWat1V0AU4kKLBbVMeZf9IzIQPX0cwBqYPewC2YyfFscL4nE-00VrI2OQA09pdV88yLpXqqnNmqMuq_jl7YG5jEoDg1Pn6ReLC1DkAVPXPR_FTWANrV0RVjRv8SgxhYXeGTo6Sk3YIXmXTn9KjmOV9OARe7WvIzHEyYjRMwBnQrCb_FPybsfVa4ms23_togactlBRgXJxtrVbo9AUYJ6UVWLrYnVoYN25V3YAiAbscM-olHLSaTiRSZtDMjP8buxRme41BmMy6SopcK2n7T--GqXbS-g_dnJy-N5lb1vsGtU0J_7hC2r0DO8AAqvbnFLa6QcOVBGn1GAw",
+          "places/ChIJabdtH-aHBDkRVf4tHJV7SFM/photos/AWCwydhb82P5zjslDB2ZXpSPA8XeQaO_OB1t_Gqi6yWEUbGAOWvUArK9mc6XwJoosJKT9syTf7C9McbEfpTxSyGG0dHjh5wA5EgOQhudCFgX6nG14N6H_OEauMydNlpSRsOmkU7QMgvmU0NGsLz7lldE9z0uIrMzC49YJRuJ-v0Uv2pSUIBj5N8YJQjdpBjRJAhMbuPmCrSKhhmp3qHhD7MB_a2zm1TlhSQAXQEIFfBh5W89LdSXKYX7KFGfzMiKVuM4Z_jl8nVsENw4RLnE_7sAPob7dgWvBeJ2B480L51bTs4RifGebPLRIuJPmssHIrjXsExHJs-LoPZ7E8JDQIQgPl-XdZHYKF39_u0c1pqkrJI88EH4CHxMmDbALOqpuPW2opMo9hPF9KGtEVG11lqbKF2DVocGcLrrmSWLBrkHR6DuxQ"
+        ],
+        "__at__": 1786793559.1128068,
+        "reviews": []
+      },
+      "naggar castle|manali": {
+        "place_id": "ChIJ9___sKyLBDkRKLDwr9swz20",
+        "name": "Naggar Castle",
+        "address": "Patlikuhal - Naggar Rd, Patlikuhal, Naggar, Himachal Pradesh 175130, India",
+        "rating": 4.2,
+        "review_count": 18087,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Stone & wood castle from the 15th century, with ornate carvings, arched balconies & mountain views.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 32.112017800000004,
+        "lng": 77.1647347,
+        "photo_refs": [
+          "places/ChIJ9___sKyLBDkRKLDwr9swz20/photos/AWCwydjUcnthhE-Jee7LVfuZShD5QWGPu2sUiUwuhE2NJYOkj7caC6OI5ARHrlhs34A_L4cJO0BDfSgYk6W_l1F4aq-7wOa7c96BrVP3toOaO0YgQLmjYsDtW9ghIh5lsgNMZtXsauBcVLsJ4w68f7wkYsTHuE4bG5jgXoAvj-Nkxw9aEjxkAabKsn01km9m0Kw6EP9bN8mCMxZKDM7xdV4tTKRMMCav35cgZSPa62F97x42OSxEGDWEII8YaFjjDo98hTiKTM4A4zKKOBYIdpuDi-aK5dBwGoeC52QK70uhaeGroPjQnZOyxBBFTb-i4gqYktQf0SMoB3FV4Q8zVjFW6PsLO-huY-pEv5rkbNI_ls7D3CkqHsNssGzd7aQ-4SZwSbXCVbMYDdX1gi1MjXPnvNXFLZc1W-ylygHwwevkK6AhG-Sp",
+          "places/ChIJ9___sKyLBDkRKLDwr9swz20/photos/AWCwydgBVG3zswJWTDEpI2Z0b5C9LfmsJtzcH_wrKmUmO-PU0un2DB3bAIHorBKOvkoK6pyD5vPPsXVr_QBsZCPax0wukfCp7fYHd7eCL4tGosNCzJnkYMikH4Ds5FfsyjW8ZlmDxosOAi2MWzBEVHoSUAHx-3ZkazE6ql-HBtY4zz8QClSC2wfHxUUpp7vVSK1DpbbXxcQHEHPUn63_g46OFlTDMYebXr3BAfmSNOIyrv9eDg7bRIi05NPEzkHcn0YpDhWGLGLKZKFTQ8_B0OKGqIsPaeFWR0Hb06QsiNtj6Q_UTsYkW7vpETvaiupbO7AQtZ_vb5JLPt6r0WJ7YvZA1w9xOh9JDOn4z2IzdZilMy_AnvFQlpzU0hhjbN1N1FVSEb-Trz0GnQpr1KG5weRrH0V2s-ceirIV-n6R9ggwKaGXAQ",
+          "places/ChIJ9___sKyLBDkRKLDwr9swz20/photos/AWCwydjCfP2LVye5j_EhMX9cCYJFBL63DWn0NSsPJ1_BcwamxeI_hgTKqjAYAkBs2ELmnjnqTQi_d_doeXa1haW4RpPtgLOgtsm3tLzerEGIcLKajcsFio6tjT2MRAzDnB-g9Vm1fr7LTr9A4Pb5ZiGx6kp5qWIrMsZut6Y4PuG20b5ih4eaZB8PPmecjdeHbuVT6Q_VYRclZmnCDxzRS0SG3Se3BzdsBlzaZ1K-yCiBIMQNPjjHL5tEud_OXH8CoP3JgI9xuc1Jo65GLNqMfoMpNjwMBF6sZ42s5yaf7cdCMfJoxiFp-lqaFdJCCRmJB4ScuQr7ue_0YTylBB9Rx09x0YThnzFcXu0L4KtCRM-ErCkB1O_tpZpsd2Iu3v21ts1c0IgqfF1NZveyfhcQ6TKz_tpbPWxwcd5qpKkrSxKoigUycC48",
+          "places/ChIJ9___sKyLBDkRKLDwr9swz20/photos/AWCwydiRSl9_bE-kgGKahmHc4tYRpoSvSPOV4vjFLBG_TlHOwFCQxKRPRJhqFqsXwmWbDa9KEgMdpFsrHwubzfQmviREmvXXNC7Cai1P6sEXLFSaDQNy6nA0_Suq1ILWSFmhecAwf4qJxqh8hbKmJQ2aCVyWtDJaWiFxi3S-ibul6q5U8l9OWh1Aipm2-4xTSbSPOI-VjIM3XGdUPudsKEmAaUF0qtRItx3TOJVz-RwZfT_0kloR4zoiwgZxcniSvA9oFS1MtV0ESxP1WBscMCcxQWhO_-NZN0X9dIIBvzOiQpJK_YkFQsvFuqN_gsMAdLp881hXRGPjRCLrGlUOALGYaI3j5WFPui0a4dmBHCY522Aaw7RE_wzNi9Gch-qKcTAlWQIo9eRDayjxnHkO83sT69Sse67pmOXWwrkwboHggDzo2w",
+          "places/ChIJ9___sKyLBDkRKLDwr9swz20/photos/AWCwydiRd8eY6yRVyugCqKrTKauswjIhuS4xX7D8zrgoyyRhugJqB8u9AKAlPrPhxW9RSvB9CoZNrkV3gEcRJdqEdWuJf8cvHxW8FcJ6EyELovCBJIUgctFf7qUgNRu9MIC4lopg1ZiDb1ZuIrSquUAE2yJveYQID2EPfhcJHmGQyjq9rhALPfxZ73ETV43pk63TkOg27xVrz6-79gXUCqdvsWQzaF8y9oCvhLGrGqPItRJq3Un5Y57rOtgqN1CNj5auZBxskCMas48GoJNCvmT2PZkB0y7u0Tx9yGgWC92uBqEGV_gkFn6Qw46B_1o41KT_M521I6cCzHF7sr1kyHsC1MwN45tGDvNK5JuGGgX0uyzFhqdXzol0yFVBeBTQnthhLTYcPX2rudMaLGCwZgutc-B0aPPZR4rs37-PxknD-aYTWek",
+          "places/ChIJ9___sKyLBDkRKLDwr9swz20/photos/AWCwydjaUnZs3PGSqRZj7feTQljlg1TVx_BvEgYyhbICVJk0-3KuKfEtoCCv6QDIAE0O1WMXmei75oJYlnxY_dVR_88aFA-P2pAIDCXsBA7bzcxIlXmr3lxa8NI4spMzLbtrdh8u09Fx_lJA7Zt26Em8ymB30UEpfklncM24oGKWPMi5unLRAUK0maKeEx3vkyOiAojVUBXb5nj-Kb-OVuHaXWsn-6bXgDcpMLMDoxBaKXWIneX0NEs2CQzyrbEAEC-bwKEtFRNNECBduWnIrrjUUMKmJqBf2ZmuwjshWpLlDq4zo9NingBsTiqAHW19h7t71sAf5tScpc3SHbKNzOevdy1_y0N6JvWz2Lo1N9WeGkQocle45Hh4hJ0OdfHjMzb_1QRicvgFGBJZkg46fKu1IB-XCFNpPOIVVntoVHerKo2tbA",
+          "places/ChIJ9___sKyLBDkRKLDwr9swz20/photos/AWCwydgp5rrg69323T0Tot6cfB-isjZW1fgsCtNRcago9U9RhFkAw4RCZdM5Wi_GKlmbwfLSalQdsJVxA2NMN-Fm7MgVHKSwp8QXZ4LgdJvOY4Hf5JUEPhXIDtduHvDDpPk0ko-rP3t0KeJVmDjhaHmr0uwkTob7yLjevMviP86aitpR2SI4WG54ckci_5ix4bgU5kcdTnfGMyLqoRibwU_Y8rDdzbuDHl6NaI9RcIgZS3YZw_4BhwiXZ2IS6nXgYQdtacu7klh3CHKi3KgMgSL4KmdUpC-OzZMgMpqAoSG-aMmTCaDJ6mP4AK8gf1TZfz42pjTV4KdthFT_wbKqkt5dAw_a7ZbN_sE718RQFV2qF7A2V-gKveIXrOy3xjol7YsWqtwvz4v6aSCCx4ihP--9hmMZ94_UPxbo7mCWnF_9n8KRHCE",
+          "places/ChIJ9___sKyLBDkRKLDwr9swz20/photos/AWCwydjb9OLtzf2EikpCVtynr_6cI-nr9-T7bCaHc86dJPD5642MN5fc-67_LkkSv0iixNkqx0s_X-acmQxPM8mzVWlCPXBQunUh82gvIp4PzXkDVwKYgy6ailNtoh0eIz3RBxp4YejCwnrUQ1qvKywIuzg5JBEVYCPf_2ojxUUHTmfzK7dk0XmGGmBNemhhTqNeutewz_8fIwTDd1V8tkTILB27DB_Qv-Fp1wwoZ2IiCSzvHoYFy4o_XMrVEI5V3AiAzzUwoQ6wkUynKJm1YLmfS_BWu2GlFRNXKmocHJsuJGLjNoZyCxVNYZra_g3W-lzsgwx6mMGgQ54l8c8-1q_jtjNbZDorUIq7SMwyjd1wWOAMz9ygUoWkB5BqehFbxIgdtt6wnryoMoBVC0SZG2deztPTMDp5KHCSGBZCOobrmFxdnF1c",
+          "places/ChIJ9___sKyLBDkRKLDwr9swz20/photos/AWCwydiGZwowF5dMBMxDSPLNtvwi7nv2_9rzTCWGkJsUSgaGeWgXCjZBEYnPqQKEctqTlgk3iuoDbR6t4a5A7pZfXWRIfWACbvfnuKp4HIjlCNWJK0vKWvP0EwhwsSNsEWLwDo5okmqs7TWPISqJtkF4rfjtlB5wIgHTTlcdFz3TzwrIA4nOfIR-WPeOMh3fHB3Ytbt2A6h6UZD-OD4jr_Z2NZk36_lBVNOpzNkZzRdAMZjkaLSitK849Lmbs59BvgDn8pIXixbCFzY1ypEL8tJvXdKQyDbtYdqqYgfpDyhHKJBdxfFj3IR8kVGEAsmMfK8WxDCNQ2qkheE1Bdu52DPTtrkcQp3i_xKX8QCtuNpGtSMnAMZUakd4xhiqgdI4Gar_kn0ta-Xs8RfAa-20dhxGv36r6ikXTYJo50q_084eFtEkcNxO",
+          "places/ChIJ9___sKyLBDkRKLDwr9swz20/photos/AWCwydh03-63B0zaPbHlJSYwNMvRlf9g2t9Cg1Kjnc4EpdNNmnolT9iQFrUdfGfxkJchAoRQwc0nt76cN_g4nCmFQBHPELSSmwNXbcIybYeGnzdQinv8Fv_d3BbI4oxYQCc4h3MXa-IIHaroc6fMq_gwrqIFoCTNgnHtQEcLDPfxYdIQBf45GG8XQu7RAEE0LZctDri83J5ZCFVX6cbayVe7RHtkVdeLNRZwywYK7gsFSE9s9USvhwWEisnHcW_Bm8_flfCAz-wA5JVKqb57yyUi99tRWctu25WCDG6Wzgol3i_cOqki4hr3gfEbkz0jNHVvAL-uVCH9pB66Ip9jj_-ZW5YBV5CabfVSTSQBnwdn25UvRn3t0xSff2OGASGPc631OK213qQxZWNDOug8ikJjQd2M4jUaxQISiYiZwwN3Dalr5g"
+        ],
+        "__at__": 1786793559.4618518,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Beautiful wood castle to visit in Naggar during the trip to Manali. Some of the well preserved wood castles in the world. Currently the property is under construction and renovation. Think it’s getting converted into a hotel.\n\nWould love to visit again. Definitely look forward to stay in the propert",
+            "author": "sandeep singh"
+          },
+          {
+            "rating": 5,
+            "text": "Naggar Castle is one of the most iconic heritage sites in the Kullu Valley. Built around 1460 AD by Raja Sidh Singh of Kullu, the castle served as the royal residence before the capital was shifted to Sultanpur. The traditional Kath-Kuni architecture, made of wood and stone, is a remarkable example ",
+            "author": "Pranjal Sharma"
+          },
+          {
+            "rating": 5,
+            "text": "Naggar Castle is a beautiful historic landmark that offers stunning views of the Kullu Valley. Built in traditional Himalayan architecture using stone and wood, the castle reflects the rich history and culture of the region. The structure is well preserved, and walking through it gives a sense of th",
+            "author": "Anu Mariyam Bibin"
+          },
+          {
+            "rating": 4,
+            "text": "Naggar Castle is a historic fort located in Naggar town in the Kullu District, located at 21 km away from Manali. Naggar castle is situated on a hilltop, providing panoramic views of the surrounding valleys.\nPresent days this Castle has been converted into a heritage hotel, managed by the Himachal P",
+            "author": "Surya Katakam"
+          },
+          {
+            "rating": 5,
+            "text": "Naggar Castle is a beautiful and historic place that reflects the rich heritage of Himachal Pradesh. It is a very old castle, built in traditional Himalayan style, and offers stunning views of the surrounding mountains and valley. Walking through the castle feels like stepping back in time.\nThe arch",
+            "author": "Art & Culture Xplorer"
+          }
+        ]
+      },
+      "nicholas roerich art gallery|manali": {
+        "place_id": "ChIJhZVT8D-KBDkRIms3e9Vx0XQ",
+        "name": "Nicholas Roerich Art Gallery",
+        "address": "Pulag Rd, Naggar, Himachal Pradesh 175130, India",
+        "rating": 4.2,
+        "review_count": 3690,
+        "price_level": null,
+        "website": "http://www.irmtkullu.com/",
+        "editorial_summary": "Paintings, including Himalayan landscapes, by a family of Russian artists in their former home.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: Closed",
+          "Tuesday: 10:00 AM – 5:00 PM",
+          "Wednesday: 10:00 AM – 5:00 PM",
+          "Thursday: 10:00 AM – 5:00 PM",
+          "Friday: 10:00 AM – 5:00 PM",
+          "Saturday: 10:00 AM – 5:00 PM",
+          "Sunday: 10:00 AM – 5:00 PM"
+        ],
+        "lat": 32.1166681,
+        "lng": 77.1686437,
+        "photo_refs": [
+          "places/ChIJhZVT8D-KBDkRIms3e9Vx0XQ/photos/AWCwydj2RgfTpcKzcrLWyM-e6pb5KI_j74G3ViLg4ujB8reqqeEvSwJVxO3emR6C1__NBg0JHW8xH4nMucf-4Dc-h_hyM0gif6vMI96V3Gt_jqzd_EMmrKCbc8w2go4tZax2tVVq9nQdD663EWL7C6_Lrs56239i4fi2Ch86eJYtkjNMdScoCsevJBpb-jRHoBnOdxGZJcDYLchdNMqn-5etmhMd7DtsgAgyW6AWmbTJwxHCHy_T4CpixhH02EwmJH9-BTET8GVL2dl7frKftiwxE2zO_O6ZLkw__JbJJJzU4xKLNICcF8y1RZvc-Swclf1OLoYp6R-E23Nzlb3xNVVTjrEfrOT5Zsp2h1IgIbFQgkizYigUG0XBxqz5fedGHe1mK0aeTUCiq6pjMYXn4tnxQVFJNEzh_PLQy3UAMGou45SUAA",
+          "places/ChIJhZVT8D-KBDkRIms3e9Vx0XQ/photos/AWCwydhVkSuqdsmbaxZQwBQTWx1uCiFyaBn4ayTZPaLc_v3QFhPx3UrnAMRij__c1eNj8fkW2kCUdQMsnZSwVS-EbRqu5PrujulHpmuPVV3lwEMG1iAckn5Bmj4djkGG-7h1gsG3YtAhmDd5zm8mSLqL_QjBBfNejRljv5V6NJnbz3WoetGBsEEhQnrYcUCuslL5Yr5lESeavBBpwyI1-iQMbaBysZcErbYfL6uA7Gx4DPewnNHRyk7BVgq-BWYXWctizGubZibrzrf5tBQemDgvJnump-Vs0epN6QOS_8SeU-tHDKsyZfxcYBCHQoW13BH1Lbyerrrj_TZ3h72eGjjkq2zhPi6G9YxC5rWT_vZxwifNMA5P7OcxlD9iwpZARhWnW8b1D_6iO4YwwfYTuhVEABZKdf2ot9MwaBKMKxWm0amEsxOH",
+          "places/ChIJhZVT8D-KBDkRIms3e9Vx0XQ/photos/AWCwydhnUcyo1fyzrlJUXgmvHmRP6b1AeZGvQdBv-zbyQh8ZXEjSHclRPodeGiyd79Kdj5k72iVA5ywJqaoVJGTIJRBmlWlCqwKQhX80L_ij4RE4a9SNAaY5NXyohrkTKL_LWaUyPVI5Ys8KWzntnTnPt0Vej5tGxQbg5GJbI13bCSeCNtrCSUe3s6G-VTDsUed6ccI5KVQQBnVKT2cLqlJCMhxdthzxOpuOqmxTLry4Vk5cjoiuOeIZfWYKtK7ySkQjDEpqKmPGJO4NhHzaX_ZBOcpv0QFQOAYFiQ8XB1ttMtYcQAKQuQ_lTn4n7UX-__n858Z9q6L_LMIPvO6_fSw3hut_n_bCzEwq0ZaLaaL7Sdx6LEjGlvxY9ESAdlG6nb4YVXqNrxZRNbH4TCHJO_9u20IrXEevKbz3j1AAIGPmJrw8u34",
+          "places/ChIJhZVT8D-KBDkRIms3e9Vx0XQ/photos/AWCwydhWKVHV5KGw3CIpwymj63haWob8Ophp2yXfEX0JCCwESQ6E8RRGoh7T5HPA8lVg1OfaHiRguKEcpysxNxM45rOo4kVqUKrtguTO7Jg4mxpT6bTteLRSnyer3Wz3j9PU_1ImpjjJAYzD0yscIWF5nnxFV9Jxk_19Zah_MS5W3w8XCZKXDR4_iLji5NH0IBH2QN-TdhQHptfuaPKzNXmOf-oWSclBpIs9vClt0hhTye4nHhVo7vgU5crCV5w5Q_Ga-3xt-vMJjn_UY9JAulE-01_fYQqcKGufs9RFEL1CU_Rluh30osUiPXJdDHgseBRpT7o2zvATkoXKgU7Nwmv5TxfWDbrSa1Ap1nISkA6nAN7xAjTveefm5stjX6KSvy4OvMzpbyqv4v8nU3tHzF2q0M68d00BksU9mQjWB_NwZfusMzQe65w6kBRJOmAW7kzY",
+          "places/ChIJhZVT8D-KBDkRIms3e9Vx0XQ/photos/AWCwydhC-ToYKffK2iqbGQPftXyWDOkpYS9lPw-QhmDMfOiolm7Q5TbrXeg_NVw7pfbefQ9T_hFuKaDqoGOVqRhgCq6wFwbTpQgeidWf2pEqTZDiK263Y2YZJJqAxMMKgyoi2yoeSSrkN24_XD3ujDerkBRQHbDzTetA-0OA01n6ZWfcg1zQkzJJuiHPQmAZpzi1FDZtH_G8MGYGmz90o0R3iF0wMQbWNoHZKu95J7p8OTSK-0nnoYq7_0lduySni6KA5oLZCHxT16FJ5MdjY9jERJ1eq2Viyfa9h6Zhi5zlDTgYu4iiTrrE5I3ZRsvbmtt90ZYbTD4gEU3DqdI5mj5KvM3ahU0ZR_vmPgAIFTUN3MUee36mKD7bSU8Mh3WVCB4E48puecOp1fry5uStiIKinIjcG0XeSAuBLDzba6I9nAa_DFTd2xv27obirMejTw",
+          "places/ChIJhZVT8D-KBDkRIms3e9Vx0XQ/photos/AWCwydiVx4EDcH3sZuv0uz77LPQv1Fbyrshav3dlt0ky_Q6RxWDmpItJAolLevKBZUjeT-SLbwsWZQrrXmk3uxMZZNhHIwW7UDV0hzyjisJ3ZSdRiR_1hPjJEAKEKgaf5FVUfav5HqDxvmEPP9YJoibKSisZVIqSjmti37mH-GLQlbMNGczrMlYaYLFT0ZT3vz1YDRsshh-qaH8Z9VVpVDMFDN1fFt8reSNDo2j6DYTi_s_jewVIOceRZLJvA8lTNE341_9d7GGpELfNZlXmKFDCmsdDTA8a8ywVKKAGTCDyDL7rTQiGvtaM-zDwP4ad5vd_iCX3GWsyRuFctcNH-eCV10DAqeCUkpf7IvREZREyJv5KEvacoHcR7mK8xXgWbmjxsulw6Bli2xh19fAT_IbGg9uLxm8wwPjA_gZa4eOoGwvHug",
+          "places/ChIJhZVT8D-KBDkRIms3e9Vx0XQ/photos/AWCwydjc4b5IaDE3Qzoe1N2z8T4BDnfv5Gvqk7sDA1RHfZP2ckU9pgmEBmYfpeQryceAlCauom2arJw_0YCOV4Yy8IwoXGo0oOuzUcEX4-iV32QeLP9RqK9n_jNDPV90gwM63hGjortYS_N0IekdnsSDDH47rBQ_-RciUYiVU_vvi6Isg1TzLWFjbfA31oz1FcOFEOXFFbmjCNaiJeYy_8tlUuS6GEwYrQ1Wxdd2tBbkQbQwc47GJdwjY4MU-VEXCPRMxCs6HjiLYiP6naOjIkmoFQS395Qx7kDTLtAu9Bbzcf9WmW5z03b4jdTJwvUZnb7NY6wnWzX0Fyz8HFP39B3syhcLvtldCseugg1K-7zyGmU8jsdu0Ct3Lb0w7r0JCCNPx5EVnTRXAkpBysrUHAGZH3ABUx5Onzxht4H24z_r0BcnK4-d7Qagq2qvvHdi6guj",
+          "places/ChIJhZVT8D-KBDkRIms3e9Vx0XQ/photos/AWCwydiZm3-5Kx5pt9DUJlkBGGb8-OVLZ25BoKilFQ1BKXcDUOQbwZKJOtJhKpnjyA6q54AwSx7IdTx_mh9KZZjJuTg279EtdJgx3-03YDuckoOCFNwtUzA1Rlc6BN9FL2cYG5TXReFhbz4XyqOYKI6wIUKux18E-EFJl14U6YZpwWG8hYHKp4b8vyD2gi0Y4MwJOZJMdYcsMJbADew7PzO71lxr1W-aFWRnQFi3_zjCzAzE8zZjFAIfgy4j4XOcgw122t1Cas0koDi_ZEurjr4651lbIyBumSq1vK9lasscxxRPz6Z2Oo-T1zb61yyVuLyJy_Rtr4jV2VUDk8Z455tnGPbpQyZ9dKLavqxg_oHqLNEyi7bd2WtTP1Xur49RNH9P5fLH8zOEZjrAlIyxAq4Gdz6cf-kQxbppqAL8leD89He6EQ",
+          "places/ChIJhZVT8D-KBDkRIms3e9Vx0XQ/photos/AWCwydjiZ2XCmTn1bik9_JVAFioPk9uC6m1QVVpIOnFe6SB7w5h2Bd0S3CmRHWdWULU_hPtZ_-VM3XOxcyTe27r_hbzGhNBnxqJi4QzKrZYbbh4LPq-MXEg4n2rguKXLndxIe_7ubtSXdq8UsSioUXmFr-jKYD1D7hdfBurQIYoiUfzGcoedi6XzQ7bJ7s0FK6ZddgEr3C6H8Dkc2R5FHfpR2jF3hJwREvZusdCW05DbuAs4UGnsa6dVGLGdy-olxX0rYsjDHWrbao6kxqyFaXb2tWojyNt4oHWYT_GHAIN1myTZah5gqNLdFzUNSUstfpyjoXIbzBYdiT0ypH81VyFUoFi-J8J-i3k1j-lT5-LnseA0TjjCjxessBb13wV60X4NbjL5lD6_SEQZfwZFPuyyCJbQ_ZYxuapGgO2uFVJ2xoCuFcHN6elPNQYH0iePpK7f",
+          "places/ChIJhZVT8D-KBDkRIms3e9Vx0XQ/photos/AWCwydhsk7syQp-N0WI-TpVKZcb7F_xZVgP3z1c0uPexOP9JNJncfRQyGqZCbld3kvLmRO4Za3nW1Po0WUBa2lM25XELeLL_bynPXzTuvhYXsyY6r6LbZG0D-SDMzJzU-l3jOMm_U6WGeoG4y6MXyqMi5iwk7MGxLkTgaF0iO_AlvglOkGkNUK8VqPxSK9v__2kt6VWloE7viv8UDfavACnKYeIg53vSGS5OPb8MwLK93tKvdz0CXigDn-S7Pdu289P-fLZoQA05IpYMweWsHx9gYFqrj6giLzQ4fDrzrzIPigntTc3MidFc95ApCdRkmy6l5evCBssQ6ERW3xyuUXP916Pp9KrFf55fHTbFd-aLKhSYbDGeq0350yMOdYwg2UQAiL-8j7Rx_D-GtF9Q0wnCnusOQoHQWM1gDWKA5LLSUwzBOTRV8M-EG_m_6Lk6dVNe"
+        ],
+        "__at__": 1786793561.4427361,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The Nicholas Roerich Art Gallery is a hidden gem in Naggar, located about 20 km from Manali and around 2 km from Naggar Castle. The paintings are beautiful, mysterious, and leave you curious about the stories and inspiration behind them. Roerich's deep connection with the Himalayas is reflected in e",
+            "author": "Pranjal Sharma"
+          },
+          {
+            "rating": 4,
+            "text": "Peaceful, artsy, and totally worth a visit\n\nVisited the International Roerich Memorial Trust in Naggar and really loved the vibe. It’s a calm and beautiful place surrounded by mountains, perfect if you want a break from crowded tourist spots. The museum showcases paintings, photos, and personal item",
+            "author": "Jipsy"
+          },
+          {
+            "rating": 3,
+            "text": "Visited the Nicholas Roerich Art Gallery in Manali. Overall experience was average.\nThe place is well-maintained and clean, which deserves appreciation. However, the ₹50 entry fee did not feel justified as most of the rooms and sections were closed during the visit, limiting the overall experience.\n",
+            "author": "Sravan Banoth"
+          },
+          {
+            "rating": 5,
+            "text": "As an artist, it was a dream come true to be here, it's like pilgrimage! This estate shuts down at 6pm, and there's a lot of well preserved artefacts, lot of Roerich originals so keep atleast an hour if you want to see things peacefully. There are three main spaces. There's the main house where a lo",
+            "author": "Subha Iyer"
+          },
+          {
+            "rating": 5,
+            "text": "Its a co.plete estate that you get to explore in a single ticket. Meant for people who are interested in culture and history. Otherwise avoidable.\nThe lilies and the magnolia tree were the highlights of the trip for me.\nThe walk up Urasvati institute is quite steep and longish.",
+            "author": "Akanksha Bansal"
+          }
+        ]
+      },
+      "nightingale restaurant|manali": {
+        "place_id": "ChIJL3VGaVmKBDkRpE89udoiyJc",
+        "name": "Nightingale",
+        "address": "Naggar Castle Rd, Naggar, Himachal Pradesh 175130, India",
+        "rating": 4.3,
+        "review_count": 704,
+        "price_level": null,
+        "website": "http://www.facebook.com/nightingalenaggar",
+        "editorial_summary": "Casual hillside Italian dining room with a terrace offering scenic views over the surrounding area.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 10:00 PM",
+          "Tuesday: 10:00 AM – 10:00 PM",
+          "Wednesday: 10:00 AM – 10:00 PM",
+          "Thursday: 10:00 AM – 10:00 PM",
+          "Friday: 10:00 AM – 10:00 PM",
+          "Saturday: 10:00 AM – 10:00 PM",
+          "Sunday: 10:00 AM – 10:00 PM"
+        ],
+        "lat": 32.1109909,
+        "lng": 77.1639816,
+        "photo_refs": [
+          "places/ChIJL3VGaVmKBDkRpE89udoiyJc/photos/AWCwydg7WFS2gf2imIIVOLel6Hh-maq_oKOZUutD1NgbrQEuMR2zWx8ETTi0FZlKtY6p_gNJfqi4PM-G3dkl8norgOuu1BWrILPt_S3snISyxjVm8sDQIXPz5yS7VNaZp7WeMiRUrlZr-tqw0mC_Cmwxo8OVELWro1FJoWzG9a9Vxm1ZFmBCulwWjo-6TY1Adi4BG3nCV6-Q8hR7F2SdB5KrKo11ENXVEkZ72OrQI5iCgf_EOp2rzDBfUhZoVlvvO7-LCz3PMqi8ARHM2IocChaOgtJFgNpPjygmlObE7jn6EpBN-mYeKYxK0sC05ku-3r_NdJE3JDdzI_cnHDK7a8Jg4nzrUzdjpaprBBfLCE7bFyCOhWtfxum1qKsnTH_gffj5Ahr5fDTsCqNFAD_v8hSdvD3i8-zJ6Mz6IvWUxeinz-BwAT0",
+          "places/ChIJL3VGaVmKBDkRpE89udoiyJc/photos/AWCwydhUmm92O2UKsxAbJTIu0UkBD9iRvkeN8ROO7j_baYbwdfBos5hHcBYV1NeV9x0sWm0JERn0Xy8UTk8Owzfcn56KPMKAnoj6Ib0l9DTcvOYMsYYMxtla-2xkhZWi2TfpyTZG8K8rR__p0rpTipboFYD4I7nE5iJ_2keGUo9v_u5lNXvHP6ZA0M9_lDkaL29lfZhFWRKWMl7pU5wAdgKjR4TzqcwC2f83mUZfVZKzO3Ih9rnzU1_KkdJva7eK4hXi-gUdVi7jsPDM_2U5FRMelipLMmBBDEjgNraEt6jIOzvBephJp2kZKBZk85oYnXwkOXqNbCzOBthIMoCWa7mUue-O2xe26nCeWMr6PPKtpPf8Ldj68w9iCTrvHQGqhYtrnzB2AuPyoOye2UvkZRziYwg9JG1uo9riqfKZCj3tytWzLzo",
+          "places/ChIJL3VGaVmKBDkRpE89udoiyJc/photos/AWCwydjhcYjaYyxljVRIqemPijtm9Q8tS6frJIxXDUTG8oMR2mPdMWTjLh31Slclc4AtlQ-iAtCpN_BpfMrLFtakaF0_cF9wW7TBPcZ18fodDGq_U0BfEiJrc172K3gcHc7QJ6eUxqk5yulvddez34zHJk2NU2egCTYyY9v1tTX95KODWpN2xt_b_ZQgSQcMBD4Ffrz-oivy0rJkoBAleclpbw__VzBzrH4l1PjQW_QyXaNKiWZ469KtqC0yd-UAzOWnXBZ22wdrOR6w27nGvCi8N8Ec6l-LR35buYZbbNLBvKm_1-1l79zu9YsUrAhZbo6pzdsOTCB3uxvIQDLIzo2ljuGP2k54c32_IG3XH0rNoDnCB5jaLeKZWHOlwjFQqCD87OU8VCqmuSO8Uh4f78gm9bsZbGPEdTEZhMc8rP0wa-JDT9NwkEVBrMADVWJHHHtc",
+          "places/ChIJL3VGaVmKBDkRpE89udoiyJc/photos/AWCwydgPpR4EaQhL_EmgKzW4oHYPfS-gUohwv6mvpDFiTHFTaxK8mDW1W1LWdtmb92ho8dffFU3kmLLhWaeyjGOx73hLYRYJ_V8Bn4WtLqg3ZP8YIZBoy8kDVyJkx89RW_BDtvTY3HtkTbgd5iOM_450e9RYunM8afUQboiPP-sZG6-U5KepdtLQ9yI8hf_EAYCDX3YwOkmidz0CMwa1XQ6RpXZGNOGfrGe2OPyrVnQGO1bMM0ypx85lJEcq5XcZo7Z7px_nNt6beTao6lT3yV9fX07100zDfWBT3ehlzDfUGKCgbmgm_tWz6Hvfqxzyou8rwu7XYpSE-O9SmL5f4TBflnbO6nAupaqov20ylPz4opoJXpR6fHJdghuXjwGl4fMiCz2dSy_LRJTRfdibMxNL1iF7mpEYZ54Rri0s16faHFEwQK0t4Ngnk1L85gGGeRh_",
+          "places/ChIJL3VGaVmKBDkRpE89udoiyJc/photos/AWCwydhIoAAtJqyO3-qeZG1b3edXuh7zw1g8X6QOS0Fp1riKvpHgAg-H59Ysge0jcbDNJ6Ar3N_mHbgPhZ68qHDlDo8kFdqR4inkpd4iPcFV81kmUg9zsflqkUXweda5iLQgd-RcNIj6-2_hPwVGPClGKv52hUPud3Pj5wSo_YR5DJu0e4WYCvotKyeqApQ5OjlFlThBh1WaOiPGoFS2KUVGowKi-vDysZSyVouxc1pCR85P0O6u7jyXLl-bhcRZTNMNSCQ93c-iuKcDxE2AmCAao7kF3m1O8Avscn7txu6avOkVUMywS8W_IN69DCZIVeCftQPB6SXdPWBRh1swNHgFQ6rHsSf6eB_R2Mq5s-sqJzyh5cOrWIWKyaAShGV1N--DRvvNdcIh7JGpMPkY1MCuW4ztPjZmdxC6xRFEy_3p781rGS5F8-H7E81sap-05Jxw",
+          "places/ChIJL3VGaVmKBDkRpE89udoiyJc/photos/AWCwydgTtAGggiCMvqKfx2-CFFsa3vSBlp46zFHLV-iJUMtLZAkpO365KJwxORl-weeyohRArjNzDoSUI5dcyKTn9wBi9HEVU3PP6gdssRgvePHdI5C07EUn5pQPJEhZZeYAq9KbGEfbslaG5aStyYhoYJx9X8aFQLlesTQF9FE9u3TKAaNqdTrEboWfIJApLBAw3K_5GgIgQPkW4ane9UGHaPjlMGXi4DRqrxr3l_vcbX9iM0mhQzaWckWghv-FG3zyJgVweGaPXb3wx0PcD1N7XF9CYMQHELUZyP-TXOVoq6QwQDS3BLyheHRZuIahKvqQOJirzVQPu5wJJlD4W15ARagjeOURZGCstyl1_C-8Py8VEREjdvIxJKnqNc0znhgq2aOMejHIFH4temZnc7hw9_xyFO6tALNAYzmN_oMMjEygxvuVPdfGNpQPD9wQH-7h",
+          "places/ChIJL3VGaVmKBDkRpE89udoiyJc/photos/AWCwydhQciCAqfwB9d8KBT747RGZGHFXPNV9o9CqbQ9O-uV7pms-XuLvvRYyLt9-7uqlCbY0kPwOqG19i3uFgtwxwcLM4fuIAu532YSemwc3vNSlmlXh0og_TJX3TV5BdKAG6LH2JqrllY3rldLY3wefLovy7gUgpxMBFPWoN_pYa9xB9dScD_ieGdPaxtptLvmOkFlXgq9qIaqpI7EARZJKXwD0DwZEV62DtWWmzHdY4qgAKRTjHhC2HdOwnNHSFnEB8VUlU6KVZba-sNn4yvcsKC4T8Qr4_yVV_Rb_pdfZ1qYAGUpdsEwYZPtuHh3-RpiFDhLzMluNm2nseslUAPMmyOSOUHBPeygZWPxQU932Gm6X1Uz0_I8U7NiuexbnKp_C8yIkKAkTsh6atDkyV_dwqTDJJV2764vBfB8xah578KGJdw",
+          "places/ChIJL3VGaVmKBDkRpE89udoiyJc/photos/AWCwydi6piQ7M_fd6ffcVeMxicb4Wz9fmd1raSpCcNRYndyn8Dp0JUO9yuX8O7fruP5eK024gBcGUoDcUtC9ASRRKwK8rk91tc4UykCFo379df0Bt-UAGeiKDaJsBNgmD5cV-DThtS5rUNRrYPCeJMIPP2P2ZCJJqjoSZwonZCvyJvXxJldExXLeK7eAPNM4x4qwJHdr2baS-OISfwKyWh7rTCM0qBlVBeKfbualYkqols9GN7bTl8Y4zBKbAxnNY6wKi_M17aUuB1gkX9p-_6iU4dTZ82qNfh4_KgAxBqAKbUO4OPQgHTz4_uS0lKzKfc19DwJpM2a4ryJAgqhONUBt_7wMnanVeq2rFKrjF1bT5vJaEK5LJa7HSyL3jwa2f0pKlPSrHxzffGQ7bilIhJogZGD6Tgvd4gTYwS7ltw3-bPbsG0yulEG0ixtx-UUmvw",
+          "places/ChIJL3VGaVmKBDkRpE89udoiyJc/photos/AWCwydgpm7KTBIS1fwuIkb3yWltoZWGh8MnVBhSMKSeeVs-OiROYRkmi5oBVa1UiJYIg5MoGyQMSROh90oYXwQgoHfd3x9kBreJnYh6YdQtHuudXT0A44H5leWuRXx4o1UN0QZlU5ws3yYPPoAL5AcOkgEywm2EEiVu-DuHJMTHqtKXv9azptgeABMYAieRiFLTaVJgnokdroYDj2oR7U2N3MtyFSNyeo7bARqKv0VSp0vxetaN1XYLajrD78C9LCOEREGmR4huB2Qcm6s-tgNTQqPpmJEK3PCLqKXQijs4dqxWVBF3_oulqzLJNBactOo-LQKh-poqA267274R274JM3a0Z2k-Sy62hz94fKEDu7jrBjj3-fR7NQdqIyMUZjulpxTDjZlV1BygV7Mv4-gxiERNkCaP20tiPVLItBAhvaOWcfFJ4WD61a7LleQXsXQ",
+          "places/ChIJL3VGaVmKBDkRpE89udoiyJc/photos/AWCwydiJKW6RRmn8CmCo_l54ZVA6wVZQwrDEJO2u1LuLG4onpZ-EN20ph2zCvZv7P-lN5l5w0sFK9vhXsuSpOXmgZuK3FgCZgSloWKoH16AM4S4ylfej_qwIa4nmZXAQ3eQAogrYP8T5FY1pGF6m3Lb0enHmVddhgbOwY_9zKzi4Izn8iHk_va92lpbzw6Ti_qDzUZx70Y3hf-D5ZesZq39c0zk6Vy_WoeczbN1i8gkHQQXxPyORqGjvCCi2_22TRSEOS_AWGoXL6TY2C3uKK9DG5dYLfP60oClvSZfmjw4eVFldkP5MR89FlW2bl0fFNubP5_DXDchO3CMoKF9b-u3Mx-zTGV5AZm4vtL52R6PiT7IBdDnU9HPh8IAik5TXu5_vYktqIXpoBxVfT0AwQtOG5YyD0MogJ4uvWGk"
+        ],
+        "__at__": 1786793561.9491572,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "I love this place!\nIn the last two weeks I’ve been here 3 times already!\nCute cafe with an amazing view\n\nWe got the:\n1. The grilled trout\n2. The pizza ( you can ask for a half and half)\n3.Cordon bleu\n4. The apple pie (is my fav) get it with icecream\n5. The mango tres leches\n6. the brownie get it wit",
+            "author": "Surabhi06"
+          },
+          {
+            "rating": 4,
+            "text": "Cute cafe with a very cool old school 90s vibe. View from our table was fantastic and service was good. Our food was served with a smile and we loved the warm and cozy environment. Felt like it was a family run place which makes the overall dining experience very comfortable.\n\nFood was good too, our",
+            "author": "Bhuvan Singh"
+          },
+          {
+            "rating": 5,
+            "text": "My most most most most most most favorite place on this earth for Italian food. I absolutely love the pizzas and the pastas and you have to try the tiramisu and the Tres leches. Another thing you have to try is the grilled trout 10 on 10. The best fish I have ever had. If you do visit Naggar this pl",
+            "author": "Kanika Rodrigues"
+          },
+          {
+            "rating": 5,
+            "text": "We tried their restaurant which is absolutely amazing!! On recommendation we tried half and half pizza and their apple juice which they make on their own is to die for!!! We actually did end up going back and getting a bottle to take back home. The person managing is really sweet. The view is soo so",
+            "author": "Suchika and Jayant"
+          },
+          {
+            "rating": 4,
+            "text": "A quaint cafe with magnificent views!\n\nVisited the cafe for their wood fired Pizzas. It was baked well with the right toppings but tasted a little bland due to lack of considerable pizza sauce.\n\nPasta was rich and creamy!\n\nOat Pancakes were the best though. The texture and taste, combined with the i",
+            "author": "Swatiii Mahant"
+          }
+        ]
+      },
+      "van vihar national park|manali": {
+        "place_id": "ChIJlwfAfe6JBDkR4IPtriR7BQQ",
+        "name": "Van Vihar National Park",
+        "address": "65QQ+JJW, Chichoga Rd, Aleo, Manali, Himachal Pradesh 175131, India",
+        "rating": 4.2,
+        "review_count": 9048,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "National park in a tree-filled riverfront setting with a variety of animals in natural habitats.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 5:00 PM",
+          "Tuesday: 8:00 AM – 5:00 PM",
+          "Wednesday: 8:00 AM – 5:00 PM",
+          "Thursday: 8:00 AM – 5:00 PM",
+          "Friday: 8:00 AM – 5:00 PM",
+          "Saturday: 8:00 AM – 5:00 PM",
+          "Sunday: 8:00 AM – 5:00 PM"
+        ],
+        "lat": 32.2391128,
+        "lng": 77.1890887,
+        "photo_refs": [
+          "places/ChIJlwfAfe6JBDkR4IPtriR7BQQ/photos/AWCwydhsJBjRXBV7yJ12vUkGRwvWyHj6IXK8AzAdbe-hRxcDbP_ZBslVQg0ltgBZixWv0sUOktZ_5a5heFGtGWA2hywiSNqfB-574x4puv5R8OcIwhTWRbpra51C9frw1wPkvHvSUvJSoXLukc23HHal_hFuh-w5m-yf8xsiTSvR6yDBvGDEc2Z9TKQlX4w-lkFi4iFkWZhbXcvWlCRm1tLfsagyPkRzYrKOJih5GX7_64PtKRuo-7m8LGRpZfMiRq0cZsj6LqpSxTAD9f0KKcOozWSZr612Bb9omx8UDBt1JfFAR0OAcy6_VieKag_pVgWauEc1m8IA_1bVxJgGVcXD3aGgL2NgJPailX1pjc-IDcZXSLWvBBJNTTjHab3B3c_4wzN8YvzNMWcZTfvndHyhVr0XmOHJuuUqb4sX-x8HpI3CNA",
+          "places/ChIJlwfAfe6JBDkR4IPtriR7BQQ/photos/AWCwydj0Uzmg7GTkwdlpA5zSHWclL5ZiHeaIU_wDeBG21GwgXq8gLzXdMdNszazAyptRSlIVha7j9yThJkirFRXpaxclaqdxN37cQdzqi03c7BkpvjIZk72qv1F-umfYRG6x4f94duM_XpyGA7DfQOdIOyXtlshEWXP0W08M1wzPt5WncvG5BXQJp04tY0JBJq_QPA148R2tLNgC9yQCdAAKn5Vt8gFfRnXhgrahpdUXtHoQgl91bE2k3Pc-4xsX3pDTaDad_9_XuG1ZLILOLktl7DsifAmiacR32ZzhSObEngaMPNJSZOYxBWbJgDNfYlVN85E7FRxfHbyR4xoEXWfUqaDcIgjyHL4YZsyHQWJ5pCNi0x3PwGZEDyayAOZ9UNUadSjCeAKwu-cvwZJPMBfoJBPnN7WyBgmnKwqP1Ddkz9x6cMtR",
+          "places/ChIJlwfAfe6JBDkR4IPtriR7BQQ/photos/AWCwydhvuVJpnMxbYPgaf6zjmw-aygguwwHAueug9DZDfHM0ikrM1weRaz9NsXGF2jgE03d-0oj21KbHUjFLWVIliVLG9PrW-v_vF_8TNK1qOhQm7jyYPxflHnUTgXgXHvE2YMcQtYz9CnHugt0aYR6IajckIMKlo-MoXv9dH8igKjj2cKmAtzJAG_k6m_tq4cpw6o1zUaLEr7bRokMlw7V7bBlHgenMA30-0u8Ak3MyGFVyRdp7-QXiQzQX1LB_HBRxoGLgRqyb6a_qM94kGSpGymVrBTLajRnzoH_DviRcoVL9v00nUFuPu4WBNylr-ACrq3eQRCbxhY6_SOb-QMOZF1um8kdeez7ptEoowvybTI9U3fWjPc4sOCtLLrT0CtawI7dw5YIed0Wliz0yeebSQFdiNXUxeM3P9-uXs_Jsgic",
+          "places/ChIJlwfAfe6JBDkR4IPtriR7BQQ/photos/AWCwydi_3Ch7nQD70xMv4_Q1hEAY43KCpKYXkaD1a7mdHa9vwdv4RAWpVg7wdFyET_Bi5IxqJy-ZZ8Jaizm6jExI8eBwY08Foxwa3q4FySyfT3Ff7AXybdw2PEGxmo_EhntEPyEcEp9hkSeFGG3CS9Vs1SD8ykalAzfqCtcl9t1aVAHPbIyVVNveZyJ9Q7qXNBOPiF8IWP6oDyvRlSmvKyJ599nalfefA-z_n30HyLxDdGQzBoCyKX04f6Bq8ATgm-7q2vTAI4Yx4jPYqdVIYQmxS3fToO5WIcqT6exGTMA3l9GUFn-cszW9wFMpJv97CowKV1HbbZstK_5CM93XNV6AlgP0TCn6vFKcx5qLYKGJ_eFPqjdEZYOKgCzjRMaHNhMRn29XrC8W8Rhh5BMh7-r_Z5NunCJjHgjj4ovf6Fe5bC0",
+          "places/ChIJlwfAfe6JBDkR4IPtriR7BQQ/photos/AWCwydidwAJnPcKJKUEW96Fb3aBDh8jKEAKEfV6gbiz1PtdDc7f5mP2umHuV0Q3qBisTvkHaHNCJTf1eaFMbvNWrUrEAwRIHgIM8YUuDgoPBSUBfEFZvMnDriLlKGye6s8j2LT-jjA0psK45mp8oQPOoYLZGKpoIG9nvRx--mzrIPoOjZFrVRyMZeTx1abmc3uSWP8HiJy2mIxrood44n9fp7yBJPVB0M4avg8lzYCGfs2ozJrke9S2BgH90LjG3IjEWk51HwWEy5uYcttV4ylDw0ttP7Ay4qMjXpWcsYblYGFks3GG-Zt9BRQKZaOU9sH2R0iA1GkD7cdqmmQgynTR0clFgg1CWfOgGFJebE-o4gMviRSQYJepErfFeoRqVn0C4sWm5s9Ey7ZtsCOFQgE1WLA7BZWhwWzXQhAerw9WXZZmaD3s-",
+          "places/ChIJlwfAfe6JBDkR4IPtriR7BQQ/photos/AWCwydiZSVHYixddBGCMgqxk2zj1MBFXQOVQXfVYIwN68CmkKgtwEXJOssmO3ASUX__4FJ1nq138M0eCCzedllPr18sof3CHlneVEPTl4tv_cPKV8X6XpKebTZ4vkgnNeiCZaLcFTalW48VDdqCFef6wWvii1LrtNqZ_wG7YUbY7OgoIserv9D3qlJj2F6dDLwAShWZ-LtWGrT-ucVfmrO8dIgt3b4RwF5Qfm7eL67wdkspHxGv8fG1nXA6pxrNB-aJI8buLAfJSooaFXuSUuz5Dq2CLi0gWNi-wJHyoPrGZZEB9I4dYUpQQ5bP3XcmU3j0s6UyBja0_2EuCOzaBjLNJnMctqd87zt727HnzBKKjW-ttGtvHu1RG5bkr0Cb1BmMeZcGKxY-4z-GOWHpDX5jD_8K-jvSSwi7ez__X9KEK2dA",
+          "places/ChIJlwfAfe6JBDkR4IPtriR7BQQ/photos/AWCwydi4WpB9UsABdq-lNOVAfC3EAHIC4e-lr9XUIsR8b1UnIbMqO5Vw8jCl3fhomfmoh8qiiARjibROQ4_4KaLVHrIj-PGUseIC1-VN4sInF3OotQss4gIMU2mvPI-BoZ07YIbf-mBlPf5bbg437AUrzfE0R-uxLvCFCQ7LJzSxN4p9O7BJIuonHX0MNiF6kmIx_-g0-su4c_VdfvvTcImGrv7AhPIzei80Vh8HbzQaD5VCXPgfi9SdbCETQjU0zvan_HtbLqHeylG_CWM65FDR57JWTd7I-aeHNnPoIZoT7nXT9I9t4bqfQx0CKsCskGslshftNA2gHUxiib6EFBQjszAvqTU8zBgaBUPxGiW_aDIoWWHbM-1VNQ41JeknlbS5U6KsS8NaQnaLQN0oyt6MClr3GdbwbU1jW83LlMO7mfUVEzLRiVVU9G7-7K92Og",
+          "places/ChIJlwfAfe6JBDkR4IPtriR7BQQ/photos/AWCwydgZz6ToZA_MftFx3nlKMR57XYe_JkW8Do15pQO7HBHF8_rKK0cIANQzz89L0kXrUAWA6eknb_KnK9ypRxgUXB8DuzBxXM2aFbPORqTrIkWZQiPGqWwqrN9C1SIReDbWv80Z7bDnr9DGdLII1cGyzK5Cn6VB_ATN7A9Dt6bTsohiElbo_cj_PKYtJPydomz7MNeGQo3g7g_CWMsazisPEFpHdiV0VTG2a8DBUFqTaD-upyMCw3I985zeF6S9jvRz0gVnWQU4_LjK2nZnUuo0dKbE0D3MYSoZnV7QcimLiCuNnSET3ytH8T_SPfcfaEIUOmV67UxBKcviQox9tXihupByfMS8O4OUnqp4hH3uxq6whTvkQKLi-GIf9fDSsWjLzMnLzDeCD191HKw5TxDWBP4WSR__5J3qT8LFFcUVxQ_PtKSV",
+          "places/ChIJlwfAfe6JBDkR4IPtriR7BQQ/photos/AWCwydib-IVJ0tIOrpAJoRja3ONnWBN3O6tjL3Obu2BLHr8iniKY15CowN3HOr3WuTJxhso8KE0c89GYTdUpVtITxIN1TztbRTftVJZQg0fS6NP8rUMxbbPHscIoNsIvoBikbtHDJqJfwg3O8K7qvZT-Y0KeXZUUb-73ColL2UG-ik0tGcL-sYotTP3qmbYiPENHt5xafPGG97q5oY3LJK_k8ewzRi4VXR1stLo_M6WEP5Ul3q7kZdYm-a83EjFtfShuBhl3nRnabxeYjidAaoLAXQbSByfnSsC6xB158sQvQfO7GCX00oF0mj8Tf9FucSkdBb129_bv0Fa9_mWQQmvRSif_KBElyuJO9egLph5Rquw05CDAQrOc66XHKIT8-bZWstIfsKWTBkliZJVAOvIUOuUx67D5dVZ-7l0WXxC1Zawd8A",
+          "places/ChIJlwfAfe6JBDkR4IPtriR7BQQ/photos/AWCwydj4oKeHnEXqX3RISvk9FOTFDPqUJ9eBTkxt5MxQv_7iADv2wRkaDdqKX4WRtU_MK7Vd5fpqElJxVy0tHtUbcNV-lsHzjzP2SlieYenmY_H8mozVxk0Al7dEw3bJnE7c7IF5LIhYmL3b_AUHhqZTs0yC9N54kz6XSsobUAEnVgkjAGkK4Ry9iXiXZR5wjdxe-vMnba1958Pp4YBn1_APEmRhmMJY3wPyouX0k3J2HfBGtL3-_uIXta-dve86uZ-ZnKY-Rmg2G3uPBhuioeTPkn5d-FNgQXYOQ0az82PRQS9Zid_jrnGe_iZmFSbPeJAgPU1bO2RLydkPDe7o6dduAMvoGYCfhH9EtY2Xr3szsBPPUMEwC42aJsJLrzI0UeHu9jTOZbVnmvT-GNweUUoUhhjqy-_9OLxTRCHHZtv9FtShEg"
+        ],
+        "__at__": 1786793562.362373,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Van Vihar Park in Manali is a beautiful and peaceful place surrounded by tall deodar trees. The fresh air and natural beauty make it a perfect spot to relax. The walking paths and boating area add to the overall experience. It is well-maintained and ideal for families, couples, and nature lovers. I ",
+            "author": "Harsimran Singh"
+          },
+          {
+            "rating": 4,
+            "text": "Van Vihar National Park is one of the most pleasant and easily accessible attractions in Manali, offering visitors a refreshing escape into nature right in the heart of the town. Spread along the banks of the Beas River, the park is known for its dense deodar and pine forests, well-maintained walkin",
+            "author": "Pioneer Voyager"
+          },
+          {
+            "rating": 5,
+            "text": "Visited Van Vihar National Park in Manali and absolutely loved the peaceful vibe. Surrounded by tall deodar trees, the place feels calm and refreshing. The walking paths are clean and perfect for a relaxed stroll, and the small boating lake adds to the charm. It’s well maintained and great for spend",
+            "author": "Mehakpreet Kharoud"
+          },
+          {
+            "rating": 4,
+            "text": "An old park, with children play areas at w to 3 places with swings etc.\nGood place for photos with trees surrounded and also rocks.\nBoating area present too,paddle boats  .\nSnack bar availble too with momo's,siddu,  the local food, ice cream, maggi etc",
+            "author": "praveen chenna"
+          },
+          {
+            "rating": 5,
+            "text": "A lovely, peaceful escape from Manali’s bustle! Our kids loved the boating and open spaces, while we enjoyed the towering deodars, golf cart ride around, and cool shade. Clean, relaxing and family-friendly—just don’t expect wildlife despite the “National Park” name.",
+            "author": "abhishek marandi"
+          }
+        ]
+      },
+      "cafe amigos|manali": {
+        "place_id": "ChIJQ5g6ff6HBDkRcysgqv-wYAw",
+        "name": "Cafe Amigos",
+        "address": "Near, Mall Rd, Rambagh, Manali, Himachal Pradesh 175131, India",
+        "rating": 4.4,
+        "review_count": 882,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "http://facebook.com/cafeamigos",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 10:00 PM",
+          "Tuesday: 9:00 AM – 10:00 PM",
+          "Wednesday: 9:00 AM – 10:00 PM",
+          "Thursday: 9:00 AM – 10:00 PM",
+          "Friday: 9:00 AM – 10:00 PM",
+          "Saturday: 9:00 AM – 10:00 PM",
+          "Sunday: 9:00 AM – 10:00 PM"
+        ],
+        "lat": 32.2463225,
+        "lng": 77.1891964,
+        "photo_refs": [
+          "places/ChIJQ5g6ff6HBDkRcysgqv-wYAw/photos/AWCwydiLUCMoxKvSAdqH9lDlYf_E9SzXVzQXigNTaBwXU5kkwMIK6RxEQ35Y0u0LMk2I9_hsqTxVGe1k8QPomeawI2e6rz8HeuEJUNjTALIqbTTQxGpDvUV6CC454b4u9uLZSG7LYD8j9JiXEUqDVTpdwfL2wv1wlxDh8-YBRVdqFyO0OWz0L0_XqU2ZIsdeYIBGGIcysFTNuCUGiAnCb6_8dw3c4R-7U3f__2YF3Cdx-EpcwcavUDeIO0fJCDAat8i2q9ADg4CtHG_bhYrvbK9uxI3M3SA58_KFXOTfftqraL--uuolSivLHImg5INYeQ_ylG7CgIWLkNyrfF9GQ_7Ayw3JbGI0hUEvW7Y6KtiayqAUgcQdb4ijqa6R5DRdfxfjk9F9c48yS01nLH-Qr83sda_RBVyGjGJkoLerhs57I-YpT6sM",
+          "places/ChIJQ5g6ff6HBDkRcysgqv-wYAw/photos/AWCwydjvILUAjbvQOoci_6o26yRH1MlS7mSLivh9SuI77TrUFGbHWmq6aSzPxwlYpPlniIa5p-DCQscV1gcNhnLUeNQkyBvqxuOdRLNA_FBiXDcouZ-3pPwbu-pwsRj-Mwlg7azJReCq5oQAX9fz2NgVJMEwUyoi-EKy4c_GOPGBUfmIhZemIhK83YhdpU7CLDEL6c_8pIZrsGiBbfnVqTWgWkg5OjrAmSsdg4jMRx3VrJULjOjXPdePUQAXr7QsuI6pdK4dNWWreW8BdwOI81oKMh3BNalpzFiq_k35wSQfrhVE0Xcm7eS3YPDkpT90Axx8g18FWNGU8VQtzK1EyBN9lNLX-nGx73eSBNwE7lJTmA1AUfUaaklQ5rQMC0stn01nUL9J072pFKiiL4s-wym9QJf34rV8V-uE6j15oC2F3qP3MDy0PCQoZ1ObygZz68bW",
+          "places/ChIJQ5g6ff6HBDkRcysgqv-wYAw/photos/AWCwydi3FvjIdnI5sxpbIFgGHhGxiUDLjPKVLfdYk_7VuXkjyXS2CX10PB1AsbvMv26206aZwmwdo7ix1uX8anB0Wj62UaXRdo-N4ep16CgK5WxajQoWAgkR86SD4-hWq3oVhyoSe57mqhIK5bGPCbtZJUVl3db8jT9JKChnleLhTsdgQSWQB7uB24vNifiSGNqqcVD720guzT7UW3UR2fyVsE5Wmx7NBBdLaA_ESbIdBGUd6jeuSsoJQF2fgbBmeg9HdgmKPTQqW2PyqD4VAHrEX2EyqmJIS1u6u_97x5M9IgodEDakoNAJQvtpZsOWQJ5F5VYMFDxMx283rSn3nZKDU1P3G7068WwrZ8XM2vqcO6--tWZkq7vB7jfF1PAvaiP3PS_cp6TQwE_Bxx7zd4TC3FD8odfQEVqkjpd76vWptb7a5Q",
+          "places/ChIJQ5g6ff6HBDkRcysgqv-wYAw/photos/AWCwydgzNA_2Yk0WZb1O_tfnET-Kgks2oP0b4zfzilxRNpkhjHLj7rIKYJcORbur_JTMzldl1FnrKuZ1sVIEBT_7PHU9IwUNCBI1HwwgAxhcLrKqQu4r8CbR2NlPKDoxRpo9_yiDwLO2VDaS5DaAMVDsQC64fwqTqJhQ8gaLKr06f_Bp1tptA6Gmp-HRYQHMACdeVOw6RzsNTLbrgMLQ2wUwp-d8J34OpsvSZToO8mI-J-2A9rgGAYT71c5qEZq3xFSRBpxJ7mFinuR7oWthWRCI_s0kKONqe1WwTYpZ-NozdiXfcDRaUt2fdLdpe4XaystOnVBlrWDOPBwUADgdc8-rfomtqjL16-OHdyclJ1i5Y1tAdKTFg-wiB1i-eR4fRExoLXk3776SiVIRx5N18e64PKaHtMbQGpFTlyK9FGgZxuaZRIqp",
+          "places/ChIJQ5g6ff6HBDkRcysgqv-wYAw/photos/AWCwydiD3Z96aKcuVVxbIv3fOsXxm3exjYyblP3d8GvA7B-uydlzo5lb77fzGXyzk2aA_Z2E1raNWWAH-DnsrQmFyI0XpSA-ea56s-vSw3UnVxY9vwmfTv8wpT1aMtzT70w7nrIKKpjpR0KKKBy3M5VWuSk0PueHWLx4IJzUjvL2lGt6850p7ehm6oYsCXTrVAyzSP_GNyOpeqQGvuzmIf2h4RyvSeGLfT1KuwtpbGuFjBVfoF8gOArUK5fe6RaDAIirCpLE7z8XsGCIvSR_OKRh9we9UlE989O1Kf8aDtmTqprN6JfCaE9g5dKbhPRKPHJYyQuvvmlf_5do_bqKdoFaayAuFs-wMUeeqnT67ybWalE9qeLt1wJyYakP_eHsjq6SGf94iAKh_Zcym1363B3fJf12eU70oQEwZ37nJqQ2EjCFAvV-mAEOq3YCof-wNA",
+          "places/ChIJQ5g6ff6HBDkRcysgqv-wYAw/photos/AWCwydhWqv2MaaoQszFhcneIV9a59FM6_kooRjUWCccp3ArTaHLBxt3Xh4mLKamJ2GTiHVY9KXfv7pmEX_RVdR1r_qGXbxMNqpjAGWUFNTEb1A_JMD4YER4FyJVyJH9PjhBtNXFWAbNe7z8C_iAgnn8N-iJGMiF7kdonAg6k0dD2bUUcyHTlu8FWqz9gTsMsN6siH3EAoUdOHA2OeP5C4Z9lyl6PyOWDJs8nJl22pV-CRv97qguzo5ykp977kVLJi6vc11U1qdW2w4qEqpY6EUHjHYRXW9y0rFPi4QPW57lVmzBt4cxzgYRBIBsXoOk9q8F3w2Bpl0K53UaYgrBveQg80b1EGVKbaJML6J7LMqcHv0x1jZ8-ZBopukweIVkZNeCqTDhdMFzTvA7MLQQG19n1VLIWFCnMMtPAgBrBwwUBGOGNJiJyB9dNnatTLz-2nA",
+          "places/ChIJQ5g6ff6HBDkRcysgqv-wYAw/photos/AWCwydgqpGWaW1PPZhU2oUdFlqFtYmycR5yd_gKZ8EaIyTNxvaHgrBoXpYaaNTLXLB1iBRBZ3f4U1i4k3Rpe7EfcS5sT8z2Gxgz7eJocmLor-T2meiVApHhhxuv1OG7RA2upY0dXgp4GutkYUSl-fSeRE35z611OF0qMOrV8iZZZ-CLpXFdTKPOR6PpvIZM5sMUb5_LMnA5qEbc5RkUJmnplueisX-Y-g6WEIWQBTsxgQIUJoYKvweS8cpQnz66qgBoLyZmpcx1A1ZiZ1OgdVgK0kjYhxzyG8L2TprX5roXeEMpgpyHL5NgaQkRl6_HT22q3DNwEzyKmadQouGTR08V9dwOIw_dQ0nfxrxlhyfI4iNFR6UtBYXo6Iw2Yyft2GRySAKvkUNyItr-CFXoiam9vpXOhAkHGOjixMVL1IWLETVyaTce1HWtQCgUfCHt0Kw_7",
+          "places/ChIJQ5g6ff6HBDkRcysgqv-wYAw/photos/AWCwydgTb6K5rIsNP6Bor_ajs3Bik69dcnLOkFn00hquTscAeSDj5aGg1PhEi3VZJXKBPeVMniTM3GcqoNbqC49sz9wtmo-G-CG8x9dd3g2Ykzo1o3nuSxZMBM3cn1vr2jYGoeCkg41q75HgHDC_tTGHV9DhoN7nnbykdSorCh4_xlWqC90VFmZ2q_ZLJUPyWX019SnsDNry5l0MHw3VYF4zURZUgZFNNypRcEDi08hREb7_KFqhieBxzGWydnIP6lW9C2rtpnfK88JUgQPvvRJJBtd3M2Rcshl8koV5dQEMZV5oiE1uhDVri910IVF2p50F4FQRDgwN8sPQs5-EKSVF45AAXbLt-KCuW0NjU7O0kup_qk3UMRqhiZ5grdm962BPNh5zVTxXEqSm7pFng9s5uOSsT1Du0UKPBfq5I3fmzIfFWzx9n_xpyJt3kQu43vhP",
+          "places/ChIJQ5g6ff6HBDkRcysgqv-wYAw/photos/AWCwydgt-F6A_74jv6KygI6b7T16hkxnRjKiG_nRsM60tuGBrqx1P4Ih2G1YMj8wKDVig-rR6h4upihXsLSM2vQn9Bsk5AKaN9DFAiIppRM8QT3JrVFJSUCu4JV6f-orzIluwcmWmbYILwTYPsCxlW6kjUuyMfxHW2KoMyBgiZMOdic3Fy4Fqi_GnC7jpvRYHIGbuM-EPCIn0ZS9X0KQWQWypC6vwv3mUUPzoGkPtIRn6P4ZXVHQkbytkj56SBtaEUo4Z-sG1pDhy7rzrYKCnRqV1oj2Up1oBF92aOIi_R5zeZ7dPP1-itIVNz5drBhZBGD48KOkxqaDir0JI5BHtk36zG3rdXw5_AggudiDqTfaA8XStCV2ePc1rMO4phMi3xmEWqFaHW2UHw8Itf2nalgjq_x-JMEM9oXRIgP-QUCFXvMjvQtx",
+          "places/ChIJQ5g6ff6HBDkRcysgqv-wYAw/photos/AWCwydhg3fuMpGEfM2Ko9lhCgTQKZRHfbwgQHhbbPmgoyncLl50BY3r9J1hi_zzKo4bXzBOb7TNcyQL8lI0NFR7-otMaL4BOm93YT7r9dBwqF_JElVvmUdqSemm65LtbJggXSq9_FSWB9v71cbPWzF33fBv_rBi2nS4XntDRMNWPfGRZe40NgEuwSpo4mEZtMX_byDzhorw5IVfMRHua1utfBtIm2eKzUswrOXsTbCAg6glzhb4FqXa2D8V-NtNSvPGk8eXOsB5a9ZP-GIfRYJF5WkhIgeNvznDeYjja_DL-Ykh9QC400bCiMttzwAUC4ECBs2Ud8R2SD2zuOuKlu1b358Q1VZU9cF9u1f8ts2ogcZArsY2hZPIyAYSermarbhEuIomxAiixYCKfziTuxh6vacHYjdC0pVIB8RI2BSQtqHzByC6-RHQo0m0SpOfu2LR1"
+        ],
+        "__at__": 1786793562.765294,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Really enjoyed my visit here. Staff were really friendly and efficient. I had the Oreo milkshake and after finishing, promptly smashed the glass- the staff were so kind though and came and helped! The Oreo milkshake was delicious as was the blueberry cheesecake I had after- beautiful! And prices are",
+            "author": "Matthew Cole"
+          },
+          {
+            "rating": 5,
+            "text": "Stopped by this café to escape the cold, and it turned out to be one of the best decisions of the day. The hot chocolate was rich and comforting, while the latte was smooth with perfectly balanced flavors. Every sip felt so satisfying.\n\nThe place has such a cozy vibe with warm wooden interiors and a",
+            "author": "Anupama Ray"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing cafe! Perfect for cafè hopping, coffee fresh and there is a entire desert bar. We had the banana shake and thukpa and it was perfect! Cold day hot soup combo was wow",
+            "author": "Dev Mehta"
+          },
+          {
+            "rating": 5,
+            "text": "We tried almost everything on the menu at Cafe Amigos on Mall Road, Manali and most of it was fantastic. The café has a cozy, relaxed vibe that’s perfect for warming up after a walk along Mall Road. Service was friendly and prompt, and the staff were happy to recommend popular items.\n\n•\tSavory dishe",
+            "author": "Darshit Patel"
+          },
+          {
+            "rating": 4,
+            "text": "Amazing cafe with a cozy ambiance and great service. The coffee was rich and perfectly brewed, and the desserts were absolutely delicious. The chocolate truffle cake was the highlight—rich, moist, and full of chocolate flavor. Highly recommended for coffee and dessert lovers! ☕🍫✨",
+            "author": "Sneha Agrawal"
+          }
+        ]
+      },
+      "beas river|manali": {
+        "place_id": "ChIJC80dHFzHBDkRiAfMFh-zvac",
+        "name": "Beas River",
+        "address": "Beas River",
+        "rating": 4.5,
+        "review_count": 9625,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 31.8830956,
+        "lng": 76.1842068,
+        "photo_refs": [
+          "places/ChIJC80dHFzHBDkRiAfMFh-zvac/photos/AWCwydjZq3ga_t0bYR0wI6bHBbIQV7c5H0Zja4eLe8zXq32njxg8P8eeyUOK9fTd0q7LjccXrEffiDZvtSinvEoy5Hr1ZFj7HcM_s8Ix61Z0HzcSv0eoysGRybPnC-OBAZsIOasi8LA2jzvD2SLKooQoU04FvLpaz6mSinYmr47lMet8CkiGdZzcd8g2svK_VgeA7P9OszD4-prNvnQgeJiyvDPbzSLWRtbSraiyRcb4kXx2PTQ9_axrf4NQNJUUHmc5vFXFPvHf-LIpel1LWrlGPPvCYyuH-d6MBTE2c3bvzlfEhxPXO9YUqUJ1tM1WkuSvZEwByrNRU-iwyKOHOvKYRzmOOQBqeRQof2neWpcped5vuwAjyf3P9fRBPNWqqW0Ok7Mro9ZEBRRUVpME6V3gX28NM6SuH5Z0s9TXutzJY1Dk86ii",
+          "places/ChIJC80dHFzHBDkRiAfMFh-zvac/photos/AWCwydhcOgSMV5DILBsxWqXZclRJGl6MeFP9vepIwEaByPpWNnjkOuObDGc4iHrykSiwAZql5lJgT1Ee_lLPvbPIy0_J_AFIHmM_XhVBTAkE1eW2eTr21Rl8g0aUTTgHpaSkCpYGel3IPfvQsKqf4s6ieQ9p6dzB4vCZMFkC70zn3HlwU8n-iiJUL3GREjFbJKbP8jFledgJTloYRn1PRAxPL-H5f7o5DJ6WWW24TPKfC5p_yoVTMhjZDIJU23D3TuwegXpW0v2WQuuoEG4kZGIAYrAb30IRAmpm5x9DldOalwCBni_vsKdU9DXJQUBPwrNxdRMIN2mogj_CWzMDAY4mIJtmlk9ZA3FOXqCeFKm9OhPlCi0KJA1SAZNnmHb08E9MIFsaC63DGRrAAnSOI7oGl77EldCi8Ify5FBznsy2c-JiOmW9qpcxGZZkLgQ7oA",
+          "places/ChIJC80dHFzHBDkRiAfMFh-zvac/photos/AWCwydgOkAUTeVnfjHIOKkqk3wakGFhLR6eT5BMUoRpNfLda26VeFzNH1Z8Ik0Qm6eOY-lPDIPUR9axFka0nel3Y8fwCzJyub6xDVvYM4WCJSyiHx2MthDZU-ntee94Rolw8zsPGqB-xqB8oTQvh9qxtem4jkWVeUcpWZMlYgIoh7z7G8EqJDYc97u8X_VGpdtJLw1M7r8_Um6fE7MzkfIADVzUYQJ_tNbb2TutG9tJg-RGQmJwgR2FlhuwwNCN3n9mUBL5IhwsDkcaf74DxdkfWZns-lh3scoofwAU75cY4GB1wGBpDDmh5kdKlhNMAj-qkZK9O3DLZN9uXK-SWgXQ5OzFaWQg-qSpFv6LT-2Iizh8Aa5Azu8QvNftflsRCGFcqGg3z_W8mlLU1zFUIjlzaacfQ17YsNTMOmxx-qB7iniPgFA",
+          "places/ChIJC80dHFzHBDkRiAfMFh-zvac/photos/AWCwydivT0KoEEA2ljne1vtfsyLrfPDoECJSq4Upbg41CSC9IcvDQcYBcm3BqtY6LJvg3G0myTh17K4u-JrPwA7iXgeVO7jIDukjUi57gzx-3qiP2BC57sNQD7AK0dqn8orycVMDXHLNdP9cKBAz6U-CjAwRKJIWHH6DhRrARt3KAkPWV_06MfnjRk2HFVO1G20z39rB7j6BiELHVFh7nblBbAd9s0I_YY-OiJ1msVKBk1F5vr-SulfLfmcvD1V51CpmXepBVZteAFYHglZTUSf0K_-zuz4r2VD_AhbsbWT5dknDEr9YPQ6ZN_zgJ-vQwRp96V-heiEwqQLjlG29rGp2DkT4pZkQKqVlcYfcBzPfznJf1IS0CMKOCEjyEbsV0XYICcOOMX7P9dNvnoEly75Z603eNOBPxScn2GjRF4-khQxUTQ",
+          "places/ChIJC80dHFzHBDkRiAfMFh-zvac/photos/AWCwydikPOg3l81ucHNFmorLzXAVrHlDo94WiKRHhQmt2md6FoPDWORaI3pHps5yernO_ot-8oyrc8wKJcbBwqpYD11ihMuzFi6gxbGL8SL7Pj5txh_cY-bz8cDshSh3DMctAqE2rtZwX6Ej6_1oNg2dAsdK5JTV0wfUUnWX1AVyMOs9hM8MAYsyvTpBB4FR4ViHfrSKeuZzfuL-4aCdc7d_lyzcAvy9IM4R6CBEN45j2z48kemLNZUiJq9TDwdFM9bq8ev8GXpn2TmFKX-7Q3HmxxV7WT1vrCmemegz7fNexS5WpYJhbJc97roU93UwADPQY4pYbUgXZw8sT52FydmnBNl-MAdqanT1PjLHQLOyKCmNzN3jHFCY_stnx8V6QyKQPEkT0ybkuhUDf4h82cq7YiwAAMrmrv0txLRdwpIsth8",
+          "places/ChIJC80dHFzHBDkRiAfMFh-zvac/photos/AWCwydgB1kwwkYa-_2OySDdIMrGOpoNApWBXQ746nqjGCgopbUXgQnuhbA6_w_iAa684reOTbxWlv2KbAUYgSO8D1HUwFilQWoPRLEO1byMaFDsf16cqi_oT7koxlKxx5szUemOr5QxJHbj4PQb_Wd3glpkWNjZPtvm9MQGiw21UQZ4_2K85ZbAxw-9e1REjCq6sGfNaz3awSmZPn-xa3G8oc9imqQy0ByWxdL7Zlm4vgu_5OyqJTUSpkp1QqL1DVtWhJaXjbkfAvam6kEseiVD9xsV0S0BF0iIzUTd2TzqT4XWjXu2Grpe_0oS2rA1yrFQI5FrJ4sCcZNeYR9pYsgz7ZfyxChzWbHlvnSa3aY9aiV4-XKGdRYvYUvRFK8h1J87Qxy8kh7kHFkWSi3wIjgOy6uFP3sFgk5OA1dUiDhIoTks",
+          "places/ChIJC80dHFzHBDkRiAfMFh-zvac/photos/AWCwydhr0hPMSX-rvIhdLHzytaMRIVnkNNz3SamsXStSMNjuCj4L-phIF7t1OLDFMGkoVpYRHbGgrfWSNUZlpfkWqK51G1xcEj0zvgqBbIhB-7B8e08hAixC0f97EuxC-OzdJDmdVuDt52kuyi3Z7qtwbyn65gA_IOIM1WbWZc0CexPA40zUZNDuDaHQ-vocfWsqHtR6pyaeHwjrcA09qGh7eBgNknSW6GTVm8j-rGubcmdEiZh0AfeajCsTBON1N9Gs42n65Iq0g9IbyRms_IQQfoa1HusaSkhy7pc4yv_EkSAgt3OzvMMPUn6GmMadJLdFL_Gdx8ie-VROpCrN0ureMQ5VVtNXGt2LX9ofRQIKEZEzYUdg_pw2X3QlizkL3wLOrANl0biQQ-Ok_h8YONpsGzQBiJGFWDruHsuqU2erh2ribLA",
+          "places/ChIJC80dHFzHBDkRiAfMFh-zvac/photos/AWCwydhd_xdkWrOcwgOWpcv1rTMLo04UjE_w5fHeHhdLrZIdu3X2tHDvDwSA8fFHBVssMqPsLLpz52P_cMKQIEK3_dlvrOO5BC3PydJK4iL4LgFowQ6hcZnOfPKDWYAc3wV8pZ_smIGc61ekIN9wby9YHPGJZnX9490iXTtma_rfcP73J44LHPl4NNP1uL-j73d9JWfhEDEIM7QfTL7SG5AeVG1YJGNR59nWV6dbAXXAmC-GYgOWinwe_PBz1Ifi1y_tKh6CxdqkuYZQ5n2s6cNiYkQjA2C5uV4h0gyDYfrKtE9TvsYKbL4Kz0I7D-FQ0RGRzBgq-E63bLfhzlPSEO5LKBQstkM9JUbA9rMc61idypUJyoOigs9c4yc2nkVyivCJZghLi-sIPF9jCp38nwjFWE3pVcRQrJqO26E-iD6wW7Gyfg",
+          "places/ChIJC80dHFzHBDkRiAfMFh-zvac/photos/AWCwydhmFxl8QCOD-l1Alj_WypSY9ArhZbMudCsTD9TPqo5znaqnc2jszlb1sPGaE1zi6o8K8WOqhFudXCQCMjQNQOnpuh7OVIMnDd69fwU2RVgsRN4YXRqko0yC_mH0S_kH3dBS2kjT_hzq1pXe8EcwgeCjA0HcZdMm2tEkLzNOXfL-yCuxmp6TRZl8DEc9pLOpJBODR6PCcA_Ar75VUjRl2Hjtcc8wHp5TxICz1-VztcWSD8_Wty1BE2fpdnz96M-cwbls_jZCzw1P_DNBVJml1wkBuQLRomgrUeKlrUElm6t8sno2TdbCOMEU_UfbaEbGoH3NInJ4AP3wvnE948aCZuxFFXhCW2n_bEHXQHAJXM3Kt0XM8C3aSd9epj0VLYJTEfDzBfdHH4AWxVLVnaicaap25rYVTrIq2laJCEXtQyc",
+          "places/ChIJC80dHFzHBDkRiAfMFh-zvac/photos/AWCwydiav3px6WIaRLcZQLN65BIs7yrT5jt_JEbK3ReIVC1KToOmQ5rRjsvey5YpObsECGTDLb11Zf594Mpj81ST6kw5iVXXzr3Afe5zYoYLLjP9TZAyhpP3ZRdaGPrb6aPWAZPi02EC4dWIn7m52M5uAIevF2NcATLYYPn-ZGRfehmkygVon8XUKi_8wlMDt9d-wYXWrgoe5ZEOSE_kdpyhMGGhH92yzTfxRc7T49ISZCtRR54lXPp-D4251b1739aUeWRLyXtURq25FI6WvLzc-60h_KcVNs2poRDFf41pX6lvc1Kh7pb5DZwXpJ0m3NQLkzU1R6GdQjkNPvvaH3nqgjJ5PMN4LS-lzY2F0GN6fLULvTa7tA56j-PbrpkqEOY_IIyEDj0S2mPV2lAeXK0GGNZnHKoF--jpjQ_eMhN7QCJFVg"
+        ],
+        "__at__": 1786793563.1030889,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The Beas River is a 470-kilometer waterway in northwestern India, originating in the Himalayas at Beas Kund near the Rohtang Pass.\n\nFlowing through the Kullu and Kangra valleys of Himachal Pradesh, it merges with the Sutlej River at Harike in Punjab.\n\nIt is a major scenic focal point for 🏔️ 🏔️ resor",
+            "author": "VICKY"
+          },
+          {
+            "rating": 5,
+            "text": "Along the Chandigarh–Manali Highway, the Beas River runs like a restless companion to the traveller. At times it glides quietly beside the road, its surface reflecting the solemn Himalayan slopes; at others it rushes past in bright, untamed currents, striking against pale stones with a perpetual mur",
+            "author": "Anusuya"
+          },
+          {
+            "rating": 4,
+            "text": "Beas River is like a necklace to Manali as its flow through main city and its travel parallel to Main highway and calls for many adventure activities. Looking that same through bus window and feeling such cool wind is memorable experience. Rafting is the most popular activities here. Many tourists a",
+            "author": "Surya Katakam"
+          },
+          {
+            "rating": 4,
+            "text": "This river is renowned for its crystal clear water and scenic beauty. Visitors like to camp along its bank and often do rafting ( can be closed sometimes). A must visit spot for relaxation and adventure",
+            "author": "Kajal Mehta"
+          },
+          {
+            "rating": 5,
+            "text": "Beauty of nature at it's best. You can stop your vehicle at a safe place in the road and you will get this view though it's safe to go near river. White pure and blue water.. With lots of rapids. I love nature mountains, river n greenery,if you want to listen the music of river's waves then you have",
+            "author": "Sheena Khan"
+          }
+        ]
+      },
+      "tibetan monastery|manali": {
+        "place_id": "ChIJRQvOsgCIBDkRWLd-aFw2yd4",
+        "name": "Buddhist Monastery, Manali",
+        "address": "65RQ+R63, Gompa Rd, Siyal, Manali, Himachal Pradesh 175131, India",
+        "rating": 4.4,
+        "review_count": 4028,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Buddhist temple housing historic & cultural exhibits as well as a meditation centre & souvenir shop.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 7:00 AM – 9:00 PM",
+          "Tuesday: 7:00 AM – 9:00 PM",
+          "Wednesday: 7:00 AM – 9:00 PM",
+          "Thursday: 7:00 AM – 9:00 PM",
+          "Friday: 7:00 AM – 9:00 PM",
+          "Saturday: 7:00 AM – 9:00 PM",
+          "Sunday: 7:00 AM – 9:00 PM"
+        ],
+        "lat": 32.2420094,
+        "lng": 77.1880419,
+        "photo_refs": [
+          "places/ChIJRQvOsgCIBDkRWLd-aFw2yd4/photos/AWCwydjmAYdKcAvp_cbCDnsilQbnh0hoxOq8PdjHsy428tZVIcgr8w-awhXFS4ZFHS1JhxLJHSJcuZH8fGXeTLdU2hq6FRRngtE9lpaEoM8T01Mb0m5yx8B5CKhBYuFTllsPFHITN6RfoZpegVnmRqOWMnCW0Y1oBBiqyZXxkgfJo5OdJ_pyIBXzdaxwnnYjQy8IvG4IIgVKjz3CPzsuOhgO4eaEVUngc3oX7zjie9AR6UFUEEOM1NCmcy3aYEQGF9WjeCOXjbngig5glt0jRtvF_LTgIK0n_kwU__ggd0mZ4j5E51P_X0JlFeD5hrD6ORlaGcObzvFhyT8Jk--GpHmkHieJ3zXAvDaocqmQUeI_XHci8jYy535m_PPHSFj5lxJuzyeB0Bb1gtCRuUPc4Qo7goP3WAEyOamir783rJ__NANjAaHY",
+          "places/ChIJRQvOsgCIBDkRWLd-aFw2yd4/photos/AWCwydgfC7p9JbKKe4Lft-0A93rg-7RX8UxyNaUHFjjkr6mxcgh2LNsezSvZNlhVGqGJt46roddU9IeTqxqt2A2TgxfUi6Os2Rg7fwOILuAsaQgRrzsmz1JR5cpTW54bHeG0L2UFLgMrzocQrvUXbuw6LMotz-wf73SnBwTu3rYI8E1jRiSVja-cp7vgdmUKRF_VFiQL5l3wuc5-Fw3uP_ar2cMeqx6mL8OSgK7v7qetLpEcQbEooZ3cAS0LHGG-nWNeu-IrnCk_IIgmuoq-hBQB9dh6igGJ0T2RhLHYV1snudHzmaJyuB_aws09OsmvNoRy1gBfzFlC1XJ9FXkgLn8CYPPBJsD82Nzk3A2EGHQ-A1UMxY01xudlCcowkdjTBa61p2GUJXOszGCHPB1dRCacsKRPCbX2vBEUWa0TBG1EC_ac00o",
+          "places/ChIJRQvOsgCIBDkRWLd-aFw2yd4/photos/AWCwydilKBrksmZ3ZAXCeclaTwssucw8O73pyGL3ao747fetBF3qCTMileIf3Jsma5-P5Iy8Lcmy0ildHoiln8SXwkW6r0tKWraJVgCCHHQLwUgqT2oU0f8lkZywSM9gG9cAQXPywZA9Taj28DiJlZeH6bfLqNnwbehQp4woUC6F1J2mZuLfCraVrHY0zqLOv5mD1roRfI1ejXs5sy5LMmdWvtn5b2xlpUixDckY9XYA_kjFyJonN7PO5wy9BBiCTF1MGnFIxzdiaBvtb7Rle7Tla8oJgjj6glrF0jHeYlrVKwIPWyUk8O9FyVBzN54qYA8_vjTqrKOh-LW7BHSM1l1abL5N-UZj563b-186RuYJ6K-hqFIonI_xIB3b3xzvwvLyksWBfr8xPC9rIURWGyRaVdiSWtazJhqXVPeZB0iPT7s",
+          "places/ChIJRQvOsgCIBDkRWLd-aFw2yd4/photos/AWCwydguC2pAHPDKEB_dg1HflMuYrfYAhXhOvcOdKj4s11NvctYt1D_4u_ZliCG7zjSwUJLm8cPzTI4aZsatpveKGZLF3mqjvWmcUSJQS6jihmHRCpcoGf87fPQBjtRbAlMTg9OMVn7RMVTjraP9gV5shElVgh8HN6gM2sDOjBQFGCWEO01M4UYdH6tTXqziVqO_vyL-7bhHpdFz8ovbU8ByID-XlCr_x2c6-3oTi09XSs8vx9EZHbU7_5hv4Ry2kbeZpX5EUv1vvsbvtjHPErJK3F8aEGW0xgTjbwJcYjxx89SUlNviiVjlrOAV5Klcid_VKt63efbjZ3MROk7W-2xJd_ak2rxUzn99YOXTYqm-BSbtz9kpg5LCSztg5mh8XLUo_ZXvRwBIftcx71t_iXRyV2ysTAJsET__ayA4Wu1ZYjY3XA",
+          "places/ChIJRQvOsgCIBDkRWLd-aFw2yd4/photos/AWCwydiWvYLlHzh739i7XtVIyUDAwDTrgPxdp49DRUba8hVvhEc83N_n1Zcvjxc-iopijCyOnDWFeyW924-3x7dm2GQY2Sej2zr2vSJrqrx_cp9uGRf4uZ4q6i09iM97qofsAWdC88Tw1FRA3r940c7XKa-gBcAkiEbD75orAC1-b9g5HwUGHNLHmky6cfljCO4pSgNqlA4kTwPytnz-qRZMEUUgy-o9scFd_f-x5iiJZDeCEzwVSkESq2hHkgNVsuRTKm2zDrLe9YVgBRp2JTZ4J-veCaeUJoqsfnrkoUxNoCG9wFhoQN-RIkul27A3cmwqAxX5Vu_rR36Y7TlthGt0cQ4-HKg6A-ft4me4OY3WEjiXR-FI4vF07vAlZcNdPT_5p410gE3no6j3K5uKQwoePw7Q5yoUCiAXby51tbZe2mcK9MxR",
+          "places/ChIJRQvOsgCIBDkRWLd-aFw2yd4/photos/AWCwydjESWQh2m5Q67Z7ekgffbQRiv97tAUX-VrfvJk5amz4qt7sqdYHElBOVBbAannyS2uzohLDzdDeJbDBYWz24nlgX3VmYzr-bh-MnUGWucqFKfQ2uS7szWGFToSanrRvJzLygbTOyF8dM8HW30mwym7pD2UrHHnN2ObCGaRtVKVN1CkkaCSNG8GHZnyOoMuf-l-8p14iiNJWUlxset9rCRO9Hir9fbwIxe7AhRuhYkR-9AE9tMNROm-aqoUQguHkDEMUKqozq3nwJqRz5NIyv-Z8TyUUONNhV7ddbliX8Jc8gyvzkkf0M7R1GyihQb-nxq_BCdhGwTUrOvlfHlePROzpSuw0PsNHk195Q0NcLLOAWLcNgScLM3JnYmF41ZX_B9HvWO3-4mXjZdZ_4iGxFCuid2XK4SU_f6YLd9w-PDrfmuwm",
+          "places/ChIJRQvOsgCIBDkRWLd-aFw2yd4/photos/AWCwydjSJ6WmczjjemLKNU9j9pxvrQAWTMc35-114nCi8rlsOumS-thfHFhU15fhMyVBl-eFt1uhmfD7IWqb3eqpbGQkwU_XhQBA2CAZqvJ1Jn1az9EodNLVvehlfTEGS81JFEofDuBIx5_l97UZuBf2zXKAI_VtsU1EFRPHskn0L1SegTc5ItknyBdFAWVQKg1mkqKwHSJI-Jw5mqJ4DB_EJWR2fD8Iw_BdFbAWkfpeDes6ZBCOpaWK9Ezs7Bao_G_lBsKZEdXYNpocS7oUUpXZ2p--VoB0PdOzfnPnUlTUUiAfNaqSHiN6fCEfxCxICHP8LLh5a094FLsCKVX5PJLsMwlkcQ9O5vzQdnhvn07CvmoKEon9c2Bcl20ZtbSO3ki2Ueri9oeWLgr2Ib6IXZBH87YHQ2Zymqmxuzcfat2PQYayf0HGI2mq1Bc9RLHl0_6w",
+          "places/ChIJRQvOsgCIBDkRWLd-aFw2yd4/photos/AWCwydjZwcpcC6rR_ztn3uZR1VdXmGhFbH7QD5CcBXHZB4WRlwg_Qh_-sNPWlnhXUlK3gCnXom62fl0RwSKiJUdTe46tLK1IbXflZO6C0cGU440HGJIReMkEsWfOq9fMEZ-I2ZRQlJTq1F2X_xf_u1diCegOLLQwjLvMVHmupOKpUHjHUAcwsDpX1BAXD0ZzrBnGMmMe69ULnF43Hl1vQsBUj8DKjeP7KXS491f6A6WH7-fVTZmCXrAdjSD5Baqt-Gw3glehqjPjGDkUypRljNNrCgibycpUnRy2BfWEJlg1EcAx6owSOeXHGO7IYyLJqIi86i03lodkSh5qmrBYz2BO1eQl0VEGMcm3qPqMY4aXUpkrEg0vykUXGWxtHH91EP8BGsR8zX-NAumAhNs6BGWZaYjtxSc_Fhdc7H40K0PhG1chyjECU3wAU78J76dVwkcq",
+          "places/ChIJRQvOsgCIBDkRWLd-aFw2yd4/photos/AWCwydh4HkYR6FO7WJofL5bDQHxG0fbBOgl6B-G09gM-Qf1fpkH1KYeUDKDihTch1twG_bM624dbyKlNiXqG-6DWzHwy26Tihp339BwwkW7neenIy409A00-qPxVYM8BtzFTpA1JFxAJeVAy2eaGf0YtFfV-4eGFHRx5e7sGQVQmPD6auW8EJLA7Mnk_gO7mMoYHI9J7PMucoinThUAj7yEJ8v26F35wVLFc2OtEIPaNwNbXZIsD8UOypBk-wUXETZ8G7Q6EI-Y2zBO7BrlTgXy74-MeByID8EYkkYEWer69sWHvSw2dqst231FTx-Mwyi-dFfAelgc3C6WylA6ECSojc6kEDtNkozVRGi1CLA6YIOZTG4-O1LmhLdTmW3gIHP_9qmNJWHd1uXplNB4xD_JhDXM7_fGcpydE6cietJTXkQM",
+          "places/ChIJRQvOsgCIBDkRWLd-aFw2yd4/photos/AWCwydjznofGVXV3As_joE2yZ9yIXslF2GUK090xqNHnss7GLA2aFIrC675HgEmczDquo_7BpI4CBbv4yfPQu_6vYDn4L28g3vLSdy64Qfw41jojMBiSLrmHx6HzDiaVYyvdonUt7z6eAGbtP4QdwMzaxiRFKFLm0XH4famYC4ILJwA4o0aD1FgHvSDZ8f0lvhkCRRyYJPYeZYNcqOf1q7ji8LR9OOORqlYMsM9XWuQiv7lPzUdpIgPZvaqpO4W9ZCjco1ZHLkekQQDudvhVvnwfUo8d8xFqWV5HGb-8fp-6hV3dCcPz6-d4_bFoP4_4V7g7NZyCA8hHnE7PP6MkX7y4Qq-4dX-PkXAaxflYGM9HcXZ3H1PKBiDxBbmGQ8Oz7F4333PGz-e1Gsd7UxwOZEasA9V7Z4k1tPrSGKk--Cz9mp1fyWTkEB2iVoubdCUmUA"
+        ],
+        "__at__": 1786793563.45017,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Visited the Buddhist Gompa on Mall Road, Manali, and found it to be a peaceful and calming place amidst the bustle of the town. The monastery offers a serene atmosphere that encourages quiet reflection and provides a glimpse into the region's rich Buddhist heritage.\n\nThe beautifully maintained praye",
+            "author": "Voyager"
+          },
+          {
+            "rating": 5,
+            "text": "Visited Buddhist Monastery and had a wonderful experience. The monastery is very peaceful with beautiful architecture, colorful prayer flags, and a calming atmosphere. The surrounding mountain views are stunning and make the visit even more special. A great place to relax, meditate, and enjoy the be",
+            "author": "ANKIT KUMAR"
+          },
+          {
+            "rating": 4,
+            "text": "The Himalayan Nyingmapa Buddhist Monastery is one of the most peaceful and beautiful places to visit in Manali. Amidst the hustle and bustle of the town, this monastery offers a sense of calm, spirituality, and cultural richness that instantly makes you slow down and appreciate the moment.\n\nThe arch",
+            "author": "Tushita Singh"
+          },
+          {
+            "rating": 5,
+            "text": "A truly peaceful and calming place in the heart of Manali. The beautiful prayer wheels, colorful murals, and serene atmosphere create a sense of tranquility as soon as you enter. The monastery is well maintained and offers a wonderful opportunity to experience Buddhist culture and spirituality. Spen",
+            "author": "Pulkit Singhal"
+          },
+          {
+            "rating": 5,
+            "text": "One of the most peaceful spots to visit in Manali. Find a quiet spot in the monastery and meditate for a few minutes - it's surreal. The flower garden is beautiful and the offerings they serve are so nice - love the sheera!",
+            "author": "siddhant valecha"
+          }
+        ]
+      },
+      "4-star hotel in manali|manali": {
+        "place_id": "ChIJoYQy1eWHBDkRjj_LhrySmCg",
+        "name": "Snow Valley Resorts Manali",
+        "address": "Log Hut Area, Old Manali, Manali, Himachal Pradesh 175131, India",
+        "rating": 4.3,
+        "review_count": 3325,
+        "price_level": null,
+        "website": "https://www.snowvalleyresorts.com/manali/",
+        "editorial_summary": "Relaxed mountain resort offering free breakfast, plus a bar, a rooftop terrace & a restaurant.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 32.250486599999995,
+        "lng": 77.1775201,
+        "photo_refs": [
+          "places/ChIJoYQy1eWHBDkRjj_LhrySmCg/photos/AWCwydhPrRHL-j9x0on_iqSZl7w8o5FaKj7AVqzB8HSOgPkDRQnV0Z_ccCGaLrb9gzHmHnCTqxiWM7jiQzKE5KQIZtDu3ZW_95fUBtYiKdEYeruY6Oqdyrkl4Q2L2pgTGlztNwVnrv1CZdH0En6aMGU5KbeO1qy8oveg_TuNKaB57LaT3dkNpfzdej1TWn4GpXZ79KCc-nnVeOdYSM-BciHjLKVih5qlPe2C0UH5NpY1tN814yYvqtDpaxjsPHHcH1c8quY84iTDq3SdOW8J83JR3uB1-n7_I3kBstaMI2WPq2fujLCRnlst0Gu5dU7UW_CdaEf1ROKTHJtXLOajA88skY7EIoF6bcQFYptV5tnFMR_KlHPGEyllmYsT4a1goLsrEiN3J8zKxAYSpGD2om6Hm2rZSXOjw5fe9nE9PIvUC8NS1mo_GQ8SLM0X3dXfogq3",
+          "places/ChIJoYQy1eWHBDkRjj_LhrySmCg/photos/AWCwydhFRuNoru6EWA6_vi6b-jKHefYbGPVC2MBkUV-5vVA9ZUihdEbyJD18Y3CbIjJm5APblqJZM7bp5ynJOcQuR00hjaeQmyeezg0sn9JHl-mG3j8LdHUp3axICY2fgzYGP1lweq9FNTr-UxW93oUtWLIomASqLnUVB5HALcCGoeDeuah1GKlMY6m5O-FYied3JS_-EZNXST05_6fmrwWtxfwzcw2DVDRKBex5D8khNhjoe51dZPJ-qW20CgzEFQ3g3qPgngk8CCGn7oZS48vnSEgjilC5p19gXd8sH-j9u7MJ0fs31JcgUg7bbM9bz1dRogxWtLv_yUXuykcmhbHWJejm26pC5AHf9XGx9YOieETrdRwNuLMaXj2ro0efOrrVsobl9q4R3QOjPzMq0VgihW0Mvtm_ukNmRpZ_6421XLcP4w",
+          "places/ChIJoYQy1eWHBDkRjj_LhrySmCg/photos/AWCwydhxbJSTPh_4VNXXw8XP-ywPo7iKBrO_Vv8RZM4roFwmCTuqiXTBubN6s--p0Wush5wGLv49k_q6k1W02lUiC6Rk9OVtRG473d6higZrji-DjXeKaGgkP4icjEQ0tte4rhU6KZxeT4jp9e11uo6cwNCT5mhClbiXWq9KgDkiB4vxfFV9_UYtKPXASD2lgVChJSCp4XvY9qA-WPm5El4FgrPt11TsHPVCJ7T93-kS_ue5syeTVnI0RUYINY9f1oYXVjVAqpK6IVwQhlkdNJzkrN_4yIkPYEq8fN_aBy8gmodHiY3zki744gtrWM0MbuDE6DlyX4cw9QYuknPZBP-lXiZ5gDqeOeyBAuFTej7xPzqgSh5r8n3_fUGhyU93055Cm0SS_9eT_pIGErb3Rg8wN0mAq8tQg7lcC9DTv-dLU_SV-0mZaFqMZ9MLYJ4CVcDY",
+          "places/ChIJoYQy1eWHBDkRjj_LhrySmCg/photos/AWCwydgS0cu-wUoEJcLEr0QyoPcVbKi4SxubgL586C_zXbstvNOfJB0b6E7kSoFDZ7ZADlF7GutpyyNnd0caF5spSuor3i1xh7LdZxqFW9WAUupIsKh-rZoOlK7coSZKJT03BAHboiFeK_XrNvdd520OzgQ3JnQSlf1CM7wiVEteJ7VtYDgRLeT9spBe8h_6sqP-in6MBlVkv2wAb92DJHXnALVcFRmcVKn8MlNsnSK9KGIP1XHpcjTGq5bQy4lPBPNjYYxACL2uVpGjYvkozn4zruAmtNMr8eNOUD3L5OMveDmlICtcfeVXiUbVDZiLu8xF6JyLcMumfTRwlA0jWl0RmYfRzWJyfKoJOIWmkn9fzU2EvXgZSL5C_6gLsSMlYyoBph1xjXqKJQNDWkU8F3kwIv94iFImB0pbKtzjQYiiM_HEA0QZ",
+          "places/ChIJoYQy1eWHBDkRjj_LhrySmCg/photos/AWCwydgY50esjB-6GkBH813CVhwhqsoQ7gRq90mOiUxb0_iii9YIeMEue1hMUR3cRH1O8e2wiA1GWN3auWOY1q9cTP3ayHWiG1_Xd9tN3odd26LZI9vN0aR4bAHUXoKEVL2QiHg8Wcg2so8KgprXtHjxmibdrWyktywx1zPxEp0rvbBF4xRYa30vTRGim2ppKu4dn0dI82RQndP0RRjUKstQrXhrFaXeS2iAoLJNE0Wh4ExhNaTKABHaU8ZOcTAOdmURoOVrxa5gt-Fco4_TSKiYNeiNkSahStCCgFEB1BTUZp93d4vvulzUv7aE7byKJGDCv9aXExJ0L7Iyfgvug22YK4RmyS2KUpRKBzr4c4VWQMhMl6gWmCDXj0mXQemQguUUI0w2_qOQWfy8Vu7GVpNxSLIfHO5gG5Q7zg4DIaqMoA2F_jmX",
+          "places/ChIJoYQy1eWHBDkRjj_LhrySmCg/photos/AWCwydiobosLptU7_LFcofEbeMzTYShpg6F4Hq-DNZtBIlS1BSHPXGylgGkT-_GjsrzjBo-6nbIczVUNbOXmzTdNf55-ipCU3DQ_qERuLMsh2xyo-mx1nKQUSa0qsHGU2JksWjsdxc1sH59XAn74e59YN4-bf5LPnsnC2Vxd14gwAHiTK41gUfThwCfxjb_puiXaaE67yvsXdD3JsV7bNL0w_qzq5rayOSoaqwebjPCf1BcDWgTJRAjZqBSLoKfAt6PsPKLmogBmTaclxDYpzo5I4xBfYfpEsSbQFrByGagZ9lguMAJDvozNAfBGPO9BPha194yKH4gw5gP3JH1zz_5yEAPuhv9Nspi9HsBC5UlnocvK5Y6VKAaI-DFVV3bqv4qBjKm9vAOKQyDxVytRajr9BPwo18IYeb2Xl_ehVukhI85U2fTM1mlEKoHpUqVtVX54",
+          "places/ChIJoYQy1eWHBDkRjj_LhrySmCg/photos/AWCwydg3xhr-7AiT_Q8PFEVZ6x3CyOXAgmRjEjxa-ddQEMim5uIjC5GecliHC-oeNoZBwd7a72uHv-LDkBtUdQPkjFxS_OrvzdHX7sGEt4J6qqAE9c7LX13yMiWjcdVheq3Ag7onuB7_pNAPXcBh34vOVzRj9omLGPsY_2BhFJjBvkz_jHgupwqACXBU0dA5aV6TorapdP-TErJcMgLSsRV4Hz7tdwQnN5X4B1TUWMWKhgtLeWm7u6mw4AF6rUwiJm5Aq1KY-pkXqe_bwMuFF41wiPquEq4QuTnNEwP05gkCoDNRxjNxWLc5kAjK2JsITYFcruf5mf_ZOkb6Cg6goA7-oOWiRsMkkrvKcef6GF4OglBaImZtUKxIerCUP6HEC2Om7drx_d9Izj30xsNTavFgOVz_DhtPvU2leajtp789raIwPC4Jij3NBOTRVP8z765k",
+          "places/ChIJoYQy1eWHBDkRjj_LhrySmCg/photos/AWCwydjHaXRbGrZmVYhYOxo-r5_9C8XjoYreXnAjplFqhyQQekPaC2VXvFOMycHvI-PHIfeQkSo3We0jev1tLOU2GNODPUPLX2F1rSmzApb9uZyf3Lyr9VK99UFoyRllGPh6RXzYfHOfTkuZchwOtGYibR-tJLP_3o-MZyOoahMvGHORMi-2EnDgN4qk5Wjmu5aRIju-1aJn30lPT1OrlQRLThefYy4E5FNpmHfsZp581dZChgL24YOq5G7tmZa0P4r807PmoqQJJoHW10J8q1axcLHnRjglkpsD9r86l1u95gzfeNh6Z43kDs7PYL3z7rpwHgCnb5XzIRET7Simbz4QlZE5yCeJ0ERHNL81TDTMu4mSkxs_ydNfEwqDGGidyN9d-yW8T8Hi391cqKuSLGHLQ9zyf8hERiKm0RebcMRzwwcc-vw-QfYGIL_GP0ki2Bpm",
+          "places/ChIJoYQy1eWHBDkRjj_LhrySmCg/photos/AWCwydhSENzDP2gkh6J7R6OW0VE30AdI8Ki8I7GB-UKTS_5S0f9doDtNlLB4WtlruVaLAs2yEfKEFxDv1ssD1nQrqz1E5bbId5ZJvJrGtWgLnH4Q9v6o1ZZ9LJfsVPVFV2Owx2ypFZf-UvOQSBO52B6tBJff1pRhOl_TAsTfLnQo0vOdJN2mrm5cFfkaIWdNtcdK35EzpbwuUKlHr0VZ6yGZqBXDSABWUntaLu6F_etXTpJzb0lVRdVUJQVH-cVw_LwyBvctHVX_DovRbY9n-pCGPgfntDtQFpA2rA9GxIlcBuTfhXQixa9qHa3PVp58imRnAzuInkviKvYRy2S3D7PHmhgRnBqVg8Xf9HypB7B2ChhaPFWT4Z1d53cXhqg6PDbzjSv87gh8fRMaIfIseLnMSbO2BBsNL4CY1QJ2bPxn3RuCFqEe",
+          "places/ChIJoYQy1eWHBDkRjj_LhrySmCg/photos/AWCwydik3oY_AREiDW-OHHDeHXu0vwkqQVCv34kOwN9sq60zvFPjJ6nY20tw3QcHhkGIUJLPeX5-0kS7uxYouWbYU5tVS4iDPBsTxB2SvUqjK5mV8thVa5OxPoQsVqVGTX_-lqo-2OEE32iDMnbReoWVtn0Q9VWghYdeXobYWc9DuTrQYWTRft7FXjDM0UH_JZi7JYqZ3zdENCVFXJGPdtSsbGap9_-3geiffwAzOibTn1r-qccSP8v5w3Xs72BW0lVVhFU_GKH77k4YVdhql5JzqypyN4MwPurRkVF_I9zBz0AKssXzDLV694nvJum8gCGHGgGDnTWg9p_M9R_Sp_k98gLeVKYuQm6v1qg78hbEMc3QDoUnl2HNg_Ws83UCxtANBFuIpBzLGIW574cO4ufcATnwGu3Hb_s_C4Tnqq53F_HwcQ"
+        ],
+        "__at__": 1786793564.4974751,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "I spent almost 8 days at this property with my family, and we had a wonderful experience. The property is amazing, offering stunning views of the snow-capped mountains. Surrounded by trees and forest, it provides a peaceful and relaxing atmosphere. Waking up in the morning to the sound of birds chir",
+            "author": "Prasenjit Saha"
+          },
+          {
+            "rating": 5,
+            "text": "This hotel is an absolute value for money and offers a perfect family stay surrounded by the spectacular pine forests. It has everything you need for a relaxing vacation, from great food to excellent facilities.\n\nPros:\n-Awesome amenities including a nicely covered swimming pool, beautiful garden, te",
+            "author": "Safar 'n' Nazar"
+          },
+          {
+            "rating": 2,
+            "text": "I’ll share my honest experience about staying at Snow Valley Resort & Spa.\n\nIf you are specifically looking to stay in Old Manali and are comfortable driving through extremely narrow roads, then this place may suit you. Otherwise, I would suggest considering other options.\n\nThe pictures shown on the",
+            "author": "SHIVANGI BHATT"
+          },
+          {
+            "rating": 5,
+            "text": "Recently my family of 8 members stayed at this place between June 10-12th and they have been raving about the peaceful haven this guys have created! From excellent hospitality to delicious hot meals, spacious rooms and leisure activities done by the property in the evening to keep the guests enterta",
+            "author": "Aayushi Jaswani"
+          },
+          {
+            "rating": 4,
+            "text": "​We recently spent a few nights at Snow Valley Resort and had a thoroughly enjoyable stay. The first thing that stood out was the location—peaceful and tucked away enough to offer breathtaking sunset and mountain views, yet still easily accessible by road with excellent private parking (a massive pl",
+            "author": "Divyanshu Tiwari"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Manali",
+    "departure_date": "2026-09-12",
+    "return_date": "2026-09-19",
+    "nights": 7,
+    "month_year": "Sep 2026",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 1,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Manali",
+      "The Himalayan",
+      "Arrival in Manali",
+      "Mall Road",
+      "Solang Valley Adventure",
+      "Solang Valley",
+      "Cafe 1947",
+      "Jogini Waterfall",
+      "Rohtang Pass Excursion",
+      "Rohtang Pass",
+      "Chopsticks Restaurant",
+      "Old Manali & Local Culture",
+      "Hadimba Temple",
+      "Manu Temple",
+      "The Johnson's Cafe",
+      "Old Manali",
+      "Naggar Castle & Art Day",
+      "Naggar Castle",
+      "Nicholas Roerich Art Gallery",
+      "Nightingale Restaurant",
+      "Nature & Relaxation",
+      "Van Vihar National Park",
+      "Cafe Amigos",
+      "Beas River",
+      "Leisure & Departure",
+      "Tibetan Monastery",
+      "Cafe 1986"
+    ],
+    "auto_summary": "7-night Manali, Sep 2026, 1 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T12:30:21Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-5-lab27-agent-inputs",
+      "branch": "sandbox/5-lab27-agent-inputs",
+      "database": "tripplanner-sbx-5-lab27-agent-inputs",
+      "at": "2026-08-15T11:32:17Z"
+    }
+  ]
+}

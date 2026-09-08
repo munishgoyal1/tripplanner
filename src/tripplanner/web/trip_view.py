@@ -16,42 +16,140 @@ unconfigured.
 
 from __future__ import annotations
 
-import math
 import re
-from datetime import date
 from typing import Any
-from urllib.parse import quote
 
+from tripplanner.config import get_settings
+from tripplanner.decisions.provenance import build_provenance
+from tripplanner.decisions.store import list_decisions
+from tripplanner.decisions.trip_cost import (
+    build_cost_ledger,
+    compare_trip_decisions,
+    plan_price_rechecks,
+)
 from tripplanner.tools import user_preferences
-from tripplanner.web import places_cache
+from tripplanner.tools.trip_effort import coherence_notes, pacing_statement
+from tripplanner.web import map_view, places_cache
 
-_MAX_GALLERY_ITEMS = 10
-_MAX_PHOTOS_PER_ITEM = 3
-_MAX_REVIEWS_PER_ITEM = 2
-_FALLBACK_HOTELS = 2
-_FALLBACK_ATTRACTIONS = 8
-
-# ISO code → display symbol. Anything not listed is shown verbatim (already a
-# symbol, or an exotic code we just print as-is).
-_CURRENCY_SYMBOLS = {
-    "INR": "\u20b9",
-    "USD": "$",
-    "EUR": "\u20ac",
-    "GBP": "\u00a3",
-    "JPY": "\u00a5",
-    "THB": "\u0e3f",
-    "AED": "AED ",
-    "AUD": "A$",
-    "SGD": "S$",
-    "CAD": "C$",
-    "CHF": "CHF ",
-}
-_PRICE_KEYS = ("price", "total_price", "total", "cost", "amount", "fare")
-_TRAVELER_RE = re.compile(
-    r"(\d+)\s*(adults?|children|child|kids?|elderly|seniors?|infants?|people|travell?ers?|pax)",
-    re.I,
+# Budget/money helpers live in ``budget`` (tech-debt #7); re-exported here so
+# existing ``trip_view.*`` callers and tests are unaffected.
+from tripplanner.web.budget import (  # noqa: F401
+    _PRICE_KEYS,
+    _sum_item_prices,
+    _to_number,
+    build_budget,
+    currency_symbol,
+    fmt_money,
+    traveler_count,
 )
 
+# Gallery selection and itinerary occurrence indexing live in ``gallery``
+# (tech-debt #7), a leaf module; re-exported here for callers/tests.
+from tripplanner.web import destination_overview as _destination_overview
+from tripplanner.web.destination_overview import (  # noqa: F401
+    _MAX_NEWS_ITEMS,
+    _fetch_destination_news,
+    _overview_places,
+)
+from tripplanner.web.gallery import (  # noqa: F401
+    _FALLBACK_ATTRACTIONS,
+    _FALLBACK_HOTELS,
+    _MAX_GALLERY_ITEMS,
+    _itinerary_names,
+    _place_occurrence_index,
+    _place_occurrences,
+    _planned_place_names,
+    _selected_names,
+    _terminal_occurrence_index,
+    _terminal_occurrences,
+    itinerary_items,
+)
+
+# Map pin construction and per-day route estimation live in ``map_pins``
+# (tech-debt #7), a leaf module; re-exported here for callers/tests.
+from tripplanner.web.map_pins import (  # noqa: F401
+    _DAY_COLORS,
+    _MAX_OVERVIEW_ATTRACTIONS,
+    _airport_pin,
+    _day_color,
+    _day_for_place,
+    _hotel_identity_matches,
+    _local_route_stop_indexes,
+    _map_pins,
+    _maps_browser_key,
+    _normalize_map_stops,
+    _provider_name_matches,
+    _resolve_road_circuit_pin_ids,
+    _route_circuit_id,
+    _route_legs_for_day,
+    _route_stats_for_day_coords,
+    _trip_day_count,
+    build_map_url,
+)
+from tripplanner.web.place_guide import (  # noqa: F401
+    _BROWSE_KINDS,
+    _FALLBACK_CITY_PLACES,
+    _GUIDE_MAX_LIMIT,
+    _GUIDE_PAGE_SIZE,
+    _HOTEL_ALIASES,
+    _MAX_PHOTOS_PER_ITEM,
+    _MAX_REVIEWS_PER_ITEM,
+    _RESTAURANT_ALIASES,
+    _TRANSPORT_KINDS,
+    _TRANSPORT_PREFIXES,
+    _arrival_city,
+    _build_item,
+    _build_row,
+    _clean_city,
+    _derive_route_cities,
+    _is_transport_stop,
+    _place_cities,
+    _trip_cities,
+    browse_kind,
+    discovery_pool,
+    paged_places,
+    warm_guide,
+    warm_view_items,
+)
+
+# Route-metric and stop-timing helpers live in ``schedule`` (tech-debt #7), a
+# pure-computation leaf module; re-exported here for callers/tests.
+from tripplanner.web.schedule import (  # noqa: F401
+    _INTERCITY_SPEED_KMH,
+    _apply_hotel_endpoint_times,
+    _apply_saved_transfer_metrics,
+    _clock_display,
+    _clock_minutes,
+    _day_schedule,
+    _enrich_drive_transfer_timing,
+    _enrich_stop_timing,
+    _haversine_km,
+    _route_duration_display,
+    _route_stats_for_coords,
+    _route_stats_for_day,
+    _route_stats_for_distance,
+    _stop_duration_display,
+)
+
+# Transport-name helpers live in ``transport`` (tech-debt #7), a leaf module
+# shared by the gallery and map-pin builders; re-exported here for callers/tests.
+from tripplanner.web.transport import (  # noqa: F401
+    _canonical_transport_name,
+    _intercity_transfer_mode,
+    _normalized_stop_kind,
+    _transport_route_endpoints,
+    _transport_terminal_refs,
+)
+
+
+def build_destination_overview(
+    destination: str, *, include_news: bool = True
+) -> dict[str, Any]:
+    return _destination_overview.build_destination_overview(
+        destination,
+        include_news=include_news,
+        places_loader=_overview_places,
+    )
 
 # ---------------------------------------------------------------------------
 # pure helpers (no network) — safe to unit-test without stubs
@@ -72,128 +170,15 @@ def is_fallback(trip: dict[str, Any] | None, focus: dict[str, Any] | None) -> bo
     return bool(trip and trip.get("destination")) and not has_selections(trip)
 
 
-def fmt_money(value: Any, symbol: str = "\u20b9") -> str:
-    if isinstance(value, (int, float)) and value:
-        return f"{symbol}{value:,.0f}"
-    return "\u2014"
+def _member_text(value: Any) -> str:
+    """One readable phrase from a per-traveller field.
 
-
-def currency_symbol(trip: dict[str, Any] | None) -> str:
-    """Resolve the plan's sticky display currency to a render-ready symbol.
-
-    The trip agent stores its chosen currency on the plan (``currency``) as
-    either an ISO code (``"USD"``) or a symbol (``"$"``). Defaults to ₹ to match
-    the agent's domestic-India default.
+    Chat learning stores these as lists ("mobility": ["uses walking stick"]),
+    while the profile editor stores a plain string. Both reach this view.
     """
-    raw = str((trip or {}).get("currency") or "").strip()
-    if not raw:
-        return "\u20b9"
-    return _CURRENCY_SYMBOLS.get(raw.upper(), raw)
-
-
-def _to_number(value: Any) -> float:
-    """Best-effort numeric coercion ("₹8,500", "8500", 8500.0 → 8500.0)."""
-    if isinstance(value, bool):
-        return 0.0
-    if isinstance(value, (int, float)):
-        return float(value)
-    if isinstance(value, str):
-        cleaned = re.sub(r"[^\d.]", "", value.replace(",", ""))
-        try:
-            return float(cleaned) if cleaned else 0.0
-        except ValueError:
-            return 0.0
-    return 0.0
-
-
-def _sum_item_prices(items: Any) -> float:
-    """Sum the first price-like field on each selected item dict."""
-    total = 0.0
-    for it in items or []:
-        if not isinstance(it, dict):
-            continue
-        for k in _PRICE_KEYS:
-            if k in it:
-                n = _to_number(it[k])
-                if n:
-                    total += n
-                    break
-    return total
-
-
-def traveler_count(travelers: Any) -> int:
-    """Headcount from a free-form travelers string ("2 adults, 1 child" → 3).
-
-    Only counts numbers that precede a traveler word so trailing ages
-    ("(ages 5)") don't inflate the total. Falls back to 1.
-    """
-    if isinstance(travelers, (int, float)) and not isinstance(travelers, bool):
-        return int(travelers) or 1
-    matches = _TRAVELER_RE.findall(str(travelers or ""))
-    count = sum(int(m[0]) for m in matches)
-    return count or 1
-
-
-def build_budget(trip: dict[str, Any] | None) -> dict[str, Any] | None:
-    """Live budget meter view-model: spend, per-traveler split, remaining-vs-target.
-
-    Pure aggregation over the active trip — no network. Returns ``None`` when
-    there's nothing to show (no spend recorded and no target set), so the
-    frontend can hide the meter entirely.
-
-    ``spent`` prefers the agent-maintained ``total_cost`` (authoritative) and
-    falls back to summing per-item prices. ``target`` comes from the optional
-    ``budget`` field the agent sets when the user states a budget for the trip.
-    """
-    if not trip:
-        return None
-
-    symbol = currency_symbol(trip)
-    breakdown = {
-        "flights": round(_sum_item_prices(trip.get("selected_flights")), 2),
-        "hotels": round(_sum_item_prices(trip.get("selected_hotels")), 2),
-        "activities": round(_sum_item_prices(trip.get("selected_activities")), 2),
-    }
-    from_items = sum(breakdown.values())
-    total_cost = _to_number(trip.get("total_cost"))
-    spent = round(total_cost if total_cost else from_items, 2)
-    target = _to_number(trip.get("budget"))
-
-    if spent <= 0 and target <= 0:
-        return None
-
-    heads = traveler_count(trip.get("travelers"))
-    per_traveler = round(spent / heads, 2) if heads else spent
-
-    out: dict[str, Any] = {
-        "currency": symbol,
-        "spent": spent,
-        "spent_display": fmt_money(spent, symbol),
-        "travelers": heads,
-        "per_traveler": per_traveler,
-        "per_traveler_display": fmt_money(per_traveler, symbol),
-        "breakdown": {k: v for k, v in breakdown.items() if v > 0},
-        "target": None,
-        "target_display": "",
-        "remaining": None,
-        "remaining_display": "",
-        "pct_used": None,
-        "over_budget": False,
-    }
-
-    if target > 0:
-        remaining = round(target - spent, 2)
-        out.update(
-            {
-                "target": round(target, 2),
-                "target_display": fmt_money(target, symbol),
-                "remaining": remaining,
-                "remaining_display": fmt_money(abs(remaining), symbol),
-                "pct_used": int(round(min(spent / target, 9.99) * 100)),
-                "over_budget": spent > target,
-            }
-        )
-    return out
+    if isinstance(value, (list, tuple, set)):
+        return ", ".join(str(v).strip() for v in value if str(v).strip())
+    return str(value or "").strip()
 
 
 def family_pills(prefs: dict[str, Any] | None) -> list[str]:
@@ -223,7 +208,9 @@ def family_pills(prefs: dict[str, Any] | None) -> list[str]:
     if teen_ages:
         out.append("\U0001f9d2 Teen-friendly (ages " + ",".join(str(a) for a in teen_ages) + ")")
     if senior_members:
-        mobility = next((str(m.get("mobility") or "").strip() for m in senior_members if (m.get("mobility") or "").strip()), "")
+        mobility = next(
+            (text for m in senior_members if (text := _member_text(m.get("mobility")))), ""
+        )
         label = "\U0001f475 Senior-friendly" + (f" ({mobility})" if mobility else "")
         out.append(label)
     if pet_members:
@@ -231,7 +218,7 @@ def family_pills(prefs: dict[str, Any] | None) -> list[str]:
 
     diets: set[str] = set()
     for m in members:
-        d = str(m.get("dietary") or "").strip()
+        d = _member_text(m.get("dietary"))
         if d:
             diets.add(d.title())
     for d in (prefs.get("food_preferences", {}) or {}).get("dietary") or []:
@@ -249,128 +236,124 @@ def family_pills(prefs: dict[str, Any] | None) -> list[str]:
     return out
 
 
-def itinerary_items(
-    trip: dict[str, Any] | None, focus: dict[str, Any] | None
-) -> list[dict[str, str]]:
-    """Return ``[{kind, name}, ...]`` for the things to show.
+def _weather_condition(summary: str) -> str:
+    value = summary.strip().lower()
+    if any(word in value for word in ("thunder", "storm", "hail")):
+        return "storm"
+    if any(word in value for word in ("snow", "sleet", "freezing")):
+        return "snow"
+    if any(word in value for word in ("rain", "drizzle", "shower")):
+        return "rain"
+    if "fog" in value or "mist" in value:
+        return "fog"
+    if "overcast" in value or "cloudy" in value:
+        return "cloudy" if "partly" not in value else "partly_cloudy"
+    if any(word in value for word in ("clear", "sunny")):
+        return "clear"
+    return "unknown"
 
-    User's selected hotels and activities come first, followed by the destination's top hotels &
-    attractions that aren't already selected — so adding something to the trip
-    never hides the rest of the places you can still browse.
 
-    When focused, keep the broader list but move the focused place to the top
-    so the details pane can still surface alternatives for quick edits.
-    """
-    if not trip:
-        return []
+def _number(value: Any) -> float | None:
+    try:
+        return float(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
 
-    items: list[dict[str, str]] = []
-    seen: set[tuple[str, str]] = set()
 
-    def _add(kind: str, name: str) -> None:
-        key = (kind, name.strip().lower())
-        if name and key not in seen:
-            seen.add(key)
-            items.append({"kind": kind, "name": name})
+def build_weather(trip: dict[str, Any] | None) -> dict[str, Any] | None:
+    raw = (trip or {}).get("weather")
+    if not isinstance(raw, dict):
+        return None
+    source = str(raw.get("source") or "").strip().lower()
+    if source not in {"forecast", "seasonal_estimate", "agent_climate_estimate"}:
+        return None
 
-    for h in trip.get("selected_hotels") or []:
-        if isinstance(h, dict) and h.get("name"):
-            _add("hotel", str(h["name"]))
-    for a in trip.get("selected_activities") or []:
-        if isinstance(a, dict) and a.get("name"):
-            _add("attraction", str(a["name"]))
-
-    for day in trip.get("day_wise_itinerary") or []:
-        if not isinstance(day, dict):
+    days: list[dict[str, Any]] = []
+    for raw_day in raw.get("days") or []:
+        if not isinstance(raw_day, dict):
             continue
-        for stop in day.get("stops") or []:
-            if isinstance(stop, dict):
-                name = str(stop.get("name") or "").strip()
-                kind = str(stop.get("kind") or "attraction").strip().lower()
-            else:
-                name = str(stop or "").strip()
-                kind = "attraction"
-            if name:
-                _add(kind or "attraction", name)
-
-    destination = str(trip.get("destination") or "").strip()
-    if destination and len(items) < _MAX_GALLERY_ITEMS:
-        for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
-            _add("hotel", name)
-        remaining = max(0, _MAX_GALLERY_ITEMS - len(items))
-        for name in places_cache.top_places(
-            destination, "attraction", n=min(_FALLBACK_ATTRACTIONS, remaining)
-        ):
-            _add("attraction", name)
-
-    if focus and focus.get("name"):
-        fk = str(focus.get("kind") or "attraction").strip().lower() or "attraction"
-        fn = str(focus.get("name") or "").strip()
-        if fn:
-            # Ensure focus target exists and appears first.
-            _add(fk, fn)
-            key = (fk, fn.lower())
-            items.sort(key=lambda it: 0 if (it["kind"], it["name"].strip().lower()) == key else 1)
-
-    return items
-
-
-def _selected_names(trip: dict[str, Any] | None, kind: str) -> set[str]:
-    if not trip:
-        return set()
-    key = "selected_hotels" if kind == "hotel" else "selected_activities"
-    out: set[str] = set()
-    for it in trip.get(key) or []:
-        if isinstance(it, dict) and it.get("name"):
-            out.add(str(it["name"]).strip().lower())
-    return out
-
-
-def _itinerary_names(trip: dict[str, Any] | None) -> set[str]:
-    """Lowercased names of every place already woven into the day-by-day
-    itinerary. A place can be part of the itinerary without sitting in the
-    ``selected_*`` buckets (e.g. the agent placed it directly), and the UI
-    should treat those as already in the trip — showing "Remove", not "Add".
-    """
-    if not trip:
-        return set()
-    out: set[str] = set()
-    for day in trip.get("day_wise_itinerary") or []:
-        if not isinstance(day, dict):
+        day_date = str(raw_day.get("date") or "").strip()
+        summary = str(raw_day.get("summary") or "Typical conditions").strip()
+        if not day_date:
             continue
-        stops = day.get("stops")
-        if not isinstance(stops, list):
-            continue
-        for s in stops:
-            if isinstance(s, dict):
-                name = str(s.get("name") or "").strip()
-            else:
-                name = str(s or "").strip()
-            if name:
-                out.add(name.lower())
-    return out
+        days.append(
+            {
+                "date": day_date,
+                "summary": summary,
+                "condition": _weather_condition(summary),
+                "high_c": _number(raw_day.get("high_c")),
+                "low_c": _number(raw_day.get("low_c")),
+                "precip_mm": _number(raw_day.get("precip_mm")),
+                "precip_probability_pct": _number(
+                    raw_day.get("precip_probability_pct")
+                ),
+            }
+        )
+    if not days:
+        return None
 
+    highs = [day["high_c"] for day in days if day["high_c"] is not None]
+    lows = [day["low_c"] for day in days if day["low_c"] is not None]
+    rainy = any(
+        day["condition"] in {"rain", "storm"}
+        or (day["precip_mm"] or 0) >= 2
+        or (day["precip_probability_pct"] or 0) >= 40
+        for day in days
+    )
+    snowy = any(day["condition"] == "snow" for day in days)
+    packing = [str(item).strip() for item in raw.get("packing_advice") or [] if str(item).strip()]
+    if not packing:
+        if snowy or (lows and min(lows) <= 5):
+            packing.append("Insulated coat, warm layers, gloves, and weatherproof shoes")
+        elif lows and min(lows) <= 15:
+            packing.append("Light jacket and layers for cooler mornings and evenings")
+        elif highs and max(highs) >= 28:
+            packing.append("Light, breathable clothes plus a hat and sunscreen")
+        else:
+            packing.append("Comfortable light layers for changing conditions")
+        if rainy:
+            packing.append("Compact umbrella, light rain jacket, and quick-dry footwear")
 
-def _planned_place_names(trip: dict[str, Any]) -> set[str]:
-    names = _selected_names(trip, "attraction")
-    for day in trip.get("day_wise_itinerary") or []:
-        if not isinstance(day, dict):
-            continue
-        for stop in day.get("stops") or []:
-            if isinstance(stop, dict):
-                kind = str(stop.get("kind") or "attraction").strip().lower()
-                name = str(stop.get("name") or "").strip()
-            else:
-                kind = "attraction"
-                name = str(stop or "").strip()
-            if kind in {"attraction", "activity", "meal", "restaurant"} and name:
-                names.add(name.lower())
-    return names
+    return {
+        "source": source,
+        "source_label": {
+            "forecast": "Live forecast",
+            "seasonal_estimate": "Typical for this season",
+            "agent_climate_estimate": "Typical monthly pattern",
+        }[source],
+        "note": str(raw.get("note") or "").strip(),
+        "days": days,
+        "packing_advice": packing,
+    }
 
 
 # ---------------------------------------------------------------------------
 # view-model assembly (may hit Places for photos/reviews)
 # ---------------------------------------------------------------------------
+
+
+def _build_cost_baseline(trip: dict[str, Any], symbol: str) -> dict[str, Any] | None:
+    """What the plan cost before the traveller started overruling it.
+
+    Absent until the first overrule, so an untouched trip shows no comparison
+    against itself.
+    """
+    baseline = trip.get("cost_baseline")
+    if not isinstance(baseline, dict):
+        return None
+    first, current = baseline.get("first"), baseline.get("current")
+    if not isinstance(first, int | float) or not isinstance(current, int | float):
+        return None
+    saved = round(float(first) - float(current), 2)
+    return {
+        "first": first,
+        "current": current,
+        "saved": saved,
+        "currency": str(baseline.get("currency") or ""),
+        "first_display": fmt_money(first, symbol),
+        "current_display": fmt_money(current, symbol),
+        "saved_display": fmt_money(abs(saved), symbol),
+    }
 
 
 def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
@@ -386,6 +369,12 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
     except Exception:  # pragma: no cover - storage failure shouldn't break the view
         prefs = None
     symbol = currency_symbol(trip)
+    cost_evidence = build_cost_ledger(trip).as_dict()
+    offer_benefits = (
+        prefs.get("offer_benefits")
+        if isinstance(prefs, dict) and isinstance(prefs.get("offer_benefits"), list)
+        else []
+    )
     return {
         "destination": trip.get("destination") or "",
         "origin": trip.get("origin") or "",
@@ -397,7 +386,20 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "counts": counts,
         "total_cost": total,
         "total_cost_display": fmt_money(total, symbol),
-        "budget": build_budget(trip),
+        "cost_evidence": cost_evidence,
+        "offer_comparisons": compare_trip_decisions(trip, benefits=offer_benefits),
+        "price_rechecks": plan_price_rechecks(trip),
+        "price_recheck_results": [
+            row
+            for row in trip.get("price_recheck_results") or []
+            if isinstance(row, dict)
+        ],
+        "cost_baseline": _build_cost_baseline(trip, symbol),
+        "provenance": build_provenance(trip),
+        "budget": build_budget(trip, cost_evidence=cost_evidence),
+        "weather": build_weather(trip),
+        "effort_notes": coherence_notes(trip),
+        "pacing_statement": pacing_statement(trip),
         "family_pills": family_pills(prefs),
         "constraints": [
             str(c).strip()
@@ -407,65 +409,63 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _build_item(
-    ref: dict[str, str],
-    destination: str,
-    selected_names: dict[str, set[str]],
-    itinerary_names: set[str] | None = None,
-    occurrences: list[dict[str, Any]] | None = None,
-) -> dict[str, Any]:
-    name = ref["name"]
-    kind = ref.get("kind", "place")
-    info = places_cache.get_summary(name, destination) or {}
-    photos = places_cache.get_photos(name, destination, max_photos=_MAX_PHOTOS_PER_ITEM)
-    reviews = [
-        {
-            "rating": r.get("rating"),
-            "text": r.get("text") or "",
-            "author": r.get("author") or "Guest",
-        }
-        for r in (info.get("reviews") or [])[:_MAX_REVIEWS_PER_ITEM]
-        if (r.get("text") or "").strip()
-    ]
-    key = name.strip().lower()
-    selected = key in selected_names.get(kind, set()) or key in (itinerary_names or set())
-    return {
-        "kind": kind,
-        "name": info.get("name") or name,
-        "selected": selected,
-        "rating": info.get("rating"),
-        "review_count": info.get("review_count"),
-        "address": info.get("address") or "",
-        "summary": info.get("editorial_summary") or "",
-        "website": info.get("website") or "",
-        "photos": photos,
-        "reviews": reviews,
-        "occurrences": occurrences or [],
-    }
-
-
-def _place_occurrences(trip: dict[str, Any], name: str) -> list[dict[str, Any]]:
-    target = name.strip().lower()
-    occurrences: list[dict[str, Any]] = []
-    for day_index, entry in enumerate(trip.get("day_wise_itinerary") or []):
-        if not isinstance(entry, dict):
-            continue
-        raw_day = entry.get("day")
-        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else day_index + 1
-        for stop_index, raw_stop in enumerate(entry.get("stops") or []):
-            stop_name = raw_stop.get("name") if isinstance(raw_stop, dict) else raw_stop
-            if str(stop_name or "").strip().lower() != target:
-                continue
-            occurrences.append(
+def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
+    """Recorded comparisons, shaped for display. Read-only in this view."""
+    if not get_settings().decisions_ui_enabled:
+        return []
+    out: list[dict[str, Any]] = []
+    for decision in list_decisions(trip):
+        out.append({
+            "id": decision.id,
+            "kind": decision.kind.value,
+            "subject": decision.subject,
+            "scope": decision.scope.model_dump(mode="json"),
+            "rule": decision.rule.model_dump(mode="json"),
+            "state": decision.state.value,
+            "priced": decision.priced.value,
+            "chosen_option_id": decision.active_option_id,
+            "agent_option_id": decision.chosen_option_id,
+            "override": (
+                decision.override.model_dump(mode="json") if decision.override else None
+            ),
+            "effect": decision.effect.model_dump(mode="json"),
+            "options": [
                 {
-                    "day": day_num,
-                    "stop": stop_index + 1,
-                    "time": str(raw_stop.get("time") or "").strip()
-                    if isinstance(raw_stop, dict)
-                    else "",
+                    "id": option.id,
+                    "mode": option.mode.value if option.mode else None,
+                    "label": option.label,
+                    "detail": option.detail,
+                    "price": option.price.model_dump(mode="json") if option.price else None,
+                    "priced": option.priced,
+                    "unpriced_reason": (
+                        option.unpriced_reason.value if option.unpriced_reason else None
+                    ),
+                    "duration_min": option.duration_min,
+                    "door_to_door_min": option.door_to_door_min,
+                    "duration_estimated": option.duration_estimated,
+                    "rejected_because": option.rejected_because,
+                    "source": option.source.model_dump(mode="json"),
+                    "lodging": (
+                        option.lodging.model_dump(
+                            mode="json",
+                            exclude={"provider_ref"},
+                        )
+                        if option.lodging
+                        else None
+                    ),
+                    "flight": (
+                        option.flight.model_dump(
+                            mode="json",
+                            exclude={"provider_ref"},
+                        )
+                        if option.flight
+                        else None
+                    ),
                 }
-            )
-    return occurrences
+                for option in decision.options
+            ],
+        })
+    return out
 
 
 def build_view(
@@ -479,6 +479,8 @@ def build_view(
     """
     if not trip:
         return {
+            "trip_id": None,
+            "updated_at": None,
             "has_trip": False,
             "title": "Trip planner",
             "destination": "",
@@ -493,6 +495,8 @@ def build_view(
             "overview": None,
             "available_days": [],
             "items": [],
+            "decisions": [],
+            "feedback": {"count": 0},
         }
 
     destination = str(trip.get("destination") or "")
@@ -503,31 +507,56 @@ def build_view(
         "attraction": _selected_names(trip, "attraction"),
     }
     itinerary_names = _itinerary_names(trip)
-    places_cache.prefetch(
-        [r["name"] for r in refs], destination, max_photos=_MAX_PHOTOS_PER_ITEM
-    )
+    city_map = _place_cities(trip)
+    # A focus change re-renders a gallery the unfocused view already warmed, so
+    # only the focused place blocks the response; the rest is warmed off-request.
+    focus_name = str((focus or {}).get("name") or "").strip().lower()
+    warm_names = [r["name"] for r in refs]
+    if focus_name:
+        warm_names = [n for n in warm_names if n.strip().lower() == focus_name] or warm_names[:1]
+    settings = get_settings()
+    photo_limit = settings.google_places_max_photos_per_trip
+    photo_names = warm_names[:photo_limit]
+    places_cache.prefetch(photo_names, destination, max_photos=1, with_reviews=False)
+    place_occurrences = _place_occurrence_index(trip)
+    terminal_occurrences = _terminal_occurrence_index(trip)
     items = [
         _build_item(
             ref,
             destination,
             selected_names,
             itinerary_names,
-            _place_occurrences(trip, ref["name"]),
+            _terminal_occurrences(trip, ref["name"], terminal_occurrences)
+            if ref["kind"] in {"airport", "station", "bus_station"}
+            else _place_occurrences(trip, ref["name"], place_occurrences),
+            city=city_map.get(ref["name"].strip().lower(), destination),
+            with_reviews=bool(focus_name and ref["name"].strip().lower() == focus_name),
+            max_photos=(
+                min(_MAX_PHOTOS_PER_ITEM, settings.google_places_max_photos_per_place)
+                if ref["name"] in photo_names
+                else 0
+            ),
         )
         for ref in refs
     ]
 
     title = f"\u2708\ufe0f {destination}" if destination else "Trip planner"
+    if trip.get("forked_from"):
+        title = f"{title} \u00b7 my copy"
     if focus and focus.get("name"):
         title = f"{title} \u2014 {focus['name']}"
 
     return {
+        "trip_id": str(trip.get("trip_id") or "") or None,
+        "updated_at": str(trip.get("updated_at") or "") or None,
         "has_trip": True,
         "title": title,
+        "forked_from": str(trip.get("forked_from") or "") or None,
         "destination": destination,
         "focus": focus,
         "is_fallback": fallback,
         "empty_message": None,
+        "feedback": dict(trip.get("feedback") or {"count": 0}),
         "overview": _build_overview(trip),
         "available_days": [
             int(day.get("day") or index + 1)
@@ -535,372 +564,9 @@ def build_view(
             if isinstance(day, dict)
         ],
         "items": items,
+        "decisions": _build_decisions(trip),
     }
 
-
-_MAX_OVERVIEW_ATTRACTIONS = 6
-_MAX_NEWS_ITEMS = 4
-
-
-def build_map_url(destination: str, highlights: list[str] | None = None) -> str:
-    """Return a Google Maps Embed iframe URL for ``destination``.
-
-    Returns an empty string when ``GOOGLE_PLACES_API_KEY`` is not configured —
-    the frontend simply hides the map in that case. Uses the Embed API "place"
-    mode keyed on a free-text query (destination + first highlight) which
-    needs no Place IDs and works for any city/country string.
-    """
-    destination = (destination or "").strip()
-    if not destination:
-        return ""
-    try:
-        from tripplanner.config import get_settings
-
-        key = get_settings().google_places_api_key
-    except Exception:
-        key = ""
-    if not key:
-        return ""
-    query = destination
-    if highlights:
-        first = next((h for h in highlights if h), "")
-        if first:
-            query = f"{first}, {destination}"
-    return (
-        "https://www.google.com/maps/embed/v1/place"
-        f"?key={quote(key, safe='')}&q={quote(query, safe='')}"
-    )
-
-
-# Day-pin palette — distinct, reasonably color-blind-safe hues, cycled per day.
-_DAY_COLORS = (
-    "#e11d48",  # coral (brand)
-    "#0d9488",  # teal (accent)
-    "#2563eb",  # blue
-    "#d97706",  # amber
-    "#7c3aed",  # violet
-    "#db2777",  # pink
-    "#059669",  # emerald
-    "#0891b2",  # cyan
-)
-
-
-def _maps_browser_key() -> str:
-    try:
-        from tripplanner.config import get_settings
-
-        return get_settings().google_maps_browser_key or ""
-    except Exception:
-        return ""
-
-
-def _day_color(day: int) -> str:
-    return _DAY_COLORS[(day - 1) % len(_DAY_COLORS)]
-
-
-def _day_for_place(name: str, itinerary: list[Any]) -> int | None:
-    """Return the 1-based day number a place belongs to, or ``None``.
-
-    "Both" strategy: prefer a structured ``stops`` list on a day entry; fall
-    back to scanning the free-form ``plan`` prose for the place name.
-    """
-    needle = (name or "").strip().lower()
-    if not needle:
-        return None
-    for idx, entry in enumerate(itinerary or []):
-        if not isinstance(entry, dict):
-            continue
-        raw_day = entry.get("day")
-        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
-        stops = entry.get("stops")
-        if isinstance(stops, list):
-            for s in stops:
-                s_name = s.get("name") if isinstance(s, dict) else s
-                if s_name and needle in str(s_name).strip().lower():
-                    return day_num
-        plan_text = str(entry.get("plan") or "").lower()
-        if plan_text and needle in plan_text:
-            return day_num
-    return None
-
-
-def _trip_day_count(trip: dict[str, Any]) -> int:
-    """Number of days in the trip, for fallback day-clustering on the map.
-
-    Prefers the structured itinerary length, then the date span, else 0.
-    """
-    itin = trip.get("day_wise_itinerary") or []
-    if itin:
-        return len(itin)
-    dep = str(trip.get("departure_date") or "").strip()
-    ret = str(trip.get("return_date") or "").strip()
-    try:
-        from datetime import date
-
-        nights = (date.fromisoformat(ret) - date.fromisoformat(dep)).days
-        if nights > 0:
-            return nights
-    except (ValueError, TypeError):
-        pass
-    return 0
-
-
-
-def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
-    """Geocoded pins for selected items + destination top-places (suggestions)."""
-    itinerary = trip.get("day_wise_itinerary") or []
-    selected = {
-        "hotel": _selected_names(trip, "hotel"),
-        "attraction": _selected_names(trip, "attraction"),
-    }
-    itinerary_names = _itinerary_names(trip)
-
-    # Structured itinerary stops are authoritative for what should appear on
-    # the map and in which order/day. Keep an explicit day map so duplicated
-    # names across sources don't lose their itinerary day assignment.
-    explicit_day_by_name: dict[str, int] = {}
-
-    # (kind, name) in display order: user picks first, then suggestions.
-    refs: list[tuple[str, str]] = []
-    seen: set[str] = set()
-
-    def _add(kind: str, name: str) -> None:
-        key = (name or "").strip().lower()
-        if name and key not in seen:
-            seen.add(key)
-            refs.append((kind, name))
-
-    def _infer_kind_from_name(name: str) -> str:
-        n = (name or "").strip().lower()
-        if n in selected["hotel"]:
-            return "hotel"
-        if n in selected["attraction"]:
-            return "attraction"
-        return "attraction"
-
-    # 1) Structured itinerary stops first, preserving day/stop order so route
-    #    lines follow the actual itinerary sequence.
-    for idx, entry in enumerate(itinerary):
-        if not isinstance(entry, dict):
-            continue
-        raw_day = entry.get("day")
-        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
-        stops = entry.get("stops")
-        if not isinstance(stops, list):
-            continue
-        for s in stops:
-            if isinstance(s, dict):
-                name = str(s.get("name") or "").strip()
-                kind = str(s.get("kind") or "").strip().lower()
-            else:
-                name = str(s or "").strip()
-                kind = ""
-            if not name:
-                continue
-            if kind not in {"hotel", "attraction", "meal", "restaurant"}:
-                kind = _infer_kind_from_name(name)
-            _add(kind, name)
-            explicit_day_by_name.setdefault(name.lower(), day_num)
-
-    # 2) User selected places (ensure presence even if stops list is absent).
-    for h in trip.get("selected_hotels") or []:
-        if isinstance(h, dict) and h.get("name"):
-            _add("hotel", str(h["name"]))
-    for a in trip.get("selected_activities") or []:
-        if isinstance(a, dict) and a.get("name"):
-            _add("attraction", str(a["name"]))
-
-    # 3) Destination suggestions to fill context around the chosen items.
-    if destination and len(refs) < 3:
-        for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
-            _add("hotel", name)
-        for name in places_cache.top_places(
-            destination, "attraction", n=_MAX_OVERVIEW_ATTRACTIONS
-        ):
-            _add("attraction", name)
-
-    places_cache.prefetch(
-        [n for _, n in refs], destination, max_photos=1, with_reviews=False
-    )
-
-    pins: list[dict[str, Any]] = []
-    for i, (kind, name) in enumerate(refs):
-        info = places_cache.get_details(name, destination) or {}
-        lat, lng = info.get("lat"), info.get("lng")
-        if lat is None or lng is None:
-            continue
-        photos = places_cache.get_photos(name, destination, max_photos=1)
-        is_sel = (
-            name.strip().lower() in selected.get(kind, set())
-            or name.strip().lower() in itinerary_names
-        )
-        pins.append(
-            {
-                "id": f"p{i}",
-                "name": info.get("name") or name,
-                "kind": kind,
-                "selected": is_sel,
-                "day": explicit_day_by_name.get(name.strip().lower())
-                or _day_for_place(name, itinerary),
-                "lat": lat,
-                "lng": lng,
-                "rating": info.get("rating"),
-                "address": info.get("address") or "",
-                "photo": photos[0] if photos else None,
-                "occurrences": _place_occurrences(trip, name),
-            }
-        )
-
-    # Fallback day-clustering: any SELECTED attraction the itinerary text didn't
-    # explicitly place still deserves a day so it shows a bold, numbered marker
-    # and joins a per-day route line. Spread them evenly across the trip's days,
-    # continuing after whatever the itinerary already assigned.
-    day_count = _trip_day_count(trip)
-    if day_count > 0:
-        used_days = sorted({p["day"] for p in pins if p["day"]})
-        cursor = 0
-        for p in pins:
-            if p["kind"] != "attraction" or not p["selected"] or p["day"]:
-                continue
-            # Prefer days that have nothing assigned yet, then round-robin.
-            target = None
-            for d in range(1, day_count + 1):
-                if d not in used_days:
-                    target = d
-                    used_days.append(d)
-                    break
-            if target is None:
-                target = (cursor % day_count) + 1
-                cursor += 1
-            p["day"] = target
-    return pins
-
-
-
-def _airport_pin(destination: str) -> dict[str, Any] | None:
-    """A single 'arrival airport' pin for Day-1 context, if geocodable."""
-    if not destination:
-        return None
-    info = places_cache.get_details(f"{destination} International Airport", destination)
-    if not info or info.get("lat") is None or info.get("lng") is None:
-        return None
-    return {
-        "id": "airport",
-        "name": info.get("name") or f"{destination} Airport",
-        "kind": "airport",
-        "lat": info["lat"],
-        "lng": info["lng"],
-    }
-
-
-def _haversine_km(a: tuple[float, float], b: tuple[float, float]) -> float:
-    """Great-circle distance in km between two (lat, lng) points."""
-    lat1, lng1 = math.radians(a[0]), math.radians(a[1])
-    lat2, lng2 = math.radians(b[0]), math.radians(b[1])
-    dlat = lat2 - lat1
-    dlng = lng2 - lng1
-    h = (
-        math.sin(dlat / 2) ** 2
-        + math.cos(lat1) * math.cos(lat2) * math.sin(dlng / 2) ** 2
-    )
-    return 6371.0 * 2 * math.asin(math.sqrt(h))
-
-
-def _route_stats_for_day(
-    pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]
-) -> dict[str, Any]:
-    """Estimate day route metrics from ordered pins.
-
-    We avoid billed routing calls in this view-model. Distances are straight-
-    line totals along the day path; durations are coarse estimates by likely
-    local transfer mode.
-    """
-    coords: list[tuple[float, float]] = []
-    for pid in pin_ids:
-        p = pin_by_id.get(pid)
-        if not p:
-            continue
-        lat, lng = p.get("lat"), p.get("lng")
-        if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
-            coords.append((float(lat), float(lng)))
-
-    return _route_stats_for_coords(coords)
-
-
-def _route_stats_for_distance(distance: float) -> dict[str, Any]:
-    if distance <= 3:
-        mode, speed = "walk", 4.5
-    elif distance <= 20:
-        mode, speed = "local transit", 18.0
-    else:
-        mode, speed = "car transfer", 35.0
-
-    duration_min = int(round((distance / speed) * 60)) if speed > 0 else 0
-    distance_1 = round(distance, 1)
-    return {
-        "distance_km": distance_1,
-        "duration_min": duration_min,
-        "mode": mode,
-        "distance_display": f"{distance_1:.1f} km",
-        "duration_display": _route_duration_display(duration_min),
-    }
-
-
-def _route_duration_display(duration_min: int) -> str:
-    if duration_min < 60:
-        return f"{duration_min} min"
-    hours, minutes = divmod(duration_min, 60)
-    return f"{hours} hr" + (f" {minutes} min" if minutes else "")
-
-
-def _route_stats_for_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
-    legs = [
-        _route_stats_for_distance(_haversine_km(coords[i - 1], coords[i]))
-        for i in range(1, len(coords))
-    ]
-    if not legs:
-        return _route_stats_for_distance(0.0)
-    distance = round(sum(float(leg["distance_km"]) for leg in legs), 1)
-    duration = sum(int(leg["duration_min"]) for leg in legs)
-    modes = list(dict.fromkeys(str(leg["mode"]) for leg in legs))
-    mode = modes[0] if len(modes) == 1 else "mixed local travel"
-    return {
-        "distance_km": distance,
-        "duration_min": duration,
-        "mode": mode,
-        "distance_display": f"{distance:.1f} km",
-        "duration_display": _route_duration_display(duration),
-    }
-
-
-def _route_legs_for_day(
-    pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]
-) -> list[dict[str, Any]]:
-    legs: list[dict[str, Any]] = []
-    for from_id, to_id in zip(pin_ids, pin_ids[1:]):
-        start = pin_by_id.get(from_id) or {}
-        end = pin_by_id.get(to_id) or {}
-        start_coords = (start.get("lat"), start.get("lng"))
-        end_coords = (end.get("lat"), end.get("lng"))
-        if not all(isinstance(value, (int, float)) for value in (*start_coords, *end_coords)):
-            continue
-        metrics = _route_stats_for_distance(
-            _haversine_km(
-                (float(start_coords[0]), float(start_coords[1])),
-                (float(end_coords[0]), float(end_coords[1])),
-            )
-        )
-        legs.append({"from_pin_id": from_id, "to_pin_id": to_id, **metrics})
-    return legs
-
-
-def _route_stats_for_day_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
-    """Estimate day route metrics from an ordered list of (lat, lng) tuples.
-
-    Same logic as _route_stats_for_day, but takes pre-computed coordinates
-    instead of pin_ids. Used by build_itinerary to calculate per-day routes.
-    """
-    return _route_stats_for_coords(coords)
 
 
 def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
@@ -913,6 +579,9 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     Network use is limited to the (cached) Google Places lookups already used
     by the trip panel — no Routes/Directions calls happen here (the frontend
     draws per-day routes client-side).
+
+    Resolving the pins, airport and itinerary here keeps them substitutable
+    through this module; ``map_view`` performs the pure assembly.
     """
     key_configured = bool(_maps_browser_key())
     destination = str((trip or {}).get("destination") or "").strip()
@@ -925,6 +594,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             "days": [],
             "available_days": [],
             "unscheduled_pin_ids": [],
+            "unmapped_stops": [],
             "airport": None,
             "empty_message": (
                 "Start planning a trip and your hotels, attractions and daily "
@@ -932,369 +602,16 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             ),
         }
 
-    pins = _map_pins(trip, destination)
-    airport = _airport_pin(destination)
-
-    pin_by_name = {str(p["name"]).strip().lower(): p for p in pins}
-
-    def _pin_for_stop(name: Any) -> dict[str, Any] | None:
-        needle = str(name or "").strip().lower()
-        if not needle:
-            return None
-        exact = pin_by_name.get(needle)
-        if exact:
-            return exact
-        return next(
-            (pin for candidate, pin in pin_by_name.items() if needle in candidate or candidate in needle),
-            None,
-        )
-
-    # Structured days are authoritative and may reuse the same place on
-    # multiple days. A pin has one primary day for display, while day routes
-    # can reference it wherever the itinerary includes it.
-    by_day: dict[int, list[str]] = {}
-    for idx, entry in enumerate(trip.get("day_wise_itinerary") or []):
-        if not isinstance(entry, dict) or not isinstance(entry.get("stops"), list):
-            continue
-        raw_day = entry.get("day")
-        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
-        for stop in entry["stops"]:
-            name = stop.get("name") if isinstance(stop, dict) else stop
-            pin = _pin_for_stop(name)
-            if pin and pin["id"] not in by_day.setdefault(day_num, []):
-                by_day[day_num].append(pin["id"])
-
-    unscheduled: list[str] = []
-    for p in pins:
-        if p["day"]:
-            day_ids = by_day.setdefault(p["day"], [])
-            if p["id"] not in day_ids:
-                day_ids.append(p["id"])
-        else:
-            unscheduled.append(p["id"])
-
-    pin_by_id = {p["id"]: p for p in pins}
-
-    def _occurrence_stop(pin_id: str, day: int) -> int:
-        pin = pin_by_id[pin_id]
-        occurrence = next(
-            (item for item in pin.get("occurrences") or [] if item.get("day") == day),
-            None,
-        )
-        return int(occurrence.get("stop")) if occurrence and occurrence.get("stop") else 10_000
-
-    stay_ids = [p["id"] for p in pins if p["kind"] == "hotel" and p["selected"]]
-    days = []
-    for d in sorted(by_day):
-        ids = sorted(by_day[d], key=lambda pin_id: _occurrence_stop(pin_id, d))
-        day_stay = next((pid for pid in ids if pin_by_id[pid]["kind"] == "hotel"), None)
-        stay_id = day_stay or (stay_ids[0] if stay_ids else None)
-        if stay_id:
-            ids = [stay_id, *(pid for pid in ids if pid != stay_id), stay_id]
-        days.append(
-            {
-                "day": d,
-                "label": f"Day {d}",
-                "color": _day_color(d),
-                "pin_ids": ids,
-                "route": _route_stats_for_day(ids, pin_by_id),
-                "legs": _route_legs_for_day(ids, pin_by_id),
-            }
-        )
-    scheduled_ids = {pin_id for day in days for pin_id in day["pin_ids"]}
-    unscheduled = [pin_id for pin_id in unscheduled if pin_id not in scheduled_ids]
-
-    # Map center: average of all pin coords (incl. airport) for an initial
-    # viewport; the frontend will fit bounds precisely.
-    coords = [(p["lat"], p["lng"]) for p in pins]
-    if airport:
-        coords.append((airport["lat"], airport["lng"]))
-    center = (
-        {"lat": sum(c[0] for c in coords) / len(coords),
-         "lng": sum(c[1] for c in coords) / len(coords)}
-        if coords
-        else None
-    )
-
-    return {
-        "enabled": key_configured,
-        "destination": destination,
-        "center": center,
-        "pins": pins,
-        "days": days,
-        "available_days": [
-            int(day.get("day") or index + 1)
-            for index, day in enumerate(trip.get("day_wise_itinerary") or [])
-            if isinstance(day, dict)
-        ],
-        "unscheduled_pin_ids": unscheduled,
-        "airport": airport,
-        "empty_message": None if pins else (
-            "No mappable places yet. Pick hotels and attractions and they'll "
-            "appear pinned by day on the map."
-        ),
+    unmapped: list[dict[str, Any]] = []
+    pins = _map_pins(trip, destination, unmapped)
+    airport = None if any(pin["kind"] == "airport" for pin in pins) else _airport_pin(destination)
+    itinerary_days = {
+        int(day["day"]): day for day in build_itinerary(trip).get("days", [])
     }
-
-
-# ---------------------------------------------------------------------------
-# structured itinerary view-model (no network) — drives the Itinerary tab,
-# cross-references selections + per-stop booked flags so each stop is clickable
-# (focus its photos) and reflects what's booked.
-# ---------------------------------------------------------------------------
-
-# A stop's "kind" decides its chip + whether it can load place photos.
-_STOP_KINDS = {"hotel", "attraction", "flight", "meal", "restaurant", "transport", "other"}
-_DEFAULT_STOP_DURATION_MIN = {
-    "hotel": 45,
-    "attraction": 120,
-    "meal": 60,
-    "transport": 30,
-    "flight": 90,
-    "other": 60,
-}
-_PRICE_LEVEL_HINT = {
-    "PRICE_LEVEL_INEXPENSIVE": "Budget",
-    "PRICE_LEVEL_MODERATE": "Mid-range",
-    "PRICE_LEVEL_EXPENSIVE": "Premium",
-    "PRICE_LEVEL_VERY_EXPENSIVE": "Luxury",
-}
-
-
-def _infer_stop_kind(name: str, hotels: set[str], activities: set[str]) -> str:
-    n = (name or "").strip().lower()
-    if n in hotels:
-        return "hotel"
-    if n in activities:
-        return "attraction"
-    return "attraction"
-
-
-def _normalize_stop(
-    raw: Any, hotels: set[str], activities: set[str]
-) -> dict[str, Any] | None:
-    """Turn a raw stop (str or dict) into the structured stop view-model."""
-    if isinstance(raw, str):
-        name = raw.strip()
-        if not name:
-            return None
-        kind = _infer_stop_kind(name, hotels, activities)
-        return {
-            "name": name,
-            "kind": kind,
-            "time": "",
-            "duration_min": None,
-            "note": "",
-            "booked": False,
-            "selected": name.lower() in (hotels if kind == "hotel" else activities),
-            "opening_hours": "",
-            "cost_display": "",
-            "insight": "",
-            "concern": "",
-        }
-    if isinstance(raw, dict):
-        name = str(raw.get("name") or "").strip()
-        if not name:
-            return None
-        kind = str(raw.get("kind") or "").strip().lower()
-        if kind not in _STOP_KINDS:
-            kind = _infer_stop_kind(name, hotels, activities)
-        dur = raw.get("duration_min")
-        return {
-            "name": name,
-            "kind": kind,
-            "time": str(raw.get("time") or "").strip(),
-            "duration_min": dur if isinstance(dur, (int, float)) else None,
-            "note": str(raw.get("note") or "").strip(),
-            "booked": bool(raw.get("booked")),
-            "selected": name.lower()
-            in (hotels if kind == "hotel" else activities),
-            "opening_hours": str(raw.get("opening_hours") or "").strip(),
-            "cost_display": str(raw.get("cost_display") or "").strip(),
-            "insight": str(raw.get("insight") or "").strip(),
-            "concern": str(raw.get("concern") or "").strip(),
-        }
-    return None
-
-
-def _selected_price_map(trip: dict[str, Any] | None) -> dict[str, float]:
-    out: dict[str, float] = {}
-    for key in ("selected_hotels", "selected_activities"):
-        for item in (trip or {}).get(key) or []:
-            if not isinstance(item, dict):
-                continue
-            name = str(item.get("name") or "").strip().lower()
-            if not name:
-                continue
-            for price_key in _PRICE_KEYS:
-                if price_key not in item:
-                    continue
-                value = _to_number(item.get(price_key))
-                if value > 0:
-                    out[name] = value
-                    break
-    return out
-
-
-def _first_sentence(text: Any) -> str:
-    s = str(text or "").strip()
-    if not s:
-        return ""
-    parts = re.split(r"(?<=[.!?])\s+", s)
-    return parts[0][:180].strip()
-
-
-def _weekday_name(day_iso: str) -> str:
-    text = str(day_iso or "").strip()
-    if not text:
-        return ""
-    try:
-        return date.fromisoformat(text).strftime("%A")
-    except ValueError:
-        return ""
-
-
-def _opening_hint(summary: dict[str, Any], day_iso: str) -> tuple[str, str]:
-    weekday_lines = summary.get("weekday_descriptions") or []
-    open_now = summary.get("open_now")
-    day_name = _weekday_name(day_iso)
-
-    matched = ""
-    if day_name and isinstance(weekday_lines, list):
-        prefix = day_name.lower() + ":"
-        for line in weekday_lines:
-            text = str(line or "").strip()
-            if text.lower().startswith(prefix):
-                matched = text
-                break
-
-    opening = matched
-    if not opening and open_now is True:
-        opening = "Open now"
-    elif not opening and open_now is False:
-        opening = "May be closed now"
-
-    concern = ""
-    if matched and "closed" in matched.lower() and day_name:
-        concern = f"Likely closed on {day_name}; review day assignment."
-    elif open_now is False:
-        concern = "Check opening hours before visiting."
-    return opening, concern
-
-
-def _cost_hint(kind: str, summary: dict[str, Any], selected_price: float, symbol: str) -> str:
-    if selected_price > 0:
-        return fmt_money(selected_price, symbol)
-
-    level = str(summary.get("price_level") or "").strip().upper()
-    if level in _PRICE_LEVEL_HINT:
-        return _PRICE_LEVEL_HINT[level]
-
-    if kind == "meal":
-        return f"{symbol}500-1,500 pp (est.)"
-    if kind == "attraction":
-        return f"{symbol}300-1,200 tickets (est.)"
-    if kind == "hotel":
-        return f"{symbol}6,000-15,000 / night (est.)"
-    return ""
-
-
-def _duration_hint(kind: str, duration_min: Any) -> int:
-    if isinstance(duration_min, (int, float)) and duration_min > 0:
-        return int(round(float(duration_min)))
-    return _DEFAULT_STOP_DURATION_MIN.get(kind, 60)
-
-
-def _insight_hint(name: str, kind: str, summary: dict[str, Any]) -> str:
-    text = _first_sentence(summary.get("editorial_summary"))
-    if text:
-        return text
-    if kind == "hotel":
-        return f"{name} is a practical base for nearby sights."
-    if kind == "meal":
-        return f"{name} is a convenient meal break near your route."
-    return f"{name} is a popular stop to include in this day circuit."
-
-
-def _reachability_hint(stops: list[dict[str, Any]], route: dict[str, Any]) -> str:
-    names = [str(s.get("name") or "").strip() for s in stops if str(s.get("name") or "").strip()]
-    if len(names) < 2:
-        return ""
-
-    first = names[0]
-    second = names[1]
-    mode = str(route.get("mode") or "").strip().lower()
-    if mode == "walk":
-        return f"Start at {first}, then walk to {second}; most stops are in a compact area."
-    if mode == "local transit":
-        return (
-            f"Start from {first}, take a short cab to {second}, and use metro/local transit "
-            "for the remaining hops."
-        )
-    return f"Hire a cab from {first} to {second}, then continue the day circuit by taxi."
-
-
-def _google_travel_mode(route_mode: str) -> str:
-    mode = str(route_mode or "").strip().lower()
-    if mode == "walk":
-        return "walking"
-    if mode == "local transit":
-        return "transit"
-    return "driving"
-
-
-def _google_maps_day_url(
-    destination: str,
-    stops: list[dict[str, Any]],
-    route_mode: str,
-) -> str:
-    names: list[str] = []
-    seen: set[str] = set()
-    for stop in stops:
-        name = str(stop.get("name") or "").strip()
-        if not name:
-            continue
-        key = name.lower()
-        if key in seen:
-            continue
-        seen.add(key)
-        names.append(name)
-
-    if not names:
-        return ""
-
-    if len(names) == 1:
-        query = f"{names[0]}, {destination}".strip().strip(",")
-        return "https://www.google.com/maps/search/?api=1&query=" + quote(query, safe="")
-
-    origin = f"{names[0]}, {destination}".strip().strip(",")
-    dest = f"{names[-1]}, {destination}".strip().strip(",")
-    url = (
-        "https://www.google.com/maps/dir/?api=1"
-        f"&origin={quote(origin, safe='')}"
-        f"&destination={quote(dest, safe='')}"
-        f"&travelmode={quote(_google_travel_mode(route_mode), safe='')}"
+    return map_view.build(
+        trip, destination, pins, airport, itinerary_days, key_configured, unmapped
     )
-    waypoints = names[1:-1][:8]
-    if waypoints:
-        waypoint_text = "|".join(f"{w}, {destination}".strip().strip(",") for w in waypoints)
-        url += f"&waypoints={quote(waypoint_text, safe='')}"
-    return url
 
-
-def _ordered_selected(trip: dict[str, Any] | None, key: str) -> list[str]:
-    """Display-cased selected names for a bucket, in selection order, deduped."""
-    out: list[str] = []
-    seen: set[str] = set()
-    for it in (trip or {}).get(key) or []:
-        name = ""
-        if isinstance(it, dict):
-            name = str(it.get("name") or "").strip()
-        elif isinstance(it, str):
-            name = it.strip()
-        if name and name.lower() not in seen:
-            seen.add(name.lower())
-            out.append(name)
-    return out
 
 
 def _place_coords(name: str, destination: str) -> tuple[float, float] | None:
@@ -1303,9 +620,15 @@ def _place_coords(name: str, destination: str) -> tuple[float, float] | None:
     if not name or not destination or not places_cache.is_configured():
         return None
     try:
-        info = places_cache.get_details(name, destination) or {}
+        coords = places_cache.place_coords(name, destination)
     except Exception:  # noqa: BLE001 — never let geocoding break the itinerary
         return None
+    if coords:
+        return (float(coords[0]), float(coords[1]))
+    try:
+        info = places_cache.get_details(name, destination) or {}
+    except Exception:  # noqa: BLE001
+        info = {}
     lat, lng = info.get("lat"), info.get("lng")
     if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
         return (float(lat), float(lng))
@@ -1315,471 +638,48 @@ def _place_coords(name: str, destination: str) -> tuple[float, float] | None:
     plain = re.sub(r"\s*\([^)]*\)", "", str(name or "")).strip()
     if plain and plain.lower() != str(name or "").strip().lower():
         try:
-            info2 = places_cache.get_details(plain, destination) or {}
+            coords = places_cache.place_coords(plain, destination)
         except Exception:  # noqa: BLE001
             return None
-        lat2, lng2 = info2.get("lat"), info2.get("lng")
-        if isinstance(lat2, (int, float)) and isinstance(lng2, (int, float)):
-            return (float(lat2), float(lng2))
+        if coords:
+            return (float(coords[0]), float(coords[1]))
     return None
 
 
-def _nearest_neighbor_order(
-    names: list[str],
-    coords: dict[str, tuple[float, float]],
-    start: tuple[float, float] | None,
-) -> list[str]:
-    """Greedy nearest-neighbor ordering so consecutive stops are geographically
-    close. Names without coordinates keep their original relative order and are
-    appended after the geo-ordered ones."""
-    placed = [n for n in names if n in coords]
-    unplaced = [n for n in names if n not in coords]
-    if not placed:
-        return list(names)
-    ordered: list[str] = []
-    remaining = placed[:]
-    cur = start
-    if cur is None:
-        cur = coords[remaining[0]]
-        ordered.append(remaining.pop(0))
-    while remaining:
-        nxt = min(remaining, key=lambda n: _haversine_km(cur, coords[n]))
-        remaining.remove(nxt)
-        ordered.append(nxt)
-        cur = coords[nxt]
-    ordered.extend(unplaced)
-    return ordered
-
-
-def _split_contiguous(items: list[str], n: int) -> list[list[str]]:
-    """Split a list into ``n`` contiguous, near-even chunks (front-loaded).
-
-    Contiguous (not round-robin) so each chunk stays a geographically coherent
-    cluster when ``items`` is already nearest-neighbor ordered."""
-    n = max(1, min(n, len(items))) if items else 1
-    k, m = divmod(len(items), n)
-    chunks: list[list[str]] = []
-    start = 0
-    for i in range(n):
-        size = k + (1 if i < m else 0)
-        chunks.append(items[start : start + size])
-        start += size
-    return chunks
-
-
-def _is_overnight_travel_day(entry: dict[str, Any]) -> bool:
-    text_parts = [entry.get("title"), entry.get("summary"), entry.get("plan")]
-    for raw in entry.get("stops") or []:
-        if not isinstance(raw, dict):
-            continue
-        kind = str(raw.get("kind") or "").strip().lower()
-        if kind in {"flight", "transport"}:
-            text_parts.extend((raw.get("name"), raw.get("note")))
-    text = " ".join(str(part or "") for part in text_parts).lower()
-    return any(
-        marker in text
-        for marker in ("overnight", "night train", "night bus", "sleeper", "red-eye", "red eye")
-    )
-
-
-def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
-    """Synthesize an intelligent multi-day v1 itinerary when the agent never
-    wrote a structured ``day_wise_itinerary`` — so the panel is never blank and
-    the user gets a real, editable first draft on the first go.
-
-    Selected attractions are ordered by geographic proximity (nearest-neighbor
-    from the hotel) and split into contiguous, day-sized clusters across the
-    trip's length, with the hotel anchoring Day 1. The user can then ask the
-    planner to refine times, meals, and pacing. Network-but-cached for coords;
-    degrades to selection order when Places isn't configured.
-    """
-    hotels = _ordered_selected(trip, "selected_hotels")
-    activities = _ordered_selected(trip, "selected_activities")
-    destination = str((trip or {}).get("destination") or "")
-    if not hotels and not activities:
-        return {
-            "has_itinerary": False,
-            "destination": destination,
-            "currency": currency_symbol(trip),
-            "days": [],
-            "stats": {"days": 0, "stops": 0, "booked": 0},
-        }
-
-    anchor = hotels[0] if hotels else None
-    symbol = currency_symbol(trip)
-
-    places_cache.prefetch(
-        [*hotels, *activities], destination, max_photos=0, with_reviews=False
-    )
-
-    # Geographic ordering of the attractions (cached coord lookups).
-    coords: dict[str, tuple[float, float]] = {}
-    for name in activities:
-        c = _place_coords(name, destination)
-        if c:
-            coords[name] = c
-    start = _place_coords(anchor, destination) if anchor else None
-    ordered = _nearest_neighbor_order(activities, coords, start)
-
-    # How many days to spread across: the trip length, but never more days than
-    # we have attractions to fill (so we don't emit empty days).
-    trip_days = _trip_day_count(trip or {})
-    if ordered:
-        n_days = min(trip_days or len(ordered), len(ordered))
-    else:
-        n_days = 1
-    n_days = max(1, n_days)
-    chunks = _split_contiguous(ordered, n_days)
-
-    days: list[dict[str, Any]] = []
-    total_stops = 0
-    for i, chunk in enumerate(chunks, start=1):
-        color = _day_color(i)
-        stops: list[dict[str, Any]] = []
-        day_coords: list[tuple[float, float]] = []
-        hotel_coords: tuple[float, float] | None = None
-
-        if anchor:
-            for hname in [anchor]:
-                summary = places_cache.get_details(hname, destination) or {}
-                opening, concern = _opening_hint(summary, "")
-                stops.append({
-                    "name": hname, "kind": "hotel", "time": "", "duration_min": None,
-                    "note": "Your base", "booked": False, "selected": True, "color": color,
-                    "opening_hours": opening,
-                    "cost_display": _cost_hint("hotel", summary, 0.0, symbol),
-                    "insight": _insight_hint(hname, "hotel", summary),
-                    "concern": concern,
-                })
-                # Add hotel coords to day route.
-                c = coords.get(hname) or _place_coords(hname, destination)
-                if c:
-                    hotel_coords = c
-                    day_coords.append(c)
-
-        for name in chunk:
-            summary = places_cache.get_details(name, destination) or {}
-            opening, concern = _opening_hint(summary, "")
-            stops.append({
-                "name": name, "kind": "attraction", "time": "", "duration_min": None,
-                "note": "", "booked": False, "selected": True, "color": color,
-                "opening_hours": opening,
-                "cost_display": _cost_hint("attraction", summary, 0.0, symbol),
-                "insight": _insight_hint(name, "attraction", summary),
-                "concern": concern,
-            })
-            # Add attraction coords to day route.
-            c = coords.get(name)
-            if c:
-                day_coords.append(c)
-
-        if anchor:
-            hotel_start = stops[0]
-            hotel_start["note"] = hotel_start.get("note") or "Start from your stay"
-            hotel_return = dict(hotel_start)
-            hotel_return["note"] = "Return to your stay"
-            stops.append(hotel_return)
-            if hotel_coords:
-                day_coords.append(hotel_coords)
-
-        if not stops:
-            continue
-
-        primary = chunk[0] if chunk else (anchor or f"Day {i}")
-        route = _route_stats_for_day_coords(day_coords)
-
-        days.append({
-            "day": i,
-            "date": "",
-            "title": f"Day {i} · {primary}" if len(chunks) > 1 else primary,
-            "summary": "Suggested first-draft plan grouped by area — ask the "
-            "planner to fine-tune times, meals, and pacing.",
-            "color": color,
-            "stops": stops,
-            "route": route,
-            "reachability": _reachability_hint(stops, route),
-            "google_maps_url": _google_maps_day_url(destination, stops, route.get("mode", "")),
-        })
-        total_stops += len(stops)
-
-    return {
-        "has_itinerary": True,
-        "destination": destination,
-        "currency": currency_symbol(trip),
-        "days": days,
-        "stats": {"days": len(days), "stops": total_stops, "booked": 0},
-    }
-
-
-def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
-    """Structured day-by-day itinerary view-model (frontend-agnostic).
-
-    Each day carries a title, prose summary, day color, and an ordered list of
-    structured stops. Every stop is cross-referenced against the trip's
-    selections (``selected``) and carries its own ``booked`` flag so the UI can
-    render booked checkmarks and make each stop clickable (to focus its photos
-    or its map pin). When the agent never wrote a structured itinerary, falls
-    back to an intelligent multi-day plan synthesized from the selections
-    (proximity-clustered; network-but-cached for coordinates).
-    """
-    if not trip or not (trip.get("day_wise_itinerary") or []):
-        return _itinerary_from_selections(trip)
-
-    hotels = _selected_names(trip, "hotel")
-    ordered_hotels = _ordered_selected(trip, "selected_hotels")
-    activities = _selected_names(trip, "attraction")
-    destination = str((trip or {}).get("destination") or "")
-    symbol = currency_symbol(trip)
-    selected_prices = _selected_price_map(trip)
-    itin = trip.get("day_wise_itinerary") or []
-
-    # Pre-load all place coords so we can calculate route stats per day.
-    # Use EVERY itinerary stop name, not just selected buckets, so added meals,
-    # markets, and non-selected places still contribute to route metrics.
-    place_coords_map: dict[str, tuple[float, float]] = {}
-    stop_names = {name.lower(): name for name in [*hotels, *activities]}
-    for entry in itin:
-        if not isinstance(entry, dict):
-            continue
-        for raw in entry.get("stops") or []:
-            if isinstance(raw, dict):
-                name = str(raw.get("name") or "").strip()
-            else:
-                name = str(raw or "").strip()
-            if name:
-                stop_names[name.lower()] = name
-
-    places_cache.prefetch(
-        list(stop_names.values()), destination, max_photos=0, with_reviews=False
-    )
-    for name in stop_names.values():
-        coords = _place_coords(name, destination)
-        if coords:
-            place_coords_map[name.strip().lower()] = coords
-
-    days: list[dict[str, Any]] = []
-    total_stops = 0
-    total_booked = 0
-    current_hotel = ordered_hotels[0] if ordered_hotels else ""
-    for idx, entry in enumerate(itin):
-        if not isinstance(entry, dict):
-            entry = {"plan": str(entry)}
-        raw_day = entry.get("day")
-        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
-        stops = []
-        day_coords: list[tuple[float, float]] = []
-        for raw in entry.get("stops") or []:
-            s = _normalize_stop(raw, hotels, activities)
-            if s:
-                summary = places_cache.get_details(s["name"], destination) or {}
-                opening, concern = _opening_hint(summary, str(entry.get("date") or ""))
-                s["duration_min"] = _duration_hint(s["kind"], s.get("duration_min"))
-                if not s.get("opening_hours"):
-                    s["opening_hours"] = opening
-                if not s.get("concern"):
-                    s["concern"] = concern
-                s["cost_display"] = s.get("cost_display") or _cost_hint(
-                    s["kind"],
-                    summary,
-                    selected_prices.get(str(s["name"]).strip().lower(), 0.0),
-                    symbol,
-                )
-                if not s.get("insight"):
-                    s["insight"] = _insight_hint(s["name"], s["kind"], summary)
-                s["color"] = _day_color(day_num)
-                stops.append(s)
-                # Accumulate coords for route stats.
-                coords = place_coords_map.get(str(s["name"] or "").strip().lower())
-                if coords:
-                    day_coords.append(coords)
-                if s["booked"]:
-                    total_booked += 1
-
-        hotel_stops = [stop for stop in stops if stop["kind"] == "hotel"]
-        distinct_hotels = {
-            str(stop.get("name") or "").strip().lower() for stop in hotel_stops
-        }
-        if not _is_overnight_travel_day(entry) and len(distinct_hotels) < 2:
-            anchor = hotel_stops[0] if hotel_stops else None
-            if anchor is None and current_hotel:
-                anchor = _normalize_stop(
-                    {"name": current_hotel, "kind": "hotel"}, hotels, activities
-                )
-                if anchor:
-                    summary = places_cache.get_details(anchor["name"], destination) or {}
-                    opening, concern = _opening_hint(
-                        summary, str(entry.get("date") or "")
-                    )
-                    anchor["duration_min"] = _duration_hint("hotel", None)
-                    anchor["opening_hours"] = opening
-                    anchor["concern"] = concern
-                    anchor["cost_display"] = _cost_hint(
-                        "hotel",
-                        summary,
-                        selected_prices.get(anchor["name"].strip().lower(), 0.0),
-                        symbol,
-                    )
-                    anchor["insight"] = _insight_hint(
-                        anchor["name"], "hotel", summary
-                    )
-                    anchor["color"] = _day_color(day_num)
-            if anchor:
-                middle = [stop for stop in stops if stop["kind"] != "hotel"]
-                hotel_start = dict(anchor)
-                hotel_start["note"] = hotel_start.get("note") or "Start from your stay"
-                hotel_return = dict(anchor)
-                hotel_return["note"] = "Return to your stay"
-                stops = [hotel_start, *middle, hotel_return]
-
-        rendered_hotels = [stop for stop in stops if stop["kind"] == "hotel"]
-        if rendered_hotels:
-            current_hotel = str(rendered_hotels[-1].get("name") or current_hotel)
-
-        day_coords = []
-        previous_coords: tuple[float, float] | None = None
-        for stop in stops:
-            coords = place_coords_map.get(str(stop.get("name") or "").strip().lower())
-            if coords:
-                if previous_coords:
-                    stop["travel_from_previous"] = _route_stats_for_distance(
-                        _haversine_km(previous_coords, coords)
-                    )
-                day_coords.append(coords)
-                previous_coords = coords
-        total_stops += len(stops)
-
-        # Calculate route stats for the day.
-        route = _route_stats_for_day_coords(day_coords)
-
-        days.append(
-            {
-                "day": day_num,
-                "date": str(entry.get("date") or "").strip(),
-                "title": str(entry.get("title") or "").strip() or f"Day {day_num}",
-                "summary": str(entry.get("summary") or entry.get("plan") or "").strip(),
-                "color": _day_color(day_num),
-                "stops": stops,
-                "route": route,
-                "reachability": _reachability_hint(stops, route),
-                "google_maps_url": _google_maps_day_url(
-                    destination, stops, route.get("mode", "")
-                ),
-            }
-        )
-
-    return {
-        "has_itinerary": True,
-        "destination": str(trip.get("destination") or ""),
-        "currency": currency_symbol(trip),
-        "days": days,
-        "stats": {"days": len(days), "stops": total_stops, "booked": total_booked},
-    }
-
-
-def build_destination_overview(
-    destination: str, *, include_news: bool = True
-) -> dict[str, Any]:
-    """Build a destination-level overview shown before any trip exists.
-
-    Combines Google Places (photos, key attractions, reviews) with fresh
-    Tavily news. Frontend-agnostic — consumed by ``GET /destination/overview``
-    and rendered by the SPA. Network calls degrade gracefully: a missing API
-    key just yields an empty section rather than an error.
-    """
-    destination = (destination or "").strip()
-    if not destination:
-        return {
-            "destination": "",
-            "summary": "",
-            "rating": None,
-            "review_count": 0,
-            "photos": [],
-            "key_attractions": [],
-            "reviews": [],
-            "news": [],
-            "map_url": "",
-        }
-
-    attraction_names = places_cache.top_places(
-        destination, "attraction", n=_MAX_OVERVIEW_ATTRACTIONS
-    )
-    places_cache.prefetch(attraction_names, destination, max_photos=2)
-
-    photos: list[str] = []
-    key_attractions: list[dict[str, Any]] = []
-    reviews: list[dict[str, Any]] = []
-    summary = ""
-    for name in attraction_names:
-        info = places_cache.get_summary(name, destination) or {}
-        pics = places_cache.get_photos(name, destination, max_photos=2)
-        photos.extend(pics)
-        if not summary and info.get("editorial_summary"):
-            summary = info["editorial_summary"]
-        key_attractions.append(
-            {
-                "name": info.get("name") or name,
-                "rating": info.get("rating"),
-                "review_count": info.get("review_count"),
-                "summary": info.get("editorial_summary") or "",
-                "photo": pics[0] if pics else None,
-            }
-        )
-        for r in (info.get("reviews") or [])[:1]:
-            text = (r.get("text") or "").strip()
-            if text:
-                reviews.append(
-                    {
-                        "place": info.get("name") or name,
-                        "rating": r.get("rating"),
-                        "text": text,
-                        "author": r.get("author") or "Guest",
-                    }
-                )
-
-    rated = [a["rating"] for a in key_attractions if a.get("rating")]
-    agg_rating = round(sum(rated) / len(rated), 1) if rated else None
-    agg_reviews = sum(
-        int(a["review_count"]) for a in key_attractions if a.get("review_count")
-    )
-
-    news: list[dict[str, str]] = []
-    if include_news:
-        news = _fetch_destination_news(destination)
-
-    return {
-        "destination": destination,
-        "summary": summary,
-        "rating": agg_rating,
-        "review_count": agg_reviews,
-        "photos": photos[:_MAX_GALLERY_ITEMS],
-        "key_attractions": key_attractions,
-        "reviews": reviews[:_MAX_REVIEWS_PER_ITEM * 3],
-        "news": news,
-        "map_url": build_map_url(destination, [a["name"] for a in key_attractions[:5]]),
-    }
-
-
-def _fetch_destination_news(destination: str) -> list[dict[str, str]]:
-    """Fetch fresh travel news for ``destination`` via Tavily; never raises."""
-    try:
-        from tripplanner.tools import web_search
-
-        data = web_search.search_raw(
-            f"latest positive travel news, new openings and good updates for {destination}",
-            max_results=_MAX_NEWS_ITEMS,
-            topic="news",
-        )
-    except Exception:
-        return []
-    out: list[dict[str, str]] = []
-    for r in data.get("results", [])[:_MAX_NEWS_ITEMS]:
-        if r.get("title"):
-            out.append(
-                {
-                    "title": r.get("title", ""),
-                    "url": r.get("url", ""),
-                    "content": r.get("content", ""),
-                }
-            )
-    return out
-
+from tripplanner.web.itinerary_view import (  # noqa: E402, F401
+    _COST_HINT_BANDS,
+    _DEFAULT_STOP_DURATION_MIN,
+    _PRICE_LEVEL_HINT,
+    _STOP_KINDS,
+    _append_return_to_stay,
+    _cost_hint,
+    _duration_hint,
+    _estimate_hotel_arrival_times,
+    _first_sentence,
+    _google_maps_day_url,
+    _google_travel_mode,
+    _has_intercity_transfer,
+    _implied_terminal_hop,
+    _infer_stop_kind,
+    _insert_transfer_day_stay_anchor,
+    _insight_hint,
+    _is_overnight_travel_day,
+    _itinerary_from_selections,
+    _itinerary_place_coords,
+    _measure_local_route,
+    _nearest_neighbor_order,
+    _normalize_stop,
+    _opening_hint,
+    _ordered_selected,
+    _popularity_score,
+    _reachability_hint,
+    _render_day_stops,
+    _road_origin_stop,
+    _selected_price_map,
+    _split_contiguous,
+    _terminal_kind,
+    _transport_terminal_stops,
+    _weekday_name,
+    _wrap_day_in_stay,
+    build_itinerary,
+)

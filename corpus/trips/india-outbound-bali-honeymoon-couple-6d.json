@@ -1,0 +1,309 @@
+{
+  "status": "draft",
+  "trip_id": "bali_2027-06-04_2027-06-10",
+  "trip_number": 1,
+  "created_at": "2026-08-25T20:52:10.674240",
+  "destination": "Bali",
+  "origin": "Bangalore",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-06-04",
+  "return_date": "2027-06-10",
+  "travelers": "Couple: 2 adults, Indian passports",
+  "notes": "Live hotel and restaurant search is temporarily unavailable. Will proceed with top romantic resorts and restaurants in Ubud and Seminyak based on current knowledge, and update with live data as soon as APIs are restored.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Bali",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 6-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 6,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-06-04",
+      "title": "Arrival in Bali",
+      "summary": "Arrive in Bali from Bangalore. Private transfer to a romantic resort in Ubud. Settle in, enjoy the resort, and relax.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Bali (Denpasar)",
+          "kind": "flight",
+          "time": "09:00",
+          "note": "Morning flight, actual time to be confirmed"
+        },
+        {
+          "name": "Private Transfer: Denpasar Airport to Ubud Resort",
+          "kind": "transport",
+          "note": "Private car for comfort and privacy"
+        },
+        {
+          "name": "Komaneka at Bisma Ubud",
+          "kind": "hotel",
+          "note": "Check-in and relax"
+        },
+        {
+          "name": "Resort Spa & Pool",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Unwind with a couples massage"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-06-05",
+      "title": "Ubud: Culture & Nature",
+      "summary": "Explore Ubud’s rice terraces, art markets, and enjoy a romantic dinner.",
+      "stops": [
+        {
+          "name": "Komaneka at Bisma Ubud",
+          "kind": "hotel",
+          "note": "Start from the resort"
+        },
+        {
+          "name": "Tegallalang Rice Terraces",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Ubud Art Market",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Locavore",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch at one of Ubud's top-rated restaurants"
+        },
+        {
+          "name": "Campuhan Ridge Walk",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Swept Away Restaurant at The Samaya Ubud",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Romantic riverside dinner"
+        },
+        {
+          "name": "Komaneka at Bisma Ubud",
+          "kind": "hotel",
+          "note": "Return and overnight"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-06-06",
+      "title": "Ubud to Seminyak: Beach & Leisure",
+      "summary": "Transfer to a luxury beach villa in Seminyak. Leisure and sunset by the sea.",
+      "stops": [
+        {
+          "name": "Komaneka at Bisma Ubud",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Private Transfer: Ubud to Seminyak",
+          "kind": "transport",
+          "note": "Private car"
+        },
+        {
+          "name": "The Legian Seminyak Bali",
+          "kind": "hotel",
+          "note": "Check-in and relax"
+        },
+        {
+          "name": "Seminyak Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90
+        },
+        {
+          "name": "La Lucciola",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner at a beachfront Italian restaurant"
+        },
+        {
+          "name": "The Legian Seminyak Bali",
+          "kind": "hotel",
+          "note": "Return and overnight"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-06-07",
+      "title": "Seminyak: Leisure & Special Experience",
+      "summary": "Relax at the villa, then enjoy a private sunset cruise — your special experience.",
+      "stops": [
+        {
+          "name": "The Legian Seminyak Bali",
+          "kind": "hotel",
+          "note": "Start from the villa"
+        },
+        {
+          "name": "Sisterfields Cafe",
+          "kind": "meal",
+          "time": "10:00",
+          "note": "Brunch at a trendy Seminyak spot"
+        },
+        {
+          "name": "Villa Pool & Spa",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Private Sunset Cruise Bali",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 180,
+          "note": "Romantic private yacht cruise"
+        },
+        {
+          "name": "Bambu Restaurant",
+          "kind": "meal",
+          "time": "20:00",
+          "note": "Dinner at a stylish Indonesian restaurant"
+        },
+        {
+          "name": "The Legian Seminyak Bali",
+          "kind": "hotel",
+          "note": "Return and overnight"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-06-08",
+      "title": "Seminyak: Free Day & Optional Activities",
+      "summary": "Enjoy a free day for shopping, spa, or optional water sports. Romantic dinner in the evening.",
+      "stops": [
+        {
+          "name": "The Legian Seminyak Bali",
+          "kind": "hotel",
+          "note": "Start from the villa"
+        },
+        {
+          "name": "Seminyak Shopping & Boutiques",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Motel Mexicola",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch at a vibrant Mexican restaurant"
+        },
+        {
+          "name": "Optional: Water Sports or Spa",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Sarong Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner at a renowned Asian fusion spot"
+        },
+        {
+          "name": "The Legian Seminyak Bali",
+          "kind": "hotel",
+          "note": "Return and overnight"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-06-09",
+      "title": "Departure: Bali to Bangalore",
+      "summary": "Relax at the villa, private transfer to Denpasar airport, and flight back to Bangalore.",
+      "stops": [
+        {
+          "name": "The Legian Seminyak Bali",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Private Transfer: Seminyak to Denpasar Airport",
+          "kind": "transport",
+          "note": "Private car"
+        },
+        {
+          "name": "Flight: Bali (Denpasar) to Bangalore",
+          "kind": "flight",
+          "time": "14:00",
+          "note": "Afternoon flight, actual time to be confirmed"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T20:55:03.660707",
+  "id": "bali_2027-06-04_2027-06-10",
+  "user_id": "corpus-india-outbound-bali-honeymoon-couple-6d-6090d5d3bea7"
+}

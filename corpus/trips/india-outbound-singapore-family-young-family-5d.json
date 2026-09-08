@@ -1,0 +1,758 @@
+{
+  "status": "draft",
+  "trip_id": "singapore_2027-06-11_2027-06-16",
+  "trip_number": 1,
+  "created_at": "2026-08-25T21:19:43.644373",
+  "destination": "Singapore",
+  "origin": "Chennai",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-06-11",
+  "return_date": "2027-06-16",
+  "travelers": "2 adults, 2 children (ages 6 and 10)",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Singapore",
+    "estimated_planned_minutes": 2454,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "8 preference-matched places account for about 2454 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      7,
+      9
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Deluxe Room at Hotel Boss",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp65547954",
+        "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1lZVEM3QlNHQVpET01CV0dFM0hZWkxPTDVLVkc3Q0pKWjZGR1IyRVBRWkVDTVNER1lXVENNRDRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUR01KUUhFWkRFTTJMSlJLR0tJWlJHNFlEQU1CVEdRNFRBTUJER0UzVEtNQk5HRTNUQU1CUUdNMkRTTUJRUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ01KVkdCNkRDTkpVSEUzRE1JMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HSVpDQU1KUUhJWURBSVmjcHJjy0CYNqPXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDAzNDkwMKNzaWQCo2hpZKpscDY1NTQ3OTU0o29jY5GCoWECoWOSBgqjY3Vyo1NHRKJnbqJJTqJjaaoyMDI3LTA2LTExomNvqjIwMjctMDYtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTllZTJkNUdTQ3M1YnRlUDZHS0dZcmxMVlZRTTc0WGhSaHqjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0BjXwo9cKPXoWOjU0dEhKFpwqFko1RBWKFhy0Bhbwo9cKPXoWOjU0dEomxwwKNia3QA",
+        "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUI"
+      },
+      "address": "500 Jalan Sultan, Singapore 199020",
+      "checkin": "2027-06-11",
+      "checkout": "2027-06-16",
+      "room_type": "Deluxe Room",
+      "guests": {
+        "adults": 2,
+        "children": [
+          6,
+          10
+        ]
+      },
+      "price_per_night": 220,
+      "currency": "SGD",
+      "total_price": 1100,
+      "rating": 7.9,
+      "reviews_count": 8000,
+      "amenities": [
+        "Pool",
+        "Family rooms",
+        "Breakfast available",
+        "Central location"
+      ]
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-06-11",
+      "title": "Arrival & Jewel Changi",
+      "summary": "Arrive in Singapore, explore Jewel Changi and Canopy Park, check in to hotel, easy dinner nearby.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Singapore",
+          "kind": "flight",
+          "note": "Morning flight, direct if possible",
+          "time": "09:00"
+        },
+        {
+          "name": "Deluxe Room at Hotel Boss",
+          "kind": "hotel",
+          "note": "Check-in and rest",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp65547954",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1lZVEM3QlNHQVpET01CV0dFM0hZWkxPTDVLVkc3Q0pKWjZGR1IyRVBRWkVDTVNER1lXVENNRDRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUR01KUUhFWkRFTTJMSlJLR0tJWlJHNFlEQU1CVEdRNFRBTUJER0UzVEtNQk5HRTNUQU1CUUdNMkRTTUJRUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ01KVkdCNkRDTkpVSEUzRE1JMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HSVpDQU1KUUhJWURBSVmjcHJjy0CYNqPXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDAzNDkwMKNzaWQCo2hpZKpscDY1NTQ3OTU0o29jY5GCoWECoWOSBgqjY3Vyo1NHRKJnbqJJTqJjaaoyMDI3LTA2LTExomNvqjIwMjctMDYtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTllZTJkNUdTQ3M1YnRlUDZHS0dZcmxMVlZRTTc0WGhSaHqjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0BjXwo9cKPXoWOjU0dEhKFpwqFko1RBWKFhy0Bhbwo9cKPXoWOjU0dEomxwwKNia3QA",
+            "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUI"
+          },
+          "address": "500 Jalan Sultan, Singapore 199020",
+          "checkin": "2027-06-11",
+          "checkout": "2027-06-16",
+          "room_type": "Deluxe Room",
+          "guests": {
+            "adults": 2,
+            "children": [
+              6,
+              10
+            ]
+          },
+          "price_per_night": 220,
+          "currency": "SGD",
+          "total_price": 1100,
+          "rating": 7.9,
+          "reviews_count": 8000,
+          "amenities": [
+            "Pool",
+            "Family rooms",
+            "Breakfast available",
+            "Central location"
+          ],
+          "time": "11:00"
+        },
+        {
+          "name": "Jewel Changi & Canopy Park",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 120,
+          "note": "Great for kids after arrival"
+        },
+        {
+          "name": "So Pho Jewel Changi",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Family-friendly Vietnamese cuisine"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-06-12",
+      "title": "Sentosa Island Adventures",
+      "summary": "Full day at Sentosa: Universal Studios, S.E.A. Aquarium, beach time, and dinner.",
+      "stops": [
+        {
+          "name": "Deluxe Room at Hotel Boss",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp65547954",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1lZVEM3QlNHQVpET01CV0dFM0hZWkxPTDVLVkc3Q0pKWjZGR1IyRVBRWkVDTVNER1lXVENNRDRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUR01KUUhFWkRFTTJMSlJLR0tJWlJHNFlEQU1CVEdRNFRBTUJER0UzVEtNQk5HRTNUQU1CUUdNMkRTTUJRUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ01KVkdCNkRDTkpVSEUzRE1JMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HSVpDQU1KUUhJWURBSVmjcHJjy0CYNqPXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDAzNDkwMKNzaWQCo2hpZKpscDY1NTQ3OTU0o29jY5GCoWECoWOSBgqjY3Vyo1NHRKJnbqJJTqJjaaoyMDI3LTA2LTExomNvqjIwMjctMDYtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTllZTJkNUdTQ3M1YnRlUDZHS0dZcmxMVlZRTTc0WGhSaHqjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0BjXwo9cKPXoWOjU0dEhKFpwqFko1RBWKFhy0Bhbwo9cKPXoWOjU0dEomxwwKNia3QA",
+            "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUI"
+          },
+          "address": "500 Jalan Sultan, Singapore 199020",
+          "checkin": "2027-06-11",
+          "checkout": "2027-06-16",
+          "room_type": "Deluxe Room",
+          "guests": {
+            "adults": 2,
+            "children": [
+              6,
+              10
+            ]
+          },
+          "price_per_night": 220,
+          "currency": "SGD",
+          "total_price": 1100,
+          "rating": 7.9,
+          "reviews_count": 8000,
+          "amenities": [
+            "Pool",
+            "Family rooms",
+            "Breakfast available",
+            "Central location"
+          ],
+          "time": "09:00"
+        },
+        {
+          "name": "Universal Studios Singapore",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 300,
+          "note": "Book tickets in advance"
+        },
+        {
+          "name": "S.E.A. Aquarium",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Coastes Sentosa",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Beachfront casual dining"
+        },
+        {
+          "name": "Deluxe Room at Hotel Boss",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp65547954",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1lZVEM3QlNHQVpET01CV0dFM0hZWkxPTDVLVkc3Q0pKWjZGR1IyRVBRWkVDTVNER1lXVENNRDRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUR01KUUhFWkRFTTJMSlJLR0tJWlJHNFlEQU1CVEdRNFRBTUJER0UzVEtNQk5HRTNUQU1CUUdNMkRTTUJRUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ01KVkdCNkRDTkpVSEUzRE1JMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HSVpDQU1KUUhJWURBSVmjcHJjy0CYNqPXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDAzNDkwMKNzaWQCo2hpZKpscDY1NTQ3OTU0o29jY5GCoWECoWOSBgqjY3Vyo1NHRKJnbqJJTqJjaaoyMDI3LTA2LTExomNvqjIwMjctMDYtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTllZTJkNUdTQ3M1YnRlUDZHS0dZcmxMVlZRTTc0WGhSaHqjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0BjXwo9cKPXoWOjU0dEhKFpwqFko1RBWKFhy0Bhbwo9cKPXoWOjU0dEomxwwKNia3QA",
+            "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUI"
+          },
+          "address": "500 Jalan Sultan, Singapore 199020",
+          "checkin": "2027-06-11",
+          "checkout": "2027-06-16",
+          "room_type": "Deluxe Room",
+          "guests": {
+            "adults": 2,
+            "children": [
+              6,
+              10
+            ]
+          },
+          "price_per_night": 220,
+          "currency": "SGD",
+          "total_price": 1100,
+          "rating": 7.9,
+          "reviews_count": 8000,
+          "amenities": [
+            "Pool",
+            "Family rooms",
+            "Breakfast available",
+            "Central location"
+          ],
+          "time": "21:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-06-13",
+      "title": "Wildlife & Science",
+      "summary": "Mandai cluster: Singapore Zoo, River Wonders, and Science Centre for hands-on fun.",
+      "stops": [
+        {
+          "name": "Deluxe Room at Hotel Boss",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp65547954",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1lZVEM3QlNHQVpET01CV0dFM0hZWkxPTDVLVkc3Q0pKWjZGR1IyRVBRWkVDTVNER1lXVENNRDRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUR01KUUhFWkRFTTJMSlJLR0tJWlJHNFlEQU1CVEdRNFRBTUJER0UzVEtNQk5HRTNUQU1CUUdNMkRTTUJRUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ01KVkdCNkRDTkpVSEUzRE1JMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HSVpDQU1KUUhJWURBSVmjcHJjy0CYNqPXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDAzNDkwMKNzaWQCo2hpZKpscDY1NTQ3OTU0o29jY5GCoWECoWOSBgqjY3Vyo1NHRKJnbqJJTqJjaaoyMDI3LTA2LTExomNvqjIwMjctMDYtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTllZTJkNUdTQ3M1YnRlUDZHS0dZcmxMVlZRTTc0WGhSaHqjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0BjXwo9cKPXoWOjU0dEhKFpwqFko1RBWKFhy0Bhbwo9cKPXoWOjU0dEomxwwKNia3QA",
+            "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUI"
+          },
+          "address": "500 Jalan Sultan, Singapore 199020",
+          "checkin": "2027-06-11",
+          "checkout": "2027-06-16",
+          "room_type": "Deluxe Room",
+          "guests": {
+            "adults": 2,
+            "children": [
+              6,
+              10
+            ]
+          },
+          "price_per_night": 220,
+          "currency": "SGD",
+          "total_price": 1100,
+          "rating": 7.9,
+          "reviews_count": 8000,
+          "amenities": [
+            "Pool",
+            "Family rooms",
+            "Breakfast available",
+            "Central location"
+          ],
+          "time": "09:00"
+        },
+        {
+          "name": "Singapore Zoo",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 180,
+          "note": "Arrive early for animal shows"
+        },
+        {
+          "name": "River Wonders",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 120
+        },
+        {
+          "name": "The Treetop Café (Zoo)",
+          "kind": "meal",
+          "time": "17:00",
+          "note": "Kid-friendly lunch"
+        },
+        {
+          "name": "Science Centre Singapore",
+          "kind": "attraction",
+          "time": "19:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Deluxe Room at Hotel Boss",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp65547954",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1lZVEM3QlNHQVpET01CV0dFM0hZWkxPTDVLVkc3Q0pKWjZGR1IyRVBRWkVDTVNER1lXVENNRDRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUR01KUUhFWkRFTTJMSlJLR0tJWlJHNFlEQU1CVEdRNFRBTUJER0UzVEtNQk5HRTNUQU1CUUdNMkRTTUJRUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ01KVkdCNkRDTkpVSEUzRE1JMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HSVpDQU1KUUhJWURBSVmjcHJjy0CYNqPXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDAzNDkwMKNzaWQCo2hpZKpscDY1NTQ3OTU0o29jY5GCoWECoWOSBgqjY3Vyo1NHRKJnbqJJTqJjaaoyMDI3LTA2LTExomNvqjIwMjctMDYtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTllZTJkNUdTQ3M1YnRlUDZHS0dZcmxMVlZRTTc0WGhSaHqjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0BjXwo9cKPXoWOjU0dEhKFpwqFko1RBWKFhy0Bhbwo9cKPXoWOjU0dEomxwwKNia3QA",
+            "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUI"
+          },
+          "address": "500 Jalan Sultan, Singapore 199020",
+          "checkin": "2027-06-11",
+          "checkout": "2027-06-16",
+          "room_type": "Deluxe Room",
+          "guests": {
+            "adults": 2,
+            "children": [
+              6,
+              10
+            ]
+          },
+          "price_per_night": 220,
+          "currency": "SGD",
+          "total_price": 1100,
+          "rating": 7.9,
+          "reviews_count": 8000,
+          "amenities": [
+            "Pool",
+            "Family rooms",
+            "Breakfast available",
+            "Central location"
+          ],
+          "time": "21:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-06-14",
+      "title": "Marina Bay Wonders",
+      "summary": "Explore Gardens by the Bay, ArtScience Museum, and the Marina Bay Sands SkyPark.",
+      "stops": [
+        {
+          "name": "Deluxe Room at Hotel Boss",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp65547954",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1lZVEM3QlNHQVpET01CV0dFM0hZWkxPTDVLVkc3Q0pKWjZGR1IyRVBRWkVDTVNER1lXVENNRDRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUR01KUUhFWkRFTTJMSlJLR0tJWlJHNFlEQU1CVEdRNFRBTUJER0UzVEtNQk5HRTNUQU1CUUdNMkRTTUJRUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ01KVkdCNkRDTkpVSEUzRE1JMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HSVpDQU1KUUhJWURBSVmjcHJjy0CYNqPXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDAzNDkwMKNzaWQCo2hpZKpscDY1NTQ3OTU0o29jY5GCoWECoWOSBgqjY3Vyo1NHRKJnbqJJTqJjaaoyMDI3LTA2LTExomNvqjIwMjctMDYtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTllZTJkNUdTQ3M1YnRlUDZHS0dZcmxMVlZRTTc0WGhSaHqjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0BjXwo9cKPXoWOjU0dEhKFpwqFko1RBWKFhy0Bhbwo9cKPXoWOjU0dEomxwwKNia3QA",
+            "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUI"
+          },
+          "address": "500 Jalan Sultan, Singapore 199020",
+          "checkin": "2027-06-11",
+          "checkout": "2027-06-16",
+          "room_type": "Deluxe Room",
+          "guests": {
+            "adults": 2,
+            "children": [
+              6,
+              10
+            ]
+          },
+          "price_per_night": 220,
+          "currency": "SGD",
+          "total_price": 1100,
+          "rating": 7.9,
+          "reviews_count": 8000,
+          "amenities": [
+            "Pool",
+            "Family rooms",
+            "Breakfast available",
+            "Central location"
+          ],
+          "time": "09:00"
+        },
+        {
+          "name": "Gardens by the Bay",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 150,
+          "note": "Supertree Grove & Cloud Forest"
+        },
+        {
+          "name": "Satay by the Bay",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Local & international food court"
+        },
+        {
+          "name": "ArtScience Museum",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Marina Bay Sands SkyPark",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Deluxe Room at Hotel Boss",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp65547954",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1lZVEM3QlNHQVpET01CV0dFM0hZWkxPTDVLVkc3Q0pKWjZGR1IyRVBRWkVDTVNER1lXVENNRDRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUR01KUUhFWkRFTTJMSlJLR0tJWlJHNFlEQU1CVEdRNFRBTUJER0UzVEtNQk5HRTNUQU1CUUdNMkRTTUJRUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ01KVkdCNkRDTkpVSEUzRE1JMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HSVpDQU1KUUhJWURBSVmjcHJjy0CYNqPXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDAzNDkwMKNzaWQCo2hpZKpscDY1NTQ3OTU0o29jY5GCoWECoWOSBgqjY3Vyo1NHRKJnbqJJTqJjaaoyMDI3LTA2LTExomNvqjIwMjctMDYtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTllZTJkNUdTQ3M1YnRlUDZHS0dZcmxMVlZRTTc0WGhSaHqjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0BjXwo9cKPXoWOjU0dEhKFpwqFko1RBWKFhy0Bhbwo9cKPXoWOjU0dEomxwwKNia3QA",
+            "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUI"
+          },
+          "address": "500 Jalan Sultan, Singapore 199020",
+          "checkin": "2027-06-11",
+          "checkout": "2027-06-16",
+          "room_type": "Deluxe Room",
+          "guests": {
+            "adults": 2,
+            "children": [
+              6,
+              10
+            ]
+          },
+          "price_per_night": 220,
+          "currency": "SGD",
+          "total_price": 1100,
+          "rating": 7.9,
+          "reviews_count": 8000,
+          "amenities": [
+            "Pool",
+            "Family rooms",
+            "Breakfast available",
+            "Central location"
+          ],
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-06-15",
+      "title": "Little India & Departure",
+      "summary": "Cultural walk in Little India, shopping, and fly home in the evening.",
+      "stops": [
+        {
+          "name": "Deluxe Room at Hotel Boss",
+          "kind": "hotel",
+          "note": "Check-out",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp65547954",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1lZVEM3QlNHQVpET01CV0dFM0hZWkxPTDVLVkc3Q0pKWjZGR1IyRVBRWkVDTVNER1lXVENNRDRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUR01KUUhFWkRFTTJMSlJLR0tJWlJHNFlEQU1CVEdRNFRBTUJER0UzVEtNQk5HRTNUQU1CUUdNMkRTTUJRUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ01KVkdCNkRDTkpVSEUzRE1JMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HSVpDQU1KUUhJWURBSVmjcHJjy0CYNqPXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDAzNDkwMKNzaWQCo2hpZKpscDY1NTQ3OTU0o29jY5GCoWECoWOSBgqjY3Vyo1NHRKJnbqJJTqJjaaoyMDI3LTA2LTExomNvqjIwMjctMDYtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTllZTJkNUdTQ3M1YnRlUDZHS0dZcmxMVlZRTTc0WGhSaHqjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0BjXwo9cKPXoWOjU0dEhKFpwqFko1RBWKFhy0Bhbwo9cKPXoWOjU0dEomxwwKNia3QA",
+            "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUI"
+          },
+          "address": "500 Jalan Sultan, Singapore 199020",
+          "checkin": "2027-06-11",
+          "checkout": "2027-06-16",
+          "room_type": "Deluxe Room",
+          "guests": {
+            "adults": 2,
+            "children": [
+              6,
+              10
+            ]
+          },
+          "price_per_night": 220,
+          "currency": "SGD",
+          "total_price": 1100,
+          "rating": 7.9,
+          "reviews_count": 8000,
+          "amenities": [
+            "Pool",
+            "Family rooms",
+            "Breakfast available",
+            "Central location"
+          ],
+          "time": "09:00"
+        },
+        {
+          "name": "Little India Heritage Walk",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120,
+          "note": "Explore temples, markets, and art"
+        },
+        {
+          "name": "Komala Vilas",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Vegetarian South Indian lunch"
+        },
+        {
+          "name": "Flight: Singapore to Chennai",
+          "kind": "flight",
+          "time": "17:00",
+          "note": "Evening departure"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "SGD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T21:22:44.482665",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-25T21:21:54",
+      "expires_at": "2026-08-26T09:21:54"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-25T21:22:44",
+      "expires_at": "2026-08-25T21:52:44"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_singapore_2027_06_11_2027_06_16",
+      "kind": "lodging",
+      "created_at": "2026-08-25T15:51:54.073133Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Singapore",
+        "date": "2027-06-11"
+      },
+      "subject": "Stay in Singapore",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_e9cc7bb32767",
+      "options": [
+        {
+          "id": "opt_stay_e9cc7bb32767",
+          "mode": null,
+          "label": "The Clan Hotel Singapore by Far East Hospitality",
+          "detail": "Deluxe Room",
+          "price": {
+            "amount": 1549.66,
+            "currency": "SGD",
+            "basis": "per_party",
+            "taxes": null,
+            "fees": null,
+            "due_at_property": null,
+            "all_in": null,
+            "mandatory_costs_complete": null,
+            "excluded": [],
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-06-11",
+            "checkout": "2027-06-16",
+            "room_name": "Deluxe Room",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "10 Cross Street",
+            "rating": 9.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp65547954",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEfR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNIWU1KREdJWURFTlpRR1lZVEM3QlNHQVpET01CV0dFM0hZWkxPTDVLVkc3Q0pKWjZGR1IyRVBRWkVDTVNER1lXVENNRDRHUTJURU9MNE5GSUdPVktJUFFZVE9PQlhHWTNUR01KUUhFWkRFTTJMSlJLR0tJWlJHNFlEQU1CVEdRNFRBTUJER0UzVEtNQk5HRTNUQU1CUUdNMkRTTUJRUFJIRkVSU09QUVpEQU1SV0dBNERFTVJSR0FZREE3QlJQUkpEQ01KVkdCNkRDTkpVSEUzRE1JMlNKNFJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HSVpDQU1KUUhJWURBSVmjcHJjy0CYNqPXCj1xpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Juq0RlbHV4ZSBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMDAzNDkwMKNzaWQCo2hpZKpscDY1NTQ3OTU0o29jY5GCoWECoWOSBgqjY3Vyo1NHRKJnbqJJTqJjaaoyMDI3LTA2LTExomNvqjIwMjctMDYtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAzOTllZTJkNUdTQ3M1YnRlUDZHS0dZcmxMVlZRTTc0WGhSaHqjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLdQcm9wZXJ0eSBzZXJ2aWNlIGNoYXJnZaFhy0BjXwo9cKPXoWOjU0dEhKFpwqFko1RBWKFhy0Bhbwo9cKPXoWOjU0dEomxwwKNia3QA",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHJEZUOTKOKRDUOWSTJBMU2SSEI5EVSRCFJZNFCR2ZLFKEGN2CKNDUCWSEJ5GUEV2HIUZUQWK2JRHUYNKLKZDTOQ2KJJNDMRSHKIZEKUCRLJCUGTKTIRDVSV2UINGUINCHKEZFIRKPJQ2E4RSJI5HVMS2JKBIVSVCPJ5BFQR2ZGNKEOTKKKFEEKWSEIVGTETCKKJFUOS2JLJJEONCZIRAU2QSUI5ITIVCBJVBEIR2FGNKEWTKCJZDUKM2UIFGUEUKHJUZEIU2NIJIVAUSIIZCVEU2PKBIVURCBJVJFOR2BGRCEKTKSKJDUCWKEIE3UEUSQKJFEIQ2NJJLEOQRWIRBU4SSVJBCTGRCNJEZFGSRUKJKTIVKTI5FFSUSUIVGUEU2HLFLVIQKPIJHEOSK2INAU2SSRJBEVSRCBJFMXYMJVGQ4S4NRWPR6FET34PR6HYRDFNR2XQZJAKJXW63L4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            },
+            "search_context": {
+              "destination": "Singapore",
+              "adults_per_room": 2,
+              "rooms": 1,
+              "children_ages": [
+                6,
+                10
+              ],
+              "guest_nationality": "IN",
+              "refundable_only": false
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-25T15:51:54.031956Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_69e622f01570",
+          "mode": null,
+          "label": "The Fullerton Hotel Singapore",
+          "detail": "Premier Courtyard Twin Room",
+          "price": {
+            "amount": 2235.11,
+            "currency": "SGD",
+            "basis": "per_party",
+            "taxes": null,
+            "fees": null,
+            "due_at_property": null,
+            "all_in": null,
+            "mandatory_costs_complete": null,
+            "excluded": [],
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs 685 sgd more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-06-11",
+            "checkout": "2027-06-16",
+            "room_name": "Premier Courtyard Twin Room",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "1 Fullerton Square",
+            "rating": 9.4,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp2f0a1",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFFRzRZRE9NUldHVTNHSU5SWkdZMlRPTVJTR0EzREdOVEdHNDJUT01SWEdRM1RTTlJSRzRaRE1OQlNHQTNUSU5aWEdZNFRNWkpTR0EzVEVOVEdHWlRETVpENEdFUlRFTUJTRzRZRE1NSlJQUVpEQU1SWEdBM0RDTlQ0TVZYRjZWS1RQUkVVNDdDVEk1Q0hZTVNCR0pCVE1MSlJHQjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUTU5aVEdFWURTTVJTR05GVVlWREZFTVlUU01SV0c0WlNHTUpYR1VZQzJNSlpHSTNET00zNEpaSkVNVFQ0R0lZREVOUlFIQVpERU1KUUdBWUhZTUw0S0lZVENOSlFQUVpERU1aVkdFWVNHVVNQRU5IRkVSU09FTVpEQU1SV0ZVWURRTEpTR0lRRENNQjJHQVlDR6NwcmPLQKF2OFHrhR-lb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm67UHJlbWllciBDb3VydHlhcmQgVHdpbiBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmMTkyNjczo3NpZAKjaGlkp2xwMmYwYTGjb2NjkYKhYQKhY5IGCqNjdXKjU0dEomduoklOomNpqjIwMjctMDYtMTGiY2-qMjAyNy0wNi0xNqNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDM5OWVlMmQ1R1NDczVidGVQNkdLR1lybExWVlFNNzRYaFJoeqNpc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpw6Fkt1Byb3BlcnR5IHNlcnZpY2UgY2hhcmdloWHLQGvwUeuFHrihY6NTR0SEoWnCoWSjVEFYoWHLQGklHrhR64WhY6NTR0SibHDAo2JrdAQ=",
+              "rate_id": "I42FSRCPJVJFOR2VGNDUSTSSLJDVSMSUJ5GVEU2HIEZUIR2OKRDUONBSKRHU2USYI5ITGVCTJZJFERZULJCE2TSCKNDUCM2UJFHFUWCHLE2FITK2JJJUOQJTKRCU4VCHI5NFIRCNLJCDIR2FKJKEKTKCKNDTIWKEJVGUUUSQKFNEIQKNKJMEOQJTIRBU4VBUJVLFQRRWKZFVIUCSIVKTIN2DKRETKQ2ILFGVGQSHJJBFITKMJJJEOQRWIREU4SSTJBDDMR2TKVCEQS2WIVEFSTKKLBEECM2UJVHFUVCHIVMUIU2NKJJUOTSGKVMVMRCGIVGVSVCTJVJFORZULJJUOTKKLBDVKWKDGJGUUWSHJEZUIT2NGM2EUWSKIVGVIVBUI5EVSRCFJZJFCSCBLJCEKTKKKFDUCWKILFGUYNCLJFMVIQ2OJJIVAUK2IRCU2WSWI5CVSU2HKVJVARKOJBDEKUSTJ5CU2WSEIFGVEV2GKVMUIUKMJJJUOSKRIRBU2QRSI5AVSQ2HPQZDEMZVFYYTC7D4KJHXY7D4PRIHEZLNNFSXEICDN52XE5DZMFZGIICUO5UW4ICSN5XW27BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            },
+            "search_context": {
+              "destination": "Singapore",
+              "adults_per_room": 2,
+              "rooms": 1,
+              "children_ages": [
+                6,
+                10
+              ],
+              "guest_nationality": "IN",
+              "refundable_only": false
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-25T15:51:54.031956Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_26b12914e57c",
+          "mode": null,
+          "label": "PARKROYAL COLLECTION Marina Bay, Singapore",
+          "detail": "Urban Deluxe Hollywood Twin With Balcony",
+          "price": {
+            "amount": 2488.04,
+            "currency": "SGD",
+            "basis": "per_party",
+            "taxes": null,
+            "fees": null,
+            "due_at_property": null,
+            "all_in": null,
+            "mandatory_costs_complete": null,
+            "excluded": [],
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs 938 sgd more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-06-11",
+            "checkout": "2027-06-16",
+            "room_name": "Urban Deluxe Hollywood Twin With Balcony",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "6 Raffles Boulevard, Marina Square",
+            "rating": 9.1,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp235eb",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFvRzQyVE9NUldHSTNEQ05URkdJWURNTkJXR1UzR0dOWlZHNDRETU5KU0dBM0RRTlRHR1pSVE1ZWlhIRTNUT05UR0daVERNTkJTR0EzVElOWlhHWTRUTVpKU0dBM1RPTlJaRzQyRE1PQlNHQTNERU5SUkdaUlRNTVpXTVkzR0tOWlpQUVlTR01SUUdJM1RBTlJSR0Y2REVNQlNHNFlETU1KV1BSU1c0WDJWS042RVNUVDRLTkRVSTdCU0lFWkVHTlJOR0VZSFlOQlZHSTRYWTJLUU01S1VRN0JSRzQ0RE9OUlhHTVlUQU9KU0dJWlVXVENVTVVSVENOQlVIQTNUS0laUkc0MlRBTEpSR1EyRFFOWlZQUkhGRVJTT1BRWkRBTVJXR0E0REVNUlJHQVlEQTdCUlBSSkRDTUpWR0I2REVOQllIQVlESUkyU0o0UlU0VVNHSllSVEVNQlNHWVdUQU9CTkdJWkNBTUpRSElZREFJWaNwcmPLQKNwFHrhR66lb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZKFVyYmFuIERlbHV4ZSBIb2xseXdvb2QgVHdpbiBXaXRoIEJhbGNvbnmjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxNDQ4NzWjc2lkAqNoaWSnbHAyMzVlYqNvY2ORgqFhAqFjkgYKo2N1cqNTR0SiZ26iSU6iY2mqMjAyNy0wNi0xMaJjb6oyMDI3LTA2LTE2o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMzk5ZWUyZDVHU0NzNWJ0ZVA2R0tHWXJsTFZWUU03NFhoUmh6o2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWS3UHJvcGVydHkgc2VydmljZSBjaGFyZ2WhYctAbxmZmZmZmqFjo1NHRIShacKhZKNUQVihYctAa_1wo9cKPaFjo1NHRKJscMCjYmt0BQ==",
+              "rate_id": "I42DEVCPJVJFOR2JGNCEGTSUIZDUSWKEJVHEEV2HKUZUOR2OLJLEONBUIRGU4SSTI5ATGRCRJZKEOR22KJKE2WK2LBEEKM2UJ5HFIR2HLJKEITKOIJJUOQJTKREU4WSYI5MTIVCNLJFFGR2BGNKE6TSSLJDTIMSEJVHUEU2HIEZUIRKOKJJEOWSSKRGU2WSXJVMTGR2LJZNFUUCRLFJUOTKSKFDUSM2UIFHFEUSHIY3EIRKNIJJUONCZIRGU2SSXKBJFGVZULAZFMS2OGZCVGVCUGRFU4RCVJE3UEU2JIVNEKR2OKJHEORKZJBMU4QSWI5ETIWCZGJFVCTJVJNKVCN2CKJDTINCEJ5HFEWCHJVMVIQKPJJJUOSK2KVLVIQ2VJVKVEVCDJZBFKSCBGNKEWSK2KJDTIMSUIFGEUUSHKEZEIUKOLJLFAUSIIZCVEU2PKBIVURCBJVJFOR2BGRCEKTKSKJDUCWKEIE3UEUSQKJFEIQ2NJJLEOQRWIRCU4QSZJBAVSRCJJEZFGSRUKJKTIVKTI5FFSUSUIVGUEU2HLFLVIQKPIJHEOSK2INAU2SSRJBEVSRCBJFMXYMRUHA4C4MBUPR6FET34PR6HYVLSMJQW4ICEMVWHK6DFEBEG63DMPF3W633EEBKHO2LOEBLWS5DIEBBGC3DDN5XHS7BQFYYDA7BQFYYDA7D4GAXDAMD4GAXDAMA"
+            },
+            "search_context": {
+              "destination": "Singapore",
+              "adults_per_room": 2,
+              "rooms": 1,
+              "children_ages": [
+                6,
+                10
+              ],
+              "guest_nationality": "IN",
+              "refundable_only": false
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-25T15:51:54.031956Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 1549.66,
+        "delta": null,
+        "currency": "SGD"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "singapore_2027-06-11_2027-06-16",
+  "user_id": "corpus-india-outbound-singapore-family-young-family-5d-82f575f5cc96"
+}

@@ -1,8 +1,8 @@
-name: Build & Deploy to Azure Container Apps
+name: Build and Push Image
 
-# MANUAL ONLY. Image build + push + deploy no longer run on every commit so the
-# local commit/test loop stays fast. Trigger this from the Actions tab
-# ("Run workflow"), or build & ship locally with the one-click scripts:
+# MANUAL ONLY. This workflow publishes an image but never deploys it. Releases
+# must use the guarded canary and production scripts after the image is built.
+# Trigger this from the Actions tab ("Run workflow"), or build locally with:
 #   infra/push-image.ps1      (build + push image to GHCR)
 #   infra/deploy-canary.ps1   (deploy to canary)
 #   infra/deploy-prod.ps1     (deploy to prod, with approval gate)
@@ -10,17 +10,15 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write    # OIDC token for Azure login
   contents: read
   packages: write    # Push image to GHCR
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/tripplanner
-  RESOURCE_GROUP: rg-tripplanner-trip-planner
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,51 +46,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Azure login (OIDC)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Deploy infra + app via Bicep
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            set -euo pipefail
-            URL=$(az deployment group create \
-              --resource-group "$RESOURCE_GROUP" \
-              --template-file infra/main.bicep \
-              --parameters infra/main.bicepparam \
-              --query "properties.outputs.containerAppUrl.value" \
-              -o tsv)
-            echo "App URL: $URL"
-            {
-              echo "## Deployment successful"
-              echo ""
-              echo "**App URL:** $URL"
-              echo "**Image:** \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}\`"
-            } >> "$GITHUB_STEP_SUMMARY"
-        env:
-          # Image tag = commit SHA (immutable, traceable)
-          CONTAINER_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          # Azure OpenAI
-          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
-          AZURE_OPENAI_DEPLOYMENT: ${{ secrets.AZURE_OPENAI_DEPLOYMENT }}
-          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
-          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          # Travel APIs
-          DUFFEL_API_KEY: ${{ secrets.DUFFEL_API_KEY }}
-          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
-          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
-          # OAuth (all optional — leave secrets unset to disable login)
-          OAUTH_GOOGLE_CLIENT_ID: ${{ secrets.OAUTH_GOOGLE_CLIENT_ID }}
-          OAUTH_GOOGLE_CLIENT_SECRET: ${{ secrets.OAUTH_GOOGLE_CLIENT_SECRET }}
-          OAUTH_GITHUB_CLIENT_ID: ${{ secrets.OAUTH_GITHUB_CLIENT_ID }}
-          OAUTH_GITHUB_CLIENT_SECRET: ${{ secrets.OAUTH_GITHUB_CLIENT_SECRET }}
-          # Public HTTPS callback base for Google OAuth (ingress terminates TLS).
-          OAUTH_REDIRECT_BASE: ${{ secrets.OAUTH_REDIRECT_BASE }}
-          # Web session signing secret (reuses the existing CHAINLIT_AUTH_SECRET
-          # GitHub secret value so no new secret needs to be created).
-          WEB_SESSION_SECRET: ${{ secrets.CHAINLIT_AUTH_SECRET }}
+      - name: Summarize image and guarded release path
+        run: |
+          {
+            echo "## Image published"
+            echo ""
+            echo "**Immutable image:** \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}\`"
+            echo ""
+            echo "Deploy with \`./infra/deploy-canary.ps1 -NoBuild -ImageTag ${{ github.sha }}\`."
+            echo "Production promotion remains owned by \`./infra/deploy-prod.ps1\`."
+          } >> "$GITHUB_STEP_SUMMARY"
 

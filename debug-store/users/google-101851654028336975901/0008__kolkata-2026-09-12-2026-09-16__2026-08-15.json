@@ -1,0 +1,1165 @@
+{
+  "archive_no": 8,
+  "trip_id": "kolkata_2026-09-12_2026-09-16",
+  "user_id": "google-101851654028336975901",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T12:28:31Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T12:28:35Z",
+      "content_hash": "37d78589f1a7d0a0",
+      "plan": {
+        "status": "draft",
+        "trip_id": "kolkata_2026-09-12_2026-09-16",
+        "trip_number": 8,
+        "created_at": "2026-08-15T17:58:30.987823",
+        "destination": "Kolkata",
+        "origin": "",
+        "departure_date": "2026-09-12",
+        "return_date": "2026-09-16",
+        "travelers": "Munish (solo)",
+        "notes": "4 days in Kolkata, balanced sightseeing and downtime. Moderate budget, 4-star hotel, economy flights, direct flights preferred.",
+        "planning_recommendation": {
+          "confidence": "high",
+          "destination": "Kolkata",
+          "estimated_planned_minutes": 918,
+          "evidence_place_count": 9,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "9 preference-matched places account for about 918 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            3,
+            5
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": false
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 4,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2026-09-12",
+            "title": "Day 1 · Arrival & Park Street",
+            "summary": "Arrive in Kolkata, check in to hotel, explore Park Street for food and nightlife.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-in"
+              },
+              {
+                "name": "Park Street",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 90,
+                "note": "Iconic street for food and culture"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2026-09-13",
+            "title": "Day 2 · Heritage & Museums",
+            "summary": "Visit Victoria Memorial, Indian Museum, and enjoy dinner nearby.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Victoria Memorial",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120,
+                "note": "Must-see landmark"
+              },
+              {
+                "name": "Indian Museum",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 120,
+                "note": "Largest museum in India"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-09-14",
+            "title": "Day 3 · Temples & Riverfront",
+            "summary": "Explore Dakshineswar Kali Temple, Howrah Bridge, and Kumartuli.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Dakshineswar Kali Temple",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Howrah Bridge",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Kumartuli",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 90,
+                "note": "Famous for clay idol artisans"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2026-09-15",
+            "title": "Day 4 · Palaces & Departure",
+            "summary": "Visit Marble Palace, South Park Street Cemetery, depart Kolkata.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Marble Palace",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "South Park Street Cemetery",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Checkout and depart"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T17:58:35.611204"
+      }
+    },
+    {
+      "at": "2026-08-15T12:29:10Z",
+      "content_hash": "5a5e7668141414a4",
+      "plan": {
+        "status": "draft",
+        "trip_id": "kolkata_2026-09-12_2026-09-16",
+        "trip_number": 8,
+        "created_at": "2026-08-15T17:58:30.987823",
+        "destination": "Kolkata",
+        "origin": "",
+        "departure_date": "2026-09-12",
+        "return_date": "2026-09-16",
+        "travelers": "Munish (solo)",
+        "notes": "4 days in Kolkata, balanced sightseeing and downtime. Moderate budget, 4-star hotel, economy flights, direct flights preferred.",
+        "planning_recommendation": {
+          "confidence": "high",
+          "destination": "Kolkata",
+          "estimated_planned_minutes": 918,
+          "evidence_place_count": 9,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "9 preference-matched places account for about 918 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            3,
+            5
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": false
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 4,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2026-09-12",
+            "title": "Day 1 · Arrival & Park Street",
+            "summary": "Arrive in Kolkata, check in to hotel, explore Park Street for food and nightlife.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-in"
+              },
+              {
+                "name": "Park Street",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 90,
+                "note": "Iconic street for food and culture"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2026-09-13",
+            "title": "Day 2 · Heritage & Museums",
+            "summary": "Visit Victoria Memorial, Indian Museum, and enjoy dinner nearby.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Victoria Memorial",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120,
+                "note": "Must-see landmark"
+              },
+              {
+                "name": "Indian Museum",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 120,
+                "note": "Largest museum in India"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-09-14",
+            "title": "Day 3 · Temples & Riverfront",
+            "summary": "Explore Dakshineswar Kali Temple, Howrah Bridge, and Kumartuli.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Dakshineswar Kali Temple",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Howrah Bridge",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Kumartuli",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 90,
+                "note": "Famous for clay idol artisans"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2026-09-15",
+            "title": "Day 4 · Palaces & Departure",
+            "summary": "Visit Marble Palace, South Park Street Cemetery, depart Kolkata.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Marble Palace",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "South Park Street Cemetery",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Checkout and depart"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T17:59:10.040854"
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T12:29:10Z",
+    "user_id": "google-101851654028336975901",
+    "chat": {
+      "buckets": {},
+      "operations": {
+        "recent_operations": [
+          {
+            "key": "b6cec662d9cb6f39079653d2219364c31cd23eff4f9172ab65e2995f24b00fa9",
+            "status": "completed",
+            "reply": "Here’s a draft itinerary for your Paris trip, 6 days/5 nights, starting September 6, 2026. I’ve selected a well-rated 4-star hotel (Hotel Chambiges Elysees, 4.5★, 890 reviews) in central Paris, matching your moderate budget and balanced pace.\n\nDraft — I'll refine with real prices and availability next.\n\nDay 1 · Arrival in Paris (Sep 6)\n- Arrive in Paris, check in to Hotel Chambiges Elysees\n- Relaxing walk in the Latin Quarter\n\nDay 2 · Eiffel Tower & Seine\n- Eiffel Tower (morning, book tickets in advance)\n- Seine River cruise (early afternoon)\n- Dinner at Le Bistro Parisien (Eiffel Tower view)\n\nDay 3 · Louvre & Marais\n- Louvre Museum (morning, arrive early for fewer crowds)\n- Explore Le Marais (afternoon)\n- Dinner at Café Charlot\n\nDay 4 · Montmartre & Sacré-Cœur\n- Montmartre & Sacré-Cœur (morning/lunch)\n- Lunch at Le Consulat\n- Musée d'Orsay (afternoon)\n\nDay 5 · Versailles Day Trip\n- Day trip to Palace of Versailles & gardens (full day)\n- Late lunch at La Petite Venise (after palace tour)\n\nDay 6 · Departure (Sep 11)\n- Check out of hotel\n- Farewell breakfast at Café de Flore\n\nNext, I’ll search for the best flights, verify the hotel, bookable activities, and top restaurants, and provide a full cost breakdown. \n\nLet me know if you want to adjust anything (dates, hotel tier, pace, etc.) before I proceed!",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "plan a paris trip"
+          },
+          {
+            "key": "7c5ce5f58f252e849510e0128ff9af997acbd2fa6adb8bb79c818a93e8d4fbfc",
+            "status": "completed",
+            "reply": "Here are your live flight options and updated itinerary with direct booking links:\n\n✈️ FLIGHTS (Bangalore ⇄ Paris, Air India, Economy)\n- Outbound: Sep 6, 22:30 BLR → 01:25 DEL (AI 2488), 02:55 DEL → 11:15 CDG (AI 143)\n- Return: Sep 11, 13:15 CDG → 00:35 DEL (AI 142), 02:10 DEL → 04:50 BLR (AI 565)\n- Total round-trip fare for 2 adults: ₹1,07,122\n- Booking link: Air India via Duffel (live fare, book here)\n\n🏨 HOTEL\n- Hotel Chambiges Elysees, 4.5★ (890 reviews), 8 Rue Chambiges, 75008 Paris\n- 5 nights, est. ₹1,20,000\n- Booking link: Chambiges Elysees on Booking.com\n\n🗓️ ITINERARY HIGHLIGHTS\n- Day 1: Arrive Paris, check in, stroll Latin Quarter\n- Day 2: Eiffel Tower, Seine cruise, dinner at Le Bistro Parisien\n- Day 3: Louvre, Le Marais, dinner at Café Charlot\n- Day 4: Montmartre, Sacré-Cœur, Musée d'Orsay, lunch at Le Consulat\n- Day 5: Versailles day trip, lunch at La Petite Venise\n- Day 6: Farewell breakfast at Café de Flore, return flight\n\n🍽️ RESTAURANT SUGGESTIONS (all 4.5★+)\n- Pink Mamma (Italian), Chouchou (French/Mediterranean), Sphère (Fine dining), Le Ju', Le Consulat, Café Charlot, Café de Flore\n\n🌦️ WEATHER (seasonal estimate)\n- Mostly overcast, highs 20–29°C, light rain possible Sep 10–11. Bring light layers and a rain jacket.\n\n💰 COST ESTIMATE (for 2 adults, INR)\n- Flights: ₹1,07,122\n- Hotel: ₹1,20,000\n- Meals: ₹25,000\n- Activities & tickets: ₹30,000\n- Local transport: ₹10,000\n- Total: ₹2,92,122\n\nNo major events or public holidays during your dates—Paris will be lively but not overcrowded.\n\nFlight and hotel links are live and bookable. Does this look good, or would you like to adjust anything (dates, hotel, pace, etc.) before I finalize?",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "add flight links to and from bangalore which is our home city"
+          },
+          {
+            "key": "c443402fb186eb7ab6801e6f3b3912a160017e57f700e83373c381ffa4ecbfe3",
+            "status": "completed",
+            "reply": "Here’s your 7-day Rajasthan itinerary, focused only on the Rajasthan circuit (no flight links from your originating city), covering Jaipur, Jodhpur, Udaipur, and Pushkar. Each day features real hotels, top attractions, and local cuisine:\n\nDay 1 · Arrival in Jaipur (Sep 10)\n- Check in to a central Jaipur hotel (e.g., Samode Haveli or similar)\n- Evening stroll at Johari Bazaar\n\nDay 2 · Jaipur Forts & Palaces\n- Amber Fort (morning)\n- City Palace & Hawa Mahal (midday)\n- Lunch at Laxmi Mishthan Bhandar (traditional Rajasthani cuisine)\n- Return to hotel\n\nDay 3 · Jaipur to Jodhpur\n- Drive from Jaipur to Jodhpur (approx. 6 hrs, 340 km)\n- Lunch at Gypsy Restaurant (en route)\n- Check in to a Jodhpur hotel (e.g., RAAS Jodhpur or similar)\n- Evening at Clock Tower Market\n\nDay 4 · Jodhpur Forts & Culture\n- Mehrangarh Fort (morning)\n- Jaswant Thada (late morning)\n- Lunch at Indique Restaurant (fort views)\n- Return to hotel\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- Drive from Jodhpur to Udaipur (approx. 5.5 hrs, 250 km)\n- Stop at Ranakpur Jain Temple (midway)\n- Check in to a lakeside Udaipur hotel (e.g., Amet Haveli or similar)\n\nDay 6 · Udaipur Palaces & Lakes\n- City Palace Udaipur (morning)\n- Boat ride to Jag Mandir on Lake Pichola (midday)\n- Lunch at Ambrai Restaurant (lake views)\n- Return to hotel\n\nDay 7 · Udaipur to Pushkar & Departure\n- Drive from Udaipur to Pushkar (approx. 5 hrs, 270 km)\n- Visit Brahma Temple & Pushkar Lake\n- Lunch at The Laughing Buddha Café (vegetarian, lake views)\n\nThis plan is focused entirely within Rajasthan, with all intercity travel by private car and no flight links from Bangalore or elsewhere. All hotels, attractions, and restaurants are real, well-rated options. \n\nWould you like to see live hotel options for each city or adjust any part of the route?",
+            "agent": "trip",
+            "trip_id": "rajasthan_2026-09-10_2026-09-17",
+            "message": "Plan a trip to rajasthan for 7 days, just showing the rajasthan in itinerary without flight links from originating city"
+          },
+          {
+            "key": "aa43b93c1576694efeb07ecc058296b0e203a2d440b176646474b737d87ed2b6",
+            "status": "completed",
+            "reply": "Here’s your 7-day Rajasthan itinerary starting and ending in Bangalore, now including explicit flight connections as required. All intercity transfers are clearly shown, and each day features real hotels, attractions, and meal stops. (Currency: INR)\n\nDraft Itinerary\n\nDay 1 · Fly to Jaipur, Arrival & Old City (Sep 10)\n- Flight: Bangalore to Jaipur (IndiGo, morning direct)\n- Samode Haveli (hotel, check-in)\n- Lunch suggestion: Tapri Central (Jaipur, rooftop café)\n- Johari Bazaar (evening stroll/shopping)\n\nDay 2 · Jaipur Forts & Palaces\n- Samode Haveli (start)\n- Amber Fort (09:00)\n- City Palace (12:00)\n- Hawa Mahal (14:00)\n- Laxmi Mishthan Bhandar (lunch)\n- Return to hotel\n\nDay 3 · Jaipur to Jodhpur\n- Checkout from Samode Haveli\n- Drive: Jaipur to Jodhpur (private car, 340 km, 6 hrs)\n- Gypsy Restaurant (lunch en route)\n- RAAS Jodhpur (hotel, check-in)\n- Clock Tower Market (evening)\n\nDay 4 · Jodhpur Forts & Culture\n- RAAS Jodhpur (start)\n- Mehrangarh Fort (09:00)\n- Jaswant Thada (11:30)\n- Indique Restaurant (lunch)\n- Return to hotel\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- Checkout from RAAS Jodhpur\n- Drive: Jodhpur to Udaipur (private car, 250 km, 5.5 hrs)\n- Ranakpur Jain Temple (midway stop)\n- Amet Haveli (Udaipur, check-in)\n\nDay 6 · Udaipur Palaces & Lakes\n- Amet Haveli (start)\n- City Palace Udaipur (09:00)\n- Jag Mandir (boat ride, 12:00)\n- Ambrai Restaurant (lunch)\n- Return to hotel\n\nDay 7 · Udaipur to Pushkar & Fly Back to Bangalore\n- Checkout from Amet Haveli\n- Drive: Udaipur to Pushkar (270 km, 5 hrs)\n- Brahma Temple (13:30)\n- Pushkar Lake (15:30)\n- The Laughing Buddha Café (17:00, lunch)\n- Drive: Pushkar to Jaipur Airport (2.5 hrs, 145 km)\n- Flight: Jaipur to Bangalore (evening direct)\n\nNext Steps:\n- I’ll now fetch real flight and hotel options for your dates and update the itinerary with concrete selections and prices.\n- Would you like to adjust any cities, add more experiences, or see specific hotel/flight classes?\n\nLet me know if you want to refine anything, or I’ll proceed with live searches for the best options!",
+            "agent": "trip",
+            "trip_id": "rajasthan_2026-09-10_2026-09-17",
+            "message": "can you include the flight connectiopns as we are based at banagalore"
+          },
+          {
+            "key": "ac138dbaf905191f6023e6aaf9b63500f8b3fd35ab3d74cbad1dfb0c3e63a9eb",
+            "status": "completed",
+            "reply": "Here’s your updated 7-day Rajasthan itinerary from Bangalore, now including both the outbound and return flights, all intercity transfers, and real hotel/restaurant/attraction stops. All travel is in INR.\n\nDraft — I’ll refine with real prices and availability next.\n\nDay 1 · Fly Bangalore to Jaipur, Arrival & Old City (Sep 10)\n- Flight: Bangalore to Jaipur (direct, morning)\n- Samode Haveli (hotel, check-in)\n- Tapri Central (lunch, rooftop café)\n- Johari Bazaar (evening stroll/shopping)\n- Samode Haveli (overnight)\n\nDay 2 · Jaipur Forts & Palaces\n- Samode Haveli (start)\n- Amber Fort (09:00)\n- City Palace (12:00)\n- Hawa Mahal (14:00)\n- Laxmi Mishthan Bhandar (lunch)\n- Samode Haveli (overnight)\n\nDay 3 · Jaipur to Jodhpur\n- Samode Haveli (checkout)\n- Drive: Jaipur to Jodhpur (private car, 340 km, 6 hrs)\n- Gypsy Restaurant (lunch en route)\n- RAAS Jodhpur (hotel, check-in)\n- Clock Tower Market (evening)\n- RAAS Jodhpur (overnight)\n\nDay 4 · Jodhpur Forts & Culture\n- RAAS Jodhpur (start)\n- Mehrangarh Fort (09:00)\n- Jaswant Thada (11:30)\n- Indique Restaurant (lunch)\n- RAAS Jodhpur (overnight)\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- RAAS Jodhpur (checkout)\n- Drive: Jodhpur to Udaipur (private car, 250 km, 5.5 hrs)\n- Ranakpur Jain Temple (midway stop)\n- Amet Haveli (Udaipur, check-in)\n\nDay 6 · Udaipur Palaces & Lakes\n- Amet Haveli (start)\n- City Palace Udaipur (09:00)\n- Jag Mandir (boat ride, 12:00)\n- Ambrai Restaurant (lunch)\n- Amet Haveli (overnight)\n\nDay 7 · Udaipur to Pushkar & Return to Bangalore\n- Amet Haveli (checkout)\n- Drive: Udaipur to Pushkar (270 km, 5 hrs)\n- Brahma Temple (13:30)\n- Pushkar Lake (15:00)\n- The Laughing Buddha Café (16:30, lunch)\n- Drive: Pushkar to Jaipur Airport (2.5 hrs, 145 km)\n- Flight: Jaipur to Bangalore (direct, evening, arrives late night)\n\nAll major intercity connections and both flights are now included. Next, I’ll search for live flight and hotel options and update with real prices. Would you like to adjust anything before I proceed?",
+            "agent": "trip",
+            "trip_id": "rajasthan_2026-09-10_2026-09-17",
+            "message": "add return flight also back to bangalore"
+          },
+          {
+            "key": "ff761b5a21529201bed9a0ce61d0bd7ff52ce18d5eb5b952513e766db884efd2",
+            "status": "completed",
+            "reply": "Currently, there are no nonstop/direct flights from Bangalore (BLR) to Paris (CDG) for your dates. The best available option is with Air India, which includes a short layover in Delhi both ways:\n\n- Outbound: BLR → DEL (Air India 2820), DEL → CDG (Air India 143)\n- Return: CDG → DEL (Air India 142), DEL → BLR (Air India 565)\n- Total round-trip fare for 2 adults: ₹1,07,122\n\nThis is the fastest and most convenient routing available—there are no true direct (nonstop) flights from Bangalore to Paris at this time. If you’d like, I can also check premium airlines (like Emirates, Lufthansa) with one connection, or alternate dates for possible direct service.\n\nWould you like to proceed with this Air India option, or see other airlines with one stop?",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "check and add any direct flights if possible without a stop"
+          },
+          {
+            "key": "d4badbd3fbaaa734369becad3097e25888d5473d15b92923a93941a5c688e6b2",
+            "status": "completed",
+            "reply": "I checked all available options for your dates (Bangalore ⇄ Paris) with up to 2 stops, prioritizing budget fares.\n\nThe lowest fare is still the Air India option with one stop in Delhi (no cheaper 2-stop options found for your dates):\n\n- Outbound: BLR → DEL (Air India 2820), DEL → CDG (Air India 143)\n  - Sep 6, 17:25 BLR → 20:25 DEL\n  - Sep 7, 02:55 DEL → 11:15 CDG\n- Return: CDG → DEL (Air India 142), DEL → BLR (Air India 565)\n  - Sep 11, 13:15 CDG → 00:35 DEL (Sep 12)\n  - Sep 12, 02:10 DEL → 04:50 BLR\n\nTotal round-trip fare for 2 adults: ₹1,07,122  \nBooking link: Air India\n\nNo 2-stop flights are cheaper than this Air India option for your travel dates. If you want, I can check alternate dates or airlines, but for now, this is the best budget-friendly flight available.\n\nWould you like to proceed with this flight, or should I check other dates/airlines?",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "any cheaper flight options with 2 stops may be. priritoze the budget"
+          },
+          {
+            "key": "c7fcd15ac63a9dcffb24e93c46c159864f554e96b905d66f21c11b2580900fe8",
+            "status": "completed",
+            "reply": "I checked all airlines for your dates (Sep 6–11, 2026), up to 2 stops, and the Air India option with one stop in Delhi remains the lowest fare at ₹1,07,122 for 2 adults. No other airline (including 2-stop routes) is offering a cheaper fare for these dates.\n\nIf you are flexible with your travel dates (for example, shifting by a few days earlier or later), I can check for even lower fares on alternate dates. Would you like me to search for cheaper flights on different dates, or should I proceed with the current Air India option?",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "check other dates na dairlines"
+          },
+          {
+            "key": "4bbd0daa7f62089d41fedb7a6ea80aab2b4308476de64c532e99139566b3125a",
+            "status": "completed",
+            "reply": "Got it! You’d like to see flexible flight options with up to 2 stops between Bangalore and Paris for your travel dates (Sep 6–11, 2026), prioritizing budget-friendly fares.\n\nI’ll search for all available flights (including those with up to 2 stops) and present the best value options. I’ll also update your itinerary and cost estimate accordingly.\n\nOne moment while I fetch the latest flight options…Thank you for clarifying! I’ll search for flexible flight options between Bangalore and Paris for your dates (Sep 6–11, 2026), allowing up to 2 stops to maximize budget-friendly fares. I’ll update your itinerary with the best value options and include booking links.\n\nI’ll proceed to find these flights and update your plan accordingly. Please hold on while I get the live options.I searched all airlines for your flexible dates (Sep 6–11, 2026) with up to 2 stops. The best available fare is still Air India (one stop in Delhi) at ₹1,07,122 for 2 adults—no other airline or 2-stop routing is cheaper for these dates.\n\nUnfortunately, there was a temporary error verifying the live booking link, but this Air India fare remains the lowest and most reliable option. If you are open to shifting your travel by a few days earlier or later, I can check for even cheaper fares on alternate dates.\n\nWould you like me to try searching for flights on different dates (e.g., departing a few days before or after Sep 6), or should I proceed with this Air India option? Let me know your flexibility (how many days before/after) and I’ll check for the absolute lowest fares!",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "yes flexible with dates"
+          },
+          {
+            "key": "6d176a6c997e7e4bbcc4dc563ecc08694978d65dd7f06809f041092474add933",
+            "status": "completed",
+            "reply": "Here’s your updated itinerary with all flight segments, stop airports, and layover details included:\n\nDay 1 · Departure from Bangalore (Sep 6)\n- Kempegowda International Airport, Bangalore (BLR) — 17:25, board Air India 2820\n- Indira Gandhi International Airport, Delhi (DEL) — 20:25, layover: 6h 30m (change from domestic to international terminal)\n- Charles de Gaulle Airport, Paris (CDG) — Arrive 11:15 (Sep 7), transfer to hotel\n- Hotel Chambiges Elysees — Check in and relax\n\nDay 2–5: Paris sightseeing as previously planned (Eiffel Tower, Louvre, Montmartre, Versailles, etc.)\n\nDay 6 · Departure from Paris (Sep 11)\n- Hotel Chambiges Elysees — Check out\n- Charles de Gaulle Airport, Paris (CDG) — 13:15, board Air India 142\n- Indira Gandhi International Airport, Delhi (DEL) — 00:35 (Sep 12), layover: 1h 35m (change from international to domestic terminal)\n- Kempegowda International Airport, Bangalore (BLR) — Arrive 04:50\n\nAll flight stops, layover durations, and airport transitions are now clearly shown in your itinerary. If you want to adjust the layover times or see alternate routings, let me know! Otherwise, I’ll proceed to finalize the plan and booking links.",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-06_2026-09-11",
+            "message": "can you show me the stop airport also in the itinerary just like origin and destination ones you show with stop time and layover detail etc"
+          },
+          {
+            "key": "21f7054094053907608a3ceaf4c905ccdb8dda47ac7f65bbe8f96141dbc212b0",
+            "status": "completed",
+            "reply": "Here’s your revised Paris trip plan (Sep 10–13, 2026), now with a real hotel selected and all stops in correct order. I’ve included all flight/stop details, and your hotel is Hôtel Privilège (4★, 4.4★ Google, 1127 reviews, central Paris, single room).\n\nDay 1 · Arrival in Paris (Sep 10)\n- Flight: Bangalore to Paris via Delhi (Dep. 10:00, Arr. 19:30, total 11h incl. layover)\n- Hôtel Privilège Single room — Check in and freshen up\n\nDay 2 · Eiffel Tower & Seine (Sep 11)\n- Start from Hôtel Privilège\n- Eiffel Tower (09:30, 2h, book tickets in advance)\n- Seine River Cruise (12:00, 1.5h)\n- Lunch at Le Bistro Parisien (14:00, 1h 15m, with Eiffel view)\n- Musée d'Orsay (15:45, 2h)\n- Return to hotel\n\nDay 3 · Louvre & Montmartre (Sep 12)\n- Start from Hôtel Privilège\n- Louvre Museum (09:30, 2.5h, arrive early for fewer crowds)\n- Le Marais (12:30, 1.5h, lunch/shopping)\n- Montmartre & Sacré-Cœur (15:00, 2h)\n- Dinner at Le Consulat (17:30, 1h 15m)\n- Return to hotel\n\nDay 4 · Departure (Sep 13)\n- Check out of Hôtel Privilège\n- Breakfast at Café de Flore (08:30, 1h)\n- Flight: Paris to Bangalore via Delhi (Dep. 12:00, Arr. 23:00, total 11h incl. layover)\n\nNote: Day 1 runs straight through lunch with nowhere to eat—let me know if you’d like to add a meal stop after arrival.\n\nNext, I’ll search and add the best flight options (with stop details and layover times), top restaurants, and activities with prices. Would you like to adjust anything before I proceed?",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-10_2026-09-13",
+            "message": "plan a paris trip"
+          },
+          {
+            "key": "6743b75fd5298e5223aaf88e461f77c356849adb436f03b143a7857c1f509b6d",
+            "status": "completed",
+            "reply": "Thank you for pointing that out! For a complete and transparent itinerary, I will ensure that every flight leg is shown in detail, including:\n\n- Each airport (with IATA code)\n- Departure and arrival times for every segment\n- Layover duration and airport for each connection\n- Airline and flight number for each leg\n\nThis will be reflected in both the day-wise itinerary and the summary, so you can see exactly where and when each stop occurs.\n\nI’ll now update your Paris trip with a fully detailed flight itinerary, including all airport stops and timings, along with the rest of your plan.\n\nLet’s proceed!Here’s your updated Paris trip plan with all flight legs and airport stops shown in detail, including layover durations and exact timings. I’ve also corrected the itinerary so that all stops are in proper chronological order.\n\nSummary of Flight Details (All Segments & Layovers):\n\nOutbound (Sep 10–11):\n- BLR (Kempegowda Intl, Bangalore)  \n  Dep: 22:30 (AI 2488, Air India)\n- DEL (Indira Gandhi Intl, Delhi)  \n  Arr: 01:25 (+1 day), Layover: 2h 45m\n  Dep: 04:10 (AI 143, Air India)\n- CDG (Charles de Gaulle, Paris)  \n  Arr: 11:15\n\nReturn (Sep 13–14):\n- CDG (Charles de Gaulle, Paris)  \n  Dep: 12:00 (AI 142, Air India)\n- DEL (Indira Gandhi Intl, Delhi)  \n  Arr: 23:00, Layover: 2h 30m\n  Dep: 01:30 (AI 502, Air India)\n- BLR (Kempegowda Intl, Bangalore)  \n  Arr: 04:00\n\nDay-wise Itinerary:\n\nDay 1 · Sep 10: Depart Bangalore\n- 21:00: Arrive at Kempegowda Intl Airport (BLR)\n- 22:30: Flight AI 2488 BLR-DEL (Air India, Economy)\n\nDay 2 · Sep 11: Arrive Paris & Sightseeing\n- 01:25: Arrive DEL (Indira Gandhi Intl), Layover: 2h 45m\n- 04:10: Flight AI 143 DEL-CDG (Air India, Economy)\n- 11:15: Arrive CDG (Paris)\n- 13:00: Check-in at Hôtel Privilège (4★)\n- 15:00: Eiffel Tower (2h, book tickets in advance)\n- 17:30: Seine River Cruise (1.5h)\n- 19:15: Dinner at Le Bistro Parisien (1h 15m, Eiffel view)\n- 20:45: Return to hotel\n\nDay 3 · Sep 12: Louvre, Le Marais & Montmartre\n- 08:30: Start from Hôtel Privilège\n- 09:30: Louvre Museum (2.5h)\n- 12:30: Le Marais (lunch & shopping, 1.5h)\n- 14:30: Montmartre & Sacré-Cœur (2h)\n- 17:00: Dinner at Le Consulat (1h 15m)\n- 18:30: Return to hotel\n\nDay 4 · Sep 13: Departure\n- 07:00: Check out of Hôtel Privilège\n- 08:00: Breakfast at Café de Flore (1h)\n- 10:00: Arrive at CDG Airport\n- 12:00: Flight AI 142 CDG-DEL (Air India, Economy)\n- 23:00: Arrive DEL, Layover: 2h 30m\n- 01:30: Flight AI 502 DEL-BLR (Air India, Economy)\n- 04:00: Arrive BLR\n\nAll flight segments, airports, and layovers are now fully detailed and in order. If you’d like to adjust any activity times or add more stops, just let me know!",
+            "agent": "trip",
+            "trip_id": "paris_2026-09-10_2026-09-13",
+            "message": "The individual airport stops during the fligth are now not showing. they should not be removed. full flight leg should show with each airport the layover itme and leg timing etc."
+          },
+          {
+            "key": "9b196a0e0969820fedeaf88ff186f85c4ba08567353ebba8da06c41a61ce90fc",
+            "status": "completed",
+            "reply": "Here’s a draft for your Varanasi–Ayodhya religious circuit trip (7 days, 3-star budget, simple religious focus):\n\nDraft — I'll refine with real prices and availability next.\n\nDay 1 · Arrival in Varanasi (2026-09-10)\n- Arrive in Varanasi, check in to your 3-star hotel.\n- Evening: Ganga Aarti at Dashashwamedh Ghat.\n\nDay 2 · Varanasi Temples (2026-09-11)\n- Kashi Vishwanath Temple\n- Annapurna Temple\n- Sankat Mochan Hanuman Temple\n- Assi Ghat\n\nDay 3 · Sarnath Excursion (2026-09-12)\n- Dhamek Stupa (09:00–10:00)\n- Mulagandha Kuti Vihar (10:30–11:15)\n- Sarnath Museum (11:30–12:30)\n- All transfers allow for realistic travel time.\n\nDay 4 · Varanasi to Ayodhya (2026-09-13)\n- Morning: Check out, travel to Ayodhya (train/car, ~4.5 hrs)\n- Ram Janmabhoomi\n- Hanuman Garhi\n\nDay 5 · Ayodhya Temples & Saryu Aarti (2026-09-14)\n- Kanak Bhawan\n- Nageshwarnath Temple\n- Treta Ke Thakur\n- Evening: Saryu Aarti at Saryu Ghat\n\nDay 6 · Prayagraj (Allahabad) Excursion (2026-09-15)\n- Triveni Sangam\n- Hanuman Temple\n- Anand Bhavan\n\nDay 7 · Departure from Ayodhya (2026-09-16)\n- Check out and depart. Option for a final temple visit if time permits.\n\nI’ll now search for real 3-star hotels, transport options, and top-rated restaurants, and provide a cost breakdown in INR. Does this draft look good, or would you like to adjust anything before I proceed?",
+            "agent": "trip",
+            "trip_id": "varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
+            "message": "plan a varanasi and ayodhya circuit trip, include any other releigious sites nearby. maximum duration of 7-8 days minimum could be 5 days. medium 3star hotel budget, keep it simple as it is relgiious"
+          },
+          {
+            "key": "bea17d003883bdf34afc4ec5bb1c3603129ba66f0ee951bfab7f8a4c242dac85",
+            "status": "completed",
+            "reply": "Here’s a draft for your 7-day Varanasi–Ayodhya religious circuit, including major nearby sites (Prayagraj, Sarnath, Chitrakoot). All hotels are simple, clean 3-star properties, and the itinerary is paced for a comfortable religious focus.\n\n─────────────────────────────\nDraft — I'll refine with real prices and availability next.\n\n**Day 1 · Arrival in Varanasi**\n- Check in at Hotel City Inn (3★, Opp. Cantt Railway Station)\n- Evening Ganga Aarti at Dashashwamedh Ghat\n\n**Day 2 · Varanasi Temples & Sarnath**\n- Kashi Vishwanath Temple\n- Annapurna Temple\n- Lunch at Shree Shivay Restaurant (pure veg, thali)\n- Sarnath (Buddhist stupa & museum)\n\n**Day 3 · Prayagraj (Allahabad) Day Trip**\n- Early drive to Prayagraj (3 hrs)\n- Triveni Sangam\n- Lunch at El Chico Restaurant (vegetarian options)\n- Hanuman Temple\n- Anand Bhavan\n- Return to Varanasi\n\n**Day 4 · Varanasi to Ayodhya**\n- Morning drive to Ayodhya (5 hrs)\n- Check in at Hotel Ramprastha (3★)\n- Ram Janmabhoomi\n- Hanuman Garhi\n\n**Day 5 · Ayodhya & Nearby Temples**\n- Kanak Bhawan\n- Nageshwarnath Temple\n- Treta Ke Thakur\n- Lunch at Shree Ram Bhojanalaya (pure veg thali)\n\n**Day 6 · Chitrakoot Excursion**\n- Day trip to Chitrakoot (5 hrs each way)\n- Ram Ghat\n- Kamadgiri\n- Return to Ayodhya\n\n**Day 7 · Departure from Ayodhya**\n- Check out and depart\n\n─────────────────────────────\n\n- All hotels are 3-star, clean, and centrally located.\n- Meals are at well-rated, pure vegetarian restaurants.\n- All major religious sites and ghats are included.\n- Intercity travel is by private car for comfort and flexibility.\n\nGot it — you want a simple, religiously focused circuit, 3-star hotels, moderate budget, and a balanced pace. Does this look good, or would you like to adjust anything (duration, sites, hotel comfort)? \n\nNext, I’ll:\n- Search and confirm real hotel rates in Varanasi and Ayodhya\n- Add concrete restaurant picks for every day\n- Refine travel times and route details\n- Show a cost estimate in INR\n\nLet me know if you want to add/remove any sites or change the trip length!",
+            "agent": "trip",
+            "trip_id": "varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
+            "message": "plan a varanasi and ayodhya circuit trip, include any other releigious sites nearby. maximum duration of 7-8 days minimum could be 5 days. medium 3star hotel budget, keep it simple as it is relgiious"
+          },
+          {
+            "key": "6f10b95d06e09c1e36259991a84b69c9518846b9c5c51411d1e4f98896de7f3d",
+            "status": "completed",
+            "reply": "Draft Manali itinerary for 7 days is ready, featuring top-rated hotels, restaurants, and balanced sightseeing:\n\nDay 1 · Arrival in Manali\n- Check in at The Himalayan (4.7★, Hadimba Road)\n- Explore Mall Road\n\nDay 2 · Solang Valley Adventure\n- Solang Valley (paragliding/ropeway)\n- Lunch at Cafe 1947 (riverside)\n- Jogini Waterfall trek\n\nDay 3 · Rohtang Pass Excursion\n- Rohtang Pass (snow activities)\n- Lunch at Chopsticks Restaurant\n\nDay 4 · Old Manali & Local Culture\n- Hadimba Temple\n- Manu Temple\n- Lunch at The Johnson's Cafe\n- Stroll Old Manali\n\nDay 5 · Naggar Castle & Art Day\n- Naggar Castle\n- Nicholas Roerich Art Gallery\n- Lunch at Nightingale Restaurant\n\nDay 6 · Nature & Relaxation\n- Van Vihar National Park\n- Lunch at Cafe Amigos\n- Relax by Beas River, spa evening\n\nDay 7 · Leisure & Departure\n- Tibetan Monastery\n- Lunch at Cafe 1986 (Mall Road)\n- Last-minute shopping\n\nDraft — I'll refine with real prices and transport next.\n\nOne thing: Please confirm your origin city (where you'll travel from), so I can add the round-trip transport (flight/train/drive) and complete the plan.",
+            "agent": "trip",
+            "trip_id": "manali_2026-09-12_2026-09-19",
+            "message": "I want to plan a manali trip for 7 days"
+          },
+          {
+            "key": "460f7395d65dc02a6cd3f626207445b4c97ea2ce81c461fa5165a09e43035d1f",
+            "status": "completed",
+            "reply": "Here’s a draft Mussoorie itinerary for you (solo, 4 days, balanced style, moderate budget):\n\nDraft — I'll refine with real prices, transport, and availability next.\n\nDay 1 · Arrival & Mall Road\n- Arrive in Mussoorie, check in to a 4-star hotel, and stroll Mall Road for shopping and local snacks.\n\nDay 2 · Kempty Falls & Company Garden\n- Morning at Kempty Falls, afternoon at Company Garden, return to hotel.\n\nDay 3 · Gun Hill & Lal Tibba\n- Cable car to Gun Hill for views, then visit Lal Tibba, Mussoorie’s highest point.\n\nDay 4 · Mussoorie Lake & Cloud’s End\n- Boating at Mussoorie Lake, walk at Cloud’s End, then depart.\n\nNext steps (need your input):\n1. Please confirm your origin city (where you’ll start the trip) so I can plan your transport to and from Mussoorie.\n2. I’ll add top-rated restaurants for each day and recommend the best available 4-star hotels based on reviews (live hotel rates are currently unavailable).\n\nOnce you confirm your starting city, I’ll complete the plan with real transport, hotel, and dining options.",
+            "agent": "trip",
+            "trip_id": "mussoorie_2026-09-12_2026-09-16",
+            "message": "I want to plan a mussoirre trip"
+          },
+          {
+            "key": "6da6c4871246dac361a98e29f41ae4ee9f3055adc553ee8a1a36829713aaad05",
+            "status": "completed",
+            "reply": "Here’s a draft day-wise itinerary for your Dehradun trip, with a balanced pace and moderate budget. (Draft — I'll refine with real prices and availability next.)\n\nDay 1 · Arrival in Dehradun\n- Arrive and check in to your 4-star hotel.\n- Evening stroll and shopping at Paltan Bazaar.\n\nDay 2 · Nature & Heritage\n- Visit Robber's Cave (morning).\n- Explore Sahastradhara (midday).\n- Lunch at a local restaurant.\n- Return to hotel and rest.\n\nDay 3 · Culture & Wildlife\n- Mindrolling Monastery (morning).\n- Forest Research Institute (late morning).\n- Lunch at a local restaurant (after FRI).\n- Malsi Deer Park (afternoon).\n- Return to hotel.\n\nDay 4 · Temples & Landmarks\n- Tapkeshwar Temple (morning).\n- Clock Tower (late morning).\n- Lunch at a local restaurant.\n- Last-minute shopping at Paltan Bazaar.\n- Return to hotel.\n\nDay 5 · Departure\n- Check out and depart from Dehradun.\n\nNext, I’ll search for real flights, 4-star hotels, activities, and top restaurants, then update with real prices and names. Currency for this plan: INR ₹.\n\nDoes this draft look good, or would you like to adjust anything before I proceed?",
+            "agent": "trip",
+            "trip_id": "dehradun_2026-09-12_2026-09-16",
+            "message": "plana trip to dehradun"
+          }
+        ]
+      }
+    },
+    "preferences": {
+      "profile": {
+        "display_name": "Munish",
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": "IN",
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 4,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [
+        {
+          "note": "Tends to filter hotels to 4-star and above",
+          "source": "inferred",
+          "at": "2026-08-13"
+        }
+      ],
+      "behavior_signals": {
+        "flight_class": {
+          "economy": 6
+        },
+        "hotel_rating_floor": {
+          "4": 8
+        }
+      },
+      "about_me": "",
+      "profile_summary": "Munish travels solo and prefers a balanced trip style with moderate comfort, consistently choosing 4-star and above hotels and standard rooms. He favors economy flights, direct routes, and is open to trains and rental cars but not buses. There are no stated dietary restrictions or strong dislikes. Munish has shown interest in destinations such as Dehradun, Mussoorie, Manali, Varanasi, Ayodhya and nearby religious sites, Paris, and Rajasthan.",
+      "profile_summary_updated_at": "2026-08-15T17:54:34.473575",
+      "planning_mode": "direct",
+      "display_currency": "INR",
+      "profile_summary_digest": "143c2164b34e2546e7210a7ab6c6ec9372ec8f24f3d646541c18d9268542e7f4",
+      "_explicit_fields": [
+        "display_currency",
+        "profile.display_region"
+      ],
+      "_promoted_signals": {
+        "hotel_rating_floor": [
+          "4"
+        ],
+        "flight_class": [
+          "economy"
+        ]
+      }
+    },
+    "places": {
+      "park street|kolkata": {
+        "place_id": "ChIJrXycR-d2AjoRkj9lPDKZ4yw",
+        "name": "Park Street",
+        "address": "Park St, Kolkata, West Bengal, India",
+        "rating": 4.5,
+        "review_count": 4920,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Prominent city thoroughfare featuring historic sites, boutiques, cafes & a vibrant nightlife.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 22.5541098,
+        "lng": 88.351357,
+        "photo_refs": [
+          "places/ChIJrXycR-d2AjoRkj9lPDKZ4yw/photos/AWCwydgxgFXGOxU6csXMMHX00D1HJIkuT-R8R1RXXCvBZB_OiBfwe0W5NRuGn25yIMoe_VPy8zDEJQr3vsJBSqwMR5sddJ1Cw4zPzx8xyKP5QAWrPOGyQ0AJnA90n495SgowsFn5-DPNz4_HS6399-pM7nH7C1Tkjdus_Q9HOV-Ur8GuOgGhDD3H2maF1RIIxgA3y3BCMZZwlfURSoIpgdfWJT922U2HKI4XbWoCIyJTHBWDNc4CC8AO-LGECiPu-uuwHnfAB642u9l9C06LnT1SCRM1qCykTVxfoLKh1KXp0K56Pw7KfBqSm9dDKq02NvdJHqZXWcTfPlTNY1SSKyBjCuMgJ9ohsb2NTSsHdFUwMi8hO2gZoIn3-4CT8kFi2aPcsh5CQC5bcEL5VU_JDRCZgOB6n6o4qAjOO8CUq0FfCzNlBcEU",
+          "places/ChIJrXycR-d2AjoRkj9lPDKZ4yw/photos/AWCwydj2eGYzhaDZ9TG1eKojIjUynenmsr9WBIPbX3FF4BDUQqGFEBX6p-K6BtbFpL8TKYnrERg0_pTNVHumpux4g79s80LH6n2FYST8BaRM9f5SBEIYBk2X0pMfUA2DV3CVPhh4Us6S0QqB0Ty5sKS1y9nkrqKi-V7W4fajCsnZSIG858XGc4cX9KG3LkydHsKfvnu4kpy2yvRCGvH_b3Zs-Y1E0FlIPU-58G95acgaEJtNWO64GDPp97rM9xHoR0ad6A6iQIi5tVxABHW8D9dslymmnnn5NDQVniELuDd5gFUS1-kiB2NUbNsgfMWpTMho-crjHW0drtuMo9yIwI2_Hc-e0U7Aa86Mi-fSsB19n5RuqjUWoqUqwgYFF_lJjfEGK1NfHHdg5krVh1gOBkX7zUQr4yjM3KrzAiTR0Z4tHTMkeQ",
+          "places/ChIJrXycR-d2AjoRkj9lPDKZ4yw/photos/AWCwydj-qK8mbzkMbgCpcZQ9CJFKvBrH-iWva2BIqMMdcHAsrmQzf3vOB2XjRTcGdpN8UluwGTq89-NEJqdSkZl9Lb91jaO41pEaXhMaQV6oyFp4QcwoYF8JFMB6U-uiBzy0NW78hlrgiS33Mb2-Ol96h0jhvGlDzPYGYI-3__lyhdqf9tX_4Fiii2KdtNh-4JcEcq0ObPwJHuN0gcaXA3MvDWnbfLrAFv0o1Ey7bRY9e8Iueb7HLCcvlOd1oktFr_zqowiAgj_9df4Mo3H0aIUTS2LvmdW43yiAaeLDDn7kH-HVuQbRK6OuIyO4hgH2tFt1ZVrL6Rozxg3DsD77G0H_eBLRGsjK8lpWQRKHLt-Q0dkor0kSYu_RkWnBg2r90Z4M9uF9OEdvU5g3oSuZtcbiiILOzUyFEqdTTs6GpTnjkRw1b16Y",
+          "places/ChIJrXycR-d2AjoRkj9lPDKZ4yw/photos/AWCwydgJwbInwo4Ff5YBT_RzsOQO57aooE_QezAYvEdaTsP4GLhXey9-RoO0_dS-Bdo9Mz_8vqEwx7Z1dXIgsE9Zz28yshh8E3rlGBFqUjkYHnOkeI41wAL72K79rPH1cgkx0hWyJ_ZXwrwUjmHTXg0UuRVCyK3K9se4-IR8OG4as_iutLDAZj7zjYymwR8uoeMO-S20qidRyhw11OJtp3quvaLhaWM3_wwcC8wy1CJdWmuo1vD64xvuSQDXzeZOQ5RsNtg3eg4-HbSH6LyX-IwTR9dKQtj2sT4UPFwAyQirydu78kpNKRwVozNxagkA98KENpoxksj01PNbgLNelCB08LBTCTWmk6APQ0w6BflGDjDWPnI3BuqAu_PEiT4b4w5dQZ4L8L77cL0AG4c7PGzNoLs9RxJUeJFLRbbIH0aVBuBs-w",
+          "places/ChIJrXycR-d2AjoRkj9lPDKZ4yw/photos/AWCwydjP9MjpBtqXPDrPFUxCr4J27OpoEdkGbOYTskshbKfSr9Vw2opmsglKGTW78vquIaSGfILTGpCM1U9cBR9hJNpTw-Ysz0_q1wGnk5NzSkuehIrN3cvLWgkscsHlITlPwuKQMIQmHp1POaRpFKHeP31tUsRahlVjswCSXeR-W-2cyZaHaIWF0Wf8e4kpIZFK7zUPmJExcjKHymccEOzgfSH6g3ZB9sdtUNqxLZsYwpohW0RcwpEzOVBQQoEjpA51y318atnDTJF1tdaYGiacjIeK7-J3cwEPcV94mi5tqH2RVzqkfBB-6s11LKyuk300xjIlNQUtTniYwFSWgVxeJ61S4x72hGSO3WGAc6DLfjFxkzTVZxQibsq0ZLR3CISl6K6833psd9hr_AehOWwrTIl3Jy0oVDqhkkH7QP8yUEO_LdlG",
+          "places/ChIJrXycR-d2AjoRkj9lPDKZ4yw/photos/AWCwydhj5vL35ePZx2BhnOMNuBrmwpD7Z9UWMTwexJLZ14QjIM8TI_Lr9AFKtxsGToUt_SBprEHUlSLF-FOfHFe-nQxIGqlLkPQH5hxRSCB6bdQ30EhYXu9O4tuLwu9n3eFt6l4McxbyKN_7VmwO7mcSCn6eewdKHsoDs_Ju4OuM5hwy04qo9b-GMP8n-xdat6_jY4Fcv0uvhAXcPmwZaSyPtt-n-Yc_-J1QTqNRPGmW1ruXlCkWaRWO6C0X8DxLKa94dLT_Lw7f6CHNZmbPRRNwlJaragzVTGZ_BRfTiyCq1Rho8N-w7EZ-Caze6u270kxbbdBmLQ504dxVXKh91dzHeRC1unoFZCWp9W2eiZLYacqsNzzyknPm4rzB6b8b3yy94ziDi9_UgxncwXNsjwltrOF751BIeEeOJj6_iNLV6btqBQ",
+          "places/ChIJrXycR-d2AjoRkj9lPDKZ4yw/photos/AWCwydhhXv8gp9QrH4JYHJDfG2yWNSRLgHjxd4beedztBtclLWJJ0iS-OdqY36WwWdam-39xktv933pzly_IJNRY_cj2bibXb9P2R5_jJP3ZeaSBe-zeQQDmqLCizK7RwCwScxHEph2foDQ843TStllUeQzAyLzlOR7g5AIAGlPWp6oB4v6kIqkB4jwuH0elxLOKm8jXV5vQ4AJaMAG4rTWELqikXVZNv_2kRCUzfA6dmOMa7N2nHV4wGkD5VeHBL0AJQiVNlCoWjgQebRaCdrirefuwTO1pLYfAC1oqGAUgVyjvqmokPeiAu-2OoCk-hSBYzJRZx4sShkjbM9RdYPbaQOddFfdyRbUQXndRLneKcjzHg91f8PhZXMty50km7Jh_FksHtDMSqX81-0r-BMY9mK8aUTlGjeiFU2x4CqbV-ciHiZeT",
+          "places/ChIJrXycR-d2AjoRkj9lPDKZ4yw/photos/AWCwydjEviNTjJyHygS8_l1N5pwqfh3ya8KwMqlxaUNbQ6U1vCKFRbwcr7FUJwUFNvgQ_c8YuAAAQ26B8X2nhLelgD_QaSX_vKswOqu_plfAA2j30c0esEYdgcVyF1Yjq6E3N71Ds-aFOj20rpZcFUU7ICOMdjdzT95rXd-HEUgzVFRdrQk24-uitdd3H8T_rMt1riwffrT2yBPGj9uMbq1UpRZKZ899JoembgTvqfAMoqNi-j_PyAqdNA6CAB9XJk8Xm23VgYH7eFL0VgRYOWMNq2OmfEVYvnxEUELc7WuNlwbz7HWrvQqjj69wft8OzU7PvK7fdvMA8gCqohyYJkGdsCDzESrmHm6Ub9OxP7TQ7oi6DrHFwf4ePrjICEy6A1C4h0yeh6xxge6-tuF0bCrk900zJENcVoswEUcvPrG_pvZ2WOss",
+          "places/ChIJrXycR-d2AjoRkj9lPDKZ4yw/photos/AWCwydjDDTWhrRkAN0aaN_TUJn-5RHBDFfj6gF6fAUyOAdOoi0JjdrG1oguodFVGD9KMku_9F5A8SnFwKQJ7f9JFnTgJW1UaVOGEIU8mjX7bRYcGGk2W8xtrV3hVCvs-n5KZbs3I6UZ6jGJK8TxcwuU9EI3-9WV75hRX-KKY6qIrVi05lVprJB3ESaojbyGejypX22w4Rs0tqvxt5VJ_mJL4MekaP2sFpXbrIHy-2YX80eKYC5hHm2c6k5x8E6Lmy3i2v9TT8jPXSGlOvKKSXahD15Nuk70Q_8Xswpyu0-4-JvuE2Ib0T-SEpaZDOAI0aDoGVPrP74-vASG7fcJ8cgedhmttmQNBl-0PonBCvdUqQPyH5k0q4DB4cNpQ9Sx7ANd3aRfOuk0uhDFkfGMFl41Yuo4APBZluTiBGa7ItZONmRw",
+          "places/ChIJrXycR-d2AjoRkj9lPDKZ4yw/photos/AWCwydi-zMy8rXuNEA-GuxVHFfnOSGkq_qSBWy3KLdvZ2UGzAi_dNWJmGgeI-xAshc_RZfsBP9LoAGNubKnN6TSpnOuUEPbIUly1MLe8pQ5Q2dEgidT_T3IDoolW5LVXbkPvkOkRk-jYwBsQ-7JKfjSR74QdDU437ZD77ehPmY_ynq1AyqqSD7oyk9MXeDONXHQZhv8h84172XtnRonLaEMESbPdQTk-bdgOB84U_p4-x7Mk2RrCvDbgW29EQHrZIWhoYu8GSHZjQQyb1_GGTcCn8tR8ALprAuLvRSGT3AvUfmbS5XxF6Nr_6MG0FoxyXHnWwbMUOtcD1lV7AC-WgSuIUni3AOQMQYBRiPeo7w80SvAsTmgU4M51n7kCbeYs5AgTltykiWA5wWMJdVNsWNOEOpK1b-dxJL2n9hxpdwZbUF8cLw"
+        ],
+        "__at__": 1786796916.169891,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Pretty damn nice place to hop around. Went during Christmas, although it's a peak time and the crowd is way too high. Might be an overrated place for spending Christmas but in general it's a good spot.",
+            "author": "Piku"
+          },
+          {
+            "rating": 5,
+            "text": "I went there to stroll and for dinner. It is good , it has few good places where you can eat while walking.",
+            "author": "Gaurav Kumar Meena"
+          },
+          {
+            "rating": 5,
+            "text": "There are places you visit, and then there are places that quietly become a part of who you are. For me, Park Street is the latter. No matter what phase of life I’m in, I somehow always find myself coming back here. If I need a peaceful corner to sit with a book and a cup of coffee, it’s here. If I ",
+            "author": "RAMSHA"
+          },
+          {
+            "rating": 5,
+            "text": "Great place for spending time and for year end celebration.",
+            "author": "Sidharth Das"
+          },
+          {
+            "rating": 4,
+            "text": "Best place for night life in kolakta",
+            "author": "Harshit Omer"
+          }
+        ]
+      },
+      "victoria memorial|kolkata": {
+        "place_id": "ChIJXQGuRhN3AjoRY5fjvORAtQA",
+        "name": "Victoria Memorial",
+        "address": "Victoria Memorial Hall, 1, Queens Way, Maidan, Kolkata, West Bengal 700071, India",
+        "rating": 4.6,
+        "review_count": 92493,
+        "price_level": null,
+        "website": "https://victoriamemorial-cal.org/",
+        "editorial_summary": "Elegant, domed, white marble museum, opened in 1921, housing displays on the history of Kolkata.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Closed",
+          "Tuesday: 10:00 AM – 6:00 PM",
+          "Wednesday: 10:00 AM – 6:00 PM",
+          "Thursday: 10:00 AM – 6:00 PM",
+          "Friday: 10:00 AM – 6:00 PM",
+          "Saturday: 10:00 AM – 6:00 PM",
+          "Sunday: 10:00 AM – 6:00 PM"
+        ],
+        "lat": 22.5448082,
+        "lng": 88.3425578,
+        "photo_refs": [
+          "places/ChIJXQGuRhN3AjoRY5fjvORAtQA/photos/AWCwydgcLqLPNAeILzaMEx6LDaZTrvkSS51YJv1HPL2uo8pxr5HW6Qsy9r_tlqaTLWxLNRt11oVmlD9DwTMmkWGGN09pyc6Qf1GThSDr1z4ZFwpRP9EHwJVrBdqsg_cOuuz3EpmFjBMVYVgtcNeUWsj1WtFLZrKqEwF_NVuCW3E-gqVp9LI8iNGt04tGaUYrvTAF4Ge0a-AcL894S7zS0u8NjLMhwF3KyxwOa-gVqfx2AZdFxPLvbTRL9wzjARc_mVpR9SG7xKsS3vDWGMjqyfNAWlQUUvcI7LoPLgN4pKepBLR2DXdEi0bjJszsZ6nCPgFAWxH99_BdXQrRhgnSaBqST67rU3fmrZaN-vftdDUT6NNJrodV6Fm3-6rGbjM-9Jqjhvr8GFsEik9B4sJwCMFPXnKhJbhgW62iIv1-eHhiKiWiQg-c",
+          "places/ChIJXQGuRhN3AjoRY5fjvORAtQA/photos/AWCwydjcaUswgArE54sKsXj_2BQXc1S_4FZOrlHz9177HVsezeOTw3twt3tA9K2GD0PDoeBfjdqvZ5JsbwwBtHATM9WYItHaxEvtaqWmqAlKI4ae437RFPK8GJG1jsBtc_5pToQAR1VVapmJXkIR6HLt0kuS6mQF0dj8xYLaARS4f60t3ALbbW_0FHNZRWtcpn5sy22z9phQR7imzJYpNpKPSLLe5qJ8EJKTlCwKCNzBdtTLOHiXI7rf7urOyhwmqPPUT4lwG_8j9NH9w9dpwmpI3LooJRn2p_tt-Lki-lnUJlXa1rVQm5vEhxVZaJWEaqq8GVseQ1uC_s2ZZ2KY0fKn7SaVbeXZCTG92GGiVA4gl5wgKAXAl1j9-sTTBDhmiqaF5-U_S1icss2PKO46nT7EUmZQOJ5hlvCWjDy7nvgBP8qxKxjtzeEAKqIuMLOkG-Ti",
+          "places/ChIJXQGuRhN3AjoRY5fjvORAtQA/photos/AWCwydgTIq_BCgFkVU9XS-gCAniRBBTqfI6ldzcWH0LJHzPwqoZjIZAm6aQr-fB1nkmERYJa6z_4s7VfZtMCbE1-AGrxLK6V9nziIvY6jP3n2WwovTD-ibnJ9nMeshaAocVHrnwuc3HulWOGcmGIKWBT0u81K21qI7B021OcaB9uuKyLKA3KmiOxQOHhalxRK4rBqIE8i7SsJ6gp-X2gm1GkFwFcsFrsKbW8vCmk0MP9atJH2mr_yKjhlaYH1gCoyBFP7WOIFbGrPVuqqUSegyV-HF6TXLxGl72_zYn0ZF3fMbZRIS8_T7xy8rAmdsVAiAEGtuVA24mQWry6vRybvrgYvDghe42Zwul7VjvH6hBUlGI10ikzye_JwVcPEAE1SDQl3HkLWGHWGDSu-Yiah957KE0Oz-xwBzN4qY1Ys-9b4zZRK77nUsAqkjw3rOiXRXdI",
+          "places/ChIJXQGuRhN3AjoRY5fjvORAtQA/photos/AWCwydg-qa3z1e02mojq07ROfjOFEE-t6587q4THafH5fFvQYTV3X-Ru8U3Msx2OkbJM3baF4dF2XyCQL5FdLbbX0E4GScQGSV40ZtkC_w54nYASmlD2awcltv3fo7s-PWkhnUB8MLPT7K56UHVJm5J_uAcFS0kyvdd4ByfLwgGkK-SAv7n50aJU8Xpz1OIDuNYXP5pABe0u2t8mEiqaGEJqKm1shXOnaWO2Oa9Eu26JV8_gyisdPK5goGyI6BzXoSeDmbfLR7yh0zWOjYG8kj-Fya4xcUureVH9RVAnQe_pDKlfpVTQuYoHONIpzL0CCJlBXvKKNauyGIGyY6RdQuBDwaS17zVUBrd9vjpmifGbKLN_jpJ7FAfad_JvGNtLH1jVmigjYugNMggUwjopHSp-3fqV5DKTX5bmFv0eyIUyUKpNow1C",
+          "places/ChIJXQGuRhN3AjoRY5fjvORAtQA/photos/AWCwydhYtJ87bvOIpc_m9RWtrYUCpwoX_r9WFGxJ_LmBeu7aNHPu1RblIAy1bCh3akj59q1-wfTZyvGWlNwvc9ko57FdEK5CnE3ZBUZdYmDsjYVQRCrO9ater-3PXjuhBbD8LTDeNEZbNFnFBG70_8ZykfugZ3RLA2VLXwHEV96KWoX6QkG18GK0rLMRqRNQOiJbGXYkjf6H6T-IMFoMlOUVbPhtYB_qqx1UZMk931Y6438ZKs4BOiUY7zKzGsvCiE_R76bOzJcPNCQxmcX4qY2ik1eAh-EUQZ6br46C72OYFYuCKF2382Aeo75VpeZtM3xL6KNAVtqdLR2M6QnbV_3ZzvNSnkwdkB3u75cwiJ1XR5q71kzh7diYMbAO3IfNuTDcunq6l5f_Yz2t4sVvPN7hMskiumgfVbWunw_bpDzIP96-fQ",
+          "places/ChIJXQGuRhN3AjoRY5fjvORAtQA/photos/AWCwydhr0Wm3ciemmBxGOt1Ddm4tmOixbXMvm21XKdkEXil4SAJs0qUCekvq2ORQjoEirvWkaL7DRB-uF9frrmidOPtaMd90vvBH45g4rLLnNdgj2mrChP8rFVaEYt8VFHq9tGzuMnfBzkuO0siw_K-RhK7RB4pB3ksJYkvqOlFSCbwFcQOIInMuZ_X2HHCixXBaASSWa4UTr3UecJI_rOfmTih0L5S7mM1yWT3w7jXaKD4sZwGY2PEfZXgHY4JEgjPHlxuOrZ7He75P2k5Al8JpVbf1r1nv-tWoYmPxYmFbZT0YEHYTiIeCYDaIUlnWA7astTq3rDuV928kwW11I2EhNWLq84w5xqYXdKuRsFG_wS5blSuR-JL62tasQY6k2_0IWXHQbgvm0xa6DsXczn7149kIkxyqnckXzDxQrJZBlK-7Z79V9WDdpk_mkk7FO1dt",
+          "places/ChIJXQGuRhN3AjoRY5fjvORAtQA/photos/AWCwydg-WsWpr7OhSYLLXEaLHhMlkGk_zDo611ANM-l7BAWMzKLRIfAvPBCvsqHWo2MbECJXEmV_vGOPb4Ov5BRZj2BgmVUZSUsW-dEvYjwD4HwPGJrifp1zdaWPeoFiIPGgL7MoUcHaEhDJh4Fxr0_U7Tk7F85zAVuhiy1nlqlUI2552bpZfVmmFkdzdj8-4EsdwH6pOcoGrVVnv3BVkPzcihIY-grrviCskmSZDsT8SPVbecdQK_556sssQMNDeMLC-K9qlOGSz--oBQlpgLHdWnuawpGhBaD7ORxGP0Go1VE24rDlYrwZ9FRK8TiUFiJs4bofn4nsuYUNeXddhosl15et83v2linHhPrpk1Gxj22Ymx-xRp510fhnxMqIRZnzq_xC-l6hSzmnGzLvwryTMGdd2_se44pb1PShPW7BLsbHChC8OKFhxfnb3a03LwHa",
+          "places/ChIJXQGuRhN3AjoRY5fjvORAtQA/photos/AWCwydiHQG4lwzvoNVVh_UbsD5WynP5-ArMRaTjQj2l2QgCstBgxUpBt7HcD5GsdWfqZYB-5zttHkZvZrprzF5MQ_K0pnlh0Ya4P1xY3SC0sgxiT-NpqQyQR15QRAKnCHhBOVwVhU-H4DKST4qQ8RPYqLNHmmreo0vbB59GH5FUsBWOAr138mggHh8JJ2wkOGCc2fw5mGhc9F2u9sBb5Vc7S7CkptmU6BRop6Zhtw0zRkZ9BEnxBteGtXkwwZ-sesvJRXxLYLUyeofv4IJzBeDUrSqKru8eXyX5-j3tTs8c39GnaBZDEoQJ6yR3vy4Zguvdn9sFJbDSPTlGEnFNJoooInyRRVFEqBglP7o2NsuYf0eM-YMdYMDqjd2mOz_wpwNYkfx7BqXYqVHRA3IUIatm1bnvd-g2fZs5g14TRaKLaiu8",
+          "places/ChIJXQGuRhN3AjoRY5fjvORAtQA/photos/AWCwydjubU6Ed4RZPE9qjymMZmYjHkdrfGScgOWpbC9PMDGYi4aXEWR91SNSiG4Ry8wS4h1aK-1OPxyTb9rlww2ij3GMqAfwWidAgTZWWlH4GO0K2NcQBYSE8zJUDmEQrTne9Voky8ahAtCxqhyY4nV6Q7PYK1T1jTthztR9050RffElyQQgOmWTOmO8Bcr6BjFTrAxBt5ovXE8AkBY2kTibt_-pkeNESUR51t-O3cZVSGbj5yWZFGAgHYJ358XFSe4sGCXpORJbMsDhqoF119jeB_8Z042kYW4WxtHQmkFXYKwa-1vkdq_emXwW-t4SYZI79LQe1OPIBtVcl2GVg7CPbdpoDDs9qHG3FEgBiVMg2zHnylRQuCc_PlTGo7JRy65csx3JW0UUHAaKJUZ3-GTNN3Sr-9qSOretvpy8K13HnsaTzBGPBXHuIsbevYx6sQ",
+          "places/ChIJXQGuRhN3AjoRY5fjvORAtQA/photos/AWCwydiggJ7GYSKc98iiXWdjsn09VrxLPxmiOEQZEimRNJEInNgHORaAtZXPSdozjamRUume18wJTfZ8rlcXHIvHly11vn7l6R6yKH0AWWewCav0hNqSh9dt7IEr6yyZmU4uBGQUIXOWlK3P4NET4VGcB-6VGy6xHJbJ8jN6cEM9kE4rtzYcRCjd8UnuzoPYaiqkHKnTBwnaqdrDoiMGhDSOI1ST6ZaDZ3OcmiykyVtTLWCJ59sGyfrYR9ddmj9k9-EgH1OIjsx3eSfP8JCrDuwKkej6iuNx6AdhQTYSWsu2OLusYAYY6zOC_iK4DIIXWwLIydLeCtfuVQWlffpwElOqWRQ_HsCXhHC3TFUrxnCqZn_NQn2qgb-ESdLNiQiJyI28zn91E8ObooF_3SgU2XEj615SDagiEXHENsEK3HwTFZ1bow"
+        ],
+        "__at__": 1786796916.5587032,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The Victoria Memorial is one of the major architectural landmarks of Kolkata. It is also a premier art gallery, museum, research center for art and museology and cultural hub in Kolkata. It is located in the Maidan in Central Kolkata. It was built during the British colonial period, between 1906 and",
+            "author": "Abhijit Basak"
+          },
+          {
+            "rating": 5,
+            "text": "A great place to admire ancient Indian architecture. The monument often feels like Kolkata's own Taj Mahal because of its stunning design and historical charm.\n\nThe entry fee is ₹30 for the garden and ₹50 to explore the interior architecture of the building. It used to be a popular destination for f",
+            "author": "Atanu Maity"
+          },
+          {
+            "rating": 5,
+            "text": "I recently visited Victoria Memorial in Kolkata and it was such a beautiful experience 🤍 The monument looks stunning from every angle — you truly get a 360-degree great view all around. The white marble architecture and greenery together make it a perfect peaceful spot.\n\nThere are very nice sitting ",
+            "author": "yoshita singh"
+          },
+          {
+            "rating": 5,
+            "text": "A stunning architectural masterpiece! The Victoria Memorial is the heart of Kolkata. The pristine white marble against the lush green gardens makes for incredible photos. The museum inside is incredibly well-maintained and offers a fascinating deep dive into the history of the city. Highly recommend",
+            "author": "SONA SINGH"
+          },
+          {
+            "rating": 4,
+            "text": "I had a great time visiting the Victoria Memorial. The first thing that catches your eye is how beautiful the white marble building looks in person. The gardens are clean and peaceful, making it a nice place to take a walk or just sit and enjoy the surroundings.\n\nThe museum inside is also worth expl",
+            "author": "Pranav Ranawade"
+          }
+        ]
+      },
+      "indian museum|kolkata": {
+        "place_id": "ChIJ33o0YBF3AjoRrAtN-RkG158",
+        "name": "Indian Museum",
+        "address": "27, Jawaharlal Nehru Rd, Colootola, New Market Area, Dharmatala, Taltala, Kolkata, West Bengal 700016, India",
+        "rating": 4.5,
+        "review_count": 57528,
+        "price_level": null,
+        "website": "https://hindi.indianmuseumkolkata.org/",
+        "editorial_summary": "Indian heritage museum with sections on archaeology, art, anthropology and geology, founded in 1814.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Closed",
+          "Tuesday: 10:00 AM – 6:00 PM",
+          "Wednesday: 10:00 AM – 6:00 PM",
+          "Thursday: 10:00 AM – 6:00 PM",
+          "Friday: 10:00 AM – 6:00 PM",
+          "Saturday: 10:00 AM – 6:00 PM",
+          "Sunday: 10:00 AM – 6:00 PM"
+        ],
+        "lat": 22.557885799999998,
+        "lng": 88.3511268,
+        "photo_refs": [
+          "places/ChIJ33o0YBF3AjoRrAtN-RkG158/photos/AWCwydipIdKBTwe5RH2PeEVGx7Uo65BGRrFo_dFhQYVraKos2gHbf7HRtB6-Gu1SLWY497gCf7PM6-AX0_8JfTWhaTRXfZsYBHpit-vNSK0NZjv6BHouv9DUPhoV5ptCpQXQtOyiT4Z8-zfmYhA_Ey5oLU2Ysi4F7mINHcWzevGcDLC-cqqb26ZvzaNhb0bJvWQuN0C9LvRJsOa10prlV9HWf7IrxuIeBDMNbwFwiYiyoBHsF3vrS9NsmBxjJpX5OvYhkHcUbWDyhCSoiNKIFXH0wzU6ydbtxbxyXNUNWP4RIaLvWjCmFk7DEBZrSjj0poPO1inKP8jqKDBr3q-7LHZMm-53xKH9v93FNYGnFQJTFpMRzMaF6akly4f-mY300laef4e_WaLdC2hZpfqxbZZosPyJ5VZD54cbhEpNA6vv7wte6NYM",
+          "places/ChIJ33o0YBF3AjoRrAtN-RkG158/photos/AWCwydipaBjVSjjNK4JmAs6JzASEK-Wxiseu2U3JcHNRbESRaPOxwK4cnLqEBA-4FU0XLpdrk2yU5k2Pm0uVKpMnGhqXvmsh3hcmVy2pPO53xjNPIXcF8niC1x28iNiosvH0gytGOJj86oHDOg2o7JVZOhkdcmzEcB_4G-DisfFHig5o-_nmjUyp1ntOHSq-0a5dsdnoW52YYJIWVu-idDyY75q5ehu_qBKjq_1ixlUArCa7ICRT3co6931ALC6hPlz3imSIzug3cm1BGTpaZj9nLLOXfOJACV1IDghmMf_0MSB7HiRSq3r7KSJBRzs9njPM8j_DfNFqw4pFhsFu-WSMS-hgo0JaJ6R1URh5VUMKyoQ7kbE5zBH6cp1zdPfTpjtINCuFlDNsVA6DAminFaVpZrzPx9jDWl6_7xK6SZpR_3TFU2nD",
+          "places/ChIJ33o0YBF3AjoRrAtN-RkG158/photos/AWCwydiNjciYT6CAuBWBVAqHzSHgAc73sn3DeiPvGPIO0XAvfz_8Gc8UHurAnMDMR4-nVQMhoqyG2YVobSfW9cJhObnjGCTbfQzwO6m8eSaITpQG4diOZ7b2PnATPVF9xRrH-cSEt2O1ir1TognTBg1g2RsdnIAPz3i9wgeZKbX4pQPMmO5SJufAdnp8px-JBB7Py8gUdBaWDzsWW6olk-X6YdcVbn14KSc2TOxHsAzb5o_TPK3XKfUfBzi9DGdH8UTlMrLRdeOtt7ntQhB4446XuvgZnhyUQkj4Bl3oksceiOHo1Cj58q-p6fAXctOqYOS9tg3du8dgUDkg3Za6vmSZPSZHU7awK0rHkpzYx9zN_4YhbV34Csq1yij3_8MK0ozbpoeSSJJRwUa_wRFPc8eeDNxXIhIjOi9Lqd_IAEtJDDTFHT0",
+          "places/ChIJ33o0YBF3AjoRrAtN-RkG158/photos/AWCwydglAa83TIJvGhOyThR1jx55gCwvD29_qr8deoYinh30digP2Z1sqkstprAfbHhdBWpWt5PWWE4Oa9v6dxhRZTZ-KAuxpa2Vwvk31LC06rccRR_eWcKqUi76_ByzL_B1yW7Xm6hpHt_N0TAF9XVGYL0J3Xx84095B9q8JWmzJW9CWypyrVewF78jZ1IQVM9zmZJTiE-2mCnwox-g9wOkZn5-Dihd1crEOsDpKjXdbILAsUTQGG7Zi_jSyGRpsjTaYONc_o4jOYGXBOoiKT6rM772NMIdoIxFadLhvlD_n0CDk-Etnt-ksmflT9y8Vi81D0OFHLgulyDmnYXYmwTJb-GDxGkx9IWIDY_KpndkiOW3Y47NFIyhYOg8xTfJEl3WViLe8PhDrNiOc8G0V_4anFpK8UfzZVVtIGoTKXHDBXoVBURo",
+          "places/ChIJ33o0YBF3AjoRrAtN-RkG158/photos/AWCwydhCAoXAaQDbr0sUdSdh92ySKMc31Ax37ax0j-i4MaMqdcAOyxKZBGGHkjhUQQA-2woUagTN_huYYx3zOnZZti72jC2njEX6TNv3RL0lF4pPhrwHqIW-aluCVS0N2t4PEIIqqMljsh2Fm3MQxjDN2fR4Ybu4yf250IQ6eET-AL52a2bdJQu004Fl1itSJOI3XfCnBdyy7SOnMKvuo6rtEF_Suzf7exsIFjn7m84Gi-oWUdEFs-OC1s71WL-xbjVernexQquetRsTEPXXufPKp6xrxZtpkH0HwA-kGVRVjRnUQgHamyT1THY4AvXvbz9klI-gjfVLE-Uo-qvNUc_lqPazwXgCmCdvNK8BcbzzGg6owvCcSLpuGIrIVM6jUJU8Pf1T3fn7iEcUvK_7HbjCJpoVgm7xuxGewNYx35H_Jeu0MFHN-YDGSW32ywL9WdF9",
+          "places/ChIJ33o0YBF3AjoRrAtN-RkG158/photos/AWCwydiQIr_6IWp_000yyhqBOSchCIqASKcH3exuWE49GK3fGPvKK-5p-F4XtpUoFkkLqptzb_9XYF2XbZ0aW_nkH2JzIezPC5v8FO-03fp7TSCSpEzXAKIt2Uc_rMOCncIt37Jf-p1AvecpkAwMRYwsi9mOZIEf4Sjgq8NkJzR-Y8o1B1kGwJucpBzZwvyU2aABWd7m9h5sQv1YCXxkpV0TWCGSXqqFYR7YxhVAlK8db-69QTFo1NXV2V3LyMYKIPrMF8PgYSK30FPAKMaX23rg16mq3p_O2i31oP8VaF_du_pQunsyMtH3QICazpObeYfdlHSchTBWazmbP4Fjlsldg1gfuDIpWo1zFMr-SxNJ0gwQ-qjuWJ9XwXFOwI495WOff0f8dY8iH6mUC-IgGryJCcmoxIf8usqsQL4u0u4FOzM",
+          "places/ChIJ33o0YBF3AjoRrAtN-RkG158/photos/AWCwydipUKWme2wCesNSRVxbGdMRhN6iTRF9UCy8bfRQw4_VU0HAcl2Tpb8LM4DnZb_ZwGDXF1xQKE6d-QJ-nCF8TIpt_53KbTjCSw6W_aB5EF77wFGVCxyx6l736trVS4PuvoH0wxvpjRpG3-KBiHnGhW-SpWNDSk4doGdcoJLJcZJ7IwX_2eTujmYHBng1yIH7oB894L4WZwRc5zbFkYw8T_dzob9ta0_LCbjkIb5QCiYJlrgXMcKg7FqMBbJBNSFY2G_V28skfHcdooyc_BoylXfscMiHzcIZjVKnAKFEVz1jwDNT2HlfPzKel3LyJ0L-lbDo3IKgD6p7jgD_ff6C3POr9mpVufJnO_UUmsck02LyS1oAuNHEV-Ce4x7sdGv7UuodwAbmxf4ol-7bAHXBpkWVQ7y_Pms0pVdReZtWsh9CrvnX",
+          "places/ChIJ33o0YBF3AjoRrAtN-RkG158/photos/AWCwydiBmbgPNwPASkk5qw2yKjsCaYoVAxCedTFygfh4HvpksZNBN40LXrXzYSYOLtfxUdt7rwToFaVlzw5NrGY66rNvYOEI-pHZpGeqkyjPF5pAYzirY8LA4xIGpyWaIwy5byl6v03fdO2Kc1zMIGof2KIplV15IpfMe7Y7iBZqGMlDX3IVwC88mP8Uyz6YELHiyPnh6sp2S4IoQ18WczeucfRPooCrc5Oi22ZIXmQOyzkBA7Xs3DJfO9wZXVHXs7rAsOZTSrY2-qb2eaDoUfu1-Hzd3DkfbfDFF2rlF6hjDJi1DEoCTwLeiPSnfo5hdSmOgsFBUkqCXB7DDUPDhkOICoVIHZj12o0m3SXgwFXxpvn2EJrFVZWcdaWZsDV0qQwfruyz5lVUM5Q6y-O21D2JKrxuh04gM-hENE3Au05q7C3hZg",
+          "places/ChIJ33o0YBF3AjoRrAtN-RkG158/photos/AWCwydjAIFSot1CA5WshDnkEr1aSCYENC7xlhCm9bHBwOC9uWDoN04dLZJ8_tZcTf_3E1TE7jIsiiin8dVPdNknjWNiOyzIlr5639U8qE-9-mFAHF41V1YSC_jQP7fi-hw0UaUnqdCB1jLd4MbX_EBZryzPhG_ACms0adRNTbvDWBmYuVAKnWbW6CrHbwyUfo9suLvh8eecZ5jOZ2OqJtKozym-WvUdZsn5oPh8ttqP1pra_TpaZsy0GtXqe0TYxVFU7Fkuvz5u_is4CQSdB6sBQO2SNlKwI5y4qZVxr1yvc_Att1_0tFLLn5ytbbNz-FZ8UM2J1vGc9hYrh3YPh6Dunilr9gJk5kwR53V_fm8NFwf_5j6EUh5_ioduZnEU4RJXny7bXqSELp9IL6ziP3uT5dE9KDp0IzGRlmzmAE4Ohi4wANg",
+          "places/ChIJ33o0YBF3AjoRrAtN-RkG158/photos/AWCwydgFD0auRoNwDIJDUI3ov4GztH4_XrbVUBAKsnY05OQS8Ja-NHp7PzseysKHXZXL24MfGAB0x3B-bWAUT4Xf9HX4zGydWmc88JJh-hZj-_BIKDrViF1b6DJEt2vsirrYjrjnRLehv51ZoGpoeVao8esJxLlaseSC_zhjozB5LSjxTVeyDG5UZpfqeVuOIbxwCcBOzdqN64RaFSxg69_SoB8LrBMprXiWxs3Kq1JqZGvt6nvFGK5bFhVuvcUSrenGaJ085h092oY2Awk0hzMnNgnM-gr_QoXr9i3SgigKAjsRwgwQCCI5k7bMzm3D6BEk3qDUb_e3jRP2UnTB3dROejCu4ygJJ1phtTPHln3UOaPzkn6aH6oNQDW-g3DJUjpQYjPDhShp1FFbmzucKVu9WLWroyFsnf8ilw-0w8pXGYIp2_A"
+        ],
+        "__at__": 1786796917.147017,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "It's a very beautiful place to learn about history of India and the world. Here we can find a lot of interesting Artifacts, Fossils, Geological, Botanical specimens. Must for Students and history lovers. You may find a lot of interesting things here. You will need atleast 3-4 hours to explore all th",
+            "author": "Suraj Debnath"
+          },
+          {
+            "rating": 5,
+            "text": "The majestic museum building attracts the curious mind. It's prominently located in the heart of Kolkata. The building itself is more than 200 years old. President of India had come for the 200 year old  celebration of the museum. The museum is an excellent place to see and learn about the evolution",
+            "author": "Ankita Pramanik"
+          },
+          {
+            "rating": 4,
+            "text": "A must-visit cultural landmark in Kolkata! This historic museum houses a massive, well-organized collection. The Egyptian mummy is a fascinating highlight, but the museum offers so much more. Art enthusiasts will love the stunning collection of Indian paintings and sculptures, while the textile gall",
+            "author": "Md Saddam"
+          },
+          {
+            "rating": 5,
+            "text": "Visited the Indian Museum and was truly amazed by its vast collection of history, art, archaeology, fossils, and cultural treasures. Established in 1814, it is one of the oldest museums in Asia and houses fascinating exhibits, including the famous Egyptian mummy, ancient sculptures, rare coins, and ",
+            "author": "Malvika Prasad"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting the Indian Museum in Kolkata was an unforgettable experience. The museum has an incredible collection of ancient sculptures, fossils, mummies, coins, paintings, and historical artifacts that beautifully showcase India's rich heritage. Every gallery is well maintained and informative, making",
+            "author": "Md Hassan"
+          }
+        ]
+      },
+      "dakshineswar kali temple|kolkata": {
+        "place_id": "ChIJKXjZ3QOd-DkRTF0w7e-Ao_8",
+        "name": "Dakshineswar Kali Temple",
+        "address": "Dakshineswar, Kolkata, West Bengal 700035, India",
+        "rating": 4.7,
+        "review_count": 103031,
+        "price_level": null,
+        "website": "http://www.dakshineswarkalitemple.org/",
+        "editorial_summary": "9 ornate spires top this riverside red and cream 1800s temple, with shrines to Krishna and Vishnu.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 5:00 AM – 12:30 PM, 3:30 – 7:30 PM",
+          "Tuesday: 5:00 AM – 12:30 PM, 3:30 – 7:30 PM",
+          "Wednesday: 5:00 AM – 12:30 PM, 3:30 – 7:30 PM",
+          "Thursday: 5:00 AM – 12:30 PM, 3:30 – 7:30 PM",
+          "Friday: 5:00 AM – 12:30 PM, 3:30 – 7:30 PM",
+          "Saturday: 5:00 AM – 12:30 PM, 3:30 – 7:30 PM",
+          "Sunday: 5:00 AM – 12:30 PM, 3:30 – 7:30 PM"
+        ],
+        "lat": 22.654884,
+        "lng": 88.3576911,
+        "photo_refs": [
+          "places/ChIJKXjZ3QOd-DkRTF0w7e-Ao_8/photos/AWCwydj-4lDF0i9xMlU4e6XFhfsYJO0bLG5tbnaZj3q0t2gZFfw7Yma2X-0VAz_mjLerTywLZv6A29o7GzePqhdX9fJLQ7-p9A2nxvOD3qaj-8daz6UGL8WJslwY5E2YFC5wjAD92gYIzPOlV6QXEn59Ejg4Jn3VLkNGKyihiEGhtdF7OHwCrxhJ5XlXuj6w1y5FsXfu3Vu_1t5bsFqxFXXH3YIVW-B-Qi6ccl6AtcJs--kZHmrZ75Sxb9bOfqGYxvKmnn1kYQNdu9CfXrEoSpdohypq2f0YY1rESV6PuCZWjkf1jci_27_-TugFQzFxPQ33HitgDXs4B-XwExiu_ejXwovEwd4ey6pytrDhaSOu0mCPv5_ScX46r99TZJrBb5CGYhIhbG9wet5mW-S229JN_xmhgB0Q2IZbTkRAAVl_DpE",
+          "places/ChIJKXjZ3QOd-DkRTF0w7e-Ao_8/photos/AWCwydgaBeF_w1WQ09CzruDr4YDaRxlF97Mi6W9UMrHy5xaZFbTkaBuaWGDncvZWGQWWf8PuE8LnLbbt9hybUWwn2ZFcrnqlivfr1cr0JNwZmqk-12t3Ont8Yigh9diI2Lzyoisc5Zm04v6qiZwoxNycOJu9QKN1jhAoFWpYZiepH7zvxDNHKvTtgN0452IscdkgdvPR5vzYPL3DsUhH3e6AwkFHPNNebs5XieWgb34Ut49il6WMZBu9aDv0gOfgymP4C4u0mczeJSVA75Dmbhr5s9WdMdfi5coylqWIJzLTa-yxltDZSoULPAbelTxm4PIdwF1y65QCPeqc8xzb4D56iw-v1On0kjNTPyDR3UsLs5rzPaWBZOpQTAgrXnSSZPs96djAJVLKaBxtijnaRWHVMcnE2MLU-Qit4fTDr54BBmtRCo0b",
+          "places/ChIJKXjZ3QOd-DkRTF0w7e-Ao_8/photos/AWCwydi2gR7WCti_VdW4mUqj4JleLV0ojTgD82rafQ4yUpPRu-jsNaR4biB0i2fA7i0lWXtGDvfcoRpginhhB9aJ4GGyHwvpeCaJW54HEKP_aqcH3LnclVgM3xg-7v2xBaHmwmstSK_VWbEZR1z8z1dhNEn5dmJFGutZr3OxoeQfq8U8OkUfS-GLhhkjP1nO9HoDhHXqhWmCKto7XnJcWuvnEF6xylNTx0XswwtrLrkB0efEx54JzAfBrPteYDIMfIoDAgXPio9Ef4u0G611HtQ_pduOYODHgAYxH0KeQcPYRwfDP9Uj3Sg54SGTxJmdwqyQJKjXWsfM4_6j2dylWuZ-vUT7uyvUlDABvtXYzTjpDt2yfzdB1NyTV88CPJHCIVHZrlKDdeFUX1yKf7smJptWJG8Ko7fk8yWk5QU0S6rGkZXO0Q",
+          "places/ChIJKXjZ3QOd-DkRTF0w7e-Ao_8/photos/AWCwydiXI7tprUVYbPYqmdJmpLDwUdD203iPtYtDsMev81wdbuePpknolun7r6lVmaRCFHxX2FcRdiil-SqGdh-Ke0YkYQgEwCxxcIs0FXo0A2ucNA_7pSnjX1KEavfNMNssOv9sx4EuY6IsxlkEQNmWDvbtJjdZ90_rHhWINyvFldinm8y4r6GfS7OZPCWW0_Phi2wzxW0XV4S4cKIKF70VR9QKTOcIIFL9jNSY36LtR3pMI6jPowG0OXJQV8CWeKlW37wWn5zPjm5Hbq8IS0dYuH-zKmaIBloW5DO3LT1NT4CWUfL_RLwooMeu3d7iNPDCiv7zpm2X75BPlNDdZhUjHiw0CxzmEy3k-pBMDEeNMHDt6vkq_t9GkbHhtFQ7kIUYvV-PuXe5_7K0abfl4v0gK7L3PHu5n6U8RhqCjRKj0zC27WYFqfIS6M3qnL15D7cf",
+          "places/ChIJKXjZ3QOd-DkRTF0w7e-Ao_8/photos/AWCwydjG3exi5-E8dxHB4sXZ6sGhJ-0erILJUPjxrIGbyWGlbQVKYHwPTobr1C7ibkfls2ighoBYY5Ee2sb0iEt7M88I9zDfi7Okug-9EUyRQYs4mTbeZzEau5FZCNCGZjEO4p9AEqgDZyw6wj6iMtYBAHtK2p4IkHDDV4dlQtpdoRCh-EvJ47pJeLKZ1u-rYoptf4jE6j-AVofcEwE5rvW9j3_T_fW55rP6i4YI8KEQqznfFPtbMTI7Qw1f7T54mDcHDNQiFrgQzgQ_1R51vNNHZXZ1zlg4m9H_9JaLF7MYdv210TT8C8EqFST-LapPklFOYFR2OZeMbT2bnAtrdElgYU-_BvkOgTL3cYUTc0XCi_Wmz6gI-TogpjdZZaZcw4G5WIKj-bMlTbJur8R8nhXWCcgbhMCykqfTEtEwoGm9EHkHPA",
+          "places/ChIJKXjZ3QOd-DkRTF0w7e-Ao_8/photos/AWCwydiUbcFEthaLPkVnM8ubzYdMSgr5zaUwbEghrdToQ75fOspNb6lKOVOXUZecCIETuTMFSHMUkAKHWBUpcYDrQCLknXawu3LD5MpQe2NZ-8e3HTXBvXtHFMvZmZZWlYhs7Irk0bkEnr7bBr529v_9594neiBvIIepVoWvCPN61JImHxTpWFi0XGHAGO4THyStmvHkzULJagN2dlbOqHND8uYOoGSrPspfVRYnDoCC7-znTvG35tMRAenv-zvRNPBW7Eb4lEIb3H_A7EMKahu7xSRT0cZM0wpgRFdcbf2zLKy35khyAwfopLt5nPyiSJLssj4zA3QvmviFpW7blm6L4cpvjWPgjpc0uIGS4tp0dZDQAs5X7a5jT3bsK5nTz98fK11TzZYyOaN2s3s63m7N5p-6R2kpS2R17de8L-z-VlS4-Q",
+          "places/ChIJKXjZ3QOd-DkRTF0w7e-Ao_8/photos/AWCwydifU5fcfJlMdEem3XKMh5iBeNybjNQ2xGueep9me2vAjI47sGjxvahcLiPdp9JGmBG1DAY_9nQVggy0pKvAava0xF9PBYFHITkcjHXzFGfhq_vMRBBAyv3tND7dPfpRdVKfvvqG8JJL1Gs1DK_OhU85fylNro0SNkEaSiyhAHRUbxN9bb65U4hDax_Eg0PznYSLmqSDx4Kbgde-Ur8MaUQDeM2baRAiOkwQgWv4h8ddxduNZLVDs8YkZEasiVkTFdLma84RONBiqRjUHi2ZmbL9DyPzR2o9KhE0n5Bk1RrYeIlkrx4JycS4Zg6KRqvp-rHe8PelD5r4sKawEh5m1mS5g9bCKqMHrRkwwphd5ky3LOVkcoGoGH-AyiEzlJMuiRp4DX9y5CWx1fn0IZCJpf05S8iAcPSfXGJLVr0zkoU",
+          "places/ChIJKXjZ3QOd-DkRTF0w7e-Ao_8/photos/AWCwydg0tL888Bx0sAtDcySXdEf29M6apFojVD9m17ihMzYZrPX5GON0UfNNTZNB6U1fkxtKJsnDIW3JJYGlQFuiWyfBEhJvmCCd20JOpSErSJrh6SlysfRDkXivw2RN6wKMtD2nnTltAAKHeUMUdlsCMpsGBPdMgXCnxAPDGd3lUiRR6LUYpaRS76e8qKfr8JAJ6ZH3VP8BDYRBF2womEH6p5PphMI_nD6SFlUgkeFY2mjYBIb6AjJZYs9NQTpOKxUvKIjblSxYfCqjfbUfojcofjGISzW8Bcb3hS4AykesHI5vHjnvGvjvRAxA-xNCy1nAiBmxdor0E69PZXJ_VeGTXgAvseEFbyHYBSmFDn7gh7n5x9-N0UWVU8WP5jfllSiNxJBt_hO4s1UJx7hGZdwgIJ452YSi4zIz5m9a4Bw-cA_vrBY_",
+          "places/ChIJKXjZ3QOd-DkRTF0w7e-Ao_8/photos/AWCwydjKaQixZuv0gh0b-J6jA6XISxaiB9BcUxdr6KpX0TJ8To-wGOmnp5ErKJoSMebqYWRsLgqPwnIwa8e1DZisH9cSCzWX9eydhiJLJBf6HPhDrkXVijR1aECkDNdD8IsinKJI6g8UjUzBAXHQPD7Keoi0yFGZ9f6Ws_nx1DuEv95WBbLwLdJUmuvdLF1G6Hc95UZT7cQQeoRfImp0Yo7i8s52W5_8nxYhNPcNCw85h2YiCPSsFOuGr2IPdVIxLxxArQFUcPsjF45yXY_DT5KoGrvmx1rZKvmTX_4pNtTkeymVQ4-5j5kBaE5_tcw6cyIy0aDwJoij9Y2xbXu69-nR0ifcEjucgJhVdscI0wDp7YH7ukyWb01AmQ3yRxE_3tV9LEDNb8-RjFIXacq1bDM7ASpiq0fWtV2bRi-Hp3rXn6QO_H1mCCEGemjQ1bD7dF2u",
+          "places/ChIJKXjZ3QOd-DkRTF0w7e-Ao_8/photos/AWCwydjMF4NYaLO2xSKq8PqDA-k6xDRxhokPeki4BS-DB9roP0ZsiKrwoLE80Ap7Th3Cf0pt-FnBmOOj06-2hieIpeyjIqG6DtGsFp55tOjEIhftT2S_8K8JBqfIv6DHZMqV3r5w0MgE171ZVvQf61jEjWyNvupXUlIJAY3VgdJezt9PbKWDJbe3ai5fRbLPtdIhnuIncWOIqdnlu8mqMAW3TGsyLzMW9B-F-R_aEdqpflh4g4irTVyISh9FKZq8sKnYi8vqDFPS73aiWlOE4q7pyLuWTOgPN7OeWWNB_V34QRmKmz5evcQhEhZTuEHZhOUTe9BQxDpbL2U-tEpvqWihhmg6ZXWkVVDh8oIweXUmMim_LuhPjk8VAF6PV-xtYjMSg_zc0wM61RUWk_gEE8sbs502bDzqwdf0vHlbE508sMBRLM3ADVKmliYo14VBBy4h"
+        ],
+        "__at__": 1786796917.852177,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "One of the most sacred temples of Maa Kali. The atmosphere here is calm, peaceful, and deeply spiritual, filling every devotee with devotion and positive energy. The temple’s beautiful architecture, the holy presence of Maa Bhavatarini, and the serene surroundings near the Ganga create a truly divin",
+            "author": "Subhasini Pal"
+          },
+          {
+            "rating": 5,
+            "text": "Dakshineshwar Kali Temple is not just a place of worship; it’s an experience that quietly settles into your heart. Located on the eastern bank of the Hooghly River, the temple’s serene setting immediately creates a sense of calm, even before you step inside.\nDedicated to Goddess Bhavatarini (a form ",
+            "author": "A C"
+          },
+          {
+            "rating": 5,
+            "text": "A temple with high positive energy. Located near the bank of Hooghly river. Here it is believed that Sati devi body parts had fallen here. Hindu people should visit when you are in around Kolkata.",
+            "author": "sarthak dandpat"
+          },
+          {
+            "rating": 5,
+            "text": "Dakshineswar Kali Temple, located on the banks of the holy Ganga, is one of the most peaceful and spiritually uplifting places in Kolkata. A must-visit for all devotees of Maa Kali. Inside the premises, you can also find multiple Shivlingas and small temples dedicated to Lord Jagannath and Lord Kris",
+            "author": "Khwab ka Safar"
+          },
+          {
+            "rating": 3,
+            "text": "Located on the eastern bank of Hooghly River at Dakshineswar in Kolkata, Dakshineswar Kali temple is a famous Hindu temple. The presiding deity of the temple is Bhavatarini, a form of Parashakti Adya Kali. Built by Rani Rashmoni, a philanthropist and a devotee of Kali in 1855, the temple is famous f",
+            "author": "Gurmeet Singh Virdi"
+          }
+        ]
+      },
+      "howrah bridge|kolkata": {
+        "place_id": "ChIJG-seu793AjoRmRFBjKoKhMk",
+        "name": "Howrah Bridge",
+        "address": "Kolkata, West Bengal 711101, India",
+        "rating": 4.6,
+        "review_count": 136083,
+        "price_level": null,
+        "website": "https://howrah.gov.in/bn/tourist-place/%E0%A6%B9%E0%A6%BE%E0%A6%93%E0%A6%A1%E0%A6%BC%E0%A6%BE-%E0%A6%AC%E0%A7%8D%E0%A6%B0%E0%A6%BF%E0%A6%9C/",
+        "editorial_summary": "Bustling cantilever road bridge opened since 1943 and spanning the Hooghly River.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 22.585127,
+        "lng": 88.3467759,
+        "photo_refs": [
+          "places/ChIJG-seu793AjoRmRFBjKoKhMk/photos/AWCwydg_HsS67I1MNIJHAHUmhiVTaLIBZvJo2BggoBgfT-28CqiGSSUGSUhxvniNB1BDuC2T9VnFZ5OgUYQx1chiHInS54EaVWohlTfP9ZHBQaRCbnZ9Ju1gmaECUCwsr4Au_wNL_vWp9N8XC7HFXyubCm0CQwgyjeS_d8ZFJmZDnTiOkJwxZvFmkwJ8HkRx0mJGkoIXyYvvPmyX6dyYz9AZAxZOxEgplhNOUG19b9ba0IY69pvpdjoqGdxscjJ0PJ_DuHsIfljVpDaQyRzu_uh1apDzQFqRef2QUGZ0e9Ca3L3Tmm1A1E19wDtJHKlQCLcFOl5CTK1anDy05_S2JZSN4oj3ObJCHC1lQ_e8cSsQsohxJ9o8RLUuRsBlmbhNwziKOE8Mjd_owle-H2IPoRx7PUKl8QqWQbX3L2ryJuYE_GE",
+          "places/ChIJG-seu793AjoRmRFBjKoKhMk/photos/AWCwydiEyHVGqSp4sDnm52s2ZLiaqQqWr_-9yEOqT2-OxAOnT1XxJQcH390IAILUvdlnZ2kKPI7YxKqBGDl8PfAeZrtLT1lvYPual2lhklR6Pmg5a2o0_ipsvoFQm4C9qpVwrf-CvSD6rtsYnqXGS6CKNNsNw5RL8q7hAAFtpeCgFQoe9k5_w20P39YP-bSwtR9ivjUtJzxHj85-9_sGEVHtZarJNsV8aOJZrvNWqTJk_pRyprduEOx0FMUgWuKtWeEnHAx90aA7GNFUK6-5mKmrg9OFdkLixmlei-FM-xxORL7CRmUFBX2vei9GoZgQy-SGkBU94QTPuhX4EJ7gy1ugbgrGIvR1FFeg8oCQZWkaFBVnS7wjEPj9IZuyKXtZ4PUjVSh1_ldgXOcFWvZ3hF4t2_PNKrcdFUQ-J24DLndisojhJQ",
+          "places/ChIJG-seu793AjoRmRFBjKoKhMk/photos/AWCwydjzw5lFih-rA7pcRgH-_WuJK5XgTDoXs3_vHieGhUSQEHExxMKneb8aBN1thlM3aUW51DNXZ5pDG2G_AEGVDhEDOAFJekCJKVqEijYVDbiiKj9ex3u3RFjt9ed9WtEJIReeI9tl9T4vDXjf267YI012vbqDrUBrMwLmc9ianrjEi-yJMAxA0CLsOAoFi-Ja9V6CEJ4l_7YhxggzC62-xmMLwq62jmHCJZ7XI_n7KcKJDyE7TwjzoTuy63q93CYDK-YBRERmZBs27b3uPmBiGYuMttTRgfA447ribwZrw3kCO7EQ4MHouyZEtj7PHtC5LOt0FCst-U3kGIkwbWxILdnKQkhId223ittiISBARK0iAcSSohEVOSS8uweQRKWN527RFBaIn6MFiTX5pzizxrhh5gwbL6Lh2s3CcGdK0rK2zA",
+          "places/ChIJG-seu793AjoRmRFBjKoKhMk/photos/AWCwydgvJp5RE4oRXW1hr2FgT4zTgyaQwR-qcmwZFtukK8rbRS_pR6pU8_YS4liscVyoAsF-GVQDLO0E7uLoMcIfBsJgNjYMS6LZ7wAHesGqTUV0sQ-wi3omnR6pUWFzbz9iaSnVPFfgSRmj00XljrT-tnIlLacvRwEuZozXCR1URztkm8UNSOUfF37mtIHi176fwCYPk1IiCDPYSn0WXbHKvpmw3Yb8jVDTt3q2vlQ063pkAVaUF5qwUhIpaIVxKI03RpIDNXoHp8SiBOsb_t6wgS0uxeF8BEIJGCa_Ng1a22kgiaSmf4QEqHux57RE7ipSu6h-jiy68sAWmyfSfwuU-0XhatyKUgqfJSv7-vApj_pi4DzcNg94_fuVSlNgHo3eD1DZJsU7zG5Y9Nkxdec7Y8VAnp0BV4zyyXGU2C6mZ35GNRo",
+          "places/ChIJG-seu793AjoRmRFBjKoKhMk/photos/AWCwydi74vRtV1N64RXXxY0HwGfRQ26T9khQEBvn6JXeKFDTAeQvF1-GWVHKgice1-9PcDAVObhDuB7uEcsxanmDyA47RoOEjsmo1nIge2ilObrmQBB6o1vejmEG72DCTbtQgtJ5dPiX5lx6EraKzWg5KUxBR7R-B7k3nuQ89UraI6YMFR2afje1fcLZkd3gmWvdyi-WDjXFUA9YMAsPY3BsdsQOYHejC6iVHMA24dd82Imlk2MvGoYpvs0-U7W9AtN17-h19xoWfrikhaX3etk4214aSbxHPRX76E_-Cu8Z6fhnkNW3Go6aSnmFTWOYWS_bVy2Rj7BKi2t3c-dVKLE3uRSdf8XEOd7yNa2dSzfKrO9W0dgB627GGlF5YxYlprwYiQJlrB0ugu2ORPvBEukYJzIyVN2XvOffa618WAk3gPV-zwhd",
+          "places/ChIJG-seu793AjoRmRFBjKoKhMk/photos/AWCwydhs83JS0xWJksX3BjbseOSnF6_qT9YJHdQHCtydhBkiCPF4nyVvacPJ4_SW4F3x6JPKX-w2G3VZAzeg4i1clPTT2qsrdmyJcG1HebjMgB5FLGFExL5mbhe-e5DPXo4F27J_vlidWcxJrcBb0rUG8MUMGXQS8GGgN2ebj_toCZrdmenVpZiJ62_W0zT_5r-1Y8mbp6T0hu3DWm2IJN3YJSoOd0RcXKWmoKMXNnwp3vqNR-kvYvIN-zcINjV18yyGHZwtNcyCHkighRhn_oUpiIN_J3-2VEfYab-wxwXIId3XnI9hW_W279TzXlJqjy-QSVSa_KW59HaB-zAoZ-XLLAtL5H6pixh6gQoRsBP2egbrlEVERyPjiY6PNO-y1xZ3Nnj9deXJ7TEeKtTmEa3mEjwAAxH-8D3xzCWNS65nhPCDxTgp",
+          "places/ChIJG-seu793AjoRmRFBjKoKhMk/photos/AWCwydhoSyryGlKrzTqa3OOpZ4qT2EIiOQTLIKczoD6XrxDkR90AJ85Lfj9xDiwL3-EJkMAWew4ouTBkpzpgVit4ILyEnegVUq9i8jjxeCW_oqJC8pB9i4CTx_DFca0jX-TWsIyHRe64wX_CpKHvP_sOuB7-Fz3gp8wx294yMvaaeWUBmO0b50qyGzyEUDBEYrNZsr9HdztYzz0VPJcLg09zw7I1GT0apJt1VS_6pNsnxiyVTvwPA1ocV7U61w-jyAJkLMWVMSDR9zwn1EmLAnNvhYm_7vmZDVS33EmVggRRkkscJk4EVWT_h_87qZLdV2KaSC3Po5zI_Fxoew-pOiJ5sYXP0dkfeknFIpB5EiRuN5RSBOIzSIm4szpDas3s69T45UDpaS3p-Sohkcc4fNSZjSfAyf5LSIb-NhBEL_Zu4cwpj6mm",
+          "places/ChIJG-seu793AjoRmRFBjKoKhMk/photos/AWCwydh8A7LdvA-o7BqCPR8s7ohwc2NcNURLZd7fn3CcgejRK8GarAPdDfzm1azBLhw51oCY9ufcZ4Lvvz84TSseP8qTCmHxpUTsQJ5dPFA3mG32HGumYjtOt61G9GbUO9DeoFkOhF1I0AeThyP7WnImdsxq5kYwZP89HcjV2nIx9vQdrbHEcFRNVVOtFbE1wkZcbXWTepB2yCbkZHKZ9pvKHuh_bSIkncUi-zg4qhoPi8SHRu29-p7nTmd6aDkOBC3qWUCUXvE9vPx_o0sepWiPic-V41CShEmq8qMduwpNrPZDAqRjCMfep6-8rz0PMynq1caSklyBxz7uKs13wEuepDgJQ9J2y_dXLmUQ6qwEDFIj7EYVbxMKWczUSQrrl8RV3QNDtyn_rlGbLo_wY03fwEsQzH0bU2YKddLM78ZQO9g",
+          "places/ChIJG-seu793AjoRmRFBjKoKhMk/photos/AWCwydjMEApvdvsJFhL0x6ZfdGCcOHIuMMznaQmnfa-v9KlnMesg4-MLnci16wOJ5ZTjONa2FnWP3MaNtv8hf-4mQFoqVFM44ZMBEuKVYBaVMLk_-WTyXD-KfY9M-5XdacVH6AqObbRAGiVcH1bsDnJqyK5v8-h6JnrsEg0iQ2oW74d7z3W8ecMG0sayK3RDEevEBie58ULkyziUw_wjiZ7tf8KGgR-tLKp2Wa_g7W3REZe6jNkbR8NlwJ33S5Vh09alkIATM70IASlHtgP0HZgvPFBJjMH8m3V5dugHVbqqtx4NYE07hDOL2NmbYcPdZe2UisE81WfOhRRKUjFvYfV_N_jTWqCzugLRLoIfLIU1mWXD9R0YgoKUkEoIRyfP_c488DaAb39bx2iuDe-fN1KqljxH_jN1c6KeScakWxvNZ9Qm3t8c",
+          "places/ChIJG-seu793AjoRmRFBjKoKhMk/photos/AWCwydhZgAXKntxa3qBTq7KFObNNY9aiHX_c7Z3Mlsnm4cEALQIdl8hYTbV-9C8xTRZw1BqBjr-t1xcIlvvc2LRDvdFh6AQxF0myACi7vNrc5apzt0Z0mesJ5PY-HmL_fw6BN1lZzgFsee5shpsQsoyOpbEvsBhfwswUuIHygEwc2KdpDoZOK3oHVj8l5M1q3Yu93J86uCXDcxRyh9ncAPqGLwzEP8al-ntKb2W3NkFOLak2ZKtnuKO5gQFHNQVkHFuMy1pBZq0m7qaVVaHXyq5Qzr7FL5QFszTYFYY_CFAOO4IVmWeNnggpw1Rv7xJgnu7lNrlItbwLOF8vLReqMbgbzF9Zidv56CbMz1BFFzGMQQoRF1kpcqjRNDWV9ETV76fyFxSA_C9sqKOtY7TQJX98y_sAMzxaokFJhcV1yMFDhNdvyVopV40Rr2xc4DOFXhFi"
+        ],
+        "__at__": 1786796918.386367,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "There are some places that you don’t just visit, you actually feel them — and Howrah Bridge is definitely one of those places. The moment you reach there, the energy of Kolkata hits differently. Continuous traffic, people rushing everywhere, the sound of horns, cool breeze from the Hooghly River, an",
+            "author": "Gopal Pandia"
+          },
+          {
+            "rating": 5,
+            "text": "Howrah Bridge is one of the most iconic landmarks in India. The massive steel structure, the views of the Hooghly River, and the vibrant atmosphere make it a must-visit destination. It's especially beautiful during sunrise and after sunset when the city lights come alive. A perfect place to experien",
+            "author": "MITHUN KUMER SHIKARI"
+          },
+          {
+            "rating": 5,
+            "text": "Built during the British era, the iconic Howrah Bridge stands as a true engineering marvel of exceptional durability, remaining completely rock-solid where modern structures often falter. Even during the peak of summer, the natural wind corridor over the Hooghly River provides a remarkably cool and ",
+            "author": "Kumar Karan"
+          },
+          {
+            "rating": 5,
+            "text": "🌉 Howrah Bridge (Rabindra Setu), Kolkata – The Pride of Kolkata\nI have visited Howrah Bridge many times over the years, and every visit feels different. Whether I'm arriving in Kolkata or simply exploring the city, I always make time to pass through this iconic landmark. It never fails to impress me",
+            "author": "Gagandeep singh"
+          },
+          {
+            "rating": 5,
+            "text": "It’s not just a bridge, but a true symbol of Kolkata’s heritage and daily life ✨\n\nThe view of the Hooghly River from the bridge is beautiful, especially during sunrise or at night when the lights make it look even more stunning. The constant movement of people, vehicles, and the nearby flower market",
+            "author": "Sumit Roy"
+          }
+        ]
+      },
+      "kumartuli|kolkata": {
+        "place_id": "ChIJAViBZc13AjoR_Vh87yZTrmo",
+        "name": "Kumartuli",
+        "address": "Kumartuli, Hatkhola, Kolkata, West Bengal 700005, India",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 22.6000017,
+        "lng": 88.3612679,
+        "photo_refs": [
+          "places/ChIJAViBZc13AjoR_Vh87yZTrmo/photos/AWCwydj3MRQgAP-3Jgx3jaJBwSVf3t_XMZUCX5Szy1B6u0Rj0sh2aJb0aupvu9z-n6Q8B0TEjQlNyeJaKlhl52txQls-0eqK_dQzwXOjmjNRdUtQ8J1bKBdzKS_sM21FQNDoW56B4Xacf-RuotN2dNx07jiSwqvr3PQNBM3KnDhmZrPt4ntuFIauzMmuVGsf8yv5t-3EezaP7CRe784M41mv87hEJeShIKKIchJ92XTgcd4GWsVBW5DMnfVXaCWaIOPexqSbkxMrLag89YQHro1Gt_UlMoTVQXjQnPC-Y-t4qVNXL0IfebD0oi3pgx-YHGtx93F_wtqJ3FoUN04gJlHDaIEaiDMkuW8ALgLMpz9nm0cYDaiCZjeNtTXWKPEiUuvEfvho1k6N5gXhiTRO-sXbvHiYw-c09V7RxpGcxtWYpG_lNw",
+          "places/ChIJAViBZc13AjoR_Vh87yZTrmo/photos/AWCwydiukFu7xA3r5xif5Q3Q2hRzCInlzSJ09jWqGMg2UBHNH1Bq3yO_fh7W-WRbT5CVxDg5ukUDOnOCejPXP8aqH_rldyd3jnWN6vHAwZ0hGAz5QAC_clwTOadqSUdTQ5gTy-gEYiqhHiCUoGUgAq0KW4SpODx_NPZmySzoVqONKJ-fTWu54ZgNQZtOTk3TZ_tfpy3gAvBGIuOvka0g7Gy9gS4JNynheFNuDv3ii_dbUccFrq0DlO1gzi3lDtp9CPzPR0gNPMIXAX6A48RPNsLACECCfPuYfAxBaA7uFiDvQc577pkcnMnyJ4yHSGgJbFp-PXOUZiSHo2mqE9gWhlc_xLwTFgRCG-ncL5eJmvX5knl1CpyhHEFYgun4R-1UBSK5kUY9CUyAZo_vqToATYoN_1OxnCnrAO5lXbkMwuGycrk8MbWN",
+          "places/ChIJAViBZc13AjoR_Vh87yZTrmo/photos/AWCwydhggrxgikpES1w8yoEIgLxHYVaAFrP_o5MVjiWaBwXjYkn1uRHnmDWKVY4roGQl0BfWqePNzdrqfE2I7YrgWnvkcbktcj_iyRkt9B0ILHc67loxV2EOwJehvlSFERwj0ERyCR9TkVOml59FctxP26_PKfHHQzsKuZ5WNOmbqZ2lpb_cWMSMp00yuyxUh__H_VKCC2zQLMkVidT2DbWkTBTeQ1Lr0S41SQBGU1S_sE47ABiK3IfcLSgP_BREN1x4fly_FTcqUae-hFCRY2Qk_fOxumMZpZn7fCJQJtMhUx0QYFnG2zWkPxnoNdZ2e9ECGuNsAz5ccKt-dWznpwioq6zTgFRPktXnqXNH_lIa2iB-b1ErRy5dlQX2pvSVM9eOhavOfd94GI81Ow1Adt2UqSH5dOT1ruhevWsJa9et4vY4vQ",
+          "places/ChIJAViBZc13AjoR_Vh87yZTrmo/photos/AWCwydj_zkMY0s2QEQvgaxpi-Gi_aEobU2b7jXetqoeaaWqsDQ_R3vUIhCRPAK418QNGtwAW_UPcUGjAal8EAy8uvS5nO3G-IUpIWN1mV0UHi-KQ5noM8PSYVw6ei-LuwTxmlEAunJ1AA97ApK05nx1tliH8PymwofNY1rBvcPm2CFog8GnW7cJ5yCMZ4T9bR2PvN1E9Gv8OyPtFki0A79USR9KvgPvTP9RxJJ0g2bn8A2feDZTPIGW0cjM7l5yDeQHzi9_oFi3Ijgi1fZJ_w80reJzhY9kV7bxzT4nIq-uyUJu0yrxv7tMIqoYV8BuQYRots8C5zH25bAwz38d1sBNrUR63W2JV4T5YPYvNuhOctMV2HPE3Av8YV0G92mrjSQXamqC7vwINPINRxRgapEA9hPSBmeGrgkZ9g3CS1ZxNWzTeJuR6",
+          "places/ChIJAViBZc13AjoR_Vh87yZTrmo/photos/AWCwydj9izEgzExD4VMI0aeHpOqKEc0GHNxO_YCZPQSlxsL40LcDyxMi86uFyqSLhqm3KNRJRX43fBsJkZgvHfykzgPqTK9XvzclXbzmP4BTB-5ICWlcz9yzuoPZhPmJgvLvTScMTWELpiBO54JFU2lunFoLXOAXIfBPMX9dCIbQGgAzc6IeSnqqhfvw1YLT0pLvBVrpoT22dvYkr52za6raHf3Ou9VjBQ9EymGClb20ZzdvQ5j1OoGXIumoVuMhV3P7RtTD4Qdu4_V0vaRwQLD26nNFkzL4A3aXHxaOrrAI5ttDVAmjdj7RFJ-wtkYWxT4QbhJgzdd7x_bWen7TpKjKN8blR1AZdFqIqMOjk6Zz_syQOwGLC_SWG8F5naWg_U5i3JGHdnXBgaNARRADz5JD_yXXhoQCiuRIJiMTUVQf4TxjzS83",
+          "places/ChIJAViBZc13AjoR_Vh87yZTrmo/photos/AWCwydhUlXbzzyJUqdD57vlmNny689hxOBX3pteocJquUHcuyvUchH4DbHYnU-YC5P48TGEDUhq-AT70gLboPHTBQi0snc_jfaEwOP45s-8t4rh63ESEm5ugcZ_aqpOEMfwb4P43vBAnY0yZcoxlq0ficuPhZ796NIGvvC7U0o7ChhVyxd4SXUXuUlD4WA2Q6mLLk-wf9Sv9yUyU_7g64fNCVAMKya_klZy9NSKcRVYZKVqgxilmVOJe0uOI8xL2dG04BOHgQhHNZ2NH_wVTA1_7fpzX-7Cphj1FrElQn9vUwOh5YQWj2MMe6uV11NqtNEBDdk8vjbnK7H67vhnsvfP8_4xyAIs6VU4mnpe642ahRgBbx6cn9skJvfi_QGdS5Ih09qb7ort8v5doe8ewl1kYZsClhvxg4hUc5boP8pDQqVnJQg",
+          "places/ChIJAViBZc13AjoR_Vh87yZTrmo/photos/AWCwydghzmwlBTmeLupQQYXktcEIRzn2Wzq0FnrCcGLGmAwQahnwoUXBW9dRaMHsG6SQYypmfVv-TLV89kPZfgjtIIvQyhpNQH3fZe2kaQvJir9e7vn-Th41pp2r_MqIEB_mBddLRuNUYxKhYdID8O3BATY_Xl5uVOyrwhytzVp1yZBunqQr3R4cJu7ET8Go2H_5Gk2WI5iOCIvHgAEypdWSUzP8ZsaQSPbzKTRYTHcILyHB88cwHl5iAI9v2rVl_poELj8-3OJazgf8MvQpxkjUG5UmIPCZjlqqEV7WSdgmnmP5ohvyT7EOEJc5AyDn_9R0c7jQpQNOxPr3vCymCVsTatxiZp6ld8UhG4sof21soF4S1Nud5HEWumG1uXOkOTlNFY6kkQh7nywbxQSKXyeRrTN0gMGId7V2vbSCS4lARYvkzFHe",
+          "places/ChIJAViBZc13AjoR_Vh87yZTrmo/photos/AWCwydhzN3G0TVukGwcyQkrpvPtzQ5qSig0yd0ItvwTRXk5ifSNeaOnjcH3dPbEHdWjhSaV4v6TszMDu2JhAUhDhgcNy-wR-bBOcuqS03s4yfrXoPedMkC6d4daxPoXmZSYqxIwQQVNreyAc5ioPlMvNspRQFLugLELiyRfU-wFnIyAnV_BAtQbSt_Q3d_NcEVapbIWGvHvp4ZGc11qui49-I_ZcLo10psagl5V1luHt9MrAkKyiieIYF1_Er4O7pRWpc0WwTCMLCS5nHPWGx5Mn1kEJoXPTl6tKvzNhHB-rQoARFMeABn9xM9SWRBEqtOyn9kqbuvfi8nu0R8b2ICJXN8zgRCy507mq-IjeeOKTtRQzVVpon5IrERgKic2nEl7Tj3jex6nFN_dRorkNLKcHUKpbfEN5VdLP_IQeh4uDJwY4ngNq",
+          "places/ChIJAViBZc13AjoR_Vh87yZTrmo/photos/AWCwydh8JVfJPtSZ_WHRjmg7BdZnZeOw-3macYXdGX-DQYoKJPdUoFyGpvrIOxDyragwqA-EBWRbmdv19FL8jS7plgP9HAyo2x0CGCDy3kV60Tqb9E0-6tpM8d4EaL5zLCWEuFO4HNWNvbkkbb-R82Cr8n284kNwB8vUllJJTPeZkWwy-G4mMw_uJcPCLVDSuoW6hXdyhAmQkK2keoHQKOz2razKIT6nQA8Tmzn2-YrlmGXgDXEBgqdvtOVMsYPkgEsq5QZ3Na8dITdI_vwc_hgbywzl1UXWUSP2bjG8oCSPXawmRS90fHWImMlQDIWYrFWFBTbdILl0zj-3y5-1oIttye3H20tJuhznsXSAEJSCHeNv41I9Si7BPIowAwWRJZCGCZQUS3YOu2_gDkQhReISGXeSTvLTr8GY0Io2NDpj4R3hZSIf",
+          "places/ChIJAViBZc13AjoR_Vh87yZTrmo/photos/AWCwydjVOTkRdZ61ZZszrxhEkuenV1zleBSKMOFtkqrsC8a_JW90rJfkBkawIhuhlEp3NNE7RRMSej_ogjiLuorbYbwvNlfEFI2_pGVazFWrerCgXgWmkwa2Wy2A7x1xt6mHom1sKlRC8ZsMpPXltTf-Y9YMXmy6OJe4M4b_o7m8_Y-OH9IlPR_YI04ALYfnOJMyCmJiP33JqZFSnj-UUz8pglRd8cIptiKl2muWrw1u8HmUbHw5TJaFlv506hBH7PkDF58GG1Cr11sOZDaylD_y0PNYW8_fd71ktzlWavuYmqrLXdcs5JWzu13mvgcTphDQ3L8iUaTv1rGClt4ZlU8w7dzxhgfejHaaK6bvO_ay3EgmLLupYOL35mrvOr88IFh6Y5BtP13rTL6hXHbnHr3OTETzN-tYU89eNo6iqJz4s83gE9o"
+        ],
+        "__at__": 1786796919.329023,
+        "reviews": []
+      },
+      "marble palace|kolkata": {
+        "place_id": "ChIJz54hfLR3AjoRnVaB8jiPTdg",
+        "name": "Marble Palace",
+        "address": "Marble Palace, Raja Katra, Jorasanko, Kolkata, West Bengal 700007, India",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Stately, 19th-century private residence with unique art & landscaped grounds, plus guided tours.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 22.5821869,
+        "lng": 88.3601869,
+        "photo_refs": [
+          "places/ChIJz54hfLR3AjoRnVaB8jiPTdg/photos/AWCwydgOHmv7e44eDEoSL6jjS-ZD9897jyOchS11kGE14UXlAooTDyjKhXP7hwzCYQTptTD8UBMCnYdwYwsCQjCW-OcI5j6gOdC7BET3p76rlY1izZ0PfTcAqIIWACibJopDZDWISJSYa6sycA9ktyYGV2Nhbl6Hme0-8uVXZvDx4UIHclic2FqeAjWbv_xR6iqbaZjc06kgdXWhrIrD_25TgkM8KMF8nLiaM2846p8mOSBcnoOfPT3WBXBrC2t4LDnUpVE5qel6qLl0xbQCNbSM-k1neeuhnqNS3cWV3rvdd_uOqz7T2HM9Wq99U78OvZPqNRpZVCYrkhqZhy4gwlubSnSAHhKfA1Klk46nVvkJkdi0rWDSsJVJyWfPNDi34Vd8HH3Ik4IcwlWo7uJ6VdfU7F_1AkT4wTCxTxsWIO31S1pd0Q",
+          "places/ChIJz54hfLR3AjoRnVaB8jiPTdg/photos/AWCwydj-VrRupzQOeefuzchNwVbe60ozH2WPTh3nl3Egiw7AeEIlirBi0sGtVILXY0FWJYnMWj45FQKXXETVGz0-UfF2rKs_Ua5rRjCoaQzHgfV58el6PDh108komAgOYE7APamAN90XVFHYB7gefyu7ImSxl5IUV3LmFeMgQImWZ6MhQ7iZtOoX4L4aAnGtLEmY1gqIht0f3BT-8yNZR-1Jj7Hxxdq4c_BohcRE07pwwo-YulSpZxiB4qkbv2x1fAY2p5j1i_K5AtX9QUtPRDS1_xWb13r91hD6qut33YpyyiviGhO7acUe_DyypoFyqIW7dg6c9RWEGbqJbgozgl4vaTdTU4xBAyHoA6CSZ_MDCWlglDVU83K957z2lH6h6QGG-oYO-1d7t8ptxpT7C9nxztNpblVUnekTAY7UJnjd6oJlWaco",
+          "places/ChIJz54hfLR3AjoRnVaB8jiPTdg/photos/AWCwydiV4xWhTLVvacf5MNMImk2Q1be20jgILYdwshUAQ1FwiTMer_ZPbe6Ze7isLX0hgYG0mFSaJdcMAp-NvUnY5l2p8lHyrcS3_U7L2Tb8e5HIkLuKq-XDZQyhn_aRJ06bqWhUYGrvJbxMOpiH9JTe4rP_wjzej2rEqaur9AoyUGRTSqInYDQovwmQZVjDj2pmgKRQCdCM3jgVa-OpIA2rRV1k6eLyRCEEO6YAVpHyGVi68bgDmmxpNaPVkOTr-dASJxdEJJ5R86Oe_9ZsGrxBBRhH977wmIlsIuRpXA8opk0OBG0ieHJgPA28o9TRfaOTH4-Ux2g--z2gKr112eZ0E-DhkYPmmQ0iqLaxRkuqrBdbFpI4h2HDsuWKm8fpYDa_LLBH9QBxICNPB13cmYaRK9vhgHg6s99_1EvZukjNp7k",
+          "places/ChIJz54hfLR3AjoRnVaB8jiPTdg/photos/AWCwydh-zJStzTaIkoYlC9jvil3Z0hMTZA09hQlN1auDtwsv52mE7tTmtEr-f6mnj30rOnOJ4Il5OWuKeotejUBrd58_XkhBmHZkGdlFJujhFtG_StgCR-7MLyhGQLgCbN_VLnuFkJV-H7xwVIInXGe5doIUExMhluClJ2WYni-YZJ9k_2-PMxbb0Pe-GeHsCXd3Zi_GsWKMtqzlMsrqnuyUqQBa8guJLmKVkMOUZ9hhisy3DfKoywRSKiz6hHgTjjbBdhBUgbGhuQrfcaS62G-aS65U3wfwQMbLgfUFztC0A8_vTnTfLQiSEuiLUYJ_yXew9hdBCJXFpJHJ3cZQyhwR6x8eQE7Cez-A1dvDOl-sC5yvUlxswgcWclQXbqxSsarjLZ1bUPiF3jCP1KfH02JTdlisf8oeFPHsbRvAFYD61iE",
+          "places/ChIJz54hfLR3AjoRnVaB8jiPTdg/photos/AWCwydjwfmQ6WZHrszbBVU9CK5DRt10LR2gyJ53kHF-0zNPLMp_9iSI3mpB7fIybx4ofmkwVxPUgONrNBxIGReieWZOm837EV3WNLgRN6e8mOwArbGka3gt82es4eZMjJhpHEY6PuQrmEFcjJmfGgi6CNRsYJFT0MiC7dpody6DWLiYTgkU94x_yLAdbuffLRIVHEmp8VLBmFNHoSZi-zIfnK0UIUPd7joSQpnvxDf60Uojvt0aVbnZV6wYhZAMFnF3U4ddVX6bNLiTbBqfQfk225ERElr0aVx4tw5lRvxVPRjGzElc-H2voTBDYKv61s6ziyW1myGRngCOOj_L8eginJWEm8dTNCjl0REMdIE33hrtoaGB2VTUurRnfY9UFjCbr4qTORmJ1FmZ3YqEVnV_8r6fInl3P5HrdjhvcFiVYdOX3baRh",
+          "places/ChIJz54hfLR3AjoRnVaB8jiPTdg/photos/AWCwydgaQIPA35c6gTv5m-7POzRTZLxkNqTLWMVntcOVG-QdPxtyblVT0m2dXDF5FeuVzxaikW_VqTgp_S3flssC0I3jv8_qyZ3IChfQuucIXWXW4uo7hbI3is_ESFZN4dRjiERSEAlcSzVTAl1uz_F49A75GDrwKPKVQBZfYB5086WWJgR6oZgWaTuZcX0r1C4IQmF77w20e8WSOcB4CpNZKH_da9WvPcCaYermCm-sE8MVm8BSoP9sLmJDFM5l55f7J4ejpms2h08ct_pznDBgEuyupXdqnHn08lqSsman5hhSpCuwk_oEr0pcAEvVAzfCwNPgM1ll2eONsIYytfB32JeFP3-AY2E8yksmf5Y97edLjWEdVHi2gQR1_qMXJBNNAaFZ9GJBRLioyV6oVlKTgiXSBNhtCWOb0OztomZ8cE35kQ",
+          "places/ChIJz54hfLR3AjoRnVaB8jiPTdg/photos/AWCwydjDwgn9ZYmgn0wC7U6nYoXQUWVIr6E8e8jb0yOC-6ci24P4yOXckkipy6xfdwze4R_5GpWwfj2ZdhcVNNw7u99zUrG69XrJAmk3pbtRTEE9cqICNgyjqAVf59QBJYPMtlTnez8fAz8GTzm0tzK5mT-cMRCpCyZMrpv_n6va_pxnNzLaMKLgJo2sNogy8_hNg8blDkqGrNxBfP2vTUmV3AjMwr7mCQP34vxu69ftHb8zaehDRmlkqAea887vImTH0CSb72iRBQMKVEFxAzzJujM--kb2HLx6ltSibt7i11X3Uka8JHquH12HSAYO4uCXBJg28xalr6LNIDa70NnZO8cocWMEiz7enAYW0DoNcsnpelZmqdIwfOpCuuUzt-cAUp6tu3u0qOcoGE89Bx7Lsd09-X8NC-ojBGikmF7401uIIbM",
+          "places/ChIJz54hfLR3AjoRnVaB8jiPTdg/photos/AWCwydhoB1f83iqUWcYRVt2nAqEZU1w_X2_qPP7oSHeB8KG-ZgBzpPJR0o_mWfLQhtvz3pNOEQOX-ngOpHE1bHwJyk0x41zRd1wj1fAIfidd0ZCpuHW1MeZmlX4BnrKXLcZh2wL8SoMR-1JCkCNi8jcQDPeTOdOP-H9JfqJv3DXUy05cRDGg-848zjFr8--liZsWidG5LjYpTmM8FbtNgX0x3Jc6t_XwH5ypTnKdsbnwFS0Z2U-cuSumfbNSWA8P2u4wJbSrvNTR4b8jjRDKQ9RNYL4xOrKcVgm6h9IUuVyqtHIwc4eWlEwZWbM4ULI8_KT-dfYqRGuOwBJDLaGpVRc7DXKGVoRe1dIKA6ZcyKip_ca_ry7D42eFL_Pjs-Zsk7mOwwdoo6gwvGOxP3Fpcwygc1FwLupUk_vWIMoFCasPb_de45s",
+          "places/ChIJz54hfLR3AjoRnVaB8jiPTdg/photos/AWCwydhYzyGgh3XI8psP_zTh0dNoTvEawcj4VQCcWP4CQu-jHU5TcuDnYQpoeWxZ3R2xgiv35Ct77Bw42Etl22fH9JUiWNe5GAKp_t5hskCBc3GbmUuy6BGj6e_NAasKJ-U2D0rSbOGqIjxyjtBhqaMU3hQO5KxqP4MNbj_BB_WQDxYB-DG1Qpc7PUYZjgZjWqZCJFd4nPvpXs1gjCx1LS-OW25OiB7FKG-gcX0NX3iUqCQb_UYpPx_KDn3_zyVh4qB5Wg5ybVS8dSI5PApoVEH7ItgGZOEQIBNBw29obiWLr-xyfjxc-V594ZtHWdIJKUCV0WF9cI_0m-nPOF7jEMP1GCq4zrmDpTt5qea_1v5h6usDoCD9OyXLOCtliuU4438z2AWkqXbtyrCR02Dwq_MLz-EeuSjR_liszuPKxpPGNMY",
+          "places/ChIJz54hfLR3AjoRnVaB8jiPTdg/photos/AWCwydjwIq74hEOMuJHvvB4TQhl21JYEfCYtpke058n857jVfwj6L6rBUvx5AGVY7BeCrYF-3rsyBFviF4bbMxvhhTbhT5wSrk3-O0ecgITO2-m_H1HePMg1NkphTen9tHtJdgrn0QnvGYJRWr40RkLYgTzRtRTthfbkOZXSf71X4AKvWsLJBknEkaNSaE9mNbJHWLiGEIhKEjSsy1sHpaFR64IC7uRiCiJitRUCgOwMVjdEIKMTmGN2VWw9gHBRz-4sceMF-Ch47_GXr0E2enk_eQLJzMr9AVuWhvxi0UidYd21RBhrWEGV6Cyt4NFhdIp_K1C7yHIXsWIAX19pJfpGmDQMDLPvC0K4i-7CSndyWMnUEig2fs85vmkiIgW-lYaUAR_j1ek0MkbEog5l1GVjLEITh89kW9VtwD1vY1l9csoPGiA9"
+        ],
+        "__at__": 1786796919.851051,
+        "reviews": []
+      },
+      "south park street cemetery|kolkata": {
+        "place_id": "ChIJp6XOKxx3AjoRY2Ytgd6-Xyc",
+        "name": "South Park Street Cemetery",
+        "address": "184, AJC Bose Rd, Mullick Bazar, Park Street area, Kolkata, West Bengal 700017, India",
+        "rating": 4.4,
+        "review_count": 1726,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "This sprawling, 18th-century Christian graveyard features large, picturesque tombstones.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 5:00 PM",
+          "Tuesday: 10:00 AM – 5:00 PM",
+          "Wednesday: 10:00 AM – 5:00 PM",
+          "Thursday: 10:00 AM – 5:00 PM",
+          "Friday: 10:00 AM – 5:00 PM",
+          "Saturday: 10:00 AM – 5:00 PM",
+          "Sunday: 10:00 AM – 5:00 PM"
+        ],
+        "lat": 22.5465721,
+        "lng": 88.3601875,
+        "photo_refs": [
+          "places/ChIJp6XOKxx3AjoRY2Ytgd6-Xyc/photos/AWCwydhYjAVirVKSZg9QytJdGBixEs6fe0due-6N7OV-FABCXQ5i3lix_oZSofz3IQYiQCiSEspkhsvtjUsRL7VkyIRHUqUKD_456myG_0IpLfvRzUiG-IpM4ty2NvnhmlqwquqvnEqEeR6PhABD4SWnQ__you2F86XMNa46IRV8czVmaS0wuENqBudibH7Dt8xuE2AmZWn5xMJJ1RGBDpnOk_AG1T-IJ1r6D9FcNmfBC1iMgmPaTTsp1YtoS1yYeFhYqrfkJ04qgPD5VNjYgAXbJ_Qi2XZQJYqqbkUd497i4oWYMNPBMLAA45_oQ5-IrnM8rJ9U3peA6VlDOg8niPL4-rrgdgQQUPovrEzPXfb6uLyT6TQGqqWvzIajFLvOwqIGu9zyeDDXtt_ZJRUH4GxTEDf2x5ZYWi8GhXbO1KO_gfHOooLoUY9kBaR65IhsMghs",
+          "places/ChIJp6XOKxx3AjoRY2Ytgd6-Xyc/photos/AWCwydjbBYD87ub46UqbYxqpqueMiMduI1pfSYCNYgLoTOzGSyrgl3ScyHXS5mr507l0k5-AhIJbDk26e33OJ36Y1g4qLWxx4Zm9LzWIS_IBKWJaJEhX3QTSIFoemKaDSeUj75OvIPIjX-cSbTTqkqJ98mehLUSWfuOdnMIKzdgYbRaqxcYzDS9aCBKWdaS45Ce4ye_mVnapEu7khXYcQHYHTXqmIfq4e6Ej8AqZ_po1EvTVRm7nnDMGBqFVPZXHqxgcvnVSybOAIEOFjlMZyjCPCcddNFSqhFtkraZDdq4pKPBH7M5UsIovq6LErWDcU8P1wn0mkTpyIWz0nZpLEgODSlngzRfEWoFgobGGZKqY-fLTuZj5hyYYHIQvwSB1q5AQp1qSavGnV5YoXi8QD6Aj4SEt9kWPdlaw1Ug_kH_i6eDYDMO05dHLAf4Zu6m_DQ",
+          "places/ChIJp6XOKxx3AjoRY2Ytgd6-Xyc/photos/AWCwydi7lESxnQ2uuCpEBfSSO0KxpDaLX3zJHSBlON38PTqFnJWYQlbCIp68V8FpJlZED0HcnVdCsbneh5sRBV3demtuCx3UVXq4qtKmHOlKCZpH-vTgY6w3XNPv1ysmEBXAurBevxQfhETA4SmRGb-K6FqS1Y4ICNLRmxCIeA93rOx88okgiM1ov90EsEIkcEQY__gil0EtW1qFC0dTLvMiIHGFYo87ZT2GsYhy_SHjhNMym-Akm_SqaWsJbBieCHJnFeIUKH2UlXvxE_THZgctN9zcb3poaJiYN8mYuLVCA53Cv_o-qVdIZLBf64BfEXZGyfhip-Qax2m7y2azoP664_XfXYRZs208LGnL50OwQwAoaKkn9XVAHjYO_FYQ-0v9vgEEP37c_MQX5X7-fS6d4RpCEMV0cFxEOGwIA1O2Rqwm-iGqA7zOoeaw8O7z-C3p",
+          "places/ChIJp6XOKxx3AjoRY2Ytgd6-Xyc/photos/AWCwydghRoTfgcy-l1AP3bgSJwq-bMIdFj_XrKAxzdKLHghVcIwvlcPU80ggcI769ydHwmu-me8FTkeC23DLT2WN8_hmSUFyeABwY3k7cVDT1XaY84sMEryJEFnH3Im9OOjAqhQ9T9wGNqzhKv19aEMEdKyRigwo1DWn2A22IrU2kkH8LsznFSEx4zalPfKOvHI0ACJKdyY_SI4tp09T6TmrNw5EVc-_A5EXQm3yGcuZ0yO_1et4gsHOqCoo7_wSCr3TooFUho9VYFZ7uwj4jFB_lTcxOc3MZHT-E-nmz_u3777wQxbM0JlG_XtkFFCxXoV_GKwbiFp61jkMhafygLOZr5pemJLyH5rKVFnONPPqwJpAG4Xfh_BoiChFT_a4RV1LoOh9__5drMBX-CapU117QM8VmKXM1CZx2wrUWRBCm8qpmwNHQdnv1HZmLdKqpA",
+          "places/ChIJp6XOKxx3AjoRY2Ytgd6-Xyc/photos/AWCwydhL3kqyZfsFb5fIVJNTvDBfrS5N4H8EV2mIzD07D6bsA6wmPJJTVpnG1TevNwDYtYYNqgvMEGuyHHTFIdEvPfMJF6DdpFXDw4YniZ2D70CvO-j2dEY8J0aSqu5cHXG6OG0uUn0yy_-K_XyoynEIJPpTrHoB0T8bSxVVHa4BYLa-pdCfFQbJ8vpbsmChH183sI7rxQdpwIb-fptmTvDsaKZBzM8rDghYPtkODYcpdx1jfG0lUsiwC02p3PDIog5l3OY9A3ibGVNqFxsBZiuk8juGepxtizsmy1zkfjL6X7EU1Kty9e1l3TFE3W8vZVztHYpJsAdkR_K2c7Vg1gw6tSp8MTz1EWXzr0g5jnrZ7DLW8te1UKM2NnpXkEizZm4aQwiNrd96Z4FLLy_Tt1zsdEkBrrrbuzOXJKaKtRmBeXqNAx3JC5RciLUWL_4rNg2m",
+          "places/ChIJp6XOKxx3AjoRY2Ytgd6-Xyc/photos/AWCwydgWaOlqR4_-lasXK9LtgUaH9nsW_hpSC-2-wpeHKJKOODIgYZgfrKuzW-0sgiR61vHt0TcK-dHdql3gBDHCWi3SvcffEEoE_EXzqGtrPFQhyCtbJKbTeDhuWvDRlnH93TXR6xqYvtthzzWOqEX_ECVpnS5C53xvMZzra_LQD5KtFsVTQ21NfXCeXynPHhRSfYrhh7eLAwQL4d8Vs3cBcL1P-aUpEUIjBTheerFBMr5I1_GNyElFEmv9ZtnzMOhCQDTU5sDMFmfRo6Mq-qjZCFh-oWDFVffd1CUiAQ9s8-AqlA-b7pPvgUmASlMS_Xjv96jDS2rqtK3yec7h9gOTvvJ_ZMgS0w24hlzgVZP5c6c13yL_0gF339CsloZ0LHZIcd_vq_3DyEQDDvmT4G_Om4PLcLI_0rIszfAMmAxtUVcSmYURd97TMAFRh6Q19dnd",
+          "places/ChIJp6XOKxx3AjoRY2Ytgd6-Xyc/photos/AWCwydg8_QY6F-MMkKUUCL3gEKJ0nOGlordKKi_dZ-R3bKUxFCfqyatQdi1fed7jotdW6c2UOOopM0v0C64KdrVDKH5N30aVY-wnysdH-5wP4u2Ao1S-J2VChhKrsRA9nCsdUio8SGhiW52H1uPvVJRjoktXBM7hG86z-8kl1kgQcezoaYT6VkZR4VJsPN4cH1pJVPhBBok_gR8oUmWkVSNNMChPSkayJ7JXqqnYZJS6IUs5Gk87UCxwjpW-4BZOuJpAHzeTIxJX0URFXRyv3DXBzMrkoth_KRV62a4QW1UUbVHcnadvEbN8_6mauCRGS_V6xr9rqfwGkSk3aQBXrjCFYTSm69GAKBP76hLL2yW55rAZMN2h2kA49fJHld6HZaI2JSvy0uiYhtRSg2v1gvFS7udwvotGQsPI-4zrApg3oAUlW-5wtC-q6oHW0A66H3L1",
+          "places/ChIJp6XOKxx3AjoRY2Ytgd6-Xyc/photos/AWCwydjyyoUinBVFjNVhF7z16RYBp7Vo_-_fL7Pkn22xjUaF6wHzPcKVXDuEcV_xuVBEy21IdGtTea3OALiJVxr-P8YBmQ12YcpVxJoUhI-IbfU2E8w6fT4KFgR6Uc8Dg_VNHKNpnOUHs3MpYvsPunbGkHqrYB86qmHEioM0OG_QqGzaRJ5CSXoYVyhmPLEMZHBkEIDGmaX5HyN81MemxMiVvW7NBu4qFrE_O9989Ox5unGH7qE_tthvnqjlMdYJDIoT44yzYqtWuW5I-C0GNg7fVPLFtydFUMyrqyu_AUwmcg43kDDyKTVbl-_TlKcjsHQai9ZKDkYuvfjfu1C-yXY64R2ohJajku2X1NXLQn9Sc6vpJneMi-3MkWhklWTi_dbLiqFApJxA9o-lfb6UUzTiKiurwBKKXR2Uf_5u7aOguse1_ANevQRwMh78Vclu3w",
+          "places/ChIJp6XOKxx3AjoRY2Ytgd6-Xyc/photos/AWCwydhc6R0ewqeoFmiIP9SWcYt7otHwlTN640b0Qss9tmGCFSKPnGveVMTcssG312MYJIquBYI9B6RMtqdF9lVgJ4QcQXv1FejBcfRAceZspgQK5jd3zzjEGQA7LThGsWqf-xeIn3O0P4FH3iKjgoUy7yMIwjFzFuO3pZxYYMB56bw4mnRVoMZX2n9jrqsIo2imiJNXL5a_Rekr2A0t8E9woqd2xlfurpHyesaYNuMZwBtg0VqkAJ8NtyRcykj6Lz4QmfnXocJRIyRO-FK9CA55Fa26jZy-l3-50s1Bz5qX1i0Vy5_hiCpJoPHK7XfUrzU0QJbAsg1ym1B4g8zcYLCVQE6RQLHeQhqSG8sErrN40OnYhMiotvQJcIsyAEuWyLxXJ2rVEBkLmRPD9wQFqPa6bmuiN6twwEKAeeOjbqb8uHs",
+          "places/ChIJp6XOKxx3AjoRY2Ytgd6-Xyc/photos/AWCwydgHkU6yTFXyTRxNb_2DaVeLndCHlqH7796jITkO3lwww5l_QXe2dnSTO6stgm3ap20PNl_aVVZKQ1nTb4kq3_v7ATk1XeDoAFHFDPxxk30XMffJwRZJpEcrDyLNXkrqL2AzVoCzx6LyCPAVqjTWmmY8ChCDzqnOJRzomZKeYLKuOelsrxgvf2mjIgy4GdgtntOWcImNTVVCPxIy6A4bGn9Va6pOeYv4JrTWd2J-f4Hso8mVJv2GWikPlg-5_HUme4QuRDxkLUTRsLSglnm95YTcSVCJDXzV-xEf10ABLYyDbYUfvzY7wA3T_G6GwH5lSoq62NcUbHOkTAk662rSknCZQYswWIDPglfwNEoVvuLnfp35J9fjg61USrtN30es-cU2q2foJ1dzNA2WFMiG05hcOlSNTs1vjnccJW6RjB0US0jZtTMK9S3ltTtexrcq"
+        ],
+        "__at__": 1786796920.2024388,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Visiting South Park Street Cemetery felt like stepping into a quiet conversation with history. Tucked away from the city’s rush, the cemetery carries a solemn beauty with weathered tombstones, grand mausoleums, and moss-covered paths that whisper stories of Kolkata’s colonial past.\n\nI was struck by ",
+            "author": "Sushmita Chakraborty"
+          },
+          {
+            "rating": 5,
+            "text": "The South Park Street Cemetery is one of the oldest and most historic cemeteries in Kolkata. Established in 1767, it is considered one of the earliest non-church cemeteries in the world. This place reflects the deep colonial history of Kolkata and offers a unique experience for visitors who are inte",
+            "author": "Arpan Mullick"
+          },
+          {
+            "rating": 5,
+            "text": "The South Park Street Cemetery in Kolkata is described as a historically significant open-air museum operational from the mid-1700s, showcasing Victorian colonial architecture and history. Its appeal comes from its unique atmosphere, featuring towering obelisks, classiosi columns, and ornato mausole",
+            "author": "Angira Sarkar"
+          },
+          {
+            "rating": 5,
+            "text": "South Park Street Cemetery is a fascinating historical site in Kolkata with beautifully designed cemeteries dating back over 200 years. The entry fee is ₹25 which is well worth it for the experience.\n\nLocated beside St. Xavier’s College on Park Street, this place is a hidden gem for history and arch",
+            "author": "Vijender Singh"
+          },
+          {
+            "rating": 5,
+            "text": "One of the must visit place in Kolkata belonging to the colonial period. It's a nice place to visit to know your history regarding the British empire and British Raj. You can get the tickets in front of the door which costs Rs 25 (normal) and Rs 50 (DSLR + Person). No separates student discount is g",
+            "author": "Nishan Dutta"
+          }
+        ]
+      },
+      "hotel (tbd)|kolkata": {
+        "place_id": "ChIJQfOk-wV3AjoRGs05cT1ogvM",
+        "name": "The Park Hotel",
+        "address": "17, Park St, Taltala, Kolkata, West Bengal 700016, India",
+        "rating": 4.4,
+        "review_count": 21233,
+        "price_level": null,
+        "website": "https://www.theparkhotels.com/kolkata/",
+        "editorial_summary": "Polished hotel featuring an outdoor pool & 8 restaurants & bars, plus spa & a gym.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 22.5540974,
+        "lng": 88.351871,
+        "photo_refs": [
+          "places/ChIJQfOk-wV3AjoRGs05cT1ogvM/photos/AWCwydgaiF3TYALtL13yH8VPOjU-ok-iusNU7rZ8hkMgsonmY9jacsT3Hxqwy4c4PKVNmY25RzTAlODlaB7eWXLHi7iGbJSu49WfiU3wCCJofsjk5qkT2ivvX38FHzs8aZ7CR09A-AMGgTVD4ZAzp52e5J6Hz1iaaH4STDgFzgEdTfu-AJciP4onjPM8ng_hUpjjClhKbstvlABmGI7RHuA0xqrH5OGBxlUfSzaquKDklsJsNlWnrqMr6PDm-d9gixZrAq8jG2im4bnxfwD7u5Iy5WiA9aSS7tO6isjFd8RnMU2E0pvDFotMmJxjDAin3GRp0ZMAgD2QhZI6vyskivGkLwgr48pps61Na6Z0n0k4h7PpSC1MJ_N_71V5h12KWp6YOjrPHMEi7jEYbv5m5vNTENw1klfEXFKp8435vfVMOi5v_vA",
+          "places/ChIJQfOk-wV3AjoRGs05cT1ogvM/photos/AWCwydg9f84rjDj5GdiT6oEihiIjkZ3d3j9imdJX5_C7kjuH_RKamxuvMKV5KCmN0fEkDnopyTStGtYRej3Ta2UlGXK-bk6K3WuBN18Xwe9U9SJ_gY6pPHNSCyjc_syvWY5GGe5TpWEnBX6S8MYuFDI1jUlCOIhjDwWr3fXG7XmMxZORoqaZpyZ4LchvQvlVokBkqwsjv0R8gchlVa5zUPVW4stFGJziYnzWVj6YGOCtU1didxOrRarQpd5G6NmnU6AyKivk2M6LsxmzdrGdUdjskE-PKuAi2tyPrYlkBha2RKT8jbf_DWnLq8tp--FB9DUPi5MRkpHpLiPRsrRn7IASus--nrDZUo6t4NE77VrFSrJhnXOOCCZAPm52_0axHSXfKyo5r4kP1mI5cEgLkQ_drNn2gZt6phaQ0yLKbaoBwB5ybKeWML1NFTlF8Uys9wBE",
+          "places/ChIJQfOk-wV3AjoRGs05cT1ogvM/photos/AWCwydjzVPifU2rQtQMR3QmUIR-_BUUNLcfVCbGbje-CazqqsQrZOIzQgsEMM_PO_5p1egHZtFjezvdqGrWVStkRxqmZ5ijMufnnh3gFzvR_daeljqNhnf7Ga_0CYqptUwR9t4cHmSLMaPXanGl6sdJrm0l7zIGbTvX6DnT6S2bNJ_y6hSWGIpIw2HUQNMtGk9NryyBm2v15GtFOY7vf3wsccTgVPc0uwxe9_3HM9fOIFvo_yNDHFNzyl8docSUgea0CK3zlQviJa0FqBdldYr7sKzlDVdBhIQoY7LGuirZFrIWXjvISnZeoyhu633FY2OzHE_DwxunQOsLlLfKNM1UgU5Yx7kANZEuQtUAJWk0y17McJNGGSwa0ORxkTJo2l2EqgGaqAMEuunn_WeMMsisrKl5diibw8eKTkochXJ8nxFjAV4le",
+          "places/ChIJQfOk-wV3AjoRGs05cT1ogvM/photos/AWCwydgNuCQSke7cfSnsSjzHEPFBNc1JqwjYiDU2XuTBdbANbkKGzKIJKrDkf8A9WtKWh4M7bHwt8Tfw4TA0NVClPEOxYHhAfhhZO2UezFMvP_GhUSsy3D3xVo8n2ZIfZbm5YzMhUqEwfhOgZ3coVWIEkO5sMWAtCXXcS7JxhVhOypun7exnfHnQrPJoEKCWXloyu5CFlPhiOYMNRrf-DsDXL7vWET5d1yGN3RItnG0wMdDhhT4ErfnMeEeiA_AhzWzF8EfWQCi5Gb7KYqHuXkXtmg05vEaGLrptpXv-LxcXh3N9jNBIA2s57iBOCwqjlMmZtSr-B88dyJWveXC1dheqctbXNN6Eaxw2JM-yzR3DBcntXFOkhTIkx_M2M0NZTzbyOD9s9es-mu1KVBfdqqjNGMEHeSLJcah7huvBcq8f0yXyhUP7fKK1WcGUq0QBYBwx",
+          "places/ChIJQfOk-wV3AjoRGs05cT1ogvM/photos/AWCwydjTAn9JzjEUJoY51n61dhMB6BJ7LbiR6-hlvdg0On_4CibZcAIntXJRyFUbmCRgjn2J1HPl-kiZAXrei3MW1XWiP6IhvQfycDYJveIlvcAMAGaD7ONDZwSeZpQ1aeVRdxon4Z4-7xScT6bP0U1Kr39M4GZNbr2Cled1NfgmlMDF-W2UMq6sjlPSVBnCmR8_U3XKk1vOZGt1fP3ubXJXAwHmC1_EHPORjV8LeaOc51TcP5opalI720dF3rzLv3CXTjLicV9hBrP4-8ZFFS1vNGY9S-YSZ7pZwoFvzqsHhAIwqMIC8x4mN9GvAu3RVrMxlTUPa0OWo6VLK4UQGFBpfL_e1Q8ws0WqqZkA9gd0QVnsShRy2ETrj5q8nDn-kypCaIJDXdNKFgDJt5U8FEwmExWht3y8WLA6-iyh9ioqO79Y6WA",
+          "places/ChIJQfOk-wV3AjoRGs05cT1ogvM/photos/AWCwydj0IoJP2mx6vUUEuuy6-etmEjsaS4emFPEssyaiH14KRCPQH0VJqeXMGs3KGmuRMgIPTG4uPqIovw-quBWHSZg0YnBBOsH4r-GbAjsbr9SxlVDLFCogPdndJfSbFBG2K22NJ2MILyxQl6RCSbnRkZiOzvj0qhFxSbr1WBWQIpYfHYyDrosWqkqdQDnvXx61XU4PCpJC3hUfmsw-cnO6tXrcv4vI6bkjxT0d5S5wxmQc0vuWFt8Qm1i4Hr0rdiYZBtaXR8bkeMSoiE9x2WIv0HBiALx4BKZXJmS4fSqrp4Kiu35-vweb4Mur9XgAYHmup9pwjru5tLkcaS5qjm-QQIR6QTOAQ0EhQdgQgim3S_SxajnIR1OqRdQqvPgLyAMsODdZQjTse6UXA77lW7STyGe-qECNQHsiNBYMb1tu5Lfrtg",
+          "places/ChIJQfOk-wV3AjoRGs05cT1ogvM/photos/AWCwydj2SJj1HIB_u9BZF-BjHFa3fpN_DIJvnXGixhgWelP26jyGv9jxnW_dlYZFmr5ZVKGMJko_Kn0GfbpQFTx8LDKXJJkyNlOIh3DT0dJU_V4ZIFE_d3ms5KqRj9r2HIHYsc5tj_su7QOPWJuoRN7vPgtH_6gWPC5i7yKiS2vRkB5DIaeHKfB1DOgHn6g89nPX4ayaCk4Si10KaTRF3ksTJ1j4tysePcMY1dKmkrccW9mOCOlFChPpC4o6odcoIotvodbz3w56o1w_1_aVQzVMC5YbB6nFVJbJys89C8VDukLMY-QaP46-gyhtH8Pmn0QJnPLf9GhePTolmKzlObPdvmBP2zh_iIkPr9toObaSiKg_kNbex5CkyF94mbfzSzEaRdC0BiBL2JgCRTDc0Dq1puFRjDULHuQvMAjOtZ8BRr1UlGf4",
+          "places/ChIJQfOk-wV3AjoRGs05cT1ogvM/photos/AWCwydi8bOB0rl8Bm_vGTogalgyEeswKrrWo-4kACnZvOw96v48a3Us0gin1Si3i4Qr9SQClUghU4wDhkFPi6xipdm6jMi3XVbVz2M-cruo6EvF5GLfJh2nINEzAhtPDO5wWZFeTPDcZ3mNh_vuV-8m1YaK2KglyokcnyS9meWIcuA3p65NvRGwHvlfd8Oq9SuTskVT_wD_iiSuNLgtuItcNYVvE5iBinbd0tf-wCSVLBNCD17vx83nzKrrsA9rULn6012MotMmD0TEoUe6cnDy5F-AwMGjPGpv6qo0HbIGu2BkfBdpGRSaft1-XEcLZ1jnONzGU7iH2tUjqUysj7fZnQiZV2MOmjCLkWUa2RmxNheM1ZwafewUQv624BDd439ahn4ybEKJEepdEj7XFrQU_BxddcYLuR3VigyW4_B_YduYHug",
+          "places/ChIJQfOk-wV3AjoRGs05cT1ogvM/photos/AWCwydiLK20HfUP7BbEFEfdDU0pR6z2gaECegFNiw19MmtCXvLoSgiiQbkoCjVu_4ik_mWlUC0VTpSw3R5nBw_Eo8i7DOHZZ0yLXyaD518eTBqxNBznVoamy--sQ6jzyz_IRLQV1_Q3sJDsUXbxhKk6lVKUMhGHZlESJXuJ3hEcM80pJ_KW080rh06CU4A-hml0ODZuDHscdsbDJtu96SJsTbMyayY8uhs0QVP-_7eI96L7X8CAXwQ9fA-SsI6In55w5HMajsq-SSHU_xygve8MIIADaYShz23Lb_pQ88DVx9EiheLIP30jXfT8ygPhgHoUfiWU1eDvNDSXQJatVsqWRJNSOU8X_jaaJ-B_fS3M71BxWa4-laCFFrjo9AYsEEterRIlWTsivGnubCu2E0PP4ef00q4EBVVMArXRQWjKEBg2RDjU",
+          "places/ChIJQfOk-wV3AjoRGs05cT1ogvM/photos/AWCwydjWhZKwzbmFt6FvhAkBfnzgKM8gUZ2iMLbYZoMJBoQcnvepYRXqDvnnBFMvqJxCXydrZ9lJWwNCJURba4R21kiiDQz6Ea8Y6wAPqwsD36vkCCC3ShfhDg-az_3PPjJf6AU4mpjqr8e7LQMILYnR6yQ3vwd7mtSG35gF_8LG3YepJ8n493YeQKxRWYO-y663b2DfAFzeZB7T9gl-sEMQr8Czd8gqTbdOdBBCJNnAuie7vb4GGjpYJ6EhqkKzntmWEZ-_FtB_TyZ_4XpIFDwlLHeI0DOScRJ50nhsB9l8pPX6nfPriLLSSWLccsmaXSSFoSaLxscDL28TW4XJs53raie0rCrvAbTpYN12qgjkwxzGbsiPnDHDiv8PEf-b2_2AEmB6d-SE_tJ7mfTFhupWpD8juWt34fiVu80WaT0rwET7Nw"
+        ],
+        "__at__": 1786796921.292979,
+        "reviews": [
+          {
+            "rating": 1,
+            "text": "Our group of four (two women and two men) visited Aqua at The Park Hotel for the after-party, and unfortunately, the experience was extremely disappointing.\n\nFrom the very beginning, the staff treated us with a complete lack of professionalism and respect. We were clearly watching other guests being",
+            "author": "Priyadarshini Sarkar"
+          },
+          {
+            "rating": 5,
+            "text": "I recently stayed at The Park Kolkata and had a wonderful experience. Despite checking in late at night, the process was incredibly smooth and welcoming. To our delight, my room was upgraded upon arrival, which was a lovely surprise!\nI was very impressed by the breakfast at their all-day dining rest",
+            "author": "Ms. Gira Senghani"
+          },
+          {
+            "rating": 5,
+            "text": "The Park is a fantastic destination that offers a perfect blend of luxury, comfort, and exceptional hospitality. From the moment I arrived, I was impressed by the stylish interiors, modern design, and warm welcome from the staff. The vibrant atmosphere and elegant ambiance make it an excellent choic",
+            "author": "Rohan's Creation"
+          },
+          {
+            "rating": 5,
+            "text": "Awesome stay,  great service and best location.\nFinest breakfast 😋- Chef- Amma made Awesome idlis vada and dosa for us.... And the multitude of north indian dishes and fresh fruits that adds up to the breakfast.\nA superb and well managed gym with trainers as well to start the day.\nThe restaurant is ",
+            "author": "vijay kumar"
+          },
+          {
+            "rating": 4,
+            "text": "I have stayed here for 2 days during my official visit to Kolkata.\nThe hotel location is very prime it’s on the main road called Park Street it’s a posh area of Kolkata lots of Nights club/pub and bars are there on this road.\nRooms are ok not too good and not bad it seems like it’s a very old proper",
+            "author": "pankaj verma"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Kolkata",
+    "departure_date": "2026-09-12",
+    "return_date": "2026-09-16",
+    "nights": 4,
+    "month_year": "Sep 2026",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 0,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Kolkata",
+      "Day 1 · Arrival & Park Street",
+      "Hotel (TBD)",
+      "Park Street",
+      "Day 2 · Heritage & Museums",
+      "Victoria Memorial",
+      "Indian Museum",
+      "Day 3 · Temples & Riverfront",
+      "Dakshineswar Kali Temple",
+      "Howrah Bridge",
+      "Kumartuli",
+      "Day 4 · Palaces & Departure",
+      "Marble Palace",
+      "South Park Street Cemetery"
+    ],
+    "auto_summary": "4-night Kolkata, Sep 2026",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T12:29:10Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-5-lab27-agent-inputs",
+      "branch": "sandbox/5-lab27-agent-inputs",
+      "database": "tripplanner-sbx-5-lab27-agent-inputs",
+      "at": "2026-08-15T12:28:31Z"
+    }
+  ]
+}

@@ -1,0 +1,463 @@
+import { describe, expect, it, vi } from "vitest";
+import type { MapPin, MapView } from "../../types";
+import { clearMapOverlays, synchronizeMapOverlays } from "./overlaySync";
+
+function createGoogleMapsDouble() {
+  const markerClicks = new Map<string, () => void>();
+  const markers: Array<{ options: Record<string, unknown>; setMap: ReturnType<typeof vi.fn> }> = [];
+  const polylines: Array<{ setMap: ReturnType<typeof vi.fn> }> = [];
+  const google = {
+    maps: {
+      Marker: vi.fn(function (options: Record<string, unknown>) {
+        const marker = {
+          addListener: vi.fn((event: string, callback: () => void) => {
+            if (event === "click" && typeof options.title === "string") {
+              markerClicks.set(options.title, callback);
+            }
+          }),
+          setIcon: vi.fn(),
+          setMap: vi.fn(),
+          setZIndex: vi.fn(),
+        };
+        markers.push({ options, setMap: marker.setMap });
+        return marker;
+      }),
+      Polyline: vi.fn(function () {
+        const polyline = { setMap: vi.fn() };
+        polylines.push(polyline);
+        return polyline;
+      }),
+      Size: vi.fn(function () {}),
+      Point: vi.fn(function () {}),
+      LatLngBounds: vi.fn(function () {
+        const points: Array<{ lat: number; lng: number }> = [];
+        return {
+          points,
+          extend: (point: { lat: number; lng: number }) => points.push(point),
+          isEmpty: () => points.length === 0,
+        };
+      }),
+    },
+  };
+  return { google, markerClicks, markers, polylines };
+}
+
+function mapView(pins: MapPin[], pinIds: string[]): MapView {
+  return {
+    enabled: true,
+    destination: "Rajasthan",
+    center: null,
+    pins,
+    days: [{
+      day: 1,
+      label: "Day 1",
+      color: "#e11d48",
+      pin_ids: pinIds,
+      route: {
+        distance_km: 10,
+        duration_min: 20,
+        mode: "car",
+        distance_display: "10 km",
+        duration_display: "20 min",
+      },
+    }],
+    available_days: [1],
+    unscheduled_pin_ids: [],
+    airport: null,
+    empty_message: "",
+  };
+}
+
+describe("synchronizeMapOverlays", () => {
+  it("detaches every owned overlay during redraw or teardown", () => {
+    const overlays = [{ setMap: vi.fn() }, { setMap: vi.fn() }];
+
+    clearMapOverlays(overlays);
+
+    overlays.forEach((overlay) => expect(overlay.setMap).toHaveBeenCalledWith(null));
+  });
+
+  it("does not invent fallback connectors for an explicitly filtered day", () => {
+    const pins: MapPin[] = ["hotel-a", "hotel-b"].map((id, index) => ({
+      id,
+      name: id,
+      kind: "hotel",
+      selected: true,
+      day: 1,
+      lat: index,
+      lng: index,
+      rating: null,
+      address: "",
+      photo: null,
+      occurrences: [{ day: 1, stop: index + 1, time: "09:00" }],
+    }));
+    const view = mapView(pins, pins.map((pin) => pin.id));
+    view.days[0].legs = [];
+    const { google, polylines } = createGoogleMapsDouble();
+
+    synchronizeMapOverlays({
+      google,
+      map: { fitBounds: vi.fn(), getZoom: vi.fn(() => 10), setZoom: vi.fn() },
+      view,
+      suppressFallbackRoutes: true,
+      activeDay: null,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      pendingRouteFocus: null,
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(polylines).toHaveLength(0);
+  });
+
+  it("keeps fallback connectors for an unfiltered legacy day", () => {
+    const pins: MapPin[] = ["place-a", "place-b"].map((id, index) => ({
+      id,
+      name: id,
+      kind: "attraction",
+      selected: true,
+      day: 1,
+      lat: index,
+      lng: index,
+      rating: null,
+      address: "",
+      photo: null,
+      occurrences: [{ day: 1, stop: index + 1, time: "09:00" }],
+    }));
+    const view = mapView(pins, pins.map((pin) => pin.id));
+    view.days[0].legs = [];
+    const { google, polylines } = createGoogleMapsDouble();
+
+    synchronizeMapOverlays({
+      google,
+      map: { fitBounds: vi.fn(), getZoom: vi.fn(() => 10), setZoom: vi.fn() },
+      view,
+      activeDay: null,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      pendingRouteFocus: null,
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(polylines).toHaveLength(1);
+  });
+
+  it("clears stale overlays and lets pending exact focus win over aggregate bounds", () => {
+    const pin: MapPin = {
+      id: "palace",
+      name: "City Palace Udaipur",
+      kind: "attraction",
+      selected: true,
+      day: 1,
+      lat: 24.5764,
+      lng: 73.6835,
+      rating: null,
+      address: "Udaipur",
+      photo: null,
+      occurrences: [{ day: 1, stop: 2, time: "10:00" }],
+    };
+    const staleOverlay = { setMap: vi.fn() };
+    const map = {
+      fitBounds: vi.fn(),
+      panTo: vi.fn(),
+      setZoom: vi.fn(),
+    };
+    const { google, markerClicks } = createGoogleMapsDouble();
+    const onPinClick = vi.fn();
+
+    const result = synchronizeMapOverlays({
+      google,
+      map,
+      view: mapView([pin], [pin.id]),
+      activeDay: 1,
+      candidatePin: null,
+      focus: { name: pin.name, day: 1, stop: 2 },
+      pendingFocus: pin,
+      pendingRouteFocus: null,
+      previousOverlays: [staleOverlay],
+      onPinClick,
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(staleOverlay.setMap).toHaveBeenCalledWith(null);
+    expect(result.pinMarkers).toHaveLength(1);
+    expect(result.focusedPin).toBe(pin);
+    expect(result.consumedPendingFocus).toBe(true);
+    expect(map.panTo).toHaveBeenCalledWith({ lat: pin.lat, lng: pin.lng });
+    expect(map.setZoom).toHaveBeenCalledWith(15);
+    expect(map.fitBounds).not.toHaveBeenCalled();
+
+    markerClicks.get(pin.name)?.();
+    expect(onPinClick).toHaveBeenCalledWith(pin);
+  });
+
+  it("consumes pending route focus by fitting every ordered endpoint", () => {
+    const source: MapPin = {
+      id: "source",
+      name: "Bengaluru Airport",
+      kind: "airport",
+      selected: true,
+      day: 1,
+      lat: 13.1986,
+      lng: 77.7066,
+      rating: null,
+      address: "Bengaluru",
+      photo: null,
+      occurrences: [{ day: 1, stop: 1, time: "08:00" }],
+    };
+    const destination: MapPin = {
+      ...source,
+      id: "destination",
+      name: "Udaipur Airport",
+      lat: 24.6177,
+      lng: 73.8961,
+      occurrences: [{ day: 1, stop: 2, time: "10:05" }],
+    };
+    const map = {
+      fitBounds: vi.fn(),
+      panTo: vi.fn(),
+      setZoom: vi.fn(),
+    };
+    const { google } = createGoogleMapsDouble();
+
+    const result = synchronizeMapOverlays({
+      google,
+      map,
+      view: mapView([source, destination], [source.id, destination.id]),
+      activeDay: 1,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      pendingRouteFocus: 1,
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(result.consumedPendingRouteFocus).toBe(true);
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(map.fitBounds.mock.calls[0][0].points).toEqual([
+      { lat: source.lat, lng: source.lng },
+      { lat: destination.lat, lng: destination.lng },
+    ]);
+  });
+
+  it("falls back to the day route when the focused drive circuit is missing", () => {
+    const source: MapPin = {
+      id: "source",
+      name: "Darjeeling Hotel",
+      kind: "hotel",
+      selected: true,
+      day: 1,
+      lat: 27.047,
+      lng: 88.263,
+      rating: null,
+      address: "Darjeeling",
+      photo: null,
+      occurrences: [{ day: 1, stop: 1, time: "08:00" }],
+    };
+    const destination: MapPin = {
+      ...source,
+      id: "destination",
+      name: "Bagdogra Airport",
+      kind: "airport",
+      lat: 26.699,
+      lng: 88.311,
+      occurrences: [{ day: 1, stop: 2, time: "10:30" }],
+    };
+    const map = {
+      fitBounds: vi.fn(),
+      panTo: vi.fn(),
+      setZoom: vi.fn(),
+    };
+    const { google } = createGoogleMapsDouble();
+
+    const result = synchronizeMapOverlays({
+      google,
+      map,
+      view: mapView([source, destination], [source.id, destination.id]),
+      activeDay: 1,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      // A circuit id that was never built (e.g. an older cached view-model).
+      pendingRouteFocus: { day: 1, circuitId: "day-1-stop-2-drive" },
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(result.consumedPendingRouteFocus).toBe(true);
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(map.fitBounds.mock.calls[0][0].points).toEqual([
+      { lat: source.lat, lng: source.lng },
+      { lat: destination.lat, lng: destination.lng },
+    ]);
+  });
+
+  it("renders only the selected drive circuit pins, legs, and labels", () => {
+    const source: MapPin = {
+      id: "source", name: "Gangtok Hotel", kind: "hotel", selected: true, day: 4,
+      lat: 27.33, lng: 88.61, rating: null, address: "", photo: null, occurrences: [],
+    };
+    const destination: MapPin = {
+      ...source, id: "destination", name: "Lachung Hotel", lat: 27.69, lng: 88.74,
+    };
+    const unrelated: MapPin = {
+      ...source, id: "unrelated", name: "Gangtok Monastery", kind: "attraction", lat: 27.34, lng: 88.62,
+    };
+    const circuitId = "drive-day-4-gangtok-to-lachung";
+    const circuitLeg = {
+      from_pin_id: source.id, to_pin_id: destination.id, route_circuit_id: circuitId,
+      distance_km: 121, duration_min: 360, mode: "car", distance_display: "121 km", duration_display: "6 hrs",
+    };
+    const unrelatedLeg = {
+      from_pin_id: source.id, to_pin_id: unrelated.id, route_circuit_id: "drive-day-4-local",
+      distance_km: 2, duration_min: 10, mode: "car", distance_display: "2 km", duration_display: "10 min",
+    };
+    const baseView = mapView([source, destination, unrelated], [source.id, destination.id, unrelated.id]);
+    const view: MapView = {
+      ...baseView,
+      days: [{ ...baseView.days[0], day: 4, legs: [circuitLeg, unrelatedLeg] }],
+      drive_circuits: [{
+        id: circuitId,
+        day: 4,
+        mode: "Drive",
+        label: "Gangtok to Lachung",
+        pin_ids: [source.id, destination.id],
+        legs: [circuitLeg],
+        route: circuitLeg,
+      }],
+    };
+    const map = { fitBounds: vi.fn(), panTo: vi.fn(), setZoom: vi.fn() };
+    const { google, markers, polylines } = createGoogleMapsDouble();
+
+    synchronizeMapOverlays({
+      google,
+      map,
+      view,
+      activeDay: 4,
+      activeRouteCircuitId: circuitId,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      pendingRouteFocus: null,
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(markers.map((marker) => marker.options.title)).toEqual([
+      "Gangtok Hotel",
+      "Lachung Hotel",
+      "121 km · 6 hrs · car",
+    ]);
+    expect(polylines).toHaveLength(1);
+  });
+
+  it("renders a selected bus road circuit from its own ordered breaks", () => {
+    const source: MapPin = {
+      id: "boston-bus", name: "Boston Bus Stand", kind: "bus_station", selected: true, day: 2,
+      lat: 42.3472, lng: -71.0756, rating: null, address: "", photo: null, occurrences: [],
+    };
+    const scenic: MapPin = {
+      ...source, id: "scenic", name: "Scenic Hudson Overlook", kind: "attraction",
+      lat: 41.7004, lng: -73.9290,
+    };
+    const meal: MapPin = {
+      ...source, id: "meal", name: "Roadside Kitchen", kind: "meal",
+      lat: 41.3083, lng: -72.9279,
+    };
+    const destination: MapPin = {
+      ...source, id: "new-york-bus", name: "New York Bus Stand",
+      lat: 40.7569, lng: -73.9903,
+    };
+    const unrelated: MapPin = {
+      ...source, id: "central-park", name: "Central Park", kind: "attraction",
+      lat: 40.7812, lng: -73.9665,
+    };
+    const circuitId = "day-2-stop-2-bus";
+    const circuitPins = [source, scenic, meal, destination];
+    const circuitLegs = circuitPins.slice(1).map((pin, index) => ({
+      from_pin_id: circuitPins[index].id,
+      to_pin_id: pin.id,
+      route_circuit_id: circuitId,
+      distance_km: 116.7,
+      duration_min: 100,
+      mode: "Bus",
+      distance_display: "116.7 km",
+      duration_display: "1 hr 40 min",
+      intercity: true,
+    }));
+    const baseView = mapView(
+      [...circuitPins, unrelated],
+      [source.id, destination.id, unrelated.id],
+    );
+    const view: MapView = {
+      ...baseView,
+      days: [{ ...baseView.days[0], day: 2, legs: [] }],
+      road_circuits: [{
+        id: circuitId,
+        day: 2,
+        mode: "Bus",
+        label: "Bus: Boston to New York",
+        pin_ids: circuitPins.map((pin) => pin.id),
+        waypoints: [
+          { pin_id: source.id, role: "origin" },
+          { pin_id: scenic.id, role: "scenic" },
+          { pin_id: meal.id, role: "meal" },
+          { pin_id: destination.id, role: "destination" },
+        ],
+        legs: circuitLegs,
+        route: {
+          distance_km: 350,
+          duration_min: 300,
+          mode: "Bus",
+          distance_display: "350 km",
+          duration_display: "5 hrs",
+        },
+      }],
+    };
+    const map = { fitBounds: vi.fn(), panTo: vi.fn(), setZoom: vi.fn() };
+    const { google, markers, polylines } = createGoogleMapsDouble();
+
+    synchronizeMapOverlays({
+      google,
+      map,
+      view,
+      activeDay: 2,
+      activeRouteCircuitId: circuitId,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      pendingRouteFocus: null,
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(markers.map((marker) => marker.options.title)).toEqual([
+      "Boston Bus Stand",
+      "Scenic Hudson Overlook",
+      "Roadside Kitchen",
+      "New York Bus Stand",
+      "116.7 km · 1 hr 40 min · Bus",
+      "116.7 km · 1 hr 40 min · Bus",
+      "116.7 km · 1 hr 40 min · Bus",
+    ]);
+    expect(polylines).toHaveLength(3);
+  });
+});

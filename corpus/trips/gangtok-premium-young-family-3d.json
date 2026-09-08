@@ -1,0 +1,270 @@
+{
+  "status": "draft",
+  "trip_id": "gangtok_north_sikkim_2027-10-04_2027-10-07",
+  "trip_number": 1,
+  "created_at": "2026-08-16T20:45:38.169127",
+  "destination": "Gangtok & North Sikkim",
+  "origin": "Kolkata",
+  "departure_date": "2027-10-04",
+  "return_date": "2027-10-07",
+  "travelers": "2 adults and 2 children (ages 6 and 9)",
+  "notes": "Premium hotels throughout. Balanced sightseeing and downtime. Family-friendly activities.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Gangtok & North Sikkim",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Premium Beach Villa with Whirlpool, Park Residency, Gangtok",
+      "city": "Gangtok",
+      "address": "Park Residency, Gangtok, Sikkim, India",
+      "rating": 4.8,
+      "price_per_night": 12000,
+      "currency": "INR",
+      "checkin": "2027-10-04",
+      "checkout": "2027-10-05",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp655d6a1b"
+      }
+    },
+    {
+      "name": "Premium Beach Villa with Whirlpool, Park Residency, Gangtok",
+      "city": "Gangtok",
+      "address": "Park Residency, Gangtok, Sikkim, India",
+      "rating": 4.8,
+      "price_per_night": 12000,
+      "currency": "INR",
+      "checkin": "2027-10-06",
+      "checkout": "2027-10-07",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp655d6a1b"
+      }
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-04",
+      "title": "Arrival in Gangtok",
+      "summary": "Fly from Kolkata to Bagdogra, transfer to Gangtok. Check in to a premium hotel and relax. Evening stroll at MG Marg. Dinner at Queen's Pod.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Bagdogra",
+          "kind": "flight",
+          "time": "09:00",
+          "note": "Morning flight (exact time TBC)"
+        },
+        {
+          "name": "Drive: Bagdogra Airport to Gangtok",
+          "kind": "transport",
+          "time": "11:30",
+          "duration_min": 240,
+          "distance_km": 125,
+          "note": "Scenic drive to Gangtok"
+        },
+        {
+          "name": "Premium Beach Villa with Whirlpool, Park Residency, Gangtok",
+          "kind": "hotel",
+          "note": "Check-in and relax"
+        },
+        {
+          "name": "MG Marg",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 90,
+          "note": "Evening stroll and shopping"
+        },
+        {
+          "name": "Queen's Pod",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner at top-rated restaurant"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-05",
+      "title": "Lachen & North Sikkim Adventure",
+      "summary": "Early morning drive to Lachen. Visit Seven Sisters Waterfall, Singhik View Point. Lunch at Ingredient Resto-Bar. Check in to Lachen hotel.",
+      "stops": [
+        {
+          "name": "Drive: Gangtok to Lachen",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 300,
+          "distance_km": 120,
+          "note": "Scenic drive with stops"
+        },
+        {
+          "name": "Premium Beach Villa with Whirlpool, Park Residency, Gangtok",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "12:30"
+        },
+        {
+          "name": "Seven Sisters Waterfall",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 30
+        },
+        {
+          "name": "Singhik View Point",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 30
+        },
+        {
+          "name": "Ingredient Resto-Bar",
+          "kind": "meal",
+          "time": "16:30",
+          "note": "Lunch in Lachen"
+        },
+        {
+          "name": "Premium Hotel Lachen (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and relax",
+          "time": "18:30"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-06",
+      "title": "Gurudongmar Lake & Return to Gangtok",
+      "summary": "Visit Gurudongmar Lake (early morning), return to Gangtok, evening at leisure. Dinner at Gangtok Groove.",
+      "stops": [
+        {
+          "name": "Gurudongmar Lake",
+          "kind": "attraction",
+          "time": "06:00",
+          "duration_min": 120,
+          "note": "Early visit due to altitude"
+        },
+        {
+          "name": "Drive: Lachen to Gangtok",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 300,
+          "distance_km": 120,
+          "note": "Return to Gangtok"
+        },
+        {
+          "name": "Premium Hotel Lachen (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "14:30"
+        },
+        {
+          "name": "Premium Beach Villa with Whirlpool, Park Residency, Gangtok",
+          "kind": "hotel",
+          "note": "Check-in and relax",
+          "time": "16:30"
+        },
+        {
+          "name": "Gangtok Groove",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner at popular family spot"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-07",
+      "title": "Departure from Gangtok",
+      "summary": "Check out, drive to Bagdogra, fly back to Kolkata.",
+      "stops": [
+        {
+          "name": "Premium Beach Villa with Whirlpool, Park Residency, Gangtok",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Drive: Gangtok to Bagdogra Airport",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 240,
+          "distance_km": 125
+        },
+        {
+          "name": "Flight: Bagdogra to Kolkata",
+          "kind": "flight",
+          "time": "13:00",
+          "note": "Afternoon flight (exact time TBC)"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T20:48:48.866870",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-16T20:46:58",
+      "expires_at": "2026-08-17T08:46:58"
+    }
+  ],
+  "id": "gangtok_north_sikkim_2027-10-04_2027-10-07",
+  "user_id": "corpus-gangtok-premium-young-family-3d"
+}

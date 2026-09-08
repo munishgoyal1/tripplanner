@@ -1,0 +1,176 @@
+{
+  "status": "draft",
+  "trip_id": "pondicherry_2027-03-06_2027-03-08",
+  "trip_number": 1,
+  "created_at": "2026-08-15T20:19:05.446704",
+  "destination": "Pondicherry",
+  "origin": "Chennai",
+  "departure_date": "2027-03-06",
+  "return_date": "2027-03-08",
+  "travelers": "2 adults",
+  "notes": "Balanced pace, moderate budget, 3★+ hotel, open to train or rental car.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Pondicherry",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 2-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 2,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-06",
+      "title": "Day 1 · Chennai to Pondicherry & Old Town Exploration",
+      "summary": "Depart from Chennai in the morning, arrive in Pondicherry, check in to hotel, explore the French Quarter, visit Promenade Beach, and enjoy local cuisine.",
+      "stops": [
+        {
+          "name": "Drive: Chennai to Pondicherry",
+          "kind": "transport",
+          "time": "07:30",
+          "duration_min": 180,
+          "distance_km": 150,
+          "note": "Morning drive via East Coast Road"
+        },
+        {
+          "name": "Le Dupleix Hotel",
+          "kind": "hotel",
+          "time": "11:00",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "French Quarter (White Town)",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 90,
+          "note": "Colonial architecture, cafes"
+        },
+        {
+          "name": "Promenade Beach",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Relax by the sea"
+        },
+        {
+          "name": "Villa Shanti Restaurant",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Dinner with local and French cuisine"
+        },
+        {
+          "name": "Le Dupleix Hotel",
+          "kind": "hotel",
+          "time": "20:00",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-07",
+      "title": "Day 2 · Auroville & Pondicherry Sights",
+      "summary": "Visit Auroville, explore spiritual and cultural sites, sample Pondicherry cuisine, and return to Chennai in the evening.",
+      "stops": [
+        {
+          "name": "Le Dupleix Hotel",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Auroville Visitor Centre",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Visit Matrimandir, explore gardens"
+        },
+        {
+          "name": "Cafe des Arts",
+          "kind": "meal",
+          "time": "11:30",
+          "note": "Brunch in a heritage cafe"
+        },
+        {
+          "name": "Sri Aurobindo Ashram",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Spiritual visit"
+        },
+        {
+          "name": "Baker Street",
+          "kind": "meal",
+          "time": "14:30",
+          "note": "Try local bakery and French pastries"
+        },
+        {
+          "name": "Drive: Pondicherry to Chennai",
+          "kind": "transport",
+          "time": "16:00",
+          "duration_min": 180,
+          "distance_km": 150,
+          "note": "Evening drive back to Chennai"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T20:19:37.169446",
+  "id": "pondicherry_2027-03-06_2027-03-08",
+  "user_id": "corpus-weekend-pondicherry"
+}

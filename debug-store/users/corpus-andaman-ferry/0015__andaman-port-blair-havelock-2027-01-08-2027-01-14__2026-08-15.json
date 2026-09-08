@@ -1,0 +1,2047 @@
+{
+  "archive_no": 15,
+  "trip_id": "andaman_port_blair_havelock_2027-01-08_2027-01-14",
+  "user_id": "corpus-andaman-ferry",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:18:13Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T14:19:08Z",
+      "content_hash": "e15e8e902c7759b9",
+      "plan": {
+        "status": "draft",
+        "trip_id": "andaman_port_blair_havelock_2027-01-08_2027-01-14",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:48:13.063490",
+        "destination": "Andaman (Port Blair & Havelock)",
+        "origin": "Kolkata",
+        "departure_date": "2027-01-08",
+        "return_date": "2027-01-14",
+        "travelers": "2 adults",
+        "notes": "Balanced itinerary, moderate budget, 3-star+ hotels, economy flights, direct preferred.",
+        "planning_recommendation": {
+          "confidence": "medium",
+          "destination": "Andaman",
+          "estimated_planned_minutes": 990,
+          "evidence_place_count": 2,
+          "reasons": [
+            "The user's explicit 6-day duration is authoritative",
+            "2 preference-matched places account for about 990 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 6,
+          "recommended_range": [
+            3,
+            5
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-01-08",
+            "title": "Arrival in Port Blair",
+            "summary": "Fly from Kolkata to Port Blair, check in to hotel, visit Cellular Jail and enjoy local cuisine.",
+            "stops": [
+              {
+                "name": "Flight: Kolkata to Port Blair",
+                "kind": "flight",
+                "time": "08:00",
+                "arrival_time": "11:00",
+                "duration_min": 180
+              },
+              {
+                "name": "Port Blair Hotel",
+                "kind": "hotel",
+                "note": "Check-in"
+              },
+              {
+                "name": "Cellular Jail",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90,
+                "note": "Historic site tour"
+              },
+              {
+                "name": "Ananda Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Local cuisine dinner"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-01-09",
+            "title": "Port Blair Sightseeing",
+            "summary": "Explore Port Blair: visit Ross Island, Anthropological Museum, and Corbyn’s Cove Beach.",
+            "stops": [
+              {
+                "name": "Port Blair Hotel",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Ross Island",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 120,
+                "note": "Ferry ride and island walk"
+              },
+              {
+                "name": "Anthropological Museum",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Corbyn’s Cove Beach",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 120
+              },
+              {
+                "name": "New Lighthouse Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Seafood dinner"
+              },
+              {
+                "name": "Port Blair Hotel",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-01-10",
+            "title": "Transfer to Havelock Island",
+            "summary": "Ferry to Havelock, check in, relax at Radhanagar Beach.",
+            "stops": [
+              {
+                "name": "Ferry: Port Blair to Havelock",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 120,
+                "note": "Morning ferry"
+              },
+              {
+                "name": "Port Blair Hotel",
+                "kind": "hotel",
+                "note": "Checkout",
+                "time": "10:30"
+              },
+              {
+                "name": "Havelock Hotel",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "12:30"
+              },
+              {
+                "name": "Radhanagar Beach",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 120,
+                "note": "Relax and sunset"
+              },
+              {
+                "name": "Something Different Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Dinner by the beach"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-01-11",
+            "title": "Havelock Adventure",
+            "summary": "Snorkeling at Elephant Beach, leisure at Kalapathar Beach.",
+            "stops": [
+              {
+                "name": "Havelock Hotel",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Elephant Beach",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 180,
+                "note": "Snorkeling adventure"
+              },
+              {
+                "name": "Kalapathar Beach",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 120,
+                "note": "Leisure beach time"
+              },
+              {
+                "name": "The Blue Cafe",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Dinner"
+              },
+              {
+                "name": "Havelock Hotel",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-01-12",
+            "title": "Leisure & Water Sports in Havelock",
+            "summary": "Try scuba diving or kayaking, enjoy a relaxed day.",
+            "stops": [
+              {
+                "name": "Havelock Hotel",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Scuba Diving Centre",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 180,
+                "note": "Scuba or kayaking"
+              },
+              {
+                "name": "Cafe Salt Water",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Lunch"
+              },
+              {
+                "name": "Havelock Hotel",
+                "kind": "hotel",
+                "note": "Rest"
+              },
+              {
+                "name": "Venom Bar & Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Dinner"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-01-13",
+            "title": "Return to Port Blair & Departure",
+            "summary": "Ferry back to Port Blair, visit local market, fly back to Kolkata.",
+            "stops": [
+              {
+                "name": "Ferry: Havelock to Port Blair",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 120,
+                "note": "Morning ferry"
+              },
+              {
+                "name": "Havelock Hotel",
+                "kind": "hotel",
+                "note": "Checkout",
+                "time": "10:30"
+              },
+              {
+                "name": "Port Blair Market",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 60,
+                "note": "Souvenir shopping"
+              },
+              {
+                "name": "Port Blair Airport",
+                "kind": "other",
+                "time": "15:00",
+                "note": "Fly back to Kolkata"
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "date": "2027-01-14",
+            "title": "Arrival in Kolkata",
+            "summary": "Arrive in Kolkata, trip ends.",
+            "stops": [
+              {
+                "name": "Flight: Port Blair to Kolkata",
+                "kind": "flight",
+                "time": "08:00",
+                "arrival_time": "11:00",
+                "duration_min": 180
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:49:08.560080",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:49:08",
+            "expires_at": "2026-08-16T07:49:08"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T14:19:45Z",
+      "content_hash": "672abc38ed58f823",
+      "plan": {
+        "status": "draft",
+        "trip_id": "andaman_port_blair_havelock_2027-01-08_2027-01-14",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:48:13.063490",
+        "destination": "Andaman (Port Blair & Havelock)",
+        "origin": "Kolkata",
+        "departure_date": "2027-01-08",
+        "return_date": "2027-01-14",
+        "travelers": "2 adults",
+        "notes": "Balanced itinerary, moderate budget, 3-star+ hotels, economy flights, direct preferred.",
+        "planning_recommendation": {
+          "confidence": "medium",
+          "destination": "Andaman",
+          "estimated_planned_minutes": 990,
+          "evidence_place_count": 2,
+          "reasons": [
+            "The user's explicit 6-day duration is authoritative",
+            "2 preference-matched places account for about 990 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 6,
+          "recommended_range": [
+            3,
+            5
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "SeaShell Port Blair",
+            "city": "Port Blair",
+            "checkin": "2027-01-08",
+            "checkout": "2027-01-10",
+            "star_rating": 4,
+            "price_per_night": 8500,
+            "currency": "INR",
+            "address": "Marine Hill, Port Blair, Andaman",
+            "provider": "liteapi",
+            "provider_ref": "lp33ec2"
+          },
+          {
+            "name": "Havelock Island Beach Resort",
+            "city": "Havelock",
+            "checkin": "2027-01-10",
+            "checkout": "2027-01-13",
+            "star_rating": 4,
+            "price_per_night": 10500,
+            "currency": "INR",
+            "address": "Govind Nagar Beach, Havelock Island, Andaman",
+            "provider": "liteapi",
+            "provider_ref": "lp33ec3"
+          },
+          {
+            "name": "SeaShell Port Blair",
+            "city": "Port Blair",
+            "checkin": "2027-01-13",
+            "checkout": "2027-01-14",
+            "star_rating": 4,
+            "price_per_night": 8500,
+            "currency": "INR",
+            "address": "Marine Hill, Port Blair, Andaman",
+            "provider": "liteapi",
+            "provider_ref": "lp33ec2"
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-01-08",
+            "title": "Arrival in Port Blair",
+            "summary": "Fly from Kolkata to Port Blair, check in to SeaShell Port Blair, visit Cellular Jail and enjoy local cuisine.",
+            "stops": [
+              {
+                "name": "Flight: Kolkata to Port Blair",
+                "kind": "flight",
+                "time": "08:00",
+                "arrival_time": "11:00",
+                "duration_min": 180
+              },
+              {
+                "name": "SeaShell Port Blair",
+                "kind": "hotel",
+                "note": "Check-in"
+              },
+              {
+                "name": "Cellular Jail",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90,
+                "note": "Historic site tour"
+              },
+              {
+                "name": "Ananda Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Local cuisine dinner"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-01-09",
+            "title": "Port Blair Sightseeing",
+            "summary": "Explore Port Blair: visit Ross Island, Anthropological Museum, and Corbyn’s Cove Beach.",
+            "stops": [
+              {
+                "name": "SeaShell Port Blair",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Ross Island",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 120,
+                "note": "Ferry ride and island walk"
+              },
+              {
+                "name": "Anthropological Museum",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Corbyn’s Cove Beach",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 120
+              },
+              {
+                "name": "New Lighthouse Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Seafood dinner"
+              },
+              {
+                "name": "SeaShell Port Blair",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-01-10",
+            "title": "Transfer to Havelock Island",
+            "summary": "Ferry to Havelock, check in to Havelock Island Beach Resort, relax at Radhanagar Beach.",
+            "stops": [
+              {
+                "name": "Ferry: Port Blair to Havelock",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 120,
+                "note": "Morning ferry"
+              },
+              {
+                "name": "SeaShell Port Blair",
+                "kind": "hotel",
+                "note": "Checkout",
+                "time": "10:30"
+              },
+              {
+                "name": "Havelock Island Beach Resort",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "12:30"
+              },
+              {
+                "name": "Radhanagar Beach",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 120,
+                "note": "Relax and sunset"
+              },
+              {
+                "name": "Something Different Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Dinner by the beach"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-01-11",
+            "title": "Havelock Adventure",
+            "summary": "Snorkeling at Elephant Beach, leisure at Kalapathar Beach.",
+            "stops": [
+              {
+                "name": "Havelock Island Beach Resort",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Elephant Beach",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 180,
+                "note": "Snorkeling adventure"
+              },
+              {
+                "name": "Kalapathar Beach",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 120,
+                "note": "Leisure beach time"
+              },
+              {
+                "name": "The Blue Cafe",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Dinner"
+              },
+              {
+                "name": "Havelock Island Beach Resort",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-01-12",
+            "title": "Leisure & Water Sports in Havelock",
+            "summary": "Try scuba diving or kayaking, enjoy a relaxed day.",
+            "stops": [
+              {
+                "name": "Havelock Island Beach Resort",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Scuba Diving Centre",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 180,
+                "note": "Scuba or kayaking"
+              },
+              {
+                "name": "Cafe Salt Water",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Lunch"
+              },
+              {
+                "name": "Havelock Island Beach Resort",
+                "kind": "hotel",
+                "note": "Rest"
+              },
+              {
+                "name": "Venom Bar & Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Dinner"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-01-13",
+            "title": "Return to Port Blair & Departure",
+            "summary": "Ferry back to Port Blair, visit local market, overnight in Port Blair.",
+            "stops": [
+              {
+                "name": "Ferry: Havelock to Port Blair",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 120,
+                "note": "Morning ferry"
+              },
+              {
+                "name": "Havelock Island Beach Resort",
+                "kind": "hotel",
+                "note": "Checkout",
+                "time": "10:30"
+              },
+              {
+                "name": "SeaShell Port Blair",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "12:30"
+              },
+              {
+                "name": "Port Blair Market",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 60,
+                "note": "Souvenir shopping"
+              },
+              {
+                "name": "Ananda Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Dinner"
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "date": "2027-01-14",
+            "title": "Departure from Port Blair",
+            "summary": "Fly back to Kolkata. Trip ends.",
+            "stops": [
+              {
+                "name": "SeaShell Port Blair",
+                "kind": "hotel",
+                "note": "Checkout"
+              },
+              {
+                "name": "Flight: Port Blair to Kolkata",
+                "kind": "flight",
+                "time": "09:00",
+                "arrival_time": "12:00",
+                "duration_min": 180
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:49:45.678241",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:49:08",
+            "expires_at": "2026-08-16T07:49:08"
+          },
+          {
+            "kind": "flights",
+            "provider": "Duffel",
+            "checked_at": "2026-08-15T19:49:45",
+            "expires_at": "2026-08-15T20:19:45"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:19:36Z",
+    "user_id": "corpus-andaman-ferry",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {
+      "cellular jail|andaman (port blair & havelock)": {
+        "place_id": "ChIJB_AtYO2ViDARi0FHrdhlP-A",
+        "name": "Cellular Jail",
+        "address": "Atlanta Point, Sri Vijaya Puram, Andaman and Nicobar Islands 744104, India",
+        "rating": 4.7,
+        "review_count": 18955,
+        "price_level": null,
+        "website": "https://southandaman.nic.in/tourist-place/cellular/",
+        "editorial_summary": "Former 1900s prison complex, now a memorial & museum with grisly dioramas depicting inmates’ lives.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: Closed",
+          "Tuesday: 9:00 AM – 12:00 PM, 2:00 – 5:00 PM",
+          "Wednesday: 9:00 AM – 12:00 PM, 2:00 – 5:00 PM",
+          "Thursday: 9:00 AM – 12:00 PM, 2:00 – 5:00 PM",
+          "Friday: 9:00 AM – 12:00 PM, 2:00 – 5:00 PM",
+          "Saturday: 9:00 AM – 12:00 PM, 2:00 – 5:00 PM",
+          "Sunday: 9:00 AM – 12:00 PM, 2:00 – 5:00 PM"
+        ],
+        "lat": 11.6747447,
+        "lng": 92.7478601,
+        "photo_refs": [
+          "places/ChIJB_AtYO2ViDARi0FHrdhlP-A/photos/AWCwydicXkFzoroL_wFCDGRxvtnV4lXNnLfDQYu-UCypKP2XGbn6Hk-NhXub88a1Zm0andpiQPRjeQyYSBy3mSJZQTyIR4Qfxcqz0ssK3VuN_5mkLPKyBnxc9qPHOzrP4mPgDzWIaWAGeDlH-qd6PDr1uiq_uKyk1RB6K7huoGPX5q9VAmPwUxCLHCiwUNyHKtAOn0yglI5YWrM2ny8EkzsTlHbhYVnea5pr0pY4ZmZuoEUcoHTSnuBq-TycvqfagYpScFXcDb5TPY9Igrq4r7M46TJR3ya6HtU9iYhF0XeisTc3H-8nuKdlt_tOhBRIHVIIvb0xVpiVeZN_bXb5f-_Bfd6K_tdzBUjTGUgutxRuEugGLgPx9unj6LE1xunGrpz6lQt9lKrGfNuZBNr7tuZIaqrN2AIoOKidps5P02W2rNWh5YUx",
+          "places/ChIJB_AtYO2ViDARi0FHrdhlP-A/photos/AWCwydgl-TMnztv_buYiEaBe-Pby18mTz9SWrQ0nzSK4JE71oCW_jG_d3QgbD8U5G4h3PqyOhDvtFFg7QJ-QaKEsUts-z12UIqvxkEH3CG-1lymI-domkLBYRulmx91Koi9BIts5oxMWhlQ_S4oK2ToEiTTCyE4rVjhXtpSCOXgxirwRz00se-2tpzAmNuGnnMxkdy-xi3qD78kkPbit2feWJrSnulSJHCIQ5futkl9RtwL8bw6ZxhV8V2PvAAdwaPNjap3rdJiuP7EoiJge7TOr0-3mo6Z-V0mqqH_T8qLmrPDXaA-g-9UdQj2jVcPuMVzWuRr6ZK4uQRS2-YmmhurzQTq8VpQIhQazj4oj0ejdqjkeZ1z5LafmmXEBGjxOyLyL-gc1earvBNe9H3dwaYX-_rrU_0imJdg1oOrQ_Bj1mxIYLg",
+          "places/ChIJB_AtYO2ViDARi0FHrdhlP-A/photos/AWCwydjJm92UCJSq1vAy76Ilqgq57GJE3RZFGFuN3QGxKA0UtLpVTHhH8sunufYg-TywghFqB_mcd6rVH8CAuRiKldhdqMQHmRgvfQWGWBNJjxssGwzkY39Epx_j1HwmEEBPpDBMTFirYoXZWRNk6VcU-SaZW7wnNZMWfoNyswvs0WUqLdYTM7h4AeGOWGEZsomLvJVG6JYg8dMjSeB1h82nGEd3dh92GSoezOR1UKq7ry5127S3p4nN8yUjzbAXCmzE-ZifGfgNVdJzM4XWISI8kMlU3djR5YHvM5K3EwxIZU1mEeE_LybZ609w_XPBQY5Yup2Wr31NkMqss3N1802qT4n7b4mzBk6KcLWTG5Qka7Pf42ny2RSRNa9rCB9_msnIj3nGPjPwfEUxtwLcnQ1XC9uM96hk4jLnMNmtv1vXHGoepQ",
+          "places/ChIJB_AtYO2ViDARi0FHrdhlP-A/photos/AWCwydjvM9jE80ULOD9cGnvEk6MCcNBTmBIV319ejQQMVQ0OOALNByAE34obUmJLTLOJdANz5-FeTPW-B1wVR6IyNr1Ajr0SgskEPhIn7bU7EMSSuLXgz8CJdQhczie86OaRfcUZXFl6dOYNCD4TlgwX0ztGWgZFJdaJzf1S0ecTNU4FPoyN-zHbPLiRO0FIeMEhEJ98DhfkyqTexhknde7oF59lf6pvzib8qv7MchXUTOQlHfsFxhm8LGHFPA7xC0n-3Gdw3biiswNJCV_W7uxzHvI2EJwGFOIoRNAH_-H_GGkyl4p3y1RLDjuPn6CxyYBCDq_mMNdNX7Y7PLa3jc6kZ2BKpyL6Ql1_wCyutpIHti4_RsW50lBB8jkfHlx_ru-yYYwVWxkjt6ZzwP7LhTcYrfXu2yNqMfw5merbvAzvFsE",
+          "places/ChIJB_AtYO2ViDARi0FHrdhlP-A/photos/AWCwydinH2gFJq1k-d1aC6hBtf8aeGw5P_Ibigi3wAT6qgpI8GDaCV5LshK6w_nVGNiRrtEa1xqEwmo5na_s94q9rtDywKMrBWM7QVrS_aIdUMCpcSK2hHhiC_Kd_uxl1rLEMCJ7MOICrckICb1l1ZrjF08XbS77A0kb_DVBQ8uCnMVr-TB1Z_i1elCCSPs2nLSynslDiKu_wtsdbkxzajEQzIDVTn7DeoQKUzPRiJuPBIY8R5X6Z9314xUXk70v4I0bFyTsYrR27Ds_47bRI3Ut29qg8RQBZ-HOjTW-Wf7r6JqShyPWvDAitnA_oTcGWEvlbYf6dFcF2_0UiFwb9shxke0aUa-5wn_TWrS53HtbjJp7VL3hh3ZG5Frh4Sp7mQi7euLbhnc_t8VBuH7CeqPUC1-rsF8A9K2uv7yaC697CBf2g-Oa",
+          "places/ChIJB_AtYO2ViDARi0FHrdhlP-A/photos/AWCwydjPijfeqmfGHKo2MQ9d7FxKSunzmbQd6cMCPXd54JdTWhqjqYdeqMYcThaBA-ftnznJ1SZHSTrNcH6gewrnVNpOwEnfeht77JXYmppn1Pe7xlJV_FtUSva28oYiRcXI_UPaQfF-n134ZdazDPisHuela9yuWcqzyIO25PL79lJYl8BTJXsJTE4CRK-xXeYZs3ne9XNpE0steobSPgT7qPQY-NCR9-DB5rr-MRdI6dRkCk-mlTDXhJA1PGmVVET7pmF_AsQVNsChSOZKxPhAmtKlcz26cDj6Q3f9z7AdXwYn_tDAGC3owErNoT0qn_0Yx6PRFowbQ4Ai8iI26qPXZ2UtZH7JinYe-tf5GL_qTUrNYW4X7Sjydv5P5YgfLvkIGN5RSMJvEmkEOBjJp9mdCUsFgBklB_jXLYku7pcySNTd85i0",
+          "places/ChIJB_AtYO2ViDARi0FHrdhlP-A/photos/AWCwydh3kZ4ZolQlan6y9Qz2qvAN4dugsuq7HD_y0mTuLL3Vv84HmBzxELxk5c6a2TUWNQSg0O0AmcIGwWw0S5aIPN28sWUuL9ePVOK7OpSpvz4bU--5AS0hWkvpUy5tadXavWGSCqAjuQL5NS80K_oOt_znP5dmgiitioxMYrwRxLHcjba2qUBd4NMv0KEYubwCjwKK6DDHewLazNn08BPrb5lvW9n38_UG-edivQNyuDndBWlU73-cOGsk82dLR08eMKV6AbbuqPeiXLIiKZwj3ckyadpAyPmlU6Mh82ffN7EyLcxq1yetgiBxAeB1Iqgo98w4nB-SQuLR5Jgv-CSsk5mITML29v__1B7H1HI59wApcnmIxWRTma1OShDtRNNqV-6jGhFC0R1rYJy-WlSazkxgUFLYWiHIQErKHH1hwfU",
+          "places/ChIJB_AtYO2ViDARi0FHrdhlP-A/photos/AWCwydgGoqNLQV6dXG3QttUAWN3wK7pqjg9wz8DF3KNnUA47U4t9hV83VBOvIXNSX4LX_vavEZlDeAwCj-_27gUu_lTrYDp7upTIL37ITD549QOidTnydcbqEJgOMm_aPleIk9YTtqd8DgiVADslltDw8u53SqOPdhF9-a7PlYOfkqNvdGnVvfsSxscC63UzjU6HMKX9Ew8zthnz667syeMFSYssrjKUXLTJyAuad_cTQMKfYxpvE45ob0d8OYmKjT-MPFPOwNOBSTyHLM3GdGSTh0g94mxUFjl28SrNs_tLOLuGMZOJgzTMAwm5kAk4pdyj__yBfNH30GiHDrunQwt23fvUvlaV93-v04XY5FDVvdsig2xeaz6z_-9wblUMZIQ2KtSb763jwjckOAK1adG743ckqHFW1CN6OVA02EBHQVRYXw",
+          "places/ChIJB_AtYO2ViDARi0FHrdhlP-A/photos/AWCwydinwwprPTUT19EamqVsweElES6yh3Sro9Zb95XknJfADEnRkZrFYsOZx154C1PwKz0MfPuCzagZ426QRLfJawHE1p-GSm_qC9AQaqfPefwUP2vLHJ-eEAhlYKAVj-9RpVO-FWpYfA9QaUF9DpX5ORK89cNXs20fDmz7DlZXdexdJaZHZ-p9pO2qh688B-mBSyAO4k_YwXeZFE5MoDeMncZUaA_t5JYbisLPiarj7UCwdg0y4gWaULZT-4T0eKjL9gsgG_4hUky67KufP6CgjFtXMreo2YnsluzjbdyQVuSyz0EDbWKoBywmhhhRzZYHRd9vJ7PZcwKYZSnRzpJ3l4iWtZvF6rXtkmQgjpWk5KdFTa_m_K20kd7FTpiccHDkB8cpYLeilN8rnT4GcTGPdkeBgcYrvTIcx_kV4GWllHOqpSJa",
+          "places/ChIJB_AtYO2ViDARi0FHrdhlP-A/photos/AWCwydia1AgB81J_ihkApSuScMmsA1EhQg2qRGxE3wwqa4Jafqtkl-FmWSNuJpl7Pro7NJ0FnJ4lChGFXWHcjoO2qqxTwnF9E-Ewrq-yC5AmlnmL1ktl9lbpN9jZl4Hl6Hv02FjjqDPpzCbu-VJTHr2PkQhLH-rPmBkCHcVRhYnf-eNHKHzBp_mhZPwtrRvTW9XDYnC3ZMTQLI-0UaNi2UaF5xEQ9x7jdGUoJrY5vnuAMptOSFfaOWc3ctx0_AaIWtqbpg7hRhc4AsF65c7KnoyD_wp0cezEmsekw1axJo_qXvib19FJ9rUGZvCoOxUWsrv5ngPzVIE-6tbBhGGZbm3qdCfjCL9kRzNvp4lPiDTjxzYLpM1sz4ST11qpV9YNd6v-LVnIyK2PN1i8sgRz9J2-dySjvG4V3U6j-3F1y-PStTvAWg"
+        ],
+        "__at__": 1786803532.049769,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Do not rely on the timings given over the phone. We were told the ticket counter is open from 10 AM to 4 PM, which is simply not true. The counter operates from 10 AM to 12 PM, closes for lunch from 12 PM to 2 PM, and then reopens from 2 PM to 4 PM. Plan accordingly unless you enjoy surprise intermi",
+            "author": "SAM"
+          },
+          {
+            "rating": 5,
+            "text": "A chilling yet must-visit tribute to India’s heroes\n​Visiting the Cellular Jail is a deeply moving experience. Walking through the solitary cells and seeing the central watchtower really makes you realize the hardships our freedom fighters endured. The architecture is unique but haunting.\n​Highlight",
+            "author": "Ranjan Das"
+          },
+          {
+            "rating": 5,
+            "text": "Cellular Jail is one of the most important historical places to visit in Andaman. Walking through the prison corridors gives a powerful glimpse into India’s freedom struggle and the sacrifices made by our freedom fighters. The architecture and preserved galleries beautifully showcase the history and",
+            "author": "Debashruti Das"
+          },
+          {
+            "rating": 5,
+            "text": "Cellular Jail, Andaman is a place of immense historical importance and a must-visit destination in Andaman. The silence of this place has a lot to tell, and every cell carries a story of courage, sacrifice, and the struggles of our freedom fighters. Walking through the corridors and seeing the indiv",
+            "author": "V. V Nair"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting the Cellular Jail was a deeply emotional and unforgettable experience. The historic monument stands as a powerful reminder of India’s freedom struggle and the immense sacrifices made by our freedom fighters. Walking through the old prison corridors and solitary cells gave us goosebumps and ",
+            "author": "VISHNU V NAIR"
+          }
+        ]
+      },
+      "ananda restaurant|andaman (port blair & havelock)": {
+        "place_id": "ChIJ5a--FwCViDARn-BEPE4xH9c",
+        "name": "Ananda Restaurant",
+        "address": "opposite CID Police station, Aberdeen Bazar, Rajiv Gandhi Nagar, Sri Vijaya Puram, Andaman and Nicobar Islands 744101, India",
+        "rating": 3.4,
+        "review_count": 54,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 11.667827599999999,
+        "lng": 92.7424156,
+        "photo_refs": [
+          "places/ChIJ5a--FwCViDARn-BEPE4xH9c/photos/AWCwydgNHDYIyyZJSav3_96ZQh-NQ4ephWGHwNpr7sISEMosQijjQtvlpXXwPP4AIESa3urcIoXdz9OVQlzEfs1Xf0QQJkRTxPdqM3Q9NNlOYpldGcuD0idhTjXDGbrXPfjicYUZpa4UvrPwRCkZo4qJgXPr7Mp37GcfDcI5PBXmOmgc2ru3H4yxG2UaSiT1Tg6EWRtoPYJK9v3El2c63IfqtDEgrGHnX_i6HGEkrq7nVm42FjpOA5qmvnkIG8E2t2uYQnkT7iXW9OSKO4sd5zUopjEDS2BoWLrLmkjOooVA2yT-NjPYicTDvhFZWX3WOQ20YPfoKTn_0SV0pcm7BNXvh88DirpzbkfDJxJeHYKGaOMDAg5rJ_-wC1ywuUYOlI-TEkKPI_7-ZpQseaYnziN2lG1e33bIiBAke8g45YmAE3DzciC6RDbc6mLHW0k_HOQR",
+          "places/ChIJ5a--FwCViDARn-BEPE4xH9c/photos/AWCwydgaMQ1hL0DsSIHzQOaYg3P13EswJKbLuPIOWvJZSOgna9QmffElLq0llHZIDCaTtpQ-LJURUFDwmROCDu8fsPyjyQM45pkgHtJinOPrdj0dP6WDRAcfVpohoU8xn4c--XvHMGucryb1dsysmGfFNELgygWoviW5QSxafiAYaxShf_H9V9rYBuV8zRFhOjf8BVptVLvT3GgdGRbTgUP7k4Y_ZXr0pDoOzULZLXQTgT4RTwqY1ZiQrSVBlm9rqncbqHKQO1DYr119o_8GAKT0pSPuurJ7zAW63T5jRLY8QRCYqmqUNz762sfeLv3UsMYdn7BRMMAc5omJ99F-ZevnMBpy95QH8gVElpADfbfXraSbzy94A_cWT3JN_hAHob0RDYj_TAXkpqcp7oiBlOZd9pU-fitRXrfp7B0-Eq-6BDBmSTxJi9ft1JNQgwp1Sg-j",
+          "places/ChIJ5a--FwCViDARn-BEPE4xH9c/photos/AWCwydgSda9Ij8eY2tkoOp3TfNED2-B55Gst86BDbjuRS_pSEmuXtIszurEQJNVp-U6afuY0cDYDR0q_6yET4lEEyGjz7dHYdHgIqgVAEsDs8T7WGey2isAe2_qDXTbd6Zg-R5vkNfK7NbKOyFkWv0zpBEF-NxcKe1UZiz3oKrrH79bbmGG-rvzMloZ-PUpQuchCqUgaqulzBvTWwWgCqzfsC0_694l-uAUsFzQF7MvbVbcEnTa8v4LvCJGH6kzb8YYBsmrnxQupc-XymBDG9J9BeDFPWN7hfP2Xx_6eRSSc0atkhR3glijgfayF8wC7ZdU3IW5uwYrOObOl2oLMPh2hyRjuZKHeNEHyR4G9lYxkh6p5KXsvqX6wB14atj1m_MPq7hfQe1gOQrkrhtzGFzAf7plU5D5llgxD6H8Tac40yTXSUtf93WPZBvXYgTt7WNdI",
+          "places/ChIJ5a--FwCViDARn-BEPE4xH9c/photos/AWCwydgaQTp5KZWnp1cF9lR1L5mVCVZfadBoqCKmIUfoZCU6i7AKXyypds1J5YpkEe-So00k4sCpX9irrJ5jnA00ShUUYcqjughm71XzwgwrVXvzZYOiNk6GQLG1808Pp3ZkF1QbuAqjG9wCcOxxYoV8Lbb59nEnC0Bd6v-BouTE6GdSWHnntJC1-IwIVqAs91uROw4nvSfw-RmY5OvFPqKGyGtoNmxRh4bTmTZ77YvuVy75TUy1BEXwBEE1bzEq7HGWR9WTr3WiK-bzSNPL2E7tkLlkyHGna-RFjxQgjqBGU_Lhpp7zkdQDPQ9SWY-fCjFfdQdFyBNcH2hO6KAo59NXNW9jGPblp2zuS1ORPSy76ZramKgasIAK7o2D22Of1kgDB9TqHtu4j9fGkoUOUar8fyXKjRnyXtLNZ-HKpIr2cx1jlDA6q7ZuqQk_-zu4aljR",
+          "places/ChIJ5a--FwCViDARn-BEPE4xH9c/photos/AWCwydiqlU11Ig7Zcoe6ce9Mbn2hBFBT9YHcXUI6_OfCeyA33Oo5MSvACWGjzKXd0qfHKyMRALD3nBByiXPpLq9C1oGAWT4hYmbDzdPLnHE9ELZdshMx9_VNbrmY_KlNd80Ty7zE4bSzd4NpRbQ-bizNbnDCYDDAQNgJQ9TOaQKY4WD1qabByuT_cUvA2QYnSZuSAAk3tEuHgWu0SnaC595yF-eJ77IJbvHFH0cI2zjAf3R5I6iQ6c_2gwJDaqkftdiQ9id5ROqieLE7zZvAsrsidVphR45UfL81ZnIGLc031hXymEBrJSzGbyCEkwwrCp-PsUf4KgPW_D9UeqcNrJMXEBo8AuiaaSJPKvLW4cC_yMorCrO5-eSExt67TvFWe3sfUiiXcd-fVEUWD03tymsKZJRVcKe7df3vWV4vD33OphYFORX1ENs4frFcKVAU64s-",
+          "places/ChIJ5a--FwCViDARn-BEPE4xH9c/photos/AWCwydg8Nmk2kfD5OF1v48i3YSrq8UhH-h0IhmGEjTLPvDTG2_4SXY7VbKA0xvSsmCoojkdGsgsXyzjkiCnhlHVcJyoHuPPlQFz1twyLvtEPQKxzTsva4hvA8GW2-1ISv09vfBux49MjRQ8dkXDZEmigscck0vC-kJJBovhJOnpgzm154B8fCYi9-wNhHn-Ai71hsbQkvjPvTZQnxCX93H2R0jV3IbcUHsFugOk9SAG4gjgg7I8U0egWxRijIpzcGzP_rysooZiKIJo_fNEGNf0k2VMVt75imTYTW848gD2U54DT5aa9uHj5ejRWOOqouU_VJKz3tAPe9CE0NIJumqjeUQNWfEJ_reggxLOrNIcJa2BFIg6sq6bJoN6EeNGXID0QVjnA-mZtH9Jvcxq4NPS8xqwMy37QOfW-9yjxslTfW_sIFDCaC34VT1K6GO5_TQ",
+          "places/ChIJ5a--FwCViDARn-BEPE4xH9c/photos/AWCwydhCkPjxCwx027Spx1AlxJxQJr-hjJhI__V_Rt1NEyEW0kdHucWiHyNxYxX0fSJyXWlygF3lFHO6sBQEugOREY36RFKv5q2yBKXqTx4HNqQj3grKwjVfOytuTzFj-I5BRNehNuNKWaIbI-SeB-pkpvkr0j-NvuUm6FQzt_Fa7QGZog1PJdi2k21_VxShEEukjB9SCvv_alEikTr-r9n9kVQQSzuCo3bto3nCS_teaJcd2aXj9cBjtomHdtaBRL29CxFWvjoVUNAEBCPENa0O4JIVivnDF-KjmKG4uCXvYTndbxvhC0LmaQ4FedUB30Qjz5yJvKXpefyztMG40CayWPR46EXD2Pwzp-luWMV1HrSZiSrc4qnLeDPhLd19H8sP8ZY_mack3M8YXtKUenREZjllf0KXwYu4IHAdzg-J9AnikSXu8Lu2jKeOFWj-qw",
+          "places/ChIJ5a--FwCViDARn-BEPE4xH9c/photos/AWCwydiE9lgSBc59PLDYSV4QT_2_LTvp9wAqNHZA0zY9I9mHWLHgmlVhj747NeWhj_tPMGXAgZzLDNmoR3kcAuUxxQSPU0uzVZuQcH7l6Gj-n0v_eQIotjaas4labkCrB6t_4tn1b4h0REc8wmgrbQ3Sa9f_DsaMgdFcVlsSZuW5sLRjEuiZNbqSIDJWENs6knQ1h_PGk6lloKoiCQ9ZdvEZ0lbwElJ8DS0MlvtzjjpECxR31XHyU1Zeyyji6TKBzSn9FKw6llYzJhxTQ6X_69PIahvYETmKpfBC_ER1ohHecEi10xsKh_1bMlJvmR0C9fT2Y_7vbp7UqUDOLsJLRpFSpnoR11bwK89ve0iJfoQpI2Axb2GTvf8Bs4yoaOPcXu67Bg_4ezYqx_Kb3AL1TauMtihZb3XSCTc9ujgTkiM8miJEJxG1RqZvBPt4goDy6gj8",
+          "places/ChIJ5a--FwCViDARn-BEPE4xH9c/photos/AWCwydhLpeSPy9ooJFg3G9cdDxG2xOJjG35pTYiYfYtsdn7Bg5TV5SHXzLsPSAA6FQsYPEQpjR_n-Hwelv6syjCBNosqdj7-A8LQzBcZ31pzcZNAWByQVVIoVG-xtvdtF-kP95GKp_QQfPXtTw0FkngUf4xF9li9tcAo3GDy3vEELpIkqNuZ7xJWDKny00FYpIn_bCAWZB6oERHX08wJp8vMciAPCcPmMyuI7V2GNGF7qkb_t-r1NtkkQP9YbrapOU2zcvsdYMz0DXXhnwc3_iCJzigZJXci7jz177mK13a2TYrmTqan3AjW57S5UiSpBk3oqTn1i77g5MQdH8jzzK78HcZr-tcAhRV6d6FHlhBRjIArte_ju_jQrGC4yC_m8sTbgTjdTYWBNBYFPGVAfVM-sSUgbWd49LNEpR6buNTWzDL2HvIi4LAkNGsLfQd5Cw",
+          "places/ChIJ5a--FwCViDARn-BEPE4xH9c/photos/AWCwydh24sn5lJUXR4Tyq0czUGjnnJBM4M1btwC7tSMluHojJlu4clBFgAF8h0EsOa_R0XmFOc7_7tNP5IGvaGaCmDaLOyVEqnf2Q8COElW9-IjNe3FHOMukHgWnsaFXY0xOPIxyfrtwBlZj72kgt-QTobSgELWLap1gf9BIUIRqVctpNDQBXqryIFLXU5-VNKkCLHTrbCWtr08wZMKlo2QGNuCTzpqOnz_BMsbDOtcKJ_zAjyB-l0CciH2nlV7h7Iq-zbt3pOu-kJbcqaYNZjUEJzCskGotvR04siUoknx_vIgAa91hbe0HnoGTdxC-MBW0JPRhklX79Mo4gX-GePbP-Jf-LbCbTFiZ8TH9pDpxiy7vcnoCQL0jbz3LgS-g6t43hkiE4ql7XO5rEq-1IStn6zkFhtsbiD7RcMim9rZaP6TwNGgAAHbyU_T34hAjFQ"
+        ],
+        "__at__": 1786803532.523809,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "★★★★★\n\nAnanda Restaurant is an absolute bang-for-the-buck seafood spot in Port Blair and a place every visitor should consider trying at least once.\n\nThe standout dishes for me were the Squid Fry, Crab Masala, and Fish Thali. The seafood was fresh, flavorful, and cooked with just the right balance o",
+            "author": "Ila Fisuat"
+          },
+          {
+            "rating": 4,
+            "text": "It’s an old restaurant which still carries the same vibe but don’t be fooled as the food served is delicious especially if you love non veg.",
+            "author": "Rad Rider"
+          },
+          {
+            "rating": 1,
+            "text": "I went this hotel after reviewing from google. And now i will not recommend to anyone. The food was pathetic. Prawns  curry was like 0/10. Prawns tastes like some other thing. I don’t think thats a real prawns. And the chicken soup was like water mixed with some chicken and chilli powder. Fish fry (",
+            "author": "jinjith pj"
+          },
+          {
+            "rating": 3,
+            "text": "Good place to have non veg food",
+            "author": "Aijaz Rizvi"
+          },
+          {
+            "rating": 1,
+            "text": "One of the best place to get expensive worst food. The place smells like a old sofa. No offense, just a honest comment.",
+            "author": "Adhi R."
+          }
+        ]
+      },
+      "ross island|andaman (port blair & havelock)": {
+        "place_id": "ChIJVUXtIG2ViDARKTDF_dMdDMQ",
+        "name": "Aberdeen Jetty",
+        "address": "Aberdeen Jetty, Sri Vijaya Puram, Andaman and Nicobar Islands, India",
+        "rating": 4.3,
+        "review_count": 172,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 11.6720405,
+        "lng": 92.75022109999999,
+        "photo_refs": [
+          "places/ChIJVUXtIG2ViDARKTDF_dMdDMQ/photos/AWCwydgUhG_MpjwT8fUom8UIPbS4GM2i33uFT6TOLeH4Wg_812iSP3BTUYzPcykowT5fDyiLD96Be70D0BnUQCj72ohfDpPlDobOFboD3dxGgu3bQboMVykyKxmIQUJRfwEGDtRyL1AX901tSLix5-sp_x9thPiV97YiW27RT0wu3kae0D3TiMJ6OxZReR6fw8MeNCL6_XbhWdH9YvKXY8p6gdMP_EXqm13BXMNHhEvcVH28vE1qzEZTDZ3Q2s_FDYaz72miTc4Vv72rt6EY4qs8y4z8g90kfy6WHaQhLbvX97tZ5XoRPV8vKsjCfASUUTvWxzwUddBvtDcp-2LIZQWwYctM7IvnfZMvEU9szoMnQ1-yg4NG_umInOMVgVJ6XPtr9Ef9zBjs1GZEmlBuXYMIVs4I355EblJPirOGJQ39QTM",
+          "places/ChIJVUXtIG2ViDARKTDF_dMdDMQ/photos/AWCwydjccnJhl-ngpCx1gX9wpBDBZY0Is3wAwrQJRmTYuDrZ7mpUmGm2wSXdNFgSVThQriHkmyGoqITpsFC359kmNotpmxbmqAHhS7e6k5eLPrDORJ8FGPutrTAs33oaRPGDnWQ9jZaR-XbAhVuceJZHa7fSe74jv2QokfcMAc9yRxsMzMgMueL5l0UyPRorBj3UiLDMDtVbUUjUYbdZBLILESaNP-zvBMk1sbT_xN48UozvgaAXQcBNKmVPw_2uXx9dCK9qa1Veagyki06BMMxGWcyvoh0JmmKNV0LHSr59Yqy6hogZXpLVLFTu01hb9RAL943h3B840CW4DlHEN2WdXR_l9pql7kUB06aeAQqgbIPjHEmPTpFjwW4uKF6F89U8Kb7FntwSfrUJEFrDkyQt_ytEqENKFpfUNYEOFIe--r5R6A37phb-2sLLcKp41-n4",
+          "places/ChIJVUXtIG2ViDARKTDF_dMdDMQ/photos/AWCwydiXCi57947cYwRpDz1ft5dfwLAL6CpO1wsRVmJfnHXlDmHDthMxfSiaURK3MPIala5afneyVhUhhdrZuU7dGEHsNTFXKfqAIY7ulLrFXlNe69ecA63sRMEfu4vwArcBU-weRxIIQ0OPfNQUwmiuO8kv4ZsA7wrgYVup2_H7ObEiDOLqjwY6nymGd-2IHX5q33Ix209PbDVY3MvefhmAYmpA3INLceHSRpnRCudMwu1iIH462jGru4kEDD7a3NpLC_dBFNOHqk_fYZ-7YX2SdN00JXm17ZIGLu2F-o1OqK5q7oBFf96vVfzIxSsUbxgg7gTa52TSCT5YnN5LWY0WQlQg0tglPwHGVzAwhD9znSv9GU_mTe0CU5g1h-X5-ZNyXAZXRwKw6ke1MEb_hyvP1K6jke26WdFJkUkMJirPF4P7sg",
+          "places/ChIJVUXtIG2ViDARKTDF_dMdDMQ/photos/AWCwydhUDx7iErOSd4hZYGyGF5rE3PdjUdcNdFrLXDO-ZhxMIdBGFSoNYxZkSzqFM80dzyhIPpgV7uPO_wn4B-hAx_9FLnXsbXnk3OY87dwgpodRaYQsTbSNBKuIGmbBmUo8wLLbYlFqtBurtQguw4F-LwmhxxZF3KgauSkAa8KuDk_BIXvY_9ks4sw3SoXyXvh3x3G-_cWcDj9rqNJGJZhpFldHSCtuvy4tqbdmeCnWmqXCiaU4f3Zzv3RWxmLqmMrGI68lVXqUA_BJABwDzIKatospS0KlkvuZxnnoVWQHW__BQPhpK9_LXEnRSsMECfuVMaANx-QlGjnwjC_AlkqCnDVSl1eE16TiaplDnXFonnNy9_FXUNl-R9N9JqdAHvQUactrFDYd7kUplNmEF38yNFEopIsrr0HZcMz_ETyMk3eZgCgwEYz2t233wasd6HDx",
+          "places/ChIJVUXtIG2ViDARKTDF_dMdDMQ/photos/AWCwydhkGOKz42pRKZjKT6C2XM1gKt7cZmTAAFp3AZ0BVlgbtJSJv2CBLG0t2Q_VZPhWh99_uEpLipYRlUijTwoDN2D-GqPk7FxBikW08xn3ZPZTrvQ0SteFfSpW8RANEFqDXP7Q-UweE8-cS0wUuy0l-iyoOfoU6o8KVrJ42WugwK7D3Xt_t7VyoFTtz6sV6Oe9rgejRk4_4XF9AsXZgt4g1bG8M_rClB5qAdfJQiT800SIYjUywtlwdn557jqzqcI-v4xEDbCM9erjYZd1Bd8MEruaNTyT1NE93Ou24R4LEPtoD4V5zuJ90pA95P32NuSOeEGct0iUHCzqSBSheI6cLlL41hNOLkJef91VKSTtiJiuI5p0RNEuHhxQ4FhRrUY8PHSSt5uW9e9fQUoj2xvGTroekFmH6GnZdsxuhsTUVyOCn1E-oJruZSzBuYbuog",
+          "places/ChIJVUXtIG2ViDARKTDF_dMdDMQ/photos/AWCwydjYr-i2n2jjcPiZqah9KapU5G0oSndF2xW9l7_rb7iqYmvz9HVs2QpICyZfxUDuTBQndoos6hb5sJhyhitiC4p8J5wzcNVFm5tEMMLUAnPTKtx6Ai-GIAhgFgwSuKjqCRo9EIsaoCgoy3kiLsGalkpc1vqpyKy3x9Hz0wlZj2p31jNcIrhKwj8Q77kGnTowsqHGfaxnufiMDOmqrf3NTuL00qqlByCHKO8OwGbwpY01uwjtbYa2vHnY2ceUNuUvb5F24FFpDjoJU3fjyoLwE799GjyFhWvdNgyo3mgtq3Q1EViPTafti1UZu7M0Q2GctVKV1W_9B9I058Vs1quZd4KO3tCnR0x3F8WqS8Ve9mHdu4iZlGuFKDhzL-n8TQyZqaFP0Qp3XK421YOzmDj73yjfKR8hLhG4f1KPNanhYawvsw",
+          "places/ChIJVUXtIG2ViDARKTDF_dMdDMQ/photos/AWCwydiGpK6YKbcii8tUs16U16ScrewxiPZ5ytnTsFCW2j8nyXWMu29OUOEmBgpeuio9Gr0KRA-G0_DKbKbv8CwMMf_3KW0UeJyO_zTgp2hrMEWPvH86KRifz1XAAXGIsK-8ExhzZZZENLJn7bkdKXmW2aE4-4nTVsIpZ_NPoNdzxo2WalBkEDsqZpTj8Ahbon0nq3rFVHUItpeNRrwWQvPRbfd0McSoXRCJJRvV0kz6_g1p7tAkCI3ZYL4Ka2Rj4xj3bBvfi0bA1u-QQHuLMnvhnN1RrOMSypIBCC3qVB8YgwBAgaUk2MF27O2ayB7rahjHfrDZQHxU-FDLeemdelshtIiSFvuPYsAaJStQhvQot7NMFz-w6rR7J9Fhngp0tsfj4EMOWN8o6LwoA3Tl6mvCCIy4BctZOcT0wqYvN-wPGzxWNz9k",
+          "places/ChIJVUXtIG2ViDARKTDF_dMdDMQ/photos/AWCwydi11jhTwFNBmunrbvnzshSnopzT8DeFoVlzCbv5EOzb2egOna6e0umuAPYgGZCfvU461oCr-DHf76LJV0CSqODTtKQbWdQX0TDOTwmxhYkaZttApNIHLzokvpsHU7Bn1rm5A3YRiHPEoVh05j5EyR3Yf3BLg4utLdBDmvg5CneclACoVTbMHlCLQOJ7T_3V5Fx-tUGm4vtaqWot7vnsDy6sy55uYiCJo1G4IMTKsrynINr4DkY3qkgnRjJmVGii7OW7P_sgyu37yKbSHa2EO7f56oZPTO4U0NjlnBWrpzMDHfaWBU8W1iKVgAwY1ZADj7PBex1n0xwzIcYXePfB6yPdChW3HHJw2coIKnv7m-R5ya_AYJr3L8I8YeR28aXW1CE0CWaIcMbWjbzOchfu1Tyc2L7MNX2CsMYo2qn2FnRUj4sNcmFnI7a_RzpIggcx",
+          "places/ChIJVUXtIG2ViDARKTDF_dMdDMQ/photos/AWCwydhA7so4z6M97Uj7Cf7jVi1aEwtEJt8-yHbZGIzrImUlv-8rt3n_qMkPNgNQjyyaJ1fEf-zzmhOOcGQCIEyI4hynYTMfVnGzf4kiBQYyDDcFRTbodMq3-5cdqtvs27JKoiV7nXWPjSbJu0kvslOpdXJW6oW5C0e_vCYtGwC0gU8UPBQWEDjCpyWQ1ageqFaLBUnvFSCW7ixv1VGwuXHxFZ31ymy3J8vGkKeVCmyi-GdmM6bZe7P1WaLJAY3KCDx96OiSFe1qGT-8NTzh6EsXjr0E8UWbadeUNAfOW6QvwBAGPZLIb9DAlplEandEzOeXdci5ldaDlJFXcgAWyQdDEVk-a2UoIfMchqNGx_Q4_fGmmE7lJyew4g8myu-njViiRcjnZKOEZo7Fyk7azB09X3VKpmqbRGVoHwx4qQiH5jk",
+          "places/ChIJVUXtIG2ViDARKTDF_dMdDMQ/photos/AWCwydhc518nvLpKZ_NGpVik3BYW_t6Wze8aG1TfP5eeX9IexwvFdDbFQAk732JsVW8NEHXnhbb0JqsOGmh337BDGjkEt9ayKGO1tW1kZfQ_sLtcuxnGueJfLKQkmF8nmbjhA_cknCGuvIIv3lOTH0CjVgoEycXkrZcFYH35bGTYcfIqj60OQl0DVsjIkHvVuwkNKEaoW-u2wTp5yRRsTNZqTt2K_TBor1vNCrOMj1CbDAMsIHH6axouf7T3Tic8RU64kzO86w0DhYqQljx2xBH63aB0M_PGpQvIRnjm3J7eYtSiWaqUXTnP3heDH1iPDqoog-GrUsJrj1PrqliR7b3BrcN2U3vfSbwcczdUxvHXdLCtSmicpU0y5I-eX-HZRGP7o0HG_IcQw9JgYdpzwsBRfys1dN16Lu7tIg8xwU_b7pg1w2yiRJSSdTJAwfOV2d7q"
+        ],
+        "__at__": 1786803532.976286,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Aberdeen Jetty in Port Blair is the primary boarding point for ferries to North Bay Island and Ross Island (Netaji Subhash Chandra Bose Island), located within the Rajiv Gandhi Water Sports Complex. It's a bustling hub for tourism, with North Bay being famous for water sports like snorkeling and scu",
+            "author": "Khushboo Choudhary Bhardwaj"
+          },
+          {
+            "rating": 4,
+            "text": "Boats to Ross island available here on the spot, 470 fixed rate per person to-and-fro, 1 hour exploration time given before return in the same boat, Carry water and eatables though kulfi is available there. It's a well preserved island, battery car is available there - 100 per person, recommend for ",
+            "author": "Shekhar A"
+          },
+          {
+            "rating": 3,
+            "text": "The jetty that you would take to get to north bay and Ross Island. The jetty is pretty clean. You would see people taking a bath but it’s fine I guess it’s normal for some people.\nThe boats are clean and they give you life vests when you get one. You can you private ferry if you want but the govt on",
+            "author": "Sushma Sathyanarayanan"
+          },
+          {
+            "rating": 4,
+            "text": "The view from Aberdeen Jetty is absolutely beautiful, and the jetty ride itself is a great experience—calm, scenic, and enjoyable. However, the overall maintenance of the area is quite poor. The surroundings could really use more attention and care, as the lack of cleanliness and upkeep takes away f",
+            "author": "Rehan Mohsin"
+          },
+          {
+            "rating": 3,
+            "text": "Be prepared for a long walk in the hot sun, there is a waiting time as jackets are to be given and have to take the designated boat only which can take 10 Pax at a time and the same boat brings back after the visit to the islands. , there is an assigned person who takes care but it is not orderly, t",
+            "author": "MV Rao"
+          }
+        ]
+      },
+      "anthropological museum|andaman (port blair & havelock)": {
+        "place_id": "ChIJNTkamwmViDARjxbTerBSLn0",
+        "name": "Zonal Anthropological Museum",
+        "address": "anthropological museum, Thomas Colony, Junglighat, Sri Vijaya Puram, Andaman and Nicobar Islands 744101, India",
+        "rating": 4.2,
+        "review_count": 4508,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Modest museum with displays tracing the history & culture of the islands' tribal communities.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: Closed",
+          "Tuesday: 9:30 AM – 5:00 PM",
+          "Wednesday: 9:30 AM – 5:00 PM",
+          "Thursday: 9:30 AM – 5:00 PM",
+          "Friday: 9:30 AM – 5:00 PM",
+          "Saturday: 9:30 AM – 5:00 PM",
+          "Sunday: 9:30 AM – 5:00 PM"
+        ],
+        "lat": 11.664616899999999,
+        "lng": 92.7401246,
+        "photo_refs": [
+          "places/ChIJNTkamwmViDARjxbTerBSLn0/photos/AWCwydggWEnuyjxFLcnv24BYHwRf2ixrjpj4WEHHa9_LEpWsPtEM7Md_OmYtXZf6vn6pJtR6uYFRALz6ka6PLWm-4pnJ5VFfh56DcxRTU8GcyZZUtnE30CariJ_ZQiqdsGS7-wcKFTYZM9b3kHy6qoBBjUt1lhYHw75xH_vPH3HEBQhiU3pFhepasfspmCcOCl8Hm-gdGGLwmD51ki75-bFkIqwtzx_T28hN9K9MbRdI3KIGkwqaNmCxJ-pQUZDoMzor5ejuSFaYECNhYSs3tcyQgxOv3tSkU_moKQkBTxwa3ft3eMUDdh0dtWPg8pT2jPVkjwR5drRmw64Yhaa1uWXtSu9ik4xIW9RYrpPVR8iKewgSUZQS2Oo__xPjkeY9p1zox8PIni0GpsQ338DSuRZ7j3_RiyV24ZXP3C32vVk8Gr8",
+          "places/ChIJNTkamwmViDARjxbTerBSLn0/photos/AWCwydjJ5DAaWBs8s1sgjwxe8CWSdW-p6kAcmLPTsE2ILBwFGf8EbzcHzbg-i_rHPsa_U2oBUdxzQiBI7a524HlFwezAMkw-U7THwHVu0ITlJF6eVAjPwvZPRYYDFIlR4MXRpnuYDWrsGdT030YsWfD5A6Zs_0Lf8udR_qqCTjI2fssYkGpnxM-hHvbv0UEWY3e7zXvHdOns_P-MryfGhSJoZKR-tPXVbe9BGEX-nkuLISmCKXDj2OaFJbMxKL6blDthYAGCaUDz82JVeGYhJBF4NwkQVmO2wvQO5ueCKD79lBn03T4V2O-4fOGDAAUrbdQM6eK_d2GKhVhwuH5mtj74tKzMwEva-l0zZEU1EyUyH9Y9Y94svQBelu_WGnsWG7gI2o4NYE3KXUU633bmm17X8lLcyqlQSsfkFA3gB-6vbbg",
+          "places/ChIJNTkamwmViDARjxbTerBSLn0/photos/AWCwydgtzPYX9UlKjuFs-fMw8eoaAV9Ge5pxrWzb5YkJaHnWXJ8RSMYdfHsnPoMypV3Yp5_gN69NFGrZJa_dnM9atEZAZkmgtrkpx899YyCx2-pZ3pbxIPquP8mPEs8RN-sCGpZovnHhuy7po7KT4EZ6skQFbonlgVEint-nvw6812viOkq9pwi8l2YHXReq72LpTL5dxDWeHEaqPABhTDptaM0nCRyriQFiFlOeu7kA77HcKNTcM6v3owffsjjTFoc8qApr-40TxiRNFEKdOTO7VIqptzHjbj_QQq8Xbp9ubyci2IDQRz8ATX0vxdRRYZxy2Bev4lBNJkB-Mvb-BQgwBfyxNeaXBEm4z2Ip9LE4vKM7N3AqTRqa2e_J80UGXCpAiRJniNsEd0ApEPEEc0ICAiAb4gRqwdStfvx-vBQ__bPZ786H",
+          "places/ChIJNTkamwmViDARjxbTerBSLn0/photos/AWCwydiebr4LZ_YaPxsBoOADMufmf8dASW4rOR1U2Gs5t78BHYDn9djFobCjJyGW1WF_DD6gNM8JPrqTn--Y0ESjOZ_RM34SgCfY4fiQ71JQnmEHDnCKQPRklXFBzIq4_iymNn0bq0h0mLyiN5t2jiP9Ba0rjw4chNzrUG8mNkenps4fad-8hdZhTSW6WJuRsxq0AIU9U9Kb69u9iLE5d3YmYGM4qW28OBU3GTuxks_66MgO6aqOWZjE-hVKfhJ_Zp2FNXsBW10R8ZGA3S058BBU9l1OpG1rxjvh4KB-GxFN68O2RazIBu3ohXtQAFfnJsYlRi5hoxQEOUw2EfD2tit5qUgXoUHqux77rLzfudZyCBcWMJn6iAnLTL1nYFioSN0uK8MsfeoUGG8FTywK_b9X0w5yvYjhGnyE0fHRy-grYk4",
+          "places/ChIJNTkamwmViDARjxbTerBSLn0/photos/AWCwydhgpNtzL6hSOijMef-DstZ4sWlPTeP25NmKqdacrmsXkFSgClwLxMjj7FEdm4_0bZpeA6TMfC13aZP1HBOVZtDWmyjzzhHQsX4XaZGcaZtToh6V6zE2eJ5xeYlIkIMLooDzmyNP1PqXFCoFmAQ3I0d5r5DJmSUAgIo_rWj_ywKZMCAkmemDvxv0XVcCWalelY5uuKcCGCC3Njq_veN6aY2d31cYSS6oAkxPOIffkB3kpO86Tj0kBR2fcoBV6Pyyv7RbMC1VNt4nCDC0G-UUfrXPWd8if7YFO9boghAVh7utGXHGyEk9_Jp2QtAyO5u4ujdodIPMKQVRJkRG7WZaIEINqGhJQgYe3lUuw1ZywqpRwlQgq6si73YRH2_BQKl8fL-yl7mC2ogVmgoxmzHL0dsi_vr4cPHLNlxgd4mXt75Zqqb2Pbqx6FBzOCvbKRJF",
+          "places/ChIJNTkamwmViDARjxbTerBSLn0/photos/AWCwydhQ0FhCw5G3YsMBFa8O_ZrB0hbx85YwENRLo8CHl5OpGyZGUpPbY_85TGhYD5eZgZeXN4Xwhnrc26XmwU6JnOUqyXjg-olmLDfu9JxfAfIAPY06JqZTPnG2g5nErRqczDEva6hV4_Z8jkVRRojRZ2_0ywtW59MsSyZucem0Ip3_M2YNv-FSI9WlcS2rc9vHtvrnai593F0jt5Wd3TXsPJJ6JVrmPf3UeLYQ3-5PfATj3N3txF_abpfasOGCgwibN2J1Mw1CajBR5_2UXhTtVtX5PWn1F6HdVTTEls6ZjJADRvYDUuNPmgOKH-8G2geHBLCYYK7IfUHpFDQ-dnKFFAG4QWq6FTO77sF_L6DJz_4XRqia0t6Rsnpw5vhYakIphCazLcpYGRTRgndnPWFsf9fGzNiyqC6hadXv71VXHQCJaQ",
+          "places/ChIJNTkamwmViDARjxbTerBSLn0/photos/AWCwydiB3IHF0JoWutZ-ShmPgSgc48w2aDABHa85FHHItryRbeBW2oMbGn5FISGFmNBjXTWlOJ-4ht6pCdaXPlKPZTNU7CAUQvP4uV0cqa2-3IlawBrFEg5cDTXZIbDUJAxK_suwBFSf_Ig__3-L-BYN4tXfFac_VBJkfWhjS_weLOpOvpQgzT3eg0CkuO6iRWA9Lohz8TIyjk7k1JUkBmsSVWTMlXDQg04kuhEFiU2iSeI2D_HbbnAlKlCYMXjgqvK1oKCIIgP1TUiwd9s_rL62Ef6Ief_BfL_4Rdgo0X3GEKPKr7GXXAGbqsPHuzKt_IgWgTfCNwZ3h0H35hCcqdb98KfhPSjAP_bxJ0Eg1sNGKpRI456fiLuNSUcN8plzVn2mIFQb2ZG7hnAMYjXOWo5e6exszmqPdQ6-L8kWYpFPEFhfjw4OlCuOH1qNvfoIpiPf",
+          "places/ChIJNTkamwmViDARjxbTerBSLn0/photos/AWCwydiIZy7VquhW1gL5376CsHVb9_h745KEpYepLoNQkCj_tuj6ZoB0zRHqjK9qIwNSpgZVU0Dr4WhmgItQtAXW-Sb8z3tqu7iFIHJz3Ya5hffV48VLnEOOhRsfbTvxWbQswRolaZ6EiDBllzJF4WSsXa5hwHXWEm28JjY-v0Jsu7OWv4P8shH_NwT1FQIiAg-9CNEq5hOgUJpyQYBKM-fCAp4hbktR4k5LW2VxSGT8f53wp4u7sx-wJNUi52esugMfypQj2BUnnBwJ78NTfB_YzRBfml55dFQvza7Jj-m7cwlsfmwsrc6VqK6NAXTg3cOJPmRA4jLL4dnyqyfB_Oy1yFeqCQjfBdw-CeQXhc7CrgN2Ky14VmZbnlkECHA2qBWPH5Ym9WacAgjFg17wfWPzeWIIZK3L-g7ZeQGEpU8m0koy2Q",
+          "places/ChIJNTkamwmViDARjxbTerBSLn0/photos/AWCwydh-CHINGqghQgmSbf5Yw4zEVOxrR6PXCWtypzBwZDDhIPYf1bSYAz-_Qua-U2FqLmRI1k8PT5wpoe2O4Cqmnumv_sUEFOFn94O1dpYsltDHOtW_dQK0K-Lh-kb8qACQTpRQwfaEjGvyhKrbajmvfiDy-c3BmgxN-Twu9vY4PIDadmZv1CfZPyx0P9NeA-ImA3nNbJ0SSn4ITdxe8Em-cbAoHjyLcHaq4nlbufAg5tQcdZHRgWq6o-azowajJebbf5cIw3o1Ypx5jhRv8BFSvUwZTuE8dGisSSqPVPS16F3XOZJw4QT_ncVUJq4hL-kO3YQ8ZmE96xZ0GIldQs9_sQNbooHN3wbBTwret62T2CyoFqJcVMg4zLvJ6pGNG7Xu2sEAWNZD-cEPjVVIH91JMbtjJjdwGW1gxVf4sKIBXF8",
+          "places/ChIJNTkamwmViDARjxbTerBSLn0/photos/AWCwydj1UpiI09LuvwjkUhxZpgGMqtqYF43_z0g6GDGglxoTq4XrutkAgkTtWc6LjWeW2_mMGZMk0zgIYyVA74C1I_IEy6SfLp1m6JaX5JJ85aRQqdMlowrPbGFH1HXR1NLkxkGhQYtIWghevIDt9vSzSyWAdI0Uj7RYwLvv-hVta4MDLNShKT6nGsYjalADvGOk78oDOjLA5uSY2KaYv70H-iGYFYGPPEeQEgqgRcJDMJ-PTAUBLuOumX3tqC3QVbza7g2QdNIWeryuAwaN152QKk1M3GmOeYuFJyQMp6-a3dlSz5NLwy44_qT7Ft70q3RRBY102gL35rPgPBEYahI5M2Po71T44s7Lnmo2kZlBx3vYaSR4TjWUB9nXeWVUMGe2f2zxoRN5u4cq9CQ_LDeNLQds5o7BYseNIh9IBl94bslA-w"
+        ],
+        "__at__": 1786803533.530087,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Zonal Anthropological Museum is a very informative and interesting place to visit in Port Blair. The museum beautifully showcases the history, culture, and lifestyle of the indigenous tribes of the Andaman and Nicobar Islands through photographs, models, artifacts, and traditional tools.\n\nThe exhibi",
+            "author": "Debashruti Das"
+          },
+          {
+            "rating": 2,
+            "text": "Seriously they have collected so many items but they can be more engaging n more interesting yet it felt lyk 80's.\nGovt should really develop this place in a more attractive n tourist worthy place.\n1.add attractive building not govt office\n2.add all sound n video effects to all the knowledge u have ",
+            "author": "zalak patel"
+          },
+          {
+            "rating": 5,
+            "text": "Located hardly 2 kilometres from port blair airport, this museum is treasure of knowledge about Andaman and Nicobar islands. Indigenous human inhabitants and tribes of Andaman and Nicobar are well displayed in this museum... Their lifestyle... Household traditional items.. constmes, weapons, social ",
+            "author": "Ravi kant Mishra"
+          },
+          {
+            "rating": 5,
+            "text": "This is one of the best places to visit in Andaman, Very few people visit this place as photography is not allowed inside. There is so much to learn about Jarawa & other tribes like Shompen, Nicobarese etc. You will learn many things about their culture, life & all. If you are someone who is curious",
+            "author": "Nikk B"
+          },
+          {
+            "rating": 4,
+            "text": "Zonal Anthropological Museum is a must visit place to learn about the tribals of Andaman and their culture. While the ambience of the buildings and how the artefacts are displayed needs great improvement, the place is still a storehouse of information on their houses and way of life. Videos are also",
+            "author": "Sajeev Thomas"
+          }
+        ]
+      },
+      "corbyn’s cove beach|andaman (port blair & havelock)": {
+        "place_id": "ChIJnQTbz_yUiDARZe3cbXfj1WA",
+        "name": "Corbyn’s Cove Beach",
+        "address": "JPWX+27M, Sri Vijaya Puram, Andaman and Nicobar Islands 744112, India",
+        "rating": 4.2,
+        "review_count": 14472,
+        "price_level": null,
+        "website": "https://www.andamanworldtravels.com/corbyn-cove-beach-andaman.php",
+        "editorial_summary": "Sandy, palm-fringed beach with jet-ski rentals, lounge chairs & several casual eateries.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 11.6450857,
+        "lng": 92.74815679999999,
+        "photo_refs": [
+          "places/ChIJnQTbz_yUiDARZe3cbXfj1WA/photos/AWCwydhOzIIXw-KtcnWDHJq4SNFLt00izVEaEBVu1aO7WQ7aLG-aSq41ORxTweE4n_Znzi017ixosAtxmpaDmRpA5HzZy8AGGvKhsVaIN6hudIArCyNjefK2oW-6zFopqMkWGuOOTYkfmHcJ2oB2CF1kK7c2gn65R1-3SpekG6BzClC05msrVacNlZw3jNyisfFjHZ0M6oFqGZ8Tutj04hSv7qXjmiamYS7ADZ4hYq8GFsRtsp75DUli1lxjsqf4yx4N10cDByKwMyXQQNLTTmpat3MGIgZ-zgyOUB0NRPQex-ZdT9GLWBYrIeAzCdzhYiiIw2qioKIrOUyz7E-jiTV5Sl82FeEaCs9JjoKaAcKeABtSc5B29_StsR73SnlK-wggCSuE1WpXGzTNiewcJ-kD0CiNrW_N-OJGv4iHV6_VSISM_g",
+          "places/ChIJnQTbz_yUiDARZe3cbXfj1WA/photos/AWCwydjggP8_NZlxWFwiBLQQ0o1oBz6MbnR3DFPITOIwkoy8dgAiAqVaUPEvv6oN-RQ-VAqoQJF5kEkCU5hxjkSQ_lqoDTEtn_mkHU28UzZUg9DoRWWpT5zTVAv-XbL1upII_XG_C2FjaXBhjc3M4XFTGQZnAvE-NHq6h5OC268NVrmCSAV-yidZVTzSECAEHLwg0rOksrW4pYtQ0DMZvCq-YeFOZgztPZCctRXo6qU5-9l6kpjqQJo2HkfcqSBymmuqTReMwu6k_Bhw9Cw7zPWwlh_hA8HHwk5p6Nfv6VSAL4i65kwBn3ONgs1GO-KNdlruW-3TdwwRMLXT-b062Z3ita9OHHESG2mziTG4YV16pu1doELoAqGroG4r_btcl-Esw2ukY8aQKSlVSascGgh3F32gbf9DoCLSC9auVNiXXLB0Q81U",
+          "places/ChIJnQTbz_yUiDARZe3cbXfj1WA/photos/AWCwydjwikfoA4IBlkogpNwdN5tSVf0XGjU4CxOfXWxs0xmXhqL7nEbH86pGa37cOgR2MfJ0XGouoOxQsXP1wSfAXLiylryUI-BBltWccDWq_YFXCcWBdNxobfblwMwTqlwiVOhM63u-J0-OCZxFMeRJbB4tVxkzAcUssPGKY7NTmU4Rd0DPcylxfMYEKHqV8Ujd7ls2lxoP8wkjn2Y4RQABmtGzUTWRQ5lE5E4X2w2mdJzp8tq_iF_AtNESJQBnh_8ToliJ5AK9ZiAyXqAFmkDc9bcZB8P7bjYm8S6GXcZfGtmXW20HtBKaBq3FxWbdNzyRvH9ltsLZaUzPBYVAdR1HD09nDfI6kg5sjWLciCcCGqgGDjGc4_fUeXo_3jfjdnOkmy4qsQFn1GOjAesgPmM_nwDyvSDwk59bEeyE0bjf95vYuuxz",
+          "places/ChIJnQTbz_yUiDARZe3cbXfj1WA/photos/AWCwydjQgpaS_zNjgFtpI0yclTM8K3hxZA9cEfRTOiLS6f1iBnfg316aqIgYBv2HctPpSIbYqTI8qE8cLCMsORiUZjQqsXQP81xeHA1jHDnwNBl5Hc-unQTUMPwIi5xubfm35VgLjdro8C9z2lKrF8637D2feuzSN3qf2YXKxgclMXvez3RPOIsObD4V0QhpK65t9aCud7eZKh4MrQR3arIi1gwuLfcpceV0CwcrybGDaRihHeKDufYy3MYB-qrYfyg491kpzxQuRH-Ll_Dik1bScxOug9J5DPqSLLF9PnjqeyXTbeAJ4dtcy48sxxaz2KnFRck0F6rGvma-UN9jZZ5b-_ELV69cDk1-T3EDnA_J2TJsMc5IX6BbwmV8FhfvY6CfklLS7H3xIb5oseR59xEBQinlQegfl-5w0b34ApFqLPFZ7Js",
+          "places/ChIJnQTbz_yUiDARZe3cbXfj1WA/photos/AWCwydhaSOnt7f3S86qtFUedaqBneA5oU-V_sH3R9vz3GMvEjemUHwMFEu7qAhZ1ZW_Yx4sOajnrajZP7kSR-Z2grO0iuRXPT79nTrbgvoe-KsSieP2xyykiuvGkoNYWDaNGHWyoeFO8nnwXmoY5XyewU3Ei0RogkjMJXc46ao6OvPO74PPMBNasDB3Flcft61W_FDSGRXN2hevvnBv8vfHJpKEC_nMtCwD_f0xZMYJLj9qVdBWs-RxQHwB02u5RAy1mD5VU_MFOtz6ultDZSKl5eNYJoRuAntOTOwmUEK4K0PfsSLommZC1vEKy5KlEj7CcsaXYcm-Wo2WbUUvd5fbFWDpIzujRxRNvd0IcILg0Vfdl83f1mUQI81j0HED9PTxlb9nZ6KyhucAMZid1gUF9-Fmug63i1zX3NwykruDWmp7_L9hV",
+          "places/ChIJnQTbz_yUiDARZe3cbXfj1WA/photos/AWCwydjSlARo4Ft2TJ6DrnJoQqu4_evhNj6b6xgwNWlG5OuwZZJ3sWd7mVaK53TnBS7pVZlTv0yyJkvQ8Z5DMwu68jXAG78dvJOJqDbCsTY9N-KACA__m8t-lPg4XQE6OWKjPxzRtCaR5RXlEpVaEsFEzusUUWUrfD227X786keaSFWiTP3YAsn3ZbHf-4_c4XsCZRd6JYG2iREPdt0GN67Ew4Bvv7oMv1ZJWNP4TXGM2GgbiNSoOYyRwysjyAdVXaU_yzA_Y8UEaAl5FLgNjR8Ry4qM7VcDX0Ne9pAAge3D_GBSZ6cjs9F4AXjetF3nEucdw1wR7ycR1dldD7Bl_tTQBW5oRK2oYcawKmDBDXq6eoW45MOPqtthDjSEvhaMMA1-RPOYXR9F8TUoGY5EjRm3YTlilGNUR7erYHPTimlWwnKi6Ec",
+          "places/ChIJnQTbz_yUiDARZe3cbXfj1WA/photos/AWCwydhCLoQpL333yG8y_G1kP7rgU91oE_tsmfYUZTG56PJnpjpEpxnDpW_L9D5CBfapBRxToQigKnxB0vOh-MzuKyuGYrTbSnjhtN-2iyki40DxTMoVC5xmLhAzWTXdugGKahNj99lYM1YJkGshLoZQf9MgKhj_N_W7RDyz0K0FC7sRyY8kWs28SIZpd9VIoryI2YTFlefYkFuHhs1hU3Wxql07txhBIp8Bw4AcYHYlpKcLdS1-J3Dj5oMIBaw6sL25mINiK57sLhOiAJoujdRcMr_lDNoRd3AfuSmY4bfpn8EVX5_DMJBRzRVBEsNV-JW_mzBonwcLhEEmE3W3qlHtlUTsV4fLAYKVfPTmOjLsYzMW1wRm0Gew-3rfBrWZMUJy2-R0XmMam7M2QkOa3Juw5yfZwz7agWXpdT--q2TK8vJAzQ",
+          "places/ChIJnQTbz_yUiDARZe3cbXfj1WA/photos/AWCwydgZROQkrH6LzkKlQpsiNDOlsaiJ-n5LDVAmIeiX7Y24DqEgIgPbgfCvCvnixpUtglylbtAw0svKBm5Y7F6JdDXJSK3Bs2p6wl7HNL8x1zCu9KzeZwRINIEpoxX9z7xoHif0PLZpuBejm1w-977eWCBD8tL256rP0HQN7bBWg_v0EAX8mWOM3fKZo5Ajb6wU6PUKvihfAEl2VAvXwpF5qEz0FQG2fbkGJUMwxqCQnU2Bfy9yS4SCD0RbV_R7G1wDSkdCZSJ2tKQMNcEaUL3udktTBV99u0Wwr15vnF8p5RbTLQet2jzJhbz8e5KqSxy_G0qEwHfU5jNiqFlkrL9FiBOFkEZW1QIAHpSj-brzGeu9PqdSnFOFM7Mu4z1Z0EFdjMk3ayBU11gQhqKwtVZOWAARnHNI4DQnDSPXcZnV1t42nCQ",
+          "places/ChIJnQTbz_yUiDARZe3cbXfj1WA/photos/AWCwydiX6dcLPGQToJNZ5WNw1NzTGh7WGo2iWSURxKa4P5rPEex7u6jZjqSUq0NqlyNsQqMRqoos4DlRMPM7DY-RFKuq6OCkl41x7_NM94KMPYvNenVuBPhyyihwEADPRWgX55sykFztcSTxd050IBPi_eOW6jk2i2B9vBed6ho6tGFUvMc886YkMmUjoztEIVJ9Bgafu_87Q3VvKJBIVZO-6ulqxS59tcnZiAqxTUuYZ-3eKhvBGqAPDUQPr455Gj4rpLnIp5ZfrvrJWRTSHNxT9R5dI5IzDugE_hmO5uyEhUNosl0kHHmvIq-2HJ_BaIifHCrrjMpmIq82YTsCzgBI08YcUnuTWClOwZFTVU1yT9A7V9VFpkRQ4ALRmBX3u6MEg0D9VSo8kfE5y8Cz5izS35QyfjbQrB1Vfw8TB9PsF7fRbEj0",
+          "places/ChIJnQTbz_yUiDARZe3cbXfj1WA/photos/AWCwydiyfnoacz_UCV8WwmKx9Qyfe1RENtTFSZTrywsCRkrhZL5SRp8upbYG14HuiGVmXYOPsHIJgtW4aonf106B9WF5TJxVeWGLhLhY-B6UqEvHCl1PZwaZ4h9A0nz_8stfD_4eWyt-QkDt4b6fuwUUCJ8X0WqQXD5Rpm1R_whdts7UWx7flRQdm941ZLqiTeidCbx3mBtgDpbok68eZ-hj7F1-ClTHIMGcU6mpwJhzo8XKjzMCXd2loRZBfz9MaBdN8cPFp_-3tE_XYXTckNjWUdo183RUYdu1h69_l0t_0-Rxiea1cluQ_VxaYHQ3Mpx3RWgK9XWq3T9lWeBVGobL2eWLRBL_kCzzeEr17S7utWpIKIdBim-KRU0Djq9_se2ahHYjBN6yQFAUnrHJc1e-ao-URxIek75BV4qhax2KixhUY1g"
+        ],
+        "__at__": 1786803533.952663,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Had an amazing time at Corbyn’s Cove Beach, Andaman! 🌊✨\nThe beach is absolutely beautiful with clean shores, crystal-clear water, and peaceful surroundings. Perfect place to relax, enjoy the sea breeze, and watch the stunning sunset. The atmosphere is calm yet lively, with great spots for photos, wa",
+            "author": "Mohit Gajera"
+          },
+          {
+            "rating": 5,
+            "text": "🧘‍♂️🏖️✨\nSpent a refreshing morning at Corbyn's Cove Beach with Veeranna  a perfect spot to relax and start the day in the Andamans.\n\nThis beach is one of the most easily accessible in the main island, located just a short drive from Sri Vijaya Puram (Port Blair). With its scenic coastline, coconut t",
+            "author": "Travel with Sagar"
+          },
+          {
+            "rating": 4,
+            "text": "Cobyn’s Cove is one of the most peaceful and pretty beaches in Sri Vijaya Puram. The soft sand, gentle waves, and tall coconut trees make it a perfect place to relax or take a quiet walk by the sea. The water shines bright under the sun, and the breeze feels fresh and calming.\n\nIt’s also a spot wher",
+            "author": "Harsha Batra"
+          },
+          {
+            "rating": 4,
+            "text": "Not bad for a chilled out vibe, can also enjoy some beautiful sunrise views.\nNot to mention water sports available at a pretty decent price.\nI was there late in the evening so cld only spend an hour relaxing on the beach, walking around and ofcourse enjoying the sea views. So ofcourse I will go ther",
+            "author": "Arun Dahiya"
+          },
+          {
+            "rating": 4,
+            "text": "Amid green coconut trees .. this semilunar shaped beach is a major attraction of port blair. Still area is under development and construction work proceeding. Here you can get a great sunrise view in the morning. One can enjoy boating and jet ski riding here.. however as par my view city management ",
+            "author": "Ravi kant Mishra"
+          }
+        ]
+      },
+      "new lighthouse restaurant|andaman (port blair & havelock)": {
+        "place_id": "ChIJVVVZz3KViDARC-zUGwnOH0c",
+        "name": "New Lighthouse Restaurant",
+        "address": "MPCW+MJ4, Rajiv Gandhi Nagar, Sri Vijaya Puram, Andaman and Nicobar Islands 744104, India",
+        "rating": 3.8,
+        "review_count": 3340,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 10:30 AM – 10:30 PM",
+          "Tuesday: 10:30 AM – 10:30 PM",
+          "Wednesday: 10:30 AM – 10:30 PM",
+          "Thursday: 10:30 AM – 10:30 PM",
+          "Friday: 10:30 AM – 10:30 PM",
+          "Saturday: 10:30 AM – 10:30 PM",
+          "Sunday: 10:30 AM – 10:30 PM"
+        ],
+        "lat": 11.6716483,
+        "lng": 92.7465883,
+        "photo_refs": [
+          "places/ChIJVVVZz3KViDARC-zUGwnOH0c/photos/AWCwydhI39Rxr7gTQq-Ro5wWAi-9XCJodl3_cQpUvBS7X2-Sk9uYsubrvjRMmMWVbbCIDX-hIqGCZsQegmaGJMhr-aQq09U_TPAlf_xZl8JQP9HH7gnegk8IGSE-Xmri9vHtMQs6I7ZbgCmpe2x6bcGqscdFjGevJynHoPgLUdMNr9pK6qu3UNE_1pkRQIpwyf9gTJ5UXJ3OxXyPs37S1SnC7mB-FNlSeQwulm-gv2auwiD-nABHZ53ON7hafwv7QfSgMJitXrUOuaP5N1FcjbxbnknWkxl8TR7Ffrb6-8zuhtIEOet67gyWxf0yYohh_yTA2fZcB0kFuxodzxfxm1F5K0XelocpZwjpcS9Lx9t-Unjt8PWYwveTJDAY0DnB-aodzBRmwDToeuZyU-qq3YI7smXzQmmgODXwqz8fAclCQlvQHo8iA0MK-9drD8d0v6KH",
+          "places/ChIJVVVZz3KViDARC-zUGwnOH0c/photos/AWCwydg7qwFjNzlKRttrM_pVV-MQoRMtp82Jv0IY4t8866ctEewA--Z5gilMTnWRArUDywSYTJZw3aMRGRqdCJ_FlmCseFsyX8h2nNEIq0DU5LyHDEaf5wBh7Ixxk0gaocHdbp-IBjWgt2hwTdlqr6_ldbZ3tZC28YCiH-rFXEfcz5nV_nvmoDgI7-HG8iYn7Q3sWoy4o5fwOwid6UEV6Q3xL-UZEhXlnkzAjvlKdaEADjjTDz2qQHiEmX0AsBNbjR97NI7VGdKepvrfu9Q8Wc09MlmnBc1uFj40rd-32GsqT2tswtilLtE-TEfrSFHGCATkkjZRXLksnd6LXUUq76bPAFjmPcny2i0UBQZBGFDNOk4SAyDsPx-C5yRcBK3rJ6M0bo7KtJC489espWiBFrp8m3JRbP7ldXZ5HQps2O6C0mQecBbDTMdooCMzdnu5uA",
+          "places/ChIJVVVZz3KViDARC-zUGwnOH0c/photos/AWCwydhadBerNbTEQUa-Ha6DyusNGdzbZFD_fT9Rp7LA9Y-wROBk9OB5uDTfiNjLsIFhhJ8Cz9S_xWSwP99_Bwpf3sFyqpdcUto-TPTKMBvihMbScUyHtKGKup_ljJbyAvvN8jC0KDSSIzVqGrQx14kejuP6Xi0anYC6NF0W_oaf9iWi3sdQvlQihPUhHJCK-g-oNvILbSzNExVQBTf9IRafbmJCOXr-RBfqgKt5qXehPa6-pQlV2uRGitSLM49WyOigxspMuI6xgrR5EC2SMQtfZ6jLgY7I0jR-UBXohngOFFsXrXM4z2XiloJuawOmoK_kAKtcSRz4Q1fI665IUPoKi7ogsuWuSkOWZTTNso2GbhEOQ_C4scVJZdBKBeH4_TN89pwDq9-bnt90OrtOazF1lK1WPnjPHw6csCZYpWqMjblIRpAopGW4yv4LlmIFqtMH",
+          "places/ChIJVVVZz3KViDARC-zUGwnOH0c/photos/AWCwydgbNkjCeXJ7xSoL4qQsXk_rKdjJHwZFAkJYuEQ30wINkmhvOr4MkwiLfDEyfnKOgdzEQ8VdQUURsFFw5qKt9_1-uw4Og37kshOOoavGj8rruo5VVjX_zf7mFOYy9OU8Zwz--AfLUswFLBIbpFo0TFKp2ECD6naMZRad31RNbZsVgjaV8EaHfteSuQN2qSR9uJCbg_t8gQTd8p4q5ThHO9zV0eCeKR416kWqiHd19ZhGEcuSDVTRSEfjcfwqNMOFON_0bey0f7Q06cXUw01n4uont8BDhl7qOa1POHyamJSetO1auTN1980aEBy6tabyBKJACPi_jOw1nEb_c3oHEOUw-JZSa-5LCeg___DU25_nN0RR5h9yqdCduuP0JV8eaDLOMghNyzubucpqw2oORv22H7OJ6nkTxecIkyF1mRkTzF3AJgHa1fdClbaywzWo",
+          "places/ChIJVVVZz3KViDARC-zUGwnOH0c/photos/AWCwydjYqA4uhvUoFUn8UND_YHH7OisP3iv01QASlT99BQ_SeovIEDP2wEVpz4aK-EiBVo3cAnQP_xjfytxgVKgqqc9GCeYRFe5TuG-PDnlpqS2tRW_VtIy6hzmphjQMOYPcCp-6v8YfUs64NjlTFPVWkfqsyHxRV8ZNvh_Q2EA9gmulYrP37p86_kRH885aaZjJJEZ9VXMYObCS580MJ6y3qfBnvPOBCBwZZAZfb5Cpcqtfj7814JfePRvav4tBynn0s1oVrILhGFIQ1HG7ELrAFeigG5JgJq-cOKwo4NOV4pzhrPZ_hKQzOBlR3QAGNfMqVB6E9eM-FFyppyiGWNZFDds6Y1B2o3cbTPQdA7m84q6XJClaKG9lDezokIlznRAE05Lk_Se-Awe3VeCXut85A_ARhWfUZDhoe1aCegAgZNXX18lBQbcc291uLQ4ELodI",
+          "places/ChIJVVVZz3KViDARC-zUGwnOH0c/photos/AWCwydhqvgoVI32ZKfBqen51NRN_5KqafPh5w8MqjyWdm3MxOTeFFpgh2aq2yQn71OWjoCw6QsC2K5BWnGsHcHztVs54pZHEMQs7XZvE9ZiuatpjSTvUkD-_Qs96vu3LeU4OHT4QjcIiVRI5gB2_8cn7F5cyM-x6Iz3A5mh4t6-euPX7gH5JS3n8bwPUinhok72g6gS5k8vdoNuPesI2q1sGHmBNuFieLYuCl3zG6ETqDY5AaumVBoygQwd1UPbujWCeAMN9xHjV6YWDRy9siMgMgAbU76dwYTdPTSkQWpwWReFq8hlhz5PGrtcKK_ajelIbWJH6BQUxIAhfrABL1EnUdHIAp-Of75Qe6fYOGg36EwvbBJZmVdxZJqU9vN4paIJVxH5tMlLR-hHU9R3y6wYUV3R8MyAFOoj8ef-zHCLV3C_hrz3-",
+          "places/ChIJVVVZz3KViDARC-zUGwnOH0c/photos/AWCwydhHA5NZtn5pflMcMyqYku9LdsMuGMJNGv_Fr__lbVpNeQIhRljJok75cwLNT_dZwOkLdhhgDmxKfQJEeLGgO2Nb8hLtDoFxB0bIl74hrjaCG6KS4aoQQ-paApzZNnko0SmRNjeGLfA_uhPPzM3EFD4iiBsxMxcZrC1qzj2easwaiM1rk7iQkG6CezWjoAxo_ajybrTL0gN8hNs6aY_rSJb8erfESwoeWmYXkOpuaZfgSeWH00Ddg3rFW31-UMFfrGT2k9Tkpgq8axC9I3qEnG2MKKA8e0GNL2mh309ARokOyIJxOEnNZtEtOKg2ZlFa6l9gu0Rg_eYUyiT0Z1LlmSlyAnd5wn8icVJU5O5q63dNEOQrPU7Abf3RoumqBctdoEeITTXisjuYUFRGGL0e6Ls5sSUaNwwmeCMeqj1X7Z8wH8nr",
+          "places/ChIJVVVZz3KViDARC-zUGwnOH0c/photos/AWCwydhzK2g3Ar9E41Yrmr3yJtvRrxDplwIIZhH3fWCwMLulWahSbEYVJg-CeOQ9s0gYxrcRccFaGrttOZccP12GgekceJ4oJd9-iTvt-Q2FFtxEhqoECm2ltl5W_EAPsFX2Jg6rVUA4-DWDZ2m3zS77t0AriY8oIzPdWZL1hOfR4j1FJsw5Ow5EtT3vVcStWz6IjsW7zKbeX2S2me_-jVljRdzsfV9XjqalVCIS55jSRU0rEYESYvTGv9kcj6oMxU6-v4HggvA7byR_5aPOvNZvkDbGUbjcXcGFPtTpFV2Z4AgDZavTFhU5evRvKrfbgs1flNDt8bE6I4ed3x9T-3rlkkpcgsthbWQiTv82m-60INWXLTlcE0d8xsYFkh_iOCfHJ6RElRJgEnROPznLNPV9AjjWQpa_Hi3J10BP0iLQj9FCLsiRVhGa0aHkbHTi_PUf",
+          "places/ChIJVVVZz3KViDARC-zUGwnOH0c/photos/AWCwydiGB4pEl77tuRRb5o0KdWelTSpTHygJyT67FFTg2Tz7B5l0IdN9wd3gEM9KE1r8_ENbad9JdGsdxjp7_FU_m6lS7VH2FuL-hnG5oJMHHDhtvIU4-ZzvFWwyfoNTQEjyWb4IbiRWtWpP8gnDBXnVhsUN3_QfzngPQ39XNSd1x6I66L7NyvZOo43GfMHUzO6ESNgTf6924q_WXfbc6SCuMhiRadxg8pFT2VvrPpV8dkGOwmpy2x70VmtR5k3ndePJem5lQ3j4LvOtJH3_SnQ7kT_vhpsx-Jb3bLfw099eWxrq3tsbDXARqqL2eiVXXCnpo98qMjrQINAa4cOR0jT7ygs_xPWpH7yLWGrtoMrDB7XarzulzG-2-2VIv9vrxijVyNfPuPp_2TtfzP8L7yP_PQ-mdS-Q9frYvVetdz-HqUXAqYI",
+          "places/ChIJVVVZz3KViDARC-zUGwnOH0c/photos/AWCwydgRHq9YU954fClz_0N0_Ge6MpH9MDVrS9D-weYD19xMEZggiBgKA4SfvOJ8I2t6IxJM6HzrujMQXkfS2bgUzkJJlkq_zdAqPskqPlyNrKTij0JGsqT65hWIB52hccqwKU-YltAKQMWdOvj0UlW_fRwiR0wDVuaIk9v9hBR6Rt_K6N2PU5OLdiBBs9JL5p-EtqjSTQHNhKYAboywfu-_SpPROLa1ptC7hODoK3iKa2R1NrEZxGtv5mebd_EvD8C08rK_m5IImWwOYhvBdYigML9TXcrhI6hyrT5UflqvAo5PjyZjnx2EPdgMCaHxILC9V0_HJaBBVsi7B2dmUwLcOuWfTCkXXlTGhU8AQV0ixHdcpd1xc0VDXk9UBnVf6J7JRrVutwn4YOHvQzP2FkxCl9OJ0aaTtcwSdPue-VPP1ua5PnPUhPf3nbCYt0k-loVh"
+        ],
+        "__at__": 1786803534.517977,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "The food is good and very economical  considering the cost everywhere else in Vijaya Puram. If they imprive the quality of the seating, cutlary and ambiance this place will rock.",
+            "author": "Anil Anjalassery"
+          },
+          {
+            "rating": 4,
+            "text": "One of my favourite sea ⛵🌊 food restaurant in all of Andaman Islands. They let you choose us the fish 🐟🐠 and other sea foods of our own choice. Taste as usual was superb. Service was always good. It's always advisable to reach the restaurant by 9.15 P.M to avoid crowds. Orelse the service would be a",
+            "author": "A Revered Wanderer"
+          },
+          {
+            "rating": 5,
+            "text": "New Lighthouse in Port Blair served us the best and freshest seafood we've had not just in Port Blair but in the entire Andamans! They serve daily catch, and you can literally taste the freshness in every bite. The Chinese-style lobster preparation was hands down the best lobster I've had in my life",
+            "author": "Debashree G"
+          },
+          {
+            "rating": 4,
+            "text": "This is a place where one can get good food. It's a simple place but the food is tasty. This usually is crowded during mealtime so you might have to wait for a little time for a table. Do try the fresh seafood available.",
+            "author": "Nupur Pradhan Satpathy"
+          },
+          {
+            "rating": 3,
+            "text": "Good food but gravy taste same for crab, chicken or fish. Portion wise less when compared to Ananda. E.g for a fish curry you will get 3 pieces but each piece is a quarter size of a round cut. Crab and prawns are farmed not sea caught.",
+            "author": "Aravind S"
+          }
+        ]
+      },
+      "radhanagar beach|andaman (port blair & havelock)": {
+        "place_id": "ChIJc7dLFhLSiDARs2Vymn1jFZc",
+        "name": "Radhanagar Beach",
+        "address": "Radhanagar Beach, Andaman and Nicobar Islands 744211, India",
+        "rating": 4.8,
+        "review_count": 9805,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "White sand & rainforest trees lend a tropical vibe to this acclaimed swimming & diving standby.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 11.9844552,
+        "lng": 92.95084539999999,
+        "photo_refs": [
+          "places/ChIJc7dLFhLSiDARs2Vymn1jFZc/photos/AWCwydgQmh1BE7KUcStBRAiNgdTFRTv5S6iXq1L-smVLft0GfbJQKZnI1vIdqe2Ktnetlkz9YmAsnt_tqnPjxznsmZDXW9kObwLF-Hyw7DIdQ4Sw4OKTLodAmKlojC8-noEPu7aXkO9Yw9xIbyr54E-PIW3fTDBSax-ldWkHULjggmC0KXpEG4eXEsQ3wOoq9Orhs_5qK3Cq3xJ6PFMmH8Eb1g4kr2lS-jz_zVtD9yHjDelYqQaKeXviQQS0mVh8pjtdv3R2eRqgEeah7AthqVAXBoEeMsCERVhHc3VKMIKNpJUUd4kujWz2q66E1iCsEbgEZUCKQo1wSAILQwmWr5PMLNykt0m61qFgSjsC-vujQzJw0USs84dnkChBFFBen7pOgamNPN2YmP5_iF-itmY6nNDKfXncjQI6VYuAWFToXp4uog",
+          "places/ChIJc7dLFhLSiDARs2Vymn1jFZc/photos/AWCwydjIQeamEcxiC-naIqHtpN5zTvtwCPkr0mLsf1KXU1DTdrbnFnNYIokpgDt4zROIRmzzuqKOKbeAHRbCCZjEP1TBtHn7bVnvNiq27ovSqcE9KJ67h9tQmqvakXZLwlrawr1BeZY3L13wjI6OqCTFRcCaHZHvasz3rC_7JGRBZLPrhKS1HZzJ_fY6tOU2grHtmXKRL70z91bGt1ZftT5iLTjiw2OhQyTaBQfrL4aTIivOz8_6yOLkOzrGzOjwSHKl5XU3T0QLtu5Flpgv4to3m7fM-QWTQfdAdmwUuOWi6WirT8KyljTPd-bqurL7Y7r3vL9P-_wn1HkXQ1uE5VQ62n2n-liHeC0dVBPJflB0ccZtVUooC7OG_yAVcfwN53B7luxFDNQg_wS9Unqb-ULFtDzFksDC0xZyIDo689Yhk1UL8w",
+          "places/ChIJc7dLFhLSiDARs2Vymn1jFZc/photos/AWCwydiJU6pTLGSV1dYpmK4iUAcuUU0YyGYwXLFNeZANcUuY1vgbH8gFTdYi7Y_gPg3efsL2-YfH9Wo90L7Kchg6qtOP442cskiZnRHZvaip1q7cYZMxm0chXWV1BDWbDc_eGCnxWu6zWaaLmmfSUkG0ry5IoYiQ8BLIJqtNbb3Ax5i9htHSBMBxg1Qt1LOfH0GIH10N8xgCzJ515fpto2RMaBv-hXOw9cydoUn4tY_DkcuV2qL8lKaJ1BbnOvHzleqBxLqFG51yrBFaLcfiC2XLFmojYvzTcvcRTR7a3_bVjls3a_EYgJ0OOyIh5xBkpT-POsIsBKoR3rMHyr1_c9wZS8cdKtlBDBKMeyltTnPjhC9yuzG9dRGUI7UbEHaxk_wEAmTV67UgYa2PmZQGuZ10WH-_vRvmOc_9liu-EUZWCTavw1UP",
+          "places/ChIJc7dLFhLSiDARs2Vymn1jFZc/photos/AWCwydh1bNlTfQpaE2XwGCqNseHW4VDispptEB5VXOTLrcrrj6ViVSHhe6B8N7tLZ-iNCvlDDaj3Y49dJ1wESiGQOPaA6QZEEzeoEeykQjBjoYuUTn04IWfavdHgl8gHLJVXBm76RwUjqX9T-MGHTqK01wHsHs2jVIYJxYg-M8sivhP9b_mu1binFMS7hz0Eb89p98L5RhZ0Ep2AE648Soqb65Y57dZEHgimMFgayFUQe36VF87jNhR3ONts2MDlGEphubVk-fsVaeHxP-hCmwOk1M4ZP3DFMOKR0FYpeJsuD3shMyOZ9GUd_yskj579uV8Nt3ktAZGQP4M8i5g6cNB6ysYvA6mS7LiKnxEQq5dxIeNS6HpvC1oO5Lqk9XVGbEYSmiT4PmESt52m6dZfGGG_xrkntAyq-yD3TEOJ3kmc6AUYOA",
+          "places/ChIJc7dLFhLSiDARs2Vymn1jFZc/photos/AWCwydgIHMwl9Hk6UhmHoxrX6t4czkIZkPfNrXzzGlFOyiyUI6QwqhYYRDvX3eM0xhiomXJfCRpigtj3wCjKeUQcG1_aK6gamIH0NGp27ZyFeexu7UXdITUFHNcNVWYzFlGDdoaZUd-eHltpK-0tw2TZb7wjGJ5XGdeRfQ8YK30Ij9gJNCcsd138D49CRHncxhbq-THLTPQiv8_aI1XMw62TcTUqAB5DOfdui1ihwSY3ROlb3As37RhCHzZrxIkFhCY73P8cH6tSwXXBv5dQ2tw5OXw4LDuKt5wH0RRiDuy-ZZlc9h-MdmXPEWLqUtjeJvWnVP2cchLBqMZyCFMM8RZG-SW7mQIK8trsXxdP55daI-VetZGEcwkw22s9OjJcY5JFlsR73qpV2NEbtQA_zpblnb_8b6YBrOGn2zuh2qr5M6ajyJsU",
+          "places/ChIJc7dLFhLSiDARs2Vymn1jFZc/photos/AWCwydjf6EAGDMerJ3wBXGSf0-ixnReau8cKLa1C8BAThI_aIKG_4NIwrR2-4Rb7sEtSePmPlMjHrdDRiebJ6MnF31n0dqth8w3iDb5YzQOV6jMyvJv19tsoAX4x1Z7pftfV3IwOrlBs0jIaXiWKBkISVoBH-djHrztZ5XdrgTrtEffzkjsbCqVKV-p2-eJ2QxOLtbMza6x1kziMbL7b-MLDdmWUAJCDx8_KeJx_rTu8oHu4fNcxJiciT4xGraxN-SB04SgwdHXyf34xmDO242ppnCJkSuT5oGkV3iwcZOzIFdkQ6ttFLHQ_sUULlTddfD3xgiKnGi9gr5_namerTcpAaYjkFdnzN63noPNEgnG_5gp0sILInPzh9D07ncf6pINTt-Dxqns4HH5EqbthbHmGRUxBbj5q7yC3bfg-UuPhfjXynA",
+          "places/ChIJc7dLFhLSiDARs2Vymn1jFZc/photos/AWCwydhqwaq0ETlVS2l7pi5Czt8pppPweGmIxVhObCZgtFigKBPRoHpc5-QaQ3PLna3UgPcTpsWTG-VmbDxEpBdfhVBi1PBTQJ-5L8Fj86pcKfJYc3oyWU8XyVahYRUc5EzoE7Qm1jmDPv0lGBhP44_6kDljyLfTRW-JSJPy7__DT1oST_gb8oChif00NHp4jz7d83leZrSl2BFXCNMoGgusDI4J_6XXHxmJ2fYkVGxee5AKjzTWLGIQ1OlG8LvhuZRcTWJAPWVcmbTBqTywXwFYuJ8v4pGeEUtYirb_UK8cMfM2QpKt6EbX2QxHfNnj2ui6x2l3063AhqTNzzb3MTAiuvMaGLLFizrVmXIq2HZJ-LxNOeRjtkL9VCpqnDUmfiKGFQ5i8YXwDR2jS6MhtqLTzb33rLo-uJ1SYS_uwSHEhTeUdw",
+          "places/ChIJc7dLFhLSiDARs2Vymn1jFZc/photos/AWCwydgSaXPnEFW4eIaS4hggj3XxiFi_FRYmX0Wid-BVrMQv8EjBkhHPHp35o1jTWPlEEfWhGK-ZzEVi8SB_Vri_lbkCVvoeg33JPPIRRVTk2_AYwUCFWOLgh72_iaHpg7nNKKghZDwiIFHpe9niRpDWrxDvNLxKXPh-RkTuUvcXBtHJQoyRCBVXGr3CO5876ykLs-P9EvxD3v6_1idQOYOs-dxkVkUtOJvU-Okt6lagvmsfJAix5_hK4ZyYVn75YsvmEno2rG_kKyR9gipAVKkX7HxTvkJz0I4l55feuvz0xa8oXowrX2-CiHimmGqty7oYRit9jHJHbWql9AgeW6l79BWZUHBy-qi-5y3cfpNpDi914xTy9XoLpWAaPIVedTPIp5QELxD7tKJhKKdmW1pH3jKdCey0aavDSt4k7Do0NciAwA",
+          "places/ChIJc7dLFhLSiDARs2Vymn1jFZc/photos/AWCwydik7Onh2Z7Lg5V25nVb5vrNXDhNeFyYal_z5rpLjaEjG6Q6D8LgjN465kLVR_QOY83JVhh63TIdGAwbUYmskwSQLhuhLDiKxTxpMMCxK21vp_eYOBP7CFnrXOZiifafw1VEDGiJlYx9tTDZnufKQ-dTPTmktdfZq3O7wz61UrruepOv9suEBcOt5hKB6kBiwoGFSIbjpMA_KlCpT9tIPHvh2SCiEqyMNXsXFJIt-CebKNIgUbOj1L00jfTEh5zq6u9dn_mllvWSpc6pezSiBEvY0M2UTQ5RpspUs2DDG2GQjvnKv9lvNsWZC0z1kUGj0NGSCh5SQfsDvCboWkYebEBbGM1sfxnOHqvtaqo73lRWwTREHax7b1XTXr7eRpCizJug5a2AwyKUIWrIsZItJeeLlw2d_AdbBnyC97m_xL6xBg",
+          "places/ChIJc7dLFhLSiDARs2Vymn1jFZc/photos/AWCwydg-dCQjuO7JJxxYOw639U1sk5hogD0Fs9eqKy2gm_zlbxYdsdTDSXyT349kS-pSlb5yO1QbxyzSdNRXD1hJduho5m46vdGzomR5upkj7GCGSHVKG7_v4Ro2s8yVArd0_j_f17q7WiPse0Ftk6k-6WJ8FOfZRff2JmGqaeG3Hwbae6YeIzAoL7NZd21vEMJeBqJLvfw2PyaFNzIZmNfMWTs1y9762KmasWbDCNqdz2Y9Bgj-VfIOLZYdmmI0Tp2wf9SDh9-C92sSp9vP_NvXmhANIJTSQh5S5J6xonVx1L1FsjHOwuo3IL9rgMI6EP3cKpLRjGkB5__LKxNsPotyH35bqbvxmt87b4PCRwwswCb8382cyWjv6dqmAxkmo1ob97LB8CoWuFd-i0SrgxIlVzQd8XI6tUHNoKacjiOMSoNnpg"
+        ],
+        "__at__": 1786803535.062718,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Best beach I found in entire andaman. Clean beach, Blue Water, white sand, safe beach to swim and play in water, waves are calm   and overall view is mesmerizing. This is blue flag certified beach. There are lifeguard constantly watching you and act quickly in case things goes wrong. You have locker",
+            "author": "Rajiv Warade"
+          },
+          {
+            "rating": 5,
+            "text": "⭐⭐⭐⭐⭐\n\nOne of the most beautiful beaches I have ever visited.\n\nThe clear blue water and soft white sand make this place absolutely stunning. The beach is clean, well-maintained, and perfect for relaxing as well as enjoying time with family.\n\nThe waves are gentle and the surroundings are very peacefu",
+            "author": "Yogendra Bawankar"
+          },
+          {
+            "rating": 5,
+            "text": "Crystal clear water, white sand and breathtaking view - One of the best beaches I have ever been, highlight of my Andaman and Nicobar trip. Loved every minute I spent here.",
+            "author": "Sukaina Mir"
+          },
+          {
+            "rating": 5,
+            "text": "Radhanagar Beach is a stunning white-sand beach on Swaraj Dweep in the Andaman Islands, known for its turquoise waters, serene atmosphere, and spectacular sunsets. It is widely regarded as one of Asia’s finest beaches and a must-visit destination for nature lovers.",
+            "author": "Nikhil Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "This is one of the best beaches to visit on Havlok Island, where you will find a white-sand beach. This beach is perfect for photography.",
+            "author": "Chetan Savani"
+          }
+        ]
+      },
+      "something different restaurant|andaman (port blair & havelock)": {
+        "place_id": "ChIJd2O5tj3TiDARgXP_K94AhIM",
+        "name": "Something Different - A Beachside Cafe",
+        "address": "Beach No. 2, behind Havelock Power House, Havelock Island, Andaman and Nicobar Islands 744211, India",
+        "rating": 4.4,
+        "review_count": 5221,
+        "price_level": null,
+        "website": "https://somethingdifferenthavelock.com/",
+        "editorial_summary": "International dishes are served in a spacious open air dining room at this casual beach venue.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 11:30 AM – 10:00 PM",
+          "Tuesday: 11:30 AM – 10:00 PM",
+          "Wednesday: 11:30 AM – 10:00 PM",
+          "Thursday: 11:30 AM – 10:00 PM",
+          "Friday: 11:30 AM – 10:00 PM",
+          "Saturday: 11:30 AM – 10:00 PM",
+          "Sunday: 11:30 AM – 10:00 PM"
+        ],
+        "lat": 12.035727,
+        "lng": 92.989741,
+        "photo_refs": [
+          "places/ChIJd2O5tj3TiDARgXP_K94AhIM/photos/AWCwydg51VcLdt8n2LZw03F23DdqhUlLw-AYFCvTR0S2AIyfi6kPEmd0Ngo3Kc07yoKJ5SQZ7Nfj-LDBHCBwsaK-Bc41xzQ7pmv3DBNNRO3tY_qGE_pSoFe-mopjff17dDsw_dawZSjnjmd8sAjNakjbxM0JCUHkFpiQcKWKGB74QIft1855w9nJHCFaFI9DsrRvOQSSA7uYLq66O4ItxfJLhHvCmPzlztKZdxJE9rAEEA1VbV5Mb4eUV6vByUjvk_ocpa30qRKOX_76afgXLjn082Fdnhz-Phf_odbMgvYQBeFpj2E88EjRsGcCgtvE6yev0hDErD1JKeBNPIpWM4cOZyJAjUf9_6NbQvAPBP95Wplx5CULH7wtnz4D_2DcJLK_GqNqt-e7SetsUrvzLvfbeQukH_-zcioTS8KKGMqKtx9Zlg2V",
+          "places/ChIJd2O5tj3TiDARgXP_K94AhIM/photos/AWCwydg6xATTb5vrA2kZM5KHZakx9tb5YJdsWBC4q7P1yF9WON4soc9plgAVz7BXcO6vHwmhNV02flKgXdgoxvQ02AFs3w4ju8FXrKj4qdFPD7_n2lhdQe4wHOcyVRH0X2RKTMaTQmuuq-unxEafjHZyxR55VXZVMkXnv8Le6ad4fZhhyeEdd1tuhBVvuRnWgpOUmLI5rOyaEaZBtmmpjTySUPJFrIBQV0Y-9tXD67l3zi2sxLVn7sUJVKYM_NBzCnGzHwQnirIVtYGUSqr-G0q1EK9895vU8v7mundfDgTTzyR20geVCq8R7yZm47bqeCSv6ZHBBbyzQuia66wZGYz6t9I3JsaT-MPy5e1wSAij7gJ11YAo3CnV2Q3YdYZrs_O9nBdfSHmiQv-dPBmlpTHjeBHne1xiHjRL_kXfxfVY1aNC1N5QOxQTd3ZqLj0eZfYT",
+          "places/ChIJd2O5tj3TiDARgXP_K94AhIM/photos/AWCwydi1YEJjcevkxGywYgu6peDbHHi9RMdB21UveW0wHlELAD-X9d9sTTskdz3DEhczkl8I4Q2CiWKw5PbXlUMuEHbPBkp6HpyHDjybOK7KKMxlTJbZb9KoMSVP-A6ySItR46s1w5LJyYWoat0lLpbA2QGCdDnyeJqqjWKfQS3n3FhRVvvLzG8hsjcNzgpScskhkR5eeziLqBb1wj_in0eopwpBOBdC5eb8lLC5WZ8KmdHcQT-7gmXFFGGSri5KM9fiaYvn38e7JMmOcvijkhxbzohucNuwAn6HwoPuwL4VC1JFfJqTxAlW8SMYpw9AXmVJRTksnxOwhrb59RP1LyDiWO-DqfgLLfIhx2ffAnxT5eNHywSF2IM2CdKWuzZMsDVaTqNiXdfVtDP0o-k57DJW3fJL1X95PCWV0y7wT-d00Bo",
+          "places/ChIJd2O5tj3TiDARgXP_K94AhIM/photos/AWCwydiFOHtPN0c_L8pk15Kb_RqAl1SfXFw0H7lBwWtIcc8BcJSUqEJWLthEHXVffz7lwVcAS2CO6Vh82NZypa72vBiZj2XUCZIxg2BazpC9UOPaTB0mXlY7A2SEcNvjGaEMqOxzWviYYTNqy_VO88WacSINwG_CaUZQHQnX1g5gqExibvQrTfKD0FJQYGj1uxOK5JHBUe9GWqoYbG2SM7xNoZvtBU_szfy4kLgrbK7PSejJdkYBVoJl4_C72MXWgEmWE0T9fc-VT05DIKEiTqLtymAuNu-AS38G3DxxGK4Y0g7arpaNvlyKWdbCUsJYs7qCTCTGj3v5Usf-aBDs3axTcfV86rvUbWWC1eK2E2pJ4MoMG9sj1qV_0jRh5lOH4beAoQusoHdY6r2jFE-3mIm7WG9xt-bjIR2OFVE-za9ru7u8gHxudYkr2SjLQVOVsErj",
+          "places/ChIJd2O5tj3TiDARgXP_K94AhIM/photos/AWCwydj34wBDXGcE2lrYq23JoUBKuO_JzYz2HaKjz5dIE7WIcYirbgH9vidpl_hvBlXVLLzgCq_O3Nx3Avg9sCCFVm3MDF2U3nv1n-nv3fnmPqHrJ6wqZM1ehdvugMoqtmypZDrQk_E_9RhJpx-peqiOC-arVX8V5F9a8UCN1-kHFBSJRuUUvbcdZO6aJvg8Z6tOtYoYvr_qaHVyM_WePceuZLQ_rTDRvUG5-b2G8fPksn7k3AZTowJuYhqE67fUdwTs_99fbS-9zVCWAOsJcPUBoV8-CmJM12_WG9cnBR-1ZCmPS_WBfeO5WVj4YgwzzB9u5MmlhXbX0scQLemhCkeN-piYdGfckgBy406HSUYJVuZDvm37Hd2FaCD1KvkchM5HsY9BqG3m2sBFfPNJLzBI6zPFu0K1SHsZ7tJxjel1YA9cQNKNQ70HDT0ejUTvRg",
+          "places/ChIJd2O5tj3TiDARgXP_K94AhIM/photos/AWCwydj9ZFrQe7bIh9eiHTiT9M3EMf6f6QPQ1u12e1oyHz4VSC_RsZC6yn4bi-PrttwEvOzrCnYFyGImlw7Hb3dB4QoVHOLphPQnvaeUiUGVLUeHpMGXblJZBdYIp5p6Y0EW7RqL0ejsMLxgfk5VBBMehsLM1iWixeLgxtzqwoWK7JlajjLVVuUEi-VYQBlQ4JupR8FvMQjHBZQz7mQEn1InCKM84kcKiFZqOyPrrT1lirRZK34AzG-NjyGRnFALDU_pj87Yv9yz3IdCtDC0HR9ECBhv7AkjsUdiCVC8NC2A7rIRHkkF3hH6rNDaqSdSidrwK6tU6ukzrSLvTwzNeqjRZNdUlvsEEpecX0kFWTyqD2rC8I2t-TauyksdwCDOLyXu1rTLLfI9RF1ZDOKux-VDjFIQH05CCXC56MD_oja75qUeZ4XiAr1fhMERn-1sgp6Q",
+          "places/ChIJd2O5tj3TiDARgXP_K94AhIM/photos/AWCwydhYQ0SoUMQkASaOOex_okLOBE7Si3UhHUBJenDXf5woF7bFFkccJmfqEadqGauOk6UefQqZDRPrrcurbhJLljUqziWifebxNAont92jskAeVm-R43WQhSwbJEJsy9NNZF4KSoGfvME5gjFl0QfGRAYz3VGh12uyR27BhvhjmGWBDpaef0IEwicC5rrGN8huRoT7rlHqihiFKpzoqrhXHvfj4jsTEJwEdsMhhl2Yzgg1asE5fMwRka1b3AV8_kmD6yCKoiUHc5aTns2WhV7rwrCBG4GoK4XvnibH19uPOadhFvT9Y0XiMovjzrY7kJWF-glzS4w3XPayG3Vk6NSuxWG6odm69ku6pHdAPTexdGf5dDl2BKSNr44Cbk_jbwrStex-3pK2QhXYgSCgwpOGoKKwtJeKDWYviOsbAyJpCpkswGFunVMuDS0fjo3JU2Rc",
+          "places/ChIJd2O5tj3TiDARgXP_K94AhIM/photos/AWCwydigudefebw8i0nJRVIzWaUUzZuDqGMNzRIgaNw9caXtlVv2zOwcoUIbW3Le96mPXc5_QsTqKFAw3_r_gSwur3nDrLRlbQL8a-z-mz0fE4tqlY3FuNPfhw5msHCn9Dbt0VnizxjVshXOc7DnGYwB2a6Q8isZHECQ9jw0_iS_crftIpkELDJ78wzgqKKSRnaOfikEG90nzX_rvNnpoC4uCoYUH0jzJAXRzlL6ZF9_gU1wTl5-0i2kRg-4DIgOVdZheI9HsZZd94sbq7Gnhufo69z8h5bsbcUs2SwRlHw8fJ_Ll9u325Vks-SzRqb6OjZslNARh7VsisVNMDnN4GrystOtxNez9ypRsXjjOUpY7ARYEWkw_yJHl1fUi_kTtMyBP1foriChgJBkOt41Pg6rR-VTGJU8nbpk0X4Q9r51MWS11jLy80Ft14EMO8iHmsNb",
+          "places/ChIJd2O5tj3TiDARgXP_K94AhIM/photos/AWCwydgfiFE3GfxCc5T5VpMbDgFMIzqPgdpJHb8yeEgHRa0FCGDRPyrzWc5h-3t-pLBxxBh2PGjhNgPTlHXIokJhcSUWes3BNMocpi9maylgIymWhxSmtD5rzdaPFwoCUUTYVI97eV0xpGAPsZrnjDvdBZfivfAWzUGCB2RIX36eVcUW42u8Zzpl4P6ARq6iGXD_m86MnIny1Z8qrottHQONd2VeFKha31GvgGxMCcuGDXYe0NJqZAsu5zMbj2cRgAChuW2s8zHYktpOXhjuGFOCzHkk3P-ys6vOmj0YDnUv3DD0nJL6N8AEIYGYvsWK7sKi8VzlMGCv2-F-vpuc6UvkIlHNblRztg1YgxE3vxKclbp_1NitRB0G-4ftLjA-INi1yNareIIgaaXciqrHGAB2HXMgBSTDF2a42QZCSZUvhMqB_kgN-J3Mjmt0bmzkgoSn",
+          "places/ChIJd2O5tj3TiDARgXP_K94AhIM/photos/AWCwydhWxbA9wof-3KP-Gsgrr7xUq4bBFvxUFeKia4zcWSLbHf_IwgMxoHjqPjqN9qWz_xdXb4TDJ1SH-eLDrxLLvlwS5rv0Ozj--OL3rkekyxuBpbK9aaRLw4KiITWjP715jTGy8e3wJ-Kf_tznWBXLrne6iWn8o9_EtYUuZPrWn_yV225Bv54ThYPoB5bEIRysZbWDPasvz52JT09OEQrD586c1NDA3L5JLNYugCRkd5TVE8hCyotI6ujkCeLDFSMGdWuLpjRaDeVW1sIbpkqjnqm-dw9vzjaERRRlrzXRcxgV0-Xq8RSDqy6eXp5DxTS-qXO1PIDE2D6iR-RXimLThEh_JIEycvM87fQ_u1iV_IDcQQKMc-469j5Of8d2Ki1cfXePxpw2GZVMhWgUdkMNc1X6YmuNuR_0zo-THhqdW2qDFVbV2niR7StgOjvesZK1"
+        ],
+        "__at__": 1786803535.5470111,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Had an amazing dining experience at Something Different Restaurant in Havelock Island. The food was delicious, the ambiance was beautiful, and the hospitality truly stood out.\n\nA special mention to Dinesh, Kartik and Noor\nand the entire team for their exceptional service. They made us feel so comfor",
+            "author": "Shikha Priyadarshani"
+          },
+          {
+            "rating": 5,
+            "text": "We had a really lovely experience here — the ambience is beautiful, especially with the beach right behind the restaurant. It makes the whole setting feel very relaxed and special.\n\nWe ordered the Butter Garlic Prawns, Butter Garlic Prawns Fettuccine, Braised Lamb, Risotto, Ham & Bacon, and for dess",
+            "author": "Hamira Baig"
+          },
+          {
+            "rating": 4,
+            "text": "Something Different was recommended by another tourist who visits the Island and hence we decided to give it a try.\nThe place is buzzy on weekends with attentive staff and fast service.\nWe ordered their full Tandoori Fish, veggie pizza, butter garlic prawns, chickpea salad, chicken salad, tandoori c",
+            "author": "Brian Ammanna"
+          },
+          {
+            "rating": 4,
+            "text": "If you’re looking for a perfect beachside hangout, Something Different – A Beach Side Cafe truly lives up to its name. The ambiance is absolutely perfect—relaxed, scenic, and ideal for unwinding by the sea.\n\nThe food is another highlight, with both quality and quantity being very impressive. Everyth",
+            "author": "ASHISH KESHARI"
+          },
+          {
+            "rating": 5,
+            "text": "Something Different is a fantastic spot for families and friends. The standout feature is the speed—this is hands-down the fastest service I have seen in my life. They should honestly replace Maggi’s \"2-minute\" tagline!\n\nThe Experience:\n\nService: Our waiter, Dinesh, was fantastic and kept everything",
+            "author": "Prahalad N G"
+          }
+        ]
+      },
+      "elephant beach|andaman (port blair & havelock)": {
+        "place_id": "ChIJMx8PR33SiDAR-gWRWyf8lr4",
+        "name": "Elephant Beach",
+        "address": "SH4, Havelock Island, Port Blair, Andaman and Nicobar Islands 744211, India",
+        "rating": 4.5,
+        "review_count": 1718,
+        "price_level": null,
+        "website": "https://www.andamantourism.gov.in/",
+        "editorial_summary": "Energetic beach destination offering swimming, snorkeling, speed boats & banana boat rides.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:30 AM – 3:30 PM",
+          "Tuesday: 7:30 AM – 3:30 PM",
+          "Wednesday: 7:30 AM – 3:30 PM",
+          "Thursday: 7:30 AM – 3:30 PM",
+          "Friday: 7:30 AM – 3:30 PM",
+          "Saturday: 7:30 AM – 3:30 PM",
+          "Sunday: 7:30 AM – 3:30 PM"
+        ],
+        "lat": 12.0081083,
+        "lng": 92.9416061,
+        "photo_refs": [
+          "places/ChIJMx8PR33SiDAR-gWRWyf8lr4/photos/AWCwydgpcKqMSNAbNgK9wMi35b4_ZJci2KSJhZYBoxOCHTxALmGf-NFzRYLUJiZfq2T9YLTg_5phsDlHTESY3oqDG7-mdv3yf5VAFRybbcr8213GwP1ZxH8-BZ8D8YyCts38tMswnIZoXMxxQhevTaLzfiURSuFgKXGYHo0ttnOpm8IAvWhi2PHkteHJc2Nxc7GEgQca9cp8jpG7EVFNCOxmxxrl72Kv9eHiloNM3I9m3_GEgoqsnWKsap06wajHTrxnpOIs9KZ-8MkKLN_RSgkpeUlo6fdvUzOKJdLsnQpfu-sYVflzTIZ_f0GfG4lzD3Oq6h5qk4IfqgPJ-SXEWJycXXo5YJ-UiGWc14Lw-4ZEZ47E3bxwCNgC0KuUumEIR4TYxB8bsXmmOvY6tZG7GpsMaEFqNkqoRjXIUHHvLO5KwMAo3L4I",
+          "places/ChIJMx8PR33SiDAR-gWRWyf8lr4/photos/AWCwydgNbT2UDcjzgjg63CRt8cqd1RbFqQ8ZLQd14CKj01NuOgrkJtP5yBkbQB3CVknUyQGhQG87ZA9gyHCeD-DurRpyuu3Wc_l6uKKlQN1WGVJSzzbRVDkHQ1bvm-AbhAhXgqCvNlJUA7bJ3fELgiy3D13QWz1BOuT2diWKj58j4rXQalE2G99k_vp8hGCqKtcBaRERBrJVtK2fMgbvbW30Dy8Wv2NnZwp6bprYeYnEuQJUrb0pRw0AdBkXzE7oyUF7b5-eBZdEzgB2p41SDZvCGvggHVjtVtxDvB0csbBVpfhKTI8fSzIG_K70PiRjD4L0UUmfgMef0NKZRY0MQKnS8D-L9cfu6IWlqAeXJUroBOXuO5chPGSvAxRM6KPI_wGY65qRd4Z7Fe-q6usHqMiceyNLqiDXtOmv75vt3N4N638LOA",
+          "places/ChIJMx8PR33SiDAR-gWRWyf8lr4/photos/AWCwydjMjFQzkWv7Zr9loqLOVyplxlScc6zqIxiWLcpO15s44EIIxI9ByOfHu6alCqz5Q_FEIgIp2vvNFbQXFmzqMoKTZT0Me_T9QIfXanwCKsalS52HcdSuBcUG3HvGZLMWVulBom7AySkhLZfqRXAuS__4s1BHuvth8pOU0htXezLRC70GIkQzXWwuu8UCHNKpEY04zqbYrRkXOGGdcmvIDMewT0fM7a_fr5kAxXE19e8Y38GdXDKVEwJya1zlhRPffCW8y2VW6o2PbzwN7qh4xj69ExvPhpVijxfPIDduXhm073jJMB4aHVLQXG-TRfX3W7F65CX5y0fHWht6OW8AO0sOH4_lX5l8vxdX6a1war9eErLhsTk6JgLzOrMd3_32cD7QWfZVUnbQ4I0-c9wYf6NIW8tt48mrIw_n-Of19zjpJQ",
+          "places/ChIJMx8PR33SiDAR-gWRWyf8lr4/photos/AWCwydhw_h4N1nCZBTIdk0x4fVUWQub_u_AKIaZXxP-6ktroQVzsCHLXR4jNKP5b2wmV_pK5XlqyM-OWReZ4qNoKRwehuf6diXS4zhwGVdaEbJDxE__9pN7y5oeICAhUgkoLbgZnb_WkPsueyySVlNw4rEHfajKt3AnqZA7iZLjgQvtszyGubn2UTHzgJgeoTfvl0iht9fYLJ5hFwFS4s6hglHDaTW8x0mJSbmTMxt7Nh3UzgEHYxtmTKTB1EtFxPWAJaYezpBXR3qqWZAyfAhmGKEMV0zwUQLsTmtr-9yhTyeWSE-4yD0Av8tGS9Dkc45w_x2eMW8sBNODV0n_8icj-8paMBk0RJBF8xHa-nWJU9fsmHozr3ASEzanU5xw5pC3hp7kgJGtLj59fyyQG6zMh3FjSnKpMPYbrJ8iaWSXRGHfeqg",
+          "places/ChIJMx8PR33SiDAR-gWRWyf8lr4/photos/AWCwydhyAUxuRhRAdx6AxQza2DH9qsePtzWq4egwLswzpIMToskwTlZxlL7xsMN8i0ZGwcbglXavhX2pyPLQLq_ezvTYsX0jUN3xiidW12AZA9-ldxD-Mwt15ni0_b-OWYgnNIVgXXqYilTgjnD_XW3HEzkk0raurkxTNo8P-ayPo9iAB0hZE2H8hdnCV11px076FUGf6di-YHQsHgUarSXQRfFfr9zJ_-ukt4I2URRrDVh-8hvqin0lisgOJlKQ5dQ2ix2HD0xfYHZkDQiQPxwv18dD1WM5TWBH_9fppCM32sdJ8I2gs8hDeIGjtwallfC5FNIjqg5HKTKhk5x0Y62MhGdLl_cldfPzH66A6Xtr1ILaMGqL1Q-5HWPrM6_3unnLfgHRb5i8DJgnz0jEYV2Y0FI1K0s2dG7KcKrHd-S1cbqTvto",
+          "places/ChIJMx8PR33SiDAR-gWRWyf8lr4/photos/AWCwydh1RI80zvg2VFMu_JXtMcaaGTfHcDVXsD6q0F4T-7s_vlhOrctWQOpIitHnsPH2rHqV8Q7D478b_L2qeRhzkxSWd1CAGo3xWkiXa3AGf3Io3bk0ZNwXqS3_DztPSoIa9g8xmMothrahdAPomlsHjg8mGT5x0OcCbYFg5AefC38Ock9Prgx8Thwf2FOB9JwvvgwX_5WDcd4Oz93_rrKM9BYDHRuMGKfrfE5QgbyeHrYNp2CSA3edZ79ff6IIDKvpm0Ccg9-6oPtVO6C0N6FjG7VjKl7PrQFUvKsonO-aJxpjShOWEQJYJMDdn85iXpQ9jQ_3uWCMYvbmFZ5JBg0mvQoqKWHPFLZGEztOvTqetkGzZNDi6FDXm-9QE4cw7GqKnLYpfVI0QJKEx8VGflSaEnEdXWuqbzsZg9y4DHOy4xromw",
+          "places/ChIJMx8PR33SiDAR-gWRWyf8lr4/photos/AWCwydgdoTSaZpRk-rB4B5K0zMg3pZG_zsMr4X_GKOi5v8HIPUJzzw3rbUJWIzrmKFbq_SC_5ewOarnLkC5rQDYIB92brCuHzI56dhD13aopavBGPmN5C8yZdZIr4ikNnmx1g5wVlvrCa_TKDCWRG-x0EgUm2gJ-uTNbaDqeojSgdOEzVVZLyafeqzkbkK6dIQd442eGlXBbuO7JJPHn-kb6_1upNvAUKIpFCY8YlVnnClgu1xRFL0NvVtDXCqoqkRtRWwfuWBGRQ3ZyRWHXxbDHOKtUc4SlS2aBpYuUqlshHOmR-8oylTtU9nO-HmtL8BoDBrObyIx4797PHOr9XFGlG4gdCOzTHQtbu1TG8sNZHYlaOK6ZnuquSmJElwAEzslkBTq5JIeJPnWF8Q6mydjZRyzvUzMUpO3t2MMCkKwhbaurqA",
+          "places/ChIJMx8PR33SiDAR-gWRWyf8lr4/photos/AWCwydgs-SJorTqt-4wvwQ4abPf6h5EGzSmJutfPfCEQb5X1eDlYf0_0MhEqfJtUq5AKYwonwlkJSYW5mke5n-RX8t8aTnSEE_nX1pO8mMbSsx6pjkqbhv_oImlvHST7oi6EBwo42rZeJGJXmQvvR6NsSEEGynQ-vBIWsPaUp1NR78Ck5h26PzFBie_sbvsXg9_5wGM-QBp4xckzeWkpvowxqo8Nt-uLizRHLyfF12WyQSgs-BacD32KQwSR6ygUNn003WhQkEKsHaWYTwpdIgRq_8rQ4Peggigd03oK8um7jS1g6zPhX-v3iWj7C5MertFd1McAVL22_Sgp3cGGvDRGWwEeAEFtVNnFUXxCrsCe4f7bDFoL9UhaEBqMH_rHOleolneIb5to-n_cLdlFOSJgqZjCRBJEwzrsENUzk987KDw",
+          "places/ChIJMx8PR33SiDAR-gWRWyf8lr4/photos/AWCwydgCLd6_nhiqAiRvcYDSuXu7KHsvDEmtYYqr2ceRbdN_kW4LqM2f8X6JIv3kQXt_WHoMySoFE5xqslBZBDXg0pFF-Icd6SQS2X-lp6eO-eCweJRdvxL9A9JL5-t2m9_s5NpcTDpbrooADLU10r4ax0qmFiXAWvb8WEBvs6BN33_QHtcrD5bbfswF3r5O3i5tR8e7h_6XykiueqnpZf572HHxuE-r2t7xAH74cpRD8eGZ6W5hPyKMdftzJXJJP25tzTxb0URwf7zCJPFl_yOSAG25djNUY-4vf_cyKM2uGFqlGAGhqeA5D7opBnlNVPjc_ggukrx953FECXEihbjsxzeOHwbJFTrns19Q_omoDNUIVHtfrjriH5tUm0nfEOJTeXSa2qQqo5DJRlG3ySr-JpfHKIXv4fpM9m3g8yMcbropT_-s",
+          "places/ChIJMx8PR33SiDAR-gWRWyf8lr4/photos/AWCwydjqwZRKwcU-JD_-oiFqOR-Cq5pS3Q-pndLNWFK54JVFAT8ekEUZaae322RPKLAkQrBZ2kGwecsxC4OGasn58CKs0d9Fp0giHF-1wzclRJNM_g6i8hCK0Y6vlIALw7p9JlkSGiLeodZrKFL7wM0zdP8WtdJSBol4EDXkqgGXc636SooBf2B5F7uP6gGLiXz3iRWPASQ73fkIs0zcPQHLrlRZFZlQdCar-BV2f-U-i-D5_F9ZVwNjmorWsG7Dba5n5eLjYmbWpQjC-cjXOAdyP0bunhB9PotkRHZLGHgdegJOSht5KVOKbq4FCkhjCqCmj1Rzyni9Qc29VkCM-Y04jasZZzgTETj1tgQ2LV_y14UPAWSFFyNQDtjQQaSL5a_Sh48p3fjimu-oBVirFi9NuQk_rH7R3S9JhvmSJAfdyK8"
+        ],
+        "__at__": 1786803535.96304,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Elephant Beach is one of the best places in Havelock Island for water activities and adventure. The beach is famous for snorkeling, sea walk, jet ski, banana boat rides, and many other exciting activities. The soft white sand and crystal-clear turquoise water make it a beautiful place to relax as we",
+            "author": "Rahul Gupta"
+          },
+          {
+            "rating": 3,
+            "text": "Visited Elephant Beach recently, and while the place itself is undeniably beautiful, my overall experience was just average — a solid 3-star at best.\n\nThe beach is stunning, with clear turquoise water and great spots for relaxation and photos. However, the major downside was the experience with wate",
+            "author": "Neil"
+          },
+          {
+            "rating": 5,
+            "text": "Elephant Beach (also called Elephant Island) can be reached from Havelock in two ways. One option is a 20–30 minute speedboat ride from the main Havelock Jetty, which usually costs around ₹1000–₹1200 per person. The second option is a 30–45 minute jungle trek (around 2 km) starting from the road tha",
+            "author": "Parth Koradiya"
+          },
+          {
+            "rating": 5,
+            "text": "The beach is clean and perfect for water sport activities. Snorkelling wasn’t that great as we had already done scuba that morning but the other activities were fun.\nThe best part is the boat journey to reach the island.",
+            "author": "ALISHMA BHARDWAJ"
+          },
+          {
+            "rating": 5,
+            "text": "I will say this a must visit in the havelock island.\n\nImportant points.\nIt will be closed by 3PM plan accordingly.\n\nLocker facilities available so don't worry about carrying things.\n\nMust carry cash since there is no signal. Jio and Airtel.\n\nGet yourself a guide Because they'll get you good price an",
+            "author": "Sivakumar Goru"
+          }
+        ]
+      },
+      "kalapathar beach|andaman (port blair & havelock)": {
+        "place_id": "ChIJk6pG0prTiDARvRqcSV6kYqU",
+        "name": "Kala Pathar Beach",
+        "address": "Kala Pathar Beach, Andaman and Nicobar Islands 744211, India",
+        "rating": 4.7,
+        "review_count": 1539,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Backdropped by dense forest, this tranquil beach offers a stretch of white sand & clear, aqua water.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 12.000611099999999,
+        "lng": 93.0070952,
+        "photo_refs": [
+          "places/ChIJk6pG0prTiDARvRqcSV6kYqU/photos/AWCwydh9eQptE5ajDmgNxVU6trDy3wtENbBqhZUosUQwKtA6Xw9yJRMhhVRJPVNYXaQbVZi3wvYapAI2Px1AGEFQseoawuLQ8_YLuGXtic2HF9ZJJG5o2z1dCxbeXDkZ8xTQZO-z-Cfd1B0XdqcjcK2RzQy9yqMfqC4-hlc8M9-4csTBT2YPzs-WsALe65mB6N6G1vxxDxAzUohwq88Qry553g1MNsRkjzBpmfoT3NUP0eNzxNd8xFjHuARNofXKtwV8K44p99bS11sp-C2BQuyqxyrJLcAg0A5WnToqbN_rmtmKjUHSXl3399RgFQG9jIt4at3lFofkYIBOVa_EGyLbFjdW9JX9aYzWa8eg_32Qert90qC0TOdnVHrsTDDlzp94jHV5OuPwzbbMV3YKkMtfGB9rq8jc_0h4gxo3zRCLHbNWyPye",
+          "places/ChIJk6pG0prTiDARvRqcSV6kYqU/photos/AWCwydjQxU5e-uYNYRK6Wg_PWypx2nYnCoDrkTi65N-GAPzv-q8gcNAk0VSWxV6IL4F7ka4A7_WJ_GN-GaZaWuOgiNld7fME4pgR3QBr70xxNhUzvLqfgrcCKWjKKCkNr-bMr_G-UrwovPj-JEvomP2bAUElwpJNZSVVRxyz-9u5tRlU1ITdsh_l-jVLHhXTqvke2OjqeAfn9q-dThryE-Vja9u3yCQnlKaEy_NAZzLGTZMA_O-EEdxryRQt4PqBmSecKwUuBTuUhPaUUJ10rubr0ffynG_-GERWCsX4AIyApINVQWxsQeIFLmySdtwWwXOlorlCNvSTFLlQNYky4lg2I5dgNYRED_-JV9wzUG-zTJVv-Vme-ZIdTjHKtWAQitAPYmAhwbycLHekP0ISqZmP3G2vxw-jvZT8bqgUX9Tz24DihSxG",
+          "places/ChIJk6pG0prTiDARvRqcSV6kYqU/photos/AWCwydgrqzfCR3mzhAyFti20rU0CCvTcMU_ves9jQ7gxKqUN2Ao4xJwwCReuZsShcv7MszMhKUq5oyoXwu-l9_26PXFiRp7KjDzGBs8G_q-hen8Rd0pDOdqSf2X7IKf9ATI0qlTMFzAkAcGNVgM5ZRHOAkZJTzn_CLgdXmK2sXATtf6dC__bUYhpQiBjlpijo8QUDdKFm3ASQKwmwoSH0IKIUS94U2ZcTnFw2Xgz3Phd256gDMlec6OfG6EgJgcorz9ar1dpwMhJjhqnqPYwfYmNsi6Yf9lj1Y7oip_Kx7aQNGg3sb7xDhMYUY3VJ-tiGiG2CDbJBgqNddEjjBpABZNNHIDsyU7Qrv1ZaA6hxsgpTnr9pTAGZjGl9KJLCCSMJQjamur6HG4vfvqnpi-AmW34BdNsDpw0LQeXrDEigpKqRh1gKDAl9wmJp-UqIxIZxiU4",
+          "places/ChIJk6pG0prTiDARvRqcSV6kYqU/photos/AWCwydjgqPpPIrlI8XM1FUBsl4DYoj4XAT7ucy_5a_S4hY6ZEOBUmR-ZtpZmryQtJwMuG7x93RUVw567wjAcjUgWKNmljp3QcMM-ViZxbF6fKHqxp5zxTNCknnwV1FMpby7EWh8euEywnkca0EpLDCVGWiyNW093n9wbMaTYv83ci2Q7EElKFRmb97fJhiNQ39Vf2Bmb9AMvV1lIahXwh4AhNYtIsbhL-ULzKgE4ltCmFfm22wujfGb2IUExqkXEUVaBVWWW03KSc9uQlZS8LYQd9jOhZmCaiX6GM-tZ9QszrK8v5fum4BFDDbLsHha3VpC-pd5iRpLx8CBvmBGnurpaKxwjK0JTQoPLCmpCp2tf4F-Oq9-MJEBicSxY14tgYTnL75L25RqTW53od20AeFKX4-AHqDLrHQ2PaWhF1804ejmabd0",
+          "places/ChIJk6pG0prTiDARvRqcSV6kYqU/photos/AWCwydhecDYBDsVgx8Ps7fwSBRhqqTy3xcCFJgZNvCxkRA1MAm9ZdcM2_2QBvKXAhTcdd9qE-IFLfbYp6VNezAn-Q7MWE9oNLuOJUm1Sn5pVKBZlzpw5KgM4RUG6avB2BdQvOlOKQUscQrVj28rbSBJ9yQujBsGiAmIdKN71ygVdSzb5iBqsBxhWhJoGcnJbEC0ezw6CARqw5mU_0CbUxhIPzRJhILmRyfV87uk5wWITBRkouaHa-0emhYMNfKUUEVQT1txXr_MHXklAljy-wKMXSLgl-iffGC6sJkQOHsKwcM2FThCzmoqEReryrFMIUQST5621TQYMYgtVpF0Dy4K40H-UaLk7-atvptHqCqOhktxQ9jEZrjU5s4mJ3hz0YzzvdOPQgyZ3NAwS-4MZybKz1CEoI_8fW_27nQZwPvBJ0tzltiH8",
+          "places/ChIJk6pG0prTiDARvRqcSV6kYqU/photos/AWCwydi9v1t7yPKXga_rYdUsT6zTq3r9kFcwlFNL0nj59Az-n-vbumNYHJNMqxAYE_GsFCGV-O0PWe1ohQO2GCFPfctEeLjQqwW8dhJNlmUVGeVbJjP80sz0erUVlh6XMmzR6BW7K_MvNeu4tD4VEPi6H_KlAS7s9YCj5tK6hjwj0M3TdsbBf00wOTt1HtUj9LekKCxkfoni5xFa59z-ANRnTrSxgFwxGXKe7TiZpxagiTh_SR6z3CtLTbj1f8kzkaUxeDqmQaVEndvzcxFqkVVc856eUG4KfyanE4qrR9q23BDQi7BmPn-ORmYYCsqdYKhwo2Pk4ZQuhOs_dPgoGRE0vJy_ZO0y5p_kaZxCtllEVNBwb8kSgzauivQJ0k_AZKqvB_ccnKVHhPOd4Ee3O8Fdc3uj55ADApzeGIWNfX_5pToTmdro",
+          "places/ChIJk6pG0prTiDARvRqcSV6kYqU/photos/AWCwydhA-957DoaTVoUpXqkuS_meqdAilxgfinhsDHTiJU8kQWO2ISCwQemZ-15pitKJi5sBtG_B-qPOhB81j0lh4YT8AElVQOn_SLv9VoKRJEJVDfiirO0IUG_3ejhh0iwNVtMb1QHAt9sbR3PCjxiCFBID-gxCjXb39CBi0V1u02afi1cGJxYDg167gX0PprJcI968YCR6EB3fCXQdQAHDt0cmomA7jVWeSzLjaikVnKfl8BWH8soYonpY_gEfsbOXWlVGWkvS5aywRUkAvu7yuC_5ojh0Ii494nrwaNCe1DZawzPOZbJpN-vt05xHKUXso3sSg5pLLeTjp5gjp5s5ir_o_9lgl1YvcTbXtLg-R1l_MFFOdI3p0Ecy9XJCBEDd3BEqzcQ-l8fPWFDT71jJPwDSNNz7NRN02gG43WVuhq1hCtIC",
+          "places/ChIJk6pG0prTiDARvRqcSV6kYqU/photos/AWCwydg4n4lEWKvFor2q5GmnA3M28eNCwhAOSDdg4oeq7KTdZ8X2DhsyNENKbBPEmjfIcg3tZEIN5q0aGk6HZ0n5BZrkHQq0G67c32flSfonRQLv5tsY7_CbPc84vVbrX_mCkfCO_NgT02911uCIwMPFigs9_BVzuvurvBQmZ70UBAplSH_MS96Q_Jm0Mpjdn68M-he4_NTTeRPlxfkNnw5TtmATD9SYDrA3CQpYv5wJ2q8dIt76FtoSvt5teOtofuxcP42ggOVUToylVRIkaf7G9va_4uYx43SWvICaK0knFbu-r6tsQLKsUyQQhTUblzgY6iYTa3xJjGakwLnXri9vclAdz9arT_DxrSfjKzGRBryCNVDsUj4Orzh6C2n9xEMYf29LGPRI59YijUeiOMI5NqaIOfDjyNrLwd8FWnbGGZ8mQGwDR0exQrtiS2sgJ_lZ",
+          "places/ChIJk6pG0prTiDARvRqcSV6kYqU/photos/AWCwydiIDAKGYe3TEI3F-RBCGQPBsoFdVaUDon2KZv6uAsXf8pqwHeEfiwdeLXTIg3EvKbnydU_SoSmFoQwRclDrWdwE9O3PVjWUhYDHj0wEfO71jR5q0Rm7nkgtLecfcCbNPZAta6pjQyIXaqYsnmR-ApHIW4ZadCJLOg-lHwTHGgl2TuZcWOLguTYvdNMEKrToRvJQj3yIQk9gV0nmbXi4rssNq3DjfW3nREMMvesl5VZfUGUk6spjb5nViuVPPz9qMcq_F_5HLryzW3LFbBLjLPtTq8ySHIvXHm1Ll8liilyxqd6idmAqDPUDhg8vlEWQ4bBQaAV5QCWwnrzuzB_SWn6RMoWFceoqp8IhIoSL1WZi8Lu_nMejzeqiyeH4AbhiS6oFEQbJKtzLL5Q-sdJnA4F0EMAv8q6LRm0eh5HnXPElHG2_",
+          "places/ChIJk6pG0prTiDARvRqcSV6kYqU/photos/AWCwydhiUxEaxfUjJnI5XmXY8U1mbPZQsEmBnjk8XKmI4Bxb-IQNzpW6keZlrI46PfWCBLiVTD0sa_X-PTsClVxLBJxTGvsbe3SKOu7dM852XSSP5Z-nzeASuP4mjpJ7hzD3Et7IHAF6_ZJs9LR9imIYapPtQKSImcVpP5w6F9VJvDHOyZunYd7rZu1pKIELHqHcaavFss3lweSaEgXj_FuKajHcEqtbhuUC5LJDcfJCc_mNGxxglzhrIxXEXWD-7aerg_6fB1wP6vAsY0KJ8ZobFGJKA3ekzodCelCnzceL3G8CBGbVTBogvTXybMjmRH2embSwAYkOsx4se3QYHhDUDgKiz0TkhTzA7ME_6VH11UHgMJuvjn7hURfkR01x9xMtiLtja_kJROJb6cdMSgVKbg81y9T2jbKO4EVQBPvQwN1iPg"
+        ],
+        "__at__": 1786803536.365417,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We had a good time at this beach . It was cloudy n the sky hues were mesmerizing ....we sat on the rocks n enjoyed the serene beach. Not crowded. A lot of corals r on the shore but it is prohibited to carry corals from the beach.\nA lot of parking space is available n small shacks n shops r around.",
+            "author": "Neha Kanagat"
+          },
+          {
+            "rating": 5,
+            "text": "Kalapathar Beach was one of the highlights of our trip to Havelock Island. The water is incredibly clear, the scenery is beautiful, and it's the perfect place to slow down and do absolutely nothing for a while.\n\nOne tip: don't feel like you have to go all the way to the main Kalapathar Beach locatio",
+            "author": "SAM"
+          },
+          {
+            "rating": 5,
+            "text": "The sexiest beach in India is right here, The Kala Pathar beach. The Turquoise water here is incomparable with any other beaches around. I wish i could live here forever. Adding some photos for reference. Please do not litter the beach when you visit. We need to keep our places clean.",
+            "author": "Shardul Mali"
+          },
+          {
+            "rating": 5,
+            "text": "Kala pathar is one of the most photogenic beaches in Havelock and probably in Asia. The beach with torquoise blue waters, powdery sand, the occasional rocks, trees both dead and alive creates a unique landscape. The main beach tends to be bit crowded, so recommend stopping by any of the secluded spo",
+            "author": "Sajeev Thomas"
+          },
+          {
+            "rating": 4,
+            "text": "Crystal clear beautiful beach at the Havelock. Waves are quite hard and not suggested for a dive into sea. It’s a great view to sit and relax",
+            "author": "Mahendra Shivaprakash"
+          }
+        ]
+      },
+      "the blue cafe|andaman (port blair & havelock)": {
+        "place_id": "ChIJ2Q9m6APTiDARTHOKgOBCVzY",
+        "name": "The Blue Cafe",
+        "address": "near Radha Nagar Beach Havelock, Andaman and Nicobar Islands 744211, India",
+        "rating": 4.8,
+        "review_count": 914,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 10:00 PM",
+          "Tuesday: 10:00 AM – 10:00 PM",
+          "Wednesday: 10:00 AM – 10:00 PM",
+          "Thursday: 10:00 AM – 10:00 PM",
+          "Friday: 10:00 AM – 10:00 PM",
+          "Saturday: 10:00 AM – 10:00 PM",
+          "Sunday: 10:00 AM – 10:00 PM"
+        ],
+        "lat": 11.9894144,
+        "lng": 92.95486849999999,
+        "photo_refs": [
+          "places/ChIJ2Q9m6APTiDARTHOKgOBCVzY/photos/AWCwydhJH-epGT_3zUbYG1utaeInv2C3sN72PN7ke1frNy2GLXx8mrozUObjF6OOoJ_EIGjc_teBFnQXunvH9W6wctTs1HeurJIWH6V8079ij8Rj_bpp-qfMCRlTOL6sY6AJaEsuRASKL7XIRAjCiJnrZLJtI1coptVSHNuEfVmXIR4IVzzscc_KeO9JKuTbtdYQgj0NFTi2XIn3OQif__GBdL10bTOqIfz2wRMtdrB3RIsCUPNzRGMpY-lh0Jk9wkzL2GB1NLzGRf24cxpQFe99cPmgXPaxJspo3069LJWCo2BUETg9tfctgkwGWk24nXUj1jiTKfVFuKOLt-tq-6dO_q92-9pusdcbXY8t0aG2o92cO86GJm_vIwzaUs-5t9vZoQ9ofyJ5iukXa4WT0pRlVTMUD368IvNShhD-sJxJQlnkBZM",
+          "places/ChIJ2Q9m6APTiDARTHOKgOBCVzY/photos/AWCwydgjPsIVcURjjAtOLHN_cVv-ExSOxt1C4am6idYzYWSXFCF0Hpu4noMY7W4CK0ay6BhGCMhWEYk7nELPeL7E99sy00R3VfFZwW1nCg6pfAhwx_pwkfGPpUA9nml9C_-Oicf2PxTWoNdDJlihkXXTdPSKHd7nyBX2IGXlLbZWdM5GqpLyMdVXXl26IHxD6zyxGBfjMdyvFaRi5QjOJThI5ZJOWaOM1EpG250JIlXrbGEY9M5abFmDy5tjHceekeB_wC26Ip76XUYjQMoA4S23MdFWNjzue-MMJcTrB3q7T1wb2qslUa_XDFuUDuNtoWR8SFUThnlQZHn1htHeFT86oxi90mERbejFmxjDJ1i1eyA4nnXBfrsZmNpB_uypAlxluE53OK9dI9BuZnkmo4KvatB4TpR-uhCaKPqlS5wA5ISz5rM",
+          "places/ChIJ2Q9m6APTiDARTHOKgOBCVzY/photos/AWCwydhC111aNu_MoaeuFv3KxYDzqt5HL_d71lHPm9fDU6yVY3ppookgi5e0KxijSsCZZwEAO0BEdza4CmY8T3cV5riAi034JUf4JMSzNABgSVuWbLTn790sDcrQOWSX2-rTvot4rVL9jl4qh_XTlOR0QsTWG_1gy1v0TzO_ixV2uankL0wNusUx1i4YpFjmeoY2VW1AYxqyMDrjIEowBIny-9xSc52XgNFudS9BK9lF0ZVx2tZMuDrnTeHOyT8mUxxbuZgVXrYoN_CMJAzp0ngGMicLQjUmMdzeMn3i4FA8-s2mwQNNxIplHBKz90G3AVEYI2bkiVWzKN-4moLTXOe0_cyqX6ZpkHdFWfZz0GHPDYfrfO7E-GKvF0w8TpzNRw0N8xLAxyi_ZtcsGfxjRtqbVCJvdHTPiWF3QMfS8yGXWtluScm_mOsDYGFfliqAH8o0",
+          "places/ChIJ2Q9m6APTiDARTHOKgOBCVzY/photos/AWCwydhslW0J8t8uy5z6TiIMYVwXgSfNw0xgmQqYjNrMP4MiDjCGpe6X70KPmUzReBsrWUWke_oh6UeewataaAENi_QVFwg35TN1iud0HXaPqZlHf1VZeyuHMgQ3TXjU97ISay3de9US58OZFgtWjHQACAxZKmBuIqiFeYYkaTk5iFgnHrlAp8pMIN6OBmTQX75IChLv8_O02RvvdrfjWsoE7V0TvtucNNzA_D-lfdPnZHWFN2lRa_Zea_Fp2nM505ZUODKaVONW6WLprkEFfBLG_y10gpq68y2slew9TVeroA_rZRmGxkoTsxRjTaiNJ0KeztIuVZ7R7nM6sBaVD-Ueb_23bZ3hhurJjfQCV5bd2uMvCIHVAaMHplycMeATYS_K5bMFo_wkKcnDt74Iw5057OKV5aFfYh0a0udmtNYHX-G0dZ1O",
+          "places/ChIJ2Q9m6APTiDARTHOKgOBCVzY/photos/AWCwydgqlMdOLN-KlaAU0qpgZBtbJDVA47JSzAftiB-H8aRB93boSQSqc4T16kz4A5b3g5hMbU4RJO7gVwsZPRk_ZP7pMiGsEht7E-nFi_HvGGXXZswipcrbTSBJs_Yzp5FHwmb9r2TDeBjd1LLHPC6CfsqqU07dJMLWK3bmdqzI2-kWvxSIsA-1fD3yg3P2_q2v-zo7WSYp8TOp3AdGhTeHJlIMCauE-dlDz72nDOINp_89ufI7EAM25EBmc8CwaSFCuIpasuRvJvvukNDe7X5I42MSszOzLPhLjHsW7ar_HWtNwxNlsdk8NwKI2XoiwUfgxrl-4Ia1kUp-AY0rhQkX8r6YTWSUYGIpNf4BICnFsmbhmOdHDNueND0NsBYw-BGmkHkKMBdtmDQ6991vauzx0dfB2SCe3kEpziH4GVL7jj4h-APEJTz2LnGI-20yoxf6",
+          "places/ChIJ2Q9m6APTiDARTHOKgOBCVzY/photos/AWCwydh9-0MZwzqNrN5gPYa8nr-e_VSygpZpfa3lhtXafDcsKQVZfirhYhdOppZAbaAcfRUr3cuJs_Q3B1koUXVLfw5cKgdm9G7gnGJHIJhXAR2STxpxaVMyhYdTE62jiAtg7-_BrZle7phZ6MqEvPVjXonFYeTUCLJ_d-VoTF5_aJ7X0sYH4Kbb1EKk4l0-vWze29ImGNZL65CQlO4Rxb0PXT1UAjYJCJ661QsNpaZYCfbOMZdOh1aXbMhJMWFZxEbt1BTwdCnPmHLpXDknfby5WEzDjYRfR9jC0rn27TdmcgEXArxlezyWdLJ16X-0hkpyQH0lVc1EQn-BWQE13w7-HOCkqQtRgyLdeTsRLbrFxC8JazESePk0PdCVk770LEGeKnctmk5p33uNtX_1WkZYoYpl-Oqy6RywODagQpzIFUCJ3W_FXCzg6qpsjA78AHEp",
+          "places/ChIJ2Q9m6APTiDARTHOKgOBCVzY/photos/AWCwydinrwmYcEvb7WFlK_ftaDs5qp23s3Q66TeDsWcybfK0MYkp9s4rmqwJH0aerOg-uprucljyZLp2VcSgyz-0nG5HCtpEh8ghAXroQnttgycd3zNRm000ozQHfPFl9oixnkgkWVfrwKE4VKL10oEWJpLG5mSLj3_hfn5KQT9UONVMsrcPF4k4TRjhsZxQKgAJ9ItqBGdFqbWA17_f5CocTih2Woq2klUaBMy6kwPVqByXVkh9JfivBNt2vZovsfnbyxtXGGU2U7OJJtg_KMODABL3pdRXjo1Zv-Y8o5V2zTeCdFa5MrtEyXvTwRW7s_nvD8Ta9aa4RcTjEVpuHLSGKbW_2kl5vZiBHKwRVrfo3dKMkVcXXem7_eJJowIbthFHC_4n2IzzEgd5iGLtic8N9Qdzs06RZmhShrjiwxGlIWDlEO11",
+          "places/ChIJ2Q9m6APTiDARTHOKgOBCVzY/photos/AWCwydhjnw1t0CqkIF1AO8AG1l4opJuOLe0ibqLj4XoVG-yueOqrCfBDUXsl9D3bNX9haRX9LsT3GNaPv5T_qSig_4qVP-4OzDlVbJg3dIGUQmpMlkeG4pYWg1gFs4F0yH8I_cD_MY-VS2Qdg8BhI4xV1US05JO_ziV49Gv_FN1xfZsxNEQrnoJdZw7XubZYYk_N0_pHFdzWH69qlpS-WQd9qf5mMOVFyq-94X1XshqPUm-2Ry3BOEI2_SEhTN2shr_JmWkK6wwcD7F8kB2y1ESAa0teZR71O2fuU0zqU5JRuqw6gAy-tviAVjRaSBdWwyJnr1LbTq6I02HtKe14hxVt_Ablzh9FJ7aHQFHQR7bW2OMpyDqlXWr7NBkDhLdU7BXq5zHNgYv0nHiFwphmIwXORPLISPX1H9aFHx0vxyGAwtw6aw",
+          "places/ChIJ2Q9m6APTiDARTHOKgOBCVzY/photos/AWCwydi1UTtCJpbras6Va0lX3jtAAVO2l8FIq5PXrWzxc9jD11XQj1EC0dddeo7HQ6mjeuAUTZMCRqdMj82it-e0cxtkxLAw-NeXub479l-4EdXfX4KxYxehDnfWwgPUJXo5mfc6WYpTgizx-_uFroNxscyYCcVcUebw993v2c66oq_yLIxdJGO0DCupvFRCQXw6O36dEBj3NtmHD48Kcx6qm76OEgy8ERjqcoxWf6US9ZNWA4USArzieeB-hmQnkkGUYDlrTzfvYN2UxB4HyrG1NZt-Z8dKvAcIqxvirbJtmL86zUoTuPVLTTxG-Ha7jJCd_x4lV8VLjtCPoTjjVpbCELRb5wy9Hxu14JxOOnVybuH_7hxgnYJxc7pOQOUqhJKiAogL2P8wU0SFv4gSdY55TuEen_pcDDxMT92LcNMvUHZfUkYIVFDCc4OxxhSdYySE",
+          "places/ChIJ2Q9m6APTiDARTHOKgOBCVzY/photos/AWCwydiAGdYPDX8c412EEamm98n-7mI0gLzx9DSFhgPSJJ5gl88UpOX_1WEM8mwMWWIHn2vjcnRi4wdlkRFg7oSyiD_QsTYk-KoJ3n5IWgpfLpS2VreOidsURWM9-8KQuZSFEVY2dpvx65ajUnnj84Lg1pqKcpFMd1SUMzU_alyOGoLDOIMpvty5YuDcNMCkvCxTQlMVVl0j0UTo2m4Fvu4g0ydFLdYDGwzQ-_hMSa6UNNuUW5pnkPpcoQcE5ZTTSq5P_jH68q13ZKhpy86epiUeGI19Xxf9bQl-qpK6U-7Y3O-TcInYz3Wxs3EeiZrZFA3JlothHAT1MUf9cstDaUSFSaPqhujfKqOapta6pazQq_VYNRDfpJpz9vc4NaRLQUwWDJN7esjQ5yPh2Aa0C4Gy8W5-gxiwp0Y9vz08fkcNj5blww"
+        ],
+        "__at__": 1786803536.793535,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "I had a wonderful experience at this café. The ambiance was warm, cozy, and beautifully set, creating the perfect place to relax and enjoy a meal. The food was fresh, flavorful, and presented with great care, reflecting true attention to quality. What truly stood out was the staff—their friendly nat",
+            "author": "kashish sharma"
+          },
+          {
+            "rating": 5,
+            "text": "Had a wonderful experience at TSG Café. The ambience was pleasant and relaxing, making it a great place to unwind after exploring the island. The food was fresh, tasty, and served promptly. The staff were courteous, attentive, and made us feel welcome throughout our visit. The café was clean, well-m",
+            "author": "SAISHASHANK KAMINENI"
+          },
+          {
+            "rating": 4,
+            "text": "The food was really nice and ambience too, staff was really helpful and kind, we were served by Subodeep.",
+            "author": "Francis D'Mello"
+          },
+          {
+            "rating": 5,
+            "text": "We had a very enjoyable evening- snacks, tea, lime-soda, cappucino wuth cookies.\nOur servers Annie and Shubhodeep were pleasant, efficient, and the chefs Pankaj amd Ronnie did a very good job.\nWould recommend for a quick bite!",
+            "author": "B Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "Best place to chill and eat just yumm and yummm food after doing lots of activities at elephanta beach..\nStaff was very genuine and Shubho one of the staff is really very good and respectful ☺️😊 must visit place and vibe😍😍",
+            "author": "chirag vhora"
+          }
+        ]
+      },
+      "scuba diving centre|andaman (port blair & havelock)": {
+        "place_id": "ChIJo_qbDxvTiDARHX5diG_Btbk",
+        "name": "The Dive Master",
+        "address": "Beach no 2, Havelock swarjdeep, next to nemo beach, Havelock, Andaman and Nicobar Islands 744211, India",
+        "rating": 4.9,
+        "review_count": 3607,
+        "price_level": null,
+        "website": "https://thedivemasterhavelock.com/",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 5:00 AM – 11:00 PM",
+          "Tuesday: 5:00 AM – 11:00 PM",
+          "Wednesday: 5:00 AM – 11:00 PM",
+          "Thursday: 5:00 AM – 11:00 PM",
+          "Friday: 5:00 AM – 11:00 PM",
+          "Saturday: 5:00 AM – 11:00 PM",
+          "Sunday: 5:00 AM – 11:00 PM"
+        ],
+        "lat": 12.038425799999999,
+        "lng": 92.9859773,
+        "photo_refs": [
+          "places/ChIJo_qbDxvTiDARHX5diG_Btbk/photos/AWCwydhcDymZD2SFk9NVoU5G_3vNEKfeYgpJJEVVwMzqGRHtnlHvnULf28KWyYjkDJvvaWYQQtiBdRTo1FjeZATbuRiuuPciwPrRgcbLWqa-nkCg2kV4C6NqEvW-jV-arfpYIdhwoMjsXjaGPLkpw2j-IFj3g0P5NnrZKUwit4_QIPDkk6vPjZwe0xvykDncCAE_ip9uHDbtKs5chOuGMHUntWTMxefPtCKeHBBImrzY5Ii0cKVpOrDZ63vTz9r0krYVhbXmw1Zeoy7Vze_DFbZCOCTSIvq896lunVX0D5C9dn2IBDMolmN-m2JJZfYDRyeGX53cEeTZn0PbkYZd7ftrO0U-7Yd6vQP92n7cXxcx0HiQLxAAJ5xokjITRCrzlk9USCobarh7tnv0571A3lyMxya94fSyXY-Dc4A8Id5sjXwIMYow",
+          "places/ChIJo_qbDxvTiDARHX5diG_Btbk/photos/AWCwydjbUGs8-ghcXliS-oPlae0rQ4wKr2TweEVYCFLR78jgXoIILVy6SdaS1s8Owhs9fE20aP4cZfq4bcfSuwGvfnjvu-6w7sXMWOCk2yu5Fpl9YBrmzIFfvrhZug0VKhXJohUjSGAeA5GyIkSQPh0xdg0rxQVRKlsIdN2AHv6Lzen7lkXZvlIHTiUyeTjFV2asny8t85yCWuqQY2qzSLbTQ6KGMRmuB3JI3dyxtxq2cuSuLibRLc5su8Ia-mP61689Wv6z_OTZPWv9i3LJsQMCAsjaLmdlpuUAgpAg071vB5GkQFsWrp3Ph25TSRrucyK3PMDb-I51We9LVkc4n4T4vx_tqMuaFSUBAgP_8FU9vY8PKJaw9YtI0PaQsgy6r7s2OKX2oMNvI8wxtvYuyPWE_4RQPXaMAuVxYIa9GKN0QOsvSbSp",
+          "places/ChIJo_qbDxvTiDARHX5diG_Btbk/photos/AWCwydi0Zqt0htXSCTpbb9HEmty8fW0tXsP5QLEzjNF4ocofL9fiBMest5GGMnZUs-G4ZDcFa750TYneSXIZP5EHrNgbCpX1UTpjT3s9_PNX0TlftC51y8SIpOFDjOPyO6KAYy-OxeiXdJcFipsREwdM6zRI4uoCUoeblEXqaaV6iqG-iOr82hrQ0DUlIIVkVHCqOcUk8WbHVn1gDqzifIcj6OQl8vcp9dlw42-LcjTkdVy4R0CcnYGnXSA1wz9LLmVoAnFN0RSnOW8M7FuWdzvKbssmuWHGtKWfFkrkZG_63K0x7ObMZVdx5MOpoBJAgYganbh_6BHfezZIdm0kBiGQ4cRYMxTSop_GuKiuNYJYy9P_5cS3U2lGwfgljPST3JCpL1NpSh3GhHPM1WezCCauE-0ryxK0Suu3zvUwH4iNaa4Fk1k4sv5Kydx2ROzFng",
+          "places/ChIJo_qbDxvTiDARHX5diG_Btbk/photos/AWCwydgoknjr61tRD1MntS74yVZ3EMli9Zz4zeUISzQ4Zjsc3GUqUGStI7Iukh1fiIEsmzJiBZ_SIHVnO856DNQYD1LVcTFV-_9iRDCivPoTgTrpyG3GVViGayxu3_Sf5dSIFL9sl0S8WbCPt_tBUPudelqOpUNJrmxVO-x9bWmoCZcuZ-CGekVKL7ZLcLUhnB28a6aQRtKEiRZdZvy2BXTTNkBHInPZm_Wat2szSMHcrLMU-ojf8PkyfAgM_SOg2NLQCKahVzM9ULLxF4qaCg2qMuSBx1Rqd0ZR2OMb_Z4OFEmUToCpWQFZkshtNhlr77SfZDuJ07t99f81mEyg6zliHNg5tXkZSlU_uW9gNuORx25KcpeO8hRu-7rgSmSvhT2YMOR8qJM5cS4dHxrA5cWU72TwroUlXCD5yNdmGi6cJBWWQQ",
+          "places/ChIJo_qbDxvTiDARHX5diG_Btbk/photos/AWCwydjWzm7HLruAmbdPBB--oMvkA0vYYF1aKgc7_qlJe9MWM0qgZeIoakbYfVjir1ByC4igHbBWkfCBOpCgfhwzpzXII650qpk6p4hPT-6UyXsUh17JFYONOg4xmWh2593aFaqQBsEQJimIwGmetGTQVTG2lcw3Rt2Y8hQeGscKzpj_nWnUYizeZ7j1hum7AeLS3JHNHxBkxexEyKZ4EbPsB48QhPb6ciqDT6VMVDxbvbJhpuKqiXz6AUv2HCR_5yToSDJbMlVLoqpl6SJ3ryl6KYAPJl2lmzlACZ5O7psMeaf0LsMYVK1nw00yVSkXxZ-T-CPkShkK0MTgasa_VVcqgN5C8_z9HHLzP6XIVZKnfr64-CR8-vzLYI6s6Pk3_eBJY1uDGg46OdKj4ijBfUXKN3cycpfB1pq1AprmL8K0I7Ke3lg",
+          "places/ChIJo_qbDxvTiDARHX5diG_Btbk/photos/AWCwydj1w92qRU04rtpZyK3I4zzX35ghh9JG3MAD5LoPHh4g5dyVIwIXTCjjXuW1-QnzCnTG4knslxM5dYtv23-DDltqimlLZkTEXgwJztcKO5l1tKOCBCQLJeH4Wxqjt3IVzQ8IEqFnmWAKZJn027BhCO5O_cw2xs1BeegYw4py3CNreUaXl-MPB3SAcsY2RSWBBCudfH3VkLOQQpUy6dYLH5qg7XhtmyqMKLN3doLIAtT38uQ3EvTHy-Ca3FSGciQ6BfQx8VFYJ3OVKuX6BHUb0s2VpBEU14_9vW693mBuE8-r6B-4cGvNtMk-u3EIPlTKyX4f_G0HGw2IAXSUpx2elIZ4TMS9igHrGqLyeDI26aJyUIRgxTkz5RuaWb3O0yX0i_6Lr1-_WJ68fUnn7-e9mvKBLbds5QTSiaOFOiXzALN78qzk",
+          "places/ChIJo_qbDxvTiDARHX5diG_Btbk/photos/AWCwydiydBq-dPZZl37ODb3lRTzo3FJQafiow8Y-OnrImGZYQvcL4Np_XErNVcAF-YOfn2N1lH4e8YxLUdhseMOrjjV5tyP9upLkGBQ2Ya-RfV1kk6TxDK8MhWXTDpZj40iUszPv7fRaGKi7MLiCcHZR2XKARXfblzy8U0Nvcrwemq9R7Xqd43YuQnYehIma8TMBpA1CKq666j3U0iv7Banr2MrmlfrzWWt0tg0D9r76h5XgR6T_5y9K9Z4Qj9o-AG-62iHkcmoVxp0P6TYWvfuQFqqImyMy8H7LVX-915MneDpbMyaQ4EvyfEM2o5Y_CmP02VkB7Okf27R-_bQm41R2s6O1UAl7FNV_YHr-wXfGmB4a9IVOXIZ4N-YQ2FXZYpV5EL13VMG1yOnVjaTSY2MKrN4LXWtA4YRWD58suKp6Xw_aBQ",
+          "places/ChIJo_qbDxvTiDARHX5diG_Btbk/photos/AWCwydhjbC2hObxk_t-du39hiq0k3Q7XpATrZhmk7Fr6ZFyUeByRx0r8VPEY-Hk3WLKrztxQlyMdaodq-vy1Lh1YMXfhQfQWh8Dv3reGw3bpsvpS2dDrcJpFmecyXL9N1xkQNSgousqWXzSEp7LP-DCyt_CUOxhBrSEwJ5axyCtO8tGVWU1Wc4mKXdrltQxb11NkiJfRd7ycWkiBZqRtxiWcCtHzjWxWg6EuYyBee2fADjKHmFBJNEjJmwV6_Y6Ub-pd8-EP43xPP06iFmAbBuitFlkL2JUIANnEmUNuCvtIVVcKRhFwnu5WX8k9yX8IbiaJHqtnZGELMLNSUSXv9lbVj37bzPMOyH_XRKT-QYCqaChPensOCnkciA1epGSdnc-F4SQBf1NKHDYTdYF0x5P2OmE5cePuv0oLiFc1A2ChfSwsY1Rl",
+          "places/ChIJo_qbDxvTiDARHX5diG_Btbk/photos/AWCwydhJfsXtRtMJazU5rWZ9oyEMlqoytX7xJsOxihy_mnJEHVX33uoIxD53dPDId3jScCm7zlxNRWYuQ_CinrPoX0QEf59_yfnRWABba4G54XgAs-S4Mg7PkQ03IAETaA9ruU6i5QZthnwt5WYL3kNCgBgKMakZVMZmwMdEJOf6Lx9VxRf7HT8sRmsIsmYVSYTBnW7yuI8z3gFEtVsWSYd6HNvzNDQv_WQYdi8YX1wtKHjKrnJuk4Id1GgNDBChRSWh0temIgC4g8IfFLl_4YHc4CkXPQjXe3pOq5iB013OyMyjbAAipYYqCMIlc11Jh9S7vPMlxp87IWLDql3go3e_NfYyha0Ewv8EZh5amRJJ8A8h3N-iaxnAxde5eUcDzuVJiaqPBnDf9Cz96ZzybKaqM6dvPDJcbhvt1KMp1E5Bq1Pgb8fXiC1vgQP3pWzwXA",
+          "places/ChIJo_qbDxvTiDARHX5diG_Btbk/photos/AWCwydhjOMCg0rYvo6L3VokwJuaOOVXwynym15v1Twg4CFqOEiNCdFZ9zMJGBS2NjdqymhYkIlb3DHB08cfh6BAAw9p1dUv6qmWQbGob16xUwE1eqVGNauJjHgfNlhUEG4M5--eBrXgKd88jhODmHwKVbpXEImm8JQIFGWnKCvYtvg7S5t3kNPlUPoOueLQqOyEeKACjh6Kt0VfgzhaSwPRm1SdtcIaHBvm-2Lq3q15N1jFGnDwmDxiJ_S1X06UrloJb9HOx2_aETYS94gjSzwzTZmAQ1oAhmvHLjq1pIFDtPKNSnkv-Cskvdu9XslSHOxLSThniZRPDVjkUtYCsZ0D9tnLMXAZyNsTwE-F2ol2LJLJnGF5hKp62IcaeHE-I-d-vQHNKxcxYLOfUaTDeasYXDAUpv7_xc0WcpeSxlr3SNar7SQ"
+        ],
+        "__at__": 1786803537.4992058,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The experience with the Dive master was exceptional. Manoj, our instructor made us feel comfortable from the very beginning, and his teaching approach built strong confidence and a sense of safety. He patiently answered all our questions and shared practical tips that really helped underwater.\n\nHe w",
+            "author": "Prathiksha B"
+          },
+          {
+            "rating": 5,
+            "text": "If only you're looking worthwhile and actually want to go with the best memory to go with them. The dive master is actually a very good option to go with.\n\nFirst of all they have a pickup and drop system from the hotel.\n\nIt's so good there's 2 options for diving, either you can go for the shore divi",
+            "author": "Aparna Shree"
+          },
+          {
+            "rating": 5,
+            "text": "I had already completed my Open Water certification earlier, and recently went back to do my Advanced Open Water with Divemaster in Havelock Island—and honestly, it turned out to be one of the best experiences I’ve ever had.\n\nFrom the very beginning, what really stood out was how seriously they take",
+            "author": "Chaitanya Kanekar"
+          },
+          {
+            "rating": 5,
+            "text": "Had a fab experience. And I had done scuba diving before in Spain and still my experience with Dive Master was sooo much better. Was a little scary during the training but a piece if advice don't quit even if you are scared. One on one diver will be there with you and you will have a blast. Thanks t",
+            "author": "Shaswati Kundu"
+          },
+          {
+            "rating": 5,
+            "text": "We had our scuba diving experience with The Dive Master, Havelock, and it turned out to be one of the most memorable parts of our Andaman trip.\n\nHonestly, I was a little nervous initially, especially regarding safety since my wife and I were doing scuba for the first time. But the team handled every",
+            "author": "NISHANT ANAND"
+          }
+        ]
+      },
+      "cafe salt water|andaman (port blair & havelock)": {
+        "place_id": "ChIJSc2TqW7TiDARHT1PhYFrGno",
+        "name": "Cafe Salt Water",
+        "address": "Beach No 5, Govind Nagar, Havelock, Andaman and Nicobar Islands 744211, India",
+        "rating": 4.4,
+        "review_count": 148,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "http://www.outbackresorts.in/cafe-saltwater/",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 7:30 AM – 11:00 PM",
+          "Tuesday: 7:30 AM – 11:00 PM",
+          "Wednesday: 7:30 AM – 11:00 PM",
+          "Thursday: 7:30 AM – 11:00 PM",
+          "Friday: 7:30 AM – 11:00 PM",
+          "Saturday: 7:30 AM – 11:00 PM",
+          "Sunday: 7:00 AM – 11:00 PM"
+        ],
+        "lat": 12.0261339,
+        "lng": 93.0026991,
+        "photo_refs": [
+          "places/ChIJSc2TqW7TiDARHT1PhYFrGno/photos/AWCwydirnt_pb_ytlmuefBV8RiO985bHOHC1Rp2Oat5SnwSlTh9onO81rJMZjVcrPbupKQEHXHx_tmXS4aOAY5LlwGGo-Na18s2Jof3snRY1eY2hQsDYam7JNHZkg3G0sG6VgaxChr7l2RvkXnD6M2cQsZJGBvxI5JtrWD4rc8EBBFdYDZeiIOWTsJ7ZiBxv32C2u3J8loAzvcHWzr6huLorZp7y8a5AT0a3qw99ryvxXecd9P0DIw76-DUY4HBK2ocx3Fk3yIbqi-LaRl3aPUbAhw2_G0q0NHh7_UbhvHh0zDhFf7ne9gfgQIVB5FoSOM7MfxtyDu54S8g1zAxXkoE-0oULpjSs1Eli0A72IR6CoYtL1rUr-Bb1Y0Q_4B311MkG6vD-FTzySjdJPAi_sqMRkSRL-0Il7uPrMcCDqAvnFmWEldXo",
+          "places/ChIJSc2TqW7TiDARHT1PhYFrGno/photos/AWCwydjq0RkhXVAT6GULB87uNA-RR9d3AWFXE2FIQCf41rL1BBHaM64kx4jI3cs2sOMyhhhbzshN2MWfUjNmcngA3w-1IK-H5oCXD7J3LF_8wShzN_OxOaQ2INm39rveRI26Gn2CV6OTa8yrckbjnxJiQ8G3EufTZ509xC5MMcH7ksTPRobB6aPiVLqRDg17Ud68-8L7IgH2W7yORcXRXtS_gPMQvelMXtKjVKx66MeOdaHdskgzemKe4qc0Oj3VmcpC0vnDNcX-Vq0Nuc1KSzNoqmcwLf7qAMhL2MSXuuI9P07epaX276PErbEyLyXAB8QIPKaCTb0VUmiAMXDkhwb1p3vn54x3Yb1J8Zo8ZsieRVbghHkTzSTRzTdF_5I8_XhxgqiVn0N6irweR76t9-ulWncxbgRVj45cKXITOa9PZDC62lpr",
+          "places/ChIJSc2TqW7TiDARHT1PhYFrGno/photos/AWCwydixb8KimwC6IEOJ4L0h1bSbPAJN6iWGxC6vv5n6FozNd5Uf104Xh7bRJCn2hS1TaTCCOAHAK1TFGFN7SC9jrUn_N8FKr0AzNlkinkmpQufV0q7RBhI7yyTlzTq9TVW2Nx0Q96nAF_B0gokS42tFcFwFKJ9X4tayqLVdVJrGAozGv45xtQXaIU1V-S0yWUBSz15YtKYagE4uJsAbqek-3F4dyaSOfEreu8_Q0IyS7RcaulkhsAwlM_iuScJKihEIgV1eHVbLMsGfdKXOFe4AyxyA4SRFXk528_qv2g2BdcqWkPCEvBgEgPkmz49eJWkftsGTJ0y94uYn64s2KXum4ijU7l_uddeBHpQ2jBi_Kkynbw4REfpUbEs3mS3JuTlF7sYhOqPCUyQ1JmpErVMI4dOqH3aLP8JrnCkhDD1SVPT9zzg",
+          "places/ChIJSc2TqW7TiDARHT1PhYFrGno/photos/AWCwydgJQy_x85b6tzcXDURqBrlArZzqevRydijbWLQjPeRSpzSGXz2BraAxfOMJxrldw72xPcrmuy_xKka7nqB3IOH446fnivwEe7-Qthlal-NgEiJr67kNr8YbdDzmee-Ntp2TM7NeJQaFN1pHSB9btRTKDhOvqUe-O1bw6FKEMCNJh_2KUaNj27z0VCuFM8lhczDNKLOwtksL_c848MSacE6wFDOqENhoNXMpkfX0xI_jHT5WbnTcsFaotI5uQa2F-neu9HYjHPFHSp8_7cPwoVVg59mjMUZHku5_g8LCiTeaxiQ0dFXW7q_Tu2NNzTp4ilwyIIsD6f6qKHdO_uxRF7u-GnzwkAwAP4JjOafLEPxFTR-6TyP8t8RLI30aFMGtokSW42MkuwsL7wsbl9AkBtohP02mamd-CGeKEUY82rhby9j9",
+          "places/ChIJSc2TqW7TiDARHT1PhYFrGno/photos/AWCwydiUhOV9m9FUV9-SAQcYyey29QrrcmjzWXR7EzwEcsQ0fnkiQtc1_SWLmnBzZTS5Bo4n69Rt37q1L6vVCoghXBqWDfEqGDn7__yzykqtXXPIiQoVdtpsR1VNyKAHVrVhFjYATgNrejmW4n1t3YsdwtXmJ1G73ss4HKpN6xu7iK7C1QlrjHk3bn7Qlc4Qd_6F2GaKiZ7azaqcTC00btr4RChNjT3tGyiuJmKv8FL-8llFl8w5rtOcKc6ZwQGmMO38snZgFfEXso2eEstAFGyun4r7goQ4mIkjDUcElo185UoFex48gj3tiNVHVT_bPHGJz3rj9IWbW3TivxHichs4sAiMrZ1JMXW-DXwbUL4pTlDe2iOCpp9GLtFtDz8Yrw5878_B3wN65NizLVeVdOR4_AsvIxzYYNySW44gTGpl7MqCzA",
+          "places/ChIJSc2TqW7TiDARHT1PhYFrGno/photos/AWCwydioe12CObSAZbfYr9AxylR3E8nX2YIX3q_eNmaI-KrS0nHScqmVuCylgggxLNib_SEA77VxvI1Qs5sD4cWIohonuCJFhZaqkJGBaF8L8v_nQLImbZIms4w1IBL2Z5gYrPX5E5IePI1DsdEdgpzW6RNuQN7GfDcxLgWZf4rHZ6CitBNZBhQFbMZcMCPH29onX1jIMwg3MSjzAeOvcbuTqbdTw_nPPG6TePTLmdSF6QX0LmsTD2OsEhLx2L0cxd7qxneVpFk-xm0Izqv4qs6JQOU9K_RJVUQ64jMTSU4fixzY9NfJ3n_by2_PX2v3YrZMuOM0ssCC3Ji5PZVZWZq0mZcPBOexQN5OhLnxgYG8hfzy-GA-r1u00RoNsZuuH2sfBopmHGKfm0T9max-XkDoCHtYFVS2EoeGDV0TChYvQ_RHrA",
+          "places/ChIJSc2TqW7TiDARHT1PhYFrGno/photos/AWCwydgiLToEalH99g7Gt03mDKPKgtpLzf_Fpx0nIHpr4rl9saC25hFIAwVCINx_2CROJGcCcaa4Wdx0EdXb5WcvL-VyorCeL2hI_RxklpTZuR03eXLXoJpOM4fX-lCAiUhbzJleHf7A-tVonJnQNOPN-kctCLNfyFt0pbeucaPHw6BsnzKZRx8mGsVjp4GrRthiFBRMzUxQXfgiPx8CVdWujaM-YRSCg-7-s8yZj4deL4vtQcsxJfWG9p_EY1vszX6GitKqHlYAwcutGMNuOJb3LDohxYe-UYLU3-ZT8pTpDZvmfZIfyLJ9C-NtGZK8t-dXUth4iOXIaB95zeL3IlgtJTswihNDaU1Rz0972mvyq-egl_1Dl_bfKLEc_2teuzGJwHi6TxKeK04tXmZsF8QEOjkvZ1JRcAGtfI9yZBTRU00",
+          "places/ChIJSc2TqW7TiDARHT1PhYFrGno/photos/AWCwydhtX-N2ufN64efJCztxuXUuO3EtJ7y69ivlS6NnW0Jq_n31Zw9hq44k5ark3hgslfcL5R3EYQLqxUGz60OLdWmlWAelwL0g_9kYuTmx9yp3d7fnlYIt5ApKk3B48Jey2HaYNsWDm0Dk6KSU1d933ESsct0kVWYXfHJLwvZordUU4PM4Sx5spaRSjOVHXp9-bpEf56wUegRb7rCWqUOziEw7HRYDfdvdjypNZG5Ba4g1iX1i37VRO3JTTeIeVtZ1bPG0cwgzFbhYxOowiJqihWEvisrR08gNN7G7jF4VSGKtPEfiDHRwRHXQatzvWt5U_2TCEvSG8b45WH4yGM1GNFUZCebMh2JtXFbtc2PzRG65BOu9aIU4nU9EcaVpQ7WQskouhPMYH1YwalYUEcSr_aZdT_3a464K5zOM7z4jgf6ZlEQu",
+          "places/ChIJSc2TqW7TiDARHT1PhYFrGno/photos/AWCwydhXBs5zg2M2vWD1dPpgPgp3wyTETmHHXUSESHOWv5Bw9F7Zr-eqcg8TmMZmaLSD_O0UMw70n1EeYtMvfAlm9UQvzn4bJn85VENq7YyZMWzcWRo-nayfjxOIy_UksdCu6P3PU9LYSi9oX2y4rfT_eJYBpBvVgkH88VbDi-HFvwEazN7uGIBvzdjiemK_Gawp9VXZjHGPx38aCfZpvp4V6LjRnZ22leCo7zaSVKeeAwj1ggCtV8Ueyr8wzn425dVkrM2QOpAHsfHPRCOWoGmdXqL8MGw-rZJTsnzyWSWe2wRuU-Ghya4G8VuMgFTNd5GC4tZSf4sTVhmZQ9gumteRFBXfwCHewwDREEWTiCxqkv4zL7H22Alj9Vdp_DeiIT7H5M-MmlHZZg8xzDRjD6sCTVfILhJ1sZjYR3198RF-eYe3msCJ",
+          "places/ChIJSc2TqW7TiDARHT1PhYFrGno/photos/AWCwydgSQiGnPeKOVdXWzsakEqgQZeGMv1lkMZXW7QleAB2rUnQN3UhCzX1KZH4O4kHu28JgWzocY05TNhE67qjE0L2GIP70PLlwTTS8um0qkRdJUzex-IZdWyD33yWwJLOhp4lDKWyrKbCGremqu4taas1Ck_gPkWWjTBQ6FbiLboAku4mjSOBdzM0KxyBJoKqN0HWxBNy5bLgajVyhzuJAMHs9zMm0r1cOuTcIgrAZiWdMwY788ITHWWo5SSSugS1bbRVsmIvzipfqVjU6WLVH8yBVv9ZrK6UOTSXXNI5GJtl0751Ik9urml9WptoweyPp5WDToZU2bxaqCHA5gPWCTZ-0h1n8BJ0T8-QdHVIqN3_dx2HXLvm2ICDRQ7m1_ZE3JHmY0PaKyoupwSJopQKFcRlVGiYnzRMlv8T8q_O8bH6RcZc"
+        ],
+        "__at__": 1786803537.9197838,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "Date of visit: 28th December, 2021 (late lunch)\n\nCafe Salt Water is a place with a very peaceful ambience. It was good to sit and relax there while waiting for the food. We went for a very late lunch at around 4 PM. There were only 2 other tables occupied at that time and was very calm. We initially",
+            "author": "Rubesh VP"
+          },
+          {
+            "rating": 5,
+            "text": "I recently dined at Salt Lake Cafe in Havelock, and I must say, their pizza was absolutely amazing! The flavors were on point, the crust was perfectly crispy, and every bite was a delight. I highly recommend trying their pizza if you're ever in the area. It's definitely worth it! They make it fresh!",
+            "author": "Atkan Matkan"
+          },
+          {
+            "rating": 5,
+            "text": "Café Salt Water is all about great food and friendly vibes! It’s an ideal place to enjoy a laidback meal with your friends. The food is scrumptious! We tried their popular ‘Dal Makhni’ and grilled fish with garlic sauce, which my Bengali friend declared was one of the best he’s ever had!",
+            "author": "Shipra Yadav"
+          },
+          {
+            "rating": 5,
+            "text": "Cafe salt water is one of few good restaurant in Havelock island, we visited the place in November.\nThis best place to have breakfast and lunch , you will get best of the sandwiches and pizzas on the island. They bake their own bread, give it a try if you are in Havelock.\nIt's into Outback resort.",
+            "author": "Tribhuvan Mangla"
+          },
+          {
+            "rating": 5,
+            "text": "A classy place to hangout. They bake their own breads, that’s a rare thing in Havelock. It has a  calm ambience without too much flare and loud music.\nThe staff is quiet friendly. It’s a place you can either work or relax, suits both.\nThe rooms are made of glass bottles picked up from beaches. Bring",
+            "author": "Kartik Babu"
+          }
+        ]
+      },
+      "venom bar & restaurant|andaman (port blair & havelock)": {
+        "place_id": "ChIJZ69KjWvTiDARe-v-Pp12UM0",
+        "name": "Venom Bar",
+        "address": "Resort, Symphony Palms, 3, Beach, Govind Nagar, Havelock Island, Andaman and Nicobar Islands 744211, India",
+        "rating": 4.1,
+        "review_count": 326,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 11:00 AM – 11:00 PM",
+          "Tuesday: 11:00 AM – 11:00 PM",
+          "Wednesday: 11:00 AM – 11:00 PM",
+          "Thursday: 11:00 AM – 11:00 PM",
+          "Friday: 11:00 AM – 11:00 PM",
+          "Saturday: 11:00 AM – 11:00 PM",
+          "Sunday: 11:00 AM – 11:00 PM"
+        ],
+        "lat": 12.0294932,
+        "lng": 93.00170639999999,
+        "photo_refs": [
+          "places/ChIJZ69KjWvTiDARe-v-Pp12UM0/photos/AWCwydh4ZEqpl3O7clXduGXtiaJAxkxDxUHL_EVbGnHik0euw7h5XxPNsP6fsvtPNs4q0_TQiJocWkoI4oGjt6JODPQ5-lY5QEYL1OAFiUd_rcGmnMr2fdEkc5x-hnZWM-4a0XHqz3VvQvreEANkbZTaRwpOliuXerdxsN52M8rPNXOmwc3Vl3W42_AYo7n581qooFWAUdARiTDNdDz69KUNxm4EsavI4gYZA-yGyvJSARqbw4HOLEVA3C0ibfWOmSH4DiNcs4SdVVxZ9lquRByyizh_EqtuTdpfzatMIie5CRtoY-d1ZGUQ-FATUUkneNc_zzusW5f-AS3GLwb3PFmzAIco_bBTB2qqq1EmEUhWw61t7dDm-kK2g9ZhacotP2jxWQXZwk8ilu8sM9JzZJz477BPliJEeeiGZsTK6D6pM3UXsQ",
+          "places/ChIJZ69KjWvTiDARe-v-Pp12UM0/photos/AWCwydgbfxUS_61yL5SEjwVS2OZExKKaJtxPLyO0mRXnnPfRUrS7vsG7teRurnpU_ixU4igcwkl74iXZ90GF3stVAT8gCWvVduhABaYxigNcVsM_Fn27wXuaNoMN5Eswanx2zfaikmBQCUV-kgGNm9AmQC_09IJkIDptFXBz-Af7DCbNGaOyutDaK7o38w4a0D018IDQyetLzVyXJ1TD9pcN7PfBH9jvBvcnhAZUjNyr1D32xjFb-a5trcrsZ9ViaMivBWASrgFfQjgeh4_JHvl1GnLzC7N8UiiILfmTAUZHOOB5MgItc17_pm7hlHKZrtFG4BBl_J0rYfQARxhFBYE4hlswGiaB5gk-HllugtauvLoddPvp2e45QFeZM6BaPCIBeN-XVTYo8oI0WMZwZA4jiBPcox1SFfcYEoCiowGrz0N4XJUZQcQA8yLU3F1QTx8F",
+          "places/ChIJZ69KjWvTiDARe-v-Pp12UM0/photos/AWCwydjEeBjquoOn8v1qryhYda7gTUIuiAt-zFiXPYK75hsPG8a6aFHQE15Vyw8z1ZZBtWqM86bQOPrBsT8Pys4qdAg5QEOhfavoL_Te3shRdyoWuVLLAMGIi9bMCRkkjXdqSNfAyNT5wOeGj6ypBerr9bYNaZys_zdnKZdtAF65aCOIJvfHWJMWC5IQAJBPRL2JihX0AUjuB00pJi1EMhrcYRox1PE0caml-HkYH5rfKIQyqqe5Bc4nOf90ccMqZFub4w8lk4kCgEqtXFXkGMoZ0bk4lDB-RGe6m5b3ZEJC1H35RwF_WfiiRp8LMD4dArVgGsTsp_wH6VFJdmcIYoubnaR52PGRKzqygzFbyUl1S4m1-0d18A6dCuXZ9Ljf6z0hMyTqHVMWURF-1q1QePiwrmw02sIUKTOyX0sBRb_ogYQr1sodbbBkdkELYuOJm6vb",
+          "places/ChIJZ69KjWvTiDARe-v-Pp12UM0/photos/AWCwydiqY4hkSfcFU1yQ8AqCq_8Y01wmkc4ks0p3K7LAMIKDLIfSoQODHhm_jFbsceOohUOzI8ysAnYex6mh6fI8te8py82Ick9N0BMS9xbApd0qN28EnhacGQqGnIkpfGX0T-VF7DMLq5ew2XC2C1TDXlgEPL7t-lhf1UAegiLt8xfwJht-D8rOrGPJitwvDKSlEOsXg77UirmgDNOoiYOi199_pMX_BEZZhhPJR7xfVhvIQ4ARt0m-fOMNAD1ptCOhDj2-NLtsxtgdYaX-6Hh7GpZZ16WbcRD7MnwBB1Lr6T1eyM3ChQAZ8G67oFierQd3EosSnA7dYSIfZP9ib2uavLvP6KXdn-m08VPRHrq5Kp29HqwXRGBocjAcH3wLk_Iv4u1Qg24G0XketkG-Zt01C-_Ka2PeL-YDS5pwGoeaW70_z08ouOP72NNZmtdzV9uO",
+          "places/ChIJZ69KjWvTiDARe-v-Pp12UM0/photos/AWCwydgdkQkLqPLlF8RKQ_4YA2G9lWhKh9QuoV-hGX_yXrhcmiXNHZex7LHubhL4korN7t3uuLW4pDKSaEQgDe-t4uNvpnxZpNPNSI5fecrp6KHKrc2iMJ7YK-nhgMSE-DodYohAy7C_8mOfLsQgOH-9Y-OKutcDXO8gW824TYR_BKH2dcuwAmqb_r7OES3z1O_q02E3uQPo0T4wAFnp7cSXAJp-u3hw-C2qJVhKtzPkkmpU3idht1fQL0djdc2iWvw1ysMca1NCzvkSTGpeszIC4Ab6Jo_j2t5imHEo71jcfjG8VmagMB4p3Le-YHVNMkAFuuhjpNDgXUv3idRWBE6rvp1Pb5G6fQyg3E46pIeaGm4sdO617W3erRv5dnlzR7tPrdlROGldnjXvx_fWVG5wMCyAY3A7wiBYqk0JN8kZLglQow",
+          "places/ChIJZ69KjWvTiDARe-v-Pp12UM0/photos/AWCwydgeHaM9b-nRSSay3PuFdn4ID6GP3CkKRgUkCNrBkN6e4hxYJq0l6YXjBEvIG5wahG83z24D0wkZ3EybG4tD-CIO46pRaONf4p5F6MEMRazsJkn9ODdoGxkmmKdhwl-hNtnyEdSPza6CHshDPNRRRAs5vzPkdHHFifkNotaL-bwAQ7ZeBpv-rSZgn78J5KhHH7oJzJcyYs_xTAUNtAg0eQYoVCWsOF_3ud1YKxsg4GhOO_ezIJiniXXmAqZQQ_YjiRatLOxOCjKAJeJPNQ1ThBw8sxgAuQGwHHuaCj4BJX6jHjZiu-uM9n744P8F_0zjKKKV_BmnRcapRWjHlfhxBzPZ5RjRvHa7nhlC2UYf5UOfaax902CSkw95RP_g9z1mVVx2dwH2Pi03BodP0c2rKb-VmpCjf3IPuBudRG5kXXftj_HIdF3QcQ-1EypLU6w5",
+          "places/ChIJZ69KjWvTiDARe-v-Pp12UM0/photos/AWCwydjYjmpKNjB23Ido-AYK7_wYJ9Z-yfjVdRzX9xD76aOiWRnPYs9qTWnGLxVle5KAzmWMdh5R9zfaOTimXeGvxXrnWMcvWPlrBtAXekQogW2lgpzJedcC-I2Pcrw_lvSzNdVfXq9hrLrOoxMUy0yr4NTDMMpGYsT6mbU3fA3Y2G146KZoafRccY8ecdQrixLkbEiB13_GsNiow0n53-vEdBu3dkp1oYteU3YpmvjhBmkZZqfMGcT-SnqsGBKWznK6zDjOprTuWgrDwj3T0ArvI2JJpccoaG5WfiW1O6WCXRxVctQalCXTxC3x19OXhKfE5kMPN16fZ4SMdnMZ4M_CqjmeeZ7_QBWpxwTUEIL3wsusf-hAE6CmkX5XQM7poAkudOVhMXmswg6VWvRxAjelfK81IBzqjiibGNmceQmMjFZzSwoc",
+          "places/ChIJZ69KjWvTiDARe-v-Pp12UM0/photos/AWCwydiEf044lQFuvnO8gsspPIuNKZL3ZsLEvXnCjUCNqfAtvx9_1E_puWlnTgFkOCONHc1pWYNdjM9tAnJc_OIMzVWgAk-d8IasAU0Ex1dkG19zFp65RAM6xP7bUhwTpm4BjPqlyCz5Jr1re1ht7ihLkwx_UgOGPK41qn5FKXZDBsRAdt-VHyT7v-ub7N_yeJ8pX5hXI6nHRzs6UHlKjuICxz2hhqNmu6PpqAGIAhaNVdrxjhvJgw_pwemnj8i8l6VTz9jT7pvXZPiCGGez8xIeH7w0Vd61dEVWWmRzOfp3_mJQ1ISMkCtMRTZnxoYGfwrbrO4oHvbglxNZKLIrZ61XVRvgFxP-URRREvDpl8F9gIMl01Z6gKurzF50s2NTCsjAMAUBC0wW2foINDBwDLALh6zgLOlEZl-R8dUtE9eG_YUeuUsd",
+          "places/ChIJZ69KjWvTiDARe-v-Pp12UM0/photos/AWCwydiQtQZFF7zua8v_WLYwOjjJGWb7hPz3qpOhrELkvCIo6RfxWoboHurvpIXk0dQdSfP0NB-qbYKleKBHyz1CZm_a76zNRX8AxErsxHGX9pY8Je6VMB0ahSpgAeeoTLV3GXuce3uio0jT0lJkrzxOThMnAQPSUMOVVJlTtkdMS819rwEoLXDomDQNpccFvcW53jQDAO3szT764lKwTlzNBprxtWgAykyP5AEhKDN2VL5XSH-_cJmqHvkecphbDGCytPfiEfZnCok-WbrAAlAR_efGVHoQwnKbSsBg-y7il2nQXa6bgQbwkjQ0xBQkU2tB6CvnVA_sYHCiXPKzU66VIMBIA8AFy6gOrJsFAkmMlrUeRgICEG1Oo69IFXegnmPuaqDn86TFqOX7fXTSc67qdq2E9oQK_AJobxnko6cF_1wJqA",
+          "places/ChIJZ69KjWvTiDARe-v-Pp12UM0/photos/AWCwydiVQuZCjtuluJfhDxU3qQpd7uuw9VX3PcqhhQoZVLx1c-ULdFhm1whuVjKnkvF9z4lX8HqdsYwR2fL_7dN9NOKvmCJ3DjKeaQcOpgHLeGr2oAPy-Tj1rAtuwjF0BX8HM-IyDH0hOOdi-3YtZtrTnohHpY_sJsy5W-qqXPKoBOy4U2txOlBm3gs3yYU8BH5LNwCVhlQ6a6pUHRAGwIo97NZow6lK9hXbnS2oIU9giDDkyZDmQBflyXetzNbJOXn0_dpR3jK-8Hz_EjTH5AqIQZLFcmXDI_Vx96Vq92Ka9pMd390-jVnsHayfRjx-aJ8Xy82BG8tNZVAmYKEpYNEAJPK0PcUzn35pQH5ZVx4R2eK-hvCM7WShM2elm5ebMCmLUAsNpKRoGe-DNqdheMTlw8YI-8g_w6pdeuJTVuxmqz6R2w"
+        ],
+        "__at__": 1786803538.328334,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "Located inside the Symphony Palms Resort, Venom Bar has a good cocktail menu, but there are several major drawbacks you should know before visiting.\n\nThe Atmosphere: Despite being on an island, it isn’t really sea-facing. More importantly, there are no fans or AC, making it incredibly hot and uncomf",
+            "author": "Prahalad N G"
+          },
+          {
+            "rating": 1,
+            "text": "During my recent visit to a restaurant in Andaman, the experience turned out to be quite disappointing from start to finish.\n\nWe started the evening by ordering drinks, only to realize that the liquor and beer were shockingly overpriced. A beer with an MRP of ₹120 was charged at ₹600 (including tax)",
+            "author": "Prabakaran Gopal"
+          },
+          {
+            "rating": 4,
+            "text": "Off-season,  only i and my friend were there for lunch. I ordered seafood pizza and prawn Momos. Pizza was ok. Momos were better.",
+            "author": "Adhyatm Dixit"
+          },
+          {
+            "rating": 5,
+            "text": "Venom Bar is a great spot to unwind and enjoy the nightlife. The ambiance is energetic with good music and a lively crowd. Drinks are well-crafted, and the staff is friendly and quick with service. It’s a fun place to hang out with friends, especially if you’re looking for a relaxed yet vibrant bar ",
+            "author": "Mridul Roy"
+          },
+          {
+            "rating": 5,
+            "text": "Mesmerising music with great ambience with cool breeze of the sea. Lip smacking starters and the service was top notch. It was a great experience. Especially the service rendered to us by Ms Preeti needed a special mention. Thank u..",
+            "author": "Suvransu Mohanty"
+          }
+        ]
+      },
+      "port blair market|andaman (port blair & havelock)": {
+        "place_id": "ChIJn6vv4QqViDAR7yNmNm5krTk",
+        "name": "RATHNAM Market Port Blair",
+        "address": "MP9R+P7J, Aberdeen Bazar, Aberdeen, Sri Vijaya Puram, Andaman and Nicobar Islands 744101, India",
+        "rating": 3.9,
+        "review_count": 423,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 8:30 AM – 9:00 PM",
+          "Tuesday: 8:30 AM – 9:00 PM",
+          "Wednesday: 8:30 AM – 9:00 PM",
+          "Thursday: 8:30 AM – 9:00 PM",
+          "Friday: 8:30 AM – 9:00 PM",
+          "Saturday: 8:30 AM – 9:00 PM",
+          "Sunday: 8:30 AM – 9:00 PM"
+        ],
+        "lat": 11.669330299999999,
+        "lng": 92.7406275,
+        "photo_refs": [
+          "places/ChIJn6vv4QqViDAR7yNmNm5krTk/photos/AWCwydjGNugEG2bRcjbtrSyqEkPzWoeW7WhDgCcyOJovdmexZ21R8A3gXKfWQSudqidOX8H6ttyfXyQr2AjFwUyS8cnx9oC7l2bot27L2ylFBziFOUplEXx_9EfKL_0GRn8F8q4QmwPdBuLLsHZokKWaWBIHs4CFiAzWv1DsXb1TXRCPGam_FnI99m_vatYg8wJ9G4uYqZriBpxRQMx0fo0hH6xqAVIOBSQd4_H1lFsg4xMvwTjR7LAXtlYdMmU-oQwXEPxL-MdsdJvF0ZikPHGu_JZtcgHkKLJS1nMJnknEHYgT9aWpcRvJcPnnO9pOZEGvHhb_MmQJCbEeZdulh7ukvaMyUuO0vyAJjwXBRUWEG9-mSlACS38Pyfnh6-ECdNBbaFz0VsuadrR2HXir3rRWkVlcpth8EaaULl6vf7s1ldaqr2FGbgxtrKunCnIbw5y1",
+          "places/ChIJn6vv4QqViDAR7yNmNm5krTk/photos/AWCwydhnV7OYCjnr2SHPOJh_b9B9WaKMyGMtc6HH-zWZFhhiuKGazrtlwwyRfRdCkK1OtdaJ70yMFlYE-JxwerQr3DLSNC7yLRbqcQMQW2tv9eBm1b1Lg-QX7o75Wt1pvy2nwP9A-7-uiD5tLaVjK3OrUBuVOpIhQmaOZbUdVCAqbJmw7X0TjFElSaTB5bn1qBc7b5lAXLRT-kbmWl0Xp1Wl-wPn9gcJKlZkYbt_CVzpQeYcnNDdNv7CrUtmxGTdtqfa210pqYjooIN81YEoJgptNuNhJ8rZqTYmDydruioMnqWQab61BnHETr3BGtvzR--ixpwkJzI6AMIWtvKudyiZa5ASdkGgmxlls5XzgXdipqSIs6rgrQcMfP2-13HZRyTmPNslA0xgRTS-CAc3g7OepdLVy8JIoteZmuiDTsYlrm1A5No",
+          "places/ChIJn6vv4QqViDAR7yNmNm5krTk/photos/AWCwydhYUlEFt5LB5iAtodekPeOUqRb9snUbB7Sks_h-O6qAH8qZbHAul5V2Z73LTKYrjJXt0yRvuFB2sDhfWu8uAMlNYa8pyHqEawOasyLC95LE3zMxyb-MzmnpuaAgpqrkYervCZDkCTXeBN2xCjvST4YkX9UDlG9P85gdxqFLk-Omf-03Vh11JR6RECz1WcBuj6VxKQAmaPLI8FhEiksz_RPe3N4kXuOpg1QPRVACD4jHi-LrrgSZSdRuznOrfdSTHBrnpTcS7ovMsHKcZUMqkdVQNQNu9txIsPfQpKRozkJ_ls8yDxrUBT_SxX9TB1vdK68JC8-9fFD8ALn8jGdZLTKlBa5KCzZc5jVHrpX3hHkTKSx6nJA4Pc3QdP3gtK-0P1ECKjLC-h0vi7DgiG_cgOSkCvLPbeMo86mPS5JkyYE",
+          "places/ChIJn6vv4QqViDAR7yNmNm5krTk/photos/AWCwydjetmWSIvVffkKPI_Dmo3tGQAz2dDWoNfEv8W6H6vloASAJyA4FmVRjocD_5oRwuzHB7C8rzw1UFgPDYo8nTKvdbO9GTb7sWnVZ1G4o89El2A1ZkOa2pd9_6jlkUzQ1j7nW0Od1hLE0Do1hI3yTFBBTOzZFEWfZ-WbDk1TZRSA6n-N2ZTyLw6nXGEGzt843P6cVgOpeLFwX8l9x4rFlnMf-wJmIgWoOHb4TrnQ3oSqgdunQBzfiS5WE49UT4giL2TQ0FWKCf5kBoXRQ7KMdk-jbeiVhgn-khBeH0YyS05PJROQCcA9YrI7Bxa6AL003zGe7NEes4VFQYWt789cDhQibzqacq-TZ48Zp0r5aej_ODZSHTHjpIdj-CNRRwTf15popguI-_3ppeJWp6a5M0k6XZGAwkj2N2dqe7T7aAo6WQA",
+          "places/ChIJn6vv4QqViDAR7yNmNm5krTk/photos/AWCwydgO7AaIGC4kahC-YACvltUtyTI73YHzOxEsoz-j7j5y6f3KH0DqnXONBQLZ5NXopFzAVM2HnIjttmwoIFwHup21uP27joni2k_QVLpQcZElGFN8otyKoHPzsMg8aEjxfVCku_YfrQxMXb096D1TX4_ncxg_MF2dCb1NNejX8I_7tLZOc0MF20TzhT3F32yZxyCT1x95HgczbnRB7_ssMcswLiGObGIXPDeVbcpCl7fuuuFtq86A7Wn1VZf2BBJZoFDUVv0TPNHR21EG7W9yV9KTJjXHZEl0CqdkcishtvS6XMhbx-ufSLed806c0swMHw6oO6vCEtsT4_Lt7PDKTd5QwlF_pIFbY7ii8WmikY0tczaUQlZ31OxjlN_Z7BC8iUIHz0gZXduB8zaIzOyzdRXbLQ8XG-iOHUk62v7zMSzQKw",
+          "places/ChIJn6vv4QqViDAR7yNmNm5krTk/photos/AWCwydhMrUo9VVT3TAtwyMRRHf5mPW1I7bk8HvD0EqHjptF8yUQ3DXcN4rrVk6t7hkdK_kuqH9eBlp8s4vZeJR_9Kp8-Dff6Nwugz_4a0ugfrYxb9oFMqaK5Is_2x6XSBo2XiSQJ52slECP6vWjyu7tkbmkYWTDJV6IAQ_lu-XLG_EN2r8dHDapXOAqrSRAXUm57l6RVwVv2BQrAYCcs2fmPivIqnYcjQspUh_jgsGl1VhHAAXmnVffronyJ85Uoa7s7U3zwu2WNAe6qoMiXcQsszMnvDu7sAL_W5AoTPwn-xYyDHYQ4cssWuQImA0KhFbjIAvACbp4ig2EnM6Go5FP2ytCuOPNxPJCaS5HhhV_lPeaOLZPXI-RwLC7jkpb2tCpRHaSLlz4Zvd1cu_ELcw9zU_Cok2prrUhHPHjuF34_tAPKW0373rDDD1iiYncIIQ",
+          "places/ChIJn6vv4QqViDAR7yNmNm5krTk/photos/AWCwydhpjpzeRlsyRRfnhN3SstjpdQB37dL8sRCM4VLAGNVBOeZmL1DENTEzhp01z8vcJE3F5fahTvHzCvHZBEhvZNxg18HrsDB7NZxTyzuEVA4Q0DUg5--Fbn97ueK28jHOwWdcy29HGDEMqOwsVdINqz7PqyPGZdW7xIwKu6vcb2yHX_0EJEVYmDhLqB5ubVA33kGmjZxNXF3ApllTQa_eeZZ7IK6cGNQmAHazRKWV4oa9ijFo2Ug8PY-BSbSv86LSiDSOWXrtShWDkL1VPIs6wKwmu4fJQEqLMsImcSTlwLFx68vLAeYHB79cWOUID7KBT2PMzT3k4n7sTzBkPcjBk1B7ZuVHgoL_EmQhAeoAkRyir9MDjX-fAl1po9iZ_BULz7-kuOz6X5MxmXGzPxh4ga1EI_H9kjYjRdSc-mexsV4",
+          "places/ChIJn6vv4QqViDAR7yNmNm5krTk/photos/AWCwydjT-IKnFBVVm4s9ot_gXWDxz_WSu5kUu3qkaK3sBA7P1dkXG6GIfVcu-i6lSpXvQw2fXUpFSj2Zxezgz9MWJGltzP8Z2piDJMco0Vauge-cfV7btHfl4FlL31qqguQO7k5l5RaTQOTNg8c_WcHnop85kXn-drWWzDGCzaUON5A9I8pZxIVc0C4NbLYl5jdDvTBARHhJvAwqmNPxElXoAlpPg85ErYKZPsoM_izR0gNovjV1f2HADI915_LZdzrtApcadqjEczc_5gjwqdVYGyTll4oXbz76AkniMZkid-oMijgXkrcXeEhvskYTZ5CX8jZ0-GHgxTrnhPB22V9AKGVa70QBUBN5YCq7kcYQU3m_E6jmj4S26xkp3bHAC_tNwa_uFM0-RG_3jiAbaKNcF75rZgVtQ7-tMMWOAZlG5Nhb2ho",
+          "places/ChIJn6vv4QqViDAR7yNmNm5krTk/photos/AWCwydh3XkhNREfk19b-acS0jJQ6MgRGbZdpwPYognCmKDtrMA3QFD9Thh4BK-Wf8rL6KC7wre4b5u24DCAapy34eDoRTdraM7UyMLn6telrsCeQNh2ZTUEF3E0YMf2-FgnudvJyiHASJYmkFsOEWN1hcf-L6xiCMfJia64R9FJ0XBtj8w8h7WuB2RBvGiQspCS8UQpaQyhp1bMpeXSt5X6gQMGzdhQRZ13mNzYUPPNxZG4QqeGuxmpnfaFgB6drCcpgjg4bXT-3OPb8AIEyeACkWFXKSoY8FxGeX_B7oTIXTk6sfZccB-XqMQuQX1olA82tReJ8kQuOVW9rL2_6c_qTdqyjBy0sd058tYWB9pOvNHXbsf7G2yziQmPNvoAB-V4i1VoXXPOnZxaArEqW6nqET5HzwTdH-be8-6cMpsawbgPMcw",
+          "places/ChIJn6vv4QqViDAR7yNmNm5krTk/photos/AWCwydhQR3i--OvZQF-1PR-qQiiTnplXcXMogt1qwyXW8xvpALR7c4CfJrRRTHIoHFFWOBoh1wSS21Rxn8l91z87Wr87w8yRdlylbfbGVCkxkcgU-tpusADcWIetR2KWHIz9R1pVMEfMhYJDIa6yVxOXvoN_Zep1DeOn7OFFtlMpSI9Uh9xyRDbFfGdkYaUl1ILJ5vsEIaq5InQc6VcN0Yn09G4FwhqQk_WqxBdGlWawowDEfGyaYUVCNuBo0aZZzROc-gjapAvstUdVLIZUExSnJJ7WAkhmAWxqRRCaI35n5g-u2-xyccjjyftdWzOs6cl82U6Q0tmOfF7VcTrK_-YDCaJXfpUlXg34kE_utuN4XYHEKtz2s0HKVcwjiZCc1qat25mALfGheC-9tbiyzIivlDGJFELjl5B4ae5Bdo3qjv52jBg"
+        ],
+        "__at__": 1786803538.8525,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Really nice to have a wander around.\n\nDefinitely a locals market, and it was really nice to watch people and traders interacting.\n\nEveryone was very friendly in side and zero pressure, simply hellos, how are you and your country sir / madam.",
+            "author": "Marc Ollosson"
+          },
+          {
+            "rating": 4,
+            "text": "Rathnam Market is one of the most popular and important local markets in Port Blair 🛍️\nThis place truly reflects the daily life of the city and is a one-stop destination for regular shopping needs. You can easily find fresh vegetables and fruits 🥦🍎, clothes, footwear 👕👟, household items, stationery,",
+            "author": "NEYNIE"
+          },
+          {
+            "rating": 5,
+            "text": "One stop shop for all products",
+            "author": "Sam Roams"
+          },
+          {
+            "rating": 5,
+            "text": "To have breakfast, lunch and Dinner I recommend to go \"Sri Madurai Meenakshi Bun Paratha\" Rathnam Market near SBI Bank. I loved specially Chicken Biryani ( Full plate @130 with 4-5 piece chicken and Basmati rice)",
+            "author": "Premchand Mahto"
+          },
+          {
+            "rating": 5,
+            "text": "Physically if you search anything you will find it here.",
+            "author": "Er. Dweepson"
+          }
+        ]
+      },
+      "flight: kolkata to port blair|andaman (port blair & havelock)": {
+        "place_id": "ChIJ_0wQx1GUiDAR8NlzS1h3Imk",
+        "name": "Veer Savarkar International Airport",
+        "address": "Lamba Line, Sri Vijaya Puram, Andaman and Nicobar Islands 744103, India",
+        "rating": 4.2,
+        "review_count": 6845,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 11.641656,
+        "lng": 92.730243,
+        "photo_refs": [
+          "places/ChIJ_0wQx1GUiDAR8NlzS1h3Imk/photos/AWCwydhTHMK1sXM5VqPdemy4CpXTfUnqA5ue3zFu-O48S5SwUnbvA-wTMutnLXCAYqMEvsVUUn3GwzJ2kFcOJJjhz1KwESJ2zhfuxFLpDv47ShFMgZmochENPJQX0wXLUoI8RcEcgVDvp8NntB-p3CzH7CG0FKi29uEJgQPEMYhP0YwoFBjYKbePw7LW4CevkOof-dusFtx_M-64NWwaIXxAgEKLBt7hxPdSj2Sd_5a8ySLfljjKHL0tJEkt9s9O8YC7KAASJOu1MZZhwzwsEWOhY6MsrarJq4W_P_2UAZYzkPRbt2b2onVm5A_bca4u5_tUYznvk4BT7-t4EcWOuO-7W6AlRcb6hFan-awjxxmVO5F8lbDqgaLTYReHnosHBjKVW4sqgziT5kZFU-pdy4H0r6_Az4qlh4Hkk61n7RRycKiycQn6fVGRKrPL9rNrMisf",
+          "places/ChIJ_0wQx1GUiDAR8NlzS1h3Imk/photos/AWCwydjhkBGWnA-XHVfDa7eBro3S9fWIVNhAkIYfQ0kp39rf0oDV4iMXVrJgrw9nFN_9z5O4Zi_g6jX-EtgpETxBXwiEmtAuSOYv8C-_QQz93I6FEnF-qD0G7KxpXkjmUIlolWi4LLiTPvilUhT3pv60xonq2qe3meX5fencgJDJWRUiE7MXKA9SxEGKONP77dGqlI1a_D3PMBpnvubhCaG9ml9khfz3xW4uGljSuTkh2ZgxWM2rAJ_5glHekEesPWH2LhhP9r2tlfXl_E0N0kHfhgEnKZOPowlC9Me5jg-6JBxqzkylqHkfMxrMpNu-frjVad7Q_GZ7y__FebzhoD54LAsGXYseh6mrrGk_ihdtaf1T51aJcz30F9p_ITHmV-6prU4DrFt8t-zjPnfOFmseeQcKhSbO67nHdd3pcI-kBjz-UmmqOuXtnYveq_Agkw",
+          "places/ChIJ_0wQx1GUiDAR8NlzS1h3Imk/photos/AWCwydiFUBDU9HeqP8ySbt4nhKb-pSSNSBIuLuAraJWEuLXOMf9mmC1S88gHQRqISIWZfAgnKVZZfxcxE6WleModIwcmsMi44CsiI61llO_GuL82vy0OTX1aYn1HvYAOTPVdT0mFPRe4mwXl7Z4GqbMEfim_BZjLRql-Qj60Ii5rm1enx09hlXkDWRp23DbrVGnD-hPdh8VdjuospBE1MamxtLV4ZEVv5iJki0ZAg3BGZsHVx-__FpuUY1FRl1eie4TtDa_qoooNiNZrpIIoXTJ78oxTQhXPDnkbHwL4CC0osZ4cvjxzaF_JKOgd3XD3cpWuyWfDB7_IS58B6MYQPlWLNkOwyhnD6feRxGc-UnE5UdxLxW3nUdZRWIgliTdOgOsWLOQEydd1XCuMJ-U_gtWttthy0CG5WQGSOze2W9RIMu5ovw1v",
+          "places/ChIJ_0wQx1GUiDAR8NlzS1h3Imk/photos/AWCwydhHh0KRJWi26nuS7YhEhbYgQUoGhk-xavEUs7GbB3WO0i0pww6ESMy9BTzA7veEiySFf40MID8uuu7uYBnu90g8H4ehzkH3_pPkJoPX0W3tbHPBpPWs56QziYI6bU6iElWD1l3xPqawSmoasHU_51xosigRnPlrE-rtcnRS6iUlx-UwTxpc825Finq3DiEIUtmVCiu2oHcbOduMOvTU-qBpFj2ypyHF8WNsyeDZmIBN3-wFw0uT3N60Ycb88FkAMZQgkmibwDuegNLuYyytPYTTcf1dFEfM7zeaUS5vdw8lWlf8lWHbeFbqRCv0QIHKsk45dG5g1krjnS2DWtVnG8odq-7KTEzeAwiXo2uJHG_mk5jwhNz-anV6XHhG-TtNSAtfrZodEwgjmC6ZNzq4oQc3AZGiyhhU_EjV6ax0bV0-lV8",
+          "places/ChIJ_0wQx1GUiDAR8NlzS1h3Imk/photos/AWCwydhEoQZLd4dZ1W8ifMDvVQZW4xkv4yrzkrSWhPG3JWk7KPShMuDAycQHDxU84y1getUWYt7AP428t7IFnDbEHvmPMOFU9B3o3vBk-5UBhxVh9tjirAPAWK5kqX_-DUFjyS6Mk5RwteXK5IOxjBbH2uVMzeEAsvcuGYGpO0Plx8B6IEOgEMdOUOYkS_nv--CY81JHfYeKXMip4W3cH5UFGOtJ8JWheG-uAxs1EMlZ1FX0-hs2GZn0d46KywY0waO9K_b6vuwpJcouW2CXxLSguF5rs4SHo-z-pdcrpSgfxsOhLk-0yGpR-GuHvZqBvht8WaqG_KhCttJwQGSPVjguNLOFEHaTbcqsRfSYCXDcMeP0y5MC8JspjqHAAuhWJMj6jpWAP-_tjs0_MGIlOSa6W6w_hsoXr_jWQ-INw4dvxwKq8WCw",
+          "places/ChIJ_0wQx1GUiDAR8NlzS1h3Imk/photos/AWCwydi5XMU0Ultm13JYNHsamdjOHeUD2DQO4VuAjmbxuGJeG0IcwnbxszXx7mZvqVoRqbcw3XcGh_frHjGt4_EegRTav7h8PShlBchWhsTIpkt07D3okGUT7KrT1ITU9UYL6tVHD9U6IiYuWIxGvMe5jqwG9jOA0ftNlTeLEeB9oz1UgkQJzcLV5o1wtytGXNnvhCWaF7NQLYx2GkaEnVx4i5f28FADqz0xhziFBj97OOcLd7FT42RJv7ej9yJEdPFBYqMWIcY0XZwpayP4z-4uHM9yslJpGdlw-lD4ITKnIGDzypHjRp02eQQq19VJWW59GfR_6xkEv8JecfgfZlfrX9td5wYx6PUBGBg_KyUwl_JKwM3HcI8x2qChlmd7GyW-z693AI4Scik7ys39aNHMgVTeQCCmXCxi6XQbPteeJkhJ0U6I",
+          "places/ChIJ_0wQx1GUiDAR8NlzS1h3Imk/photos/AWCwydgDLaNIhtIPetmprSOjzGeadJMP3TVjww4pd4PXbsA2z0rSy8t184eBnvKZ-Z9ZADwri2MH7ug_R6TR77A4dEUD-17np46XFNtW4yjHNOt67S2XSdSqc8EHKLyrdNepx_PUt3e45thf01S1P_ERXkHf_Kn9DP8fqGQUizcjGLwZsMMATScJXAFNZ-tcUNnZ44JQ0ugerlVe7uegPKG_ylp16jxPYpb9s3w5fP0XWeGY78dSeyz6IW8zTyV2ySEabU5glpWTBOHkjXzwIXBsPU7AKxY9J7cKb9qH_2m19Msq83-vXEwhFvTUWXaE0y627_2rHCXeYyWHk6BqSZi-Oz9xNwDv4M0EK3hqsYCFgK_2vOONW6bjHMTbX4fv2nCMWpQsKa4beBOvIXQDivInQpRHa9DJwlvvNcIqocSLcQcURbi5",
+          "places/ChIJ_0wQx1GUiDAR8NlzS1h3Imk/photos/AWCwydijm9MWp_sQnmnMvBw75040TAWU1V7G4i63CD4h3m4TeXhzlYbWFTmc45GO4rfaREcTF3g-sSbOVFfKaI0ufUTGuo1gq49_Fk-Tjj4JGJ49jWKYvWUT7m0Sg7nzhXwfBqOHSLyv4wAjWIV7ANgV7g8aa6H7zGtuqNVTKzj4RwPEEwNchFHaJV7BpbEQg-38VX_12t8NF1NE_VAYxWLkvm8VejO82v83EIa5MF3u9nAasx47ZwFG7CMlGVJrPrcoxKuihhE06uohcZi-EkA9nh5kMxwMb1H0SlX9p-6rC3EtglIeS3n_9bg0l61_-QPIpTFFoZ2xCBSUD0-lUDMhDToJoI1cKPODi4L-G6sMyqKvAc9nv4hkRpgVgCXveSfRmrq086VmeTqIBEM31vVSD7MN0J50OIhqcGNVyiY7hwmy554Q",
+          "places/ChIJ_0wQx1GUiDAR8NlzS1h3Imk/photos/AWCwydhiZnpVKmm-J7V5YQrAWVd3M86DoCW07WYZJg0t_dE7p5vRu1lO6up9We3oR2Yh3SVnKFgZG1roGNc4zYHGVYMew9bsLgN_nJZS7AXpwSwWDf8M_lrqbJ2AJdEDt9qHITLeVZS0aWAHh5IcP45qj5bCkmVYpjjJULTm9v_t-CBji5jkcG9cN9jQc-YA3udfwrHrXON1IRR6NJxL4mGpOBbQKu75XGdLnSM0Y2m-vdLE7J5xernIdL_-mtpP27hVgCXAU59YiEGlL2EutmYVXOz4CFPdGzPpLxWUQ38gmwIx4KTl19e9XWrqyPezpjWfS6OochJWOjCA_VmkFnZJj0lbnj_xsKAslfkh2Blfcr4wGoajfSS2mb3wfbZGQmXZhsHUvjK0rhiOImrbfOhYZRRTbZJcN6W_EXTCL_zCrKP9ew",
+          "places/ChIJ_0wQx1GUiDAR8NlzS1h3Imk/photos/AWCwydhpH53CmETqgJV1RpQD7p70KxOAODb8rwB0W9P3r31-8vEZZo1peWh1qHO9GvY_-CInOR5Hh35xcPQkqQLRgTIW1KQJ5F3svS7eTxLuTPt-EQFAX1j0ruJfbbln1uouopdXrT0shV2TCfr_2W8u3sOwUV77gDi9ToRK5Uq-wlXJjb9jCS1yPUSas6Xqmarcv-BWwaSx2IrRHdJAw6fsT9UMWBc_9fWWYnrtbI9amFZ99yjIRbjoRkTJZrb68vpBhcRdi42ee4i403MI2WoY2eowXzITCDip6Ovc-1YBz92iC-d2fQbEv0DvuvYtzY30E7SqQRR2vMgre4ut5wQm0FXvfmCLDSqKnehJw4VwnochNm_qqSMHPjzCbT7tOwEt7s8eGyC7g2u6rhj7vM5JUIcajPRSRfAOfP1NxEWTNrlI0Z_VDqfmKZA9u7UaDkxe"
+        ],
+        "__at__": 1786803539.40799,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Veer Savarkar International Airport, Sri Vijaya Puram offers a pleasant and convenient travel experience. The airport is clean, well organised, and equipped with good facilities for passengers. The staff are helpful, and the check-in, security, and boarding processes are generally smooth.\nThe airpor",
+            "author": "V. V Nair"
+          },
+          {
+            "rating": 4,
+            "text": "Veer Savarkar International Airport is a small yet very well-managed airport that perfectly reflects the calm and welcoming vibe of the Andaman Islands. The airport is clean, organized, and easy to navigate, making arrivals and departures smooth even during peak tourist season.\n\nThe staff are polite",
+            "author": "Debashruti Das"
+          },
+          {
+            "rating": 5,
+            "text": "Namasthey 🙏\nHad a pleasant experience at Veer Savarkar International Airport. A cool, calm, and neatly maintained airport that may look small but feels stylish and well organized. The airport is very close to the main road, making it easy to walk out and quickly access buses and autos. Loved the cle",
+            "author": "Travel with Sagar"
+          },
+          {
+            "rating": 5,
+            "text": "Very beautiful and nice airport.. since located on port blair island the  architecture of building resembles oyester with its flap opened. Surrounded with green nature . Quick check in and check out services here. Main gate is greeted by statute of veer Savarkar.. the great freedom fighter from whic",
+            "author": "Ravi kant Mishra"
+          },
+          {
+            "rating": 5,
+            "text": "This airport shines with beautiful, modern updates and cutting-edge technology. It’s clear, neat, and truly stunning. DigiYatra is fully accepted, making check-in seamless. The only minor suggestion: add a lounge.\nImportant Note for A&N Travelers: Avoid collecting anything from Andaman & Nicobar bea",
+            "author": "Prasad A C"
+          }
+        ]
+      },
+      "ferry: port blair to havelock|andaman (port blair & havelock)": {
+        "place_id": "ChIJv3rTGQCViDAR7HOuQrtyQiw",
+        "name": "Andaman Ferry Booking From Port Blair to Havelock to Neil Island - Ferrybooking.in",
+        "address": "Ferry terminal drop area, Haddo, Sri Vijaya Puram, Andaman and Nicobar Islands 744102, India",
+        "rating": 4.6,
+        "review_count": 20,
+        "price_level": null,
+        "website": "https://ferrybooking.in/",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 11.683583,
+        "lng": 92.71977450000001,
+        "photo_refs": [
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydi9RKC85ymQBIVl6ZM-NRWIy88Pqh3E2vMOTCA14_ne0gYarlgukQtDu9KXFTSWaNd5LGahGAxsGJZtQBeKW4aAxIPbavq_f4sH8LbUJcpNbOjt2R8MAgBZVGa0WE3R-TGbU1BCFmPTkp3Wbhl_UHws0KMm4uIa1yyIqzy3gGecMeOZy4pqYP9qrxMMe50eg5iVPqmhhY4g3nd9o2jRggc2iIHVJ-PLbkMiA2pNIwVOY6jiUAByBbuufTAFObQXhWd1v40ME-RMQ-oRtbhH0LOGTcbxioqOqZ4lVIBw6TKWuq5vgDsrG9xgxIpWfAUpl3vbSlir-Mfq7U1dyxtaMuiXq-jt_5XYOuL76u3F742kiZ1fR7U3fD04MeOHTvkLU9fOIGkzKe4ylEgNOhZfg9KzVU4k048p2CzKu_s_tk5tRoVFm2TDlVFLpQHp2Ymh",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydjwJblRAaeNcjCKAgen6BrJNNxXpzVz4xiyOnVBE_CqQn7xfL8xo1vAr9dL4E_BxGlTfGeUN_ugll8GwwzGIAUfh7wBU8sOGiQ61T2hRJCc7c_2z6qnR47MdFqKKmiJLOfuMn_ZU3KTv1AGmUFN40Yh-n0Wp2pvtlNx8RgAbPwCUWGbZok1Uqs-AoH3zAX2UqMD2XEeyJB2igQb6HIC9kRYy8uZAjUtKIZVHdKLreVL7k6mCwHqwJi2f0I-sgSPyOGyTuDCA9ej2-iQpRk5Nm6omHsYSoxuPsF1zu-RGsdyvMdjaO6fxCx__to0xfMtKb2envSPqWLD3Wn3Bwzpak8khqVYKc-wDNEEFV6ableBbgtuWUnLVj9FxiAdV-EzFTK46yiC8vnHVbiUCe_Oz8Bkf3-ma5Z2GZ_cfuDn9Ml18IUa",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydiRssFv6QERTek8divFe1GNXOGJXoJmeq27bfGK0yqa59EbLOuPL3dZOINEH3OizYZblJBy90jLm7tyPh3t38fBftvUP4KT26h7Pm2-ORclGFet2JXlh-LU71b1O_oe313W3X0nj-RI89e6m1MsOi9SdNKC1TWFTLkL6jeGXBKdFHqWS1K3RWo6gOj6wJeqFbfo6PFtIlUlGMsVWoPVVdqsyg1T8Xnda3vORrRF0FOUBqt7wWNHBsNbCWTtdwGrKccdzmDXYvV2dTYKeB8UdODO_54cvL2tZMWAbTc_YN8B31y5K6W5vwNE3WnyRLPSQucQ-JvhNAs1YeG_G0G0ouoymeopigiGph0p37uCn7c-QgxwqWof6E8jndWPhQ_lGETD9I1aeaMe8MXWFaWrC4XblyGu2S9XutHdc8le2zytpy7egVBY_6pZHRG-PoUw",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydgMmhbYQ85EA8kWRcdAL6r_1YPhVRNXfrK9jkz8jIlNtjRWSM3Qx0oiTB9TGi4vQkVAKNTUim8x2Y0MZN4wDyFvA7S9GNVqh8SNPkJTSrp4Kwx7DvaVF32v2cM8coUCECPpjj-J9mjl0BPz64lNGirz5-k4fdlJ8Mk5elcKbUz4PF7eAzFFPBCkm3G7lW7iZNXWSgJ-AUX6q4_lIcgxN4J29pUpEH0vACQQGl5Q_lAirBNWsgk4syEp94fTcJ_wlGHcoJQIiCwmL8mkf7m4jGUJTloW8oSvEEk2M-YuEMff9SEEGer333U7ia9c1UWT_0dS5VGhkOJzdOvQDrmkGPfpGmim1AupLY5VBd1i2NZel7kxOtRsj5yeg0qjLJzYi6nX0ca6d2KeMQVAyfV4WWNbADObB_F4zTVvJP5t1PPTsw",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydhme25rUr4YxXTrnl8025zgUtw-jTfYtaL293QZT8RLucOK-GWELq4O7hMX0tF90JazKEOFZdWTR0LbIb7Kanr4rv5YDkAB4KUmZjoUauiz8o4bBbuFb5huwycPfAG5UePfFSKWvHwpmB5YrBlHH-Q79aR0_oSVATTHyUpkQXRn-Z82_P3Q35RRCnraBz1_YPbcK9OswezF3_1ydk0zHcZhavfKdMhNB092xXmGfrLZearDlrfUgwTYCDGcRP4pe_YB9oq-oyyYfOKrbqtRmx3ubdl4Qi9G6-pGbxJQLiHya69Rm6KN-9a8DYu4OM-wSVkSswqzxo80WJl1EECUaoLR1nM54ltKiFpbzrorzG8xURPHPQi3IuE5-SrNReIWzLtvC5oSOed-Cpa1ZWpSiFHGPvrzPf_z8TtBIDJAGUj5M-1i",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydj5aR-B1IA5PVFWKVJpxl1-vu3GBXOzqxqMI1vwx4KmEcQJ7K8_ZI-G4-zR5jkLqqSW0DtmlxwGjdamzyO98Q-xhcLR9BdBOKdwD448QnBdYtoA4zTvSkYTLjMfH7AT2mV5YKVezbOoYAmsN5vIhpDENi-7yRX5-1ZH6sg9AtystUdG1dGd1SBS61wO2Sa0sQgbad3GJbyhH6EEyIyyOrZ7XR_JSRdC7zf1gXNsLlt3Zf3sTxKsQMtawhIqHgn4vRgfTl5TsViHeFCzL9FedC9Vau8xHcFR2HUvCU6kTbZI97Lqyl6ZRrl6MHk_6VYN5cCZUwrDwQ89TU38q_g-CKswUaCPMf_-kfM0_2eZZpRuTomORBFlQaNcHdHGeRNUTlMBHmpdADrL19Ya3peLkP-JG_k4rCvtrq3UUhSQSgx8FqWiNVTn9Id3lXBpDQ",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydjIJM3uzrcQFuHnMiGPK6T8XzPs2iRvbFxocbYrdMR9FyBQKyheBW6GodntphdYvhCOJMkfzAnNpy1cSOYeeOg97ThYmDIoxJgM0svWeB_zLJYHAMR28973ELdqTlQj004g4VGTs-EIgqcGEs1KR4qdTI9gzX0Ijzt7gYqvgfzRsmolk5XFSQh2WYmRrJEBwZENd3mxepcfcJbPwuce02RIDfFOsfeS1tVTENFPm8YDTU6rzOxWMcozQUcidOfx3rlwEFKoyOJZ6Dp2kFqVzfXbzcQK7ucIk7O5BFOnm6ABlgpVTBdN0vzQWiQCcFySmeSfb4-sJwwbwu8J2frR5pHhV7ahtryhaQYnHbhezo13TTriTIHe_COBTBacGh2Fwf6JHx06TKSvJH4gBeR6ERYUPJeo5LTm8MbohTH82cg",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydjXpbxNmt2brAbZDfMywjdszNUwLNETr_1rXSsWBWjXrJYvhTYc9vFJksgXR38CHcURJu4YllpGAQRVEdG9Q7d4EPaBBZv3LBA1OrSm2Q1mMCUepAThjTcFtyXl6-AUEu1x6sHyYmVMTE3tSrTRL69d0kTcV8XBnVXOs7fE1UhasZD7eFq5XhKVIg2zq23s-Zo86vACu0aFhfrOydRfYWXNOTIRJp5esixXu8_vzF-hcJCblh9KX4tVK7NDmVQBYlsxbd6fF6illfCoEzVg7_M8_SbI6DKjSsYX49zbU4zPr9_JVx2knz3FGUpTJQtwt7pHT4uLrFYbtcqL7lUuaA2cAaQ2Q7PTtlO7iZ-70pO-pjazgg3YvtPpTsTgLmba2IiOZ4n0YvYd27Skd_qcStAngCIHB9J25IaxfxqyKYgwRrw9",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydgkXlvsHE7LQWNAe--vnXe5QaLhLC-cIbzoD8bCaTYMEDkKXQ3quLf7f8nlufbhMtgbQ12GwTt4Opa6UAgP2NXiF8cfmJVHQOBCR5zCPkQyQ0w7p1Ikr94uzMnAzPv-wXsfN-w5fi_z7sHsf99LKEsLus1CwHSYGrJ8c4GJ14zoP2rlR5SodWyqyzcLE1C1jqiHdhyxwG5dpViLK_CtWfd7DZBoC-JmSqVeE9M1XBhn2YsMCxmc9AhbznBjNJOTb4BeotHq5Wb_b_N55z5yfevjaM27IKwb1ryaf_GI6Z0zM4KYz4SeJCxvkG2PVAE5cdTO5_VEU6miHu_XPuXeCHQHMF2ytTn-MmehhMGoLgiKuROUZ3eHe56Xod1OaA3qRYFmoZmr6lIAophB-7zuY_Pi8uwDAzN8kEhWaat4_DyNwXI",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydjMAZZSdeQVDTRr7CRBEj0LDf7fC1z7EBhBcGLYjo9lt4qBZHjnLAXf9JRqul57nbxc4BXthkZbsbYUd0A9Mj4gL_DimZU3BT-RkWVk4_8tJ0eFbUuEihNqqEAtL1Ox-mwpci7oiHJZrFxUYpBEBDIjIpTuzytrVlSP1ld1G6ylWiKEZOWndSugguTjDyyyR8w0rFUyliWX9u_7-4JQ4kugi-aPhfox4Ajyt9N9TA8VSXNUc2XxsoVJSAfdvzOObOAxOKURahu1SZRjT0DayewYIxiV2ynd6CRbBb0DJbmJCbDLNUHeRz2PYSCrJdhmfatXi3h_Qgb5ioyxZfZh56yUhg6ig4npdAOYb6IJLVxrdwdktMSklqeG1rYYAT23e2GPe4hVZbpNi3EHV_gAjoXIumpO5Ulnf4Ye7HLgazFoYtrA"
+        ],
+        "__at__": 1786803539.903975,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We took Makruzz ferry from here to go to Havelock Island. They check your ticket on entry. Then you have to scan your luggage. You have to board your luggage yourself.There is a big waiting area. It has a snack counter as well as washrooms. Washrooms are clean.",
+            "author": "Meeni"
+          },
+          {
+            "rating": 3,
+            "text": "We booked the Green Ocean ferry - Royal class.\nThe actual seating layout was very different from what's shown online.\nThere are few more ferries like Makruz & Nautika. Green Ocean had access to deck, so we booked that.\nThere are different times. So book as per your need. Try to reach hadoo 30 mins p",
+            "author": "Pankaj Toshniwal"
+          },
+          {
+            "rating": 5,
+            "text": "Makruzz all the way. Easy and comfortable passage from Haddo Passenger Terminal to Havelock Jetty. The music videos, though, were jarring and discordant. Makruzz could possibly consider not playing the same. They would do well to  play videos of the Andamans",
+            "author": "Jayendra Chiplunkar"
+          },
+          {
+            "rating": 4,
+            "text": "The ferry ghat of Port Blair is around 30 minutes drive from the airport. It has a big parking area to ease travel of passengers, mainly tourists. The ticket counter and boarding area is also spacious. Luggage of  passengers are scanned before boarding. There is snacks and coffee counters inside as ",
+            "author": "Sujay Banerjee"
+          },
+          {
+            "rating": 5,
+            "text": "One of the best websites for private ferry booking in the Andamans! I got the cheapest price - cheaper than direct booking and other comparable websites, and an additional discounts for large group booking (8+ passengers)",
+            "author": "Aniruddh Agrawal"
+          }
+        ]
+      },
+      "port blair hotel|andaman (port blair & havelock)": {
+        "place_id": "ChIJ56dW_vuViDARfzpvBjoBHSI",
+        "name": "Coral Reef Hotel & Spa, Port Blair",
+        "address": "Bhathu Basti, Sri Vijaya Puram, Andaman and Nicobar Islands 744105, India",
+        "rating": 4.5,
+        "review_count": 1291,
+        "price_level": null,
+        "website": "https://www.coralreefandaman.com/hotel-and-spa-in-port-blair",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 11.6189778,
+        "lng": 92.7117854,
+        "photo_refs": [
+          "places/ChIJ56dW_vuViDARfzpvBjoBHSI/photos/AWCwydgb0dxOfQMr-q5-tMF1cXjxopN9TuvqqkCJFndkXiB1roZLMu54KlGGE35vtfBYlmjvMASNz0SGqgG4mOevtBKIvN2bNs2A-k9C9ydu2BzwRqJYeqMGSo9A5SrHKNKvmPVApfAlAZdCqKUctvzW2ShD-tBmxF0Z98Pr3Omj3hqpvG36T-UU8klxTYHI6v6RJwWQzgtMIklE_K4P3ocVvLSEKw_NfC_XppUpT1tvrh1IcXBFEE_EyoCJvr6qSZNdm0Z_y0sZ_-lD-VTqGWWyIHZn-6WuinJ0VQLS4CJBa1QY61J58fU6Lx4FcLjFBwRRd0ne-UhDYwxjlZv5aFk0UuNIbp024hm-Mq2fu2863hLGkFWR69L0ljihg1-pzepm5yc_foCog2oJZJnMBOouGhSy2j8zfA1RN7tfC_8Ig44",
+          "places/ChIJ56dW_vuViDARfzpvBjoBHSI/photos/AWCwydgvtalD5D4-9mYztp8zD54ZA576Uv1s1xEGNoD-R5uDIpfgyAh3BzUQbtStsVGg4Yd5wfOhbjX5qXr7yDIeeaE-HXt7Ur8pBqBBoiCizkzCIw5scNVwgfEJyu0W8RMEdoRQvQSIUZ2jNmrSgrcWIhT_ktgZ0gPKPOOTdJ165BrjTAcXgVdZJRUFgf5IOnsTI_WA4sp4mJhCRGgNbwG0xToVu1zkUI1bEn914i6AHMUlAY15w3oK6KteG_D2sbfXPeiImgSMf1KADhabiu18YvCzqtq5SP3b6sUIDYxl1utadkpOHjMxiNpfjP-jizwfDONXQQIcn4vs8Rh6Qa-tJB_R3XEuPJAK9MfHHnVuHyiBZToxAXj-yLQkm4ZMRGSILr39OtRiWelO8mPGIdWyrRc6iJRzYD9FpaXwTqv5y1E",
+          "places/ChIJ56dW_vuViDARfzpvBjoBHSI/photos/AWCwydingAxQNF2Wpw7V3E2y8QcAti-YOWAMRv6YHteD67B3J2LL2vcI_jkfrUcRAJXN_znNR7TvBM9F9EsYAt5S_aEdS_uZFsXhXz2xdpI4GeR1X15NzJYzrA7Bq74D5q51fYeeABLhC9w5vGDtcMar5wFBxPTO_P_TTdiuxtyf0CH8nSyKWXbqDPVVMldkQLaYfHApPYKjH6p7V4300riVR-MzPnXwrLV8CHYDS25QuAWhV3eJV26aTHnIjIjUwm8I3GJOAd7PKY8PEMlMrOjJitK75kGCjSsZp3-03AXQFUsyMgu_Msc2_uB0nlIS9NSCzgZZPISYWzolXdcT87d2k8swQo0MxiyfcLB-0rttMlTVjJwk-mGZk5Wj5AO1R31pi9yCNM-9Bkv-QiAwZ7gVBuhmWc2a2SfkahE3nBnR21TuqffE",
+          "places/ChIJ56dW_vuViDARfzpvBjoBHSI/photos/AWCwydjLArGz9oKVePuCjYNxe9y7CuX3zqVfMDuivNKfsqX19qA5Jj4xFtH3lBBdCg0VST8f2XsYHrFDpWkvEghDKAygd4m9C70q3Nsutyfctq7Z_2DJ16SjAwlANOrvpGZrv7E0bCrKT0Cx_dorLI3DkEMzlHXloNdlJk8AbtEKdY8FjW7Cybf2PSGG2wcUpW9bkdVspmRRO18CyUH7ZrzIcjAFoPkt_QjLZY0x12hT8FUKqYoyIzx6N3ARRsxxuud3xHVCcDpIzpHvO-zBaVwrF0_da7tvj11NUn0UnK8q8wjzuZOMaPhnxhEs77pLFhn89q4l9QPc1CvrEPSjqG_57Z9c_Q9Xaep8zShLsRe1D2nl9hLi0Lx2JXEfL1M9d-5jl39O0nFg5NkFHN-KfAWY5qtor2c3-L2cmyF28zTk0sQ",
+          "places/ChIJ56dW_vuViDARfzpvBjoBHSI/photos/AWCwydgaVRoZaIdHdQXxWfY0iA1RbuUANZzdo0NYp9xP5y4bRiJIY9mKawVLKeSiZWBQZJvbtgMQ6W4l5A-CfTDpAlUUmb_I_ZarVTyF8m7eJxTjVxCVDxTUdl7z5XA9iP--hRAYv7Y3mvOCS6fLiNX7csLpcz2Ca6o1_4rfM5-OzC_iULEKLpIm9uOYZWwXddwPTzkaKy3VWD84_0b7pHG_8or7QQzXya-brm1ZKIvLa9vohEYZ7IcGEJ05aGaFncNM3ohKk0dG_u_eYQ79e1kbEslgOHvxBtZ9RwFmbSTRC2KlXSeys9V-aFkV0jH6sQLlxoogFzuok0oFqGVHNbqYXPLKBprDa6RSD-3ypuWYg4NO9ooDgdVVnQZ5iuv0AHqWEIgIuPVcVuYu3Mf2EsRRLN269zZPwGwoYDkUCbaNEAk60Q",
+          "places/ChIJ56dW_vuViDARfzpvBjoBHSI/photos/AWCwydjVQksywB6rlAxplgBphRBU4TR8gbd1AlQrYPe_WjoakteRFJgW0FFIKWQ9XtwZ5VK3d3n0adA2EREceBtL58QqQ-5RlrHY2DleRUIP86rxmr5IUaF5rE0QMtly3vldwkt5p1nEmRg_A9KJxSxhCEE93tkAsXAyQIWAhV_tL4dX09fL84JDXEXQXkVm6BlwvzsrRM2x6mcqaAIkQxcZracJLi5FeThpxsg4NTxyO0dgT2b6_kTg10Hodj30INvTQhOSmZmhoYY-hA18TPbxOb7OZf97Z1v68A_Jj5cSUtwZvaVezuQHOCm2nAwjwXSpwj900m593w6YMxLHnHGCUnN8UnnEW_Cgp1qeNHgJTtRTtPnuHUnmek7xiZNAs6gL3aY9nYZRZHsQ45QtwqgDfc8P6Wyf8CmSFKmOU4rpCupT8l5o",
+          "places/ChIJ56dW_vuViDARfzpvBjoBHSI/photos/AWCwydiSrshX_cRc0wkgs-FlJPZFFhmgKO4WEZ8LqizvUF2kwc7gBfjXajC0ZJ4zKp0inYxzyJZ-rVX-mIc8Ljdu4u6AhnR4A4neN0CvmIv2qgHYuaHPuZUeyrPCibbDtaBhmwnzWI75_OiRDHkyOaqaVc_0yttry0oWiUhs9WXK9zuPhIEJNJEjt3C0WfQkEBXE1P4z2f7cc56kZV-ppXR8p6hZ-UZ_PkxqsL60m0XXbIS8cVRExV4EAIneIV_iAc1RoY_4m--JahTqjrjub0ziEqk5HQePwcVCPLclz3cTHYtJXYdtLoRuhpprPz0h5gFMukkBwJIK6WRAtzl0mjTUprYfMFg7Q_AekfYk-931D_IWhAdZyg1P77yylN8XeM8S--9hzFevjaJ74xVs2sHmGq_03UB1A7u-uqQ87SGLrJGXEf1L",
+          "places/ChIJ56dW_vuViDARfzpvBjoBHSI/photos/AWCwydhO_pAwQB_6h9bFSB3vcA0e3L3W61kRTbY1n4EHRUHRJ-Sx5Lw9tcdi_tE4ctI8k83GgnURIByxFSdC9EupYYKppx0q5deMFVP0v1mW6V8I-d66YDbeW8qng0KtwS4-z69kZvGdJ4W2tcOONCzoVdjqoAAHIAZVydJamLuIiTVqMUIFJot5f_2KLr8gbH8M9Gyu1kqGmmARGfp0EEcA5vl1Lj0KhFFLPl7TByU8rfRJicELrDcLN4iQsDErTjxlHrLh_zXr0mWQtObc6Q3Y_8YbNvblNowcPx5jeRY6kr8PiyBLPDWp6J2s6to9CP6mAS_cf6h1Z5METuyWJnIuCfpq2sfqsrY0lOTeMDRimBi3bbkpnJ9g1Gt34qWVACeztAbc2IXktA6Hl3bX5WvZz-Qa7t1DuaBXh6CKOL44zrKf8D_U",
+          "places/ChIJ56dW_vuViDARfzpvBjoBHSI/photos/AWCwydhdfGtrsAV0jJDsaay70D6jfOby02Zpc9MP160loMfzr40TRpePsNG8QAOSSXHNg29I9N6MqB4iNPQ04pR5xH8_lL1aoYK4R_y8Kz72QJG9I-uuKElGnymxI9BpJkmgJN8m84dWd6qAkIQxbPSAY7-QzjC7VB349JkE3KSe0vrn9AnKIWI8p8_KCZH_kv_jNF05w9zuIIGUCtQfdjYghM8npdMGcvCCwCw7AyDAafLZDerzeclx1P9J_M_2QHQ_tBq3u7OfnnpmBm4dXINPOIIs4PRQr6FsfSqbeN6paPHKsNgU-g4p1QFxC-HFfiE5fmbKrfqeHoeKs3qjNTR3YmPfcpA4kYRSMRrwTNsxa3V_G0hr4EjXuIreDsrRjONMMWv6UdTfyOSagjPdVDPpfw_ueVXuXNN5Ubvp3YGtP8TePw",
+          "places/ChIJ56dW_vuViDARfzpvBjoBHSI/photos/AWCwydgqjLKsSeN3bvObOnkdaQeqTNus9UMKd6LhxlskUeehjXkxePnfdmzLAJUrQfHe0210i4x3oXvZn9NMeYhphcvBKBmRKloR6hxFftIOc3lTVQjiYJlz6ixr1wsMMM8HDA9UYm0owlCxjhb2cp3E4jrNpv2zz3eLwPIZS5J8sXYSwARslvYAq9N98UM9h9_GH2gMuOsJpjPvxMdlopLGLxC77kspzkXtKj5fDTEDSxsL_00VY6_pZCq_soRR04OBC6THNpC8s2xItI12nBqW0cZFQomoyvwC_-9pfBmlubxsPtfzOkCsh-4bMse7ywKhZL7Vvy6BL11O6NbFAdIewHfmy82AYnBYZWcCxKUU3PlwYoH-IVt32sBvlo4_p9NQ-5dp0yuxqOMaQblDXIv95v3w1HPpC0Dp4MZQbvyhgtU9yBqbFxVb8oKcj1VYYIf3"
+        ],
+        "__at__": 1786803540.953977,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Overall nice stay but can’t give 5 due to certain things :\n1. Property is not near to anything but market. Rooms lack any view.\n2. SPA seems non functional\n3. Housekeeping ring bells exact at 10 AM but same punctuality is not seen during room service\n\nOn the good part :\n1. Maintained good cleanlines",
+            "author": "Tathagata Biswas"
+          },
+          {
+            "rating": 5,
+            "text": "Had a great stay at this hotel! The service was excellent, rooms were clean and well-maintained, and the food was really good.\n\nOne funny (and slightly tricky) thing I noticed—they’ve placed a lot of snack items inside the room. At first glance, it feels like they are complimentary, but actually, th",
+            "author": "Pruthvi raj"
+          },
+          {
+            "rating": 4,
+            "text": "The rooms are clean, modern, and equipped with a great shower and simple furnishings. The TV is on the smaller side (32 inches), but it didn’t bother us. Overall, the service is excellent and very prompt—if you need anything, it’s best to reach out to reception. The restaurant is also very good, tho",
+            "author": "manish kumar"
+          },
+          {
+            "rating": 5,
+            "text": "Had a great and comfortable stay. Very tasty dinner and breakfast. Breakfast had good spreads. Great room service!! And unforgettable stay.. it would be great if the television had necessary apps active like Netflix and YouTube.",
+            "author": "Janaga Anand"
+          },
+          {
+            "rating": 5,
+            "text": "We recently stayed at the Coral Reef Hotel for 3 nights with my wife and our twin children, and it was a fantastic experience from start to finish. Traveling with kids can be a challenge, but the hotel staff made everything seamless for us.\n​What We Loved:\n​Exceptional Service: The staff members wer",
+            "author": "Ashik Ghona"
+          }
+        ]
+      },
+      "havelock hotel|andaman (port blair & havelock)": {
+        "place_id": "ChIJzbY7uVbTiDARxq4KsrTn75Y",
+        "name": "Havelock Gateway Hotel",
+        "address": "Govind Nagar, No.2, opposite Govt Hospital, Swaraj, Dweep, Andaman and Nicobar Islands 744211, India",
+        "rating": 4.5,
+        "review_count": 606,
+        "price_level": null,
+        "website": "https://www.havelockgateway.com/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 12.0314249,
+        "lng": 92.9929218,
+        "photo_refs": [
+          "places/ChIJzbY7uVbTiDARxq4KsrTn75Y/photos/AWCwydgo7Mg5GdVe2H4-qVihPYKQAb9RCgcKqmksCnino-ytaiFeKa-u12HDQ-miC1QCsMcTclA8nSLXRGhWNtADsNnX3eu6yYUPjcWwlPW829Dzu5AOXup8IgDqMQzIkvR4PkURnoqPeIzybEJ9Lk-lqMC0iIRqQAvRVLOPbLFXU6SYj0EKAit4O7p5EWWBnbt6YzvVPTX6_emBhJOZsMDEP2oTgLDllTuvS56A6V_o4D4-8k1kQj9jYhzw-9p3NfxvP0CZ3HFejc2uXLIvKt_weiBzK7PJa9FinLGDmJjcTlYYLPwxhuLI2-OmDKYz-ek0zqPiXwiKlQ6XLMpPY9v26wV0CfYmqfdYpyaFpuMDHqZej6ctz9LeiFyChYuo0OtqVrhrd8--B1ciwOqxy-u9LoHwGHQL1WC-VdV0oKx08jK0bdU",
+          "places/ChIJzbY7uVbTiDARxq4KsrTn75Y/photos/AWCwydiOunRNQRWQFI61FKVJ6LWPuBBfaSWtTZMoImpE-9TmL3DUsHz3sdfAqCqGJZ1X4eRGv7SI6DR2atQUWuSnjjr1JzXYKHOPMvKD1XRYICkH7fpKPle0fo-6imV-zVLg4Z9Cpdffj75hD8thugNjQCBhQaFYmRypXFdi9n-9sf9uFdAfz1VUN8In-84H8ZErF6eu1ordmn_fxQFLDbNy_rKvX32g4K-m5cMHt3yRle3i2OtXu2oTq7rZqcYHLcWntwQfx8Ohz9lmLtUh84Tsh1fBIUPW4mzHL4HHMuVhEO7RSK1kMPtn9HDl0LywuRhFm1DL7NSZ5RTx0gtRUBQonLTfuhyeIgBR4FxPAZwwoJERWXClbtxO0fePPoG5XI3ErzFlbS_dn8Md6Ym7DRkNBPx8UfYAsORhu5YnelZJWr8",
+          "places/ChIJzbY7uVbTiDARxq4KsrTn75Y/photos/AWCwydjUxgF24HbNGQ49FHBpLa5tUhufBOMIOkuS1g19919VjzuB_TuhPC1H1a8LtCSSkKJkSRmwa-8uo2seNB7tFhLq9QBOliQOS_eaJoHUrPsk2Cu4_UXuq9NoYBNwDPu_cmBZHfLG9b93LbyVNW-34YrS19Rnt8ABPEYV3OzEHgK_dpypiKaGfTy5haAl7qmOrMQyKwomqRkqrkxyzc6gi6s-Np5ddE9CXaZ5nTMBmuWlbGUfi6ZUbnhfqPlxblEmO9DTMqLt5Q4A6MXSVW6hPdyXUxbFEXOSfcM_LKmtLxBzynHtLBB2bSKJOtWQZFt-a8QzTY7AbEaU5zUR8zwK5khDTy5aVbL5G9kGc6F16x2HXqFnh0wLSVepIxzNEpzsx_bYyLamvAKnqEOqsuQzrMF2Iz_RIcfp-rWUqgz-oKmvTGu4",
+          "places/ChIJzbY7uVbTiDARxq4KsrTn75Y/photos/AWCwydhDNpzxwIzRTsSPj9HVYkwu63Jncz1B6QglCDKYk37BvZPnZtkA7HQov5-LO2yE5e5LBwnvRO0Ts5qkWUpXuwKUBpDVVsXiNHbqFdDHVn7VSH0eE8tDPRJclMZW0RqXFTqIpS8Gdxe1d6RYLrb2oi2mBAJ-XacPFZ4R0EH5tbNA6MdOHSGgxuN2daYXFrpjXfZ_gtH-JLJOUNC4FhxUhwzk1nVPgKnS0ZHoBTrhvCwgTndy9yK0FeQbYamRhNLjZ6yxCfbwH0QGwlPqV1YEOeN0GiqK2JUxfm6i9aFdvWwWcR2hoQSFQkGYOECEvdCllcvZQPEWmwuG53Qb-HtUQTl_Zpllr84493prByWz8vJrq00OM1sTHOkUAF354kSsNIpRpAIVaRgWFH6Ciizi8ywgH9cbNewcf8J3m4eaxLUeRo2o",
+          "places/ChIJzbY7uVbTiDARxq4KsrTn75Y/photos/AWCwydh8jUsEOgzJo_jXhnoYEKuZl384zBTm1nDeM4NpkClbwcfIEgyOiHIeaHcjytUUmvkU1qCr-_jp_zZ0hIFP9AezQhS5HLyi3K_9ax8b4CXa_sUBB6cgnEJrz3UWRPOofchOPLUrJt2zTKl2QTof3xmlUrGxli7QhgiV-W6Wy_srRoOoBAARan7FaRtujelXUr0vlfHxrBTWPfa1Q_dZF1lbcFJsFkE-oT6j0ELtc-ooAHr50HhZwIjQFd_iYmyYh01Ir7lubVjjNsMLQZ12RDN0DMihPYg8wryOseCBSFJ8R36l1PJExX5gleK2B_CnAwQIm5ZFwuGD7mStB2JopJd772mlEnKoUcxVuOsV0MmX2DbjGd5q18OVQXCl7zSbw9VljUzWB4N808TX4Y5Isu-Rrqqr4VXp2pl-tDRlJub6Tn4",
+          "places/ChIJzbY7uVbTiDARxq4KsrTn75Y/photos/AWCwydhTmHy6ePl0cvVnCN_bo5ZGKPgH1yH6dn8Kz2zZr_lP156ctHT2ddJIVvls9Fv26xnDt3MaigXkwOdG16_3632KAnrlppQvMTqIam9k_yOiSzOfsJ2KAGwPgbZ50bUCbfY_dNSrQJuKRO7uUx6-ipkpfzIJbA30H4ZPTpYOX1vrp0MDx5LZxl1pT8D872oTAOOcVn95nJu_rOni1GBcZzDHNJgUD0VhkvFcgVZwSCs4EuXLXKWh1b3Rn030jbd0Z7wYKEQtly0n0dCdmDMOlr97rxbDacg4RAo8D0h0U4JE7kmYkD4O_r5_98kvFetesegcmSSNx71VdJPJnmpJX9MkaLJ5m0v4hSBL3qG4YXVR2WIxWVoMNnFCbhxgba1Uedj5NtkkoyH0FJjUq7GZEc2FENgIJr6IzDnT1vxJbJtldRTL",
+          "places/ChIJzbY7uVbTiDARxq4KsrTn75Y/photos/AWCwydho5B90s2AQQqtinYS_uidvhb2cepJlfMz1x6FDFuPMBFfurg17h6mtYpP0vgzCQ3He6TnXnhjI8xVArp4P8amnzorFvcyX3s6qOHdDkupWLWE9x_KiZy2V1fq33n_28IhFQ7q0PCI1FZnOnG540QWqJ2PlhwznNFgBOhIc-5MxKRaY0XjWwxDld9O4BZ2ymisb_bMXupdKh5yShw4fooLBkLhL62ov0IJcAPWejKdvwOerN4-LxdVoWtdO1IoPrwBPGofAqx6yCs8gprdP_u1L3nJ0bTh7OjUMq8nEHaN6ABlUf6GQxxYC-HRenRJwDTHhfrJfLcW8iy8xVnUMkUUOPe6bZHI6aLUgWDCHjLPBaeKn4_m-lJL6aSeNlxYmycfA5Hpn7C7ZATkaCDuIJH2biwAJreF5bxYwahqWcK0P82U",
+          "places/ChIJzbY7uVbTiDARxq4KsrTn75Y/photos/AWCwydhBBz9pEKUKx1ns6v6GOgWf5QW1uFqubedaoR8BT2nfYRBPqU88RD1JitgHhNB2bS5T__lhsk0o1H44KsB80uHsiMZm8gquwukyulKBdP6q8R5btE732SnodI-xiQbJW-MqPh_MwA5yprPqkTcyTfS-4NFCTCn9XGnL4i4tyOEr1f2ZlwdGS33FSLAwG5STRhGRo2bmlMgGZgESPIk0ueSsyeumKVr_7idkFfDu_JbI5CiT6XZLJG0gxNl-qf4bWerrxNwg4RgR_wPMiXuCTcawPQGrCdZMSskAqZHZSyM0EIa-gAGljo-FZiJ3AYMRy4LOsFtqQPtdi0WwZHv58wK6PnmihCrsPM99tztR0Khs8YDPLMNDI0ImNT4OrHiZjeq0KSmKU1M3dBS7fPomyEsGSO921YYRAU5FqCDHkjwWszPk",
+          "places/ChIJzbY7uVbTiDARxq4KsrTn75Y/photos/AWCwydh3giwLlpumkhzCLBxdC0YsG_twP7Bwaf-3BXDbD0WCZIO-DbgrzH2dZzMNyhH323EzPljhWfVQqMvpJVouk7baf6XEoct5zuo6f8uti1WmsnMSF9w-S5Sqmd9CNtVvuGlCbP-eGxa1uNj-auk8rd83NThCa79NCiuFM9AHEIJF2GY14XiZQb8r8wJsNVmW0z3kfV9JTN1e_aSV3bLULWTdlb531Ars341njowh-5lf13EW-FtBs5mfGExDMktd1rzGBmChtnyTapufldkQlJuRy3g6Exhs-Xyc_RyLVMStXigINlOLSiXCOcAksYCv7TZaTHRLNnyfAHjcwJz_MCRaexSfQSobGhYMINeCTsnS4b4Z-ki3AjYL-f4hfhJUIK6gb-hFNLsJCcm2d9J9HitsPK3yGviXOQukI7wDpG4",
+          "places/ChIJzbY7uVbTiDARxq4KsrTn75Y/photos/AWCwydhA_zpbfdFeWaClgWxY9nK-Y-jN1nuNvbdQLEj_WYInBVN74XW5g7WswUmGwKJwDR6Xymu6Hnhu8KxDUVIv1apL5z-npGF-2n1e2f46NEF71gTX7ccHQFNLAYRBqtYwOLS8jtfWy4sHBXGmfPBhstSVAamhlx-sxiyMdNtlJLysX7PBnNpderoHKK36wq2YcP51b2DobjxwTzoPlR8DMXJL7Z6L4RAd281g0uAbhPbYXbiPUaHkrJ_o73Add3gnCpHxT65Jph3jrwAier8OBccNvJoheKmB9YhTFjQouLImdQ2Q1rBC3YtMg751WEwFHrNPLekXAp8adNC1XCwtGX4FgLNKRdKZI4DlO5Cp2IvcUiDtAQxiGzQqod3zvEtSotfEaNQyISADXjHCj7FXztKSJkebTVFy7yekS_0KeB5g76Vg"
+        ],
+        "__at__": 1786803541.880188,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "I recently stayed at Havelock Highway Hotel with my friend during Havelock one day tour package.\n\nI’m extremely impressed with their overall service. We received a very warm and positive response.\n\nFood quality was outstanding — fresh, tasty, and well-prepared. But the real highlight of this hotel i",
+            "author": "Sankaran Ekambaram"
+          },
+          {
+            "rating": 5,
+            "text": "Awesome hotel with great ambience and a fun swimming pool. Best for family and kids visit. Special mention to golden retriever Nicco for his lovely welcome and friendly behavior. Good dog 🐶♥️",
+            "author": "Shaoni Chakraborty"
+          },
+          {
+            "rating": 5,
+            "text": "The location is far but ,Had a great stay at Havelock Gateway Hotel. The rooms were clean, comfortable, and well-maintained, making it a relaxing place to stay. The staff was very friendly and helpful, always ensuring we had a smooth experience.\nThe location is convenient for exploring the island, a",
+            "author": "Sujay Arun"
+          },
+          {
+            "rating": 5,
+            "text": "This hotel was absolutely fire. The TV had Netflix which I really appreciated. It also worked, to my pleasant surprise. The hotel also had a really good wifi connection.  The room was also really good. Room service was amazing. The bathroom was really clean so i really appreciated that. Thank you so",
+            "author": "Simran Kamath"
+          },
+          {
+            "rating": 1,
+            "text": "Nothing fancy. Rooms are like motel catagory though very spacious.\nNothing in the rooms works like charms. Room services are pathetic. Didn't even got water after so much reminders in two days.\n\nPackage Food are also not good. If ordered, then you will the good value.\nLocation is nothing to brag abo",
+            "author": "Somak Chowdhury"
+          }
+        ]
+      },
+      "ferry: havelock to port blair|andaman (port blair & havelock)": {
+        "place_id": "ChIJv3rTGQCViDAR7HOuQrtyQiw",
+        "name": "Andaman Ferry Booking From Port Blair to Havelock to Neil Island - Ferrybooking.in",
+        "address": "Ferry terminal drop area, Haddo, Sri Vijaya Puram, Andaman and Nicobar Islands 744102, India",
+        "rating": 4.6,
+        "review_count": 20,
+        "price_level": null,
+        "website": "https://ferrybooking.in/",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 11.683583,
+        "lng": 92.71977450000001,
+        "photo_refs": [
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydhUCDYpBEXvmTChjNnbOvCOnB5Un5xgzgVN_x3596e4AB0l8g17O7qEQ7zxl4CEBswH5o3qrKbvRiGrvapsV3jL3gg7eRVbSc0x_UJvkRmonGmHz9xTwOAZm5SqlUYIOvcdZJwbOopmFCJ2H-JR2-dmWUa6a2NTvJT2pjqNSsihI6gtG7FFlv2NAuAKEf2RxElvdRAImi1QTOa4m8PjV0Z5TcN5-h4tK3K5PHs0UgDdd2b_h1AIRSmbOCa6YIdSGUKoJMeOn1uhaLARH-B7czDnUTR5s8ZelSzGqsA62zg23gR4eXIKBqLfsCQmq0pk7fLjx9a6RnVNjnVXBWksHk7gFj6cQYqRmPHLs62EYdRQffdZNcK_IEzRGx4Q-fFqxcj6WDMamx6Qy0BO2LYS7bdHBfAwC7IAsZzXkqhcI40HdpDNzZGp9yqCXxtHbs7k",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydgwSM4llmlFiYmAVJanS1vg-ePutLBif8zG27uYB9kfu4l6fSWP1eRQ0qOxyf4uOAjPgeQRHw797mjtCJfPXWx9ZGDuK0Zv_QGRkbzpVfKkq_NFgBT_Qx5Uv8LyZOi_yTugOK65qCdraTGFXZHtOCYtU1wWMCCGk096xcU2AAdSE_nWNpBNWqaPljxqhuNNUNDYrc6G5NgMNyRh9xTTIQhshtEoZwaB5cKjMFX7gDnY9Pu-vri_1WLBC6cmcHU1pjJyozQXl2xqWYL8v8MPsbJ9s6e11w6V13_3ISBm1pMfTvp1Hj-Xc0Bk41_bWNkb6cXzwTsXD3yihF_ruAzMYZx_atNQNvXRAgU9I3E2ATlvaCugLu45IAuFOd23OEJbPjOFwzuwb-XPtibcoak0QnOHaF7Thyp2kpx4fAtQujlEfInf",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydgfjCFLw0LvkEzA-w3_AIs70JyJVBKOLfnQOXBFMtPpuCRHvIWX81cRPRjyQ7x_LPZTbAR_UA0D6wCnOKT0Hy-ZhoIZnntxnrf113Y_2GhN4lU-GiOzy-Vge9zs_sulVBTmWdGvqVFZ0icL30f9qkr5F6u1gK-i1SS29WDhiMVP8RLu3u9wkLnaQ1yzE84WDNENGnrI2c_iU3Z0KhCQb5EMfVJuXHdRcimponJPJv0wLNbG_-nHONy0fV7Uel_Wvy6yVNM_lmOZoUBMtkk3K1Y-jWXcKORyHAEBc_XNxhVOw18sm0guSMgEDtRAoZuDUxOh949B3zwaYWHQr4BOuqGECh_xs_jJiuLzD55g_3mKrFPHX-vskFB5ImU4V7RkcQhu8EQDX-W9ZbwhoaADq1f6iPu8rCZodk_CmUHqOjqdMFN0XLQGLe_nBIJlXhtF",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydi78W6gm0zhWK4tHP9lVAqJ13V4QeDIieYrpw3xtUG0YlNv0pPvLy1fr9oZFxfXTpepTh1J_IOLfhSJ3Teq-Sa6t7n3YZV-EjFn2brXy-A0p-b1SJUo08HLVQ495cHFeLWW9Ppsmqe8Be78wGByZKSM_ofb-pgJWWMiTq4eqnzRRW6BbF43qPEvfg4BIEZoie8Cg5_vPdCd8Di41k68900Bxw-q6Ch260Vu6vDOk3OdNaCgmaUolZ9joyv-4GyEWRlDl0ZfAgbUTXpj8zntwf44ncVQQhbNfEULz32HWmp9L8J8WEWGGz4K4F8DxBylquQeXPKwQP6fUAfQuMnWt22LZb1zV8Bo3V9jIYSpfsQKa77kFQ6Sy_rsrRPvrSdFi9_H0rI89bBJQOOCXT_O2zyesQ-8dL-WOfdOX_NDwwN8-w",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydiw_3_ZZREVK2PEfJYTczte3JUeNGy8WTGl6N5TAjBsSuTd7DjbByNDzSZcmaOKxtp_O2pSIxI1Qc-hFTIBrbhu1MAvZ86ORcB_VHuAdIhHVx_GuqEP91Wpf2AdfoKv49YwETqIjMOFrqTNg9iLEk2OtBEEWLbw-t3n5HdwRC4Au7ay54unkxzj1X8Toa5yzadtBwxWRROrZQcba9hJphlcbRHIRhc6WbICJ6AAxXKiNjcyH4rg6yRwAYRfoCv22GHJnLjLd-pxFGYURkV49OjZud9NpXgTJIF7pqsRs-zoAoxFQS2Mnyw5I_rN_BDrTGHp74PbZTMNfikYAhN4UeYxFzk5ssjsDuCtImx8l9Zz7Iq8yue6cPS309lGfC_6EjKq50gVvzzp6mn9XKZ4da97hfAx4U1HjP07Vx66-Vh7cW5B",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydg5gsa7rKOsfOM1_YZKoGXisHuPdL-FBo6bLB9X04JiT2PKY49zsKVhMtQV2q8Xc7jr5Ts4MVKyr-FNH5b8baPO4vLdgRlEyHo23_LPf4Wk4g0fqXgkWg6cplxZRw4WztW9AFQPPNFNnrGIwzLr6R5SgKJknF6JFPPKugHiyIdndtTehv8Y1iyZ_Bu26dzZOMYAgnxhHxiZmKlNPM8L6qkXnY8Px-GpUJyXYYncqs1d9Lkc_dZnV49V1HxXRxKczwoTmkK4dHud-XNNPHy0JJ2qHwAMNJf4lbIZ2aKgqT32n9SjNR_eqsNS_IBC6g4oFmMDmByMffyE69bcoIQBhSdMX6F34XgUTkicgLmUvpcwvIF_MOtuG1zAxRUQFSUF0fU6oSCrxcMU2QcbRbNDEhXdwqgP_iHscrXtbCGig5kKhGFnsIGHta-JiV4cCA",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydibixovdcKiC7y_p_fzxzZh5XflQDXkrYIyA4FMJ5iCT1tQZ9HING2OEqF2A44sFrlHbTxByfcwvVJbFSKtJCOOSmX4aMUb28FOKCa43YywBi0WGCXwQOLN1e8ffQEF5LUyIvHPG3E8ZbxHQeG9nyh6KVQAHM9-t4kXWFKx37PSflFcfkAhrAvLZZ4J-c1T_Tx08sPORr2NubaYmLdm9f7zlvrFP4SPa8w29Tlxi42oArr7J2mTJJJQk2GTImiGon1Y4Jpz9rgotadon28EKAj735APfU4kl9NErCH_JDEX0XDfuVFv-PCilukpF8WqQkQSNRrFNNkYt_9unWrK2d0uD-GN1TKi_0QDZycuwszeQwLvSF7gxxxvr8loc92qxDO2DJ61xcYissFggbarUu4S6hwJblaGEm5d3bngls8",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydj-Oine41_Tnv-RHmQ0dvvXW9DxI0JZ_guvNVdnvbocW8kkepz64WKWZEH5o0B1BiZQEWC_yE7pn2YwUO06MSFkWb9lJBa0U-Vo4gAyWkb0HNyd7dLCUDOunAngT9mMJ260ZLd4EuJ26ixh7wbRGdxkC-CR0LmAw8tpzNCfarzoIIHy5Avv_g2twNQGpsZqg9PehWUsnG_KLSBET0HmKT-3HeE8l__ZxWn0LO8k8YKBYdNoozZIuDSIDiw8M_7LjjEE_SJyFsG3sxREYGGBXF4o7hvciIMFNpDzE_vqcVnYR38P15Cnhn8TaRYnH98WykrWDazAGLM1ia1nxzzTmfv4BP2nEHn6uQ-UtDFUtdbYuP5zeV97ez5IvfWa3lk6zXMC4xz0DmDPO2g3HMnC5tmmaQUGX8PLUJSyp4BCgoTS0Qfm",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydhv6FpDTRwEmgI4-UGQQUTZKAqq9d-3GDIvQ6iLvsk4d1JToWr860VhMp8p4fYZfB-NkCmWnqLTBp9CVwqcexlZyJyqwkrdo50p5CIPKOrUNyXZ5XX0JL9o27LbC_awJi6LAytmVFcn6VhRnHkdAPMdBgFO-p49s9Rh9m33OgVzh8FBU7OQrhXcOyPMk_2gcJ4TdrmApBrCsoPUb1DLOS8XSmb4jy2xGx1FYI0TOkYuzd83gaTwgYvvCGetqu145xXE8Y9lXM5o5nLbL3xhzwcYiNoj6RXmy2zS2AxD3Fnk8s1nGqxxDrk0ANDofxwn7JvT0Q7Wdg8gVtRrzn7YDTqeA2_Vb2qwmVdKYB6pwHTcmvTnLaCkf7IoqVDAILD3VgVQ6YMU1qcYaVGxj_BpHUYzAGDlhuqdp0LBSLw6ymZ-UxU",
+          "places/ChIJv3rTGQCViDAR7HOuQrtyQiw/photos/AWCwydj0RhSMU9Rw2rIHqXL6pmr-HaqHmCeRS5kxTmHSWd0CO9Lro9Ws3Wayd_9F0HL9GuXc2b-r5IpSlUlFfMir4hADDpIU4GxxRfkXiiTGJOXvLDMl4h_HA5t8TpVgl2-hB0reTiEzou0qJCEG96RAUUefWR05PTniB1svbgNxYStHGPUiY3T_LZ9kiAyOm9AFbHp2xEjkcPKmTP_H5r4nI69mcRxGOscLhX7FzKzXJDTjGPRTR9OygrjBBFudbCE-56-c65l7-Lq-JTgCk4VSwoaEj9eXPWHyOsMBYl4Q_Gw28nxCSOu0nzZNcNeOqP2-3I_-r-_xGbV_1bo3HySP1K0KIQ8_3y2EjVROd5iqb4fOpKgVPKFFVIwFSQ-l582bstVgvK6VYl9F5oMWwZJpNdZX2G8G8Aq8wZw0KT_nbbdQWWzk"
+        ],
+        "__at__": 1786803542.3285959,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We took Makruzz ferry from here to go to Havelock Island. They check your ticket on entry. Then you have to scan your luggage. You have to board your luggage yourself.There is a big waiting area. It has a snack counter as well as washrooms. Washrooms are clean.",
+            "author": "Meeni"
+          },
+          {
+            "rating": 3,
+            "text": "We booked the Green Ocean ferry - Royal class.\nThe actual seating layout was very different from what's shown online.\nThere are few more ferries like Makruz & Nautika. Green Ocean had access to deck, so we booked that.\nThere are different times. So book as per your need. Try to reach hadoo 30 mins p",
+            "author": "Pankaj Toshniwal"
+          },
+          {
+            "rating": 5,
+            "text": "Makruzz all the way. Easy and comfortable passage from Haddo Passenger Terminal to Havelock Jetty. The music videos, though, were jarring and discordant. Makruzz could possibly consider not playing the same. They would do well to  play videos of the Andamans",
+            "author": "Jayendra Chiplunkar"
+          },
+          {
+            "rating": 4,
+            "text": "The ferry ghat of Port Blair is around 30 minutes drive from the airport. It has a big parking area to ease travel of passengers, mainly tourists. The ticket counter and boarding area is also spacious. Luggage of  passengers are scanned before boarding. There is snacks and coffee counters inside as ",
+            "author": "Sujay Banerjee"
+          },
+          {
+            "rating": 5,
+            "text": "One of the best websites for private ferry booking in the Andamans! I got the cheapest price - cheaper than direct booking and other comparable websites, and an additional discounts for large group booking (8+ passengers)",
+            "author": "Aniruddh Agrawal"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Andaman (Port Blair & Havelock)",
+    "departure_date": "2027-01-08",
+    "return_date": "2027-01-14",
+    "nights": 6,
+    "month_year": "Jan 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 3,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Andaman (Port Blair & Havelock)",
+      "Andaman",
+      "SeaShell Port Blair",
+      "Port Blair",
+      "Havelock Island Beach Resort",
+      "Havelock",
+      "Arrival in Port Blair",
+      "Flight: Kolkata to Port Blair",
+      "Cellular Jail",
+      "Ananda Restaurant",
+      "Port Blair Sightseeing",
+      "Ross Island",
+      "Anthropological Museum",
+      "Corbyn’s Cove Beach",
+      "New Lighthouse Restaurant",
+      "Transfer to Havelock Island",
+      "Ferry: Port Blair to Havelock",
+      "Radhanagar Beach",
+      "Something Different Restaurant",
+      "Havelock Adventure",
+      "Elephant Beach",
+      "Kalapathar Beach",
+      "The Blue Cafe",
+      "Leisure & Water Sports in Havelock",
+      "Scuba Diving Centre",
+      "Cafe Salt Water",
+      "Venom Bar & Restaurant",
+      "Return to Port Blair & Departure",
+      "Ferry: Havelock to Port Blair",
+      "Port Blair Market",
+      "Departure from Port Blair",
+      "Flight: Port Blair to Kolkata"
+    ],
+    "auto_summary": "6-night Andaman (Port Blair & Havelock), Jan 2027, 3 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T14:19:45Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:18:13Z"
+    }
+  ]
+}

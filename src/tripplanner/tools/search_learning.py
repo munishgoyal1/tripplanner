@@ -19,10 +19,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from tripplanner.tools.user_preferences import (
-    load_preferences,
-    save_preferences,
-)
+from tripplanner.tools.user_preferences import mutate_preferences
 
 log = logging.getLogger(__name__)
 
@@ -35,9 +32,8 @@ _VALID_CABINS = {"economy", "premium_economy", "business", "first"}
 def _add_note(prefs: dict[str, Any], note: str) -> None:
     """Append a learned note to ``prefs`` in place, deduped case-insensitively.
 
-    Mutates the passed dict so the caller's single ``save_preferences`` persists
-    it — we must NOT call ``user_preferences.add_learned_note`` here because its
-    own load/save would be overwritten by the caller's later save.
+    Mutates the transaction's current preference dict so the caller can persist
+    promotion and note changes together.
     """
     from datetime import datetime, timezone
 
@@ -45,7 +41,12 @@ def _add_note(prefs: dict[str, Any], note: str) -> None:
     cleaned = note.strip()
     if not cleaned:
         return
-    if cleaned.lower() in {(n.get("note") or "").strip().lower() for n in notes if isinstance(n, dict)}:
+    existing = {
+        (entry.get("note") or "").strip().lower()
+        for entry in notes
+        if isinstance(entry, dict)
+    }
+    if cleaned.lower() in existing:
         return
     notes.append({
         "note": cleaned,
@@ -122,11 +123,15 @@ def _extract_signals(tool_name: str, args: dict[str, Any]) -> list[tuple[str, st
 def _promote(prefs: dict[str, Any], category: str, value: str) -> bool:
     """Apply a promotion (additive / default-only), mutating ``prefs`` in place.
     Returns True if anything changed so the caller knows to persist."""
+    explicit_fields = {str(field) for field in prefs.get("_explicit_fields") or []}
     if category == "flight_class":
         if value == "economy":
             return False  # economy is the default — nothing to learn
         transport = dict(prefs.get("transport_preferences") or {})
-        if transport.get("flight_class", "economy") == "economy":
+        if (
+            "transport_preferences.flight_class" not in explicit_fields
+            and transport.get("flight_class", "economy") == "economy"
+        ):
             transport["flight_class"] = value
             prefs["transport_preferences"] = transport
         _add_note(prefs, f"Tends to search {value.replace('_', ' ')} class flights")
@@ -135,7 +140,10 @@ def _promote(prefs: dict[str, Any], category: str, value: str) -> bool:
     if category == "hotel_rating_floor":
         floor = int(value)
         hotel = dict(prefs.get("hotel_preferences") or {})
-        if int(hotel.get("star_rating_min", 3) or 3) < floor:
+        if (
+            "hotel_preferences.star_rating_min" not in explicit_fields
+            and int(hotel.get("star_rating_min", 3) or 3) < floor
+        ):
             hotel["star_rating_min"] = floor
             prefs["hotel_preferences"] = hotel
         _add_note(prefs, f"Tends to filter hotels to {floor}-star and above")
@@ -158,30 +166,34 @@ def observe(tool_name: str, args: dict[str, Any] | None) -> list[str]:
         if not signals:
             return []
 
-        prefs = load_preferences()
-        buckets: dict[str, dict[str, int]] = dict(prefs.get("behavior_signals") or {})
-        promoted_state: dict[str, list[str]] = dict(prefs.get("_promoted_signals") or {})
         promoted: list[str] = []
-        dirty = False
 
-        for category, value in signals:
-            cat_bucket = dict(buckets.get(category) or {})
-            cat_bucket[value] = int(cat_bucket.get(value, 0)) + 1
-            buckets[category] = cat_bucket
-            dirty = True
+        def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+            promoted.clear()
+            buckets: dict[str, dict[str, int]] = dict(
+                prefs.get("behavior_signals") or {}
+            )
+            promoted_state: dict[str, list[str]] = dict(
+                prefs.get("_promoted_signals") or {}
+            )
 
-            already = promoted_state.get(category) or []
-            if cat_bucket[value] >= _PROMOTE_THRESHOLD and value not in already:
-                if _promote(prefs, category, value):
-                    dirty = True
-                already = already + [value]
-                promoted_state[category] = already
-                promoted.append(f"{category}:{value}")
+            for category, value in signals:
+                cat_bucket = dict(buckets.get(category) or {})
+                cat_bucket[value] = int(cat_bucket.get(value, 0)) + 1
+                buckets[category] = cat_bucket
 
-        if dirty:
+                already = promoted_state.get(category) or []
+                if cat_bucket[value] >= _PROMOTE_THRESHOLD and value not in already:
+                    _promote(prefs, category, value)
+                    already = already + [value]
+                    promoted_state[category] = already
+                    promoted.append(f"{category}:{value}")
+
             prefs["behavior_signals"] = buckets
             prefs["_promoted_signals"] = promoted_state
-            save_preferences(prefs)
+            return prefs
+
+        mutate_preferences(apply)
         return promoted
     except Exception as exc:  # never break a tool call
         log.warning("search-learning observe failed: %s", exc)

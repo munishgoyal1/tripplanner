@@ -1,14 +1,14 @@
 # tripplanner — AI Trip Planner
 
 > **Owner**: Munish Goyal ([munishgoyal1](https://github.com/munishgoyal1))
-> **Azure account**: munishgoyal1@gmail.com
+> **Azure account**: [munishgoyal@aitripplanner.co](mailto:munishgoyal@aitripplanner.co)
 > **Repo**: https://github.com/munishgoyal1/tripplanner (private)
 > **Status**: Active development — trip planner with real Amadeus API search
 
-An AI-powered trip planner that creates complete, bookable travel plans in
-under 30 minutes of user interaction. Searches real flights, hotels, and
-activities via Amadeus APIs, learns from user preferences and past trips,
-and can execute bookings on the user's behalf.
+An AI-powered trip planner that creates complete, booking-ready travel plans in
+under 30 minutes of user interaction. It searches real flights, hotels, and
+activities through capability-specific providers, learns from user preferences
+and past trips, and preserves provider handoffs without charging or booking.
 
 ## Architecture
 
@@ -35,7 +35,7 @@ User ──► Rich CLI  or  FastAPI
 
 ### Hosted mode (React SPA + FastAPI on Azure Container Apps)
 ```
-Browser ──► *.azurecontainerapps.io ──► React SPA (served by FastAPI)
+Browser ──► aitripplanner.co ──► Azure Container Apps ──► React SPA (FastAPI)
                                               │  /api/* (HTTP + SSE)
                                               ▼
                                        Trip Agent (same)
@@ -52,8 +52,12 @@ The product has a React SPA (`frontend/`) and native Expo client (`mobile/`).
 Both consume contracts, transport, SSE parsing, and workspace state from
 `packages/tripplanner-client/`. In production the FastAPI process (`api.py`)
 serves the built SPA from `frontend/dist` and the `/api/*` endpoints on one
-port. The iOS/Android app calls the same hosted endpoints directly and uses
-native browser OAuth to adopt the web app's stable Google identity.
+port. Production is available at <https://aitripplanner.co>; the generated
+Azure hostname remains available for rollback access. The iOS/Android app calls
+the same hosted endpoints directly and uses
+native browser OAuth to adopt the web app's stable Google identity. Hosted API
+access is authorized by signed web/mobile sessions or a signed anonymous guest
+capability; caller-supplied account ids are never authoritative.
 
 Single-agent LangGraph graph with a tool-calling loop. The agent calls search
 tools (Duffel primary, Amadeus fallback), manages a trip plan through draft →
@@ -83,8 +87,8 @@ learning for that turn.
 | `record_past_trip` | Save trip to history with rating | Working |
 | `record_trip_postmortem` | Structured post-mortem (rating + what worked/didn't), feeds learned_notes | Working |
 | `search_flights` | Real flight search — airlines, times, stops, prices | Amadeus API |
-| `search_hotels` | Real hotel search — names, ratings, rooms, prices | Amadeus API |
-| `search_activities` | Sightseeing, tours, attraction tickets with prices | Amadeus API |
+| `search_hotels` | Live hotel rates with legacy property fallback | LiteAPI / legacy |
+| `search_activities` | Tours, schedules, and from-prices with legacy fallback | Viator / Amadeus |
 | `search_points_of_interest` | Landmarks, restaurants, attractions | Amadeus API |
 | `search_places_with_reviews` | Hotels/attractions with real Google ratings & reviews | Google Places |
 | `get_place_reviews` | Detailed reviews & editorial summary for a place | Google Places |
@@ -137,10 +141,34 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 | Persistence | JSON files (local) / Cosmos DB (hosted) | Auto-dispatch via env var |
 | Hosting target | Azure Container Apps (FastAPI serves the React SPA) | Serverless, scales to zero |
 
-> **Developing locally?** See [`docs/dev.md`](docs/dev.md) for the one-page cheat
-> sheet (`.\scripts\test.ps1`, Ctrl+C / F5 loop, scripts table, keyboard shortcuts).
+> **Developing locally?** Run `scripts\win\Setup-Tripplanner-Dev.cmd` on Windows or
+> `./scripts/mac/Setup-Tripplanner-Dev.command` on macOS to reproduce the full toolchain
+> and VS Code/Copilot configuration. See
+> [`docs/development/new-machine-setup.md`](docs/development/new-machine-setup.md)
+> for manual sign-ins and non-portable state, then see
+> [`docs/development/dev.md`](docs/development/dev.md) for the `.\scripts\dev\dev-spa.ps1` workflow.
+> For isolated feature work, use the sandbox workflow described in
+> [`docs/development/parallel-agent-development.md`](docs/development/parallel-agent-development.md).
 
 ## Quick Start
+
+### One-click Windows setup
+```powershell
+.\scripts\win\Setup-Tripplanner-Dev.cmd
+.\scripts\dev\dev-spa.ps1
+```
+
+### One-click macOS setup
+```bash
+./scripts/mac/Setup-Tripplanner-Dev.command
+pwsh -File scripts/dev/dev-spa.ps1
+```
+
+The setup command installs missing prerequisites, restores locked dependencies,
+applies portable VS Code/Copilot configuration, and preserves any existing `.env`.
+See [docs/development/new-machine-setup.md](docs/development/new-machine-setup.md)
+for required manual authentication, and [docs/operations/deployment-flow.md](docs/operations/deployment-flow.md)
+for the two-stage canary and production release flow.
 
 ### Local CLI
 ```bash
@@ -168,7 +196,7 @@ uv run uvicorn tripplanner.api:app --reload
 ### Local hosted-UI preview (React SPA + FastAPI)
 ```bash
 # Backend (API) + Vite dev server together, with the /api proxy wired up:
-scripts\dev-spa.ps1
+scripts\dev\dev-spa.ps1
 # open http://localhost:5173
 #
 # Or run just the backend and have it serve a production SPA build:
@@ -195,20 +223,20 @@ Don't wait 3–4 minutes for CI on every code change. Use the local dev script
 — it runs the FastAPI backend plus the Vite dev server together:
 
 ```powershell
-scripts\dev-spa.ps1                 # backend on :8000 + Vite on :5173
-scripts\dev-spa.ps1 -Watch          # enable live reload for both
-scripts\dev-spa.ps1 -BackendOnly    # just the API
-scripts\dev-spa.ps1 -FrontendOnly   # just Vite
-scripts\dev-spa.ps1 -CosmosBackend azure # explicitly use Azure tripplanner-local
-scripts\dev-spa.ps1 -UseCanaryData  # explicitly share hosted canary data
+scripts\dev\dev-spa.ps1                 # backend on :8000 + Vite on :5173
+scripts\dev\dev-spa.ps1 -Watch          # enable live reload for both
+scripts\dev\dev-spa.ps1 -BackendOnly    # just the API
+scripts\dev\dev-spa.ps1 -FrontendOnly   # just Vite
+scripts\dev\dev-spa.ps1 -CosmosBackend azure # explicitly use Azure tripplanner-local
+scripts\dev\dev-spa.ps1 -UseCanaryData  # explicitly share hosted canary data
 ```
 
-By default, `scripts\dev-spa.ps1` launches Docker Desktop when needed, starts
+By default, `scripts\dev\dev-spa.ps1` launches Docker Desktop when needed, starts
 the official Dockerized **Cosmos DB Emulator**, and uses its isolated
 `tripplanner-local` database. Emulator data persists in a named Docker volume.
-Rerunning the script first replaces a previous Vite process from this repository
-on the requested frontend port. It refuses to stop unrelated port owners; use
-`-FrontendPort <port>` when another application legitimately needs that port.
+Rerunning the script force-stops process trees listening on the enabled API,
+frontend, and Labs ports and verifies each port is released before restart. Use
+custom port parameters before launch when another application needs a default port.
 Docker Desktop must already be installed; startup waits up to two minutes for
 its daemon and reports a clear error without resetting emulator data. Set
 `COSMOS_DEV_BACKEND=azure` in `.env` or pass `-CosmosBackend azure` to explicitly
@@ -221,9 +249,9 @@ Three speeds of feedback you actually have:
 
 | Speed | Command | When |
 |---|---|---|
-| ~1 sec | `.venv\Scripts\python.exe -m pytest -q` | logic/tool changes — runs 92 tests |
-| ~3 sec reload | `scripts\dev-spa.ps1` | UI / agent prompt / streaming changes — Vite serves the SPA; refresh the browser |
-| ~3-4 min | `git push` | only when shipping to prod, changing Dockerfile, or testing CI/Bicep |
+| Fast | `.venv\Scripts\python.exe -m pytest -q` | Backend logic and tool changes |
+| ~3 sec reload | `scripts\dev\dev-spa.ps1` | UI / agent prompt / streaming changes — Vite serves the SPA; refresh the browser |
+| Release | `infra\deploy-canary.ps1` | Build, deploy, and smoke the immutable canary image |
 
 The local loop and deployed app run **identical code**. The dev script sets the
 emulator endpoint explicitly, while hosted Container Apps use environment-
@@ -231,7 +259,9 @@ specific databases in the shared account. Leave `COSMOS_ENDPOINT` unset when
 running the CLI directly to retain the local JSON fallback.
 
 ### Deploy to Azure (hosted, multi-user, Cosmos-backed)
-See [infra/README.md](infra/README.md) for the full deploy walkthrough. One
+See the canonical [deployment flow](docs/operations/deployment-flow.md) for the
+release procedure and [infra/README.md](infra/README.md) for infrastructure
+ownership. One
 lifetime free-tier account hosts separate 400-RU/s canary and production
 databases (800 RU/s total), while Container Apps remain scale-to-zero.
 
@@ -247,7 +277,26 @@ databases (800 RU/s total), while Container Apps remain scale-to-zero.
    AZURE_OPENAI_DEPLOYMENT=gpt-4.1
    ```
 
-### Amadeus API (required for real search)
+### LiteAPI (recommended for live hotel and flight availability)
+1. Create an account and obtain a server-side API key from LiteAPI.
+2. Set in `.env`:
+   ```
+   LITEAPI_API_KEY=your-key
+   TRAVEL_HOTEL_PROVIDER=auto
+   TRAVEL_FLIGHT_PROVIDER=auto
+   ```
+   `auto` prefers LiteAPI when configured and otherwise preserves the legacy
+   providers. The key is backend-only. This integration searches and verifies
+   rates; it does not prebook, book, charge, cancel, or create orders.
+
+### Viator (recommended for live activity discovery)
+1. Obtain a Basic Access Affiliate sandbox API key from Viator.
+2. Paste it into the existing blank `VIATOR_API_KEY=` entry in `.env`.
+   `TRAVEL_ACTIVITY_PROVIDER=auto` selects Viator when configured and otherwise
+   preserves Amadeus fallback. Results include schedules and from-prices only;
+   no availability check, reservation, booking, payment, or cancellation is made.
+
+### Amadeus API (legacy activities and search fallback)
 1. Sign up free at [developers.amadeus.com](https://developers.amadeus.com)
 2. Create a Self-Service app → get API Key + Secret
 3. Set in `.env`:
@@ -256,7 +305,7 @@ databases (800 RU/s total), while Container Apps remain scale-to-zero.
    AMADEUS_API_SECRET=your-secret
    AMADEUS_BASE_URL=https://test.api.amadeus.com
    ```
-   Use `https://api.amadeus.com` for production (real bookings).
+   Use `https://api.amadeus.com` only for supported production search traffic.
    Free tier: 2,000 API calls/month.
 
 ### Email export (optional)
@@ -297,11 +346,17 @@ Assistant pane being open.
 
 ### Google Places API (recommended — adds real ratings & reviews)
 1. Go to [console.cloud.google.com](https://console.cloud.google.com)
-2. Create/select a project → enable **Places API (New)**
-3. Create an API key under "Credentials"
-4. Set in `.env`:
+2. Use the environment project: `aitripplanner-local`, `aitripplanner-canary`,
+   or `aitripplanner-prod`. The projects share billing, not credentials.
+3. Enable **Maps JavaScript API**, **Places API (New)**, **Routes API**, and
+   **Maps Static API**.
+4. Create a server key restricted to Places, Routes, and Static Maps, plus a
+   separate browser key restricted by environment referrer to Maps JavaScript
+   and Places.
+5. Set them in `.env`, `.env.canary`, or `.env.prod` as appropriate:
    ```
-   GOOGLE_PLACES_API_KEY=your-key
+   GOOGLE_PLACES_API_KEY=your-server-key
+   GOOGLE_MAPS_BROWSER_KEY=your-browser-key
    ```
    Free tier: $200/month credit (~10K text searches).
    Without this key, the agent still works but can't show real ratings.
@@ -320,14 +375,27 @@ Assistant pane being open.
 
 ```
 tripplanner/
-├── REQUIREMENTS.txt              # Running log of all requirements & decisions
+├── docs/README.md                # Documentation index and ownership guide
+├── docs/REQUIREMENTS.md          # Current capability baseline + proposed roadmap
+├── docs/reference/               # Owner inputs + chronological history
+├── docs/roadmap/                 # Consolidated future feature candidates
+├── docs/feature-briefs/          # Reusable template + editable next increment
 ├── .github/copilot-instructions.md  # Agent context for Copilot/AI sessions
 ├── pyproject.toml                # Dependencies & project config
 ├── Dockerfile                    # Multistage: build SPA (node) + run FastAPI (uvicorn)
 │
 ├── frontend/                     # React 19 + Vite + TS single-page app (the UI)
+│   ├── labs/                     # Isolated UX experiments and build configuration
 │   ├── src/                      # App.tsx, ChatPanel, TripPanel, DestinationOverview, ...
 │   └── dist/                     # Production build, served by FastAPI in prod
+│
+├── packages/tripplanner-client/  # Shared web/native contracts and request helpers
+│
+├── scripts/
+│   ├── README.md                 # Developer workflow + utility ownership
+│   ├── user/                     # Regular owner-facing launchers
+│   └── dev/                      # Local stack, worktrees, sync, and emulator
+│       └── cosmos-emulator.compose.yml  # Portable local persistence
 │
 ├── infra/
 │   ├── data-stack.bicep          # Subscription-scope shared data bootstrap
@@ -335,7 +403,6 @@ tripplanner/
 │   ├── main.bicep                # RG-scope IaC (ACA + Log Analytics)
 │   ├── canary.bicepparam         # Canary app + database binding
 │   ├── prod.bicepparam           # Production app + database binding
-│   ├── cosmos-emulator.compose.yml  # Portable local persistence
 │   └── README.md                 # Deploy walkthrough
 │
 ├── src/tripplanner/
@@ -347,13 +414,14 @@ tripplanner/
 │   ├── api.py                    # FastAPI server: /api endpoints + serves the SPA
 │   ├── user_context.py           # ContextVar holding current user_id
 │   ├── json_store.py             # Atomic local JSON persistence
-│   ├── storage_cosmos.py         # Cosmos backend + conditional write primitive
+│   ├── storage_cosmos.py         # Cosmos backend + conditional create/replace/delete
 │   │
 │   ├── web/
 │   │   ├── __init__.py
 │   │   ├── trip_view.py          # Pure-Python view-model (frontend-agnostic)
 │   │   ├── places_cache.py       # Synchronized Google Places cache
 │   │   ├── trip_operations.py    # Blocking trip operations used by async routes
+│   │   ├── chat_store.py         # Trip transcripts + principal request replay index
 │   │   └── oauth.py              # Standalone Google OAuth (HMAC session cookie)
 │   │
 │   ├── agents/
@@ -364,27 +432,44 @@ tripplanner/
 │       ├── amadeus_client.py     # Amadeus OAuth2 client
 │       ├── flight_search.py      # Amadeus flight search (fallback)
 │       ├── hotel_search.py       # Amadeus hotel search
-│       ├── activities_search.py  # Amadeus tours & POI
+│       ├── activities_search.py  # Viator activity boundary + Amadeus fallback/POI
 │       ├── google_places.py      # Real ratings, reviews, restaurants
 │       ├── web_search.py         # Tavily live web search
 │       ├── trip_planner.py       # Trip lifecycle (Cosmos-aware)
-│       └── user_preferences.py   # Preference store (Cosmos-aware)
+│       └── user_preferences.py   # Sparse/explicit preference merge + replayable mutations
 │
 ├── tests/
-│   └── test_trip.py              # 46 tests (prefs, planner, helpers, Cosmos dispatch)
+│   ├── test_trip_*.py            # Ownership-split trip persistence, plan, provider, Cosmos, and saved-trip tests
+│   └── test_trip_view_*.py       # Summary, itinerary, map, journey, place, and verification projections
 │
 └── ~/.tripplanner/                # User data when running locally
     ├── user_preferences.json     # Preferences & past trip history
     ├── active_trip.json          # Current trip plan in progress
-    └── trips/                    # Archived booked trips
+   ├── trips/                    # Archived booked trips
+   └── chats/                    # Trip transcripts + bounded chat_operations index
 ```
 
-## API Endpoints
+## API
 
-| Method | Path | Description |
+When the API is running, FastAPI publishes the complete versioned interactive
+contract at [`/docs`](http://localhost:8000/docs) and its OpenAPI schema at
+[`/openapi.json`](http://localhost:8000/openapi.json). Those are the canonical
+references for request and response models; the endpoints below are an
+orientation guide rather than a partial substitute for the contract.
+
+| Area | Key endpoints | Notes |
 |---|---|---|
-| POST | `/chat` | Send a message, get agent response |
-| GET | `/health` | Health check |
+| Assistant | `POST /chat`, `POST /chat/stream`, `GET /chat/history` | `chat/stream` uses server-sent events. |
+| Workspace | `GET /trip/view`, `GET /trip/workspace`, `GET /trip/map`, `GET /trip/places` | Read the authoritative persisted trip view. |
+| Trip changes | `POST /trip/select`, `/trip/deselect`, `/trip/repair`, `/trip/stop/booked`, `/trip/stop/place` | Mutations return refreshed authoritative state or a conflict response. |
+| Lifecycle | `GET /trips`, `POST /trip/new`, `/trips/switch`, `/trips/delete`, `/trip/fork` | A signed user or scoped guest capability owns trip data. |
+| Verification and exports | `GET /trip/verification`, `POST /trip/verification/refresh`, `GET /trip/export.ics`, `/trip/export.pdf`, `POST /trip/export/email`, `/trip/share` | Export and share endpoints enforce the relevant owner or share capability. |
+| Traveller data | `GET/POST /preferences`, `GET/POST /documents`, `GET /trip/documents/readiness`, `POST /account/privacy` | Never send credentials or documents to an unauthenticated caller. |
+| Runtime | `GET /health`, `/providers/status`, `/usage`, `GET /auth/me` | Diagnostics disclose no provider secrets. |
+
+In local development, the Vite proxy exposes these routes under `/api`; the
+hosted service serves them at the same origin. See the OpenAPI contract for
+all paths, authentication behavior, payloads, and error responses.
 
 ## Running Tests
 
@@ -394,35 +479,24 @@ uv run pytest -v
 
 ## Roadmap
 
-- [x] Persistent user preference memory
-- [x] Real flight search via Duffel (primary) + Amadeus (fallback)
-- [x] Real hotel/activity search via Amadeus
-- [x] Real ratings & reviews via Google Places
-- [x] Fresh web content via Tavily search
-- [x] Trip plan lifecycle (draft → finalize → book)
-- [x] Past trip history for learning
-- [x] React SPA (served by FastAPI) for hosted multi-user mode
-- [x] Azure Cosmos DB persistence (auto-dispatch when configured)
-- [x] Azure Container Apps Bicep IaC (Free Tier compatible)
-- [ ] TripAdvisor Content API (deeper review data, requires approval)
-- [ ] Real booking execution via Duffel Orders API
-- [ ] Hotel booking integration (Booking.com / Agoda API)
-- [ ] Activity booking integration (Viator / GetYourGuide)
-- [ ] Multi-city trip support
-- [ ] Group trip planning (multiple families)
-- [ ] Custom domain + auth on top of the hosted SPA
+The current capability baseline, explicit gaps, and proposed roadmap live in
+[`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md). Roadmap entries are
+candidate outcomes, not automatic approval. The consolidated longer-term
+feature backlog lives in
+[`docs/roadmap/FUTURE_FEATURES.md`](docs/roadmap/FUTURE_FEATURES.md). Use
+[`docs/feature-briefs/NEXT_INCREMENT.md`](docs/feature-briefs/NEXT_INCREMENT.md)
+to scope the next coherent milestone.
 
 ## Key Files for New Agents/Sessions
 
 If you're an AI agent picking up this project:
-1. Read `REQUIREMENTS.txt` for full history of decisions and requirements
+1. Read `docs/README.md`, `docs/CODEMAP.md`, `docs/PRODUCT.md`, and `docs/REQUIREMENTS.md`
 2. Read `.github/copilot-instructions.md` for codebase conventions
-3. The graph is in `src/tripplanner/graph.py` — single-agent tool loop
-4. The agent is in `src/tripplanner/agents/trip_agent.py`
-5. Tools/connectors are in `src/tripplanner/tools/`
+3. Read `docs/reference/README.md` only when original intent or history is needed
+4. For planned feature work, read the active brief under `docs/feature-briefs/`
+5. The graph is in `src/tripplanner/graph.py` and tools are in `src/tripplanner/tools/`
 6. Always commit AND push after changes (user preference)
 
 ## License
 
 MIT
-

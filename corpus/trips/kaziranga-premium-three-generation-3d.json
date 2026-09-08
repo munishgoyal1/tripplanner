@@ -1,0 +1,220 @@
+{
+  "status": "draft",
+  "trip_id": "kaziranga_national_park_2027-02-13_2027-02-16",
+  "trip_number": 1,
+  "created_at": "2026-08-17T19:34:47.394367",
+  "destination": "Kaziranga National Park",
+  "origin": "Guwahati",
+  "departure_date": "2027-02-13",
+  "return_date": "2027-02-16",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Draft itinerary created for 3-day Kaziranga trip from Guwahati, 4 adults and 1 child (age 8), including grandparents. Premium hotels requested but no live hotel rates found; will recommend top-rated resorts based on general knowledge. Restaurant and activity planning will be completed next.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Kaziranga National Park",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Diphlu River Lodge",
+      "address": "Kaziranga, Assam",
+      "rating": 4.7,
+      "price_per_night": 18000,
+      "nights": 3,
+      "total_price": 54000,
+      "currency": "INR",
+      "room_type": "Premium Cottage",
+      "amenities": [
+        "river view",
+        "private deck",
+        "breakfast included",
+        "wheelchair accessible"
+      ],
+      "note": "Top premium resort, ideal for families and elderly"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-13",
+      "title": "Day 1 · Arrival & Check-in",
+      "summary": "Depart from Guwahati by private car, arrive at Kaziranga, check in to a premium resort, relax and explore the property.",
+      "stops": [
+        {
+          "name": "Drive: Guwahati to Kaziranga",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 300,
+          "distance_km": 220,
+          "note": "Private car transfer, scenic route"
+        },
+        {
+          "name": "Diphlu River Lodge",
+          "kind": "hotel",
+          "note": "Premium resort, riverside location"
+        },
+        {
+          "name": "Wild Mahseer Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner at a top-rated local restaurant"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-14",
+      "title": "Day 2 · Jeep Safari & Tea Garden",
+      "summary": "Morning jeep safari in Kaziranga National Park, visit a tea garden, evening at leisure in the resort.",
+      "stops": [
+        {
+          "name": "Diphlu River Lodge",
+          "kind": "hotel",
+          "note": "Start from resort"
+        },
+        {
+          "name": "Kaziranga National Park Jeep Safari",
+          "kind": "attraction",
+          "time": "06:30",
+          "duration_min": 180,
+          "note": "Early morning safari, elephant sightings"
+        },
+        {
+          "name": "Tea Garden Visit",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Guided tour of local tea estate"
+        },
+        {
+          "name": "Diphlu River Lodge",
+          "kind": "hotel",
+          "note": "Return to resort"
+        },
+        {
+          "name": "Bamboo Restaurant",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner at resort restaurant"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-15",
+      "title": "Day 3 · Elephant Safari & Departure",
+      "summary": "Morning elephant safari, visit Orchid Park, return to Guwahati.",
+      "stops": [
+        {
+          "name": "Diphlu River Lodge",
+          "kind": "hotel",
+          "note": "Start from resort"
+        },
+        {
+          "name": "Kaziranga Elephant Safari",
+          "kind": "attraction",
+          "time": "06:00",
+          "duration_min": 120,
+          "note": "Family-friendly safari, suitable for grandparents and child"
+        },
+        {
+          "name": "Kaziranga National Orchid Park",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Explore orchid varieties and cultural exhibits"
+        },
+        {
+          "name": "Drive: Kaziranga to Guwahati",
+          "kind": "transport",
+          "time": "13:00",
+          "duration_min": 300,
+          "distance_km": 220,
+          "note": "Private car transfer"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-16",
+      "title": "Day 4 · Departure",
+      "summary": "Check out and depart from Kaziranga.",
+      "stops": [
+        {
+          "name": "Diphlu River Lodge",
+          "kind": "hotel",
+          "note": "Check out by 11:00 (confirm with your hotel). Leave bags with reception if your onward departure is later.",
+          "time": "11:00"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 54000,
+    "private_car": 12000,
+    "jeep_safari": 8000,
+    "elephant_safari": 6000,
+    "tea_garden": 2500,
+    "orchid_park": 1500,
+    "meals": 9000
+  },
+  "total_cost": 86000,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T19:39:19.089557",
+  "id": "kaziranga_national_park_2027-02-13_2027-02-16",
+  "user_id": "corpus-kaziranga-premium-three-generation-3d"
+}

@@ -1,0 +1,1277 @@
+{
+  "archive_no": 27,
+  "trip_id": "lonavala_2027-01-20_2027-01-23",
+  "user_id": "corpus-pet-friendly-lonavala",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T15:03:57Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T15:03:57Z",
+      "content_hash": "6a335dc3767d6815",
+      "plan": {
+        "status": "draft",
+        "trip_id": "lonavala_2027-01-20_2027-01-23",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:33:57.227527",
+        "destination": "Lonavala",
+        "origin": "Mumbai",
+        "departure_date": "2027-01-20",
+        "return_date": "2027-01-23",
+        "travelers": "2 adults and 1 dog",
+        "notes": "Pet-friendly stays only. Balanced sightseeing and leisure.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Lonavala",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 3-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 3,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:33:57.227622"
+      }
+    },
+    {
+      "at": "2026-08-15T15:04:48Z",
+      "content_hash": "f858bd859999a1ab",
+      "plan": {
+        "status": "draft",
+        "trip_id": "lonavala_2027-01-20_2027-01-23",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:33:57.227527",
+        "destination": "Lonavala",
+        "origin": "Mumbai",
+        "departure_date": "2027-01-20",
+        "return_date": "2027-01-23",
+        "travelers": "2 adults and 1 dog",
+        "notes": "Pet-friendly stays only. Balanced sightseeing and leisure.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Lonavala",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 3-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 3,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-01-20",
+            "title": "Day 1 · Arrival & Local Exploration",
+            "summary": "Drive from Mumbai to Lonavala, check in to a pet-friendly hotel, and explore Lonavala Lake and local markets.",
+            "stops": [
+              {
+                "name": "Drive: Mumbai to Lonavala",
+                "kind": "transport",
+                "note": "Start early morning, approx. 2.5 hrs drive (85 km)"
+              },
+              {
+                "name": "Pet-friendly Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-in and settle with your dog"
+              },
+              {
+                "name": "Lonavala Lake",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90,
+                "note": "Scenic walk, dog-friendly"
+              },
+              {
+                "name": "Lonavala Bazaar",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 60,
+                "note": "Local shopping and snacks"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-01-21",
+            "title": "Day 2 · Nature & Sightseeing",
+            "summary": "Visit Bhushi Dam, Tiger Point, and enjoy a relaxed lunch at a pet-friendly cafe. Evening at leisure.",
+            "stops": [
+              {
+                "name": "Pet-friendly Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Bhushi Dam",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90,
+                "note": "Morning visit, open area for pets"
+              },
+              {
+                "name": "Tiger Point",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 90,
+                "note": "Great views, dog-friendly"
+              },
+              {
+                "name": "Pet-friendly Cafe (TBD)",
+                "kind": "meal",
+                "time": "14:00",
+                "duration_min": 60,
+                "note": "Lunch with your dog"
+              },
+              {
+                "name": "Pet-friendly Hotel (TBD)",
+                "kind": "hotel",
+                "time": "16:00",
+                "note": "Relax and unwind"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-01-22",
+            "title": "Day 3 · Fort & Park",
+            "summary": "Explore Rajmachi Fort and Ryewood Park, both suitable for pets. Evening at hotel.",
+            "stops": [
+              {
+                "name": "Pet-friendly Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Rajmachi Fort",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 180,
+                "note": "Mild trek, carry water for your dog"
+              },
+              {
+                "name": "Ryewood Park",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 90,
+                "note": "Spacious park, pet-friendly"
+              },
+              {
+                "name": "Pet-friendly Hotel (TBD)",
+                "kind": "hotel",
+                "time": "16:00",
+                "note": "Evening at leisure"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-01-23",
+            "title": "Day 4 · Departure",
+            "summary": "Checkout and drive back to Mumbai.",
+            "stops": [
+              {
+                "name": "Pet-friendly Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Checkout"
+              },
+              {
+                "name": "Drive: Lonavala to Mumbai",
+                "kind": "transport",
+                "note": "Approx. 2.5 hrs drive (85 km)"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:34:48.760577",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:34:48",
+            "expires_at": "2026-08-16T08:34:48"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T15:06:09Z",
+      "content_hash": "7545c49408026dd5",
+      "plan": {
+        "status": "draft",
+        "trip_id": "lonavala_2027-01-20_2027-01-23",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:33:57.227527",
+        "destination": "Lonavala",
+        "origin": "Mumbai",
+        "departure_date": "2027-01-20",
+        "return_date": "2027-01-23",
+        "travelers": "2 adults and 1 dog",
+        "notes": "Pet-friendly stays only. Balanced sightseeing and leisure.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Lonavala",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 3-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 3,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "Ratnaa Resort",
+            "provider": "liteapi",
+            "provider_ref": {
+              "hotel_id": "lp1f5d2",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+            },
+            "checkin": "2027-01-20",
+            "checkout": "2027-01-23",
+            "room_type": "Petite One Full Bed",
+            "price_per_night": 4200,
+            "total_price": 12600,
+            "currency": "INR",
+            "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+            "google_rating": 4.1,
+            "google_reviews_count": 1708,
+            "pet_friendly": true,
+            "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location"
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-01-20",
+            "title": "Day 1 · Arrival & Local Exploration",
+            "summary": "Drive from Mumbai to Lonavala, check in to a pet-friendly hotel, and explore Lonavala Lake and local markets.",
+            "stops": [
+              {
+                "name": "Drive: Mumbai to Lonavala",
+                "kind": "transport",
+                "note": "Start early morning, approx. 2.5 hrs drive (85 km)",
+                "time": "09:00"
+              },
+              {
+                "name": "Ratnaa Resort",
+                "kind": "hotel",
+                "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp1f5d2",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+                },
+                "checkin": "2027-01-20",
+                "checkout": "2027-01-23",
+                "room_type": "Petite One Full Bed",
+                "price_per_night": 4200,
+                "total_price": 12600,
+                "currency": "INR",
+                "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+                "google_rating": 4.1,
+                "google_reviews_count": 1708,
+                "pet_friendly": true,
+                "time": "11:00"
+              },
+              {
+                "name": "Lonavala Lake",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90,
+                "note": "Scenic walk, dog-friendly"
+              },
+              {
+                "name": "Tiger Point",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90,
+                "note": "Great views, dog-friendly"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-01-21",
+            "title": "Day 2 · Nature & Sightseeing",
+            "summary": "Visit Bhushi Dam, Tiger Point, and enjoy a relaxed lunch at a pet-friendly cafe. Evening at leisure.",
+            "stops": [
+              {
+                "name": "Ratnaa Resort",
+                "kind": "hotel",
+                "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp1f5d2",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+                },
+                "checkin": "2027-01-20",
+                "checkout": "2027-01-23",
+                "room_type": "Petite One Full Bed",
+                "price_per_night": 4200,
+                "total_price": 12600,
+                "currency": "INR",
+                "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+                "google_rating": 4.1,
+                "google_reviews_count": 1708,
+                "pet_friendly": true,
+                "time": "09:00"
+              },
+              {
+                "name": "Lonavala Bazaar",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60,
+                "note": "Local shopping and snacks"
+              },
+              {
+                "name": "Rajmachi Fort",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 180,
+                "note": "Mild trek, carry water for your dog"
+              },
+              {
+                "name": "Pet-friendly Cafe (TBD)",
+                "kind": "meal",
+                "time": "16:00",
+                "duration_min": 60,
+                "note": "Lunch with your dog"
+              },
+              {
+                "name": "Ratnaa Resort",
+                "kind": "hotel",
+                "time": "17:30",
+                "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp1f5d2",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+                },
+                "checkin": "2027-01-20",
+                "checkout": "2027-01-23",
+                "room_type": "Petite One Full Bed",
+                "price_per_night": 4200,
+                "total_price": 12600,
+                "currency": "INR",
+                "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+                "google_rating": 4.1,
+                "google_reviews_count": 1708,
+                "pet_friendly": true
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-01-22",
+            "title": "Day 3 · Fort & Park",
+            "summary": "Explore Rajmachi Fort and Ryewood Park, both suitable for pets. Evening at hotel.",
+            "stops": [
+              {
+                "name": "Ratnaa Resort",
+                "kind": "hotel",
+                "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp1f5d2",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+                },
+                "checkin": "2027-01-20",
+                "checkout": "2027-01-23",
+                "room_type": "Petite One Full Bed",
+                "price_per_night": 4200,
+                "total_price": 12600,
+                "currency": "INR",
+                "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+                "google_rating": 4.1,
+                "google_reviews_count": 1708,
+                "pet_friendly": true,
+                "time": "09:00"
+              },
+              {
+                "name": "Ryewood Park",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 90,
+                "note": "Spacious park, pet-friendly"
+              },
+              {
+                "name": "Bhushi Dam",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 90,
+                "note": "Morning visit, open area for pets"
+              },
+              {
+                "name": "Ratnaa Resort",
+                "kind": "hotel",
+                "time": "18:00",
+                "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp1f5d2",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+                },
+                "checkin": "2027-01-20",
+                "checkout": "2027-01-23",
+                "room_type": "Petite One Full Bed",
+                "price_per_night": 4200,
+                "total_price": 12600,
+                "currency": "INR",
+                "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+                "google_rating": 4.1,
+                "google_reviews_count": 1708,
+                "pet_friendly": true
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-01-23",
+            "title": "Day 4 · Departure",
+            "summary": "Checkout and drive back to Mumbai.",
+            "stops": [
+              {
+                "name": "Ratnaa Resort",
+                "kind": "hotel",
+                "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp1f5d2",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+                },
+                "checkin": "2027-01-20",
+                "checkout": "2027-01-23",
+                "room_type": "Petite One Full Bed",
+                "price_per_night": 4200,
+                "total_price": 12600,
+                "currency": "INR",
+                "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+                "google_rating": 4.1,
+                "google_reviews_count": 1708,
+                "pet_friendly": true,
+                "time": "09:00"
+              },
+              {
+                "name": "Drive: Lonavala to Mumbai",
+                "kind": "transport",
+                "note": "Approx. 2.5 hrs drive (85 km)",
+                "time": "11:00"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:36:09.316470",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:34:48",
+            "expires_at": "2026-08-16T08:34:48"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T15:06:09Z",
+    "user_id": "corpus-pet-friendly-lonavala",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {
+      "lonavala lake|lonavala": {
+        "place_id": "ChIJ2TZdomwB6DsR0asZn2AJ9_4",
+        "name": "Lonavala Lake",
+        "address": "Lonavala Lake, Khondagewadi, Lonavala, Maharashtra 410401",
+        "rating": 4.4,
+        "review_count": 1780,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Surrounded by lush greenery in the rainy season, this scenic lake is a popular spot for recreation.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 18.7417874,
+        "lng": 73.3996038,
+        "photo_refs": [
+          "places/ChIJ2TZdomwB6DsR0asZn2AJ9_4/photos/AWCwydgkI1K9WfEOMUNapwZwnUwUwkkHaaOm7RxQZHGhDSVPA_cNrncOCODH_QxuBU-4wYGCzTuXCO76BOCt3sHOXebLoQhP0We9VvuCCxmbjU0yANjnk_HIwMgkfu_Tlf0h3ZW8_IN1UGZSELdF0kgxUg7wDgllgc4mqjyhe3-kSvroRCXW9PvQn2ovDhI1IcaBw-8SVxKGKAqvC_J01mTFHa-KTc5bXXitGHIznOwRCJpGrpJPyIeLnh-Sf7US4cfM-qfh72ykZYaLi-TAu2OlJ8JGBhoui8DZBxkpBTGMmncZmbXkvoeJ72AoRjB2ZhKVDkl33DG99vOVIkCw14Bfnk5xugEJYjcR8YW71hQ63_UnS0PGeb0_U36VBdYhEVCYkJzGvJUibTQe6LSb1ACFgAcFxVxHcvgLdzD8Y7r_T7yHAIE",
+          "places/ChIJ2TZdomwB6DsR0asZn2AJ9_4/photos/AWCwydi-9mNKA4kZsEziGuyieE6sz1is95J7mkWkFh5logXskOQktH9msM6HBDMg8XhUjxcZlOCx6jCobPKwv_9tsF7O8U7ba_hlhcaxkN6l5rf4FgNLBGXaX9gaww-vd643cU5iY-cRBNaYtGYpy4qsPPt4ngIkEFvo-dFP8u8lq3000Z62dgcXf-hiwSTPmLeKlB0NQcMBlWajr6NVa3m3LNCbBYDeepBO2FSeMcCLXtoNUDYnNsuqByrgyx6Sy3buaeuB4suh69gUHHq7xlgrqatuN-0gL3YeXCd03fWNwL3kZ_GYcP6ZYqMHRoEDhf6cV-YrELaqVOi0h7yrecN0EnDI9ZXZCdZ7QSpw-5RhzMAMoOKck7M_vFcWcDBzzEiKFactalzMdaBrucUEgmYdN6nNPKIsU04dS1k2qnhV6rK2Kg",
+          "places/ChIJ2TZdomwB6DsR0asZn2AJ9_4/photos/AWCwydj--jt9M2VC9ws7y9446o_9_mx1LnYYbdW8A5tcHWxWpe6DJzFsHjdI70-Q-1XIOdqFw-wUWaPn2jG5D1u-wDh3jMrynU1Y_wcLh9sy2xFXACktw-G0XaCVle3bxIBSLomfCGA4nowGxtiRXNo3NCtKjS6JF7C3rNgaMN4o3yAwFU2iE38rc8ZeV90bD__Y9pV2pZDhxplB-wj5fDGAVn1nP7Gpx6rb_ZMt9aD_skj_85LFViKDVgCnJqIviXmxzKh33xlJH3JL4b8zbeYD2atDUjSaXmSW7bJ_21H1saoZ8erpq3kOTWYPZ7gbypUMIE_4WC2IpDLZ5pyzboLksh2AZI36WXKRvpmayZwTpQ5-IQbJ2gmerdW6SbW9eIbakFrONcMQVWo921qhTUzoT6F_zvha-ULkMBRU9emBpoM",
+          "places/ChIJ2TZdomwB6DsR0asZn2AJ9_4/photos/AWCwydhrPnVtxsjyJSjf8rZHSgo4Gevmv2saMaXc5jaH57EBLwD2OyIGs0fRbrcroaHLRfbvgUuF2xZ1J6M3Kfzir64foqDQ4l7iKFiYSnHEhRhpg0kD4livXeyglj2ScNbiJkb7a07Mm5GYH_IMvBQaEsOAqcPZ61uFU1XOiaUZAKqu7yJ0TRauLHyHMUSXAPJ62GId9AGLLCrdO3ny6RP5AtOQwjU0S3lcCiLa7qkT5dj8_ZQ3d6FgooMimmbvTh0SabneNDgQ9ZAuTrLLPjiByKvuXQybBlpzGY3FjW3nNmZIsMwZgdqBUnnnLQ9vxM4heM6we9kyoJr8M2Zk6s2mDvVvFIEX69_AEZ2WUQs86lpbK-nYd45pCvIXTWR4qhSloaml_SI-p77BCFyhB6N8I4g85Z8JnNrgeWO3_W1AoxrXnuJ07WN2FewUbrBYPuM7",
+          "places/ChIJ2TZdomwB6DsR0asZn2AJ9_4/photos/AWCwydg2vfYUYUX9cecMTZ-BBtQn4ecKHQpIDNLQeTvE3Z4SlnJOieCtjhXCbJGta1vNLLP7HIwLwF2G9Hmgtd2CYRr9TfN4FxKpX-rbIAHQ7O5Ztw2ASWUXGJ3Ea7zdlwliL8I7S--q_mTKMT3BGbvcc8NEvU95TBMWQRWaFMvN7egtqxeFi01a7VphfUkcSNERYWRI8FV62HzH3Z2eHUs0OxrcAeAzxltMXwnQaRkicFgoyZQVSLRX4OafELKUBjn7xVw7YZJ7liaEV2hmy_KEre8AXQYfxIIB1Ol-QhXPCxGmjudXPo6K43z_jptijoEO-LoQkD6wP4IdxR89BxKiHd_P1XtmlfIHVTVjhzAlgdjLrnlc09gLQX1phtIGaf-PngdY88RYLepuviyM_NjBHQ9rxXz7reKfkRzblvedahQ",
+          "places/ChIJ2TZdomwB6DsR0asZn2AJ9_4/photos/AWCwydjNnPFoK8xzP1cW76omRyO6LTDM9BW-pTDcYa6LxiiHRTnEdhg9kVRYicvoG1cocr93Vexku5TF7ui2XOy1A67olifoBJW43zkZ11QA2S1BLCkd9Kb_j7gkvCRdTaboXdaqbRAC49Fvihs2vaJmZZqtQCOefJ1P4PjGv7S_PkAXc21aG2M5TaKmEh-IVMdLkNfzVzif-K8xI-FKFpJhtQpAxLfwFhKnbHcrG6VnVCUK1ovjSD36fIxEMDLLJ_pufiroS6Pnnk8TWcHXYH4J8cU3eR6dUXNYJMU8liLZ1KIKsj6HyiVkI4-q0roDo_G3Xb2P-6N-4kUlA3GEdT6oYQmtIh2VwsJQ3XBlgPKC5ZHxheefCRTaPwOWaqGRIXBiBGLVElVfA1ziMipsP0UwMJjNRsOaPskWI_GzaR_8dvMnxdKH",
+          "places/ChIJ2TZdomwB6DsR0asZn2AJ9_4/photos/AWCwydjEirGpr0zw8_jJiFD7sTsKRJI2OO1RRCYXSh7NtIhB6nr2XM2PScqMG4bvUFdT59XFNWu1D5mnOU_IByEH4k6Ngzt_9aKIqO5n7fo3BrAmDkTXXZrTx2Qa9WT4O07YVr_3sARriJ_Ephb3zQS3ZzMJmwnsqx8znyPwwsyuL0qEOO61OniNKJdX6ESf0C4WUEzdT7XRWQFLgkJ_L-q2y-KO53eA2QWR7opM6bAHij_HQWbOeGlJR6N-tAzdGxOt01L_Uw2b2ZrBzzDi4V6boGhUTn1bLid3OYpf0R60s6sfteiU9X5RxztOQ_aQjvo0xxItG22D_AoyvTbupnckLCJNwwjyKDHN7I-VtUyIG4p2SXhPgRItlE0fr2uDYwkXzU3F4ISg-QG-OCcUvFDAbxBqT0-nFj4ODC5S-OjlwmmEeTKT",
+          "places/ChIJ2TZdomwB6DsR0asZn2AJ9_4/photos/AWCwydiigH95q076W-Rt1NP_xV210Sx4Pvz0u1Hn2jV2tC80XoTYV0mU783BjjJus1r-Y-nj8jB1jop6sJoA94WFgbzVhvli0nQIRzNK4v0E_g3fuvXuKz64zYGAdEO2tr4Wu0ptHaua436rPZBy6KdzbdhG1K8jS7ZMCqloio69gfjNPep0Gu6hZeVp2mmRLjkdIvvzPnfNDSUd72zBPxaOCPtI_hGBR0KK3Oje5Mmy3AYQd1jB9Ocwh808XA9JC5p5h1b4r4vpKfmS_lVT-x0-A2kSndHHueRQM8gn2a_BQJ4-4Zc4YOMJiQ-Lp0qbGEjD5FtwlkzANyUAt_yuwAjLQbJtSQ6kYgo9qukzXKDGp8YcDWISLJpl-8j6ZWpGqS-_wZwgkqikGblDbvY3o3CzlcDJlaC3pqQKFpnToBWqjLSngrw",
+          "places/ChIJ2TZdomwB6DsR0asZn2AJ9_4/photos/AWCwydhpWSaTZY6vD_hu4yxsaTc7pKK4Chq0Isg0cel7r8JqW4sdJnPI7J1J5kF8_auIswM_SiDKVUr4-U286thzhUmcD7ncCRYI0u7gRq8or8VUtacnyfW6Uesa3_djAM5oHltQsHFtsADD5EOQ_3VmmlE5IITyCH-JsSvV-I9LhF8b-ucwKiZstbHQ7TJasJSC4lnii-hzPKS1D2CvF1_fZ20o318zAS0Evhg3Li96z7fqAc34TxZBwxRWCzKfEDTJNkiS8ELL2ONi2XrYI20XBNVvTNa-c_CeWnR9Q3-D7qyr2LLTx3BO_L4yuzMDqu3l4fC0L31CbjQPRl6Wztf7AnJ1z60kTfu0QUtUL9t5LjhwBsBGHzvuFVXWcMBY2Z_tUPK8mKW6RLliCQkQ0ODV8Z_07vkLZeGUnlAtoQaD-KEdaQ",
+          "places/ChIJ2TZdomwB6DsR0asZn2AJ9_4/photos/AWCwydjF71ye6vnciNBs6rB55G-7VFRM0ux-ZqkQOhaMcs84KIxVTkAdiKq-NOywZqc-MYTvWvNRni_9ThpKEYHxgfrm_04O37CtV3VyLiP3BTByJD6tr1RavJ4yUrRf13KY8Zoienofu_cVK2mfqT4wxwHLBkiNW_RpMRSLG2OH-cfHDFgwr2yjhDM-3XEiatKMBrLYSFMAi6Tg2RGSMA5FWfb48FmUXDvzsFnwlY40v3Qe2BvnSeOSdix6XUtHX7bNS0miw1dUfmroZjUHLR7Xky5ABsODbPff9U_S8Nq4N-UErvA_U52TIF5mb3p7szWULz8rOlIKI0OuJrherY4ofm1Q18L26Ratq2RfriAwXLQV8DS8SSTX2gm_oygHKNRxP7rePKe1E2G5k0fR1E8uhq18uV9AUGUlPK1soYCtJf8Uzlc"
+        ],
+        "__at__": 1786806274.593708,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Lake in February is almost dry...but the view is beautiful specially the majestic mountain range and sunset if you go during that time. It is the most amazing during rainy season with the waterfall and the fog..",
+            "author": "S C"
+          },
+          {
+            "rating": 5,
+            "text": "Lonavla Lake, also known as Monsoon Lake, is a beautiful and serene water body located near the picturesque hill station of Lonavla in Maharashtra. Surrounded by lush green hills, dense forests, and a peaceful natural environment, the lake comes alive during the monsoon season when it overflows with",
+            "author": "Amit Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "Perfect place\nPerfect location\nOn road side\nWeather is awesome\nPlace where mountain, clouds and water can seen a place.\nFoggy atmosphere in rainy season\nPerfect picture suit point.",
+            "author": "Cm Jangid"
+          },
+          {
+            "rating": 4,
+            "text": "Gets completely transformed during monsoon with lush greenery and misty views all around\n\nThe cool breeze and calm waters make it a perfect spot to relax. locals often enjoy hot corn and chai by the roadside. one interesting fact is that it's not a natural lake but was created as part of a dam proje",
+            "author": "Selva"
+          },
+          {
+            "rating": 4,
+            "text": "Nestled just 1.6 km from Lonavala town, **Lonavala Lake**—also known as the “Monsoon Lake”—is the perfect quick escape, especially from June to September, when rain transforms it into a dreamy green oasis.\n\n---\n\n### 🌄 What Makes It Special\n\n* **Lush monsoon beauty**: Fed by the Indrayani River and s",
+            "author": "Tejaswi Sankhe"
+          }
+        ]
+      },
+      "lonavala bazaar|lonavala": {
+        "place_id": "ChIJ53jFXhwB6DsR992Bgb-9aII",
+        "name": "Lonavla Bazaar",
+        "address": "Nangargaon Industrial Estate, opp. State Bank of India, Nagargaon, Nangargaon, Lonavala, Maharashtra 410401, India",
+        "rating": 4.3,
+        "review_count": 458,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 9:30 AM – 1:30 PM, 3:30 – 7:00 PM",
+          "Tuesday: 9:30 AM – 1:30 PM, 3:30 – 7:00 PM",
+          "Wednesday: 9:30 AM – 1:30 PM, 3:30 – 7:00 PM",
+          "Thursday: 9:30 AM – 1:30 PM, 3:30 – 7:00 PM",
+          "Friday: Closed",
+          "Saturday: 9:30 AM – 1:30 PM, 3:30 – 7:00 PM",
+          "Sunday: 9:30 AM – 1:30 PM, 3:30 – 7:00 PM"
+        ],
+        "lat": 18.7482413,
+        "lng": 73.4225431,
+        "photo_refs": [
+          "places/ChIJ53jFXhwB6DsR992Bgb-9aII/photos/AWCwydgUznBXvHV-KLxWG2sJNvIwCif_aW42k-ldGAI1g-XyqvwVTnA3umu51M751S3Uf3XTh3fuclGwwmTt2N1Mbsq5wq9HBvDs5_ygTitXHjnDtR5AosOW2TGX_xSgiE4orvRIdKcIPGDYOom5K3pz0_ATRDdv2GyWtEre_6UsrDARmZmVtb-NwFraQbc7cQXV99satsf-aeP03Dn5nEat6gk2yq4QGfSJPV6wAthUYERw4J6pytBFe-SiAny_WrAvyuRWDTsUDAo2Zf_KC2etb2LWI1HCBPxH73GvmxITxWY3_YGHJijDSJCycKg-hIoFYUuLc30blmdfLKehtfZnX1FX7kaezWkk-ECaKqUtBPV5Q8taUKj4Q3R4YrMJLq9YStiHkP0LPXkW6sNmGOstQ2JPZQ-MzIRfy5Cf8tuZRAzIM8BR",
+          "places/ChIJ53jFXhwB6DsR992Bgb-9aII/photos/AWCwydi5p1c8UrnFSz-SWz-pfidyB6Psv4eLfzYzLWgsUCXi8o5r0GWFflczNbqCeFMGFUZBdX5fcfJ4uhUBTjgEydvl5BPi2X0X8_cXcAOTJg0WOttbb17utjbysETd7l6x-OJFPvVzwWKjvtmJrEf8rxXSyFT8apURYNOiFVxkSZL_KwvDNSS2WAGmnzwzsfOX_BzJXwa0r7TnsL-U2IH2GX-iDphA5lH2vQACw-wth4_QlTXmQb5Pe67s63Wg2NDPloJrGxntJd6N2Gbha-aGZTAwV3YcSgxumeEJFUj6UMskyWYCRvCN6TM5O52Rx8ffI0W9DpSjmQSFKrh0LAbbLphV-SUpppB5N5ySpu996NeBc1byaZM25eRCR76w5Oq4s82i4K4GNI0LjLOLppXmtvY_QviqGqPtxjRKUDFsKyPMWw",
+          "places/ChIJ53jFXhwB6DsR992Bgb-9aII/photos/AWCwydiq1J6WYDK4UNbKQHZ4VeXb8ZW9ySgmkelW77yw9MXGrRzd1MK6zAmjjsxspUD8eXhGC9m_-aUoRznvJSaMfFIcGGcQLfvVH-ZG89ZSOqM-KrY6Kd48NOfrkw9Fc-Ex5kF_hvfwrDlpyCy9VVJKESyY_8vRgudagCglSonxkAkDiGtKNQ8Gx3FLxpMMpv1gyfquTh5eKLatGu7eaoIsnUhTYUX30RcvGcgDWasGFd3pIfRHWg8Gxt4h5KkfGqcdI98Sw_XJMMj3RZ7rrvU5VgviSArWn6ucPtCAzU7_hs-zQU_KSJRAw9a9toR-vG-xV0TDRGnh9G2YodmVWTZ0Aca9LxOiNZ7-vwehK6Eb3i6FeRjgd4kM0NIYjkVIc2kmLU-ZONDkEUOuGW1ygBCHc--9nkAR9akqXU72vZE_8Crw3hOr",
+          "places/ChIJ53jFXhwB6DsR992Bgb-9aII/photos/AWCwydgcvuQresseI_pGgZLGBvcmT1KCoxz4bJPNPjBN5iE-9lJKJBLbpxSn7hyO7-TYmt7pmSuH8v5K6G5GMAMDXoMbHl6_z8QorLDbeuH_HH7LjaFtYu-Jgohzui53KD0LycHuC1XjI2aCRiyLsFwFxJCWShJ0MpdlMCtEpEv4kVp39VqcYcNxKFFfXm0d8KbJ1cIxYDjr4kfrDMAY57aS8AxgGzqRgXK5DhKuRDuu7IIXHNdsT2drBrer3972n66FTeg7sCT0k5mnNIRVenJMlOqXEGjHDWZ8FMLdQCLJxXfWtabwlEkLMarg9oY6ZuhhyaS1Uj3g0K5r1PmUK_RnPDPmGTOnImbFLADWgTrLNYQWylqote5VdiL8EYiA87_uEgZ2-7lXpAOMHZT5AgO4sXu7X2QF6Q0osNpaw7k5uQfZiA",
+          "places/ChIJ53jFXhwB6DsR992Bgb-9aII/photos/AWCwydjN5tAAJu451FE62Rfv_aozWLp7KMpTmRB41_as0Y-CJseS6ZEVaM1R0UfoHAQgnp3gmuefbu3-brvIUBBpHomPIZ29nPZihb7Q1IeVagm0z_HqvBw-QmofL6_-RsI_kY_645eudnwWkye3cfbkCD9vUqEAxjb2XY_SPnVUNLK11XsKevlrNhUTVZ7jnF24UOgGVJNZWy-QCs_JXFrvfqM7ndj_ulkcCKkP5xbl7RrCJL0bGyydiXEPvotshXvZ_UZd290vQeESd7-PtUTfpNBr-G5PImHkVzX-ge-RlHQl5lFOXQaNgdJc5_uRcraN17N54jjoHtqR5ICjNuOLLdvTw5iWznetzDYLXuu0V3ATdwYwpdzb1jrTMYYV9I9F8Zu7uWXYYtWfV_r28f-zpMkDJQxncfmdGhEk6y3VUpiqVA",
+          "places/ChIJ53jFXhwB6DsR992Bgb-9aII/photos/AWCwydiqCVD3NmQmMQ8Bxis-7cWxz4Gceprx4vhgCkRLXN9Q049kQQ2ghlH0244VNpkYVNdw_fPzpgX9eZ9W8s35SxBG66PNlk-C0RAK-poEUyXCCBryK-4KGK2mNM-gjqH7Uk19wdXWc6PcvWEG0hfYCPNSN5MaF1TvCGzzqjFyCo0hIA8osEWLtHdLInj_bJBHmPqVVBiWQYvDymwgjo10WtKFUvv1b4HavX-SfBJGyh_DK-pA6pd2zjSNQdWDopmFzoD8dTbLP1XSAccihT0VGMlY7klVC2Vpd77lJa_4cepjs__to7s0IRq0V-6-rX4HlPIAcZtJDHveZBZfRnaaYxnem8yva5j8SRd5xY-mcMHXeYs7b60wkQ0RQidXYWCP9mQEsYoeCXFRdRZPFtfUAS8apxad9jkDcgFRNfyXU1Q",
+          "places/ChIJ53jFXhwB6DsR992Bgb-9aII/photos/AWCwydgbPgv4yWRDWVm__bLtUhGPo68iwfW6mNSDbSilW5jxWz8NAVufTcw6FPXFSC1eHqBS_nNcOJgvAMbzf_fHciINnhSPC2AGeoHXcHn6xNQHplKcrThEcBgpKhACysfjUOVP7YbV2jM2NWgLe2RqPD0tN5rFvA0aNsdiRAbXJ8XsS-iRcpZJ7pDchGvmOLxDazWQlk3K4C9rmjpY3kcRoUYMZulFKIbU1RkFyrD3Vpre_2nKhDy2WL6QwWDIQx0f1FsvS9RS2VP6JN0QQZ9JBHBGtbkK1CeCohluQebWc6jAGBZ3j8Nn_HYqTm2quRH4UquoFkYUgtGSsyDtHEWpQ_0ZmSWyRBT8gUldkKhEuv6GW4DMk6UPrETNxYGjzlxdNSlhr7EYVawkdJIUlV0cmQq1LAIw2N_SCSjJWM1FAiazVw",
+          "places/ChIJ53jFXhwB6DsR992Bgb-9aII/photos/AWCwydi4RYCH7uQqyHdDDCHgDvOA1hU6Ax9CDIkIQ3gVwMy_285z4jBtslXFvRGrw0poRe8aGVc0etfCrXfHXKV_2ppBQpKJJ442Avl6c2jPZt45EVxLN2W1ba__9aa0Oq26NRxo0xV8JVqGIueJgd2w06-Z32-_IaraPqR7ohu2t4Wi6cO_eUJsMWs4BsnLVkqaNfCY6x2tM4HqAHG3GY6AFJHjp9I6ZAaCzBkJYhumWTr1gBAYmC4iIPU2xFKZSbdYyqo0dU-agHzt7IaiJL1sEWvuLYMr876m8DBNylJ88DMDtNP8jtmy0yflHBSSmValLJAxoD_TtJY-OVatkB8qMNcGJoIRCJSazzXIIH18DYu-aQ92ANz36Bybz7h4H3Kw__01w3epXy4fM4sY1_Z_ENLiyzNtk97f6Ex8x7PI2ZrNRJfwgzCVDtxdr1XSuU5Y",
+          "places/ChIJ53jFXhwB6DsR992Bgb-9aII/photos/AWCwydhOvvNrRUItiqBWGDNeNJHxV75AqA-RCZ0ojflYwSrzPhJ9wx52GmbOuZOm_p6lUKWc3s_Mqyhel-WtE8FM--F4lDEToUlACvUVTSlm-C4JF24hT-4nOnrvbHGJr5wObtGXSZGG632djVwuRT_xmjiCVSTLypHrG2A9ehHgiersaskLOmMc-5m24K57rS9eDelyoPWTyIY3RLXXXkwaOe4FkcyBkDJt9SYrtf8Z-NqqkHixWPkYtd0TCwMqqvBxqXESXg5iW-V80fdpTRWZqdfoL8szRNZD5asoqHOVVEZP_zrnH-uHA8e90AkJXAh0t3DqVRIjdlAwUlygtl0CpI1WdJ7bZUsywzJEc-m0mnafTPDKF7EHnSt9l2AUrEz7J_up7rnHRmWiDHIavn_B0OShdvEJW7jc5td0RXZY0vo",
+          "places/ChIJ53jFXhwB6DsR992Bgb-9aII/photos/AWCwydhWwQKXVuy1bWYaB6dRBq7fESsTIK_pD4nIFVOzVKr7HwN5EIfix1m2vGga3oseCJMD_PZkm_DgWGr7q2Q_3A5F0PVyfuwpsko05GGxaXVDu1rgLwzSPxS5Aa20PfUVVDWk0-6igz0xjYWDfzWikDtiZevPMSZApmCg1gbnsWoY1cz0r2UF0NbU0DvOFG7As_lRWwIyqvXPpVO2HP-b5F0uIB98tZXBKTze8Da8Dy-O9MNOeR0dwjM1PSTk7nd3htgMyFGoXHpf1syyDJa5dc7jxn2-AjlZaH3v0gwV72z5safJKmoEqMWwgeiJ04LIiud57qU3O557OW-hD9P7g_rVcDA96YbfQBKuIYJUr-SPwriyG-QyJGeXhwkjiCfTI0I4MpBMip7Z4qNaIIBudK32E-1pqQUtLWNVAFOLJDJWUUKXzDxVPPOz7w3V2kEP"
+        ],
+        "__at__": 1786806275.0506828,
+        "reviews": [
+          {
+            "rating": 2,
+            "text": "The market is good, there is a lot of variety. But I don't like one thing, a person takes time out of his time and comes from a long journey. And when he comes here, he realizes that it is lunch time. I think they have kept lunch time like the ship instead of lunch time, it would be very good.. When",
+            "author": "Akash Shelar"
+          },
+          {
+            "rating": 5,
+            "text": "Very nice staff .Cooperative people..Products are fresh clean n can still be more  economical..\nToiletries are too highly priced..\nThey don't have any discount margin for higher quantities..\nThey need to have more schemes for buyers benefits",
+            "author": "Minal Bhatia"
+          },
+          {
+            "rating": 5,
+            "text": "Very nice place since from childhood I'm going over there for grocery shopping and monthly ration all the staff is very helpful specially pratiksha behaviour is very good and professional 👍",
+            "author": "Fardeen Shaikh"
+          },
+          {
+            "rating": 5,
+            "text": "One place stop for all our grocery needs and more. Staff is also good and a lot of options and varieties to choose from.",
+            "author": "Imran Qureshi"
+          },
+          {
+            "rating": 5,
+            "text": "Made some wonderful purchases here staff were very helpful.",
+            "author": "William Malheirs"
+          }
+        ]
+      },
+      "bhushi dam|lonavala": {
+        "place_id": "ChIJSXUDsWEB6DsRGK56_D4p-A8",
+        "name": "Bhushi Dam",
+        "address": "Bhushi Dam, Maharashtra",
+        "rating": 4.2,
+        "review_count": 4180,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 18.7224264,
+        "lng": 73.3962885,
+        "photo_refs": [
+          "places/ChIJSXUDsWEB6DsRGK56_D4p-A8/photos/AWCwydgXckl2Yq15h1xgYtDchhHdndk7SkswwNNi2jW0y4oJjiQXtxN8UXASYid4MHygPpBQyWfxixevxWKPiJ2bISdI3Hi_q3HaAj1JiJkbFqcg4PMdJE4vm19qbpDJnD-lgYb7kU4ZF9Nn7Pdz2F5KS8z5uh49usI96UdtKg5sz16K-8xRAUxaSL2wxghX0QZoNSz1K4HOhcqxDSsCTYhOEqqEwor50CmGmfL3yUdszBdGOOx1aaf3QAlv3hTgdFelFgOH55SdDzRn09-kSinQEQWkQYiQbuUN5JfUEqfKDmtZTrnTZKQLn4Sd26SFZv_HOXR050f4QqOlaK9y_w_31Ldfl77RPzKRriZCVPL687aXCYvJ2cPP80OQ7e34nmit3fTak9-fXlQTInnP_vXwzzZ54EUxlFTL07wJLkffwwwDwL5-",
+          "places/ChIJSXUDsWEB6DsRGK56_D4p-A8/photos/AWCwydgaPzgVE4ONLvqNoEUtMUjJkauoG_epW4QggKjlTcLu5vIOvob1K6zMJeWjvAjacZbNM2eh86xrPemSBQt_rLqyQzZ4t5c1lpFAZMu08OeEwjNCj-cfNn9RihpkYhK7PVC07o5RqnvgYK0VYUw-gYd_Es4kez2TQ6HSrZwiU9V1-ckHzEo9XiE-zQqIDw436NE1r_vfBof5VqnfiJtgvWDKQFmLInInyKL4Rf8BrSiBgO04r7E2ayCPaOGYMNzaKWyE7lBosDVqFHyIAh6Fm0QShYo2kF3Swqdr9fy0kFUibiAF8LOhwSvSMBNSxVHcD-phwQ_LlCVqezYjX0zxFCc9T4Qax9e_nPm1Tt5lnOwD4fv5x5f3YFL4xW_7k2I3nrWwCsKcnPXDOhij3pdxcQCxyy0cJII0EIdRpgkAcFSKVvPA",
+          "places/ChIJSXUDsWEB6DsRGK56_D4p-A8/photos/AWCwydhZ0SaonfFQS7UI3t93ce1qROn135S4m6NylJ73SZJQABaSeCnQ2bnOp7oKntvtcA99TD-xvoO7f-bqRiIqxAfk6lBEe4629WS3uLgjpGpY2P76_7I3t3X2Tn7ChN3mgyi0kZ_xElvCqPsuKZOxZ9aGzFq1ldM6ih3I-LBcbZ_ZQEFIZD-enhf-Ri06ki3HdZ2D0QlMQnzLCHF-YWRXfOh_QozjjxkUE1faaEA5mU6MIqAYOuH9PLYOnWEA7ORXll0QVAVoBZlv0rwuM8P1GIrbRco-cq2sxdVF2s34mQ0nJfpDRYY2IekgbNlhjCAnsdk2_daeHhgSAVVazhudh5UVWpEAyF1bAVlI8ubEB9cLpGz845onwbqlF7osCSx9sJK57D3s8uCDaUq2m2HGWwh0S9sZGrp0cCAaz1ZkXJ50UQ",
+          "places/ChIJSXUDsWEB6DsRGK56_D4p-A8/photos/AWCwydiJUg1C0g70W0Zqw0_-wolY0QABQxG6JPlyWftKTBdKAPN50U6vvK0JdJvSEztNCH4B0wBzVCjkvZCVei7jqJK3i2hvniYGumYjwQhsvYmzmn_pp8Z-1GeF1Pt4jfHrk6ZXyn7cS1HoRUH7ypMMT-ejJmrmH3XzsZiyBremYuTHb5xmq63f7satILvPh12KLR-nis9JjgnRL-wydvGEsbWFhklYKw4yHiyrEs623G-T891x96BgQ9paAGoth4TFgOo-VyPXX-04juZeOpSZfgC-FJ3BhmmVNxcknpzoum6CQPvI1awYoA4C6WqZiWUw0489kZD3cjGpHCp39KEs4GU25VJAb5pLonPf_n6HxH4Eg5oiP8fNvWNgfMOlF2O1U3cZZfxsP2IQk2f88uu9LE3UcNEihY0PZA-2tEMdUIE",
+          "places/ChIJSXUDsWEB6DsRGK56_D4p-A8/photos/AWCwydgKa3K33huDO1c6yvxGM5IAyh6QU1g4M4q04SCcPra6c1ISv4vDg_e3vi2MCrqY8BiddCZxXpeT2wATh45alwEPv351IdOBOnxBn5sREGKBFpEoZ3NIRURPdJEsxdS6PAWojd02uzT-VrpYWnb7AKvcuSpq3nR9wcAGIpulf8bcCVsgXkyhMI8CABJ0HfBtOIJG16tvLR4M1R93uYS2gYFojnp4k1myIpT4uPTyrjn9-yZ6AAFPEI9BINc7DVxXXPH35c0Ta7eldKilhmlXJQvALVnsTt4C2S6wH-9ZeDYvcK9Y3xhzYpHsdK9MDl2Jg6gAYPuGMfRBdW-7adqDbNSEMuV9rdi-WQR6qIk2eEtGpKqVcf8AqJ-gLoJTuMK2SdMsz3rPZGxay2oVGzf8B_XYwMEpQORV6uahn_8fZ3vanH0J",
+          "places/ChIJSXUDsWEB6DsRGK56_D4p-A8/photos/AWCwydju4k-yHrPLRvSIGkqr4XMmKYx3t1DhLSZ3ixEbgmkSfD4dF8-KLaB8UfTSthiapnN51hKRjBsiiTKPullLHIM_2rC569mGiv5J5Z37A3kObXxk-ltcxtePdXRQxDSCVE3Fbx3xgTlMIW9h9gYsq1HskNqqi570KngmpbLM9F3Wgu9GyH9hy5QMMGqAn0QVLrZviv6UEPzjPgbz7wDrJ2ktdx1fk_9VY6IigTV5NPWWW6Mm-KYi8tZAHNI_kTz8-bSMIx5zYzFOJiR2vciNTO88oJsHkqAl4eTvjbKYNiesp-QrMV60tq6uoQ8E2Id-goDVqg6Dm4-MYG058NfvCWiPsNomJR2n_Q6S_XUc0KrRz9cc_5dxA3HK1-Ds8es9BSr-6riZkZcHujtzrcZthHZYKxoUad5zpMbJ_TlXqyzdczzr",
+          "places/ChIJSXUDsWEB6DsRGK56_D4p-A8/photos/AWCwydjNwy1-_6zVumIXzlX_SYZOiwqa2ghRDpfalyxu0GdgiJbYyn9zj7wxfnepG0jXYnVwmBHfqZRKee_KQNmKZCWI70kKM5IUBmgcqWgUT6MkfKrsKbzBbl20-oWE54kb4qGXuXHZDIZaioWppnn11LUN8KvFvY2IB26wpUxC7inarx7u-OfsukkjYF0jKkhF6ZA681EvN_cknz8c2eC1Y8PJwbkMvog1ySK_J-u3mVAnW6XLdFeyBJLqZxIWlVt3TSZ2GcZVbtIbLHjJ805pkNJqkjR2RgV3ag5WngQrXDMmtIW5RuZEiXuXM8UmqBJ42i3TlQErDbQvMiqJ6lURgy6UF127hkGp_RqwTSzvAgxqu3IfkvzalIbkN58B4mf6iLMD3p77sk_YLpg0jHcI_RRdwmewuSsF2D9InD4ohd8mgQ",
+          "places/ChIJSXUDsWEB6DsRGK56_D4p-A8/photos/AWCwydhXzteQd7KCv3bICFu-3FZ0JeLSm07rnRV-LShkuEJnn0WdP7dBNsLgy20gtT2vUO7HimXkwgHGQg8aTV_JQ0g3C4SgQgy4nYzich5bac04kjILK4kn8tIo8inQhQq6OQuoKgLgsCKotQ8iOtHsOhQ7S8X5M94u9Vfff9H9uDOOauEs4zjM20D87LDoVUG_NkMMXySjfnm5GV1ICesI7JwbHs67yKlpNfWnP1-QzKvbdm9UDIQ__B7A-Oroec2a9ISstks_0bp9OgFByCl2yfMg_RG1HZPOTaZowOjB9xZGctBsRYKfHlhwDNtZ1V3vCAn0ne31smGHNNwh0nLmf1-EqwApUQ1PRSrbVI-l9gxsRi4_zZ_4nROnAuCuAXuwJRFQAoj_sth9w_I017OhLmv0LiGmc75jCnxUAoRUVMUztIRX",
+          "places/ChIJSXUDsWEB6DsRGK56_D4p-A8/photos/AWCwydjulAj6cWufAxZyp8tDl8E9onJ9Almi6a7Ymc_rtMYvHMfl9uBhLabmAXLpiyk6WL6hPncET_MQB448LfqcmtPlwnXg9BpA_Kth-6SII4hVWgjvuNEEp28KDvFMJSEoWR4KKp46i9nXTfqqW_h20Q_MfcWFb9EhwZ-fnmuPO3i4TUlDBUTLf70oPQSpsKV5xg99BubG-MBcc6gCUHD-KtoY_74Jsed9CynI3rgPS236q66L91uB44BlDirIhL56lo4LSATTj5MAWmaX4RoB-teNZXHiAQCerTZ9JQvvr11kfjt-JirQCe0tvRmrp5du-zkm1lz5XOXjwiF_Gbeh5GE29eRfmkQV6aRlM_VPwdw293p2Hd30MlsseYIMY2JZCNczP5W01GIr68LqDU4b2XVIyomo4GxGNUAw-Fo6xh7yzWM",
+          "places/ChIJSXUDsWEB6DsRGK56_D4p-A8/photos/AWCwydjewNBvtYGN7MeAECa82Gc03eGUFTZJ0O-xWoiH0ABI-CNNo7InR9AiQ8IA3S8Sbevj2xqSnu_OI5hsk_W9fACfdKlWrbD2fs-CbDXY0Ll4BM3tNasQ-kpxkHuI4VrS-1NihrjLkzxbo9IyaSjVN9YjzYb_0KwEruDTicYk0z5e2fgSkNPI05X11b2TwOILMb2p3iQe1DR3AqBOGR753Leks6XuSqQJYH9vSXVzWFAK9-UAdD2yRn6MEAPD_iwFleUPV7JqPH09aGyVS-h6FmDtArYEAOuXSQsh1geMbEBjCxRTHin7r0tjf3HhUQTRqL7DEJ89sJS41qNA3mKJT2zaOffe5XoRdtpgmYcRs4CwMClYTuoVXXG7mAuHftM5P-iJCvoSJ3QRrsREwBZzpk1kkQ-5csIoq7o11O1fqI85PA"
+        ],
+        "__at__": 1786806275.3977869,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "Bhushi Dam is located in Lonavala, Maharashtra, and is one of the most popular monsoon attractions in the region. Surrounded by lush green hills during the rainy season, it becomes a lively spot where water flows over the stone steps, creating a natural stair-like waterfall effect. It’s a nice place",
+            "author": "Sahil"
+          },
+          {
+            "rating": 5,
+            "text": "Wonderful place to get soaked in water. Be careful of slippery road to the dam and avoid wearing shoes. Avoid weekend or Reach early or you will be stuck in long traffic.",
+            "author": "Nilesh Pandey"
+          },
+          {
+            "rating": 3,
+            "text": "Good water flow but risky for small kids and elderly people.\nAvoid if it's raining heavily.",
+            "author": "Aaquib Khan"
+          },
+          {
+            "rating": 4,
+            "text": "This place has mesmerising view in monsoon\nBut we visited in Nov yet had a great time\n\nJust that People should have civic sense and shouldn’t dump garbage here n there",
+            "author": "Swarupa Morye"
+          },
+          {
+            "rating": 2,
+            "text": "The place is beautiful, but so much plastic waste. The people have put food stall at the site only. Not maintained properly.",
+            "author": "Ronak Sharma"
+          }
+        ]
+      },
+      "tiger point|lonavala": {
+        "place_id": "ChIJ30jHY-wD6DsRSuDDJvPcQLQ",
+        "name": "Tiger Point Lonavala",
+        "address": "Kurvande, Maharashtra 410401, India",
+        "rating": 4.5,
+        "review_count": 26049,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "High-altitude trails & lookouts in a rugged area known for spindly, foliage-covered rock formations.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 18.696086899999997,
+        "lng": 73.385235,
+        "photo_refs": [
+          "places/ChIJ30jHY-wD6DsRSuDDJvPcQLQ/photos/AWCwydiCob0YfSp5RruLedi7FeT94e9f5pW0Tcy9tI5AeUgI8k81IMq_X5Ie_sKRVy5NnuqhR5uq8Vj9FehS1d4Y_Nq-N6Kq6BRBvVbssaoCVTh9eX-UKbY2blx1cwmBH9gQgys3n7PH2dQvoVciZLiUoo49BgENW5gt_tzDCCpUGH9npe8LkLzLSgnuksw0_HUib_vMJbPlxQN7QOO-LJULTzdYa7Tz4hxTJYDnpKH80mG4g0FjBixX1SaBTQSjwRZkzXKitHZxiCrXQvzKo96RphENqFz1_t5pf_T8iSaU2ogVL6eFcw8hRoXqHNTmNSs4fAKvWe2leuLe3WOtkeSNa2dqyMAeGVUT9B-aIy28rWOaPpWxaI8LwvrrpKVXyE6-QiKM1CRxH2-F9VAfcm1kUFvRtGviZ9QZA3CwXj43tDBoipz3",
+          "places/ChIJ30jHY-wD6DsRSuDDJvPcQLQ/photos/AWCwydhqVUDv0UtxrPD9UujM6L_iKPwdRaNts7Zb4xez0Xh86spADQ124LsGZdehWSFxaaWs_XQ93de39ieeZ_v_FKTTxtVfK3u6AsggBcbGGCVufuUH_X96rvJFzy2_o_ulJUjPjkXOkk8qfPQ319r7WvYyD32Z_Flb4OqcCMG4jwilu_tbCCFwp0znlo0cumF7EYcLYUf0N6sgV-ib3koB9atDujhZrxrlHftu0UX08dImLJ2bKeBbPxOnJO-9C7VJtFGob-xnxTm0vybbszibqiAqCzGpLmPVZExVVF9HiJvSbF1UodOXuZW7AVBMXTdtbTf8yUEVpXRe9Kf6wrYntC0JR2ADm0oFrgPOgCgGzQfFz81WNsOokHtMNLmBYcPbY4ped4FQZGm5S7q_bhGwBqjK1f9SJkMpK0BQVO40qA",
+          "places/ChIJ30jHY-wD6DsRSuDDJvPcQLQ/photos/AWCwydjmZAR9PE-ze7u2ADh8mTI-JP0_qzkv3TY14E_zQ-qDIYpywJ-fJj7tmcvbnM62ATArQkxTIHYM7dCAHjhBUUbjw_YHW_1MDuBmirV06fCC0w1EQ5fF1fgQoRPvgiDMMIeZVl8OpZidlTt0eXyXHjWV2ssj1ohG9f5WV_0FdWdJNR9hWuQC-iamJISFIGaAhAxCtEn4CKyrLoz41ogNLaCX6zBcpmzHcOyw-Eh6hXjbyNEtJFBMykX_I1eRT3_7jRbKmhOrSlD0ne436mP86-L7WwyzOqYbxAVKWJn5ahXoB43TEoQeUq3d_HWyzoIUEwcUQsfAnQDy-Df4N-mhbuqLwRJKHR5hpsEQkijPpDlfNqsaBKSNrtoWilB4H5Ptbwf4AuEG5Z7CUss8MTTDABZQPiaNYKyzN7iDGNDa_vGRF_426JweXVJhNxOjiSAk",
+          "places/ChIJ30jHY-wD6DsRSuDDJvPcQLQ/photos/AWCwydjZy1s6LljeJJ5vTsrB5wEdBQSsA9KBWjhhJftEyA8Ck9ACnW3Y0Pdx1jZoiMLrmvau_gDEsBk5Mx6I_ULtSyi2lmHXL2Vi3sOurXFR6Uiuldq1zfim7WLrKqqbiJvSNMS5hUYw9YO5JC0pcfWwa71h8mtsXLJiBr93VMBSRetjxmAu1dchVxoqxAHePZkq88h6MY-ombAqVTWLiTHyq03MimPjL_knyURt-WVk-tFQ5Ks-A63r9tN8-NHlafHCqPGBBhlGOTliBYvJ9ZFMIFifQ7UvB5qNrLOwBkAcJkt-WLigMK1YYk-WMl4Jvle3TqE3I_CZr2561mGKd5EgW0wqAEZmGgNdKVj8NxKkLV7oeJS4t7p1rPQZyVKfOt9B4zXDZn4ucmBJY7-8ciK3A1jE-K8ByR0oOCZNGioLIGQX642g",
+          "places/ChIJ30jHY-wD6DsRSuDDJvPcQLQ/photos/AWCwydi6TBTwvYiG26knONz540MD_u2c_Tfoy_nnrmXokfqxGurgqXpNvcEdt4sH6-527c9D66_1WD9x29vdIRpTfbf6kG_e2lIg4ugMg6O8ulSYkOoYrbWBW5T378xAB656VgcoEh7YfSdvmGPClbQqrcHCWZu4ygtBzdZPjDJRD7yBfAlUTiZ5G9BO80XgWDZk3X2Z59Fe4F17WC2bQorHviwnEOzqnvHSOnA1_mmaxzRXU6FuyArAgiOHQyldobkkwp6LNSyHANgSRUQuQPh6gvNQyUcACS1aIsPfkxwSqdoczZpdF12JqT0TZ4UAiT4t_PUhIPW8yDgFWSEsHx7SHPsqgqgFVTLHQPANjK8XDm2xgOVMtiGOwBblAbVmg5CHth3Tt7qk_Dgdl--BkmzlAz5zheffT6zyiF3EunRKxWEYDvVmw5gSENKxtQRECgax",
+          "places/ChIJ30jHY-wD6DsRSuDDJvPcQLQ/photos/AWCwydhd1Bykj_rTYPfYQCsIfPO1Q1xemOJDC5ioEvjJwWWLodMMaUGkzk7qAxsuvfii_wLLxtZkmge4VUXKD5D1JwY5g40fvwys_cTMWSuCcYKFCCJS14PZFGP3yT0EwDGxfbWvFRHbwVHtPOwfnKe3UIJPmmVCo4cpeeFUBNi-bK9iVt4ry0BrD_6aKeWTtbZXw8uRQrZuHdLvkejS9m6TfxWsSQ2LWgPQO8_iKG-Q_X2HWsMLTRHYj_XJXQqbxNMxeW4xKTlsQ3Dc65FJ5aHsx72v2qvTNji7AS2-7ihByYGlm2h2iilWsDaaR_kcZaEfVJvTdLA51fefN6M3f5InzbizA0-TBHeq4SYs8C42YS7wYVVCbVrru4sfqRKQksnYSDEllMdspboOVp3ffhxLqV20MbmFHeIdW38jrPVn_zU4IMVI",
+          "places/ChIJ30jHY-wD6DsRSuDDJvPcQLQ/photos/AWCwydhut7zDv-AwOR3ESbEs05Q-hwlEO7sTWUawrP4YdUtiDV7UjT3sumolro3Us63IoacF3yrQk7n7KT_pzI6HwbS_6QvarujpANX7zf7NTSz_gHYVbbkCu9r6w39exlXpHFNbvUi66e8fwVDOc_J1iKSBarRvIoyYK5qNoKdHY5WydXFwojrtFLTXrGraj9U-XkKsvEha4SV1I1Qa5455Vjeef9jrxmnkSsB7T0lRkmx2mGsqsdjkYB9D3UXKOtxhle9o8IiyyWD6wr6tnQ7G3PAb6kscZIPDPlmiMpY0_Ljnl-IB7kLIS3oaua2ppdm1X5VoaVpMUBQWN2EOs-wRehlvYRqK709mSPf45NA9OXLoCTcDV_1x70jeRRadIAKjRi5ODMhBXfei20s8c9iyd8uCcKzsSSPMGK_D7AWkLq4",
+          "places/ChIJ30jHY-wD6DsRSuDDJvPcQLQ/photos/AWCwydgMjA43e1OWBESJHdx6_08inLnJIupu70T2HIs5sZY3iBsRL1L-NQxh7C1ybazzC45Wj1P-KnsomLx7chu0hVeAG8oKPagWZeyYcOfQ0UtlvI-UcEbdQWAEMo9YuHq8o2TVvnnedX8NkP2tGuIdburOksDqBf_WC_Wbzpsvwm4JjWGSuE0rgQnbWY6UWilq3wlzvi4NwmNWUREg_fV6ZgLj0qp5BFllOkzQbA6fXlk08Lr_lCyA6IkfXcCDXjTVSHPjEtGiIoTQoIki7Js_vr9jpEQdkePU_51hU7KY8kvjFpnQbXPOJ2Bkg3EQvWbU7o-GxFmSau-JuY5Ax5ClB07w_ooq-6fldV8OEU1O4WoQl-TzkjXR_MlPAy-uWvwuBSQUyQ5c10-vCxApvyuq5GbEQDKpmC8_feEbLtr61i8jqA",
+          "places/ChIJ30jHY-wD6DsRSuDDJvPcQLQ/photos/AWCwydhCpb1_4wllRMjY92PAib0HkMSP13zWksaC--1UET8jOaQALRH6Ptgs78Dx1-y1-i1mbTVrVGXDFPx3rfLDwn7goamTmG3v81f3Q8wRE15dVDa5aIC1gTzRo1I2ALUm2KfW8NWj_u5XsZMfF-hMTxuyrP1dzjyDyJ7EoutXVSFhWn1aDudDJbv1O4_HKDlBWIG_Z6-vCml-bMUTH6SiR3nriOqnhe78iLB47NrZuztHSODNHkqkXE7jMd4gtIe8qknrUqEfsj0Kjfdg9c_-gVnJluu50Ro7j6mOuG9w9N4cdEGzkV85P66HR-IxAh-ERbRbq0E29T0M1DAKc4KYxaOiwBuOqX8PVq5ECcvu5l86PQ3r7K6-FK7ZM1g5oHb3VeSHdOF1DOaCn4Hc2O8IQPinWaH_8BXte3GoUgn6AyoYxg",
+          "places/ChIJ30jHY-wD6DsRSuDDJvPcQLQ/photos/AWCwydh-Di5ZkXjPMRh-Nq-lJgN8zYm4QV_U0xNfnyWWnE09tcorQ08AYyZ4jISBic0vKuBABi3_4hG7HO2gylpyc5XL18n7ehJjMAx_umoAHUkkwspjszQilzG9nDd_E3_xy7jLo5ICLa5xWXfu1b2i-2HwkLJG04C906dmFlVZT_KcnLvz3HTkH3-UeOYeNxjnLB4enYqciAiLD9GoOe1VGL8Dky9iGq-5S_7uL9QSKkD84cMzHDmrzhH_XqGZQGMWhiHikuY8510kOiYhkBRYEkOJbwMoI_WQjcTVhFSbsnOGeNyaH6D7t3lqeA_377dfobudMG6CG27oWmqjM0xe8qLzjqJ6AuSEXoIh_-xV0mBq-isS_SS6B_SnQ_YAq5UGrBIPjxA3bfgkQA4s0S31HW5I3nnU94DMB9d2ScbMTRY"
+        ],
+        "__at__": 1786806275.740256,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Tiger point is the iconic view point of Lonavaka. It is known as the sunrise and sunset point. The point becomes heavenly during monsoon, but in summers too is equally good. There are many food stalls outside.\n\nDon’t miss out on the local street food at the top! The hot corn (\"bhutta\") was my favori",
+            "author": "Ramya Iyer"
+          },
+          {
+            "rating": 5,
+            "text": "This is a lovely place I’ve ever experienced such a beautiful place this was, Tiger point in Lonavala is only the place were you can see the best view of mountains and clouds and more. Best time to visit is in the evening like sunset time the view will be mind blowing.",
+            "author": "Giri Chandra"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Lonavala was one of the most memorable experiences of my life. The pleasant weather, winding roads through the Western Ghats, and breathtaking viewpoints made every moment enjoyable. I explored famous attractions, tasted the famous chikki, and captured countless beautiful memories...",
+            "author": "Madhuri Shindibande"
+          },
+          {
+            "rating": 4,
+            "text": "Tiger point is always best to visit but due to its commercialzation its very costly for food and always very busy occupied by tourists.\n\nOne can avoid food here just go and enjoy the view take some photos and head towards next destination.\n\nPOV-Avoid throwing any garbage as local shops are already t",
+            "author": "Prasad Pakhare"
+          },
+          {
+            "rating": 4,
+            "text": "Nice views all around. Best during monsoon season when it's not raining. Cool windy place. Avoid crowds during the day time.",
+            "author": "Vikas Singh"
+          }
+        ]
+      },
+      "pet-friendly cafe (tbd)|lonavala": {
+        "place_id": "ChIJpc9s43kB6DsRodG7hXVjUjg",
+        "name": "Lola cafe and bar Lonavala",
+        "address": "Old Mumbai - Pune Hwy, opposite Kumar Resort, Takve Kurth, Tungarli, Lonavala, Maharashtra 410401, India",
+        "rating": 4,
+        "review_count": 1464,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 11:00 AM – 12:00 AM",
+          "Tuesday: 11:00 AM – 12:00 AM",
+          "Wednesday: 11:00 AM – 12:00 AM",
+          "Thursday: 11:00 AM – 12:00 AM",
+          "Friday: 11:00 AM – 12:00 AM",
+          "Saturday: 8:00 AM – 12:00 AM",
+          "Sunday: 8:00 AM – 12:00 AM"
+        ],
+        "lat": 18.7542235,
+        "lng": 73.4039423,
+        "photo_refs": [
+          "places/ChIJpc9s43kB6DsRodG7hXVjUjg/photos/AWCwydiogLKDceWVobGa9TvlwWuOZkmeAT-GdDCWpOGIAFDdWfJ5UGuAuQvjDJcylhCWAE2xSfhR2rYrUyS8JdQnJfMYIZsU0Wc8Cpu7QzSuFH2-LEe4UZnLccr99TxmMGDlEPWe9vhTZKjcpe-lb4-d1jO_mAyZRJ1f8JdKRgaAdoTQEGRiKyouktPqLMOcEGI1qAPB6dIdCSKQhxWEzqn64Tkc0LZi0ooA_y9yOeaE-hqXQ58r8WAGmFQ18VqnPDBIyHoAhHJ1Ncj-n0eg6y0NPIu2a23FbhoFFk3Rhg3bSXOcLSgtRdwF15l37YIF8bAyHKo6SiyINLwXXRrvCo6_BWgnQ3WiZ3_i60yF8iL3sewLIJecwkuTiJ5H6R_NZ5Do6qWAuVbxCFYHWWF9yXUbND2Bxq-kyXkfyb6bu37yNDjFxA",
+          "places/ChIJpc9s43kB6DsRodG7hXVjUjg/photos/AWCwydj317hjgquVN0msJJBbHt5ax7--ZiSwWNvphxFqxoBgrSYlZbOtDJXjjYy2vOVXOVjPr62YNu9nIasbQYxjO2zPLcjzhzhWdZS3cTHixOvceXXjGQBsGE4XuQRzGdPzZg-FtVhAeythBpfFETWeEexyI4zJXxjMGYlJ_GHW2yCTugyE4qDkK31sCV4rqq47MQMqAsFt8P7J4wVboSprtBmUkK1Lvwg2eorq8VwHD-XxTCuVovM2O8TtyN2ToOr5If_7LdBhjWbcZXV5YO2ozNIxk0uC-8cXmtASzeK2Il8v4NZo5NkI-LtTTK4VtwsxIOGk-KU8tNBEpmolu3XfvIVUCI0XoaJLsPq9WXbB6tyS_pZJaUBF9Y8Uw-HWTSnCXSSjHvUQI_F-ltr5GsdjLBSftZxuZcYhIF5thgrgzj8uR-o87z0CDeOq2F3k9hSj",
+          "places/ChIJpc9s43kB6DsRodG7hXVjUjg/photos/AWCwydgcFbtEoGK0LYrxRojFnlxIRy8vj33wM3MJRiVrMa57K2a6oTqZqLHlE1iLjRmyewTJeEOmMGS4MmS5xVAYfVtjJd4GeP5ylpAba_rpGJlD-uGB-Ld_y3nXdqETLGI4UhOARqhpQOTRTJkwDytL63EBgM3NidD4o41UmICqDynMmOltZbdnks24f9BIvBqMtOgS_UaIQujHcS-COl_Ob186jhhl9V1sjGbQcgmpd5pLGrsUlmJGMvnn6x4V_dSlji9crh_sa7Cv_8JmRUlMS4uiQoyz3r4oJfI1PATsVKBm1SRnn9nm_QfzkLwM3eU9VAXzAiRDURpHVF4YlcUA8ZnT9JITcCWtaki9-v0wrk5NoyPJ9_JG23QpAZnOthe62riisLsxODoTc4mZ5Rl7AgCJzCqGuhj8MXbf-xpEhYDr3Q",
+          "places/ChIJpc9s43kB6DsRodG7hXVjUjg/photos/AWCwydjAPOWevGJeykaCuk0950xMJpimtD0vEzmPYP0RfTlO6cGsDmchEvSKJ7rgf_srCaalK-wxk3qiECvBWNHkLd81AycK6QO8LYkOHxpArWpcmjQtK-mvD0-kd7hIgk1k5Cm1fzUwiXs8b3sSti4aOcECXgni503kcgZII0dWn5ZS1C9XqIs769jhfuudbZMaezskIZdOPZKdoDtK0szOewltzUnjT1FRzKkA48lhYaZPh2IcJzBoDh-y44oZAwc15zhsvo2VUBxCRffmI-1056iOCnlgXJrhlFyZ2ysvEVXMFW4HI_2cHqFWdYgJSvmvY0jNPz7xa9BI0My4YqLD-Nowt4SBHgcFDzRL0Z0hhdO2NFgcAtnRexcauBZken1wMoVo1SiFFPtq7_qNo2MEJHzLjKVuFV1ZBTln9TD4ZDX6TbL4-W7ivIfhM3E87Pbp",
+          "places/ChIJpc9s43kB6DsRodG7hXVjUjg/photos/AWCwydgSy-HVl9K9vOf7iVpYQc3P5rdodO33MNHfXLyBiPmt5Z7E7Bdes8XrOdc9vdIZpf1nxOk7Pf3AQbhNP95L0Gm5fYxD4q0Y1vcF4GvOixI6Ri8_Ln6_7bRdCZFD0SXXN6Ie3zncbOz3bgLK_r_k2DBRyNuBW8nKuN_jBpt9WegC-0foYN39W6D5uoDogxhDN763dYHHpom1_FQqOniccR41d5ZeEOUkbtkw50PNDurnmWG1r3Upie0VSkNmHMb-nnmHeOhlg8-0m7OqPlNGwMTHPylLRgwqQmXKEAbrRecKiuroGa6VEcYdjP7s4TPDM2eKgDmYK9DIWMnCZ7jQZLT8X6gFTc9YkGPWXBg7o2rjhBcgmsMZxSa_37UClgBXha9kv7tMaNDdJCPCRGp7svKaGnx1haOTXvCHd7wdJcehWYYpPfjQucTDCS2XiA",
+          "places/ChIJpc9s43kB6DsRodG7hXVjUjg/photos/AWCwydiKCS4CK0Fa55fOeV7L21vKTiTj14SW7TS_euSeoaBWZ129S7AlmRFrxBBtN3awtUPa_hdIxc3nnh2HW22nhF-FUHGdJo3vZRIGSk1uWXkhP-HKLswAFTlsN0opTvLVHM4O7C9G_hPNDgFeAVynI80UKlcvBOiEqpUgS3RClzSVA3X3jg4Oq6lhy48Cnq0aZhFwkDbgZRRnhP-S_wFQqeG6RQA8Zw_H2lSsHBakgO8ZPsBKW1O0oySysyXKfdU-P_Hk0GSzMyNbxXxWeATKOaU0mvVs_Z5bT4KJGVTTHmmsftTtdtV3-wb9IV0LGxqiHzOUr7x_RiLMOX0Lc2woqOXc1xrcct5sOSF2wdWboFglQwPaLWr-DCuaLK5v3MevongwjMl0NIqvxR7jTTT8UKj51CHKqSMt7lZIqmLKeCSiz6gydy6lg67a8Y2NeA",
+          "places/ChIJpc9s43kB6DsRodG7hXVjUjg/photos/AWCwydi8Wu1uJJ1LMSuIWkZNYwSQuwXYn6jfH3G_UK9nEipeG7YAS421VIBZTgA9BgEUiYFR0s4KvNKxiFOM6UDAgnVAkuexGGmlhze1rAMM2E3pO2SQE-2dJQNtYOScNw1tSyJarJgJ5WdlqNpF0c2pwZ97bWGT0FCRveef9HxgoFvqAaUKksUEwLq6hu1_LlZUUTkTLQ9Zl9_CaVz67L_K7jY6BxF6vLa0sRVxKAxKgBl7v59JPscUegBhJ_sh10HX0PNfhOaU0AJcRYigCRfsDUbDw-_o5CH8KpPjbzHHS6o2H_TGyZlhZKRt2CnRnAwAcoJVGd07kecslmq0vdWYyOFL_LswxFxeJqSXbZ4pNIwxCPumIOFZJN_CH9ztwksc5M_T9_-A9RSu4gYlZ5fyvlVKkgjL_J7JUt9-hByMeG-EBQh0KHGWjVymnFX8l1z0",
+          "places/ChIJpc9s43kB6DsRodG7hXVjUjg/photos/AWCwydjqMnIGvzAcKHeznR41LIOTbNzgcYVfSN7JOYMxFZ5oHilH2kOJbd4ox1KtJIAUFdsL1A92PVbgcDkEpY7KY6GxXmZ5h6ORdK79dXTKYxM6SK208V0cncOByDzJIkqu1aHahLlQkHcagd_t4GDKgWoNzBJjwI-egLlxTpApCMdqgk56YRpkQT5NdwftPCEZrDSxZNUIs2e_dIJc7ZOaHOh8FL97RjJRfJg3l3LHeZuSjA1z7hkbhNym2PN-JnezQWM_o8jUraALY6QHsf0u-w_ouKSS05YcMGPh_tQmk-aNLQd7D77iedy5B8IQQv3LS7gZMB52oLlrliRAf47AwlkAEu4qf7uw1EwNlt570y9-grlWWgtTlIV2J53jrSykdu_7-HoAASIhrhfw4k2Rv1VicXpvpgKZtfm9Uc5-95xzRfKLtvsnic3Z-nbjLV4f",
+          "places/ChIJpc9s43kB6DsRodG7hXVjUjg/photos/AWCwydj3f3xk_FhjGR7ypadvjY-TjvPiFZds6XdGXJd0EtP8WWKA801EM0YGjnc5632bWe0cWO8kXxfGFoGzcdNo4PDgCe9R1ubahAjCmhx_NnC9-gVYdeMA7LC0BsmI6_BVr4XGXT3HAXPnczgvz_VDKmmfy1rIjd64QPapT62OQIfy0Mv8KrZ3LhWflZngPI0-USJAoL96C3zwZS6bs8jJ4APyInsFv5vuczhfSHSZRXVftldJ1-SzC0gb2Ma35_MoCIk6uFy_XZ0NXQ81SMQnbfoSYKnrb0roXSZ-03eCo9lUHBYiKQ1CrL7a5PZX2DcmlonTG28yuXDbSeGZtrIjR1JZwgo9cyG5MuVMnOATx78ccFqvYwko0kd012bkg18M5mgy1c3ZE4SY4dNVbfg9CSHVEJduC8SQK23j2wyyHVouBeH7KmQ9x6QGmaKMfg",
+          "places/ChIJpc9s43kB6DsRodG7hXVjUjg/photos/AWCwydilAJ_GyD8v4H94-dc-DqhfArRgcs3jzWhpI9Dp4ZCjbNmgk0MgOZMBIouMYa1mqpMsZQwpgW8iy3hOLifl_mP8ZOrT1Q3NUZDQz6cqhPjsD9jNfEneD_4bdtopZiLlS1_sbE0HPjav5lwbCbeJvjoVTtolWhSBt_e2q67DYc0OjvB-Owk6-MoYFlCqySYnqdKctdjxlDLui1qAFft9SeF2wMDsPEEscAMGNXzHciAaz9om6pU0d0SxqKbWqdL4ClDSAl-tioCgvhZeles0VRcKIRM1EC7jvcXib1iQaPiH2RCj5AZ8RJdWr7nNQnqcp1B1Lz-KKuBt9-lAkcD3Xs-TD9DBiDUHtZlcbtwPQS8o17IZyXudxclimfMjiCGVt7D8bBg19nPwbrpdhoxHbPsYoRNioWtsRAyANLY5GM2-gNBXWtTeMYI-hHO2pg"
+        ],
+        "__at__": 1786806276.167917,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Delicious food with fresh ingredients and great flavors. The portions were satisfying, and everything was served hot. Definitely worth visiting again!",
+            "author": "Raj Joshi"
+          },
+          {
+            "rating": 5,
+            "text": "Been eating here every time I visit Lonavala, and it never disappoints. The taste is always on point and every meal just hits right. If you’re thinking about trying this place, don’t hesitate go for it and enjoy your meal. You definitely won’t regret it!",
+            "author": "Harshita Gowda"
+          },
+          {
+            "rating": 4,
+            "text": "The place was good and we had a great time with our family. However, the North Indian food options were very limited - we were informed that only Chinese and pizza were available. That said, the quality and taste of the food were good. The waiting time for the order was a bit long, but overall, it w",
+            "author": "Sidharth"
+          },
+          {
+            "rating": 4,
+            "text": "The atmosphere is nice and very aesthetic. The pizza is also good. It would still be more nice if they would make the pizza base on their own. Very spacious and the staff is polite too. Great place for taking pictures. The pizzas however are pricer.",
+            "author": "Mishka Archana"
+          },
+          {
+            "rating": 2,
+            "text": "March 2026.\nI am recently visited this place with my friends School Cantt for lunch and Ambience was really very good I love that it was very joeful very photo genic and it was good enough but as we go with the food it was not up to the mark not up to the pricing which they have mark in the menu, to",
+            "author": "Kajul Joshi"
+          }
+        ]
+      },
+      "rajmachi fort|lonavala": {
+        "place_id": "ChIJl-fBYCwH6DsRiRMA31A2eaY",
+        "name": "Rajmachi Point",
+        "address": "Rajmachi Point, Khandala, Lonavala, Maharashtra 410301",
+        "rating": 4.4,
+        "review_count": 1111,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Hilltop overlook popular with trekkers, offering sweeping views of the surrounding landscape.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 18.7702116,
+        "lng": 73.3670934,
+        "photo_refs": [
+          "places/ChIJl-fBYCwH6DsRiRMA31A2eaY/photos/AWCwydh3EAZJMfcRyP4JVPrlZrONHe84nH6LMwL0z54tUJamjBSG3cVyr267R-perFNRP4BsdNwGuC01CbWE7FljtoxQETuzoADftJgDjLe2Vt7DBUpKA39fqphS3jcCN2ou4MvRz06JsS2D7SP5uiEMMjjiyLlqI7qZ90SFibwButJzkWR14uvm4DtOhnevpNW6ZGUgEefJXg5WFon_I1cXQZmXNhjdD3nLlD8Pz5MB3vlQwkO2dyfzU4FfXUbB867BLxkIouBE63aUZ--ze-PDXltUJfz1laKYZ17b6WvvhJFn7fJigcLN3bndHvdU2nDIBICVCVoZ-IOj-6-j_J419FeYgJ7Hbxtba9OvPwUcVX0EmYTwVfq42nsFtIRRvW0KotvOEorq3vgbH17Viv8MiWiv1E0747NLSAU2mLqIbWkJLXA1",
+          "places/ChIJl-fBYCwH6DsRiRMA31A2eaY/photos/AWCwydjFED3Dz_Ptt70A83ZU4Ot24O-rkadmHFkz6Mu0GGAlkk7zTvafY7eirfByGmWyA_AHjTERGFxK96MoHRUc70kGd9XVeydyyBdP9r27DExHK7_xsdInbLZdUCbYFcjt8f7UKnRjmucN99FXEZDsfr1yBgUA-kSEaoUwVpj4FQVJrDZB1q1daI2uQZ3IVJ5r6Jzt40poUT90iTYAkuECMaFlsoUlIKphzFX_jmHCdZQC6lCDCV97GL1qaHC_iLQ2Dy6fa68MLON7vFvyvZ7hYR8fT66qvw6jTCjXIKXKrWAadbjEmJBY0bHl9XQ1uWtTtsolYTSCe7jYO047Iz7Cw4qRf3WzbLK8pHgPsiOC7wFa3Pn5KzW6o1i_4gm_hnLgF_j9uYFz9GM1LYnfcZOHuYGVnpnvkXTxoL5b36jn6lyPU-8j",
+          "places/ChIJl-fBYCwH6DsRiRMA31A2eaY/photos/AWCwydhwAEInt7O3dn7ZugefcTH2UhFCOheru2zlhuTBLfn5zswbMECq148uRZfAaU3lWc2AbWnSytuwNALJ99-NFedzrpeMgaheDWbkfZc-0M0eJSTR70gAC4E97OWsjM14KqDnI1cipJNf4_ouFlvm3ORxrpi64_aj8AMKSGXrUqPzqUNrfInYImldaiQHw075_1HU80lIHwWRrcW7v7aU_Ud8yN_mvY0QPUSGKMUgFZ6nQYq3xeQ1wCvhz0amFxCaI-1qV19sZt1sSRr27c3h0kWB7GgIqy1dvVSqgUERhoAX8yu42BPEib7CEQpzqBkTNaTOMr2UqSqPcCVZOKW5QLPAAlcL7kU8nFDbl3n7WrYifAPSVgWansg0dvkg29aUsHMeLz90LE79Yf-UNB3q2xu2ql67dNE6u0XJpXU8t8E-mw",
+          "places/ChIJl-fBYCwH6DsRiRMA31A2eaY/photos/AWCwydj-g39jowzG9SI06M5ON8LBbnltzcZV1pRfU4Mo7RTlfEunj1cfExU-i44EIAnxBND7hMYhUWg7NP45yYExEjlsIay6zJtJwqF7ebM2rhn4o4SAGzrRh4Lr7wkQFUIJIKj9K2xsNEt0M0g7Zwb_ant9sPy5qzZpIN4HSBm24CtbJUxBZGEt64AoCrwZW3Xl26mvD5g59NevMBRlBEYdJ9My2Up1Jv3Yt0oRMvb9n5BR6t_eysK4u-JRj8GN576A2eHFt_mUOqRvpG-00TmrJ5cuU9uMnKE4JQMGb2qA9hn5njJtJApLvHKL_upmmQAZnPU53rP9z_upnW8WEd_c1i8-ZFeEeyFKf7yb5pQFHSHihNctrV9FUjd0v0sLbRPEYjKKDH2QkrmKRcw6g6ZM9AWkwCuoaZBa_XhJLVjTJXXkwVbP",
+          "places/ChIJl-fBYCwH6DsRiRMA31A2eaY/photos/AWCwydjTHHUFgdqDzQo_IL2LK3TvrzZ9gj63n3X1Mxihosinx1OCFaPd5XV7ngYATkqbziVVEfNIDlRw8W8czLLI6cFgxyqcGy7__PrD5b0HB-b1LisKGwUht9s4opRvMjnrrMiBO32y7ZPL1MwOJVgbe7begvOAKQsZcegJlasZXkBuy38kZJwouXFpSwJsLWvY55OO3sULE-H1bKSgNBzwD-9a-3tyiwrBcM84eNzrHv0XFK-yJwR1ZdVGZnuhopa5IdnlXQZurTGWXq84dqlbDhS8HxY9w3YiwUe9IVWQKcD-QYnQ6xuKf55VZt3ZF3fu7maqT3g1trMIIuPt-C7_HYeI-OcyqtaviMLc8ENxwkbZ1kqBjXpbK46bsAM9uMeOnxJifw8QCX3xp9SHwTWHm0dcyVbJp453vEkd6m2_U8y7zB2Y",
+          "places/ChIJl-fBYCwH6DsRiRMA31A2eaY/photos/AWCwydg-1Wx1wjl04w0YyFT-FHWURc3l6k5pbTDKbmT1zUgEd8Z06jRo-fHVNAt7idGb_AWhn3fXN6_KhzOq-RmJC131QBpecAFZ4sEi65flWnDxSYLxa6vbLjmJIkAbpJnhG2_ysruGmtEfPXPoQd9uab7pMs-Qkg8ZI8IVWLEY5vtOo5IyMGg4QDVkYaaM0SiLGq3ewJxWLnHapSOCVtzh6XJJNkAqdF48jyTLsSwMNsCskKKhDGrjmjK2BbRkbSu4ALMNbcG5A0Mu0cLq5Z7YxJL8vqmftHrUfwHfXWRdxSVqHMpWqtigyGuUbkS255HH4mcXRNv7htvtxwmfwCLaY27JVy7MlIR7GRYWex3BffOAJV8ttgz3Fhgl8IKLbMQ0mREY1ROK6o9DcNFuIPSkG0yDdUHt-b0siYX29-dp6QlJcPNM",
+          "places/ChIJl-fBYCwH6DsRiRMA31A2eaY/photos/AWCwydi-naROz8wbdDxET3HDHXMlQnUauhV4gSYaEAwzQFkf4ORcMlm9kNHvTt2jsIv2e7CronLyAO7MmhWN0xQBy1Xny1h_NKjNxDNRtvxQlOZFArnEcA2-VomHdOPUF13Kp0SK1EcfYpV88H5yPiMuReXlyy9vfGQfLIq3_SFi6yqbAgzzP9ISyRN8XN35qeBfCRMAdKNImkB5wi5EVhhH6aFuvjxg_l4YLpbzwQTBZjxC4eXYq6QWufx3bnp1TkkN4ErZD8NJH-Za6JCxW1iU60L0RyQFgLbRLfLrpOvKgKUPhKtydW-R78l77xK6-iugUfwfa6su9WCyUMXlTQnOO7quYFmfbGx53QGq6ZlUknXYoavu8ITzLSJJ5oM3SfjCPe-NjmoZXw2PTIi1MyQfxWDKt93E7w9l0IkOwC4ZiesooJ_c",
+          "places/ChIJl-fBYCwH6DsRiRMA31A2eaY/photos/AWCwydje4eNzf4mavaP8vgI3aXMyl0LiREfNFxmfepZzNNqbIG8yNBjSc2ZtXbwYGw4A3BI0ZREBx9JWrVkrRWs68ey-PND0DtNzrqkMrTe5K73QuPgsYxzVraNEnY7cIJTxOhd-MOyYNnECMe1v4gHnr0I2JjJFfZqViouP0F3TmuBMnswBF9KmJTImBHSQ-E4_nfjw9qgLkcm7qn36YsLUnaxTqzkadMmr5T0XiNN2L7Iq9twUNzOUGSmSr6k3yTBlBtLMmeqUxy39M3xIU3UR589ZLtnyrAEQjk_hhfhyCHq-YcbAtzFjNuFvZ7FyoMsTCO820xbINhBXCGlItyiSspr-bYQxL5T_DQ6N1uJK9rOi2hdJq2Y8cuy4QhC7PTRJ19SYJQOfr3p5kXM6V7_FdYsadKvUfPufe6Iznndn6NA",
+          "places/ChIJl-fBYCwH6DsRiRMA31A2eaY/photos/AWCwydiSB5mmY390lWReVJRH4M3FvgtLrPxjcvuI9FDxkAm5VBad6RaFizV4FO_0BucNumv3DT6cMIbpz7lNHbQlmc06L0uXZnhVabATXmU7yjSE5xiYvT1x8A9XhQOVrahl_RNlmT398AePZKsRTcryAEcQTr2Vw-xZjZvohcy3QNwZQDFPOyEGtZLJlhTIgZ0c3ApEX8usbnbxR1ZGGQE5fcLPBrAWqcqwRzMiQFzAJqiFE6BP7ySUvQl8m7jzoALgiEyV3YxpU9WXrBvtHcd-DJRLArOz8ZvjK5mIHcfQqlRAqWVhmqq4EYW-bKMtlzqC1Agz_qZVH4pbW8g63SyzW6EQQiNSshpAJy2uAnIKzMnbqJciXVktcFjETBe2JQgWzYo_JoYx_cjE4kFV0w3odH46fmPq4gS15r19N7GTbaJhWA",
+          "places/ChIJl-fBYCwH6DsRiRMA31A2eaY/photos/AWCwydgDtNKNqBeUlVVMwJJVhfqR6c90M0Rsn3wT6-LkVj8oeCFyAK4wD-rEXmSDBHCuyiMkCNdDxHWaKvlovJfap93xUAidawwaBFTBAFeFCFl5ZLFAplDfDI_ieLiHJktvmBpCSTG6JEX0MSjeyqt9haAiZ0rtdozpDEy3TcpQ5hTMe4oZEPhGvMZWqb3wOxi0b_FKmcx3ftEXBbmB-s7REkxBlpk3ENAy32dLHZBTuinetN_INJAWVRaISECvDYaij5T3cdA0-L7_0VeH0-lx9z5baDYc85-WWxHZG93_nXQ6EICvQnvvnPUEfhuqFkQAigyrwjL8E3rRHqQHa0GG4a-MxihX9xY9iESHJTwArsUPFUMlF0cCVXg6vcVXyMzlkBhSh_mrqx5QbqP1_uKH09jj9xlU8qRxyKBkcVQ94AMejEM"
+        ],
+        "__at__": 1786806276.758068,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The view was very nice and feeling was like a nice moisture in the air. The waterfall flowing far away and the tunnel and bridge all the things were great to see.",
+            "author": "Manasvi Bhosale"
+          },
+          {
+            "rating": 5,
+            "text": "Rajmachi Point is one of the best scenic viewpoints near Lonavala–Khandala, famous for the view of Rajmachi Fort, Sahyadri mountains, deep valleys and waterfalls (especially in monsoon).",
+            "author": "ajit patil"
+          },
+          {
+            "rating": 4,
+            "text": "My visit to Rajmachi Fort was a truly memorable and enjoyable experience. Located near Khandala and Lonavala, this fort is not only a popular trekking destination but also an important historical site.\n\nRajmachi Fort has great historical significance as it was used to control the trade routes betwee",
+            "author": "Sarita Sahu"
+          },
+          {
+            "rating": 3,
+            "text": "It's offers excellent view Rajmachi Fort and of the Pune-mumbai Expressway.\nBeware of Monkeys and feed them responsibly.",
+            "author": "Varun Mandalkar"
+          },
+          {
+            "rating": 4,
+            "text": "I visited this point. The view from here is so magnificent.\nThe Pune-Mumbai highway is visible from here.\nAlso, a waterfall is visible from here.\nI tried to click & posted it in the review.\n\n(⭐out of 5)\nCleanliness- ⭐ ⭐ ⭐ ⭐\nPlace-⭐ ⭐ ⭐ ⭐\nRecommended-⭐ ⭐ ⭐ ⭐\nFood Availability- Yes\n\nSo, in the corner ",
+            "author": "Travel Freak"
+          }
+        ]
+      },
+      "ryewood park|lonavala": {
+        "place_id": "ChIJG22LbxEB6DsRDqak-p5pG_U",
+        "name": "Ryewood Garden",
+        "address": "PCX2+PX4, Hudco Colony, Lonavala, Maharashtra 410401, India",
+        "rating": 3.8,
+        "review_count": 1632,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 7:00 PM",
+          "Tuesday: 9:00 AM – 7:00 PM",
+          "Wednesday: 9:00 AM – 7:00 PM",
+          "Thursday: 9:00 AM – 7:00 PM",
+          "Friday: 9:00 AM – 7:00 PM",
+          "Saturday: 9:00 AM – 7:00 PM",
+          "Sunday: 9:00 AM – 7:00 PM"
+        ],
+        "lat": 18.749255899999998,
+        "lng": 73.4024505,
+        "photo_refs": [
+          "places/ChIJG22LbxEB6DsRDqak-p5pG_U/photos/AWCwydjEieGLrndz_Bg3s9Mq-e4ph9hqoTskl2zbGvP8pZRZHX-iniYDFDozS7oYNNoJy03-YKdo0615t1q14oBx06PToCvCCgjfzaVYWf4oENVE24dI5akiXEzzdFLUH8VtvG366wJVypQF-ZrUFyzQfKI0AD8jEhYC7hOxk2wiU3HewkYscp_XZkblTGnFbjze0-WUrps4Fk2FNAFYOKrO9c3hhP98bSNhpnE-HX0bCia_0ICkHLjyeANRIwba_5t09SMaU-8BrlSmcMKkYw1tj_kbCSWM8_I5aPZa7R_gFFDNL635VEt7zxpSjMtovXfcVf0q_xDNvqi_g6nlnA2lH85OBNqTHOw6LLzxVVIvTcvpbwgRFEv0yxiO64VCvi5NWDaITnYTT99gYv7yDqBVJtE_TIi0TXB2BWaBHrsbJd0wCA",
+          "places/ChIJG22LbxEB6DsRDqak-p5pG_U/photos/AWCwydgZBNe1jwZBu9dZHJa9ePrLPhD1GJk3KEHulPG03ASwG2xhauDKjWrFsUi95gGgUxlYG17yyYGX6mPrk4SCTz3bJTz1AzGIBjaymVwwG8Ir6YWaKczZHt2aBtTTT8xZMERGwORfj93OD07GFuUcPA5LIj_RYEiMkCv4cBB88YTTHKsVeWdgdG3XBZacrAKeSkiGMk6URusMEEu5ia6oF2xH3VvllW_yG0xVgRHSvvjWVKUgWcvK_ROfT-ShmxqULCK3OWG91sQlPkQM6-5YX559Lgek9MOla6clbzQ8PT6bpadIqX0jc84hZPT5Wg-mSDUnYB6oZVItiWVjY3RsUcprYbqbr-FtRZuGKhStE0bE89EUVkrLXdRwCTuqit5fycAT-_N9bEBLwocdokTiZbFMp0nMT9naouOrlj0CQ6VWUxqQ",
+          "places/ChIJG22LbxEB6DsRDqak-p5pG_U/photos/AWCwydjVjER5PyywV2sRPuZs0y_hZvRwsXIKmdJ3Phv01WhhtEZPbGZTn8dr2agGHT_De1Ary73Q4LvISEg9so4T9N8bMXMqKLKQFaHC5fbhVomptSZgUNaMMA7EtaN-gVy_V3WKb3IuCgntPelOq5VeEq9rYLWt7401P48Ko1TYYZdcIJjJ88TIIwjvBwM_zx4o8zSjdHO_-L28Jv3d3vsXWQ1Chs-Axh8Gl7iPv-JioLLLC8P_jldsNP6hHQYe9P23LTz4xN8FrJoSCWvWnkQPntapgjgAm6XsIhkONQqFV4C4I1gbJLu44Zgo2vLu5GmIDXcJKNsk3d1GcC9oF3jTlOPCqPyl9nGMy9cQ30jLAJR0k2rpoGbZqDEOteHWZ2f08aJemNEhVRGjh2YvZr44TAk3UNiDrr9RxhG4qCn_PA99OA",
+          "places/ChIJG22LbxEB6DsRDqak-p5pG_U/photos/AWCwydjxWv9xWLmgs2hrkR5ljqtstuR1z36wFrC2X3L5OnTEbl9ERO6terlDTyf6-MaqCR3wc94hSG5s8nE2uODBtbOOYpLm4I4KeNORswVRD5B9sZGHg5GYK8inP48KzL7hTBQ7WbWdnZZNmH0lmppCzDhObg0NCbv-6slCYkhd9nmxpqTJ8uEEFSLH5UtNXglx1yI0haiUEgjv-RvEU6-TJVQQEaU7or7NDikXcJNuDnTA8aBZ_keIqJdMj5PU4PjDSfelqYkD9aS4Ff109FhxREPDgiV-RdZcIk4PircJz4eAfPuWFUfzFT_4GvtpF2Bfp1ax6PPjoVH1sTH0fOVZubTqWQR0q_XYOVV3NcFU57BBaX_agvfuhE6GqL6tEtueeiBUk2vMrb9eM7WLZ3lhJU9VpdVSKLFGyx16cUSc9cjfJQ",
+          "places/ChIJG22LbxEB6DsRDqak-p5pG_U/photos/AWCwydjudSFUFGpn-vTD_-HxpN47cyI_Hfj-kwOSB6URL2dVsvXlZnpHUcyQGK57dg0GQGT2XymtXY-Nmbc4PDqs7FV2x46f73yAmJGmJiW2g_xCUAssAaeXYOv-iPOWMQOBzA8Thh2fKyVeLr2Yyu956Jhr-DKAcXNelntFmKDZgmm7KviM6TIZ0yldFb8LX3Xc_UhJurfdsrlHvInOB1yXcrZW68Ixnj2u3NLmTjq7PGE1uGvxsPNhcVv-9GRjfB726kdQ132Si3wUR8sHfw9yKMOWQDONAGCL3LojFO1DfHmbgFdfYsCEgnRsrsv8jLnEjvpihCcmZKCmDlSzg1rsicKQ_l4o8uv-2jcq7MzmrRT4E-NQ1Cc9CrM9mAWjFHZz3xZhYb60F3pYYDT1OEAwjDXM9r83AOM6_V--h5DoYyhJsQ",
+          "places/ChIJG22LbxEB6DsRDqak-p5pG_U/photos/AWCwydhhpHaxYxp5Cn1YokQF-qpDd2mcEG30XfBKZJbMCMEXpSfmMbUjMZMWNbFStXi-jWmLXBrqarDLCVcQIPF60YPmO3RuFprnrpMdOfDO_BFOgtceavTFAgQOekj9SuIdRO-FtnFCjCl5tePdof8XEnirz5pn5J-7iLrl16kEytzx9CVToezEibDnun5hbu-wJNDqs_05BSdBz-VRvgcMOby_piVhzC44b1aUViPEE1W4V_QPPf5AJ5ycrDO1Kb-r27Iia-a9mYkbGG5jFAmpV0eHopNmP_QXOtx1ev9TIPZaJ1bBV2EhJzrnSvObzetpDMfDuAPsAQ-fj_JsURmO3OKtkxX7n2XKX-udfrtYoVS--e7IFUXeHTSu0SapJ4HwL37x7As1t7F7guMqP1NRpm6DqaPOjo7PVwmvBluX0_6-6w",
+          "places/ChIJG22LbxEB6DsRDqak-p5pG_U/photos/AWCwydhyx7V09hZ_v4tiN1MO-B-yOAxghsbboN9eQow3qOJWY34BHHWFAEJYBAkwCwmqZzIKrgvEQtmpiDQGySyN-tTHjWLJytWjd74ckVrv98xgBiAWJ8Lw4QONfipHLX2x08RzYpNPKLwu4_NfAWHbE-aXXvB48IVI15L-qyFhDycDV1_M4WACoyxa_Wqy52HQ9WFzqtTn4KSCakF3Y8DsRuz1ophbb_573mj3H_DfNHOBu8nyCZzqidHSbr0bN-gyJ-joyiIHIm_jiWaiiXyrTJUFas-2GCOSL6dpoE7SWeVC3hB-fX3f8-H5mAnEQ2QPAnq0F3aaTeF-HMVOTo_0aQEOffhvpU5jahKGbYRz-Nb6cYkPLEeRHvbd_-fLuRxr-YpTcawxl4YRtous0u3rBKwMG70TXGjd55KHF0R0sDxjvHYm",
+          "places/ChIJG22LbxEB6DsRDqak-p5pG_U/photos/AWCwydhbn4asAUmNfiDw9a454hqtaAyU_9UyymfmV6iDb9PTeBWvGw0OHpOcjO16wq-Zybl2ZQtfJsFld7mcdczSSE5K_9nOlA_QbCBFz8xd4YpXUiqhQWwItiaiyNmvNYVRnEXR-iZ-zHBKtFz7gGc0aWYkkxSgt2uKDbe4qT9hokJ8LDjxQuhbASSxR4cGece2nUM1sL5n3k3n4lX1odOucbpxrKerutndAC-2h0BmlnpwHuUPRNW9M0AwcBUiV2AB2Q_-FCAb-WBvCx_K-H94wcG1gNvOfkiZ3PPhJS3N1RYvx9msy1eAbCaNtZ_w_P76MEohocRHjVlyfAofn6EQIKnbQP5gzqkf1M0ytFchRBQzleg7TaVTa8mRAYhFBCRlAUM8mnJ_482okhh4eFWVApxVl7NWJrZNmH4TDLTj43MuNQ",
+          "places/ChIJG22LbxEB6DsRDqak-p5pG_U/photos/AWCwydicMSCm-JVavz33f7ZuCht7irfT3tmw6HW8ICPIJ64U-E6fJFr4AjCvP3EXTM4C3ZiZUDbgiPeI9bbef08krByaTL-Yd8mkByh9sMXuhFFEhSqQ9o-kNGL7k-io0rJFIppgBRAqiJW9heu64RqHcaWboNlmatWAif61x0JuM2KDQNd1VT1_DW-gSjh1zi31orMCBmOTxEPuogO3w_2AWx46z-zj0vtOPYBeirAm-rMfwd42kDcVf72Hjk8tj8s8ZFh8LO4sbX4IqnrCNN3qkUewEAMp5I3bj3aXvrNG4Rci60PRxAhKTbRjiX8Etxv7Ylqj_LEvUsdTGucYNjV_9hXH8dkyH8ofFAfPyr5pO-KlGp7FzWaLHAPAiLsDtQVB_y3p9uciTmzfXJqmc1adt33_UABMrQGVbh9VDDB6idJ3cA",
+          "places/ChIJG22LbxEB6DsRDqak-p5pG_U/photos/AWCwydi5o2gVrLvEEVvVFlog1zET8QadH9avEt-UjtUDTGY80FIsbVPCjquFRJw5n-a_vOZ-xD-yNDPTzRSlkHV0VwaB4uaksuxNWFiazqB2Xy1_aLR4laJ36VQrjUUZstkEUzANRo_86yGX25rr3QpACjNghZMWRY8cYIlWbtAvBY6BlCXsTOE4GtEGHsp5fuUpKVsbztedrK91HW8EALMvaW0FL3kwLLsPfVyfPvRwCPcOeGw1nc1gXYO4gJ0S22smiOW0mkiEVXeHpUlWuEPpN7iMcgBbM0cDhTMpesYuF4V8EyHeT4Z2j15OplO4meS-jcpMgOtdDi1uk3aUCaYAvRfGD9iOGbpBf4D3s0TpJ1oW1Y-YZG6B4mufPL5ibtvFc4GwpZ0Iro3FeAVFtt7TYBAva6dhD6zcaUyZn2wreUbkfwIr5A_gjwNCa7z3dA"
+        ],
+        "__at__": 1786806277.116118,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "A very ordinary garden in lonavala, visited this on weekend after visiting Narayani Dham & looking for a place for kids to play for somewhile in shade & away from sun.\n\nThe garden is maintained & has the playarea cleaner than expected. It had washrooms too, though we did not visit those.\n\nCompared t",
+            "author": "Arpit Panchal"
+          },
+          {
+            "rating": 5,
+            "text": "Excellently preserved garden. Lots of very old trees and serene environment. A very critical piece of greenery for people living in Lonavala. The temple adjacent to it is also very nice.",
+            "author": "Mahesh"
+          },
+          {
+            "rating": 3,
+            "text": "Not much to do here. Children play area and a Shiva temple present here. Place is quiet and peacful. Good for relaxing and meditation. Benches available to sit.",
+            "author": "Surendra Yadav"
+          },
+          {
+            "rating": 5,
+            "text": "Nicely maintained garden for leisure walk. Plenty of trees, walking trails, benches, children play area. It has a Mahadev mandir in it. There are no hawkers around so a quite place to relax",
+            "author": "Katja Khen"
+          },
+          {
+            "rating": 4,
+            "text": "Nice garden with sitting area and swings for kids",
+            "author": "Dr Nalini Bansal"
+          }
+        ]
+      },
+      "pet-friendly hotel (tbd)|lonavala": {
+        "place_id": "ChIJr4ofc8QA6DsRDWH6laZV0Wc",
+        "name": "Della Resorts",
+        "address": "Kunegaon, Khandala, Lonavala, Kune N.m., Maharashtra 410401, India",
+        "rating": 4.4,
+        "review_count": 11941,
+        "price_level": null,
+        "website": "https://www.dellaresorts.com/",
+        "editorial_summary": "Ultrachic hotel with an adventure park & a 24-hour spa, plus 6 eateries, a gym & an outdoor pool.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 18.7805498,
+        "lng": 73.3906182,
+        "photo_refs": [
+          "places/ChIJr4ofc8QA6DsRDWH6laZV0Wc/photos/AWCwydjZX6ugWTpZ3JUFg1iGBTuue_JQ2YGeddb-FqWCF-IWdNqJw7_LQkjmKxo7TxrBTWcZjnKbkHF2nt3DMAzxWfqMKcjbWC1ARxTr6u_BGgELL8NrgatgLNX85mrN6QdiGyw3M5wmz2B8SGpkKslo9cKvSXzxLJLlLUG0GXtywduTvcb2efDJgKBqfhuiKywWjY3C2FdHJrJrbZdDborC9U6kXfLakNFOsdunCArZyd7GLZhWOGlFT216jdV9nA-KLsq00WeW13JST9lqgt-BSWaVKtjzyWlKKicLfkt2ekKL_BuWL7KwQm89WOoc6LzDLexR5ERVkWOB1vrymu_RPo23Xuu-AGJrb2MVKVJ8_g4aEWOT_oybxvICwjab74C-s00RDzoX83mha21pmqKoLp-3vbq1lFx84EP0oNP7v_f9YfbKtN6LK_QmdhMC3g",
+          "places/ChIJr4ofc8QA6DsRDWH6laZV0Wc/photos/AWCwydh2r6AnIHPVgZ5sg-f4sNr6nLIgWapWy4boYYxWCGmrJ1PPDEa_46Vjfi6UUSfB0WVRRT3rf_-ipnKHWUAQNc9a5d3qPZeg6PCC6W6ie3qpb9b1WN1cCBRIBtZR20yk71F3fw_Yb9gF-8Dgz_hxVzNvaDSw5RJSuEZolb5HEZr1zQsmaBaX65s9THewW117DCSX3gbAagpEAw4tNKzA_cIbaZ38_YuqC382OQO1P9JLTW-l1Q4BkXpq1Ghon1qIBMe9RtNam1S6g49K7j7GJ17726Rad34UtQR9esF98ZuxNyceWsHL_Z0SrmVp1fckDDo6ewGK3KU6Z9xM1NJ14GiKNEo6fVg_Dxe2klC5dr84KQ9hy6pJlMfuoGHiq1TNwtd-BWq63qui9VRGiNlcOoX_az1YhjU-i6JWS_pCCV7s2Q",
+          "places/ChIJr4ofc8QA6DsRDWH6laZV0Wc/photos/AWCwydjm6po1REPGnQV_iczrZKbztb30tfvGoiFuI96QGli1ywvVeGlqwzjrc1HV2Tk2eYEws-5mPedGxA8utZdfCe4r5_S7OHiBTt_ZKORGu-utziVTQjpC14_EdH1TxlKw4YWga0a501zpuTGfxQiO3L4ts5YBht0gtsolB_wpxCJ0r5LhTryRJtLEtjS9kdFtXoKfkkYTwEqhLcrfFprw34lc9_LhhN9Q5-sijwJFe2Pob6X0QuzXESH_B3yLYx13hhJYDHnz4JdehxYk5R5zxBWBj2AcScmaYYcsaocyF0nQPa96Oma1B07eljWrr6srV0_J31lNXpqo0RZf4rvBLBkF6G-aMjO0A4MB_5C0tjeeBjgeDT1bKpGCPL7JpO-4DZW5CFfYz5kReKnkdDKyvNHbNyVDIp-h6lJz6W38ebRTSQ",
+          "places/ChIJr4ofc8QA6DsRDWH6laZV0Wc/photos/AWCwydjfyJnv6kpoL510qANmdGTEOXmQGEaR3D2Exb_XY7Fiuy6vAn9W49C6dQjEsgRnxEXMKNJZ0a5vofyyQ17oq_m14WeGoZD9imDvmf41FmRVi6Z24zJNc16umv5YLcKByu23RimV0I_XzbR2bNhVktUzlTg_donDqij7odRk4ZFTB8Y6R_RoePET-7WugrW-KVuoZpqnlrs-E_1vtHyYBtApA2fGfwlOktwkFHPaLxLfOgySsYzDTB6TeaiTRy_dM9Cq98mZzmZBPoLReWuAOKd-gQ5edf0lSN5u8zCOvTjw-MOw2ds2eNhvlvlUeDRuhfnSfDrnFqOBVTxmX6VoiMRMqXc4f9vjw3tYMPiMazTU85MwUS5tejAy_R9LslRu2OMVegu9S6Ra_950ka5LTIRRG2fzu_rZ9t5yGC-PaMw1YsZ6Ps9MjNoVpDYyYqsV",
+          "places/ChIJr4ofc8QA6DsRDWH6laZV0Wc/photos/AWCwydgOVNmTlzMLwwbWQM51E4mcc-ZfdPDRhZ3-In887Cmbmb8y9h2SVoIKI7dGK2TXh3ZZds97WOPsRjuRnXpphvgfEgD5n3q0P01u8_Bea5dGsSA830t6vQK2bIqsBhjc1w5f3c--lMF3CiZCxhhqQ9jYdn_37ECAfKPuYXXklrI8uNHVACb7f-D_6z8PZ9qOKly4YkX4zwS7n0wgmagiBm4h9EkMkPEJUIM8H4DAgSoPEpLqg4WGlDiruiLrbhcDDukyADd5_0f3GdXQIJVTX0de_RK3Exb6mr9z3TNSVNWwy05iH5AOdQFbyKAZzibPWZzii1LBrY7NHMRHbvqkW4jqjr8dJyyCo0f5PWsgPYTDk2kvgO40qCOI6FprDyLx0c97OAY2-gNm1e77xDKomWFmmatfldNmkabQMRDVqAz8lg7iRdx6MtRrlJZidChy",
+          "places/ChIJr4ofc8QA6DsRDWH6laZV0Wc/photos/AWCwydhtsLDQAc-5HzCZnRuhOkFcP_RaI7nelC7_02xcJEjpY_GYro-Z-57CBh1LUwcSrwDQF6KHbiAG4_7gy2cDcQmJDw-vmcE6jWInViWmjFaG3lG0JvXbEcS5OBkJbcwhGA0-URIIHC03ouLVBM1fE_iJzSACPfvQdu_PEEpxf0rN1WcZIMLwh05MLjnckQV1MmewAOY2T-eAaFKqwxNPKP_8oTJQgwixFdTy1bhOZr1qPevG0IObuCZASGv_rWLpljp2EZsFqOx3bR7wyQsoOj9Vi1VnF0bC-yq9kYPsfXNFQf5FBnNhBdPlm-o0bU3QoHvc74ssnFFdYjhniShXk8WqRx8P9W_XREp3l8zF5pwPOlsfvsPwalDiEUJKS-QADkxkqfnP32Ej8JDB6N035RxJMh_6lISr62ozNIKnaVuMIUq1",
+          "places/ChIJr4ofc8QA6DsRDWH6laZV0Wc/photos/AWCwydho7PzlaXguPkJHHsQOR6PJy_btkczuUEHPmENGvsrkIjmqPvP9mBIH1Nbrr4lY5dOm7N7N_eRFfMk1SKxtBcTARziilSeM_7kZlejyDWgrpzNtoo_LBseyOD0Lmsuu2XpSJQWmPTUuvL2tU5yZC7IkA09GdZZ6O9FuNTTr0K6LVhYOHx9WUcBXog3tLgmYnz444WOkzUFTASK0hiCsNeoHnLT27i08qInPfqrYSx_evukXaAxl1mQnpON1XvW2JPCrK-B2PNs9YbGSrf_MVRYuXwX7KKaz0p3u83n-wt5WFrWPtt9ywr7pmzcl0st53yxReVvBUWm3giT4FoNAvrngVqqDmTepp2E8yFGZ7ms7rgkNCNrI2auxKgwh1biY1_RHNEuMfblZmk9ZS4GqDTfR-ZNDbsidYa0QrNRMXn89nddh",
+          "places/ChIJr4ofc8QA6DsRDWH6laZV0Wc/photos/AWCwydhEPMGnT4BBy8kOdCAYxaYi08195hGe96qWuDz55CNqgdgaSYQpkg810iwpizxrdgGL649v27Zs_N-hn5-Dqkx0bHWq2cxaWESU0CIXuBLkxWXIQLC2sS5m-ZmUWK4c4ktDX6_3RnX6wJdtHuEVnMw8VqZEYL4rRUEhl8qXfLF4xCZ0MSNcXzpS7_NqPTN00W3tBDKSBKfNm4C1xwKUXvq_ezjrvdMIOjlITczRb-tcQ-PZ-MZLxaWyv9pvs3QwzxlkwWEoZdUdjF6JI7faSaoszD-KwnbVtW06GC8ud8yEqavOjDma6vNNTqd4xufBicCWRDVwafCgeyVSM_-YxdBxbSkJqtdS7fy4WrS3IHUy9a0h0-0N2iUN2xXuIfkE9K2znHpokxNGyBAx0qkY7jHD8xlym-3BboDEPpX_5ng4yA",
+          "places/ChIJr4ofc8QA6DsRDWH6laZV0Wc/photos/AWCwydiPy11JF6V0antzo2g1oR66TlQTRGSZw6v4YhHO7-UXUwlMibfEUOYloIQTvlAhg1FwXXKgm3BttFxL2EDrgmqAY2ye-Xw_19ApOBfB5bQaV5jCQ8rEusTa2UV_aIV6Jd-SpwKdepWig3j5WQNC1U7_QscCAKsNQvkz0xWK1v86hrzAwzseNP26JKDXbwu0UNq2GseNhurYcCqpcIlYGg5Lh-EmvR51HflSq4gJtOu7p7qXQHXIiCvKBNlFkd9S4ZI4uwRjnavF4KhY1oH--w9EVE2LZ9M8_BJuHMNz0aGMh5UTQYbfdYkJaMigo26tZ2pbnLOYpy5M1ouIL1u13RZY_e9e53hoLoB3fsjhCpkv8yESKCxkVK6PgmEb3oZzyo9WVBxvzTHFl9mPuMMZ8ygT3eNbytQ2EsDrMCY",
+          "places/ChIJr4ofc8QA6DsRDWH6laZV0Wc/photos/AWCwydjtcudIh7D3GbVQS44yUNuYoGJfMsX9dcxgY3_5nI4NkAqKd6wZ1d54clYYoTarW7-v_vmoUgM1sGb5aLwAOUzBG6dMIJPJZIUnVmw5DwEzpHbGmPXCV4MmhKjc4hR3c5QPF1OJ9XnN_CNTEGOMNc0rmjX3ugf-mcmvZI85MQCfynt1k2x0Y5oZl5iVE9N7aHAc8aq2vVkzYm2fU6qBcXv7owUg1NEZmEq9TbqqX7AZgcGffZkUqkAdJ-X6Ri8FB4l23hsAOKIPvismOQo5MELI4Ix8pRVgCeB3CVXElM3jkDODc5OmNPcsew5vUHi-HRmdaVa74OU6WeqSzA-Xe9Ig6mWiYS3qJOGAonM4ap6V0MuIAj5WOdILAr2-_FOdEFA5KszUOv5Y92itFrH2OBs3iYsh5hw9R1lUccnJGJl-wIE_2ZVEskyTVVV7zFxt"
+        ],
+        "__at__": 1786806277.6110551,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Della Resorts truly lives up to its 5-star reputation. The rooms are large, spacious, clean, and well-maintained. The hospitality is excellent, and the staff is courteous and helpful throughout the stay. The resort is highly hygienic, and services such as transportation, room service, and food deliv",
+            "author": "Swapnil Bodade"
+          },
+          {
+            "rating": 5,
+            "text": "Della i visited 3rd time still suprising to see the beautiful nature\nBecause I have seen each season and it felt beautiful\nService is awesome\nStaff is extremely excellent and supportive with prompt action Shrushti,varsha, Nitesh Singh,ashish,yogesh.\nWere extremely supportive and helpful in coordinat",
+            "author": "hemant bagda"
+          },
+          {
+            "rating": 5,
+            "text": "As a pet parent, finding truly pet-friendly hotels can be challenging, but this property exceeded all expectations. What impressed me most was their genuinely welcoming attitude toward pets, with no unnecessary restrictions or complicated rules.\n\nMy pet was treated like a valued guest rather than an",
+            "author": "Natasha Shrimali"
+          },
+          {
+            "rating": 5,
+            "text": "I had the opportunity to visit the resort today, and I must say it is one of the finest resorts in Lonavala, offering excellent facilities and amenities. The property is very well maintained, and the rooms are exceptionally comfortable and impressive.\nI would especially like to appreciate Ms. Shrush",
+            "author": "Pravin Gunjal"
+          },
+          {
+            "rating": 5,
+            "text": "We recently stayed at a Villa here with my wife and two kids, and it was an absolutely fantastic experience.\n\nFrom the moment you enter the property, it honestly feels like you’ve stepped into a completely different world. The entire resort is exceptionally well-maintained, clean, and beautiful.\n\nHe",
+            "author": "Makarand Patil"
+          }
+        ]
+      },
+      "ratnaa resort|lonavala": {
+        "place_id": "ChIJ6Y1oD4-rwjsRVIBMea8Kw_I",
+        "name": "Ratnaa Resort",
+        "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+        "rating": 4.1,
+        "review_count": 1708,
+        "price_level": null,
+        "website": "https://www.ratnaaresort.com/",
+        "editorial_summary": "Relaxed rooms & suites in a warm hotel offering a restaurant, an outdoor pool & free parking.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 18.7657184,
+        "lng": 73.5502394,
+        "photo_refs": [
+          "places/ChIJ6Y1oD4-rwjsRVIBMea8Kw_I/photos/AWCwydhgMykLELlZOrVkyahXiJuW89z3n4ygudjjlqhtFc5-dR1-fXNicu-vNTLOTRonlAu8oN01e-ZIbCmEM8pSndza6TJrXM-ZVQ6fQY1v0-puEnx3k7Mq8ypOca-8P8b3H6jdQ6FAhwPyO_NKx8rDPtCnh8sBqSwRNahScSCJozUJUUVwR8QS3LuPY-a22zz6_Is4coBxwDXD8s0bD3XhmDOcAaC0MsWiA1QPopy9vcy1x-RhdMIvMX77-15YHIR9gkTGy3x1n1F2ojyOGmIVeuZXI0I4e4RvnPtgJMiQU6d2MEWWRUR5FkSHpCt9h793o99R7ZFl0jTFaN7Zr-QmylTaApAtg2I3wAb-Qhi1S0gdd-YvUwFWFBz0-iT0UnWIEKn8sOm6nZE92yVyV0Go5Nv6SHg1dPHmGUC7_9vx2OC9vTbG",
+          "places/ChIJ6Y1oD4-rwjsRVIBMea8Kw_I/photos/AWCwydjHnAuSnhdKyJfwN-_YPgRbbZqwFNlN7u7w3eHm2MLxztcErNXu3GU9qQBeAT7Ukj_znBK3lJX3_TyP6c7Wt-iiz8sA7e8AWdzuSfY01mzQErQnIZ_oVss-A0PSGNWqER7h3bx2o8hQtbCFppmRbVgW8YSPGKC-nzGrJssHoa0yYb8s3v86mG_pvXHIAPNRlSSTN81geZUBuvH8wwi9XO0PR9gTZKTMHYzHKvvwJJeOIWk4WPG8oCDgLUqBR5WOGjiwMMLeb0WOA-8uJhRYCjJHHHyF7y4EQcPJ_ZLviU19nqqki0vWc7ARbLrtFWXiHlH17yQj-TWznMUVCENWnLQs_LIbhnRrdIDDZj2XB8hI0PHrhypE5ndHslRArdw0j025vpxtqWzCBlP3fVxBWdmstvISUHmaLL0GInZYYZXQqw",
+          "places/ChIJ6Y1oD4-rwjsRVIBMea8Kw_I/photos/AWCwydj11zvWPAICt0xob8KSw_VA1THftqXn33a1v-39-0uPNRwdCLQjFcEj__b28S4l-YSfzUWAZHQhW5gdCLrpSprxjuXj5vLK--wGVYJN40xiU0X8T0Ftwi7YM4cb50hM08R0UH36LlzadtM4aYZ1EMLOu1sYPds_bPe6WT9AQN0smGJm7N1ZfmqxTKASG3ZAqa8SooNEo7zz1QBDWFuEm5vuzbUT8Ecgll-y8XBFNWtt5kirwDf1KzU8hM_2-r7hESK8ZauVKRHsGkWf0EQv0RDY97k-Ht1o_YcGId_fSXmz0pPt9QwuMU3auG493CdWtSWG7iFrDEeowqrDY38sijbemJPa6pXB9kOyrvw4Gw3c784fXOcaUrWwMzn8a-ryl01T_Iq_Le5CiYX2O4HoFqVFNLi9B4g-ysPtsDNlBqPk-4kW",
+          "places/ChIJ6Y1oD4-rwjsRVIBMea8Kw_I/photos/AWCwydhvpG-d5geGziyDM7qOSBKV1yqewQRCrC0ZDG7WW4IDWGlgPQJwlFOGS7n48YRaSBToGykQLIwMZr-PK2HwvMIiJNccr_ZmyVqtOrNA7pRNajknxwHz05Yohg6O3zt8LoGGx4HBftSTs8s6l3awAWOFOSy56db7MYe_PyBp9d4d6uQe-aE_x8WifDPbBcRDb3O6-CWI05MyoqktRq1qX3TG_JaB7IEuxkoIBrcCdBswWAbMbkZHJ_SIyTl6gOmSjW3uGVj0MSe9bX_3GPkoHt8-KcfuC51wguDVEpWbhHAE58fg50_pIqst-mtqqkvFRO7dfg5cq2kVdgAmgrIoD54iwlafIcpQaH-7wCzRbMDN1AkJA_S-iXwQa3xiVXK2lX16ngJJvg808i-GAJI10U-m5AY0LvF3Ui_Cm-Rxxe-TrAk6",
+          "places/ChIJ6Y1oD4-rwjsRVIBMea8Kw_I/photos/AWCwydhqyOAKDoB6NWy8nfV30Yri4Rz8MG46Et4owYGPMZyS_e3PmusKH-VH_JlnBziq686rqr8gdc_6ucWrtwYCBtiOtjm-03Vhk96MA-dh_B-ysszXnt9lAYgb2jaZxcy4SdmevXiUa83JqH1odg9LIP2ZAGMILBVwc4LGokyouft4UT8NYBOrKNeuMx_eRIpxXjlwhHyOCTL5-JMqDuHGqp0EXwRcIctPZKWLFaBEGF6zrjLd4E6giSghpLP4DPWKNFYZoit1SNeAaPCxSHkOuROoZYWy3KP1TpWab3i2K2uMJo_u7d4_gVUwYaWZ_yaZgOKOQQn5FYA3k5Uq0AN_irhHnizXGuNcThyVtADPHENx98lwVXVEifdc0WLD46CkgYSFd_3923F1XYSXeAh2x3_N1r797nydEJQTUYKZC_VLlg",
+          "places/ChIJ6Y1oD4-rwjsRVIBMea8Kw_I/photos/AWCwydi5YhOgdd55l2UBMsajWukxPujM6wtwqCh91xJEaTNRRXnWypn-0pUl5VbMZhxzsZpv45-PJEjOciqApTkr4OluQTI8ScwHHIEBMAzwVshEPy5LlzGgKKdYgdxup3LaJUtQKTxSixXrfyvn9B5_rciEFK31aOJvpvL9UFtU_B1TrkfAUdgw7WWd1GOL--M5CZFQ6UD62e2fXko3wfSh4Vp-YjpMRjM3-OOhDRFLpfMnuNBvmdVUxzqt8OuB4OadcgyiF3w6DBXKFQwsrHrKK12Y3flMxwZBIoh3QXDR83tHF_10JHpysfefXLEx7AkdNUBjCVDbglmVnICax8ZOc43tvnlJWeztJGSIihiMTNn9drUoe6ToIh_Q1oHEu1Trwm6AKPV2hnYZIppO7n8v87qljfaXPJZF81WHeg8L4hgHlg",
+          "places/ChIJ6Y1oD4-rwjsRVIBMea8Kw_I/photos/AWCwydiNJgMMq6YQhKQorCqgKhgDmEDhg4SI6hZDfp3uhsAW-iWmumWrEDSYDWQZ9eIFrHKcaAKb9gLrX-dNMMBxyZBwYar3NO5bndmBufNkgdGe_kcCCD0jCihNeUde-6LKocclAHKUOATxYvN0OFsuV78qXaq04eEOaNDUAHnE0Umb7WuEMe88tj8xRYk8QSnZb6WnM3OMlFqSJUhzjO8hkbkZx_4IbCtT1zMsURJbZBOmcrDQgr8lbhCiJ0zHxJVc6Huej4Ib_odYBOshVLM0I9OTR2rZDFhNNkfPcPfTs58fJcdT5bUwsH0I3vQR5rLM6Q4RxdG7XNGdX6xtAmbeOboP-9IQqcGvDaMAAaN6q8xz0GPcXdA3vhLA9pO_Q1H2-VyTGmp-Af6vyfl_K2mwoId76ZLeK-M5tVU8cOZkzoS9Bw",
+          "places/ChIJ6Y1oD4-rwjsRVIBMea8Kw_I/photos/AWCwydiO8RtGuBPdjL7MAinoLpmpUVaiWNrDDlPixesd3WXTBLmCHjW-EDmIRSbbcPp7PG54aFPjRxUCAjydlfO4q6UOCyDglqlNBxFbBX2LYQZxRYfwd8CYrsfcUUGDiEIY_lvKwjdclfqF9iotozJVhSpHkKTZ_2wmvAKfPlksG4Yti4VDnQ1fEazcT-C0NJGafreK56DRtpNj2k5LIrm7QTj91SVw-8Xz22m2g44KYYXfgdmGoJ1u05ch3VIXF2h-Zcr3STGgkNQn62FL2ud7TD-lSclVnb61dXpt_UiadyHBS0MQS4Cp4NdUxAaoZLRpHEP1LoyhnhPpXHDa-E-8BirnLdRp_zioHRwZ9XqtJg_0kacJUu26R_Ofjx0EMMD_mOfo1iE4C4J2vXlSN5cFL44ACNRhc0kKI44MVdc0upUO1g",
+          "places/ChIJ6Y1oD4-rwjsRVIBMea8Kw_I/photos/AWCwydgmXJWxySNJjdH8t_9ocXWI8Tzg5IpFRuD8VMhDkoJ2Eede4eTN0LW_VJHx6-XaXbBX5qtnMWQTTh-AAKlYt48xKSXIzJxuVDTWcxSfxOdLMw0XQEoI3ssAR9TuqpnJzhGf0RH1Bpl3cIaoO_ByT7qXc423GfW2hsgVBKL_6AP_rqZG9bjA7hZ8o_pGMQza5rTV_z_WJ-vMZ1fRJ6RAnxJ855UUEJalZVbsBU9XEbWWE7wLgqww-S4ZWvwC3aHh_ssneMAWvyw08o9t8OLU96hilnRfPcRKjTDvViHoU1USlRq_aNkAZ4S52K0paKNy2zRzA7wslj1ne02y9B8IlMyE65Qc1tgcTdEEvGwqL0mr4E9WaEcVgoHNW0DtTwG0E_l_lIx2w9s7wD9-kRaZXZcmWjrKUbgwKk02usMhLLNTEg",
+          "places/ChIJ6Y1oD4-rwjsRVIBMea8Kw_I/photos/AWCwydhDrkFTvx7270VDoKkhB9yR-C-cFaQMwzyglceB2noMvPnlF1a8_8u9KUfFof7vqG5LjYrz3IZKDxKjxhl965n1wEejbptkA04oXUuQ7UWW6D4M1MBgb173U7NcjVEPgcrC6MoxwkqG7B-CcrE1xlIHmbIGJ5Xc7kXJNWJ_Vw_V1TsM01ItfDVdcn1Hf2u-WciWj_A3N4QyMRlLvBwFvEbsac0RzniLzic3zEPIi9Y33UD4K2qcI29ZjrmHp_OFdHnIkhlz5p2De9nj7OzTa2NpxTe-i-N43JK4pdhmz9RhwUcz1xTqAWqtGKCB2X4oLv75LrOd5bPHULZWVQ9hZOqfRtEmv-ontIX7CHm5uRk5x15ouLbIALhk2-eYL0vkItzlKz_6reavi4Kh2C5PpM5C7yJCVzu29i5qCgZuc_UL5wWQ"
+        ],
+        "__at__": 1786806369.198907,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Had a wonderful stay at this resort! The ambience is peaceful, the rooms are clean and well maintained, and the staff is extremely courteous and helpful. The food was delicious and the overall hospitality made our experience truly memorable. Perfect place to relax and unwind. Highly recommended!",
+            "author": "Harsh Jain"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing location. Very good capacity for stay . Ideal for wedding and get togethers. Goor service from venue and  polite staff. The event manager on panel is amazing guy. Very premium decor they provide. Out side catering is allowed. My brother's wedding was conducted here. And I am satisfied",
+            "author": "Sumit Maniyar"
+          },
+          {
+            "rating": 5,
+            "text": "Awesome resort, good service, big and comfortable rooms, fantabulous veg food, good swimming pool, inside sports and music room added advantage.... overall best experience",
+            "author": "Vishal Mehta"
+          },
+          {
+            "rating": 4,
+            "text": "Ratna Resort is one of the best places for events like weddings and celebrations. The spacious lawn and banquet areas are ideal for large gatherings, and the scenic surroundings add a beautiful backdrop to any function. The staff is cooperative and keeps the place well maintained, making your specia",
+            "author": "Jinay Gadiya"
+          },
+          {
+            "rating": 4,
+            "text": "Very good location but rooms are not very well maintained.",
+            "author": "Elastomer India"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Lonavala",
+    "departure_date": "2027-01-20",
+    "return_date": "2027-01-23",
+    "nights": 3,
+    "month_year": "Jan 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 1,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Lonavala",
+      "Ratnaa Resort",
+      "Day 1 · Arrival & Local Exploration",
+      "Drive: Mumbai to Lonavala",
+      "Lonavala Lake",
+      "Tiger Point",
+      "Day 2 · Nature & Sightseeing",
+      "Lonavala Bazaar",
+      "Rajmachi Fort",
+      "Pet-friendly Cafe (TBD)",
+      "Day 3 · Fort & Park",
+      "Ryewood Park",
+      "Bhushi Dam",
+      "Day 4 · Departure",
+      "Drive: Lonavala to Mumbai"
+    ],
+    "auto_summary": "3-night Lonavala, Jan 2027, 1 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T15:06:09Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T15:03:57Z"
+    }
+  ]
+}

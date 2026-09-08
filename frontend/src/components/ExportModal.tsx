@@ -1,5 +1,6 @@
 import { Download, Eye, Mail, Printer, X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { trackEvent } from "../analytics";
 import { downloadTripPdf, emailTripExport, tripExportUrl } from "../api";
 
 export default function ExportModal({ onClose }: { onClose: () => void }) {
@@ -10,6 +11,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
   const [mailtoHref, setMailtoHref] = useState("");
+  const emailRequestRef = useRef<{ key: string; requestId: string } | null>(null);
 
   const options = {
     include_photos: includePhotos,
@@ -18,10 +20,12 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
   };
 
   const openPrintView = () => {
+    trackEvent("itinerary_exported", { method: "print" });
     window.open(tripExportUrl(options, true), "_blank", "noopener,noreferrer");
   };
 
   const openPreview = () => {
+    trackEvent("itinerary_exported", { method: "preview" });
     window.open(tripExportUrl(options, false), "_blank", "noopener,noreferrer");
   };
 
@@ -47,6 +51,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
       link.click();
       link.remove();
       URL.revokeObjectURL(href);
+      trackEvent("itinerary_exported", { method: "pdf" });
     } finally {
       setBusy(false);
     }
@@ -61,9 +66,19 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
     setStatus("");
     setMailtoHref("");
     try {
-      const result = await emailTripExport(email.trim(), options);
+      const requestKey = JSON.stringify({ email: email.trim().toLowerCase(), ...options });
+      if (emailRequestRef.current?.key !== requestKey) {
+        emailRequestRef.current = { key: requestKey, requestId: crypto.randomUUID() };
+      }
+      const result = await emailTripExport(
+        email.trim(),
+        options,
+        emailRequestRef.current.requestId,
+      );
       if (result.ok) {
+        emailRequestRef.current = null;
         setStatus(result.message || "Export sent.");
+        trackEvent("itinerary_exported", { method: "email" });
         return;
       }
       if (result.mailto) {
@@ -77,6 +92,8 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
       } else {
         setStatus(result.message || "Could not send email.");
       }
+    } catch {
+      setStatus("Could not send email. Retry to safely check the same delivery attempt.");
     } finally {
       setBusy(false);
     }

@@ -1,13 +1,15 @@
 import { CalendarPlus, ChevronDown, FileDown, Link2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { trackEvent } from "../analytics";
 import { shareActiveTrip, tripIcsUrl } from "../api";
 
 interface Props {
   disabled?: boolean;
   onExport: () => void;
+  compactTrigger?: boolean;
 }
 
-export default function TripActionsMenu({ disabled = false, onExport }: Props) {
+export default function TripActionsMenu({ disabled = false, onExport, compactTrigger = false }: Props) {
   const [open, setOpen] = useState(false);
   const [shareStatus, setShareStatus] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
@@ -32,6 +34,7 @@ export default function TripActionsMenu({ disabled = false, onExport }: Props) {
     setShareStatus("Creating link...");
     try {
       const url = await shareActiveTrip();
+      trackEvent("trip_shared");
       try {
         await navigator.clipboard.writeText(url);
         setShareStatus("Link copied");
@@ -49,14 +52,16 @@ export default function TripActionsMenu({ disabled = false, onExport }: Props) {
         type="button"
         disabled={disabled}
         onClick={() => setOpen((current) => !current)}
-        className="btn-ghost disabled:opacity-40"
+        className={compactTrigger
+          ? "inline-flex h-8 items-center justify-center gap-0.5 rounded-md px-1.5 text-slate-400 transition hover:bg-slate-50 hover:text-slate-600 disabled:opacity-40"
+          : "btn-ghost disabled:opacity-40"}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Trip actions"
         title="Export, share, or add this trip to your calendar"
       >
         <FileDown size={15} aria-hidden />
-        <span className="hidden 2xl:inline">Trip actions</span>
+        {!compactTrigger && <span className="hidden 2xl:inline">Trip actions</span>}
         <ChevronDown size={13} aria-hidden />
       </button>
       {open && (
@@ -95,6 +100,7 @@ export default function TripActionsMenu({ disabled = false, onExport }: Props) {
             role="menuitem"
             href={tripIcsUrl()}
             download
+            onClick={() => trackEvent("calendar_exported")}
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-ink"
           >
             <CalendarPlus size={16} className="text-slate-400" aria-hidden />

@@ -1,0 +1,330 @@
+{
+  "status": "draft",
+  "trip_id": "varanasi_and_ayodhya_2027-02-03_2027-02-08",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:52:02.172567",
+  "destination": "Varanasi and Ayodhya",
+  "origin": "Pune",
+  "departure_date": "2027-02-03",
+  "return_date": "2027-02-08",
+  "travelers": "2 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Varanasi and Ayodhya",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel Madin",
+      "city": "Varanasi",
+      "checkin": "2027-02-03",
+      "checkout": "2027-02-05",
+      "star_rating": 4,
+      "price_per_night": 6500,
+      "currency": "INR"
+    },
+    {
+      "name": "Clarks Inn Express Ayodhya",
+      "city": "Ayodhya",
+      "checkin": "2027-02-05",
+      "checkout": "2027-02-07",
+      "star_rating": 3,
+      "price_per_night": 4800,
+      "currency": "INR"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-03",
+      "title": "Day 1 · Arrival in Varanasi",
+      "summary": "Fly from Pune to Varanasi, check in to Hotel Madin, evening visit to Dashashwamedh Ghat for Ganga Aarti.",
+      "stops": [
+        {
+          "name": "Flight: Pune to Varanasi",
+          "kind": "flight",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Morning flight, direct preferred"
+        },
+        {
+          "name": "Hotel Madin",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Dashashwamedh Ghat",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Attend Ganga Aarti"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-04",
+      "title": "Day 2 · Varanasi Temples & Sarnath",
+      "summary": "Morning temple visits, lunch at Baati Chokha, afternoon excursion to Sarnath, evening at Assi Ghat.",
+      "stops": [
+        {
+          "name": "Hotel Madin",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kashi Vishwanath Temple",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 90,
+          "note": "Early morning visit"
+        },
+        {
+          "name": "Sankat Mochan Hanuman Temple",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Baati Chokha",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Traditional local cuisine"
+        },
+        {
+          "name": "Sarnath",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 120,
+          "note": "Buddhist site, museum"
+        },
+        {
+          "name": "Assi Ghat",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Evening stroll"
+        },
+        {
+          "name": "Hotel Madin",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-05",
+      "title": "Day 3 · Varanasi to Ayodhya",
+      "summary": "Travel to Ayodhya by morning train, check in to Clarks Inn Express, lunch at Brij Bhog, visit Ram Janmabhoomi and Hanuman Garhi.",
+      "stops": [
+        {
+          "name": "Train: Varanasi to Ayodhya",
+          "kind": "transport",
+          "time": "07:30",
+          "duration_min": 300,
+          "distance_km": 200,
+          "note": "Morning train, approx. 5 hours"
+        },
+        {
+          "name": "Hotel Madin",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "13:00"
+        },
+        {
+          "name": "Clarks Inn Express Ayodhya",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "15:00"
+        },
+        {
+          "name": "Brij Bhog",
+          "kind": "meal",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Lunch in Ayodhya"
+        },
+        {
+          "name": "Ram Janmabhoomi Temple",
+          "kind": "attraction",
+          "time": "18:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Hanuman Garhi",
+          "kind": "attraction",
+          "time": "20:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Clarks Inn Express Ayodhya",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "22:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-06",
+      "title": "Day 4 · Ayodhya Pilgrimage",
+      "summary": "Explore key temples and ghats in Ayodhya, lunch at Shri Kanak Rasoi, evening at Saryu River.",
+      "stops": [
+        {
+          "name": "Clarks Inn Express Ayodhya",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kanak Bhawan",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Nageshwarnath Temple",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Shri Kanak Rasoi",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Vegetarian thali"
+        },
+        {
+          "name": "Saryu River Ghat",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening Aarti"
+        },
+        {
+          "name": "Clarks Inn Express Ayodhya",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-07",
+      "title": "Day 5 · Return to Pune",
+      "summary": "Morning free time in Ayodhya, travel to Varanasi, fly back to Pune.",
+      "stops": [
+        {
+          "name": "Clarks Inn Express Ayodhya",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Train: Ayodhya to Varanasi",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 300,
+          "distance_km": 200,
+          "note": "Morning train, approx. 5 hours"
+        },
+        {
+          "name": "Flight: Varanasi to Pune",
+          "kind": "flight",
+          "time": "16:00",
+          "duration_min": 180,
+          "note": "Afternoon flight"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-02-08",
+      "title": "Day 6 · Arrival in Pune",
+      "summary": "Arrive in Pune, trip concludes.",
+      "stops": [
+        {
+          "name": "Pune",
+          "kind": "other",
+          "note": "Trip ends"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:53:35.862352",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:52:58",
+      "expires_at": "2026-08-16T07:52:58"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:53:35",
+      "expires_at": "2026-08-15T20:23:35"
+    }
+  ],
+  "id": "varanasi_and_ayodhya_2027-02-03_2027-02-08",
+  "user_id": "corpus-varanasi-pilgrimage"
+}

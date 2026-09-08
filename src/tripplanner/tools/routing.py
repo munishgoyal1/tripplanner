@@ -16,15 +16,35 @@ import json
 import httpx
 from langchain_core.tools import tool
 
+from tripplanner import http_client
 from tripplanner.config import get_settings
+from tripplanner.places_budget import paid_provider_authorized
+from tripplanner.providers.cache import ProviderTTLCache
+from tripplanner.providers.openrouteservice import OpenRouteServiceError, OpenRouteServiceProvider
 
 _ENDPOINT = "https://routes.googleapis.com/directions/v2:computeRoutes"
 
 _VALID_MODES = {"DRIVE", "WALK", "BICYCLE", "TRANSIT", "TWO_WHEELER"}
+_GOOGLE_ROUTE_CACHE: ProviderTTLCache[dict] = ProviderTTLCache("google-route")
+_ORS_ROUTE_CACHE: ProviderTTLCache[dict] = ProviderTTLCache("ors-route")
 
 
 def is_configured() -> bool:
-    return bool(get_settings().google_places_api_key)
+    settings = get_settings()
+    return bool(settings.google_places_api_key or settings.openrouteservice_api_key)
+
+
+def _google_configured() -> bool:
+    settings = get_settings()
+    return (
+        paid_provider_authorized()
+        and settings.enable_google_maps
+        and bool(settings.google_places_api_key)
+    )
+
+
+def _ors_configured() -> bool:
+    return bool(get_settings().openrouteservice_api_key)
 
 
 def _normalize_mode(mode: str) -> str:
@@ -89,14 +109,35 @@ def _meters_to_human(meters) -> str:
 
 
 def _post_routes(payload: dict, field_mask: str) -> dict:
+    if not paid_provider_authorized():
+        raise RuntimeError("Paid provider access is not authorized")
+    cache_key = json.dumps(
+        {"field_mask": field_mask, "payload": payload},
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    cached = _GOOGLE_ROUTE_CACHE.get(cache_key)
+    if cached:
+        from tripplanner.provider_usage import record_cache_hit
+
+        record_cache_hit(provider="google", operation="compute_routes")
+        return cached.value
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": get_settings().google_places_api_key,
         "X-Goog-FieldMask": field_mask,
     }
-    resp = httpx.post(_ENDPOINT, headers=headers, json=payload, timeout=20)
+    resp = http_client.post(_ENDPOINT, headers=headers, json=payload)
     resp.raise_for_status()
-    return resp.json()
+    data = resp.json()
+    if data.get("routes"):
+        _GOOGLE_ROUTE_CACHE.set(
+            cache_key,
+            data,
+            provider="google_routes",
+            ttl_seconds=get_settings().openrouteservice_route_ttl_sec,
+        )
+    return data
 
 
 def _build_route_payload(stops: list, mode: str, *, optimize: bool) -> dict:
@@ -139,6 +180,60 @@ def _stop_label(stop: str | dict) -> str:
     return str(stop)
 
 
+def _coordinate_stops(stops: list) -> list[tuple[float, float]] | None:
+    coordinates: list[tuple[float, float]] = []
+    for stop in stops:
+        if not isinstance(stop, dict) or "lat" not in stop or "lng" not in stop:
+            return None
+        try:
+            coordinates.append((float(stop["lat"]), float(stop["lng"])))
+        except (TypeError, ValueError):
+            return None
+    return coordinates
+
+
+def _ors_route(stops: list, mode: str) -> dict | None:
+    if not paid_provider_authorized():
+        return None
+    coordinates = _coordinate_stops(stops)
+    if not coordinates or not _ors_configured():
+        return None
+    normalized_mode = _normalize_mode(mode)
+    if normalized_mode not in {"DRIVE", "WALK", "BICYCLE"}:
+        return None
+    settings = get_settings()
+    cache_key = json.dumps({"coordinates": coordinates, "mode": normalized_mode})
+    cached = _ORS_ROUTE_CACHE.get(cache_key)
+    if cached:
+        return cached.value
+    provider = OpenRouteServiceProvider(
+        settings.openrouteservice_api_key,
+        settings.openrouteservice_base_url,
+    )
+    try:
+        route = provider.compute_route(coordinates, normalized_mode)
+    except OpenRouteServiceError:
+        return None
+    summary = route.get("summary") or {}
+    legs = [
+        {"duration": segment.get("duration"), "distanceMeters": segment.get("distance")}
+        for segment in route.get("segments") or []
+    ]
+    normalized = {
+        "duration": summary.get("duration"),
+        "distanceMeters": summary.get("distance"),
+        "legs": legs,
+        "provider": provider.name,
+    }
+    _ORS_ROUTE_CACHE.set(
+        cache_key,
+        normalized,
+        provider=provider.name,
+        ttl_seconds=settings.openrouteservice_route_ttl_sec,
+    )
+    return normalized
+
+
 @tool
 def compute_route(stops_json: str, mode: str = "DRIVE") -> str:
     """Compute travel time and distance for an ordered list of stops.
@@ -160,37 +255,92 @@ def compute_route(stops_json: str, mode: str = "DRIVE") -> str:
     """
     if not is_configured():
         return (
-            "Google Routes API not configured. "
-            "Set GOOGLE_PLACES_API_KEY in .env and enable 'Routes API' on the "
-            "same Google Cloud project."
+            "Route provider not configured. Set GOOGLE_PLACES_API_KEY for Google Routes, "
+            "or OPENROUTESERVICE_API_KEY for coordinate-based driving, walking, and cycling."
         )
     try:
         stops = _parse_stops(stops_json)
     except ValueError as e:
         return str(e)
 
-    payload = _build_route_payload(stops, mode, optimize=False)
-    field_mask = (
-        "routes.duration,routes.distanceMeters,"
-        "routes.legs.duration,routes.legs.distanceMeters"
-    )
-    try:
-        data = _post_routes(payload, field_mask)
-    except httpx.HTTPError as e:
-        return f"Routes API call failed: {e}"
-
-    routes = data.get("routes") or []
-    if not routes:
+    route: dict | None = None
+    source = ""
+    google_error = ""
+    if _google_configured():
+        payload = _build_route_payload(stops, mode, optimize=False)
+        field_mask = (
+            "routes.duration,routes.distanceMeters,"
+            "routes.legs.duration,routes.legs.distanceMeters"
+        )
+        try:
+            data = _post_routes(payload, field_mask)
+            routes = data.get("routes") or []
+            route = routes[0] if routes else None
+            source = "google_routes" if route else ""
+        except httpx.HTTPError as exc:
+            google_error = type(exc).__name__
+    if route is None:
+        route = _ors_route(stops, mode)
+        source = str(route.get("provider") or "") if route else ""
+    if route is None:
+        if google_error:
+            return f"No route found after Google Routes failed ({google_error})."
         return "No route found for the supplied stops."
-    route = routes[0]
     labels = [_stop_label(s) for s in stops]
     out = {
         "mode": _normalize_mode(mode),
+        "provider": source,
         "total_duration": _seconds_to_human(route.get("duration")),
         "total_distance": _meters_to_human(route.get("distanceMeters")),
         "legs": _format_legs(route, labels),
     }
     return json.dumps(out, indent=2)
+
+
+def _seconds_to_minutes(value) -> int | None:
+    if value is None:
+        return None
+    try:
+        return int(round(float(str(value).rstrip("sS")) / 60))
+    except (TypeError, ValueError):
+        return None
+
+
+def route_metrics(origin: str | dict, destination: str | dict, mode: str) -> dict | None:
+    """Duration in minutes and distance in km for one origin → destination hop.
+
+    Non-tool: transport comparison needs the numbers, not the formatted string
+    ``compute_route`` hands to the model.
+    """
+    if not is_configured():
+        return None
+    stops = [origin, destination]
+    route: dict | None = None
+    source = ""
+    if _google_configured():
+        payload = _build_route_payload(stops, mode, optimize=False)
+        try:
+            data = _post_routes(payload, "routes.duration,routes.distanceMeters")
+            routes = data.get("routes") or []
+            route = routes[0] if routes else None
+            source = "google_routes" if route else ""
+        except httpx.HTTPError:
+            route = None
+    if route is None:
+        route = _ors_route(stops, mode)
+        source = str(route.get("provider") or "") if route else ""
+    if route is None:
+        return None
+    minutes = _seconds_to_minutes(route.get("duration"))
+    if minutes is None:
+        return None
+    meters = route.get("distanceMeters")
+    return {
+        "mode": _normalize_mode(mode),
+        "provider": source,
+        "duration_min": minutes,
+        "distance_km": round(float(meters) / 1000, 1) if meters else None,
+    }
 
 
 @tool
@@ -212,10 +362,10 @@ def optimize_day_route(stops_json: str, mode: str = "DRIVE") -> str:
     Returns JSON with optimized_order (the new sequence of stop labels),
     total_duration, total_distance, and per-leg breakdown in the new order.
     """
-    if not is_configured():
+    if not _google_configured():
         return (
-            "Google Routes API not configured. "
-            "Set GOOGLE_PLACES_API_KEY in .env and enable 'Routes API'."
+            "Google Routes API not configured. Waypoint optimization requires Google Routes; "
+            "OpenRouteService is available only as a coordinate route fallback."
         )
     try:
         stops = _parse_stops(stops_json)
@@ -247,7 +397,11 @@ def optimize_day_route(stops_json: str, mode: str = "DRIVE") -> str:
     optimized_idx = route.get("optimizedIntermediateWaypointIndex") or list(
         range(len(intermediates))
     )
-    reordered_intermediates = [intermediates[i] for i in optimized_idx if 0 <= i < len(intermediates)]
+    reordered_intermediates = [
+        intermediates[index]
+        for index in optimized_idx
+        if 0 <= index < len(intermediates)
+    ]
     new_order = [stops[0], *reordered_intermediates, stops[-1]]
     labels = [_stop_label(s) for s in new_order]
 

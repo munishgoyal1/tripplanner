@@ -1,0 +1,376 @@
+{
+  "status": "draft",
+  "trip_id": "jaipur_jodhpur_udaipur_2027-02-16_2027-02-23",
+  "trip_number": 1,
+  "created_at": "2026-08-25T20:56:06.442044",
+  "destination": "Jaipur, Jodhpur, Udaipur",
+  "origin": "Mumbai",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-02-16",
+  "return_date": "2027-02-23",
+  "travelers": "Couple: 2 adults",
+  "notes": "Hotel search for Jaipur failed due to provider/API limits. Please specify a preferred property or let me know if you want to proceed with a recommended heritage hotel (e.g., Alsisar Haveli, Samode Haveli, or Pearl Palace Heritage) and I will add it to your itinerary for pricing and booking as soon as possible. The rest of the itinerary is ready to finalize once a real hotel is selected.\n\nUdaipur Market on Day 7 leaves only 75 minutes before the flight; 120 minutes are required. Recommend either skipping the market or moving it to an earlier slot for a stress-free departure. Please confirm your preference.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Jaipur, Jodhpur, Udaipur",
+    "estimated_planned_minutes": 1282,
+    "evidence_place_count": 9,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "9 preference-matched places account for about 1282 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-16",
+      "title": "Day 1 · Mumbai to Jaipur · Arrival",
+      "summary": "Fly from Mumbai to Jaipur. Check in to hotel and explore the Pink City’s old town in the evening.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Jaipur",
+          "kind": "flight",
+          "note": "Morning flight"
+        },
+        {
+          "name": "Jaipur Hotel",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Old City Walk",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening stroll and local snacks"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-17",
+      "title": "Day 2 · Jaipur Forts & Palaces",
+      "summary": "Full day exploring Jaipur’s historical highlights: Amber Fort, City Palace, Jantar Mantar, and local markets.",
+      "stops": [
+        {
+          "name": "Jaipur Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Amber Fort",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Go early to avoid crowds"
+        },
+        {
+          "name": "City Palace Jaipur",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Jantar Mantar Jaipur",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Johari Bazaar",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 60,
+          "note": "Explore local crafts"
+        },
+        {
+          "name": "Jaipur Hotel",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-18",
+      "title": "Day 3 · Jaipur Museums & Culture",
+      "summary": "Visit Albert Hall Museum and Hawa Mahal. Experience local culture and cuisine.",
+      "stops": [
+        {
+          "name": "Jaipur Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Albert Hall Museum",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Hawa Mahal",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "LMB Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Lunch at a heritage eatery"
+        },
+        {
+          "name": "Anokhi Museum of Hand Printing",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Jaipur Hotel",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-19",
+      "title": "Day 4 · Jaipur to Jodhpur · Blue City Exploration",
+      "summary": "Morning train/flight to Jodhpur. Explore Mehrangarh Fort and the blue lanes of the old city.",
+      "stops": [
+        {
+          "name": "Train: Jaipur to Jodhpur",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 360,
+          "note": "Morning train (or flight if preferred)"
+        },
+        {
+          "name": "Jaipur Hotel",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "14:30"
+        },
+        {
+          "name": "Jodhpur Hotel",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "16:30"
+        },
+        {
+          "name": "Mehrangarh Fort",
+          "kind": "attraction",
+          "time": "18:30",
+          "duration_min": 150
+        },
+        {
+          "name": "Toorji Ka Jhalra (Step Well)",
+          "kind": "attraction",
+          "time": "21:30",
+          "duration_min": 30
+        },
+        {
+          "name": "Jodhpur Hotel",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "22:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-20",
+      "title": "Day 5 · Jodhpur Palaces & Culture",
+      "summary": "Visit Umaid Bhawan Palace Museum, Jaswant Thada, and explore Sardar Market.",
+      "stops": [
+        {
+          "name": "Jodhpur Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Umaid Bhawan Palace Museum",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Jaswant Thada",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Gypsy Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Lunch with local flavors"
+        },
+        {
+          "name": "Sardar Market",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Jodhpur Hotel",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-02-21",
+      "title": "Day 6 · Jodhpur to Udaipur · Lake City Arrival",
+      "summary": "Travel from Jodhpur to Udaipur by road/train. Evening at Lake Pichola and Bagore Ki Haveli.",
+      "stops": [
+        {
+          "name": "Drive: Jodhpur to Udaipur",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 300,
+          "note": "Private car or train"
+        },
+        {
+          "name": "Jodhpur Hotel",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "13:30"
+        },
+        {
+          "name": "Udaipur Hotel",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "15:30"
+        },
+        {
+          "name": "Lake Pichola",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Bagore Ki Haveli",
+          "kind": "attraction",
+          "time": "19:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Udaipur Hotel",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "21:00"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-02-22",
+      "title": "Day 7 · Udaipur Palaces & Departure",
+      "summary": "Explore City Palace, Saheliyon Ki Bari, and local markets. Evening flight/train back to Mumbai.",
+      "stops": [
+        {
+          "name": "Udaipur Hotel",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "City Palace Udaipur",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Saheliyon Ki Bari",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Jagdish Temple",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 45
+        },
+        {
+          "name": "Millets of Mewar",
+          "kind": "meal",
+          "time": "14:15",
+          "duration_min": 60,
+          "note": "Lunch with local cuisine"
+        },
+        {
+          "name": "Udaipur Market",
+          "kind": "attraction",
+          "time": "15:45",
+          "duration_min": 60
+        },
+        {
+          "name": "Flight: Udaipur to Mumbai",
+          "kind": "flight",
+          "time": "18:00",
+          "note": "Evening flight back"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T20:59:08.814321",
+  "id": "jaipur_jodhpur_udaipur_2027-02-16_2027-02-23",
+  "user_id": "corpus-india-rajasthan-heritage-couple-7d-cb02073445c2"
+}

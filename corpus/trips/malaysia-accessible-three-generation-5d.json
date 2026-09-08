@@ -1,0 +1,264 @@
+{
+  "status": "draft",
+  "trip_id": "malaysia_kuala_lumpur_penang_2027-07-04_2027-07-09",
+  "trip_number": 1,
+  "created_at": "2026-08-16T20:14:57.074464",
+  "destination": "Malaysia (Kuala Lumpur & Penang)",
+  "origin": "Chennai",
+  "departure_date": "2027-07-04",
+  "return_date": "2027-07-09",
+  "travelers": "4 adults and 1 child (age 8), including grandparents (one with limited mobility)",
+  "notes": "One traveller cannot manage long walks or stairs. Prioritize accessible hotels and activities.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Malaysia",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-07-04",
+      "title": "Day 1 · Arrival in Kuala Lumpur",
+      "summary": "Arrive in Kuala Lumpur from Chennai. Check in to hotel and relax. Evening visit to Petronas Twin Towers (elevator access, minimal walking). Dinner at a nearby accessible restaurant.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Kuala Lumpur",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "15:00",
+          "duration_min": 270,
+          "note": "Direct flight, wheelchair assistance available"
+        },
+        {
+          "name": "Accessible Hotel Kuala Lumpur",
+          "kind": "hotel",
+          "note": "Central, elevator, accessible rooms"
+        },
+        {
+          "name": "Petronas Twin Towers",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Elevator access, minimal walking"
+        },
+        {
+          "name": "Madam Kwan's Suria KLCC",
+          "kind": "meal",
+          "time": "20:00",
+          "note": "Malaysian cuisine, accessible"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-07-05",
+      "title": "Day 2 · Kuala Lumpur City Tour",
+      "summary": "Guided city tour with accessible transport: Batu Caves (view from outside), National Mosque, Central Market (wheelchair-friendly). Lunch at accessible food court. Evening at hotel pool.",
+      "stops": [
+        {
+          "name": "Accessible Hotel Kuala Lumpur",
+          "kind": "hotel"
+        },
+        {
+          "name": "Batu Caves (outside view)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60,
+          "note": "View from outside, avoid stairs"
+        },
+        {
+          "name": "National Mosque of Malaysia",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Wheelchair accessible"
+        },
+        {
+          "name": "Central Market Kuala Lumpur",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 120,
+          "note": "Wheelchair-friendly shopping"
+        },
+        {
+          "name": "Food Court Central Market",
+          "kind": "meal",
+          "time": "15:00",
+          "note": "Variety of cuisines, accessible"
+        },
+        {
+          "name": "Accessible Hotel Kuala Lumpur",
+          "kind": "hotel",
+          "time": "16:30",
+          "note": "Rest & pool"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-07-06",
+      "title": "Day 3 · Travel to Penang & Georgetown Heritage",
+      "summary": "Morning flight to Penang. Check in to hotel. Afternoon accessible trishaw tour of Georgetown's heritage sites. Dinner at local restaurant.",
+      "stops": [
+        {
+          "name": "Flight: Kuala Lumpur to Penang",
+          "kind": "flight",
+          "time": "10:00",
+          "arrival_time": "11:00",
+          "duration_min": 60,
+          "note": "Short flight, wheelchair assistance"
+        },
+        {
+          "name": "Accessible Hotel Kuala Lumpur",
+          "kind": "hotel",
+          "time": "11:30"
+        },
+        {
+          "name": "Accessible Hotel Penang",
+          "kind": "hotel",
+          "note": "Central, elevator, accessible rooms",
+          "time": "13:30"
+        },
+        {
+          "name": "Georgetown Accessible Trishaw Tour",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 120,
+          "note": "Minimal walking, accessible trishaw"
+        },
+        {
+          "name": "Tek Sen Restaurant",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Chinese-Malay cuisine, accessible"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-07-07",
+      "title": "Day 4 · Penang Hill & Kek Lok Si Temple",
+      "summary": "Morning funicular ride up Penang Hill (wheelchair accessible). Visit Kek Lok Si Temple (use accessible paths). Lunch at David Brown's Restaurant. Evening at leisure.",
+      "stops": [
+        {
+          "name": "Accessible Hotel Penang",
+          "kind": "hotel"
+        },
+        {
+          "name": "Penang Hill Funicular",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Wheelchair accessible funicular"
+        },
+        {
+          "name": "Kek Lok Si Temple (accessible route)",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "Use accessible paths, avoid stairs"
+        },
+        {
+          "name": "David Brown's Restaurant and Tea Terraces",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "On Penang Hill, accessible"
+        },
+        {
+          "name": "Accessible Hotel Penang",
+          "kind": "hotel",
+          "time": "16:00",
+          "note": "Rest or explore hotel facilities"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-07-08",
+      "title": "Day 5 · Penang Leisure & Return to Chennai",
+      "summary": "Morning at leisure or visit Penang Peranakan Mansion (accessible). Afternoon flight from Penang to Chennai.",
+      "stops": [
+        {
+          "name": "Accessible Hotel Penang",
+          "kind": "hotel"
+        },
+        {
+          "name": "Penang Peranakan Mansion",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Wheelchair accessible"
+        },
+        {
+          "name": "Flight: Penang to Chennai",
+          "kind": "flight",
+          "time": "15:00",
+          "arrival_time": "17:30",
+          "duration_min": 180,
+          "note": "Direct flight, wheelchair assistance"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "MYR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-16T20:20:10.081088",
+  "id": "malaysia_kuala_lumpur_penang_2027-07-04_2027-07-09",
+  "user_id": "corpus-malaysia-accessible-three-generation-5d"
+}

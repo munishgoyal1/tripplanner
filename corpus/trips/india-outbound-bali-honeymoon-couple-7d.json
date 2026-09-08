@@ -1,0 +1,280 @@
+{
+  "status": "draft",
+  "trip_id": "bali_2027-06-02_2027-06-09",
+  "trip_number": 1,
+  "created_at": "2026-08-24T22:01:25.056223",
+  "destination": "Bali",
+  "origin": "Bangalore",
+  "departure_date": "2027-06-02",
+  "return_date": "2027-06-09",
+  "travelers": "Couple: 2 adults, Indian passports",
+  "notes": "Prioritize romantic stays, privacy, downtime, and one special experience.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Bali",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-06-02",
+      "title": "Day 1 · Arrival in Bali",
+      "summary": "Arrive in Bali, transfer to a romantic villa, settle in and enjoy a private welcome dinner.",
+      "stops": [
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Check-in to private pool villa"
+        },
+        {
+          "name": "Sambal Shrimp",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Private welcome dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-06-03",
+      "title": "Day 2 · Seminyak Beach & Spa",
+      "summary": "Relax at Seminyak Beach, couples spa treatment, sunset cocktails.",
+      "stops": [
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Start from villa"
+        },
+        {
+          "name": "Seminyak Beach",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Bodyworks Spa",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90,
+          "note": "Couples massage"
+        },
+        {
+          "name": "Potato Head Beach Club",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Sunset cocktails and dinner"
+        },
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Return to villa"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-06-04",
+      "title": "Day 3 · Ubud Day Trip",
+      "summary": "Explore Ubud: rice terraces, monkey forest, romantic lunch with a view.",
+      "stops": [
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Start from villa"
+        },
+        {
+          "name": "Tegallalang Rice Terraces",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Sacred Monkey Forest Sanctuary",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Swept Away Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "note": "Lunch by the river"
+        },
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Return to villa"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-06-05",
+      "title": "Day 4 · Downtime & Cooking Class",
+      "summary": "Leisure morning, Balinese cooking class, evening at leisure.",
+      "stops": [
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Start from villa"
+        },
+        {
+          "name": "Bali Cooking Class",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120,
+          "note": "Couples cooking experience"
+        },
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Return to villa for downtime"
+        },
+        {
+          "name": "Merah Putih",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Romantic dinner"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-06-06",
+      "title": "Day 5 · Nusa Penida Special Experience",
+      "summary": "Full-day private tour to Nusa Penida: iconic beaches, cliff views, and a secluded picnic.",
+      "stops": [
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Early start from villa"
+        },
+        {
+          "name": "Private Tour: Nusa Penida",
+          "kind": "attraction",
+          "time": "07:30",
+          "duration_min": 480,
+          "note": "Includes Kelingking Beach, Angel's Billabong, picnic lunch"
+        },
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Return to villa"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-06-07",
+      "title": "Day 6 · Tanah Lot & Sunset Dinner",
+      "summary": "Visit Tanah Lot temple, relax, sunset dinner at a cliffside restaurant.",
+      "stops": [
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Start from villa"
+        },
+        {
+          "name": "Tanah Lot Temple",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90
+        },
+        {
+          "name": "The Edge Bali",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Sunset dinner with ocean views"
+        },
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Return to villa"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-06-08",
+      "title": "Day 7 · Leisure & Departure",
+      "summary": "Relax, last swim, check out, transfer to airport for flight home.",
+      "stops": [
+        {
+          "name": "Villa Kayu Raja",
+          "kind": "hotel",
+          "note": "Leisure morning, check-out",
+          "time": "11:00"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-24T22:04:35.661561",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-24T22:04:35",
+      "expires_at": "2026-08-24T22:34:35"
+    }
+  ],
+  "id": "bali_2027-06-02_2027-06-09",
+  "user_id": "corpus-india-outbound-bali-honeymoon-couple-7d"
+}

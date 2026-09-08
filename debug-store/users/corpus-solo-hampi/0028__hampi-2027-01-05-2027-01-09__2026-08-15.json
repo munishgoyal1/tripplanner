@@ -1,0 +1,1379 @@
+{
+  "archive_no": 28,
+  "trip_id": "hampi_2027-01-05_2027-01-09",
+  "user_id": "corpus-solo-hampi",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T15:08:13Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T15:10:01Z",
+      "content_hash": "8e6857e39df947f0",
+      "plan": {
+        "status": "draft",
+        "trip_id": "hampi_2027-01-05_2027-01-09",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:38:12.969064",
+        "destination": "Hampi",
+        "origin": "Bangalore",
+        "departure_date": "2027-01-05",
+        "return_date": "2027-01-09",
+        "travelers": "1 adult (solo)",
+        "notes": "Solo trip, moderate budget, balanced pace, 3-star+ hotel, open to train or rental car.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Hampi",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 4-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-01-05",
+            "title": "Day 1 · Arrival & Local Exploration",
+            "summary": "Travel from Bangalore to Hampi, check in to hotel, explore Hampi Bazaar and Virupaksha Temple.",
+            "stops": [
+              {
+                "name": "Train: Bangalore to Hospet Junction",
+                "kind": "transport",
+                "time": "06:30",
+                "duration_min": 390,
+                "note": "Morning train, scenic route"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "time": "13:30",
+                "note": "Check-in"
+              },
+              {
+                "name": "Hampi Bazaar",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Virupaksha Temple",
+                "kind": "attraction",
+                "time": "16:30",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-01-06",
+            "title": "Day 2 · Monuments & Riverside",
+            "summary": "Visit Vittala Temple, explore riverside ruins, enjoy local cuisine.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Vittala Temple",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Riverside Ruins",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Mango Tree Restaurant",
+                "kind": "meal",
+                "time": "14:00",
+                "duration_min": 60,
+                "note": "Lunch"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "time": "18:00",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-01-07",
+            "title": "Day 3 · Royal Enclosure & Hill Views",
+            "summary": "Explore Royal Enclosure, Lotus Mahal, climb Matanga Hill for sunset.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Royal Enclosure",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Lotus Mahal",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Gopi Guest House Café",
+                "kind": "meal",
+                "time": "13:00",
+                "duration_min": 60,
+                "note": "Lunch"
+              },
+              {
+                "name": "Matanga Hill",
+                "kind": "attraction",
+                "time": "16:30",
+                "duration_min": 90,
+                "note": "Sunset climb"
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "time": "18:30",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-01-08",
+            "title": "Day 4 · Departure & Anegundi",
+            "summary": "Morning visit to Anegundi village, return to Bangalore in afternoon.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "time": "07:30",
+                "note": "Check out"
+              },
+              {
+                "name": "Anegundi Village",
+                "kind": "attraction",
+                "time": "08:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Train: Hospet Junction to Bangalore",
+                "kind": "transport",
+                "time": "12:00",
+                "duration_min": 390,
+                "note": "Afternoon train"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:40:01.080774",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:40:01",
+            "expires_at": "2026-08-16T08:40:01"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T15:10:12Z",
+      "content_hash": "1308b540f99cd88b",
+      "plan": {
+        "status": "draft",
+        "trip_id": "hampi_2027-01-05_2027-01-09",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:38:12.969064",
+        "destination": "Hampi",
+        "origin": "Bangalore",
+        "departure_date": "2027-01-05",
+        "return_date": "2027-01-09",
+        "travelers": "1 adult (solo)",
+        "notes": "Solo trip, moderate budget, balanced pace, 3-star+ hotel, open to train or rental car.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Hampi",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 4-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "Mobility Accessible, Roll in Shower",
+            "address": "102063, Hampi, India",
+            "provider": "liteapi",
+            "provider_ref": {
+              "hotel_id": "lpf92d9",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+            },
+            "price_per_night": 2200,
+            "nights": 4,
+            "total_price": 8800,
+            "currency": "INR",
+            "rating": 4.2,
+            "reviews_count": 320,
+            "room_type": "Standard Room",
+            "amenities": [
+              "Mobility Accessible",
+              "Roll in Shower"
+            ]
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-01-05",
+            "title": "Day 1 · Arrival & Local Exploration",
+            "summary": "Travel from Bangalore to Hampi, check in to hotel, explore Hampi Bazaar and Virupaksha Temple.",
+            "stops": [
+              {
+                "name": "Train: Bangalore to Hospet Junction",
+                "kind": "transport",
+                "time": "06:30",
+                "duration_min": 390,
+                "note": "Morning train, scenic route"
+              },
+              {
+                "name": "Mobility Accessible, Roll in Shower",
+                "kind": "hotel",
+                "time": "13:30",
+                "note": "Check-in",
+                "address": "102063, Hampi, India",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lpf92d9",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+                },
+                "price_per_night": 2200,
+                "nights": 4,
+                "total_price": 8800,
+                "currency": "INR",
+                "rating": 4.2,
+                "reviews_count": 320,
+                "room_type": "Standard Room",
+                "amenities": [
+                  "Mobility Accessible",
+                  "Roll in Shower"
+                ]
+              },
+              {
+                "name": "Hampi Bazaar",
+                "kind": "attraction",
+                "time": "15:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Virupaksha Temple",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-01-06",
+            "title": "Day 2 · Monuments & Riverside",
+            "summary": "Visit Vittala Temple, explore riverside ruins, enjoy local cuisine.",
+            "stops": [
+              {
+                "name": "Mobility Accessible, Roll in Shower",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Start from hotel",
+                "address": "102063, Hampi, India",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lpf92d9",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+                },
+                "price_per_night": 2200,
+                "nights": 4,
+                "total_price": 8800,
+                "currency": "INR",
+                "rating": 4.2,
+                "reviews_count": 320,
+                "room_type": "Standard Room",
+                "amenities": [
+                  "Mobility Accessible",
+                  "Roll in Shower"
+                ]
+              },
+              {
+                "name": "Vittala Temple",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Riverside Ruins",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Mango Tree Restaurant",
+                "kind": "meal",
+                "time": "15:00",
+                "duration_min": 60,
+                "note": "Lunch"
+              },
+              {
+                "name": "Mobility Accessible, Roll in Shower",
+                "kind": "hotel",
+                "time": "18:00",
+                "note": "Return to hotel",
+                "address": "102063, Hampi, India",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lpf92d9",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+                },
+                "price_per_night": 2200,
+                "nights": 4,
+                "total_price": 8800,
+                "currency": "INR",
+                "rating": 4.2,
+                "reviews_count": 320,
+                "room_type": "Standard Room",
+                "amenities": [
+                  "Mobility Accessible",
+                  "Roll in Shower"
+                ]
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-01-07",
+            "title": "Day 3 · Royal Enclosure & Hill Views",
+            "summary": "Explore Royal Enclosure, Lotus Mahal, climb Matanga Hill for sunset.",
+            "stops": [
+              {
+                "name": "Mobility Accessible, Roll in Shower",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Start from hotel",
+                "address": "102063, Hampi, India",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lpf92d9",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+                },
+                "price_per_night": 2200,
+                "nights": 4,
+                "total_price": 8800,
+                "currency": "INR",
+                "rating": 4.2,
+                "reviews_count": 320,
+                "room_type": "Standard Room",
+                "amenities": [
+                  "Mobility Accessible",
+                  "Roll in Shower"
+                ]
+              },
+              {
+                "name": "Royal Enclosure",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Lotus Mahal",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Gopi Guest House Café",
+                "kind": "meal",
+                "time": "14:00",
+                "duration_min": 60,
+                "note": "Lunch"
+              },
+              {
+                "name": "Matanga Hill",
+                "kind": "attraction",
+                "time": "16:30",
+                "duration_min": 90,
+                "note": "Sunset climb"
+              },
+              {
+                "name": "Mobility Accessible, Roll in Shower",
+                "kind": "hotel",
+                "time": "18:30",
+                "note": "Return to hotel",
+                "address": "102063, Hampi, India",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lpf92d9",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+                },
+                "price_per_night": 2200,
+                "nights": 4,
+                "total_price": 8800,
+                "currency": "INR",
+                "rating": 4.2,
+                "reviews_count": 320,
+                "room_type": "Standard Room",
+                "amenities": [
+                  "Mobility Accessible",
+                  "Roll in Shower"
+                ]
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-01-08",
+            "title": "Day 4 · Departure & Anegundi",
+            "summary": "Morning visit to Anegundi village, return to Bangalore in afternoon.",
+            "stops": [
+              {
+                "name": "Mobility Accessible, Roll in Shower",
+                "kind": "hotel",
+                "time": "07:30",
+                "note": "Check out",
+                "address": "102063, Hampi, India",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lpf92d9",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+                },
+                "price_per_night": 2200,
+                "nights": 4,
+                "total_price": 8800,
+                "currency": "INR",
+                "rating": 4.2,
+                "reviews_count": 320,
+                "room_type": "Standard Room",
+                "amenities": [
+                  "Mobility Accessible",
+                  "Roll in Shower"
+                ]
+              },
+              {
+                "name": "Anegundi Village",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Train: Hospet Junction to Bangalore",
+                "kind": "transport",
+                "time": "12:00",
+                "duration_min": 390,
+                "note": "Afternoon train"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:40:12.678375",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:40:01",
+            "expires_at": "2026-08-16T08:40:01"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T15:10:12Z",
+    "user_id": "corpus-solo-hampi",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {
+      "hampi bazaar|hampi": {
+        "place_id": "ChIJL1y-wdt_tzsRi-4w_sr8H2A",
+        "name": "Hampi Bazaar Street",
+        "address": "Hampi Bazaar St, Hampi, Karnataka 583239, India",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Street leading to a historic temple & outdoor market, also lined with ruins of old bazaar pavilions.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 15.3348937,
+        "lng": 76.4610654,
+        "photo_refs": [
+          "places/ChIJL1y-wdt_tzsRi-4w_sr8H2A/photos/AWCwydjDQBVaW8hHelTT4oI8wdLWuT4xmAEscHWFQGt7HHmsku_Myp8-WBDaKMyPouExNlv9Plpxh4w2vWKcgfg8VCnrYX-OzAArSJ-de8OH0PuDFKyvn3ufJUIsY_kleXswA8pTKDValjqa8Lc9kB_um9nbSKOVpu5_zl6jH-d1lv66nP0GrPQqvLXVwafqkLN9QrSKIB-vFqy71H600rNP5Ln6Hv0qhd-KSieeYuoSMyms9JOx4aDoZ5wPq9mNTOtzpk-1UlFpiQGyGJsw9-vaHunY0bcHmFVpOWeG28m154WR0YucjRNcfVgv3x3fb2p3jSv279wQ1iQXVSz94LBk-RWB4lTpRvz3ek4tqW9efFgopTmnRyvXdCVN6rX7vibigewUS-yrPii0QRGSFumBixfSTkPCDPBTX6sMMZbeuWtDIA",
+          "places/ChIJL1y-wdt_tzsRi-4w_sr8H2A/photos/AWCwydhCQ5WGpii42VZCXkBgdlp1srwaQJj8phCqpJ6UlMxIwpP-su9Z-1Jm1P62_4xinYM6pM7stpcAteGh0kmZ2tRojvTFVFlXYZDKBRpjC66eW1cqtYiJkwqnGGPH_ngj4CdXZeyd0WcTT00QcFnDVRkgpx9r7CeiB2ZfgoX3zXUN9j_jMNsnd8xN7A4LQx9SqzalzLfWi9eHXJfmmNWlrbY8g8ZvNXGC3-1F5k7TPAbClOceT_PaclXW6gVMeVWoZ1XeAGwj6NYQF0DnCeDPdmpzeEns1JlUhXn2SuERr5tdVIszivsZk_jx5j90E5upDrEy9xsHXmzTbLSCWded3ZzZ6LVCPhaKS_je5vY1Wth2kZG1vd-70S7gEHAcumAcuKNqoVGjYtJXr0m2Jr-yPvFO1fMaP_aGWBSorJ9TvomUZSj5",
+          "places/ChIJL1y-wdt_tzsRi-4w_sr8H2A/photos/AWCwydg2tgtsmu7yYcM4wUQTwPwT-fGrV5YLOGvw5kDarjM26QcEkE7EYXp4rw5wKcTh3c2mK3EkP3CiLWe_UpcEGO63lallO20QgqVHpnaex0dx_khndIZLo7x4da7QN8NrMqP3AYOjRJbmdy__u5Idhk-BvdE4pFB-Khnvwsl4YcoiLEQikRY6Z7uWD0VgUX6wL9dm2Padrv6_uNQOMwS4HKbMJYYEwb1hxMxTyMFsfUyPmxECMZlspQS5wTTQZNwf5-OKsBIwcHeouS6Bew4mNNaceFIvTPe46hKLHuO3vAuq1sGL_5fj-Xyu9mwMXp4PEpqyY5emOvTTYRlzeMq0C9BEhpsr_2vipgN8AvgYpnEVVZo_EtII7LvmV8-38WeKR-Ph00FudHMC4l-urDxhD6gSbrnYNxYZnzdAC3JPqkrExBIr",
+          "places/ChIJL1y-wdt_tzsRi-4w_sr8H2A/photos/AWCwydgQN7mc318-Eu4hRzKKaf5eEZaOjcSWLtzG88S-kPER7_VlSkLNYO_bssbEBJVo-6N1T_5DS8Ui_qaslP85RXPHjMrStyutqOUvB5MfKw38XX8SnJ1D30-rGUX8Qg933Iz6L4yRDVkyjXdh5DJi5CWsTbmNWSHEj6_KzkK6cGMzk3muVwxHmoppakE0jvmSL_PUV2nIbxEla1tkPEeoj4hdl4du5CGOpTCtVGKkphbq6aj6EDUZPVUIqJMCKgcezTj4mEnWagF0LI43fkvJU8IYYHYw7kSyACN7MOEgxe_T7I1ZX-jV8ruN7kwUKuYthkBBIfHw2A5SIRp5o6HirX1_n2qI2_oUg6hMaMM_VT0vA22lDQlh3oy3bA-j33Bss5jxH4fXny076F5tn_dVWSwnWNEE-TbiGrLMpk8ZxswrZbhp",
+          "places/ChIJL1y-wdt_tzsRi-4w_sr8H2A/photos/AWCwydg1cWWGPQVHXXYbMlhRY3vlEgpXroMV14aGEzPub-VA8x8dh-WW8NeHSqYrXH8_z0RPJsiocZAIUtGKgdM8lP5rqvLb-fqxYpVxKKH0S6cUvnwwjFgJw_y0iKdXxs-TvId2OxlMPsb3OwK7K23nE-RVBGJVOUTkQkDveSHtJI1xDRurC6AFRECUVXDidbN4FC8wNyDcBfaRFHGu2RXSIXfo7waLtLgKcYHAIJnlFHkWA8zNLmQn6OoZVAsD2dNPfnEDLkb2Ky3WYaInDu90-0ra7rqsZDDsiN5m6-K2vEdzASI0p9ekIK0U-GpIeI9XxWOn0wU8P1o1eauQ_oDQ1DMM7FCqauOJ62tg_3WK2HqQq_Vi8iK8yXYqHpz_Gkwwe7SuHjt8H7yNiS7xQh0Ocs95Ecs1ka0Mv5wUGqoDIl3C9HI9",
+          "places/ChIJL1y-wdt_tzsRi-4w_sr8H2A/photos/AWCwydjK6zYxU9GWEQ_m66jm8Za3Gh9agqdg0sFo4HHwNSY9iyeyMausbO1AuZaoAG2NmjRaBfNHqIx_ikPlT19-X3QFzpcXh7v8eUtUIO6_0cQT7jIuMUsNd0pqdNO9JSMnPlg0os-menO5PIA7a9uBQ1C5BQ5aRYuJJ9RTb-ZvffkcRDSqJSoiEDmfa091U6LfaCYWfJ4IGJy66h5-qa5E_v89OYZFNSNw8PEY4ylhtgFej_APAonQh7jliwyhwPOwpCHStf7obnJRDgdOABSyRZre__ggU1GO101VTqD6sfPCvMSiqcB9V3lFVwxBn8WHDnPu7aaCPKDqXKeRf845DR8DSSZdcrqepTFW29DhTPgn9nG7d4jPR6xfj_jbcTdObMZewlr3rm5MDDXNhFlLVcwmQhKagkt2LIkePowS20iwbtQB",
+          "places/ChIJL1y-wdt_tzsRi-4w_sr8H2A/photos/AWCwydhhP4KlNRx4zhQzDubUs8CiZyXYcgr69LWiPJLBlEdOgESVsAXkm636HZgUve0m57Q0ioIotcD34kJmojZDAlv7dPyd9a72MkkkHctqgatm_UWdAF64oYVNxwJfhQxrOwGQbSKbSAfoe13tg5GRWbePzGPoABOjbsu2fCZc271AZ1Phyq-MeQuZSm5BmxcqrLjeOKJlKP-TX3vjwyO82RJDDV3uHjYegsLQUDOkUFJZwaGrh_WKaLV9qELrVOU5tcaIg1n7fWlYhYFwtW72Pbjom9w1fMYt8UWRa_iCFlU12sFmvHXW-0sG1T8GeG4YwZ03-TmtlgbdsxCFrK1ZKn_d4pRz2GVi325FDQ5TJ8UhxvLTMX4NfXw-i1TfQHYMuf2ENFR5gFKL_r5mcDybf7l339Ch77YapzIixaKqR1MCGNQ",
+          "places/ChIJL1y-wdt_tzsRi-4w_sr8H2A/photos/AWCwydhd1RSAYWyGMD1S6hh-G9UDeV4Fhy6EZKyLi12hCw4JRXEzXn0GInmedag2Spn3UzV2oBoFH_Eq0ql8-OXQXUzm8OnguI_9zzU5X8C48-p23T_LsWZWogvCzMYGnyPwFrZ8NawZFgY1_zDpZOsurRav82bdl47azq7dU2KTSheprksHMmqjuBAFq4pwiVgNYzM0jbxuMfQNCEQrAL0ZwdomG6fpBvIqQo9jOSjdrpDDuztl0kZkrRCGeITZXdTMsT-ureHmbF2_8eAtVatHg_SfmtHVMN6Bj-Lzqe7TRNCDTXcvri54A_NvgP05HKz0YLcyVdBirIUi1U4l_07pz4fvxJ2XvGwTmlMKLtkhNo2Pd0YDIyimGmf-z-LC2EaCN3UVsEul9toRwebGQiYr8YHOdO4LanlHqLjVcpOllHMILA",
+          "places/ChIJL1y-wdt_tzsRi-4w_sr8H2A/photos/AWCwydgz23z6I4P2cqJiu16MlZQzheADR0fe-HzlT1dzuPQr7t9nRbtPXLYjuVzNJe_AMXs1u2eRyHTACeG3XeKyhXE4ylGj3nxYjs8AHzyHH5bjosPXNzfZ4RsWZv2OqMZXrcO4iD1XoF4TYEtso8AVlKAIQ_PIk77zC0xjtFxq8D90YVEj5meVZ62mZ-TMAGzFZ-hN6c5QmwbnIvomamcJls1o3KBZ7N_TJJWBFweXy3plBJ5e3QzBA84XR40Pkg0ziJUCMA93fWi4bnrqm-Qhp5iAN_DIkjOvCXZ-an__OHzCWL98jzcXQK3NUUS6u7exC4ykNEaeg98REzH1kfGtUpgY3fcTVxS5jl-DxfZk7LTdleAlkLy7uGYlzO4-N9NKt73PyZRr2o6kF9JlS5Vvf4KPYVeSnj7aEzy7ZSmynPsHGw",
+          "places/ChIJL1y-wdt_tzsRi-4w_sr8H2A/photos/AWCwydg8LTxhfOQa1Bue4n6qXy3YpbTqHRdb6QQS66jLFb_oBvpTA7Dwf7d5Dr7ffo9S9cEukpoRlp6H4wE0VzruAtck8L5PsDxZha6YG64NQ8Ci710EdWlRbSou76gauNTMThBsOXVKupD2MoW9M1bvOq9XRvGQHP9qHSuk-H8A9dG4r_-jA20y8aX0ltMMY_7kUs6KtDgXrm3Soql0muz3XQXUYoAD9-fzRzr70fA8vLDWRKXbyKwm9X93yMND61jCmJIUYdbk6Vbrl6_lQxXol86sKqPpl6hhIq6scsK9zBfhRr1xWA7FthrBUhV5XfWjcKeNn_8TW45zu1yUnW1QnXHBYpXHVW8Y9uH_1tiXiG5F5OiVoeTaHz9qF0spdt9WbDikCY6Z86i5oYZt34-43JcxKqj8b2A6IWYaO1ZiK5auAhPf"
+        ],
+        "__at__": 1786806559.4744902,
+        "reviews": []
+      },
+      "virupaksha temple|hampi": {
+        "place_id": "ChIJV_KDB_F_tzsRDerWkB1XnEE",
+        "name": "Virupaksha Temple, Hampi",
+        "address": "Hampi, Karnataka 583239, India",
+        "rating": 4.7,
+        "review_count": 13762,
+        "price_level": null,
+        "website": "https://vijayanagara.nic.in/tourist-place/virupaksha-temple/",
+        "editorial_summary": "A UNESCO Heritage Site, this 7th-century Hindu temple has a gateway tower, courtyards & dining hall.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 6:00 AM – 1:00 PM, 5:00 – 9:00 PM",
+          "Tuesday: 6:00 AM – 1:00 PM, 5:00 – 9:00 PM",
+          "Wednesday: 6:00 AM – 1:00 PM, 5:00 – 9:00 PM",
+          "Thursday: 6:00 AM – 1:00 PM, 5:00 – 9:00 PM",
+          "Friday: 6:00 AM – 1:00 PM, 5:00 – 9:00 PM",
+          "Saturday: 6:00 AM – 1:00 PM, 5:00 – 9:00 PM",
+          "Sunday: 6:00 AM – 1:00 PM, 5:00 – 9:00 PM"
+        ],
+        "lat": 15.335133299999999,
+        "lng": 76.45865289999999,
+        "photo_refs": [
+          "places/ChIJV_KDB_F_tzsRDerWkB1XnEE/photos/AWCwydhE_T4UUqHQn_3x-8VpdR4oWHXLgQwfloG11V_TprR5T49RxgGmKc_WT3CwbcH0SFe2yDXcpibqLlvRrSNwNUOV-_bMwkIgmjlaXOaH5jIhFTc0EjnO8ECCdSy6fhJkhjBCm3ML-onZKzy5tzPlNgeW0VpwqgH3K6mPex4U0QIv38N30mvEIvFcszoVqhsFOmnW9g5IbUfTY6G-vzuWnP92Sc1Suj2J8fk4ARu_vhdaQE_XV7sRngxg7WEFrJGEfErMqDhl4oe1vxBNjkpRDnnaFfSxy5goki6jl01an-bTrA3K-5VaLuFcnd2BdZpN8SyevH1v87ZPchqmzx0E4BolQtCCZM5NzHGFbytETJOovT3VD6aV8Noy9hb08_uMOgpxIyPjz5YX6tK4hEhv5MPy1UJDZ-ViC3SCWju2xbA",
+          "places/ChIJV_KDB_F_tzsRDerWkB1XnEE/photos/AWCwydilZBXL2_yJCjHHrI5C6M6CjNcIlASH230dMTrtkWjcDjopwX2zxe1K1MD42VOV001-w-GlIGqAcC3xyxoT8fxyphVvsw60-OeOc_5qckWLKVy1CgNlHHb9-d-6USA34KvcyPcU7peFfQJFczpLLLn38VWPf5XynwWxWwmohk3JopIBJKTLghHi4KSO3wAWWjBDmTIUf44QUezlVqNFKYoghnkKRDlTRaw4r06NA77B3mcNlvQ5H7Ksn1txgRDlcbVUw-QCyBtpzUUXfsk2NyEg-xLSpV8AQG65DGD3c9nLm9I2Vu6edyMZQvW2zFuEtBmZVbRPUaclrTPKNsGsFvuBCPVOjNbdG4RP3dBqRc89pfjytTHBGopla48Y7BpnnOIrWcvSsOFbyILvIrfJXGTQkqpPCGpzq29NIsSRHOmHBqw",
+          "places/ChIJV_KDB_F_tzsRDerWkB1XnEE/photos/AWCwydhj8mWinxfEP-foYWYkOOAWIeQwwuZ9xAaX-xjUnH1osRFORaZPqT3HDp7Q4mwOFqdNpo1uriF9Yt1suOeHVUwRVSR1hnwLn1ac55uvIf0sj7H_RP_50Ub-kG4003rNPlw3z8oUL7S3fuSeZGduKoo_NwKmQ4McHELM_JXyiLlaIzNw6UAHrtj1WZIJX01cmRhAJ-6FaX4UUlgwgN0HAvY6bIhE03VhA-RarK2omWifeLEuXFJN_iogUa7EhVZKk0sUqIjIdH7lHWaeCaRNfDyMITyXwu7y2UH-jKpo5TpHOdueD-NzGgRJMOx72poi79SmpQaRlqYrgHiVkas-zFCr2KQQndwlCQgfOTwhckxouuONN61yf4HYrZXogaXIM2-RJWo20fKnEecDRPKDF1YnU4qlzxgKPfvd67ugQlkpnZ8K0EKKj1AWfhh1JZ33",
+          "places/ChIJV_KDB_F_tzsRDerWkB1XnEE/photos/AWCwydiXLuRnLu6ZkZXm8jDjfufp_jujPTNUcp5BIQ0aTL5eB99jXw6Ka8J42T3g7aSqDCXQu6Rnepm7NdZ2FY6zLYEX8hTZd86FUvOJgcs-nbo6AdkdvbkbbrV7KEXbAb8SwH8N9m_rKM78AYPCVZNvcq247EWZ1S_Zg-JvI2KmdS8VbbC8zl28H_PEJohPMCfXBY9CAxeQ4sBrXIySoBriu4dzdKMLW7NGo3eVAzYbORu2OkH9G-1giy-CuP0EDz3jObBRzjF4TIJ8qB7vLds8gAceBCs6hb6BtD10i7XyjCUBfmpsmxktpJT0fK4SuAcRcqmgaYi2yPEgoVlnSjAr4dBTm1DxqMxkOdbXopS3v-JT9gJt1BFv1jQmTVNRH15G4HpYz4fdsFyvFye3kSVUZpzP9hb6CBIGHacNKdFYytE",
+          "places/ChIJV_KDB_F_tzsRDerWkB1XnEE/photos/AWCwydi922YrCYuRz4gk6kZClD8P015_C-smgetRaHD2NAF-0l6CtjKNQ0rTA9wYnbDUXmry6r4kEs1rQfJgtRk-l5Gk59AD4PbK2eCNKIyCk_hFPWZnsDg8Nbqe1_Q5ciyiohElCHd9nUNze7LAayPPOfXI6INO8a-_-yGagkmJ5gNF-QbupirysFqxwY4nI84UFPjlFSVWshqSzVPbcc9iGiC6QlzI3j6_Yvo8yYxghINyRnWq-n0xvCjKEAmQccq7e7krru1mE6KDTF287tvI6dyjgO0y7LIo1lS-6DxQf2hZ4hv9VRZgSH_N49BjvZ8XRvM0ik-11sgWGralGle1ajGkM3hr3e_zttlEDJsn1VLnfmF8puUe9mM_V40aAdDZ8_ifE4VL-AzT3q1D5gTYygJg5HDbYMsM-aOqRd7GnEPwtp8F",
+          "places/ChIJV_KDB_F_tzsRDerWkB1XnEE/photos/AWCwydib4IJyQ-y_aL7q5wdm6AIEy_gmjLoKNcJtgernmE5Bv5FaYnE6ZyIq9oLzJG7HuYjJ5AIIaUwvl5ScOOvmmqJ3_bTFbsWXR9Ge7rfzJafKH7gMvEVL8ompQOKk4vsyMLqt09WUeycCj3TJVdB5U4I75GYSm_B7v5TgqSCI10sEeuAbUMqOE1MbprpEJhlOZSR4QbKE4uL0ulcoBzGs4SlyDCB-jXa7uwL9UvYDmrL9Lkse9GOqMRCplfbRnSnHJ9U390v26jRkYolS9p81TJkC9F2UY4hA1DsU62T52ogfo5y0YYHsYEw24otZoF7WTRQHglMfEQ6nUBt9iwab5U5sA-JOWobIvnKyXcdP0COPgBzr2EfJBYLiArUb0hfGFFEUlBddL9svkJoO7PFWDEI_VvJXOUosyB84TquullLAmQ",
+          "places/ChIJV_KDB_F_tzsRDerWkB1XnEE/photos/AWCwydgk735q72fTVPZlZiFzo0gtrgoj6I43FJ3K_XWALrUvgmPa0ZGpw3Tk14SL1UM6s3e_wrm2tm908TxFIX_iDAh_nHtmgoFKFMTYR81LpQkmanLAXYPB4UYS40hAhTNJ0_1jvwh7KlzC1Gza5fjdVZqo2fQ4gxJ82HGy6faMaxUwaRZSUxcCG7tRLI6vO98g0vFMEhJXC2TlyZuG_EmzKCyt2F9G2nY5W2NW3Fe0HXzZfYi-1PvRmbHEhqhhwu4zBFWDeWwAwaMk9_v958e68rP08o3Tb2a6oGQd20nt7_B2JPNg22l08VQ45ZaoWROqFCjh2eIDDC2WAMkg_blB_Ems7nX1nN_ctQqYE8T4YWAN5Z-RFR3ISj3U36m83twICElVScZ4R4Dle2ET2eEQ7rnZzxd_gT5cpYpq0jAV3XakhOgIMZsoMUHPJkWStmHG",
+          "places/ChIJV_KDB_F_tzsRDerWkB1XnEE/photos/AWCwydhxf3BIiHxSJ_bCEDBgUYSE5Ddttq4RfuYJYSyOe-v8WG8tcK6ZV1UK2qQ1ck7sUWNKFdtu1XeyplZlQJLJYpjUFEYIZBlaYcaUDNRCKgpsyFrKN4UGJudSDnNdZWn0QZaxGxrpjaxie6i39axZzfqzZcZ4hysnFNf3ujMsbD7cuKN585uUbVabvIKm0Y-wdOMVcyVZgUz2wtSdcmupPpNWTcoHICfLkgvh0tG078CUi_AaAiam7IJPRhXG4gmiFMCPj-D8mUGJb31yAf_FgteAwZbjKAe_9mmxlwMW6eEN6HCsG4XR5WlW04CcK1DdoIpMxarf08eM2BIuRVPDMvZWnlLuRMxIWUmuMCo-gQWZlkQbr6ONcFvUSQO5ITaKV612UWk6Afpp0qFvC_Kr66RR3-DT0YAM8Um2CujLsSe60vI9pQ2WuHal2mcsj9qe",
+          "places/ChIJV_KDB_F_tzsRDerWkB1XnEE/photos/AWCwydhqLh8VIPNiir_B7NVDL1FS3GLrTxKsMeE1dpwO9PgwGQpSt_76hKAHVX2OkUGpPyvHXZ-UniIZHq48iR_un40nYjGRs6Kd-YkANsn0TN8GkXAGEHVc9NoB9CuOJTp95T4xaTxZRn8cUHAACD5O4GyN6MRm8jKk0k6Puza1IG5YO4V41Mg8Y9djc8G0y6qgiDZWoHS3Y85iCmA4TVNsb7X2I8sixAeVeCnuk_zdNk7errhUPQeSw_NgHhLmDBVBTobOOadmN1g8Wo0XBMw3xaGU2dy9zEwUNycsLBm5vXmPOV-n2qNlNX3OjEnFggsW7BIYma1FCtw1t9oqNrcHz38lt28rJrBKSBu_WiWg8-PBUlvLU1QhzCBsz0Kk9O7k907hWN6KPTH52oi1mRbvVShDFJSUb6YgguCCXcMbmWnyL00ZGqya4sQ-m7FMu4Lo",
+          "places/ChIJV_KDB_F_tzsRDerWkB1XnEE/photos/AWCwydjxP4hq09faM4fEEX_i-3SwcK2P1EWoifIXgXmlKgjnB76wMrJnEorOcFFK-ZJ3Gdrg1ZWi2xcGoa7xlD0iwMTH1fGBmUxVFoXfDnHo8RUcbu6LdRCaMFHPnR0mt5_-JbRZdDf0JhmoTOu8An-jwhBoHpt_U8Mu0CFsYs9qiQnbCu6o11IKeCchwJ-ZQui38AxstvPKwLkdP7aKI3fYgQ1YM6Lb29ZSVeQ9QXfwnYbcFhqiRJ2dYAFXNDUoqk4j6KLmlbpcs2VLmr47chcfFUAQWPN_nuSgetDV_HRiEKWFFBr2HuHOFkZCfO7qCHUIYPW6uNAKGQ-Jt8wiYRct3aoYmguHYPgDcDiIRsqEfknAZkCwZ2pndqvsCsU45RiSRODI3eKw-KTi5xlYRnGlUXPgQWCN9QtXoA7rDbSBLWQWuFI4"
+        ],
+        "__at__": 1786806559.878262,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Virupaksha Temple is the spiritual heart of Hampi and one of the oldest continuously worshipped temples in India. Dedicated to Lord Shiva, the temple is known for its magnificent gopuram, intricate carvings, and powerful spiritual atmosphere.\n\nThe architecture is breathtaking, and the temple beautif",
+            "author": "Bharath Gajavelly"
+          },
+          {
+            "rating": 4,
+            "text": "Virupaksha Temple is one of the oldest and most famous temples in Hampi. This temple is dedicated to Lord Shiva, who is worshipped here as Virupaksha. The history of this temple goes back more than 1,000 years, and it is believed that worship has been continuously taking place here from ancient time",
+            "author": "venkat venki"
+          },
+          {
+            "rating": 5,
+            "text": "Walking into the Virupaksha Temple feels like stepping through a portal into the 7th century. While the surrounding empire of Hampi lies in hauntingly beautiful ruins, this sacred sanctuary remains vibrantly alive, its towering 160-foot gopuram standing as a defiant sentinel against time.\n\nThe Exper",
+            "author": "Kunal Amzare"
+          },
+          {
+            "rating": 5,
+            "text": "Hampi is a great place to experience our History and also faith. Shree Virupaksha Temple is the prime emblem of this renowned kingdom.\nThe Temple us maintained pristine and very clean. The temple us the abode of Lord Virupaksha along with Shree Papa Devi & Shree Raja Rajeshwari Devi Amma.",
+            "author": "Ranjit R"
+          },
+          {
+            "rating": 5,
+            "text": "Virupaksha Temple is one of the most magnificent and spiritually significant temples in Hampi. The towering gopuram, intricate carvings, ancient architecture, and peaceful atmosphere make it a truly unforgettable destination. The temple beautifully reflects the rich heritage of the Vijayanagara Empi",
+            "author": "B S Giri"
+          }
+        ]
+      },
+      "vittala temple|hampi": {
+        "place_id": "ChIJr9fR3sF_tzsRbZRZR4LIbKI",
+        "name": "Ancient Shree Vijaya Vitthala Temple",
+        "address": "Hampi, Nimbapura, Karnataka 583221, India",
+        "rating": 4.8,
+        "review_count": 16490,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Ruins of a temple known for creative architecture such as a moving stone chariot & musical pillars.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 8:30 AM – 6:00 PM",
+          "Tuesday: 8:30 AM – 6:00 PM",
+          "Wednesday: 8:30 AM – 6:00 PM",
+          "Thursday: 8:30 AM – 6:00 PM",
+          "Friday: 8:30 AM – 6:00 PM",
+          "Saturday: 8:30 AM – 6:00 PM",
+          "Sunday: 8:30 AM – 6:00 PM"
+        ],
+        "lat": 15.342304899999997,
+        "lng": 76.47519170000001,
+        "photo_refs": [
+          "places/ChIJr9fR3sF_tzsRbZRZR4LIbKI/photos/AWCwydhoT5MOCDlWYBzB3r38Ox7s3qxIyy0Rqt_25rzoxGu1Ro7nqcheoO8fNtZmIEPa2w8cD85RoDxjebktwo89uSC2wyjswEcRRD_Jt1Zl0Jm7z6xP83qvYp_99kjvyyHPtWs_WTr0Zq_jtbOjmRI3q8s62Hm-yv7Ly0iMotJS9aBa5k7ihYA8ve2FxVgxCnLOm_TWO71iozwHxMYwETC9c3MiT3KDF0FO1HZvW3as92iFKcR_hfI8sLLBfwa_W3Tx0gSE3NqCa0_lWv5usNkFPFQPbCUN5fKOPk3_twuf2UBSgjJ3T4CL6_XtFl45DS2_z9pYqLUWalIfONMbUR56JHr_xIkXtskIinQPv2qPpKynga95QNNJHsWDFHZd5WeD2N3iOJnH-P2JXhwH7u_nXUbtGEmsvQl0X47f5ebJTyrUwLeL",
+          "places/ChIJr9fR3sF_tzsRbZRZR4LIbKI/photos/AWCwydjPjhEdQei1Tp_GC__8idypvPRRLUrcGDhIMwhH8_gRQgCL6nM0bMsEPwKxzVKqhBStEp-zZf3_zz247HrvdLMZ4NV4tVB1CiEsgche8c48LkPEXlYsE00U9tr2wnqJS_ZY8Xzam7f7xD1iHKVlhP1gkDq9FUZCyQqKZsFoplmVveYNec66VyGLY67LW5nQX-s0QvscgVB2K24Gm9O3GeZOo5YMu7isPEsuCYHHJCmWdMumxNQhQlplWcHTfKTeTdnQc6qhO6p2ouVpgAYrwS0XTlcT6kJOldKdR8DIvXze2cSg7Hd4yMVs9XBVKTCNZTzBecLpoYTb4xGiMo9ie_lsFnE1JWIRVlI2Zvf5VR2h_PY9s5DE0NMP19Xxt7TvCmV_5HTTrvlLoKnSabAHSMJfggB4xp-pc-WvRBBkC0LyTw",
+          "places/ChIJr9fR3sF_tzsRbZRZR4LIbKI/photos/AWCwydg9ax2AFvbxPFHX3XFdgk_TGFQb0jPaMSliCKjyPGDRWCJGYXr6AzElcfEwsFYVp4-r7hFGLp7GQlwRBmZhc7VwaoSVA5YKzqM1DpxO9UQ8JTblCdvX00EGKeoAEjcC1Rbj8ygDkLuoj9mB42lDRLOepwHTD4TjOjNV_NIbQM728u48C6qQPnU_fB3XWqqIgUcBL4yo0O41TChI0ZIgvbHpNxxDGfyfiVSSZi_Ph5-BfJ4LD2dkxdS4BoKxXLGItjjV_R3fsI4cJZ7D923ItQDlcLcGGb5xOYX9DerZ7Q1BZsNzW3E5ppU5Y4tn-aupZvRQg9XcJIGPdSCJh9kyvBz5NPmQFIn7UPm8JOyzzTPPsTv1WQTgTf24aK5bq4w3VgZyY_16BRoMO-jpT7W9C4TiggKtLa_6oW-02n6kEJhpEgF4Ez-kKIGQ5RrvohCy",
+          "places/ChIJr9fR3sF_tzsRbZRZR4LIbKI/photos/AWCwydhA4G548gSxq9RV7TKXzdxqSeO9lw-1PV5Ksao3QMb08C6PwPIdIDrxjJXSANkHm20v5I8GG9sJpmmBpt1GftOzgXEthZic7AJIh2lgrZkf_FYs_1vv1ieRcJ-z7lUGoXUiAJiA1tzj7EbFJGQcxN03eswQtNqRXEqEsODgZEEJXrUYdOwbFuhY8vF_xS_lbHh6K8hHyv-hHy0rgXfgI5hX0FACTqP9X_JlxLGlkgld8B_hPI-4wGKrIKCFIvGP2JalfU6Y4x7WiBm3WfuuUwvO_cvMrJLRdjgCB4YeA7yV7CvUsGOs86Zha9oYI1IHHCzRdMlK4l9POYp_OGdobC0rPUf7D_4gu925qTy_TzazVV3G7eqOOSZyxoFSFp-3O3XdCcqSjh1MGdTkVF5C26SxEiZDyem6qlm4CPlVrHmHxbA",
+          "places/ChIJr9fR3sF_tzsRbZRZR4LIbKI/photos/AWCwydjIGkyBfTD6tMgyprXnGtcJJlDPRd8mCudSnZT0guSOe7irxPjYuKlgmAIpxFzfka_iao0fzxG9aGu9qQsqH-_YVD2mNeyeYff0CUT9d3l9WFPuvApLvj9-0JH6dQjJ58O-GHJSf5p6O-gZdXYeZGEQadKDF0aC_cNyqs2uN9NAosPZdFmHJvCw7fzZA5YrCL4d1VfQHac0qUR9duvgCW7kzqM_BWk-YyUFfyxG3ch8ZrvUn3bNBQsuuywVdnHKayOBUbaABbdG3UQQhUhvjA4rzlpvAk2lQHjtJk79iXv0OG6dr7J1g6YIsVYSioEnYLUdRtOoG2CoUadaubDit8zKMhW5MiNXNy_VtBpIezqak6719tDhf1ofa_VjwRAmZvoRmpiSU0fFui5ZjWeYuNirxXoHfPjSOWq2ziHFaTzwmXO5",
+          "places/ChIJr9fR3sF_tzsRbZRZR4LIbKI/photos/AWCwydgr6yAhE58K9bi-VuQdt4hLG1vdNSgco5fJ7GH5hKB_ndNr-FiXNeVKkf8zT2p9ph4QiN-Q6kkon4jF4ursd0iM3mRyYO-MUJexExwjbcnlaj-6cmfGe2dFweqo7opqP2_Tql45K7abH6SskjNGwFcF6F_1NsdzYpd3A5aswk-hKEx-OeqfPP8d5K7Q2cQHXKMNCKSxFMxUjeOk7-xqhP3TwEXoERCadkvp0SAV1prH81J0RsvvH8O4kWD7FP44lJunK9e9nSlcyXlIEjM_LPxjeWqbV02QUupGgP6AJitVrfPiuAGyeIjr9noVrhV7kQPOZwrybcXTETKDMXCfCZwWHgBrPlgTVMbY3yLAdYwoprWfSLqBTZuXM8wDfnE4kDpRcvRpNJygzkxf1AkiUGpptFY0xsTz7u_smrE93CxDQg",
+          "places/ChIJr9fR3sF_tzsRbZRZR4LIbKI/photos/AWCwydjhgZg2L-AerkrGVK41pYrEQ6OmQhFypMQNWgUssISHDpx_s_SqzwVCEwAapypwhS_4K5nbmIderpXJ6UyOyoMBycP1ijSJKL5XT6R1WT3WI1uDpJKc1qEd99JUwFYr6sVKWn0VPwFeMeeIVvUEFC91PHzN9tXMr_FadXC_7vlAiiIzbl9un9AJPYLPJczAkgp_-87kxQZbLEUpcBjVnvTqObRK30dLXNOsL_TRXZt_-Vd4FdwGhCK-jRESTIfoiS0akT8efie0-sFVhIODHIk2jYPhJfPNLoDsEbB1o4xxJ8JbA3vKlYtpyTLXKk_LGNwfxCPXpKVrWOarTGfeLE8YBPg79C5ymqD-_rrmWPZl77XvOjaF2QNQmxK3quWigICjDm-P2YV1gwqWekqYigovRRY9dDRswk6WGSC66n7PQw",
+          "places/ChIJr9fR3sF_tzsRbZRZR4LIbKI/photos/AWCwydgRsoqelRQZ6xF3ZLESOH04OlOHOmfrFQFXoHnTW9-mlcVup9jFx4DWNXjTcJkOc5lBtW-ej3XWTh214ne-AHQomI6BvwkfH3qRe3HJKVL5UMpf6mlGC2ZFtsZ8BEnTUwAtEXVGhUMi8cnvDaOWtAF4WCOqz53N_abRYTHI2QYzC8bA4sVBpGyuqSSMOCxc6lWQ7Uk7dyX3YIoff2cXzuEjmbgnICQ8yY-bZTunney6dm8w28E1XCvmBtgJ0xISjy8BWMkGctfFokzJWkHRTe2XJKe-FQaKmKkPcJG6_qzp1wFNdHCmMecOWjciVgXYFeljvV9kRPTaG5QKERYHNJjc7nrdaTEkGe0w-5slzGXujrp6y-mvghFpFjrpH-FT7FgdZ9tK9vyEcQqP0bo_G_pcioTlHcOPAfU2A6C52DM",
+          "places/ChIJr9fR3sF_tzsRbZRZR4LIbKI/photos/AWCwydi9HGu-QLH-5BQTRIgPpIVoDE4ceftaHix1YOoWDzqiP6p4vgohPlnbsyqS9DmCG6eCqBLadWyvIbJ35JvZn6hugwvpTL2xbdoLypvBcXR-oGf2ZY-fyaJ3Hqydr8vHjzv4PavRjSNCSYdeTp_3rqXeUXEuV72BdfAzpFS4OEykW-B6T3hRU7HirUysXrrdXEubr4fDbf5LQALXZ3wJeAuzCTYATsfys187iD3pK_jHk5xfvLicwmJcmjf2PKxQPD2wyRjKvihSaL7qFlV7DLZh4hfyW8fGIx66dkgyVJhVpF2KOVJqSeLeB4ZQLUEZ18YIAibqUroDmmOjVLHKAsOYgeMrfefe5ydrljQ_cf2gDnSHjMm-_pBLM9EsJyNgbcQ4aPDkx1b4hUtQpkCwChEbFoLwGfeBsBxnie7x05ra9luq",
+          "places/ChIJr9fR3sF_tzsRbZRZR4LIbKI/photos/AWCwydhXwULZBAJkCEt1pmcMgmhKO8ahYqXSEaFW6HaRjrZm9nOHZU-PGn1PboNkJx5LAS_QCV4ceLxjEqsfvtoDqzGuyEM8ZE8eJq-PDHqyibBDMkUeQQFFt4g6X0B8QuqMFdc_GrkQZS3cHdIHXnLtsBbjxKTHLW_1gn7Ydme1QRRm1BDrPpNwPwyr9-SJ-_CjNt0kRbfLD2sOoU7B06Qovaw0GKgwDBHfr0Pu9HTPjwhnvbXWs3PqTq4vJlQ6B14bQ2vN_QmcDRa0z12oy4XhkTW3ixMzd2IdLY37D-vnNSNit3BpotW79aoAhf-xnafko2pWDwTGymo3lLvbxljux0S7c2F7s74aZkYpZfGq_kd9C5xBwHejiAzTBc8gLXbL7iJQvaAyBnuJ8XyhfSbd7Pr7eGXRdaSxbBaUN85FTU8lRA"
+        ],
+        "__at__": 1786806560.2816918,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Shree Vijaya Vitthala Temple is one of the most magnificent and historically significant monuments in Hampi. The temple is famous for its stunning architecture, intricate stone carvings, and the world-renowned musical pillars that showcase the extraordinary craftsmanship of the Vijayanagara Empire.\n",
+            "author": "Bharath Gajavelly"
+          },
+          {
+            "rating": 5,
+            "text": "The Shree Vijaya Vitthala Temple in Hampi, Karnataka, is the crown jewel of the Vijayanagara Empire. Built in the 15th century, this UNESCO World Heritage Site is globally celebrated for its Dravidian architecture, the iconic Stone Chariot, and the legendary musical pillars.\n\nThe murti (idol) of Lor",
+            "author": "uday nikam999"
+          },
+          {
+            "rating": 5,
+            "text": "Our visit to the Vijaya Vittala Temple and the iconic Stone Chariot in Hampi was truly unforgettable. This place is one of the finest examples of the grandeur and architectural brilliance of the Vijayanagara Empire.\n\nThe Stone Chariot is simply breathtaking and is one of the most famous landmarks of",
+            "author": "Rohan Hejamady"
+          },
+          {
+            "rating": 5,
+            "text": "The Vittala Temple in Hampi is truly an architectural masterpiece and one of the most fascinating historical sites in India. The intricate stone carvings, magnificent temple complex, and the iconic Stone Chariot showcase the extraordinary craftsmanship of the Vijayanagara Empire. Walking through thi",
+            "author": "B S Giri"
+          },
+          {
+            "rating": 4,
+            "text": "The Vijaya Vittala Temple in Hampi is one of the most beautiful and iconic historical places in India. This temple is famous for its incredible architecture, stone carvings, and the world-famous stone chariot, which is also seen on the ₹50 Indian currency note. The moment you enter the temple comple",
+            "author": "venkat venki"
+          }
+        ]
+      },
+      "riverside ruins|hampi": {
+        "place_id": "ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww",
+        "name": "Group of Monuments at Hampi",
+        "address": "Hampi, Karnataka 583239, India",
+        "rating": 4.7,
+        "review_count": 5844,
+        "price_level": null,
+        "website": "https://www.incredibleindia.gov.in/en/karnataka/hampi/hemakuta-hill-temple-complex",
+        "editorial_summary": "Ancient ruins are the focus of this UNESCO site featuring the remains of a grand 14th-century city.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 6:00 AM – 6:00 PM",
+          "Tuesday: 6:00 AM – 6:00 PM",
+          "Wednesday: 6:00 AM – 6:00 PM",
+          "Thursday: 6:00 AM – 6:00 PM",
+          "Friday: 6:00 AM – 6:00 PM",
+          "Saturday: 6:00 AM – 6:00 PM",
+          "Sunday: 6:00 AM – 6:00 PM"
+        ],
+        "lat": 15.334976900000001,
+        "lng": 76.4619233,
+        "photo_refs": [
+          "places/ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww/photos/AWCwydgsufDfWspz7xebX8mXEFiN4crwO858mXHfddG22Lu_bjoymW_2rw8OXhIbT37FouO7Gs5PCk-Ba0Re05fjrAHSqYaAAUfKKiRJLEuVMckIJyUBp8WSFMRycj-GtoUEhdYYTPdULWM9GUxOsv-zlgh5NEsAgf_LMsB_JuXAjZ7An_uYkphIa_lWN0BzwK8YruN7BHJ99qdyz4J2d986kPq2BheJRrjwYpaKi26V2PM9yf4ub-j_TjpvISdTKvcTr7rWMKPU7I4kDu1SR3AlSs1rqe2bjCkzxjTcVqKQcGZjL-LGvEp-Sxi_g1S0cjIfHaTMRHKugA-NdP2CHSqtYz4f7JUTcccwlQgoXkkzZ266dqriv7bWkDIsmx-RnCiVOTwRW534PlCqRMAhEvYHnPj4uo1Yu78toseCdM9bNjSKFKZpiM2s8dX9yP129w",
+          "places/ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww/photos/AWCwydgBPlehb5WFO99bjeeVotIdxJBvjd6XOUtTcoVq3NPQ__2L8DpRH8zrlX93aXy9DSLJJB3L__gJ6ZTACQRZfmQKW91YFoUNjlNRDFRe2Dpois4sJR47haq2vfFMLlXNfyPSsHQD0WdLiuQ_iD9TfanTbr-x9PjgKsGj2RnKPO4eFlCpa_PVpAcEIQoZ5dOJBzOyUBO4muXAXCPKG4NmO2RHW4akPNpt2cok27vh5OGFR40FLtA3cqtkrL9Sgmwkzqr1KUTVvfo78Cy9-ULyrMagjPp-kDDg4m4GvisUkK5vttZ4C2UyFNrDx6EocuOIRSTW2PkqaL94qOXgNh40ipQfY4Yyy0f76ZYZg80fTmeDgzALwkmI-IRcL8rrohBFS1bNj0gIPAR4_DHGGGG3vROu1uxXarB7VPU0hQe28eYjpw",
+          "places/ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww/photos/AWCwydjMMh9yf-6_RkKGM8n64viTfCZnMgl68TJqBqwsBCVQQXnKrdHHDy48y_uYeR_mx5Ea68ujpzi0tiMFOIEfDYQiEUgVZqLrSLkUXq_5L4cZgKn-4xkpqp1VbrrW2xN4EavbZLwH3wsajtqbTXgz5POgC8Iu4_T_frkbljcX1Fgy3ZbtMoK19J_W1CTzYHllTxfyfEFagngICMx9rqBoAFXP9I2baiC4-7KpkSXZBk5nFRtLfmjdkhbMzKoZdfHZlqlOR_fydoaE3TTb6GHjfhbC4QW7bf1dR_U2l2IsRPb49JzrVGm2b-6IloQNI5edNtOAz3BQRb1RMWEAxDzRYiaf_80AU7FjcI8cfDcVkyP_AJ3rVPnTCXGwql3qQ0VJsScL0LKcYjwxwuB5kMn7980ZeabL7_BZrCAdoP9tmFZhJlBT",
+          "places/ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww/photos/AWCwydiS2IJgg4jjamsBhaJ1PIHZE7sBpsuImOVDa79UonnZoaR3VNY8-wcVxGwu-MXCxZFIMgoa7_YW3O9QqPvWojd2nlJvWSvfCj3UBCDxiGbHbpE5dfk_UVb67IZ7RqTWKTo32VMLZeXAx0_BE3-L6ojZ_TSeKdqe03qMtVi6Fp13ZdwlLnuCWdqGC808381f3_CiAahTOmmrHKxUpqyI5sg6xxaN6--sgpfZ_z3hg31lLK49TI1AHbydI1oDpAhfSdVYphBzK5zHV8o4Ywm9duRNDdPt8S3kidUEWMevEAqP-rK6B--HJJhEbfyK2XAQhBp1RH1j8eRZ7Hi99v7RdT-cxHPoNodXgffnundSwR1TmMhh25QM6q_UhRwD3NOArLoBsEHBRMiJH4kAo47cvvgRREsrvOPYh7RgAuEq0_FnNmM4",
+          "places/ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww/photos/AWCwydgf8q9WiMiYVLAw4nzXndER2c35uOB-Lh7HtCI2DjbxW6fJuaPSojvJo_rJShZTd6KRBiEySrP_4S1C5S_DY3kTPSAN5eguXhoJlZ0fQe0yf-jaKPha4pYUJYZMwf6vQowPhQZrpR8dH1du5bV9VUSLDHqSF4b3VUyM2VrWftwny6JJqHfA-U6gDidufLxT8rh1p6Z57DicYYeaTDr9LpbWM4pcErw6Scfw_DizIT31Y52v8ASHC1Gm6chqoPVP0vrfFoEE2KWE__l3RcIjypoz6Qa-0xvJJbWcT60okhEL_TsWgbmCyKA6Kb10SlRDfYV25K-09lQtyzCXwAq5IyQ8YvyN8LNY3zrvqb8JC7unlXp5739PPnaUMkAg0UzXZMRX_vvHWVwH9YUQtqe0ly7yLCdiULA9N5hgLc3oTLQ",
+          "places/ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww/photos/AWCwydhQZPq8Pabrp182OCGMBcM_St95_gywWiUqDsDhuQAARMzS0I1gal0oROsT_z4ATXkTK5MA8oW1_IWVRewkWH9vUdL4f3QMnuNEqxE0yLhnQRetLl5o2NuMbQU3BhyaxkNn4knDfvEIow2bVjNvT355Pso_AQP6QbgJfrb4Sguw1obRtcARjL_EMmzlhefPo3rwKiPK12IPmmTGbiwew-E1fIGYoztoC6Unzz0U1mFcQ7FPgNQcUkjTXUIuyuEkBPE-NFgXGYLX2Z2iu8ZWRZFgrA6TXbgaLbtPaKnZ2meAkQLiu_Nu32oE1DHDfq0MKAXQ85to6q2Zww4EWjrFIy4hLMaq3BO-6jZO30pQOc5UXP5j2VyT9ZdB4VaFF-GIjrrzZWQ8TNWzRwl6Ezo5jTw0q0gjI4fkOmQ8CiTKqX4IXx4",
+          "places/ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww/photos/AWCwydjay67No1_pD6iG9L7DL5JFzePuJCdedRO7USPxl7g6Pvi58b3dovvbcEQ-U1vEv8jIA2UWKQuVFFDPsoevVNvFoU_MIZMC0IGXosV7IfwKXKXYDMPcz7HAnKW703ENxkU3eCgJANYy6Xpc2t188U73ioU85No2jUgXbKOKOT63tJxiDzkJ1BybyphJyLjsrcZjweXm2FyiyqnXUjOP-HWaBiXeleQVLQYSs9UXeYNevSDmn4Cv91KuWf80a78YVEG-enaRYHZPJ5msmtcKupT0NEeNZG5qDC1uJS7dPTXzyaTeSEzqqzlWmsTnfM6TQm4c3zX9B0oC47ykHqWADQmgYgeB14ILHXwyx53vocIneRpZdMS00fdO9lqwybQzAySllUFKhbR5o13LisA59uweR5VCYT_EA5C0PEXSsShtoA",
+          "places/ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww/photos/AWCwydhxQ-bvpF9Tygg-GlxZU9rr7vrlh4h4xd_z1gkq-TJAT2X1F0ISQ5-rTZNfYGmJ9gRAnLN2l9PoXTL16E4BOBKQgJxsZIqKvPKnFsLyjhAJ-JI162ink8N4fvCnvJYv99Aix-VZbU17UAoC5jWOXYpiWDZjxG0hR-L3XXQ-PXrP5UlZ4jQ_5Aok6cWsx9IRKptlOdfCCRqHtlzOJyI7Vxf_5Elw_uDx50lkr3g7dlbSVLXBe2jt8FOBGx_DdIB_CyyUUCYks8UzW7dcoZau2dfJjIgqwddfcRL_eOzffMbXd2a9ZfL_9PSU5qWxwjY9rIgrUaUG2dhT-6py4IV3FvSx3hmobMs2dVWGMnCDuvNJ4OgCqrJFWUIcknKDVv5JgLfZ_zHwWQ8lgelhMz0SsqL7lqsLZl_ISmSEi4pRpAJ5F50VN3EEvFsjOSlLPE_N",
+          "places/ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww/photos/AWCwydgRnlcHu6r_kk9HYFvVO7_5EyhcW_3lEwqxBuhXsn5XoKHYw1NB2Pn3VPOdNh-ROw2fFf_NTeq9s7IKBehAB62iZUxp4bE7pQ_NMO6ixL5vPdtjZfaNW4WAvjgT4V3RKV54vtrwWF-g0-SM47ut9ITpA4GA90epkQRL3Iml9huTVInV4V70GZXCMpl7-aQlyRsYxup7XGpoAkKClk_Owca3MUEfZA3WreNfopjrEZz_bknTd1Z20VVYyVjSf9KWw_nvigFn4zqKWjoQbUiPyHR9m_FcEvTgsokW-77d1uHHllQzTQp4Fyv0gO1KO3TmcrRJBVei2Meuf7Cu6ZC-ukJY-DekgDNmgfZo5odiB1Uo-AsQ6Cpufyxw5a1FDvogCFMaHmro59rMxKRIF4sxCYkfrMfNgQ-lOkDY6OH-rYGrcw",
+          "places/ChIJ7Vf6WNl_tzsR4i35Gw1E8Ww/photos/AWCwydhtPkSHHa3NBMMzjGtOyNSYQwVZTUJVUeWdj2QSe3q1-6NDOtuB8tDtnp32G9yLHNqCACN9Cs2JemBYydzfAosQssFQKzhMCzrNGiSPcR6oswybT1LiHx-td5mghg7nOusTuN2SMpckXdu6-Bd-epPJ0VgmC6RZYQtaeAJbkA5kYtm5LWAQoV97m2qbMkVn1BI9UXBmVY-0HvtVKCpYTBwCSUmHT704Aq-kugmMEJ77NAX_vo64W1q0RQF2CYkUW4zw2Q1r86DZ_9E38dY5dkO5XxG7pGIgk1gw_Ec0uj77AbjNP82jSbOtux6-Y9Cd_ti6ktAWcp2-xLZyufDdEqS6Jt8_kjMunCmGNc9xzX9cs0lLJFlU_3Kv3q9VKD0Iv1lB_11im6v3qPYtBQJPH5ig_YzcynlXm2pBRviyE0PV2A"
+        ],
+        "__at__": 1786806560.707228,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Hampi is one of the most fascinating heritage destinations I have ever visited. Every corner reflects the rich history, culture, and architectural brilliance of the Vijayanagara Empire. The traditions followed by the local people add authenticity to the experience and make the place feel alive rathe",
+            "author": "Rutik Govekar"
+          },
+          {
+            "rating": 5,
+            "text": "Visited Hampi Group of Monuments today. Explored Virupaksha Temple, Lotus Mahal, Elephant Stables and many other historical places. The architecture, stone carvings, and the overall atmosphere were amazing. It feels like travelling back in time and experiencing the glory of the Vijayanagara Empire. ",
+            "author": "Rohit Sharma"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Hampi was a memorable experience for me. This is the mythical city of Kishkindha from the Ramayana Era. It also contains the ruins of the Vijayanagar Empire. Situated on the bank of the mighty Tungabhadra, the breathtaking monuments in the midst of nature are truly spectacular. The seamless",
+            "author": "Eureka Parmar"
+          },
+          {
+            "rating": 5,
+            "text": "Hampi, a UNESCO World Heritage site in Karnataka, India, stands as the skeletal remains of the once-mighty Vijayanagara Empire. Sprawling over 4,100 hectares of a surreal, boulder-strewn landscape along the banks of the Tungabhadra River, it is often described as the world's largest open-air museum.",
+            "author": "Brajnandan Rai"
+          },
+          {
+            "rating": 5,
+            "text": "had the privilege of visiting Hampi, and it was truly an experience of a lifetime. This ancient city, with its stunning architecture and rich history, left me in awe. As I wandered through the ruins, I felt like I was stepping back in time, surrounded by the remnants of the Vijayanagara Empire.\n\nThe",
+            "author": "Pramod Ladagi"
+          }
+        ]
+      },
+      "mango tree restaurant|hampi": {
+        "place_id": "ChIJVXMaNtl_tzsRtU8y5T6UtQo",
+        "name": "MANGO TREE RESTAURANT",
+        "address": "Old Busstand, behind sathyama Temple, Kamalapura, Karnataka 583221, India",
+        "rating": 4.3,
+        "review_count": 9270,
+        "price_level": null,
+        "website": "https://m.facebook.com/pages/Mango-Tree-Hampi/402252199854549",
+        "editorial_summary": "Lights hang low over the tables of this funky eclectic dining room for thalis & Indian dishes.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 9:30 PM",
+          "Tuesday: 8:00 AM – 9:30 PM",
+          "Wednesday: 8:00 AM – 9:30 PM",
+          "Thursday: 8:00 AM – 9:30 PM",
+          "Friday: 8:00 AM – 9:30 PM",
+          "Saturday: 8:00 AM – 9:20 PM",
+          "Sunday: 8:00 AM – 9:20 PM"
+        ],
+        "lat": 15.3021513,
+        "lng": 76.47252019999999,
+        "photo_refs": [
+          "places/ChIJVXMaNtl_tzsRtU8y5T6UtQo/photos/AWCwydgKwRk4yEtC2Zt3FLMqs8ubnvBnfftKczAqd6-hJqnw7T1_PX3LcfKjF4AWbEKBdCl8SP_DlYK-m8JSdwoKDjIrZVMS8RT1skyzIi84PxhzC9ZS0kaK5d4_s_cpZclFwBZxARLaaYAdbwSdgrqMt2ixwAZXkY_tKtp9O9HnzVHZ-omfPEgjxPGKewmGrqrFOQ0sPkThUuDICssFydnur5thEZFPsGV3lpNUCEV5x9fkVvNnJ9XGwJuIYQmeKUHfCyzBhy96O16ZPQrZTG4JAS6ATuPFLF-qnztmRhKip6eLRg-P-s3eRBtm2RfZLGI3cLWShRO-3B59dC3ThTZU5OZrxq37w0G86w6I1V-2gDVWxpl1GRnJX91x9veueki7lqkGo1FztmswibhfwBKNlhSMqCscYonaOhOIPxHrhp0",
+          "places/ChIJVXMaNtl_tzsRtU8y5T6UtQo/photos/AWCwydiOM9-SXDR6a9MTeIEmfER1FwZIT6i4zFgCinJ2SP2VyXyubCCr-x4zTrpdUj4T_4TSVyUqlVmBxV51zP5zG1bTsKLTQMFTyp8k_OlMNllMDoZOjdd7naMbaW1IOWkmQYclpQ_2Zb16jOTi_GbHxMeUF66l8xCL2isv57a7JiP0Y8l_jg7JKS23w9G78AthTT15LRSZD9Pl_WRhUjCB9ohQkNmMCB7KJvWnKv8UgAfJ-y3jtMTZal87zJSwwhadvO2jkopEA7Sw2IG4qwffu-8Lwdax-QLlkY6-FadKWBUhXJ98hNHWvS9FpOezpgel3RieTT6oiEk9fdJpu5Sr7RktDM_uAepcvafa2fLSfNvxndCz9oCNCIUJNC6BpjX4onF6fHSXmdAkE94xHx3GjMK95mk-cNv7HkJkshcHcXKwTw",
+          "places/ChIJVXMaNtl_tzsRtU8y5T6UtQo/photos/AWCwydgCMslTB4_3p_gWUXFMZGaKX1BoL8PeAB4FrlHzZL1uyDk3oedGtP6BHK8rmIMem91EeXFrwfkGg75EGheNnP0u3riE0ANlDMfAHVEufZqB-UBlWcVP9KU6KRUNsiWRcWr6xcRR8w4IaS1lw8XGDa64DBMDgF6MKQ2Re5rrjYtbsaOrQ8GbtNOJyQx2h54MYeN_PpKZzlc1cmpgFsZVRsBVBCgTAPY8UPY_ajoyircyRW2WBVicWaUX_S5iiocwEFPEHKPp_TdEDPx0pokTc6hM2nG0m_k1dlinHIBmDdXKstUvmkf02OvvDY8igOWlhZjwscl0mGYE01WYD9hhYS_D0VG44wpKI-xi-37fKV1b02x31cH_sblFziu61I_O_LYGn6P4OLrtf3mR0xqxV41zD-dTzivmiyrQJoOgYBcWQQ47IKd4gI3Xw-eu1TY1",
+          "places/ChIJVXMaNtl_tzsRtU8y5T6UtQo/photos/AWCwydjb8ZBW_15C6BvKAadpwYdeMxaL_I_EnB0QPpbJhMp3WcDpRwEC7D9xMFXSG0KOKQN4rwXztqcelmuz7CbTIBgviNhK23zOCzBI8psNp2crcLk076g9Sy7-4RNmBJwVLINFtKP69yjc0TmKz6gFXPmjNSzOP0K0BGLsOJqVn9aQMhU0hXmXnwuTXcdSBZU_rc9T3q8T1p2OouStyXZ3M3DO5jBTINAeibKuW_P5b5Za4KbFyDvTmzwAlmrlN4RQzHAsoh-VdtC7j9R_sTV_T4EjD3OVN_T6p4l-hQnuiYlZC_aSLX9nBlEkQK6gS0_brS2mzNumHR_kWYyJWIayYj74BMBVQoG1x-Bjx2cqcs3VRM12DjsGfLnZyo4LRYsiCn_CqT2Mv7K1F-7i0QsPSkfPvzArwobWuxJOO_WbHk3Qq6z1HUCdOyVODi4N_f7C",
+          "places/ChIJVXMaNtl_tzsRtU8y5T6UtQo/photos/AWCwydgjF3JdUXBvCJM71cLW2nDu6pqlXoiEO5WGb6hRzY72_APvXR_zzjFxh7S7qksHy_wjFHyk43yj4ovl9xaoSvc_kepzDoBF_YSM3jhC7i1w7PO13yZhQfyP7YnRpqg5yhUCYnVl_EDldyuTYy16GqvECNd09kY4SLNexzKiIEi4wQ5yLUUqql2c8hqFOBgcWbmH8Vzym5NIyYbw_zsOb0CKvdCCUxudKzOcItXp5Ttf5cLjxYXBon9W2HQldiYAByvpgZ3kFUMfCvsFWt3JV99ypbNEZzC3Y4tYOB_AH9nJVQwvifIVymG7-UvLvsU3pinkKdEjb1FItUv2yzk8ddLgdsMiWbZjoSdus1qyLwY-qC9DRS0FfRiTgWljwz5gbEbaQxObK5EAFbc9J-0F4yiqn_14j0ojnDhv6yzAQlCRcU961K0IInLcitO6BA",
+          "places/ChIJVXMaNtl_tzsRtU8y5T6UtQo/photos/AWCwydh0kRAXatfcTvkQm4eoD0Un_B3MPtrcc3duu4mviy9VFC9wbq48pgZH8KxVunuafCZirKCnVqQxrhcCQkGLe19nb9mvgc6pEJ80uDCHq0mMuiSpwDVnI37xfCcldQQn7qEo7ISXjGpdQA_7iFJx2j4AW3nFjRbc5E6sY3IxJTKaoemenCr4ECjyGuADkZY0i76QvBTBs_QIVaVtOT-SwzHjvjH7Ho12xkf8bPeKAO9sgAawyv2L0wnNukE5yjjK0tTI5LNDSGhJjsYzR3FNNH1A4kiiaol2LX6bD30bMwuo1mwFIKUzOhD5wGJMbjCoZCXkcWsycvq084HFutnvSWeA4cTZywCkI2SUyuGAjmJcnqh6QWzF-aqpbcu39ogJCNAcCKFEkaOazeBWTMXAh3WWBrBsD_s0hUkg8SsOUARsDsEP",
+          "places/ChIJVXMaNtl_tzsRtU8y5T6UtQo/photos/AWCwydh2xBqyHf0Suqboe_EwZy823KxvpiAigW5LDlOQGVNWlQjUhgIaLluMPei0jWPFXsodlMc3HZ1KEUyckaOCsCBLqDtUG3xajSDtnCqLnFKV8W4HY14BpkmUTJv4jV_TrHMu68zhdrWxHgY0YczQCFwB2prwd0dBeWpgc2f-ErqAUEED1u16n8xVe1VJ61pahB-6eDmxwwArf9mzOLIByx88-9qhyUCIQtHOJIeEMUsrt9gKd97aOApjpEstJPp-4oIyEgALBG1EkYLRtWPoLtyFMHigtc4tepq5GUArQA-_h8XVd3PvnUtBOvJ5-8_OYILgUnt3Q_iyPqaXXjCWEIG71bMol3tTW5LYtkcf-4QULl2j6tqq0rbF7oYFO1NFQwtgxklMpGxAWWPTm-xmBT8nbttNOzyu049r2vUrMmcW-Du2PcmfLHKOTJVvuIQr",
+          "places/ChIJVXMaNtl_tzsRtU8y5T6UtQo/photos/AWCwydiB7mLhtiuRDmXeyxELtJHJw07zy2C7M9cirKnCDHKVDkTzSmVnfFDmgLpyWVGwAX1SoDgNkItc5YBAbT1WD3qEWOz_GIL5ncXro3aoLg4TnS1IUKWtW2wmzCXwImreSJRnGzBxHhaOFtFn0J9lDz4BKBxMoaMdyn5JZ5yYPrRo-fdqH1mA5LcyQ7LmLzB7ZVjfouFadZrjfTkkrh7xfW34wFMXM4gbygP6OaoHesf1byLtiRFE8WQkiDCLX2IM50q10ZehZxqyMFO9xezQoxYttfLjFkIR-GHnw_gPW3s-lJKxGEpOS17rrKccw3cEi9bGN7hEM0s3GCkhvYT2B-cjBfPHccFTqY7PA4CI6wt-RJXtIHKOyRNL2FRuwdOA_BrgOEavbezRgCaVXBD73Tt3SGVGksuQqQ_HrKku185pfq0",
+          "places/ChIJVXMaNtl_tzsRtU8y5T6UtQo/photos/AWCwydi4a4L8VAGTbaViVCV2OukTsikp4Fdl8K8VUoqr6tP5HfoziGJYs5HWQPYvZa4eHne3Sr76Nt3dpwR_yLg17mArZU5APoz0QK0yFuoQGEKZVwdkj_LVPJGWgHmDrwJv0LfJP8KLWW2c0KWlfrW_jwtZTupn-KnUgSFKVui1VlRUacU661SL7Sog5-b-zd3hja1LXOXvuPIrD4IlqIetGH6CaTt6HOa86kKc5QtXZe2Qva7tlLbjFiEII2j-Hkxzk7k9CoLwHzJ_P7zBUWVLZx4brYIBplaSYIkhAHyGgSMyVlVnze9B9wZ4si9k-QShtxrAkpLkZTRNY9QBjU5al_WUnK7a5qWPEZnT64VaisN6n-90AJKwIRGUc-rNvtnfedF-noKq40Yki0p8Tat99k47Jsq0ZnzgHjYOy7i2X-OQsA19G9_ZVECNuEu2QSfS",
+          "places/ChIJVXMaNtl_tzsRtU8y5T6UtQo/photos/AWCwydgP9Ke6Op9XSe2Jd_6Pwx7QGmw8FZORo96LiB28_LaUNTW6gZdIDczLhVq-0fqQ5NLuys0BFQDg56vKzM8Apjn9UbIoDV1JhhqEhY-3o_-xt5mIKL7Bz7yEq4GrYplr1yHv-em6laBUVxsCnIApNsnherh-kxPJOOYuBaDACs2VHAIideyReu3ronpEL7XlKxz_MoEG1YMtGNW083C0kY0nikBiT5YD-0BiqKINKgIX_Ovj-GUBPrWe7tO2dGyLPPfpYIsH6BuauctVS9U0gdWVQwR9Kqw8Dj_l4NfR-BBbQQijAFpSninKrDkGSZ4SKT6_PQxziqTtPwLgtfqRnBdlit3eUIOG89NvzVcEZTHpK6dhMr23GbqceTfs0gqB2ysj7gaEuaoDNLbXq4MkK9SJ83YOq30hPFy8oqZffYQfMcoe"
+        ],
+        "__at__": 1786806561.1341782,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Visited Mango Tree Restaurant, Hampi today and had a great experience. I ordered the South Indian thali, and it was really tasty and satisfying. The thali included roti, rice, 4–5 varieties of sabji, papad, and other items — everything was fresh and well prepared. The ambience is also very good and ",
+            "author": "Rohit Sharma"
+          },
+          {
+            "rating": 3,
+            "text": "The ambience and service are good, but their famous South Indian meals are just average, if not below average. The prices are also too high for the quality of food and service.\n\nJust a heads up: if you want to sit on the mats or floor, you’ll need to remove your shoes. For the table option, it’s not",
+            "author": "Trustworthy Local Guide"
+          },
+          {
+            "rating": 5,
+            "text": "Recently visited Mango Tree Restaurant for lunch, and the overall experience was really good. We tried Mushroom, Kofta, and Paneer Masala — all the dishes were super tasty and full of flavor. The food quality and taste were excellent, and the overall meal was satisfying.\n\nOnly one thing disappointed",
+            "author": "Ankush Patil"
+          },
+          {
+            "rating": 3,
+            "text": "Decent food, but heavily overhyped and crowded\n​Mango Tree is easily one of the most talked-about places in Hampi, but in my experience, it’s quite overhyped. Because Hampi lacks large, proper dining options, this place gets massive crowds. During peak hours, expect a waiting time of around 40 to 50",
+            "author": "Pankaj Adhage"
+          },
+          {
+            "rating": 4,
+            "text": "One of the most popular places to eat in Hampi, and it lives up to the hype. The atmosphere is charming, the vegetarian food is tasty, and the service is friendly. It can get busy, but the overall experience makes it a great stop for a relaxed meal.",
+            "author": "Rajath"
+          }
+        ]
+      },
+      "royal enclosure|hampi": {
+        "place_id": "ChIJdcSJTjJ-tzsRZ2-u-V5-F74",
+        "name": "Royal Palace",
+        "address": "The Great Platform, Kamalapura, Karnataka 583221, India",
+        "rating": 4.6,
+        "review_count": 6721,
+        "price_level": null,
+        "website": "http://www.karnatakatourism.org/",
+        "editorial_summary": "Historic site with remnants of the royal complex where the king of the Vijayanagara empire lived.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 6:00 AM – 6:00 PM",
+          "Tuesday: 6:00 AM – 6:00 PM",
+          "Wednesday: 6:00 AM – 6:00 PM",
+          "Thursday: 6:00 AM – 6:00 PM",
+          "Friday: 6:00 AM – 6:00 PM",
+          "Saturday: 6:00 AM – 6:00 PM",
+          "Sunday: 6:00 AM – 6:00 PM"
+        ],
+        "lat": 15.3156384,
+        "lng": 76.4700455,
+        "photo_refs": [
+          "places/ChIJdcSJTjJ-tzsRZ2-u-V5-F74/photos/AWCwydin8WjZLSrYUfpO7GUUXQ13YayiemWy6RqUS2Ot4-4RNiyPhikxPL2DbSycK6xCiciNqX4BnYML12juM0zj3AfzFqOA91WuiOlZKHh87a_ExYlbIkUcaRpbM4L87FKtLJcF_CMB-6NdPzjfOngxYfxsfGGDI5HQ6z7XV_xdkqo_1yAi34dLOAZj7yQvJuEYI6BK-XpaLMNL3L5HJe5I68DgHt1EO8ExhFcLTilTkD4w29_qVlPSlSrNotesWE3_dILIi6hIpWZSR3URG3Yq5H5d-y9kw3o17uw3lU931Y-DEgdpR5-Jtj_dKHlZRo2wv94Wbl_7jNoV9QwEBr0HGNzg1pc3baQf26SYqsOr14WgNQIVzHEJVsd0XQpedTRHCvwyWP7ZveYUkfbFFMTID2HgMJJFdHrGLL1XgFz3TVRR9xQ",
+          "places/ChIJdcSJTjJ-tzsRZ2-u-V5-F74/photos/AWCwydhQ-y4AMIjDiefRFD3Vjn2isRZe3gmYawmqNLN4vIBS939AeNCxG6yjaX5x__i46tmNnITDUhEkCM6zr4bCG8iYkFuJhsWJnvR1eidQnA_wDoZb-7u7ngY00rDwzer15Hw3o0BYyaBX89QAZajWz_1wYdEjy05zJOtnOZizwvgtNs3_8L99fJkvEmrlwnRGlAE2MAFbo0h2aUPmaVGS41JqqOx-jVbFzZTMyMdRJANii91jJ0wYGcJXnV0phawNQlZF7nbXIhwM_tQDT1nBLEPYyV_voTQn6gyVMAWCOd56SZIaqbpiK2ykTz44ovYxCNrj7IsfEtF63Ic7rhK5EC-Gbtj6UjhEbEqQOCOSaLDT7x16-VrrJaPVNeoZVMzaSLOELKF4TQKCa4gsz-1zvGYDY-b2_W6uABFJsgFWAmL57A",
+          "places/ChIJdcSJTjJ-tzsRZ2-u-V5-F74/photos/AWCwydg4K9WfxovYYGG8YHtgx9x8bFz2YixUa-2F2WK-EnQ00ew_Wli0evHm2yvruhL_uKs-VQlPlWtDHJ8foCErJMCKHobfUAyJJACgrmHb70OhRz8yYeKwt7X89GYUjqdtNyN3MSRgce0T4SJB0pjnVOuSUUY7FN0lpdssiSiuXDPNJ1gMTdtgzpuI-9h-ROUIB-b93BjGap9L-P8vyHaR_DKXyu6wZerR1eQPBUHP5eRus6tchArUlHFydxzPFgTm56nRTkf8OB7taAbDh_xxVCouvGymWHbj5FlG0k9HuA11W4ZyM6iUxDYwsgozLa1yqylIcNJMP2P9KqGqyla1L-AcXOI8n2AG4w9sBGouHWMcGdFb_FXXb2JyvlS_HTfFgGBn6Gmeh4ZTjfRW7VXCX1eXBn8Cdj1fDakTc4ihZtBBkUc",
+          "places/ChIJdcSJTjJ-tzsRZ2-u-V5-F74/photos/AWCwydjR44ZtHiPzDNR-yw4AKMxdTiJ0XGCTtVI4Zp5R-N-dYfzOzO9YchVorLUydslew_sDbwHsnOIL0gwcSqh9vzB4eD-XXG2o5lf9q3NLJTl2vmv9gO-KTWexVo17u3c2B2RCKYP23tBEnifTvbWZFsabKu7pyVGYjpx-XbFtNeisuoar-8Xro4AoXWZW-JFMd9KPGDQDnTZcKdgnhYJkEzazV1k764ADCdW7eZsWJFvwF8lDVaVmzaSqwwAk_jXTUyFGNqFUfd3aN4FT_pO1d70doNrd-Tj71WoZUImV26a_pWy4Jl485QZ69jUZjYs9Ln7P5cDZMtKF5qZQLXSvrGELouargWzQJ5g5ZZyuEByjbBttkEyqQphUnia85C72rspRA80yEUeTWiZeQOG6iOlL6WgXy5AQNwKtZeH-7gKftQ",
+          "places/ChIJdcSJTjJ-tzsRZ2-u-V5-F74/photos/AWCwydhnn6fgP3VEXuiWm_EmE30oPbidlSOqyqlSVB5D38ALTslYJ68TI3EG0TmrEQsJxAc9BTQ2J1S_E9VSogPUrA98k_qAE5LpT8stbXZyfW57ntisoBH6PmXYaIVeQknWXAJERz1068VjQA4Iz7Qhgw-QVs7NB6kjPPLm89lIStMwtmLL7EUQ7eFNHwxlpWT3kVHcyLi13ZV4iSMID_dQeLE4n0yaKwxW37KRPDiatJKS8PCS8NUF_FIhmyGnoSBZ79NXitMh0yl5iPECicFtH8P4dhRUK8l-icI0ZFLk5sjLxehbyfJeTAQKIK9daWniAAcI0vrTSj8GpHdvW5LDSJOJE1Dv8Jl-PxtvLmB6WvFmlvDpgObaky9lM56rW1O3nx_en8NeMCGtMYF5Ds9DGwHbEWx58XcC1_mJbRXLjvImuY2xs26GUUsbjleuzw",
+          "places/ChIJdcSJTjJ-tzsRZ2-u-V5-F74/photos/AWCwydhHJuJqep1cIQdxY5z1vBYWp06qA13_wrl3FsmJAN-3et1tqM5tbv6m8ZYA1HFgGpy8fMtrNlTUL7prx6AfEgE1uYVSla_JI8Y6PCAhTjnlp5P9dqi6VplW5rA3a5MYFr5SsJeml9NPaqceQ4JcEEwIsug4UaYMglVjRJ9fr4FKW5CgDeEdpKIBrU9Go1qHon2DV_1yeXdLphpdL_7zv4YXXwf02AAQFCP5Z2Agu7ZqRaq_fhQcDFGprHvn5V4iSEnXD5F9t0-_cJycAGZxEyLJMj7VmNZSjr_B58FUy_-JaJsPuKR5weeMvO-IeqFZlKyCoa6HDHzd1EZIUsELexfNr9G_cQiae78OytrMX1a438z6vubAYin-dxLzstqK5FbXAhLXlA1L98BIyseIizcZHx124HI0fxcErnORs7uzeWVE",
+          "places/ChIJdcSJTjJ-tzsRZ2-u-V5-F74/photos/AWCwydgzdSbXWkXvmTk-WUln17wfVMHHT94OEtlhWoqdoAeV55nOv59rnno1dYQqtdi_DAwEMEsqaS0zs0aOniu6gMkOkjybuNLBUUWkFQKej54peFSJXLIVm8PORFZr-IjsOxNZDD24nHUFr9gF10ndApzn-nHARTHFT6bByYcTmJjxpjkPiSyJ_sajGpmld-XFRQVl3ma8GkIQF84k3io2QaHyj_3gd8c7hBsDeCpPRBGWxRCvzapApk9Cm7WWqh81MBZscSgNOfuQ_f0RTs8M-Ak-6qRERyAihNXHnVHiVIfWD6A3Bt6CkEG03Km81jrGyKG-N89cgXWUbyc4zPu847e8H1p5OdrtWdIqgFPJQnIZhTX6dAr5E6j_8xG9_f_M7u28pqoo0ploDnHYw_1VXQFkeoWVigLZrlacWGBj6BI1lg",
+          "places/ChIJdcSJTjJ-tzsRZ2-u-V5-F74/photos/AWCwydjdsN2neoUyOCRF4yOHeqoDzmptqEUvjdIMlAokOfjqeenvHUDJ-a6lrrVQCQ84iYV484TBZ29DAFP9xO1Zs4A2owf-G5fWOzWd5rik4C2hTEQ2CDb_OWq-V6SLdAYyNfQLeuJg_J6X6h5ikwrGR09BWzNyypYpnKuPl0jiycVG1heGBsX_GnbX0JUjYPm1J9EYGwaNu6IiJoKznEfr1z_0r4OWycr2vUyyn7Orw5LDscN-6vA9MHP_OB0wjR_-oEFTlEK1UPJCEj2gSYOr95_TjUD3dPUUqHmvx2x17dgcBzEmA7FJarAUqwJ1x-sJHM22nHqcZv5GO9Qebb-n-zRm-09TLb-HSUITRKmLsJ5amLOsTo1ELs2jLeJwd9jGbUFkFdaE5fCLjK_35847_0fxMIsc90EQRRWY1PWhqbhRbw",
+          "places/ChIJdcSJTjJ-tzsRZ2-u-V5-F74/photos/AWCwydi8pGNkZfyroq9afjoxN4menih6HpGluANOQHO0HU7oOw9kvW2NnmkCa_VkQRs2WKSZhAsFC1huD0ZW_5-g5OI7TQgNBYo2hbHqcyBsf-ne6zSHO6AcY7ZmXYs1YfpsQQurIcovDKW-6D8SjtRUf40vTVPkU9src3P-WdaFsjzi79YHsie1myZoTS1n45gfhROfDQf8MPHquQVmWJ9cz5Ft4UItKWRdAhxJ0F1zf00I8YOSUpH_oJ43xo_gDwZDCO9GhrIzf0A5a3p_dIv_UMf8l0WNV7QGpc-lW5DWdFsdZVfO9YB-RikGrBIOHjYS8ZHMCDo-q5uzALfyvtEzF8Shskq5CnSs-Eaigs_mqtEldzy81SMyFTfa2jBLKNSrE-3COAVDYmqx46iQVKy89ut3evCJJ01Q1NkZroekzzlg52F5FPuTRrex_mefpQZF",
+          "places/ChIJdcSJTjJ-tzsRZ2-u-V5-F74/photos/AWCwydgWNTPV27BhhbTcpa2FssWat9W_R2APDUXnN5BUoyd9zb-PN41-jtRdredB0kHTYT3tuAWCp7XWgX0zK7mFwxkJ3cZ15Lj8x3YioqYkGZcWNdQBw9rOwPOWcszcFyDUOXXmXQuNF2XcPW7uXknhNWJ8Mf64ElduwhhfpBmxnMp-jThY-UCWbh9iSj2o0jIsS_4rxHY1_NKv7yzSErlc1USOYABiy-RW8gn-j3MPahUuw01iGwhH2hnfoJ7Xnmt8KO2XyXEYlQzFBKtpYvjsjRBrbmSt_d6H2pPhB9oNAz8VVkmrbgogDp2Ka80qBQce1FBUofvdP87ufOESuthHndrNyVQX3GYYEUdzCogDIMd8WF-yG6Ewrcg37j8D4HIun4fXzM6JxxiRtZvlO1uChvfjfhkkYzUHPNYwkSOS7r5Z-OjC"
+        ],
+        "__at__": 1786806561.509978,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The Royal Palace area in Hampi is a fascinating place that gives you a glimpse into the grandeur of the Vijayanagara Empire. Walking through the ancient ruins, open courtyards, and historical structures makes you appreciate the rich heritage and architecture of this UNESCO World Heritage Site. The p",
+            "author": "Aditya Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "The Royal Palace in Hampi is a remarkable historical site that reflects the grandeur of the Vijayanagara Empire. Although only the foundations and ruins remain today, the scale of the palace gives a fascinating glimpse into the royal lifestyle and magnificent architecture of the past.\n\nWalking throu",
+            "author": "Bharath Gajavelly"
+          },
+          {
+            "rating": 5,
+            "text": "Echoes of an Empire\n\nThe Royal Palace (Royal Enclosure) at Vijayanagara is a site that transports you back to the grandeur of a lost empire. Though only the stone foundations and ruins remain, the scale and layout of the complex are awe‑inspiring. Walking through the zones, pathways, and platforms, ",
+            "author": "Kpmmnr"
+          },
+          {
+            "rating": 5,
+            "text": "What a magnificent place! The Royal Palace in Hampi is unlike any other historical site I’ve visited. Every structure and archway reflects the brilliance of ancient engineering and artistry. It’s a great place to wander, learn, and take incredible photos. We took a local guide and it made the storie",
+            "author": "Amarnadh Patoju"
+          },
+          {
+            "rating": 5,
+            "text": "The Royal Palace complex in Hampi offers a fascinating glimpse into the grandeur of the mighty Vijayanagara Empire. Although the original palace structures have largely vanished, the extensive foundations, platforms, and archaeological remains reveal the scale and sophistication of the royal capital",
+            "author": "Mahesh"
+          }
+        ]
+      },
+      "lotus mahal|hampi": {
+        "place_id": "ChIJO0oL28x_tzsRAUU0ER7HXiY",
+        "name": "Lotus Mahal",
+        "address": "8FCC+4G8, SH 131, Hampi, Kamalapura, Karnataka 583221, India",
+        "rating": 4.6,
+        "review_count": 10715,
+        "price_level": null,
+        "website": "http://www.karnatakatourism.org/",
+        "editorial_summary": "Ancient stone palace structure with tranquil gardens, arches & elaborate carvings.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 6:00 PM",
+          "Tuesday: 8:00 AM – 6:00 PM",
+          "Wednesday: 8:00 AM – 6:00 PM",
+          "Thursday: 8:00 AM – 6:00 PM",
+          "Friday: 8:00 AM – 6:00 PM",
+          "Saturday: 8:00 AM – 6:00 PM",
+          "Sunday: 8:00 AM – 6:00 PM"
+        ],
+        "lat": 15.3202851,
+        "lng": 76.47132429999999,
+        "photo_refs": [
+          "places/ChIJO0oL28x_tzsRAUU0ER7HXiY/photos/AWCwydi9A9AwMoSkSUXgrYnlvkjYiQo5qZOH_Ahic_GDVpIsZvxVVetUin0eG7wjLlwKRJgvoHoMh4tn6PEe2is-bk8WzujnGE_kiiuj4aZE7KOvU7JYoG_PAPWtnHDMookiAmJC1QGnqfNG8DOkqNlEBbPovhO1yCkgyIOHva-SZoveZBcbKQ95q_o3w_tZ55rZTVYbiOeRIbXU_8bMTGu2DVmY9QBAlO_9_qGG_xeNlUdi57GutwtB6jviX7MMggRsEiOxLALLTRCyeJCdU9poTWNfC_zLnqwinuNRFSRBYBinvHr8ZcvR9XKYbkaBdKkDGbmtnEuxnRCZODDZZYSu8jCrjrpRu7ecd-PFMyoDlRfI7T_3rjOwrgACibwd3G5ZPO3tdpdlTfM1M4bIH4OhPlzJlTBp2LpgaBrDJ9qIq3aI2w",
+          "places/ChIJO0oL28x_tzsRAUU0ER7HXiY/photos/AWCwydiwkuwnMnOkLU5KkcrO9XSQeqxATH1375sQgXQLHVumiZMOjEL5wRn0brMJqpaVTZrUVAc_RROgLdIb89eASZuWnEWX6QlMJielaLWmeHT4BId8TNngd8r1AfzvSg0GyUxKxTErLokleW3BRN9TQiiqYBCfWfF5gV5qtVUKkw3cqBFaY9zGcx8Cv8fdJ6kGv2s2lZ8mWo7U_hRKnGXWylFbwTFzQCEEtnNQyLLpR6hDLRqh3TcUhMvfnPxK2pvmVwrCHZAd9y4iZxvXO6JFYhVHZJMxFDXT91IXB0vahDzGVlGvwAAcA0UOFKyh197oAtwRjBeYSoSo90dwQXhewZwRr9lxqPXcyxMZbN_QjQOOMCDwOJN9xmplWTXR5khr5LfVKecuFoC0A3YTvklqBtDrFwXWlv8K0xSXctz8BKssRA",
+          "places/ChIJO0oL28x_tzsRAUU0ER7HXiY/photos/AWCwydj4iKuONeS2_RcQ46eoVQuWdVN649VqzpHl57a9d4QvFOkHQ6hcAE4ctqghH37mvIveXLX3Oi8tj9HFQR3ST_vtZ-f0lrkqfgW-390tm_y2Q6wsIVxjQsQupBhhZyks5FDyuVXswu-qFmkVPpq1c7ldDxEfvXVg344s0Ji8anLypmmmD8UCF4R4gj856U7Eyac0WsnW1B1F3edYPzzO-n0UopIGFZUGSnXi84ckqEezk8waqSd9HRaR4fO2zamAHv5NwSKk7thxGVT_lRBjtUqnVbecnDSWDBpdQZMVMVFBB18YKtS57RzUNiInjAhuh1ARp4ZwsrZcY5sa4yKIEYCf1wMVo6vQHYyh5suTejK5BQ6-sJuiTMQCW3Gk33J9MPGecI5TW9vJOQ8ZRF-o9gHOULbLSKFvnpJEqIKACWpCZg",
+          "places/ChIJO0oL28x_tzsRAUU0ER7HXiY/photos/AWCwydjH9MaAk8n7ArzdBcG0ssc5J-5uQB2xL4z4OAMz8vPUiPugqnvqDgeAwPigMEiiNbguLF-6UbifaOgvr1U8-AVpYNttxYoXUBHmSqCG1rqu22Kb086_ISuIFDlpeBiAjFP8d1hBdfSg2EraDJRodpwZnNMBR-ijgkwHIT2gIj6Zisj-ixZ1JbShZ3v9PuROc_5KpzbHDIV8oVW9g7VnT2Hpx4uLzpNGZcMsq3WoI8YpRe-aZ1hWIABw2A90hiYmUC6ZGHMygxuZIufZKkkWp6j9zFl8RPxpBEgzuabrLqGX8kmO3dv0Z3LINcb2cGepFfsXlFfJL2Pyg4qEIJdeY6fG5iVq94ddlDRjOR95_J7FUqP_XdMjMJT56bpcahmkPAlFHniCPXKtm-DbYR-CAX10GQ1vAyO-803MOq0gqBo3_9nZ",
+          "places/ChIJO0oL28x_tzsRAUU0ER7HXiY/photos/AWCwydhOgn2R36jheiZASQD9h-HxwzY2qsgvs5DSPukgMIyUIB8ims99yY3bX6QN7hfl1uExMi_lbutlDIPcnjohQ9Kklzt_rLA8uS6azs3rsGwUpmIA-hC7NJ0tD9NITfNi343XSziGUztYf28WNAj5vPaTgzULsikDoa0g_YZpGxAH5QhhrzqTftJgunMa7jVuJcAVPsEmP7JWlt4W4I3JQFWioQ9ZA9bN-Kz1tYeIWRPl1BMjxvYQr3Jnz_Ik3LY0oxIMjbBaCEwbA-MAv7S1pT7SGZ0yipg5NTk-dLM_hUNfEpPn2bhuRsCdNL1mPem70Y6zbfsKRKDIzAQe_W2paJWrjh2hpJSpLlmNX6vI4lml2F-V2R_T3-rdlmmVw8nAsr59a8ojx7H7mQcguLAD0Tmt4bOy6kBNvibq-ZSlNAZG6q2N",
+          "places/ChIJO0oL28x_tzsRAUU0ER7HXiY/photos/AWCwydg_huClwtzCA0mXvZTkhPTrGhx1uzAJp3Z_ZC0ftp3v0gFIxEAB_YVX7oPHu_kbjBZAjeImZBroKpLdSG6d5QCM9M2tVnqgRaPxdK52eBJlGTYmXHRhmIrhHWTVYsSuZZ19P23Mf-DqHRMfbF3cRs2GY1O6ZKedB2ZPXcYcFf9NX7fFR7U0A4TP711CR7qVS9NQ19XcHXsxQBM_cUviiRX4GvBfCPr0E1ufe6q2CeveL7KUq2ub1oqujVHpzN3z4aplBksgYbA6B8uacGGfl68VEPxyzYdD_T4pgbN29mmATOJisyWtKRhy17bmsrvIMhRTrw2x8knv6YYKeRX63hjBoFOWLNwVkkDox-y8XMJ3iMBwfodGELW06E9iRxZJ4f3whmOUp2ip7RpTCQPat0ePJmKz9u9SUaBEaPeByixyox_c57J8-PCHNbY_zrQb",
+          "places/ChIJO0oL28x_tzsRAUU0ER7HXiY/photos/AWCwydgVvVhujGdtey0A_k8aMai7QiXi7eGm0D2PCkKkbaasRuwnxb8JqI-3nMVkP7ma86FxqdWUFPws4Vg-tDS50t4ihKZG9wYHe_b6IAbQ_d9dxKk4mI1P0TemSdnGLkN4mSyUPuGpvj3GwK-dFwbakVdv-cCs6_vFDR0lMlHjM5xNFEL107GHJiKKmmWKmYKkf9nQn4tlLZMH1QyJcNpUz7uRgrTp71ignHKmDbwhP_fL4YzQC5rb-0pMyPr7JeIA4gC_04_dpepUz1SZ3bYZsLXcqoq2Ng9TgEEthaLYDu6h30ixyY4tIogq33rYd84ZdNDkGZE2-CFe558oDrK4man8VbWCKS854gnewQb9lxMlUPyc1v3JYIvHgxL-MVG2fvlSHLtHIYolositIg46zRJkEy7gqzFfXoGZ0sORj0Ph2STeQYJTcPte_8Cy2Qnk",
+          "places/ChIJO0oL28x_tzsRAUU0ER7HXiY/photos/AWCwydj7V8o6KN3teqejP0mPDHymjH12rxy3TlXkd0AkESTuEGBmY1dh32XpwIETc4cGzzElBq4IKAa_lRPcS-wzsCCsjgiEt5Rtrj36BXo_Ol7OZMhaIJRN4pcvsbngNSlvsZJUYEsUw4zum0iLVe8dmdRkBV6AuTAe-mQSMXhJPvrzOtD1ykIym3U1tzLE1qGeJzXHqaX7Pj1hskVOWYDrV5LwW1k_Mn2eNQSGvzjyHK5wMF0MPWkOImIxhGQ9fkfZpXH6US9MOLSXn8iApl7Q1Py8IGmeXEJACso2SUCpTbFmCN_qcy89wIptgQzOuihsvSSemorRDHz8E0PaLQMvTOcHzSLGuB4at5aOAEmMsB9JhoONyRZUz1sX8EWrNmFKVmIrwb2_1JYVK61OCNH3K-NagvmAWUCZMbVYHXHsf_rPEKkZ",
+          "places/ChIJO0oL28x_tzsRAUU0ER7HXiY/photos/AWCwydhvqfTOxOD9OXbNGqLsz1yameD_TdGY732LfcSTdM3hNvqS0bLBsBaeTH3ZPSOsDx3PSNukc72H8MKbbz9LIylidE67me-N_ceZ24QtRCGsCfUj7UY3eMB9_-wTs9VNHqE4_dSRqZ3e8d6VXAz4sPOmWVC2ypvY83iUdftqtMrCaAVGXqeFm26H12dLV_J5l-2TqDGJruyOI-KkLUsWoEdSeP4Mt8BHDoheW5sXmBIKEC7XEyAZoucYPyqzi7N_wRF7NKixmJKV_JBxswWF_sySOhssYN1r7f2D2ghRWqkxQuCyEB-HJ5VDDHsarCCWOKuLuIMz2L9DZRcgLXxUFYtq4F3KSH3oDwL__gu4L82SBiXmb3HnnglmPI1urVX4ttR4zM1I3BIJ8LFKWZsMh2IPp79N7VanyJRzh8sVzSLKsw",
+          "places/ChIJO0oL28x_tzsRAUU0ER7HXiY/photos/AWCwydiXqmT2TIqGj1jwLHyBiZGY1Ik9SfyahmGB7QS3_FZQBZOIJLmKcxczSiskNTZhmVE613StCVInycxV3LG11DBnTwLsYn7yeJ-FN_s0qi57x_PBCXSWmssMpxdjuIJjRD1OA0D47Bu4pgz5mv1KqHuVWl7z3Bxv-Lgt2HFxWTqKiw6e99UVZyWVV4PZ8I_CzDaIAtqkhdBFcdWd_tKW0jFot5hb7uLTOgOph2hMPLcLMysX2GJ7Gid7v0TmP_7fP4m468xUsO9mRy18srNU-BVkn7Qpde7ubarZVgrD8MFrhq4Wb5Sbpwe4SB3r6pVIZM6jU4cvmYEv8eHrBgIbSvvJkmUq9RfJPNAT4eEoOqk_fJF9Rwn-326yiDbI6mN8nsmbAzkJr8F-dnRXz2osCUajcldomsUV66kZMwYtNJecvV2b"
+        ],
+        "__at__": 1786806561.908395,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Lotus Mahal, situated within the Zenana Enclosure of Hampi, is one of the most elegant and unique structures of the Vijayanagara Empire. Unlike the massive stone temples and royal complexes, this monument stands out for its delicate Indo-Islamic design and lotus‑shaped arches that give it its name. ",
+            "author": "Mahesh Todakar"
+          },
+          {
+            "rating": 5,
+            "text": "Visited the beautiful Lotus Mahal during our Hampi trip and absolutely loved the place. The architecture is unique and elegant, with a perfect blend of history and artistry. The surrounding gardens are well maintained, and the atmosphere feels calm and peaceful. Early morning or evening visit is rec",
+            "author": "Shri Vhanna"
+          },
+          {
+            "rating": 5,
+            "text": "A beautiful example of IndoMoghul architecture. The structure is beautiful piece looking like the petals of a flower.  Entry into the Lotus Mahal is restricted.  You can see from outside. The compound has the Treasury building, Jal Mahal, Zenana enclosure,  elephant stable, watch tower etc. A very b",
+            "author": "Guru Krishna Priya Sreenath"
+          },
+          {
+            "rating": 5,
+            "text": "The Lotus Mahal, a distinctive structure within the royal enclosure of Hampi, offers a unique architectural experience. Located in the heart of this UNESCO World Heritage Site, it stands out with its elegant design. This monument provides a glimpse into the sophisticated aesthetics of the Vijayanaga",
+            "author": "uday nikam999"
+          },
+          {
+            "rating": 5,
+            "text": "Lotus Mahal, Hampi — (also called Kamal Mahal or Chitrangini Mahal) is one of the most beautiful and architecturally unique structures in Hampi, Karnataka, India — part of the UNESCO-listed Vijayanagara Empire ruins.\nThe Lotus Mahal is celebrated for its elegant architecture, serene lawn surrounding",
+            "author": "A C"
+          }
+        ]
+      },
+      "gopi guest house café|hampi": {
+        "place_id": "ChIJaVeszt5_tzsR8APDpZbHxrQ",
+        "name": "Gopi Guesthouse And Roof Restaurant",
+        "address": "Janatha Plot, near Virupaksha temple, Hampi, Karnataka 583239, India",
+        "rating": 4.2,
+        "review_count": 894,
+        "price_level": null,
+        "website": "http://www.gopistays.com/",
+        "editorial_summary": "Rooftop restaurant overlooking the river & serving special thalis at a budget guesthouse.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 7:30 AM – 10:00 PM",
+          "Tuesday: 7:30 AM – 10:00 PM",
+          "Wednesday: 7:30 AM – 10:00 PM",
+          "Thursday: 7:30 AM – 10:00 PM",
+          "Friday: 7:30 AM – 10:00 PM",
+          "Saturday: 7:30 AM – 10:00 PM",
+          "Sunday: 7:30 AM – 10:00 PM"
+        ],
+        "lat": 15.336162199999999,
+        "lng": 76.4602589,
+        "photo_refs": [
+          "places/ChIJaVeszt5_tzsR8APDpZbHxrQ/photos/AWCwydj7mnCcCAlDNEzD5oEwwK9gDkCcRgUABzqgi4h453NYiiIlx2qpdQG3ugklOtAmxdyAj3Ksmmh0KLyMzV_G50wW7aAE1V-IE68KHn7RyUV840-66IfIUfViKHgZB-Nhf2B3DlGMWZc8PbD6VzKUbDFuLvksZz06k9PZ41VGiIvUXoxKkcH4Mp98b5Uz30Io2Vh--2wVnnwP-HLi4PJ8AnZgzFvhNTMWkOajJYj1Z5KC_Oh18ZGsxit2QY-K4C-dvastkrMWl5mzILqvbCASMRnnR593sg-f8HNP4ddTFqM5KtaAJemjMSEliL2acKTy79r4o2N9dJBfjGPMt8_PxPaaCNp1hKfWCNz4-5adJrgxjx3wvQjpH2pGPQ2GXkXzFcVYPHAy5yW4LXhc-UfUuw8ZDx_8aE-1TQuepkY5W6FujQ",
+          "places/ChIJaVeszt5_tzsR8APDpZbHxrQ/photos/AWCwydgWg5Gw94h-AToVK1xrPbwlADXxH_fmZ2nDtKESDKRS9CBVu4wIzZMtOMQiKEI7Y2t9OXIMgBPKuAOVzbscsV-nwIodeOSvoHgrIwqwGrhKIpKBrMeiGntCfYNxrzeNhl-XJaiTL9kd4MPzFsja1fr3r3TKlReGHafuWDYPIx3ov0GeWsHpG06t2fUH-cXa0hMr0OEW85ILzsmAGeR01Z4CrERfe7I647wb8JCRSzriz5NnweH8foGOAS82x79eGRNEmApK3Ae6596ucoJ8a0AMNpke2dFePD1Mq1wfgS4DQZgxgPKE6UXw7KATP2pmVUoiXGH5tKKUAnM4zv-l0LZp8rOl-0cWDGURfBJltMuMSHMWytzAqkslVsx1T1K65ZmqbRjMRO2isXQXVfSetmqtPbQTkT_DsvRi6J5u0sRHEkU",
+          "places/ChIJaVeszt5_tzsR8APDpZbHxrQ/photos/AWCwydjSffJCyQ_fdYLMaZYMeii9UiDYjpF-NelKM1trkdhTM4SPU4v8YGItR30z6G7w6GHzzbC1iw7f93jpkOJmwmAdF5SjEaZKH254X9t1WeM-ZRHRAagbnRLxFUzqWE2rFtS5Rh_yOhunxANXq8-WmEwRAp8ro2wm18eWLiQSiPR_j19bn044tNnJpZ9FgMQtBdnyC3BmKMCm4gCbueEZqanc4ZH1RFd0WyRi_L-JJXQBVsNQXWFDv3gydhmYlA5ekDnarTG3GUv2CIKhfwg0dUqnGS9fAYfepvtMnbitZD3tbwAc_p_a60pNpdZl-KNnm5UFvVjWy4vP0coHZYe8TTHZEDYTbdElKIf9Z6VBGes8lvVE_6KwVj8UhzDAJZDjT6blA-6PGNdwmoh8Cxgfd1UgnE_SAxoh6WuvJSu5FKnKd0MnsDOCxLW63YqsPfiQ",
+          "places/ChIJaVeszt5_tzsR8APDpZbHxrQ/photos/AWCwydhFeI3B6yXM-62q1RL43itzfg_KcOlSmZVTxi0jdK7TfYn4Pqfvu8g2qrG5acTDHgajrcYclIgHmWLjYaRzCceW-07IiOCQ6U7-uF3YcG8h5vNfTLA1Ye_fn4ux6U6jVIauMGAk5YnZ-bbKJHraCM3UFXkCSal3-BdndbGaEdL3VjGmbfW2jXGcFRcphZLuq5_ytSMYN6VlA-sLpK30Dry76ue8cKgzBJb6XuQ9fRLTeP9XOpM97zLZRyWS0yctlu7Sixoc5uJde-6qu196d-UsdVpivnupmuFLvUFYbti-pte72JlDaTRYdFsV8n1FwEVDGmCTEiuFAeB0abl0jZEGrsDLLbG2y4PlT7UAazJtt4izI2Ejx2XcvbrMqyiPEh_sz6Ee0gBnIhQFixe2h3C7GOCHdBlSlXYaAJJ_48LbjC8_Pl2GUXPNaUrVGtZD",
+          "places/ChIJaVeszt5_tzsR8APDpZbHxrQ/photos/AWCwydgoDkC-oH00oUqTs1Y4hDT0GQDjNeI1NfQ3c9zKv6IcNOcFWSBwymF-dg-Ag0FHTIzf-a543bnXlf6FbVnRyrOEGlnoTJKLe74GSg2V6j06ndUjuwlHJiAsOfYDJ53Aa44_45GX4DrOHFEJ1KTKKM_x4W_vZcrfz1slDJLQiwKcvqB3Wb89V6TYFXUp37-Ng2DdY7uHrcUj5sIQHmk9OtqPLm5hA-EReluMZEQu1ou-6vu_w1b-8Qqvu2-lBOfqqUqmmOTWEZfjc6bMgDKvQAVg_eVnrCtNSJJNdduVYYxPlNZZjLVcFXuw_icpyhYMpH8e2jfY63rUigKwh05-T7oLQniOeSXyjSJKR9UvKLooTd8cfmHt3m3pXMOd07xODQ1pCBH41y4-RTWeHEnGVVvuYx2deDTjRVA2m5ytQZwBTzvV-oW3wdUmY3zYt5rb",
+          "places/ChIJaVeszt5_tzsR8APDpZbHxrQ/photos/AWCwydixqcigmSVQNJncg3F5dy637ZddsMU6XnBuXH7vFIKvMlEIZUvrfDzqjhXLsTD36vEOiYCZSAuJTK15MF5HseuyB-UFlc7rk6EmSRV6W3Aw5JldcYtjBwtsLyCF3r-TVHiuK5odv3Cu6ml6cx4JJS52zakop5iTNGwpWerYLA5_GMnOhnjrLOCqrazlW7lX3b6iufs2UerfCGwySE9WwYu_YGOEwXMo6m7Jvv-w9SePkgCj0-Y1aUmhVIm3lN_sKaCa4FVHoFIAPqEnZqCN9_0jbmc_zVcQclOCNGiVmJxkeYuUNl7GfE5H80jFzII-hPp9ZJN0Wcw1PJDfAcR6rpSJrHqaked86gBnd_7dau3zgyC4TpOv2cBI0S6cBEUH7g0Z6tm3ikAHwGpSl0IgAC5Tm9z7GEfSgq8V4VKmXwp6XSvX",
+          "places/ChIJaVeszt5_tzsR8APDpZbHxrQ/photos/AWCwydiBHu_E0dTlPZro78E-Z7JN4JWnRcqd6BUA46bxfIsSQXt0n2hLpo7b7UiHph9HTz2De9BnU4JDLKxNgqT1f8b1EMcP_xMDM0M9krAsgKNIAUpq7aS25e5q24CERMW9S8pfE8koM8PQWB0dYvVqumxXJx2lsLt5bXSQT5blmpyaYgCxOzE1iSMQVnbXmISyn9MSsk2Xq8p_v5Is_SiGtREULDOVYhSNE_K3yInInqFDubgGJXsbJ_i6BBg4OsE4vO9-tVjVAZ96i8bpxaHlkm7kU38Y4vdwWce3-w1gyO6UyS4v0OkqBge3GPPW71ZPmovCITGgsbkJJ3Ym1EZCFz6ihqHVsAhkV8p67OgzNk59lJWsoOX4GnkIMS8RMy4bXEFnmqDfpW_ou41LW2CmNQJuxpu5AJJDYaKGqu55FWPpNdepulMzxz6ToCDnHVYr",
+          "places/ChIJaVeszt5_tzsR8APDpZbHxrQ/photos/AWCwydiK_7W-5eg1VCvUOOemDAINGGbtmZF_6GTMXzOeg5nVBDlSwyGFZt8ekTsDfK5CS1rIPQHtHQBSj50Bu7oEACnf8KdMuniBNXCx-YxzASwk_2KFPa_qffrAEMjjG2tajyQjuoPH7BOFCtRO4PClo0GAofx5WvhZCWa8ahPu-kQtkGC6ULZSqf7uuUwtvCxrgllr9b8TrW6i8UtVCX2jL1uNB2ICxNtstiiVvlDyvYApBNzY6s5VDIGwh1Dy1we17aoIJCjtj1TgThn2j9McG_6kc5o87hrVAZnnsXkUdrIJzeGtBGJjyWCV4AEgzfelA3i0wfl9bIAKp6t-IPnUKjL4fUh7Q_uWL7irsW5mLfZEzN6kkrSe7uzh7XDUxvWax4tr6AP3VC5vfbw1wUy0vXoqNlc0Sq1YMsEHfvZyllqMRFzSWJpVLM2zgd5Vtg2d",
+          "places/ChIJaVeszt5_tzsR8APDpZbHxrQ/photos/AWCwydi6m55S15A3YMpVYGYk0puCZI8T3iG8fUz6N-VQu6o4wLs64fkrYng3uBNrChLII72nqouItc_U8Sh9yjA7jsAfGXCmIK3qxYf41S-i40xEHCA7RkKCRFds2KMKagZrEznJqDuMre0H_148noeDJqiBQl3wAVSEqqF-MWhVYrmRpohVn7x8fS1W3GXxEl9H3QXS5KoKWuNV5768eFqnA6IqTuXMoaMh1JjtzR6iBJypoSPAd54N-CfUQFk3ZkLaVI9C41BpssyoY_2AIUI8rMuEDjjOoFcPgyWrxbLBCdVlcir2E4V9jnzVagBqNxTF6WnujLfwMg-TE7ya6eH6NxF27WW_5geCg0WYQPN6HuuqTCy3zHxtfJvmV66PUfjCv3ixToishxUQZZN_ORzQ6dkQqAFVWPHPfkfuH4DVEY0",
+          "places/ChIJaVeszt5_tzsR8APDpZbHxrQ/photos/AWCwydj9CxM0G4hFBCsy4Vs8mSLLNJMwda5vQO8uGMwIWFn0o6SIuhh3BJtiNrav2QPLN5hAcWo8oDiYlzVd1hsWh-rgtMZSzMWLhWUl4B09gOGwDbmXikm0DGQ9aaKeLXjPsXic3Qy2EjdBK7OL5Ze7Wzh_PPjp9REaTOTedK43p1IsyEOd3kSaX0Y65ngkXlFOSQMls_NcSMHCkseBOO2X9pfhsx6s-vt95WhQG5GKrbEU_ET2r9hDWt3RGYMOSidioBjIUDL6bjWaPP6E1QThvtqo1M2AJQ_EMqH0gU2SRTIKAKzrnE79ILG0W90ebU5bx0nTFzw_XCGH7uA98M13XN3lDqc3twnLQspnMa45fyHQHBNs5zCMKvZ8Ivr6xEfW5zAC1KtSTYGFLF06gl6RYMX2f3Cmm-uLpFT4lGT6evoffA"
+        ],
+        "__at__": 1786806562.4659488,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We had an amazing Hampi tour experience and truly enjoyed our stay at Gopi Guest House. The entire trip was memorable, peaceful, and well managed.\n\nThe stay was very comfortable, with clean and well-maintained rooms along with a friendly and welcoming atmosphere. The staff was polite, helpful, and e",
+            "author": "Pooja Gamare"
+          },
+          {
+            "rating": 5,
+            "text": "This was a great place to stay they offered a tour of the temples which a gentleman very kindly took us on and was very informative. The room was clean and spacious and the food was a real highlight, we ate here everyday! don’t hesitate to book if you’re thinking about visiting hampi",
+            "author": "Hope Card"
+          },
+          {
+            "rating": 5,
+            "text": "I spent two nights at the Gopi Guest House, checking out March 19. If I could make wish, it would be that all Guest Houses would have as endearing a staff as what I experienced at the Gopi. The owners are on the premises at all times. The owners are four brothers and Mother, who treat their staff li",
+            "author": "Martin Rimes"
+          },
+          {
+            "rating": 5,
+            "text": "This was a lovely hotel and restaurant. Amazing food! The staff were very welcoming and helpful. Recommend the banana leaf curry and the Thali. And a really nice view on the roof top.",
+            "author": "amie johnstone"
+          },
+          {
+            "rating": 5,
+            "text": "We stayed and ate here for 3 days\n\nBeds are firm but comfortable and the rooms were clean. Towels and soap provided as well\n\nFood was really good across the board and more importantly so was the chai and coffee!\n\nViews from the roof top are beautiful, you can see the river and the temple along with ",
+            "author": "David Fahie"
+          }
+        ]
+      },
+      "matanga hill|hampi": {
+        "place_id": "ChIJM01BS8V_tzsR7MAjj-ckIug",
+        "name": "Matanga Hill",
+        "address": "Matanga Hill, Karnataka 583239, India",
+        "rating": 4.7,
+        "review_count": 699,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Peak with hiking trails leading to a popular lookout for watching sunrises & sunsets.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 15.3316387,
+        "lng": 76.4682381,
+        "photo_refs": [
+          "places/ChIJM01BS8V_tzsR7MAjj-ckIug/photos/AWCwydjWda5Z0_iRR8vvyPiatN2y1s4mEn7kWyxg9MxtsHdqsz4p7xWMQ8u2ZlCNSgBKNWznPv1O3_pEqgpuCfsSfmpxW8n3GWS30mcjyHZat4Ghxb_S4Y-KqzV_ubdtFh_4gHg-1KYUvVeImc-YiaoqKAWojj9tPghjdlgPFi35FG_FbRk_I-7nJGFpUa-eQc5Whbc40kFNxGWmBqYNQl3mMUAC60Y0bnOGJTb5f5dp3ndI63Th0bwFVXMamJ-2YdNl8ifFDkFoNzn7KTn8zy0l9NKcXZ7GVSm0nIKMqxKM_yjEfzXYbp3B_gUAay8VYwH1LZsTToT2XHMQ-rY9B7duHOcneMtJfQIZ1XPH0ohIDiVcFI9uYAgdgMcadtNEagifPqf0umAqSu_vWr6obE3jSwDo7RZz5scUyyAGMej9PXg",
+          "places/ChIJM01BS8V_tzsR7MAjj-ckIug/photos/AWCwydjfKT14_kJL4EOB0FZm-mn-9cUgFvd_aOX1l-zCSeqDIxA8nf6z3OtsikBygY5_7MElr17UodfMX3WmQiNMPDOR95sUUMMrTjvR7jWbNb8H3LFcs-q9EKFChG7os9Z1C8Nqt7v530_TdWAuZISqBKNxJ8DZPwQhL-6kaqDBLJ4A5aSkpWndRN5CMYuWnvQB6dKBnswwrhlHAGmFtQleo0epKR9pG0qt0SLbaLqK2HOROKeToatTtB_BrQX0mw0c-RSJ2rnCRkLfxvl7gvPleTMpqYdE59HHPNSZAMTJW67Wb3zCdNZGWfF8mfLrcHfLmtcC7ShYMC2EsM0tqcoWlpz1edi-3AlXMeIzCh17yMVSbWRG0NeNAsFN44tFBa7bfvSts3B-Ud-dGTtwxbsIIRdn9frQDsaNY3rfAbrLuUbJNZGU",
+          "places/ChIJM01BS8V_tzsR7MAjj-ckIug/photos/AWCwydjyKFfYfrgGy_bfY4TTO66FTU8Ezwt9ClQe2PremOfl9_Vm7xXKnahmdb_1jMLgd1UeBfwBXzhxIYm3S5D07gI9VgLy-HrFKcwPr-RgtyvLTYKqcMB2chB5zQfJU7lFKRHdnSIgepVICOdNoGwcSM3KzEIHu_uI6B2Lx35ZwpLZdpOAOb7ef68o_5eivL_yuNUUlWssiE4CYr9SGn1Xuk9LZ3mJRZ0DSKUF6tdLBtHs1exFohTVihR-dr1UE4N6KVQa6yiwk3v-40uk_oJQvnMuLSYvSBYFq4e64BXRXu2IowCC4KnhojPjTQjvLKvLfZbPT0oeLtf3qjzfyRAewduwRLxuteHUWKb7daax2imvkU5upyK77XRK8Gt0JqnSoRMxI0Xof3DIvNcMCPaGmUjEJsgpd2KDYOvtvApP7W4zxTn2MXt8Q_38uSgl7KAh",
+          "places/ChIJM01BS8V_tzsR7MAjj-ckIug/photos/AWCwydh1YBWnmqYIvWot7wwQaK7JRExQJER0mzcNDgEh38O3eYUZ_bhu5aX17PbtxJHQ0BX3WS3vJY1d-SF9FX-mPsiGHBqW7lf8qNnD2SJp7q7CNepSnk6aeCjeFsX2zeCLmXrfTrJXaNSAYT8ei2YAYJqO2SR-iOqc60FBTYr5ZBhKUEk9ObzBaJCpLbm_ChsaQx9CGca73-vDvJEg23m_ufReYQuiVGr-_iYjggxy0uosgJ1FEyyeeaHC8WqaI01pDtaLRs8mt_mtRWqrH1iAosJGmpo90V06vudoeh3lwu2DYh5peMhDxNbIJSjQfvkFhWT4LWp660zWSWBkoCCt-AKUYaqfXwhr4uJ_UeUC7N0u-t7dDbPpno-ku05vFvRiuIP2B3uzibycyKvBzGuZ7gFkbLdgERUk1Z3k1w8L_dRA1Ws",
+          "places/ChIJM01BS8V_tzsR7MAjj-ckIug/photos/AWCwydhGw7t820uItK4C8nEWAI0PO3xQprI1HoU9AnvyOrRi5r9JIJHmYNi-Dx_KbyGLE-_Pu-BHDjZgh-msw-io2RbsFyh0LV1YRbFWwSrR9QBiufV-T0ukXkOG8vLQe7VoAoyVeSUVc3hGNdpv4hpMej6g0fUJrUGJYMKWWGL-oaK23MEupQfeFYx_rdknouh21alW4_9CYFUe7C106e98cv0m4z-E4c41u2qycX19HWUiUoZAFzcyG53-GWP8dA5bj5jIlu_Rlrp0cP8dYdCCliBEGqFiM8tmH8f7VnedXEJj_4Zmob-PZkigd8EN-jP0Oy_PYSkc3cT_84dALvYuF_ThLcbPq2PfPWWRmD5lzz5h5xaQGsY0KnsEG12TCFJBgnLSHpjl6B_ghuFv0_lKVg1-xLP2csfgkBl29DL1r2Mk0A",
+          "places/ChIJM01BS8V_tzsR7MAjj-ckIug/photos/AWCwydgMcZ-Q8e1dS3Rxs_w2hmMIk467qhF1-52cw2IdyxuZ9qXVFeYmnqxV8qBc2Hkihi_GxCGGHVTSty6Q5loTIrb8_xUEHoDDhrw15PVit_ZPeLZW-QHy6BY43Naoqmw4LWveNRTTmGI9hZMQe7UNyMye8ypqvtb4_BC1L76RcxHUaPLZQsrO5I2RK-cyp96ap5CmVYL0JyLH1tFwPZZPui7wPchCovSq5WawVratg_raVVgCWCy_FyrOR56_ckL2MdsvF2knK-AM8XcYxrgXsHrEEn4w0LS9UXpjtkFrK-YD8E9zDBdShah7GTa1TfT3crTl05Y_-8FYqeR3BuERKNp8GLqTWr4w7t17fzMs1Qsc3A0Ns1LZwYcIotKAnhBGshMp48W9AOhMfK5J8vU-oJjPccS3ROlzgYaAkDKU_Uunig",
+          "places/ChIJM01BS8V_tzsR7MAjj-ckIug/photos/AWCwydj8D_jL-6sbf4imWW4AoSW8D92l-5LzFfagqtBLEz90tjbedyE9GNFLzp3J6a9I0TrAyf7ekDjwOZI5LAkOJkBZ_hn7Vnr_RsrTFui3-YPXMQ8pQaSaJ4Og551r4yL0GBMTRk-UaoOyRv5oLMY-MxIpTJPq6Z33vk6t1mNuyupycXYfiaeNxPTD_S3YxW7AjfeE6nSIPq7lay2FOzO1Lf9Uh81jtp49yF9IwjOtnE2Dy3r97Dk2ZwS-o40rkX7ozCd1DWkyA9TxLfSGfxzx6UR4ozj0c8I06iFZCRJwQSFEx1btbQVtLnMLPhubLECfVuOiVPqN2rbncAzlwBmC_GFWcp8Pi4a9cYUh_JqIufzr-AFZcKK3_QUd8yu1YHvK28EfL8Lq9x8FwU8CaEoH1D4tWQMKJycSI5ZVBs5R_-tSmw",
+          "places/ChIJM01BS8V_tzsR7MAjj-ckIug/photos/AWCwydhHTtzr2qAl4FtjV3u2d11fXdfn8Nb8qNbZIC0c34I8pX3gvXaUNWiHJu5NFJTGoVxcwYMKafPqheIwMWMNXDESS2yGD_cRzMcybStgb0TrdIhhtbfeOV5fKnHPr0Sv_XgoFMP6fZKvoZa9nqrBZcHdsn2-3EU1mYtc8UgoYWhftSMRX-j7iNx2XDCj1Pn-hEgOFnq2H4-VwSsxpUuCkGnp6DGpF4-EALnMddh68l4tgbQAJokKtDbvTxKhvOrrPRNHQHPVai0FHCKlKOgX5418S2Dh4CZzB9XEEJfZvFuIB4_BMjwvvqr4zWcHdqpSG-NSkLUQ-QhWTOi1hBD4iJ3To29ZQV-6ylMQjXkVpIEXm0FJe7NmB3ONoHncWa7gYKeALyFtj13Ferhc5mtp3FJQMDnL77ld_GkCvun2Dc-C6-zW",
+          "places/ChIJM01BS8V_tzsR7MAjj-ckIug/photos/AWCwydj4z9rJDwLZaqpej9rpJPWIJvNBivUwYx7ObkZUNjIQevwwZLk9evnaAiQ9oEd2prLdBfoQUWkKlv5ILk7z1VD7_lHYjYSur5M_fx9AOx4f2ENL4GY0BJmPqe93_7EtS48uFx-eP3xswRtvcZbF4JS2pRluBofkrR_WMwkd4-SUio6zWV547Efaodoz9QpPl8F4RooNlLo1FuuqxM36DjVPCmVg_UA69RX9HyfTGPO-nuUIz0Rk0avQ4ewhjl-_BOW11tN7BVY_STyTX04wVfqyTBoJkkDBZzh7GT9pl1QlPrlD8MEtXtHC0A6ZelGoiv7A5a93Fxc_Z6s-UKH59jm_MMG5amow0noNwB_QIcUKkSgwTVbliCT1GpY7w004dmFQtekAykk3fFV5Di41fwhobydgRc1KKw0eDlDuv6pMUA",
+          "places/ChIJM01BS8V_tzsR7MAjj-ckIug/photos/AWCwydj_-RouETjrt-PDCbNhNQFrBIeVoYmWLlYY_44uIZcRngXA0egam2uEx-AoqAq3x7otGR8Ao1q_sRn4_h-dtvXJZ3LeiXBtE2CIjvqBQtDHOGTgEyqYRdhy3-zReB3jLu-h2v-GyTDft0aSzp8fJA-9cfW27BC_my6WLfduXmPVm_76TMZvAkWv6GS4v7YAamPSo11P5mSUo8OdMRk3gucOddwsrP799AZgd3cPucKZgk36180E3ShdCuE5b0jq7Tt77ITK57F-gKBBNCnNyyEezc_5saIePjBDoRtSKPmV2akyT2uGbB7hEIHHCza_lnD5GL8AJDtKShwOkCXvZbbgA09RvQdkRDLfivAlol1fOj_vwumk9g4kfoK9u1C3FYaasQMEdDQQJJRJssCi1CKM2R4klkMYt1wlQ753LHo"
+        ],
+        "__at__": 1786806562.777143,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "An amazing trek that leads to the most beautiful sunrise…once you reach the top, you are transported to a different world… highly recommended. But start early to be on time for the sunrise.",
+            "author": "Anubha Kartik"
+          },
+          {
+            "rating": 5,
+            "text": "An unforgettable sunrise view that’s absolutely worth the climb! 🌅\n\nMatanga Hill is one of the best sunrise spots in Hampi. Try to reach the top before sunrise the panoramic views as the sun rises over the ancient ruins and rocky landscape are truly mesmerizing.\n\nThe trek is moderate and takes aroun",
+            "author": "Alim bahadur"
+          },
+          {
+            "rating": 5,
+            "text": "The view is phenomenal. The trek is easy.  it takes about 20 minutes one side. The steps are made entirely of rock, which can be a bit slippery.",
+            "author": "vishnu pisapati"
+          },
+          {
+            "rating": 5,
+            "text": "\"Matanga Hill in Hampi = best sunrise spot! Moderate 30-min climb with steps and rocks. From the top you get a 360° view of Hampi’s ruins, Virupaksha Temple, Tungabhadra River, and endless boulders. Super windy and peaceful. Go early morning to avoid heat and crowd.\" In evening you’ll get some coffe",
+            "author": "Christy Benny"
+          },
+          {
+            "rating": 5,
+            "text": "The climb is totally worth it — the sunrise/sunset views over the boulder landscape are unreal. It's quiet, a little challenging, and completely rewarding once you're at the top looking over the ruins.",
+            "author": "divya gangadhar"
+          }
+        ]
+      },
+      "anegundi village|hampi": {
+        "place_id": "ChIJI-hLXdl_tzsRuDbfdlDgUm4",
+        "name": "Hampi",
+        "address": "Hampi, Karnataka, India",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "http://hampi.in/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 15.3350132,
+        "lng": 76.46002399999999,
+        "photo_refs": [
+          "places/ChIJI-hLXdl_tzsRuDbfdlDgUm4/photos/AWCwydgtJhFcT3svEj1-0wZS7ADEdRQA0CcweHpxk0d1__Is-62cCSFOR73rSkBMor3xwQjm-1elM4GwPqrxd1Ij0MHZNUWoJ3iuNV_pv4khPXNsAWjeHIefBQBYNfVDGOv0NprjV2paL817S_vFquEynoBuoebZ2JqAbrGMkqL7eAITUyKFMkZbCnmF-lzXleJZzc3qNSb_e9ylA264etWM1DSrxUZBBA-k7AB0FTlMD037mUA4kFDtZmNCrclmrmcuIscSFwXXvrs8_WtZGIT6SE29zuqKz7_m7Ox5wyi4sez9UEE3BvRTVKPaRGPROfsgyUo96wTW_Ifsu1JgxTlVeHcxJCkR37lAGMbq3XojKF-7jpdOYurgw1Z_nL36HC8xc7Xxc8wS3HxawknQw9aMEaZTXbZVc-yQQjlwm0Gg1DMFUw",
+          "places/ChIJI-hLXdl_tzsRuDbfdlDgUm4/photos/AWCwydg0t63FjebpJj09jeV8iNzcBVdDIvuRELY9WfT5J3ObjwkG-kr_i7RD1XBAz0aSKfcdXxbqtrC2-NYxj_DijaFj0iv5TeaVx2IE70RywoZu4EhR9nBNCMi9K6iFlt2ZRi9_sdRlWYJAfXm79uSfm23dl0umQJ0GbMbR2N2Yf_BQ46ivsJg-Zog-AQV9waRMH0mxn_gy_FP5Z4q6h7no-K7avIpBTlzmKHTi6lhQqMxue0sbNMqCW3K07HN694PnrycNw07uOjCPxgMlIX1sAn4lQgMu0qf70LuJxVxLnelN5xyj0HIDhcBsYXvVJtqGkWxNEhxggbY9nu0EJUHl5VxcJ3N6AYAoRc8qVT4eeeWkzNy3EoZE-eL8L8K0IDQJ-OWu49TqF_RQNrKp8ERneKJnA2gJtvG6wfBPFEsRY6T5bw",
+          "places/ChIJI-hLXdl_tzsRuDbfdlDgUm4/photos/AWCwydjc7fX2r4i7pHoCQ1M1cLxmdlXQMvINItqVNvpsfLt-8SjftrOmDaOeUmPI0WC2iTNha3NCIOedIPdZHvANkToqgcmxGH-qwVv1wmmPPq7GeCo50-TnoCN6K5z-lb1rnKuvmyGNt_nbXglrAzaR9fwf2Ljtl5RLkcIadRdZiHKsYxRK1qm92exqnI2SjkDYMWpjehfK_9F-LRy7_ilJPgj86UM68-q644Fc27Npb_EdUnd0HuN_laeZmqHt6nTEf0RNAnKsH-jz_KardFmNDlNMzI690NH_STZzGmK5j1blFmMhjT5F8s6SP3rSe_pN_lvpZk3h8DtgioU_zxZlq1TpWZjEVIXEvv2V_PS0tR5NB9Ehu6HX5QJBhjPvuJmW3qCt8rMLOPqpxPP7wgUusGgjdyWyvoFrtqFJ0WWI3Do",
+          "places/ChIJI-hLXdl_tzsRuDbfdlDgUm4/photos/AWCwydggjbPpI_ZCoYRZI7oZu2z3RiOhl-_l2p0XNz1-h9uG8LH4s4CzRRRT6BFl3hrJ3h1D3zKL_4fCOEjhMnPEl0I3Z1ms1AilKcN_Je1P9hOAp8fytAvqRWziPOuLmC0aaF30c1aajFNA5KCJYMje6me33WblAvYb9z15HXMGfb1aOs7cHQeE7urqh1wpXnFgpN3VV8hPexwfBIMclf4-BVf6-FKPf6HfkGtQm_34oUWzmt3Nr-e5jTQW03c7hUAMf3YNNbalKGjY24muY49xKhzOZlvtyxP_-u0GvaO9dow0gxFy2p0QDK44E6ydTIU1JueaQxUF_dkzw6WApIgw3minRlTxCBbO0H4oq542LqdhznBwcXRpZvWILI-qAkdZC4by27ZOwpGgBITmwDmOGI39cuaeRts4vlcdnc8w1hPFWNE",
+          "places/ChIJI-hLXdl_tzsRuDbfdlDgUm4/photos/AWCwydjKzDLUOqSiDUyspFi73rcpu92Uy6N43QwBUS1leP4uTvI_KCmwnbHJh-Q21kvYAor5vFk-KMr0vWUriTbVH_02to2qtPU62adDmWyv-fXbKCcCEqSe8wFRw1LFB9vvxjp2veMU1S0qx3BUaM2KeheDfTBjelKDachH3czndPYjNk7JcyQlOXQsRAmoW3I_nywaH4cTg8m_kyxKrSuMOtfvALoc6-3USP-7vDUF4i3ih-rQ5bIu54zHxHWYYO_EImARzgznAQF0Fsh4O1ev2WcpLnCzO076JOnigjiTiGW7V1wbJ0OnjfbnnolWrSFTNGxZmP4mpXYztvGS2QBCbH6Ba4qzjziV-Q-2HGW--9P11Zc31JdxMZRz0HDHAEweq0Yjb7paO9-kg2-wLk7-0YdS_hFxOnQf8R8veTRDpJARXw",
+          "places/ChIJI-hLXdl_tzsRuDbfdlDgUm4/photos/AWCwydhUnNv4CK9Z3IJ-1si9qEQ9GBp8yEaVK6F6DHYOjo8HfpdB6XKs-vceQbvA8fldQuJhsf8Rl7p2WCRtFe9JTP512gMn8zx8mJ1Ggp-VW4tuJODojeF7i_rbXVyyQm7pU0Ue32NBIatyuALeOefP2Aokmr0LhwtSgdToFxgvi6FKJzDy8pbKxb5IccDE-XTBYFAS30hM-rE7u2iYwSF3QP5ke1pTsdv2sLVrPuTjPnbIwuyZm95wLlUA6mQWDIrpg5tM_FV9MIadqnqAGGL2DpX8tT4_ruVMO64rrlgGDvfDEvYvazUXkAuPhH6lXGXqcMi2yaJVYXcPUxTAwxaILcVFavle7X3rA4N5--itRh68ty2eQdRJ1llBl0W0A3ugPOem3gfeu-5-tt5r0dnBo4n0isWMlfFY6omHygxBXYmNnrFY",
+          "places/ChIJI-hLXdl_tzsRuDbfdlDgUm4/photos/AWCwydhvdpdSTZCEfZMZQkUnIzUOOD70ZXJbn86kbTR0d18NXg3_DUooHG5hcgUFdIYn2MPdOAGhvPFCFnhArlEZWm-HtKRbKlQNPCHTw8O8Ng5BKhQ8XhsbkPqbjor6R1RvP5eESROtDTY69YRqFDkr_MqetgAFviHT1JOFeCHud-HLAkkpfIxo59n-O0bdl2T43NAxPDTHNgd4GJndBEZZbZsHgOHwmFOphgCLogN4tTaoQLAFRW-IHuyxVWTWwUpBDeXfwFLQMicnv6GZH7twu871ztEzys73MYXNtO-Mi7P3D1iquY57CBGsv6j24Y1OyH3I8uPvSr8uinRgUAi1neY2px4qU1wnp3KRavDflldL4pd9RnKNOTVc5K6ZywomiAKojZVisuUwEoMfCpeJdQFxQ4llg_B4o-WndI4m7UlA5uGTXMhhIWHe6xlmEg",
+          "places/ChIJI-hLXdl_tzsRuDbfdlDgUm4/photos/AWCwydiSea2Iz2fHz3Z-u9OVM2t5vn8yK4Gu5Q-knQ3n-m3PnK0HENN1s7RIDb54k7JduzXOhNuNUCbPVqgh3AessphxlJmVgyj7TUkfuWoqSFXNrnwlpWmH4jssp8WAYdLUNamoyXWMOe6ytnE3784RdeoB1I65k2Hz7pTsZF_76UKw_CjGz8pGzycBXG4DwXqw6G4Eu3X7WTrYK_MMiiGuIK2BcFJ4ZxUYWt8tbRYRM-J7YaJC9GFJtuN0locZDR3MkK7VkVePm77nhK2MI_Yb-8iKTQ0ZOPfHnKk47VFzIx1YzDYDPCSi1GXuwNYCpiSJlsaZOyejLJKqbJY89V7rqzhrQ4fPlWKOZRA7y0sxj9ctJRkU5dUDKyqcVFqo1u4kiHfRk3jJRwLWhjt0UvrXZqEIcMivOZ2IrCzUC3Pvi-bAvtfu8xBFehdaYRZheg",
+          "places/ChIJI-hLXdl_tzsRuDbfdlDgUm4/photos/AWCwydhPYhtdT6lRhDKRbjPW81QlGVsuDsifnFqjdNx3Wsc5jBh_6cePx-RIfNggENOeFgNJ_g_vi58_Z1FtQ2-L2vMvLd-YUrLBdA5WVKK5fcBMY6MipKzvfGhnzsFYI6hoalL6sQolb71Ja8X3u9ooidZOoT5ReBNhNivV4fOqNWdqnGQyEVolYdZzLiUJMZGtD5nx_NysmcjsgU5j1PRWwbjNrc2KkpCExgUP-WRrzYLM_rMZBfsKoiJVRY6BOMp5PaiRR53BaZfIKKr2qucOH-F-ahrP6nfqVFP33AIXgSd7n2CVYX5SSBg0_caJKAoIC6XJ83gRYDD2tuk0dkYv17gZc95YiRLXczIBGpyQC11RdzpchIjlZNbBL8ImIh1ICgm9bfJgUbcj2cDEyuYy-TW3sWEktEppe83aYPoy-WOAnMVwmvCeUH4ISsad_5Kn",
+          "places/ChIJI-hLXdl_tzsRuDbfdlDgUm4/photos/AWCwydjGy8l7CNALrh0XXOo6vmYBlwz-Kksg7eCvKbeTrIc2AAjgCOt-U6LMbeoR4X0Vm_FUZXgvAupWI5eo4Wxt7obIJnqdNR6Okz0i_s9_OS2umDh6Z72OgnJRpxHyNJ9-uXbnhqttcWyBnKQ10oDSwCrh7HG-O-ub_4_UFgi2jMpmwlv3mylY-dK4czljiONNS-dTw6Eicoe_zGbdMAvQYesc8tB-7F__ZNUchz-hO9b_qtoImrknWTQgJMhCpRzLwkX6--3miU5J6n74RtCHKhbO9E0AYelemyV6ArTTZmg-UJQAptIjSGhhLSf2ZC60ixFODYw_8kFkDCOX27einwMgh1MHcObX7ety1lCEXtCkjCnqtxKIUWELn9LeAinZa-4L87qSLpbaBUlSE7WDnWWx6Wq1aGqLd7LrfA9CxrxWlA"
+        ],
+        "__at__": 1786806563.132319,
+        "reviews": []
+      },
+      "train: bangalore to hospet junction|hampi": {
+        "place_id": "ChIJ7R84HD7UuTsRIptK_a_2xLg",
+        "name": "Hosapete Junction (Hospet)",
+        "address": "Hosapete, Karnataka 583201, India",
+        "rating": 4.2,
+        "review_count": 1318,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 15.287344000000001,
+        "lng": 76.3855587,
+        "photo_refs": [
+          "places/ChIJ7R84HD7UuTsRIptK_a_2xLg/photos/AWCwydjAqOu2yt7Le3QymGnPyr7ugpYwFegoqWCV1_gHOhr90RgVvLmOV_XCZqGKGqWBvMMH5ZB0-qatCOlCBSgobkAW5A-vUEjyx-kkEZLLxHh2MHHuDq_bvdMe40waT7SpLkOnf4PaEd0QtOC59B4sGGEpaJL_XKqwFQ05JXVthdFai--tUDzxevQ5-ivi3Eza9iLAasXit32Jq5g3xqYpMDEw4P-DTbkg8UH298qs8U9tK6QesLBKp4HC1YRgRCMDd_huqRDxoxujEoERaTPfuj-Zt24CyKh5II6L1LX69BCdL3afgPempUjoOYVbtTjmhCeTCN5yNka_AyRC3dZ5C07bvnMtajfOFVMciTvv0XFFeeP4g4YktDU5t8ZNl35tG3pvDRyIJbHmtdqZ3MW8eDys00UDWamBKQpGWrW_2ZsW6g",
+          "places/ChIJ7R84HD7UuTsRIptK_a_2xLg/photos/AWCwydjGDyESYdqyOIFs0LcR4pHppBWK8l-3DacY8vyEsndy45jxOUS1lEZwNDjpxjlTCyUT4LTlae6WnXJRGGqRbIe-iDNimzSjhtqCol4MX9rcm7898Px-3WW19Gaj1Wf-_7YINB7pUmOeaygLwoOONRNNaIza29roGmhXwf6WRty2Ff0Q8xbXOMsrsLvDyXRD0G7ZTGMH23a6eeKQIqUWq-vFoGFAwrVrBTI6Tx8jXiem5FBVWN3BB-KlGRXI9LHok3hnqFP_fjPSLcZnD1J_rQGCJvTmOjCamZV7EePQ6n2Iz3uNPOIGG9VB9nV-NxhU_3hagpDzwc9jtNZ0R-ijg5qiL1D1zLq0Nf2ENI4f4JfExnGEBvh9NUaENxvY9COXNYm_HMv3eAFfpDoOEI0OGaz_oUrkKAtBmFclcBbVJPu_p_JhJgyflYwR_7rktFPy",
+          "places/ChIJ7R84HD7UuTsRIptK_a_2xLg/photos/AWCwydjF6gxiNZxS9huMT-WOnhVuhRWmYzYewTD87ZOyOPcbmZskfUw1NFLnXELhuy9LfUiUq_DDKd7t-ixGbRDvYmXeoBl7dpi2wkPqlCIrNlkbaNuXjTvoCXTPJwTHrTRKIcAnt1qteTz85nLm-mcgt44Yp6y9BlzkO0aIg9kxdnIylz1n3Hl8NcqOrtMJhYwvjC2FTFFNJbjuX3BSQeo6QI7JbtcRDc1HNuCZcdhgzEvyM1OPGTXakWcabk3KQXa4I8y05kCv2OVIUhuROSLKeJVlPM6DqMaWcsfaRPp1cGhlAjSuzNFQVy16IDuWRP6zw4tZ8zkHu7UzsrSZwwjJZ22ufZyQc9MM4JnBHJh5iI_wrlzZotusJgXN9KKE4u7RAu8FEuHANC7ctZVOEKdP7sGQgEse-GC0t-28HZiGTXPOEA",
+          "places/ChIJ7R84HD7UuTsRIptK_a_2xLg/photos/AWCwydhV3n683urjpVJQixwi1QzAxmK56oEPS7r3fEWmDoFVHEDt0Tjr5f8Ar6QqkseCBg8S8S6K_YLOQFRKsyoAYihdVG50UPfKh9Y0PY8oDs44EK_jOAKHnLeo1kNdCXULRijqGIxg-GYsFlRBS8_lq6SGIGG7N09rk0TtxU6sklAuHwXySBlYhGaPe0t__uwyhaUvQqgtfbFrDIZPeI1LgIfeik4-NvIctKc9l_VGJilFBMXkiOU_WpkzawePMlFGkw5lXRhzu6rgM0oSpVtduAli9bStxx5r9sYUwhz-7xrlXJGX0HQUn-ci6K6w579EN9W21bk82MwbFHLgGPD1-YdrXeAvLHl-HWb2ktvv7m9OVDlcWmPpdU6-z2f9kh2Kxyr_KStGGisXnCVbdGnbrygO8WBVkTt70qYH2mtpUKTCdGEe",
+          "places/ChIJ7R84HD7UuTsRIptK_a_2xLg/photos/AWCwydhAJ6nwUCFtpMApTbAfwVGjmERjAz16YIr7e-Rccf7bYkyLFnWA6stXobH1jAgXkFQHDP19rVNnLlFvLYgLhodEx0ePNehiO9omFZLfcUHKjlSs6qDL6P0atSQ3nviUu52Wwfs0tIOsKtlcW6d3t1rVjWdezwcwNy6FK_ylhFLJObL0JxMGIITv4LHUX6GAwI8_XEcrmU-abSLHlI-Jfz9AuvtG1gdpg4SO9JT5lxTMyyXWESZ_6mqeSj8itTg0fVw7RZk8r1ryV7afqEppnfaGzb2_3DL-cMHeGT6l7_60gZIJvZlqesbRHUeDIlTebjNQFrhI4-eCA3GSM0wUO1Ja4ZTX_dcseSwuQaK7LEZiMylDu3tLSdVLdErHtcNZ0UdEZ_Z-KRRZiu_ysWihu4JUotZ_8i-8osnKIR4I75PZ4uJq",
+          "places/ChIJ7R84HD7UuTsRIptK_a_2xLg/photos/AWCwydhqzIaQNBiwqoLzEfdWZbPULHdbs0cIqhXANgB9DgJ36mVf4_sHwsciDnDoLYi69KsfRzmoT3MOCfQWAXQecRER0YQunqXou3XMqEOxUH5eBbz09awlecDjEsW_DmL48_mfFf9srW52kuUucyip5yLER5rPsu9tjS-bl3OtoN9v93FK6Cp3ORfSrRyP0M1-0SxAtV2wgQqouNo_FSrGZ2exf6vJDGQBKUHYDD8AJDk4IjoIVB36GUbSoFKUZoeSv_cY_BMhqFGtlHpoUmOhMsS2BZxIr1Nh-oKQyAqW9qkWtoaLnXj-5B5iWPpJpsHXv2bsmka1M9P--IGHvcRWthMo3CkkzF2XxQ18qU_-v9HyO2BjXTzKHGimD8F-m5cCGQtuZ70W8N-AyXDRUOaxRjWLSKLSarzpPo6rXj3nuWnk_FA",
+          "places/ChIJ7R84HD7UuTsRIptK_a_2xLg/photos/AWCwydjyC1rPUf48gXA-6R6qTfKmOOLKELwJIxbmBxn7NdNhO1rO-IPYGbQfSPS5Nn0TqFC028AgXjm3mGQeBA5msiOg3lIdz3Vgd_BpXORZ9LSwByBetfrIupDXNPIii68Ak4jt_H9YseAX3M6CnOcjb23Pf4VPLCahebeZaoWEQECkufaz30LBeE4RXiv1-_uxGtmb9c7SA2tmIcNHfTIiygR1BJp4R-k8sdYN_sDtdfZsH-NOnlILoXhB6XDThvzMjlNBSZ54aBa2u5GEAFAviu_YUyoGscXH9DwB_RZnA_6qhq68FLZ_gf-8oRlL99EeILG0hA-x_NlXMUNO1sGyArsY1MKoI1nbGit3jrMCTko9_QKH6eM4E_K0P-ziaHI3cB84829S9ghodijHsisAE5gsDBJy1IB2B8oQUWRjXls7ZZ4",
+          "places/ChIJ7R84HD7UuTsRIptK_a_2xLg/photos/AWCwydgEgt7DrmU3A1jVDbAfEbcr7-QwkYvr5wv8aZ5HbAXdDkmIYol2YTY2LmGjEfFFKXiHP11QnhgJikNfuSPwIqW6f3e33Ph3wR9DkB3lyKmEwjj8BRS4LYo7B_LeZTP-G7po0-0v1My2lU_pbzNHOUPamt5K0uHZeKKjM32dCy-0YrD1yp4S-X_1eW_YqPg0N0ld5A4TRE8r8JQXOFeIs86G8fNmqOyf5dJuemcv-zNEoCDqcForRwVFzRJ0BNzuK6ztFKwbt4Mpz383E2YsDq5HId5-_qOQprJ4asxpz9uB1boPOkNE1HWkK2VjwX9GdZj3ghPaHKSUyEOkBAsW_Wqid9Uu5o9sxF1aRCE-VIsFVOKl8OTOK8k-fhcRqOnb4-jlTEc_mZF0EZflRJQVhB6cpYDkNknUH8xnsGLHJzwrbw",
+          "places/ChIJ7R84HD7UuTsRIptK_a_2xLg/photos/AWCwydjdEQ-ftsIffuzahZokxoMr-kdHVrIYbl-7QN0z40r8yvzUutynCpFfz2pg9zTuHBHJpOT4Na00j3UITw5faG3C0iY-MPrKkgN9bTQy1kqhyP6jgdwXW0Uj2v6SvisfQfJYMlWk2V-C2i4mLEbTu606CRkZGvS0U-f07N9JX65IKa3z6DBaunYHS6Xxahya1gzm4Vff1ByYByBUNzUmd_8BAqO5vkLWi0SSdnMB6qentpbvqPfP1senslGmD2P_6-6TgkahSjE5-74jA4d6yi_oYBX5AbMpg6abYv6eEeS-fnifSW6rT6ApJk-WGmF8IhmFeJe-CJSoYOrqto1sh9K1-ZXdLQpJ41MwDKwrSt3Zp78a_lNQGHwh0x4T37_MPScsTBjQQpJ8fXxIuSaG1nhgnnaPTJSkwZzVBah6YxFj_An5P6hl_Us_qUY5By_3",
+          "places/ChIJ7R84HD7UuTsRIptK_a_2xLg/photos/AWCwydgVCtK2CYa5V5hWVPF6OXfqFt0aGQBCaJAH8DkTtzgpJY8SuiRqeAD7hiMIDA93N0-7O9-eSornxd3r4BwM23QjiqqcEd3sWmYWjS0njkRYiTtclQja1zORzsZF08m-zQrdEtcc1OW8ShWknkgzW4u2y6DQxGGqdpuBefJwiwx7z-stmoRHyqoZFnuLMp3zhKTY01O_q6mDY_kBrtaUrBsi6FAF5YEkimQSW028MqvyvvVVaGQ98YzW2IEDUG3Lsq6rDBe93E226StUvgDJT_Xmjgeuw6MaCowdkwco5moHqxU5_8JqCbdbGbSBSnPlZTamoc_kIPbIs8Ay3PnwvagZLHurAyqPVBUj7uIzF2tMtJz9dEDri-awzkZ_MX9B_GTSjisteyPJKRJP1VPiGuL2M5bxV7WlUJw_Bn_dJjrn1w"
+        ],
+        "__at__": 1786806563.4793751,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Not to mention, it’s too beautiful in morning. You can see sunrise happening very beautiful in the morning.\nCome early in the morning for the Hampi. If you are going for Hampi, beware of auto drivers, they would ask very inflated price for taking you to South Hampi near the Tugabhandra River. Instea",
+            "author": "Shashi Bhushan Rana"
+          },
+          {
+            "rating": 5,
+            "text": "Date: 21 January 2026\nStation: Hospet Junction (HPT), Karnataka\n\nHospet Junction is an important railway station serving Hospet (Hosapete) city and the nearby world-famous Hampi region. It comes under South Western Railway and acts as a key junction connecting North Karnataka with central and southe",
+            "author": "Dinesh"
+          },
+          {
+            "rating": 5,
+            "text": "Humpi- the UNESCO's famous world heritage village is 13 kms from here.\nAccomodation,Travelling options are available here so",
+            "author": "shivanand waghmare"
+          },
+          {
+            "rating": 3,
+            "text": "The railway station looked beautiful at night with bright lighting and a well-maintained ambiance. The illuminated platforms and clean surroundings created a pleasant and welcoming atmosphere.",
+            "author": "Mohammed Imran"
+          },
+          {
+            "rating": 3,
+            "text": "Retirement rooms needs a better house keeping and clean toilet facilities. Sometimes they give water towels coffee milk sachets and sometimes they don't. But the station was kept relatively better",
+            "author": "ARAVINDAN M V"
+          }
+        ]
+      },
+      "hotel (tbd)|hampi": {
+        "place_id": "ChIJ9dwxr4_VuTsRyfCHxHrWVIM",
+        "name": "Tungabhadra Resort Hampi",
+        "address": "Naranayanapete Road, Village - Ayodhya D. Post - Shivapur Tq, Ayodhya, Karnataka 583234, India",
+        "rating": 4.9,
+        "review_count": 26,
+        "price_level": null,
+        "website": "http://tungabhadraresorthampi.com/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 15.3456898,
+        "lng": 76.4040287,
+        "photo_refs": [
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydiZ5Gu50Ulj1v0kOAAV-XfwvLdD9UBcOJ_xICsCkwQ4_zqu9F5hNJj5sjBiSCnO7B3twG89Z81Qa6HSACXIM08w5VJCdUyiWCUDgcFmwRKaMDqBtwrxK4YQENu-tNZsmAXOy03jhFGfdMTr2mu3QSvBT_1pAipwXN9rWW9IGetk6Sf4vFLzIU6VyAWUjrc9a4z3-PlGuOhwVi5BxtHy9wFH-ctfUbnC4Nrg8x81YAI_ktQ1HTC77dYdfTddrsFdZXH_8OIldAXVdoZsQS3EAPWdV0lvyul_LwPtj89Rd7oTa3TQlWMGbDngB_PEv9D-WkG4b8JFHgH8thmaQBz9fQtQOt6C_W5DvlzReyZJJm-gwHf9Xl2wlTTDo5Nazu0Uru2DQVL4YOY4fTLW6uIt0my4RRCwoV__TszDEku7UiMkWJxhJ8UXCTE0htHrVpao",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhl2iUaQ6cnyMaUmdR_-pHntYRou34X7-dxOSW-kSVmgyEvfezGo5sxRAd1gHydnwC5Dp0gB-5ZL-vqWVJv4FMDQ8RaF4MLvkBzjfeu4dLuQfd86ZB5rnL1v8PJfxYaKpFdU6DJjC1CgkdUOa_5EpREoFfdysFXuEihWNrMHpEPUKKAKPDY6Ank2pxExaSi3QLx-1gft0nxYNq0u0EERVcTKBciLVRSWXx54Kg15j9WAZUQ5bhC1R025KWplojVb4TnM2oqKHvY3CZk5QDPe51GIjcQL1Sq-q333WOhPE5TCfuYbW2XnRn0Y35cTm4enxgyt2e8hS2_rqeLZ4NNsFcJMLKBUPAXF3P7xnEnY7crA-jxcYs8FpEIEX-aHs77pLFlT7ph5xcdcTvSGpd6TefqmuNdH6nTaVShUabJdX5WGnbD0eiktuuykx767wf4",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhc62e5No1mFXPUa_-XfgipFNEVLjJE-JKUqMzTlhN-M3C46hXTMEExpc27wA_GwR7pRscHtiog-hiteDFGUwqO-3ui4foswyiXMlMEXgW-LklB58ar0uucSoebHr2qnFaNQMtaLRsaYn_FrPyIVLEfzxECi8e1jjrinFHNoH8CMpVXRwLnixKwFjGM_B8__znBXqFXDyeQNbnT74pkggQOAxiF2i1fFk40HPeNy4MDMRBHrql2vC4pXbq7r9kfIX-Cv2QYe-1eaZSv_uXW4EpZ9O7nZ_6XlclO0xzq44rRfMrXyMewOW36_otyCHrWiy5V1vaH2Ft748OvFtF8bV446X6HavPgTr1M7_TaAUpsKeOgqN7xtpp36kudS7ektjGrIiDYvyBumylr1wnoMb9hr2oCUfHLqu569ZrE7TNnhNPteNONs4il4AsIw27d",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydiy5DThEraTSbBeTCV5j_VseLgDvAqpnJRbaNmKq5wafXJ7bN0VrojxaXMhLp3VvYplIEg8YoGsuIrj-ZC1yEQJtiRt3x2RGqtQJSLlDiws6pdcYSfVQRluHr7kSE1xHk7g9yqfrTAkGvwWcynklLb393DxZNoGTgNAXDJta661BC9BloPLcesM9b7h-0d0TKF7a1L9fjzXo1MZIAtEoo8otzhtBlZEK8juivp9a5O_vv1T6lo-KmWFhubPQXrfqA5A-lfS3jXzhFeGCQ58-ZLFhQilorSTqtM_iyK770HSAVZS-f_ShBDXfSadLTmjapCJQY7pqSwsIULq3RqDv3uMLosh7iM0mEjqUXIUcqpyzonjeXUqAfK2XQW23VcxmzFt8gB2WrWqeiPY9F2Qu_wEHbqZqppSl7MEz21QySXcsaRYSANq0oI3q2am2A",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhUzwNkUNp9x0DEWNliGL4Dfo6l2ILG6vmNJbe4htwfe-XmtOqEzsXbQyP1n6ANRdBD2UbZ8un5xcNyxx_3fQXBpc5clhhq75SwjqgM_RdCixeed-F-6Hq__T8sifiUCjf3Ulpio60JCKjpDiLqKgpQc8-CwRjEu3F2MLpd8zxNCE_eJa1DJ3RTCwvqxQiq4o3p6mrQBpLB_S-OtZHWXxatZZz21-2wpvst3RBsrR1ntC_GNcnF4wTMw4kVniadSunBZPsg47Dkpcai8KAkyKhGJf4lGok102oFJAvhd2ewpaHYN1rxyH859gSLI2fWIIo3WtPkE4ZmCDD7FeM9ba0gx1-MY-wBtrIfdX41UExMWWjMWcvEKRr1zX4ctWoBmT7E1dY-G1FqjjLg_FFkuKhj5GR4Xk5Ao-ZqruWEAbd5cI4hunpdEpsegOPedQ",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhlr7VFpTZsAy464hyTPGmxItgJiEjuU5IW2lLvunidu4wdjzizT9Ac25vvWZrvoNxvf4iSacbu65Jq5FaMp7c2Q7cFa-duTBgJNJtNkgGCt0yrYeh1zvkfGvrZjR7G8yylzOM3qmsC1VZ62LsDZUbHUXZ9u8Pyf_DTTOff7_lNV15DG9mbz6bFKMu0NqVXYIQr-DpucnRl9Fomw-vv8Puh0DxTF5BsVXZ89uCxD8oReyCPNqQipIfSjmfaIS7Xx1YBYBxnMhH07yK_M6qaXt1zSROuVko6iOauvZjTLBNNzzmwlEtZQiM4z9EiguUDLF31fYS6Vu_6hwQ2sFbcnl7DsH0AmeVm6s07nVEuSriBAEUWuYT8wZiA2tNGKszh3irzBM3_h_RKWc4tvJfCcCdr6w8TRkiHJGOzepymF9aU1jyw55iFhE_YkbTkYQ",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydh4YxgDQjYvSBsrDkxrRl1v7gRts0uE4HgpcGFJ6FErsBb-dQcoTv-GVoCWym3BM6K4JYA6w-KSUICzuyd352rh0s8JtcqAKdg302dKW0-9z98kqan_GHKECYZK6AL_5v7mp88Sj5Pztxfgd8cNswOhFDfJRMWiz7kyr1xPm_v5DzrXbq0ne2QuEceJpkOfCY6H3LeBTDka2UHWEqL1dq-EPR2v1jiXR9PyBjEItwn6TD3qqtQb0aOON7fdD4PjQZqoc1s2GswJQKu1ALAeXzdPYCJ26d2SuYUJ5xKavdKN7qJVaIOv0_usnLLTZaqqi3mwsST8Zs3Vzyxv97t5q0vFsIoLyztATX8Ds816bDqUh-5gc2czKIH-02fc3dkdAwsNq_6D34vF4Cu8uM5rxvZUNXaYgyPc51oxWZGTWtQh0odIbrg1pwHMlutaNUUi",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhTuwNtbbxUmf19qhoGeJo3mxFMfjnsT_pl7KAYlLu9xqLtUNx-ASQVoiy_0Kv8s_WoXE9Hl0u1QW1eWNpSihN-6frn5bg_sNxc6iQX7ADuljD9qgioeQu-_rjNqp3NzLlzOdhFxwzp1GcV46oik4Dpa9ctKQf3M4A171y6y6nr8Sje6xnsFJ3amTD7BVMOWfK7p56f3vraMYFo7L8GztfbavVaz6dLWFqt5fw79eZD0i44tYre-BsVh0Q0vNzHHnm78lfUFrDtBeqo0NWc-tJsZuLmN9WzhqCGvFJF6uSxlhdGi9veNvwBnYSFm6zZAmnrkSj4ZlYyr8x7Kflr3sPGj08oyLgEKkZxXMQbRJ30uCYO3a2AAw0sZTD_QEvyC2Aolz1LU5wfx0raK_cGqaApbS7RozyT9B9-iggD1Tw9giIo-Ni2FSjwCNNBroc6",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydh2CSv0wOBofLsT_GYdWmxQKH2jaOyJeBIFZqFsf5_J8nZdk7kjPELTjjSlpK5wqhjA-HSv-eOXCIvlUZKAjGeb8bZf0aeMD5cbpzC84JswOiToZyEgT5ny_AC0fq6ziMIDKz3tcAhoghl8-zNCNlOG6iXdlVTgDper8ssiliTQ5ApUgqB2AmUDuGCVHKRvgkKASiagDH-zAH1KCXXCSOVHkkB56EW9ydABIMlcSp8Imh4PgpxAfk2Cmf-AMVNhGohKUME8IAA9HFHq8vaU7PwsWKz2p8jJUme2Q1aSQT_RKgra0pWH_liJv3aHs_HMmPTYnTVJEHGIQp-4oEEG2ZSnONt4LKNGcwXz-C1QhjRMg4DWsHbpZZfpfo0N6XiCkPI47jx6T8RuEGIAEWPD3zH6aGWRQsgPRkuxPUFQSEgtq-yQtlzaBnPJYl35qg",
+          "places/ChIJ9dwxr4_VuTsRyfCHxHrWVIM/photos/AWCwydhhZfXcgLHgLKdHCXYkTJ9CUDQo8MWkP3dBtDUAACfxSQoP7sJkZKFdNDhPbKduTcR9YP9W__r-hIm7ZSQJunIOywo_AIgbRqK82-MRaCHTxQuIxZRKRG26PriFMjofBd3NQTESkzaglcYFWzcJKtEnSaXQU-0cfa2Tc6UYWV1svdmd-9EUdZwNJnC8fG-PV9UVaEEP0eMc3Dg8RatIdl-W6N6MYLbhnVIDHGdCEboeNxvwH99pAajhlIqsZ1MgUVH5tz0A9tYjGpR2BiZB7BmLRd7VqIMm9AT0KXESiYl_g5L_mCY_lFCBvK2Bc6pgY8S0JfKi-Ne5Ob7_r29z0PSIB_fLodjSYk-OmZT4RvyK2LB6juAiLwV4GwRTvqYhyCznaRjVy1alyx0WjkMoApNf9NnjaHDBQtBhN3DIYt71YQFY5qfOSbA2011HBJCT"
+        ],
+        "__at__": 1786806564.660026,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Beautiful place. Clean and nice rooms. Friendly staff and good services.",
+            "author": "Tuhina Bagchi"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent place to stay away from city. Good response by staff and owner. Food is very testy with natural garden very refreshing. It would be nice if u have a swimming pool",
+            "author": "Vaishnavi Sagar"
+          },
+          {
+            "rating": 5,
+            "text": "Stunning views, friendly staff, luxurious rooms, unforgettable experience.",
+            "author": "Avishkar mane"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing staff and services, beautiful location, comfortable rooms, and good food",
+            "author": "Vinod Tamabavekar"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent place to stay. Away from city crowd. Nice place to spend time with family and friends. Clean room. Staff is very cooperative. Food is very fresh. Natural beauty with farms around the resort.",
+            "author": "Manju Bagchi"
+          }
+        ]
+      },
+      "mobility accessible, roll in shower|hampi": {
+        "__at__": 1786806612.677845
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Hampi",
+    "departure_date": "2027-01-05",
+    "return_date": "2027-01-09",
+    "nights": 4,
+    "month_year": "Jan 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 1,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Hampi",
+      "Mobility Accessible, Roll in Shower",
+      "Day 1 · Arrival & Local Exploration",
+      "Train: Bangalore to Hospet Junction",
+      "Hampi Bazaar",
+      "Virupaksha Temple",
+      "Day 2 · Monuments & Riverside",
+      "Vittala Temple",
+      "Riverside Ruins",
+      "Mango Tree Restaurant",
+      "Day 3 · Royal Enclosure & Hill Views",
+      "Royal Enclosure",
+      "Lotus Mahal",
+      "Gopi Guest House Café",
+      "Matanga Hill",
+      "Day 4 · Departure & Anegundi",
+      "Anegundi Village",
+      "Train: Hospet Junction to Bangalore"
+    ],
+    "auto_summary": "4-night Hampi, Jan 2027, 1 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T15:10:12Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T15:08:13Z"
+    }
+  ]
+}

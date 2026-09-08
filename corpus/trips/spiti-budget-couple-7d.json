@@ -1,0 +1,498 @@
+{
+  "status": "draft",
+  "trip_id": "spiti_valley_2027-06-04_2027-06-11",
+  "trip_number": 1,
+  "created_at": "2026-08-17T20:04:41.457366",
+  "destination": "Spiti Valley",
+  "origin": "Delhi",
+  "departure_date": "2027-06-04",
+  "return_date": "2027-06-11",
+  "travelers": "2 adults",
+  "notes": "Total budget INR 80,000. Balanced trip style. Moderate hotel tier (3-star+).",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Spiti Valley",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel Bodh Residency, Manali",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lpa2a29"
+      },
+      "rating": 4.1,
+      "price_per_night": 1800,
+      "currency": "INR",
+      "address": "Near Circuit House, Manali, Himachal Pradesh"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-06-04",
+      "title": "Day 1 · Delhi to Manali",
+      "summary": "Depart from Delhi by overnight Volvo bus to Manali. Scenic drive through the Himalayas.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Manali",
+          "kind": "transport",
+          "time": "18:00",
+          "duration_min": 720,
+          "distance_km": 540,
+          "note": "Overnight Volvo bus"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-06-05",
+      "title": "Day 2 · Manali Sightseeing & Acclimatization",
+      "summary": "Arrive in Manali, check into hotel, local sightseeing and acclimatization.",
+      "stops": [
+        {
+          "name": "Hotel Bodh Residency, Manali",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Check-in"
+        },
+        {
+          "name": "Hadimba Temple",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Manali Mall Road",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Café 1947",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Hotel Bodh Residency, Manali",
+          "kind": "hotel",
+          "time": "19:00",
+          "note": "Return for overnight"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-06-06",
+      "title": "Day 3 · Manali to Kaza (Spiti Valley)",
+      "summary": "Early morning drive from Manali to Kaza via Rohtang Pass and Kunzum Pass. Scenic stops en route.",
+      "stops": [
+        {
+          "name": "Drive: Manali to Kaza",
+          "kind": "transport",
+          "time": "06:30",
+          "duration_min": 540,
+          "distance_km": 200,
+          "note": "Private taxi/jeep"
+        },
+        {
+          "name": "Hotel Bodh Residency, Manali",
+          "kind": "hotel",
+          "time": "16:00",
+          "note": "Start"
+        },
+        {
+          "name": "Chacha Chachi Dhaba (Batal)",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Lunch break"
+        },
+        {
+          "name": "Hotel in Kaza",
+          "kind": "hotel",
+          "time": "20:00",
+          "note": "Check-in"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-06-07",
+      "title": "Day 4 · Kaza Local Sightseeing",
+      "summary": "Explore Kaza and nearby monasteries. Visit Key Monastery, Kibber village, and local cafes.",
+      "stops": [
+        {
+          "name": "Hotel in Kaza",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start"
+        },
+        {
+          "name": "Key Monastery",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Kibber Village",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Taste of Spiti Café",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Hotel in Kaza",
+          "kind": "hotel",
+          "time": "19:00",
+          "note": "Return for overnight"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-06-08",
+      "title": "Day 5 · Spiti Valley Exploration (Hikkim, Langza, Komic)",
+      "summary": "Visit the highest villages in Spiti: Hikkim (world's highest post office), Langza (Buddha statue), Komic (highest village).",
+      "stops": [
+        {
+          "name": "Hotel in Kaza",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start"
+        },
+        {
+          "name": "Hikkim Village",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Langza Village",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Komic Village",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Norling Café, Kaza",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Hotel in Kaza",
+          "kind": "hotel",
+          "time": "19:00",
+          "note": "Return for overnight"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-06-09",
+      "title": "Day 6 · Kaza to Manali",
+      "summary": "Return drive from Kaza to Manali. Scenic stops and lunch en route.",
+      "stops": [
+        {
+          "name": "Drive: Kaza to Manali",
+          "kind": "transport",
+          "time": "06:30",
+          "duration_min": 540,
+          "distance_km": 200,
+          "note": "Private taxi/jeep"
+        },
+        {
+          "name": "Hotel in Kaza",
+          "kind": "hotel",
+          "time": "16:00",
+          "note": "Start"
+        },
+        {
+          "name": "Chacha Chachi Dhaba (Batal)",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "Lunch break"
+        },
+        {
+          "name": "Hotel Bodh Residency, Manali",
+          "kind": "hotel",
+          "time": "20:00",
+          "note": "Check-in"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-06-10",
+      "title": "Day 7 · Manali to Delhi",
+      "summary": "Morning at leisure in Manali, then return to Delhi by overnight Volvo bus.",
+      "stops": [
+        {
+          "name": "Hotel Bodh Residency, Manali",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start"
+        },
+        {
+          "name": "Solang Valley",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Drive: Manali to Delhi",
+          "kind": "transport",
+          "time": "18:00",
+          "duration_min": 720,
+          "distance_km": 540,
+          "note": "Overnight Volvo bus"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-17T20:07:48.811564"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T20:08:28.344970",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T20:08:10",
+      "expires_at": "2026-08-18T08:08:10"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_manali_2027_06_05_2027_06_06",
+      "kind": "lodging",
+      "created_at": "2026-08-17T14:38:10.807630Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Manali",
+        "date": "2027-06-05"
+      },
+      "subject": "Stay in Manali",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_6a4c86f27fef",
+      "options": [
+        {
+          "id": "opt_stay_6a4c86f27fef",
+          "mode": null,
+          "label": "Staycity Aparthotels Manchester Piccadilly",
+          "detail": "1 Bedroom Apartment- Capacity 3",
+          "price": {
+            "amount": 25411.74,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-06-05",
+            "checkout": "2027-06-06",
+            "room_name": "1 Bedroom Apartment- Capacity 3",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "8B Gateway House",
+            "rating": 9.4,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lpa2a29",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFNR01ZVEVNQldHSTNES05SVUc0WkRNWlJXTVkzR0lNUlFHWVlUT01CV0dFM1RFTlpVR1pTRE1OSldNVTNUSU1URUdJWURNTVpXR0UzVEFOUlJHWVpUTU9KWEdRM1RTTVJRR01aWFlNSkRHSVlERU5aUUdZWURLN0JTR0FaRE9NQldHQTNIWVpMT0w1S1ZHN0NKSlo2RVNUU1NQUVpFQ01DRFBRMkRLTVJaUFJVVkFaMlZKQjZEQ05aWUdZNFRPTlpVSEEyVEVOWlpMSjJVWVZSREdZM0RNTUpWR01SVENNQldHWVdUTU5SV0dFMlRHN0NPS0pERTQ3QlNHQVpETU1CWUdFM0RBT0JWSEY2REM3Q1NHRTJUQU9MNEdJMlRJTUpSRzQyQ0dVU1BFTkhGRVJTT0VNWkRBTVJXRlVZRFFMSlJHWVFEQU9CMkdVNFNHo3ByY8tA2NDvXCj1w6Vvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybr8xIEJlZHJvb20gQXBhcnRtZW50LSBDYXBhY2l0eSAzo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjY2MTUzo3NpZAKjaGlkp2xwYTJhMjmjb2NjkYGhYQKjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA2LTA1omNvqjIwMjctMDYtMDajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxMDI4ODFjMGhUOGV5Q3pUQVlTZUhyRkJNZFhGUFIwOVl5czCjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpwqFkq1RvdXJpc20gZmVloWHLQGM6PXCj1wqhY6NJTlKEoWnCoWSjVkFUoWHLQLPaWZmZmZqhY6NJTlKibHDAo2JrdAU=",
+              "rate_id": "I5GVSVCFJVBFOR2JGNCEWTSSKVDTIWSEJVNFEV2NLEZUOSKNKJIUOWKZKRHU2QSXI5CTGVCFJZNFKR22KNCE2TSKK5GVKM2UJFGVIRKHJFMUITKNLJLUORJTKRAU4USSI5MVUVCNJ5FFQR2RGNKFGTKSKFDU2WSYLFGUURCHJFMUIRKOLJIUOWKZIRFTOQSTI5AVURCPJVBFOR2BGNEFSWSMJ5GDKS2WI43UGSSKLI3EKU2UKNJVAUK2IVBU2Q2EKBITERCLJVJFUUCSKVLECWRSKZFEENSEINHFUWKHLE2FIT2OLJKUQQJSKRCU4WS2JRFDEVKZKZJEIR2ZGNCE2TKKKZDU2USUINGUEV2HLFLVITKOKJLUORJSKRDTOQ2PJNFEIRJUG5BFGR2BLJCE2TKCLFDUKM2EIFHUEVSIIY3EIQZXINJUORJSKRAU6TBUI5ETEVCJJVFFERZUGJBUOVKTKBCU4SCGIVJFGT2FJVNEIQKNKJLUMVKZIRIUYSSSI5MVCRCBJ5BDER2VGRJUO7BSGU2DCMJOG42HY7CSJ56HY7D4GEQEEZLEOJXW63JAIFYGC4TUNVSW45BNEBBWC4DBMNUXI6JAGN6DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:38:10.759121Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_f7e653d9ea15",
+          "mode": null,
+          "label": "AC Hotel by Marriott Manchester City Centre",
+          "detail": "Standard Room, Guest room, 1 Queen",
+          "price": {
+            "amount": 31224.64,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹5,813 more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-06-05",
+            "checkout": "2027-06-06",
+            "room_name": "Standard Room, Guest room, 1 Queen",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "15 Mason Street",
+            "rating": 9,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lpf8d03",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFYRzRaVE9OQldHRTNHS05SVUdZWVRPTVJXR1FaREFOWlNHWlRETVpSV01RWkdHTVJRR1kzVE9OSldHVTNUR05aVUdJWURPTVJXTVkzR01OVEVHSlJURU1CVEdFWkRBTlpSRzQyVE1OSldHVTNHSzdCUkVNWkRBTVJYR0EzREFOTDRHSVlERU5aUUdZWURNN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFNOWlhHUTRES01SWEhGTkhLVENXRU1ZVEFNSlpHRVpUU0laVEdFWVMyTUpRR0U0VENNWlpQUkhGRVJTT1BRWkRBTVJUR0E0VEFPQlFHTVlEQTdCUlBSSkRDTUpaR0I2REdNSlNHSTJETU5CREtKSFNHVFNTSVpIQ0dNUlFHSVpTMk1CWkZVWURRSUJRR001REFNQkSjcHJjy0Defij1wo9cpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Ju2SJTdGFuZGFyZCBSb29tLCBHdWVzdCByb29tLCAxIFF1ZWVuo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAxOTEzOaNzaWQCo2hpZKdscGY4ZDAzo29jY5GBoWECo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNi0wNaJjb6oyMDI3LTA2LTA2o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTAyODgxYzBoVDhleUN6VEFZU2VIckZCTWRYRlBSMDlZeXMwo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZLwkNjMuMzIgVVNEIHBlciByb29tIHBlciBzdGF5oWHLQLikSj1wo9ehY6NJTlKEoWnCoWS5wqMxIEdCUCBwZXIgcm9vbSBwZXIgc3RheaFhy0BgH1wo9cKPoWOjSU5SomxwwKNia3QC",
+              "rate_id": "I42FUVCPJZBFOR2FGNDUWTSSKVDVSWKUJ5GVEV2HKFNEIQKOLJJUOWSUIRGVUUSXJVIVUR2HJVJFCR2ZGNKE6TSKK5DVKM2UI5HFUVKHJFMUIT2NKJLU2WJTI5GU4VCFI5FFEVCFJVBFIR2FLJCECTS2KJDTIMSUJVHEUV2HKUZUOSZXIJJEKTK2IRAU2USYI5ATGRCBJZGDIR2JLFCEKTS2KFDVSWKEJU3UIRSOLJIFMS2VGM2EURSIJBMVGS2PJNFDMRCFKFFFCSKOGZCESTSKKNEEMNSHKNKUISCLKZCUQWKNJJMEQQJTIRJU4WSYI5ITIRCLJVJFQSCGJZEEWVCDK5CU2WKUIFGUUWSHIVNFIU2JLJKEORKZKMZE2SSRI5CTIVCDJVNFUUCSJBDEKUSTJ5IFCWSEIFGVEVCHIE2FIQKPIJIUOTKZIRATOQSSKBJEURCDJVFFUR2CGZCEOTKKKNDUSMSEJVHEERCLJJEFGR2UKNJUSWSIINDU2USRI5EVUUZSJVBFURSVLFCFCSKCKFDU2NKEIFGUERD4GMYTEMRUFY3DI7D4KJHXY7D4PRJXIYLOMRQXEZBAKJXW63JMEBDXKZLTOQQHE33PNUWCAMJAKF2WKZLOPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:38:10.759121Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_cbde1b385292",
+          "mode": null,
+          "label": "INNSiDE by Meliá Manchester",
+          "detail": "The Innside Room - King",
+          "price": {
+            "amount": 35802.83,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹10,391 more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-06-05",
+            "checkout": "2027-06-06",
+            "room_name": "The Innside Room - King",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "1 First Street",
+            "rating": 9,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp7d07f",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gE0RzQyRE1PQldHVVpEQU5SWkdaU1RNWkpYR00zRFNOUlVHWTJURU1CWEdJM0dNTlRHR1pTREVNQlNNUVpEQU5UQ0dZNFRNWkpXRzU2RENJWlNHQVpET01CV0dBMlhZTVJRR0kzVEFOUlFHWjZHSzNTN0tWSlhZU0tPUFJFVTRVVDRHSkFUQVEzNEdRMlRFT0w0TkZJR09WS0lQUVlUT09CV0hFM1RPTkJZR1VaRE9PSzJPVkdGTUlaVkdFWkRDTVJYRU1ZVEFOUlVGVTJUQ01SUkdJM1hZVFNTSVpISFlNUlFHSTNEQU9CUkdZWURRTkpaUFFZWFlVUlJHRVpURTdCVEdVNERBTVJZR1FSVkVUWkRKWkpFTVRSREdJWURFTlJOR0E0QzJNSldFQVlEUU9SVkhFUlGjcHJjy0Dhe1qPXCj2pW9yX3ByywAAAAAAAAAApW9yX2Nty7-EeuFHrhR7omNty7-EeuFHrhR7o3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jut1RoZSBJbm5zaWRlIFJvb20gLSBLaW5no29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNTEyMTI3o3NpZAKjaGlkp2xwN2QwN2ajb2NjkYGhYQKjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA2LTA1omNvqjIwMjctMDYtMDajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxMDI4ODFjMGhUOGV5Q3pUQVlTZUhyRkJNZFhGUFIwOVl5czCjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpwqFkqENpdHkgdGF4oWHLQGM6PXCj1wqhY6NJTlKEoWnCoWSjVkFUoWHLQLv4keuFHrihY6NJTlKibHDAo2JrdAU=",
+              "rate_id": "I42DERCNJ5BFOR2VLJCECTSSLJDVUU2UJVNEUWCHJUZUIU2OKJKUOWJSKRCU2QSYI5ETGR2NJZKEOR22KNCEKTKCKNGVCWSEIFHFIQ2HLE2FITK2JJLUONJWIRBUSWSTI5AVURCPJVBFOR2BGJMFSTKSKFDUSM2UIFHFEUKHLI3EOSZTKM3UWVSKLBMVGS2PKBJEKVJUKVKDIR2KIFKECUJTGRDVCMSUIVHUYNCOIZEUOT2WJNEVAUKZKRHU6QSXJBCTGVCPJZBFSR2VLJCE6T2LGJHVMR2GJVEVUVSHIVNEIQ2NKJMEKTKZKRAU4USVIZKTEVCDJVJFER2JGNMFSVCTKNEVUSCILFGVEUKHJEZUIQKPIJJEOWKZIRIU4SS2KBIVSWCZKVJFER2FLJKEKN2CKRDVKNCEIFGVEWKHKFJFMRKULJCEUWSKIVGVIUSEI5EVSRCFJZJE4R2BGRBTETKKK5CUCWKEKFHVEVSIIVJFC7BTGU4DAMROHAZXY7CSJ56HY7D4KRUGKICJNZXHG2LEMUQFE33PNUQC2ICLNFXGO7BQFYYDA7BNGAXDAML4PQWTALRQGF6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T14:38:10.759121Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 25411.74,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "spiti_valley_2027-06-04_2027-06-11",
+  "user_id": "corpus-spiti-budget-couple-7d"
+}

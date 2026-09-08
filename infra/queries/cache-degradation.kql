@@ -1,0 +1,9 @@
+ContainerAppConsoleLogs_CL
+| extend event = parse_json(Log_s)
+| extend event_kind = tostring(event.event_kind), result = tostring(event.result)
+| where event_kind == "cache_access"
+| summarize
+    Accesses = count(),
+    Misses = countif(result in ("miss", "refresh"))
+| extend MissRate = todouble(Misses) / Accesses
+| where Accesses >= 20 and MissRate >= 0.5

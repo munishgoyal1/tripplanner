@@ -1,7 +1,9 @@
 import { ChevronDown, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { deleteTrip, fetchSavedTrips, switchTrip } from "../api";
-import type { SavedTrip, TripView } from "../types";
+import { ApiError } from "@tripplanner/client";
+import { dismissNotice, notify } from "../lib/notices";
+import type { SavedTrip, TripWorkspaceView } from "../types";
 
 const STATUS_BADGE: Record<string, string> = {
   draft: "bg-slate-100 text-slate-600",
@@ -9,18 +11,26 @@ const STATUS_BADGE: Record<string, string> = {
   booked: "bg-brand/10 text-brand",
 };
 
+const SWITCH_NOTICE = "trip-switch";
+
 export default function TripSwitcher({
   version,
   onSwitched,
 }: {
   version: number;
-  onSwitched: (tripId?: string, view?: TripView | null) => void;
+  onSwitched: (tripId?: string, workspace?: TripWorkspaceView | null) => void;
 }) {
   const [trips, setTrips] = useState<SavedTrip[]>([]);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryToken, setRetryToken] = useState(0);
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [selectedTripIds, setSelectedTripIds] = useState<Set<string>>(() => new Set());
+  const [deleting, setDeleting] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const switching = useRef(false);
+
+  useEffect(() => () => dismissNotice(SWITCH_NOTICE), []);
 
   useEffect(() => {
     let alive = true;
@@ -36,7 +46,11 @@ export default function TripSwitcher({
   useEffect(() => {
     if (!open) return;
     const onDocumentClick = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false);
+        setDeleteMode(false);
+        setSelectedTripIds(new Set());
+      }
     };
     document.addEventListener("mousedown", onDocumentClick);
     return () => document.removeEventListener("mousedown", onDocumentClick);
@@ -55,35 +69,124 @@ export default function TripSwitcher({
 
   const onPick = async (tripId: string) => {
     setOpen(false);
+    setDeleteMode(false);
+    setSelectedTripIds(new Set());
+    if (switching.current) return;
+    switching.current = true;
+    const label = trips.find((trip) => trip.trip_id === tripId)?.destination ?? "trip";
+    notify({ id: SWITCH_NOTICE, tone: "progress", message: `Switching to ${label}\u2026` });
     try {
-      const view = await switchTrip(tripId);
-      if (view) onSwitched(tripId, view);
-    } catch {
-      setError("Could not switch trips.");
+      let workspace: TripWorkspaceView | null;
+      try {
+        workspace = await switchTrip(tripId);
+      } catch (error) {
+        // The workspace lock is held for a moment by another mutation; one
+        // polite retry turns a scary failure into a slightly slower switch.
+        if (!(error instanceof ApiError) || error.status !== 409) throw error;
+        await new Promise((resolve) => setTimeout(resolve, error.retryAfterMs ?? 1000));
+        workspace = await switchTrip(tripId);
+      }
+      if (workspace) {
+        onSwitched(tripId, workspace);
+        notify({ id: SWITCH_NOTICE, tone: "success", message: `Switched to ${label}.` });
+      } else {
+        notify({ id: SWITCH_NOTICE, tone: "error", message: `Could not open ${label}.` });
+      }
+    } catch (error) {
+      notify({
+        id: SWITCH_NOTICE,
+        tone: "error",
+        message:
+          error instanceof ApiError && error.status === 409
+            ? `The Assistant is still finishing an update. ${label} will open once it completes.`
+            : `Could not switch to ${label}.`,
+      });
+    } finally {
+      switching.current = false;
     }
   };
 
-  const onRemove = async (tripId: string) => {
-    const trip = trips.find((candidate) => candidate.trip_id === tripId);
-    const name = trip?.destination || "this trip";
-    if (!window.confirm(`Delete ${name} and its chat history? This cannot be undone.`)) return;
+  const toggleSelected = (tripId: string) => {
+    setSelectedTripIds((current) => {
+      const next = new Set(current);
+      if (next.has(tripId)) next.delete(tripId);
+      else next.add(tripId);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    setSelectedTripIds((current) => (
+      current.size === trips.length
+        ? new Set()
+        : new Set(trips.map((trip) => trip.trip_id))
+    ));
+  };
+
+  const onRemoveSelected = async () => {
+    const selectedTrips = trips.filter((trip) => selectedTripIds.has(trip.trip_id));
+    if (selectedTrips.length === 0) return;
+    const deletingAll = selectedTrips.length === trips.length;
+    const message = selectedTrips.length === 1
+      ? `Delete ${selectedTrips[0].destination || "this trip"} and its chat history? This cannot be undone.`
+      : deletingAll
+        ? `Delete all ${selectedTrips.length} saved trips and their chat history? This cannot be undone.`
+        : `Delete ${selectedTrips.length} saved trips and their chat history? This cannot be undone.`;
+    if (!window.confirm(message)) return;
+
+    let remaining = trips;
+    let deletedCount = 0;
+    setDeleting(true);
+    setError(null);
     try {
-      const remaining = await deleteTrip(tripId);
-      setTrips(remaining);
+      for (const trip of selectedTrips) {
+        remaining = await deleteTrip(trip.trip_id);
+        deletedCount += 1;
+        setTrips(remaining);
+      }
+      setOpen(false);
+      setDeleteMode(false);
+      setSelectedTripIds(new Set());
       onSwitched();
     } catch {
-      setError("Could not delete the trip.");
+      setSelectedTripIds(new Set(
+        selectedTrips
+          .slice(deletedCount)
+          .map((trip) => trip.trip_id),
+      ));
+      setError(
+        deletedCount > 0
+          ? `Deleted ${deletedCount} ${deletedCount === 1 ? "trip" : "trips"}, but could not delete the rest.`
+          : "Could not delete the selected trips.",
+      );
+      if (deletedCount > 0) onSwitched();
+    } finally {
+      setDeleting(false);
     }
   };
 
   const active = trips.find((trip) => trip.is_active);
   const label = active ? active.destination || "Untitled" : "My trips";
+  const selectedCount = selectedTripIds.size;
+  const deleteLabel = selectedCount === 1
+    ? "Delete 1 trip"
+    : selectedCount === trips.length
+      ? `Delete all ${selectedCount} trips`
+      : selectedCount > 1
+        ? `Delete ${selectedCount} trips`
+        : "Delete selected";
 
   return (
     <div ref={ref} className="relative z-[70] shrink-0">
       <button
         type="button"
-        onClick={() => setOpen((current) => !current)}
+        onClick={() => {
+          if (open) {
+            setDeleteMode(false);
+            setSelectedTripIds(new Set());
+          }
+          setOpen((current) => !current);
+        }}
         className="pill bg-white text-ink ring-1 ring-slate-200 transition hover:bg-slate-50"
         title="Switch between your saved trips"
         aria-expanded={open}
@@ -94,22 +197,48 @@ export default function TripSwitcher({
         <ChevronDown size={14} aria-hidden />
       </button>
       {open && (
-        <div data-testid="saved-trips-menu" className="absolute left-0 top-full z-[80] mt-1.5 max-h-80 w-72 overflow-y-auto rounded-2xl bg-white p-1.5 shadow-pop ring-1 ring-slate-100">
-          {trips.map((trip) => {
-            const dates =
-              trip.departure_date && trip.return_date
-                ? `${trip.departure_date} \u2192 ${trip.return_date}`
-                : trip.departure_date || "dates TBD";
-            const badge = STATUS_BADGE[trip.status] || STATUS_BADGE.draft;
-            return (
-              <div
-                key={trip.trip_id}
-                className={`flex w-full items-start gap-2 rounded-xl px-2.5 py-2 text-left transition hover:bg-slate-50 ${
-                  trip.is_active ? "bg-brand/5 ring-1 ring-brand/20" : ""
-                }`}
-              >
-                <button type="button" onClick={() => onPick(trip.trip_id)} className="min-w-0 flex-1 text-left">
+        <div data-testid="saved-trips-menu" className="absolute left-0 top-full z-[80] mt-1.5 w-80 overflow-hidden rounded-lg bg-white shadow-pop ring-1 ring-slate-100">
+          <div className="flex h-10 items-center justify-between border-b border-slate-100 px-3">
+            {deleteMode ? (
+              <>
+                <button type="button" onClick={toggleAll} disabled={deleting} className="text-xs font-semibold text-brand disabled:opacity-50">
+                  {selectedCount === trips.length ? "Clear all" : "Select all"}
+                </button>
+                <span className="text-xs text-slate-400">{selectedCount} selected</span>
+              </>
+            ) : (
+              <>
+                <span className="text-xs font-semibold text-slate-500">Saved trips</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteMode(true);
+                    setSelectedTripIds(new Set());
+                    setError(null);
+                  }}
+                  className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-semibold text-slate-500 hover:bg-rose-50 hover:text-rose-600"
+                >
+                  <Trash2 size={13} aria-hidden />
+                  Delete trips
+                </button>
+              </>
+            )}
+          </div>
+          <div className="max-h-72 overflow-y-auto p-1.5">
+            {trips.map((trip) => {
+              const dates =
+                trip.departure_date && trip.return_date
+                  ? `${trip.departure_date} \u2192 ${trip.return_date}`
+                  : trip.departure_date || "dates TBD";
+              const badge = STATUS_BADGE[trip.status] || STATUS_BADGE.draft;
+              const details = (
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
+                    {trip.trip_number ? (
+                      <span className="shrink-0 text-xs font-semibold tabular-nums text-slate-400">
+                        #{trip.trip_number}
+                      </span>
+                    ) : null}
                     <span className="truncate text-sm font-medium text-ink">
                       {trip.destination || "Untitled trip"}
                     </span>
@@ -119,19 +248,59 @@ export default function TripSwitcher({
                   <div className="mt-0.5 text-[11px] text-slate-400">
                     {trip.counts.flights}{"\u2708 \u00b7 "}{trip.counts.hotels}{"\u{1F3E8} \u00b7 "}{trip.counts.activities}{"\u{1F3AF}"}
                   </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onRemove(trip.trip_id)}
-                  aria-label={`Delete ${trip.destination || "untitled trip"}`}
-                  className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full text-slate-300 transition hover:bg-rose-50 hover:text-rose-500"
-                  title="Delete this saved trip"
+                </div>
+              );
+              return (
+                <div
+                  key={trip.trip_id}
+                  className={`flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left transition hover:bg-slate-50 ${
+                    trip.is_active ? "bg-brand/5 ring-1 ring-brand/20" : ""
+                  }`}
                 >
-                  <Trash2 size={14} aria-hidden />
-                </button>
-              </div>
-            );
-          })}
+                  {deleteMode ? (
+                    <label className="flex min-w-0 flex-1 cursor-pointer items-start gap-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedTripIds.has(trip.trip_id)}
+                        onChange={() => toggleSelected(trip.trip_id)}
+                        disabled={deleting}
+                        aria-label={`Select ${trip.destination || "untitled trip"} for deletion`}
+                        className="mt-1 h-4 w-4 shrink-0 accent-brand"
+                      />
+                      {details}
+                    </label>
+                  ) : (
+                    <button type="button" onClick={() => onPick(trip.trip_id)} className="min-w-0 flex-1 text-left">
+                      {details}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {deleteMode && (
+            <div className="flex items-center justify-end gap-2 border-t border-slate-100 px-3 py-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setDeleteMode(false);
+                  setSelectedTripIds(new Set());
+                }}
+                disabled={deleting}
+                className="h-8 rounded-md px-3 text-xs font-semibold text-slate-500 hover:bg-slate-100 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void onRemoveSelected()}
+                disabled={selectedCount === 0 || deleting}
+                className="h-8 rounded-md bg-rose-600 px-3 text-xs font-semibold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {deleting ? "Deleting..." : deleteLabel}
+              </button>
+            </div>
+          )}
         </div>
       )}
       {error && <p role="status" className="absolute left-0 top-full z-30 mt-1 text-xs text-rose-600">{error}</p>}

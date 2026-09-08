@@ -8,38 +8,45 @@ Android.
 ## Run on Android
 
 The maintained setup, smoke-test, troubleshooting, EAS preview, and Google Play
-instructions live in [`docs/android-testing.md`](../docs/android-testing.md).
+instructions live in [`docs/mobile/android-testing.md`](../docs/mobile/android-testing.md).
 
 Install Expo Go from Google Play, then from this directory:
 
 ```powershell
 npm install
+$env:EXPO_PUBLIC_API_BASE_URL='https://your-api.example/api'
 npm run android
 ```
 
 This starts LAN mode on port 8082. Scan the QR code from Expo Go. The same
-`EXPO_PUBLIC_API_BASE_URL` override described below applies to Android.
+`EXPO_PUBLIC_API_BASE_URL` requirement described below applies to Android.
 
 ## Run on iPhone
 
 The maintained setup, smoke-test, troubleshooting, EAS preview, and TestFlight
-instructions live in [`docs/ios-testing.md`](../docs/ios-testing.md).
+instructions live in [`docs/mobile/ios-testing.md`](../docs/mobile/ios-testing.md).
 
 Install Expo Go from the App Store, then from this directory:
 
 ```powershell
 npm install
+$env:EXPO_PUBLIC_API_BASE_URL='https://your-api.example/api'
 npm run iphone
 ```
 
 This starts LAN mode on port 8082 because the local Docker Cosmos Emulator uses
-8081. Scan the QR code with the iPhone Camera. The app uses the production API
-by default. Override it for a reachable development or canary API before starting:
+8081. Scan the QR code with the iPhone Camera. The app has no implicit production
+fallback; set the reachable development, canary, or production API explicitly
+before starting:
 
 ```powershell
 $env:EXPO_PUBLIC_API_BASE_URL='https://your-api.example/api'
 npm run iphone
 ```
+
+Set the same public environment variable in every EAS build profile or EAS
+environment used for a standalone build. A missing value stops startup rather
+than silently connecting a development build to production.
 
 `localhost` is the phone itself and cannot reach the PC backend. Use a LAN IP,
 tunnel, or hosted canary URL for physical-device testing.
@@ -48,7 +55,9 @@ tunnel, or hosted canary URL for physical-device testing.
 
 Use the Account tab to sign in with the same Google account as the web app.
 The native OAuth handoff stores the signed session in SecureStore and reuses
-the web identity, so saved trips, active trip, chat, and preferences are shared.
+the web identity. Every subsequent API request carries that signed session as a
+bearer credential, so saved trips, active trip, chat, and preferences are shared
+without trusting a caller-supplied account id.
 The selected backend must include `/auth/mobile/session`; an older production
 deployment can run the app as a local mobile profile but cannot complete native
 Google sign-in until those backend changes are deployed.

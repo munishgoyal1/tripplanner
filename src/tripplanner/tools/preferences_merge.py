@@ -27,6 +27,7 @@ _ADDITIVE_LIST_PATHS: frozenset[str] = frozenset({
     "food_preferences.dietary",
     "food_preferences.cuisine_likes",
     "food_preferences.cuisine_dislikes",
+    "transport_preferences.road_break_preferences",
 })
 
 

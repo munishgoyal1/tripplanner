@@ -38,6 +38,7 @@ export interface DestinationOverview {
 
 export interface MapsConfig {
   enabled: boolean;
+  places_enabled: boolean;
   key: string;
 }
 export type BrowserMapsConfig = MapsConfig;

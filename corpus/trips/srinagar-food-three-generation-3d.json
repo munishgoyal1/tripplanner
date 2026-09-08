@@ -1,0 +1,237 @@
+{
+  "status": "draft",
+  "trip_id": "srinagar_and_gulmarg_2027-05-04_2027-05-07",
+  "trip_number": 1,
+  "created_at": "2026-08-17T18:43:50.639981",
+  "destination": "Srinagar and Gulmarg",
+  "origin": "Delhi",
+  "departure_date": "2027-05-04",
+  "return_date": "2027-05-07",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "Hotel search returned no availability. Recommend booking a reputable 3-4 star hotel in Srinagar directly (e.g. Vivanta Dal View, Hotel Grand Mumtaz, or RK Sarovar Portico).",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Srinagar and Gulmarg",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-04",
+      "title": "Day 1 · Arrival in Srinagar",
+      "summary": "Arrive in Srinagar from Delhi, check in, enjoy Kashmiri lunch, visit Dal Lake and local markets.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Srinagar",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "10:00",
+          "duration_min": 120,
+          "note": "Morning flight, direct"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Ahdoos Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Famous for Kashmiri Wazwan"
+        },
+        {
+          "name": "Dal Lake",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Shikara ride"
+        },
+        {
+          "name": "Lal Chowk Market",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 60,
+          "note": "Local shopping"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Return for rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-05",
+      "title": "Day 2 · Gulmarg Excursion",
+      "summary": "Day trip to Gulmarg: scenic drive, gondola ride, local lunch, return to Srinagar.",
+      "stops": [
+        {
+          "name": "Drive: Srinagar to Gulmarg",
+          "kind": "transport",
+          "time": "08:30",
+          "duration_min": 120,
+          "distance_km": 50,
+          "note": "Scenic route"
+        },
+        {
+          "name": "Gulmarg Gondola",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Cable car ride"
+        },
+        {
+          "name": "Highlands Park Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Local cuisine with mountain views"
+        },
+        {
+          "name": "St. Mary's Church",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 30,
+          "note": "Historic site"
+        },
+        {
+          "name": "Drive: Gulmarg to Srinagar",
+          "kind": "transport",
+          "time": "15:30",
+          "duration_min": 120,
+          "distance_km": 50,
+          "note": "Return drive"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-06",
+      "title": "Day 3 · Srinagar Heritage & Departure",
+      "summary": "Explore Mughal gardens, enjoy local lunch, visit handicraft shops, depart for Delhi.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Shalimar Bagh",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60,
+          "note": "Mughal garden"
+        },
+        {
+          "name": "Nigeen Lake",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 60,
+          "note": "Quieter lake experience"
+        },
+        {
+          "name": "Mughal Darbar Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Local lunch"
+        },
+        {
+          "name": "Kashmir Handicrafts Shop",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Shopping for souvenirs"
+        },
+        {
+          "name": "Flight: Srinagar to Delhi",
+          "kind": "flight",
+          "time": "16:00",
+          "arrival_time": "18:00",
+          "duration_min": 120,
+          "note": "Evening flight"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-07",
+      "title": "Day 4 · Arrival in Delhi",
+      "summary": "Arrive back in Delhi, trip concludes.",
+      "stops": [
+        {
+          "name": "Delhi",
+          "kind": "other",
+          "note": "Home"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T18:47:38.086102",
+  "id": "srinagar_and_gulmarg_2027-05-04_2027-05-07",
+  "user_id": "corpus-srinagar-food-three-generation-3d"
+}

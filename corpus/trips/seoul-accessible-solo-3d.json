@@ -1,0 +1,259 @@
+{
+  "status": "draft",
+  "trip_id": "seoul_2027-04-10_2027-04-13",
+  "trip_number": 1,
+  "created_at": "2026-08-18T21:28:41.036160",
+  "destination": "Seoul",
+  "origin": "Delhi",
+  "departure_date": "2027-04-10",
+  "return_date": "2027-04-13",
+  "travelers": "1 adult (mobility needs: cannot manage long walks or stairs)",
+  "notes": "One traveller cannot manage long walks or stairs. Accessibility-friendly hotels and attractions required.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Seoul",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [
+    {
+      "option": 1,
+      "airline": "Nuitée Air",
+      "price_usd": 1452.99,
+      "segments": [
+        {
+          "from": "Delhi (DEL)",
+          "to": "Seoul (ICN)",
+          "departure": "2027-04-10T20:30",
+          "arrival": "2027-04-11T02:45",
+          "stops": 1
+        }
+      ]
+    }
+  ],
+  "selected_hotels": [
+    {
+      "name": "Lotte Hotel Seoul",
+      "address": "30 Eulji-ro, Jung District, Seoul, South Korea",
+      "rating": 4.5,
+      "review_count": 8821,
+      "accessibility_features": [
+        "wheelchair accessible rooms",
+        "elevators",
+        "central location"
+      ],
+      "price_per_night_usd": 220,
+      "nights": 3,
+      "total_usd": 660
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-10",
+      "title": "Day 1 · Arrival in Seoul",
+      "summary": "Fly from Delhi to Seoul, check in to the highly rated, centrally located, accessible Lotte Hotel Seoul, and visit Namsan Seoul Tower (accessible observation deck).",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Seoul",
+          "kind": "flight",
+          "time": "20:30",
+          "note": "Nuitée Air, 1 stop, accessible airport assistance available"
+        },
+        {
+          "name": "Lotte Hotel Seoul",
+          "kind": "hotel",
+          "note": "Check-in, centrally located, wheelchair accessible"
+        },
+        {
+          "name": "Namsan Seoul Tower (accessible observation deck)",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Elevator access, minimal walking"
+        },
+        {
+          "name": "Lotte Hotel Seoul",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-11",
+      "title": "Day 2 · Historic & Cultural Seoul",
+      "summary": "Visit accessible Gyeongbokgung Palace and Insadong, enjoy dinner at Myeongdong Korean BBQ Mongvely (4.9★), all with minimal walking.",
+      "stops": [
+        {
+          "name": "Lotte Hotel Seoul",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Gyeongbokgung Palace (accessible areas)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90,
+          "note": "Wheelchair accessible paths, avoid stairs"
+        },
+        {
+          "name": "Insadong (accessible shopping street)",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Flat, easy access"
+        },
+        {
+          "name": "Myeongdong Korean BBQ Mongvely",
+          "kind": "meal",
+          "time": "18:00",
+          "note": "4.9★, accessible, Korean BBQ"
+        },
+        {
+          "name": "Lotte Hotel Seoul",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-12",
+      "title": "Day 3 · Modern Seoul & Departure",
+      "summary": "Explore COEX Mall (fully accessible), lunch at Myeongdong Kyoja (4.2★ dumplings), then depart for Delhi.",
+      "stops": [
+        {
+          "name": "Lotte Hotel Seoul",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "COEX Mall (fully accessible)",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120,
+          "note": "Elevator access, shopping and dining"
+        },
+        {
+          "name": "Myeongdong Kyoja",
+          "kind": "meal",
+          "time": "14:00",
+          "note": "4.2★, accessible, famous dumplings"
+        },
+        {
+          "name": "Flight: Seoul to Delhi",
+          "kind": "flight",
+          "time": "18:00",
+          "note": "Nuitée Air, accessible airport facilities"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "flights_usd": 1452.99,
+    "hotel_usd": 660,
+    "meals_usd": 90,
+    "activities_usd": 60,
+    "estimated_local_transport_usd": 60
+  },
+  "total_cost": 2322.99,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {
+    "destination": "Seoul",
+    "country": "South Korea",
+    "source": "seasonal_estimate",
+    "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+    "days": [
+      {
+        "date": "2027-04-10",
+        "summary": "Rain",
+        "high_c": 11.5,
+        "low_c": 7.5,
+        "precip_mm": 6.8
+      },
+      {
+        "date": "2027-04-11",
+        "summary": "Overcast",
+        "high_c": 15.5,
+        "low_c": 7.2,
+        "precip_mm": 0.0
+      },
+      {
+        "date": "2027-04-12",
+        "summary": "Overcast",
+        "high_c": 20.6,
+        "low_c": 4.6,
+        "precip_mm": 0.0
+      }
+    ],
+    "packing_advice": [
+      "Pack a rain jacket and umbrella for arrival day.",
+      "Dress in layers — spring temperatures vary (7–21°C).",
+      "Comfortable shoes suitable for short walks.",
+      "Bring any required mobility aids."
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T21:32:57.427395",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T21:32:19",
+      "expires_at": "2026-08-18T22:02:19"
+    }
+  ],
+  "id": "seoul_2027-04-10_2027-04-13",
+  "user_id": "corpus-seoul-accessible-solo-3d"
+}

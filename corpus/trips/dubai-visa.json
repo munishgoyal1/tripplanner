@@ -1,0 +1,346 @@
+{
+  "status": "draft",
+  "trip_id": "dubai_2026-11-20_2026-11-24",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:43:28.932149",
+  "destination": "Dubai",
+  "origin": "Hyderabad",
+  "departure_date": "2026-11-20",
+  "return_date": "2026-11-24",
+  "travelers": "2 adults on Indian passports",
+  "notes": "Mid-range budget, balanced pace, 3-star hotel, economy flights.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Dubai",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 4-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 4,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Rove Downtown",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp9db42",
+        "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+        "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+      },
+      "checkin": "2026-11-20",
+      "checkout": "2026-11-24",
+      "price": 2160,
+      "currency": "AED",
+      "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+      "room_type": "Standard Double Room",
+      "star_rating": 3,
+      "guest_rating": 4.9,
+      "reviews_count": 26995
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2026-11-20",
+      "title": "Day 1 · Arrival & Downtown Dubai",
+      "summary": "Arrive in Dubai, check in to hotel, explore Downtown Dubai including Dubai Mall and Burj Khalifa area.",
+      "stops": [
+        {
+          "name": "Flight: Hyderabad to Dubai",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "12:00",
+          "duration_min": 240
+        },
+        {
+          "name": "Rove Downtown",
+          "kind": "hotel",
+          "note": "Check-in and freshen up",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp9db42",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+            "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+          },
+          "checkin": "2026-11-20",
+          "checkout": "2026-11-24",
+          "price": 2160,
+          "currency": "AED",
+          "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+          "room_type": "Standard Double Room",
+          "star_rating": 3,
+          "guest_rating": 4.9,
+          "reviews_count": 26995,
+          "time": "13:30"
+        },
+        {
+          "name": "Dubai Mall",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Dubai Creek Abra Ride",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 60
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2026-11-21",
+      "title": "Day 2 · Old Dubai & Creek",
+      "summary": "Discover Dubai's heritage: Al Fahidi Historical Neighbourhood, Dubai Museum, Abra ride on Dubai Creek, evening at Deira souks.",
+      "stops": [
+        {
+          "name": "Rove Downtown",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp9db42",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+            "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+          },
+          "checkin": "2026-11-20",
+          "checkout": "2026-11-24",
+          "price": 2160,
+          "currency": "AED",
+          "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+          "room_type": "Standard Double Room",
+          "star_rating": 3,
+          "guest_rating": 4.9,
+          "reviews_count": 26995,
+          "time": "09:00"
+        },
+        {
+          "name": "Burj Khalifa",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Deira Gold Souk",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Palm Jumeirah",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Atlantis, The Palm",
+          "kind": "attraction",
+          "time": "19:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Rove Downtown",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp9db42",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+            "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+          },
+          "checkin": "2026-11-20",
+          "checkout": "2026-11-24",
+          "price": 2160,
+          "currency": "AED",
+          "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+          "room_type": "Standard Double Room",
+          "star_rating": 3,
+          "guest_rating": 4.9,
+          "reviews_count": 26995,
+          "time": "21:30"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2026-11-22",
+      "title": "Day 3 · Desert Safari & Marina",
+      "summary": "Morning at leisure, afternoon desert safari with dinner, evening stroll at Dubai Marina.",
+      "stops": [
+        {
+          "name": "Rove Downtown",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp9db42",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+            "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+          },
+          "checkin": "2026-11-20",
+          "checkout": "2026-11-24",
+          "price": 2160,
+          "currency": "AED",
+          "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+          "room_type": "Standard Double Room",
+          "star_rating": 3,
+          "guest_rating": 4.9,
+          "reviews_count": 26995,
+          "time": "09:00"
+        },
+        {
+          "name": "Desert Safari",
+          "kind": "activity",
+          "time": "14:00",
+          "duration_min": 300,
+          "note": "Includes dinner"
+        },
+        {
+          "name": "Al Fahidi Historical Neighbourhood",
+          "kind": "attraction",
+          "time": "19:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Rove Downtown",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp9db42",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+            "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+          },
+          "checkin": "2026-11-20",
+          "checkout": "2026-11-24",
+          "price": 2160,
+          "currency": "AED",
+          "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+          "room_type": "Standard Double Room",
+          "star_rating": 3,
+          "guest_rating": 4.9,
+          "reviews_count": 26995,
+          "time": "21:30"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2026-11-23",
+      "title": "Day 4 · Palm Jumeirah & Departure",
+      "summary": "Visit Palm Jumeirah, Atlantis, relax, then depart for Hyderabad.",
+      "stops": [
+        {
+          "name": "Rove Downtown",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp9db42",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+            "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+          },
+          "checkin": "2026-11-20",
+          "checkout": "2026-11-24",
+          "price": 2160,
+          "currency": "AED",
+          "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+          "room_type": "Standard Double Room",
+          "star_rating": 3,
+          "guest_rating": 4.9,
+          "reviews_count": 26995,
+          "time": "09:00"
+        },
+        {
+          "name": "Dubai Museum",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Dubai Marina Walk",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Flight: Dubai to Hyderabad",
+          "kind": "flight",
+          "time": "16:00",
+          "arrival_time": "19:00",
+          "duration_min": 240
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:46:04.016767",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:44:23",
+      "expires_at": "2026-08-16T07:44:23"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:46:04",
+      "expires_at": "2026-08-15T20:16:04"
+    }
+  ],
+  "id": "dubai_2026-11-20_2026-11-24",
+  "user_id": "corpus-dubai-visa"
+}

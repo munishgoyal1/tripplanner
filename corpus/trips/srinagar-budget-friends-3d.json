@@ -1,0 +1,268 @@
+{
+  "status": "draft",
+  "trip_id": "srinagar_and_gulmarg_2027-05-13_2027-05-16",
+  "trip_number": 1,
+  "created_at": "2026-08-18T21:29:55.929426",
+  "destination": "Srinagar and Gulmarg",
+  "origin": "Delhi",
+  "departure_date": "2027-05-13",
+  "return_date": "2027-05-16",
+  "travelers": "4 adults",
+  "notes": "Total budget INR 80,000. Balanced trip style. Economy flights, 3-star hotels, moderate budget.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Srinagar and Gulmarg",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Golden Tulip Srinagar",
+      "address": "Next To United Nations Head Office Srinagar Jammu and Kashmir, Sonwar Bagh, Srinagar, 190001",
+      "rating": 4.1,
+      "review_count": 2003,
+      "website": "https://www.sarovarhotels.com/golden-tulip-srinagar/",
+      "price_per_night": 4500,
+      "nights": 3,
+      "total_price": 13500,
+      "currency": "INR",
+      "rooms": 2,
+      "note": "Good location, strong reviews, fits budget"
+    }
+  ],
+  "selected_activities": [
+    {
+      "name": "Dal Lake Shikara Ride",
+      "date": "2027-05-13",
+      "price": 1200,
+      "currency": "INR",
+      "adults": 4
+    },
+    {
+      "name": "Gulmarg Gondola",
+      "date": "2027-05-14",
+      "price": 3200,
+      "currency": "INR",
+      "adults": 4
+    },
+    {
+      "name": "Mughal Gardens Entry",
+      "date": "2027-05-15",
+      "price": 800,
+      "currency": "INR",
+      "adults": 4
+    }
+  ],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-13",
+      "title": "Day 1 · Arrival in Srinagar",
+      "summary": "Arrive from Delhi, check in to Golden Tulip Srinagar, explore Dal Lake and local markets.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Srinagar",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "10:00",
+          "duration_min": 120,
+          "note": "Morning flight"
+        },
+        {
+          "name": "Golden Tulip Srinagar",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Dal Lake",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120,
+          "note": "Shikara ride"
+        },
+        {
+          "name": "Lal Chowk Market",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Shopping and local snacks"
+        },
+        {
+          "name": "Ahdoos Restaurant",
+          "kind": "meal",
+          "time": "18:30",
+          "duration_min": 90,
+          "note": "Dinner with Kashmiri cuisine"
+        },
+        {
+          "name": "Golden Tulip Srinagar",
+          "kind": "hotel",
+          "note": "Return for overnight stay"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-14",
+      "title": "Day 2 · Gulmarg Excursion",
+      "summary": "Day trip to Gulmarg, visit meadows, gondola ride, and return to Srinagar.",
+      "stops": [
+        {
+          "name": "Drive: Srinagar to Gulmarg",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "distance_km": 50,
+          "note": "Private cab"
+        },
+        {
+          "name": "Gulmarg Gondola",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 120,
+          "note": "Cable car ride"
+        },
+        {
+          "name": "Khyber Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Lunch in Gulmarg"
+        },
+        {
+          "name": "Gulmarg Meadows",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 90,
+          "note": "Walk and photography"
+        },
+        {
+          "name": "Drive: Gulmarg to Srinagar",
+          "kind": "transport",
+          "time": "16:30",
+          "duration_min": 120,
+          "distance_km": 50,
+          "note": "Return by cab"
+        },
+        {
+          "name": "Golden Tulip Srinagar",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "19:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-15",
+      "title": "Day 3 · Srinagar Gardens & Departure",
+      "summary": "Visit Mughal Gardens, local lunch, and depart for Delhi.",
+      "stops": [
+        {
+          "name": "Golden Tulip Srinagar",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Shalimar Bagh",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Explore Mughal gardens"
+        },
+        {
+          "name": "Chashme Shahi",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 60,
+          "note": "Visit another famous garden"
+        },
+        {
+          "name": "Ahdoos Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Lunch before departure"
+        },
+        {
+          "name": "Flight: Srinagar to Delhi",
+          "kind": "flight",
+          "time": "15:00",
+          "arrival_time": "17:00",
+          "duration_min": 120,
+          "note": "Afternoon flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "flights_round_trip": 32000,
+    "hotel": 13500,
+    "activities": 5200,
+    "meals": 6000,
+    "transport_cab": 9000,
+    "misc": 4300
+  },
+  "total_cost": 76200,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-18T21:34:38.556663"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T21:38:19.385363",
+  "id": "srinagar_and_gulmarg_2027-05-13_2027-05-16",
+  "user_id": "corpus-srinagar-budget-friends-3d"
+}

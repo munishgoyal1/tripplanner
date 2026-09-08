@@ -1,5 +1,6 @@
 """Tests for search-behavior preference inference (search_learning)."""
 
+import os
 import shutil
 from pathlib import Path
 
@@ -8,7 +9,10 @@ import pytest
 from tripplanner.tools import search_learning, user_preferences
 from tripplanner.tools.user_preferences import load_preferences
 
-_TEST_DIR = Path.home() / ".tripplanner_searchlearn_test"
+# Parallel sandboxes run this suite at the same time against one home
+# directory, so a shared name means one run's teardown deletes another
+# run's fixture mid-test. The pid keeps them disjoint.
+_TEST_DIR = Path.home() / f".tripplanner_searchlearn_test-{os.getpid()}"
 _TEST_FILE = _TEST_DIR / "user_preferences.json"
 
 
@@ -84,6 +88,27 @@ class TestObservePromotion:
         # explicit "first" stays; only a learned note is added
         assert prefs["transport_preferences"]["flight_class"] == "first"
 
+    def test_does_not_override_explicit_default_choice(self):
+        prefs = load_preferences()
+        user_preferences.mark_explicit_fields(
+            prefs,
+            {
+                "transport_preferences.flight_class",
+                "hotel_preferences.star_rating_min",
+            },
+        )
+        user_preferences.save_preferences(prefs)
+
+        for _ in range(3):
+            search_learning.observe(
+                "search_flights_duffel", {"cabin_class": "business"}
+            )
+            search_learning.observe("search_hotels", {"ratings": "5"})
+
+        updated = load_preferences()
+        assert updated["transport_preferences"]["flight_class"] == "economy"
+        assert updated["hotel_preferences"]["star_rating_min"] == 3
+
     def test_promotes_hotel_rating_floor(self):
         for _ in range(3):
             search_learning.observe("search_hotels", {"ratings": "5"})
@@ -100,6 +125,6 @@ class TestObservePromotion:
         def _boom(*_a, **_k):
             raise RuntimeError("disk gone")
 
-        monkeypatch.setattr(search_learning, "load_preferences", _boom)
+        monkeypatch.setattr(search_learning, "mutate_preferences", _boom)
         # Must not raise.
         assert search_learning.observe("search_hotels", {"ratings": "5"}) == []

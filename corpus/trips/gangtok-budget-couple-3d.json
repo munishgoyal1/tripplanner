@@ -1,0 +1,216 @@
+{
+  "status": "draft",
+  "trip_id": "gangtok_and_north_sikkim_2027-10-16_2027-10-19",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:38:29.125436",
+  "destination": "Gangtok and North Sikkim",
+  "origin": "Kolkata",
+  "departure_date": "2027-10-16",
+  "return_date": "2027-10-19",
+  "travelers": "2 adults",
+  "notes": "Budget under INR 80,000. Balanced trip style. 3 days.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Gangtok and North Sikkim",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-16",
+      "title": "Arrival in Gangtok",
+      "summary": "Fly from Kolkata to Bagdogra, transfer to Gangtok by taxi. Check in, relax, and explore MG Marg in the evening.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Bagdogra",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "09:30",
+          "duration_min": 90,
+          "note": "Morning flight, actual time will be searched."
+        },
+        {
+          "name": "Drive: Bagdogra to Gangtok",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 240,
+          "distance_km": 125,
+          "note": "Scenic drive with a snack break."
+        },
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Check-in and rest."
+        },
+        {
+          "name": "MG Marg",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Leisure walk, shopping, cafes."
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-17",
+      "title": "North Sikkim Excursion (Lachen & Gurudongmar Lake)",
+      "summary": "Early morning drive to Lachen, visit Gurudongmar Lake, return to Gangtok. Includes scenic stops and local meals.",
+      "stops": [
+        {
+          "name": "Drive: Gangtok to Lachen",
+          "kind": "transport",
+          "time": "06:00",
+          "duration_min": 240,
+          "distance_km": 120,
+          "note": "Scenic drive, breakfast en route."
+        },
+        {
+          "name": "Gurudongmar Lake",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "One of the highest lakes in India."
+        },
+        {
+          "name": "Lunch at Lachen",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Local cuisine."
+        },
+        {
+          "name": "Drive: Lachen to Gangtok",
+          "kind": "transport",
+          "time": "14:30",
+          "duration_min": 240,
+          "distance_km": 120,
+          "note": "Return drive with scenic stops."
+        },
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Start early.",
+          "time": "19:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-18",
+      "title": "Gangtok Sightseeing & Departure",
+      "summary": "Local sightseeing in Gangtok, visit Rumtek Monastery, and depart for Bagdogra/Kolkata.",
+      "stops": [
+        {
+          "name": "Hotel in Gangtok",
+          "kind": "hotel",
+          "note": "Check-out."
+        },
+        {
+          "name": "Rumtek Monastery",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Famous Buddhist monastery."
+        },
+        {
+          "name": "Lunch at Gangtok",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Local restaurant."
+        },
+        {
+          "name": "Drive: Gangtok to Bagdogra",
+          "kind": "transport",
+          "time": "13:30",
+          "duration_min": 240,
+          "distance_km": 125,
+          "note": "Return drive."
+        },
+        {
+          "name": "Flight: Bagdogra to Kolkata",
+          "kind": "flight",
+          "time": "18:30",
+          "arrival_time": "20:00",
+          "duration_min": 90,
+          "note": "Evening flight, actual time will be searched."
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": {
+    "amount": 80000,
+    "currency": "INR",
+    "owner": "user",
+    "updated_at": "2026-08-18T17:39:01.551508"
+  },
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:39:17.939573",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T17:39:17",
+      "expires_at": "2026-08-19T05:39:17"
+    }
+  ],
+  "id": "gangtok_and_north_sikkim_2027-10-16_2027-10-19",
+  "user_id": "corpus-gangtok-budget-couple-3d"
+}

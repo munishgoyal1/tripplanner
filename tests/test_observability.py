@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from pathlib import Path
 
 import pytest
@@ -100,6 +101,121 @@ def test_hash_user_id_anon_when_blank():
     assert obs.hash_user_id("") == "anon"
 
 
+def test_model_rate_limit_fields_whitelists_safe_headers_only():
+    class Response:
+        status_code = 429
+        headers = {
+            "retry-after-ms": "1250",
+            "x-ratelimit-remaining-requests": "29",
+            "x-ratelimit-remaining-tokens": "0",
+            "authorization": "secret",
+        }
+        body = "prompt and provider response must not be logged"
+
+    rate_limit_error_type = type("RateLimitError", (Exception,), {})
+    error = rate_limit_error_type("contains private provider text")
+    error.response = Response()
+    error.status_code = 429
+    error.code = "429"
+
+    fields = obs.model_rate_limit_fields(error, "gpt-4-1-local")
+
+    assert fields == {
+        "model_provider": "azure_openai",
+        "model_deployment": "gpt-4-1-local",
+        "rate_limit_scope": "tokens",
+        "provider_status": 429,
+        "provider_error_code": "429",
+        "retry_after_ms": 1250,
+        "remaining_requests": 29,
+        "remaining_tokens": 0,
+    }
+    assert "secret" not in json.dumps(fields)
+    assert "prompt" not in json.dumps(fields)
+
+
+def test_model_rate_limit_fields_ignores_other_errors():
+    assert obs.model_rate_limit_fields(RuntimeError("private"), "gpt-4-1-local") == {}
+
+
+def test_timed_operation_emits_content_free_terminal_event(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(
+        obs,
+        "app_event",
+        lambda kind, **fields: captured.update(kind=kind, **fields),
+    )
+
+    with obs.timed_operation("workflow_operation", "workspace_projection", panel_count=3):
+        pass
+
+    assert captured["kind"] == "workflow_operation"
+    assert captured["operation"] == "workspace_projection"
+    assert captured["status"] == "ok"
+    assert captured["panel_count"] == 3
+    assert captured["ms"] >= 0
+
+
+def test_terminal_chat_event_includes_safe_rate_limit_details(monkeypatch):
+    from tripplanner import api
+
+    rate_limit_error_type = type("RateLimitError", (Exception,), {})
+    error = rate_limit_error_type("private provider response")
+    error.status_code = 429
+    error.code = "rate_limit_exceeded"
+    error.response = type(
+        "Response",
+        (),
+        {
+            "status_code": 429,
+            "headers": {
+                "retry-after": "2",
+                "x-ratelimit-remaining-requests": "28",
+                "x-ratelimit-remaining-tokens": "0",
+            },
+        },
+    )()
+    captured = {}
+    monkeypatch.setattr(
+        api,
+        "app_event",
+        lambda kind, **fields: captured.update(kind=kind, **fields),
+    )
+
+    api._record_chat_operation(
+        time.monotonic(),
+        user_id="google-owner",
+        transport="sse",
+        outcome="error",
+        exception=error,
+    )
+
+    assert captured["kind"] == "chat_operation"
+    assert captured["error"] == "RateLimitError"
+    assert captured["provider_status"] == 429
+    assert captured["model_deployment"]
+    assert captured["rate_limit_scope"] == "tokens"
+    assert captured["retry_after_ms"] == 2000
+    assert "private" not in json.dumps(captured)
+
+
+def test_chat_phase_records_content_free_operation_metrics(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from tripplanner import api
+    from tripplanner.ops_metrics import reset, snapshot
+
+    reset()
+    monkeypatch.setattr(api.time, "monotonic", lambda: 1.125)
+
+    api._record_chat_phase(1.0, transport="sse", phase="finalization")
+
+    assert snapshot()["operations"]["by_operation"]["chat_phase.sse.finalization"] == {
+        "calls": 1,
+        "errors": 0,
+        "p50_ms": 125.0,
+        "p95_ms": 125.0,
+    }
+
+
 # ---------------------------------------------------------------------------
 # PiiRedactingFilter (mutates LogRecord in place)
 # ---------------------------------------------------------------------------
@@ -174,6 +290,36 @@ def test_app_event_scrubs_pii_in_non_sensitive_field(capsys):
         url="https://api.example.com/?token=abcdefghijklmnop1234",
     )
     assert "<redacted>" in parsed["url"]
+
+
+def test_optional_app_log_file_is_rotating_json_and_redacted(tmp_path, monkeypatch):
+    target = tmp_path / "diagnostics" / "app.jsonl"
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    obs.setup_logging(force=True)
+
+    logging.getLogger("test.file").error("failed for alice@example.com")
+
+    parsed = json.loads(target.read_text(encoding="utf-8").strip())
+    assert parsed["level"] == "ERROR"
+    assert parsed["msg"] == "failed for <email>"
+    assert "alice@example.com" not in target.read_text(encoding="utf-8")
+
+
+def test_json_exception_trace_is_redacted(capsys):
+    obs.setup_logging(force=True)
+    handler = logging.getLogger().handlers[0]
+    handler.setFormatter(obs.JsonFormatter())
+
+    try:
+        raise RuntimeError("token=abcdefghijklmnop1234 for alice@example.com")
+    except RuntimeError:
+        logging.getLogger("test.exception").exception("provider failed")
+
+    parsed = json.loads(capsys.readouterr().out.strip())
+    assert "<redacted>" in parsed["exc"]
+    assert "<email>" in parsed["exc"]
+    assert "abcdefghijklmnop1234" not in parsed["exc"]
+    assert "alice@example.com" not in parsed["exc"]
 
 
 # ---------------------------------------------------------------------------

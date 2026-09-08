@@ -1,0 +1,461 @@
+{
+  "status": "draft",
+  "trip_id": "srinagar_and_gulmarg_2027-05-04_2027-05-09",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:55:29.076991",
+  "destination": "Srinagar and Gulmarg",
+  "origin": "Delhi",
+  "departure_date": "2027-05-04",
+  "return_date": "2027-05-09",
+  "travelers": "1 adult",
+  "notes": "Packed sightseeing, early starts preferred.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Srinagar and Gulmarg",
+    "estimated_planned_minutes": 1695,
+    "evidence_place_count": 8,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "8 preference-matched places account for about 1695 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      5,
+      7
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-04",
+      "title": "Day 1 · Arrival in Srinagar",
+      "summary": "Fly from Delhi to Srinagar, check in to hotel, explore Dal Lake and local markets.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Srinagar",
+          "kind": "flight",
+          "time": "07:00",
+          "arrival_time": "09:30",
+          "duration_min": 150,
+          "note": "Morning flight"
+        },
+        {
+          "name": "Hotel in Srinagar",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Dal Lake",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120,
+          "note": "Shikara ride"
+        },
+        {
+          "name": "Lal Chowk Market",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 90,
+          "note": "Local shopping"
+        },
+        {
+          "name": "Hotel in Srinagar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-05",
+      "title": "Day 2 · Srinagar Gardens & Heritage",
+      "summary": "Visit Mughal Gardens, Hazratbal Shrine, and enjoy Kashmiri cuisine.",
+      "stops": [
+        {
+          "name": "Hotel in Srinagar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Shalimar Bagh",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 90,
+          "note": "Early morning visit"
+        },
+        {
+          "name": "Nishat Bagh",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Hazratbal Shrine",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Ahdoos Restaurant",
+          "kind": "meal",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Pari Mahal",
+          "kind": "attraction",
+          "time": "16:15",
+          "duration_min": 90
+        },
+        {
+          "name": "Hotel in Srinagar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-06",
+      "title": "Day 3 · Gulmarg Adventure",
+      "summary": "Drive to Gulmarg, enjoy gondola ride, sightseeing, and return to Srinagar.",
+      "stops": [
+        {
+          "name": "Drive: Srinagar to Gulmarg",
+          "kind": "transport",
+          "time": "07:30",
+          "duration_min": 90,
+          "distance_km": 50,
+          "note": "Early drive"
+        },
+        {
+          "name": "Gulmarg Gondola",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Cable car ride"
+        },
+        {
+          "name": "Khyber Restaurant",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Lunch in Gulmarg"
+        },
+        {
+          "name": "St. Mary's Church",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 45
+        },
+        {
+          "name": "Drive: Gulmarg to Srinagar",
+          "kind": "transport",
+          "time": "15:00",
+          "duration_min": 90,
+          "distance_km": 50,
+          "note": "Return drive"
+        },
+        {
+          "name": "Hotel in Srinagar",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "17:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-07",
+      "title": "Day 4 · Srinagar Old City & Culture",
+      "summary": "Explore old Srinagar, visit Jamia Masjid, local handicrafts, and enjoy a traditional meal.",
+      "stops": [
+        {
+          "name": "Hotel in Srinagar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Jamia Masjid",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Srinagar Handicrafts Market",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Shopping"
+        },
+        {
+          "name": "Chai Jaai",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Tea & snacks"
+        },
+        {
+          "name": "Shankaracharya Temple",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Hotel in Srinagar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-05-08",
+      "title": "Day 5 · Departure",
+      "summary": "Relax, visit local sights if time permits, fly back to Delhi.",
+      "stops": [
+        {
+          "name": "Hotel in Srinagar",
+          "kind": "hotel",
+          "note": "Check-out"
+        },
+        {
+          "name": "Floating Market (optional)",
+          "kind": "attraction",
+          "time": "07:00",
+          "duration_min": 60,
+          "note": "Early morning"
+        },
+        {
+          "name": "Flight: Srinagar to Delhi",
+          "kind": "flight",
+          "time": "10:30",
+          "arrival_time": "13:00",
+          "duration_min": 150,
+          "note": "Return flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T18:02:38.825606",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T18:02:38",
+      "expires_at": "2026-08-19T06:02:38"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_srinagar_2027_05_04_2027_05_09",
+      "kind": "lodging",
+      "created_at": "2026-08-18T12:32:38.814711Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Srinagar",
+        "date": "2027-05-04"
+      },
+      "subject": "Stay in Srinagar",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_03bdb0ab7f26",
+      "options": [
+        {
+          "id": "opt_stay_03bdb0ab7f26",
+          "mode": null,
+          "label": "Mercure Samarinda",
+          "detail": "Superior Room - 2 Single Beds",
+          "price": {
+            "amount": 18465.91,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-04",
+            "checkout": "2027-05-09",
+            "room_name": "Superior Room - 2 Single Beds",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "Jalan Mulawarman No 171 Pelabuhan Kecamatan Samarinda Kota",
+            "rating": 9.8,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp6555c508",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFURzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laREFOWlNHWlRETVpSV01RWkRBTVRFR0lZREdNUlNHQTNUR05SWkdaU1RNTlpXTU0zREtNUlFHWVpETU5KV0dRM1RHN0JSRU1aREFNUlhHQTJUQU5ENEdJWURFTlpRR1VZRFM3REZOWlBWS1UzNEpGSEhZU0tPS0o2RENRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5KV0dNMlRNTlpXR0JTVUc0TElFTVlUT01CUUdFWVRTT0JSR1lSVEVNSlhIQVdUQ05aUUdBWVRDT0pZR0UzSFlUU1NJWkhIWU1SUUdJM0RBT0JSR1lZVEFNQlFQUVlYWVVSUkdFMlRBN0JSSEEyRE1OSlpHSVJWRVRaREpaSkVNVFJER0lZREVOUk5HQTRDMk1KV0VBWVRBT1JRR0FSUaNwcmPLQNIIej1wo9elb3JfcHLLAAAAAAAAAAClb3JfY23Lv4R64UeuFHuiY23Lv4R64UeuFHujcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm69U3VwZXJpb3IgUm9vbSAtIDIgU2luZ2xlIEJlZHOjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKoxNzAwMTE5ODE2o3NpZAKjaGlkqmxwNjU1NWM1MDijb2NjkYGhYQGjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA1LTA0omNvqjIwMjctMDUtMDmjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNGRiZmQ4OGJpRGNLR25rem5TTnBueTlZbmFjVFRidHBzb0mjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZKlTYWxlcyB0YXihYctAmxV64UeuFKFjo0lOUoShacOhZLhTZXJ2aWNlIGNoYXJnZSAodGF4YWJsZSmhYctAlwN64UeuFKFjo0lOUqJscMCjYmt0Bg==",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEIQKOLJJUOWSUIRGVUUSXJVIVURCBJVKEKR2JLFCEOTKSKNDUCM2UI5HFEWSHLJJVITKOLJLU2TJTIRFU2USRI5MVURCNJZFFOR2RGNKEON2CKJCU2WSEIFGVEWCHIEZFIQKOIQ2EOSKZIRCU4WSRI5KVSRCTG5CEMTS2KBLEWVJTGRFEMSCILFJUWT2LJI3EIQ2RJJIUSTRWIREU4SSTJBDDMR2TKVCEQS2WIVEFSTKKLBEECM2UIFHEUV2HJUZFITKOLJLUOQSTKVDTITCJIVGVSVCPJVBFCR2FLFKFGT2CKJDVSUSUIVGUUWCIIFLVIQ2OLJIUOQKZKRBU6SSZI5CTGSCZKRJVGSK2JBEFSTKSKFDUSM2EIFHUEUSHLFMVIQKNIJIVAUKZLBMVKUSSI5CTEVCBG5BFESCBGJCE2TSKLJDUSUSWIVKFURCKLJFEKTKUKJCEOSKZIRCU4USOI5ATIQZSJVFFORKBLFKECT2SKFDUCUSRPQYTQNBWGUXDSML4PRJE67D4PR6FG5LQMVZGS33SEBJG633NEAWSAMRAKNUW4Z3MMUQEEZLEON6DALRQGB6C2MBOGAYXY7BNGAXDAML4GAXDAMA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T12:32:38.730762Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_28fd7f269809",
+          "mode": null,
+          "label": "Swiss-Belhotel Borneo Samarinda",
+          "detail": "Superior Twin ",
+          "price": {
+            "amount": 36073.58,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs ₹17,608 more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-04",
+            "checkout": "2027-05-09",
+            "room_name": "Superior Twin ",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Jl. Mulawarman no. 6",
+            "rating": 8.6,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp4f353",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEURzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laREFOWlVHNDNUTU9KV01VWkRBN0JSRU1aREFNUlhHQTJUQU5ENEdJWURFTlpRR1VZRFM3REZOWlBWS1UzNEpGSEhZU0tPS0o2RENRSlFJTjZESU5KU0hGNkdTVURIS1ZFSFlNSlhIQTNUQU5KV0dNMlRNTlpXR0JTVUc0TElFTVpURU5CVUdNMlNHTUpTSEUyUzJNWlNHUTJER05MNEtKREU0N0JTR0FaRE9NQlZHQVpUQU1CUUdCNkRDN0NTR0VZVENORDRHTTNEQU5aVEdVNFNHVVNQRU5KRU1UUkRHSVlERU5aTkdBMlMyTUJURUFZREFPUlFHQVJRo3ByY8tA4Z0yj1wo9qVvcl9wcssAAAAAAAAAAKVvcl9jbcu_hHrhR64Ue6Jjbcu_hHrhR64Ue6NwY2SzMjAyNy0wNS0wNCAwMDowMDowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3Nybq5TdXBlcmlvciBUd2luIKNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJKFoXSzMjAyNy0wNS0wMyAwMDowMDowMKFhy0C8Loo9cKPXoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSFoXSzMjAyNy0wNS0wNCAwMDowMDowMKFhy0DhnQ3Cj1wpoWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmMzI0NDM1o3NpZAKjaGlkp2xwNGYzNTOjb2NjkYGhYQGjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA1LTA0omNvqjIwMjctMDUtMDmjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxNGRiZmQ4OGJpRGNLR25rem5TTnBueTlZbmFjVFRidHBzb0mjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiShKFpw6Fkt1Byb3BlcnR5IHNlcnZpY2UgY2hhcmdloWHLQKwuuFHrhR-hY6NJTlKEoWnCoWSjVEFYoWHLQKwuuFHrhR-hY6NJTlKibHDAo2JrdAI=",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEIQKOLJKUONBTKRGU6SSXJVKVURCBG5BFERKNLJCECTKSLBDUCMSUIFHEINCHJFMUIRKOLJIUOVKZIRJTORCGJZNFAVSLKUZTISSGJBEFSU2LJ5FUUNSEINIUUUKJJY3EISKOJJJUQRRWI5JVKRCIJNLEKSCZJVFFQSCBGNKECTSKK5DU2MSUJVHFUV2HIJJVKRZUJREUKTK2KRCU4QSVI5GTEU2HJVFFGSCFGJJTETK2KNDVCMSEI5HEYNCLJJCEKNBXIJJUOQK2IRHU2QSWI5AVUVCBJVBFCR2CGZCEGN2DKNDUKWKUINHEINCHJUZUIQKOLJKEOVJUKNDVKU2QIVHEURKNKRJEIR2JLFCEKTS2JZDUCMSTGJGUEVCFIFMUIQKPKJIUOQKSKF6DGNRQG4ZS4NJYPQZDAMRXFUYDKLJQGQQDAMB2GAYDUMBQPRJE67D4PR6FG5LQMVZGS33SEBKHO2LOEB6DALRQGB6C2MBOGAYXY7BNGAXDAML4GAXDAMA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T12:32:38.730762Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_46408ac8d274",
+          "mode": null,
+          "label": "FUGO Hotel Samarinda (Bigmall)",
+          "detail": "Superior",
+          "price": {
+            "amount": 38770.42,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs ₹20,305 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-05-04",
+            "checkout": "2027-05-09",
+            "room_name": "Superior",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "no.08 Jl. Untung Suropati, Samarinda, Kalimantan Timur, 75243",
+            "rating": 9.8,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp656cf4be",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEQRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0o2RENJWlNHQVpET01CVkdBMkhZTVJRR0kzVEFOSlFIRjZHSzNTN0tWSlhZU0tPUFJFVTRVVDRHRkFUQVEzNEdRMlRFT0w0TkZJR09WS0lQUVlUT09CWEdBMlRNTVpWR1kzVE1NREZJTllXUUlaUkc0WURDTlJUSEVaVEtPQkRHSVlUT09CTkdFM1RBTUpXR000VEdOSllQUkhGRVJTT1BRWkRBTVJXR0E0RENOUlJHQVlEQTdCUlBSSkRDTUpWR0I2REdPQlhHNFlESU1SRElKQkNHVFNTSVpIQ0dNUlFHSTNDMk1CWUZVWVRNSUJSR0E1REFNQkSjcHJjy0Di7k1wo9cKpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JuqFN1cGVyaW9yo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSqMTcwMTYzOTM1OKNzaWQCo2hpZKpscDY1NmNmNGJlo29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wNS0wNKJjb6oyMDI3LTA1LTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTRkYmZkODhiaURjS0dua3puU05wbnk5WW5hY1RUYnRwc29Jo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWSpU2FsZXMgdGF4oWHLQKxqKPXCj1yhY6NJTlKEoWnDoWS4U2VydmljZSBjaGFyZ2UgKHRheGFibGUpoWHLQKgmBR64UeyhY6NJTlKibHDAo2JrdAY=",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJI3EIQ2JLJJUOQK2IRHU2QSWI5ATESCZJVJFCR2JGNKECTSKKFEEMNSHJMZVGN2LKZFFQWKTJNHVAUSFKU2FKVBUI5DECVCBKEZTIR2RGJKEKT2MGRHEMSKHJ5LEWSKQKFMVIT2PIJMEOQJSKRGU2WSWI5MTGVCNJVCEMSKOLFLVCSK2KJDTIWKEINHFEVCIIVNFIS2PIJCEOSKZKRHU6QSOI5CTGVCBJVFFOR2NGRKEOTSKLFIFESCGIVJFGT2QKFNEIQKNKJLUOQJUIRBU4USSI5AVSRCBG5BFEUCSJJCEGTKKKZDUENSEI5HUEWCHGRMUISKNKJCESSSCINDVIU2TJFNEQQ2HJVJFCR2JGNBTETKCLFDFKWKUJVEUEUSHIE2UIQKNIJCHYMZYG43TALRUGJ6HYQSJPR6HY7CTOVYGK4TJN5ZHYMBOGAYHYMBOGAYHY7BQFYYDA7BQFYYDA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-18T12:32:38.730762Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 18465.91,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "srinagar_and_gulmarg_2027-05-04_2027-05-09",
+  "user_id": "corpus-srinagar-packed-solo-5d"
+}

@@ -1,0 +1,12 @@
+ContainerAppConsoleLogs_CL
+| extend event = parse_json(Log_s)
+| extend
+    event_kind = tostring(event.event_kind),
+    outcome = tostring(event.outcome),
+    rate_limit_scope = tostring(event.rate_limit_scope)
+| where event_kind == "chat_operation"
+| summarize
+    Samples = count(),
+    Throttles = countif(outcome == "rate_limited" or isnotempty(rate_limit_scope))
+| extend ThrottleRate = todouble(Throttles) / Samples
+| where Samples >= 5 and Throttles >= 2 and ThrottleRate >= 0.2

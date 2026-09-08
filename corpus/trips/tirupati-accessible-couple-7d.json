@@ -1,0 +1,512 @@
+{
+  "status": "draft",
+  "trip_id": "tirupati_2027-08-09_2027-08-16",
+  "trip_number": 1,
+  "created_at": "2026-08-17T19:20:09.113392",
+  "destination": "Tirupati",
+  "origin": "Hyderabad",
+  "departure_date": "2027-08-09",
+  "return_date": "2027-08-16",
+  "travelers": "2 adults (one with limited mobility, cannot manage long walks or stairs)",
+  "notes": "Accessibility: One traveller needs to avoid long walks or stairs. Balanced trip style, moderate budget.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Tirupati",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Marasa Sarovar Premiere Tirupati",
+      "address": "Upadhyaya Nagar, Karakambadi Road, Tirupati",
+      "checkin": "2027-08-09",
+      "checkout": "2027-08-16",
+      "room_type": "Superior Room Twin Bed",
+      "price_per_night": 5500,
+      "nights": 7,
+      "total_price": 38500,
+      "currency": "INR",
+      "amenities": [
+        "wheelchair accessible",
+        "elevator",
+        "pool",
+        "spa",
+        "restaurant"
+      ],
+      "google_rating": 4.3,
+      "reviews_count": 2100
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-08-09",
+      "title": "Day 1 · Arrival in Tirupati",
+      "summary": "Arrive from Hyderabad, check in to accessible hotel, light local sightseeing nearby.",
+      "stops": [
+        {
+          "name": "Train: Hyderabad to Tirupati",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 480,
+          "note": "Accessible train, reserved seats"
+        },
+        {
+          "name": "Superior Room Twin Bed at Marasa Sarovar Premiere Tirupati",
+          "kind": "hotel",
+          "note": "Accessible room, central location"
+        },
+        {
+          "name": "Sri Kapileswara Swamy Temple",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Wheelchair accessible, minimal walking"
+        },
+        {
+          "name": "Hotel Restaurant (Marasa Sarovar Premiere)",
+          "kind": "meal",
+          "time": "18:30",
+          "note": "Dinner, accessible seating"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-08-10",
+      "title": "Day 2 · Tirumala Darshan (VIP/accessible) & Local Sights",
+      "summary": "VIP darshan with minimal walking, visit nearby accessible attractions.",
+      "stops": [
+        {
+          "name": "Superior Room Twin Bed at Marasa Sarovar Premiere Tirupati",
+          "kind": "hotel"
+        },
+        {
+          "name": "Tirumala Tirupati Devasthanams (VIP Darshan)",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "VIP/accessible queue, wheelchairs available"
+        },
+        {
+          "name": "Chakra Theertham",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Accessible, short walk"
+        },
+        {
+          "name": "Hotel Restaurant (Marasa Sarovar Premiere)",
+          "kind": "meal",
+          "time": "19:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-08-11",
+      "title": "Day 3 · Sri Venkateswara Zoological Park & Shopping",
+      "summary": "Visit accessible zoo, light shopping at handicraft stores.",
+      "stops": [
+        {
+          "name": "Superior Room Twin Bed at Marasa Sarovar Premiere Tirupati",
+          "kind": "hotel"
+        },
+        {
+          "name": "Sri Venkateswara Zoological Park",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Wheelchair accessible paths"
+        },
+        {
+          "name": "Tirupati Handicrafts Emporium",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 60,
+          "note": "Accessible shopping"
+        },
+        {
+          "name": "Minerva Coffee Shop",
+          "kind": "meal",
+          "time": "17:30",
+          "note": "Accessible, popular local cafe"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-08-12",
+      "title": "Day 4 · Chandragiri Fort & Relaxation",
+      "summary": "Explore Chandragiri Fort (easy access areas), relax at hotel.",
+      "stops": [
+        {
+          "name": "Superior Room Twin Bed at Marasa Sarovar Premiere Tirupati",
+          "kind": "hotel"
+        },
+        {
+          "name": "Chandragiri Fort (Ground Level)",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Accessible areas only, avoid stairs"
+        },
+        {
+          "name": "Hotel Spa (Marasa Sarovar Premiere)",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Relaxing spa session, accessible"
+        },
+        {
+          "name": "Hotel Restaurant (Marasa Sarovar Premiere)",
+          "kind": "meal",
+          "time": "19:00"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-08-13",
+      "title": "Day 5 · Sri Padmavathi Ammavari Temple & Leisure",
+      "summary": "Visit accessible temple, leisure time at hotel.",
+      "stops": [
+        {
+          "name": "Superior Room Twin Bed at Marasa Sarovar Premiere Tirupati",
+          "kind": "hotel"
+        },
+        {
+          "name": "Sri Padmavathi Ammavari Temple",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 60,
+          "note": "Wheelchair accessible, minimal steps"
+        },
+        {
+          "name": "Hotel Poolside Café (Marasa Sarovar Premiere)",
+          "kind": "meal",
+          "time": "17:00",
+          "note": "Accessible, poolside snacks"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-08-14",
+      "title": "Day 6 · Day Trip to Srikalahasti (Accessible Areas)",
+      "summary": "Day trip to Srikalahasti, visit accessible areas of temple, return to Tirupati.",
+      "stops": [
+        {
+          "name": "Drive: Tirupati to Srikalahasti",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 60,
+          "distance_km": 36,
+          "note": "Private car, accessible"
+        },
+        {
+          "name": "Srikalahasti Temple (Accessible Areas)",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 90,
+          "note": "Accessible entry, avoid stairs"
+        },
+        {
+          "name": "Drive: Srikalahasti to Tirupati",
+          "kind": "transport",
+          "time": "12:30",
+          "duration_min": 60,
+          "distance_km": 36
+        },
+        {
+          "name": "Superior Room Twin Bed at Marasa Sarovar Premiere Tirupati",
+          "kind": "hotel",
+          "time": "14:00"
+        },
+        {
+          "name": "Hotel Restaurant (Marasa Sarovar Premiere)",
+          "kind": "meal",
+          "time": "19:00"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-08-15",
+      "title": "Day 7 · Departure",
+      "summary": "Check out, return to Hyderabad.",
+      "stops": [
+        {
+          "name": "Superior Room Twin Bed at Marasa Sarovar Premiere Tirupati",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Drive: Tirupati to Hyderabad",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 420,
+          "distance_km": 550,
+          "note": "Private car, accessible, regular breaks"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-08-16",
+      "title": "Buffer Day · Optional Local Sightseeing",
+      "summary": "Optional day for rest or additional sightseeing before departure.",
+      "stops": [
+        {
+          "name": "Superior Room Twin Bed at Marasa Sarovar Premiere Tirupati",
+          "kind": "hotel"
+        },
+        {
+          "name": "Govindaraja Swamy Temple",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 60,
+          "note": "Accessible areas only"
+        },
+        {
+          "name": "Hotel Restaurant (Marasa Sarovar Premiere)",
+          "kind": "meal",
+          "time": "19:00"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 38500,
+    "transport": 12000,
+    "meals": 7000,
+    "activities": 3500
+  },
+  "total_cost": 61000,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T19:24:32.109988",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T19:24:06",
+      "expires_at": "2026-08-18T07:24:06"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_tirupati_2027_08_09_2027_08_16",
+      "kind": "lodging",
+      "created_at": "2026-08-17T13:54:06.158390Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Tirupati",
+        "date": "2027-08-09"
+      },
+      "subject": "Stay in Tirupati",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_af901bc1a096",
+      "options": [
+        {
+          "id": "opt_stay_af901bc1a096",
+          "mode": null,
+          "label": "Ekante Bliss Tirupati - IHCL SeleQtions",
+          "detail": "Superior Room Twin Bed",
+          "price": {
+            "amount": 44023.14,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-08-09",
+            "checkout": "2027-08-16",
+            "room_name": "Superior Room Twin Bed",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Near Ramanuja Circle, Renigunta road,",
+            "rating": 9.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp4f6e5",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEtRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laREFOWlNHWlRETVpSV01RWkRBTlpVRzQzVE1PSldNVVpEQU5SU0dZMlRNTkQ0R0VSVEVNQlNHNFlEUU1CWlBRWkRBTVJYR0E0RENOVDRNVlhGNlZLVFBSRVU0N0NKSlpKSFlNU0JHQkJYWU5CVkdJNFhZMktRTTVLVVE3QlJHNDRETU9KWEdRM0RTTVJSR0UyVVNSM0hLTVJUR01SVkdNMkRTSVpSR0EzRElMSlRHSTJUR05CWlBSSkVNVFQ0R0lZREVOWlFIQVlETU1KWkdBWUhZTUw0S0lZVEFNSldQUTJESU1CU0dNWVRJSTJTSjRSVkVSU09FTVpEQU1SWEZVWURRTEpRR1lRRENPSjJHQVlDR6NwcmPLQOV-5HrhR66lb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkszIwMjctMDgtMDYgMTk6MDA6MDCicnSjUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm62U3VwZXJpb3IgUm9vbSBUd2luIEJlZKNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJGFoXSzMjAyNy0wOC0wNiAxOTowMDowMKFhy0C4laFHrhR7oWOjSU5SonR5pmFtb3VudKJ0eqNHTVSicnSjUkZOpHNoaWSmMzI1MzQ5o3NpZAKjaGlkp2xwNGY2ZTWjb2NjkYGhYQKjY3Vyo0lOUqJnbqJJTqJjaaoyMDI3LTA4LTA5omNvqjIwMjctMDgtMTajZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwZmZkZTJmNDlhdTdqV1FPdm0zMmEyekVWZVRxOEw3YVJjYWejaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFktEdvb2RzICYgc2VydmljZXMgdGF4oWHLQL_0NcKPXCmhY6NJTlKibHDAo2JrdAU=",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEIQKOLJJUOWSUIRGVUUSXJVIVURCBJZNFKRZUGNKE2T2KK5GVKWSEIFHFEU2HLEZFITKOIQ2EORKSKRCU2QSTI42FSRCRJVBFUUCRLJCECTKSLBDUCNCEINHFINCNKZMEMNSWJNKFAUSFKU2DOQ2KJJNEUSCZJVJUER2CIJMFSTSCKZDUSNCYLEZEWUKNGVFVKUJXIJJEONBUIRGU6SSYI5ITGRCTJVJFER2FGJKVGURTJBFU2USUI5GVEVSHJUZEIU2JLJJEOQJTIREUYSSUI5ETEVCHJZBFUUCSJJCU2VCUGRDUSWKEIVHFUUKIIFMUITKNJJNEOQKZJBMU2TBUJNEVSVCBJVFFOUCRGJCESTKCKNDU2WKUJFETEU2KGRJFMRKSKNHUKTK2IRAU2USYIZKVSRCRJRFFCR2ZKFCEGT2KGJDUCWKDI56DINBQGIZS4MJUPQZDAMRXFUYDQLJQGYQDCOJ2GAYDUMBQPRJE67D4PR6FG5LQMVZGS33SEBJG633NEBKHO2LOEBBGKZD4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T13:51:37.769567Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        },
+        {
+          "id": "opt_stay_3125ae48f297",
+          "mode": null,
+          "label": "Fortune Select Grand Ridge, Tirupati - Member ITC Hotels' Group",
+          "detail": "Deluxe Room (Deluxe Room) KingBed",
+          "price": {
+            "amount": 63024.55,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹19,001 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-08-09",
+            "checkout": "2027-08-16",
+            "room_name": "Deluxe Room (Deluxe Room) KingBed",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "Shilparamam,Tiruchanoor Road",
+            "rating": 9.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp6ac39",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gFQR1kyRE1OSldNTTNUS05aWUdZMlRFTUJYR0kzR01OVEdHWlNERU1CU0hBM0RJTlJWR1pSVE9OSlhIQTNES01SUUc0WkRNWlJXTVkzR0lNUlpHSVlETVlSV0hFM0dLTlJYR1laRE1OSldHUjZEQ0laU0dBWkRPTUJZR0E0WFlNUlFHSTNUQU9CUkdaNkdLM1M3S1ZKWFlTS09QUkVVNFVUNEdKQVRBUTM0R1EyVEVPTDRORklHT1ZLSVBRWVRPT0JXSEUzVElOUlpHSVlUQ05LSkk1VFZHSVpVR00zVEdNQlZFTVpEQU5aVkZVMkRHTlpUR0EyWFlVU0dKWjZERU1CU0c0WURRTUJVR0EyREFNRDRHRjZGRU1KUkdVWUhZTlJUR0FaRElOSlZFTkpFNkkyU0laSENHTVJRR0kzUzJNQllGVVlESUlCUUdRNURBTUJEo3ByY8tA7sYRmZmZmqVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SzMjAyNy0wOC0wNCAwNDowMDowMKJydKNSRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtkhRGVsdXhlIFJvb20gKERlbHV4ZSBSb29tKSBLaW5nQmVko29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkYWhdLMyMDI3LTA4LTA0IDA0OjAwOjAwoWHLQO7GEZmZmZqhY6NJTlKidHmmYW1vdW50onR6o0dNVKJydKNSRk6kc2hpZKY0MzczMDWjc2lkAqNoaWSnbHA2YWMzOaNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDgtMDmiY2-qMjAyNy0wOC0xNqNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDBmZmRlMmY0OWF1N2pXUU92bTMyYTJ6RVZlVHE4TDdhUmNhZ6Npc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFktEdvb2RzICYgc2VydmljZXMgdGF4oWHLQOC2rhR64UihY6NJTlKibHDAo2JrdAE=",
+              "rate_id": "I5MTERCNJZFFOTKNGNKEWTS2LFDVSMSUIVGUEWCHJEZUOTKOKRDUOWSTIRCU2QSTJBATGRCJJZJFMR22KJKE6TSKLBEECM2EJNGVEUKHGRNEITK2KJLU2WJTI5EU2US2I5EVSRCNLFJFOSCFGNDUWTSSLBDVSWSEJVHEUV2HKI3EIQ2JLJJUOQK2IRHU2QSZI5ATIWCZJVJFCR2JGNKECT2CKJDVUNSHJMZVGN2LKZFFQWKTJNHVAUSFKU2FKVBUI5FECVCBKEZTIR2RGJKEKT2MGRHEMSKHJ5LEWSKQKFMVIT2PIJLUQRJTKREU4US2I5EVSVCDJZFUUSJVKRLEOSK2KVDU2M2UI5GUEVSFJVNEIQKOLJLEMVJSIRDU4WSUI5ATEWCZKVJUOSS2GZCEKTKCKNDTIWKEKFGUEVKHIEZEIQKNIQ2EORRWIZCU2SSSI5KVSSCZJZJFIR2BLJCESTSKKZCU4SSFGZETEU2JLJEEGR2NKJIUOSJTKMZE2QSZIZKVSRCJJFBFCR2RGVCECTKCIR6DMMZQGI2C4NJVPQZDAMRXFUYDQLJQGQQDANB2GAYDUMBQPRJE67D4PR6EIZLMOV4GKICSN5XW2IBIIRSWY5LYMUQFE33PNUUSAS3JNZTUEZLEPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T13:51:37.769567Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        },
+        {
+          "id": "opt_stay_e351eaa62bb0",
+          "mode": null,
+          "label": "Taj Tirupati",
+          "detail": "SUPERIOR, KING BED",
+          "price": {
+            "amount": 88940.42,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs ₹44,917 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-08-09",
+            "checkout": "2027-08-16",
+            "room_name": "SUPERIOR, KING BED",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "S.No.260/1B Tanapalli Road",
+            "rating": 9.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp3365a1",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEkRzRaVE9OSlhHQTNES05aU0dZNFRNWlJYR0laR0dNUlFHWlJETU9KV01VM0RPTVJRR1laRE1OSldHUjZEQ0laU0dBWkRPTUJZR0E0WFlNUlFHSTNUQU9CUkdaNkdLM1M3S1ZKWFlTS09QUkVVNFVUNEdKQVRBUTM0R1EyVEVPTDRORklHT1ZLSVBRWVRPT0JXSEUzVElOUlpHSVlUQ05LSkk1VFZHSVpUR00zRFFNWlZHTVJUQ01SVUhBV1RHTVpXSEFaVEtNMzRLSkRFNDdCU0dBWkRPTUJZR0EzVEFOWlRHQjZEQzdDU0dFWVRLTUQ0SEE0RFNOQlFHUVpDR1VTUEVOSkVNVFJER0lZREVOWk5HQTRDMk1CWEVBWURPT1JUR0FSUaNwcmPLQPW2xrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkszIwMjctMDgtMDcgMDc6MzA6MDCicnSjUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm6yU1VQRVJJT1IsIEtJTkcgQkVEo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkYWhdLMyMDI3LTA4LTA3IDA3OjMwOjAwoWHLQMoOiPXCj1yhY6NJTlKidHmmYW1vdW50onR6o0dNVKJydKNSRk6kc2hpZKczMzY4MzUzo3NpZAKjaGlkqGxwMzM2NWExo29jY5GBoWECo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wOC0wOaJjb6oyMDI3LTA4LTE2o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMGZmZGUyZjQ5YXU3aldRT3ZtMzJhMnpFVmVUcThMN2FSY2Fno2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnDoWSgoWHLQMikvXCj1wqhY6NJTlKibHDAo2JrdAE=",
+              "rate_id": "I42FUVCPJZFFQR2BGNCEWTS2KNDVSNCUJVNFEWCHJFNEOR2NKJIUOWSSIRGU6SSXJVKTGRCPJVJFCR2ZLJCE2TSKK5DVENSEINEVUU2HIFNEIT2NIJMUOQJULBMU2USRI5ETGVCBJ5BFER22GZDUWM2TG5FVMSSYLFJUWT2QKJCVKNCVKQ2EOSSBKRAVCMZUI5ITEVCFJ5GDITSGJFDU6VSLJFIFCWKUJ5HUEV2IIUZVISKOKJNEOSKZKRBU4S2KJE2VIVSHJFNFIR2NGNCFCTK2KZDU2USUINGVEVKIIFLVIR2NLJLUQQK2KRFU2MZUJNFEIRJUG5BFGR2BLJCE6TKCLFDUCM2UIFHFUVCHII3EIQZXINJUORKZKRFU2RBUJBATIRCTJZBFCR2RLJBUOVKTKBCU4SSFJVKFERCHJFMUIRKOLJHEOQJUIMZE2QSYIVAVSRCPJ5JFIR2BKJIXYOBYHE2DALRUGJ6DEMBSG4WTAOBNGA3SAMBXHIZTAORQGB6FET34PR6HYU2VKBCVESKPKIWCAS2JJZDSAQSFIR6DALRQGB6DALRQGB6HYMBOGAYHYMBOGAYA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T13:51:37.769567Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 44023.14,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "tirupati_2027-08-09_2027-08-16",
+  "user_id": "corpus-tirupati-accessible-couple-7d"
+}

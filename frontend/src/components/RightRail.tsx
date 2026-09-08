@@ -3,15 +3,22 @@ import ItineraryPanel from "./ItineraryPanel";
 import MapPanel from "./MapPanel";
 import TripSwitcher from "./TripSwitcher";
 import type { DeselectItemOptions, SelectItemOptions } from "../api";
-import type { TripView } from "../types";
+import type { Itinerary, MapView, TripView, TripWorkspaceView } from "../types";
 import type { ItineraryJump } from "../workspaceState";
+import type { ItineraryFilter } from "../lib/itineraryFilters";
 
 interface Props {
+  filters: readonly ItineraryFilter[];
+  onFilterToggle: (filter: ItineraryFilter) => void;
   overview: TripView["overview"];
   /** The Photos / overview content (the existing TripPanel). */
   photos: ReactNode;
   /** Bumped when the trip changes so map + itinerary refetch. */
   reloadToken: number;
+  tripId?: string | null;
+  /** View-models handed over by a trip switch, so the panels skip a refetch. */
+  mapSeed?: MapView | null;
+  itinerarySeed?: Itinerary | null;
   /** Name of the stop to highlight (drives both itinerary + map). */
   focusName: string | null;
   /** Exact itinerary day when the focused place occurs more than once. */
@@ -20,6 +27,8 @@ interface Props {
   focusToken?: number;
   circuitFocusDay?: number;
   circuitFocusToken?: number;
+  routeFocusDay?: number;
+  routeFocusToken?: number;
   itineraryJump: ItineraryJump | null;
   onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void;
   onStopMap: (kind: string, name: string, day?: number, stop?: number) => void;
@@ -38,22 +47,29 @@ interface Props {
   ) => void | Promise<boolean>;
   /** Persistent saved-trips switcher (always visible). */
   tripVersion: number;
-  onSwitched: (tripId?: string, view?: TripView | null) => void;
+  onSwitched: (tripId?: string, workspace?: TripWorkspaceView | null) => void;
   /** Map is lazy (Google Maps JS bills per load) — opt-in, stays mounted. */
   mapOpen: boolean;
   onToggleMap: (open: boolean) => void;
 }
 
 export default function RightRail({
+  filters,
+  onFilterToggle,
   overview,
   photos,
   reloadToken,
+  tripId,
+  mapSeed,
+  itinerarySeed,
   focusName,
   focusDay,
   focusStop,
   focusToken,
   circuitFocusDay,
   circuitFocusToken,
+  routeFocusDay,
+  routeFocusToken,
   itineraryJump,
   onStopFocus,
   onStopMap,
@@ -95,15 +111,23 @@ export default function RightRail({
         <section className="flex min-h-0 basis-2/5 flex-col border-b border-slate-100">
           <div className="min-h-0 w-full flex-1">
             <ItineraryPanel
+              filters={filters}
+              onFilterToggle={onFilterToggle}
               overview={overview}
               reloadToken={reloadToken}
+              tripId={tripId}
+              seed={itinerarySeed}
               focusName={focusName}
               focusDay={focusDay}
               focusStop={focusStop}
+              focusToken={focusToken}
+              circuitFocusDay={circuitFocusDay}
+              circuitFocusToken={circuitFocusToken}
               jumpTo={itineraryJump}
               onStopFocus={onStopFocus}
               onStopMap={onStopMap}
               onDayMap={onDayMap}
+              onAllDaysMap={onMapAllDaysFocus}
               onStopRemove={onDeselect
                 ? async (kind, name, day, stop) => { await onDeselect(kind, name, {
                     day,
@@ -120,12 +144,18 @@ export default function RightRail({
           <section className="flex h-72 min-h-0 flex-col border-b border-slate-100">
             <div className="min-h-0 w-full flex-1">
               <MapPanel
+                filters={filters}
                 reloadToken={reloadToken}
+                tripId={tripId}
+                seed={mapSeed}
                 focusName={focusName}
                 focusDay={focusDay}
+                focusStop={focusStop}
                 focusToken={focusToken}
                 circuitFocusDay={circuitFocusDay}
                 circuitFocusToken={circuitFocusToken}
+                routeFocusDay={routeFocusDay}
+                routeFocusToken={routeFocusToken}
                 onPinFocus={onStopFocus}
                 onDayFocus={onMapDayFocus}
                 onAllDaysFocus={onMapAllDaysFocus}

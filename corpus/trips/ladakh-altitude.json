@@ -1,0 +1,358 @@
+{
+  "status": "draft",
+  "trip_id": "leh_ladakh_2027-07-01_2027-07-08",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:39:19.966041",
+  "destination": "Leh Ladakh",
+  "origin": "Delhi",
+  "departure_date": "2027-07-01",
+  "return_date": "2027-07-08",
+  "travelers": "2 adults",
+  "notes": "Balanced pace, moderate budget, 3-star+ hotels, economy direct flights preferred. Acclimatisation days included.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Leh Ladakh",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "The Grand Dragon Ladakh",
+      "kind": "hotel",
+      "hotel_id": "lp3ae3d",
+      "address": "Sheynam, Old Leh Road, Leh, Ladakh, 194101",
+      "rating": 4.7,
+      "reviews": 1200,
+      "price_per_night": 12000,
+      "currency": "INR",
+      "checkin": "2027-07-01",
+      "checkout": "2027-07-04",
+      "note": "Top-rated, centrally located, excellent amenities"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-07-01",
+      "title": "Arrival in Leh & Acclimatisation",
+      "summary": "Fly from Delhi to Leh. Transfer to hotel. Rest and acclimatise to high altitude.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Leh",
+          "kind": "flight",
+          "time": "06:30",
+          "arrival_time": "08:00",
+          "note": "Morning direct flight, exact time TBC"
+        },
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-07-02",
+      "title": "Leh Local Sightseeing & Acclimatisation",
+      "summary": "Easy sightseeing in Leh town: Shanti Stupa, Leh Palace, local market. Light walking only.",
+      "stops": [
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel"
+        },
+        {
+          "name": "Shanti Stupa",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Leh Palace",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "The Tibetan Kitchen",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Top-rated Tibetan & Indian cuisine, 4.4★, 3.1k reviews"
+        },
+        {
+          "name": "Leh Main Market",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90
+        },
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-07-03",
+      "title": "Leh – Sham Valley Day Trip",
+      "summary": "Scenic drive to Sham Valley: Hall of Fame, Magnetic Hill, Gurudwara Pathar Sahib, Sangam. Return to Leh.",
+      "stops": [
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel"
+        },
+        {
+          "name": "Hall of Fame",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Gurudwara Pathar Sahib",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 45
+        },
+        {
+          "name": "Magnetic Hill",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 30
+        },
+        {
+          "name": "Lamayuru Restaurant",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Popular for local and Israeli cuisine, 4.3★, 1.1k reviews"
+        },
+        {
+          "name": "Sangam (Indus-Zanskar Confluence)",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 45
+        },
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-07-04",
+      "title": "Leh to Nubra Valley via Khardung La",
+      "summary": "Drive over Khardung La (one of the world’s highest motorable passes) to Nubra Valley. Visit Diskit Monastery, Hunder sand dunes.",
+      "stops": [
+        {
+          "name": "Drive: Leh to Nubra Valley via Khardung La",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 300,
+          "distance_km": 120,
+          "note": "Scenic mountain drive with stops"
+        },
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel",
+          "time": "13:30"
+        },
+        {
+          "name": "Diskit Monastery",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Wazwan Planet Restaurant",
+          "kind": "meal",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Best in Hunder, 4.5★, 420 reviews"
+        },
+        {
+          "name": "Hunder Sand Dunes",
+          "kind": "attraction",
+          "time": "18:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel/Camp in Nubra Valley",
+          "kind": "hotel",
+          "time": "20:00"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-07-05",
+      "title": "Nubra Valley – Pangong Lake",
+      "summary": "Drive from Nubra to Pangong Lake via Shyok route. Enjoy the stunning lake views.",
+      "stops": [
+        {
+          "name": "Drive: Nubra Valley to Pangong Lake via Shyok",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 360,
+          "distance_km": 180,
+          "note": "Mountain drive, scenic stops"
+        },
+        {
+          "name": "Hotel/Camp in Nubra Valley",
+          "kind": "hotel",
+          "time": "14:30"
+        },
+        {
+          "name": "Pangong Cafe",
+          "kind": "meal",
+          "time": "16:30",
+          "duration_min": 60,
+          "note": "Popular lakeside cafe, 4.1★, 359 reviews"
+        },
+        {
+          "name": "Pangong Lake",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Camp/Hotel at Pangong Lake",
+          "kind": "hotel",
+          "time": "20:00"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-07-06",
+      "title": "Pangong Lake – Leh via Chang La",
+      "summary": "Return to Leh via Chang La pass. En route visit Hemis Monastery or Thiksey Monastery.",
+      "stops": [
+        {
+          "name": "Drive: Pangong Lake to Leh via Chang La",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 360,
+          "distance_km": 220,
+          "note": "Mountain drive, scenic stops"
+        },
+        {
+          "name": "Camp/Hotel at Pangong Lake",
+          "kind": "hotel",
+          "time": "14:30"
+        },
+        {
+          "name": "Tsas by Dolkhar",
+          "kind": "meal",
+          "time": "16:30",
+          "duration_min": 60,
+          "note": "Modern Ladakhi cuisine, 4.6★, 943 reviews"
+        },
+        {
+          "name": "Thiksey Monastery",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 60
+        },
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel",
+          "time": "19:30"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-07-07",
+      "title": "Leh Leisure & Departure",
+      "summary": "Relax in Leh, last-minute shopping or sightseeing. Fly back to Delhi.",
+      "stops": [
+        {
+          "name": "The Grand Dragon Ladakh",
+          "kind": "hotel"
+        },
+        {
+          "name": "Leh Main Market",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Flight: Leh to Delhi",
+          "kind": "flight",
+          "time": "12:00",
+          "arrival_time": "13:30",
+          "note": "Afternoon direct flight, exact time TBC"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:41:51.164144",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:40:25",
+      "expires_at": "2026-08-16T07:40:25"
+    }
+  ],
+  "id": "leh_ladakh_2027-07-01_2027-07-08",
+  "user_id": "corpus-ladakh-altitude"
+}

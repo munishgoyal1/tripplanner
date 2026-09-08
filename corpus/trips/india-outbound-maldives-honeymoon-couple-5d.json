@@ -1,0 +1,252 @@
+{
+  "status": "draft",
+  "trip_id": "maldives_2027-02-03_2027-02-08",
+  "trip_number": 1,
+  "created_at": "2026-08-25T21:28:35.599442",
+  "destination": "Maldives",
+  "origin": "Bangalore",
+  "travel_scope": "round_trip",
+  "departure_date": "2027-02-03",
+  "return_date": "2027-02-08",
+  "travelers": "Couple: 2 adults (Indian passports)",
+  "notes": "Prioritize romantic stays, privacy, downtime, and one special experience. Focus on resorts ideal for couples.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Maldives",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the resort scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-02-03",
+      "title": "Day 1 · Arrival in Maldives",
+      "summary": "Fly from Bangalore to Malé. Transfer by speedboat or seaplane to your romantic resort. Check in and enjoy a private sunset dinner on the beach.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Malé (TBD)",
+          "kind": "flight",
+          "time": "07:00",
+          "duration_min": 300,
+          "note": "Depart Bangalore, direct or 1-stop flight"
+        },
+        {
+          "name": "Velana International Airport (MLE)",
+          "kind": "flight",
+          "time": "12:00",
+          "note": "Arrive in Maldives"
+        },
+        {
+          "name": "Speedboat/Seaplane Transfer to Resort",
+          "kind": "transport",
+          "time": "14:30",
+          "duration_min": 60,
+          "note": "Transfer to island resort (allowing for immigration and baggage)"
+        },
+        {
+          "name": "Romantic Resort (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and relax"
+        },
+        {
+          "name": "Private Beach Dinner",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Romantic sunset dinner on the beach"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-02-04",
+      "title": "Day 2 · Leisure & Spa",
+      "summary": "Enjoy a leisurely breakfast, couples spa treatment, and private time. Unwind at the pool or on your villa deck.",
+      "stops": [
+        {
+          "name": "Romantic Resort (TBD)",
+          "kind": "hotel",
+          "note": "Breakfast at resort"
+        },
+        {
+          "name": "Couples Spa Experience",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120,
+          "note": "Relaxing couples massage"
+        },
+        {
+          "name": "Infinity Pool or Villa Deck",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 120,
+          "note": "Private downtime"
+        },
+        {
+          "name": "Ithaa Undersea Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner at the famous underwater restaurant (advance reservation recommended)"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-02-05",
+      "title": "Day 3 · Special Experience: Sandbank Picnic",
+      "summary": "Take a private boat to a secluded sandbank for a romantic picnic and snorkeling. Evening at leisure.",
+      "stops": [
+        {
+          "name": "Romantic Resort (TBD)",
+          "kind": "hotel",
+          "note": "Breakfast at resort"
+        },
+        {
+          "name": "Private Sandbank Picnic",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 180,
+          "note": "Boat to sandbank, picnic, and snorkeling"
+        },
+        {
+          "name": "Resort Spa or Water Villa",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Relax or optional spa"
+        },
+        {
+          "name": "Sea.Fire.Salt. Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner at a top-rated oceanfront restaurant"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-02-06",
+      "title": "Day 4 · Water Sports & Sunset Cruise",
+      "summary": "Try kayaking or paddleboarding. In the evening, enjoy a private sunset cruise with champagne.",
+      "stops": [
+        {
+          "name": "Romantic Resort (TBD)",
+          "kind": "hotel",
+          "note": "Breakfast at resort"
+        },
+        {
+          "name": "Water Sports (Kayak/Paddleboard)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Gentle water sports for two"
+        },
+        {
+          "name": "Private Sunset Cruise",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Champagne cruise at sunset"
+        },
+        {
+          "name": "Edge by Meeru",
+          "kind": "meal",
+          "time": "19:30",
+          "note": "Dinner at a romantic overwater restaurant"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-02-07",
+      "title": "Day 5 · Leisure & Departure",
+      "summary": "Enjoy your last morning at leisure. Check out and transfer back to Malé for your flight to Bangalore.",
+      "stops": [
+        {
+          "name": "Romantic Resort (TBD)",
+          "kind": "hotel",
+          "note": "Breakfast and check-out"
+        },
+        {
+          "name": "Speedboat/Seaplane Transfer to Malé",
+          "kind": "transport",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Return to Malé (allowing 2+ hours before flight)"
+        },
+        {
+          "name": "Flight: Malé to Bangalore (TBD)",
+          "kind": "flight",
+          "time": "12:00",
+          "duration_min": 300,
+          "note": "Depart Maldives, direct or 1-stop flight"
+        },
+        {
+          "name": "Kempegowda International Airport (BLR)",
+          "kind": "flight",
+          "time": "17:30",
+          "note": "Arrive in Bangalore"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-25T21:32:14.680576",
+  "id": "maldives_2027-02-03_2027-02-08",
+  "user_id": "corpus-india-outbound-maldives-honeymoon-couple-5d-05e100483c1e"
+}

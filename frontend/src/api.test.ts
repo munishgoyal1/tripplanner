@@ -1,5 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { deselectItem, fetchSavedTrips, streamChat, tripExportPdfUrl, type StreamHandlers } from "./api";
+import {
+  deselectItem,
+  fetchTripView,
+  fetchSavedTrips,
+  savePreferences,
+  streamChat,
+  tripExportPdfUrl,
+  type Preferences,
+  type StreamHandlers,
+} from "./api";
 
 function streamResponse(frames: string[], status = 200): Response {
   const encoder = new TextEncoder();
@@ -24,33 +33,88 @@ function handlers(): StreamHandlers {
   };
 }
 
-describe("streamChat", () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
+beforeEach(() => {
+  localStorage.clear();
+  localStorage.setItem("tripplanner_user_id", "local");
+});
 
+describe("fetchTripView", () => {
+  it("sends the exact itinerary occurrence with place focus", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ has_trip: true }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await fetchTripView({ kind: "attraction", name: "Jag Mandir", day: 2, stop: 1 });
+
+    const url = new URL(String(fetchMock.mock.calls[0][0]), "http://localhost");
+    expect(Object.fromEntries(url.searchParams)).toMatchObject({
+      focus_kind: "attraction",
+      focus_name: "Jag Mandir",
+      focus_day: "2",
+      focus_stop: "1",
+    });
+  });
+});
+
+describe("streamChat", () => {
   it("dispatches a complete reply", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
         streamResponse([
           'event: progress\ndata: {"stage":"thinking"}\n\n',
+          'event: input_request\ndata: {"version":1,"request_id":"request-1","question":"Pick a pace","known_context":["Boutique stays"],"fields":[{"id":"pace","label":"Pace","kind":"single","value":"balanced","options":[{"value":"easy","label":"Easy"},{"value":"balanced","label":"Balanced"}]}],"submit_label":"Continue","allow_skip":true}\n\n',
           'event: token\ndata: {"text":"Hello"}\n\n',
           'event: done\ndata: {"reply":"Hello","trip_id":"trip-1"}\n\n',
         ]),
       ),
     );
     const events = handlers();
+    events.onInputRequest = vi.fn();
 
-    await streamChat("plan a trip", events);
+    await streamChat("plan a trip", events, { requestId: "request-client-1" });
 
+    const request = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(new Headers(request.headers).get("X-Request-ID")).toBe("request-client-1");
     expect(events.onToken).toHaveBeenCalledWith("Hello");
     expect(events.onProgress).toHaveBeenCalledWith("thinking");
+    expect(events.onInputRequest).toHaveBeenCalledWith(expect.objectContaining({
+      request_id: "request-1",
+      question: "Pick a pace",
+    }));
     expect(events.onDone).toHaveBeenCalledWith("Hello", "trip-1");
   });
 
-  it("marks planner review turns as proposal-only", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
+  it("passes a receipt through and ignores one with nothing to say", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        streamResponse([
+          'event: receipt\ndata: {"seq":1,"at":"0:12","kind":"transport","text":"Compared 3 ways from Lisbon to Porto","detail":"train picked, 2 rejected","decision_id":"dec_1"}\n\n',
+          'event: receipt\ndata: {"seq":2,"at":"0:14","kind":"web"}\n\n',
+          'event: done\ndata: {"reply":"Done"}\n\n',
+        ]),
+      ),
+    );
+    const events = handlers();
+    events.onReceipt = vi.fn();
+
+    await streamChat("plan a trip", events);
+
+    expect(events.onReceipt).toHaveBeenCalledTimes(1);
+    expect(events.onReceipt).toHaveBeenCalledWith({
+      seq: 1,
+      at: "0:12",
+      kind: "transport",
+      text: "Compared 3 ways from Lisbon to Porto",
+      detail: "train picked, 2 rejected",
+      decision_id: "dec_1",
+      source: undefined,
+    });
+  });
+
+  it("marks planner review turns as proposal-only", async () => {    const fetchMock = vi.fn().mockResolvedValue(
       streamResponse(['event: done\ndata: {"reply":"Three options"}\n\n']),
     );
     vi.stubGlobal("fetch", fetchMock);
@@ -61,7 +125,20 @@ describe("streamChat", () => {
     expect(JSON.parse(String(init.body))).toMatchObject({
       message: "Review Day 3",
       proposal_only: true,
+      request_id: expect.any(String),
     });
+  });
+
+  it("passes an abort signal to the streaming request", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      streamResponse(['event: done\ndata: {"reply":"Stopped safely"}\n\n']),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    const controller = new AbortController();
+
+    await streamChat("Plan Goa", handlers(), { signal: controller.signal });
+
+    expect(fetchMock.mock.calls[0][1].signal).toBe(controller.signal);
   });
 
   it("rejects when the stream ends without a terminal event", async () => {
@@ -93,14 +170,113 @@ describe("streamChat", () => {
 });
 
 describe("saved-trip API", () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
-
   it("rejects non-success list responses", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("unavailable", { status: 503 })));
 
     await expect(fetchSavedTrips()).rejects.toThrow("Could not load saved trips (503)");
+  });
+});
+
+describe("preferences API", () => {
+  it("omits an unchanged generated summary while preserving planning mode", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ ok: true, about_me_extracted: [] }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    const prefs: Preferences = {
+      display_name: "Munish",
+      home_city: "Bengaluru",
+      home_country: "India",
+      trip_style: "balanced",
+      budget_level: "moderate",
+      flight_class: "economy",
+      prefer_direct_flights: true,
+      hotel_star_rating_min: 3,
+      dietary: [],
+      interests: [],
+      dislikes: [],
+      about_me: "",
+      profile_summary: "Generated summary",
+      profile_summary_updated_at: "2026-07-28T12:00:00",
+      planning_mode: "interactive",
+    };
+
+    await savePreferences({ planning_mode: prefs.planning_mode });
+
+    const [, init] = fetchMock.mock.calls[0];
+    const body = JSON.parse(String(init.body));
+    expect(body.planning_mode).toBe("interactive");
+    expect(body).not.toHaveProperty("display_name");
+    expect(body).not.toHaveProperty("profile_summary");
+    expect(body).not.toHaveProperty("profile_summary_updated_at");
+  });
+
+  it("includes the summary compare timestamp for a real edit", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ ok: true, about_me_extracted: [] }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    const prefs = {
+      display_name: "",
+      home_city: "",
+      home_country: "",
+      trip_style: "balanced",
+      budget_level: "moderate",
+      flight_class: "economy",
+      prefer_direct_flights: true,
+      hotel_star_rating_min: 3,
+      dietary: [],
+      interests: [],
+      dislikes: [],
+      about_me: "",
+      profile_summary: "My correction",
+      profile_summary_updated_at: "2026-07-28T12:00:00",
+      planning_mode: "direct" as const,
+    };
+
+    await savePreferences({
+      profile_summary: prefs.profile_summary,
+      profile_summary_updated_at: prefs.profile_summary_updated_at,
+    });
+
+    const [, init] = fetchMock.mock.calls[0];
+    expect(JSON.parse(String(init.body))).toMatchObject({
+      profile_summary: "My correction",
+      profile_summary_updated_at: "2026-07-28T12:00:00",
+    });
+  });
+
+  it("surfaces a stale summary response as a reloadable conflict", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ error: "profile summary changed" }), { status: 409 }),
+      ),
+    );
+    const prefs = {
+      display_name: "",
+      home_city: "",
+      home_country: "",
+      trip_style: "balanced",
+      budget_level: "moderate",
+      flight_class: "economy",
+      prefer_direct_flights: true,
+      hotel_star_rating_min: 3,
+      dietary: [],
+      interests: [],
+      dislikes: [],
+      about_me: "",
+      profile_summary: "Stale correction",
+      profile_summary_updated_at: "2026-07-28T12:00:00",
+      planning_mode: "direct" as const,
+    };
+
+    await expect(
+      savePreferences({
+        profile_summary: prefs.profile_summary,
+        profile_summary_updated_at: prefs.profile_summary_updated_at,
+      }),
+    ).resolves.toMatchObject({ ok: false, summary_conflict: true });
   });
 });
 

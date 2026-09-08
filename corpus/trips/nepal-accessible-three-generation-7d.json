@@ -1,0 +1,357 @@
+{
+  "status": "draft",
+  "trip_id": "nepal_kathmandu_pokhara_2027-03-15_2027-03-22",
+  "trip_number": 1,
+  "created_at": "2026-08-18T22:25:16.821021",
+  "destination": "Nepal (Kathmandu & Pokhara)",
+  "origin": "Delhi",
+  "departure_date": "2027-03-15",
+  "return_date": "2027-03-22",
+  "travelers": "4 adults and 1 child (age 8), including grandparents; one traveller has limited mobility (cannot manage long walks or stairs)",
+  "notes": "Accessibility needs: one traveller cannot manage long walks or stairs. Balanced pace, moderate budget, minimum 3-star hotels, economy flights, direct flights preferred.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Nepal",
+    "estimated_planned_minutes": 1398,
+    "evidence_place_count": 6,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "6 preference-matched places account for about 1398 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel Shanker Kathmandu",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp5623c"
+      },
+      "address": "Lazimpat, Kathmandu 44600, Nepal",
+      "rating": 4.2,
+      "reviews": 1200,
+      "price_per_night": 110,
+      "currency": "USD",
+      "checkin": "2027-03-15",
+      "checkout": "2027-03-18",
+      "rooms": 2,
+      "accessibility_features": [
+        "Elevator",
+        "Wheelchair accessible rooms"
+      ],
+      "note": "Central, historic, elevator, flat access"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-15",
+      "title": "Day 1 · Arrival in Kathmandu",
+      "summary": "Arrive from Delhi, transfer to hotel, easy evening walk near hotel (flat, accessible).",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Kathmandu",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "11:00",
+          "duration_min": 120,
+          "note": "Morning flight, direct preferred"
+        },
+        {
+          "name": "Hotel in Kathmandu",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Garden of Dreams",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Flat paths, accessible"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-16",
+      "title": "Day 2 · Kathmandu Heritage",
+      "summary": "Explore Kathmandu's historic sites with accessible stops and minimal stairs.",
+      "stops": [
+        {
+          "name": "Hotel in Kathmandu",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Kathmandu Durbar Square",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Accessible areas only"
+        },
+        {
+          "name": "Pashupatinath Temple (outer grounds)",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Accessible viewing"
+        },
+        {
+          "name": "Lunch: Fire and Ice Pizzeria",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel in Kathmandu",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-17",
+      "title": "Day 3 · Patan & Easy Sightseeing",
+      "summary": "Visit Patan and nearby accessible attractions. Leisurely pace.",
+      "stops": [
+        {
+          "name": "Hotel in Kathmandu",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Patan Durbar Square",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Accessible areas only"
+        },
+        {
+          "name": "Lunch: The Old House",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel in Kathmandu",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-03-18",
+      "title": "Day 4 · Transfer to Pokhara",
+      "summary": "Fly to Pokhara, check in, lakeside stroll (flat, accessible).",
+      "stops": [
+        {
+          "name": "Flight: Kathmandu to Pokhara",
+          "kind": "flight",
+          "time": "10:00",
+          "arrival_time": "11:00",
+          "duration_min": 60,
+          "note": "Short, scenic flight"
+        },
+        {
+          "name": "Hotel in Kathmandu",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "11:30"
+        },
+        {
+          "name": "Hotel in Pokhara",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "13:30"
+        },
+        {
+          "name": "Phewa Lake lakeside walk",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 60,
+          "note": "Flat lakeside path"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-03-19",
+      "title": "Day 5 · Pokhara Highlights",
+      "summary": "Easy sightseeing: boat ride, accessible attractions, minimal walking.",
+      "stops": [
+        {
+          "name": "Hotel in Pokhara",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Phewa Lake boat ride",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Accessible, gentle"
+        },
+        {
+          "name": "Lunch: Moondance Restaurant",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Davis Falls",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Accessible viewing platform"
+        },
+        {
+          "name": "Hotel in Pokhara",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-03-20",
+      "title": "Day 6 · Sarangkot Sunrise & Leisure",
+      "summary": "Sunrise at Sarangkot (by car, minimal walking), leisure afternoon.",
+      "stops": [
+        {
+          "name": "Hotel in Pokhara",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Sarangkot sunrise (by car)",
+          "kind": "attraction",
+          "time": "06:00",
+          "duration_min": 120,
+          "note": "Car access, minimal walking"
+        },
+        {
+          "name": "Lunch: Olive Cafe",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Hotel in Pokhara",
+          "kind": "hotel",
+          "note": "Return and rest"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-03-21",
+      "title": "Day 7 · Return to Kathmandu & Departure",
+      "summary": "Fly back to Kathmandu, connect to Delhi. Relaxed departure day.",
+      "stops": [
+        {
+          "name": "Hotel in Pokhara",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Flight: Pokhara to Kathmandu",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "10:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Flight: Kathmandu to Delhi",
+          "kind": "flight",
+          "time": "14:00",
+          "arrival_time": "16:00",
+          "duration_min": 120,
+          "note": "Direct flight preferred"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-03-22",
+      "title": "Day 8 · Buffer Day (optional)",
+      "summary": "Buffer for flight delays, rest, or local shopping if needed.",
+      "stops": [
+        {
+          "name": "Hotel in Delhi",
+          "kind": "hotel",
+          "note": "Return home"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T22:28:07.234737",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T22:28:05",
+      "expires_at": "2026-08-18T22:58:05"
+    },
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T22:28:07",
+      "expires_at": "2026-08-19T10:28:07"
+    }
+  ],
+  "id": "nepal_kathmandu_pokhara_2027-03-15_2027-03-22",
+  "user_id": "corpus-nepal-accessible-three-generation-7d"
+}

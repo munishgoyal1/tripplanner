@@ -1,0 +1,577 @@
+{
+  "status": "draft",
+  "trip_id": "nepal_2027-03-08_2027-03-15",
+  "trip_number": 1,
+  "created_at": "2026-08-17T19:23:17.487605",
+  "destination": "Nepal",
+  "origin": "Delhi",
+  "departure_date": "2027-03-08",
+  "return_date": "2027-03-15",
+  "travelers": "4 adults (including grandparents) and 1 child (age 8)",
+  "notes": "Nepal International Ethnic Folklore Festival begins March 16, after your trip. No major events in Pokhara during your dates.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Nepal",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Bedroom Villa Kathmandu",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp5623c"
+      },
+      "address": "Kathmandu, Nepal",
+      "rating": 4.3,
+      "price_per_night": 110,
+      "nights": 3,
+      "total_price": 330,
+      "room_type": "Family Villa",
+      "checkin": "2027-03-08",
+      "checkout": "2027-03-11"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-08",
+      "title": "Arrival in Kathmandu",
+      "summary": "Arrive from Delhi, transfer to hotel, settle in and enjoy a leisurely evening.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Kathmandu",
+          "kind": "flight",
+          "time": "10:00",
+          "arrival_time": "12:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Check-in and relax",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-09",
+      "title": "Kathmandu Sightseeing",
+      "summary": "Morning visit to Swayambhunath Stupa and Durbar Square. Free afternoon.",
+      "stops": [
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "09:00"
+        },
+        {
+          "name": "Swayambhunath Stupa",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Iconic Buddhist site"
+        },
+        {
+          "name": "Phewa Lake Boat Ride",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Scenic boat ride"
+        },
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Return for free afternoon",
+          "time": "15:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-10",
+      "title": "Pashupatinath & Boudhanath",
+      "summary": "Morning visit to Pashupatinath Temple and Boudhanath Stupa. Free afternoon.",
+      "stops": [
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "09:00"
+        },
+        {
+          "name": "Kathmandu Durbar Square",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Historic palace complex"
+        },
+        {
+          "name": "World Peace Pagoda",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Panoramic views"
+        },
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Return for free afternoon",
+          "time": "15:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-03-11",
+      "title": "Travel to Pokhara",
+      "summary": "Morning flight to Pokhara, transfer to hotel, relax. Free afternoon.",
+      "stops": [
+        {
+          "name": "Flight: Kathmandu to Pokhara",
+          "kind": "flight",
+          "time": "09:00",
+          "duration_min": 45
+        },
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "10:15"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-03-12",
+      "title": "Pokhara Lakeside & Peace Pagoda",
+      "summary": "Morning boat ride on Phewa Lake, visit World Peace Pagoda. Free afternoon.",
+      "stops": [
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp5623c"
+          },
+          "address": "Kathmandu, Nepal",
+          "rating": 4.3,
+          "price_per_night": 110,
+          "nights": 3,
+          "total_price": 330,
+          "room_type": "Family Villa",
+          "checkin": "2027-03-08",
+          "checkout": "2027-03-11",
+          "time": "09:00"
+        },
+        {
+          "name": "Pashupatinath Temple",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Sacred Hindu temple"
+        },
+        {
+          "name": "Davis Falls",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Return for free afternoon",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp5623c"
+          },
+          "address": "Kathmandu, Nepal",
+          "rating": 4.3,
+          "price_per_night": 110,
+          "nights": 3,
+          "total_price": 330,
+          "room_type": "Family Villa",
+          "checkin": "2027-03-08",
+          "checkout": "2027-03-11",
+          "time": "15:00"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-03-13",
+      "title": "Pokhara Sightseeing",
+      "summary": "Morning visit to Davis Falls and Gupteshwor Cave. Free afternoon.",
+      "stops": [
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp5623c"
+          },
+          "address": "Kathmandu, Nepal",
+          "rating": 4.3,
+          "price_per_night": 110,
+          "nights": 3,
+          "total_price": 330,
+          "room_type": "Family Villa",
+          "checkin": "2027-03-08",
+          "checkout": "2027-03-11",
+          "time": "09:00"
+        },
+        {
+          "name": "Boudhanath Stupa",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Largest stupa in Nepal"
+        },
+        {
+          "name": "Gupteshwor Cave",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Return for free afternoon",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp5623c"
+          },
+          "address": "Kathmandu, Nepal",
+          "rating": 4.3,
+          "price_per_night": 110,
+          "nights": 3,
+          "total_price": 330,
+          "room_type": "Family Villa",
+          "checkin": "2027-03-08",
+          "checkout": "2027-03-11",
+          "time": "15:00"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-03-14",
+      "title": "Return to Kathmandu",
+      "summary": "Morning flight to Kathmandu, transfer to airport for Delhi flight.",
+      "stops": [
+        {
+          "name": "Bedroom Villa Kathmandu",
+          "kind": "hotel",
+          "note": "Checkout",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp5623c"
+          },
+          "address": "Kathmandu, Nepal",
+          "rating": 4.3,
+          "price_per_night": 110,
+          "nights": 3,
+          "total_price": 330,
+          "room_type": "Family Villa",
+          "checkin": "2027-03-08",
+          "checkout": "2027-03-11",
+          "time": "09:00"
+        },
+        {
+          "name": "Flight: Pokhara to Kathmandu",
+          "kind": "flight",
+          "time": "09:00",
+          "duration_min": 45
+        },
+        {
+          "name": "Flight: Kathmandu to Delhi",
+          "kind": "flight",
+          "time": "13:00",
+          "duration_min": 120
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-03-15",
+      "title": "Day 8 · Arrive in Delhi",
+      "summary": "Arrive back in Delhi. End of trip.",
+      "stops": [
+        {
+          "name": "Delhi",
+          "kind": "other",
+          "note": "Trip ends",
+          "time": "09:00"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {
+    "Kathmandu": {
+      "source": "seasonal_estimate",
+      "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+      "days": [
+        {
+          "date": "2027-03-08",
+          "summary": "Heavy drizzle",
+          "high_c": 23.2,
+          "low_c": 15.3,
+          "precip_mm": 2.1
+        },
+        {
+          "date": "2027-03-09",
+          "summary": "Rain",
+          "high_c": 22.9,
+          "low_c": 15.1,
+          "precip_mm": 4.2
+        },
+        {
+          "date": "2027-03-10",
+          "summary": "Cloudy",
+          "high_c": 23,
+          "low_c": 15,
+          "precip_mm": 0.5
+        },
+        {
+          "date": "2027-03-11",
+          "summary": "Cloudy",
+          "high_c": 22.8,
+          "low_c": 15.2,
+          "precip_mm": 0.3
+        }
+      ]
+    },
+    "Pokhara": {
+      "source": "seasonal_estimate",
+      "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+      "days": [
+        {
+          "date": "2027-03-11",
+          "summary": "Overcast",
+          "high_c": 23.1,
+          "low_c": 16.2,
+          "precip_mm": 0
+        },
+        {
+          "date": "2027-03-12",
+          "summary": "Drizzle",
+          "high_c": 24,
+          "low_c": 16.5,
+          "precip_mm": 1.2
+        },
+        {
+          "date": "2027-03-13",
+          "summary": "Cloudy",
+          "high_c": 23.8,
+          "low_c": 16.1,
+          "precip_mm": 0.2
+        },
+        {
+          "date": "2027-03-14",
+          "summary": "Cloudy",
+          "high_c": 23.7,
+          "low_c": 16,
+          "precip_mm": 0.1
+        }
+      ]
+    },
+    "packing_advice": [
+      "Light rain jacket",
+      "Comfortable walking shoes",
+      "Layered clothing for cool mornings",
+      "Umbrella"
+    ]
+  },
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T19:32:21.778612",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T19:28:23",
+      "expires_at": "2026-08-17T19:58:23"
+    },
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T19:31:25",
+      "expires_at": "2026-08-18T07:31:25"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_pokhara_2027_03_11_2027_03_14",
+      "kind": "lodging",
+      "created_at": "2026-08-17T13:58:16.157861Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Pokhara",
+        "date": "2027-03-11"
+      },
+      "subject": "Stay in Pokhara",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_c73c8cba66f9",
+      "options": [
+        {
+          "id": "opt_stay_c73c8cba66f9",
+          "mode": null,
+          "label": "Hotel St. Pierre",
+          "detail": "Standard Room with Two Double Beds",
+          "price": {
+            "amount": 1185.76,
+            "currency": "USD",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-03-11",
+            "checkout": "2027-03-14",
+            "room_name": "Standard Room with Two Double Beds",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: RFN",
+            "address": "",
+            "rating": 0,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp1f5d2",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gFaRzRaVE9OQldHRTNHS05SVUdZWVRPTVJXR1FaREFOWlNHWlRETVpSV01RWkRBTlpYR1k0VE9OQldIQVpEQU5aVUc0M1RNWlJTR0EzRElOVEdHNDJUTU1SV01NM0RLTVJRR1laRE1OSldHUTNURzdCUkVNWkRBTVJYR0FaVENNTDRHSVlERU5aUUdNWVRJN0RGTlpQVktVMzRKRkhIWVZLVElSNkRJUUpSSU00QzZOQ0JHQkJYWU5CVkdJNFhZMktRTTVLVVE3QlJHNDRETU9KWEdVWURTTVJWR1FaWFNTS0tQQVJUQ01SWUdRM0RNSVpXR1k0UzJNSlNIQTJETU5UNEtKREU0N0JTR0FaRE9NQlRHQTNUQ01CUUdCNkRDN0NTR0VZVEtNRDRHRVlUUU5KWEc0UlZFVFpES0pERTRJWlNHQVpET0xKUUdNV1RBTlpBR0VZRFVNQlFFTaNwcmPLQIKHCj1wo9elb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkszIwMjctMDMtMTAgMTA6MDA6MDCicnSjUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZIlN0YW5kYXJkIFJvb20gd2l0aCBUd28gRG91YmxlIEJlZHOjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDMtMDcgMTA6MDA6MDChYctAcahR64UeuKFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDMtMTAgMTA6MDA6MDChYctAcahR64UeuKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTt4AEaRzcmlk2gFaRzRaVE9OQldHRTNHS05SVUdZWVRPTVJXR1FaREFOWlNHWlRETVpSV01RWkRBTlpYR1k0VE9OQldIQVpEQU5aVUc0M1RNWlJTR0EzRElOVEdHNDJUTU1SV01NM0RLTVJRR1laRE1OSldHUTNURzdCU0VNWkRBTVJYR0FaVENNTDRHSVlERU5aUUdNWVRJN0RGTlpQVktVMzRKRkhIWVZLVElSNkRJUUpSSU00QzZOQ0JHQkJYWU5CVkdJNFhZMktRTTVLVVE3QlJHNDRETU9KWEdVWURTTVJWR1FaWFNTS0tQQVJUQ01SWUdRM0RNSVpXR1k0UzJNSlNIQTJETU5UNEtKREU0N0JTR0FaRE9NQlRHQTNUQ01CUUdCNkRDN0NTR0VZVEtNRDRHRVlUUU5KWEc0UlZFVFpES0pERTRJWlNHQVpET0xKUUdNV1RBTlpBR0VZRFVNQlFFTaNwcmPLQIKHCj1wo9elb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkszIwMjctMDMtMTAgMTA6MDA6MDCicnSjUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZIlN0YW5kYXJkIFJvb20gd2l0aCBUd28gRG91YmxlIEJlZHOjb2NuAqRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCShaF0szIwMjctMDMtMDcgMTA6MDA6MDChYctAcahR64UeuKFjo1VTRKJ0eaZhbW91bnSidHqjR01UhaF0szIwMjctMDMtMTAgMTA6MDA6MDChYctAcahR64UeuKFjo1VTRKJ0eaZhbW91bnSidHqjR01UonJ0o1JGTqRzaGlkpjEyODQ2NqNzaWQCo2hpZKdscDFmNWQyo29jY5KCoWEEoWORCIGhYQSjY3Vyo1VTRKJnbqJJTqJjaaoyMDI3LTAzLTExomNvqjIwMjctMDMtMTSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAxMDAzZmVmNUJpQkhnTFY5NFRNTnR4N2xyRkpGZkdNNmZZb0mjaXNowqNzc3Cgo2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacKhZKNUQVihYctASe9cKPXCj6Fjo1VTRIShacKhZKhDaXR5IHRheKFhyz_4AAAAAAAAoWOjVVNEomxwwKNia3QG",
+              "rate_id": "I42FUVCPJZBFOR2FGNDUWTSSKVDVSWKUJ5GVEV2HKFNEIQKOLJJUOWSUIRGVUUSXJVIVURCBJZNFQR2ZGRKE6TSCK5EECWSEIFHFUVKHGQZVITK2KJJUOQJTIREU4VCHI42DEVCNJVJFOTKNGNCEWTKSKFDVSWSEJVHEUV2HKEZVIRZXIJJEKTK2IRAU2USYI5AVUVCDJVGDIR2JLFCEKTS2KFDU2WKUJE3UIRSOLJIFMS2VGM2EURSIJBMVMS2UJFJDMRCJKFFFESKNGRBTMTSDIJDUEQSYLFHEEVSHJE2FQWJSJNIU2NKLKVITOQSSI42DIRCNJ5FFQR2VLFCFGTKSKZDVCWSYKNJUWS2QIFJFIQ2NKJMUOUJTIRGUSWSXI5MTIUZSJVFFGSCBGJCE2TSUGRFUURCFGQ3UEU2HIFNEIT2NIJKEOQJTKRBU2QSRI5BDMRCDG5BVGR2FLFKEWTKEGRDUKWKUKFHEUWCHGRJFMRKULJCEWSSEIU2ESWSTI5AVURCPJRFFCR2NK5KECTS2IFDUKWKEKVGUEUKFJV6DKOJSFY4DQ7BSGAZDOLJQGMWTCMBAGEYDUMBQHIYDA7CSJ56HY7D4KN2GC3TEMFZGIICSN5XW2IDXNF2GQICUO5XSARDPOVRGYZJAIJSWI434GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T13:58:16.117333Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "opt_stay_4373bfe174a8",
+          "mode": null,
+          "label": "LESLIE HOTEL",
+          "detail": "Leslie Queen",
+          "price": {
+            "amount": 3685.58,
+            "currency": "USD",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0,
+          "rejected_because": "Costs $2,500 more for the stay.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-03-11",
+            "checkout": "2027-03-14",
+            "room_name": "Leslie Queen",
+            "board_name": "Room Only",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "",
+            "rating": 0,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp32268",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2exHWlJUTU5KWEdNM0dHTlJaR1kyVEVNQlhHRTNUS05SVkdZMlRNWkw0R0VSVEVNQlNHNFlER01KUlBRWkRBTVJYR0FaVENORDRNVlhGNlZLVFBSRVU0N0NWS05DSFlOQ0JHRkJUUUxaVUlFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJaRzQyVEFPSlNHVTJERzZLSkpKNENHTVJRR1UyRENOUkRHRVlUT05STkdJWURLTkJSR1o2RTRVMzRLUkNIWU1MNEtJWVRDTkpRUFFaVE1PQlZHVTRDR1VTUEVOSEZFUlNPRU1SUaNwcmPLQJwOKPXCj1ylb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm6sTGVzbGllIFF1ZWVuo29jbgKkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZO3gARpHNyaWTZ7EdaUlRNTkpYR00zR0dOUlpHWTJURU1CWEdFM1RLTlJWR1kyVE1aTDRHSVJURU1CU0c0WURHTUpSUFFaREFNUlhHQVpUQ05ENE1WWEY2VktUUFJFVTQ3Q1ZLTkNIWU5DQkdGQlRRTFpVSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUlpHNDJUQU9KU0dVMkRHNktKSko0Q0dNUlFHVTJEQ05SREdFWVRPTlJOR0lZREtOQlJHWjZFNFUzNEtSQ0hZTUw0S0lZVENOSlFQUVpUTU9CVkdVNENHVVNQRU5IRkVSU09FTVJRo3ByY8tAnYgo9cKPXKVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkolJPpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqxMZXNsaWUgUXVlZW6jb2NuAKRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYyMDU0MTajc2lkAqNoaWSnbHAzMjI2OKNvY2OSgqFhBKFjkQiBoWEEo2N1cqNVU0SiZ26iSU6iY2mqMjAyNy0wMy0xMaJjb6oyMDI3LTAzLTE0o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMTAwM2ZlZjVCaUJIZ0xWOTRUTU50eDdsckZKRmZHTTZmWW9Jo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJGEoWnDoWSpU0FMRVNfVEFYoWHLQHAf1wo9cKShY6NVU0SibHDAo2JrdAY=",
+              "rate_id": "I5NFEVCNJZFFQR2NGNDUOTSSLJDVSMSUIVGUEWCHIUZVIS2OKJLEOWJSKRGVUTBUI5CVEVCFJVBFGRZULFCEOTKKKJIFCWSEIFGVEWCHIFNFIQ2OIQ2E2VSYIY3FMS2UKBJEKVJUG5BVMS2OINEFSTSDIJDUMQSUKFGFUVKJIVMUKRZXIJKUOVK2IRJTORCKJNBFIVSLKNCDIR2FGNKFCTSSLJDTIMSUIFHUUU2HKUZEIRZWJNFEUSRUINDU2USRI5KTERCDJZJEIR2FLFKE6TSSJZDUSWKEJNHEEUSHLI3EKNCVGM2EWUSDJBMU2TBUJNEVSVCDJZFFCUCRLJKE2T2CKZDVKNCDI5KVGUCFJZEEMRKSKNHUKTKSKF6DCNZZGUXDKND4PRJE67D4PR6EYZLTNRUWKICROVSWK3T4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T13:58:16.117333Z",
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 1185.76,
+        "delta": null,
+        "currency": "USD"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "nepal_2027-03-08_2027-03-15",
+  "user_id": "corpus-nepal-slow-three-generation-7d"
+}

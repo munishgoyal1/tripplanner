@@ -27,7 +27,7 @@ TypeScript types in `src/types.ts` mirror it — keep them in sync.
 From the repo root:
 
 ```powershell
-scripts\dev-spa.ps1          # starts FastAPI (:8000) + Vite (:5173)
+scripts\dev\dev-spa.ps1      # starts FastAPI (:8000) + Vite (:5173)
 ```
 
 Or manually:
@@ -45,7 +45,9 @@ npm run dev
 
 Open http://localhost:5173. Vite proxies `/api/*` to the FastAPI server, so no
 CORS setup is needed in dev. The browser gets a stable `web-<uuid>` user id
-(stored in `localStorage`) that keys both chat history and trip state.
+(stored in `localStorage`) plus a server-signed anonymous session that authorizes
+its chat and trip state. Google sign-in replaces that authority with the signed
+cross-device account cookie.
 
 ## Build (production)
 

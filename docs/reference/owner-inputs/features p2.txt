@@ -1,0 +1,2 @@
+1. implement the line follows roads request (actrual map route draw instead of straight line between stops on the route). I want to evaluate how nicely this gets implemented and based ont hat will decide whether to keep it or revert.
+2. 

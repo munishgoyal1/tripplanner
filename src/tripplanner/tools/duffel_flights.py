@@ -14,10 +14,17 @@ Docs: https://duffel.com/docs/api/offer-requests/create-offer-request
 
 from __future__ import annotations
 
+import json
+
 import httpx
 from langchain_core.tools import tool
 
+from tripplanner import http_client
 from tripplanner.config import get_settings
+from tripplanner.decisions.provenance import note_price_check
+from tripplanner.providers.liteapi import LiteAPIError
+from tripplanner.providers.models import FlightSearchQuery, QuoteStatus
+from tripplanner.providers.registry import get_flight_provider
 from tripplanner.tools.flight_search import resolve_iata
 
 _BASE_URL = "https://api.duffel.com"
@@ -102,7 +109,8 @@ def _format_offers(offers: list[dict], max_results: int) -> str:
             for seg in segments:
                 lines.append(_format_segment(seg))
 
-    lines.append(f"\n{len(offers)} Duffel offer(s) found (showing top {min(max_results, len(offers))}).")
+    shown = min(max_results, len(offers))
+    lines.append(f"\n{len(offers)} Duffel offer(s) found (showing top {shown}).")
     return "\n".join(lines)
 
 
@@ -118,6 +126,9 @@ def search_flights_duffel(
     cabin_class: str = "economy",
     max_connections: int = 1,
     max_results: int = 5,
+    currency: str = "INR",
+    country: str = "IN",
+    refresh: bool = False,
 ) -> str:
     """Search real flights via Duffel — airlines, times, stops, and prices.
 
@@ -134,8 +145,60 @@ def search_flights_duffel(
         cabin_class: one of 'economy', 'premium_economy', 'business', 'first'.
         max_connections: Max connections per slice (0 = direct only).
         max_results: How many cheapest offers to return (1-10).
+        currency: ISO currency code for live prices.
+        country: ISO country code for provider market context.
+        refresh: Bypass the short-lived shared result cache.
     """
+    del refresh
+    # A registry provider is tried first, but an empty or failed result must fall
+    # through to Duffel rather than ending the search.
+    registry_errors: list[str] = []
+    provider = get_flight_provider()
+    if provider:
+        try:
+            offers = provider.search_flights(
+                FlightSearchQuery(
+                    origin=origin,
+                    destination=destination,
+                    departure_date=departure_date,
+                    return_date=return_date,
+                    adults=adults,
+                    children=children,
+                    infants=infants,
+                    cabin_class=cabin_class,
+                    currency=currency.upper(),
+                    country=country.upper(),
+                    max_results=max_results,
+                )
+            )
+            if offers:
+                note_price_check("flights", provider.name)
+                return json.dumps(
+                    {
+                        "quote_status": QuoteStatus.LIVE.value,
+                        "provider": provider.name,
+                        "offers": [offer.model_dump(mode="json") for offer in offers],
+                    },
+                    ensure_ascii=False,
+                )
+            registry_errors.append(f"{provider.name}: no availability")
+        except (LiteAPIError, ValueError) as exc:
+            registry_errors.append(f"{provider.name}: {exc}")
+
     if not is_configured():
+        if registry_errors:
+            return json.dumps(
+                {
+                    "quote_status": QuoteStatus.UNAVAILABLE.value,
+                    "provider": provider.name if provider else "none",
+                    "errors": registry_errors,
+                    "notice": (
+                        "No fallback flight provider is configured. Set DUFFEL_API_KEY to "
+                        "search flights when the primary provider returns nothing."
+                    ),
+                },
+                ensure_ascii=False,
+            )
         return (
             "Duffel API not configured. Set DUFFEL_API_KEY in .env.\n"
             "Sign up free for a test token at https://app.duffel.com/sign-up "
@@ -176,16 +239,20 @@ def search_flights_duffel(
     }
 
     try:
-        resp = httpx.post(
+        resp = http_client.post(
             f"{_BASE_URL}/air/offer_requests",
             params={"return_offers": "true"},
             headers=_headers(),
             json=body,
+            # An offer request fans out to airlines, so it keeps a wider budget
+            # than the shared Duffel default.
             timeout=45,
         )
         resp.raise_for_status()
         data = resp.json().get("data", {})
         offers = data.get("offers", [])
+        if offers:
+            note_price_check("flights", "Duffel")
         return _format_offers(offers, max_results)
     except httpx.HTTPStatusError as e:
         body_text = ""
@@ -200,4 +267,42 @@ def search_flights_duffel(
         return f"Duffel API error {e.response.status_code}: {body_text}"
     except Exception as e:
         return f"Duffel search error: {e}"
+
+
+@tool
+def verify_flight_offer(offer_id: str, refresh: bool = True) -> str:
+    """Verify a LiteAPI flight offer's latest availability and price.
+
+    Args:
+        offer_id: Opaque provider offer ID returned by search_flights_duffel.
+        refresh: Bypass the short-lived shared verification cache.
+    """
+    del refresh
+    provider = get_flight_provider()
+    if not provider:
+        return json.dumps(
+            {
+                "quote_status": QuoteStatus.UNAVAILABLE.value,
+                "notice": "Configured legacy flight provider does not support offer verification.",
+            }
+        )
+    try:
+        offer = provider.verify_flight(offer_id)
+        note_price_check("flights", provider.name)
+        return json.dumps(
+            {
+                "quote_status": QuoteStatus.LIVE.value,
+                "provider": provider.name,
+                "offer": offer.model_dump(mode="json"),
+            },
+            ensure_ascii=False,
+        )
+    except (LiteAPIError, ValueError) as exc:
+        return json.dumps(
+            {
+                "quote_status": QuoteStatus.PROVIDER_ERROR.value,
+                "provider": provider.name,
+                "error": str(exc),
+            }
+        )
 

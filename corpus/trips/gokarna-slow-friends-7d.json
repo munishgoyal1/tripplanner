@@ -1,0 +1,379 @@
+{
+  "status": "draft",
+  "trip_id": "gokarna_2027-01-14_2027-01-21",
+  "trip_number": 1,
+  "created_at": "2026-08-17T18:34:14.243484",
+  "destination": "Gokarna",
+  "origin": "Bangalore",
+  "departure_date": "2027-01-14",
+  "return_date": "2027-01-21",
+  "travelers": "4 adults",
+  "notes": "Leisure pace, free afternoons",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Gokarna",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-14",
+      "title": "Day 1 · Arrival in Gokarna",
+      "summary": "Depart from Bangalore by road, arrive in Gokarna, check in to hotel, relax and explore the beach nearby.",
+      "stops": [
+        {
+          "name": "Drive: Bangalore to Gokarna",
+          "kind": "transport",
+          "time": "07:00",
+          "duration_min": 420,
+          "distance_km": 485,
+          "note": "Private car or train, approx. 7 hours"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "15:00",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Gokarna Beach",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Easy stroll, sunset"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-15",
+      "title": "Day 2 · Kudle Beach & Relaxation",
+      "summary": "Morning at Kudle Beach, afternoon free for leisure, optional yoga or spa.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Breakfast at hotel"
+        },
+        {
+          "name": "Kudle Beach",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "Relax, swim, walk"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-16",
+      "title": "Day 3 · Om Beach & Local Cafes",
+      "summary": "Visit Om Beach in the morning, free afternoon, try local cafes.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Om Beach",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Namaste Cafe",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Lunch at a popular beachside cafe"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-17",
+      "title": "Day 4 · Temple & Town Walk",
+      "summary": "Visit Mahabaleshwar Temple, explore Gokarna town, afternoon free.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Mahabaleshwar Temple",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Gokarna Town",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90,
+          "note": "Walk through markets, shops"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-01-18",
+      "title": "Day 5 · Half-day Excursion (Paradise Beach)",
+      "summary": "Morning boat ride to Paradise Beach, afternoon free.",
+      "stops": [
+        {
+          "name": "Boat Ride to Paradise Beach",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 30
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "10:00"
+        },
+        {
+          "name": "Paradise Beach",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 120
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-01-19",
+      "title": "Day 6 · Leisure & Spa",
+      "summary": "Free morning, optional spa or yoga session, explore nearby cafes.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00"
+        },
+        {
+          "name": "Spa/Yoga Session (TBD)",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Cafe (TBD)",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-01-20",
+      "title": "Day 7 · Departure",
+      "summary": "Check out, return to Bangalore by road.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Check-out"
+        },
+        {
+          "name": "Drive: Gokarna to Bangalore",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 420,
+          "distance_km": 485,
+          "note": "Private car or train, approx. 7 hours"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-17T18:39:10.515687",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-17T18:39:10",
+      "expires_at": "2026-08-18T06:39:10"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_lodging_gokarna_2027_01_14_2027_01_21",
+      "kind": "lodging",
+      "created_at": "2026-08-17T13:09:10.487908Z",
+      "scope": {
+        "day": null,
+        "from_place": "",
+        "to_place": "Gokarna",
+        "date": "2027-01-14"
+      },
+      "subject": "Stay in Gokarna",
+      "rule": {
+        "code": "verified_stay_total",
+        "text": "Lowest verified stay total; provider rating and refundability break ties"
+      },
+      "chosen_option_id": "opt_stay_79958cbf9d67",
+      "options": [
+        {
+          "id": "opt_stay_79958cbf9d67",
+          "mode": null,
+          "label": "Holiday Inn Express & Suites Guthrie North Edmond by IHG",
+          "detail": "2 Queen Beds Standard",
+          "price": {
+            "amount": 120351.44,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-14",
+            "checkout": "2027-01-21",
+            "room_name": "2 Queen Beds Standard",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "2227 E Oklahoma Ave, Guthrie, Oklahoma, 73044",
+            "rating": 8.2,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp4f8cd",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gE3R01aREVNQlhHRTNUS05SVkdZMlRNWkpTR0EzREVOUlZHWTJET01aU0dBM1RHTlpVR1lZVE1aSldHUTNEQ05aU0dZMkhZTUpER0lZREVOWlFHRVlUSTdCU0dBWkRPTUJSR0lZWFlaTE9MNUtWRzdDSkpaNkVTVFNTUFEyRUNNQ0RGNDJFQ01DRFBRMkRLTVJaUFJVVkFaMlZKQjZEQ05aWUdZNFRPTUpaR0U0VEFOUldPNVpYUVVaREdNWkRLT0JURzRSVEVNSlhIQVdUR01SVkhBWlRPN0NPS0pERTQ3QlNHQVpETU1CWUdFMlRDTUJRR0I2REM3Q1NHRVlUS01ENEdFWkRBTVpWR0UyREtJMkNJSVJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HRTJTQU1KUUhJWURBSVmjcHJjy0DtYfcKPXCkpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JutTIgUXVlZW4gQmVkcyBTdGFuZGFyZKNvY24BpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJCicnSkTlJGTt4AEaRzcmlk2gE3R01aREVNQlhHRTNUS05SVkdZMlRNWkpTR0EzREVOUlZHWTJET01aU0dBM1RHTlpVR1lZVE1aSldHUTNEQ05aU0dZMkhZTVJER0lZREVOWlFHRVlUSTdCU0dBWkRPTUJSR0lZWFlaTE9MNUtWRzdDSkpaNkVTVFNTUFEyRUNNQ0RGNDJFQ01DRFBRMkRLTVJaUFJVVkFaMlZKQjZEQ05aWUdZNFRPTUpaR0U0VEFOUldPNVpYUVVaREdNWkRLT0JURzRSVEVNSlhIQVdUR01SVkhBWlRPN0NPS0pERTQ3QlNHQVpETU1CWUdFMlRDTUJRR0I2REM3Q1NHRVlUS01ENEdFWkRBTVpWR0UyREtJMkNJSVJVNFVTR0pZUlRFTUJTR1lXVEFPQk5HRTJTQU1KUUhJWURBSVmjcHJjy0DtYfcKPXCkpW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3JutTIgUXVlZW4gQmVkcyBTdGFuZGFyZKNvY24CpHBya3PAo2RldMsAAAAAAAAAAKJjcIKhcJCicnSkTlJGTqRzaGlkpjMyNTgzN6NzaWQCo2hpZKdscDRmOGNko29jY5KBoWEEgaFhBKNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMTSiY2-qMjAyNy0wMS0yMaNnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDBmZDM5MmM3QzZHWTBuVEJia2FlTTJrc3FLM0ZzWUpoTHJDT6Npc2jCo3NzcKCjaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiThKFpw6Fko0ZlZaFhy0AqD1wo9cKPoWOjSU5ShKFpw6Fkp0xPREdJTkehYctAm73hR64Ue6Fjo0lOUoShacOhZKhTQUxFU1RBWKFhy0Ch2IUeuFHsoWOjSU5SomxwwKNia3QH",
+              "rate_id": "I5GVURCFJVBFQR2FGNKEWTSSKZDVSMSUJVNEUU2HIEZUIRKOKJLEOWJSIRHU2WSTI5ATGVCHJZNFKR2ZLFKE2WSKK5DVCM2EINHFUU2HLEZEQWKNJJCEOSKZIRCU4WSRI5CVSVCJG5BFGR2BLJCE6TKCKJDUSWKYLFNEYT2MGVFVMRZXINFEUWRWIVJVIU2TKBITERKDJVBUIRRUGJCUGTKDIRIFCMSEJNGVEWSQKJKVMQK2GJLEUQRWIRBU4WSZI5MTIVCPJVFFUR2FGRKECTSSK5HTKWSYKFKVURCHJVNEIS2PIJKEONCSKRCU2SSYJBAVOVCHJVJFMSCBLJKE6N2DJ5FUURCFGQ3UEU2HIFNEITKNIJMUORJSKRBU2QSRI5BDMRCDG5BVGR2FLFKEWTKEGRDUKWSEIFGVUVSHIUZEIS2JGJBUSSKSKU2FKU2HJJMVEVCFJVBFGR2ZK5KECT2CJZDUKMSTIFGUUUKIJFMUIQKJLF6DMMBRG42S4NZSPR6EESL4PR6HYMRAKF2WKZLOEBBGKZDTEBJXIYLOMRQXEZD4GAXDAMD4GAXDAMD4PQYC4MBQPQYC4MBQ"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T13:05:24.316875Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        },
+        {
+          "id": "opt_stay_dfbb1a98e75a",
+          "mode": null,
+          "label": "Hampton Inn & Suites Guthrie, OK",
+          "detail": "2 QUEENS NONSMOKING,HDTV/FREE WI-FI/HOT BREAKFAST INCLUDED,WORK AREA,",
+          "price": {
+            "amount": 165976.14,
+            "currency": "INR",
+            "basis": "per_party",
+            "amount_max": null
+          },
+          "priced": true,
+          "unpriced_reason": null,
+          "duration_min": null,
+          "door_to_door_min": null,
+          "duration_estimated": false,
+          "day_cost": 0.0,
+          "rejected_because": "Costs ₹45,625 more for the stay, and has a lower provider rating.",
+          "running_cost": null,
+          "lodging": {
+            "checkin": "2027-01-14",
+            "checkout": "2027-01-21",
+            "room_name": "2 QUEENS NONSMOKING,HDTV/FREE WI-FI/HOT BREAKFAST INCLUDED,WORK AREA,",
+            "board_name": "Breakfast Included",
+            "refundable": null,
+            "cancellation_summary": "refundableTag: NRFN",
+            "address": "401 Cimmaron Rd",
+            "rating": 7.7,
+            "review_count": null,
+            "provider_ref": {
+              "hotel_id": "lp9588c",
+              "offer_id": "3gAWonJzkt4AEaRzcmlk2gHQR01aREVNQlhHRTNUS05SVkdZMlRNWkpYR01aREFOVEZHWlRETVpKWEdNM0dJTlRHR1pSRE1PSldNVTNET01UREdZNERNTkJYR1EzVE1NVEdHWTNET01SV0dVM0RLTVJRRzQzVE1PSlNNUTNETU5SWkdKVERNT0JXTVkzVElNUlFHWVpET01SV0dVM0RDTlRDR1kzRE1NSlhHTTNUSU1SUUdZNFRNWkpXR00zR0dOWlZHWTJETU5KV0dRWkdHTlpYR1pURE9NUldNSVpEQU5SUkc0WkRNTkpXR0VaR0c3QlJFTVpEQU1SWEdBWVRDTkQ0R0lZREVOWlFHRVpEQzdERk5aUFZLVTM0SkZISFlTS09LSjZESVFKUUlNWFRJUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFNOWlJIRVlUU01CV0daM1hHNkNURU0zRENNUlVIRVpDR01KU0hFWUMyTlJSR0kyRFNNVDRKWkpFTVRUNEdJWURFTlJRSEFZVEtNSlFHQVlIWU1MNEtJWVRDTkpRUFFZVE1OSlpHNDNEQ05KRElKQkNHVFNTSVpIQ0dNUlFHSTNDMk1CWUZVWVRLSUJSR0E1REFNQkSjcHJjy0D0QsEeuFHspW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiQkmkbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Ju2UUyIFFVRUVOUyBOT05TTU9LSU5HLEhEVFYvRlJFRSBXSS1GSS9IT1QgQlJFQUtGQVNUIElOQ0xVREVELFdPUksgQVJFQSyjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk7eABGkc3JpZNoB0EdNWkRFTUJYR0UzVEtOUlZHWTJUTVpKWEdNWkRBTlRGR1pURE1aSlhHTTNHSU5UR0daUkRNT0pXTVUzRE9NVERHWTRETU5CWEdRM1RNTVRHR1kzRE9NUldHVTNES01SUUc0M1RNT0pTTVEzRE1OUlpHSlRETU9CV01ZM1RJTVJRR1laRE9NUldHVTNEQ05UQ0dZM0RNTUpYR00zVElNUlFHWTRUTVpKV0dNM0dHTlpWR1kyRE1OSldHUVpHR05aWEdaVERPTVJXTUlaREFOUlJHNFpETU5KV0dFWkdHN0JTRU1aREFNUlhHQVlUQ05ENEdJWURFTlpRR0VaREM3REZOWlBWS1UzNEpGSEhZU0tPS0o2RElRSlFJTVhUSVFKUUlONkRJTkpTSEY2R1NVREhLVkVIWU1KWEhBM0RTTlpSSEVZVFNNQldHWjNYRzZDVEVNM0RDTVJVSEVaQ0dNSlNIRVlDMk5SUkdJMkRTTVQ0SlpKRU1UVDRHSVlERU5SUUhBWVRLTUpRR0FZSFlNTDRLSVlUQ05KUVBRWVRNTkpaRzQzRENOSkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlUS0lCUkdBNURBTUJEo3ByY8tA9ELBHrhR7KVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybtlFMiBRVUVFTlMgTk9OU01PS0lORyxIRFRWL0ZSRUUgV0ktRkkvSE9UIEJSRUFLRkFTVCBJTkNMVURFRCxXT1JLIEFSRUEso29jbgKkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjEyNDkyo3NpZAKjaGlkp2xwOTU4OGOjb2NjkoGhYQSBoWEEo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0xNKJjb6oyMDI3LTAxLTIxo2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMGZkMzkyYzdDNkdZMG5UQmJrYWVNMmtzcUszRnNZSmhMckNPo2lzaMKjc3NwoKNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWSgoWHLQLYVwAAAAAChY6NJTlKEoWnDoWSgoWHLQLYVwAAAAAChY6NJTlKibHDAo2JrdAM=",
+              "rate_id": "I5GVURCFJVBFQR2FGNKEWTSSKZDVSMSUJVNEUWCHJVNEIQKOKRDEOWSUIRGVUSSYI5GTGR2JJZKEOR22KJCE2T2KK5GVKM2EJ5GVIRCHLE2EITKOIJMEOUJTKRGU2VCHI5MTGRCPJVJFOR2VGNCEWTKSKFDTIM2UJVHUUU2NKEZUITKOKJNEOSSUIRGU6QSXJVMTGVCJJVJFCR2ZLJCE6TKSK5DVKM2EINHFIQ2HLEZUITKNJJMEOTJTKREU2USRI5MTIVCNLJFFOR2NGNDUOTS2KZDVSMSEJVHEUV2HKFNEOR2OLJMEOWSUIRHU2USXJVEVURCBJZJFERZULJCE2TSKK5DUKWSHI43UEUSFJVNEIQKNKJMEOQKZKRBU4RBUI5EVSRCFJZNFCR2FLJCEGN2EIZHFUUCWJNKTGNCKIZEEQWKTJNHUWSRWIREVCSSRJFGVQVCJKFFFCSKOGZCESTSKKNEEMNSHKNKUISCLKZCUQWKNJJMEQQJTIRJU4WSSJBCVSVCTJVBFOR22GNMEONSDKRCU2M2EINGVEVKIIVNEGR2NJJJUQRKZIMZE4USSI5ETERCTJVKDISS2JJCU2VCUGRDUSWKEIVHFEUKIIFMVIS2NJJIUOQKZJBMU2TBUJNEVSVCDJZFFCUCRLFKE2TSKLJDTIM2EINHEURCJJJBEGR2UKNJUSWSIINDU2USRI5ETGQZSJVBFSRSVLFKEWSKCKJDUCNKEIFGUERD4HAZDSOBYFYYDO7D4IJEXY7D4PQZCAUKVIVCU4UZAJZHU4U2NJ5FUSTSHFREEIVCWF5DFERKFEBLUSLKGJEXUQT2UEBBFERKBJNDECU2UEBEU4Q2MKVCEKRBMK5HVESZAIFJEKQJMPQYC4MBQPQYC4MBQPR6DALRQGB6DALRQGA"
+            }
+          },
+          "flight": null,
+          "source": {
+            "provider": "liteapi",
+            "url": null,
+            "checked_at": "2026-08-17T13:05:24.316875Z",
+            "expires_at": null,
+            "confidence": "cached"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": 120351.44,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "full"
+    }
+  ],
+  "id": "gokarna_2027-01-14_2027-01-21",
+  "user_id": "corpus-gokarna-slow-friends-7d"
+}

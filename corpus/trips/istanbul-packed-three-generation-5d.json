@@ -1,0 +1,341 @@
+{
+  "status": "draft",
+  "trip_id": "istanbul_2027-05-14_2027-05-19",
+  "trip_number": 1,
+  "created_at": "2026-08-18T22:08:58.714647",
+  "destination": "Istanbul",
+  "origin": "Delhi",
+  "departure_date": "2027-05-14",
+  "return_date": "2027-05-19",
+  "travelers": "4 adults and 1 child (age 8), including grandparents",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Istanbul",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Sirkeci Mansion",
+      "address": "Taya Hatun Cd. No:5, 34110 Fatih/Istanbul, Türkiye",
+      "rating": 4.8,
+      "reviews": 1560,
+      "price_per_night": 320,
+      "nights": 5,
+      "total_price": 1600,
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp1f7764"
+      }
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-05-14",
+      "title": "Arrival in Istanbul",
+      "summary": "Arrive from Delhi, transfer to hotel, relax and explore Sultanahmet Square in the evening.",
+      "stops": [
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Check-in and freshen up",
+          "time": "09:00"
+        },
+        {
+          "name": "Sultanahmet Square",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening stroll, Blue Mosque exterior"
+        },
+        {
+          "name": "Hafiz Mustafa 1864",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Famous Turkish desserts"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-05-15",
+      "title": "Historic Istanbul",
+      "summary": "Full day exploring Hagia Sophia, Blue Mosque, Basilica Cistern, and Grand Bazaar.",
+      "stops": [
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Start after breakfast",
+          "time": "09:00"
+        },
+        {
+          "name": "Topkapi Palace Museum",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Hagia Sophia Grand Mosque",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 90,
+          "note": "Go early to avoid crowds"
+        },
+        {
+          "name": "Dolmabahçe Palace",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Kadıköy Market",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Pandeli Restaurant",
+          "kind": "meal",
+          "time": "20:00",
+          "note": "Classic Turkish lunch inside Spice Bazaar"
+        },
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "time": "22:00"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-05-16",
+      "title": "Palaces & Bosphorus",
+      "summary": "Visit Topkapi Palace, Spice Bazaar, and take a Bosphorus cruise.",
+      "stops": [
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Start after breakfast",
+          "time": "09:00"
+        },
+        {
+          "name": "Spice Bazaar",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Blue Mosque",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Istiklal Street",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Walk, shops, and cafes"
+        },
+        {
+          "name": "Hamdi Restaurant",
+          "kind": "meal",
+          "time": "16:00",
+          "note": "Lunch with Bosphorus views"
+        },
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-05-17",
+      "title": "Modern Istanbul & Taksim",
+      "summary": "Explore Dolmabahçe Palace, Istiklal Street, and Galata Tower.",
+      "stops": [
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Start after breakfast",
+          "time": "09:00"
+        },
+        {
+          "name": "Basilica Cistern",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Bosphorus Cruise",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 120,
+          "note": "Relaxed sightseeing on the water"
+        },
+        {
+          "name": "Galata Tower",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "360 Istanbul",
+          "kind": "meal",
+          "time": "16:30",
+          "note": "Lunch with panoramic views"
+        },
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Return and rest",
+          "time": "18:30"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-05-18",
+      "title": "Asian Side & Departure",
+      "summary": "Morning ferry to Kadıköy, local market, lunch, then transfer to airport.",
+      "stops": [
+        {
+          "name": "Eminönü Ferry Terminal",
+          "kind": "transport",
+          "time": "08:30",
+          "note": "Ferry to Kadıköy"
+        },
+        {
+          "name": "Çiya Sofrası",
+          "kind": "meal",
+          "time": "11:15",
+          "note": "Famous Anatolian cuisine"
+        },
+        {
+          "name": "Istanbul Airport",
+          "kind": "transport",
+          "time": "13:00",
+          "note": "Transfer for return flight"
+        },
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Check out",
+          "time": "15:00"
+        },
+        {
+          "name": "Grand Bazaar",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Shopping and exploration"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-05-19",
+      "title": "Day 6 · Departure",
+      "summary": "Check out and depart Istanbul.",
+      "stops": [
+        {
+          "name": "Sirkeci Mansion",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "11:00",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp1f7764"
+          },
+          "address": "Taya Hatun Cd. No:5, 34110 Fatih/Istanbul, Türkiye",
+          "price": 1200,
+          "currency": "USD",
+          "rating": 4.8,
+          "reviews_count": 1800,
+          "reviews": 1560,
+          "price_per_night": 320,
+          "nights": 5,
+          "total_price": 1600
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 1200,
+    "meals": 600,
+    "activities": 350,
+    "local_transport": 200
+  },
+  "total_cost": 2350,
+  "budget": 0,
+  "currency": "USD",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T22:18:28.834168",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T22:16:18",
+      "expires_at": "2026-08-19T10:16:18"
+    }
+  ],
+  "id": "istanbul_2027-05-14_2027-05-19",
+  "user_id": "corpus-istanbul-packed-three-generation-5d"
+}

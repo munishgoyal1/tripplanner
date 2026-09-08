@@ -1,0 +1,437 @@
+{
+  "status": "draft",
+  "trip_id": "amritsar_2027-11-06_2027-11-11",
+  "trip_number": 1,
+  "created_at": "2026-08-18T19:15:56.535511",
+  "destination": "Amritsar",
+  "origin": "Delhi",
+  "departure_date": "2027-11-06",
+  "return_date": "2027-11-11",
+  "travelers": "1 adult",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Amritsar",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 5-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 5,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Ramada Amritsar",
+      "address": "Hall Bazaar, Amritsar, Punjab 143001, India",
+      "rating": 4.4,
+      "review_count": 12200,
+      "price_per_night": 6500,
+      "total_price": 32500,
+      "checkin": "2027-11-06",
+      "checkout": "2027-11-11",
+      "room_type": "standard",
+      "amenities": [
+        "breakfast",
+        "wifi",
+        "pool"
+      ],
+      "provider": "liteapi"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-11-06",
+      "title": "Arrival in Amritsar & Golden Temple Evening Visit",
+      "summary": "Arrive from Delhi by train, check in to Ramada Amritsar, evening visit to Golden Temple.",
+      "stops": [
+        {
+          "name": "Train: Delhi to Amritsar",
+          "kind": "transport",
+          "note": "Morning Shatabdi Express, 6 hours",
+          "time": "09:00"
+        },
+        {
+          "name": "Delhi",
+          "kind": "other",
+          "note": "Trip origin",
+          "time": "11:00"
+        },
+        {
+          "name": "Ramada Amritsar",
+          "kind": "hotel",
+          "note": "Check-in and freshen up",
+          "time": "13:00"
+        },
+        {
+          "name": "Golden Temple",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Evening visit for sunset and night view"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-11-07",
+      "title": "Heritage Walk & Jallianwala Bagh",
+      "summary": "Early start: Amritsar Heritage Walk, Jallianwala Bagh, Partition Museum, lunch at Kesar Da Dhaba, Hall Bazaar shopping.",
+      "stops": [
+        {
+          "name": "Ramada Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Amritsar Heritage Walk",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 120,
+          "note": "Guided morning walk through old city"
+        },
+        {
+          "name": "Jallianwala Bagh",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Partition Museum",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 75
+        },
+        {
+          "name": "Kesar Da Dhaba",
+          "kind": "meal",
+          "time": "13:45",
+          "duration_min": 75,
+          "note": "Lunch at iconic eatery"
+        },
+        {
+          "name": "Hall Bazaar",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90,
+          "note": "Explore local market"
+        },
+        {
+          "name": "Ramada Amritsar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-11-08",
+      "title": "Golden Temple Sunrise & Gobindgarh Fort",
+      "summary": "Early morning Golden Temple, Durgiana Temple, Gobindgarh Fort, lunch at Hangries Amritsar, Sadda Pind village experience.",
+      "stops": [
+        {
+          "name": "Ramada Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Golden Temple",
+          "kind": "attraction",
+          "time": "05:00",
+          "duration_min": 90,
+          "note": "Experience sunrise and morning prayers"
+        },
+        {
+          "name": "Durgiana Temple",
+          "kind": "attraction",
+          "time": "07:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Gobindgarh Fort",
+          "kind": "attraction",
+          "time": "08:30",
+          "duration_min": 120,
+          "note": "History, museums, and cultural shows"
+        },
+        {
+          "name": "Hangries Amritsar",
+          "kind": "meal",
+          "time": "11:00",
+          "duration_min": 75,
+          "note": "Lunch at top-rated spot"
+        },
+        {
+          "name": "Ramada Amritsar",
+          "kind": "hotel",
+          "note": "Rest/refresh"
+        },
+        {
+          "name": "Sadda Pind",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Punjabi village experience"
+        },
+        {
+          "name": "Ramada Amritsar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-11-09",
+      "title": "Wagah Border & Rural Amritsar",
+      "summary": "Maharaja Ranjit Singh Museum, breakfast at Haveli, Wagah Border ceremony, Punjabiyat Farm Experience.",
+      "stops": [
+        {
+          "name": "Ramada Amritsar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Maharaja Ranjit Singh Museum",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 75
+        },
+        {
+          "name": "Haveli",
+          "kind": "meal",
+          "time": "09:45",
+          "duration_min": 60,
+          "note": "Breakfast at 4.5★ restaurant"
+        },
+        {
+          "name": "Wagah Border",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 180,
+          "note": "Arrive early for the ceremony"
+        },
+        {
+          "name": "Punjabiyat Farm Experience",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Rural Punjab experience"
+        },
+        {
+          "name": "Ramada Amritsar",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-11-10",
+      "title": "Local Culture & Departure",
+      "summary": "Ram Bagh Gardens, Lawrence Road Market shopping, collect bags, evening train to Delhi.",
+      "stops": [
+        {
+          "name": "Ramada Amritsar",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Ram Bagh Gardens",
+          "kind": "attraction",
+          "time": "08:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Lawrence Road Market",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Shopping and street food"
+        },
+        {
+          "name": "Ramada Amritsar",
+          "kind": "hotel",
+          "note": "Collect bags"
+        },
+        {
+          "name": "Train: Amritsar to Delhi",
+          "kind": "transport",
+          "time": "16:00",
+          "duration_min": 360,
+          "note": "Evening Shatabdi Express to Delhi"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "hotel": 32500,
+    "meals": 4000,
+    "activities": 3000,
+    "local_transport": 2000,
+    "train": 2200
+  },
+  "total_cost": 43700,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T19:32:37.191903",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-18T19:26:35",
+      "expires_at": "2026-08-19T07:26:35"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec_transport_delhi_amritsar_2027_11_06",
+      "kind": "transport_mode",
+      "created_at": "2026-08-18T13:48:36.035703Z",
+      "scope": {
+        "day": 1,
+        "from_place": "Delhi",
+        "to_place": "Amritsar",
+        "date": "2027-11-06"
+      },
+      "subject": "Delhi → Amritsar",
+      "rule": {
+        "code": "door_to_door_time_unpriced",
+        "text": "Whole-journey time — no fare source covers this hop"
+      },
+      "chosen_option_id": "flight",
+      "options": [
+        {
+          "id": "road",
+          "mode": "road",
+          "label": "Drive",
+          "detail": "448.8 km door to door",
+          "price": null,
+          "priced": false,
+          "unpriced_reason": "no_source",
+          "duration_min": 472,
+          "door_to_door_min": 492,
+          "duration_estimated": false,
+          "day_cost": 0.132,
+          "rejected_because": "Has no fare we can verify and takes 3h 21m longer door to door.",
+          "running_cost": null,
+          "lodging": null,
+          "flight": null,
+          "source": {
+            "provider": null,
+            "url": null,
+            "checked_at": null,
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "train",
+          "mode": "train",
+          "label": "Train or coach",
+          "detail": "Station to station, plus the transfer at each end",
+          "price": null,
+          "priced": false,
+          "unpriced_reason": "no_source",
+          "duration_min": 508,
+          "door_to_door_min": 548,
+          "duration_estimated": false,
+          "day_cost": 0.071,
+          "rejected_because": "Has no fare we can verify and takes 4h 17m longer door to door.",
+          "running_cost": null,
+          "lodging": null,
+          "flight": null,
+          "source": {
+            "provider": null,
+            "url": null,
+            "checked_at": null,
+            "expires_at": null,
+            "confidence": "live"
+          }
+        },
+        {
+          "id": "flight",
+          "mode": "flight",
+          "label": "Fly",
+          "detail": "Includes the airport run, security and the transfer in",
+          "price": null,
+          "priced": false,
+          "unpriced_reason": "source_failed",
+          "duration_min": 81,
+          "door_to_door_min": 291,
+          "duration_estimated": true,
+          "day_cost": 0.246,
+          "rejected_because": null,
+          "running_cost": null,
+          "lodging": null,
+          "flight": null,
+          "source": {
+            "provider": null,
+            "url": null,
+            "checked_at": null,
+            "expires_at": null,
+            "confidence": "live"
+          }
+        }
+      ],
+      "state": "agent",
+      "override": null,
+      "effect": {
+        "total_cost": null,
+        "delta": null,
+        "currency": "INR"
+      },
+      "priced": "none"
+    }
+  ],
+  "id": "amritsar_2027-11-06_2027-11-11",
+  "user_id": "corpus-amritsar-packed-solo-5d"
+}

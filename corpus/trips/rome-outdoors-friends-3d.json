@@ -1,0 +1,208 @@
+{
+  "status": "draft",
+  "trip_id": "rome_and_florence_2027-09-01_2027-09-04",
+  "trip_number": 1,
+  "created_at": "2026-08-18T17:11:29.704532",
+  "destination": "Rome and Florence",
+  "origin": "Mumbai",
+  "departure_date": "2027-09-01",
+  "return_date": "2027-09-04",
+  "travelers": "4 adults",
+  "notes": "",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Rome and Florence",
+    "estimated_planned_minutes": 723,
+    "evidence_place_count": 5,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "5 preference-matched places account for about 723 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-09-01",
+      "title": "Day 1 · Arrival in Rome",
+      "summary": "Arrive in Rome from Mumbai, check in, and explore Villa Borghese Gardens for a relaxing outdoor start.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Rome",
+          "kind": "flight",
+          "time": "07:00",
+          "duration_min": 540,
+          "note": "Morning flight, direct if possible"
+        },
+        {
+          "name": "Hotel in Rome",
+          "kind": "hotel",
+          "note": "Check-in and drop bags"
+        },
+        {
+          "name": "Villa Borghese Gardens",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Enjoy the gardens and outdoor sculptures"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-09-02",
+      "title": "Day 2 · Rome Outdoors & Transfer to Florence",
+      "summary": "Morning walk along the Tiber River, then train to Florence. Afternoon at Parco delle Cascine.",
+      "stops": [
+        {
+          "name": "Tiber River Walk",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90,
+          "note": "Scenic riverside walk"
+        },
+        {
+          "name": "Train: Rome to Florence",
+          "kind": "transport",
+          "time": "11:30",
+          "duration_min": 90,
+          "note": "High-speed train"
+        },
+        {
+          "name": "Hotel in Rome",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "13:30"
+        },
+        {
+          "name": "Hotel in Florence",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "15:30"
+        },
+        {
+          "name": "Parco delle Cascine",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 120,
+          "note": "Florence's largest park, ideal for outdoor activities"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-09-03",
+      "title": "Day 3 · Florence Gardens & Tuscan Countryside",
+      "summary": "Explore Boboli Gardens in the morning, then enjoy a Tuscan countryside tour for nature and scenic views.",
+      "stops": [
+        {
+          "name": "Hotel in Florence",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Boboli Gardens",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90,
+          "note": "Historic gardens with outdoor sculptures"
+        },
+        {
+          "name": "Tuscan countryside tour",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 240,
+          "note": "Guided outdoor tour of the Tuscan hills"
+        },
+        {
+          "name": "Hotel in Florence",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-09-04",
+      "title": "Day 4 · Departure",
+      "summary": "Check out and return to Mumbai.",
+      "stops": [
+        {
+          "name": "Hotel in Florence",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Flight: Florence to Mumbai",
+          "kind": "flight",
+          "time": "10:00",
+          "duration_min": 600,
+          "note": "Morning flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "EUR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-18T17:14:02.839559",
+  "price_checks": [
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-18T17:14:02",
+      "expires_at": "2026-08-18T17:44:02"
+    }
+  ],
+  "id": "rome_and_florence_2027-09-01_2027-09-04",
+  "user_id": "corpus-rome-outdoors-friends-3d"
+}

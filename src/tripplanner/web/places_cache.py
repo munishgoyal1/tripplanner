@@ -14,11 +14,17 @@ re-resolved on demand from the long-lived photo references.
 
 Lookups are parallelized: ``prefetch`` warms many places at once and photos
 for a single place are fetched concurrently, so switching destinations no
-longer blocks on dozens of sequential round-trips.
+longer blocks on dozens of sequential round-trips. Outbound calls share the
+process-wide pooled HTTP client, and durable (L2) writes are handed to a
+background writer, so neither TLS setup nor a slow store shows up as
+user-visible latency.
 """
 
 from __future__ import annotations
 
+import atexit
+import contextvars
+import hashlib
 import json
 import logging
 import os
@@ -26,18 +32,21 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
-from threading import RLock
+from queue import Empty, Queue
+from threading import Condition, RLock, Thread
 from typing import Any
 
 import httpx
 
+from tripplanner import http_client
 from tripplanner.config import get_settings
 from tripplanner.json_store import atomic_write_json
+from tripplanner.places_budget import consume, current_budget, use_budget
 from tripplanner.tools.google_places import _BASE, is_configured
 
 log = logging.getLogger(__name__)
 
-_MAX_PHOTOS_PER_PLACE = 3
+_MAX_PHOTOS_PER_PLACE = 1
 _HTTP_TIMEOUT_S = 10
 # Place details (id, rating, address, summary, lat/lng, photo refs, reviews)
 # and the top-places lists barely change, so we keep them for a week. Signed
@@ -46,13 +55,36 @@ _HTTP_TIMEOUT_S = 10
 _META_TTL_S = 7 * 24 * 60 * 60  # 1 week
 _MISS_TTL_S = 60  # transient lookup failures must not hide itinerary pins for a week
 _PHOTO_TTL_S = 50 * 60  # re-sign photo URLs before Google's ~1h expiry
+_PHOTO_REFS_SCHEMA = 1
 _MAX_WORKERS = 8
 _MAX_ENTRIES = 800  # soft cap; evict the oldest beyond this
 
-# Durable L2 store so warm data survives container restarts.
+
+def _ttl(seconds: int | float) -> int:
+    settings = get_settings()
+    configured = {
+        _META_TTL_S: settings.google_places_metadata_cache_ttl_sec,
+        _MISS_TTL_S: settings.google_places_miss_cache_ttl_sec,
+        _PHOTO_TTL_S: settings.google_places_photo_url_cache_ttl_sec,
+    }
+    configured_ttl = configured.get(seconds, seconds)
+    if seconds in (_MISS_TTL_S, _PHOTO_TTL_S):
+        return settings.cache_ttl(configured_ttl)
+    return settings.stable_cache_ttl(configured_ttl)
+
+
+def _reviews_ttl() -> int:
+    settings = get_settings()
+    return settings.stable_cache_ttl(settings.google_places_reviews_cache_ttl_sec)
+
+
+# Durable L2 store so warm data survives container restarts. Each place is one
+# small Cosmos item (keyed by a hash of the cache key) so the store scales well
+# past Cosmos's 2 MiB per-item limit; ``_COSMOS_DOC_ID`` is the legacy monolithic
+# document we delete once after migrating to the sharded layout.
 _COSMOS_CONTAINER = "places_cache"
 _COSMOS_PARTITION = "_shared"  # places are global, not per-user
-_COSMOS_DOC_ID = "cache"
+_COSMOS_DOC_ID = "cache"  # legacy single-document store; deleted after first shard write
 
 # Process-wide cache shared across FastAPI request and prefetch threads.
 _CACHE: dict[str, dict[str, Any]] = {}
@@ -62,7 +94,17 @@ _LOAD_LOCK = RLock()
 _PERSIST_LOCK = RLock()
 _loaded = False
 _suppress_persist = 0  # >0 while a batch is in flight (one write at the end)
+_dirty_keys: set[str] = set()  # keys awaiting a durable write while a batch is in flight
 _persist_retry_after = 0.0
+_legacy_doc_cleaned = False
+
+# Durable writes are best-effort, so they run on a single background thread: a
+# slow or stalled store must never add latency to the request that warmed the
+# cache (a Cosmos read timeout once added ~65s to a destination switch).
+_WRITE_QUEUE: Queue[set[str]] = Queue()
+_WRITE_CV = Condition()
+_writer: Thread | None = None
+_queued_writes = 0
 
 
 def _local_path() -> Path:
@@ -76,24 +118,25 @@ def _load() -> None:
 
 
 def _load_once() -> None:
-    """Populate ``_CACHE`` from the durable store once per process."""
+    """Populate ``_CACHE`` from the durable store once per process.
+
+    With Cosmos enabled the durable layer is sharded (one item per key) and read
+    lazily on demand, so there is no bulk load here. The single-file local store
+    (dev / Cosmos disabled) is still loaded eagerly.
+    """
     global _loaded
     with _CACHE_LOCK:
         if _loaded:
             return
-    raw: Any = None
     try:
         from tripplanner import storage_cosmos
 
-        if storage_cosmos.is_enabled():
-            doc = storage_cosmos.read_doc(
-                _COSMOS_CONTAINER, _COSMOS_PARTITION, _COSMOS_DOC_ID
-            )
-            raw = (doc or {}).get("entries")
+        cosmos_enabled = storage_cosmos.is_enabled()
     except Exception as exc:  # noqa: BLE001 - durable cache is best-effort
         log.warning("places_cache cosmos load failed: %s", exc)
-        raw = None
-    if raw is None:
+        cosmos_enabled = False
+    raw: Any = None
+    if not cosmos_enabled:
         try:
             p = _local_path()
             if p.exists():
@@ -108,75 +151,220 @@ def _load_once() -> None:
     now = time.time()
     with _CACHE_LOCK:
         for k, v in raw.items():
-            ttl = _MISS_TTL_S if _is_miss(v) else _META_TTL_S
-            if isinstance(v, dict) and (now - v.get("__at__", 0.0)) < ttl:
+            ttl = _ttl(_MISS_TTL_S if _is_miss(v) else _META_TTL_S)
+            if isinstance(v, dict) and (ttl == -1 or (now - v.get("__at__", 0.0)) < ttl):
                 _CACHE[k] = v
         _loaded = True
 
 
+def _doc_id(key: str) -> str:
+    """Cosmos-safe item id for a cache key (keys contain spaces, '/', '|')."""
+    return hashlib.sha1(key.encode("utf-8")).hexdigest()
+
+
+def _persistable(entry: dict[str, Any]) -> dict[str, Any]:
+    """Drop volatile signed-photo fields before persisting; they expire within
+    ~1h and are re-resolved from the long-lived ``photo_refs`` on reload."""
+    if get_settings().cache_warm_everything:
+        return dict(entry)
+    return {k: v for k, v in entry.items() if k not in ("photo_urls", "__photos_at__")}
+
+
+def _live_snapshot() -> dict[str, dict[str, Any]]:
+    """Full persist-ready copy of the cache for the single-file local store.
+
+    Drops volatile photo URLs and skips entries whose TTL has already lapsed —
+    those are never served, so persisting them only bloats the file. Must be
+    called while holding ``_CACHE_LOCK``.
+    """
+    now = time.time()
+    snapshot: dict[str, dict[str, Any]] = {}
+    for k, v in _CACHE.items():
+        ttl = _ttl(_MISS_TTL_S if _is_miss(v) else _META_TTL_S)
+        if ttl != -1 and (now - v.get("__at__", 0.0)) >= ttl:
+            continue
+        snapshot[k] = _persistable(v)
+    return snapshot
+
+
+def _durable_read(key: str) -> dict[str, Any] | None:
+    """Point-read one key's entry from the sharded Cosmos store (or None)."""
+    try:
+        from tripplanner import storage_cosmos
+
+        if not storage_cosmos.is_enabled():
+            return None
+        doc = storage_cosmos.read_doc(_COSMOS_CONTAINER, _COSMOS_PARTITION, _doc_id(key))
+    except Exception as exc:  # noqa: BLE001 - durable cache is best-effort
+        log.warning("places_cache cosmos load failed: %s", exc)
+        return None
+    entry = doc.get("entry") if isinstance(doc, dict) else None
+    return entry if isinstance(entry, dict) else None
+
+
+def _secondary_read(key: str) -> dict[str, Any] | None:
+    """Point-read one key from the optional shared durable cache."""
+    from tripplanner import secondary_cache
+
+    doc = secondary_cache.read_doc(_COSMOS_CONTAINER, _doc_id(key))
+    entry = doc.get("entry") if isinstance(doc, dict) else None
+    return entry if isinstance(entry, dict) else None
+
+
+def _cleanup_legacy_doc() -> None:
+    """One-time best-effort delete of the pre-sharding monolithic cache doc."""
+    global _legacy_doc_cleaned
+    if _legacy_doc_cleaned:
+        return
+    _legacy_doc_cleaned = True
+    try:
+        from tripplanner import storage_cosmos
+
+        storage_cosmos.delete_doc(_COSMOS_CONTAINER, _COSMOS_PARTITION, _COSMOS_DOC_ID)
+    except Exception:  # noqa: BLE001 - orphan cleanup must never break a write
+        pass
+
+
+def _writer_loop() -> None:
+    global _queued_writes
+    while True:
+        try:
+            keys = _WRITE_QUEUE.get(timeout=1.0)
+        except Empty:
+            continue
+        try:
+            with _PERSIST_LOCK:
+                _write_durable(keys)
+        except Exception as exc:  # noqa: BLE001 - durable cache is best-effort
+            log.warning("places_cache durable write failed: %s", exc)
+        finally:
+            with _WRITE_CV:
+                _queued_writes -= 1
+                _WRITE_CV.notify_all()
+
+
+def _schedule_durable(keys: set[str]) -> None:
+    """Hand the keys to the background writer; never blocks the caller."""
+    global _writer, _queued_writes
+    if not keys:
+        return
+    with _WRITE_CV:
+        if _writer is None:
+            _writer = Thread(target=_writer_loop, name="places-cache-writer", daemon=True)
+            _writer.start()
+            atexit.register(flush_writes)
+        _queued_writes += 1
+    _WRITE_QUEUE.put(set(keys))
+
+
+def flush_writes(timeout: float = 10.0) -> bool:
+    """Block until queued durable writes drain. Returns False on timeout.
+
+    Used by tests (which assert on the durable store right after a lookup) and
+    at interpreter exit so a pending write isn't lost on shutdown.
+    """
+    with _WRITE_CV:
+        if not _queued_writes:
+            return True
+        deadline = time.time() + timeout
+        while _queued_writes:
+            remaining = deadline - time.time()
+            if remaining <= 0:
+                return False
+            _WRITE_CV.wait(remaining)
+    return True
+
+
+def _persist_entry(key: str) -> None:
+    """Persist a single touched key. Batched writes defer to the block's end."""
+    with _CACHE_LOCK:
+        if _suppress_persist:
+            _dirty_keys.add(key)
+            return
+    _schedule_durable({key})
+
+
 def _persist() -> None:
-    with _PERSIST_LOCK:
-        _persist_snapshot()
+    """Persist every currently cached key (used at the end of a batch)."""
+    with _CACHE_LOCK:
+        keys = set(_CACHE.keys())
+    _schedule_durable(keys)
 
 
-def _persist_snapshot() -> None:
-    """Write ``_CACHE`` to the durable store. Best-effort; never raises.
+def _write_durable(keys: set[str]) -> None:
+    """Write the given keys durably. Best-effort; never raises.
 
-    Signed photo URLs are dropped before persisting — they expire within ~1h,
-    so re-resolving from the long-lived ``photo_refs`` on reload is correct.
+    Cosmos: one small item per key, so the store scales past the 2 MiB per-item
+    limit. On success the legacy monolithic doc is cleaned up once. On throttling
+    (429) we back off briefly; on any Cosmos failure we fall back to the
+    single-file local store. When Cosmos is disabled (dev) we write only local.
     """
     global _persist_retry_after
     with _CACHE_LOCK:
-        if _suppress_persist:
-            return
-        snapshot = {
-            k: {
-                kk: vv
-                for kk, vv in v.items()
-                if kk not in ("photo_urls", "__photos_at__")
-            }
-            for k, v in _CACHE.items()
-        }
+        entries = {k: _persistable(_CACHE[k]) for k in keys if k in _CACHE}
         retry_after = _persist_retry_after
     now = time.time()
+    primary_ok = False
     try:
         from tripplanner import storage_cosmos
 
         if storage_cosmos.is_enabled() and now >= retry_after:
-            try:
-                storage_cosmos.upsert_doc(
-                    _COSMOS_CONTAINER,
-                    _COSMOS_PARTITION,
-                    _COSMOS_DOC_ID,
-                    {"entries": snapshot},
-                )
-                return
-            except Exception as exc:  # noqa: BLE001
-                status_code = getattr(exc, "status_code", None)
-                if status_code == 429:
-                    # Cosmos throttled us. Keep the cache warm locally and
-                    # pause Cosmos retries for a short window so a burst of
-                    # photo/detail warming doesn't spam warnings.
-                    with _CACHE_LOCK:
-                        _persist_retry_after = now + 5 * 60
-                else:
-                    log.warning("places_cache cosmos persist failed: %s", exc)
-                # Fall through to local persistence either way.
+            ok = True
+            for k, entry in entries.items():
+                try:
+                    storage_cosmos.upsert_doc(
+                        _COSMOS_CONTAINER,
+                        _COSMOS_PARTITION,
+                        _doc_id(k),
+                        {
+                            "key": k,
+                            "entry": entry,
+                            **({"ttl": -1} if get_settings().cache_stable_forever else {}),
+                        },
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    if getattr(exc, "status_code", None) == 429:
+                        # Throttled: keep the cache warm locally and pause Cosmos
+                        # retries so a burst of warming doesn't spam warnings.
+                        with _CACHE_LOCK:
+                            _persist_retry_after = now + 5 * 60
+                    else:
+                        log.warning("places_cache cosmos persist failed: %s", exc)
+                    ok = False
+                    break
+            if ok:
+                _cleanup_legacy_doc()
+                primary_ok = True
     except Exception as exc:  # noqa: BLE001
         log.warning("places_cache cosmos persist failed: %s", exc)
-    try:
-        p = _local_path()
-        atomic_write_json(p, {"entries": snapshot})
-    except Exception as exc:  # noqa: BLE001
-        log.warning("places_cache local persist failed: %s", exc)
+    if not primary_ok:
+        try:
+            with _CACHE_LOCK:
+                snapshot = _live_snapshot()
+            atomic_write_json(_local_path(), {"entries": snapshot})
+        except Exception as exc:  # noqa: BLE001
+            log.warning("places_cache local persist failed: %s", exc)
+
+    from tripplanner import secondary_cache
+
+    for k, entry in entries.items():
+        secondary_cache.merge_write(
+            _COSMOS_CONTAINER,
+            _doc_id(k),
+            {
+                "key": k,
+                "entry": entry,
+                **({"ttl": -1} if get_settings().cache_stable_forever else {}),
+            },
+        )
 
 
 @contextmanager
 def _batched_persist():
-    """Suppress per-entry writes inside the block, then persist once at the end.
+    """Suppress per-key writes inside the block, then flush them together.
 
-    Warming a destination touches many places; without this each miss would
-    rewrite the whole durable doc. Batch them into a single trailing write.
+    Warming a destination touches many places; batching collapses the trailing
+    per-key persists into one flush of the dirty keys.
     """
     global _suppress_persist
     with _CACHE_LOCK:
@@ -187,8 +375,10 @@ def _batched_persist():
         with _CACHE_LOCK:
             _suppress_persist -= 1
             should_persist = _suppress_persist == 0
-    if should_persist:
-        _persist()
+            keys = set(_dirty_keys) if should_persist else set()
+            if should_persist:
+                _dirty_keys.clear()
+    _schedule_durable(keys)
 
 
 def _evict_if_needed() -> None:
@@ -207,22 +397,57 @@ def _cache() -> dict[str, dict[str, Any]]:
 
 
 def _is_miss(entry: Any) -> bool:
-    return isinstance(entry, dict) and not any(
-        key for key in entry if not key.startswith("__")
-    )
+    return isinstance(entry, dict) and not any(key for key in entry if not key.startswith("__"))
+
+
+def _has_location(entry: dict[str, Any]) -> bool:
+    return entry.get("lat") is not None and entry.get("lng") is not None
 
 
 def _fresh(entry: dict[str, Any] | None, ttl: float | None = None) -> bool:
+    """Whether a cached entry may still be believed.
+
+    An entry with no coordinates is not knowledge about a place, it is a lookup
+    that half-worked, and holding it for a week kept eight Paris stops off the
+    map with no request ever being retried. It expires like a miss instead.
+    """
     if entry is None:
         return False
+    if ttl is None and not _is_miss(entry) and not _has_location(entry):
+        ttl = _ttl(_MISS_TTL_S)
     effective_ttl = (
-        ttl if ttl is not None else (_MISS_TTL_S if _is_miss(entry) else _META_TTL_S)
+        ttl if ttl is not None else _ttl(_MISS_TTL_S if _is_miss(entry) else _META_TTL_S)
     )
-    return (time.time() - entry.get("__at__", 0.0)) < effective_ttl
+    return effective_ttl == -1 or (time.time() - entry.get("__at__", 0.0)) < effective_ttl
+
+
+def _is_explicit_airport_name(name: str) -> bool:
+    normalized = " ".join(str(name or "").strip().lower().split())
+    trimmed = normalized.rstrip(".,;:()[]{}")
+    padded = f" {trimmed} "
+    tokens = trimmed.replace(",", " ").split()
+    airport_index = tokens.index("airport") if "airport" in tokens else -1
+    suffix = tokens[airport_index + 1 :] if airport_index >= 0 else []
+    has_terminal_suffix = bool(suffix) and (
+        suffix[0] in {"terminal", "terminals"}
+        or (suffix[0].startswith("t") and suffix[0][1:].isdigit())
+    )
+    return (
+        trimmed.endswith(" airport")
+        or " international airport " in padded
+        or " domestic airport " in padded
+        or normalized.startswith("airport,")
+        or has_terminal_suffix
+    )
+
+
+def _lookup_city(name: str, city: str) -> str:
+    return "" if _is_explicit_airport_name(name) else city
 
 
 def _key(name: str, city: str) -> str:
-    return f"{(name or '').strip().lower()}|{(city or '').strip().lower()}"
+    lookup_city = _lookup_city(name, city)
+    return f"{(name or '').strip().lower()}|{(lookup_city or '').strip().lower()}"
 
 
 def _key_lock(key: str) -> RLock:
@@ -237,33 +462,11 @@ def _headers(field_mask: str) -> dict[str, str]:
     }
 
 
-def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
-    """One Text Search call to grab id + photos + summary in a single hit."""
-    if not is_configured() or not name:
-        return None
-    field_mask = (
-        "places.id,places.displayName,places.formattedAddress,places.rating,"
-        "places.userRatingCount,places.priceLevel,places.photos,"
-        "places.editorialSummary,places.websiteUri,places.location,"
-        "places.currentOpeningHours.openNow,"
-        "places.regularOpeningHours.weekdayDescriptions"
-    )
-    try:
-        resp = httpx.post(
-            f"{_BASE}/places:searchText",
-            headers=_headers(field_mask),
-            json={"textQuery": f"{name} {city}".strip(), "pageSize": 1},
-            timeout=_HTTP_TIMEOUT_S,
-        )
-        resp.raise_for_status()
-    except httpx.HTTPError as exc:
-        log.warning("places lookup failed for %s: %s", name, exc)
-        return None
+def normalize_place(p: dict[str, Any], name: str = "") -> dict[str, Any]:
+    """Shape one Google place into the cached summary every reader expects.
 
-    places = resp.json().get("places") or []
-    if not places:
-        return None
-    p = places[0]
+    Pure, so the contract with ``place_facts`` can be tested without a request.
+    """
     loc = p.get("location") or {}
     return {
         "place_id": p.get("id", ""),
@@ -274,16 +477,73 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
         "price_level": p.get("priceLevel"),
         "website": p.get("websiteUri", ""),
         "editorial_summary": p.get("editorialSummary", {}).get("text", ""),
+        "business_status": p.get("businessStatus", ""),
         "open_now": (p.get("currentOpeningHours") or {}).get("openNow"),
-        "weekday_descriptions": (p.get("regularOpeningHours") or {}).get(
-            "weekdayDescriptions", []
-        ),
+        "weekday_descriptions": (p.get("regularOpeningHours") or {}).get("weekdayDescriptions", []),
         "lat": loc.get("latitude"),
         "lng": loc.get("longitude"),
-        "photo_refs": [
-            ph.get("name") for ph in (p.get("photos") or []) if ph.get("name")
-        ],
+        "photo_refs": [ph.get("name") for ph in (p.get("photos") or []) if ph.get("name")],
+        "__photo_refs_schema": _PHOTO_REFS_SCHEMA,
     }
+
+
+def remember_places(places: list[dict[str, Any]], city: str) -> None:
+    """Seed structured discovery results into the shared UI place cache."""
+    now = time.time()
+    touched: set[str] = set()
+    cache = _cache()
+    with _CACHE_LOCK:
+        for place in places:
+            name = str(place.get("name") or "").strip()
+            if not name or not place.get("place_id"):
+                continue
+            key = _key(name, city)
+            existing = cache.get(key) or {}
+            photo_schema = (
+                {"__photo_refs_schema": _PHOTO_REFS_SCHEMA} if "photo_refs" in place else {}
+            )
+            cache[key] = {**existing, **place, **photo_schema, "__at__": now}
+            touched.add(key)
+        _evict_if_needed()
+    _schedule_durable(touched)
+
+
+def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
+    """One Text Search call to grab routine place metadata and photo references."""
+    if not is_configured() or not name:
+        return None
+    field_mask = (
+        "places.id,places.displayName,places.formattedAddress,places.rating,"
+        "places.userRatingCount,places.priceLevel,places.photos,"
+        "places.websiteUri,places.location,"
+        "places.businessStatus,places.currentOpeningHours.openNow,"
+        "places.regularOpeningHours.weekdayDescriptions"
+    )
+    for attempt in range(2):
+        if not consume("text_search"):
+            return None
+        try:
+            resp = http_client.post(
+                f"{_BASE}/places:searchText",
+                headers=_headers(field_mask),
+                json={"textQuery": f"{name} {city}".strip(), "pageSize": 1},
+                timeout=_HTTP_TIMEOUT_S,
+            )
+            resp.raise_for_status()
+            break
+        except httpx.HTTPStatusError as exc:
+            if attempt == 0 and exc.response.status_code >= 500:
+                continue
+            log.warning("places lookup failed for %s: %s", name, exc)
+            return None
+        except httpx.HTTPError as exc:
+            log.warning("places lookup failed for %s: %s", name, exc)
+            return None
+
+    places = resp.json().get("places") or []
+    if not places:
+        return None
+    return normalize_place(places[0], name)
 
 
 def _photo_uris(refs: list[str], max_width_px: int = 800) -> list[str]:
@@ -294,8 +554,15 @@ def _photo_uris(refs: list[str], max_width_px: int = 800) -> list[str]:
     if len(refs) == 1:
         uri = _photo_uri(refs[0], max_width_px)
         return [uri] if uri else []
+    budget = current_budget()
+
+    def _resolve(ref: str) -> str | None:
+        with use_budget(budget):
+            return _photo_uri(ref, max_width_px)
+
     with ThreadPoolExecutor(max_workers=min(_MAX_WORKERS, len(refs))) as ex:
-        uris = list(ex.map(lambda r: _photo_uri(r, max_width_px), refs))
+        futures = [ex.submit(contextvars.copy_context().run, _resolve, ref) for ref in refs]
+        uris = [future.result() for future in futures]
     return [u for u in uris if u]
 
 
@@ -307,8 +574,10 @@ def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
     """
     if not photo_ref or not is_configured():
         return None
+    if not consume("photo"):
+        return None
     try:
-        resp = httpx.get(
+        resp = http_client.get(
             f"{_BASE}/{photo_ref}/media",
             params={
                 "key": get_settings().google_places_api_key,
@@ -327,8 +596,10 @@ def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
 def _fetch_reviews(place_id: str) -> list[dict[str, Any]]:
     if not place_id or not is_configured():
         return []
+    if not consume("review_details"):
+        return []
     try:
-        resp = httpx.get(
+        resp = http_client.get(
             f"{_BASE}/places/{place_id}",
             headers=_headers("reviews"),
             timeout=_HTTP_TIMEOUT_S,
@@ -359,35 +630,98 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
     Always returns a dict — empty `{}` for known-misses so we don't retry
     within the TTL window. Pass ``refresh=True`` to force a re-fetch."""
     cache = _cache()
-    k = _key(name, city)
+    lookup_city = _lookup_city(name, city)
+    k = _key(name, lookup_city)
+    with _CACHE_LOCK:
+        fresh_before_lock = not refresh and _fresh(cache.get(k))
     with _key_lock(k):
         with _CACHE_LOCK:
             entry = cache.get(k)
             if not refresh and _fresh(entry):
+                _record_cache(
+                    "memory_hit" if fresh_before_lock else "coalesced_hit",
+                    operation="text_search",
+                    sku_class="pro",
+                )
                 return {} if _is_miss(entry) else entry  # type: ignore[return-value]
-        info = _lookup_place(name, city) or {}
+        if not refresh:
+            durable = _durable_read(k)
+            if durable is not None and _fresh(durable):
+                with _CACHE_LOCK:
+                    cache[k] = durable
+                    _evict_if_needed()
+                    _record_cache("durable_hit", operation="text_search", sku_class="pro")
+                return {} if _is_miss(durable) else durable
+            secondary = _secondary_read(k)
+            if secondary is not None and _fresh(secondary):
+                with _CACHE_LOCK:
+                    cache[k] = secondary
+                    _evict_if_needed()
+                    _record_cache("secondary_hit", operation="text_search", sku_class="pro")
+                _persist_entry(k)
+                return {} if _is_miss(secondary) else secondary
+        _record_cache("refresh" if refresh else "miss")
+        info = _lookup_place(name, lookup_city) or {}
         info["__at__"] = time.time()
         with _CACHE_LOCK:
             cache[k] = info
             _evict_if_needed()
-        _persist()
+        _persist_entry(k)
         return {} if _is_miss(info) else info
+
+
+def _record_cache(result: str, *, operation: str = "", sku_class: str = "", units: int = 1) -> None:
+    from tripplanner.observability import app_event
+
+    app_event(
+        "cache_access",
+        cache="google_places",
+        result=result,
+        **({"dataset": _dataset_for_operation(operation)} if operation else {}),
+        units=units,
+    )
+    if result.endswith("hit") and operation:
+        from tripplanner.provider_usage import record_cache_hit
+
+        record_cache_hit(provider="google", operation=operation, sku_class=sku_class, units=units)
+
+
+def _dataset_for_operation(operation: str) -> str:
+    return {
+        "text_search": "places_search",
+        "place_details": "places_details_reviews_hours",
+        "photo_media": "places_photos",
+    }.get(operation, operation)
 
 
 def get_photos(
     name: str, city: str, max_photos: int = _MAX_PHOTOS_PER_PLACE, *, refresh: bool = False
 ) -> list[str]:
     """Return up to ``max_photos`` renderable image URLs for ``name``."""
+    max_photos = min(max_photos, get_settings().google_places_max_photos_per_place)
     info = _ensure(name, city, refresh=refresh)
     if not info:
         return []
+    if info.get("__photo_refs_schema") != _PHOTO_REFS_SCHEMA and not refresh:
+        refreshed, succeeded = refresh_details(name, city)
+        if succeeded and refreshed:
+            info = refreshed
     with _CACHE_LOCK:
-        stale = (time.time() - info.get("__photos_at__", 0.0)) >= _PHOTO_TTL_S
+        stale = (time.time() - info.get("__photos_at__", 0.0)) >= _ttl(_PHOTO_TTL_S)
         needs_photos = refresh or "photo_urls" not in info or stale
         refs = list((info.get("photo_refs") or [])[:max_photos])
         current = list(info.get("photo_urls") or [])
     if not needs_photos:
+        units = min(len(current), max_photos)
+        if units:
+            _record_cache(
+                "photo_url_hit",
+                operation="photo_media",
+                sku_class="photo_media",
+                units=units,
+            )
         return current
+    _record_cache("photo_url_refresh" if current else "photo_url_miss")
     photo_urls = _photo_uris(refs)
     with _CACHE_LOCK:
         info["photo_urls"] = photo_urls
@@ -414,17 +748,22 @@ def prefetch(
     if not todo:
         return
 
+    budget = current_budget()
+
     def _one(name: str) -> None:
-        if with_reviews:
-            get_summary(name, city, refresh=refresh)  # populates lookup + reviews
-        else:
-            get_details(name, city, refresh=refresh)
-        if max_photos > 0:
-            get_photos(name, city, max_photos=max_photos, refresh=refresh)
+        with use_budget(budget):
+            if with_reviews:
+                get_summary(name, city, refresh=refresh)  # populates lookup + reviews
+            else:
+                get_details(name, city, refresh=refresh)
+            if max_photos > 0:
+                get_photos(name, city, max_photos=max_photos, refresh=refresh)
 
     with _batched_persist():
         with ThreadPoolExecutor(max_workers=min(_MAX_WORKERS, len(todo))) as ex:
-            list(ex.map(_one, todo))
+            futures = [ex.submit(contextvars.copy_context().run, _one, name) for name in todo]
+            for future in futures:
+                future.result()
 
 
 def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any] | None:
@@ -433,19 +772,53 @@ def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
     if not info:
         return None
     with _CACHE_LOCK:
-        needs_reviews = refresh or "reviews" not in info
+        review_ttl = _reviews_ttl()
+        reviews_stale = (
+            review_ttl != -1 and (time.time() - info.get("__reviews_at__", 0.0)) >= review_ttl
+        )
+        needs_reviews = refresh or "reviews" not in info or reviews_stale
         place_id = info.get("place_id", "")
     if needs_reviews:
         reviews = _fetch_reviews(place_id)
         with _CACHE_LOCK:
             info["reviews"] = reviews
-        _persist()
+            info["__reviews_at__"] = time.time()
+        _persist_entry(_key(name, _lookup_city(name, city)))
+    else:
+        _record_cache(
+            "reviews_hit",
+            operation="place_details",
+            sku_class="enterprise_atmosphere",
+        )
     return info
 
 
 def get_details(name: str, city: str, *, refresh: bool = False) -> dict[str, Any] | None:
     """Return place metadata without the extra reviews request."""
     return _ensure(name, city, refresh=refresh) or None
+
+
+def refresh_details(name: str, city: str) -> tuple[dict[str, Any] | None, bool]:
+    """Refresh place facts without discarding a usable cached entry on failure."""
+    cache = _cache()
+    lookup_city = _lookup_city(name, city)
+    key = _key(name, lookup_city)
+    with _key_lock(key):
+        with _CACHE_LOCK:
+            previous = cache.get(key)
+        if previous is None:
+            previous = _durable_read(key)
+        _record_cache("refresh")
+        info = _lookup_place(name, lookup_city)
+        if info is None:
+            known = previous if previous and not _is_miss(previous) else None
+            return known, False
+        info["__at__"] = time.time()
+        with _CACHE_LOCK:
+            cache[key] = info
+            _evict_if_needed()
+        _persist_entry(key)
+        return info, True
 
 
 def place_coords(name: str, city: str = "") -> tuple[float, float] | None:
@@ -459,12 +832,12 @@ def place_coords(name: str, city: str = "") -> tuple[float, float] | None:
 
 
 def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False) -> list[str]:
-    """Return the names of the top ``n`` hotels/attractions in ``destination``.
+    """Return the names of the top ``n`` hotels/attractions/restaurants in ``destination``.
 
     Used by the sidebar as a fallback so the panels fill in with the
     destination's highlights *before* the user has locked any selections.
-    ``kind`` is ``"hotel"`` or ``"attraction"``. Results are cached per
-    ``(destination, kind)`` so we only hit Places once.
+    ``kind`` is ``"hotel"``, ``"attraction"`` or ``"restaurant"``. Results are
+    cached per ``(destination, kind)`` so we only hit Places once.
     """
     if not is_configured() or not destination:
         return []
@@ -474,16 +847,36 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
         with _CACHE_LOCK:
             entry = cache.get(ck)
             if not refresh and _fresh(entry):
+                _record_cache("discovery_hit", operation="text_search", sku_class="pro")
                 return entry.get("names", [])  # type: ignore[union-attr]
+        if not refresh:
+            durable = _durable_read(ck)
+            if durable is not None and _fresh(durable):
+                _record_cache("discovery_hit", operation="text_search", sku_class="pro")
+                with _CACHE_LOCK:
+                    cache[ck] = durable
+                    _evict_if_needed()
+                return durable.get("names", [])
+            secondary = _secondary_read(ck)
+            if secondary is not None and _fresh(secondary):
+                _record_cache("discovery_hit", operation="text_search", sku_class="pro")
+                with _CACHE_LOCK:
+                    cache[ck] = secondary
+                    _evict_if_needed()
+                _persist_entry(ck)
+                return secondary.get("names", [])
 
-        query = (
-            f"best hotels in {destination}"
-            if kind == "hotel"
-            else f"top tourist attractions in {destination}"
-        )
+        if kind == "hotel":
+            query = f"best hotels in {destination}"
+        elif kind == "restaurant":
+            query = f"best restaurants in {destination}"
+        else:
+            query = f"top tourist attractions in {destination}"
         names: list[str] = []
+        if not consume("text_search"):
+            return names
         try:
-            resp = httpx.post(
+            resp = http_client.post(
                 f"{_BASE}/places:searchText",
                 headers=_headers("places.displayName,places.rating"),
                 json={"textQuery": query, "pageSize": max(n, 1)},
@@ -500,14 +893,17 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
         with _CACHE_LOCK:
             cache[ck] = {"names": names, "__at__": time.time()}
             _evict_if_needed()
-        _persist()
+        _persist_entry(ck)
         return names
 
 
 def clear_cache() -> None:
     """Drop every cached entry. Useful for tests."""
-    global _loaded
+    global _loaded, _legacy_doc_cleaned, _persist_retry_after
+    flush_writes()
     with _CACHE_LOCK:
         _CACHE.clear()
+        _dirty_keys.clear()
         _loaded = False
-
+        _legacy_doc_cleaned = False
+        _persist_retry_after = 0.0
