@@ -86,3 +86,13 @@ Examples: engineeering review, refactor planning, deterministic guardrails, tool
 ## Final rule
 
 When Codex is acting in this workspace, it must follow the repository's Copilot rules and the reporting format above in every substantive task.
+
+## Completion and validation
+
+- Read `.github/copilot-instructions.md` for shared lane and publication rules.
+- Commit and push completed changes; report the lane, commit, publication status,
+  affected stack, and whether the primary or sandbox stack needs a restart.
+- Run focused checks once per milestone. Broaden only when changes or unresolved
+  failures justify it; do not repeatedly run passing full suites.
+- Original prompt must be verbatim when quoted; otherwise label it a summary.
+- Prompt logging remains paused; response summaries do not authorize log writes.

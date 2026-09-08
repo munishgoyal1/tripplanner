@@ -36,7 +36,8 @@ trip through shared API contracts.
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |
 | `src/tripplanner/agents/trip_agent.py` | Phase-selected tool sets and the exhaustive read/trip-write/profile-write/external-write capability registry used by proposal-only mode |
 | `src/tripplanner/chat_turn.py` | Transport-neutral replay/admission, cap and conversation-limit decisions, interrupted-turn persistence, final transcript persistence, passive learning, and completion telemetry shared by JSON and SSE chat |
-| `src/tripplanner/api.py` | FastAPI routes, hosted identity boundary, JSON/SSE transport adaptation and stream events, `/providers/status` diagnostics, production SPA mount |
+| `src/tripplanner/api.py` | FastAPI assembly, hosted identity boundary, JSON/SSE transport adaptation and stream events, production SPA mount |
+| `src/tripplanner/web/runtime_routes.py` | Independent health, public demo (including ETag), provider readiness, and tool metrics routes; registered before the SPA catch-all |
 | `src/tripplanner/public_demo.py` | Validated bundled regional demo fallback, Cosmos active-manifest reads, ETags, and atomic monthly refresh |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
 | `src/tripplanner/planning_intelligence.py` | Pure trip-duration, personal day-capacity, and sparse-itinerary policy |

@@ -3,7 +3,7 @@ name: Continuous Integration
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [master]
 
 permissions:
   contents: read
@@ -48,7 +48,7 @@ jobs:
       - name: Type-check
         run: npm run typecheck
       - name: Unit tests
-        run: npm run test:unit
+        run: npm run test:all
       - name: Production build
         run: npm run build
 
