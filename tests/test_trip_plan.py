@@ -90,6 +90,99 @@ class TestPartialItineraryMerge:
         assert plan["day_wise_itinerary"][1]["stops"][0]["name"] == "Lemon Tree Hotel Indore"
         assert "Partial itinerary update merged" in result
 
+class TestCalendarGuardAgainstWrongTrip:
+    """Regression coverage for a production incident: an itinerary carrying
+    another trip's dates was merged into the wrong active trip, because
+    nothing checked a day's own date against the trip's booked window.
+    """
+
+    @staticmethod
+    def _days(dates: list[str]) -> list[dict]:
+        return [
+            {
+                "day": index + 1,
+                "date": day_date,
+                "stops": [{"name": f"Stop {index + 1}", "kind": "attraction"}],
+            }
+            for index, day_date in enumerate(dates)
+        ]
+
+    def test_a_shorter_wrong_trip_itinerary_is_rejected_not_merged(self):
+        create_trip_plan.invoke({
+            "destination": "Italy",
+            "departure_date": "2026-07-18",
+            "return_date": "2026-07-24",
+            "origin": "Bangalore",
+        })
+        original = self._days([
+            "2026-07-18", "2026-07-19", "2026-07-20", "2026-07-21",
+            "2026-07-22", "2026-07-23", "2026-07-24",
+        ])
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": original,
+        })})
+
+        # Six days carrying a different trip's dates -- shorter than the
+        # existing seven, so the partial-merge path would otherwise splice
+        # this straight into the real itinerary.
+        wrong_trip = self._days([
+            "2026-09-05", "2026-09-06", "2026-09-07", "2026-09-08",
+            "2026-09-09", "2026-09-10",
+        ])
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": wrong_trip,
+        })})
+
+        assert result.startswith("Error:")
+        assert "different trip" in result
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["day_wise_itinerary"] == original
+
+    def test_a_full_length_wrong_trip_itinerary_is_rejected_not_replaced(self):
+        create_trip_plan.invoke({
+            "destination": "London",
+            "departure_date": "2026-08-25",
+            "return_date": "2026-08-29",
+            "origin": "Bangalore",
+        })
+        original = self._days([
+            "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-29",
+        ])
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": original,
+        })})
+
+        # Same day-count as the existing itinerary, so this would otherwise
+        # take the full-replace path instead of the partial-merge path.
+        wrong_trip = self._days([
+            "2026-08-28", "2026-08-29", "2026-08-30", "2026-08-31", "2026-09-01",
+        ])
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": wrong_trip,
+        })})
+
+        assert result.startswith("Error:")
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["day_wise_itinerary"] == original
+
+    def test_an_itinerary_within_the_booked_window_is_still_accepted(self):
+        create_trip_plan.invoke({
+            "destination": "Italy",
+            "departure_date": "2026-07-18",
+            "return_date": "2026-07-24",
+            "origin": "Bangalore",
+        })
+        in_range = self._days(["2026-07-18", "2026-07-19", "2026-07-20"])
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": in_range,
+        })})
+
+        assert not result.startswith("Error:")
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["day_wise_itinerary"] == in_range
+
+
 class TestTripPlanState:
     @staticmethod
     def _save_booking_ready_trip(**updates):

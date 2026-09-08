@@ -1213,3 +1213,61 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
+
+
+# --------------------------------------------------------------------------- #
+# trip calendar                                                                 #
+# --------------------------------------------------------------------------- #
+
+
+def test_a_day_dated_outside_the_booked_window_is_flagged() -> None:
+    wrong_trip = plan(
+        [[stop("Hilton Goa Resort", "09:00", "hotel", 45)]],
+        departure_date="2026-07-18",
+        return_date="2026-07-24",
+    )
+    wrong_trip["day_wise_itinerary"][0]["date"] = "2026-09-05"
+
+    violations = [v for v in trip_guard.validate_plan(wrong_trip) if v.code == "I14"]
+
+    assert violations
+    assert violations[0].day == 1
+
+
+def test_a_day_dated_inside_the_booked_window_is_not_flagged() -> None:
+    in_range = plan(
+        [[stop("Hotel Artemide", "09:00", "hotel", 45)]],
+        departure_date="2026-07-18",
+        return_date="2026-07-24",
+    )
+    in_range["day_wise_itinerary"][0]["date"] = "2026-07-24"
+
+    codes = {v.code for v in trip_guard.validate_plan(in_range)}
+
+    assert "I14" not in codes
+
+
+def test_the_calendar_invariant_stays_silent_without_both_trip_dates() -> None:
+    """The trip's own dates are missing, so nothing can be compared -- and a
+    fabricated bound would be worse than no check at all."""
+    undated = plan(
+        [[stop("Hotel Artemide", "09:00", "hotel", 45)]],
+        departure_date="2026-07-18",
+    )
+    undated["day_wise_itinerary"][0]["date"] = "2026-09-05"
+
+    codes = {v.code for v in trip_guard.validate_plan(undated)}
+
+    assert "I14" not in codes
+
+
+def test_the_calendar_invariant_ignores_a_day_with_no_date_of_its_own() -> None:
+    no_date = plan(
+        [[stop("Hotel Artemide", "09:00", "hotel", 45)]],
+        departure_date="2026-07-18",
+        return_date="2026-07-24",
+    )
+
+    codes = {v.code for v in trip_guard.validate_plan(no_date)}
+
+    assert "I14" not in codes
