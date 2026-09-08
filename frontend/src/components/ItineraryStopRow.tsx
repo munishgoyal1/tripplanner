@@ -161,7 +161,7 @@ export default function ItineraryStopRow({
     >
       {stop.travel_from_previous && (
         <div className="flex items-start gap-2 py-1.5 pl-3">
-          <span className="mt-2 h-px w-4 flex-shrink-0 bg-slate-200" aria-hidden />
+          <span className="mt-2 h-px w-4 flex-shrink-0 bg-border" aria-hidden />
           <div
             aria-label={`Travel from previous stop: ${stop.travel_from_previous.distance_display}, ${stop.travel_from_previous.duration_display}`}
             className="flex flex-wrap items-center gap-x-1.5 text-[10px] font-medium text-accent"
@@ -173,10 +173,10 @@ export default function ItineraryStopRow({
             <span aria-hidden>·</span>
             <span>{stop.travel_from_previous.duration_display}</span>
             {stop.travel_from_previous.detail && (
-              <span className="basis-full font-normal text-slate-600">{stop.travel_from_previous.detail}</span>
+              <span className="basis-full font-normal text-muted">{stop.travel_from_previous.detail}</span>
             )}
             {stop.expected_arrival_time && (
-              <span className="basis-full font-normal text-slate-500">
+              <span className="basis-full font-normal text-muted">
                 Est. arrive {stop.expected_arrival_time}
                 {stop.buffer_before_display && stop.time
                   ? ` · ${stop.buffer_before_display} free before ${stop.time}`
@@ -193,13 +193,13 @@ export default function ItineraryStopRow({
           jumpActive
             ? "border-amber-300 bg-amber-50 shadow-card"
             : active
-              ? "border-brand/30 bg-brand/5 bg-clay-soft/40 ring-brand/30 shadow-card"
+              ? "border-clay/50 bg-paper shadow-card ring-1 ring-clay/15"
               : focusable
                 ? "cursor-pointer border-border bg-paper hover:border-clay/40 hover:bg-clay-soft/20"
                 : "border-border bg-paper"
         }`}
       >
-        <div className="flex items-start gap-2.5">
+        <div className="flex flex-wrap items-start gap-2.5">
           {mapLabel ? (
             <span
               aria-label={mapLabel.startsWith("H")
@@ -223,10 +223,10 @@ export default function ItineraryStopRow({
               {KIND_ICON[stop.kind] || KIND_ICON.other}
             </span>
           )}
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 basis-[calc(100%-2.5rem)]">
             <div className="flex flex-wrap items-baseline gap-x-1.5">
               {stop.time && (
-                <span className="text-sm font-semibold tabular-nums text-ink">
+                <span className="text-[11px] font-medium tabular-nums text-muted">
                   {stop.time}{stop.time_estimated ? " est." : ""}
                 </span>
               )}
@@ -237,7 +237,7 @@ export default function ItineraryStopRow({
                   event.stopPropagation();
                   onFocus();
                 }}
-                className={`block max-w-full truncate text-left text-sm font-semibold ${
+                className={`block w-full text-left text-sm font-medium leading-snug ${
                   focusable ? "text-ink hover:text-brand" : "cursor-default text-ink"
                 }`}
                 title={routeFocusable
@@ -249,10 +249,10 @@ export default function ItineraryStopRow({
                 {circuitReturn ? `Return to ${stop.name}` : stop.name}
               </button>
             </div>
-            <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[11px] text-slate-500">
-              <span className="font-bold uppercase text-slate-400">{timingLabel}</span>
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[11px] text-muted">
+              <span className="font-medium text-muted">{timingLabel}</span>
               <span aria-hidden>·</span>
-              <span className="font-bold uppercase text-slate-400">{circuitReturn ? "Hotel return" : stop.kind}</span>
+              <span className="font-medium text-muted">{circuitReturn ? "Hotel return" : stop.kind}</span>
               {unmapped && (
                 <>
                   <span aria-hidden>·</span>
@@ -262,7 +262,7 @@ export default function ItineraryStopRow({
                         ? `The map found “${unmapped.candidate.name}” instead. Confirm it on the map to pin this stop.`
                         : "The map could not place this stop."
                     }
-                    className={`font-semibold ${unmapped.tier === "anchor" ? "text-amber-600" : "text-slate-400"}`}
+                    className={`font-semibold ${unmapped.tier === "anchor" ? "text-amber-600" : "text-muted"}`}
                   >
                     Not on map
                   </span>
@@ -277,7 +277,7 @@ export default function ItineraryStopRow({
               {departureText && (
                 <>
                   <span aria-hidden>·</span>
-                  <span className="font-medium tabular-nums text-slate-600">{departureText}</span>
+                  <span className="font-medium tabular-nums text-muted">{departureText}</span>
                 </>
               )}
             </p>
@@ -290,7 +290,7 @@ export default function ItineraryStopRow({
               event.stopPropagation();
               onToggleBooked(!stop.booked);
             }}
-            className={`inline-flex h-6 flex-shrink-0 items-center gap-1 rounded-full px-2 text-[10px] font-semibold ring-1 transition ${
+            className={`ml-[2.125rem] inline-flex h-6 flex-shrink-0 items-center gap-1 rounded-full px-2 text-[10px] font-semibold ring-1 transition ${
               stop.booked
                 ? "bg-emerald-50 text-emerald-700 ring-emerald-200 hover:bg-emerald-100"
                 : "bg-amber-50 text-amber-800 ring-amber-200 hover:text-brand hover:ring-brand/30"
@@ -307,7 +307,7 @@ export default function ItineraryStopRow({
                 onMap();
               }}
               aria-label={`Show ${stop.name} on the map`}
-              className="grid h-6 w-6 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-brand"
+              className="grid h-6 w-6 place-items-center rounded-full text-muted transition hover:bg-sand hover:text-brand"
               title={routeFocusable ? "Show complete route" : "Show on map"}
             >
               <MapPin size={13} aria-hidden />
@@ -326,7 +326,7 @@ export default function ItineraryStopRow({
                   }
                 }}
                 aria-label={`Remove ${stop.name} from itinerary`}
-                className="grid h-6 w-6 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-rose-600"
+                className="grid h-6 w-6 place-items-center rounded-full text-muted transition hover:bg-sand hover:text-rose-600"
                 title="Remove from itinerary"
               >
                 {removing ? <Loader2 size={12} className="animate-spin" aria-hidden /> : <Trash2 size={13} aria-hidden />}
@@ -368,15 +368,15 @@ export default function ItineraryStopRow({
                 event.stopPropagation();
                 setNotesOpen((open) => !open);
               }}
-              className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 transition hover:text-ink"
+              className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-muted transition hover:text-ink"
             >
               {notesOpen ? "Hide notes" : "Notes & tips"}
               <ChevronDown size={12} className={`transition ${notesOpen ? "rotate-180" : ""}`} aria-hidden />
             </button>
             {notesOpen && (
-              <div className="mt-1 space-y-0.5 border-l-2 border-slate-100 pl-2.5">
-                {noteTexts.map((text) => <p key={text} className="text-xs text-slate-500">{text}</p>)}
-                {!circuitReturn && insightTexts.map((text) => <p key={text} className="text-xs text-slate-600">{text}</p>)}
+              <div className="mt-1 space-y-0.5 border-l-2 border-border/60 pl-2.5">
+                {noteTexts.map((text) => <p key={text} className="text-xs text-muted">{text}</p>)}
+                {!circuitReturn && insightTexts.map((text) => <p key={text} className="text-xs text-muted">{text}</p>)}
               </div>
             )}
           </div>

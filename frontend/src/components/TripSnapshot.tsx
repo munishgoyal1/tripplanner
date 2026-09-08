@@ -17,20 +17,20 @@ interface Props {
 function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCurrency: DisplayCurrency }) {
   const hasTarget = budget.target != null && budget.target > 0;
   const pct = budget.pct_used ?? 0;
-  const tone = budget.over_budget ? "bg-rose-500" : pct >= 80 ? "bg-amber-400" : "bg-emerald-500";
+  const tone = budget.over_budget ? "bg-rose-500" : pct >= 80 ? "bg-amber-400" : "bg-sage";
 
   return (
-    <div className="border-t border-slate-200 pt-3">
+    <div className="border-t border-border pt-3">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <p className="text-[10px] font-semibold uppercase text-slate-400">Trip spend</p>
+          <p className="text-[10px] font-semibold uppercase text-muted">Trip spend</p>
           {budget.estimated && (
             <>
               <p className="text-[10px] text-amber-700">
                 Final total not confirmed · {budget.all_in_coverage_pct ?? 0}% all-in coverage
               </p>
               {!!budget.required_unknown?.length && (
-                <p className="mt-0.5 max-w-64 text-[10px] leading-snug text-slate-500">
+                <p className="mt-0.5 max-w-64 text-[10px] leading-snug text-muted">
                   Check: {budget.required_unknown.join("; ")}
                 </p>
               )}
@@ -38,19 +38,19 @@ function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCur
           )}
           <p className="mt-0.5 text-base font-semibold text-ink">
             {formatSourceAmount(budget.spent, budget.currency, displayCurrency)}
-            {hasTarget && <span className="text-xs font-normal text-slate-400"> / {formatSourceAmount(budget.target ?? 0, budget.currency, displayCurrency)}</span>}
+            {hasTarget && <span className="text-xs font-normal text-muted"> / {formatSourceAmount(budget.target ?? 0, budget.currency, displayCurrency)}</span>}
           </p>
         </div>
-        <p className="text-right text-xs text-slate-500">
-          {formatSourceAmount(budget.per_traveler, budget.currency, displayCurrency)} <span className="text-slate-400">per traveler</span>
+        <p className="text-right text-xs text-muted">
+          {formatSourceAmount(budget.per_traveler, budget.currency, displayCurrency)} <span className="text-muted">per traveler</span>
         </p>
       </div>
       {hasTarget && (
         <>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sand">
             <div className={`h-full rounded-full ${tone}`} style={{ width: `${Math.min(pct, 100)}%` }} />
           </div>
-          <div className="mt-1 flex justify-between text-[11px] text-slate-500">
+          <div className="mt-1 flex justify-between text-[11px] text-muted">
             <span className={budget.over_budget ? "font-medium text-rose-700" : ""}>
               {budget.remaining != null ? formatSourceAmount(Math.abs(budget.remaining), budget.currency, displayCurrency) : ""} {budget.over_budget ? "over" : "left"}
             </span>
@@ -82,7 +82,7 @@ export default function TripSnapshot({
     ? "bg-brand/10 text-brand ring-brand/20"
     : overview.status === "finalized"
       ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-      : "bg-slate-100 text-slate-600 ring-slate-200";
+      : "bg-sand text-muted ring-border";
   const countFacts = [
     { label: "days", value: overview.counts.days, icon: CalendarDays },
     { label: overview.counts.hotels === 1 ? "stay" : "stays", value: overview.counts.hotels, icon: BedDouble },
@@ -140,18 +140,18 @@ export default function TripSnapshot({
         active
           ? "border-brand/30 bg-brand/5 ring-inset ring-2 ring-brand/20"
           : onAllDaysMap
-            ? "cursor-pointer border-slate-200 bg-white hover:bg-slate-50"
-            : "border-slate-200 bg-white"
+            ? "cursor-pointer border-border bg-paper hover:bg-background"
+            : "border-border bg-paper"
       }`}
       title={onAllDaysMap ? "Show all itinerary days on map" : undefined}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase text-brand">Trip snapshot</p>
-          <h1 className="display mt-0.5 truncate text-xl font-semibold text-ink">
+          <h1 className="display mt-0.5 text-2xl leading-tight font-normal text-ink">
             {overview.destination || "Your trip"}
           </h1>
-          <p className="mt-1 truncate text-xs text-slate-500">
+          <p className="mt-1 text-xs leading-relaxed text-muted">
             {[overview.origin && `From ${overview.origin}`, dateRange, travelersLabel].filter(Boolean).join(" · ")}
           </p>
         </div>
@@ -190,14 +190,14 @@ export default function TripSnapshot({
               {rechecking ? "Rechecking prices…" : "Recheck prices"}
             </button>
           )}
-          {recheckOutcome && <p className="mt-1 max-w-52 text-[10px] text-slate-600">{recheckOutcome}</p>}
+          {recheckOutcome && <p className="mt-1 max-w-52 text-[10px] text-muted">{recheckOutcome}</p>}
         </div>
       </div>
 
-      <p className="mt-3 text-sm leading-relaxed text-slate-600">{tripSummary}</p>
+      <p className="mt-3 text-sm leading-relaxed text-muted">{tripSummary}</p>
 
       {stops != null && booked != null && (
-        <div className="mt-3 border-t border-slate-200 pt-3">
+        <div className="mt-3 border-t border-border pt-3">
           <div className="flex items-center justify-between gap-3 text-xs">
             <span className="inline-flex items-center gap-1.5 font-semibold text-ink">
               <CheckCircle2 size={13} className="text-emerald-600" aria-hidden />
@@ -207,27 +207,27 @@ export default function TripSnapshot({
               {remainingStops ? `${remainingStops} need booking` : "All confirmed"}
             </span>
           </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100" aria-label={`${readinessPct}% of stops ready`}>
-            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${readinessPct}%` }} />
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sand" aria-label={`${readinessPct}% of stops ready`}>
+            <div className="h-full rounded-full bg-sage" style={{ width: `${readinessPct}%` }} />
           </div>
         </div>
       )}
 
-      <div className="mt-3 grid grid-cols-4 divide-x divide-slate-200 border-y border-slate-200 py-1.5">
+      <div className="mt-3 grid grid-cols-4 gap-1.5">
         {countFacts.map(({ label, value, icon: Icon }) => (
-          <div key={label} aria-label={`${value} ${label}`} className="flex min-w-0 items-center justify-center gap-1 px-1.5">
-            <Icon size={12} className="shrink-0 text-slate-400" aria-hidden />
+          <div key={label} aria-label={`${value} ${label}`} className="flex min-w-0 flex-col items-center justify-center gap-1 rounded-md border border-border bg-paper px-1 py-2.5">
+            <Icon size={12} className="shrink-0 text-muted" aria-hidden />
             <p className="text-xs font-semibold tabular-nums text-ink">{value}</p>
-            <span className="truncate text-[9px] font-medium uppercase text-slate-400">{label}</span>
+            <span className="truncate text-[9px] font-medium uppercase text-muted">{label}</span>
           </div>
         ))}
       </div>
 
-      <div className="mt-3 border-t border-slate-200 pt-3">
+      <div className="mt-3 border-t border-border pt-3">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[10px] font-semibold uppercase text-slate-400">Weather</p>
+          <p className="text-[10px] font-semibold uppercase text-muted">Weather</p>
           {overview.weather && (
-            <span className="text-[10px] font-medium text-slate-500">{overview.weather.source_label}</span>
+            <span className="text-[10px] font-medium text-muted">{overview.weather.source_label}</span>
           )}
         </div>
         {overview.weather ? (
@@ -236,7 +236,7 @@ export default function TripSnapshot({
             {overview.weather.days.map((day, index) => (
               <span
                 key={day.date}
-                className="inline-flex h-7 items-center gap-1 rounded-md bg-sky-50 px-2 text-[11px] font-medium text-slate-700 ring-1 ring-sky-100"
+                className="inline-flex h-7 items-center gap-1 rounded-md bg-sky-50 px-2 text-[11px] font-medium text-ink ring-1 ring-sky-100"
                 title={`${day.date}: ${day.summary}${day.precip_probability_pct != null ? `, ${day.precip_probability_pct}% precipitation` : ""}`}
               >
                 <span className="text-sky-700"><WeatherIcon condition={day.condition} size={14} /></span>
@@ -246,14 +246,14 @@ export default function TripSnapshot({
             ))}
           </div>
           {overview.weather.packing_advice.length > 0 && (
-            <p className="mt-2 text-xs leading-relaxed text-slate-600">
-              <span className="font-semibold text-slate-700">Pack:</span>{" "}
+            <p className="mt-2 text-xs leading-relaxed text-muted">
+              <span className="font-semibold text-ink">Pack:</span>{" "}
               {overview.weather.packing_advice.join(". ")}.
             </p>
           )}
           </>
         ) : (
-          <p className="mt-2 text-xs text-slate-500">Forecast unavailable for this trip.</p>
+          <p className="mt-2 text-xs text-muted">Forecast unavailable for this trip.</p>
         )}
       </div>
 
@@ -263,8 +263,8 @@ export default function TripSnapshot({
         </div>
       )}
       {overview.constraints && overview.constraints.length > 0 && (
-        <p className="mt-3 text-xs leading-relaxed text-slate-500">
-          <span className="font-semibold text-slate-700">For this trip:</span>{" "}
+        <p className="mt-3 text-xs leading-relaxed text-muted">
+          <span className="font-semibold text-ink">For this trip:</span>{" "}
           {overview.constraints.join(" · ")}
         </p>
       )}

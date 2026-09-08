@@ -227,10 +227,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   panes hidden, is valid and persists locally; the command bar always remains as
   the recovery surface. A visible docked pane has no arbitrary maximum width and
   may use all space not required by the minimum usable widths of visible siblings.
-- **Color**: coral `brand` (#e11d48) as the single accent for primary action +
-  active state; teal `accent` for secondary surfaces; ink/muted/surface
-  neutrals everywhere else. No rainbow.
-- **Type**: Inter for UI; Fraunces for display headings. Fonts loaded via
+- **Color**: Lovable warm editorial travel: terracotta `brand` for primary action +
+  active state; sage `accent` for secondary surfaces; ivory paper and sand
+  surfaces with warm ink, muted text, and thin borders. Preserve semantic status and map-route colors.
+- **Type**: Work Sans for UI; regular-weight Instrument Serif for display headings. Fonts loaded via
   `<link>` in `frontend/index.html` (NOT from CSS — PostCSS rejects late `@import`).
 - **Shape**: use radii and elevation only where an object is genuinely framed
   or floating. The itinerary snapshot and destination guide are full-width

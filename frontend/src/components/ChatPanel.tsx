@@ -540,7 +540,7 @@ export default function ChatPanel({
             disabled={busy || !transcriptReady}
             title="Start a new trip plan"
             aria-label="Start a new trip plan"
-            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink disabled:opacity-40"
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-ink ring-1 ring-border transition hover:bg-background hover:text-ink disabled:opacity-40"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12h14" />
@@ -661,16 +661,16 @@ export default function ChatPanel({
           <Fragment key={i}>
           {group && (
             <div className="flex items-center gap-3 pt-1" role="separator" aria-label={group}>
-              <span className="h-px flex-1 bg-slate-200" />
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{group}</span>
-              <span className="h-px flex-1 bg-slate-200" />
+              <span className="h-px flex-1 bg-border" />
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">{group}</span>
+              <span className="h-px flex-1 bg-border" />
             </div>
           )}
           <div
             className={`group flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}
           >
             {m.role === "user" && m.ts !== undefined && (
-              <div className="mb-1 px-1 text-[10px] text-slate-400">{clockLabel(m.ts)}</div>
+              <div className="mb-1 px-1 text-[10px] text-muted">{clockLabel(m.ts)}</div>
             )}
             <div
               className={`${wideTurns ? "max-w-[min(56rem,94%)]" : "max-w-[88%]"} rounded-lg px-3.5 py-2.5 text-sm leading-relaxed shadow-card ring-1 ${
@@ -682,16 +682,16 @@ export default function ChatPanel({
               {m.role === "assistant" && (
                 <div className="mb-1.5 flex items-center gap-1.5">
                   <Sparkles size={11} className="shrink-0 text-brand" aria-hidden />
-                  <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-muted">
                     Assistant
                   </span>
                   {m.ts !== undefined && (
-                    <span className="text-[10px] text-slate-400">{clockLabel(m.ts)}</span>
+                    <span className="text-[10px] text-muted">{clockLabel(m.ts)}</span>
                   )}
                   {m.seconds !== undefined && (
                     <span
                       title={`This reply took ${turnDurationLabel(m.seconds)}`}
-                      className="ml-auto inline-flex items-center gap-1 rounded-sm bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500"
+                      className="ml-auto inline-flex items-center gap-1 rounded-sm bg-sand px-1.5 py-0.5 text-[10px] font-semibold text-muted"
                     >
                       <Clock size={10} aria-hidden /> {turnDurationLabel(m.seconds)}
                     </span>
@@ -718,13 +718,13 @@ export default function ChatPanel({
                         title={tip}
                         className={`rounded-full px-2 py-0.5 text-[10px] ${
                           m.role === "user"
-                            ? "bg-white/20 text-white/90"
-                            : "bg-slate-100 text-slate-500"
+                            ? "bg-paper/20 text-white/90"
+                            : "bg-sand text-muted"
                         }`}
                       >
                         {t}
                         {trace?.duration_ms !== undefined && (
-                          <span className="ml-1 text-slate-400">
+                          <span className="ml-1 text-muted">
                             {trace.duration_ms}ms
                           </span>
                         )}
@@ -741,7 +741,7 @@ export default function ChatPanel({
                     <span
                       key={`${effect.name}-${effectIndex}`}
                       title={`${effect.name} was removed from the plan`}
-                      className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-400 line-through"
+                      className="inline-flex items-center gap-1 rounded-full bg-sand px-2 py-0.5 text-[10px] font-semibold text-muted line-through"
                     >
                       <MapPin size={10} aria-hidden />
                       {effect.name}
@@ -763,13 +763,13 @@ export default function ChatPanel({
               </div>
             )}
             {m.text && !(busy && i === messages.length - 1) && (
-              <div className="mt-1 flex min-h-7 items-center gap-0.5 px-1 text-slate-400 opacity-60 transition group-focus-within:opacity-100 group-hover:opacity-100">
+              <div className="mt-1 flex min-h-7 items-center gap-0.5 px-1 text-muted opacity-60 transition group-focus-within:opacity-100 group-hover:opacity-100">
                 <button
                   type="button"
                   onClick={() => void copyMessage(m.text, i)}
                   title={copiedMessage === i ? "Copied" : "Copy message"}
                   aria-label={copiedMessage === i ? "Message copied" : "Copy message"}
-                  className="rounded-md p-1.5 hover:bg-white hover:text-ink focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="rounded-md p-1.5 hover:bg-paper hover:text-ink focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand/20"
                 >
                   {copiedMessage === i ? <Check size={15} /> : <Copy size={15} />}
                 </button>
@@ -780,7 +780,7 @@ export default function ChatPanel({
                     disabled={busy}
                     title="Edit in the composer and send as a new instruction"
                     aria-label="Edit message"
-                    className="rounded-md p-1.5 hover:bg-white hover:text-ink focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:opacity-30"
+                    className="rounded-md p-1.5 hover:bg-paper hover:text-ink focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:opacity-30"
                   >
                     <Pencil size={15} />
                   </button>
@@ -867,7 +867,7 @@ export default function ChatPanel({
               className={`rounded-full p-2.5 ring-1 transition disabled:opacity-40 ${
                 listening
                   ? "bg-brand text-white ring-brand shadow-pop animate-pulse"
-                  : "text-slate-500 ring-slate-200 hover:bg-slate-50 hover:text-ink"
+                  : "text-muted ring-border hover:bg-background hover:text-ink"
               }`}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -906,7 +906,7 @@ export default function ChatPanel({
             {busy ? <Square size={15} fill="currentColor" /> : <Send size={18} />}
           </button>
         </div>
-        <label className="mt-2 flex cursor-pointer items-center gap-2 px-1 text-[11px] text-slate-500">
+        <label className="mt-2 flex cursor-pointer items-center gap-2 px-1 text-[11px] text-muted">
           <input
             type="checkbox"
             checked={smartDefaults}
@@ -928,7 +928,7 @@ export default function ChatPanel({
     );
   }
 
-  const dockButton = "inline-flex shrink-0 items-center gap-1.5 rounded-sm px-2 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-ink";
+  const dockButton = "inline-flex shrink-0 items-center gap-1.5 rounded-sm px-2 py-1.5 text-[11px] font-semibold text-muted transition hover:bg-sand hover:text-ink";
   const dockControls = (
     <>
       {layout === "bar" ? (
@@ -970,7 +970,7 @@ export default function ChatPanel({
             layout === "full" ? "h-[calc(100dvh-7.5rem)]" : "h-[58vh]"
           }`}
         >
-          <div className="flex shrink-0 items-center gap-2 border-b border-slate-200 px-3 py-2">
+          <div className="flex shrink-0 items-center gap-2 border-b border-border px-3 py-2">
             <MessageSquare size={13} className="text-brand" aria-hidden />
             <p className="text-[12px] font-semibold text-ink">Chat</p>
             <div className="ml-auto flex items-center gap-1">{dockControls}</div>
@@ -981,7 +981,7 @@ export default function ChatPanel({
       <div className="flex items-center gap-2 px-3 py-2">
         <div className="flex shrink-0 items-center gap-1">{layout === "bar" ? dockControls : null}</div>
         {layout === "bar" && (
-          <p className="hidden min-w-0 flex-1 truncate text-[11px] text-slate-500 lg:block">
+          <p className="hidden min-w-0 flex-1 truncate text-[11px] text-muted lg:block">
             {busy && progress ? (
               <>
                 <span className="font-semibold text-ink">{progress.label}…</span>{" "}
@@ -989,7 +989,7 @@ export default function ChatPanel({
               </>
             ) : lastReply ? (
               <>
-                <span className="font-semibold text-slate-600">Last reply</span> · {lastReply.text}
+                <span className="font-semibold text-muted">Last reply</span> · {lastReply.text}
               </>
             ) : null}
           </p>

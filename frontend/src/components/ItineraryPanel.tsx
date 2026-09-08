@@ -179,12 +179,12 @@ function DayCard({
       id={`it-day-${day.day}`}
       data-audit-day={day.day}
       className={`overflow-hidden rounded-md border bg-paper transition ${
-        circuitActive ? "border-brand/40 shadow-card ring-2 ring-brand/20" : "border-border"
+        circuitActive ? "border-clay/40 shadow-card" : "border-border"
       }`}
     >
       <div
-        className={`group/day grid cursor-pointer gap-2 px-3 py-2.5 transition sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start ${
-          circuitActive ? "bg-brand/5" : "hover:bg-slate-50"
+        className={`group/day grid cursor-pointer gap-2 px-3 py-2.5 transition ${
+          circuitActive ? "bg-sand" : "hover:bg-background"
         }`}
       >
         <button
@@ -204,17 +204,17 @@ function DayCard({
             </span>
             <div className="min-w-0">
               {day.date && <p className="text-[11px] font-bold uppercase text-brand">{dayDateLabel(day.date)}</p>}
-              <h3 className="display truncate text-lg font-semibold text-ink">{day.title}</h3>
+              <h3 className="display text-xl leading-tight font-normal text-ink">{day.title}</h3>
               {day.weather && (
                 <div
-                  className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-slate-600"
+                  className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-muted"
                   aria-label={`${day.weather.summary}, high ${day.weather.high_c ?? "unknown"} degrees Celsius, low ${day.weather.low_c ?? "unknown"} degrees Celsius`}
                   title={day.weather.precip_probability_pct != null ? `${day.weather.precip_probability_pct}% chance of precipitation` : day.weather.summary}
                 >
                   <span className="text-accent"><WeatherIcon condition={day.weather.condition} size={16} /></span>
                   <span>{day.weather.summary}</span>
                   {day.weather.high_c != null && day.weather.low_c != null && (
-                    <span className="tabular-nums text-slate-500">{formatTemperature(day.weather.high_c, region)} / {formatTemperature(day.weather.low_c, region)}</span>
+                    <span className="tabular-nums text-muted">{formatTemperature(day.weather.high_c, region)} / {formatTemperature(day.weather.low_c, region)}</span>
                   )}
                   {day.weather.precip_probability_pct != null && day.weather.precip_probability_pct >= 30 && (
                     <span className="text-sky-700">{Math.round(day.weather.precip_probability_pct)}% rain</span>
@@ -223,8 +223,8 @@ function DayCard({
               )}
             </div>
           </div>
-          {day.summary && <p className="mt-2 text-xs leading-relaxed text-slate-600">{day.summary}</p>}
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 pt-1.5 text-[11px] text-slate-500">
+          {day.summary && <p className="mt-2 text-xs leading-relaxed text-muted">{day.summary}</p>}
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border/60 pt-1.5 text-[11px] text-muted">
             <strong className="text-ink">{plannedStops.length} planned {plannedStops.length === 1 ? "stop" : "stops"}</strong>
             {day.schedule?.duration_display && (
               <span className="basis-full">
@@ -245,7 +245,7 @@ function DayCard({
               {confirmedStops} confirmed · {remainingStops} to book
             </span>
             {day.reachability && (
-              <p className="basis-full text-slate-500">
+              <p className="basis-full text-muted">
                 <strong className="font-semibold text-accent">Travel rhythm:</strong> {day.reachability}
               </p>
             )}
@@ -257,7 +257,7 @@ function DayCard({
             target="_blank"
             rel="noreferrer"
             onClick={(event) => event.stopPropagation()}
-            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-brand px-3 text-xs font-semibold text-white shadow-sm"
+            className="inline-flex h-7 w-fit items-center justify-center gap-1.5 rounded-md border border-border bg-paper px-2.5 text-[11px] font-medium text-muted transition hover:border-clay/40 hover:text-clay"
             title={`Open Day ${day.day} route in Google Maps`}
           >
             <Route size={13} aria-hidden /> Open route <ExternalLink size={11} aria-hidden />
@@ -269,12 +269,12 @@ function DayCard({
         changesHotel && destinationHotelIndex > 0 ? (
           <ul
             aria-label={`Transition day timeline from ${firstStop.name} to ${day.stops[destinationHotelIndex].name}`}
-            className="space-y-1.5 border-t border-slate-200 bg-surface px-3 py-3 sm:px-4"
+            className="space-y-1.5 border-t border-border bg-surface px-3 py-3 sm:px-4"
           >
             {visibleStops.map(renderStop)}
           </ul>
         ) : (
-          <ul className="space-y-1.5 border-t border-slate-200 bg-surface px-3 py-3 sm:px-4">
+          <ul className="space-y-1.5 border-t border-border bg-surface px-3 py-3 sm:px-4">
             {visibleStops.map(renderStop)}
           </ul>
         )
@@ -454,7 +454,7 @@ export default function ItineraryPanel({
       <div ref={scrollRef} className="h-full overflow-y-auto bg-sidebar">
         {filterControls}
         {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} onTripChanged={onTripChanged} />}
-        <div className="grid min-h-40 place-items-center p-6 text-sm text-slate-400">
+        <div className="grid min-h-40 place-items-center p-6 text-sm text-muted">
           Loading itinerary…
         </div>
       </div>
@@ -484,7 +484,7 @@ export default function ItineraryPanel({
         {filterControls}
         {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} onTripChanged={onTripChanged} />}
         <div className="grid min-h-48 place-items-center p-6 text-center">
-          <div className="max-w-xs text-sm text-slate-500">
+          <div className="max-w-xs text-sm text-muted">
             No day-by-day plan yet. Once the assistant builds your itinerary, each
             day's stops will appear here — check them off as you book.
           </div>
@@ -526,7 +526,7 @@ export default function ItineraryPanel({
           </div>
         )}
         <header className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-xs font-semibold uppercase text-slate-500">Day by day</h2>
+          <h2 className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted">Day by day</h2>
           {!overview && (
             <span className="chip">
               {loading ? "Refreshing… · " : ""}{stats.days} {stats.days === 1 ? "day" : "days"} · {stats.booked}/{stats.stops} booked
@@ -538,7 +538,7 @@ export default function ItineraryPanel({
         </div>
         <div className="space-y-3 pb-6">
         {visibleDays.length === 0 && (
-          <div className="py-8 text-center text-sm text-slate-500">No itinerary items match these filters.</div>
+          <div className="py-8 text-center text-sm text-muted">No itinerary items match these filters.</div>
         )}
         {visibleDays.map((day) => (
           <DayCard
