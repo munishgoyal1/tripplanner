@@ -7,6 +7,7 @@ import {
 } from "./publicEntryState";
 import App from "../App";
 import OpsDashboard from "../ops/OpsDashboard";
+import { trackPageView } from "../analytics";
 
 /** `/` owns the public entry, `/planner` owns the workspace, and `/welcome` redirects home. */
 export default function Root() {
@@ -27,6 +28,7 @@ export default function Root() {
       const showPublicEntry = !isPlannerPath();
       setShowEntry(showPublicEntry);
       if (showPublicEntry) setInitialRequest(null);
+      trackPageView();
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
@@ -36,6 +38,7 @@ export default function Root() {
     window.history.pushState({}, "", "/planner");
     setInitialRequest(request);
     setShowEntry(false);
+    trackPageView();
   };
 
   useEffect(() => {
@@ -43,6 +46,7 @@ export default function Root() {
       window.history.pushState({}, "", "/");
       setInitialRequest(null);
       setShowEntry(true);
+      trackPageView();
     };
     window.addEventListener("tripplanner:open-welcome", openWelcome);
     return () => window.removeEventListener("tripplanner:open-welcome", openWelcome);

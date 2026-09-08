@@ -9,6 +9,8 @@ import {
   DollarSign,
   Gauge,
   Globe2,
+  MapPin,
+  MessageSquare,
   PlaneTakeoff,
   RefreshCw,
   Server,
@@ -120,6 +122,27 @@ function estimatedCost(cost: number, unknown: number): string {
   return unknown ? `${value} + ${unknown} unknown` : value;
 }
 
+function DateRangeControl({ overview, days, startDate, endDate, onPreset, onStartDate, onEndDate }: {
+  overview: OpsOverview;
+  days: number;
+  startDate: string;
+  endDate: string;
+  onPreset: (days: number) => void;
+  onStartDate: (value: string) => void;
+  onEndDate: (value: string) => void;
+}) {
+  const today = new Date().toISOString().slice(0, 10);
+  const startMax = endDate && endDate < today ? endDate : today;
+  return <section className="mb-6 flex flex-wrap items-end justify-between gap-4 border border-stone-300 bg-white px-5 py-4" aria-label="Reporting period">
+    <div><p className="text-xs font-semibold uppercase text-stone-500">Reporting period</p><p className="mt-1 text-sm font-semibold">{overview.reporting_period.start_date} to {overview.reporting_period.end_date}</p></div>
+    <div className="flex flex-wrap items-end gap-3">
+      <div className="flex border border-stone-300">{[7, 30, 90].map((period) => <button key={period} type="button" className={`px-3 py-2 text-sm ${!startDate && !endDate && days === period ? "bg-stone-900 text-white" : "hover:bg-stone-100"}`} onClick={() => onPreset(period)}>{period}d</button>)}</div>
+      <label className="text-xs font-semibold text-stone-600">From<input type="date" value={startDate} max={startMax} onChange={(event) => onStartDate(event.target.value)} className="mt-1 block border border-stone-300 bg-white px-2 py-1.5 font-normal" /></label>
+      <label className="text-xs font-semibold text-stone-600">To<input type="date" value={endDate} min={startDate || undefined} max={today} onChange={(event) => onEndDate(event.target.value)} className="mt-1 block border border-stone-300 bg-white px-2 py-1.5 font-normal" /></label>
+    </div>
+  </section>;
+}
+
 function TripCostSection({ overview, kind, title, note }: {
   overview: OpsOverview;
   kind: "new_trip" | "trip_update";
@@ -185,19 +208,10 @@ function CostView({ overview, days, startDate, endDate, onPreset, onStartDate, o
 }) {
   const usage = overview.provider_usage;
   const cache = usage.cache_effectiveness;
-  const today = new Date().toISOString().slice(0, 10);
-  const startMax = endDate && endDate < today ? endDate : today;
 
   return (
     <>
-      <section className="mb-6 flex flex-wrap items-end justify-between gap-4 border border-stone-300 bg-white px-5 py-4" aria-label="Cost reporting period">
-        <div><p className="text-xs font-semibold uppercase text-stone-500">Reporting period</p><p className="mt-1 text-sm font-semibold">{usage.start_date} to {usage.end_date}</p></div>
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="flex border border-stone-300">{[7, 30, 90].map((period) => <button key={period} type="button" className={`px-3 py-2 text-sm ${!startDate && !endDate && days === period ? "bg-stone-900 text-white" : "hover:bg-stone-100"}`} onClick={() => onPreset(period)}>{period}d</button>)}</div>
-          <label className="text-xs font-semibold text-stone-600">From<input type="date" value={startDate} max={startMax} onChange={(event) => onStartDate(event.target.value)} className="mt-1 block border border-stone-300 bg-white px-2 py-1.5 font-normal" /></label>
-          <label className="text-xs font-semibold text-stone-600">To<input type="date" value={endDate} min={startDate || undefined} max={today} onChange={(event) => onEndDate(event.target.value)} className="mt-1 block border border-stone-300 bg-white px-2 py-1.5 font-normal" /></label>
-        </div>
-      </section>
+      <DateRangeControl {...{ overview, days, startDate, endDate, onPreset, onStartDate, onEndDate }} />
 
       <section className="grid gap-y-6 border-y border-stone-300 bg-white py-5 sm:grid-cols-2 xl:grid-cols-5">
         <Metric label="Measured calls" value={number.format(usage.totals.calls)} detail={`${usage.totals.failures} failed · ${usage.totals.avoided_calls} avoided`} icon={Boxes} />
@@ -244,7 +258,7 @@ function CostView({ overview, days, startDate, endDate, onPreset, onStartDate, o
   );
 }
 
-function BusinessView({ overview }: { overview: OpsOverview }) {
+function BusinessView({ overview, rangeProps }: { overview: OpsOverview; rangeProps: Omit<Parameters<typeof DateRangeControl>[0], "overview"> }) {
   const activities = Object.entries(overview.product.activities).sort(([, a], [, b]) => b - a);
   const countries = Object.entries(overview.product.countries).sort(([, a], [, b]) => b - a);
   const sources = Object.entries(overview.product.sources).sort(([, a], [, b]) => b - a);
@@ -254,13 +268,20 @@ function BusinessView({ overview }: { overview: OpsOverview }) {
 
   return (
     <>
+      <DateRangeControl overview={overview} {...rangeProps} />
       <section className="grid gap-y-6 border-y border-stone-300 bg-white py-5 sm:grid-cols-2 xl:grid-cols-5">
-        <Metric label="Users" value={number.format(overview.product.users)} detail={`${overview.product.sessions} consented sessions`} icon={Users} />
-        <Metric label="Engagement" value={elapsed(overview.product.engagement_seconds)} detail="Active time between events" icon={Clock3} />
-        <Metric label="New trips" value={number.format(overview.business.new_trips["7d"])} detail={`${overview.business.new_trips.today} today · ${overview.business.new_trips["30d"]} in 30d`} icon={PlaneTakeoff} />
-        <Metric label="Itineraries" value={number.format(overview.product.funnel.planning_completed)} detail="Completed consented sessions" icon={Workflow} />
-        <Metric label="Exports" value={number.format((overview.product.activities.itinerary_exported || 0) + (overview.product.activities.calendar_exported || 0))} detail={`${overview.product.activities.trip_shared || 0} trips shared`} icon={Activity} />
+        <Metric label="Visitors" value={number.format(overview.business_activity.visitors)} detail="Consented unique visitors" icon={Users} />
+        <Metric label="New trips" value={number.format(overview.business_activity.new_trips)} detail="Created in this period" icon={PlaneTakeoff} />
+        <Metric label="Trip updates" value={number.format(overview.business_activity.existing_trip_updates)} detail="Turns after first build" icon={Workflow} />
+        <Metric label="Chat turns" value={number.format(overview.business_activity.chat_turns)} detail="User turns on saved trips" icon={MessageSquare} />
+        <Metric label="Engagement" value={elapsed(overview.product.engagement_seconds)} detail="Current-process active time" icon={Clock3} />
       </section>
+
+      <div className="mt-6">
+        <Panel title="Page visits" note="Consented views · selected period">
+          {Object.keys(overview.business_activity.page_counts).length ? <div className="grid divide-y divide-stone-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">{Object.entries(overview.business_activity.page_counts).map(([page, count]) => <div key={page} className="px-5 py-4"><p className="text-xs font-semibold uppercase text-stone-500">{page}</p><p className="mt-2 font-display text-3xl">{number.format(count)}</p></div>)}</div> : <Empty>No consented page views in this period.</Empty>}
+        </Panel>
+      </div>
 
       <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <Panel title="Activation funnel" note="Consented sessions · current process">
@@ -306,6 +327,40 @@ function BusinessView({ overview }: { overview: OpsOverview }) {
       </div>
     </>
   );
+}
+
+function TripsView({ overview }: { overview: OpsOverview }) {
+  return <>
+    <section className="grid gap-y-6 border-y border-stone-300 bg-white py-5 sm:grid-cols-3">
+      <Metric label="Trips shown" value={number.format(overview.trip_insights.length)} detail="All persisted user trips" icon={PlaneTakeoff} />
+      <Metric label="Iterations" value={number.format(overview.business_activity.existing_trip_updates)} detail="Follow-up user turns" icon={Workflow} />
+      <Metric label="Chat turns" value={number.format(overview.business_activity.chat_turns)} detail="Across persisted trip chats" icon={MessageSquare} />
+    </section>
+    <div className="mt-6">
+      <Panel title="Trip interactions" note="One row per persisted user trip">
+        <div className="overflow-x-auto"><table className="w-full min-w-[1180px] text-left text-sm"><thead className="bg-stone-50 text-xs uppercase text-stone-500"><tr><th className="px-5 py-3">User ID</th><th>Itinerary</th><th>Places requested</th><th>First build</th><th>Iterations</th><th>Chat turns</th><th>Feedback</th><th>Updated</th></tr></thead><tbody>{overview.trip_insights.map((trip) => <tr key={`${trip.user_id}-${trip.trip_id}`} className="border-t border-stone-100 align-top"><td className="max-w-48 break-all px-5 py-3 font-mono text-xs">{trip.user_id}</td><td className="py-3 pr-4"><p className="font-semibold">{trip.title}</p><p className="mt-1 font-mono text-xs text-stone-500">{trip.trip_id}</p></td><td className="py-3 pr-4"><span className="flex items-center gap-2"><MapPin size={14} />{trip.places_requested || "Not recorded"}</span></td><td className="py-3 pr-4">{trip.first_build_seconds === null ? "Not recorded" : elapsed(trip.first_build_seconds)}</td><td className="py-3 pr-4">{trip.iterations}</td><td className="py-3 pr-4">{trip.chat_turns}</td><td className="max-w-80 whitespace-normal py-3 pr-4">{trip.feedback || "No feedback"}</td><td className="whitespace-nowrap py-3 pr-5 text-xs text-stone-500">{trip.updated_at ? new Date(trip.updated_at).toLocaleString() : "Unknown"}</td></tr>)}</tbody></table>{!overview.trip_insights.length && <Empty>No saved trips were created or updated in this period.</Empty>}</div>
+      </Panel>
+    </div>
+  </>;
+}
+
+function InfraView({ overview }: { overview: OpsOverview }) {
+  const cosmos = overview.infra.cosmos;
+  return <>
+    <section className="grid gap-y-6 border-y border-stone-300 bg-white py-5 sm:grid-cols-3">
+      <Metric label="Data store" value={cosmos.enabled ? "Cosmos DB" : "Local"} detail={cosmos.database || "JSON persistence"} icon={Database} />
+      <Metric label="Collections" value={number.format(cosmos.containers.length)} detail="Counted during this refresh" icon={Boxes} />
+      <Metric label="Records" value={number.format(cosmos.containers.reduce((total, row) => total + row.records, 0))} detail="Snapshot, not real-time" icon={Activity} />
+    </section>
+    <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-2">
+      <Panel title="Cosmos collections" note="Latest count at page refresh">
+        {cosmos.containers.length ? <div className="overflow-x-auto"><table className="w-full min-w-[480px] text-left text-sm"><thead className="bg-stone-50 text-xs uppercase text-stone-500"><tr><th className="px-5 py-3">Collection</th><th>Records</th><th>Retention</th></tr></thead><tbody>{cosmos.containers.map((row) => <tr key={row.name} className="border-t border-stone-100"><td className="px-5 py-3 font-mono text-xs">{row.name}</td><td>{number.format(row.records)}</td><td>{row.default_ttl == null ? "Retained" : `${number.format(row.default_ttl / 86400)} days`}</td></tr>)}</tbody></table></div> : <Empty>Cosmos DB is not configured for this runtime.</Empty>}
+      </Panel>
+      <Panel title="Infrastructure configuration" note="Allowlisted values only · no secrets">
+        <div className="divide-y divide-stone-100">{overview.infra.configuration.map((row) => <div key={`${row.category}-${row.name}`} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-4 px-5 py-3 text-sm"><div><p className="font-semibold">{row.name}</p><p className="mt-1 text-xs uppercase text-stone-500">{row.category}</p></div><p className="break-words text-right font-mono text-xs">{row.value}</p></div>)}</div>
+      </Panel>
+    </div>
+  </>;
 }
 
 function SystemView({ overview }: { overview: OpsOverview }) {
@@ -402,7 +457,7 @@ function SystemView({ overview }: { overview: OpsOverview }) {
 
 export default function OpsDashboard() {
   const [overview, setOverview] = useState<OpsOverview | null>(null);
-  const [view, setView] = useState<"business" | "cost" | "system">("business");
+  const [view, setView] = useState<"business" | "trips" | "cost" | "infra" | "system">("business");
   const [days, setDays] = useState(30);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -436,6 +491,7 @@ export default function OpsDashboard() {
 
   if (notFound) return <main className="grid min-h-full place-items-center bg-stone-100 px-6 text-center"><div><p className="font-display text-7xl text-stone-900">404</p><p className="mt-3 text-sm text-stone-500">Page not found.</p></div></main>;
   if (!overview) return <main className="grid min-h-full place-items-center bg-stone-100 text-sm text-stone-500">Loading</main>;
+  const rangeProps = { days, startDate, endDate, onPreset: (period: number) => { setDays(period); setStartDate(""); setEndDate(""); }, onStartDate: setStartDate, onEndDate: setEndDate };
 
   return (
     <main className="min-h-full bg-[#f4f3ef] text-stone-900">
@@ -444,15 +500,17 @@ export default function OpsDashboard() {
           <div><p className="text-xs font-semibold uppercase text-emerald-300">Tripplanner operations</p><h1 className="font-display text-2xl">Owner insight console</h1></div>
           <div className="flex items-center gap-4 text-xs text-stone-300"><span className="hidden sm:inline">Updated {new Date(overview.generated_at).toLocaleTimeString()}</span><button type="button" className="grid size-9 place-items-center border border-stone-600 hover:bg-stone-700" onClick={() => void load()} title="Refresh metrics" aria-label="Refresh metrics"><RefreshCw size={16} className={refreshing ? "animate-spin" : ""} /></button></div>
         </div>
-        <div className="mx-auto mt-4 flex max-w-[1500px] gap-1" role="tablist" aria-label="Operations views">
-          <button type="button" role="tab" aria-selected={view === "business"} onClick={() => setView("business")} className={`px-4 py-2 text-sm font-semibold ${view === "business" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Users size={15} />Business</span></button>
-          <button type="button" role="tab" aria-selected={view === "cost"} onClick={() => setView("cost")} className={`px-4 py-2 text-sm font-semibold ${view === "cost" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Split size={15} />API &amp; cost</span></button>
-          <button type="button" role="tab" aria-selected={view === "system"} onClick={() => setView("system")} className={`px-4 py-2 text-sm font-semibold ${view === "system" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Server size={15} />System health</span></button>
+        <div className="mx-auto mt-4 flex w-full max-w-[1500px] gap-1 overflow-x-auto" role="tablist" aria-label="Operations views">
+          <button type="button" role="tab" aria-selected={view === "business"} onClick={() => setView("business")} className={`shrink-0 px-4 py-2 text-sm font-semibold ${view === "business" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Users size={15} />Business</span></button>
+          <button type="button" role="tab" aria-selected={view === "trips"} onClick={() => setView("trips")} className={`shrink-0 px-4 py-2 text-sm font-semibold ${view === "trips" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><PlaneTakeoff size={15} />Trips</span></button>
+          <button type="button" role="tab" aria-selected={view === "cost"} onClick={() => setView("cost")} className={`shrink-0 px-4 py-2 text-sm font-semibold ${view === "cost" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Split size={15} />API &amp; cost</span></button>
+          <button type="button" role="tab" aria-selected={view === "infra"} onClick={() => setView("infra")} className={`shrink-0 px-4 py-2 text-sm font-semibold ${view === "infra" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Database size={15} />Infra</span></button>
+          <button type="button" role="tab" aria-selected={view === "system"} onClick={() => setView("system")} className={`shrink-0 px-4 py-2 text-sm font-semibold ${view === "system" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Server size={15} />System health</span></button>
         </div>
       </header>
 
       {rangeError && <div role="alert" className="border-b border-amber-300 bg-amber-50 px-5 py-3 text-sm text-amber-950 sm:px-8">{rangeError}</div>}
-      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} /> : view === "cost" ? <CostView overview={overview} days={days} startDate={startDate} endDate={endDate} onPreset={(period) => { setDays(period); setStartDate(""); setEndDate(""); }} onStartDate={setStartDate} onEndDate={setEndDate} /> : <SystemView overview={overview} />}</div>
+      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} rangeProps={rangeProps} /> : view === "trips" ? <TripsView overview={overview} /> : view === "cost" ? <CostView overview={overview} {...rangeProps} /> : view === "infra" ? <InfraView overview={overview} /> : <SystemView overview={overview} />}</div>
     </main>
   );
 }

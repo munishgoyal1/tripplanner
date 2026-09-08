@@ -21,20 +21,8 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-$candidates = @(
-    (Join-Path $repoRoot ".venv/bin/python"),
-    (Join-Path $repoRoot ".venv/Scripts/python.exe")
-)
-$python = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
-if (-not $python) {
-    $python = (Get-Command python3 -ErrorAction SilentlyContinue)?.Source
-}
-if (-not $python) {
-    $python = (Get-Command python -ErrorAction SilentlyContinue)?.Source
-}
-if (-not $python) {
-    throw "No Python interpreter found. Create the repository virtual environment first."
-}
+. (Join-Path $PSScriptRoot "lib/python-runtime.ps1")
+$python = (Resolve-TripplannerPython -RepoRoot $repoRoot).Python
 
 $cli = Join-Path $PSScriptRoot "debug_store_cli.py"
 & $python $cli $Command @Rest

@@ -44,6 +44,13 @@ function acquisitionSource(): "direct" | "search" | "social" | "referral" {
   return "referral";
 }
 
+function pageCategory(): "welcome" | "planner" | "operations" | "other" {
+  if (window.location.pathname === "/operations") return "operations";
+  if (window.location.pathname.startsWith("/planner")) return "planner";
+  if (window.location.pathname === "/" || window.location.pathname.startsWith("/welcome")) return "welcome";
+  return "other";
+}
+
 function recordProductEvent(event: AnalyticsEvent | "page_view"): void {
   void fetch("/api/analytics/event", {
     method: "POST",
@@ -54,6 +61,7 @@ function recordProductEvent(event: AnalyticsEvent | "page_view"): void {
       event,
       session_id: analyticsSession(),
       source: acquisitionSource(),
+      page: pageCategory(),
     }),
   }).catch(() => undefined);
 }
@@ -104,7 +112,12 @@ export function enableAnalytics(id: string): void {
     allow_ad_personalization_signals: false,
   });
   ready = true;
-  target.gtag("event", "page_view", {
+  trackPageView();
+}
+
+export function trackPageView(): void {
+  if (!ready || !measurementId) return;
+  analyticsWindow().gtag?.("event", "page_view", {
     page_location: `${window.location.origin}${window.location.pathname}`,
     page_title: document.title,
   });

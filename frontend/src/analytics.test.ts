@@ -40,7 +40,7 @@ describe("analytics", () => {
       "/api/analytics/event",
       expect.objectContaining({
         method: "POST",
-        body: expect.stringContaining('"event":"planning_started"'),
+        body: expect.stringMatching(/"event":"planning_started".*"page":"welcome"/),
       }),
     );
   });

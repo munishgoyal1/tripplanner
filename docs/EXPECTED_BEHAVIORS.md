@@ -342,6 +342,28 @@ and hosted environments do not write local study artifacts.
 - [`frontend/src/api.test.ts`](../frontend/src/api.test.ts)
 - [`frontend/src/ops/OpsDashboard.test.tsx`](../frontend/src/ops/OpsDashboard.test.tsx)
 
+### EB-OPS-002 - Inspect current infrastructure, business activity, and trip interactions
+
+**Trigger:** The verified owner opens or refreshes Operations, changes its inclusive
+date range, or selects Business, Trips, or Infra.
+
+**Expected:** Business reports durable consented unique visitors and page counts for
+Welcome, Planner, and Operations, plus new trips, existing-trip updates, and chat turns
+in the selected period. Trips shows one row for every persisted user trip with the
+user ID, itinerary title, exact requested destination, first-build duration when it was
+recorded, total iterations and chat turns, feedback, and last update. Infra queries the
+latest Cosmos collection record counts during refresh and displays only an explicit
+allowlist of selected runtime, data, AI, maps, analytics, cache, and provider settings;
+keys, secrets, connection strings, and transcript content are never included.
+
+**Executable proof:**
+
+- [`tests/test_operations_reporting.py`](../tests/test_operations_reporting.py)
+- [`tests/test_ops_infra.py`](../tests/test_ops_infra.py)
+- [`tests/test_ops_dashboard.py`](../tests/test_ops_dashboard.py)
+- [`frontend/src/analytics.test.ts`](../frontend/src/analytics.test.ts)
+- [`frontend/src/ops/OpsDashboard.test.tsx`](../frontend/src/ops/OpsDashboard.test.tsx)
+
 ### EB-FEEDBACK-001 - Record lightweight trip feedback
 
 **Trigger:** With an active trip, select the toolbar thumbs-up or thumbs-down action,
