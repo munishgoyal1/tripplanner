@@ -66,28 +66,28 @@ export default function DesktopToolbar({
         </span>
         <TripSwitcher version={tripVersion} onSwitched={onTripSwitched} />
         <div className="h-6 w-px shrink-0 bg-border" aria-hidden />
-        <div
-          role="group" className="flex shrink-0 items-center gap-0.5 rounded-full border border-border bg-sand p-0.5"
-          aria-label="Pane visibility"
-        >
-          {PANES.map(({ pane, label, Icon, title }) => (
-            <button
-              key={pane}
-              type="button"
-              onClick={() => onTogglePane(pane)}
-              className={`inline-flex h-7 items-center justify-center gap-1 rounded-full px-2 text-xs font-semibold transition ${
-                paneVisibility[pane]
-                  ? "bg-paper text-ink shadow-sm ring-1 ring-border"
-                  : "text-muted hover:text-ink"
-              }`}
-              aria-pressed={paneVisibility[pane]}
-              title={title}
-            >
-              <Icon size={15} aria-hidden /> <span className="hidden xl:inline">{label}</span>
-            </button>
-          ))}
-        </div>
         <nav className="ml-auto flex shrink-0 items-center gap-1.5 lg:gap-2" aria-label="Workspace controls">
+          <div
+            role="group" className="flex shrink-0 items-center gap-0.5 rounded-full border border-border bg-sand p-0.5"
+            aria-label="Pane visibility"
+          >
+            {PANES.map(({ pane, label, Icon, title }) => (
+              <button
+                key={pane}
+                type="button"
+                onClick={() => onTogglePane(pane)}
+                className={`inline-flex h-7 items-center justify-center gap-1 rounded-full px-2 text-xs font-semibold transition ${
+                  paneVisibility[pane]
+                    ? "bg-paper text-ink shadow-sm ring-1 ring-border"
+                    : "text-muted hover:text-ink"
+                }`}
+                aria-pressed={paneVisibility[pane]}
+                title={title}
+              >
+                <Icon size={15} aria-hidden /> <span className="hidden xl:inline">{label}</span>
+              </button>
+            ))}
+          </div>
           <TripFeedbackControl disabled={tripActionsDisabled} initial={feedback} />
           <div role="group" className="flex items-center gap-0.5 rounded-full border border-border bg-paper p-0.5" aria-label="Trip actions">
             <TripActionsMenu disabled={tripActionsDisabled} onExport={onExport} compactTrigger />
@@ -125,7 +125,7 @@ export default function DesktopToolbar({
             onClick={onOpenAccount}
             className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted transition hover:bg-sand hover:text-ink"
             title="Account settings"
-            aria-label="Open account preferences"
+            aria-label="Settings"
           >
             <Settings size={15} aria-hidden />
           </button>

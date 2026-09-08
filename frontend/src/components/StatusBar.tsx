@@ -62,6 +62,7 @@ function NoticeLine({ notice, actions, compact = false }: { notice: Notice; acti
 /** The workspace's single status line: what is happening, or what just did. */
 export default function StatusBar({ actions, compact = false }: { actions?: ReactNode; compact?: boolean }) {
   const notice = useNotice();
+  if (!notice) return null;
   return (
     <div
       className="min-w-0 flex-1"
