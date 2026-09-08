@@ -73,16 +73,16 @@ body {
 }
 
 .product-theme-aegean {
-  --landing-bg: #f7fbfa;
-  --landing-surface: rgba(255, 255, 255, 0.88);
-  --landing-heading: #10324a;
-  --landing-body: #385c70;
-  --landing-muted: #6c8795;
-  --landing-line: #c8e2e8;
-  --landing-accent: #0877b9;
-  --landing-brand: #d63c75;
-  --landing-lower-bg: #fffdf5;
-  --landing-lower-line: #d5e8e9;
+  --landing-bg: oklch(var(--background));
+  --landing-surface: oklch(var(--paper));
+  --landing-heading: oklch(var(--ink));
+  --landing-body: oklch(var(--muted-foreground));
+  --landing-muted: oklch(var(--muted-foreground));
+  --landing-line: oklch(var(--border));
+  --landing-accent: oklch(var(--sage-strong));
+  --landing-brand: oklch(var(--primary));
+  --landing-lower-bg: oklch(var(--paper));
+  --landing-lower-line: oklch(var(--border));
   background: var(--landing-bg);
 }
 

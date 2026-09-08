@@ -59,7 +59,7 @@ export default function DesktopToolbar({
 }: Props) {
   return (
     <>
-      <header className="relative z-50 flex h-14 shrink-0 items-center gap-2 overflow-visible border-b border-border bg-paper px-3 lg:gap-3 lg:px-4">
+      <header className="relative z-50 flex h-11 shrink-0 items-center gap-2 overflow-visible border-b border-border bg-paper px-3 lg:gap-3 lg:px-4">
         <span className="hidden shrink-0 items-center gap-2 xl:inline-flex">
           <Compass size={17} className="text-brand" aria-hidden />
           <span className="display text-lg text-ink">AI Tripplanner</span>
@@ -75,7 +75,7 @@ export default function DesktopToolbar({
               key={pane}
               type="button"
               onClick={() => onTogglePane(pane)}
-              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-full px-2.5 text-xs font-semibold transition ${
+              className={`inline-flex h-7 items-center justify-center gap-1 rounded-full px-2 text-xs font-semibold transition ${
                 paneVisibility[pane]
                   ? "bg-paper text-ink shadow-sm ring-1 ring-border"
                   : "text-muted hover:text-ink"
@@ -94,7 +94,7 @@ export default function DesktopToolbar({
             <button
               type="button"
               onClick={onStartNewTrip}
-              className="inline-flex h-8 items-center gap-1.5 rounded-full bg-paper px-3 text-xs font-semibold text-ink transition hover:bg-clay-soft"
+              className="inline-flex h-7 items-center gap-1.5 rounded-full bg-paper px-2 text-xs font-semibold text-ink transition hover:bg-clay-soft"
               title="Start a new trip"
               aria-label="New trip"
             >
@@ -104,7 +104,7 @@ export default function DesktopToolbar({
             <button
               type="button"
               onClick={onResetTrip}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted transition hover:bg-sand hover:text-ink"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted transition hover:bg-sand hover:text-ink"
               title="Clear this trip's plan and start over, keeping the destination, dates and travellers"
               aria-label="Reset trip"
             >
@@ -114,7 +114,7 @@ export default function DesktopToolbar({
           <button
             type="button"
             onClick={onOpenWelcome}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted transition hover:bg-sand hover:text-ink"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted transition hover:bg-sand hover:text-ink"
             title="Home: About and support information"
             aria-label="Open home page"
           >
@@ -123,7 +123,7 @@ export default function DesktopToolbar({
           <button
             type="button"
             onClick={onOpenAccount}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted transition hover:bg-sand hover:text-ink"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted transition hover:bg-sand hover:text-ink"
             title="Account settings"
             aria-label="Open account preferences"
           >
@@ -132,7 +132,7 @@ export default function DesktopToolbar({
           <button
             type="button"
             onClick={onOpenAccount}
-            className={`inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition ${signedIn ? "border border-border text-ink hover:bg-sand" : "bg-brand text-white shadow-sm hover:bg-brand-600"}`}
+            className={`inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition ${signedIn ? "border border-border text-ink hover:bg-sand" : "bg-brand text-white shadow-sm hover:bg-brand-600"}`}
             title="Account settings"
             aria-label="Account settings"
           >
@@ -142,9 +142,9 @@ export default function DesktopToolbar({
           </button>
         </nav>
       </header>
-      <div aria-label="Workspace notifications" className="relative z-40 flex min-h-10 shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b border-ochre/20 bg-ochre/15 px-4 py-2">
-        <div className="mr-auto min-w-64 flex-1">
-          <StatusBar />
+      <div aria-label="Workspace notifications" className="relative z-40 flex h-8 shrink-0 items-center gap-x-3 border-b border-ochre/20 bg-ochre/15 px-3">
+        <div className="mr-auto min-w-0 flex-1">
+          <StatusBar compact />
         </div>
         {documentBadge && (
           <button
@@ -162,10 +162,10 @@ export default function DesktopToolbar({
         )}
         {reviewPending && (
           <div className="flex shrink-0 items-center gap-1" aria-label="Planner review choices">
-            <button type="button" onClick={onReviewWithPlanner} className="rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-600">
+            <button type="button" onClick={onReviewWithPlanner} className="rounded-full bg-brand px-2 py-1 text-xs font-semibold text-white hover:bg-brand-600">
               Review with planner
             </button>
-            <button type="button" onClick={onKeepReview} className="rounded-full px-3 py-1.5 text-xs font-medium text-muted hover:bg-paper">
+            <button type="button" onClick={onKeepReview} className="rounded-full px-2 py-1 text-xs font-medium text-muted hover:bg-paper">
               Keep as is
             </button>
           </div>

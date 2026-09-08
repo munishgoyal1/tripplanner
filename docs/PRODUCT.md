@@ -187,7 +187,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   persistent dominant map center, and a contextual details inspector right.
   A compact top command bar owns saved-trip selection, global workspace
   controls (including account/preferences). A separate full-width row below it
-  owns notifications and review choices; messages wrap rather than truncate.
+  owns notifications and review choices in one compact line; a details control
+  reveals full messages without expanding the strip. The desktop command bar is
+  44 px high and the notification strip is 32 px high.
   Itinerary, Map, Details, and Assistant use semantic icons with short labels on
   wide desktops, collapsing to icon-only controls when desktop width is tighter;
   all four remain direct one-click visibility controls. New trip uses a restrained
@@ -229,9 +231,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   panes hidden, is valid and persists locally; the command bar always remains as
   the recovery surface. A visible docked pane has no arbitrary maximum width and
   may use all space not required by the minimum usable widths of visible siblings.
+- **Compact chat**: the desktop dock keeps its composer, smart defaults, and
+  conversation/maximize controls on one row. Expanded conversation remains
+  available on demand; mobile retains its readable full chat layout.
 - **Color**: Lovable warm editorial travel: terracotta `brand` for primary action +
   active state; sage `accent` for secondary surfaces; ivory paper and sand
   surfaces with warm ink, muted text, and thin borders. Preserve semantic status and map-route colors.
+  The welcome page shares the same paper, sand, terracotta, and sage palette.
 - **Type**: Work Sans for UI; regular-weight Instrument Serif for display headings. Fonts loaded via
   `<link>` in `frontend/index.html` (NOT from CSS — PostCSS rejects late `@import`).
 - **Shape**: use radii and elevation only where an object is genuinely framed

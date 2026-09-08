@@ -1,4 +1,4 @@
-import { CalendarPlus, ChevronDown, FileDown, Link2 } from "lucide-react";
+import { NotebookTabs, CalendarPlus, ChevronDown, FileDown, Link2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "../analytics";
 import { shareActiveTrip, tripIcsUrl } from "../api";
@@ -53,14 +53,14 @@ export default function TripActionsMenu({ disabled = false, onExport, compactTri
         disabled={disabled}
         onClick={() => setOpen((current) => !current)}
         className={compactTrigger
-          ? "inline-flex h-8 items-center justify-center gap-0.5 rounded-full px-2 text-muted transition hover:bg-sand hover:text-ink disabled:opacity-40"
+          ? "inline-flex h-7 items-center justify-center gap-0.5 rounded-full px-2 text-muted transition hover:bg-sand hover:text-ink disabled:opacity-40"
           : "btn-ghost disabled:opacity-40"}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Trip actions"
         title="Export, share, or add this trip to your calendar"
       >
-        <FileDown size={15} aria-hidden />
+        <NotebookTabs size={15} aria-hidden />
         {!compactTrigger && <span className="hidden 2xl:inline">Trip actions</span>}
         <ChevronDown size={13} aria-hidden />
       </button>

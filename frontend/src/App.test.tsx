@@ -421,7 +421,7 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Eiffel Tower");
   });
 
-  it("shows a headline update with the consequence underneath it", async () => {
+  it("keeps notifications compact with full details available on demand", async () => {
     fetchTripViewMock.mockResolvedValue({
       ...emptyView,
       alerts: [
@@ -434,10 +434,15 @@ describe("App responsive workspace", () => {
 
     const status = await screen.findByRole("status");
     expect(status.parentElement).toHaveClass("mr-auto", "flex-1");
-    expect(screen.getByText("Removed Eiffel Tower.")).toHaveClass("whitespace-normal");
+    expect(screen.getByText("Removed Eiffel Tower.")).toHaveClass("truncate");
     expect(
       screen.getByText("Day 2 was packed, so I moved Musée d'Orsay to Day 3."),
-    ).toHaveClass("whitespace-normal");
+    ).toHaveClass("truncate");
+    fireEvent.click(screen.getByRole("button", { name: "Notification details" }));
+    expect(screen.getByRole("button", { name: "Notification details" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getAllByText("Removed Eiffel Tower.")).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name: "Close details" }));
+    expect(screen.getByRole("button", { name: "Notification details" })).toHaveAttribute("aria-expanded", "false");
   });
 
   it("resets the trip only after the user confirms", async () => {

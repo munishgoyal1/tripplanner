@@ -187,7 +187,7 @@ export default function TripSwitcher({
           }
           setOpen((current) => !current);
         }}
-        className="pill h-9 min-w-0 shrink rounded-full bg-sand text-ink ring-1 ring-border transition hover:bg-paper"
+        className="pill h-7 min-w-0 shrink rounded-full bg-sand text-ink ring-1 ring-border transition hover:bg-paper"
         title="Switch between your saved trips"
         aria-expanded={open}
       >

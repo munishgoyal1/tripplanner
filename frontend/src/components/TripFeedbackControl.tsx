@@ -64,7 +64,7 @@ export default function TripFeedbackControl({ disabled = false, initial, mobile 
             type="button"
             disabled={disabled || saving}
             onClick={() => { setCurrentFeedbackId(null); void submit({ sentiment }); setOpen(true); }}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted transition hover:bg-paper hover:text-ink disabled:opacity-40"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted transition hover:bg-paper hover:text-ink disabled:opacity-40"
             aria-label={sentiment === "up" ? "This trip works" : "This trip misses"}
           >
             <Icon size={15} className={rollup.last_sentiment === sentiment ? "text-clay" : undefined} aria-hidden />
@@ -76,7 +76,7 @@ export default function TripFeedbackControl({ disabled = false, initial, mobile 
           type="button"
           disabled={disabled}
           onClick={() => setOpen((current) => !current)}
-          className="inline-flex h-8 items-center gap-1 rounded-full px-2 text-xs font-semibold text-muted transition hover:bg-paper hover:text-ink disabled:opacity-40"
+          className="inline-flex h-7 items-center gap-1 rounded-full px-1.5 text-xs font-semibold text-muted transition hover:bg-paper hover:text-ink disabled:opacity-40"
           aria-expanded={open}
         >
           <Star size={13} aria-hidden /> Rate

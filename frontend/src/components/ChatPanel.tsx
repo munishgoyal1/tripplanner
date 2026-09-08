@@ -846,7 +846,7 @@ export default function ChatPanel({
   );
 
   const composerBlock = (
-      <div className={docked ? "min-w-0 flex-1" : "border-t border-border bg-paper p-4"}>
+      <div className={docked ? "flex min-w-0 flex-1 items-center gap-2" : "border-t border-border bg-paper p-4"}>
         {failedRequest && (
           <button
             onClick={retryFailedRequest}
@@ -856,7 +856,7 @@ export default function ChatPanel({
             Retry request
           </button>
         )}
-        <div className="flex items-end gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
           {micSupported && (
             <button
               onClick={toggleListening}
@@ -864,7 +864,7 @@ export default function ChatPanel({
               title={listening ? "Stop dictation" : "Start voice dictation"}
               aria-label={listening ? "Stop dictation" : "Start voice dictation"}
               aria-pressed={listening}
-              className={`rounded-full p-2.5 ring-1 transition disabled:opacity-40 ${
+              className={`${docked ? "p-1.5" : "p-2.5"} rounded-full ring-1 transition disabled:opacity-40 ${
                 listening
                   ? "bg-brand text-white ring-brand shadow-pop animate-pulse"
                   : "text-muted ring-border hover:bg-background hover:text-ink"
@@ -880,7 +880,7 @@ export default function ChatPanel({
           )}
           <textarea
             ref={composerRef}
-            className="flex-1 resize-none rounded-xl border border-border bg-sand px-4 py-2.5 text-sm shadow-sm transition placeholder:text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+            className={`min-w-0 flex-1 resize-none rounded-lg border border-border bg-sand text-sm transition placeholder:text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 ${docked ? "h-8 px-3 py-1.5 leading-5" : "px-4 py-2.5"}`}
             rows={docked ? 1 : 2}
             placeholder="e.g. Plan a 5-day trip to Goa in December for 2 people"
             value={input}
@@ -898,22 +898,20 @@ export default function ChatPanel({
             disabled={!busy && (!transcriptReady || !input.trim())}
             title={busy ? "Stop response" : "Send message"}
             aria-label={busy ? "Stop response" : "Send"}
-            className={busy
-              ? "grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-white transition hover:bg-slate-700"
-              : "btn-primary grid h-11 w-11 shrink-0 place-items-center rounded-full p-0"
-            }
+            className={`grid shrink-0 place-items-center rounded-full p-0 transition disabled:opacity-40 ${docked ? "h-8 w-8" : "h-11 w-11"} ${busy ? "bg-ink text-white hover:bg-slate-700" : "bg-brand text-white hover:bg-brand-600"}`}
           >
             {busy ? <Square size={15} fill="currentColor" /> : <Send size={18} />}
           </button>
         </div>
-        <label className="mt-2 flex cursor-pointer items-center gap-2 px-1 text-[11px] text-muted">
+        <label title="Let the agent decide with smart defaults" className={`${docked ? "shrink-0 gap-1.5" : "mt-2 gap-2 px-1"} flex cursor-pointer items-center text-[11px] text-muted`}>
           <input
             type="checkbox"
             checked={smartDefaults}
             onChange={(event) => updateSmartDefaults(event.target.checked)}
             disabled={busy || !transcriptReady}
           />
-          <span>Let the agent decide with smart defaults</span>
+          <span className={docked ? "sr-only" : ""}>Let the agent decide with smart defaults</span>
+          {docked && <span aria-hidden className="hidden xl:inline">Smart defaults</span>}
         </label>
       </div>
   );
@@ -928,12 +926,12 @@ export default function ChatPanel({
     );
   }
 
-  const dockButton = "inline-flex shrink-0 items-center gap-1.5 rounded-sm px-2 py-1.5 text-[11px] font-semibold text-muted transition hover:bg-sand hover:text-ink";
+  const dockButton = "inline-flex shrink-0 items-center gap-1.5 rounded-md px-1.5 py-1.5 text-[11px] font-semibold text-muted transition hover:bg-sand hover:text-ink";
   const dockControls = (
     <>
       {layout === "bar" ? (
-        <button type="button" onClick={() => onChangeLayout?.("sheet")} className={dockButton}>
-          <MessageSquare size={12} aria-hidden /> Conversation
+        <button type="button" onClick={() => onChangeLayout?.("sheet")} aria-label="Conversation" className={dockButton} title={lastReply ? `Conversation: ${lastReply.text}` : "Open conversation"}>
+          <MessageSquare size={14} aria-hidden /> <span className="hidden lg:inline">Conversation</span>
         </button>
       ) : (
         <button
@@ -942,17 +940,18 @@ export default function ChatPanel({
           title="Minimize the conversation back to the bottom row"
           className={dockButton}
         >
-          <Minimize2 size={12} aria-hidden /> Minimize
+          <Minimize2 size={14} aria-hidden /> <span>Minimize</span>
         </button>
       )}
       <button
         type="button"
         onClick={() => onChangeLayout?.(layout === "full" ? "sheet" : "full")}
+        aria-label={layout === "full" ? "Restore" : "Maximize"}
         title={layout === "full" ? "Restore the conversation sheet" : "Maximize the conversation"}
         className={dockButton}
       >
         {layout === "full" ? <Minimize2 size={12} aria-hidden /> : <Maximize2 size={12} aria-hidden />}
-        {layout === "full" ? "Restore" : "Maximize"}
+        <span className="sr-only">{layout === "full" ? "Restore" : "Maximize"}</span>
       </button>
       {onHide && (
         <button type="button" onClick={onHide} title="Hide chat" aria-label="Hide Chat" className={dockButton}>
@@ -978,10 +977,10 @@ export default function ChatPanel({
           {transcriptBlock}
         </div>
       )}
-      <div className="flex items-center gap-2 px-3 py-2">
+      <div className="flex items-center gap-2 px-3 py-1.5">
         <div className="flex shrink-0 items-center gap-1">{layout === "bar" ? dockControls : null}</div>
-        {layout === "bar" && (
-          <p className="hidden min-w-0 flex-1 truncate text-[11px] text-muted lg:block">
+        {layout === "bar" && busy && progress && (
+          <p className="hidden max-w-48 truncate text-[11px] text-muted xl:block">
             {busy && progress ? (
               <>
                 <span className="font-semibold text-ink">{progress.label}…</span>{" "}

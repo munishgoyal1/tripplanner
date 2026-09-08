@@ -1,4 +1,5 @@
-import { AlertTriangle, CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, Loader2, XCircle } from "lucide-react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { dismissNotice, useNotice, type Notice, type NoticeTone } from "../lib/notices";
 
@@ -16,22 +17,35 @@ function ToneIcon({ tone }: { tone: NoticeTone }) {
   return <CheckCircle2 size={13} aria-hidden />;
 }
 
-function NoticeLine({ notice, actions }: { notice: Notice; actions?: ReactNode }) {
+function NoticeLine({ notice, actions, compact = false }: { notice: Notice; actions?: ReactNode; compact?: boolean }) {
+  const [expanded, setExpanded] = useState(false);
   return (
-    <div className="flex items-start gap-1.5">
+    <div className="relative flex items-start gap-1.5">
       <span className={`mt-0.5 shrink-0 ${TONE_TEXT[notice.tone]}`}>
         <ToneIcon tone={notice.tone} />
       </span>
-      <div className="min-w-0 flex-1" title={[notice.message, notice.detail].filter(Boolean).join(" — ")}>
-        <p className={`whitespace-normal break-words text-xs font-medium leading-relaxed ${TONE_TEXT[notice.tone]}`}>
+      <div className={`min-w-0 flex-1 ${compact ? "flex items-baseline gap-2 overflow-hidden" : ""}`} title={[notice.message, notice.detail].filter(Boolean).join(" — ")}>
+        <p className={`${compact ? "truncate" : "whitespace-normal break-words"} text-xs font-medium leading-relaxed ${TONE_TEXT[notice.tone]}`}>
           {notice.message}
         </p>
         {notice.detail && (
-          <p className="whitespace-normal break-words text-[11px] leading-snug text-muted">
+          <p className={`${compact ? "hidden min-w-0 truncate xl:block" : "whitespace-normal break-words"} text-[11px] leading-snug text-muted`}>
             {notice.detail}
           </p>
         )}
       </div>
+      {compact && (
+        <button type="button" aria-label="Notification details" aria-expanded={expanded} onClick={() => setExpanded(!expanded)} className="shrink-0 rounded text-muted hover:text-ink" title="Read the full notification">
+          <Info size={15} aria-hidden />
+        </button>
+      )}
+      {compact && expanded && (
+        <div className="absolute inset-x-0 top-full z-50 mt-2 max-w-xl rounded-lg border border-border bg-paper p-3 text-xs leading-relaxed text-ink shadow-pop" onKeyDown={(event) => { if (event.key === "Escape") setExpanded(false); }}>
+          <p>{notice.message}</p>
+          {notice.detail && <p className="mt-1 text-muted">{notice.detail}</p>}
+          <button type="button" onClick={() => setExpanded(false)} className="mt-2 font-medium text-brand">Close details</button>
+        </div>
+      )}
       {actions}
       <button
         type="button"
@@ -46,7 +60,7 @@ function NoticeLine({ notice, actions }: { notice: Notice; actions?: ReactNode }
 }
 
 /** The workspace's single status line: what is happening, or what just did. */
-export default function StatusBar({ actions }: { actions?: ReactNode }) {
+export default function StatusBar({ actions, compact = false }: { actions?: ReactNode; compact?: boolean }) {
   const notice = useNotice();
   return (
     <div
@@ -54,7 +68,7 @@ export default function StatusBar({ actions }: { actions?: ReactNode }) {
       role="status"
       aria-live={notice?.tone === "error" ? "assertive" : "polite"}
     >
-      {notice ? <NoticeLine notice={notice} actions={actions} /> : null}
+      {notice ? <NoticeLine key={notice.id} notice={notice} actions={actions} compact={compact} /> : null}
     </div>
   );
 }
