@@ -114,6 +114,7 @@ def record_product_event(
     user_id: str | None = None,
     country: str = "unknown",
     source: str = "unknown",
+    page: str = "other",
 ) -> None:
     if event not in PRODUCT_EVENTS:
         raise ValueError("Unsupported product event")
@@ -121,6 +122,7 @@ def record_product_event(
     safe_user = sha256(user_id.encode("utf-8")).hexdigest()[:16] if user_id else safe_session
     safe_country = country.upper() if len(country) == 2 and country.isalpha() else "unknown"
     safe_source = source if source in {"direct", "search", "social", "referral"} else "unknown"
+    safe_page = page if page in {"welcome", "planner", "operations"} else "other"
     with _LOCK:
         _PRODUCT_EVENTS.append(
             {
@@ -129,9 +131,20 @@ def record_product_event(
                 "user_bucket": safe_user,
                 "country": safe_country,
                 "source": safe_source,
+                "page": safe_page,
                 "at": time.time(),
             }
         )
+    from tripplanner.operations_reporting import persist_product_event
+
+    persist_product_event(
+        event,
+        session_id,
+        user_id=user_id,
+        country=safe_country,
+        source=safe_source,
+        page=safe_page,
+    )
 
 
 def snapshot() -> dict[str, Any]:

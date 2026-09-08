@@ -91,8 +91,11 @@ def test_common_runtime_config_has_safe_cross_platform_owner_launchers() -> None
 
     assert 'ValidateSet("status", "apply", "enable", "disable", "on", "off", "help", "?")' in google_handler
     assert "Show-GoogleRuntimeHelp" in google_handler
-    assert "munishgoyal1@gmail.com" in google_handler
-    assert "Visual Studio Enterprise Subscription" in google_handler
+    # Operator identity and subscription names belong in the non-secret
+    # environment manifest, not in a reusable runtime-control script.
+    assert "$config.gcp.operatorAccount" in google_handler
+    assert "$config.azure.operatorAccount" in google_handler
+    assert "$config.azure.subscriptionId" in google_handler
     assert "az containerapp update" in google_handler
     assert "--image" not in google_handler
     assert '"ENABLE_GOOGLE_MAPS=$desiredMaps"' in google_handler
@@ -321,14 +324,41 @@ def test_sandbox_runs_and_audits_refresh_primary_environment() -> None:
     root = Path(__file__).parents[1]
     sandbox = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
     audit = (root / "scripts" / "dev" / "trip-audit.ps1").read_text(encoding="utf-8")
+    python_runtime = (root / "scripts" / "dev" / "lib" / "python-runtime.ps1").read_text(
+        encoding="utf-8"
+    )
 
     assert "function Copy-PrimaryEnvironment" in sandbox
     assert sandbox.count("Copy-PrimaryEnvironment -WorktreeRoot") == 2
     assert 'Join-Path $primaryRoot ".env"' in sandbox
-    assert "rev-parse --git-common-dir" in audit
+    assert "rev-parse --git-common-dir" in python_runtime
+    assert '$primaryRoot = $runtime.PrimaryRoot' in audit
     assert 'Join-Path $primaryRoot ".env"' in audit
     assert 'Join-Path $repoRoot ".env"' in audit
     assert "Copy-Item -LiteralPath $sourceEnv" in audit
+
+
+def test_dev_dispatchers_share_one_python_runtime_resolver() -> None:
+    root = Path(__file__).parents[1]
+    python_runtime = (root / "scripts" / "dev" / "lib" / "python-runtime.ps1").read_text(
+        encoding="utf-8"
+    )
+
+    assert "function Resolve-TripplannerPython" in python_runtime
+    assert "function Resolve-PrimaryCheckoutRoot" in python_runtime
+
+    for name in (
+        "build-corpus.ps1",
+        "corpus-cache.ps1",
+        "multiagent.ps1",
+        "trip-audit.ps1",
+        "debug-store.ps1",
+    ):
+        script = (root / "scripts" / "dev" / name).read_text(encoding="utf-8")
+        assert 'lib/python-runtime.ps1' in script, name
+        assert "Resolve-TripplannerPython -RepoRoot $repoRoot" in script, name
+        # No script should still carry its own copy of the resolution logic.
+        assert "rev-parse --git-common-dir" not in script, name
 
 
 def _merge_block(sandbox_script: str) -> str:

@@ -93,10 +93,16 @@ distort a per-environment number.
 
 | Budget | Amount | Scope | Thresholds |
 | --- | --- | --- | --- |
-| `tripplanner-local-2000inr` | 100 INR | local project | 50 / 80 / 100% |
-| `tripplanner-canary-2000inr` | 100 INR | canary project | 50 / 80 / 100% |
-| `tripplanner-prod-2000inr` | 500 INR | prod project | 50 / 80 / 100% |
-| `tripplanner-global-8000inr` | 1,000 INR | whole billing account | 50 / 80 / 90 / 100% → Pub/Sub |
+| `tripplanner-local-2000inr` | 3,600 INR | local project | 50 / 80 / 100% |
+| `tripplanner-canary-2000inr` | 600 INR | canary project | 50 / 80 / 100% |
+| `tripplanner-prod-2000inr` | 1,800 INR | prod project | 50 / 80 / 100% |
+| `tripplanner-global-8000inr` | 6,000 INR | whole billing account | 50 / 80 / 90 / 100% → Pub/Sub |
+
+Cloud Billing budgets are monthly. The 6,000 INR global amount models a 200
+INR/day average over a 30-day planning month. The 140 INR/day local development
+quota includes 120 INR/day local and 20 INR/day canary, with separate project
+limits preserving environment-specific alerts. Production receives 60 INR/day,
+or 30%.
 
 The display names predate the lower observation-mode amounts. They are retained
 so the idempotent apply updates the existing budgets instead of creating
@@ -250,25 +256,26 @@ Both `--allow-*` flags are required when tightening a limit by more than ten
 percent or below current usage, which is almost always the case when moving from
 Google's generous defaults.
 
-Places limits are sized for observation mode. Local and canary each allow one
-bounded cached-trip inspection, including the UI's three-photo destination-guide
-budget, without permitting an unrestricted provider fan-out. Production supports
-roughly two cold trips per day at the incident's observed 47.5 Text Searches per
-trip:
+Places limits are sized from the same daily allocation. Local allows roughly ten
+fully cold authorized scopes at the application's three-search/three-photo ceiling;
+canary allows one or two smoke scopes; production allows roughly five. Cache hits
+do not consume these limits. Lower-volume API surfaces remain bounded so a leaked
+key cannot spend the full cloud allowance through an unused operation.
 
 | Quota | local | canary | prod |
 | --- | --- | --- | --- |
-| `SearchTextRequestPerDayPerProject` | 10 | 10 | 100 |
-| `SearchTextRequestPerMinutePerProject` | 10 | 10 | 30 |
-| `GetPlaceRequestPerDayPerProject` | 1 | 1 | 100 |
-| `GetPlaceRequestPerMinutePerProject` | 1 | 1 | 30 |
-| `SearchNearbyRequestPerDayPerProject` | 1 | 1 | 20 |
-| `AutocompletePlacesRequestPerDayPerProject` | 1 | 1 | 50 |
-| `GetPhotoMediaRequestPerDayPerProject` | 10 | 10 | 200 |
-| `BillableDefaultPerDayPerProject` (Places JavaScript) | 1 | 1 | 100 |
-| `ComputeRoutesRequestsPerDay`, `ComputeRouteMatrixCellsPerDay` | 6,000 | 1,000 | 1,000 |
-| `BillableDefaultPerDayPerProject` (Static Maps) | 6,000 | 1,000 | 1,000 |
-| `BillableDefaultPerDayPerProject` (Maps JavaScript) | 6,000 | 1,000 | 1,000 |
+| `SearchTextRequestPerDayPerProject` | 30 | 5 | 15 |
+| `SearchTextRequestPerMinutePerProject` | 15 | 5 | 10 |
+| `GetPlaceRequestPerDayPerProject` | 10 | 2 | 5 |
+| `GetPlaceRequestPerMinutePerProject` | 10 | 2 | 5 |
+| `SearchNearbyRequestPerDayPerProject` | 5 | 2 | 3 |
+| `AutocompletePlacesRequestPerDayPerProject` | 20 | 5 | 20 |
+| `GetPhotoMediaRequestPerDayPerProject` | 30 | 5 | 15 |
+| `BillableDefaultPerDayPerProject` (Places JavaScript) | 20 | 5 | 20 |
+| `ComputeRoutesRequestsPerDay` | 100 | 20 | 50 |
+| `ComputeRouteMatrixCellsPerDay` | 500 | 100 | 250 |
+| `BillableDefaultPerDayPerProject` (Static Maps) | 100 | 20 | 50 |
+| `BillableDefaultPerDayPerProject` (Maps JavaScript) | 100 | 20 | 50 |
 
 `requiredServices` must equal the union of `browserServices` and
 `serverServices`. The release contract requires every callable service to have
@@ -295,9 +302,14 @@ Discard stderr when capturing the channel name. `gcloud` prints a `WARNING:`
 line on an empty filter result that otherwise lands inside the variable and
 produces a misleading `Projects instance not found` error.
 
-The policy watches `serviceruntime.googleapis.com/quota/exceeded` on resource
-type `consumer_quota`, aligned with `ALIGN_COUNT_TRUE` over five minutes and
-grouped by `metric.label.quota_metric`, so the mail names the limit that broke.
+Each environment policy watches `serviceruntime.googleapis.com/quota/exceeded`
+on resource type `consumer_quota`, aligned with `ALIGN_COUNT_TRUE` over five
+minutes and grouped by quota metric and service. Titles and documentation carry
+`[local]`, `[canary]`, or `[prod]`; local/canary are `WARNING` and production is
+`ERROR`. Any rejected request still opens an incident because a hard limit was
+actually hit, but recovered incidents auto-close after one hour. Reapplying the
+script updates an existing environment policy and migrates the legacy generic
+`Maps API quota exceeded` display name instead of leaving stale settings.
 
 ## Cost model
 

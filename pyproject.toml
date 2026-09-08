@@ -16,7 +16,7 @@ dependencies = [
     "uvicorn[standard]>=0.30",
     "python-dotenv>=1.0",
     "pydantic>=2.13",
-    "httpx2>=0.1",
+    "httpx>=0.28",
     "rich>=13.9",
     "azure-cosmos>=4.16",
     "azure-identity>=1.19",
@@ -24,6 +24,13 @@ dependencies = [
     "reportlab>=4.4",
     "redis>=5.2",
 ]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [project.optional-dependencies]
 dev = [

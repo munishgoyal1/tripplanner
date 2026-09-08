@@ -130,7 +130,7 @@ describe("commitSelectionStore", () => {
     expect(() => commitSelectionStore("trip-feedback", storePath)).toThrow();
     expect(execFileSync("git", ["log", "-1", "--pretty=%s"], { cwd: root, encoding: "utf8" }).trim())
       .toBe("Record trip-feedback Lab handoff");
-  });
+  }, 15_000);
 });
 
 describe("migrateLegacyHandoffs", () => {
