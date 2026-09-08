@@ -434,10 +434,10 @@ describe("App responsive workspace", () => {
 
     const status = await screen.findByRole("status");
     expect(status.parentElement).toHaveClass("mr-auto", "flex-1");
-    expect(screen.getByText("Removed Eiffel Tower.")).toHaveClass("truncate");
+    expect(screen.getByText("Removed Eiffel Tower.")).toHaveClass("whitespace-normal");
     expect(
       screen.getByText("Day 2 was packed, so I moved Musée d'Orsay to Day 3."),
-    ).toHaveClass("line-clamp-2", "whitespace-normal");
+    ).toHaveClass("whitespace-normal");
   });
 
   it("resets the trip only after the user confirms", async () => {
@@ -604,16 +604,16 @@ describe("App responsive workspace", () => {
 
     await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
     expect(screen.getByRole("button", { name: "New trip" })).toHaveClass("rounded-full", "bg-paper", "text-ink");
-    expect(screen.getByText("New trip", { selector: "nav span" })).toBeInTheDocument();
+    expect(screen.getByText("New trip", { selector: "header span" })).toBeInTheDocument();
     expect(screen.getByLabelText("Pane visibility")).toBeInTheDocument();
     const itinerary = screen.getByTitle("Show or hide itinerary");
-    expect(itinerary).toHaveClass("rounded-md", "bg-paper", "text-ink");
+    expect(itinerary).toHaveClass("rounded-full", "bg-paper", "text-ink");
     expect(itinerary.querySelector("svg.lucide-list")).toBeInTheDocument();
-    expect(screen.getByText("Itinerary", { selector: "nav span" })).toBeInTheDocument();
-    expect(screen.getByText("Map", { selector: "nav span" })).toBeInTheDocument();
-    expect(screen.getByText("Details", { selector: "nav span" })).toBeInTheDocument();
-    expect(screen.getByText("Chat", { selector: "nav span" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Trip actions" })).toHaveClass("text-slate-400");
+    expect(screen.getByText("Itinerary", { selector: "header span" })).toBeInTheDocument();
+    expect(screen.getByText("Map", { selector: "header span" })).toBeInTheDocument();
+    expect(screen.getByText("Details", { selector: "header span" })).toBeInTheDocument();
+    expect(screen.getByText("Chat", { selector: "header span" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Trip actions" })).toHaveClass("text-muted");
     expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Guest");
     expect(screen.queryByRole("button", { name: "Travel preferences" })).not.toBeInTheDocument();
   });

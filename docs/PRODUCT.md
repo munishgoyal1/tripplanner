@@ -186,12 +186,14 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Layout**: desktop is a fixed-height spatial planner: itinerary left, a
   persistent dominant map center, and a contextual details inspector right.
   A compact top command bar owns saved-trip selection, global workspace
-  controls (including account/preferences), and the latest mutation outcome.
+  controls (including account/preferences). A separate full-width row below it
+  owns notifications and review choices; messages wrap rather than truncate.
   Itinerary, Map, Details, and Assistant use semantic icons with short labels on
   wide desktops, collapsing to icon-only controls when desktop width is tighter;
   all four remain direct one-click visibility controls. New trip uses a restrained
   coral tint rather than a solid fill; active pane controls use quiet neutral fills,
-  while trip actions remain a lighter compact icon and Account settings uses one
+  while export/new/reset share one outlined group and thumbs up/down/rating share
+  one sand-colored group. Account preferences use a gear beside the sign-in or
   short identity label. This
   keeps itinerary, map, and trip decisions visually dominant.
   The itinerary begins with the one authoritative trip snapshot: destination,

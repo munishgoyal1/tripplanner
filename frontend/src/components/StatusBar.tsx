@@ -23,11 +23,11 @@ function NoticeLine({ notice, actions }: { notice: Notice; actions?: ReactNode }
         <ToneIcon tone={notice.tone} />
       </span>
       <div className="min-w-0 flex-1" title={[notice.message, notice.detail].filter(Boolean).join(" — ")}>
-        <p className={`truncate text-xs font-semibold leading-tight ${TONE_TEXT[notice.tone]}`}>
+        <p className={`whitespace-normal break-words text-xs font-medium leading-relaxed ${TONE_TEXT[notice.tone]}`}>
           {notice.message}
         </p>
         {notice.detail && (
-          <p className="line-clamp-2 whitespace-normal text-[11px] leading-snug text-slate-500">
+          <p className="whitespace-normal break-words text-[11px] leading-snug text-muted">
             {notice.detail}
           </p>
         )}
@@ -36,7 +36,7 @@ function NoticeLine({ notice, actions }: { notice: Notice; actions?: ReactNode }
       <button
         type="button"
         onClick={() => dismissNotice(notice.id)}
-        className={`shrink-0 rounded px-1 text-xs font-semibold leading-none hover:bg-slate-100 ${TONE_TEXT[notice.tone]}`}
+        className={`shrink-0 rounded px-1 text-xs font-semibold leading-none hover:bg-paper/70 ${TONE_TEXT[notice.tone]}`}
         aria-label="Dismiss notification"
       >
         ✕
