@@ -1542,6 +1542,17 @@ def update_trip_plan(updates_json: str) -> str:
     opening_hours_repairs = _repair_known_opening_hours(plan)
     feasibility_repairs = _repair_temporal_infeasibility(plan)
     violations = validate_plan(plan)
+    calendar_errors = [
+        violation.message for violation in violations if violation.code == "I14"
+    ]
+    if "day_wise_itinerary" in updates and calendar_errors:
+        return (
+            "Error: itinerary days must stay within this trip's own departure and "
+            "return dates. " + " ".join(calendar_errors) + " This looks like it "
+            "belongs to a different trip. If you meant to plan a different "
+            "destination or date range, call create_trip_plan instead of "
+            "update_trip_plan. The saved itinerary was not changed."
+        )
     closed_day_errors = [
         violation.message for violation in violations if violation.code == "I11"
     ]

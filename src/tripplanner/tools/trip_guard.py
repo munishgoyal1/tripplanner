@@ -83,6 +83,11 @@ INVARIANTS: tuple[tuple[str, str, str], ...] = (
         "A place reported as shut down for good must not be planned at all.",
     ),
     ("I13", "Duplicate visit", "The same sight must not be planned on two different days."),
+    (
+        "I14",
+        "Trip calendar",
+        "A day's own date must fall within this trip's booked departure and return dates.",
+    ),
 )
 
 #: A trip the traveller will reach on their own. Named by the user, never
@@ -379,6 +384,54 @@ def day_dates(plan: dict[str, Any]) -> dict[int, str]:
     return out
 
 
+def _calendar_violations(
+    plan: dict[str, Any], structured: list[tuple[int, dict[str, Any], list[Any]]]
+) -> list[Violation]:
+    """A day's own written date must land inside the trip's booked window.
+
+    Content merged or replaced from an unrelated trip carries that trip's own
+    dates, which essentially never fall inside this trip's departure/return
+    range. Catching that here is exact and needs no place lookups or identity
+    matching -- unlike trying to confirm content belongs to a destination by
+    name. Only days that wrote a real, parseable date are checked; a day that
+    never wrote one degrades this invariant to silent, per module contract.
+    """
+    departure_raw = str(plan.get("departure_date") or "").strip()
+    return_raw = str(plan.get("return_date") or "").strip()
+    try:
+        departure = date.fromisoformat(departure_raw) if departure_raw else None
+    except ValueError:
+        departure = None
+    try:
+        return_day = date.fromisoformat(return_raw) if return_raw else None
+    except ValueError:
+        return_day = None
+    if departure is None or return_day is None or return_day < departure:
+        return []
+
+    out: list[Violation] = []
+    for day, entry, _stops in structured:
+        text = str(entry.get("date") or "").strip()
+        try:
+            entry_date = date.fromisoformat(text) if text else None
+        except ValueError:
+            entry_date = None
+        if entry_date is None:
+            continue
+        if entry_date < departure or entry_date > return_day:
+            out.append(
+                Violation(
+                    "I14",
+                    "Trip calendar",
+                    f"Day {day} is dated {text}, outside this trip's booked "
+                    f"{departure.isoformat()} to {return_day.isoformat()} window.",
+                    day,
+                    None,
+                )
+            )
+    return out
+
+
 # --------------------------------------------------------------------------- #
 # travel                                                                        #
 # --------------------------------------------------------------------------- #
@@ -420,6 +473,7 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
     out.extend(_return_violations(plan, env))
     out.extend(_continuity_violations(structured, destination))
     out.extend(_coverage_violations(plan))
+    out.extend(_calendar_violations(plan, structured))
     return out
 
 

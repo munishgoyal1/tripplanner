@@ -1612,3 +1612,26 @@ the outcome.
 - A provider hard cap must still admit the product behavior it guards. A one-photo daily
   quota cannot support a three-photo destination guide; retain a small explicit cap that
   covers one bounded inspection instead of making the enabled local feature unusable.
+
+## 2026-09-08 - A Day's Own Date Is the Cheapest Proof It Belongs to This Trip
+
+- Three saved production trips corrupted within one short window: freshly-researched
+  content for an unrelated destination landed on the wrong active trip, some of it grafted
+  in by the partial-day merge (a shorter incoming list whose day numbers are a subset of
+  the existing plan), the rest by a full replace. `update_trip_plan` always writes into
+  whichever trip is currently active; nothing ever compared the incoming days' own dates
+  against the trip's booked departure/return window, so a merge that was only ever meant
+  for a single edited day of the *same* trip silently accepted a different trip's itinerary
+  wholesale.
+- The fix needed no place lookups or destination-identity matching: a day carrying a real,
+  parseable date that falls outside `[departure_date, return_date]` is proof enough that the
+  content belongs to a different trip. New invariant `I14` (`trip_guard.py`) rejects the
+  whole update before merge or replace, and `update_trip_plan` reports it plainly rather than
+  silently absorbing days that merely happen to be a numeric subset of the existing plan.
+- Consistent with this module's own rule: an invariant that cannot be evaluated stays silent,
+  never wrong. A day without its own date, or a trip missing either date bound, skips the
+  check entirely instead of guessing a bound from whatever is present.
+- The corrupted content was not recoverable after the fact: Cosmos periodic backup here
+  retains only 8 hours, and hosted Container App console logs are pruned well before a week
+  is out. Detection has to happen at write time — there is no forensic safety net once it's
+  gone.
