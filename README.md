@@ -449,12 +449,27 @@ tripplanner/
    └── chats/                    # Trip transcripts + bounded chat_operations index
 ```
 
-## API Endpoints
+## API
 
-| Method | Path | Description |
+When the API is running, FastAPI publishes the complete versioned interactive
+contract at [`/docs`](http://localhost:8000/docs) and its OpenAPI schema at
+[`/openapi.json`](http://localhost:8000/openapi.json). Those are the canonical
+references for request and response models; the endpoints below are an
+orientation guide rather than a partial substitute for the contract.
+
+| Area | Key endpoints | Notes |
 |---|---|---|
-| POST | `/chat` | Send a message, get agent response |
-| GET | `/health` | Health check |
+| Assistant | `POST /chat`, `POST /chat/stream`, `GET /chat/history` | `chat/stream` uses server-sent events. |
+| Workspace | `GET /trip/view`, `GET /trip/workspace`, `GET /trip/map`, `GET /trip/places` | Read the authoritative persisted trip view. |
+| Trip changes | `POST /trip/select`, `/trip/deselect`, `/trip/repair`, `/trip/stop/booked`, `/trip/stop/place` | Mutations return refreshed authoritative state or a conflict response. |
+| Lifecycle | `GET /trips`, `POST /trip/new`, `/trips/switch`, `/trips/delete`, `/trip/fork` | A signed user or scoped guest capability owns trip data. |
+| Verification and exports | `GET /trip/verification`, `POST /trip/verification/refresh`, `GET /trip/export.ics`, `/trip/export.pdf`, `POST /trip/export/email`, `/trip/share` | Export and share endpoints enforce the relevant owner or share capability. |
+| Traveller data | `GET/POST /preferences`, `GET/POST /documents`, `GET /trip/documents/readiness`, `POST /account/privacy` | Never send credentials or documents to an unauthenticated caller. |
+| Runtime | `GET /health`, `/providers/status`, `/usage`, `GET /auth/me` | Diagnostics disclose no provider secrets. |
+
+In local development, the Vite proxy exposes these routes under `/api`; the
+hosted service serves them at the same origin. See the OpenAPI contract for
+all paths, authentication behavior, payloads, and error responses.
 
 ## Running Tests
 
