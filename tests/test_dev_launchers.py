@@ -91,8 +91,11 @@ def test_common_runtime_config_has_safe_cross_platform_owner_launchers() -> None
 
     assert 'ValidateSet("status", "apply", "enable", "disable", "on", "off", "help", "?")' in google_handler
     assert "Show-GoogleRuntimeHelp" in google_handler
-    assert "munishgoyal1@gmail.com" in google_handler
-    assert "Visual Studio Enterprise Subscription" in google_handler
+    # Operator identity and subscription names belong in the non-secret
+    # environment manifest, not in a reusable runtime-control script.
+    assert "$config.gcp.operatorAccount" in google_handler
+    assert "$config.azure.operatorAccount" in google_handler
+    assert "$config.azure.subscriptionId" in google_handler
     assert "az containerapp update" in google_handler
     assert "--image" not in google_handler
     assert '"ENABLE_GOOGLE_MAPS=$desiredMaps"' in google_handler
