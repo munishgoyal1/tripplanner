@@ -695,7 +695,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
           onAllDaysFocus?.();
         }}
         className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
-          activeDay === null ? "bg-paper text-ink shadow-sm ring-1 ring-border" : "text-muted hover:bg-paper hover:text-ink"
+          activeDay === null ? "bg-ink text-white shadow-sm" : "text-muted hover:bg-paper hover:text-ink"
         }`}
       >
         All days
