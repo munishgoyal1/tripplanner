@@ -54,7 +54,8 @@ The trip-view projection tests are likewise ownership-split across
 `test_trip_view_verification_freshness.py`. Shared deterministic Places fixtures
 and trip samples live in `tests/support/trip_view.py`; that support module contains
 no test functions and is registered once by the root pytest configuration.
-Changes to `trip_view.py`, `map_view.py`, or `day_journey.py` select all six owner
+Changes to `trip_view.py`, `itinerary_view.py`, `place_guide.py`,
+`destination_overview.py`, `map_view.py`, or `day_journey.py` select all six owner
 modules plus the trip-view API contract tests so cross-projection behavior remains
 covered.
 

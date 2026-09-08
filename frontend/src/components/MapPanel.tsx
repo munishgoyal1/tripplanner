@@ -27,10 +27,17 @@ import {
   visitOrdersForDay,
 } from "./map/routeDerivations";
 import PlaceTripActions from "./PlaceTripActions";
+import {
+  isAirportTarget,
+  isInspectableMapPin,
+  isJourneyTerminal,
+  scheduleMapOverlayDraw,
+} from "./map/mapInspect";
 
 export { focusedDayForPin, focusNameForPin, pinMatchesFocus, placeNameMatches } from "./map/focusMatching";
 export { kindForGooglePlace, mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
 export { airportIcon, hotelIcon, pinIcon } from "./map/mapIcons";
+export { isInspectableMapPin, scheduleMapOverlayDraw } from "./map/mapInspect";
 export {
   formatLegLabel,
   hotelLabelsForDay,
@@ -52,25 +59,6 @@ export {
   syncPinMarkerFocus,
   zoomToPin,
 } from "./map/viewportSync";
-
-function isAirportTarget(pin: MapPin | MapAirport): pin is MapAirport {
-  return pin.id === "airport";
-}
-
-export function isInspectableMapPin(
-  pin: MapPin | MapAirport | null,
-): pin is MapPin {
-  return !!pin && !isAirportTarget(pin);
-}
-
-function isJourneyTerminal(pin: MapPin | MapAirport): boolean {
-  return ["airport", "station", "bus_station", "origin"].includes(pin.kind);
-}
-
-export function scheduleMapOverlayDraw(draw: () => void): () => void {
-  const frame = window.requestAnimationFrame(draw);
-  return () => window.cancelAnimationFrame(frame);
-}
 
 interface Props {
   filters?: readonly ItineraryFilter[];

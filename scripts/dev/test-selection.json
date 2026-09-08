@@ -46,7 +46,7 @@
       "reason": "shared multiagent test factory boundary"
     },
     {
-      "patterns": ["src/tripplanner/api.py", "src/tripplanner/chat_turn.py"],
+      "patterns": ["src/tripplanner/api.py", "src/tripplanner/chat_turn.py", "src/tripplanner/web/trip_http.py", "src/tripplanner/web/account_http.py", "src/tripplanner/web/ops_http.py", "src/tripplanner/web/http_context.py"],
       "backend": [
         "tests/test_api_contracts.py",
         "tests/test_chat_turn.py",
@@ -56,7 +56,7 @@
       "reason": "chat and API transport contract"
     },
     {
-      "patterns": ["src/tripplanner/graph.py", "src/tripplanner/graph_policy.py", "src/tripplanner/agents/**"],
+      "patterns": ["src/tripplanner/graph.py", "src/tripplanner/graph_policy.py", "src/tripplanner/prompts.py", "src/tripplanner/agents/**"],
       "backend": [
         "tests/test_graph_policy.py",
         "tests/test_parallel_tools.py",
@@ -65,7 +65,7 @@
       "reason": "agent graph and phase-selected tool policy"
     },
     {
-      "patterns": ["src/tripplanner/web/trip_view.py", "src/tripplanner/web/map_*.py", "src/tripplanner/web/day_journey.py"],
+      "patterns": ["src/tripplanner/web/trip_view.py", "src/tripplanner/web/itinerary_view.py", "src/tripplanner/web/place_guide.py", "src/tripplanner/web/destination_overview.py", "src/tripplanner/web/map_*.py", "src/tripplanner/web/day_journey.py"],
       "backend": [
         "tests/test_trip_view_summary_weather_budget.py",
         "tests/test_trip_view_itinerary_rendering.py",
