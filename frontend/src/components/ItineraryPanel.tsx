@@ -178,8 +178,8 @@ function DayCard({
     <section
       id={`it-day-${day.day}`}
       data-audit-day={day.day}
-      className={`overflow-hidden rounded-md bg-white shadow-card transition ${
-        circuitActive ? "ring-2 ring-brand/40" : "ring-1 ring-slate-200"
+      className={`overflow-hidden rounded-md border bg-paper transition ${
+        circuitActive ? "border-brand/40 shadow-card ring-2 ring-brand/20" : "border-border"
       }`}
     >
       <div
@@ -451,7 +451,7 @@ export default function ItineraryPanel({
 
   if (loading && !it) {
     return (
-      <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
+      <div ref={scrollRef} className="h-full overflow-y-auto bg-sidebar">
         {filterControls}
         {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} onTripChanged={onTripChanged} />}
         <div className="grid min-h-40 place-items-center p-6 text-sm text-slate-400">
@@ -463,7 +463,7 @@ export default function ItineraryPanel({
 
   if (error && !it) {
     return (
-      <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
+      <div ref={scrollRef} className="h-full overflow-y-auto bg-sidebar">
         {filterControls}
         {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} onTripChanged={onTripChanged} />}
         <div className="grid min-h-48 place-items-center p-6 text-center">
@@ -480,7 +480,7 @@ export default function ItineraryPanel({
 
   if (!it || !it.has_itinerary) {
     return (
-      <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
+      <div ref={scrollRef} className="h-full overflow-y-auto bg-sidebar">
         {filterControls}
         {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} onTripChanged={onTripChanged} />}
         <div className="grid min-h-48 place-items-center p-6 text-center">
@@ -503,7 +503,7 @@ export default function ItineraryPanel({
     <div
       ref={scrollRef}
       data-testid="audit-itinerary"
-      className="h-full overflow-y-auto bg-white"
+      className="h-full overflow-y-auto bg-sidebar"
     >
       {filterControls}
       {overview && (

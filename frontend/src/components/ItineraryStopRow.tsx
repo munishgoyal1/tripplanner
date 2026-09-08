@@ -189,14 +189,14 @@ export default function ItineraryStopRow({
         </div>
       )}
       <article
-        className={`rounded-2xl p-3 shadow-card ring-1 transition ${
+        className={`rounded-md border p-2.5 transition ${
           jumpActive
-            ? "bg-amber-50 ring-2 ring-amber-300"
+            ? "border-amber-300 bg-amber-50 shadow-card"
             : active
-              ? "bg-brand/5 ring-brand/30"
+              ? "border-brand/30 bg-brand/5 bg-clay-soft/40 ring-brand/30 shadow-card"
               : focusable
-                ? "cursor-pointer bg-white ring-slate-200/80 hover:ring-slate-300"
-                : "bg-white ring-slate-200/80"
+                ? "cursor-pointer border-border bg-paper hover:border-clay/40 hover:bg-clay-soft/20"
+                : "border-border bg-paper"
         }`}
       >
         <div className="flex items-start gap-2.5">
@@ -206,7 +206,7 @@ export default function ItineraryStopRow({
                 ? "Hotel map marker"
                 : `Map stop ${mapLabel}`}
               aria-current={active ? "location" : undefined}
-              className={`mt-0.5 grid h-7 w-7 flex-shrink-0 place-items-center rounded-full border text-[11px] font-semibold tabular-nums transition ${active ? "scale-110 text-white shadow-sm" : "bg-white"}`}
+              className={`mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-full border text-[10px] font-semibold tabular-nums transition ${active ? "scale-110 text-white shadow-sm" : "bg-paper"}`}
               style={{
                 borderColor: stop.color,
                 color: active ? "white" : stop.color,
@@ -218,7 +218,7 @@ export default function ItineraryStopRow({
           ) : (
             <span
               aria-hidden
-              className="mt-0.5 grid h-7 w-7 flex-shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-[11px]"
+              className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-full border border-border bg-sand text-[10px]"
             >
               {KIND_ICON[stop.kind] || KIND_ICON.other}
             </span>

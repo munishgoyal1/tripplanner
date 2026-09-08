@@ -706,8 +706,8 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
           setNewStopDay("auto");
           onAllDaysFocus?.();
         }}
-        className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold transition ${
-          activeDay === null ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"
+        className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
+          activeDay === null ? "bg-paper text-ink shadow-sm ring-1 ring-border" : "text-muted hover:bg-paper hover:text-ink"
         }`}
       >
         All days
@@ -729,8 +729,8 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
             setNewStopDay(String(day.day));
             onDayFocus?.(day.day);
           }}
-          className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold transition ${
-            activeDay === day.day ? "text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"
+          className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
+            activeDay === day.day ? "text-white shadow-sm" : "text-muted hover:bg-paper hover:text-ink"
           }`}
           style={activeDay === day.day ? { backgroundColor: day.color } : undefined}
         >
@@ -753,7 +753,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
   return (
     <div className="relative flex h-full flex-col">
       {(loading && view || error && view) && (
-        <div className="absolute left-1/2 top-3 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-xs text-slate-600 shadow-card ring-1 ring-slate-200">
+        <div className="absolute left-1/2 top-3 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-paper/95 px-3 py-1.5 text-xs text-ink shadow-card ring-1 ring-border">
           <span>{error || "Refreshing map…"}</span>
           {error && (
             <button type="button" onClick={() => setRetryToken((token) => token + 1)} className="font-semibold text-brand">
@@ -765,7 +765,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
       <div className="relative min-h-0 flex-1">
         <div ref={mapEl} className="h-full w-full" />
         {!selectedPin && selectedMapContext && (
-          <aside className="pointer-events-auto absolute right-3 top-3 z-20 w-[18.5rem] rounded-md border border-slate-200 bg-white/95 p-3 shadow-pop backdrop-blur">
+          <aside className="pointer-events-auto absolute right-3 top-3 z-20 w-[18.5rem] rounded-md border border-border bg-paper/95 p-3 shadow-pop backdrop-blur">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase text-brand">{selectedMapContext.label}</p>
@@ -785,7 +785,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
           </aside>
         )}
         {selectedPin && (
-          <aside className="pointer-events-auto absolute right-3 top-3 z-20 w-[18.5rem] rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-pop backdrop-blur">
+          <aside className="pointer-events-auto absolute right-3 top-3 z-20 w-[18.5rem] rounded-md border border-border bg-paper/95 p-3 shadow-pop backdrop-blur">
             {isInspectableMapPin(selectedPin) && selectedPin.photo && (
               <img
                 src={selectedPin.photo}
@@ -889,7 +889,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
         )}
       </div>
       {view && (
-        <div className="shrink-0 border-t border-slate-200 bg-white/95" aria-label="Map commands">
+        <div className="shrink-0 border-t border-border bg-paper/95" aria-label="Map commands">
           <div className="px-3 py-2">
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative min-w-[9rem] flex-1">
@@ -908,7 +908,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
                   onKeyDown={(event) => {
                     if (event.key === "Enter") void handleAddStop();
                   }}
-                  className="w-full rounded-md border border-slate-200 py-1.5 pl-8 pr-8 text-xs text-slate-700 placeholder:text-slate-400"
+                  className="w-full rounded-full border border-border bg-sand py-1.5 pl-8 pr-8 text-xs text-ink placeholder:text-muted focus:border-clay focus:outline-none focus:ring-2 focus:ring-clay/15"
                   placeholder="Search a place, or tap one on the map…"
                   title="Search Google Maps places near the current map view"
                 />
@@ -937,7 +937,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
                       setNewStopKind(event.target.value as "" | "attraction" | "hotel" | "meal");
                       setStopKindAutoFilled(false);
                     }}
-                    className={`rounded-md border px-3 py-1.5 text-xs ${stopKindAutoFilled ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-500"}`}
+                    className={`rounded-full border px-3 py-1.5 text-xs ${stopKindAutoFilled ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-border bg-paper text-muted"}`}
                     title={stopKindAutoFilled ? "Type auto-filled from Google; change it if needed" : "Stop type is optional"}
                     aria-label="Stop type (optional)"
                   >
@@ -950,7 +950,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
                     <select
                       value={newStopDay}
                       onChange={(event) => setNewStopDay(event.target.value)}
-                      className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600"
+                      className="rounded-full border border-border bg-paper px-3 py-1.5 text-xs text-ink"
                       title="Choose which itinerary day receives this stop"
                       aria-label="Add stop to day"
                     >
@@ -964,7 +964,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
                     type="button"
                     onClick={handleAddStop}
                     disabled={!newStopName.trim() || addingStop}
-                    className="inline-flex items-center gap-1 rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Plus className="h-3.5 w-3.5" aria-hidden />
                     {addingStop ? "Adding…" : "Add"}
@@ -977,15 +977,17 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2 border-t border-slate-100 px-3 py-1.5">
-            {dayScopeControls}
+          <div className="flex items-center gap-2 border-b border-border px-3 py-1.5">
+            <div className="flex min-w-0 items-center gap-0.5 overflow-x-auto rounded-full border border-border bg-sand p-0.5">
+              {dayScopeControls}
+            </div>
             <button
               type="button"
               onClick={() => setSequenceOpen((open) => !open)}
               aria-pressed={sequenceOpen}
               disabled={sequencePins.length === 0}
               className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition disabled:opacity-40 ${
-                sequenceOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"
+                sequenceOpen ? "bg-ink text-white" : "text-muted hover:bg-sand hover:text-ink"
               }`}
               title="The day's stop order also lives in the itinerary pane"
             >
@@ -996,7 +998,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
                 : <ChevronUp className="h-3 w-3" aria-hidden />}
             </button>
           </div>
-          <div className="flex min-h-6 items-center gap-1.5 border-t border-slate-100 px-3 py-1 text-[10px] text-slate-500">
+          <div className="flex min-h-6 items-center gap-1.5 border-t border-border px-3 py-1 text-[10px] text-muted">
             {activeDayObj ? (
               <>
                 <span className="font-semibold text-slate-700">{activeDayObj.label}</span>
@@ -1011,7 +1013,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
           </div>
           {sequenceOpen && activeDayObj && sequencePins.length > 0 && (
             <ol
-              className="flex items-stretch gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2"
+              className="flex items-stretch gap-1 overflow-x-auto border-t border-border px-3 py-2"
               aria-label={`${activeDayObj.label} stop sequence`}
             >
               {sequencePins.map((pin, index) => {

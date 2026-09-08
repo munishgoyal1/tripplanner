@@ -527,7 +527,7 @@ export default function ChatPanel({
   );
 
   const brandHeader = (
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white/85 px-5 py-3 backdrop-blur">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-paper/85 px-4 py-2.5 backdrop-blur">
         <div className="flex items-center gap-3">
           <div>
             <BrandIdentity />
@@ -552,7 +552,7 @@ export default function ChatPanel({
               onClick={() => openAccountSettings()}
               title="Account settings"
               aria-label="Account settings"
-              className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+              className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold text-muted transition hover:bg-sand"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -577,7 +577,7 @@ export default function ChatPanel({
         ref={scrollRef}
         data-testid="chat-transcript"
         onScroll={handleTranscriptScroll}
-        className="h-full space-y-4 overflow-y-auto bg-surface px-5 py-5"
+        className="h-full space-y-3 overflow-y-auto bg-sand px-4 py-4"
       >
         {/* Guest-import banner: shown once after OAuth sign-in when guest had data */}
         {guestBanner && (
@@ -675,8 +675,8 @@ export default function ChatPanel({
             <div
               className={`${wideTurns ? "max-w-[min(56rem,94%)]" : "max-w-[88%]"} rounded-lg px-3.5 py-2.5 text-sm leading-relaxed shadow-card ring-1 ${
                 m.role === "user"
-                  ? "rounded-br-sm bg-gradient-to-br from-brand to-brand-600 text-white ring-brand/30"
-                  : "bg-white text-ink ring-slate-200"
+                  ? "rounded-br-sm bg-brand text-white ring-brand/30"
+                  : "bg-paper text-ink ring-border"
               }`}
             >
               {m.role === "assistant" && (
@@ -846,7 +846,7 @@ export default function ChatPanel({
   );
 
   const composerBlock = (
-      <div className={docked ? "min-w-0 flex-1" : "border-t border-slate-100 bg-white p-4"}>
+      <div className={docked ? "min-w-0 flex-1" : "border-t border-border bg-paper p-4"}>
         {failedRequest && (
           <button
             onClick={retryFailedRequest}
@@ -880,7 +880,7 @@ export default function ChatPanel({
           )}
           <textarea
             ref={composerRef}
-            className="flex-1 resize-none rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+            className="flex-1 resize-none rounded-xl border border-border bg-sand px-4 py-2.5 text-sm shadow-sm transition placeholder:text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
             rows={docked ? 1 : 2}
             placeholder="e.g. Plan a 5-day trip to Goa in December for 2 people"
             value={input}
@@ -920,7 +920,7 @@ export default function ChatPanel({
 
   if (!docked) {
     return (
-      <div className="flex h-full flex-col bg-white">
+      <div className="flex h-full flex-col bg-paper">
         {brandHeader}
         {transcriptBlock}
         {composerBlock}
@@ -963,10 +963,10 @@ export default function ChatPanel({
   );
 
   return (
-    <div className="relative bg-white">
+    <div className="relative bg-paper">
       {layout !== "bar" && (
         <div
-          className={`absolute inset-x-0 bottom-full z-30 flex flex-col border-t border-slate-200 bg-white shadow-pop ${
+          className={`absolute inset-x-0 bottom-full z-30 flex flex-col border-t border-border bg-paper shadow-pop ${
             layout === "full" ? "h-[calc(100dvh-7.5rem)]" : "h-[58vh]"
           }`}
         >
