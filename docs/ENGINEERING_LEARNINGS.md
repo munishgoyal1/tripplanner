@@ -1635,3 +1635,17 @@ the outcome.
   retains only 8 hours, and hosted Container App console logs are pruned well before a week
   is out. Detection has to happen at write time — there is no forensic safety net once it's
   gone.
+
+## 2026-09-08 - Split At Substitution-Safe Facades, Keep Tests On The Old Names
+
+- Oversized modules slow agents and focused tests because every edit still loads
+  the whole file. Split at the boundary callers already treat as public: keep
+  `trip_view._place_coords` as the geocoding seam, keep `from tripplanner.api import
+  app` and `trip_view.build_itinerary`, and let extracted modules receive resolved
+  values instead of growing new patch points.
+- HTTP route bodies can move onto FastAPI routers without changing URLs if
+  identity helpers stay in one shared context module and `api.py` still assembles
+  middleware, chat/SSE, SPA mount, and `include_router` order before the catch-all.
+- Prompt text is not tool-selection policy. Dated agent instructions belong in
+  `prompts.py`; `trip_agent.py` keeps phase-selected tool sets so a wording change
+  does not force a reread of capability registry code.

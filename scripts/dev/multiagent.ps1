@@ -21,6 +21,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$commonGitDir = & git -C $repoRoot rev-parse --path-format=absolute --git-common-dir
+if ($LASTEXITCODE -ne 0 -or -not $commonGitDir) {
+  throw "Could not resolve the primary Tripplanner checkout."
+}
+$repoRoot = Split-Path -Parent $commonGitDir.Trim()
 
 . (Join-Path $PSScriptRoot "lib/python-runtime.ps1")
 $python = (Resolve-TripplannerPython -RepoRoot $repoRoot).Python

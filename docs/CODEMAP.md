@@ -32,11 +32,15 @@ trip through shared API contracts.
 | `src/tripplanner/graph.py` | Agent/tool loop, model invocation and telemetry, and model-facing tool-result budget |
 | `src/tripplanner/graph_policy.py` | Pure forced-tool and completion-requirement precedence, including the semantic tool-phase budget |
 | `src/tripplanner/state.py` | Shared graph state and merge behavior |
-| `src/tripplanner/prompts.py` | Agent instructions and prompt assembly |
+| `src/tripplanner/prompts.py` | Agent instructions and dated prompt assembly |
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |
 | `src/tripplanner/agents/trip_agent.py` | Phase-selected tool sets and the exhaustive read/trip-write/profile-write/external-write capability registry used by proposal-only mode |
 | `src/tripplanner/chat_turn.py` | Transport-neutral replay/admission, cap and conversation-limit decisions, interrupted-turn persistence, final transcript persistence, passive learning, and completion telemetry shared by JSON and SSE chat |
-| `src/tripplanner/api.py` | FastAPI assembly, hosted identity boundary, JSON/SSE transport adaptation and stream events, production SPA mount |
+| `src/tripplanner/api.py` | FastAPI assembly, hosted identity boundary, JSON/SSE chat transport, production SPA mount |
+| `src/tripplanner/web/http_context.py` | Shared request-identity helpers used by HTTP routers |
+| `src/tripplanner/web/trip_http.py` | Trip workspace HTTP routes: view, mutate, export, share, and history |
+| `src/tripplanner/web/account_http.py` | Preferences, documents, privacy, guest migrate, and auth HTTP routes |
+| `src/tripplanner/web/ops_http.py` | Owner ops, analytics ingest, and usage HTTP routes |
 | `src/tripplanner/web/runtime_routes.py` | Independent health, public demo (including ETag), provider readiness, and tool metrics routes; registered before the SPA catch-all |
 | `src/tripplanner/public_demo.py` | Validated bundled regional demo fallback, Cosmos active-manifest reads, ETags, and atomic monthly refresh |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
@@ -68,7 +72,10 @@ trip through shared API contracts.
 | `src/tripplanner/http_client.py` | Outbound HTTP runtime: pooled connections and TLS reuse, per-endpoint latency budget, circuit breaking, `outbound_call` telemetry, and a second default-deny check for known billable Google hosts. Every remote dependency goes through it |
 | `src/tripplanner/circuit_breaker.py` | Pure per-endpoint breaker state machine (closed/open/half-open) |
 | `src/tripplanner/concurrency.py` | Shared bounded fan-out for independent remote work; a failed branch degrades to `None` |
-| `src/tripplanner/web/trip_view.py` | UI-independent trip view model and display semantics |
+| `src/tripplanner/web/trip_view.py` | UI-independent trip view-model facade and display semantics |
+| `src/tripplanner/web/itinerary_view.py` | Structured itinerary assembly; geocoding still resolves through `trip_view._place_coords` |
+| `src/tripplanner/web/place_guide.py` | Destination-guide discovery pool, paging, and gallery item shaping |
+| `src/tripplanner/web/destination_overview.py` | Destination-level photos, attractions, reviews, and news overview |
 | `src/tripplanner/web/map_view.py` | Interactive-map view-model assembly from resolved pins |
 | `src/tripplanner/web/day_journey.py` | Transfer-day journey model: path, terminals, inter-city edges, map framing |
 | `src/tripplanner/web/chat_store.py` | Conversation and replay persistence |
@@ -186,6 +193,8 @@ one physical cache backend.
 | `frontend/src/components/DesktopToolbar.tsx`, `MobileWorkspaceShell.tsx`, `AccessibleSheet.tsx` | Responsive workspace chrome plus reusable mobile dialog focus containment, Escape/backdrop dismissal, and focus restoration |
 | `frontend/src/components/TripFeedbackControl.tsx` | Toolbar thumbs, optional rating/comment popover, and sent-count presentation |
 | `frontend/src/lib/notices.ts` | Global notice channel: id-keyed upsert, tone priority, and success auto-expiry |
+| `frontend/src/lib/chatTurnLabels.ts` | Assistant transcript date and duration labels |
+| `frontend/src/components/map/mapInspect.ts` | Map pin inspectability and overlay-draw scheduling |
 | `frontend/src/components/StatusBar.tsx` | Render-only toolbar and mobile presentation of the single active notice |
 | `frontend/src/lib/displayPreferences.ts` | Display country, language, and currency storage; fixed standard option sets, legacy-value migration, locale derivation, and money/unit formatting |
 | `frontend/src/components/AccountSettingsController.tsx`, `accountSettings.ts` | Page-independent account/settings ownership, auth and privacy actions, destination routing, and reusable open command |
