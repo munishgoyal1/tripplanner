@@ -998,19 +998,6 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
                 : <ChevronUp className="h-3 w-3" aria-hidden />}
             </button>
           </div>}
-          <div className="flex min-h-6 items-center gap-1.5 border-t border-border px-3 py-1 text-[10px] text-muted">
-            {activeDayObj ? (
-              <>
-                <span className="font-semibold text-slate-700">{activeDayObj.label}</span>
-                <span aria-hidden>·</span>
-                <span>Schedule {activeDayObj.schedule?.duration_display || "unavailable"}{activeDayObj.schedule?.start && activeDayObj.schedule?.end ? `, ${activeDayObj.schedule.start}–${activeDayObj.schedule.end}${activeDayObj.schedule.estimated ? " est." : ""}` : ""}</span>
-                <span aria-hidden>·</span>
-                <span>Travel {activeDayObj.route.duration_display}, {activeDayObj.route.distance_display}, {activeDayObj.route.mode}</span>
-              </>
-            ) : (
-              <span>Choose a day for schedule and route-only travel.</span>
-            )}
-          </div>
           {sequenceOpen && activeDayObj && sequencePins.length > 0 && (
             <ol
               className="flex items-stretch gap-1 overflow-x-auto border-t border-border px-3 py-2"

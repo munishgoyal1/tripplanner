@@ -1335,10 +1335,10 @@ describe("map stop selection", () => {
     const onSelect = vi.fn().mockResolvedValue(false);
     render(createElement(MapPanel, { onSelect }));
 
-    expect(await screen.findByText("Choose a day for schedule and route-only travel.")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Day 1" }));
-    expect(screen.getByText("Schedule 8 hr, 09:00–17:00 est.")).toBeInTheDocument();
-    expect(screen.getByText("Travel 25 min, 8 km, car")).toBeInTheDocument();
+    expect(screen.queryByText("Choose a day for schedule and route-only travel.")).not.toBeInTheDocument();
+    fireEvent.click(await screen.findByRole("button", { name: "Day 1" }));
+    expect(screen.queryByText("Schedule 8 hr, 09:00–17:00 est.")).not.toBeInTheDocument();
+    expect(screen.queryByText("Travel 25 min, 8 km, car")).not.toBeInTheDocument();
 
     const input = await screen.findByPlaceholderText("Search a place, or tap one on the map…");
     expect(screen.queryByRole("combobox", { name: "Stop type (optional)" })).not.toBeInTheDocument();

@@ -219,11 +219,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   every planner pane. Itinerary, Map, Details, and Assistant have obvious
   show/hide controls. Assistant opens as a compact lower-right conversation sheet
   over the still-usable workspace and stays mounted while hidden so its conversation
-  state survives. Only panes scroll; the page never does.
+  state survives. Its expanded state remains bounded by the browser viewport, with
+  the composer at the bottom and the transcript scrolling above it. Only panes scroll;
+  the page never does.
   Map commands sit below the map so the pane reads as a map first: a resting search
   field that reveals stop type, target day and Add once a place is named or tapped,
-  then an optional stop-sequence strip controlled by the shared third row, then one compact
-  line separating schedule span from route-only travel. This hierarchy does not
+  then an optional stop-sequence strip controlled by the shared third row. Day selection
+  is not repeated at the bottom of the map. This hierarchy does not
   change map focus, placement, pin, route, or mutation behavior. Itinerary, Map,
   and Details group their pane-local Hide and Maximize/Restore icons in a quiet
   restrained pair without changing behavior, disabled states, or recovery.

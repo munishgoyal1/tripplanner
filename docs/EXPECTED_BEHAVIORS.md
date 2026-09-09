@@ -396,6 +396,23 @@ are currently shown and expose their actual adjustable range to assistive input.
 
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `lets panes use available width and allows every pane to be hidden and restored`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `supports every desktop pane visibility combination`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `docks Assistant as a bottom row that expands over the workspace`
+
+### EB-WORKSPACE-002 - Keep expanded Assistant inside the viewport
+
+**Trigger:** Expand the desktop Assistant, including when a new-trip request opens
+the structured quick-setup card.
+
+**Expected:** The composer remains at the bottom of the browser viewport, the
+conversation fills the available area above it, and overflow scrolls inside the
+transcript. No unused document area appears below the Assistant. User and Assistant
+turns show their times; completed Assistant turns also show end-to-end response duration,
+including after reload, trip switching, or guest-data import.
+
+**Executable proof:**
+
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `docks Assistant as a bottom row that expands over the workspace`
+- [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `renders persisted timestamp and duration from chat history`
 
 ### EB-TRIPS-001 - Delete selected saved trips
 
