@@ -107,8 +107,8 @@ function ItemCard({
   const [addDay, setAddDay] = useState<string>("auto");
   return (
     <article className={focused
-      ? "group overflow-hidden bg-white"
-      : "group grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3 border-b border-slate-100 py-3 last:border-b-0"}
+      ? "group overflow-hidden bg-paper"
+      : "group grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3 border-b border-border/60 py-3 last:border-b-0"}
     >
       {photos.length > 0 ? (
         <div className={`relative ${focused ? "" : "self-start"}`}>
@@ -116,12 +116,12 @@ function ItemCard({
             <img
               src={photos[0]}
               alt={item.name}
-              className={`${focused ? "h-72 w-full" : "h-[5.5rem] w-[5.5rem] rounded-lg"} object-cover transition-transform duration-500 group-hover:scale-[1.02]`}
+              className={`${focused ? "h-48 w-full xl:h-52" : "h-[5.5rem] w-[5.5rem] rounded-lg"} object-cover transition-transform duration-500 group-hover:scale-[1.02]`}
             />
           </button>
 
           {focused && (
-            <span className="pill absolute left-3 top-3 bg-white/95 text-ink shadow-sm backdrop-blur">
+            <span className="pill absolute left-3 top-3 bg-paper/95 text-ink shadow-sm backdrop-blur">
               {icon}
               <span className="capitalize">{item.kind === "attraction" ? "activity" : item.kind}</span>
             </span>
@@ -137,13 +137,13 @@ function ItemCard({
           )}
         </div>
       ) : (
-        !focused && <div className="grid h-[5.5rem] w-[5.5rem] place-items-center rounded-lg bg-slate-100 text-xl">{icon}</div>
+        !focused && <div className="grid h-[5.5rem] w-[5.5rem] place-items-center rounded-lg bg-sand text-xl">{icon}</div>
       )}
 
       <div className={focused ? "p-4" : "min-w-0 py-0.5"}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="display truncate text-base font-semibold text-ink">
+            <h3 className="display truncate text-base font-normal text-ink">
               {item.name}
             </h3>
             {item.address && (
@@ -172,7 +172,7 @@ function ItemCard({
         )}
 
         {item.summary && (
-          <p className={`${focused ? "mt-3 leading-relaxed" : "mt-1 line-clamp-2 leading-snug"} text-sm text-slate-600`}>{item.summary}</p>
+          <p className={`${focused ? "mt-3 leading-relaxed" : "mt-1 line-clamp-2 leading-snug"} text-sm text-muted`}>{item.summary}</p>
         )}
 
         {focused && item.reviews.length > 0 && (
@@ -180,9 +180,9 @@ function ItemCard({
             {item.reviews.slice(0, focused ? 4 : 2).map((r, i) => (
               <blockquote
                 key={i}
-                className="rounded-2xl border border-slate-100 bg-slate-50/70 px-3 py-2"
+                className="rounded-2xl border border-border/60 bg-background/70 px-3 py-2"
               >
-                <p className="text-xs italic text-slate-600">“{r.text}”</p>
+                <p className="text-xs italic text-muted">“{r.text}”</p>
                 <footer className="mt-1 text-[11px] text-muted">— {r.author}</footer>
               </blockquote>
             ))}
@@ -225,7 +225,7 @@ function ItemCard({
                   value={addDay}
                   onChange={(event) => setAddDay(event.target.value)}
                   aria-label={`Choose day to add ${item.name}`}
-                  className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+                  className="rounded-full border border-border bg-paper px-3 py-1.5 text-xs font-medium text-ink"
                 >
                   <option value="auto">Best day</option>
                   {availableDays.map((day) => (
@@ -327,25 +327,25 @@ export default function TripPanel({
 
   if (loading && !view) {
     return (
-      <div className="grid h-full place-items-center bg-white p-6 text-sm text-muted">
+      <div className="grid h-full place-items-center bg-paper p-6 text-sm text-muted">
         Loading your trip…
       </div>
     );
   }
   if (!view || !view.has_trip || !view.overview) {
     return (
-      <div className="flex h-full flex-col bg-white">
+      <div className="flex h-full flex-col bg-paper">
         {!hideSwitcher && (
-          <div className="flex items-center border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
+          <div className="flex items-center border-b border-border bg-paper/85 px-4 py-2.5 backdrop-blur">
             <TripSwitcher version={tripVersion} onSwitched={onSwitched} />
           </div>
         )}
         <div className="grid flex-1 place-items-center p-8 text-center">
           <div className="max-w-sm">
-            <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-3xl bg-white text-2xl shadow-card ring-1 ring-slate-100">
+            <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-3xl bg-paper text-2xl shadow-card ring-1 ring-border/60">
               🌍
             </div>
-            <p className="display text-base font-semibold text-ink">
+            <p className="display text-base font-normal text-ink">
               Your trip canvas is empty
             </p>
             <p className="mt-1 text-sm text-muted">
@@ -364,8 +364,8 @@ export default function TripPanel({
   const total = navList.length;
 
   return (
-    <div className="flex h-full flex-col bg-white">
-      <div className="sticky top-0 z-10 border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
+    <div className="flex h-full flex-col bg-paper">
+      <div className="sticky top-0 z-10 border-b border-border bg-paper/85 px-4 py-2.5 backdrop-blur">
         {!hideSwitcher && (
           <div className="mb-2.5 flex items-center">
             <TripSwitcher version={tripVersion} onSwitched={onSwitched} />
@@ -384,7 +384,7 @@ export default function TripPanel({
           <div className="mt-2.5 flex items-center gap-2">
             <button
               onClick={onClearFocus}
-              className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md bg-slate-50 px-2.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-100"
+              className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full bg-sand px-2.5 text-[11px] font-semibold text-muted ring-1 ring-border hover:bg-clay-soft"
             >
               <LayoutGrid size={12} aria-hidden /> All places
             </button>
@@ -395,7 +395,7 @@ export default function TripPanel({
               <div className="ml-auto flex shrink-0 items-center gap-1">
                 <button
                   onClick={() => onStep(-1)}
-                  className="grid h-7 w-7 place-items-center rounded-full text-slate-500 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
+                  className="grid h-7 w-7 place-items-center rounded-full text-muted ring-1 ring-border transition hover:bg-background hover:text-ink"
                   title="Previous"
                 >
                   <ChevronLeft size={15} aria-hidden />
@@ -405,7 +405,7 @@ export default function TripPanel({
                 </span>
                 <button
                   onClick={() => onStep(1)}
-                  className="grid h-7 w-7 place-items-center rounded-full text-slate-500 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
+                  className="grid h-7 w-7 place-items-center rounded-full text-muted ring-1 ring-border transition hover:bg-background hover:text-ink"
                   title="Next"
                 >
                   <ChevronRight size={15} aria-hidden />
@@ -440,7 +440,7 @@ export default function TripPanel({
           />
         )}
 
-        <section className="border-t border-slate-100 px-4 py-4">
+        <section className="border-t border-border/60 px-4 py-4">
           {focused && (
             view.items.length === 0 ? (
               <p className="px-3 py-6 text-center text-sm text-muted">
@@ -542,19 +542,19 @@ function HotelStayModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl"
+        className="w-full max-w-md rounded-2xl bg-paper p-5 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-base font-semibold text-ink">Add hotel stay</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-ink">✕</button>
+          <button onClick={onClose} className="text-muted hover:text-ink">✕</button>
         </div>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-muted">
           Set where <span className="font-medium text-ink">{hotelName}</span> should apply in your itinerary.
         </p>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <label className="text-sm">
-            <span className="mb-1 block text-xs font-medium text-slate-500">From day</span>
+            <span className="mb-1 block text-xs font-medium text-muted">From day</span>
             <select className="input" value={startDay} onChange={(e) => setStartDay(Number(e.target.value))}>
               {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
                 <option key={d} value={d}>Day {d}</option>
@@ -562,7 +562,7 @@ function HotelStayModal({
             </select>
           </label>
           <label className="text-sm">
-            <span className="mb-1 block text-xs font-medium text-slate-500">To day</span>
+            <span className="mb-1 block text-xs font-medium text-muted">To day</span>
             <select className="input" value={endDay} onChange={(e) => setEndDay(Number(e.target.value))}>
               {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
                 <option key={d} value={d}>Day {d}</option>
@@ -570,7 +570,7 @@ function HotelStayModal({
             </select>
           </label>
         </div>
-        <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
+        <label className="mt-3 flex items-center gap-2 text-sm text-ink">
           <input type="checkbox" checked={replace} onChange={(e) => setReplace(e.target.checked)} />
           Replace any existing hotel stop in that range
         </label>

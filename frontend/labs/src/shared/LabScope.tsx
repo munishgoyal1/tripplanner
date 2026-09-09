@@ -10,6 +10,20 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "planner-layout-directions": {
+    changes: [
+      "The planner's primary spatial model: journey canvas, editorial storyboard, refined three-pane workspace, or the current sbx4 geometry with detail-level polish only",
+      "Where day navigation, itinerary, map, place details, trip actions, notifications, feedback, and the assistant live relative to one another",
+      "How panes hide, expand, and return, including the icon language and the amount of persistent chrome",
+      "Visual hierarchy, typography, colour, surface treatment, spacing, and responsive collapse across the complete workspace",
+    ],
+    context: [
+      "The Kyoto four-day fixture, its dates, travellers, readiness state, stops, selected Kiyomizu-dera detail, warning, and assistant suggestions",
+      "The same core capabilities in every direction: switch day, inspect stop, open map or itinerary, edit with the assistant, create/reset/export a trip, rate it, open settings, and sign in",
+      "Planner data contracts, routing, persistence, provider integrations, agent behaviour, and map implementation",
+      "The sbx4 production workspace remains unchanged until an option is selected and explicitly handed off for implementation",
+    ],
+  },
   "trip-feedback": {
     changes: [
       "Where the feedback control rests in the workspace: the toolbar, the end of the itinerary, the conversation, each day header, or a floating tab",

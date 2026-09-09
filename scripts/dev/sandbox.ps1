@@ -316,7 +316,11 @@ function Invoke-SandboxValidation {
     $env:PYTHONPATH = Join-Path $Worktree "src"
     Push-Location $Worktree
     try {
-        & $python -m pytest tests -q
+        # A fixed worker count beats "auto": this machine normally runs several
+        # sandboxes/dev stacks at once, and letting xdist claim every logical
+        # core (`-n auto`) measured 2x SLOWER than serial from the contention.
+        # 4 workers measured ~3.5x faster than serial under that same real load.
+        & $python -m pytest tests -q -n 4
         if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
     } finally {
         Pop-Location

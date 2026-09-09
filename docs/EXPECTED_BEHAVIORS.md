@@ -461,7 +461,7 @@ and open the terminal as an inspectable place.
 
 ### EB-FOCUS-002 - Focus a day or the whole trip
 
-**Trigger:** Select a day scope from Itinerary or Map, or select All days.
+**Trigger:** Select a day scope or All days from the shared workspace day row.
 
 **Expected:** Day focus clears exact-place focus and aligns Itinerary to that day
 summary. The map details tile changes from any previously selected place to the
@@ -508,6 +508,23 @@ focus.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `maps a Trip Snapshot click to the shared All days focus`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `restores All days after an externally focused day`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `defers and cancels superseded overlay redraws`
+
+### EB-DURATION-001 - Add or reduce a trip day
+
+**Trigger:** Choose Add a day or Reduce a day beside the itinerary's Day by day
+heading, optionally select `Replan the whole itinerary`, and apply the change.
+
+**Expected:** The Assistant immediately performs one coherent trip update without
+asking a follow-up question. With the option unchecked, existing days remain stable
+where practical; the return date, relevant hotel stay, departure/return transport,
+and day summaries move by one day, and stops move only to ease or preserve a sensible
+schedule. With the option checked, the planner may redistribute the complete itinerary
+over the new duration. Reduce a day is unavailable for a one-day itinerary.
+
+**Executable proof:**
+
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `offers minimal day changes by default and an explicit whole-trip replan`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `sends coherent add and reduce day requests through the Assistant`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `defaults a newly selected trip to All days even when its day numbers overlap`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `marks the focused day circuit as selected`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `uses Trip Snapshot as the selected All days map control`

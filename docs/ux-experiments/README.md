@@ -143,6 +143,18 @@ experiment must include a production-scale preview that shows the option inside
 a realistic full application viewport; a miniature specimen alone is not enough
 to judge or approve a direction.
 
+## Open Planner Layout Directions Experiment (2026-09-08)
+
+The planner layout directions lab is available at
+`http://127.0.0.1:5175/lab-30-planner-layout-directions.html`. Starting from the sbx4
+workspace and one fixed Kyoto fixture, it compares two entirely new representations —
+a map-led journey canvas and an editorial trip storyboard — with a refined version of
+the current three-pane workspace and a precision-polish option that changes only smaller
+nuances such as professional pane controls, grouped actions, spacing, focus states, and
+surface finish. Its production-scale previews include working day, pane, map, and assistant
+controls. No production code is changed by the Lab. See
+[`PLANNER_LAYOUT_DIRECTIONS.md`](PLANNER_LAYOUT_DIRECTIONS.md).
+
 ## Open First Visit Experiment (2026-08-06)
 
 The first visit lab is available at

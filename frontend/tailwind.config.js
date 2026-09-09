@@ -1,30 +1,44 @@
+const token = (name) => `oklch(var(--${name}) / <alpha-value>)`;
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        ink: "#10324a",
-        muted: "#557687",
+        background: token("background"),
+        foreground: token("foreground"),
+        card: token("card"),
+        paper: token("paper"),
+        sand: token("sand"),
+        clay: token("clay"),
+        "clay-soft": token("clay-soft"),
+        sage: token("sage"),
+        "sage-soft": token("sage-soft"),
+        ochre: token("ochre"),
+        border: token("border"),
+        sidebar: token("sidebar"),
+        ink: token("ink"),
+        muted: token("muted-foreground"),
         brand: {
-          DEFAULT: "#d63c75",
-          50: "#fff2f7",
-          100: "#fce1eb",
-          500: "#d63c75",
-          600: "#b92d62",
-          700: "#96244f",
+          DEFAULT: token("primary"),
+          50: token("clay-soft"),
+          100: token("clay-soft"),
+          500: token("primary"),
+          600: token("primary-strong"),
+          700: token("primary-strong"),
         },
         accent: {
-          DEFAULT: "#0877b9",
-          50: "#eef9fc",
-          500: "#0877b9",
-          600: "#07649b",
+          DEFAULT: token("sage"),
+          50: token("sage-soft"),
+          500: token("sage"),
+          600: token("sage-strong"),
         },
-        surface: "#f7fbfa",
+        surface: token("sand"),
       },
       fontFamily: {
         sans: [
-          "Space Grotesk",
+          "Work Sans",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",
@@ -33,7 +47,7 @@ export default {
           "sans-serif",
         ],
         display: [
-          "Newsreader",
+          "Instrument Serif",
           "ui-serif",
           "Georgia",
           "Cambria",
@@ -42,8 +56,8 @@ export default {
         ],
       },
       boxShadow: {
-        card: "0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.04)",
-        pop: "0 10px 30px rgba(15, 23, 42, 0.12)",
+        card: "0 1px 2px oklch(0.28 0.05 45 / 0.06), 0 8px 24px -12px oklch(0.28 0.05 45 / 0.18)",
+        pop: "0 2px 4px oklch(0.28 0.05 45 / 0.06), 0 18px 40px -18px oklch(0.28 0.05 45 / 0.28)",
       },
       borderRadius: {
         "4xl": "2rem",

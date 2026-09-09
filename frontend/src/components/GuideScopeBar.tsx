@@ -23,8 +23,8 @@ interface Props {
 export default function GuideScopeBar({ cities, city, kind, query, onCity, onKind, onQuery }: Props) {
   return (
     <div>
-      <label className="flex h-9 items-center gap-2 rounded-md bg-slate-50 px-3 ring-1 ring-inset ring-slate-200">
-        <Search size={14} className="text-slate-400" aria-hidden />
+      <label className="flex h-9 items-center gap-2 rounded-md bg-background px-3 ring-1 ring-inset ring-border">
+        <Search size={14} className="text-muted" aria-hidden />
         <input
           value={query}
           onChange={(event) => onQuery(event.target.value)}
@@ -43,7 +43,7 @@ export default function GuideScopeBar({ cities, city, kind, query, onCity, onKin
               onClick={() => onCity(item)}
               aria-pressed={city === item}
               className={`h-7 shrink-0 rounded-md px-2.5 text-[11px] font-semibold ${
-                city === item ? "bg-ink text-white" : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                city === item ? "bg-ink text-white" : "bg-background text-muted hover:bg-sand"
               }`}
             >
               {item === "all" ? "All cities" : item}
@@ -52,7 +52,7 @@ export default function GuideScopeBar({ cities, city, kind, query, onCity, onKin
         </div>
       )}
 
-      <div className="mt-2 grid grid-cols-4 gap-1 rounded-md bg-slate-50 p-1">
+      <div className="mt-2 grid grid-cols-4 gap-1 rounded-md bg-background p-1">
         {KIND_TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -60,7 +60,7 @@ export default function GuideScopeBar({ cities, city, kind, query, onCity, onKin
             onClick={() => onKind(id)}
             aria-pressed={kind === id}
             className={`flex h-8 items-center justify-center gap-1 rounded-[5px] text-[10px] font-semibold ${
-              kind === id ? "bg-white text-ink shadow-sm" : "text-slate-500"
+              kind === id ? "bg-paper text-ink shadow-sm" : "text-muted"
             }`}
           >
             <Icon size={12} aria-hidden />

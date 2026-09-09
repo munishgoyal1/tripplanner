@@ -2,15 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Space Grotesk (UI) + Newsreader (display headings) are loaded via <link> in
-   index.html so we keep the @import-free CSS PostCSS prefers. */
+/* Work Sans (UI) + Instrument Serif (display headings) are loaded in index.html. */
+
+:root {
+  --background: 0.975 0.011 84;
+  --foreground: 0.238 0.026 47;
+  --paper: 0.992 0.006 86;
+  --card: 0.992 0.006 86;
+  --sand: 0.949 0.018 87;
+  --primary: 0.556 0.146 39;
+  --primary-strong: 0.47 0.142 37;
+  --clay: 0.556 0.146 39;
+  --clay-soft: 0.906 0.043 55;
+  --sage: 0.552 0.052 148;
+  --sage-strong: 0.45 0.065 148;
+  --sage-soft: 0.912 0.033 145;
+  --ochre: 0.727 0.128 74;
+  --ink: 0.238 0.026 47;
+  --muted-foreground: 0.505 0.026 60;
+  --border: 0.888 0.017 85;
+  --sidebar: 0.966 0.014 86;
+}
 
 @layer components {
   .input {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20;
+    @apply w-full rounded-md border border-border bg-paper px-3 py-2 text-sm shadow-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20;
   }
   .card {
-    @apply overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-slate-100 transition;
+    @apply overflow-hidden rounded-lg bg-paper shadow-card ring-1 ring-border transition;
   }
   .card-hover {
     @apply hover:-translate-y-0.5 hover:shadow-pop;
@@ -19,16 +38,17 @@
     @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium;
   }
   .chip {
-    @apply inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-medium text-slate-600;
+    @apply inline-flex items-center gap-1 rounded-full bg-sand px-2.5 py-0.5 text-[11px] font-medium text-muted;
   }
   .btn-primary {
     @apply inline-flex items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40;
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink;
+    @apply inline-flex items-center justify-center gap-1.5 rounded-md bg-paper px-3.5 py-1.5 text-xs font-medium text-ink ring-1 ring-border transition hover:bg-sand hover:text-ink;
   }
   .display {
-    @apply font-display tracking-tight;
+    @apply font-display;
+    letter-spacing: 0;
   }
 }
 
@@ -41,23 +61,28 @@ body,
 
 body {
   font-family: theme("fontFamily.sans");
-  background: theme("colors.surface");
+  background: oklch(var(--background));
   color: theme("colors.ink");
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+:focus-visible {
+  outline: 2px solid oklch(var(--primary));
+  outline-offset: 2px;
+}
+
 .product-theme-aegean {
-  --landing-bg: #f7fbfa;
-  --landing-surface: rgba(255, 255, 255, 0.88);
-  --landing-heading: #10324a;
-  --landing-body: #385c70;
-  --landing-muted: #6c8795;
-  --landing-line: #c8e2e8;
-  --landing-accent: #0877b9;
-  --landing-brand: #d63c75;
-  --landing-lower-bg: #fffdf5;
-  --landing-lower-line: #d5e8e9;
+  --landing-bg: oklch(var(--background));
+  --landing-surface: oklch(var(--paper));
+  --landing-heading: oklch(var(--ink));
+  --landing-body: oklch(var(--muted-foreground));
+  --landing-muted: oklch(var(--muted-foreground));
+  --landing-line: oklch(var(--border));
+  --landing-accent: oklch(var(--sage-strong));
+  --landing-brand: oklch(var(--primary));
+  --landing-lower-bg: oklch(var(--paper));
+  --landing-lower-line: oklch(var(--border));
   background: var(--landing-bg);
 }
 
@@ -144,11 +169,11 @@ body {
   width: 8px;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(15, 23, 42, 0.18);
+  background: oklch(var(--ink) / 0.18);
   border-radius: 999px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(15, 23, 42, 0.32);
+  background: oklch(var(--ink) / 0.32);
 }
 *::-webkit-scrollbar-track {
   background: transparent;

@@ -33,11 +33,11 @@ describe("trip feedback contract", () => {
     expect(everywhere.map((option) => option.id).sort()).toEqual(["floating-tab", "toolbar-pill"]);
   });
 
-  it("registers Lab 29 as the newest allocated number", () => {
+  it("keeps Lab 29 registered after the next allocation", () => {
     const lab = allLabs.find((candidate) => candidate.id === "trip-feedback");
 
     expect(lab?.labNumber).toBe(29);
-    expect(LAST_ASSIGNED_LAB_NUMBER).toBe(29);
+    expect(LAST_ASSIGNED_LAB_NUMBER).toBe(30);
     expect(lab?.href).toBe("./lab-29-trip-feedback.html");
   });
 });

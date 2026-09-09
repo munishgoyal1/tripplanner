@@ -17,13 +17,13 @@ export default function AssistantModalShell({ open, onClose, children }: Props) 
         data-testid="assistant-modal"
         role="dialog"
         aria-label="Trip Assistant"
-        className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,23,42,.28)]"
+        className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-md border border-border bg-paper shadow-pop"
       >
         <div className="relative min-h-0 flex-1">{children}</div>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-md bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50 hover:text-ink"
+          className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-sand text-muted shadow-sm ring-1 ring-border hover:bg-clay-soft hover:text-ink"
           aria-label="Close Assistant"
           title="Close Assistant"
         >
