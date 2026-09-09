@@ -35,7 +35,7 @@ syncs, so a conflict git can already settle never stalls the merge. Use it when 
 sandbox has more work ahead of it; use `Promote-Sandbox` when the lane is
 finished.
 
-The primary checkout owns the canonical local app stack. Before starting it, run `scripts/win/user/run/Run-Latest-Master.cmd` on Windows or `scripts/mac/user/run/Run-Latest-Master.command` on macOS. Sandboxes use their own ports and server-free validation by default.
+The primary checkout owns the canonical local app stack. Before starting it, run `scripts/win/user/run/Run-Latest-Master.cmd` on Windows or `scripts/mac/user/run/Run-Latest-Master.command` on macOS. Sandboxes use their own ports and server-free validation by default. `Copy-PrimaryEnvironment` refreshes the sandbox `.env` from the primary checkout so provider keys match, but Google Maps JavaScript still checks the page origin against the local browser key's HTTP referrers. Those referrers must include the sandbox Vite ports in `infra/billing-guardrails.json`, then be applied with `infra/gcp/apply-billing-guardrails.ps1`; copying `.env` alone does not authorize `:5273` and later slots.
 
 Promotion requires the primary `master` checkout to be clean and exactly equal
 to `origin/master` before the pull request is merged. After GitHub merges the

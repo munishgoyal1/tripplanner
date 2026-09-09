@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 
@@ -108,6 +109,37 @@ def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
     assert 'environment === "canary"' in browser_smoke
     assert "Google Places is intentionally disabled in canary" in browser_smoke
     assert "destination overview returned no photo" in browser_smoke
+
+
+def test_local_maps_browser_referrers_cover_sandbox_vite_ports() -> None:
+    root = Path(__file__).parents[1]
+    sandbox = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
+
+    def ps_int(name: str) -> int:
+        match = re.search(rf"\${name}\s*=\s*(\d+)", sandbox)
+        assert match, name
+        return int(match.group(1))
+
+    frontend_base = ps_int("FrontendBase")
+    labs_base = ps_int("LabsBase")
+    step = ps_int("Step")
+    max_slots = ps_int("MaxSlots")
+    config = json.loads((root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8"))
+    local = next(env for env in config["gcp"]["environments"] if env["name"] == "local")
+    referrers = set(local["browserReferrers"])
+    ports = [5173, 5175]
+    for slot in range(max_slots):
+        ports.append(frontend_base + slot * step)
+        ports.append(labs_base + slot * step)
+    missing = [
+        f"http://{host}:{port}/*"
+        for host in ("localhost", "127.0.0.1")
+        for port in ports
+        if f"http://{host}:{port}/*" not in referrers and f"http://{host}:*/*" not in referrers
+    ]
+    assert not missing, missing
+    assert "http://localhost:5173/*" in referrers
+    assert "http://127.0.0.1:5173/*" in referrers
 
 
 def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
