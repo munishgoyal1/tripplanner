@@ -69,7 +69,7 @@ export const toneStyles: Record<Tone, ToneStyle> = {
     muted: "text-slate-500",
     chip: "bg-white/10 text-slate-200",
     divider: "border-white/10",
-    accent: "text-emerald-300",
+    accent: "text-sage",
   },
 };
 
@@ -142,12 +142,12 @@ const receiptAccent: Record<StageReceipt["kind"], string> = {
 
 const receiptAccentDark: Record<StageReceipt["kind"], string> = {
   read: "text-slate-500",
-  search: "text-sky-300",
-  price: "text-emerald-300",
-  hotel: "text-violet-300",
-  place: "text-rose-300",
-  compare: "text-amber-300",
-  check: "text-emerald-300",
+  search: "text-sage",
+  price: "text-sage",
+  hotel: "text-clay",
+  place: "text-clay",
+  compare: "text-amber-700",
+  check: "text-sage",
 };
 
 export function ReceiptLine({ receipt, tone }: { receipt: StageReceipt; tone: Tone }) {
@@ -228,7 +228,7 @@ export function StageDayCard({ day, tone }: { day: StageDay; tone: Tone }) {
         <p className={`text-xs font-bold ${s.heading}`}>
           Day {day.day} · <span className={s.body}>{day.weekday} {day.date}</span>
         </p>
-        <span className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold ${tone === "dark" ? "bg-violet-500/20 text-violet-200" : "bg-violet-50 text-violet-700"}`}>
+        <span className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold ${tone === "dark" ? "bg-clay-soft text-clay" : "bg-violet-50 text-violet-700"}`}>
           <BedDouble size={10} aria-hidden /> {day.hotel}
         </span>
       </div>
@@ -300,7 +300,7 @@ export function ModeCompareCard({ compare, tone }: { compare: ModeCompare; tone:
     <div className={`overflow-hidden rounded-xl ${s.panel} ${s.panelRing}`}>
       <div className={`flex flex-wrap items-center justify-between gap-2 border-b px-3 py-2 ${s.divider}`}>
         <p className={`text-xs font-semibold ${s.heading}`}>{compare.subject}</p>
-        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${tone === "dark" ? "bg-emerald-400/15 text-emerald-300" : "bg-emerald-50 text-emerald-700"}`}>
+        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${tone === "dark" ? "bg-emerald-400/15 text-sage" : "bg-emerald-50 text-emerald-700"}`}>
           <Check size={10} aria-hidden /> {compare.chosen}
         </span>
       </div>
@@ -332,9 +332,9 @@ export function ModeCompareCard({ compare, tone }: { compare: ModeCompare; tone:
 export function SavingsRow({ trip, tone }: { trip: StageTrip; tone: Tone }) {
   const s = toneStyles[tone];
   return (
-    <div className={`rounded-xl px-3.5 py-2.5 ${tone === "dark" ? "bg-emerald-400/10 ring-1 ring-emerald-400/30" : "bg-emerald-50 ring-1 ring-emerald-200"}`}>
+    <div className={`rounded-xl px-3.5 py-2.5 ${tone === "dark" ? "bg-sage-soft ring-1 ring-emerald-400/30" : "bg-emerald-50 ring-1 ring-emerald-200"}`}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <span className={`text-[11px] font-bold uppercase ${tone === "dark" ? "text-emerald-300" : "text-emerald-700"}`}>{trip.totalLabel}</span>
+        <span className={`text-[11px] font-bold uppercase ${tone === "dark" ? "text-sage" : "text-emerald-700"}`}>{trip.totalLabel}</span>
         <span className={`text-lg font-bold tabular-nums ${s.heading}`}>{trip.total}</span>
         <span className={`text-[11px] ${s.body}`}>{trip.totalNote}</span>
       </div>
@@ -471,7 +471,7 @@ export function Masthead({ tone, onSkip, onOpenAccount, accountLabel, signedIn }
         <button
           type="button"
           onClick={onOpenAccount}
-          className={`inline-flex items-center gap-2 rounded-full border px-2 py-1.5 text-[12px] font-semibold transition ${tone === "dark" ? "border-white/25 bg-white/10 text-white hover:bg-white/15" : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"}`}
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-paper px-3 py-1.5 text-xs font-medium text-ink transition hover:bg-sand"
           title={`${accountLabel} account settings`}
           aria-label={`${accountLabel} profile`}
         >
@@ -484,7 +484,7 @@ export function Masthead({ tone, onSkip, onOpenAccount, accountLabel, signedIn }
         <button
           type="button"
           onClick={onSkip}
-          className={`rounded-full px-3 py-1.5 text-[13px] font-semibold transition ${tone === "dark" ? "bg-white text-ink hover:bg-slate-200" : "bg-ink text-white hover:opacity-90"}`}
+          className="rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-600"
         >
           Skip to the app <ArrowRight size={13} className="ml-1 inline" aria-hidden />
         </button>

@@ -492,17 +492,18 @@ describe("ChatPanel progress", () => {
 
     expect(await readyComposer()).toHaveAttribute("rows", "1");
     expect(screen.queryByTestId("chat-transcript")).not.toBeInTheDocument();
+    expect(screen.getByText("Default preferences")).toBeInTheDocument();
+    expect(screen.getByTitle("Let the agent decide with smart defaults")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Conversation" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /Conversation/ }));
-    expect(onChangeLayout).toHaveBeenCalledWith("sheet");
-
-    rerender(
-      <ChatPanel onTurnComplete={vi.fn()} layout="sheet" onChangeLayout={onChangeLayout} onHide={onHide} />,
-    );
-    expect(screen.getByTestId("chat-transcript")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Maximize/ }));
     expect(onChangeLayout).toHaveBeenCalledWith("full");
-    fireEvent.click(screen.getByRole("button", { name: /Minimize/ }));
+
+    rerender(
+      <ChatPanel onTurnComplete={vi.fn()} layout="full" onChangeLayout={onChangeLayout} onHide={onHide} />,
+    );
+    expect(screen.getByTestId("chat-transcript")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Restore/ }));
     expect(onChangeLayout).toHaveBeenCalledWith("bar");
     fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
     expect(onHide).toHaveBeenCalled();

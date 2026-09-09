@@ -507,7 +507,7 @@ export default function ChatPanel({
   );
 
   const brandHeader = (
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white/85 px-5 py-3 backdrop-blur">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-paper/85 px-4 py-2.5 backdrop-blur">
         <div className="flex items-center gap-3">
           <div>
             <BrandIdentity />
@@ -520,7 +520,7 @@ export default function ChatPanel({
             disabled={busy || !transcriptReady}
             title="Start a new trip plan"
             aria-label="Start a new trip plan"
-            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink disabled:opacity-40"
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-ink ring-1 ring-border transition hover:bg-background hover:text-ink disabled:opacity-40"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12h14" />
@@ -532,7 +532,7 @@ export default function ChatPanel({
               onClick={() => openAccountSettings()}
               title="Account settings"
               aria-label="Account settings"
-              className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+              className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold text-muted transition hover:bg-sand"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -557,7 +557,7 @@ export default function ChatPanel({
         ref={scrollRef}
         data-testid="chat-transcript"
         onScroll={handleTranscriptScroll}
-        className="h-full space-y-4 overflow-y-auto bg-surface px-5 py-5"
+        className="h-full space-y-3 overflow-y-auto bg-sand px-4 py-4"
       >
         {/* Guest-import banner: shown once after OAuth sign-in when guest had data */}
         {guestBanner && (
@@ -641,37 +641,37 @@ export default function ChatPanel({
           <Fragment key={i}>
           {group && (
             <div className="flex items-center gap-3 pt-1" role="separator" aria-label={group}>
-              <span className="h-px flex-1 bg-slate-200" />
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{group}</span>
-              <span className="h-px flex-1 bg-slate-200" />
+              <span className="h-px flex-1 bg-border" />
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">{group}</span>
+              <span className="h-px flex-1 bg-border" />
             </div>
           )}
           <div
             className={`group flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}
           >
             {m.role === "user" && m.ts !== undefined && (
-              <div className="mb-1 px-1 text-[10px] text-slate-400">{clockLabel(m.ts)}</div>
+              <div className="mb-1 px-1 text-[10px] text-muted">{clockLabel(m.ts)}</div>
             )}
             <div
               className={`${wideTurns ? "max-w-[min(56rem,94%)]" : "max-w-[88%]"} rounded-lg px-3.5 py-2.5 text-sm leading-relaxed shadow-card ring-1 ${
                 m.role === "user"
-                  ? "rounded-br-sm bg-gradient-to-br from-brand to-brand-600 text-white ring-brand/30"
-                  : "bg-white text-ink ring-slate-200"
+                  ? "rounded-br-sm bg-brand text-white ring-brand/30"
+                  : "bg-paper text-ink ring-border"
               }`}
             >
               {m.role === "assistant" && (
                 <div className="mb-1.5 flex items-center gap-1.5">
                   <Sparkles size={11} className="shrink-0 text-brand" aria-hidden />
-                  <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-muted">
                     Assistant
                   </span>
                   {m.ts !== undefined && (
-                    <span className="text-[10px] text-slate-400">{clockLabel(m.ts)}</span>
+                    <span className="text-[10px] text-muted">{clockLabel(m.ts)}</span>
                   )}
                   {m.seconds !== undefined && (
                     <span
                       title={`This reply took ${turnDurationLabel(m.seconds)}`}
-                      className="ml-auto inline-flex items-center gap-1 rounded-sm bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500"
+                      className="ml-auto inline-flex items-center gap-1 rounded-sm bg-sand px-1.5 py-0.5 text-[10px] font-semibold text-muted"
                     >
                       <Clock size={10} aria-hidden /> {turnDurationLabel(m.seconds)}
                     </span>
@@ -698,13 +698,13 @@ export default function ChatPanel({
                         title={tip}
                         className={`rounded-full px-2 py-0.5 text-[10px] ${
                           m.role === "user"
-                            ? "bg-white/20 text-white/90"
-                            : "bg-slate-100 text-slate-500"
+                            ? "bg-paper/20 text-white/90"
+                            : "bg-sand text-muted"
                         }`}
                       >
                         {t}
                         {trace?.duration_ms !== undefined && (
-                          <span className="ml-1 text-slate-400">
+                          <span className="ml-1 text-muted">
                             {trace.duration_ms}ms
                           </span>
                         )}
@@ -721,7 +721,7 @@ export default function ChatPanel({
                     <span
                       key={`${effect.name}-${effectIndex}`}
                       title={`${effect.name} was removed from the plan`}
-                      className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-400 line-through"
+                      className="inline-flex items-center gap-1 rounded-full bg-sand px-2 py-0.5 text-[10px] font-semibold text-muted line-through"
                     >
                       <MapPin size={10} aria-hidden />
                       {effect.name}
@@ -743,13 +743,13 @@ export default function ChatPanel({
               </div>
             )}
             {m.text && !(busy && i === messages.length - 1) && (
-              <div className="mt-1 flex min-h-7 items-center gap-0.5 px-1 text-slate-400 opacity-60 transition group-focus-within:opacity-100 group-hover:opacity-100">
+              <div className="mt-1 flex min-h-7 items-center gap-0.5 px-1 text-muted opacity-60 transition group-focus-within:opacity-100 group-hover:opacity-100">
                 <button
                   type="button"
                   onClick={() => void copyMessage(m.text, i)}
                   title={copiedMessage === i ? "Copied" : "Copy message"}
                   aria-label={copiedMessage === i ? "Message copied" : "Copy message"}
-                  className="rounded-md p-1.5 hover:bg-white hover:text-ink focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="rounded-md p-1.5 hover:bg-paper hover:text-ink focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand/20"
                 >
                   {copiedMessage === i ? <Check size={15} /> : <Copy size={15} />}
                 </button>
@@ -760,7 +760,7 @@ export default function ChatPanel({
                     disabled={busy}
                     title="Edit in the composer and send as a new instruction"
                     aria-label="Edit message"
-                    className="rounded-md p-1.5 hover:bg-white hover:text-ink focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:opacity-30"
+                    className="rounded-md p-1.5 hover:bg-paper hover:text-ink focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:opacity-30"
                   >
                     <Pencil size={15} />
                   </button>
@@ -826,7 +826,7 @@ export default function ChatPanel({
   );
 
   const composerBlock = (
-      <div className={docked ? "min-w-0 flex-1" : "border-t border-slate-100 bg-white p-4"}>
+      <div className={docked ? "flex min-w-0 flex-1 items-center gap-2" : "border-t border-border bg-paper p-4"}>
         {failedRequest && (
           <button
             onClick={retryFailedRequest}
@@ -836,7 +836,7 @@ export default function ChatPanel({
             Retry request
           </button>
         )}
-        <div className="flex items-end gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
           {micSupported && (
             <button
               onClick={toggleListening}
@@ -844,10 +844,10 @@ export default function ChatPanel({
               title={listening ? "Stop dictation" : "Start voice dictation"}
               aria-label={listening ? "Stop dictation" : "Start voice dictation"}
               aria-pressed={listening}
-              className={`rounded-full p-2.5 ring-1 transition disabled:opacity-40 ${
+              className={`${docked ? "p-1.5" : "p-2.5"} rounded-full ring-1 transition disabled:opacity-40 ${
                 listening
                   ? "bg-brand text-white ring-brand shadow-pop animate-pulse"
-                  : "text-slate-500 ring-slate-200 hover:bg-slate-50 hover:text-ink"
+                  : "text-muted ring-border hover:bg-background hover:text-ink"
               }`}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -860,9 +860,9 @@ export default function ChatPanel({
           )}
           <textarea
             ref={composerRef}
-            className="flex-1 resize-none rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+            className={`min-w-0 flex-1 resize-none rounded-lg border border-border bg-sand text-sm transition placeholder:text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 ${docked ? "h-8 px-3 py-1.5 leading-5" : "px-4 py-2.5"}`}
             rows={docked ? 1 : 2}
-            placeholder="e.g. Plan a 5-day trip to Goa in December for 2 people"
+            placeholder={hasActiveTrip ? "Ask for a change to this trip…" : "Plan a 5-day trip to Goa in December for 2 people…"}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -878,29 +878,27 @@ export default function ChatPanel({
             disabled={!busy && (!transcriptReady || !input.trim())}
             title={busy ? "Stop response" : "Send message"}
             aria-label={busy ? "Stop response" : "Send"}
-            className={busy
-              ? "grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-white transition hover:bg-slate-700"
-              : "btn-primary grid h-11 w-11 shrink-0 place-items-center rounded-full p-0"
-            }
+            className={`grid shrink-0 place-items-center rounded-full p-0 transition disabled:opacity-40 ${docked ? "h-8 w-8" : "h-11 w-11"} ${busy ? "bg-ink text-white hover:bg-slate-700" : "bg-brand text-white hover:bg-brand-600"}`}
           >
             {busy ? <Square size={15} fill="currentColor" /> : <Send size={18} />}
           </button>
         </div>
-        <label className="mt-2 flex cursor-pointer items-center gap-2 px-1 text-[11px] text-slate-500">
+        <label title="Let the agent decide with smart defaults" className={`${docked ? "w-[7.75rem] shrink-0 justify-end gap-1.5" : "mt-2 gap-2 px-1"} flex cursor-pointer items-center text-[11px] text-muted`}>
           <input
             type="checkbox"
             checked={smartDefaults}
             onChange={(event) => updateSmartDefaults(event.target.checked)}
             disabled={busy || !transcriptReady}
           />
-          <span>Let the agent decide with smart defaults</span>
+          <span className={docked ? "sr-only" : ""}>Let the agent decide with smart defaults</span>
+          {docked && <span aria-hidden className="whitespace-nowrap text-[10px] font-medium">Default preferences</span>}
         </label>
       </div>
   );
 
   if (!docked) {
     return (
-      <div className="flex h-full flex-col bg-white">
+      <div className="flex h-full flex-col bg-paper">
         {brandHeader}
         {transcriptBlock}
         {composerBlock}
@@ -908,31 +906,18 @@ export default function ChatPanel({
     );
   }
 
-  const dockButton = "inline-flex shrink-0 items-center gap-1.5 rounded-sm px-2 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-ink";
+  const dockButton = "inline-flex shrink-0 items-center gap-1.5 rounded-md px-1.5 py-1.5 text-[11px] font-semibold text-muted transition hover:bg-sand hover:text-ink";
   const dockControls = (
     <>
-      {layout === "bar" ? (
-        <button type="button" onClick={() => onChangeLayout?.("sheet")} className={dockButton}>
-          <MessageSquare size={12} aria-hidden /> Conversation
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={() => onChangeLayout?.("bar")}
-          title="Minimize the conversation back to the bottom row"
-          className={dockButton}
-        >
-          <Minimize2 size={12} aria-hidden /> Minimize
-        </button>
-      )}
       <button
         type="button"
-        onClick={() => onChangeLayout?.(layout === "full" ? "sheet" : "full")}
-        title={layout === "full" ? "Restore the conversation sheet" : "Maximize the conversation"}
+        onClick={() => onChangeLayout?.(layout === "bar" ? "full" : "bar")}
+        aria-label={layout === "bar" ? "Maximize conversation" : "Restore conversation"}
+        title={layout === "bar" ? (lastReply ? `Open conversation: ${lastReply.text}` : "Maximize the conversation") : "Restore the compact Assistant row"}
         className={dockButton}
       >
-        {layout === "full" ? <Minimize2 size={12} aria-hidden /> : <Maximize2 size={12} aria-hidden />}
-        {layout === "full" ? "Restore" : "Maximize"}
+        {layout === "bar" ? <Maximize2 size={13} aria-hidden /> : <Minimize2 size={13} aria-hidden />}
+        <span className="sr-only">{layout === "bar" ? "Maximize conversation" : "Restore conversation"}</span>
       </button>
       {onHide && (
         <button type="button" onClick={onHide} title="Hide chat" aria-label="Hide Chat" className={dockButton}>
@@ -943,14 +928,14 @@ export default function ChatPanel({
   );
 
   return (
-    <div className="relative bg-white">
+    <div className="relative bg-paper">
       {layout !== "bar" && (
         <div
-          className={`absolute inset-x-0 bottom-full z-30 flex flex-col border-t border-slate-200 bg-white shadow-pop ${
+          className={`absolute inset-x-0 bottom-full z-30 flex flex-col border-t border-border bg-paper shadow-pop ${
             layout === "full" ? "h-[calc(100dvh-7.5rem)]" : "h-[58vh]"
           }`}
         >
-          <div className="flex shrink-0 items-center gap-2 border-b border-slate-200 px-3 py-2">
+          <div className="flex shrink-0 items-center gap-2 border-b border-border px-3 py-2">
             <MessageSquare size={13} className="text-brand" aria-hidden />
             <p className="text-[12px] font-semibold text-ink">Chat</p>
             <div className="ml-auto flex items-center gap-1">{dockControls}</div>
@@ -958,10 +943,15 @@ export default function ChatPanel({
           {transcriptBlock}
         </div>
       )}
-      <div className="flex items-center gap-2 px-3 py-2">
-        <div className="flex shrink-0 items-center gap-1">{layout === "bar" ? dockControls : null}</div>
-        {layout === "bar" && (
-          <p className="hidden min-w-0 flex-1 truncate text-[11px] text-slate-500 lg:block">
+      <div className="flex items-center gap-2 bg-paper px-3 py-1.5">
+        <div className="flex shrink-0 items-center gap-1 border-r border-border pr-2">
+          <span className="hidden items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-brand md:inline-flex">
+            <Sparkles size={13} aria-hidden /> Trip assistant
+          </span>
+          {layout === "bar" ? dockControls : null}
+        </div>
+        {layout === "bar" && busy && progress && (
+          <p className="hidden max-w-48 truncate text-[11px] text-muted xl:block">
             {busy && progress ? (
               <>
                 <span className="font-semibold text-ink">{progress.label}…</span>{" "}
@@ -969,7 +959,7 @@ export default function ChatPanel({
               </>
             ) : lastReply ? (
               <>
-                <span className="font-semibold text-slate-600">Last reply</span> · {lastReply.text}
+                <span className="font-semibold text-muted">Last reply</span> · {lastReply.text}
               </>
             ) : null}
           </p>

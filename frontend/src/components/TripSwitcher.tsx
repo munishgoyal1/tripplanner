@@ -1,4 +1,4 @@
-import { ChevronDown, Trash2 } from "lucide-react";
+import { ChevronDown, MapPin, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { deleteTrip, fetchSavedTrips, switchTrip } from "../api";
 import { ApiError } from "@tripplanner/client";
@@ -6,7 +6,7 @@ import { dismissNotice, notify } from "../lib/notices";
 import type { SavedTrip, TripWorkspaceView } from "../types";
 
 const STATUS_BADGE: Record<string, string> = {
-  draft: "bg-slate-100 text-slate-600",
+  draft: "bg-sand text-muted",
   finalized: "bg-emerald-50 text-emerald-700",
   booked: "bg-brand/10 text-brand",
 };
@@ -74,6 +74,7 @@ export default function TripSwitcher({
     if (switching.current) return;
     switching.current = true;
     const label = trips.find((trip) => trip.trip_id === tripId)?.destination ?? "trip";
+    dismissNotice("meal-gap");
     notify({ id: SWITCH_NOTICE, tone: "progress", message: `Switching to ${label}\u2026` });
     try {
       let workspace: TripWorkspaceView | null;
@@ -187,28 +188,28 @@ export default function TripSwitcher({
           }
           setOpen((current) => !current);
         }}
-        className="pill bg-white text-ink ring-1 ring-slate-200 transition hover:bg-slate-50"
+        className="pill h-7 min-w-0 shrink rounded-full bg-sand text-ink ring-1 ring-border transition hover:bg-paper"
         title="Switch between your saved trips"
         aria-expanded={open}
       >
-        <span aria-hidden>{"\u{1F9F3}"}</span>
-        <span className="max-w-[9rem] truncate">{label}</span>
-        <span className="text-slate-400">({trips.length})</span>
+        <MapPin size={15} className="shrink-0 text-clay" aria-hidden />
+        <span className="max-w-[6rem] truncate xl:max-w-[11rem]">{label}</span>
+        <span className="text-muted">({trips.length})</span>
         <ChevronDown size={14} aria-hidden />
       </button>
       {open && (
-        <div data-testid="saved-trips-menu" className="absolute left-0 top-full z-[80] mt-1.5 w-80 overflow-hidden rounded-lg bg-white shadow-pop ring-1 ring-slate-100">
-          <div className="flex h-10 items-center justify-between border-b border-slate-100 px-3">
+        <div data-testid="saved-trips-menu" className="absolute left-0 top-full z-[80] mt-1.5 w-80 overflow-hidden rounded-lg bg-paper shadow-pop ring-1 ring-border/60">
+          <div className="flex h-10 items-center justify-between border-b border-border/60 px-3">
             {deleteMode ? (
               <>
                 <button type="button" onClick={toggleAll} disabled={deleting} className="text-xs font-semibold text-brand disabled:opacity-50">
                   {selectedCount === trips.length ? "Clear all" : "Select all"}
                 </button>
-                <span className="text-xs text-slate-400">{selectedCount} selected</span>
+                <span className="text-xs text-muted">{selectedCount} selected</span>
               </>
             ) : (
               <>
-                <span className="text-xs font-semibold text-slate-500">Saved trips</span>
+                <span className="text-xs font-semibold text-muted">Saved trips</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -216,7 +217,7 @@ export default function TripSwitcher({
                     setSelectedTripIds(new Set());
                     setError(null);
                   }}
-                  className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-semibold text-slate-500 hover:bg-rose-50 hover:text-rose-600"
+                  className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-semibold text-muted hover:bg-rose-50 hover:text-rose-600"
                 >
                   <Trash2 size={13} aria-hidden />
                   Delete trips
@@ -235,7 +236,7 @@ export default function TripSwitcher({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
                     {trip.trip_number ? (
-                      <span className="shrink-0 text-xs font-semibold tabular-nums text-slate-400">
+                      <span className="shrink-0 text-xs font-semibold tabular-nums text-muted">
                         #{trip.trip_number}
                       </span>
                     ) : null}
@@ -245,7 +246,7 @@ export default function TripSwitcher({
                     <span className={`chip ${badge}`}>{trip.status}</span>
                   </div>
                   <div className="truncate text-xs text-muted">{dates}</div>
-                  <div className="mt-0.5 text-[11px] text-slate-400">
+                  <div className="mt-0.5 text-[11px] text-muted">
                     {trip.counts.flights}{"\u2708 \u00b7 "}{trip.counts.hotels}{"\u{1F3E8} \u00b7 "}{trip.counts.activities}{"\u{1F3AF}"}
                   </div>
                 </div>
@@ -253,7 +254,7 @@ export default function TripSwitcher({
               return (
                 <div
                   key={trip.trip_id}
-                  className={`flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left transition hover:bg-slate-50 ${
+                  className={`flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left transition hover:bg-background ${
                     trip.is_active ? "bg-brand/5 ring-1 ring-brand/20" : ""
                   }`}
                 >
@@ -279,7 +280,7 @@ export default function TripSwitcher({
             })}
           </div>
           {deleteMode && (
-            <div className="flex items-center justify-end gap-2 border-t border-slate-100 px-3 py-2">
+            <div className="flex items-center justify-end gap-2 border-t border-border/60 px-3 py-2">
               <button
                 type="button"
                 onClick={() => {
@@ -287,7 +288,7 @@ export default function TripSwitcher({
                   setSelectedTripIds(new Set());
                 }}
                 disabled={deleting}
-                className="h-8 rounded-md px-3 text-xs font-semibold text-slate-500 hover:bg-slate-100 disabled:opacity-50"
+                className="h-8 rounded-md px-3 text-xs font-semibold text-muted hover:bg-sand disabled:opacity-50"
               >
                 Cancel
               </button>

@@ -186,12 +186,23 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Layout**: desktop is a fixed-height spatial planner: itinerary left, a
   persistent dominant map center, and a contextual details inspector right.
   A compact top command bar owns saved-trip selection, global workspace
-  controls (including account/preferences), and the latest mutation outcome.
-  Itinerary, Map, Details, and Assistant use semantic icons with short labels on
-  wide desktops, collapsing to icon-only controls when desktop width is tighter;
-  all four remain direct one-click visibility controls. New trip uses a restrained
+  controls (including account/preferences). A persistent full-width row below it
+  owns notifications and review choices in one compact line, showing a quiet saved
+  state when no transient message is active; a details control
+  reveals full messages without expanding the strip. The desktop command bar is
+  40 px high and the notification strip is 28 px high. A third 32 px row gives
+  Itinerary, Map, and Guide one shared All days/day selector and Sequence control.
+  Itinerary, Map, Guide, and Assistant use semantic icons with visible short labels;
+  all four remain direct one-click visibility controls in that reading order.
+  The refined spatial workspace starts at 27% itinerary, 48% map, and 25% details,
+  migrating the prior saved proportions once, then persists subsequent owner resizing.
+  Pane headers name their job as well as their object — Read and refine, Explore and
+  route, and Trip context — so the three-column hierarchy is legible before its content
+  loads. New trip uses a restrained
   coral tint rather than a solid fill; active pane controls use quiet neutral fills,
-  while trip actions remain a lighter compact icon and Account settings uses one
+  while export/new/reset share one outlined group and thumbs up/down/rating share
+  one sand-colored group. Thin separators make each feedback and itinerary action
+  independently scannable without breaking the compact groups. Account preferences use a gear beside the sign-in or
   short identity label. This
   keeps itinerary, map, and trip decisions visually dominant.
   The itinerary begins with the one authoritative trip snapshot: destination,
@@ -211,7 +222,7 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   state survives. Only panes scroll; the page never does.
   Map commands sit below the map so the pane reads as a map first: a resting search
   field that reveals stop type, target day and Add once a place is named or tapped,
-  then All days/day scope beside an optional stop-sequence strip, then one compact
+  then an optional stop-sequence strip controlled by the shared third row, then one compact
   line separating schedule span from route-only travel. This hierarchy does not
   change map focus, placement, pin, route, or mutation behavior. Itinerary, Map,
   and Details group their pane-local Hide and Maximize/Restore icons in a quiet
@@ -227,10 +238,21 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   panes hidden, is valid and persists locally; the command bar always remains as
   the recovery surface. A visible docked pane has no arbitrary maximum width and
   may use all space not required by the minimum usable widths of visible siblings.
-- **Color**: coral `brand` (#e11d48) as the single accent for primary action +
-  active state; teal `accent` for secondary surfaces; ink/muted/surface
-  neutrals everywhere else. No rainbow.
-- **Type**: Inter for UI; Fraunces for display headings. Fonts loaded via
+  The itinerary's Day by day heading exposes Add a day and Reduce a day. Both update
+  dates, hotel nights, departure/return travel, and day summaries through the planner.
+  Minimal readjustment is the default; an unchecked `Replan the whole itinerary`
+  option lets the owner intentionally redistribute the complete trip.
+- **Compact chat**: the desktop dock keeps its composer and a visible
+  `Default preferences` checkbox label on one row, led by a persistent Trip assistant
+  identity and a trip-aware change prompt. The checkbox tooltip retains the full
+  smart-defaults explanation. One state-aware size control expands or restores the
+  conversation, and Hide is the only other dock control. Mobile retains its readable
+  full chat layout.
+- **Color**: Lovable warm editorial travel: terracotta `brand` for primary action +
+  active state; sage `accent` for secondary surfaces; ivory paper and sand
+  surfaces with warm ink, muted text, and thin borders. Preserve semantic status and map-route colors.
+  The welcome page shares the same paper, sand, terracotta, and sage palette.
+- **Type**: Work Sans for UI; regular-weight Instrument Serif for display headings. Fonts loaded via
   `<link>` in `frontend/index.html` (NOT from CSS — PostCSS rejects late `@import`).
 - **Shape**: use radii and elevation only where an object is genuinely framed
   or floating. The itinerary snapshot and destination guide are full-width

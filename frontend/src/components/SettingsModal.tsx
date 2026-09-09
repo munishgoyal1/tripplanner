@@ -113,21 +113,21 @@ function PreferenceShelf({
   choose: (key: keyof Preferences, value: Preferences[keyof Preferences]) => void;
 }) {
   return (
-    <section className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4" aria-labelledby="preference-shelf-heading">
+    <section className="rounded-xl border border-border bg-sand/60 p-4" aria-labelledby="preference-shelf-heading">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-brand">Your travel profile</p>
-          <h3 id="preference-shelf-heading" className="mt-1 text-base font-semibold text-ink">A better trip starts here</h3>
-          <p className="mt-1 text-xs leading-relaxed text-slate-600">Choose what feels like you. These defaults shape every new trip and can be changed for one trip later.</p>
+          <h3 id="preference-shelf-heading" className="display mt-1 text-xl text-ink">A better trip starts here</h3>
+          <p className="mt-1 text-xs leading-relaxed text-muted">Choose what feels like you. These defaults shape every new trip and can be changed for one trip later.</p>
         </div>
-        <span className="shrink-0 rounded-full bg-white px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">Saved privately</span>
+        <span className="shrink-0 rounded-full bg-paper px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">Saved privately</span>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {SHELF_GROUPS.map((group) => (
-          <div key={group.label} className="rounded-lg bg-white p-3 ring-1 ring-emerald-100">
+          <div key={group.label} className="rounded-lg bg-paper p-3 ring-1 ring-border">
             <div className="mb-2 flex items-start justify-between gap-2">
-              <div><h4 className="text-xs font-semibold text-ink">{group.label}</h4><p className="mt-0.5 text-[11px] text-slate-500">{group.hint}</p></div>
-              <code className="text-[10px] text-slate-400">{group.key}</code>
+              <div><h4 className="text-xs font-semibold text-ink">{group.label}</h4><p className="mt-0.5 text-[11px] text-muted">{group.hint}</p></div>
+              <code className="text-[10px] text-muted">{group.key}</code>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {group.tags.map((tag) => {
@@ -136,13 +136,13 @@ function PreferenceShelf({
                   group.mode === "multi"
                     ? choose("dietary", toggleTag(prefs.dietary, tag, group.tags))
                     : choose(group.key, tag.value as Preferences[typeof group.key]);
-                return <button key={tag.value} type="button" aria-pressed={selected} onClick={onClick} className={`rounded-full px-2.5 py-1.5 text-[11px] font-semibold transition ${selected ? "bg-brand text-white" : "bg-slate-50 text-slate-600 ring-1 ring-slate-200 hover:bg-slate-100"}`}>{selected ? "✓ " : "+ "}{tag.label}</button>;
+                return <button key={tag.value} type="button" aria-pressed={selected} onClick={onClick} className={`rounded-full px-2.5 py-1.5 text-[11px] font-semibold transition ${selected ? "bg-brand text-white" : "bg-background text-muted ring-1 ring-border hover:bg-sand"}`}>{selected ? "✓ " : "+ "}{tag.label}</button>;
               })}
             </div>
           </div>
         ))}
       </div>
-      <label className="mt-3 flex items-start gap-2 rounded-lg bg-white p-3 text-left ring-1 ring-emerald-100">
+      <label className="mt-3 flex items-start gap-2 rounded-lg bg-paper p-3 text-left ring-1 ring-border">
         <input
           type="checkbox"
           className="mt-0.5"
@@ -151,7 +151,7 @@ function PreferenceShelf({
         />
         <span>
           <span className="text-xs font-semibold text-ink">Let the agent decide with smart defaults</span>
-          <span className="mt-0.5 block text-[11px] leading-relaxed text-slate-500">
+          <span className="mt-0.5 block text-[11px] leading-relaxed text-muted">
             It uses your request, travel profile, and history without stopping to confirm defaults.
             Turn this off to let it ask one quick question when an answer would meaningfully help.
           </span>
@@ -305,7 +305,7 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
   const content = (
     <>
         {!prefs ? (
-          <p className="text-sm text-slate-500">Loading…</p>
+          <p className="text-sm text-muted">Loading…</p>
         ) : (
           <div className="space-y-4 text-sm">
             {section === "travel" && <>
@@ -345,7 +345,7 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
                 </p>
                 <ul className="mt-2 space-y-2">
                   {profileSuggestions.map((item) => (
-                    <li key={item.id} className="rounded-lg bg-white p-2.5 ring-1 ring-amber-100">
+                    <li key={item.id} className="rounded-lg bg-paper p-2.5 ring-1 ring-amber-100">
                       <p className="text-xs font-semibold text-ink">{item.summary}</p>
                       <div className="mt-1.5 flex items-center gap-2">
                         <button
@@ -358,7 +358,7 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
                         <button
                           type="button"
                           onClick={() => resolveSuggestion(item.id, "dismiss")}
-                          className="h-7 rounded-full px-3 text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200"
+                          className="h-7 rounded-full px-3 text-[11px] font-semibold text-muted ring-1 ring-border"
                         >
                           Discard
                         </button>
@@ -372,12 +372,12 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
               </div>
             )}
             <PreferenceShelf prefs={prefs} choose={set} />
-            <details className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-              <summary className="cursor-pointer text-xs font-semibold text-slate-600">Advanced preferences</summary>
+            <details className="rounded-xl border border-border bg-background p-3">
+              <summary className="cursor-pointer text-xs font-semibold text-muted">Advanced preferences</summary>
               <div className="mt-3 space-y-4">
-            <div className="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100">
+            <div className="rounded-xl bg-background p-3 ring-1 ring-border/60">
               <div className="mb-1 flex items-center justify-between">
-                <span className="text-xs font-medium text-slate-500">
+                <span className="text-xs font-medium text-muted">
                   What I've learned about you
                 </span>                <div className="flex items-center gap-2">
                   <button
@@ -391,14 +391,14 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
                   <button
                     type="button"
                     onClick={() => set("profile_summary", "")}
-                    className="text-xs text-slate-400 hover:text-ink"
+                    className="text-xs text-muted hover:text-ink"
                   >
                     Reset
                   </button>
                 </div>
               </div>
               <textarea
-                className="input min-h-[80px] resize-y bg-white"
+                className="input min-h-[80px] resize-y bg-paper"
                 placeholder={
                   "I keep a running summary of you here from our chats. It " +
                   "updates itself in the background — edit or reset it any time."
@@ -409,7 +409,7 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
                   set("profile_summary", e.target.value);
                 }}
               />
-              <p className="mt-1 text-[11px] text-slate-400">
+              <p className="mt-1 text-[11px] text-muted">
                 This is my summary of you (distinct from “About me”, which is
                 yours). I refresh it after our conversations; your edits stick.
               </p>
@@ -519,7 +519,7 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
                 />
               </Field>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-xl border border-border bg-background p-3">
               <p className="mb-2 text-xs font-semibold uppercase text-brand">Region and display</p>
               <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
                 <Field label="Country or region">
@@ -539,12 +539,12 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
                   </select>
                 </Field>
               </div>
-              <p className="mt-2 text-[11px] leading-relaxed text-slate-500">Country and language set the example trip, dates, and units. Currency is independent, so you can stay in one country and price everything in another currency. Interface text is English for now, and none of this changes passport, visa, or provider rules.</p>
+              <p className="mt-2 text-[11px] leading-relaxed text-muted">Country and language set the example trip, dates, and units. Currency is independent, so you can stay in one country and price everything in another currency. Interface text is English for now, and none of this changes passport, visa, or provider rules.</p>
             </div>
             </>}
 
             <div className="flex justify-end gap-2 pt-2">
-              {!embedded && <button onClick={onClose} className="rounded-xl px-4 py-2 text-sm text-slate-500 hover:bg-slate-100">Cancel</button>}
+              {!embedded && <button onClick={onClose} className="rounded-xl px-4 py-2 text-sm text-muted hover:bg-sand">Cancel</button>}
               <button
                 onClick={save}
                 disabled={saving}
@@ -566,12 +566,12 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-paper p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-ink">Travel preferences</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-ink">✕</button>
+          <button onClick={onClose} className="text-muted hover:text-ink">✕</button>
         </div>
         {content}
       </div>
@@ -582,7 +582,7 @@ export default function SettingsModal({ onClose, embedded = false, section }: Pr
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-medium text-slate-500">{label}</span>
+      <span className="mb-1 block text-xs font-medium text-muted">{label}</span>
       {children}
     </label>
   );

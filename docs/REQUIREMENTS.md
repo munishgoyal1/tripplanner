@@ -396,24 +396,37 @@ re-describing the whole product.
 
 - Desktop is a fixed-height workspace with Itinerary, a dominant persistent Map,
   and a right dock containing independently visible Details and Assistant.
+- The default refined spatial balance is 27% Itinerary, 48% Map, and 25% Details.
+  The selected layout migrates older stored proportions once; owner resizing then
+  persists normally. Compact task labels in each header distinguish reading and
+  refining, map exploration and routing, and contextual trip details.
 - Panes stay mounted through hide, restore, and maximize transitions so map and
   chat state survive.
 - Keyboard-accessible separators resize itinerary/map, map/inspector, and
   Details/Assistant splits; sizes persist locally.
 - A common command bar owns trip switching, New trip, visibility controls,
   global trip actions, one labeled Account settings trigger, and the latest
-  mutation result. Account settings owns Profile and sign-in, Travel Profile,
+  mutation result. Its separate 28 px notification row stays present, carries trip
+  switching and other key messages, and shows a quiet saved state when idle. A 32 px
+  shared row below it owns All days/day selection and the stop Sequence toggle across
+  the workspace. Account settings owns Profile and sign-in, Travel Profile,
   Analytics preferences, and Privacy and data in one right-side sheet.
-- At wide desktop sizes, pane visibility controls pair semantic icons with the
-  short labels Itinerary, Map, Details, and Assistant. Compact desktop widths
-  retain the icons without introducing header overflow.
+- Pane visibility controls pair semantic icons with the visible short labels
+  Itinerary, Map, Guide, and Assistant.
 - New trip is a labeled, softly tinted command rather than a solid high-contrast
   block. The four pane controls remain directly available without a submenu and
   use quiet neutral active states; utility icons are visually subordinate to the
-  itinerary and map. Hide and Maximize remain local pane-header actions.
+  itinerary and map. Visible separators distinguish thumbs up, thumbs down, and
+  Rate inside feedback, and Export, New trip, and Reset inside trip actions. Hide
+  and Maximize remain local pane-header actions.
 - Narrow desktop uses an inspector overlay. Mobile web uses Assistant plus an
   on-demand trip-details sheet rather than compressing the desktop layout.
 - Only panes scroll; the page itself remains spatially stable.
+- The compact desktop Assistant remains a single row with an explicit Trip assistant
+  identity, a trip-aware change prompt, and a visible `Default preferences` checkbox
+  label whose tooltip carries the full explanation. One state-aware size control
+  expands or restores the transcript over the workspace; Hide is the only other
+  dock control.
 
 ### ITIN-01 - Itinerary and trip snapshot
 
@@ -431,6 +444,10 @@ re-describing the whole product.
   endpoint-to-endpoint schedule and separate route-only travel subtotal. Missing
   hotel endpoint times are estimated from timed visits and known route legs and
   visibly marked as estimates.
+- Add a day and Reduce a day are discoverable beside Day by day. Their default
+  preserves existing days and asks the planner to adjust only dates, hotel nights,
+  departure/return travel, and any stops needed for coherence. A default-unchecked
+  whole-itinerary option authorizes a full redistribution over the new duration.
 - Compact agenda rows lead with explicit Depart/Return or Arrive/Stay timing,
   keep time, place, status, and actions densely left-aligned, place each travel
   estimate above its destination, and use explicit Confirmed or Needs booking
@@ -523,8 +540,8 @@ implemented capability baseline.
 - Add stop type is optional for manual text. A Google-selected place visibly
   marks its inferred Attraction, Hotel, or Restaurant type as auto-filled and
   lets the user correct it before adding.
-- Map day scope remains directly available beside the Map pane title. The Add stop
-  form stays visible below the header, and one compact context line distinguishes
+- Map day scope and Sequence remain directly available in the shared third workspace
+  row. The Add stop form stays visible below the Map header, and one compact context line distinguishes
   the selected day's schedule span from route-only duration, distance, and mode.
 - Itinerary, Map, and Details group pane-local Hide and Maximize/Restore icons in
   a restrained pair. Existing behavior, disabled states, and recovery remain unchanged.

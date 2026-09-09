@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 29;
+export const LAST_ASSIGNED_LAB_NUMBER = 30;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -53,6 +53,19 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // Committed defaults are the fallback only. The tracked canonical selection store
 // in docs/ux-experiments overrides them at runtime and merges any newer local draft.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 30,
+    id: "planner-layout-directions",
+    title: "Four ways to inhabit a trip",
+    category: "Planner workspace architecture",
+    description: "Compare two entirely new planner layouts with a considered evolution of the sbx4 workspace and a precision-polish pass that keeps its structure intact.",
+    createdAt: "2026-09-08",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-09-08",
+    decision: "Open · Recommended starting point: A · Journey canvas",
+    href: "./lab-30-planner-layout-directions.html",
+    icon: LayoutPanelTop,
+  },
   {
     labNumber: 29,
     id: "trip-feedback",

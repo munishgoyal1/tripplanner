@@ -40,12 +40,12 @@ function GuideRow({ row, onFocus }: { row: PlaceRow; onFocus: (kind: string, nam
     <button
       type="button"
       onClick={() => onFocus(row.kind, row.name)}
-      className="group grid w-full grid-cols-[4.5rem_minmax(0,1fr)_auto] gap-3 border-b border-slate-100 py-3 text-left last:border-b-0"
+      className="group grid w-full grid-cols-[4.5rem_minmax(0,1fr)_auto] gap-3 border-b border-border/60 py-3 text-left last:border-b-0"
     >
       {row.photo ? (
         <img src={row.photo} alt="" className="h-[4.5rem] w-[4.5rem] rounded-md object-cover" />
       ) : (
-        <span className="grid h-[4.5rem] w-[4.5rem] place-items-center rounded-md bg-slate-100 text-slate-400">
+        <span className="grid h-[4.5rem] w-[4.5rem] place-items-center rounded-md bg-sand text-muted">
           <Icon size={20} aria-hidden />
         </span>
       )}
@@ -58,7 +58,7 @@ function GuideRow({ row, onFocus }: { row: PlaceRow; onFocus: (kind: string, nam
             </span>
           )}
         </span>
-        <span className="mt-1 flex items-center gap-1 text-[11px] text-slate-500">
+        <span className="mt-1 flex items-center gap-1 text-[11px] text-muted">
           <MapPin size={11} aria-hidden />
           <span className="truncate">{[row.city, row.address].filter(Boolean).join(" · ") || "Nearby"}</span>
         </span>
@@ -154,8 +154,8 @@ export default function DestinationGuide({
   if (alternatives) {
     if (!loading && rows.length === 0) return null;
     return (
-      <div data-guide="alternatives" className="mt-5 border-t border-slate-100 pt-4">
-        <p className="text-[10px] font-bold uppercase text-slate-400">Compare nearby</p>
+      <div data-guide="alternatives" className="mt-5 border-t border-border/60 pt-4">
+        <p className="text-[10px] font-bold uppercase text-muted">Compare nearby</p>
         <h2 className="mt-0.5 text-sm font-semibold text-ink">
           Other {kindPlural(focus!.kind)}
           {focus?.city ? ` in ${focus.city}` : ""}
@@ -169,7 +169,7 @@ export default function DestinationGuide({
           <button
             type="button"
             onClick={showMore}
-            className="mt-3 h-9 w-full rounded-md bg-slate-50 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+            className="mt-3 h-9 w-full rounded-md bg-background text-xs font-semibold text-muted hover:bg-sand"
           >
             Show {Math.min(6, remaining)} more
           </button>
@@ -190,7 +190,7 @@ export default function DestinationGuide({
             ? `${destination || "Trip"} highlights`
             : kindPlural(kind).replace(/^./, (letter) => letter.toUpperCase())}
         </h2>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-muted">
           {total} grounded {total === 1 ? "place" : "places"} · showing {rows.length}
         </p>
       </div>
@@ -200,11 +200,11 @@ export default function DestinationGuide({
       ) : rows.length === 0 && loading ? (
         <div aria-hidden>
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-3 border-b border-slate-100 py-3 last:border-b-0">
-              <span className="h-[4.5rem] w-[4.5rem] animate-pulse rounded-md bg-slate-100" />
+            <div key={index} className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-3 border-b border-border/60 py-3 last:border-b-0">
+              <span className="h-[4.5rem] w-[4.5rem] animate-pulse rounded-md bg-sand" />
               <span className="flex flex-col justify-center gap-2">
-                <span className="h-3 w-2/3 animate-pulse rounded bg-slate-100" />
-                <span className="h-2.5 w-1/2 animate-pulse rounded bg-slate-100" />
+                <span className="h-3 w-2/3 animate-pulse rounded bg-sand" />
+                <span className="h-2.5 w-1/2 animate-pulse rounded bg-sand" />
               </span>
             </div>
           ))}
@@ -221,7 +221,7 @@ export default function DestinationGuide({
         <button
           type="button"
           onClick={showMore}
-          className="mt-3 h-9 w-full rounded-md bg-slate-50 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+          className="mt-3 h-9 w-full rounded-md bg-background text-xs font-semibold text-muted hover:bg-sand"
         >
           Show {Math.min(6, remaining)} more
         </button>
