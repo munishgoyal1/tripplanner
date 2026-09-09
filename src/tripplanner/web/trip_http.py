@@ -677,9 +677,9 @@ async def trip_export_ics(request: Request, user_id: str = "local") -> Response:
 async def trip_export_print(
     request: Request,
     user_id: str = "local",
-    include_photos: str = "1",
+    include_photos: str = "0",
     include_map_circuit: str = "1",
-    template: str = "detailed",
+    template: str = "standard",
     auto_print: str = "0",
 ) -> Response:
     """Return a print-ready HTML itinerary suitable for Save-as-PDF."""
@@ -690,7 +690,7 @@ async def trip_export_print(
     plan = trip_planner.load_active_trip_dict()
     html = build_export_html(
         plan,
-        include_photos=parse_export_bool(include_photos, default=True),
+        include_photos=parse_export_bool(include_photos, default=False),
         include_map_circuit=parse_export_bool(include_map_circuit, default=True),
         template=template,
         auto_print=parse_export_bool(auto_print, default=False),
@@ -702,8 +702,8 @@ async def trip_export_print(
 async def trip_export_pdf(
     request: Request,
     user_id: str = "local",
-    template: str = "detailed",
-    include_photos: str = "1",
+    template: str = "standard",
+    include_photos: str = "0",
     include_map_circuit: str = "1",
 ) -> Response:
     """Return a downloadable itinerary PDF generated server-side."""
@@ -721,7 +721,7 @@ async def trip_export_pdf(
         pdf_bytes = build_itinerary_pdf_bytes(
             plan,
             template=template,
-            include_photos=parse_export_bool(include_photos, default=True),
+            include_photos=parse_export_bool(include_photos, default=False),
             include_map_circuit=parse_export_bool(include_map_circuit, default=True),
         )
     except ImportError:

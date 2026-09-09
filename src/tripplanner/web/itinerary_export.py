@@ -215,6 +215,151 @@ def _decisions_section(trip: dict[str, Any]) -> str:
     )
 
 
+#: The five download formats this renderer knows how to compose. "detailed"
+#: and "trip_book" keep the existing per-day circuit maps; "standard" and
+#: "trip_card" never show one, regardless of ``include_map_circuit``.
+TEMPLATES = ("standard", "detailed", "trip_book", "trip_card")
+_MAP_TEMPLATES = {"detailed", "trip_book"}
+
+
+def _essentials_section(trip: dict[str, Any]) -> str:
+    """Weather and budget facts the trip already has -- nothing invented.
+
+    Lab 5's mockup carried emergency-contact numbers, but nothing in this app
+    looks those up for real, so they stay out rather than being fabricated.
+    """
+    weather = trip_view.build_weather(trip)
+    cost_breakdown = trip.get("cost_breakdown")
+    symbol = trip_view.currency_symbol(trip)
+
+    blocks: list[str] = []
+    if weather and weather.get("days"):
+        highs = [d["high_c"] for d in weather["days"] if d.get("high_c") is not None]
+        lows = [d["low_c"] for d in weather["days"] if d.get("low_c") is not None]
+        range_text = f"{min(lows):.0f}–{max(highs):.0f}°C" if highs and lows else ""
+        packing = "; ".join(weather.get("packing_advice") or [])
+        blocks.append(
+            "<div class='essential'><div class='k'>Weather</div>"
+            f"<div class='v'>{_e(range_text)}{' · ' if range_text else ''}"
+            f"{_e(weather.get('source_label') or '')}</div>"
+            + (f"<div class='note'>{_e(packing)}</div>" if packing else "")
+            + "</div>"
+        )
+    if isinstance(cost_breakdown, dict) and cost_breakdown:
+        items = " · ".join(
+            f"{_e(str(key).replace('_', ' ').title())} {_e(trip_view.fmt_money(value, symbol))}"
+            for key, value in cost_breakdown.items()
+            if isinstance(value, (int, float))
+        )
+        if items:
+            blocks.append(
+                f"<div class='essential'><div class='k'>Budget breakdown</div><div class='v'>{items}</div></div>"
+            )
+    if not blocks:
+        return ""
+    return f"<section class='essentials'><h2>Trip essentials</h2>{''.join(blocks)}</section>"
+
+
+_DOCUMENT_SUMMARY_FIELDS: dict[str, tuple[str, ...]] = {
+    "insurance": ("provider", "assistance_phone"),
+    "passport": ("expiry",),
+    "visa": ("destination_country", "valid_to"),
+    "vaccination": ("vaccine", "expiry"),
+    "licence": ("expiry",),
+    "idp": ("expiry",),
+    "loyalty": ("program", "tier"),
+}
+
+
+def _documents_wallet_section(trip: dict[str, Any]) -> str:
+    """Saved travel documents relevant to this trip, as a readiness checklist.
+
+    Names and a couple of safe reference fields only. Identity numbers stay
+    out of a file that may be printed, emailed, or left on a table.
+    """
+    from tripplanner.web import travel_documents
+
+    trip_id = str(trip.get("trip_id") or "")
+    records = [
+        record
+        for record in travel_documents.list_documents(scope=None)
+        if str(record.get("scope") or "traveler") != "trip"
+        or str(record.get("trip_id") or "") == trip_id
+    ]
+    if not records:
+        return ""
+
+    rows: list[str] = []
+    for record in records:
+        doc_type = str(record.get("type") or "")
+        label = travel_documents.TYPE_LABELS.get(doc_type, doc_type.title() or "Document")
+        holder = str(record.get("traveller_name") or "").strip() or "Traveller"
+        fields = record.get("fields") or {}
+        summary = " · ".join(
+            str(fields[key])
+            for key in _DOCUMENT_SUMMARY_FIELDS.get(doc_type, ())
+            if fields.get(key)
+        )
+        rows.append(
+            "<li class='doc-row'><span class='doc-type'>{label}</span>"
+            "<span class='doc-holder'>{holder}</span>"
+            "<span class='doc-summary'>{summary}</span></li>".format(
+                label=_e(label), holder=_e(holder), summary=_e(summary or "On file")
+            )
+        )
+    return (
+        "<section class='documents'><h2>Travel documents on file</h2>"
+        f"<ul class='doc-list'>{''.join(rows)}</ul>"
+        "<p class='doc-note'>Reference numbers are kept out of this file by design.</p>"
+        "</section>"
+    )
+
+
+def _condensed_day_rows(
+    days: list[dict[str, Any]],
+    *,
+    include_photos: bool,
+    destination: str,
+    seen_photos: set[str],
+) -> str:
+    """One compact row per day for the Trip Card format: date, title, top stops."""
+    rows: list[str] = []
+    for day in days:
+        day_num = int(day.get("day") or 0)
+        stops = [s for s in (day.get("stops") or []) if isinstance(s, dict)]
+        names = [str(s.get("name") or "").strip() for s in stops if s.get("name")]
+        headline_stop = next(
+            (s for s in stops if _stop_flagship_key(s) not in seen_photos), None
+        )
+        thumb = ""
+        if include_photos and headline_stop:
+            key = _stop_flagship_key(headline_stop)
+            photos = places_cache.get_photos(str(headline_stop.get("name") or ""), destination, max_photos=1)
+            if photos:
+                seen_photos.add(key)
+                thumb = f"<img class='card-thumb' src='{_e(photos[0])}' alt='' />"
+        rows.append(
+            "<li class='card-row'>{thumb}"
+            "<div class='card-row-main'>"
+            "<div class='card-row-head'><span class='card-day'>Day {day_num}</span>"
+            "<span class='card-date'>{date}</span></div>"
+            "<div class='card-title'>{title}</div>"
+            "<div class='card-stops'>{stops}</div>"
+            "</div></li>".format(
+                thumb=thumb,
+                day_num=day_num,
+                date=_e(day.get("date") or ""),
+                title=_e(day.get("title") or ""),
+                stops=_e(" · ".join(names[:4])),
+            )
+        )
+    return f"<ol class='card-days'>{''.join(rows)}</ol>"
+
+
+def _stop_flagship_key(stop: dict[str, Any]) -> str:
+    return str(stop.get("name") or "").strip().casefold()
+
+
 def build_export_html(
     trip: dict[str, Any] | None,
     *,
@@ -228,10 +373,16 @@ def build_export_html(
     if not trip:
         return """<!doctype html><html><head><meta charset='utf-8'><title>Trip Export</title></head><body><p>No active trip to export.</p></body></html>"""
 
+    template_key = str(template or "detailed").strip().lower()
+    if template_key not in TEMPLATES:
+        template_key = "detailed"
+    include_map_circuit = include_map_circuit and template_key in _MAP_TEMPLATES
+
     itinerary = trip_view.build_itinerary(trip)
     map_vm = trip_view.build_map_view(trip) if include_map_circuit else {"days": [], "pins": []}
     pin_by_id = {p.get("id"): p for p in (map_vm.get("pins") or [])}
     route_by_day = {int(d.get("day") or 0): d for d in (map_vm.get("days") or [])}
+    seen_photos: set[str] = set()
 
     destination = str(trip.get("destination") or "")
     origin = str(trip.get("origin") or "")
@@ -241,12 +392,11 @@ def build_export_html(
     symbol = trip_view.currency_symbol(trip)
     total_display = trip_view.fmt_money(trip.get("total_cost"), symbol)
 
-    template_key = str(template or "detailed").strip().lower()
-    if template_key not in {"minimal", "detailed", "family"}:
-      template_key = "detailed"
-
     day_blocks: list[str] = []
-    for day in itinerary.get("days") or []:
+    # Trip Card renders its own condensed rows below instead of full day
+    # sections, so skip this loop entirely rather than build unused HTML
+    # and burn photo-cache lookups on content that is never shown.
+    for day in ([] if template_key == "trip_card" else (itinerary.get("days") or [])):
         day_num = int(day.get("day") or 0)
         route = route_by_day.get(day_num) if include_map_circuit else None
         maps_url = str(day.get("google_maps_url") or "")
@@ -269,9 +419,16 @@ def build_export_html(
                 details.append(f"Rating {rating:g}")
               if details:
                 place_meta_html = f"<div class='place-meta'>{_e(' · '.join(details))}</div>"
-            if include_photos and kind in {"hotel", "attraction", "meal", "restaurant"} and name:
+            flagship_key = name.strip().casefold()
+            if (
+                include_photos
+                and kind in {"hotel", "attraction", "meal", "restaurant"}
+                and name
+                and flagship_key not in seen_photos
+            ):
                 photos = places_cache.get_photos(name, destination, max_photos=1)
                 if photos:
+                    seen_photos.add(flagship_key)
                     photo_html = (
                         f"<div class='stop-photo-wrap'><img class='stop-photo' src='{_e(photos[0])}' alt='{_e(name)}' /></div>"
                     )
@@ -366,21 +523,48 @@ def build_export_html(
         )
 
     auto = "<script>window.addEventListener('load',()=>window.print());</script>" if auto_print else ""
-    if template_key == "minimal":
+    if template_key == "standard":
       accent = "#334155"
       hero_bg = "linear-gradient(135deg,#f8fafc,#f1f5f9)"
       circuit_bg = "#f8fafc"
-      title_suffix = "Minimal"
-    elif template_key == "family":
+      title_suffix = "Standard"
+    elif template_key == "trip_book":
       accent = "#7c3aed"
       hero_bg = "linear-gradient(135deg,#faf5ff,#eef2ff)"
       circuit_bg = "#f5f3ff"
-      title_suffix = "Family"
+      title_suffix = "Trip Book"
+    elif template_key == "trip_card":
+      accent = "#b45309"
+      hero_bg = "linear-gradient(135deg,#fffbeb,#fff7ed)"
+      circuit_bg = "#fffbeb"
+      title_suffix = "Trip Card"
     else:
       accent = "#0d9488"
       hero_bg = "linear-gradient(135deg,#f8fafc,#eef2ff)"
       circuit_bg = "#ecfeff"
       title_suffix = "Detailed"
+
+    card_days_html = ""
+    if template_key == "trip_card":
+        card_days_html = _condensed_day_rows(
+            itinerary.get("days") or [],
+            include_photos=include_photos,
+            destination=destination,
+            seen_photos=seen_photos,
+        )
+
+    overview_map_html = ""
+    if template_key == "trip_book":
+        overview_map = _static_map_data_uri(list(pin_by_id.keys()), pin_by_id)
+        if overview_map:
+            overview_map_html = (
+                "<section class='overview-map'><h2>Trip overview</h2>"
+                f"<img class='route-map' src='{_e(overview_map)}' alt='Full trip overview map' />"
+                "</section>"
+            )
+
+    essentials_section = _essentials_section(trip) if template_key != "standard" else ""
+    documents_section = _documents_wallet_section(trip) if template_key == "trip_book" else ""
 
     # Optional "Continue Planning" CTA block injected above the footer.
     if share_url:
@@ -401,7 +585,9 @@ def build_export_html(
     else:
         share_section = ""
 
-    decisions_section = _decisions_section(trip)
+    decisions_section = (
+        _decisions_section(trip) if template_key in {"detailed", "trip_book"} else ""
+    )
 
     return f"""<!doctype html>
 <html>
@@ -461,9 +647,30 @@ def build_export_html(
     .checks {{ margin:12px 0 0; padding-left:0; list-style:none; font-size:12px;
       color:var(--muted); }}
     .checks .stale {{ color:#92400e; }}
+    .overview-map {{ margin-top:20px; }}
+    .overview-map h2 {{ margin:0 0 8px; font-size:18px; }}
+    .essentials, .documents {{ margin-top:20px; border:1px solid var(--line); border-radius:14px; padding:14px; page-break-inside:avoid; }}
+    .essentials h2, .documents h2 {{ margin:0 0 10px; font-size:18px; }}
+    .essential {{ margin-top:8px; }}
+    .essential .note {{ margin-top:3px; color:#334155; font-size:13px; }}
+    .doc-list {{ margin:0; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:8px; }}
+    .doc-row {{ display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; border:1px solid var(--line); border-radius:10px; padding:8px 10px; background:var(--soft); font-size:13px; }}
+    .doc-type {{ font-weight:700; min-width:140px; }}
+    .doc-holder {{ color:var(--muted); }}
+    .doc-summary {{ margin-left:auto; color:#334155; font-size:12px; }}
+    .doc-note {{ margin:10px 0 0; color:var(--muted); font-size:11px; }}
+    .card-days {{ margin:16px 0 0; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:10px; }}
+    .card-row {{ display:flex; gap:12px; border:1px solid var(--line); border-radius:12px; padding:10px; align-items:center; page-break-inside:avoid; }}
+    .card-thumb {{ width:56px; height:56px; border-radius:8px; object-fit:cover; flex-shrink:0; }}
+    .card-row-main {{ min-width:0; flex:1; }}
+    .card-row-head {{ display:flex; justify-content:space-between; gap:8px; }}
+    .card-day {{ font-weight:700; color:var(--accent); font-size:13px; }}
+    .card-date {{ color:var(--muted); font-size:12px; }}
+    .card-title {{ font-weight:600; margin-top:2px; }}
+    .card-stops {{ margin-top:3px; color:var(--muted); font-size:12px; }}
     @media print {{
       .wrap {{ max-width:none; padding:10mm; }}
-      .day {{ break-inside: avoid; }}
+      .day, .card-row, .essentials, .documents {{ break-inside: avoid; }}
     }}
   </style>
 </head>
@@ -480,9 +687,13 @@ def build_export_html(
         <div><div class='k'>Days</div><div class='v'>{len(itinerary.get('days') or [])}</div></div>
       </div>
     </section>
+    {overview_map_html}
+    {card_days_html}
     {''.join(day_blocks)}
+    {essentials_section}
+    {documents_section}
     {decisions_section}
-    <p class='foot'>Generated by AI Trip Planner ({_e(title_suffix)} template). Tip: Use browser Print → Save as PDF for a carry-along copy.</p>
+    <p class='foot'>Generated by AI Trip Planner ({_e(title_suffix)} format). Tip: Use browser Print → Save as PDF for a carry-along copy.</p>
     {share_section}
   </div>
   {auto}
