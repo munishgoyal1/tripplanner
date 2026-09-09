@@ -458,8 +458,9 @@ python scripts/dev/test_selection.py --behavior EB-PLAN-001
 # Python integration tier
 .venv\Scripts\python.exe -m pytest -q -m integration
 
-# Python complete suite
-.venv\Scripts\python.exe -m pytest -q
+# Python complete suite (fixed worker count avoids the oversubscription
+# `-n auto` hits when several sandboxes/dev stacks are already running)
+.venv\Scripts\python.exe -m pytest -q -n 4
 
 # Python lint
 .venv\Scripts\python.exe -m ruff check src tests
