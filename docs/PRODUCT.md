@@ -594,3 +594,12 @@ appears, add it to §3. Stale PRODUCT.md = wasted onboarding time for the
 next agent session.
 
 Keep product intent in this canonical document rather than a parallel summary.
+
+
+Smart defaults authorize a useful first itinerary without routine confirmation of
+party, dates, duration or preferences. Current instructions win, then saved context,
+then labelled editable assumptions. Missing origin or hotel inventory is a visible
+TBD in an otherwise useful draft; never invent provider facts or booking readiness.
+Only ask when an indispensable answer prevents any useful plan. Hotel search and
+place fallback are bounded attempts, and unresolved gaps remain visible in the
+workspace and final summary. Integrity checks still protect dates and journeys.

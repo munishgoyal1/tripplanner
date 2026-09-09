@@ -506,14 +506,8 @@ def trip_kickoff_tool_choice(
         return "get_travel_preferences"
     if "recommend_trip_duration" not in turn_tools:
         return "recommend_trip_duration"
-    # Party composition is trip-specific, and travel cannot be planned without either
-    # an origin or an explicit destination-only scope. Interactive mode still promises
-    # one review even when both facts are already available.
-    if (
-        interactive
-        or not latest_user_has_explicit_party(messages)
-        or not latest_user_has_travel_origin_or_scope(messages)
-    ):
+    # Direct mode explicitly authorizes editable assumptions, including party and dates.
+    if interactive:
         return "request_trip_input"
     return None
 
@@ -567,6 +561,16 @@ def resolve_completion_policy(
             and (created_this_turn or (has_planning_intent and updated_this_turn))
         )
         else ()
+    )
+    # Inventory gaps remain visible, but cannot force an endless repair loop after research.
+    lodging_attempted = {"search_hotels", "search_places_with_reviews"} <= current_turn_names
+    core_gaps_for_planning_turn = tuple(
+        gap for gap in core_gaps_for_planning_turn
+        if not (lodging_attempted and _LODGING_GAP_RE.search(gap))
+        and not (
+            not interactive_questions
+            and gap.startswith("The trip does not say where it starts from.")
+        )
     )
     journey_safety_gap = any(
         gap.startswith(("Arrival day has no explicit", "Departure day has no explicit"))
@@ -754,4 +758,5 @@ def resolve_completion_policy(
         forced_reason=forced_reason,
         requirement=requirement,
         kickoff_tool=kickoff_tool,
+        completion_gaps=tuple(planning_completion_gaps(active_trip)) if updated_this_turn else (),
     )

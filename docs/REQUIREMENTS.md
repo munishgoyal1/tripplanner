@@ -122,14 +122,16 @@ re-describing the whole product.
 
 ### CHAT-01 - Structured minimal-input Assistant interactions
 
-- Every new trip loads durable preferences before planning. Smart defaults are on by
-  default, so the agent proceeds autonomously when the request establishes its party.
-  Otherwise one bounded `request_trip_input` review collects Adults (13+), Children
-  (0-12), and Trip group; saved family details only prefill these trip-specific facts.
-  A traveller can opt to include other material fields in that same review when an
-  answer would materially improve the trip. Every field carries a sensible prefilled
-  value; known context enumerates the relevant saved preferences and past-trip signals
-  already applied.
+- Every new trip loads durable preferences and runs duration advice. With smart
+  defaults enabled, explicit facts win over saved party/family, preferences and
+  history; missing routine facts become labelled editable assumptions. No party,
+  date, duration or preference review is required. An unknown origin stays TBD while
+  the destination itinerary is built. Only an indispensable fact that prevents any
+  useful plan warrants a question. Interactive mode retains one prefilled review.
+- Unavailable hotel inventory remains a visible draft gap after provider/place
+  research, not a completion blocker. Itinerary Hotel TBD anchors do not become
+  selected properties, invented rates or booking-ready claims. The workspace derives
+  current planning gaps from the persisted trip on every view load.
 - The backend emits the validated versioned payload as an additive `input_request`
   SSE event while retaining a concise text fallback for older clients.
 - Shared web/native TypeScript transport retains the event contract.
@@ -154,8 +156,7 @@ re-describing the whole product.
   bar. New-trip completion is announced only after every trip pane reloads; existing
   itinerary changes use the refreshed authoritative mutation summary, and proposal-only
   reviews explicitly say that the itinerary remains unchanged.
-- The inline chip/control surface appears when party composition is missing or the
-  traveller opts into a useful review. Explicit party details preserve autonomous
+- The inline chip/control surface appears when interactive mode opts into a useful review. Explicit party details preserve autonomous
   planning without another confirmation gate.
   A new hosted deployment remains pending explicit approval.
 

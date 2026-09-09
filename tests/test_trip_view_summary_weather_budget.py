@@ -284,3 +284,19 @@ def test_family_pills_surfaced_in_view(monkeypatch: pytest.MonkeyPatch) -> None:
     view = trip_view.build_view(SAMPLE_TRIP, None)
     pills = view["overview"]["family_pills"]
     assert any("Kid-friendly" in p for p in pills)
+
+
+def test_workspace_keeps_unresolved_hotel_visible_on_reload() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Srinagar", "origin": "Srinagar", "selected_hotels": [],
+        "day_wise_itinerary": [{"day": 1, "stops": [
+            {"name": "Hotel TBD - Srinagar", "kind": "hotel"},
+            {"name": "Dal Lake", "kind": "attraction"},
+        ]}],
+    }
+    first = trip_view.build_view(trip, None)
+    reloaded = trip_view.build_view(trip, None)
+    assert first["has_trip"] is True
+    assert "No concrete hotel is selected." in first["alerts"]
+    assert reloaded["alerts"] == first["alerts"]

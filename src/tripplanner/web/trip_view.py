@@ -29,6 +29,7 @@ from tripplanner.decisions.trip_cost import (
 )
 from tripplanner.tools import user_preferences
 from tripplanner.tools.trip_effort import coherence_notes, pacing_statement
+from tripplanner.tools.trip_validation import planning_completion_gaps
 from tripplanner.web import map_view, places_cache
 
 # Budget/money helpers live in ``budget`` (tech-debt #7); re-exported here so
@@ -558,6 +559,7 @@ def build_view(
         "empty_message": None,
         "feedback": dict(trip.get("feedback") or {"count": 0}),
         "overview": _build_overview(trip),
+        "alerts": planning_completion_gaps(trip),
         "available_days": [
             int(day.get("day") or index + 1)
             for index, day in enumerate(trip.get("day_wise_itinerary") or [])
