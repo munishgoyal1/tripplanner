@@ -529,6 +529,25 @@ def trip_agent(state: AgentState) -> AgentState:
             "Otherwise estimate a fitting duration from destination scope, saved pace, "
             "and a concise set of likely preference-matched anchor experiences."
         )))
+    if not interactive_questions and not proposal_only:
+        instructions.append(SystemMessage(content=(
+            "Smart defaults are enabled. Build the itinerary now using the request first, "
+            "then saved travel party/family, preferences and relevant history, then sensible "
+            "editable assumptions. Do not ask to confirm days, dates, party or preferences. "
+            "Record assumptions in trip notes and summarize them. Never invent an origin; "
+            "if unknown, build the destination itinerary and flag origin/travel as TBD. "
+            "Only ask a short question if no useful plan can be made without the answer "
+            "or an explicit user must-have cannot safely be assumed."
+        )))
+    if decision.completion_gaps and not decision.forced_tool:
+        instructions.append(SystemMessage(content=(
+            "Keep the usable itinerary and clearly summarize these unresolved gaps: "
+            + " ".join(decision.completion_gaps)
+            + " After hotel provider and place fallback research, do not repeat searches "
+            "or stop to ask for a hotel. Keep a city-specific Hotel TBD itinerary anchor, "
+            "never a fabricated selected property, rate or booking. Call out that transfer "
+            "times and totals affected by missing evidence remain provisional."
+        )))
     if proposal_only:
         instructions.append(SystemMessage(content=(
             "PROPOSAL-ONLY REVIEW: analyze the itinerary and offer concise numbered options. "

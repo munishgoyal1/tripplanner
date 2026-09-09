@@ -110,6 +110,7 @@ def render_facts(places: dict[str, Any]) -> Iterator[None]:
         "top_places": places_cache.top_places,
         "prefetch": places_cache.prefetch,
         "place_coords": places_cache.place_coords,
+        "is_configured": places_cache.is_configured,
         "_maps_browser_key": trip_view._maps_browser_key,
     }
     places_cache.get_details = get_details
@@ -124,6 +125,11 @@ def render_facts(places: dict[str, Any]) -> Iterator[None]:
         and details.get("lng") is not None
         else None
     )
+    # trip_view._place_coords gates every lookup behind is_configured() before
+    # it ever calls place_coords. Stored facts should be usable without a real
+    # Places key, so this stub must read as configured too, or the patch above
+    # is silently unreachable.
+    places_cache.is_configured = lambda: True
     trip_view._maps_browser_key = lambda: "audit"
     try:
         yield
@@ -134,6 +140,7 @@ def render_facts(places: dict[str, Any]) -> Iterator[None]:
         places_cache.top_places = saved["top_places"]
         places_cache.prefetch = saved["prefetch"]
         places_cache.place_coords = saved["place_coords"]
+        places_cache.is_configured = saved["is_configured"]
         trip_view._maps_browser_key = saved["_maps_browser_key"]
 
 

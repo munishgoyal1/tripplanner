@@ -3,11 +3,15 @@
 Pure-Python, no third-party dependency. Generates one VEVENT per:
   * outbound + return flight (selected_flights)
   * hotel stay (selected_hotels) — multi-day all-day event
-  * each day's day_wise_itinerary entry — all-day event with the plan as body
+  * each timed stop in day_wise_itinerary — a real timed event with its
+    address, so the day shows up natively in a calendar app with reminders,
+    not as one vague all-day block
+  * any stops in a day that carry no time — one all-day event per day
+    listing them, so nothing silently disappears
 
-Times are best-effort: when no explicit time is present we fall back to all-day
-events (DTSTART;VALUE=DATE). Cancel-safe: an empty plan yields an empty (but
-still valid) calendar so the export button never breaks.
+Times are best-effort: when no explicit time is present anywhere in a day we
+fall back to a single all-day event for that day. Cancel-safe: an empty plan
+yields an empty (but still valid) calendar so the export button never breaks.
 """
 
 from __future__ import annotations
@@ -68,6 +72,17 @@ def _fmt_dt_utc(dt: datetime) -> str:
     return dt.strftime("%Y%m%dT%H%M%SZ")
 
 
+def _fmt_dt_floating(dt: datetime) -> str:
+    """No trailing 'Z' and no TZID.
+
+    We do not know the destination's IANA timezone here, so a real DTSTART
+    UTC offset would be a guess dressed up as precision. RFC 5545 floating
+    time is the honest choice: the wall-clock time the itinerary means,
+    interpreted by whichever calendar the traveller is looking at.
+    """
+    return dt.strftime("%Y%m%dT%H%M%S")
+
+
 def _vevent(
     *,
     uid: str,
@@ -77,6 +92,8 @@ def _vevent(
     description: str = "",
     location: str = "",
     all_day: bool = True,
+    start_time: str = "",
+    duration_min: int = 60,
 ) -> list[str]:
     now = datetime.now(timezone.utc)
     lines = ["BEGIN:VEVENT"]
@@ -88,9 +105,12 @@ def _vevent(
         actual_end = (end or start) + timedelta(days=1)
         lines.append(f"DTEND;VALUE=DATE:{_fmt_dt_date(actual_end)}")
     else:
-        lines.append(f"DTSTART:{_fmt_dt_utc(datetime.combine(start, datetime.min.time()))}")
-        if end:
-            lines.append(f"DTEND:{_fmt_dt_utc(datetime.combine(end, datetime.min.time()))}")
+        match = _TIME_RE.search(start_time or "")
+        hour, minute = (int(match.group(1)), int(match.group(2))) if match else (9, 0)
+        start_dt = datetime.combine(start, datetime.min.time()).replace(hour=hour, minute=minute)
+        end_dt = start_dt + timedelta(minutes=max(int(duration_min or 60), 15))
+        lines.append(f"DTSTART:{_fmt_dt_floating(start_dt)}")
+        lines.append(f"DTEND:{_fmt_dt_floating(end_dt)}")
     lines.append(f"SUMMARY:{_escape(summary)}")
     if description:
         lines.append(f"DESCRIPTION:{_escape(description)}")
@@ -98,6 +118,15 @@ def _vevent(
         lines.append(f"LOCATION:{_escape(location)}")
     lines.append("END:VEVENT")
     return [_fold(line) for line in lines]
+
+
+_KIND_EMOJI = {
+    "attraction": "\U0001f4cd",
+    "meal": "\U0001f37d️",
+    "restaurant": "\U0001f37d️",
+    "transport": "\U0001f697",
+    "flight": "✈️",
+}
 
 
 def _flight_label(flight: Any) -> str:
@@ -195,7 +224,12 @@ def build_ics(plan: dict[str, Any] | None) -> str:
                 )
             )
 
-        # Day-wise itinerary — one all-day event per day.
+        # Day-wise itinerary — one real timed event per stop that has a time,
+        # so the day shows up as an actual schedule rather than one all-day
+        # block. A stop with no time, and any day with none at all, falls
+        # back to a single all-day event so nothing goes missing.
+        from tripplanner.web import places_cache
+
         itinerary = plan.get("day_wise_itinerary") or []
         for entry in itinerary:
             if not isinstance(entry, dict):
@@ -206,16 +240,62 @@ def build_ics(plan: dict[str, Any] | None) -> str:
                 day_date = dep + timedelta(days=max(0, day_offset - 1))
             if day_date is None:
                 continue
-            plan_text = entry.get("plan") or entry.get("summary") or ""
-            lines.extend(
-                _vevent(
-                    uid=f"day-{day_offset or _fmt_dt_date(day_date)}-{trip_id}@tripplanner",
-                    summary=f"Day {day_offset or ''}: {destination}".strip(": "),
-                    start=day_date,
-                    description=str(plan_text),
-                    location=destination,
+
+            stops = [s for s in (entry.get("stops") or []) if isinstance(s, dict)]
+            if not stops:
+                # No structured stops at all (legacy plans, or a free-text
+                # day) -- keep the single all-day event the old export used.
+                plan_text = entry.get("plan") or entry.get("summary") or ""
+                lines.extend(
+                    _vevent(
+                        uid=f"day-{day_offset or _fmt_dt_date(day_date)}-{trip_id}@tripplanner",
+                        summary=f"Day {day_offset or ''}: {destination}".strip(": "),
+                        start=day_date,
+                        description=str(plan_text),
+                        location=destination,
+                    )
                 )
-            )
+                continue
+
+            timed: list[dict[str, Any]] = []
+            untimed: list[dict[str, Any]] = []
+            for stop in stops:
+                (timed if _TIME_RE.search(str(stop.get("time") or "")) else untimed).append(stop)
+
+            for index, stop in enumerate(timed):
+                name = str(stop.get("name") or "Stop").strip()
+                kind = str(stop.get("kind") or "").strip().lower()
+                if kind == "hotel":
+                    continue  # covered by the hotel-stay span event above
+                emoji = _KIND_EMOJI.get(kind, "")
+                address = ""
+                if kind in {"attraction", "meal", "restaurant"} and name:
+                    address = str((places_cache.get_details(name, destination) or {}).get("address") or "")
+                lines.extend(
+                    _vevent(
+                        uid=f"stop-{day_offset}-{index}-{trip_id}@tripplanner",
+                        summary=f"{emoji} {name}".strip(),
+                        start=day_date,
+                        description=str(stop.get("note") or ""),
+                        location=address or destination,
+                        all_day=False,
+                        start_time=str(stop.get("time") or ""),
+                        duration_min=int(stop.get("duration_min") or 60),
+                    )
+                )
+
+            if untimed:
+                names = [str(s.get("name") or "").strip() for s in untimed if s.get("name")]
+                if names:
+                    lines.extend(
+                        _vevent(
+                            uid=f"day-{day_offset or _fmt_dt_date(day_date)}-{trip_id}@tripplanner",
+                            summary=f"Day {day_offset or ''}: {entry.get('title') or destination}".strip(": "),
+                            start=day_date,
+                            description=" · ".join(names),
+                            location=destination,
+                        )
+                    )
 
     lines.append("END:VCALENDAR")
     return _CRLF.join(lines) + _CRLF

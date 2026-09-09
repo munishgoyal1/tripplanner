@@ -1664,3 +1664,12 @@ the outcome.
 - Updating the JSON does not move Google's enforcement; `apply-billing-guardrails.ps1`
   must update the `aitripplanner-local-browser` key before a running sandbox can
   render the map.
+
+## 2026-09-09 - Defaults Must Govern Policy As Well As Prompts
+
+- A smart-defaults checkbox cannot remove friction when deterministic kickoff policy
+  still requires explicit party/origin facts. Apply the mode at both tool selection
+  and agent instructions; keep explicit facts authoritative and label assumptions.
+- Unavailable provider inventory is different from corrupt trip structure. After
+  bounded research, retain a useful draft with visible gaps instead of repeatedly
+  forcing hotel repairs. Derive workspace gaps from saved data so reloads retain them.

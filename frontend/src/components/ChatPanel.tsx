@@ -599,7 +599,7 @@ export default function ChatPanel({
                     // Load the migrated chat transcript in-place.
                     fetchChatHistory(tripIdHint || undefined).then((rows) => {
                       const next = rows.length
-                        ? rows.map((r) => ({ role: r.role, text: r.text }))
+                        ? withStoredTurnMeta(cacheKey, rows)
                         : [GREETING];
                       setMessages(next);
                     });
@@ -616,7 +616,7 @@ export default function ChatPanel({
                     transcriptCacheRef.current.clear();
                     fetchChatHistory(tripIdHint || undefined).then((rows) => {
                       const next = rows.length
-                        ? rows.map((r) => ({ role: r.role, text: r.text }))
+                        ? withStoredTurnMeta(cacheKey, rows)
                         : [GREETING];
                       setMessages(next);
                     });
