@@ -93,12 +93,17 @@ and exact targets are more precise and easier to keep current.
 ## Complete publication commands
 
 ```powershell
-python -m pytest -q
+python -m pytest -q -n 4
 python -m ruff check src tests scripts/dev/test_selection.py
 npm --prefix frontend run typecheck
 npm --prefix frontend run test:all
 npm --prefix frontend run build
 ```
+
+`-n 4` is a fixed worker count, not `-n auto`: this suite is usually run on a
+machine already busy with other sandboxes or dev stacks, and claiming every
+logical core measured slower than serial from the resulting contention. CI
+runs on a dedicated GitHub runner and uses `-n auto` there instead.
 
 Run mobile typecheck and lint when `mobile/` or the shared client changes. Paid
 providers and hosted stores remain prohibited in automated tests; shared pytest

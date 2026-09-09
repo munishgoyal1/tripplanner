@@ -15,8 +15,7 @@ const temporaryRepositories: string[] = [];
 
 async function createRepository() {
   const root = await mkdtemp(resolve(tmpdir(), "tripplanner-lab-store-"));
-  const remote = await mkdtemp(resolve(tmpdir(), "tripplanner-lab-remote-"));
-  temporaryRepositories.push(root, remote);
+  temporaryRepositories.push(root);
   const storePath = resolve(root, "docs/ux-experiments/LAB_SELECTIONS.json");
   await mkdir(dirname(storePath), { recursive: true });
   await writeFile(storePath, "{}\n", "utf8");
@@ -27,9 +26,18 @@ async function createRepository() {
   execFileSync("git", ["config", "commit.gpgsign", "false"], { cwd: root });
   execFileSync("git", ["add", "."], { cwd: root });
   execFileSync("git", ["commit", "-q", "-m", "Initial"], { cwd: root });
+  return { root, storePath };
+}
+
+// Only the push-failure test below needs a real remote; building one costs a
+// handful more git subprocess spawns, which is exactly what made this file
+// slow under sandbox-promotion load. Keep it out of the hot path.
+async function addRemote(root: string) {
+  const remote = await mkdtemp(resolve(tmpdir(), "tripplanner-lab-remote-"));
+  temporaryRepositories.push(remote);
   execFileSync("git", ["init", "-q", "--bare", remote]);
   execFileSync("git", ["remote", "add", "origin", remote], { cwd: root });
-  return { root, remote, storePath };
+  return remote;
 }
 
 afterEach(async () => {
@@ -121,7 +129,8 @@ describe("commitSelectionStore", () => {
   });
 
   it("reports a push failure after preserving the local Lab commit", async () => {
-    const { root, remote, storePath } = await createRepository();
+    const { root, storePath } = await createRepository();
+    const remote = await addRemote(root);
     await writeFile(storePath, "{\"trip-feedback\": {}}\n", "utf8");
     const hook = resolve(remote, "hooks/pre-receive");
     await writeFile(hook, "#!/bin/sh\nexit 1\n", "utf8");

@@ -247,7 +247,10 @@ function Invoke-BranchValidation {
     Push-Location $WorkingDirectory
     try {
         Write-Host "[check]   pytest" -ForegroundColor Cyan
-        & $python -m pytest tests -q
+        # See sandbox.ps1: a fixed worker count avoids the oversubscription
+        # that made `-n auto` slower than serial when several worktrees run
+        # their own validation at once.
+        & $python -m pytest tests -q -n 4
         if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
     } finally {
         Pop-Location
