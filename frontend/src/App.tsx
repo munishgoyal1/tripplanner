@@ -33,13 +33,15 @@ type AssistantView = "bar" | "sheet" | "full";
 
 const ITINERARY_MIN_PCT = 18;
 const MAP_MIN_PCT = 20;
-const INSPECTOR_MIN_PCT = 24;
+const INSPECTOR_MIN_PCT = 22;
+const REFINED_LAYOUT_VERSION = "refined-spatial-v1";
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
 function storedPercent(key: string, fallback: number, min: number, max: number): number {
+  if (localStorage.getItem("tripplanner_workspace_layout") !== REFINED_LAYOUT_VERSION) return fallback;
   const value = Number(localStorage.getItem(key));
   return Number.isFinite(value) && value >= min && value <= max ? value : fallback;
 }
@@ -140,10 +142,10 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   const canvasMaximized = maximizedPane !== null && maximizedPane !== "details";
   const dockMaximized = maximizedPane === "details";
   const [itineraryPct, setItineraryPct] = useState(() =>
-    storedPercent("tripplanner_itinerary_pct", 24, ITINERARY_MIN_PCT, 100 - MAP_MIN_PCT)
+    storedPercent("tripplanner_itinerary_pct", 27, ITINERARY_MIN_PCT, 100 - MAP_MIN_PCT)
   );
   const [inspectorPct, setInspectorPct] = useState(() =>
-    storedPercent("tripplanner_inspector_pct", 31, INSPECTOR_MIN_PCT, 100 - ITINERARY_MIN_PCT)
+    storedPercent("tripplanner_inspector_pct", 25, INSPECTOR_MIN_PCT, 100 - ITINERARY_MIN_PCT)
   );
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
@@ -219,6 +221,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   }, []);
 
   useEffect(() => {
+    localStorage.setItem("tripplanner_workspace_layout", REFINED_LAYOUT_VERSION);
     localStorage.setItem("tripplanner_itinerary_pct", String(Math.round(itineraryPct)));
     localStorage.setItem("tripplanner_inspector_pct", String(Math.round(inspectorPct)));
   }, [inspectorPct, itineraryPct]);
@@ -917,7 +920,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
 
         <main
           ref={workspaceRef}
-          className="relative grid min-h-0 flex-1 overflow-hidden gap-1 p-1"
+          className="relative grid min-h-0 flex-1 overflow-hidden gap-1.5 bg-background p-1.5"
           style={{ gridTemplateColumns: workspaceColumns }}
         >
           <section className={`min-h-0 min-w-0 ${!itineraryOpen || maximizedPane && maximizedPane !== "itinerary" ? "hidden" : ""}`}>

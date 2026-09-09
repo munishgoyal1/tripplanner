@@ -116,7 +116,7 @@ function ItemCard({
             <img
               src={photos[0]}
               alt={item.name}
-              className={`${focused ? "h-72 w-full" : "h-[5.5rem] w-[5.5rem] rounded-lg"} object-cover transition-transform duration-500 group-hover:scale-[1.02]`}
+              className={`${focused ? "h-48 w-full xl:h-52" : "h-[5.5rem] w-[5.5rem] rounded-lg"} object-cover transition-transform duration-500 group-hover:scale-[1.02]`}
             />
           </button>
 

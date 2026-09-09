@@ -862,7 +862,7 @@ export default function ChatPanel({
             ref={composerRef}
             className={`min-w-0 flex-1 resize-none rounded-lg border border-border bg-sand text-sm transition placeholder:text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 ${docked ? "h-8 px-3 py-1.5 leading-5" : "px-4 py-2.5"}`}
             rows={docked ? 1 : 2}
-            placeholder="e.g. Plan a 5-day trip to Goa in December for 2 people"
+            placeholder={hasActiveTrip ? "Ask for a change to this trip…" : "Plan a 5-day trip to Goa in December for 2 people…"}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -957,8 +957,13 @@ export default function ChatPanel({
           {transcriptBlock}
         </div>
       )}
-      <div className="flex items-center gap-2 px-3 py-1.5">
-        <div className="flex shrink-0 items-center gap-1">{layout === "bar" ? dockControls : null}</div>
+      <div className="flex items-center gap-2 bg-paper px-3 py-1.5">
+        <div className="flex shrink-0 items-center gap-1 border-r border-border pr-2">
+          <span className="hidden items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-brand md:inline-flex">
+            <Sparkles size={13} aria-hidden /> Trip assistant
+          </span>
+          {layout === "bar" ? dockControls : null}
+        </div>
         {layout === "bar" && busy && progress && (
           <p className="hidden max-w-48 truncate text-[11px] text-muted xl:block">
             {busy && progress ? (

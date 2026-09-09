@@ -4,7 +4,8 @@ Lab #30 compares four complete workspace directions using the sbx4 planner as th
 
 ## Decision
 
-Open. The recommended starting point is **A · Journey canvas**. No production UI is changed by this Lab.
+**C · Refined spatial workspace** was selected on 9 September 2026 and is implemented
+in the sbx4 lane for owner review. Production promotion remains a separate decision.
 
 ## Shared fixture
 
@@ -20,3 +21,12 @@ Every direction presents the same four-day Kyoto trip, 14–18 April, for two tr
 ## Evaluation notes
 
 The previews run at full application scale and include working day selection, pane hide/restore, map maximize/restore, and assistant expand/minimize actions where those interactions belong. Responsive rules preserve the intended hierarchy at narrow widths. A saved selection authorizes only the Lab scope; implementing it in production requires a separate handoff.
+
+## Implemented review
+
+The sbx4 implementation gives the wide desktop a 27/48/25 itinerary-map-details
+starting balance, preserves owner resizing after a one-time layout migration, adds
+task-oriented pane identities, shortens focused-place imagery, reorders the direct
+visibility controls to follow the canvas, collapses an empty notification row, and
+makes the compact Assistant dock explicit and trip-aware. Pane visibility, resizing,
+maximizing, focus synchronization, and mobile behavior retain their existing contracts.

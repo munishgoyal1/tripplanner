@@ -1,4 +1,5 @@
-import { AlertTriangle, Compass, House, List, MapPin, MessageCircle, PanelRight, Plus, RotateCcw, Settings, UserRound } from "lucide-react";
+import { AlertTriangle, Compass, House, LayoutDashboard, List, MapPin, MessageCircle, PanelRight, Plus, RotateCcw, Settings, UserRound } from "lucide-react";
+import { useNotice } from "../lib/notices";
 import type { TripWorkspaceView } from "../types";
 import StatusBar from "./StatusBar";
 import TripActionsMenu from "./TripActionsMenu";
@@ -8,10 +9,10 @@ import TripSwitcher from "./TripSwitcher";
 type Pane = "itinerary" | "map" | "details" | "assistant";
 
 const PANES: { pane: Pane; label: string; Icon: typeof List; title: string }[] = [
-  { pane: "assistant", label: "Chat", Icon: MessageCircle, title: "Show or hide chat" },
   { pane: "itinerary", label: "Itinerary", Icon: List, title: "Show or hide itinerary" },
   { pane: "map", label: "Map", Icon: MapPin, title: "Show or hide map" },
   { pane: "details", label: "Details", Icon: PanelRight, title: "Show or hide trip details" },
+  { pane: "assistant", label: "Assistant", Icon: MessageCircle, title: "Show or hide chat" },
 ];
 
 interface Props {
@@ -57,6 +58,7 @@ export default function DesktopToolbar({
   onOpenWelcome,
   feedback,
 }: Props) {
+  const notice = useNotice();
   return (
     <>
       <header className="relative z-50 flex h-11 shrink-0 items-center gap-2 overflow-visible border-b border-border bg-paper px-3 lg:gap-3 lg:px-4">
@@ -67,6 +69,9 @@ export default function DesktopToolbar({
         <TripSwitcher version={tripVersion} onSwitched={onTripSwitched} />
         <div className="h-6 w-px shrink-0 bg-border" aria-hidden />
         <nav className="ml-auto flex shrink-0 items-center gap-1.5 lg:gap-2" aria-label="Workspace controls">
+          <span className="hidden items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted 2xl:inline-flex">
+            <LayoutDashboard size={14} className="text-brand" aria-hidden /> Workspace
+          </span>
           <div
             role="group" className="flex shrink-0 items-center gap-0.5 rounded-full border border-border bg-sand p-0.5"
             aria-label="Pane visibility"
@@ -78,8 +83,8 @@ export default function DesktopToolbar({
                 onClick={() => onTogglePane(pane)}
                 className={`inline-flex h-7 items-center justify-center gap-1 rounded-full px-2 text-xs font-semibold transition ${
                   paneVisibility[pane]
-                    ? "bg-paper text-ink shadow-sm ring-1 ring-border"
-                    : "text-muted hover:text-ink"
+                    ? "bg-clay-soft text-ink shadow-sm ring-1 ring-clay/20"
+                    : "text-muted hover:bg-paper hover:text-ink"
                 }`}
                 aria-pressed={paneVisibility[pane]}
                 title={title}
@@ -142,7 +147,7 @@ export default function DesktopToolbar({
           </button>
         </nav>
       </header>
-      <div aria-label="Workspace notifications" className="relative z-40 flex h-8 shrink-0 items-center gap-x-3 border-b border-ochre/20 bg-ochre/15 px-3">
+      {(notice || documentBadge || reviewPending) && <div aria-label="Workspace notifications" className="relative z-40 flex h-8 shrink-0 items-center gap-x-3 border-b border-ochre/20 bg-ochre/15 px-3">
         <div className="mr-auto min-w-0 flex-1">
           <StatusBar compact />
         </div>
@@ -170,7 +175,7 @@ export default function DesktopToolbar({
             </button>
           </div>
         )}
-      </div>
+      </div>}
     </>
   );
 }

@@ -396,13 +396,18 @@ re-describing the whole product.
 
 - Desktop is a fixed-height workspace with Itinerary, a dominant persistent Map,
   and a right dock containing independently visible Details and Assistant.
+- The default refined spatial balance is 27% Itinerary, 48% Map, and 25% Details.
+  The selected layout migrates older stored proportions once; owner resizing then
+  persists normally. Compact task labels in each header distinguish reading and
+  refining, map exploration and routing, and contextual trip details.
 - Panes stay mounted through hide, restore, and maximize transitions so map and
   chat state survive.
 - Keyboard-accessible separators resize itinerary/map, map/inspector, and
   Details/Assistant splits; sizes persist locally.
 - A common command bar owns trip switching, New trip, visibility controls,
   global trip actions, one labeled Account settings trigger, and the latest
-  mutation result. Account settings owns Profile and sign-in, Travel Profile,
+  mutation result. Its separate notification row collapses completely when there
+  is no active message, document warning, or review choice. Account settings owns Profile and sign-in, Travel Profile,
   Analytics preferences, and Privacy and data in one right-side sheet.
 - At wide desktop sizes, pane visibility controls pair semantic icons with the
   short labels Itinerary, Map, Details, and Assistant. Compact desktop widths
@@ -414,6 +419,8 @@ re-describing the whole product.
 - Narrow desktop uses an inspector overlay. Mobile web uses Assistant plus an
   on-demand trip-details sheet rather than compressing the desktop layout.
 - Only panes scroll; the page itself remains spatially stable.
+- The compact desktop Assistant remains a single row with an explicit Trip assistant
+  identity and a trip-aware change prompt; its transcript expands over the workspace.
 
 ### ITIN-01 - Itinerary and trip snapshot
 

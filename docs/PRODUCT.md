@@ -186,13 +186,19 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Layout**: desktop is a fixed-height spatial planner: itinerary left, a
   persistent dominant map center, and a contextual details inspector right.
   A compact top command bar owns saved-trip selection, global workspace
-  controls (including account/preferences). A separate full-width row below it
-  owns notifications and review choices in one compact line; a details control
+  controls (including account/preferences). A separate full-width row below it,
+  present only while it has a message or action, owns notifications and review
+  choices in one compact line; a details control
   reveals full messages without expanding the strip. The desktop command bar is
   44 px high and the notification strip is 32 px high.
   Itinerary, Map, Details, and Assistant use semantic icons with short labels on
   wide desktops, collapsing to icon-only controls when desktop width is tighter;
-  all four remain direct one-click visibility controls. New trip uses a restrained
+  all four remain direct one-click visibility controls in that reading order.
+  The refined spatial workspace starts at 27% itinerary, 48% map, and 25% details,
+  migrating the prior saved proportions once, then persists subsequent owner resizing.
+  Pane headers name their job as well as their object — Read and refine, Explore and
+  route, and Trip context — so the three-column hierarchy is legible before its content
+  loads. New trip uses a restrained
   coral tint rather than a solid fill; active pane controls use quiet neutral fills,
   while export/new/reset share one outlined group and thumbs up/down/rating share
   one sand-colored group. Account preferences use a gear beside the sign-in or
@@ -232,7 +238,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   the recovery surface. A visible docked pane has no arbitrary maximum width and
   may use all space not required by the minimum usable widths of visible siblings.
 - **Compact chat**: the desktop dock keeps its composer, smart defaults, and
-  conversation/maximize controls on one row. Expanded conversation remains
+  conversation/maximize controls on one row, led by a persistent Trip assistant
+  identity and a trip-aware change prompt. Expanded conversation remains
   available on demand; mobile retains its readable full chat layout.
 - **Color**: Lovable warm editorial travel: terracotta `brand` for primary action +
   active state; sage `accent` for secondary surfaces; ivory paper and sand

@@ -522,12 +522,13 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument();
     expect(screen.getByTestId("map-panel")).toBeInTheDocument();
     expect(screen.getByTestId("trip-panel")).toBeInTheDocument();
-    expect(screen.getByRole("separator", { name: "Resize itinerary and map" })).toHaveAttribute("aria-valuenow", "24");
-    expect(screen.getByRole("separator", { name: "Resize map and details" })).toHaveAttribute("aria-valuenow", "31");
+    expect(screen.getByRole("separator", { name: "Resize itinerary and map" })).toHaveAttribute("aria-valuenow", "27");
+    expect(screen.getByRole("separator", { name: "Resize map and details" })).toHaveAttribute("aria-valuenow", "25");
 
     fireEvent.keyDown(screen.getByRole("separator", { name: "Resize map and details" }), { key: "ArrowLeft" });
-    expect(screen.getByRole("separator", { name: "Resize map and details" })).toHaveAttribute("aria-valuenow", "33");
-    expect(localStorage.getItem("tripplanner_inspector_pct")).toBe("33");
+    expect(screen.getByRole("separator", { name: "Resize map and details" })).toHaveAttribute("aria-valuenow", "27");
+    expect(localStorage.getItem("tripplanner_inspector_pct")).toBe("27");
+    expect(localStorage.getItem("tripplanner_workspace_layout")).toBe("refined-spatial-v1");
     expect(screen.getByRole("navigation", { name: "Workspace controls" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /New trip/ })).toBeInTheDocument();
   });
@@ -541,14 +542,14 @@ describe("App responsive workspace", () => {
     for (let index = 0; index < 10; index += 1) {
       fireEvent.keyDown(detailsSeparator, { key: "ArrowLeft" });
     }
-    expect(detailsSeparator).toHaveAttribute("aria-valuenow", "51");
+    expect(detailsSeparator).toHaveAttribute("aria-valuenow", "45");
 
     fireEvent.click(screen.getByRole("button", { name: "Hide Details" }));
     const itinerarySeparator = screen.getByRole("separator", { name: "Resize itinerary and map" });
     for (let index = 0; index < 20; index += 1) {
       fireEvent.keyDown(itinerarySeparator, { key: "ArrowRight" });
     }
-    expect(itinerarySeparator).toHaveAttribute("aria-valuenow", "64");
+    expect(itinerarySeparator).toHaveAttribute("aria-valuenow", "67");
 
     fireEvent.click(screen.getByRole("button", { name: "Hide Itinerary" }));
     fireEvent.click(screen.getByRole("button", { name: "Hide Map" }));
@@ -612,12 +613,12 @@ describe("App responsive workspace", () => {
     expect(screen.getByText("New trip", { selector: "header span" })).toBeInTheDocument();
     expect(screen.getByLabelText("Pane visibility")).toBeInTheDocument();
     const itinerary = screen.getByTitle("Show or hide itinerary");
-    expect(itinerary).toHaveClass("rounded-full", "bg-paper", "text-ink");
+    expect(itinerary).toHaveClass("rounded-full", "bg-clay-soft", "text-ink");
     expect(itinerary.querySelector("svg.lucide-list")).toBeInTheDocument();
     expect(screen.getByText("Itinerary", { selector: "header span" })).toBeInTheDocument();
     expect(screen.getByText("Map", { selector: "header span" })).toBeInTheDocument();
     expect(screen.getByText("Details", { selector: "header span" })).toBeInTheDocument();
-    expect(screen.getByText("Chat", { selector: "header span" })).toBeInTheDocument();
+    expect(screen.getByText("Assistant", { selector: "header span" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Trip actions" })).toHaveClass("text-muted");
     expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Guest");
     expect(screen.queryByRole("button", { name: "Travel preferences" })).not.toBeInTheDocument();
