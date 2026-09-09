@@ -261,6 +261,15 @@ function Invoke-BranchValidation {
     if (-not (Test-Path (Join-Path $frontend "package.json") -PathType Leaf)) { return }
     Push-Location $frontend
     try {
+        # A branch validated through a fresh temporary worktree (any branch
+        # without its own registered sandbox) has never had npm install run.
+        # Without this, `npx tsc` silently installs and runs an unrelated
+        # abandoned npm package literally named "tsc" instead of failing loudly.
+        if (-not (Test-Path (Join-Path $frontend "node_modules") -PathType Container)) {
+            Write-Host "[check]   npm install (no node_modules in this worktree)" -ForegroundColor Cyan
+            & npm install
+            if ($LASTEXITCODE -ne 0) { throw "npm install failed; fix it before shipping." }
+        }
         Write-Host "[check]   tsc" -ForegroundColor Cyan
         & npx tsc --noEmit
         if ($LASTEXITCODE -ne 0) { throw "tsc failed; fix it before shipping." }
