@@ -568,6 +568,15 @@
         "disposition": "implemented-review",
         "summary": "Layered Option D polish onto selected Option C: separated toolbar feedback and trip actions, exposed Default preferences without increasing dock height, simplified Assistant to one size control plus Hide, and clarified the itinerary-actions icon.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: d8a5281608f3; Recorded: 2026-09-09 05:45 UTC; Session: Polish Option C workspace controls",
         "recordedAt": "2026-09-09T05:45:22.6045202Z"
+      },
+      {
+        "version": 4.0,
+        "selection": "refined",
+        "selectionLabel": "C · Refined spatial workspace",
+        "comment": "",
+        "disposition": "implemented-review",
+        "summary": "Restored the persistent compact notification row, added the shared day and Sequence navigation row, matched the Lab download glyph, kept Workspace/Itinerary/Map/Guide labels visible, and added coherent Add/Reduce day controls with optional whole-trip replanning.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: 2e46ad3e5872; Recorded: 2026-09-09 08:09 UTC; Session: Restore planner navigation rows",
+        "recordedAt": "2026-09-09T08:09:19.0393101Z"
       }
     ],
     "implementations": [
@@ -588,18 +597,27 @@
         "comment": "",
         "summary": "Layered Option D polish onto selected Option C: separated toolbar feedback and trip actions, exposed Default preferences without increasing dock height, simplified Assistant to one size control plus Hide, and clarified the itinerary-actions icon.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: d8a5281608f3; Recorded: 2026-09-09 05:45 UTC; Session: Polish Option C workspace controls",
         "recordedAt": "2026-09-09T05:45:22.6045202Z"
+      },
+      {
+        "version": 3.0,
+        "handoffVersion": 4.0,
+        "selection": "refined",
+        "selectionLabel": "C · Refined spatial workspace",
+        "comment": "",
+        "summary": "Restored the persistent compact notification row, added the shared day and Sequence navigation row, matched the Lab download glyph, kept Workspace/Itinerary/Map/Guide labels visible, and added coherent Add/Reduce day controls with optional whole-trip replanning.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: 2e46ad3e5872; Recorded: 2026-09-09 08:09 UTC; Session: Restore planner navigation rows",
+        "recordedAt": "2026-09-09T08:09:19.0393101Z"
       }
     ],
-    "stateChangedAt": "2026-09-09T05:45:22.6045202Z",
-    "updatedAt": "2026-09-09T05:45:22.6045202Z",
+    "stateChangedAt": "2026-09-09T08:09:19.0393101Z",
+    "updatedAt": "2026-09-09T08:09:19.0393101Z",
     "implementation": {
-      "handoffVersion": 3.0,
+      "handoffVersion": 4.0,
       "selection": "refined",
       "selectionLabel": "C · Refined spatial workspace",
       "comment": "",
-      "summary": "Layered Option D polish onto selected Option C: separated toolbar feedback and trip actions, exposed Default preferences without increasing dock height, simplified Assistant to one size control plus Hide, and clarified the itinerary-actions icon.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: d8a5281608f3; Recorded: 2026-09-09 05:45 UTC; Session: Polish Option C workspace controls",
-      "recordedAt": "2026-09-09T05:45:22.6045202Z"
+      "summary": "Restored the persistent compact notification row, added the shared day and Sequence navigation row, matched the Lab download glyph, kept Workspace/Itinerary/Map/Guide labels visible, and added coherent Add/Reduce day controls with optional whole-trip replanning.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: 2e46ad3e5872; Recorded: 2026-09-09 08:09 UTC; Session: Restore planner navigation rows",
+      "recordedAt": "2026-09-09T08:09:19.0393101Z"
     },
-    "implementationSummary": "Layered Option D polish onto selected Option C: separated toolbar feedback and trip actions, exposed Default preferences without increasing dock height, simplified Assistant to one size control plus Hide, and clarified the itinerary-actions icon.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: d8a5281608f3; Recorded: 2026-09-09 05:45 UTC; Session: Polish Option C workspace controls"
+    "implementationSummary": "Restored the persistent compact notification row, added the shared day and Sequence navigation row, matched the Lab download glyph, kept Workspace/Itinerary/Map/Guide labels visible, and added coherent Add/Reduce day controls with optional whole-trip replanning.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: 2e46ad3e5872; Recorded: 2026-09-09 08:09 UTC; Session: Restore planner navigation rows"
   }
 }
