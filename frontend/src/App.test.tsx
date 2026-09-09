@@ -713,6 +713,7 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(screen.getByTestId("chat-panel")).toBeInTheDocument());
     const dock = screen.getByTestId("chat-panel").closest("section");
     const workspace = screen.getByTestId("itinerary-panel").closest("main");
+    expect(dock?.parentElement).toHaveClass("fixed", "inset-0");
     expect(workspace?.getAttribute("style") ?? "").not.toContain("23rem");
     expect(dock?.previousElementSibling).toBe(workspace);
     expect(screen.queryByTestId("assistant-modal")).not.toBeInTheDocument();

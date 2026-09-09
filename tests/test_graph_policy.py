@@ -1140,3 +1140,47 @@ def test_a_saved_turn_carries_its_tools_back(tmp_path, monkeypatch) -> None:  # 
     assert restored[1].additional_kwargs[chat_store._RAN_TOOLS] == ["request_trip_input"]
     # Never as tool_calls: the provider would demand results this history lacks.
     assert not getattr(restored[1], "tool_calls", None)
+
+
+def test_hotel_tbd_can_finish_after_provider_and_place_attempts() -> None:
+    messages = [HumanMessage(content="Plan a Kashmir trip")]
+    for name in (
+        "create_trip_plan", "search_hotels", "search_places_with_reviews", "update_trip_plan"
+    ):
+        messages.extend([
+            _tool_call(name, name),
+            ToolMessage(
+                content="No hotels found" if name == "search_hotels" else "Done", tool_call_id=name,
+            ),
+        ])
+    decision = resolve_completion_policy(
+        messages=messages,
+        active_trip={
+            "destination": "Srinagar", "origin": "Srinagar", "selected_hotels": [],
+            "day_wise_itinerary": [{"day": 1, "stops": [
+                {"name": "Hotel TBD - Srinagar", "kind": "hotel"},
+                {"name": "Dal Lake", "kind": "attraction"},
+                {"name": "Hotel TBD - Srinagar", "kind": "hotel"},
+            ]}],
+        },
+        proposal_only=False, has_planning_intent=True,
+    )
+    assert decision.forced_tool is None
+    assert any("hotel" in gap.lower() for gap in decision.completion_gaps)
+
+
+def test_direct_mode_missing_origin_does_not_block_saved_destination_plan() -> None:
+    decision = resolve_completion_policy(
+        messages=[HumanMessage(content="Plan Kashmir"), _tool_call("update_trip_plan", "save")],
+        active_trip={
+            "destination": "Srinagar", "selected_hotels": [{"name": "Vivanta Dal View"}],
+            "day_wise_itinerary": [{"day": 1, "stops": [
+                {"name": "Vivanta Dal View", "kind": "hotel"},
+                {"name": "Dal Lake", "kind": "attraction"},
+                {"name": "Vivanta Dal View", "kind": "hotel"},
+            ]}],
+        },
+        proposal_only=False, has_planning_intent=True,
+    )
+    assert decision.forced_tool is None
+    assert any("starts from" in gap for gap in decision.completion_gaps)

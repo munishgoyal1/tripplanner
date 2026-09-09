@@ -122,20 +122,24 @@ re-describing the whole product.
 
 ### CHAT-01 - Structured minimal-input Assistant interactions
 
-- Every new trip loads durable preferences before planning. Smart defaults are on by
-  default, so the agent proceeds autonomously when the request establishes its party.
-  Otherwise one bounded `request_trip_input` review collects Adults (13+), Children
-  (0-12), and Trip group; saved family details only prefill these trip-specific facts.
-  A traveller can opt to include other material fields in that same review when an
-  answer would materially improve the trip. Every field carries a sensible prefilled
-  value; known context enumerates the relevant saved preferences and past-trip signals
-  already applied.
+- Every new trip loads durable preferences and runs duration advice. With smart
+  defaults enabled, explicit facts win over saved party/family, preferences and
+  history; missing routine facts become labelled editable assumptions. No party,
+  date, duration or preference review is required. An unknown origin stays TBD while
+  the destination itinerary is built. Only an indispensable fact that prevents any
+  useful plan warrants a question. Interactive mode retains one prefilled review.
+- Unavailable hotel inventory remains a visible draft gap after provider/place
+  research, not a completion blocker. Itinerary Hotel TBD anchors do not become
+  selected properties, invented rates or booking-ready claims. The workspace derives
+  current planning gaps from the persisted trip on every view load.
 - The backend emits the validated versioned payload as an additive `input_request`
   SSE event while retaining a concise text fallback for older clients.
 - Shared web/native TypeScript transport retains the event contract.
 - The main web app renders all validated field kinds as compact inline chips and controls
   inside the selected lower-right Assistant conversation sheet. The visible
-  workspace remains usable while the sheet is open; explicit close, Escape, and
+  workspace remains usable while the sheet is open; the desktop shell remains pinned
+  to the browser viewport so an expanded conversation cannot strand unused page space
+  below its composer. Explicit close, Escape, and
   command-bar reopen preserve the mounted conversation. Submission and default-skip responses continue
   through the normal retry-safe chat path.
 - While a web response is running, the Send control becomes Stop and aborts the
@@ -144,13 +148,15 @@ re-describing the whole product.
 - Completed user and Assistant messages can be copied. A prior user instruction
   can be loaded into the composer, revised, and sent as a fresh corrective turn;
   existing transcript and itinerary side effects are not falsely presented as undone.
+- Persisted user and Assistant turns carry their local display time, and each completed
+  Assistant response carries its end-to-end elapsed duration across reloads, trip switches,
+  and guest-data import.
 - Real SSE milestones such as preference review, flight/hotel/place research,
   routing, review, and persistence update both chat progress and the common command
   bar. New-trip completion is announced only after every trip pane reloads; existing
   itinerary changes use the refreshed authoritative mutation summary, and proposal-only
   reviews explicitly say that the itinerary remains unchanged.
-- The inline chip/control surface appears when party composition is missing or the
-  traveller opts into a useful review. Explicit party details preserve autonomous
+- The inline chip/control surface appears when interactive mode opts into a useful review. Explicit party details preserve autonomous
   planning without another confirmation gate.
   A new hosted deployment remains pending explicit approval.
 
@@ -541,8 +547,8 @@ implemented capability baseline.
   marks its inferred Attraction, Hotel, or Restaurant type as auto-filled and
   lets the user correct it before adding.
 - Map day scope and Sequence remain directly available in the shared third workspace
-  row. The Add stop form stays visible below the Map header, and one compact context line distinguishes
-  the selected day's schedule span from route-only duration, distance, and mode.
+  row. The Add stop form stays visible below the Map header without repeating a second
+  day-selection or schedule-summary row at the bottom of the map.
 - Itinerary, Map, and Details group pane-local Hide and Maximize/Restore icons in
   a restrained pair. Existing behavior, disabled states, and recovery remain unchanged.
 - Itinerary filters are shared with Map. Filter changes return Map to All days and

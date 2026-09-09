@@ -1671,7 +1671,10 @@ def update_trip_plan(updates_json: str) -> str:
             + " ".join(hotel_warnings)
             + " Call search_hotels, choose the best preference-matched real option by "
             "default, verify it with search_places_with_reviews, and replace every generic "
-            "or placeholder hotel label before finishing."
+            "or placeholder hotel label when evidence is available. After provider and place "
+            "fallback attempts, continue with a city-specific Hotel TBD itinerary anchor; "
+            "do not fabricate a selected hotel or price. Summarize the gap and provisional "
+            "transfer times in trip notes and the final response."
         )
     bullets = diff_plans(before, plan)
     if not bullets:

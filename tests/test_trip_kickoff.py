@@ -31,14 +31,14 @@ def test_new_paris_trip_forces_prefilled_kickoff_after_preferences() -> None:
     assert _trip_kickoff_tool_choice(messages) == "recommend_trip_duration"
 
 
-def test_direct_mode_collects_missing_party_composition_after_duration_advice() -> None:
+def test_direct_mode_uses_party_defaults_after_duration_advice() -> None:
     messages = [
         HumanMessage(content="Plan Paris from Delhi for five days in October"),
         _tool_message("get_travel_preferences"),
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+    assert _trip_kickoff_tool_choice(messages) is None
 
 
 @pytest.mark.parametrize(
@@ -59,14 +59,14 @@ def test_direct_mode_skips_review_when_party_is_explicit(trip_prompt: str) -> No
     assert _trip_kickoff_tool_choice(messages) is None
 
 
-def test_direct_mode_collects_missing_origin_even_when_party_is_explicit() -> None:
+def test_direct_mode_builds_destination_plan_without_origin() -> None:
     messages = [
         HumanMessage(content="Plan a solo Paris trip"),
         _tool_message("get_travel_preferences"),
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+    assert _trip_kickoff_tool_choice(messages) is None
 
 
 def test_direct_mode_accepts_explicit_self_arranged_arrival() -> None:
@@ -96,14 +96,14 @@ def test_saved_home_city_satisfies_the_origin_review() -> None:
     assert _trip_kickoff_tool_choice(messages) is None
 
 
-def test_adult_count_alone_still_collects_the_trip_relationship() -> None:
+def test_adult_count_does_not_force_relationship_review() -> None:
     messages = [
         HumanMessage(content="Plan a Kashmir trip for 2 adults"),
         _tool_message("get_travel_preferences"),
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+    assert _trip_kickoff_tool_choice(messages) is None
 
 
 def test_interactive_mode_forces_the_prefilled_review_before_planning() -> None:
@@ -182,7 +182,7 @@ def test_destination_switch_asks_the_kickoff_before_creating(
     ) == "get_travel_preferences"
 
 
-def test_destination_switch_collects_missing_party_after_duration_advice(
+def test_destination_switch_uses_smart_defaults_after_duration_advice(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
@@ -196,7 +196,7 @@ def test_destination_switch_collects_missing_party_after_duration_advice(
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+    assert _trip_kickoff_tool_choice(messages) is None
 
 
 def test_same_destination_follow_up_still_has_no_kickoff(
@@ -298,7 +298,7 @@ def test_trip_agent_forces_the_prefilled_kickoff_in_interactive_mode(
     assert bound_options["tools"] == ["request_trip_input"]
 
 
-def test_trip_agent_keeps_a_forced_origin_review_in_direct_mode(
+def test_trip_agent_does_not_offer_routine_review_in_direct_mode(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     messages = [
@@ -327,8 +327,8 @@ def test_trip_agent_keeps_a_forced_origin_review_in_direct_mode(
         "proposal_only": False,
     })
 
-    assert bound_options["tool_choice"] == "request_trip_input"
-    assert bound_options["tools"] == ["request_trip_input"]
+    assert bound_options.get("tool_choice") != "request_trip_input"
+    assert "request_trip_input" not in bound_options["tools"]
 
 
 def test_trip_agent_waits_for_the_kickoff_answer_before_planning(
@@ -447,7 +447,7 @@ def test_new_trip_intent_preempts_incomplete_active_trip_gate(
                 _tool_message("get_travel_preferences"),
                 _tool_message("recommend_trip_duration"),
             ],
-            "request_trip_input",
+            None,
         ),
     ],
 )

@@ -946,7 +946,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     {!isDesktop && <FloatingStatusBar />}
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
     {isDesktop ? (
-      <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-sand">
+      <div className="fixed inset-0 flex min-h-0 flex-col overflow-hidden bg-sand">
         <DesktopToolbar
           tripVersion={tripVersion}
           onTripSwitched={handleSwitched}

@@ -26,19 +26,18 @@ either enabled (the default) or disabled.
 
 **Expected:**
 
-- With smart defaults enabled, the Assistant builds from the request, saved
-  preferences, trip history, and sensible inferences without an up-front confirmation
-  gate except when the new-trip request omits who is travelling. Party composition
-  is trip-specific, so that one compact review always includes editable Adults (13+),
-  Children (0-12), and Trip group controls; saved family data may prefill but never
-  silently enrolls everyone. Solo and family may be derived only when counts make
-  them unambiguous; two adults are not assumed to be a couple. With smart defaults
-  disabled, the same review may include other facts when an
-  unresolved fact would materially improve the trip. Explicit prompt values and
-  configured preferences are not asked again. When neither an origin nor self-arranged
-  arrival is known, the review requires the traveller to enter their city or choose
-  destination-only travel; that choice is persisted and an origin is never invented.
-  Other reviews preserve prefilled values and a skip/default path.
+- With smart defaults enabled, build immediately using explicit trip facts first,
+  then saved travel-party/family context, preferences and relevant history, then
+  sensible editable assumptions. Do not ask to confirm party, days, dates or routine
+  preferences. Record assumptions in trip notes and the final summary. Never invent
+  an origin: build the destination plan and flag unresolved arrival/return travel.
+  Only a fact without which no useful plan is possible merits a blocking question.
+  With smart defaults disabled, one bounded prefilled review remains available.
+- Search hotels and try a place fallback. If neither yields suitable evidence, save
+  the useful itinerary with city-specific Hotel TBD anchors, no fabricated selected
+  hotel/rate, and a clear final-summary and persistent workspace gap. Missing inventory
+  does not trigger an indefinite completion-repair loop or a request to choose a hotel.
+  Such a draft is not booking-ready; date, geography and journey-integrity checks remain.
 - Submitted party counts and relationship are persisted with the trip, used for
   whole-party budgets and provider occupancy, and shape lodging, pace, transport,
   meal timing, accessibility, and age-appropriate experiences.
@@ -56,9 +55,10 @@ either enabled (the default) or disabled.
 - Research is followed by one enriched full-plan persistence pass rather than
   repeated full-itinerary rewrites.
 - A planning turn normally uses at most ten tool phases. A first planning turn
-  that reaches that semantic budget continues until it has concrete lodging,
-  complete journey edges, named meal coverage on substantial days, and positive
-  cost evidence when the traveller requested a budget. Weather and other
+  that reaches that semantic budget permits bounded initial repairs for
+  journey edges, named meal coverage on substantial days, and positive
+  cost evidence when the traveller requested a budget. Lodging gaps after provider
+  and place research remain explicit TBDs; they cannot extend the repair loop. Weather and other
   enrichment may remain deferred. Later turns stop at the budget and summarize
   the best persisted itinerary and any unresolved details honestly.
 - Unexpected graph recursion exhaustion returns the persisted best-effort plan
@@ -99,7 +99,7 @@ either enabled (the default) or disabled.
 **Executable proof:**
 
 - [`tests/test_planning_intelligence.py`](../tests/test_planning_intelligence.py)
-- [`tests/test_trip_kickoff.py`](../tests/test_trip_kickoff.py) - `test_direct_mode_collects_missing_party_composition_after_duration_advice`
+- [`tests/test_trip_kickoff.py`](../tests/test_trip_kickoff.py) - `test_direct_mode_uses_party_defaults_after_duration_advice`
 - [`tests/test_trip_persistence.py`](../tests/test_trip_persistence.py) - `test_create_trip_persists_planning_recommendation`
 
 ### EB-PLAN-003 - Keep long planning turns visibly active
@@ -396,6 +396,23 @@ are currently shown and expose their actual adjustable range to assistive input.
 
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `lets panes use available width and allows every pane to be hidden and restored`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `supports every desktop pane visibility combination`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `docks Assistant as a bottom row that expands over the workspace`
+
+### EB-WORKSPACE-002 - Keep expanded Assistant inside the viewport
+
+**Trigger:** Expand the desktop Assistant, including when a new-trip request opens
+the structured quick-setup card.
+
+**Expected:** The composer remains at the bottom of the browser viewport, the
+conversation fills the available area above it, and overflow scrolls inside the
+transcript. No unused document area appears below the Assistant. User and Assistant
+turns show their times; completed Assistant turns also show end-to-end response duration,
+including after reload, trip switching, or guest-data import.
+
+**Executable proof:**
+
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `docks Assistant as a bottom row that expands over the workspace`
+- [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `renders persisted timestamp and duration from chat history`
 
 ### EB-TRIPS-001 - Delete selected saved trips
 

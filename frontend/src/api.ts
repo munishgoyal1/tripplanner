@@ -414,10 +414,12 @@ export function tripIcsUrl(): string {
   return `${BASE}/trip/export.ics?${params.toString()}`;
 }
 
+export type ExportTemplate = "standard" | "detailed" | "trip_book" | "trip_card";
+
 export interface ExportOptions {
   include_photos: boolean;
   include_map_circuit: boolean;
-  template: "minimal" | "detailed" | "family";
+  template: ExportTemplate;
 }
 
 export function tripExportUrl(options: ExportOptions, autoPrint = false): string {
