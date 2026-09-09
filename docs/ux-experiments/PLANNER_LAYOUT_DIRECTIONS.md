@@ -27,10 +27,13 @@ The previews run at full application scale and include working day selection, pa
 The sbx4 implementation gives the wide desktop a 27/48/25 itinerary-map-details
 starting balance, preserves owner resizing after a one-time layout migration, adds
 task-oriented pane identities, shortens focused-place imagery, reorders the direct
-visibility controls to follow the canvas, collapses an empty notification row, and
+visibility controls to follow the canvas, keeps a compact notification channel visible, and
 makes the compact Assistant dock explicit and trip-aware. Pane visibility, resizing,
 maximizing, focus synchronization, and mobile behavior retain their existing contracts.
 The follow-up precision pass layers Option D's finish onto the selected Option C:
 feedback and trip actions have clear internal separators, the compact Assistant shows
 `Default preferences` without growing taller, and its controls are reduced to one
 state-aware maximize/restore action plus Hide.
+The next owner refinement restores the persistent notification strip, adds a shared
+compact day-and-sequence row across all panes, keeps workspace labels visible, uses the
+Lab's download glyph, and exposes coherent add/reduce-day actions in the itinerary.

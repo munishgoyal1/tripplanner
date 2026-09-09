@@ -92,6 +92,11 @@ interface Props {
   onDayFocus?: (day: number) => void;
   /** User selected all circuits and wants the itinerary synced to its summary. */
   onAllDaysFocus?: () => void;
+  /** The desktop workspace owns the shared day/sequence row. */
+  showWorkspaceNavigation?: boolean;
+  /** Controlled sequence state when navigation is rendered above all panes. */
+  sequenceOpen?: boolean;
+  onSequenceOpenChange?: (open: boolean) => void;
   /** Add a place to the trip (from a pin's info window). */
   onSelect?: (
     kind: string,
@@ -106,7 +111,7 @@ interface Props {
   ) => void | Promise<boolean>;
 }
 
-function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect }: Props) {
+function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, showWorkspaceNavigation = true, sequenceOpen: controlledSequenceOpen, onSequenceOpenChange, onSelect, onDeselect }: Props) {
   const [sourceView, setView] = useState<MapView | null>(null);
   const [confirmingStop, setConfirmingStop] = useState<string | null>(null);
   const view = useMemo(
@@ -128,7 +133,14 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
   const [newStopDay, setNewStopDay] = useState("auto");
   const [addingStop, setAddingStop] = useState(false);
   const [retryToken, setRetryToken] = useState(0);
-  const [sequenceOpen, setSequenceOpen] = useState(false);
+  const [localSequenceOpen, setLocalSequenceOpen] = useState(false);
+  const sequenceOpen = controlledSequenceOpen ?? localSequenceOpen;
+
+  const toggleSequence = () => {
+    const next = !sequenceOpen;
+    setLocalSequenceOpen(next);
+    onSequenceOpenChange?.(next);
+  };
 
   const mapEl = useRef<HTMLDivElement>(null);
   const stopInputRef = useRef<HTMLInputElement>(null);
@@ -965,13 +977,13 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2 border-b border-border px-3 py-1.5">
+          {showWorkspaceNavigation && <div className="flex items-center gap-2 border-b border-border px-3 py-1.5">
             <div className="flex min-w-0 items-center gap-0.5 overflow-x-auto rounded-full border border-border bg-sand p-0.5">
               {dayScopeControls}
             </div>
             <button
               type="button"
-              onClick={() => setSequenceOpen((open) => !open)}
+              onClick={toggleSequence}
               aria-pressed={sequenceOpen}
               disabled={sequencePins.length === 0}
               className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition disabled:opacity-40 ${
@@ -985,7 +997,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
                 ? <ChevronDown className="h-3 w-3" aria-hidden />
                 : <ChevronUp className="h-3 w-3" aria-hidden />}
             </button>
-          </div>
+          </div>}
           <div className="flex min-h-6 items-center gap-1.5 border-t border-border px-3 py-1 text-[10px] text-muted">
             {activeDayObj ? (
               <>

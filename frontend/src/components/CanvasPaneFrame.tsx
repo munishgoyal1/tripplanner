@@ -22,7 +22,7 @@ export default function CanvasPaneFrame({
   const context = label === "Map" ? "Explore and route" : "Read and refine";
   return (
     <article className="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-paper shadow-card">
-      <header className="flex h-11 shrink-0 items-center gap-2.5 border-b border-border bg-sidebar/70 px-3">
+      <header className="flex h-10 shrink-0 items-center gap-2.5 border-b border-border bg-sidebar/70 px-3">
         <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-paper text-brand shadow-sm ring-1 ring-border" aria-hidden>
           <Icon size={14} />
         </span>

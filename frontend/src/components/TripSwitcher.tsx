@@ -74,6 +74,7 @@ export default function TripSwitcher({
     if (switching.current) return;
     switching.current = true;
     const label = trips.find((trip) => trip.trip_id === tripId)?.destination ?? "trip";
+    dismissNotice("meal-gap");
     notify({ id: SWITCH_NOTICE, tone: "progress", message: `Switching to ${label}\u2026` });
     try {
       let workspace: TripWorkspaceView | null;

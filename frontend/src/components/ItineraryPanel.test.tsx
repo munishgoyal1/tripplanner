@@ -947,4 +947,25 @@ describe("ItineraryPanel", () => {
       2,
     ));
   });
+
+  it("offers minimal day changes by default and an explicit whole-trip replan", async () => {
+    const onAdjustDays = vi.fn();
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { ...itinerary.stats, days: 2 },
+      days: [itinerary.days[0], { ...itinerary.days[0], day: 2, title: "Montmartre" }],
+    });
+    render(<ItineraryPanel onAdjustDays={onAdjustDays} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Add a day" }));
+    const replan = screen.getByRole("checkbox", { name: /Replan the whole itinerary/ });
+    expect(replan).not.toBeChecked();
+    fireEvent.click(screen.getByRole("button", { name: "Add day and update trip" }));
+    expect(onAdjustDays).toHaveBeenCalledWith("add", false);
+
+    fireEvent.click(screen.getByRole("button", { name: "Reduce a day" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: /Replan the whole itinerary/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Reduce day and update trip" }));
+    expect(onAdjustDays).toHaveBeenCalledWith("reduce", true);
+  });
 });

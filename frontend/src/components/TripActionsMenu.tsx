@@ -1,4 +1,4 @@
-import { CalendarPlus, ChevronDown, FileDown, Link2 } from "lucide-react";
+import { CalendarPlus, ChevronDown, Download, FileDown, Link2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "../analytics";
 import { shareActiveTrip, tripIcsUrl } from "../api";
@@ -60,7 +60,7 @@ export default function TripActionsMenu({ disabled = false, onExport, compactTri
         aria-label="Trip actions"
         title="Export, share, or add this trip to your calendar"
       >
-        <FileDown size={15} aria-hidden />
+        <Download size={15} aria-hidden />
         {!compactTrigger && <span className="hidden 2xl:inline">Trip actions</span>}
         <ChevronDown size={13} aria-hidden />
       </button>

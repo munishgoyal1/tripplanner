@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
+import { clearNotices } from "./lib/notices";
 const { emptyView, fetchTripViewMock, fetchWorkspaceMock, selectItemMock, deselectItemMock, startNewTripMock, isAnonymousUserMock, shareActiveTripMock, resetTripMock } = vi.hoisted(() => ({
   fetchTripViewMock: vi.fn(),
   fetchWorkspaceMock: vi.fn(),
@@ -81,7 +82,7 @@ vi.mock("./components/ChatPanel", () => ({
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ filters = [], onFilterToggle, reloadToken, onStopFocus, onStopMap, onDayMap, onAllDaysMap, jumpTo, overview, seed, focusDay, focusStop, circuitFocusDay, circuitFocusToken }: { filters?: string[]; onFilterToggle?: (filter: "flight" | "road" | "train" | "hotel") => void; reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onDayMap?: (day: number) => void; onAllDaysMap?: () => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; seed?: { destination?: string } | null; focusDay?: number; focusStop?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
+  default: ({ filters = [], onFilterToggle, reloadToken, onStopFocus, onStopMap, onDayMap, onAllDaysMap, onAdjustDays, jumpTo, overview, seed, focusDay, focusStop, circuitFocusDay, circuitFocusToken }: { filters?: string[]; onFilterToggle?: (filter: "flight" | "road" | "train" | "hotel") => void; reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onDayMap?: (day: number) => void; onAllDaysMap?: () => void; onAdjustDays?: (direction: "add" | "reduce", replanWholeTrip: boolean) => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; seed?: { destination?: string } | null; focusDay?: number; focusStop?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
     <div>
       <button
         type="button"
@@ -123,6 +124,8 @@ vi.mock("./components/ItineraryPanel", () => ({
       </button>
       <button type="button" onClick={() => onDayMap?.(3)}>Show complete Day 3 circuit</button>
       <button type="button" onClick={() => onAllDaysMap?.()}>Show all days from snapshot</button>
+      <button type="button" onClick={() => onAdjustDays?.("add", false)}>Add itinerary day</button>
+      <button type="button" onClick={() => onAdjustDays?.("reduce", true)}>Reduce and replan itinerary</button>
     </div>
   ),
 }));
@@ -187,6 +190,7 @@ function setDesktop(matches: boolean) {
 
 describe("App responsive workspace", () => {
   beforeEach(() => {
+    clearNotices();
     localStorage.clear();
     window.history.replaceState({}, "", "/");
     fetchTripViewMock.mockReset().mockResolvedValue(emptyView);
@@ -617,11 +621,42 @@ describe("App responsive workspace", () => {
     expect(itinerary.querySelector("svg.lucide-list")).toBeInTheDocument();
     expect(screen.getByText("Itinerary", { selector: "header span" })).toBeInTheDocument();
     expect(screen.getByText("Map", { selector: "header span" })).toBeInTheDocument();
-    expect(screen.getByText("Details", { selector: "header span" })).toBeInTheDocument();
+    expect(screen.getByText("Guide", { selector: "header span" })).toBeInTheDocument();
     expect(screen.getByText("Assistant", { selector: "header span" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Trip actions" })).toHaveClass("text-muted");
+    expect(screen.getByRole("button", { name: "Trip actions" }).querySelector("svg.lucide-download")).toBeInTheDocument();
+    expect(screen.getByLabelText("Workspace notifications")).toHaveTextContent("Start a trip to see planning updates here.");
     expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Guest");
     expect(screen.queryByRole("button", { name: "Travel preferences" })).not.toBeInTheDocument();
+  });
+
+  it("puts trip-wide day navigation above every workspace pane", async () => {
+    setDesktop(true);
+    fetchTripViewMock.mockResolvedValue({
+      ...emptyView,
+      trip_id: "paris-1",
+      has_trip: true,
+      destination: "Paris",
+      overview: { ...emptyView.overview, destination: "Paris", counts: { ...emptyView.overview.counts, days: 3 } },
+    });
+    render(<App />);
+
+    const dayBar = await screen.findByRole("navigation", { name: "Trip days and stop sequence" });
+    expect(dayBar).toHaveTextContent("All daysDay 1Day 2Day 3Sequence");
+    fireEvent.click(screen.getByRole("button", { name: "Day 2" }));
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-circuit-day", "2");
+  });
+
+  it("sends coherent add and reduce day requests through the Assistant", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await screen.findByTestId("itinerary-panel");
+    fireEvent.click(screen.getByRole("button", { name: "Add itinerary day" }));
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-assistant-request", expect.stringContaining("Extend the return date by one day"));
+
+    fireEvent.click(screen.getByRole("button", { name: "Reduce and replan itinerary" }));
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-assistant-request", expect.stringContaining("Replan the entire itinerary"));
   });
 
   it("closes Details and Assistant independently while keeping both mounted", async () => {

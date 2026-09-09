@@ -1,4 +1,4 @@
-import { AlertTriangle, Compass, House, LayoutDashboard, List, MapPin, MessageCircle, PanelRight, Plus, RotateCcw, Settings, UserRound } from "lucide-react";
+import { AlertTriangle, Bell, Compass, House, LayoutDashboard, List, MapPin, MessageCircle, PanelRight, Plus, RotateCcw, Settings, UserRound } from "lucide-react";
 import { useNotice } from "../lib/notices";
 import type { TripWorkspaceView } from "../types";
 import StatusBar from "./StatusBar";
@@ -11,7 +11,7 @@ type Pane = "itinerary" | "map" | "details" | "assistant";
 const PANES: { pane: Pane; label: string; Icon: typeof List; title: string }[] = [
   { pane: "itinerary", label: "Itinerary", Icon: List, title: "Show or hide itinerary" },
   { pane: "map", label: "Map", Icon: MapPin, title: "Show or hide map" },
-  { pane: "details", label: "Details", Icon: PanelRight, title: "Show or hide trip details" },
+  { pane: "details", label: "Guide", Icon: PanelRight, title: "Show or hide trip details" },
   { pane: "assistant", label: "Assistant", Icon: MessageCircle, title: "Show or hide chat" },
 ];
 
@@ -61,7 +61,7 @@ export default function DesktopToolbar({
   const notice = useNotice();
   return (
     <>
-      <header className="relative z-50 flex h-11 shrink-0 items-center gap-2 overflow-visible border-b border-border bg-paper px-3 lg:gap-3 lg:px-4">
+      <header className="relative z-50 flex h-10 shrink-0 items-center gap-2 overflow-visible border-b border-border bg-paper px-3 lg:gap-2.5 lg:px-4">
         <span className="hidden shrink-0 items-center gap-2 xl:inline-flex">
           <Compass size={17} className="text-brand" aria-hidden />
           <span className="display text-lg text-ink">AI Tripplanner</span>
@@ -69,7 +69,7 @@ export default function DesktopToolbar({
         <TripSwitcher version={tripVersion} onSwitched={onTripSwitched} />
         <div className="h-6 w-px shrink-0 bg-border" aria-hidden />
         <nav className="ml-auto flex shrink-0 items-center gap-1.5 lg:gap-2" aria-label="Workspace controls">
-          <span className="hidden items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted 2xl:inline-flex">
+          <span className="hidden items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted lg:inline-flex">
             <LayoutDashboard size={14} className="text-brand" aria-hidden /> Workspace
           </span>
           <div
@@ -89,7 +89,7 @@ export default function DesktopToolbar({
                 aria-pressed={paneVisibility[pane]}
                 title={title}
               >
-                <Icon size={15} aria-hidden /> <span className="hidden xl:inline">{label}</span>
+                <Icon size={15} aria-hidden /> <span>{label}</span>
               </button>
             ))}
           </div>
@@ -150,9 +150,14 @@ export default function DesktopToolbar({
           </button>
         </nav>
       </header>
-      {(notice || documentBadge || reviewPending) && <div aria-label="Workspace notifications" className="relative z-40 flex h-8 shrink-0 items-center gap-x-3 border-b border-ochre/20 bg-ochre/15 px-3">
+      <div aria-label="Workspace notifications" className="relative z-40 flex h-7 shrink-0 items-center gap-x-3 border-b border-ochre/20 bg-ochre/15 px-3">
         <div className="mr-auto min-w-0 flex-1">
-          <StatusBar compact />
+          {notice ? <StatusBar compact /> : (
+            <div className="flex items-center gap-2 text-xs font-medium text-muted" role="status">
+              <Bell size={13} className="text-ochre" aria-hidden />
+              {tripActionsDisabled ? "Start a trip to see planning updates here." : "All changes saved."}
+            </div>
+          )}
         </div>
         {documentBadge && (
           <button
@@ -178,7 +183,7 @@ export default function DesktopToolbar({
             </button>
           </div>
         )}
-      </div>}
+      </div>
     </>
   );
 }

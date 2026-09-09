@@ -186,13 +186,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Layout**: desktop is a fixed-height spatial planner: itinerary left, a
   persistent dominant map center, and a contextual details inspector right.
   A compact top command bar owns saved-trip selection, global workspace
-  controls (including account/preferences). A separate full-width row below it,
-  present only while it has a message or action, owns notifications and review
-  choices in one compact line; a details control
+  controls (including account/preferences). A persistent full-width row below it
+  owns notifications and review choices in one compact line, showing a quiet saved
+  state when no transient message is active; a details control
   reveals full messages without expanding the strip. The desktop command bar is
-  44 px high and the notification strip is 32 px high.
-  Itinerary, Map, Details, and Assistant use semantic icons with short labels on
-  wide desktops, collapsing to icon-only controls when desktop width is tighter;
+  40 px high and the notification strip is 28 px high. A third 32 px row gives
+  Itinerary, Map, and Guide one shared All days/day selector and Sequence control.
+  Itinerary, Map, Guide, and Assistant use semantic icons with visible short labels;
   all four remain direct one-click visibility controls in that reading order.
   The refined spatial workspace starts at 27% itinerary, 48% map, and 25% details,
   migrating the prior saved proportions once, then persists subsequent owner resizing.
@@ -222,7 +222,7 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   state survives. Only panes scroll; the page never does.
   Map commands sit below the map so the pane reads as a map first: a resting search
   field that reveals stop type, target day and Add once a place is named or tapped,
-  then All days/day scope beside an optional stop-sequence strip, then one compact
+  then an optional stop-sequence strip controlled by the shared third row, then one compact
   line separating schedule span from route-only travel. This hierarchy does not
   change map focus, placement, pin, route, or mutation behavior. Itinerary, Map,
   and Details group their pane-local Hide and Maximize/Restore icons in a quiet
@@ -238,6 +238,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   panes hidden, is valid and persists locally; the command bar always remains as
   the recovery surface. A visible docked pane has no arbitrary maximum width and
   may use all space not required by the minimum usable widths of visible siblings.
+  The itinerary's Day by day heading exposes Add a day and Reduce a day. Both update
+  dates, hotel nights, departure/return travel, and day summaries through the planner.
+  Minimal readjustment is the default; an unchecked `Replan the whole itinerary`
+  option lets the owner intentionally redistribute the complete trip.
 - **Compact chat**: the desktop dock keeps its composer and a visible
   `Default preferences` checkbox label on one row, led by a persistent Trip assistant
   identity and a trip-aware change prompt. The checkbox tooltip retains the full

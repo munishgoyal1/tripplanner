@@ -12,6 +12,7 @@ import MobileWorkspaceShell from "./components/MobileWorkspaceShell";
 import { FloatingStatusBar } from "./components/StatusBar";
 import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
+import WorkspaceDayBar from "./components/WorkspaceDayBar";
 import { trackEvent } from "./analytics";
 import { fetchDocumentReadiness, fetchPreferences, fetchTripView, fetchWorkspace, getDisplayName, importSharedTrip, isAnonymousUser, type DeselectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
@@ -137,6 +138,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   const [documentsRevision, setDocumentsRevision] = useState(0);
   const [signedIn, setSignedIn] = useState(() => !isAnonymousUser());
   const [assistantView, setAssistantView] = useState<AssistantView>("bar");
+  const [sequenceOpen, setSequenceOpen] = useState(false);
   const [turnEffects, setTurnEffects] = useState<{ token: number; effects: TurnEffect[] } | null>(null);
   const dockOpen = inspectorOpen;
   const canvasMaximized = maximizedPane !== null && maximizedPane !== "details";
@@ -425,6 +427,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     setLoading(false);
     setPlannerReview(null);
     setAssistantTurnStatus(null);
+    setSequenceOpen(false);
     const workspace: TripWorkspaceView | null = payload
       ? "view" in payload
         ? payload
@@ -644,9 +647,29 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   };
 
   const handleMapAllDaysFocus = () => {
+    setSequenceOpen(false);
     setCircuitFocus(null);
     setView((current) => current ? { ...current, focus: null } : current);
     dispatchWorkspace({ type: "jump", target: { summary: true, token: Date.now() } });
+  };
+
+  const handleAdjustTripDays = (direction: "add" | "reduce", replanWholeTrip: boolean) => {
+    const action = direction === "add" ? "Add one day" : "Reduce this trip by one day";
+    const preservation = replanWholeTrip
+      ? "Replan the entire itinerary across the new trip duration."
+      : direction === "add"
+        ? "Keep existing days stable. Use the new day to ease a hectic day when useful; otherwise move final departure or return travel to it."
+        : "Keep as much of the existing itinerary as possible, moving worthwhile stops to suitable remaining days and removing only what cannot fit comfortably.";
+    const dateAndStayChanges = direction === "add"
+      ? "Extend the return date by one day and extend the relevant hotel stay by one night."
+      : "Move the return date one day earlier and shorten the relevant hotel stay by one night.";
+    dismissNotice("meal-gap");
+    setChatOpen(true);
+    setAssistantView("bar");
+    setAssistantRequest({
+      id: Date.now(),
+      message: `${action}. ${preservation} ${dateAndStayChanges} Update departure or return transport, dates, stays, and day summaries so the finished itinerary is coherent. Apply all logical changes now using my saved preferences and do not ask follow-up questions.`,
+    });
   };
 
   const handleItineraryFilterToggle = (filter: ItineraryFilter) => {
@@ -737,6 +760,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           onTripChanged={async () => {
             await refresh(null, { silent: true });
           }}
+          onAdjustDays={handleAdjustTripDays}
         />
       );
     }
@@ -758,6 +782,9 @@ export default function App({ initialRequest = null }: { initialRequest?: string
         onPinFocus={handleStopFocus}
         onDayFocus={handleDayFocus}
         onAllDaysFocus={handleMapAllDaysFocus}
+        showWorkspaceNavigation={false}
+        sequenceOpen={sequenceOpen}
+        onSequenceOpenChange={setSequenceOpen}
         onSelect={handleSelect}
         onDeselect={handleDeselect}
       />
@@ -881,6 +908,40 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     });
   }, [assistantTurnStatus]);
 
+  const mealGapDay = panelSeed?.itinerary?.days?.find((day) => (
+    !day.stops.some((stop) => stop.kind === "meal" || stop.kind === "restaurant")
+  ));
+  useEffect(() => {
+    if (!mealGapDay) {
+      dismissNotice("meal-gap");
+      return;
+    }
+    notify({
+      id: "meal-gap",
+      tone: "decision",
+      message: `${mealGapDay.title || `Day ${mealGapDay.day}`} has no meal stop.`,
+      detail: "Use the Assistant to add a meal that fits the route and schedule.",
+    });
+  }, [mealGapDay?.day, mealGapDay?.title]);
+
+  const workspaceDays = panelSeed?.map?.days
+    ?? (panelSeed?.itinerary?.days ?? []).map((day) => ({
+      day: day.day,
+      label: `Day ${day.day}`,
+      color: day.color,
+      pin_ids: day.stops.map((_, index) => `${day.day}-${index}`),
+      route: day.route ?? { distance_km: 0, duration_min: 0, mode: "", distance_display: "", duration_display: "" },
+    }));
+  const displayedWorkspaceDays = workspaceDays.length > 0
+    ? workspaceDays
+    : Array.from({ length: view?.overview?.counts.days ?? 0 }, (_, index) => ({
+      day: index + 1,
+      label: `Day ${index + 1}`,
+      color: "#bd542f",
+      pin_ids: [],
+      route: { distance_km: 0, duration_min: 0, mode: "", distance_display: "", duration_display: "" },
+    }));
+
   return <>
     {!isDesktop && <FloatingStatusBar />}
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
@@ -917,6 +978,16 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           onOpenWelcome={() => window.dispatchEvent(new Event("tripplanner:open-welcome"))}
           feedback={view?.feedback ?? { count: 0 }}
         />
+        {view?.has_trip && (
+          <WorkspaceDayBar
+            days={displayedWorkspaceDays}
+            activeDay={circuitFocusDay ?? routeFocusDay ?? focus?.day ?? null}
+            sequenceOpen={sequenceOpen}
+            onAllDays={handleMapAllDaysFocus}
+            onDay={handleDayFocus}
+            onToggleSequence={() => setSequenceOpen((open) => !open)}
+          />
+        )}
 
         <main
           ref={workspaceRef}
