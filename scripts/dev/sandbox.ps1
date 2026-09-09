@@ -332,6 +332,14 @@ function Invoke-SandboxValidation {
     Use-CompatibleNode
     Push-Location $frontend
     try {
+        # See full-2way-sync.ps1's Invoke-BranchValidation: without node_modules,
+        # `npx tsc` silently installs and runs an unrelated abandoned npm
+        # package literally named "tsc" instead of failing loudly.
+        if (-not (Test-Path (Join-Path $frontend "node_modules") -PathType Container)) {
+            Write-Host "[check]   npm install (no node_modules in this worktree)" -ForegroundColor Cyan
+            & npm install
+            if ($LASTEXITCODE -ne 0) { throw "npm install failed; fix it before shipping." }
+        }
         Write-Host "[check]   tsc" -ForegroundColor Cyan
         & npx tsc --noEmit
         if ($LASTEXITCODE -ne 0) { throw "tsc failed; fix it before shipping." }
