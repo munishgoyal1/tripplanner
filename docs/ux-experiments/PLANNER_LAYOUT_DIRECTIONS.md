@@ -30,3 +30,7 @@ task-oriented pane identities, shortens focused-place imagery, reorders the dire
 visibility controls to follow the canvas, collapses an empty notification row, and
 makes the compact Assistant dock explicit and trip-aware. Pane visibility, resizing,
 maximizing, focus synchronization, and mobile behavior retain their existing contracts.
+The follow-up precision pass layers Option D's finish onto the selected Option C:
+feedback and trip actions have clear internal separators, the compact Assistant shows
+`Default preferences` without growing taller, and its controls are reduced to one
+state-aware maximize/restore action plus Hide.

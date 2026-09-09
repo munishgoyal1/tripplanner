@@ -60,9 +60,9 @@ vi.mock("./components/ChatPanel", () => ({
   default: ({ hideGlobalControls, assistantRequest, layout, onChangeLayout, onHide, turnEffects, onEffectSelect, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; layout?: string; onChangeLayout?: (layout: "bar" | "sheet" | "full") => void; onHide?: () => void; turnEffects?: { effects: { kind: string; name: string; change: string }[] } | null; onEffectSelect?: (effect: { kind: string; name: string; day?: number; stop?: number; change: string }) => void; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean; request: string; reply: string }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
     <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""} data-layout={layout ?? "panel"} data-turn-effects={(turnEffects?.effects ?? []).map((effect) => `${effect.name}:${effect.change}`).join(",")}>
       <button type="button" onClick={() => onHide?.()}>Hide Chat</button>
-      <button type="button" onClick={() => onChangeLayout?.("sheet")}>Conversation</button>
-      <button type="button" onClick={() => onChangeLayout?.("full")}>Maximize conversation</button>
-      <button type="button" onClick={() => onChangeLayout?.("bar")}>Minimize conversation</button>
+      <button type="button" onClick={() => onChangeLayout?.(layout === "bar" ? "full" : "bar")}>
+        {layout === "bar" ? "Maximize conversation" : "Restore conversation"}
+      </button>
       <button type="button" onClick={() => onTurnComplete?.("khandala-pune-1")}>Complete planning turn</button>
       <button type="button" onClick={() => onEffectSelect?.({ kind: "attraction", name: "Louvre Museum", day: 2, stop: 1, change: "added" })}>Open turn effect</button>
       <button type="button" onClick={() => onTurnStatus?.({ phase: "working", message: "Searching hotels. 45s elapsed. Full itinerary builds usually take about 2–4 minutes." })}>Report planning progress</button>
@@ -685,15 +685,13 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
 
     expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "bar");
-    fireEvent.click(screen.getByRole("button", { name: "Conversation" }));
-    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "sheet");
     fireEvent.click(screen.getByRole("button", { name: "Maximize conversation" }));
     expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "full");
     // Expanding the conversation never costs the user a pane.
     expect(screen.getByTestId("itinerary-panel").closest("section")).not.toHaveClass("hidden");
     expect(screen.getByTestId("context-inspector").parentElement).not.toHaveClass("hidden");
 
-    fireEvent.click(screen.getByRole("button", { name: "Minimize conversation" }));
+    fireEvent.click(screen.getByRole("button", { name: "Restore conversation" }));
     expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "bar");
   });
 

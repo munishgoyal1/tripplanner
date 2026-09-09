@@ -201,7 +201,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   loads. New trip uses a restrained
   coral tint rather than a solid fill; active pane controls use quiet neutral fills,
   while export/new/reset share one outlined group and thumbs up/down/rating share
-  one sand-colored group. Account preferences use a gear beside the sign-in or
+  one sand-colored group. Thin separators make each feedback and itinerary action
+  independently scannable without breaking the compact groups. Account preferences use a gear beside the sign-in or
   short identity label. This
   keeps itinerary, map, and trip decisions visually dominant.
   The itinerary begins with the one authoritative trip snapshot: destination,
@@ -237,10 +238,12 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   panes hidden, is valid and persists locally; the command bar always remains as
   the recovery surface. A visible docked pane has no arbitrary maximum width and
   may use all space not required by the minimum usable widths of visible siblings.
-- **Compact chat**: the desktop dock keeps its composer, smart defaults, and
-  conversation/maximize controls on one row, led by a persistent Trip assistant
-  identity and a trip-aware change prompt. Expanded conversation remains
-  available on demand; mobile retains its readable full chat layout.
+- **Compact chat**: the desktop dock keeps its composer and a visible
+  `Default preferences` checkbox label on one row, led by a persistent Trip assistant
+  identity and a trip-aware change prompt. The checkbox tooltip retains the full
+  smart-defaults explanation. One state-aware size control expands or restores the
+  conversation, and Hide is the only other dock control. Mobile retains its readable
+  full chat layout.
 - **Color**: Lovable warm editorial travel: terracotta `brand` for primary action +
   active state; sage `accent` for secondary surfaces; ivory paper and sand
   surfaces with warm ink, muted text, and thin borders. Preserve semantic status and map-route colors.

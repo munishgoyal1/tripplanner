@@ -96,6 +96,7 @@ export default function DesktopToolbar({
           <TripFeedbackControl disabled={tripActionsDisabled} initial={feedback} />
           <div role="group" className="flex items-center gap-0.5 rounded-full border border-border bg-paper p-0.5" aria-label="Trip actions">
             <TripActionsMenu disabled={tripActionsDisabled} onExport={onExport} compactTrigger />
+            <span className="h-4 w-px shrink-0 bg-border" aria-hidden />
             <button
               type="button"
               onClick={onStartNewTrip}
@@ -106,6 +107,7 @@ export default function DesktopToolbar({
               <Plus size={14} className="text-clay" aria-hidden />
               <span className="hidden xl:inline">New trip</span>
             </button>
+            <span className="h-4 w-px shrink-0 bg-border" aria-hidden />
             <button
               type="button"
               onClick={onResetTrip}
@@ -116,6 +118,7 @@ export default function DesktopToolbar({
               <RotateCcw size={14} aria-hidden />
             </button>
           </div>
+          <span className="h-5 w-px shrink-0 bg-border" aria-hidden />
           <button
             type="button"
             onClick={onOpenWelcome}

@@ -883,7 +883,7 @@ export default function ChatPanel({
             {busy ? <Square size={15} fill="currentColor" /> : <Send size={18} />}
           </button>
         </div>
-        <label title="Let the agent decide with smart defaults" className={`${docked ? "shrink-0 gap-1.5" : "mt-2 gap-2 px-1"} flex cursor-pointer items-center text-[11px] text-muted`}>
+        <label title="Let the agent decide with smart defaults" className={`${docked ? "w-[7.75rem] shrink-0 justify-end gap-1.5" : "mt-2 gap-2 px-1"} flex cursor-pointer items-center text-[11px] text-muted`}>
           <input
             type="checkbox"
             checked={smartDefaults}
@@ -891,7 +891,7 @@ export default function ChatPanel({
             disabled={busy || !transcriptReady}
           />
           <span className={docked ? "sr-only" : ""}>Let the agent decide with smart defaults</span>
-          {docked && <span aria-hidden className="hidden xl:inline">Smart defaults</span>}
+          {docked && <span aria-hidden className="whitespace-nowrap text-[10px] font-medium">Default preferences</span>}
         </label>
       </div>
   );
@@ -909,29 +909,15 @@ export default function ChatPanel({
   const dockButton = "inline-flex shrink-0 items-center gap-1.5 rounded-md px-1.5 py-1.5 text-[11px] font-semibold text-muted transition hover:bg-sand hover:text-ink";
   const dockControls = (
     <>
-      {layout === "bar" ? (
-        <button type="button" onClick={() => onChangeLayout?.("sheet")} aria-label="Conversation" className={dockButton} title={lastReply ? `Conversation: ${lastReply.text}` : "Open conversation"}>
-          <MessageSquare size={14} aria-hidden /> <span className="hidden lg:inline">Conversation</span>
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={() => onChangeLayout?.("bar")}
-          title="Minimize the conversation back to the bottom row"
-          className={dockButton}
-        >
-          <Minimize2 size={14} aria-hidden /> <span>Minimize</span>
-        </button>
-      )}
       <button
         type="button"
-        onClick={() => onChangeLayout?.(layout === "full" ? "sheet" : "full")}
-        aria-label={layout === "full" ? "Restore" : "Maximize"}
-        title={layout === "full" ? "Restore the conversation sheet" : "Maximize the conversation"}
+        onClick={() => onChangeLayout?.(layout === "bar" ? "full" : "bar")}
+        aria-label={layout === "bar" ? "Maximize conversation" : "Restore conversation"}
+        title={layout === "bar" ? (lastReply ? `Open conversation: ${lastReply.text}` : "Maximize the conversation") : "Restore the compact Assistant row"}
         className={dockButton}
       >
-        {layout === "full" ? <Minimize2 size={12} aria-hidden /> : <Maximize2 size={12} aria-hidden />}
-        <span className="sr-only">{layout === "full" ? "Restore" : "Maximize"}</span>
+        {layout === "bar" ? <Maximize2 size={13} aria-hidden /> : <Minimize2 size={13} aria-hidden />}
+        <span className="sr-only">{layout === "bar" ? "Maximize conversation" : "Restore conversation"}</span>
       </button>
       {onHide && (
         <button type="button" onClick={onHide} title="Hide chat" aria-label="Hide Chat" className={dockButton}>

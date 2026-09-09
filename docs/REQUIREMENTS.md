@@ -415,12 +415,17 @@ re-describing the whole product.
 - New trip is a labeled, softly tinted command rather than a solid high-contrast
   block. The four pane controls remain directly available without a submenu and
   use quiet neutral active states; utility icons are visually subordinate to the
-  itinerary and map. Hide and Maximize remain local pane-header actions.
+  itinerary and map. Visible separators distinguish thumbs up, thumbs down, and
+  Rate inside feedback, and Export, New trip, and Reset inside trip actions. Hide
+  and Maximize remain local pane-header actions.
 - Narrow desktop uses an inspector overlay. Mobile web uses Assistant plus an
   on-demand trip-details sheet rather than compressing the desktop layout.
 - Only panes scroll; the page itself remains spatially stable.
 - The compact desktop Assistant remains a single row with an explicit Trip assistant
-  identity and a trip-aware change prompt; its transcript expands over the workspace.
+  identity, a trip-aware change prompt, and a visible `Default preferences` checkbox
+  label whose tooltip carries the full explanation. One state-aware size control
+  expands or restores the transcript over the workspace; Hide is the only other
+  dock control.
 
 ### ITIN-01 - Itinerary and trip snapshot
 
