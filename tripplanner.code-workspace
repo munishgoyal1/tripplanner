@@ -9,6 +9,7 @@
 		}
 	],
 	"settings": {
-		"window.title": "Reseracher"
+		"window.title": "Reseracher",
+		"powershell.cwd": "tripplanner"
 	}
 }
