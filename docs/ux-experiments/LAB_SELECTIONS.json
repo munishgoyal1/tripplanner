@@ -534,5 +534,26 @@
     "implementations": [],
     "stateChangedAt": "2026-08-25T10:44:46.842Z",
     "updatedAt": "2026-08-25T10:44:46.842Z"
+  },
+  "planner-layout-directions": {
+    "labId": "planner-layout-directions",
+    "labTitle": "Four ways to inhabit a trip",
+    "selection": "refined",
+    "selectionLabel": "C · Refined spatial workspace",
+    "comment": "",
+    "disposition": "ready",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "refined",
+        "selectionLabel": "C · Refined spatial workspace",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-09-09T05:01:12.846Z"
+      }
+    ],
+    "implementations": [],
+    "stateChangedAt": "2026-09-09T05:01:12.846Z",
+    "updatedAt": "2026-09-09T05:01:12.846Z"
   }
 }
