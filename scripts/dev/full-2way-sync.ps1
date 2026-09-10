@@ -249,8 +249,10 @@ function Invoke-BranchValidation {
         Write-Host "[check]   pytest" -ForegroundColor Cyan
         # See sandbox.ps1: a fixed worker count avoids the oversubscription
         # that made `-n auto` slower than serial when several worktrees run
-        # their own validation at once.
-        & $python -m pytest tests -q -n 4
+        # their own validation at once. -n 2 rather than -n 4: worker-vs-worker
+        # contention was flaking timing/iteration-budgeted tests under real
+        # concurrent load from other lanes/agents on this machine.
+        & $python -m pytest tests -q -n 2
         if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
     } finally {
         Pop-Location

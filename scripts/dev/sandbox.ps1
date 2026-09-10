@@ -319,8 +319,11 @@ function Invoke-SandboxValidation {
         # A fixed worker count beats "auto": this machine normally runs several
         # sandboxes/dev stacks at once, and letting xdist claim every logical
         # core (`-n auto`) measured 2x SLOWER than serial from the contention.
-        # 4 workers measured ~3.5x faster than serial under that same real load.
-        & $python -m pytest tests -q -n 4
+        # -n 4 was faster still, but its own worker-vs-worker contention made
+        # timing/iteration-budgeted tests (trip_rebalance's search budget, the
+        # performance-baseline p95 gate) flake under real concurrent load from
+        # other lanes/agents. -n 2 keeps most of the speedup with less of that.
+        & $python -m pytest tests -q -n 2
         if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
     } finally {
         Pop-Location
