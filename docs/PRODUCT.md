@@ -36,6 +36,15 @@ Neither goal may cost the third property: the planner stays fast and breezy.
 Price and offer work is background and time-boxed, and the product always shows
 the plan it already has rather than blocking on a better one.
 
+Planning-model performance is how those three properties stay in balance. The
+Azure OpenAI deployment is chosen for combined itinerary quality, paid-tool
+leverage, wall-clock, and token cost — not because it is the largest SKU. A
+stronger model should need fewer traveller round-trips and fewer exploratory
+Google Places or search calls; it still may not invent hours, ratings, or
+inventory. World knowledge proposes; grounded tools verify. The current default
+and the change rubric live in
+[research/azure-openai-planning-model-2026-09.md](research/azure-openai-planning-model-2026-09.md).
+
 New-trip planning is automation-first. With smart defaults enabled, start from a
 one-line destination request: explicit facts win, then saved traveller/family
 context and relevant history, then labelled editable assumptions. Do not require
@@ -347,8 +356,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   names and raw arguments stay out of the primary experience. A completion message
   appears only after the refreshed itinerary has loaded, invites the user to inspect
   a new plan, and summarizes the authoritative outcome of an existing-plan update.
-  Streamed answer text does not hide workspace-level progress. GPT-4.1 remains the planning
-  model unless measured quality failures justify a slower or costlier model.
+  Streamed answer text does not hide workspace-level progress. The planning
+  model stays the measured Azure OpenAI default (`gpt-5.4-mini` as of 2026-09)
+  unless a comparison shows a nearby SKU improves itinerary quality, reduces
+  Assistant or Places round-trips, and still finishes inside this 2–4 minute
+  window at an acceptable token cost.
   While streaming, Send becomes Stop; cancellation preserves useful partial text,
   restores the composer, and does not masquerade as a failed retry. Message Copy
   is direct. Editing a prior instruction loads it into the composer and sends any

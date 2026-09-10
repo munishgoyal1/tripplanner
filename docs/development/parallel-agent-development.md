@@ -2,6 +2,14 @@
 
 Use the primary `tripplanner` checkout on `master` and a fresh, task-named sandbox for each isolated feature or UX Lab. A sandbox starts from `origin/master`, carries one coherent change, and returns only through its validated promotion flow.
 
+## Choose a lane (keep this simple)
+
+Do not invent extra git workflows. Pick one:
+
+1. **Primary `master` (default).** In-chat fixes and docs in the primary checkout land on `master`. This is the least confusing path for work that does not need an isolated app stack.
+2. **Short-lived task branch.** Use this only when the owner asks for a reviewable branch, or a single coherent change is easier to merge through a pull request. Branch from current `origin/master` in the primary checkout, finish the work, open a PR, merge it, fast-forward local `master`, and delete the branch in the same session. Do not leave long-lived feature branches beside sandboxes.
+3. **Sandbox.** Use this when the change needs its own ports, emulator database, UX Lab, or parallel runtime. Create it with the sandbox launchers. Promotion (or `Merge-Sandbox`) is the only path back to `master`; do not also keep a duplicate feature branch for the same work.
+
 An in-chat sandbox fix stays in that sandbox and does not need a GitHub issue.
 Issue creation is reserved for work the owner explicitly puts on the issue board,
 deterministic trip-audit findings, specific tracked audit runs, and known work

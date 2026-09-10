@@ -3486,3 +3486,15 @@ Azure OpenAI client is reused across graph rounds, with usage accounting keyed b
 run id. Independent remote work is composed with concurrency.run_parallel; the
 destination overview now costs the slower of places and news rather than both.
 Ordered provider fallback within one capability stays sequential by design.
+
+[2026-09-10] Planning-model performance vs GPT-5.4 mini
+Owner direction: audit GPT-5 vs a better Azure OpenAI SKU for combined
+itinerary quality, speed, token cost, and fewer expensive Places calls, with
+expert-local itineraries and less Assistant back-and-forth. Finding: local,
+canary, and prod already run `gpt-5.4-mini`; PRODUCT/REQUIREMENTS still said
+GPT-4.1. Keep mini as the default. Upgrade target is `gpt-5.4` only after the
+measured rubric in docs/research/azure-openai-planning-model-2026-09.md.
+Product north star already covered the intent; stale GPT-4.1 lock replaced by
+that performance rule. Usage catalog now longest-prefix-matches so mini is not
+priced as GPT-5. Deployment was not changed.
+

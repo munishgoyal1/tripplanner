@@ -269,12 +269,14 @@ databases (800 RU/s total), while Container Apps remain scale-to-zero.
 
 ### Azure OpenAI (required)
 1. Create an Azure OpenAI resource at portal.azure.com
-2. Deploy a `gpt-4.1` model (or `gpt-5` for top reasoning)
+2. Deploy `gpt-5.4-mini` as the default planner (or `gpt-5.4` only after the
+   measured upgrade rubric in
+   [docs/research/azure-openai-planning-model-2026-09.md](docs/research/azure-openai-planning-model-2026-09.md))
 3. Set in `.env`:
    ```
    AZURE_OPENAI_ENDPOINT=https://YOUR_RESOURCE.openai.azure.com/
    AZURE_OPENAI_API_KEY=your-key
-   AZURE_OPENAI_DEPLOYMENT=gpt-4.1
+   AZURE_OPENAI_DEPLOYMENT=gpt-5.4-mini
    ```
 
 ### LiteAPI (recommended for live hotel and flight availability)

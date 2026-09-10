@@ -1686,3 +1686,13 @@ the outcome.
 - Persist correlated events before asynchronous upload; retain failed spool files
   and reject incomplete exports. A complete diagnostic event is not proof that a
   trip is complete, and a deployed recorder must be smoke-tested in its environment.
+
+## 2026-09-10 - Model-name prefixes must match the longest SKU
+
+- Azure deployment names like `gpt-5.4-mini` start with `gpt-5`. A first-match
+  rate table billed that traffic at the parent flagship price and tripped the
+  monthly cap too early.
+- Own one versioned catalog and match the longest prefix after normalizing
+  digit-digit hyphens (`gpt-5-4-mini` → `gpt-5.4-mini`). Keep usage caps and
+  harness estimates on that catalog so a cheaper deployed SKU cannot inherit a
+  dearer ancestor's rate.

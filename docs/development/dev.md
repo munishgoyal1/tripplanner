@@ -45,9 +45,13 @@ developer workstation.
 ## Sandbox-first development
 
 The default workflow uses the primary workspace on `master` plus one fresh,
-task-named sandbox for each isolated feature. Create, serve, update, promote, or
-discard it through the sandbox launchers. A sandbox begins at `origin/master` and
-returns to `master` only through its validated promotion flow.
+task-named sandbox for each isolated feature. In-chat work that does not need
+its own ports or database stays on primary `master`, or on a short-lived task
+branch that is merged and deleted in the same session — see
+[parallel-agent-development.md](parallel-agent-development.md). Create, serve,
+update, promote, or discard a sandbox through the sandbox launchers. A sandbox
+begins at `origin/master` and returns to `master` only through its validated
+promotion flow.
 
 To synchronize primary `master` and start the canonical stack, double-click
 `scripts/win/user/run/Run-Latest-Master.cmd` or run the VS Code task **Tripplanner: Run Latest Master**.

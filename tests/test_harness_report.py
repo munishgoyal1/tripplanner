@@ -59,3 +59,16 @@ def test_report_separates_measurement_estimate_and_billing() -> None:
     assert report["cache"]["hit_rate"] == 0.5
     assert report["amplification"]["requests_per_action"] == 0.5
     assert report["quality"]["subjective_evaluation_costed_separately"] is True
+
+
+def test_azure_catalog_prices_gpt54_mini_below_gpt5() -> None:
+    from tripplanner.validation.harness.pricing import azure_openai_rate
+
+    mini = azure_openai_rate("gpt-5.4-mini")
+    flagship = azure_openai_rate("gpt-5")
+    full = azure_openai_rate("gpt-5.4")
+    assert mini.input_per_million_usd < flagship.input_per_million_usd
+    assert mini.output_per_million_usd < flagship.output_per_million_usd
+    assert full.input_per_million_usd > flagship.input_per_million_usd
+    assert azure_openai_rate("gpt-5-4-mini") == mini
+    assert mini.cached_input_per_million_usd == 0.08

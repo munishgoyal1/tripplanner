@@ -11,7 +11,8 @@ or deployment policy.
   VS Code/Copilot configuration, sandboxes, and manual sign-ins.
 - [`architecture-onboarding.md`](architecture-onboarding.md): guided system
   architecture, ownership map, data flows, invariants, and first-week reading plan.
-- [`parallel-agent-development.md`](parallel-agent-development.md): sandbox
+- [`parallel-agent-development.md`](parallel-agent-development.md): which lane to
+  use (primary `master`, short-lived task branch, or sandbox), plus sandbox
   worktrees, promotion, and cleanup.
 - [`issue-workflow.md`](issue-workflow.md): GitHub issues as the shared task board
   across chat sessions, including claiming, triage and implementation comments,

@@ -106,7 +106,11 @@ authoritative source for normalized RU consumption and throttling.
 ## Cost review
 
 Application LLM cost is available through the existing per-user monthly usage ledger
-and `/usage` API. The local gate proves only that its own execution adds no model calls;
+and `/usage` API. Estimates use the versioned catalog in
+`validation/harness/pricing.py` (currently `2026-09-10`). That catalog is not an
+invoice. Dated nearby-SKU comparison and per-itinerary planning figures live in
+[../research/azure-openai-planning-model-2026-09.md](../research/azure-openai-planning-model-2026-09.md).
+The local gate proves only that its own execution adds no model calls;
 it does not forecast real trip-planning token consumption.
 
 For Azure spend, review Cost Management over a representative date range grouped by

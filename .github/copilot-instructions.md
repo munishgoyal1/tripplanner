@@ -56,6 +56,11 @@ not override the canonical documents above, which govern current behavior.
 - The primary `master` workspace is the default development lane. Use a fresh,
   task-named sandbox only for an isolated feature or UX Lab. A sandbox returns to
   `master` only through its validated promotion flow.
+- When the owner asks for a reviewable branch in the primary checkout, branch
+  from current `origin/master`, land one coherent change, merge through a pull
+  request, fast-forward local `master`, and delete the branch. Do not leave
+  long-lived feature branches, and do not also create a sandbox for the same
+  work. See [parallel-agent-development.md](../docs/development/parallel-agent-development.md).
 - Run `scripts/win/user/run/Run-Latest-Master.cmd` only from primary `master` to fast-forward it
   from `origin/master` before starting the local stack.
 - The primary workspace owns the canonical local stack. Sandboxes use their own
