@@ -245,6 +245,24 @@ class Settings(BaseModel):
         )
     )
 
+    # Agent tool-call budgets. These bound how many tool-call rounds/searches
+    # a single chat turn can spend before the graph forces completion, which
+    # is the other lever (besides the Google Places counters above) that caps
+    # paid-provider spend per turn. Raising them lets a complex itinerary (e.g.
+    # a multi-city or 7+ day trip) finish researching before being cut off, at
+    # the cost of more provider calls and LLM tokens per turn.
+    max_tool_phases_per_turn: int = _env_positive_int("MAX_TOOL_PHASES_PER_TURN", 10)
+    max_initial_itinerary_updates: int = _env_positive_int(
+        "MAX_INITIAL_ITINERARY_UPDATES", 2
+    )
+    max_post_research_updates: int = _env_positive_int("MAX_POST_RESEARCH_UPDATES", 1)
+    max_transport_comparisons_per_turn: int = _env_positive_int(
+        "MAX_TRANSPORT_COMPARISONS_PER_TURN", 3
+    )
+    max_transport_comparisons_per_trip: int = _env_positive_int(
+        "MAX_TRANSPORT_COMPARISONS_PER_TRIP", 6
+    )
+
     # Google Maps JavaScript API — browser-side key for the interactive trip
     # map (pins, day routes). MUST be a SEPARATE key from google_places_api_key
     # because it is exposed to the browser: lock it down with an HTTP-referrer

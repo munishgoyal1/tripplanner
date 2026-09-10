@@ -54,8 +54,10 @@ _AIR_TAXI_CLIMB_MIN = 45
 _AIR_CRUISE_KMH = 750.0
 
 _CACHE_TTL_SECONDS = 24 * 60 * 60
-MAX_COMPARISONS_PER_TRIP = 6
-MAX_COMPARISONS_PER_TURN = 3
+# Sourced from Settings (see config.py "Agent tool-call budgets").
+_settings = get_settings()
+MAX_COMPARISONS_PER_TRIP = _settings.max_transport_comparisons_per_trip
+MAX_COMPARISONS_PER_TURN = _settings.max_transport_comparisons_per_turn
 
 _cache = get_cache("transport-compare", default_ttl_seconds=_CACHE_TTL_SECONDS)
 _turn_count = 0

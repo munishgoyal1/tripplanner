@@ -10,6 +10,7 @@ from typing import Any, Literal, TypeAlias
 
 from langchain_core.messages import BaseMessage, HumanMessage
 
+from tripplanner.config import get_settings
 from tripplanner.tools.trip_planner import (
     core_planning_completion_gaps,
     planning_completion_gaps,
@@ -28,9 +29,13 @@ COMPLETION_RESEARCH_TOOLS = frozenset({
     "check_visa_requirements",
     "find_local_events",
 })
-MAX_POST_RESEARCH_UPDATES = 1
-MAX_INITIAL_ITINERARY_UPDATES = 2
-MAX_TOOL_PHASES_PER_TURN = 10
+# Sourced from Settings (see config.py "Agent tool-call budgets") so these
+# turn-level ceilings are tweakable from the same config as the Google Places
+# per-trip counters, without editing code.
+_settings = get_settings()
+MAX_POST_RESEARCH_UPDATES = _settings.max_post_research_updates
+MAX_INITIAL_ITINERARY_UPDATES = _settings.max_initial_itinerary_updates
+MAX_TOOL_PHASES_PER_TURN = _settings.max_tool_phases_per_turn
 
 ForcedReason: TypeAlias = Literal[
     "tool_phase_budget",
