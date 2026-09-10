@@ -344,6 +344,13 @@ def setup_logging(force: bool = False) -> None:
         root.addHandler(RecorderLogHandler(level))
         root.addHandler(handler)
 
+        from tripplanner import alert_events
+
+        root.addHandler(alert_events.LogHandler(logging.ERROR))
+        with _EVENT_OBSERVERS_LOCK:
+            if alert_events.observe not in _EVENT_OBSERVERS:
+                _EVENT_OBSERVERS.append(alert_events.observe)
+
         app_log_path = os.environ.get("APP_LOG_PATH")
         if app_log_path:
             path = Path(app_log_path)
@@ -444,11 +451,17 @@ def timed_operation(kind: str, operation: str, **fields: Any) -> Iterator[None]:
     started = time.perf_counter()
     status = "ok"
     error = None
+    status_code = None
     try:
         yield
     except Exception as exc:
         status = "error"
         error = type(exc).__name__
+        # Generic (not Cosmos-specific): any exception carrying a numeric
+        # status_code -- e.g. azure.cosmos's CosmosHttpResponseError on a
+        # 429 -- surfaces it so alert_events can distinguish throttling from
+        # other failures without importing a cloud SDK here.
+        status_code = getattr(exc, "status_code", None)
         raise
     finally:
         duration_ms = round((time.perf_counter() - started) * 1000, 2)
@@ -461,6 +474,7 @@ def timed_operation(kind: str, operation: str, **fields: Any) -> Iterator[None]:
             status=status,
             ms=duration_ms,
             **({"error": error} if error else {}),
+            **({"status_code": status_code} if status_code is not None else {}),
             **fields,
         )
 

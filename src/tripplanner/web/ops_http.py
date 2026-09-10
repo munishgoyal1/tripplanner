@@ -166,6 +166,20 @@ async def ops_overview(
     runtime["business_activity"] = durable["business"]
     runtime["trip_insights"] = durable["trips"]
     runtime["infra"] = durable["infra"]
+
+    from tripplanner.alert_events import recent as alert_events_recent
+    from tripplanner.alert_events import snapshot as alert_events_snapshot
+
+    try:
+        runtime["alerts"] = {
+            "counts": await asyncio.to_thread(alert_events_snapshot, days),
+            "recent": await asyncio.to_thread(alert_events_recent, 50, days),
+        }
+    except Exception:  # noqa: BLE001 - one dataset must not hide the dashboard
+        runtime["alerts"] = {
+            "counts": {"period_days": days, "by_signal": {}, "total_fired": 0},
+            "recent": [],
+        }
     return runtime
 
 

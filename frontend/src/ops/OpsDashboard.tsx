@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import {
   Activity,
   AlertTriangle,
+  Bell,
   Bot,
   Boxes,
   Clock3,
@@ -363,6 +364,76 @@ function InfraView({ overview }: { overview: OpsOverview }) {
   </>;
 }
 
+const severityLabels: Record<number, string> = { 0: "Critical", 1: "Error", 2: "Warning", 3: "Informational", 4: "Verbose" };
+const severityLabel = (value: number | null) => (value == null ? "—" : severityLabels[value] ?? `Sev ${value}`);
+const signalLabels: Record<string, string> = {
+  application_failure: "Application failures",
+  chat_latency_burn: "Chat latency burn",
+  model_throttling: "Model throttling",
+  provider_circuit_open: "Provider circuit open",
+  cache_degradation: "Cache degradation",
+  cosmos_throttling: "Cosmos DB throttling",
+  gcp_quota_exceeded: "GCP quota exceeded",
+};
+
+function AlertsView({ overview }: { overview: OpsOverview }) {
+  const bySignal = Object.entries(overview.alerts.counts.by_signal).sort(([, a], [, b]) => b.fired - a.fired);
+  const recent = overview.alerts.recent;
+  const openCount = recent.filter((row) => row.state === "firing").length;
+  return (
+    <>
+      <section className="grid gap-y-6 border-y border-stone-300 bg-white py-5 sm:grid-cols-3">
+        <Metric label="Signals fired" value={number.format(overview.alerts.counts.total_fired)} detail={`${overview.alerts.counts.period_days}-day window`} icon={Bell} />
+        <Metric label="Distinct signal types" value={number.format(bySignal.length)} detail="Out of 7 tracked alerts" icon={Boxes} />
+        <Metric label="Currently firing" value={number.format(openCount)} detail="Among the most recent 50" icon={AlertTriangle} />
+      </section>
+      <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-2">
+        <Panel title="Counts by signal" note="Captured in-app, independent of email">
+          {bySignal.length ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[480px] text-left text-sm">
+                <thead className="bg-stone-50 text-xs uppercase text-stone-500"><tr><th className="px-5 py-3">Signal</th><th>Severity</th><th>Fired</th><th>Resolved</th></tr></thead>
+                <tbody>
+                  {bySignal.map(([signal, row]) => (
+                    <tr key={signal} className="border-t border-stone-100">
+                      <td className="px-5 py-3">{signalLabels[signal] || signal}</td>
+                      <td>{severityLabel(row.severity)}</td>
+                      <td className={row.fired ? "font-semibold text-rose-700" : ""}>{row.fired}</td>
+                      <td className="text-stone-500">{row.resolved}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <Empty>No alert conditions fired in this period.</Empty>
+          )}
+        </Panel>
+        <Panel title="Recent alerts" note="Newest first · what fired and when">
+          {recent.length ? (
+            <div className="divide-y divide-stone-100">
+              {recent.slice(0, 20).map((row) => (
+                <div key={row.id} className="px-5 py-3 text-sm">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="font-semibold">{signalLabels[row.signal] || row.signal}{row.key ? ` · ${row.key}` : ""}</span>
+                    <span className={`font-mono text-xs ${row.state === "firing" ? "text-rose-700" : "text-stone-500"}`}>{row.state}</span>
+                  </div>
+                  <div className="mt-1 text-xs text-stone-500">{severityLabel(row.severity)} · {new Date(row.fired_at).toLocaleString()}</div>
+                  {Object.keys(row.detail || {}).length > 0 && (
+                    <div className="mt-1 font-mono text-xs text-stone-500">{Object.entries(row.detail).map(([k, v]) => `${k}=${v}`).join(" · ")}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Empty>No alert conditions fired in this period.</Empty>
+          )}
+        </Panel>
+      </div>
+    </>
+  );
+}
+
 function SystemView({ overview }: { overview: OpsOverview }) {
   const routes = Object.entries(overview.requests.by_route).sort(([, a], [, b]) => b.p95_ms - a.p95_ms);
   const tools = Object.entries(overview.tools).sort(([, a], [, b]) => b.calls - a.calls);
@@ -457,7 +528,7 @@ function SystemView({ overview }: { overview: OpsOverview }) {
 
 export default function OpsDashboard() {
   const [overview, setOverview] = useState<OpsOverview | null>(null);
-  const [view, setView] = useState<"business" | "trips" | "cost" | "infra" | "system">("business");
+  const [view, setView] = useState<"business" | "trips" | "cost" | "infra" | "alerts" | "system">("business");
   const [days, setDays] = useState(30);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -505,12 +576,13 @@ export default function OpsDashboard() {
           <button type="button" role="tab" aria-selected={view === "trips"} onClick={() => setView("trips")} className={`shrink-0 px-4 py-2 text-sm font-semibold ${view === "trips" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><PlaneTakeoff size={15} />Trips</span></button>
           <button type="button" role="tab" aria-selected={view === "cost"} onClick={() => setView("cost")} className={`shrink-0 px-4 py-2 text-sm font-semibold ${view === "cost" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Split size={15} />API &amp; cost</span></button>
           <button type="button" role="tab" aria-selected={view === "infra"} onClick={() => setView("infra")} className={`shrink-0 px-4 py-2 text-sm font-semibold ${view === "infra" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Database size={15} />Infra</span></button>
+          <button type="button" role="tab" aria-selected={view === "alerts"} onClick={() => setView("alerts")} className={`shrink-0 px-4 py-2 text-sm font-semibold ${view === "alerts" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Bell size={15} />Alerts</span></button>
           <button type="button" role="tab" aria-selected={view === "system"} onClick={() => setView("system")} className={`shrink-0 px-4 py-2 text-sm font-semibold ${view === "system" ? "bg-emerald-500 text-stone-950" : "text-stone-300 hover:bg-stone-700"}`}><span className="flex items-center gap-2"><Server size={15} />System health</span></button>
         </div>
       </header>
 
       {rangeError && <div role="alert" className="border-b border-amber-300 bg-amber-50 px-5 py-3 text-sm text-amber-950 sm:px-8">{rangeError}</div>}
-      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} rangeProps={rangeProps} /> : view === "trips" ? <TripsView overview={overview} /> : view === "cost" ? <CostView overview={overview} {...rangeProps} /> : view === "infra" ? <InfraView overview={overview} /> : <SystemView overview={overview} />}</div>
+      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} rangeProps={rangeProps} /> : view === "trips" ? <TripsView overview={overview} /> : view === "cost" ? <CostView overview={overview} {...rangeProps} /> : view === "infra" ? <InfraView overview={overview} /> : view === "alerts" ? <AlertsView overview={overview} /> : <SystemView overview={overview} />}</div>
     </main>
   );
 }

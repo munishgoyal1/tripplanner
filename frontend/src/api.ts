@@ -227,6 +227,25 @@ export interface OpsOverview {
     redis_bytes: number;
     redis_stats_truncated: boolean;
   };
+  alerts: {
+    counts: {
+      period_days: number;
+      since: string;
+      until: string;
+      by_signal: Record<string, { fired: number; resolved: number; severity: number | null }>;
+      total_fired: number;
+    };
+    recent: Array<{
+      id: string;
+      signal: string;
+      key: string | null;
+      severity: number;
+      state: "firing" | "resolved";
+      fired_at: string;
+      resolved_at: string | null;
+      detail: Record<string, unknown>;
+    }>;
+  };
 }
 
 export async function fetchOpsOverview(

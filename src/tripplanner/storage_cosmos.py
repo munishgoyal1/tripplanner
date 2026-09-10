@@ -116,6 +116,7 @@ _CONTAINER_TTLS = {
     **{name: _CACHE_TTL_SECONDS for name in _CACHE_CONTAINERS},
     "provider_usage": 90 * 24 * 60 * 60,
     "flight_recorder": 7 * 24 * 60 * 60,
+    "alert_events": 180 * 24 * 60 * 60,
 }
 
 

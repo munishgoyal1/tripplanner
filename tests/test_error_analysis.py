@@ -96,6 +96,38 @@ def test_reads_current_and_rotated_local_json_without_raw_messages(tmp_path: Pat
     assert "private" not in report
 
 
+def test_render_report_includes_alert_signals_independent_of_email() -> None:
+    report = render_report(
+        "local",
+        [],
+        hours=24,
+        generated_at=dt.datetime(2026, 7, 30, tzinfo=dt.UTC),
+        alert_signals=[
+            {
+                "signal": "cosmos_throttling",
+                "severity": 3,
+                "state": "firing",
+                "fired_at": "2026-07-30T01:00:00Z",
+                "detail": {"window_count": 22, "threshold": 20},
+            },
+            {
+                "signal": "gcp_quota_exceeded",
+                "severity": 2,
+                "state": "firing",
+                "fired_at": "2026-07-30T01:05:00Z",
+                "detail": {"endpoint": "places.googleapis.com"},
+            },
+        ],
+    )
+    assert "FAILURES DETECTED" in report
+    assert "Alert signals fired: 2" in report
+    assert "cosmos_throttling" in report
+    assert "gcp_quota_exceeded" in report
+    assert "window_count=22" in report
+    assert "RU/s allocation" in report
+    assert "billing-guardrails.json" in report
+
+
 def test_parses_log_analytics_table_shape_and_redacts_labels() -> None:
     payload = {
         "tables": [
