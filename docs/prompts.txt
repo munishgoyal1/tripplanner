@@ -1,0 +1,4 @@
+
+Next, think about redesigning the details UX - the current gray background and the card looks like something picked naively off the shelf - design it to pack maximum info but with a good UX. that will be the entry point . 
+Or propose some other way to think of the main overview or summary entry point for customer to see snapshot of itinerary. - may be within itinerary pane itslef at top ? Think hard about it.
+Always keep the data coherent acorss all of UI , in case same data like count of acitiviteis has to be necessarily  shown in mulltiple places. Think about bit of refactoring so we dont need to duplicate the UX elements or informaiton across.
