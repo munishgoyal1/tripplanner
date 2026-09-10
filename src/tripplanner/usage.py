@@ -25,6 +25,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from tripplanner import limits_config
 from tripplanner.observability import app_event
 from tripplanner.validation.harness.pricing import azure_openai_rate
 
@@ -52,11 +53,7 @@ def cost_for(model: str, prompt_tokens: int, completion_tokens: int) -> float:
 
 def get_cap_usd() -> float:
     """Read the monthly cap from env. Default 20.0; ``<= 0`` disables the cap."""
-    raw = os.getenv("MONTHLY_LLM_COST_CAP_USD", "20")
-    try:
-        return float(raw)
-    except (TypeError, ValueError):
-        return 20.0
+    return limits_config.monthly_llm_cost_cap_usd()
 
 
 def _local_dir() -> Path:

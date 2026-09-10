@@ -26,6 +26,17 @@ by `infra/prod.bicepparam`; local and canary never create email alerts. Creating
 or changing the production Action Group still requires the normal
 `APPROVE_PROD_DEPLOYMENT` gate and a deletion-free production `what-if`.
 
+This alert, the four operational alerts below (latency burn, model throttling,
+circuit breaker, cache degradation), and the Cosmos 429 alert are all **infra
+health / error signals, not billing/cost alerts** — their severity, evaluation
+window, and threshold are declared in `azureInfraHealthAlerts` in
+[`infra/billing-guardrails.json`](../../infra/billing-guardrails.json), the
+single config file for every Azure + GCP alert (billing guardrails live in the
+same file, under `gcp`/`azure`/`gcpQuotaAlertPolicies`). `infra/main.bicep`
+reads that JSON via `loadJsonContent()`; only the KQL query bodies stay as
+separate files under `infra/queries/`, since Bicep needs a literal path to
+load file content.
+
 After the approved first deployment, send an Action Group test notification and
 confirm delivery. Then validate the query with a controlled PII-safe error event;
 do not create a user-facing outage just to test alerting.

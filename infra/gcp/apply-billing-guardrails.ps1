@@ -381,6 +381,11 @@ if (-not $SkipQuotas) {
 }
 
 # --- quota alerts -----------------------------------------------------------
+# Severity/aggregation/auto-close come from infra/billing-guardrails.json's
+# gcpQuotaAlertPolicies block (single config place for this alert), not
+# hardcoded here.
+
+$quotaAlertPolicy = $config.gcpQuotaAlertPolicies
 
 foreach ($env in $gcp.environments) {
     if (-not $PSCmdlet.ShouldProcess($env.project, "Ensure quota alert policy")) { continue }
@@ -388,7 +393,11 @@ foreach ($env in $gcp.environments) {
     Invoke-Gcloud @("services", "enable", "monitoring.googleapis.com", "--project=$($env.project)") | Out-Null
 
         $policyDisplayName = "[$($env.name)] Maps API quota exceeded"
-        $policySeverity = if ($env.name -eq "prod") { "ERROR" } else { "WARNING" }
+        $policySeverity = if ($quotaAlertPolicy.severityByEnvironment.PSObject.Properties.Name -contains $env.name) {
+            $quotaAlertPolicy.severityByEnvironment.$($env.name)
+        } else {
+            $quotaAlertPolicy.severityByEnvironment.default
+        }
         $policyFile = Join-Path ([System.IO.Path]::GetTempPath()) "tp-$($env.name)-quota-policy.json"
         @"
 {
@@ -409,7 +418,7 @@ foreach ($env in $gcp.environments) {
                 "duration": "0s",
                 "aggregations": [
                     {
-                        "alignmentPeriod": "300s",
+                        "alignmentPeriod": "$($quotaAlertPolicy.alignmentPeriodSec)s",
                         "perSeriesAligner": "ALIGN_COUNT_TRUE",
                         "crossSeriesReducer": "REDUCE_SUM",
                         "groupByFields": ["metric.label.quota_metric", "resource.label.service"]
@@ -418,7 +427,7 @@ foreach ($env in $gcp.environments) {
             }
         }
     ],
-    "alertStrategy": { "autoClose": "3600s" }
+    "alertStrategy": { "autoClose": "$($quotaAlertPolicy.autoCloseSec)s" }
 }
 "@ | Set-Content -Path $policyFile -Encoding utf8
 

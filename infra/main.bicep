@@ -228,43 +228,30 @@ var logsName = '${namePrefix}-logs-${suffix}'
 var envName = '${namePrefix}-env-${suffix}'
 var appName = '${namePrefix}-app-${suffix}'
 var publicDemoJobName = '${namePrefix}-demo-refresh-${take(suffix, 8)}'
+
+// Severity/window/threshold for every alert below come from
+// infra/billing-guardrails.json (`azureInfraHealthAlerts`), the single
+// config file for all Azure + GCP billing and infra-health alerts — edit
+// values there, not here. Bicep's loadTextContent() needs a literal path
+// per call, so KQL query bodies still load individually here and are
+// matched back to their JSON metadata by alert `name`.
+var alertsConfig = loadJsonContent('billing-guardrails.json').azureInfraHealthAlerts
 var failureAlertQuery = loadTextContent('queries/application-failures.kql')
+var operationalAlertQueries = {
+  'chat-latency-burn': loadTextContent('queries/chat-latency-burn.kql')
+  'model-throttling': loadTextContent('queries/model-throttling.kql')
+  'provider-circuit-open': loadTextContent('queries/provider-circuit-open.kql')
+  'cache-degradation': loadTextContent('queries/cache-degradation.kql')
+}
 var operationalAlerts operationalAlertType[] = [
-  {
-    name: 'chat-latency-burn'
-    displayName: '[${namePrefix}] Tripplanner chat latency burn'
-    description: '[${namePrefix}] Alerts when at least five chat operations have a p95 above 120 seconds.'
-    signal: 'chat_latency_burn'
-    severity: 2
-    windowSize: 'PT15M'
-    query: loadTextContent('queries/chat-latency-burn.kql')
-  }
-  {
-    name: 'model-throttling'
-    displayName: '[${namePrefix}] Tripplanner model throttling'
-    description: '[${namePrefix}] Alerts when model throttling is repeated and exceeds 20 percent of chat operations.'
-    signal: 'model_throttling'
-    severity: 2
-    windowSize: 'PT15M'
-    query: loadTextContent('queries/model-throttling.kql')
-  }
-  {
-    name: 'provider-circuit-open'
-    displayName: '[${namePrefix}] Tripplanner provider circuit open'
-    description: '[${namePrefix}] Alerts when one provider circuit remains observably open for at least five minutes.'
-    signal: 'provider_circuit_open'
-    severity: 3
-    windowSize: 'PT15M'
-    query: loadTextContent('queries/provider-circuit-open.kql')
-  }
-  {
-    name: 'cache-degradation'
-    displayName: '[${namePrefix}] Tripplanner cache degradation'
-    description: '[${namePrefix}] Alerts when at least twenty cache accesses have a miss rate of 50 percent or more.'
-    signal: 'cache_degradation'
-    severity: 3
-    windowSize: 'PT15M'
-    query: loadTextContent('queries/cache-degradation.kql')
+  for alert in alertsConfig.operationalAlerts: {
+    name: alert.name
+    displayName: '[${namePrefix}] ${alert.displayName}'
+    description: '[${namePrefix}] ${alert.description}'
+    signal: alert.signal
+    severity: alert.severity
+    windowSize: alert.windowSize
+    query: operationalAlertQueries[alert.name]
   }
 ]
 
@@ -424,11 +411,11 @@ resource failureAlert 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = if (
   kind: 'LogAlert'
   properties: {
     displayName: '[${namePrefix}] Tripplanner application failures'
-    description: '[${namePrefix}] Alerts on PII-safe application, chat, or tool failure records.'
-    severity: 1
+    description: '[${namePrefix}] ${alertsConfig.failureAlert.description}'
+    severity: alertsConfig.failureAlert.severity
     enabled: true
-    evaluationFrequency: 'PT5M'
-    windowSize: 'PT5M'
+    evaluationFrequency: alertsConfig.failureAlert.evaluationFrequency
+    windowSize: alertsConfig.failureAlert.windowSize
     scopes: [logs.id]
     targetResourceTypes: ['Microsoft.OperationalInsights/workspaces']
     autoMitigate: true
@@ -505,11 +492,11 @@ resource cosmosThrottlingAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = if
   name: '${namePrefix}-cosmos-throttling'
   location: 'global'
   properties: {
-    description: '[${namePrefix}] Alerts when Cosmos DB returns at least twenty throttled requests in fifteen minutes.'
-    severity: 3
+    description: '[${namePrefix}] ${alertsConfig.cosmosThrottlingAlert.description}'
+    severity: alertsConfig.cosmosThrottlingAlert.severity
     enabled: true
-    evaluationFrequency: 'PT5M'
-    windowSize: 'PT15M'
+    evaluationFrequency: alertsConfig.cosmosThrottlingAlert.evaluationFrequency
+    windowSize: alertsConfig.cosmosThrottlingAlert.windowSize
     scopes: [cosmos.id]
     targetResourceType: 'Microsoft.DocumentDB/databaseAccounts'
     targetResourceRegion: location
@@ -530,7 +517,7 @@ resource cosmosThrottlingAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = if
             }
           ]
           operator: 'GreaterThanOrEqual'
-          threshold: 20
+          threshold: alertsConfig.cosmosThrottlingAlert.threshold
           timeAggregation: 'Count'
         }
       ]

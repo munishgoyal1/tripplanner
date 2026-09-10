@@ -1,9 +1,13 @@
-"""Small in-process admission limits for expensive chat turns."""
+"""Small in-process admission limits for expensive chat turns.
+
+Limit values themselves live in ``limits_config.py`` — the single place to
+tune every time-window throttle and usage budget; this module only holds the
+sliding-window/concurrency enforcement mechanics.
+"""
 
 from __future__ import annotations
 
 import asyncio
-import os
 import time
 from collections.abc import Iterable
 from collections import defaultdict, deque
@@ -11,14 +15,9 @@ from dataclasses import dataclass
 
 from fastapi import HTTPException, Request
 
+from tripplanner import limits_config
+
 _WINDOW_SECONDS = 60.0
-
-
-def _positive_int(name: str, default: int) -> int:
-    try:
-        return max(1, int(os.getenv(name, str(default))))
-    except ValueError:
-        return default
 
 
 def client_ip(request: Request) -> str:
@@ -66,8 +65,8 @@ class ChatAdmission:
                     headers={"Retry-After": "2"},
                 )
             now = time.monotonic()
-            user_limit = _positive_int("CHAT_USER_REQUESTS_PER_MINUTE", 10)
-            ip_limit = _positive_int("CHAT_IP_REQUESTS_PER_MINUTE", 30)
+            user_limit = limits_config.chat_user_requests_per_minute()
+            ip_limit = limits_config.chat_ip_requests_per_minute()
             if not self._record(self._user_requests[user_id], now, user_limit):
                 raise HTTPException(
                     status_code=429,
@@ -81,8 +80,8 @@ class ChatAdmission:
                     headers={"Retry-After": "60"},
                 )
 
-            per_user = _positive_int("CHAT_MAX_CONCURRENT_PER_USER", 1)
-            global_limit = _positive_int("CHAT_MAX_CONCURRENT_GLOBAL", 4)
+            per_user = limits_config.chat_max_concurrent_per_user()
+            global_limit = limits_config.chat_max_concurrent_global()
             if self._active_users[user_id] >= per_user or self._active_total >= global_limit:
                 raise HTTPException(
                     status_code=429,
@@ -165,8 +164,8 @@ class ReplayLookupAdmission:
     async def check(self, user_id: str, ip_address: str) -> None:
         async with self._lock:
             now = time.monotonic()
-            user_limit = _positive_int("CHAT_REPLAY_LOOKUPS_PER_MINUTE", 60)
-            ip_limit = _positive_int("CHAT_REPLAY_LOOKUPS_PER_IP_PER_MINUTE", 180)
+            user_limit = limits_config.chat_replay_lookups_per_minute()
+            ip_limit = limits_config.chat_replay_lookups_per_ip_per_minute()
             if not ChatAdmission._record(self._user_requests[user_id], now, user_limit):
                 raise HTTPException(
                     status_code=429,

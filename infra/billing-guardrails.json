@@ -1,14 +1,16 @@
 {
-  "$comment": "Declarative billing guardrails. Monthly cloud budgets use a 30-day planning month: the 140 INR/day local development quota includes 120 INR local and 20 INR canary; prod receives 60 INR/day. Edit identifiers for a new account, then run the idempotent GCP and Azure apply scripts.",
+  "$comment": "SINGLE SOURCE OF TRUTH for every Azure + GCP alert and cost guardrail (billing budgets/quotas AND infra-health/error alerts). Each block below has its own $comment explaining what it configures and which script/template consumes it. Existing top-level keys (alertEmail, thresholds, gcp, azure) and their nested paths are UNCHANGED on purpose -- ~15 PowerShell scripts (apply/migration/access-control scripts under infra/) read them by exact dotted path today, so this reorg only ADDS structure (comments + two new sections) rather than renesting the existing ones. Monthly cloud budgets use a 30-day planning month: the 140 INR/day local development quota includes 120 INR local and 20 INR canary; prod receives 60 INR/day. Edit identifiers for a new account, then run the idempotent GCP and Azure apply scripts.",
 
   "alertEmail": "munishgoyal@aitripplanner.co",
 
   "thresholds": {
+    "$comment": "BILLING (cost). Percent-of-budget notification thresholds shared by Azure Consumption Budgets and GCP Cloud Billing Budgets. Notify-only -- see azure.cutoff / gcp.shutoffEnabled below for the (separate) hard-stop mechanisms.",
     "environment": [0.5, 0.8, 1.0],
     "global": [0.5, 0.8, 0.9, 1.0]
   },
 
   "gcp": {
+    "$comment": "BILLING + REAL-TIME THROTTLING (cost), GCP side. operatorAccount/billingAccount/opsProject identify the account; environments[].budget* feed GCP Cloud Billing Budgets (infra/gcp/apply-billing-guardrails.ps1, notify-only); quotas[] below are the only layer that actually REJECTS calls in real time (gcloud quotas preferences); shutoff* configures the Pub/Sub-triggered billing-detach backstop (infra/gcp/billing-shutoff/main.py), currently disarmed via shutoffEnabled=false.",
     "operatorAccount": "munishgoyal@aitripplanner.co",
     "billingAccount": "01CEBE-1C217F-A8F9D5",
     "currency": "INR",
@@ -134,6 +136,7 @@
   },
 
   "azure": {
+    "$comment": "BILLING (cost), Azure side. operatorAccount/subscriptionId/tenantId identify the account; environments[].budget* feed Azure Consumption Budgets (infra/azure/apply-billing-guardrails.ps1, notify-only -- Azure budgets cannot stop resources by themselves). cutoff configures the ONE hard-stop mechanism Azure has: an Automation Account runbook (infra/azure/budget-cutoff-runbook.ps1) wired to the global budget's Actual100 notification, which stops Container Apps/Jobs and disables Azure OpenAI public access across canary+prod. See docs/operations/azure-billing-guardrails.md.",
     "operatorAccount": "munishgoyal@aitripplanner.co",
     "subscriptionId": "9fe3951c-d440-4d09-91f1-cb47e02f04c3",
     "tenantId": "73dae932-6537-41dd-a995-a2f0254cd9e2",
@@ -154,5 +157,68 @@
       { "name": "canary", "resourceGroup": "rg-tripplanner-canary", "budgetName": "tripplanner-canary-2000inr", "dailyBudget": 20, "budget": 600 },
       { "name": "prod", "resourceGroup": "rg-tripplanner-prod", "budgetName": "tripplanner-prod-2000inr", "dailyBudget": 60, "budget": 1800 }
     ]
+  },
+
+  "gcpQuotaAlertPolicies": {
+    "$comment": "INFRA/ERROR ALERT (not billing), GCP side. Fires a GCP Monitoring alert policy when any entry in gcp.quotas above rejects a call (serviceruntime.googleapis.com/quota/exceeded). Consumed by infra/gcp/apply-billing-guardrails.ps1, which previously hardcoded these same values inline -- moved here so they're visible without reading the script. Notifies the 'Owner email' channel (created from alertEmail above if absent); auto-closes if the condition stops recurring.",
+    "severityByEnvironment": { "prod": "ERROR", "default": "WARNING" },
+    "alignmentPeriodSec": 300,
+    "autoCloseSec": 3600
+  },
+
+  "azureInfraHealthAlerts": {
+    "$comment": "INFRA/ERROR ALERTS (not billing), Azure side. Azure Monitor log/metric alerts on application & infra HEALTH -- errors, chat latency, provider throttling/circuit-breaker state, cache miss rate, Cosmos DB 429s. Prod-only, gated behind main.bicep's enableFailureAlerts param (off by default; see infra/prod.bicepparam). Consumed by infra/main.bicep via loadJsonContent() -- this JSON is the source of truth for severity/window/threshold; the KQL query bodies still live under infra/queries/*.kql (queryFile below) since Bicep's loadTextContent() requires a literal path per file. See docs/operations/operations-slos.md.",
+    "failureAlert": {
+      "description": "Alerts on PII-safe application, chat, or tool failure records.",
+      "severity": 1,
+      "evaluationFrequency": "PT5M",
+      "windowSize": "PT5M",
+      "queryFile": "queries/application-failures.kql"
+    },
+    "operationalAlerts": [
+      {
+        "name": "chat-latency-burn",
+        "signal": "chat_latency_burn",
+        "displayName": "Tripplanner chat latency burn",
+        "description": "Alerts when at least five chat operations have a p95 above 120 seconds.",
+        "severity": 2,
+        "windowSize": "PT15M",
+        "queryFile": "queries/chat-latency-burn.kql"
+      },
+      {
+        "name": "model-throttling",
+        "signal": "model_throttling",
+        "displayName": "Tripplanner model throttling",
+        "description": "Alerts when model throttling is repeated and exceeds 20 percent of chat operations.",
+        "severity": 2,
+        "windowSize": "PT15M",
+        "queryFile": "queries/model-throttling.kql"
+      },
+      {
+        "name": "provider-circuit-open",
+        "signal": "provider_circuit_open",
+        "displayName": "Tripplanner provider circuit open",
+        "description": "Alerts when one provider circuit remains observably open for at least five minutes.",
+        "severity": 3,
+        "windowSize": "PT15M",
+        "queryFile": "queries/provider-circuit-open.kql"
+      },
+      {
+        "name": "cache-degradation",
+        "signal": "cache_degradation",
+        "displayName": "Tripplanner cache degradation",
+        "description": "Alerts when at least twenty cache accesses have a miss rate of 50 percent or more.",
+        "severity": 3,
+        "windowSize": "PT15M",
+        "queryFile": "queries/cache-degradation.kql"
+      }
+    ],
+    "cosmosThrottlingAlert": {
+      "description": "Alerts when Cosmos DB returns at least twenty throttled requests in fifteen minutes.",
+      "severity": 3,
+      "evaluationFrequency": "PT5M",
+      "windowSize": "PT15M",
+      "threshold": 20
+    }
   }
 }
