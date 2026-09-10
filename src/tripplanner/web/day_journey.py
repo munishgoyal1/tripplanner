@@ -22,8 +22,8 @@ from tripplanner.web.map_pins import _haversine_km, _route_circuit_id
 from tripplanner.web.schedule import MAX_GROUND_LEG_KM
 from tripplanner.web.transport import (
     _canonical_transport_name,
-    _intercity_transfer_mode,
     _normalized_stop_kind,
+    _resolved_transfer_mode,
     _transport_terminal_refs,
 )
 
@@ -162,7 +162,7 @@ class _JourneyWalk:
         name = _canonical_transport_name(str(raw_name or ""), mode_name)
         kind = _normalized_stop_kind(name, kind, mode_name)
 
-        mode = _intercity_transfer_mode(name, kind)
+        mode = _resolved_transfer_mode(name, kind)
         if mode:
             self._visit_transfer(stop, stop_index, name, kind, mode)
             return

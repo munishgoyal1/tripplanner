@@ -333,6 +333,66 @@ def test_the_phase_budget_does_not_end_with_advisor_flagged_sparse_days() -> Non
     assert "meaningful nearby stops" in requirement
 
 
+def test_core_planning_completion_gaps_flags_a_short_itinerary() -> None:
+    gaps = core_planning_completion_gaps({
+        "destination": "Kashmir",
+        "origin": "Delhi",
+        "departure_date": "2026-10-01",
+        "return_date": "2026-10-07",
+        "day_wise_itinerary": [
+            {"day": day, "stops": [{"name": "Houseboat", "kind": "hotel"}]}
+            for day in range(1, 6)
+        ],
+    })
+    assert any("5 of 7 requested days" in gap and "2 days missing" in gap for gap in gaps)
+
+
+def test_core_planning_completion_gaps_is_silent_when_days_cover_the_range() -> None:
+    gaps = core_planning_completion_gaps({
+        "destination": "Kashmir",
+        "origin": "Delhi",
+        "departure_date": "2026-10-01",
+        "return_date": "2026-10-07",
+        "day_wise_itinerary": [
+            {"day": day, "stops": [{"name": "Houseboat", "kind": "hotel"}]}
+            for day in range(1, 8)
+        ],
+    })
+    assert not any("requested days" in gap for gap in gaps)
+
+
+def test_the_phase_budget_does_not_end_with_a_short_itinerary() -> None:
+    current_turn: list[BaseMessage] = [
+        HumanMessage(content="plan a seven-day Kashmir trip"),
+        _tool_call("create_trip_plan", "create-1"),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+        _tool_call("update_trip_plan", "update-1"),
+        ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 2),
+    ]
+    decision = resolve_completion_policy(
+        messages=current_turn,
+        active_trip={
+            "destination": "Kashmir",
+            "origin": "Delhi",
+            "departure_date": "2026-10-01",
+            "return_date": "2026-10-07",
+            "day_wise_itinerary": [
+                {"day": day, "stops": [{"name": "Houseboat", "kind": "hotel"}]}
+                for day in range(1, 6)
+            ],
+            "selected_hotels": [{"name": "Houseboat"}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.budget_exhausted is False
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "persist_or_repair_plan"
+    assert "5 of 7 requested days" in (decision.requirement or "")
+
+
 def test_new_trip_kickoff_preempts_incomplete_active_trip() -> None:
     decision = resolve_completion_policy(
         messages=[HumanMessage(content="Create a separate new Hawaii trip")],

@@ -463,6 +463,55 @@ def test_map_view_connects_city_origin_to_hotel_for_road_trip(
     assert day["legs"][0]["intercity"] is True
 
 
+def test_map_view_connects_an_unlabeled_transfer_between_two_towns(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Regression: a transport stop with no mode field and no drive/train/bus/
+    flight keyword -- just two place names ("Srinagar to Gulmarg", typical of
+    an unlabeled hop on a multi-town circuit trip) -- used to be silently
+    dropped: no pin, no route leg, no road circuit, and no diagnostic. It must
+    now default to a drive, same as an explicitly labeled "Drive: X to Y"."""
+    coords = {
+        "Srinagar": (34.0837, 74.7973),
+        "Gulmarg Cottage": (34.0484, 74.3805),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "origin": "Srinagar",
+        "destination": "Gulmarg",
+        "selected_hotels": [{"name": "Gulmarg Cottage"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Srinagar to Gulmarg", "kind": "transport"},
+                {"name": "Gulmarg Cottage", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    pins_by_id = {pin["id"]: pin for pin in view["pins"]}
+    day = view["days"][0]
+    route_names = [pins_by_id[pin_id]["name"] for pin_id in day["pin_ids"]]
+    assert route_names == ["Srinagar", "Gulmarg Cottage"]
+    assert day["circuit_pin_ids"] == day["pin_ids"]
+    assert len(day["legs"]) == 1
+    assert day["legs"][0]["mode"] == "Drive"
+    assert day["legs"][0]["intercity"] is True
+
+
 def test_map_view_connects_train_stations_between_stays(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
