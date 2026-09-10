@@ -117,8 +117,12 @@ re-describing the whole product.
   phases while keeping internal tool names and raw arguments out of the UI. The
   chat and common command bar show one overall elapsed clock, a typical 2–4 minute
   full-build expectation, and continuing-work reassurance rather than appearing stuck.
-- GPT-4.1 is the measured default planning model. A slower or costlier model
-  requires evidence that it improves a relevant quality failure.
+- The measured default planning model is the Azure OpenAI deployment in the
+  environment profiles (`gpt-5.4-mini` as of 2026-09). A slower or costlier
+  nearby SKU requires evidence that it improves itinerary quality, cuts
+  Assistant or paid Places/tool round-trips, and still meets the 2–4 minute
+  full-build expectation. Dated comparison notes live in
+  [research/azure-openai-planning-model-2026-09.md](research/azure-openai-planning-model-2026-09.md).
 
 ### CHAT-01 - Structured minimal-input Assistant interactions
 

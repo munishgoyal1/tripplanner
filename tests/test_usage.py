@@ -21,9 +21,8 @@ def _isolated(tmp_path, monkeypatch):
 
 
 def test_cost_for_known_model_uses_listed_rates():
-    # gpt-4.1: 0.003 prompt / 0.012 completion per 1K tokens.
     cost = usage_mod.cost_for("gpt-4.1", prompt_tokens=1000, completion_tokens=1000)
-    assert cost == pytest.approx(0.003 + 0.012)
+    assert cost == pytest.approx(0.002 + 0.008)
 
 
 def test_cost_for_unknown_model_uses_default_rate():
@@ -33,10 +32,14 @@ def test_cost_for_unknown_model_uses_default_rate():
 
 
 def test_cost_for_mini_prefix_beats_parent_prefix():
-    # gpt-4.1-mini must match before gpt-4.1.
     mini = usage_mod.cost_for("gpt-4.1-mini", prompt_tokens=1000, completion_tokens=1000)
     full = usage_mod.cost_for("gpt-4.1", prompt_tokens=1000, completion_tokens=1000)
     assert mini < full
+    gpt5_mini = usage_mod.cost_for("gpt-5.4-mini", prompt_tokens=1000, completion_tokens=1000)
+    gpt5 = usage_mod.cost_for("gpt-5", prompt_tokens=1000, completion_tokens=1000)
+    gpt54 = usage_mod.cost_for("gpt-5.4", prompt_tokens=1000, completion_tokens=1000)
+    assert gpt5_mini < gpt5 < gpt54
+    assert usage_mod.cost_for("gpt-5-4-mini", 1000, 1000) == gpt5_mini
 
 
 def test_record_usage_persists_and_accumulates():
@@ -396,6 +399,7 @@ def test_a_deployment_named_with_hyphens_is_priced_as_the_model_it_is() -> None:
 
     assert cost_for("gpt-4-1-local", 150_000, 15_000) == cost_for("gpt-4.1", 150_000, 15_000)
     assert cost_for("gpt-4-1-mini-dev", 1000, 1000) == cost_for("gpt-4.1-mini", 1000, 1000)
+    assert cost_for("gpt-5-4-mini", 1000, 1000) == cost_for("gpt-5.4-mini", 1000, 1000)
     assert cost_for("gpt-3-5-turbo", 1000, 1000) == cost_for("gpt-3.5", 1000, 1000)
     # A genuine gpt-4 deployment keeps the gpt-4 price.
     assert cost_for("gpt-4", 1000, 0) > cost_for("gpt-4-1-local", 1000, 0)

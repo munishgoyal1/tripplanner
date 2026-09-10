@@ -8,9 +8,9 @@ default $20). Storage:
   ``users`` container, partition ``/user_id``.
 - Local: ``~/.tripplanner/usage/<user_id>_<YYYYMM>.json``.
 
-Pricing comes from a small constants table keyed by the deployment name
-prefix; unknown models fall back to a conservative gpt-4o-mini-ish rate so we
-never report zero cost.
+Pricing uses the versioned Azure OpenAI catalog in
+``validation.harness.pricing``; unknown models fall back to that catalog's
+default so we never report zero cost.
 
 The module is intentionally side-effect-free at import time. ``record_usage``
 is what actually persists; everything else just reads.
@@ -20,33 +20,13 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from tripplanner.observability import app_event
-
-# Per-1K-token USD rates (rough Azure list prices, mid-2026). Keys are
-# *prefixes* of the deployment name lowered. First match wins; ordering matters
-# for "gpt-4.1-mini" vs "gpt-4.1".
-_RATES: list[tuple[str, float, float]] = [
-    # prefix, prompt_per_1k, completion_per_1k
-    ("gpt-5", 0.005, 0.015),
-    ("gpt-4.1-mini", 0.00015, 0.0006),
-    ("gpt-4.1", 0.003, 0.012),
-    ("gpt-4o-mini", 0.00015, 0.0006),
-    ("gpt-4o", 0.0025, 0.01),
-    ("gpt-4", 0.03, 0.06),
-    ("gpt-3.5", 0.0005, 0.0015),
-]
-
-_DEFAULT_RATE = (0.001, 0.003)  # if we don't know the model, assume cheap-ish
-
-# A deployment cannot contain a dot, so "gpt-4.1" is deployed as "gpt-4-1-local"
-# and would otherwise fall through to the far dearer "gpt-4" prefix.
-_VERSION_SEPARATOR_RE = re.compile(r"(?<=\d)-(?=\d)")
+from tripplanner.validation.harness.pricing import azure_openai_rate
 
 _CONTAINER = "users"
 _LOCK = threading.Lock()
@@ -63,13 +43,11 @@ def _doc_id(month: str) -> str:
 
 def cost_for(model: str, prompt_tokens: int, completion_tokens: int) -> float:
     """Estimate USD cost for a single LLM call."""
-    name = _VERSION_SEPARATOR_RE.sub(".", (model or "").lower())
-    p_rate, c_rate = _DEFAULT_RATE
-    for prefix, p, c in _RATES:
-        if name.startswith(prefix):
-            p_rate, c_rate = p, c
-            break
-    return (prompt_tokens / 1000.0) * p_rate + (completion_tokens / 1000.0) * c_rate
+    rate = azure_openai_rate(model)
+    return (
+        (prompt_tokens / 1_000_000.0) * rate.input_per_million_usd
+        + (completion_tokens / 1_000_000.0) * rate.output_per_million_usd
+    )
 
 
 def get_cap_usd() -> float:
