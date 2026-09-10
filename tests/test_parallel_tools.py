@@ -432,6 +432,8 @@ def test_existing_itinerary_retries_one_failed_mutation(monkeypatch) -> None:
 def test_existing_itinerary_failed_mutation_retry_is_bounded(monkeypatch) -> None:
     from tripplanner import graph as graph_mod
 
+    monkeypatch.setattr(graph_mod.graph_policy, "MAX_INITIAL_ITINERARY_UPDATES", 2)
+
     monkeypatch.setattr(
         graph_mod,
         "load_active_trip_dict",
@@ -459,6 +461,8 @@ def test_existing_itinerary_failed_mutation_retry_is_bounded(monkeypatch) -> Non
 
 def test_empty_itinerary_retry_is_bounded(monkeypatch) -> None:
     from tripplanner import graph as graph_mod
+
+    monkeypatch.setattr(graph_mod.graph_policy, "MAX_INITIAL_ITINERARY_UPDATES", 2)
 
     monkeypatch.setattr(
         graph_mod,
