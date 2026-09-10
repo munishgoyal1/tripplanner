@@ -38,7 +38,7 @@ function Get-GoogleApiDesiredState {
     )
 
     $path = Get-GoogleApiProfilePath -Environment $Environment
-    $match = [regex]::Match((Get-Content $path -Raw), "(?m)^$([regex]::Escape($Flag))=([01])$")
+    $match = [regex]::Match((Get-Content $path -Raw), "(?m)^$([regex]::Escape($Flag))=([01])\r?$")
     if (-not $match.Success) {
         throw "$Flag must be set to 0 or 1 in $path."
     }
@@ -54,7 +54,7 @@ function Set-GoogleApiDesiredState {
 
     $path = Get-GoogleApiProfilePath -Environment $Environment
     $content = Get-Content $path -Raw
-    $pattern = "(?m)^$([regex]::Escape($Flag))=[01]$"
+    $pattern = "(?m)^$([regex]::Escape($Flag))=[01]\r?$"
     if (-not [regex]::IsMatch($content, $pattern)) {
         throw "$Flag must be set to 0 or 1 in $path."
     }

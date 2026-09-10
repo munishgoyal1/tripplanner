@@ -43,6 +43,28 @@ function Invoke-Gcloud {
     return $joined
 }
 
+function ConvertFrom-GcloudJson {
+    param([string]$Text)
+    if ([string]::IsNullOrWhiteSpace($Text) -or $Text -match '(?m)^ERROR:') {
+        return $null
+    }
+    $starts = @($Text.IndexOf('['), $Text.IndexOf('{')) | Where-Object { $_ -ge 0 }
+    if (-not $starts) {
+        return $null
+    }
+    $start = ($starts | Measure-Object -Minimum).Minimum
+    try {
+        return $Text.Substring($start) | ConvertFrom-Json
+    } catch {
+        return $null
+    }
+}
+
+$sdkBin = Join-Path $env:LOCALAPPDATA "Google\Cloud SDK\google-cloud-sdk\bin"
+if (Test-Path (Join-Path $sdkBin "gcloud.cmd")) {
+    $env:Path = "$sdkBin;$env:Path"
+}
+
 if (-not (Get-Command gcloud -ErrorAction SilentlyContinue)) {
     throw "gcloud is not on PATH. Install it, then run 'gcloud auth login' and 'gcloud auth application-default login'."
 }
@@ -76,10 +98,20 @@ Write-Host ""
 # --- ops project ------------------------------------------------------------
 
 $existingProjects = Invoke-Gcloud @("projects", "list", "--format=value(projectId)")
-if ($existingProjects -notmatch "(?m)^$([regex]::Escape($ops))$") {
+$projectIds = @(
+    $existingProjects -split '\r?\n' |
+        ForEach-Object { $_.Trim() } |
+        Where-Object { $_ -and $_ -notmatch '^(ERROR|WARNING):' }
+)
+if ($projectIds -notcontains $ops) {
     if ($PSCmdlet.ShouldProcess($ops, "Create ops project")) {
-        Invoke-Gcloud @("projects", "create", $ops, "--name=$ops") | Out-Null
-        Invoke-Gcloud @("beta", "billing", "projects", "link", $ops, "--billing-account=$billingAccount") | Out-Null
+        try {
+            Invoke-Gcloud @("projects", "create", $ops, "--name=$ops") | Out-Null
+            Invoke-Gcloud @("beta", "billing", "projects", "link", $ops, "--billing-account=$billingAccount") | Out-Null
+        } catch {
+            if ("$_" -notmatch "already in use") { throw }
+            Write-Host "  ops project already exists"
+        }
     }
 } else {
     Write-Host "  ops project already exists"
@@ -449,8 +481,8 @@ foreach ($env in $gcp.environments) {
                 "beta", "monitoring", "channels", "list", "--project=$($env.project)",
                 "--format=json(name,displayName)"
         ) -AllowFailure
-        $channel = if ($channelsJson -and $channelsJson -notmatch "ERROR") {
-                @($channelsJson | ConvertFrom-Json | Where-Object { $_.displayName -eq "Owner email" }) |
+        $channel = if ($channelsJson) {
+                @(ConvertFrom-GcloudJson $channelsJson | Where-Object { $_.displayName -eq "Owner email" }) |
                         Select-Object -First 1 -ExpandProperty name
         } else {
                 ""
@@ -467,8 +499,8 @@ foreach ($env in $gcp.environments) {
         "alpha", "monitoring", "policies", "list", "--project=$($env.project)",
                 "--format=json(name,displayName)"
     ) -AllowFailure
-        $existingPolicies = if ($policiesJson -and $policiesJson -notmatch "ERROR") {
-                @($policiesJson | ConvertFrom-Json | Where-Object {
+        $existingPolicies = if ($policiesJson) {
+                @(ConvertFrom-GcloudJson $policiesJson | Where-Object {
                         $_.displayName -in @($policyDisplayName, "Maps API quota exceeded")
                 })
         } else {
@@ -481,7 +513,7 @@ foreach ($env in $gcp.environments) {
                 Invoke-Gcloud @(
                         "alpha", "monitoring", "policies", "update", $existingPolicies[0].name,
                         "--project=$($env.project)", "--policy-from-file=$policyFile",
-                        "--notification-channels=$channel", "--quiet"
+                        "--set-notification-channels=$channel", "--quiet"
                 ) | Out-Null
                 Write-Host "  [$($env.name)] quota alert updated: $policyDisplayName ($policySeverity)"
         } else {

@@ -213,6 +213,8 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
     assert "$quota.preferenceId" in apply_script
     assert "kept tighter" in apply_script
     assert "$AllowQuotaIncreases" in apply_script
+    assert "ConvertFrom-GcloudJson" in apply_script
+    assert "--set-notification-channels=" in apply_script
     for cloud in ("azure", "gcp"):
         environments = {
             environment["name"]: environment

@@ -1725,3 +1725,7 @@ the outcome.
 - A JSON edit does not change Google's enforcement until
   `apply-billing-guardrails.ps1` runs, including `-AllowQuotaIncreases` when
   photo/search daily caps are raised so an allowed trip can finish.
+- Windows `gcloud` JSON can be prefixed with warnings and CRLF project IDs
+  fail `(?m)^id$` matches. Parse from the first `{`/`[`, trim IDs, and treat
+  "already in use" as exists. Cloud SDK 584 `alpha monitoring policies update`
+  takes `--set-notification-channels`, not `--notification-channels`.
