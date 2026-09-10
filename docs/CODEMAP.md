@@ -92,6 +92,7 @@ trip through shared API contracts.
 | `src/tripplanner/trip_events.py` | Durable trip event ownership |
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
+| `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py` | Private diagnostic events: full model/tool and planner HTTP evidence, provider attempts, seven-day local/Cosmos spool, integrity-checked operator export; see operations SLO runbook |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics |
 | `src/tripplanner/debug_store.py` | Internal implementation of the Trip Flight Recorder: automatic local-only history of real trip revisions for investigation and emulator restore; never active in hosted mode |
 | `src/tripplanner/validation/` | Trip Quality Audit implementation: Trip Quality Corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, comparable-run summaries (brief 004), and durable provenance aliases used by local inspection links |

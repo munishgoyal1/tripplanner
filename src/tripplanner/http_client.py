@@ -168,6 +168,30 @@ def close_client() -> None:
 def request(
     method: str, url: str, *, endpoint: str | None = None, **kwargs: Any
 ) -> httpx.Response:
+    import uuid
+
+    from tripplanner.flight_http import body_data
+    from tripplanner.flight_recorder import record
+
+    attempt_id = uuid.uuid4().hex
+    started = time.monotonic()
+    record("provider.attempt", attempt_id=attempt_id, method=method, url=url,
+           endpoint=endpoint, request=kwargs)
+    try:
+        response = _request(method, url, endpoint=endpoint, **kwargs)
+        record("provider.result", attempt_id=attempt_id, status=response.status_code,
+               duration_ms=(time.monotonic() - started) * 1000,
+               body=body_data(response.content, response.headers.get("content-type", "")))
+        return response
+    except BaseException as exc:
+        record("provider.error", attempt_id=attempt_id, error=str(exc),
+               error_type=type(exc).__name__, duration_ms=(time.monotonic() - started) * 1000)
+        raise
+
+
+def _request(
+    method: str, url: str, *, endpoint: str | None = None, **kwargs: Any
+) -> httpx.Response:
     """Perform one pooled, budgeted, breakered outbound request."""
     name = endpoint or endpoint_for(url)
     if name in {"places.googleapis.com", "routes.googleapis.com", "maps.googleapis.com"}:
@@ -225,7 +249,9 @@ def post(url: str, **kwargs: Any) -> httpx.Response:
 
 def outbound_status() -> dict[str, Any]:
     """Non-secret outbound health, surfaced by ``/providers/status``."""
-    return {"endpoints": _breakers.snapshot()}
+    from tripplanner.flight_recorder import status
+
+    return {"endpoints": _breakers.snapshot(), "flight_recorder": status()}
 
 
 def reset_breakers_for_tests() -> None:

@@ -47,6 +47,7 @@ def _force_local_storage(monkeypatch: pytest.MonkeyPatch) -> None:
 def _disable_debug_store(monkeypatch: pytest.MonkeyPatch) -> None:
     """Keep fixture trips out of the committed debug archive."""
     monkeypatch.setenv("TRIPPLANNER_DEBUG_STORE", "0")
+    monkeypatch.setenv("TRIPPLANNER_FLIGHT_RECORDER", "0")
 
 
 _LOCAL_HOSTS = {"127.0.0.1", "::1", "localhost", "0.0.0.0"}

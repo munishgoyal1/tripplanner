@@ -315,6 +315,7 @@ def extract_about_me(text: str) -> dict[str, Any]:
 
         from tripplanner.azure_openai import require_azure_openai_enabled
         from tripplanner.config import get_settings
+        from tripplanner.flight_http import model_recording_options
     except Exception as exc:  # pragma: no cover - import errors are environmental
         log.warning("about_me extractor: imports failed (%s); skipping", exc)
         return {}
@@ -322,6 +323,7 @@ def extract_about_me(text: str) -> dict[str, Any]:
     try:
         s = require_azure_openai_enabled(get_settings())
         llm = AzureChatOpenAI(
+            **model_recording_options(),
             azure_endpoint=s.azure_openai_endpoint,
             api_key=s.azure_openai_api_key,
             azure_deployment=s.azure_openai_deployment,

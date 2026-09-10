@@ -36,16 +36,35 @@ Neither goal may cost the third property: the planner stays fast and breezy.
 Price and offer work is background and time-boxed, and the product always shows
 the plan it already has rather than blocking on a better one.
 
-New-trip planning is automation-first. Once the user supplies an origin,
-destination, rough timing, and who is travelling, the agent owns the first complete proposal: it
-chooses sensible defaults, researches and selects the strongest verified hotel,
-fills every day with concrete places and meals, and persists the enriched plan.
-The first planning turn continues past its normal tool budget when necessary to
-finish concrete lodging, journey edges, substantial-day meals, and requested-
-budget cost evidence. Weather may remain deferred enrichment; those core plan
-categories may not.
-The user refines a useful plan through chat instead of designing one from a blank
-canvas or resolving avoidable `TBD` decisions.
+New-trip planning is automation-first. With smart defaults enabled, start from a
+one-line destination request: explicit facts win, then saved traveller/family
+context and relevant history, then labelled editable assumptions. Do not require
+confirmation of ordinary party, date, duration or preference defaults. Never invent
+an origin or provider facts. Ask only when an indispensable answer prevents any
+useful itinerary. With defaults disabled, offer one consolidated prefilled review.
+Research hotels with a bounded place fallback; unavailable inventory becomes a
+city-specific Hotel TBD with visible workspace and final-summary gaps. Preserve
+date, geography and journey integrity, and distinguish a useful draft from a
+booking-ready plan. The traveller refines a useful proposal, rather than doing the
+planner's research or resolving every provider failure.
+
+**Local-expert standard:** deliver the practical judgement a trusted local and an
+experienced travel agent would combine, without requiring a well-travelled friend
+circle or separate research. Account for ritual/admission windows, advance booking,
+queues, last entry, weekly/seasonal closures, heat/rain/snow, realistic road legs,
+parking and walking access, meal timing, family ages and mobility, rest and total
+trip cost. A high star rating is one signal, not a reason to ignore suitability.
+Advice must affect the actual sequence, visit times, stay locations and alternatives.
+
+Every consequential local insight needs identifiable place/area, source URL,
+checked time, applicable dates/season, traveller intent, confidence and the planning
+consequence. Distinguish official rules, observed visitor patterns and inferred
+recommendations; corroborate subjective advice and keep conflicts visible. For
+example, a Mahakaleshwar ritual visit and ordinary darshan can require different
+schedules; do not apply a universal early-morning rule to all temples. A confirmed
+early slot may justify staying in Ujjain the previous night rather than a tiring
+pre-dawn transfer from Indore. Failed verification retains an explicit gap and a
+useful alternative, not a fabricated reservation or a blocked whole itinerary.
 
 Trip duration is part of the recommendation, not a universal default. When the
 user leaves duration flexible, an explainable planning layer estimates the
@@ -63,10 +82,11 @@ preferences and trip history, distinguishes durable defaults from one-trip
 exceptions, and asks at most one consolidated question when an unresolved fact
 would materially change the plan. Capable clients should render that question as
 prefilled structured controls with a skip/default path; typed data, not model-authored
-markup, owns those interactions. Who joins is always a trip fact rather than a
-family-profile assumption: when omitted, the review collects adults age 13+, children
-age 0-12, and whether this is solo, couple, family, friends, or another group. Those
-facts drive total budget, occupancy, pace, transport, and experience fit. After the first complete plan, Details and Map
+markup, owns those interactions. Who joins is a trip fact: use explicit counts first,
+then saved context as an editable assumption when smart defaults are enabled.
+With defaults disabled, the review collects adults age 13+, children age 0-12,
+and the group relationship. These facts drive total budget, occupancy, pace,
+transport and experience fit. After the first complete plan, Details and Map
 support visual refinement while Assistant remains available for broader changes.
 
 ## 2) Non-goals (resist scope creep)
@@ -594,12 +614,3 @@ appears, add it to §3. Stale PRODUCT.md = wasted onboarding time for the
 next agent session.
 
 Keep product intent in this canonical document rather than a parallel summary.
-
-
-Smart defaults authorize a useful first itinerary without routine confirmation of
-party, dates, duration or preferences. Current instructions win, then saved context,
-then labelled editable assumptions. Missing origin or hotel inventory is a visible
-TBD in an otherwise useful draft; never invent provider facts or booking readiness.
-Only ask when an indispensable answer prevents any useful plan. Hotel search and
-place fallback are bounded attempts, and unresolved gaps remain visible in the
-workspace and final summary. Integrity checks still protect dates and journeys.

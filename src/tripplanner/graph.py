@@ -240,6 +240,9 @@ class _UsageCallback(BaseCallbackHandler):
 def _build_llm(
     endpoint: str, api_key: str, deployment: str, api_version: str
 ) -> AzureChatOpenAI:
+    from tripplanner.flight_callbacks import FlightRecorderCallback
+    from tripplanner.flight_http import model_recording_options
+
     return AzureChatOpenAI(
         azure_endpoint=endpoint,
         api_key=api_key,
@@ -262,7 +265,9 @@ def _build_llm(
         # Without this a streamed turn reports no tokens at all, so everything
         # the web UI does would go unpriced.
         stream_usage=True,
-        callbacks=[_UsageCallback(deployment)],
+        **{**model_recording_options(), "callbacks": [
+            _UsageCallback(deployment), FlightRecorderCallback(),
+        ]},
     )
 
 
@@ -601,7 +606,9 @@ def build_graph() -> StateGraph:
     graph.add_edge("tools", "trip_agent")
     graph.add_edge("proposal_tools", "trip_agent")
 
-    return graph.compile()
+    from tripplanner.flight_callbacks import ToolRecorderCallback
+
+    return graph.compile().with_config(callbacks=[ToolRecorderCallback()])
 
 
 # Singleton compiled graph

@@ -56,6 +56,7 @@ from tripplanner.chat_turn import (
     TurnTerminal,
 )
 from tripplanner.decisions.receipts import ReceiptLog
+from tripplanner.flight_middleware import FlightRecorderMiddleware
 from tripplanner.observability import app_event, model_rate_limit_fields, setup_logging
 from tripplanner.request_limits import (
     acquire_chat,
@@ -81,6 +82,8 @@ from tripplanner.web.trip_http import router as trip_router
 setup_logging()
 
 app = FastAPI(title="Personal Assistant API", version="0.1.0")
+
+app.add_middleware(FlightRecorderMiddleware)
 
 
 @app.exception_handler(TripConflictError)
@@ -364,7 +367,12 @@ def _save_chat(
         carryover = chat_carryover.distill(base_history, prev_dest, new_dest)
         origin_prompt = chat_store.originating_request(base_history, new_dest)
 
-    return chat_store.persist_turn(
+    from tripplanner.flight_recorder import record
+
+    record("chat.persist.attempt", trip_id=tid_after, previous_trip_id=tid_before,
+           request_id=request_id, completed=completed, duration_seconds=turn_seconds,
+           messages=completed_turn)
+    saved_trip_id = chat_store.persist_turn(
         tid_before,
         tid_after,
         base_history,
@@ -376,6 +384,10 @@ def _save_chat(
         agent=agent,
         turn_seconds=turn_seconds,
     )
+
+    record("chat.persisted", trip_id=saved_trip_id, request_id=request_id,
+           completed=completed, duration_seconds=turn_seconds)
+    return saved_trip_id
 
 
 # Fire-and-forget passive-learning sweeps. Keep strong refs so the event loop

@@ -28,6 +28,11 @@ def get_user_id() -> str:
 def set_user_id(user_id: str) -> None:
     """Set the user ID for the current execution context."""
     _user_id.set(user_id or _DEFAULT_USER_ID)
+    from tripplanner.flight_recorder import IDENTITY
+
+    identity = IDENTITY.get()
+    if identity is not None:
+        identity["user_id"] = user_id or _DEFAULT_USER_ID
 
 
 def is_default_user() -> bool:

@@ -681,6 +681,18 @@ implemented capability baseline.
 - Tool latency, failures, cache hits, model-call latency/tokens/prompt size,
   forced completion-gate reasons, structured events, and hosted health are
   observable through API metrics and Azure logs.
+- A private flight recorder is enabled by default across local, canary and production
+  code paths. It captures exact model messages/tool schemas and returned messages,
+  model HTTP attempts (including SDK retry counts), tool inputs/outputs/errors,
+  shared provider HTTP payloads/statuses, application events, planner API/SSE bodies,
+  graph/interaction lifecycle and saved trip revisions. Events carry UTC time,
+  trace/run/attempt identifiers, user/trip attribution and durations. Credentials
+  and document-processing content are excluded. Private files spool before asynchronous
+  Cosmos delivery; compressed chunks are verified on export and expire after seven days.
+  Recorder failures preserve pending files and expose degraded status. This code-level
+  capability still requires deployment and a live hosted recorder smoke check.
+  Browser Google SDK internals and infrastructure SDK wire retries are outside this
+  server recorder; their existing application/status telemetry is not a full wire trace.
 - Hidden operations and owner-only backend access is authorized solely to the
   verified `munishgoyal1@gmail.com` application session. Cloud operator and billing
   identities do not grant application-owner access, and customers receive no owner role.
@@ -822,6 +834,33 @@ implemented capability baseline.
 - No server-rendered public edge. One FastAPI process serves the API and the
   client-rendered SPA, so landing, destination-content, and shared-trip URLs are
   not indexable and not first-paint-fast for anonymous visitors.
+
+### Expert itinerary intelligence: concrete gaps (2026-09-10)
+
+The target is captured in PRODUCT.md. These are assessed gaps, not claims that new
+provider integrations or local-expert scheduling have shipped.
+
+| Need | Existing foundation | Missing capability and concrete source path |
+| --- | --- | --- |
+| Practical visit windows | Google Places hours, reviews and ratings; Tavily search; explicit closure recheck | Fetch official temple/attraction/operator pages and tourism-board guidance; extract ritual slots, last entry, booking, dress/access rules. Corroborate subjective crowd/queue advice with dated reputable travel sources and permitted visitor evidence. Store source/date/confidence/conditions and translate into scheduling constraints. |
+| Review-informed fit | Limited Places review sample, aggregate rating/count | Aspect-level evidence for families, mobility, cleanliness, noise, food and queues; recency and sample confidence. Places is not a full review corpus or guaranteed popular-times feed. Licensed broader review data requires separate access; do not treat Business Profile APIs as access to arbitrary businesses' reviews. |
+| Weather and disruptions | Open-Meteo forecast; far-future historical/seasonal proxy; web closure advisories | Slot-level weather suitability, authoritative IMD/local authority alerts, road/park/operator closures, refresh close to departure and ready alternatives. A previous-year sample is not a forecast. |
+| Real transport | Flight/provider adapters, Google Routes, OpenRouteService fallback, estimates | Verified rail/coach/ferry inventory and last-mile schedules/fares. Prefer official regional operators/GTFS where available; partner APIs need approved access and coverage validation. No universal working India rail/bus inventory is currently established. |
+| Stays and tickets | LiteAPI/legacy hotel search, Places fallback, Viator discovery | Reliable destination/occupancy/date coverage, taxes, cancellation, entry-slot availability and deadlines. Official admission portals for important anchors; broader paid integrations only after coverage/cost evidence. A named hotel does not establish room availability. |
+| Personal local-expert decisions | Saved profile/family/preferences, duration advisor, place facts and deterministic repair/rebalance | A sourced local-advice store consumed by schedule, stay-location and ranking decisions; explainable tradeoffs and learning from accept/reject/actual trip outcomes. Distinguish explicit preferences from assumptions. |
+| Lowest practical total cost | Provider quotes, cost ledger, route/mode comparisons | Consistent whole-party totals across taxes, baggage, occupancy, transfers, tickets and cancellation; compare a few feasible end-to-end alternatives rather than independently cheapest components. |
+
+Cost strategy: reuse permitted cached facts by destination/place, search only missing
+high-impact facts, fetch details only for shortlisted places, bound each provider
+fallback and defer nonessential refreshes. No new paid subscription is assumed.
+Separate provider spend from trip spend, and preserve provenance/freshness across both.
+
+Reference sources checked for this assessment:
+[Google Places policies](https://developers.google.com/maps/documentation/places/web-service/policies),
+[Tavily extraction and crawling](https://docs.tavily.com/examples/quick-tutorials/crawl-api),
+and the [official Mahakaleshwar timing/booking site](https://www.shrimahakaleshwar.mp.gov.in/timing).
+The temple page appeared in search but could not be fetched successfully during this
+check, so no exact ritual time, admission price or booking deadline is asserted here.
 
 ### Out of scope unless explicitly reopened
 

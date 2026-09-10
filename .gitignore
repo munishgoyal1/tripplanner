@@ -63,3 +63,6 @@ docs/ux-experiments/LAB_SELECTIONS.previous.json
 
 # Local debug captures of real trips; never version personal trip data.
 debug-store/
+
+# Private full-fidelity diagnostic captures.
+flight-recorder/

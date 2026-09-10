@@ -1673,3 +1673,16 @@ the outcome.
 - Unavailable provider inventory is different from corrupt trip structure. After
   bounded research, retain a useful draft with visible gaps instead of repeatedly
   forcing hotel repairs. Derive workspace gaps from saved data so reloads retain them.
+
+
+## 2026-09-10 - A usage ledger cannot reconstruct a planning conversation
+
+- Kashmir's archive retained trip/transcript snapshots and sorted tool names, while
+  rotating application logs retained only some later model rounds. Token counts,
+  prompt lengths and cache statuses cannot recover the actual inputs or tool order.
+- Keep private full-fidelity evidence separate from content-free analytics. Record
+  logical model/tool spans and physical HTTP attempts separately so retries and
+  provider failures do not masquerade as extra agent reasoning turns.
+- Persist correlated events before asynchronous upload; retain failed spool files
+  and reject incomplete exports. A complete diagnostic event is not proof that a
+  trip is complete, and a deployed recorder must be smoke-tested in its environment.

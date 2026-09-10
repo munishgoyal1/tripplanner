@@ -897,3 +897,21 @@ than guessing.
 - [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `sandbox records linked iterations and both promotion paths`
 - [`frontend/labs/src/shared/LabNavigation.test.tsx`](../frontend/labs/src/shared/LabNavigation.test.tsx) - `shows the permanent Lab number in detail-page navigation`
 - [`frontend/labs/src/shared/LabScope.test.tsx`](../frontend/labs/src/shared/LabScope.test.tsx) - `shows authoritative status in the top area and updates after a save`
+
+
+### EB-TRACE-001 - Reconstruct a planning turn privately
+
+**Trigger:** Build or edit a trip in local, canary or production with the default
+flight recorder enabled.
+
+**Expected:** Model prompts/replies, tools, shared travel-provider attempts,
+application logs, planner API responses and saved revisions share trace identifiers
+and UTC times. Model and provider attempts retain durations, errors and observable
+retry counts. Streaming remains streaming, including partial failure evidence.
+Credential/document exclusions do not mask dates or silently truncate trip prompts.
+A spool/upload failure does not fail the user's trip; it surfaces degraded recorder
+health and retries pending files. Export detects incomplete/corrupt chunks and includes
+research preceding new-trip identity assignment. Full payloads are private operator
+data, never public analytics. Browser SDK internal requests are outside this contract.
+
+**Executable proof:** `tests/test_flight_recorder.py`.

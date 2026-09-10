@@ -156,6 +156,9 @@ class TripRepository:
                 continue
             if activate:
                 self._write_active_pointer(trip_id, int(body["revision"]))
+            from tripplanner.flight_recorder import record
+
+            record("trip.saved", user_id=self.user_id, trip_id=body.get("trip_id"), trip=body)
             debug_store.record_trip(body, self.user_id)
             return self._outcome(body)
         raise TripConflictError(f"Trip {trip_id!r} kept changing")
@@ -173,6 +176,9 @@ class TripRepository:
             atomic_write_json(self.paths.history / f"{trip_id}.json", body, indent=2)
             if activate:
                 self._write_active_pointer(trip_id, int(body["revision"]))
+            from tripplanner.flight_recorder import record
+
+            record("trip.saved", user_id=self.user_id, trip_id=body.get("trip_id"), trip=body)
             debug_store.record_trip(body, self.user_id)
             return self._outcome(body)
 

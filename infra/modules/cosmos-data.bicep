@@ -161,6 +161,21 @@ resource providerUsageContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatab
   }
 }]
 
+resource flightRecorderContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'flight_recorder'
+  properties: {
+    resource: {
+      id: 'flight_recorder'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+      defaultTtl: 604800
+    }
+  }
+}]
+
 resource tripFeedbackContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
   parent: databases[index]
   name: 'trip_feedback'

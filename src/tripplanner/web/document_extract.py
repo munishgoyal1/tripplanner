@@ -138,9 +138,11 @@ def _invoke(document_type: str, content: Any) -> dict[str, Any]:
 
     from tripplanner.azure_openai import require_azure_openai_enabled
     from tripplanner.config import get_settings
+    from tripplanner.flight_http import model_recording_options
 
     settings = require_azure_openai_enabled(get_settings())
     llm = AzureChatOpenAI(
+        **model_recording_options(sensitive=True),
         azure_endpoint=settings.azure_openai_endpoint,
         api_key=settings.azure_openai_api_key,
         azure_deployment=settings.azure_openai_deployment,

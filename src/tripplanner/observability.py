@@ -339,6 +339,9 @@ def setup_logging(force: bool = False) -> None:
         handler.setLevel(level)
         handler.addFilter(PiiRedactingFilter())
         handler.setFormatter(JsonFormatter() if use_json else _TextFormatterWithPid())
+        from tripplanner.flight_recorder import RecorderLogHandler
+
+        root.addHandler(RecorderLogHandler(level))
         root.addHandler(handler)
 
         app_log_path = os.environ.get("APP_LOG_PATH")
@@ -408,6 +411,9 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
         fields = {**current_attribution().fields(), **fields}
     except Exception:
         pass
+    from tripplanner.flight_recorder import record
+
+    record("log." + kind, user_id=user_id, **fields)
     safe: dict[str, Any] = {}
     for k, v in fields.items():
         if k.lower() in _SENSITIVE_FIELDS:

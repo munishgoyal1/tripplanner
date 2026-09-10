@@ -482,6 +482,9 @@ async def account_privacy_action(req: PrivacyActionRequest, request: Request) ->
             reset_prefs = True
             deleted_usage = await asyncio.to_thread(clear_usage, user_id)
             deleted_cache = await asyncio.to_thread(tools_cache.clear_cache_for_user, user_id)
+            from tripplanner.flight_recorder import clear_user
+
+            await asyncio.to_thread(clear_user, user_id)
     finally:
         await release_workspace_exclusive(workspace)
 

@@ -204,10 +204,16 @@ def usage_scope(
         batch.promote_attribution(attribution)
     batch_token = _BATCH.set(batch) if owns_batch else None
     token = _CONTEXT.set(attribution)
+    from tripplanner.flight_recorder import TRACE, record
+
+    trace_token = TRACE.set(TRACE.get() or attribution.interaction_id)
+    record("interaction.start", **attribution.fields())
     try:
         yield attribution
     finally:
+        record("interaction.end", **(batch.attribution or attribution).fields())
         _CONTEXT.reset(token)
+        TRACE.reset(trace_token)
         if owns_batch:
             _BATCH.reset(batch_token)
             from tripplanner.interaction_telemetry import persist_interaction

@@ -77,6 +77,7 @@ def distill(
 
         from tripplanner.azure_openai import require_azure_openai_enabled
         from tripplanner.config import get_settings
+        from tripplanner.flight_http import model_recording_options
     except Exception as exc:  # pragma: no cover - import errors are environmental
         log.warning("chat_carryover: imports failed (%s); skipping", exc)
         return ""
@@ -91,6 +92,7 @@ def distill(
         if not (s.azure_openai_endpoint and s.azure_openai_api_key):
             return ""
         llm = AzureChatOpenAI(
+            **model_recording_options(),
             azure_endpoint=s.azure_openai_endpoint,
             api_key=s.azure_openai_api_key,
             azure_deployment=s.azure_openai_deployment,

@@ -228,3 +228,61 @@ to investigate tool health; it is not sufficient evidence of a p95 regression.
 Do not query the restricted `audit_events` container for routine reliability
 monitoring. It contains raw values and is intentionally separate from the
 sanitized operational stream.
+
+
+## Private flight recorder
+
+Enabled by default (`TRIPPLANNER_FLIGHT_RECORDER=1`) in every environment. This is
+separate from content-free rotating logs and the local-only `debug-store` archive.
+Set `TRIPPLANNER_FLIGHT_RECORDER_DIR` to a private writable path; by default it uses
+`~/.tripplanner/flight-recorder/<environment>`. Files are written atomically and
+fsynced before returning. Windows inherits the private user's directory ACL;
+POSIX files use mode 0600. Never commit or publish these records.
+
+When Cosmos is configured, a daemon retries the spool every ten seconds into the
+environment database's `flight_recorder` container (`/user_id` partition). Successful
+uploads remove the spool file. JSON is gzip/base64 encoded into <=128,000-character
+chunks with an event checksum/count. An interrupted upload retries idempotently;
+export rejects missing or corrupt chunks. Runtime container creation and IaC both
+set a seven-day TTL. Without Cosmos, local files expire after seven days when the
+worker runs. Hosted missing/unavailable Cosmos is degraded, not a successful durable
+archive. A lost container disk can lose its unuploaded spool; use persistent storage
+when this residual window is unacceptable. No per-token Cosmos writes occur.
+
+`GET /providers/status` includes non-sensitive `outbound.flight_recorder` health:
+enabled, last error type, last successful upload and pending event count. Watch
+`flight_recorder_degraded` logs and spool growth. A start without an end means a
+crash/interruption or missing evidence; never infer successful completion from it.
+An integrity-checked event does not certify that the itinerary itself is correct.
+
+Export with the target environment's ordinary operator credentials (no public
+payload-read endpoint is exposed). Specify `--cosmos` when the environment uses
+Cosmos; otherwise this reads the private local spool/archive:
+
+```powershell
+$env:TRIPPLANNER_ENVIRONMENT = 'local'
+python -m tripplanner.flight_recorder --user-id USER_ID --trip-id TRIP_ID --cosmos --output C:/private/kashmir-flight.json
+```
+
+Omit `--trip-id` to inspect the user's retained turns; use `--trace-id` for one run.
+Trip filtering includes earlier research from the same trace before the trip ID
+was assigned. Export refuses to overwrite an existing file. Reconstruct using
+`trace_id`, `span_id`/`parent_span_id`, `attempt_id`, `interaction_id`, `request_id`
+and UTC timestamps; sequence disambiguates events with the same clock reading.
+`chat.persisted` and `trip.saved` establish successful persistence, while attempt
+and graph error events preserve failed work. Account clear/delete removes the
+user's recorder partition and pending files along with ordinary user data.
+
+Coverage: graph/turn lifecycle, model prompts including tool schemas, model replies
+and token metadata, all five current model construction paths, shared travel-provider
+HTTP requests/responses, model transport attempts/retry counts and partial stream
+failures, tool callbacks, application logs/events, planner JSON/SSE bodies, revisions.
+Secrets are redacted; document-extraction model content and binary media are recorded
+as metadata only. OAuth/document route bodies are excluded. Browser-owned Maps SDK
+network calls and storage/auth SDK-internal retries are not intercepted by this
+server recorder. SDK usage and billing records remain complementary evidence.
+
+After deploying to each hosted environment, run one normal authorized planning turn
+and export its trace. Verify the model/tool pairs, retry status if one occurred,
+final transcript and saved revision, and a drained healthy spool. This task's
+hermetic tests do not substitute for that live deployment smoke check.
