@@ -371,8 +371,18 @@ Routes, and Static Maps. Flags own capabilities rather than credentials because
 Service Usage is project-wide, not key-specific. When Maps is on and Places is
 off, the SPA loads the base map without the Places JavaScript library.
 
-All three checked-in environments currently set both capabilities to off.
-Hosted Bicep parameters pass the same flags into Container Apps.
+Copying the primary `.env` keys into a sandbox is required but not sufficient
+for the interactive map. The local browser key's HTTP referrers must include
+the canonical Vite origins (`:5173`, `:5175`) and every sandbox slot's frontend
+and Labs origins (`:5273`/`:5275` plus 10 per extra slot). Those origins live
+in [`infra/billing-guardrails.json`](../../infra/billing-guardrails.json) as
+`gcp.environments[local].browserReferrers`. A JSON edit does not take effect
+until `infra/gcp/apply-billing-guardrails.ps1` updates the
+`aitripplanner-local-browser` key.
+
+Checked-in `config/environments/*.env` currently set both Places and Maps
+application flags to on. Hosted Bicep parameters pass the same flags into
+Container Apps.
 
 #### Emergency no-deployment control
 

@@ -1650,6 +1650,20 @@ the outcome.
   `prompts.py`; `trip_agent.py` keeps phase-selected tool sets so a wording change
   does not force a reread of capability registry code.
 
+## 2026-09-09 - Local Maps Keys Follow The Page Origin, Not The Copied .env
+
+- Sandbox stacks already copy the primary `.env` and load `ENABLE_GOOGLE_MAPS`
+  from checked-in `config/environments/local.env`. That is enough for
+  `/maps/config` to return the browser key. It is not enough for Maps JavaScript
+  to load: Google authorizes the *page origin*, and sandboxes serve on
+  `:5273+10n` rather than canonical `:5173`.
+- Treat local HTTP referrers as part of the sandbox contract beside ports and
+  databases. Keep them in `infra/billing-guardrails.json` and prove they cover
+  `sandbox.ps1` slot math. A copied key with a master-only referrer list fails
+  as `RefererNotAllowedMapError` while master continues to work.
+- Updating the JSON does not move Google's enforcement; `apply-billing-guardrails.ps1`
+  must update the `aitripplanner-local-browser` key before a running sandbox can
+  render the map.
 
 ## 2026-09-09 - Defaults Must Govern Policy As Well As Prompts
 
