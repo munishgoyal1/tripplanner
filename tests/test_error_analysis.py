@@ -96,6 +96,38 @@ def test_reads_current_and_rotated_local_json_without_raw_messages(tmp_path: Pat
     assert "private" not in report
 
 
+def test_render_report_includes_alert_signals_independent_of_email() -> None:
+    report = render_report(
+        "local",
+        [],
+        hours=24,
+        generated_at=dt.datetime(2026, 7, 30, tzinfo=dt.UTC),
+        alert_signals=[
+            {
+                "signal": "cosmos_throttling",
+                "severity": 3,
+                "state": "firing",
+                "fired_at": "2026-07-30T01:00:00Z",
+                "detail": {"window_count": 22, "threshold": 20},
+            },
+            {
+                "signal": "gcp_quota_exceeded",
+                "severity": 2,
+                "state": "firing",
+                "fired_at": "2026-07-30T01:05:00Z",
+                "detail": {"endpoint": "places.googleapis.com"},
+            },
+        ],
+    )
+    assert "FAILURES DETECTED" in report
+    assert "Alert signals fired: 2" in report
+    assert "cosmos_throttling" in report
+    assert "gcp_quota_exceeded" in report
+    assert "window_count=22" in report
+    assert "RU/s allocation" in report
+    assert "billing-guardrails.json" in report
+
+
 def test_parses_log_analytics_table_shape_and_redacts_labels() -> None:
     payload = {
         "tables": [
@@ -140,6 +172,9 @@ def test_infrastructure_enables_email_alerts_only_in_production() -> None:
 def test_infrastructure_alerts_on_runtime_degradation_with_volume_guards() -> None:
     root = Path(__file__).parents[1]
     template = (root / "infra" / "main.bicep").read_text(encoding="utf-8")
+    guardrails = json.loads(
+        (root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8")
+    )
     queries = {
         name: (root / "infra" / "queries" / name).read_text(encoding="utf-8")
         for name in (
@@ -150,29 +185,45 @@ def test_infrastructure_alerts_on_runtime_degradation_with_volume_guards() -> No
         )
     }
 
+    # Severity/window/threshold for every alert below are declared once in
+    # infra/billing-guardrails.json (azureInfraHealthAlerts) and consumed by
+    # main.bicep via loadJsonContent(); this is the single config place for
+    # every Azure + GCP alert (billing and infra-health alike).
+    infra_alerts = guardrails["azureInfraHealthAlerts"]
+
     assert "resource operationalAlertRules" in template
+    assert "loadJsonContent('billing-guardrails.json').azureInfraHealthAlerts" in template
     assert "if (enableFailureAlerts)" in template
     assert "actionGroups: [failureAlertActions.id]" in template
+
+    operational_alerts = {
+        alert["name"]: alert for alert in infra_alerts["operationalAlerts"]
+    }
     for alert_name, severity in (
         ("chat-latency-burn", 2),
         ("model-throttling", 2),
         ("provider-circuit-open", 3),
         ("cache-degradation", 3),
     ):
-        alert_block = template.split(f"name: '{alert_name}'", 1)[1].split("query:", 1)[0]
-        assert "displayName: '[${namePrefix}]" in alert_block
-        assert f"severity: {severity}" in alert_block
+        assert operational_alerts[alert_name]["severity"] == severity
+        assert operational_alerts[alert_name]["windowSize"] == "PT15M"
+        assert operational_alerts[alert_name]["queryFile"] == f"queries/{alert_name}.kql"
+
     assert "resource cosmosThrottlingAlert" in template
     cosmos_block = template.split("resource cosmosThrottlingAlert", 1)[1].split(
         "resource env", 1
     )[0]
-    assert "description: '[${namePrefix}]" in cosmos_block
-    assert "severity: 3" in cosmos_block
-    assert "windowSize: 'PT15M'" in cosmos_block
+    assert "description: '[${namePrefix}] ${alertsConfig.cosmosThrottlingAlert.description}'" in cosmos_block
+    assert "severity: alertsConfig.cosmosThrottlingAlert.severity" in cosmos_block
+    assert "windowSize: alertsConfig.cosmosThrottlingAlert.windowSize" in cosmos_block
     assert "metricName: 'TotalRequests'" in cosmos_block
     assert "name: 'StatusCode'" in cosmos_block
     assert "values: ['429']" in cosmos_block
-    assert "threshold: 20" in cosmos_block
+    assert "threshold: alertsConfig.cosmosThrottlingAlert.threshold" in cosmos_block
+    cosmos_alert = infra_alerts["cosmosThrottlingAlert"]
+    assert cosmos_alert["severity"] == 3
+    assert cosmos_alert["windowSize"] == "PT15M"
+    assert cosmos_alert["threshold"] == 20
     assert "Samples >= 5 and P95DurationMs > 120000" in queries[
         "chat-latency-burn.kql"
     ]

@@ -252,8 +252,18 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
         assert environments["prod"]["dailyBudget"] == daily_ceiling * 0.3
         assert environments["prod"]["budget"] == monthly_ceiling * 0.3
     assert '$policyDisplayName = "[$($env.name)] Maps API quota exceeded"' in apply_script
-    assert '$policySeverity = if ($env.name -eq "prod") { "ERROR" } else { "WARNING" }' in apply_script
-    assert '"alertStrategy": { "autoClose": "3600s" }' in apply_script
+    # Severity/aggregation/auto-close for the quota-exceeded alert policy are
+    # config-driven (infra/billing-guardrails.json -> gcpQuotaAlertPolicies),
+    # not hardcoded in the script.
+    quota_alert_policy = cloud_config["gcpQuotaAlertPolicies"]
+    assert quota_alert_policy["severityByEnvironment"]["prod"] == "ERROR"
+    assert quota_alert_policy["severityByEnvironment"]["default"] == "WARNING"
+    assert quota_alert_policy["alignmentPeriodSec"] == 300
+    assert quota_alert_policy["autoCloseSec"] == 3600
+    assert "$quotaAlertPolicy = $config.gcpQuotaAlertPolicies" in apply_script
+    assert "$quotaAlertPolicy.severityByEnvironment" in apply_script
+    assert '"alignmentPeriod": "$($quotaAlertPolicy.alignmentPeriodSec)s"' in apply_script
+    assert '"autoClose": "$($quotaAlertPolicy.autoCloseSec)s"' in apply_script
     assert '"policies", "update"' in apply_script
     assert "set-google-api-access.ps1" in control_script
     assert "APPROVE_GOOGLE_PLACES_SPEND" in control_contract

@@ -135,8 +135,10 @@ def test_ops_overview_is_owner_only_and_hidden_from_openapi(monkeypatch) -> None
         "tools",
         "cache",
         "provider_usage",
+        "alerts",
     } <= response.json().keys()
     assert response.json()["provider_usage"]["totals"]["calls"] == 0
+    assert {"counts", "recent"} <= response.json()["alerts"].keys()
     assert "/ops/overview" not in owner.get("/openapi.json").json()["paths"]
     assert "/analytics/event" not in owner.get("/openapi.json").json()["paths"]
 
@@ -165,6 +167,28 @@ def test_ops_owner_defaults_to_personal_gmail_only(monkeypatch) -> None:  # type
         ),
     )
     assert client.get("/ops/overview").status_code == 404
+
+
+def test_ops_overview_surfaces_fired_alerts(monkeypatch, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    import importlib
+
+    from tripplanner import alert_events
+
+    monkeypatch.setenv("TRIPPLANNER_HOME", str(tmp_path))
+    monkeypatch.setattr("tripplanner.storage_cosmos.is_enabled", lambda: False)
+    monkeypatch.setattr("tripplanner.provider_usage._read", lambda _since: [])
+    importlib.reload(alert_events)
+    alert_events.reset_for_tests()
+    alert_events.observe("tool_call", {"status": "error"})
+
+    owner = _client(monkeypatch, "OWNER@example.com")
+    response = owner.get("/ops/overview")
+
+    assert response.status_code == 200
+    alerts = response.json()["alerts"]
+    assert alerts["counts"]["by_signal"]["application_failure"]["fired"] == 1
+    assert any(row["signal"] == "application_failure" for row in alerts["recent"])
+    alert_events.reset_for_tests()
 
 
 def test_ops_overview_is_reachable_on_a_local_run(monkeypatch) -> None:  # type: ignore[no-untyped-def]

@@ -103,8 +103,18 @@ def render_report(
     *,
     hours: int,
     generated_at: dt.datetime | None = None,
+    alert_signals: list[dict[str, Any]] | None = None,
 ) -> str:
+    """Render the Markdown report.
+
+    ``alert_signals`` (optional) is the ``recent()`` output of
+    :mod:`tripplanner.alert_events` -- the durable record of every alert
+    *condition* that has fired, independent of whether its email was ever
+    seen. It covers signals ``failures`` cannot: latency/throttling/cache/
+    circuit-breaker/Cosmos/GCP-quota conditions, not just raw log lines.
+    """
     records = list(failures)
+    alerts = list(alert_signals or [])
     generated = generated_at or dt.datetime.now(dt.UTC)
     generated_text = generated.isoformat(timespec="seconds").replace("+00:00", "Z")
     lines = [
@@ -112,10 +122,31 @@ def render_report(
         "",
         f"Generated: {generated_text}",
         f"Window: last {hours} hours",
-        f"Status: {'FAILURES DETECTED' if records else 'No failures detected'}",
+        f"Status: {'FAILURES DETECTED' if (records or alerts) else 'No failures detected'}",
         f"Failure records: {len(records)}",
+        f"Alert signals fired: {len(alerts)}",
         "",
     ]
+    if alerts:
+        lines.extend(
+            [
+                "## Alert Signals Fired",
+                "",
+                "Independent of email -- durably captured as each alert's own "
+                "aggregate condition crossed its threshold (see "
+                "src/tripplanner/alert_events.py).",
+                "",
+                "| Signal | Severity | State | Fired at | Detail |",
+                "|---|---:|---|---|---|",
+            ]
+        )
+        for row in sorted(alerts, key=lambda r: str(r.get("fired_at") or ""), reverse=True):
+            detail = ", ".join(f"{k}={v}" for k, v in (row.get("detail") or {}).items())
+            lines.append(
+                f"| {row.get('signal', 'unknown')} | {row.get('severity', '?')} "
+                f"| {row.get('state', '?')} | {row.get('fired_at', '?')} | {detail} |"
+            )
+        lines.append("")
     if records:
         counts = Counter((record.category, record.signature) for record in records)
         lines.extend(
@@ -123,7 +154,10 @@ def render_report(
         )
         for (category, signature), count in sorted(counts.items()):
             lines.append(f"| {category} | `{signature}` | {count} |")
-        lines.extend(["", "## Recommended Checks", ""])
+        lines.append("")
+    signal_names = {str(row.get("signal") or "") for row in alerts}
+    if records or alerts:
+        lines.extend(["## Recommended Checks", ""])
         categories = {record.category for record in records}
         if "application" in categories:
             lines.append(
@@ -142,6 +176,36 @@ def render_report(
             lines.append(
                 "- Review the named tool's provider health, configuration, latency, "
                 "and cache behavior."
+            )
+        if "chat_latency_burn" in signal_names:
+            lines.append(
+                "- Check for a slow downstream dependency (model, provider, Cosmos) during "
+                "the fired window; compare with p95 by route on the operations dashboard."
+            )
+        if "model_throttling" in signal_names:
+            lines.append(
+                "- Compare against Azure OpenAI TPM/RPM metrics for the same window; consider "
+                "raising the deployment's quota or reducing concurrent chat load."
+            )
+        if "provider_circuit_open" in signal_names:
+            lines.append(
+                "- Check the named provider's own status page and recent latency; the "
+                "circuit breaker opened because it was failing or timing out repeatedly."
+            )
+        if "cache_degradation" in signal_names:
+            lines.append(
+                "- Check whether the cache backend (Redis or memory) is reachable and "
+                "whether TTLs were recently changed."
+            )
+        if "cosmos_throttling" in signal_names:
+            lines.append(
+                "- Cosmos DB is returning 429s; check RU/s allocation against actual "
+                "request-unit consumption for the affected containers."
+            )
+        if "gcp_quota_exceeded" in signal_names:
+            lines.append(
+                "- A Google Places/Maps/Routes quota in infra/billing-guardrails.json's "
+                "`quotas` was hit; check for unbounded per-trip calls before raising it."
             )
         lines.append("- Re-run this report after the fix and confirm the next window is clean.")
     else:

@@ -9,6 +9,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
+from tripplanner import limits_config
+
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(_REPO_ROOT / ".env", override=False)
 _environment = os.getenv("TRIPPLANNER_ENVIRONMENT", "local").strip().lower()
@@ -226,23 +228,20 @@ class Settings(BaseModel):
             "GOOGLE_PLACES_PHOTO_URL_CACHE_TTL_SEC", 3000
         )
     )
+    # Per-trip Google Places call budgets. Values + env var names live in
+    # limits_config.py (single place for every throttle/budget); this just
+    # wires them into Settings.
     google_places_max_text_searches_per_trip: int = Field(
-        default_factory=lambda: _env_positive_int(
-            "GOOGLE_PLACES_MAX_TEXT_SEARCHES_PER_TRIP", 3
-        )
+        default_factory=limits_config.google_places_max_text_searches_per_trip
     )
     google_places_max_review_details_per_trip: int = Field(
-        default_factory=lambda: _env_positive_int(
-            "GOOGLE_PLACES_MAX_REVIEW_DETAILS_PER_TRIP", 1
-        )
+        default_factory=limits_config.google_places_max_review_details_per_trip
     )
     google_places_max_photos_per_trip: int = Field(
-        default_factory=lambda: _env_positive_int("GOOGLE_PLACES_MAX_PHOTOS_PER_TRIP", 3)
+        default_factory=limits_config.google_places_max_photos_per_trip
     )
     google_places_max_photos_per_place: int = Field(
-        default_factory=lambda: _env_positive_int(
-            "GOOGLE_PLACES_MAX_PHOTOS_PER_PLACE", 1
-        )
+        default_factory=limits_config.google_places_max_photos_per_place
     )
 
     # Agent tool-call budgets. These bound how many tool-call rounds/searches
@@ -250,17 +249,16 @@ class Settings(BaseModel):
     # is the other lever (besides the Google Places counters above) that caps
     # paid-provider spend per turn. Raising them lets a complex itinerary (e.g.
     # a multi-city or 7+ day trip) finish researching before being cut off, at
-    # the cost of more provider calls and LLM tokens per turn.
-    max_tool_phases_per_turn: int = _env_positive_int("MAX_TOOL_PHASES_PER_TURN", 10)
-    max_initial_itinerary_updates: int = _env_positive_int(
-        "MAX_INITIAL_ITINERARY_UPDATES", 2
+    # the cost of more provider calls and LLM tokens per turn. Values + env
+    # var names live in limits_config.py.
+    max_tool_phases_per_turn: int = limits_config.max_tool_phases_per_turn()
+    max_initial_itinerary_updates: int = limits_config.max_initial_itinerary_updates()
+    max_post_research_updates: int = limits_config.max_post_research_updates()
+    max_transport_comparisons_per_turn: int = (
+        limits_config.max_transport_comparisons_per_turn()
     )
-    max_post_research_updates: int = _env_positive_int("MAX_POST_RESEARCH_UPDATES", 1)
-    max_transport_comparisons_per_turn: int = _env_positive_int(
-        "MAX_TRANSPORT_COMPARISONS_PER_TURN", 3
-    )
-    max_transport_comparisons_per_trip: int = _env_positive_int(
-        "MAX_TRANSPORT_COMPARISONS_PER_TRIP", 6
+    max_transport_comparisons_per_trip: int = (
+        limits_config.max_transport_comparisons_per_trip()
     )
 
     # Google Maps JavaScript API — browser-side key for the interactive trip

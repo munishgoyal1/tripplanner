@@ -311,6 +311,14 @@ actually hit, but recovered incidents auto-close after one hour. Reapplying the
 script updates an existing environment policy and migrates the legacy generic
 `Maps API quota exceeded` display name instead of leaving stale settings.
 
+The severity-by-environment map, the five-minute alignment period, and the
+one-hour auto-close above are not hardcoded in the script — they're read from
+`gcpQuotaAlertPolicies` in
+[`infra/billing-guardrails.json`](../../infra/billing-guardrails.json), the
+single config file for every Azure + GCP alert (billing and infra-health
+alike). Change severity or timing there and re-run
+`apply-billing-guardrails.ps1`.
+
 ## Cost model
 
 Prices below are Google Maps Platform **India** rates, USD per 1,000 calls, from

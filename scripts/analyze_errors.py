@@ -13,6 +13,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from tripplanner.alert_events import recent as alert_events_recent  # noqa: E402
 from tripplanner.error_analysis import (  # noqa: E402
     failures_from_azure_result,
     failures_from_local_log,
@@ -89,17 +90,30 @@ def main() -> int:
     else:
         failures = _canary_failures(args.resource_group, args.workspace_id, args.hours)
 
+    # Durable alert-condition history (application failures, latency, throttling,
+    # circuit-breaker, cache degradation, Cosmos 429s, GCP quota) -- captured
+    # in-app, independent of whether the alert's own email was ever seen.
+    alert_days = max(1, -(-args.hours // 24))  # ceil(hours / 24)
+    try:
+        alerts = alert_events_recent(limit=200, days=alert_days)
+    except Exception as exc:  # noqa: BLE001 - a scan must still report failures found so far
+        print(f"Warning: could not read alert_events ({type(exc).__name__}).")
+        alerts = []
+
     timestamp = dt.datetime.now(dt.UTC).strftime("%Y%m%dT%H%M%SZ")
     report_path = args.report_path or diagnostics_dir / (
         f"{args.environment}-errors-{timestamp}.md"
     )
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(
-        render_report(args.environment, failures, hours=args.hours),
+        render_report(args.environment, failures, hours=args.hours, alert_signals=alerts),
         encoding="utf-8",
     )
-    print(f"Wrote {report_path} ({len(failures)} failure records).")
-    return 1 if failures else 0
+    print(
+        f"Wrote {report_path} ({len(failures)} failure records, "
+        f"{len(alerts)} alert signals fired)."
+    )
+    return 1 if (failures or alerts) else 0
 
 
 if __name__ == "__main__":

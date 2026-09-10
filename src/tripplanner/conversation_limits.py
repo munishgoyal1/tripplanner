@@ -1,4 +1,9 @@
-"""Durable environment-wide admission limits for model-bearing conversations."""
+"""Durable environment-wide admission limits for model-bearing conversations.
+
+Limit values live in ``limits_config.py`` — the single place to tune every
+time-window throttle and usage budget; this module holds the Cosmos/local-
+file ledger mechanics that enforce them.
+"""
 
 from __future__ import annotations
 
@@ -13,7 +18,7 @@ from typing import Any, Literal
 
 from langchain_core.messages import BaseMessage, HumanMessage
 
-from tripplanner import storage_cosmos
+from tripplanner import limits_config, storage_cosmos
 from tripplanner.agents.trip_agent import latest_user_has_planning_intent
 from tripplanner.graph_policy import (
     latest_user_requests_different_trip,
@@ -31,14 +36,9 @@ _MAX_WRITE_ATTEMPTS = 5
 _MAX_RECENT_REQUESTS = 500
 _LOCAL_LOCK = Lock()
 
-_ENV_NAMES = {
-    ("new_trip", "daily"): "CHAT_NEW_TRIP_LIMIT_DAILY",
-    ("existing_trip_turn", "daily"): "CHAT_EXISTING_TRIP_TURN_LIMIT_DAILY",
-    ("new_trip", "weekly"): "CHAT_NEW_TRIP_LIMIT_WEEKLY",
-    ("existing_trip_turn", "weekly"): "CHAT_EXISTING_TRIP_TURN_LIMIT_WEEKLY",
-    ("new_trip", "lifetime"): "CHAT_NEW_TRIP_LIMIT_LIFETIME",
-    ("existing_trip_turn", "lifetime"): "CHAT_EXISTING_TRIP_TURN_LIMIT_LIFETIME",
-}
+# Kept here (not just in limits_config) because tests monkeypatch these env
+# names directly via conversation_limits._ENV_NAMES.
+_ENV_NAMES = limits_config._CONVERSATION_LIMIT_ENV_NAMES
 
 
 class ConversationLimitError(RuntimeError):
@@ -90,10 +90,7 @@ def classify_conversation(
 
 
 def _limit(category: str, window: str) -> int:
-    try:
-        return max(0, int(os.getenv(_ENV_NAMES[(category, window)], "0")))
-    except (TypeError, ValueError):
-        return 0
+    return limits_config.conversation_limit(category, window)
 
 
 def _window_key(window: str, now: datetime) -> str:

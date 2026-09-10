@@ -126,6 +126,40 @@ const overview: OpsOverview = {
     ],
   },
   cache: { configured: true, backend: "redis", redis_connected: true, fallback_active: false, memory_entries: 2, redis_entries: 7, redis_bytes: 2048, redis_stats_truncated: false },
+  alerts: {
+    counts: {
+      period_days: 30,
+      since: "2026-07-12T00:00:00Z",
+      until: "2026-08-10T00:00:00Z",
+      by_signal: {
+        cosmos_throttling: { fired: 2, resolved: 1, severity: 3 },
+        gcp_quota_exceeded: { fired: 1, resolved: 0, severity: 2 },
+      },
+      total_fired: 3,
+    },
+    recent: [
+      {
+        id: "alert-1",
+        signal: "gcp_quota_exceeded",
+        key: null,
+        severity: 2,
+        state: "firing",
+        fired_at: "2026-08-10T09:00:00Z",
+        resolved_at: null,
+        detail: { endpoint: "places.googleapis.com" },
+      },
+      {
+        id: "alert-2",
+        signal: "cosmos_throttling",
+        key: null,
+        severity: 3,
+        state: "resolved",
+        fired_at: "2026-08-09T08:00:00Z",
+        resolved_at: "2026-08-09T08:20:00Z",
+        detail: { window_count: 22, threshold: 20 },
+      },
+    ],
+  },
 };
 
 describe("OpsDashboard", () => {
@@ -205,6 +239,21 @@ describe("OpsDashboard", () => {
       "2026-08-01",
       undefined,
     ));
+  });
+
+  it("shows alert-signal counts and recent fired alerts", async () => {
+    render(<OpsDashboard />);
+    await screen.findByText("Activation funnel");
+
+    fireEvent.click(screen.getByRole("tab", { name: /^alerts$/i }));
+
+    expect(screen.getByText("Counts by signal")).toBeInTheDocument();
+    expect(screen.getAllByText("Cosmos DB throttling").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("GCP quota exceeded").length).toBeGreaterThan(0);
+    expect(screen.getByText("Recent alerts")).toBeInTheDocument();
+    expect(screen.getByText("firing")).toBeInTheDocument();
+    expect(screen.getByText("resolved")).toBeInTheDocument();
+    expect(screen.getByText(/endpoint=places\.googleapis\.com/)).toBeInTheDocument();
   });
 
   it("keeps the dashboard visible when the reporting range is invalid", async () => {
