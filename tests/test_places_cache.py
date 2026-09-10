@@ -209,6 +209,35 @@ def test_photos_do_not_refresh_entry_with_known_empty_refs(_isolate, _authorized
     assert not any(result == "photo_url_hit" for result, _fields in cache_events)
 
 
+def test_prefetch_cache_hits_do_not_serialize_on_logging(_isolate, monkeypatch):
+    """Regression: _record_cache (app_event -> flight_recorder's synchronous,
+    fsync-based write, tens of ms in production) must run outside _CACHE_LOCK.
+    Otherwise prefetch()'s worker pool serializes on that lock and a warm
+    multi-place prefetch takes seconds instead of the intended one slow-item's
+    worth of wall time. Simulated here with a monkeypatched delay standing in
+    for that real disk-I/O cost."""
+    names = [f"Place{i}" for i in range(8)]
+    for name in names:
+        pc.get_details(name, "Goa")  # warm the cache: each becomes a hit below
+
+    delay = 0.05
+    real_record_cache = pc._record_cache
+
+    def slow_record_cache(*args, **kwargs):
+        time.sleep(delay)
+        return real_record_cache(*args, **kwargs)
+
+    monkeypatch.setattr(pc, "_record_cache", slow_record_cache)
+
+    start = time.perf_counter()
+    pc.prefetch(names, "Goa", max_photos=0, with_reviews=False)
+    elapsed = time.perf_counter() - start
+
+    # Serialized (logging inside the lock): ~len(names) * delay (0.4s).
+    # Parallel (logging outside the lock): close to one `delay` (0.05s).
+    assert elapsed < delay * len(names) / 2
+
+
 def test_places_executor_paths_preserve_usage_attribution(_isolate, monkeypatch):
     from tripplanner.usage_attribution import current_attribution, usage_scope
 

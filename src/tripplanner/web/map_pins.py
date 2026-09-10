@@ -44,8 +44,8 @@ from tripplanner.web.schedule import (
 )
 from tripplanner.web.transport import (
     _canonical_transport_name,
-    _intercity_transfer_mode,
     _normalized_stop_kind,
+    _resolved_transfer_mode,
     _transport_route_endpoints,
     _transport_terminal_refs,
 )
@@ -170,7 +170,7 @@ def _local_route_stop_indexes(stops: list[Any]) -> set[int]:
         index
         for index, stop in enumerate(stops)
         if isinstance(stop, dict)
-        and _intercity_transfer_mode(
+        and _resolved_transfer_mode(
             str(stop.get("name") or ""), str(stop.get("kind") or "")
         )
     ]
@@ -375,7 +375,7 @@ def _map_pins(
             )
             terminal_refs = _transport_terminal_refs(name, kind)
             if terminal_refs:
-                if _intercity_transfer_mode(name, kind) == "Drive" and has_route_anchor:
+                if _resolved_transfer_mode(name, kind) == "Drive" and has_route_anchor:
                     continue
                 for terminal_kind, terminal_name in terminal_refs:
                     _add(terminal_kind, terminal_name, "")
@@ -647,7 +647,7 @@ def _normalize_map_stops(stops: list[Any]) -> list[dict[str, str | None]]:
         name = _canonical_transport_name(raw_name, mode_name)
         kind = _normalized_stop_kind(name, raw_kind, mode_name)
         normalized.append(
-            {"name": name, "kind": kind, "mode": _intercity_transfer_mode(name, kind)}
+            {"name": name, "kind": kind, "mode": _resolved_transfer_mode(name, kind)}
         )
     return normalized
 

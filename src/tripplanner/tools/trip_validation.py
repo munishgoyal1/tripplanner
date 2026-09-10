@@ -10,6 +10,7 @@ existing callers and tests resolve unchanged.
 from __future__ import annotations
 
 import re
+from datetime import date
 from typing import Any
 
 from tripplanner.planning_intelligence import assess_itinerary_density
@@ -160,6 +161,49 @@ def _empty_itinerary_day_warnings(itinerary: Any) -> list[str]:
         ):
             warnings.append(f"Day {day_num} has no planned places beyond the hotel.")
     return warnings
+
+
+def _day_count_gap(plan: dict[str, Any]) -> list[str]:
+    """The saved itinerary must cover every day of the booked date range.
+
+    Nothing else here compares day count to the trip's actual length, so a
+    turn that spends its whole tool budget on the first few days and saves a
+    partial itinerary reads as "complete" to every other check -- there's no
+    empty day, no missing hotel, nothing sparse about the days that exist.
+    Only fires once both dates parse and span at least one day.
+    """
+    departure_raw = str(plan.get("departure_date") or "").strip()
+    return_raw = str(plan.get("return_date") or "").strip()
+    try:
+        departure = date.fromisoformat(departure_raw) if departure_raw else None
+    except ValueError:
+        departure = None
+    try:
+        return_day = date.fromisoformat(return_raw) if return_raw else None
+    except ValueError:
+        return_day = None
+    if departure is None or return_day is None or return_day < departure:
+        return []
+    expected_days = (return_day - departure).days + 1
+
+    itinerary = plan.get("day_wise_itinerary")
+    if not isinstance(itinerary, list) or not itinerary:
+        return []
+    day_numbers = {
+        int(day["day"])
+        for day in itinerary
+        if isinstance(day, dict) and isinstance(day.get("day"), int)
+    }
+    actual_days = len(day_numbers) if day_numbers else len(itinerary)
+    if actual_days >= expected_days:
+        return []
+    missing = expected_days - actual_days
+    return [
+        f"Itinerary covers {actual_days} of {expected_days} requested day"
+        f"{'s' if expected_days != 1 else ''} ({missing} day"
+        f"{'s' if missing != 1 else ''} missing). Save the remaining days "
+        "before presenting the trip as planned."
+    ]
 
 
 def _round_trip_transport_warnings(plan: dict[str, Any]) -> list[str]:
@@ -535,6 +579,7 @@ def core_planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
             dietary=_dietary_preferences(plan),
         ),
         *_empty_itinerary_day_warnings(itinerary),
+        *_day_count_gap(plan),
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
         *journey_continuity,
@@ -572,6 +617,7 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
             dietary=_dietary_preferences(plan),
         ),
         *_empty_itinerary_day_warnings(plan.get("day_wise_itinerary")),
+        *_day_count_gap(plan),
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
         *coherence_gaps,

@@ -104,7 +104,7 @@ def _transport_terminal_refs(name: str, kind: str) -> list[tuple[str, str]]:
         return [("station", f"{waypoint} Railway Station") for waypoint in waypoints]
     if "bus" in lowered:
         return [("bus_station", f"{waypoint} Bus Stand") for waypoint in waypoints]
-    if _intercity_transfer_mode(text, kind) == "Drive":
+    if _resolved_transfer_mode(text, kind) == "Drive":
         return [("origin", origin)]
     return []
 
@@ -129,6 +129,37 @@ def _intercity_transfer_mode(name: str, kind: str) -> str | None:
         and (re.search(r"\bto\b|->|→", lowered) or lowered.startswith(("drive ", "driving ")))
     )
     if directional_drive:
+        return "Drive"
+    return None
+
+
+_LOCAL_ONLY_WORD_RE = re.compile(r"\b(?:taxi|walk|walking|on foot)\b", re.I)
+
+
+def _resolved_transfer_mode(name: str, kind: str) -> str | None:
+    """Mode to pin/draw a transfer stop by, defaulting an unlabeled-but-
+    parseable transfer ("Srinagar to Gulmarg", no drive/train/bus/flight
+    keyword) to a road journey rather than dropping it.
+
+    Skips the default for text explicitly labeled a local mode ("Taxi: Hotel
+    to Fort Aguada", a same-destination round trip) -- those two place names
+    are not an intercity leg just because they're named in travel order, and
+    must stay a local/closed-circuit day rather than being promoted to Drive.
+
+    Deliberately separate from :func:`_intercity_transfer_mode`, which
+    ``_canonical_transport_name`` also calls to decide whether the raw text
+    already names its own mode (and so a "Drive: "/"Train: " prefix would be
+    redundant) -- that check must stay keyword-only, or every unlabeled
+    transfer would wrongly look "already labeled" and lose its prefix.
+    """
+    mode = _intercity_transfer_mode(name, kind)
+    if mode is not None:
+        return mode
+    if (
+        kind == "transport"
+        and not _LOCAL_ONLY_WORD_RE.search(str(name or ""))
+        and _transport_route_endpoints(name) is not None
+    ):
         return "Drive"
     return None
 

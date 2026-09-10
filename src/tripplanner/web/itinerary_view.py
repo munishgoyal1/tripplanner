@@ -42,6 +42,7 @@ from tripplanner.web.transport import (
     _canonical_transport_name,
     _intercity_transfer_mode,
     _normalized_stop_kind,
+    _resolved_transfer_mode,
     _transport_terminal_refs,
 )
 
@@ -305,7 +306,7 @@ def _transport_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _road_origin_stop(stop: dict[str, Any]) -> dict[str, Any] | None:
-    if _intercity_transfer_mode(stop["name"], stop["kind"]) != "Drive":
+    if _resolved_transfer_mode(stop["name"], stop["kind"]) != "Drive":
         return None
     refs = _transport_terminal_refs(stop["name"], stop["kind"])
     if len(refs) != 1:
@@ -801,7 +802,7 @@ def _render_day_stops(
         if isinstance(raw, dict) and raw.get("decision_id"):
             # Lets the UI put the "why this way" affordance on the leg itself.
             s["decision_id"] = str(raw["decision_id"])
-        route_mode = _intercity_transfer_mode(s["name"], s["kind"])
+        route_mode = _resolved_transfer_mode(s["name"], s["kind"])
         if route_mode in {"Drive", "Bus"}:
             s["route_circuit_id"] = _route_circuit_id(day_num, raw_stop_index, route_mode)
         is_place = s["kind"] not in {"flight", "transport"}
@@ -863,7 +864,7 @@ def _has_intercity_transfer(
     place_coords_map: dict[str, tuple[float, float]] | None = None,
 ) -> bool:
     if any(
-        _intercity_transfer_mode(str(stop.get("name") or ""), str(stop.get("kind") or ""))
+        _resolved_transfer_mode(str(stop.get("name") or ""), str(stop.get("kind") or ""))
         for stop in stops
     ):
         return True
@@ -911,7 +912,7 @@ def _insert_transfer_day_stay_anchor(
         (
             index
             for index, stop in enumerate(stops)
-            if _intercity_transfer_mode(
+            if _resolved_transfer_mode(
                 str(stop.get("name") or ""), str(stop.get("kind") or "")
             )
         ),
@@ -994,7 +995,7 @@ def _append_return_to_stay(
         (
             index
             for index, stop in enumerate(stops)
-            if _intercity_transfer_mode(
+            if _resolved_transfer_mode(
                 str(stop.get("name") or ""), str(stop.get("kind") or "")
             )
         ),

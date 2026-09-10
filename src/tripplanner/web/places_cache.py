@@ -637,27 +637,32 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
     with _key_lock(k):
         with _CACHE_LOCK:
             entry = cache.get(k)
-            if not refresh and _fresh(entry):
-                _record_cache(
-                    "memory_hit" if fresh_before_lock else "coalesced_hit",
-                    operation="text_search",
-                    sku_class="pro",
-                )
-                return {} if _is_miss(entry) else entry  # type: ignore[return-value]
+            hit = not refresh and _fresh(entry)
+        if hit:
+            # Logging (app_event -> flight_recorder's synchronous, fsync-based
+            # write) costs tens of milliseconds. Done outside the lock so a
+            # parallel prefetch()'s worker threads don't serialize on a
+            # global lock waiting on disk I/O for every cache hit.
+            _record_cache(
+                "memory_hit" if fresh_before_lock else "coalesced_hit",
+                operation="text_search",
+                sku_class="pro",
+            )
+            return {} if _is_miss(entry) else entry  # type: ignore[return-value]
         if not refresh:
             durable = _durable_read(k)
             if durable is not None and _fresh(durable):
                 with _CACHE_LOCK:
                     cache[k] = durable
                     _evict_if_needed()
-                    _record_cache("durable_hit", operation="text_search", sku_class="pro")
+                _record_cache("durable_hit", operation="text_search", sku_class="pro")
                 return {} if _is_miss(durable) else durable
             secondary = _secondary_read(k)
             if secondary is not None and _fresh(secondary):
                 with _CACHE_LOCK:
                     cache[k] = secondary
                     _evict_if_needed()
-                    _record_cache("secondary_hit", operation="text_search", sku_class="pro")
+                _record_cache("secondary_hit", operation="text_search", sku_class="pro")
                 _persist_entry(k)
                 return {} if _is_miss(secondary) else secondary
         _record_cache("refresh" if refresh else "miss")
