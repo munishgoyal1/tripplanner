@@ -256,8 +256,9 @@ Both `--allow-*` flags are required when tightening a limit by more than ten
 percent or below current usage, which is almost always the case when moving from
 Google's generous defaults.
 
-Places limits are sized from the same daily allocation. Local allows roughly ten
-fully cold authorized scopes at the application's three-search/three-photo ceiling;
+Places limits are sized from the same daily allocation. Local allows a cold
+destination guide at the application's three-search / 50-photo (one per place)
+ceiling;
 canary allows one or two smoke scopes; production allows roughly five. Cache hits
 do not consume these limits. Lower-volume API surfaces remain bounded so a leaked
 key cannot spend the full cloud allowance through an unused operation.
@@ -270,7 +271,7 @@ key cannot spend the full cloud allowance through an unused operation.
 | `GetPlaceRequestPerMinutePerProject` | 10 | 2 | 5 |
 | `SearchNearbyRequestPerDayPerProject` | 5 | 2 | 3 |
 | `AutocompletePlacesRequestPerDayPerProject` | 20 | 5 | 20 |
-| `GetPhotoMediaRequestPerDayPerProject` | 30 | 5 | 15 |
+| `GetPhotoMediaRequestPerDayPerProject` | 80 | 5 | 15 |
 | `BillableDefaultPerDayPerProject` (Places JavaScript) | 20 | 5 | 20 |
 | `ComputeRoutesRequestsPerDay` | 100 | 20 | 50 |
 | `ComputeRouteMatrixCellsPerDay` | 500 | 100 | 250 |

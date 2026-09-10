@@ -6,6 +6,7 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMe
 from tripplanner.graph_policy import (
     MAX_INITIAL_ITINERARY_UPDATES,
     MAX_TOOL_PHASES_PER_TURN,
+    RAN_TOOLS_KEY,
     resolve_completion_policy,
 )
 from tripplanner.tools.trip_validation import core_planning_completion_gaps
@@ -124,15 +125,19 @@ def test_unstructured_days_do_not_satisfy_the_initial_itinerary_gate() -> None:
 
 
 def test_the_phase_budget_ends_after_bounded_first_turn_save_attempts() -> None:
+    saves: list[BaseMessage] = []
+    for index in range(MAX_INITIAL_ITINERARY_UPDATES):
+        call_id = f"update-{index + 1}"
+        saves.extend([
+            _tool_call("update_trip_plan", call_id),
+            ToolMessage(content="Trip plan updated.", tool_call_id=call_id),
+        ])
     current_turn: list[BaseMessage] = [
         HumanMessage(content="plan a varanasi and ayodhya circuit trip"),
         _tool_call("create_trip_plan", "create-1"),
         ToolMessage(content="Created", tool_call_id="create-1"),
-        _tool_call("update_trip_plan", "update-1"),
-        ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
-        _tool_call("update_trip_plan", "update-2"),
-        ToolMessage(content="Trip plan updated.", tool_call_id="update-2"),
-        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 3),
+        *saves,
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1 - MAX_INITIAL_ITINERARY_UPDATES),
     ]
     decision = resolve_completion_policy(
         messages=current_turn,
@@ -1184,3 +1189,61 @@ def test_direct_mode_missing_origin_does_not_block_saved_destination_plan() -> N
     )
     assert decision.forced_tool is None
     assert any("starts from" in gap for gap in decision.completion_gaps)
+
+
+def test_prior_create_marker_does_not_loop_persist_on_a_hotel_gap() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="plan a 7-day Kashmir trip"),
+            AIMessage(
+                content="Draft saved.",
+                additional_kwargs={
+                    RAN_TOOLS_KEY: ["create_trip_plan", "update_trip_plan"],
+                },
+            ),
+            HumanMessage(content="finish a bookable 7-day Kashmir plan"),
+            _tool_call("update_trip_plan", "update-now"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-now"),
+        ],
+        active_trip={
+            "destination": "Kashmir",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+            }],
+            "selected_hotels": [],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"
+
+
+def test_repeated_saves_cannot_outrank_missing_hotel_search() -> None:
+    messages: list[BaseMessage] = [
+        HumanMessage(content="finish a bookable 7-day Kashmir plan"),
+    ]
+    for index in range(2):
+        call_id = f"update-{index}"
+        messages.extend([
+            _tool_call("update_trip_plan", call_id),
+            ToolMessage(content="Trip plan updated.", tool_call_id=call_id),
+        ])
+    decision = resolve_completion_policy(
+        messages=messages,
+        active_trip={
+            "destination": "Kashmir",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+            }],
+            "selected_hotels": [],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"

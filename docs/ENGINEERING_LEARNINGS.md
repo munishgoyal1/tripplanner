@@ -1696,3 +1696,18 @@ the outcome.
   digit-digit hyphens (`gpt-5-4-mini` → `gpt-5.4-mini`). Keep usage caps and
   harness estimates on that catalog so a cheaper deployed SKU cannot inherit a
   dearer ancestor's rate.
+
+## 2026-09-10 - Lodging gaps need hotel search, not another itinerary save
+
+- Forcing `update_trip_plan` while a concrete hotel is still missing burns the
+  tool-phase budget and repeats the same "budget exhausted / no hotel" reply.
+  Count `create_trip_plan` only in the current user turn, and do not synthesize
+  a persist/repair gate for lodging-only completion gaps; `search_hotels` has to
+  outrank another rewrite.
+- Chat clocks are Unix epoch values shown in the viewer's local timezone. Stamp
+  the user row at send (persist time minus turn duration) and the assistant row
+  when the reply lands. Prefer the browser's live clock over a later server stamp
+  so a reload cannot shift the assistant into UTC wall-clock.
+- `GOOGLE_PLACES_MAX_PHOTOS_PER_TRIP` is photo-media calls per authorized HTTP
+  request, not "3 photos of one place." Pair one photo per place with a higher
+  request ceiling, and raise the GCP `GetPhotoMedia` daily quota to match.

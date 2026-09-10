@@ -16,6 +16,22 @@ const transcript: ChatMessage[] = [
 describe("turnMetadata", () => {
   beforeEach(() => localStorage.clear());
 
+  it("keeps the browser clock when the server later persists a different ts", () => {
+    saveTurnMeta("trip-1", [
+      { role: "user", text: "Move the Louvre to day 3", ts: 1_700_000_000_000 },
+      transcript[1],
+    ]);
+
+    const restored = withStoredTurnMeta("trip-1", [
+      { role: "user", text: "Move the Louvre to day 3", ts: 1_700_000_100_000 },
+      { role: "assistant", text: "Moved it.", ts: 1_700_000_100_000, seconds: 1 },
+    ]);
+
+    expect(restored[0].ts).toBe(1_700_000_000_000);
+    expect(restored[1].ts).toBe(1_700_000_000_000);
+    expect(restored[1].seconds).toBe(42);
+  });
+
   it("restores timing and stop links onto a server transcript", () => {
     saveTurnMeta("trip-1", transcript);
 

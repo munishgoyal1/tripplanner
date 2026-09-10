@@ -174,7 +174,7 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
     ) in guardrails
     assert (
         '"quotaId": "GetPhotoMediaRequestPerDayPerProject", '
-        '"local": 30, "canary": 5, "prod": 15'
+        '"local": 80, "canary": 5, "prod": 15'
     ) in guardrails
     guardrail_config = cloud_config["gcp"]
     maps_quotas = [

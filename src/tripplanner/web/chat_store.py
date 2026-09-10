@@ -196,9 +196,15 @@ def _stamped(
 ) -> list[dict[str, Any]]:
     """Record when the turn landed, and what the reply cost, on its own rows."""
     stamped_at = int(time.time() * 1000)
+    user_at = stamped_at
+    if turn_seconds is not None:
+        user_at = stamped_at - max(0, int(turn_seconds)) * 1000
     rows = [dict(row) for row in suffix_rows]
     for row in rows:
-        row.setdefault("ts", stamped_at)
+        if row.get("role") == "user":
+            row.setdefault("ts", user_at)
+        else:
+            row.setdefault("ts", stamped_at)
     if turn_seconds is not None:
         for row in reversed(rows):
             if row.get("role") == "assistant":

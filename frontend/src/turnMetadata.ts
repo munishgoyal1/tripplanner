@@ -68,8 +68,8 @@ export function withStoredTurnMeta(tripKey: string, messages: ChatMessage[]): Ch
     if (!meta) return message;
     return {
       ...message,
-      ts: message.ts ?? meta.ts,
-      seconds: message.seconds ?? meta.seconds,
+      ts: meta.ts ?? message.ts,
+      seconds: meta.seconds ?? message.seconds,
       effects: message.effects ?? meta.effects,
     };
   });

@@ -170,17 +170,20 @@ def trip_update_requirement(
     has_planning_intent: bool,
 ) -> str | None:
     positions = _tool_call_positions(messages)
-    created_this_turn = any(name == "create_trip_plan" for _, name in positions)
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    created_this_turn = any(
+        name == "create_trip_plan" and index > latest_human
+        for index, name in positions
+    )
     if not active_trip.get("destination"):
         return None
     if not created_this_turn and not has_planning_intent:
         return None
 
     update_positions = [index for index, name in positions if name == "update_trip_plan"]
-    latest_human = max(
-        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
-        default=-1,
-    )
     current_updates = [index for index in update_positions if index > latest_human]
     update_results = _tool_result_texts(messages, "update_trip_plan")
     if (
@@ -678,8 +681,11 @@ def resolve_completion_policy(
             has_planning_intent=has_planning_intent,
         )
     )
+    non_lodging_core_gaps = tuple(
+        gap for gap in core_gaps_for_planning_turn if not _LODGING_GAP_RE.search(gap)
+    )
     if (
-        core_gaps_for_planning_turn
+        non_lodging_core_gaps
         and not hotel_fallback_requirement
         and not origin_requirement
         and not update_requirement
@@ -689,7 +695,7 @@ def resolve_completion_policy(
         update_requirement = (
             "The planning turn cannot end because the saved trip still has core "
             "completion gaps: "
-            + " ".join(core_gaps_for_planning_turn)
+            + " ".join(non_lodging_core_gaps)
             + " Continue planning and call update_trip_plan with a complete corrected "
             "plan. Do not give a final response until these core gaps are resolved. "
             "Weather and other enrichment may remain deferred."

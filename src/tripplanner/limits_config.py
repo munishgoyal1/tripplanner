@@ -129,6 +129,12 @@ def google_places_max_review_details_per_trip() -> int:
 
 
 def google_places_max_photos_per_trip() -> int:
+    """Paid Place Photo media calls per authorized request scope.
+
+    Despite the historic ``_PER_TRIP`` name, ``places_budget_scope`` resets this
+    counter on each HTTP request (chat turn, destination guide, trip view).
+    One call signs one photo URL. Pair with ``google_places_max_photos_per_place``.
+    """
     return _positive_int("GOOGLE_PLACES_MAX_PHOTOS_PER_TRIP", 3)
 
 

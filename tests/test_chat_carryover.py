@@ -370,6 +370,8 @@ def test_a_stored_turn_keeps_its_time_and_duration(monkeypatch, tmp_path):
     rows = chat_store.transcript("goa_a_b")
     assert [row["text"] for row in rows] == ["plan goa", "Here is Goa", "add a beach", "Added"]
     assert all(isinstance(row["ts"], int) for row in rows)
+    assert rows[0]["ts"] == rows[1]["ts"] - 26_000
+    assert rows[2]["ts"] == rows[3]["ts"] - 8_000
     # The duration belongs to the reply, not to the question that prompted it.
     assert [row.get("seconds") for row in rows] == [None, 26, None, 8]
     # The agent's context is still only what was said.

@@ -243,8 +243,8 @@ re-describing the whole product.
   addresses, coordinates, and opening hours. Agent discovery seeds the durable
   structured Places cache so Map and Details reuse the same paid result. Routine
   metadata omits atmosphere fields; reviews load only for exact focus, photos
-  default to one per place, and owner-controlled TTL and request ceilings bound
-  cold planning/view amplification. Places query results, reviews, place-hours details, Routes responses,
+  default to one per place, and a per-request Place Photo media ceiling (50 on
+  local, 3 on canary/production) bounds cold gallery fetches. Places query results, reviews, place-hours details, Routes responses,
   and Static Maps exports are cached below their direct callers before consuming
   paid-call budget, including nested tool calls outside the graph wrapper.
 - Google Routes supplies measured route distance/time and route optimization.

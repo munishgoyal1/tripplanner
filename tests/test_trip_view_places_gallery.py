@@ -38,6 +38,9 @@ def test_build_view_overview_and_items() -> None:
 def test_unfocused_view_skips_reviews_and_limits_photos(monkeypatch: pytest.MonkeyPatch) -> None:
     review_calls: list[str] = []
     photo_calls: list[tuple[str, int]] = []
+    settings = trip_view.get_settings()
+    monkeypatch.setattr(settings, "google_places_max_photos_per_trip", 3)
+    monkeypatch.setattr(settings, "google_places_max_photos_per_place", 1)
     monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *args, **kwargs: None)
     monkeypatch.setattr(
         trip_view.places_cache,
