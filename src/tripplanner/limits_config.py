@@ -12,7 +12,7 @@ Two mechanically distinct systems live here, each its own section below:
 2. Per-turn / per-trip tool-call & paid-API-call budgets (``config.py``
    ``Settings``, enforced in ``graph_policy.py``, ``transport_compare.py``,
    ``places_budget.py``) — bounded counters scoped to one conversation turn
-   or one trip, e.g. "at most 3 Google Places text searches per trip".
+   or one trip, e.g. "at most 50 Google Places text searches per authorized request".
    Breaching one doesn't reject the request; the agent stops calling tools
    and summarizes with whatever it already has.
 
@@ -121,7 +121,7 @@ def max_transport_comparisons_per_trip() -> int:
 
 
 def google_places_max_text_searches_per_trip() -> int:
-    return _positive_int("GOOGLE_PLACES_MAX_TEXT_SEARCHES_PER_TRIP", 3)
+    return _positive_int("GOOGLE_PLACES_MAX_TEXT_SEARCHES_PER_TRIP", 50)
 
 
 def google_places_max_review_details_per_trip() -> int:
@@ -135,7 +135,7 @@ def google_places_max_photos_per_trip() -> int:
     counter on each HTTP request (chat turn, destination guide, trip view).
     One call signs one photo URL. Pair with ``google_places_max_photos_per_place``.
     """
-    return _positive_int("GOOGLE_PLACES_MAX_PHOTOS_PER_TRIP", 3)
+    return _positive_int("GOOGLE_PLACES_MAX_PHOTOS_PER_TRIP", 50)
 
 
 def google_places_max_photos_per_place() -> int:

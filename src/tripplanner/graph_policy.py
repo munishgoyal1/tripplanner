@@ -232,7 +232,10 @@ def trip_update_requirement(
             "and other useful researched choices now."
         )
 
-    gaps = planning_completion_gaps(active_trip)
+    gaps = [
+        gap for gap in planning_completion_gaps(active_trip)
+        if not _LODGING_GAP_RE.search(gap)
+    ]
     if gaps and len(updates_after_research) < MAX_POST_RESEARCH_UPDATES:
         return (
             "The saved plan still has completion gaps: "
@@ -661,7 +664,7 @@ def resolve_completion_policy(
         if proposal_only
         or new_trip_flow
         or hotel_fallback_requirement
-        or update_requirement
+        or origin_requirement
         else trip_hotel_search_requirement(
             messages,
             active_trip,
@@ -727,10 +730,10 @@ def resolve_completion_policy(
         if hotel_fallback_requirement
         else "update_trip_plan"
         if origin_requirement
-        else "update_trip_plan"
-        if update_requirement
         else "search_hotels"
         if hotel_search_requirement
+        else "update_trip_plan"
+        if update_requirement
         else "nearby_restaurants"
         if restaurant_search_requirement
         else "create_trip_plan"
@@ -744,10 +747,10 @@ def resolve_completion_policy(
         if hotel_fallback_requirement
         else "origin_correction"
         if origin_requirement
-        else "persist_or_repair_plan"
-        if update_requirement
         else "missing_concrete_hotel"
         if hotel_search_requirement
+        else "persist_or_repair_plan"
+        if update_requirement
         else "missing_named_restaurant"
         if restaurant_search_requirement
         else "kickoff_answered"

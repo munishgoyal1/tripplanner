@@ -256,27 +256,27 @@ Both `--allow-*` flags are required when tightening a limit by more than ten
 percent or below current usage, which is almost always the case when moving from
 Google's generous defaults.
 
-Places limits are sized from the same daily allocation. Local allows a cold
-destination guide at the application's three-search / 50-photo (one per place)
-ceiling;
-canary allows one or two smoke scopes; production allows roughly five. Cache hits
-do not consume these limits. Lower-volume API surfaces remain bounded so a leaked
-key cannot spend the full cloud allowance through an unused operation.
+Places limits are sized from the same daily allocation. Local, canary, and
+production each allow a cold destination guide at the application's
+fifty-search / 50-photo (one per place) ceiling for an allowed trip; conversation
+ceilings still bound how many trips can start. Cache hits do not consume these
+limits. Lower-volume API surfaces remain bounded so a leaked key cannot spend
+the full cloud allowance through an unused operation.
 
 | Quota | local | canary | prod |
 | --- | --- | --- | --- |
-| `SearchTextRequestPerDayPerProject` | 30 | 5 | 15 |
-| `SearchTextRequestPerMinutePerProject` | 15 | 5 | 10 |
-| `GetPlaceRequestPerDayPerProject` | 10 | 2 | 5 |
-| `GetPlaceRequestPerMinutePerProject` | 10 | 2 | 5 |
+| `SearchTextRequestPerDayPerProject` | 200 | 50 | 200 |
+| `SearchTextRequestPerMinutePerProject` | 30 | 15 | 30 |
+| `GetPlaceRequestPerDayPerProject` | 80 | 20 | 80 |
+| `GetPlaceRequestPerMinutePerProject` | 20 | 10 | 20 |
 | `SearchNearbyRequestPerDayPerProject` | 5 | 2 | 3 |
 | `AutocompletePlacesRequestPerDayPerProject` | 20 | 5 | 20 |
-| `GetPhotoMediaRequestPerDayPerProject` | 80 | 5 | 15 |
-| `BillableDefaultPerDayPerProject` (Places JavaScript) | 20 | 5 | 20 |
+| `GetPhotoMediaRequestPerDayPerProject` | 400 | 80 | 400 |
+| `BillableDefaultPerDayPerProject` (Places JavaScript) | 200 | 20 | 50 |
 | `ComputeRoutesRequestsPerDay` | 100 | 20 | 50 |
 | `ComputeRouteMatrixCellsPerDay` | 500 | 100 | 250 |
 | `BillableDefaultPerDayPerProject` (Static Maps) | 100 | 20 | 50 |
-| `BillableDefaultPerDayPerProject` (Maps JavaScript) | 100 | 20 | 50 |
+| `BillableDefaultPerDayPerProject` (Maps JavaScript) | 300 | 50 | 100 |
 
 `requiredServices` must equal the union of `browserServices` and
 `serverServices`. The release contract requires every callable service to have
@@ -374,20 +374,13 @@ keys as secret overlays. A key alone never activates a paid request.
 | Places | server Places API, browser autocomplete and place details | `places.googleapis.com` |
 | Maps | interactive base map, Google Routes fallback, itinerary Static Maps | `maps-backend.googleapis.com`, `routes.googleapis.com`, `static-maps-backend.googleapis.com` |
 
-The browser key is still a referrer-restricted credential for Maps JavaScript
-and browser Places. The server key still authenticates server-side Places,
-Routes, and Static Maps. Flags own capabilities rather than credentials because
-Service Usage is project-wide, not key-specific. When Maps is on and Places is
-off, the SPA loads the base map without the Places JavaScript library.
-
-Copying the primary `.env` keys into a sandbox is required but not sufficient
-for the interactive map. The local browser key's HTTP referrers must include
-the canonical Vite origins (`:5173`, `:5175`) and every sandbox slot's frontend
-and Labs origins (`:5273`/`:5275` plus 10 per extra slot). Those origins live
-in [`infra/billing-guardrails.json`](../../infra/billing-guardrails.json) as
-`gcp.environments[local].browserReferrers`. A JSON edit does not take effect
-until `infra/gcp/apply-billing-guardrails.ps1` updates the
-`aitripplanner-local-browser` key.
+The local browser key has **no HTTP referrer restriction**. Maps JavaScript
+cost is bounded by API-target allowlists (Maps/Places only) and the project
+quotas above. Canary and production browser keys remain origin-restricted.
+An empty `gcp.environments[local].browserReferrers` list causes
+`infra/gcp/apply-billing-guardrails.ps1` to `--clear-restrictions` on
+`aitripplanner-local-browser`, then re-apply the API-target allowlist. A JSON
+edit does not take effect until that script runs.
 
 Checked-in `config/environments/*.env` currently set both Places and Maps
 application flags to on. Hosted Bicep parameters pass the same flags into

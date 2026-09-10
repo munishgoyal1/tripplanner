@@ -1711,3 +1711,17 @@ the outcome.
 - `GOOGLE_PLACES_MAX_PHOTOS_PER_TRIP` is photo-media calls per authorized HTTP
   request, not "3 photos of one place." Pair one photo per place with a higher
   request ceiling, and raise the GCP `GetPhotoMedia` daily quota to match.
+
+## 2026-09-10 - Local Maps referrers are not the spend control
+
+- After the 2026-08-27 Google bill, HTTP referrer lists on the local browser
+  key blocked legitimate Vite origins (`RefererNotAllowedMapError`) more often
+  than they stopped spend. Maps JavaScript volume is small next to Places
+  Photo/Text Search; project quotas and API-target allowlists already cap a
+  leaked key.
+- An empty local `browserReferrers` list, applied with `--clear-restrictions`
+  then the Maps/Places API targets, lets primary and sandbox pages load the
+  map. Keep canary and production origin-restricted.
+- A JSON edit does not change Google's enforcement until
+  `apply-billing-guardrails.ps1` runs, including `-AllowQuotaIncreases` when
+  photo/search daily caps are raised so an allowed trip can finish.

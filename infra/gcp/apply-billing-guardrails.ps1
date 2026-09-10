@@ -168,7 +168,21 @@ foreach ($env in $gcp.environments) {
 
     $browserTargets = @($gcp.browserServices)
     $browserArgs = @("services", "api-keys", "update", $browser[0].uid, "--project=$($env.project)")
-    $browserArgs += "--allowed-referrers=$($env.browserReferrers -join ',')"
+    $referrers = @($env.browserReferrers | Where-Object { $_ })
+    if ($referrers.Count -eq 0) {
+        # Local maps testing uses many Vite origins. HTTP referrer matching is
+        # not the cost control; API-target + project quotas are. Clear website
+        # restrictions, then re-apply the Maps/Places API allowlist.
+        $clearArgs = @(
+            "services", "api-keys", "update", $browser[0].uid,
+            "--project=$($env.project)", "--clear-restrictions"
+        )
+        if ($PSCmdlet.ShouldProcess($env.browserKey, "Clear browser HTTP referrer restrictions")) {
+            Invoke-Gcloud $clearArgs | Out-Null
+        }
+    } else {
+        $browserArgs += "--allowed-referrers=$($referrers -join ',')"
+    }
     foreach ($service in $browserTargets) { $browserArgs += "--api-target=service=$service" }
     if ($PSCmdlet.ShouldProcess($env.browserKey, "Apply browser referrers and API restrictions")) {
         Invoke-Gcloud $browserArgs | Out-Null

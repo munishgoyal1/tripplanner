@@ -1247,3 +1247,26 @@ def test_repeated_saves_cannot_outrank_missing_hotel_search() -> None:
 
     assert decision.forced_tool == "search_hotels"
     assert decision.forced_reason == "missing_concrete_hotel"
+
+
+def test_other_research_cannot_defer_missing_hotel_search() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="finish a bookable 7-day Kashmir plan"),
+            _tool_call("search_activities", "acts-1"),
+            ToolMessage(content="[{'name': 'Dal Lake shikara'}]", tool_call_id="acts-1"),
+        ],
+        active_trip={
+            "destination": "Kashmir",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+            }],
+            "selected_hotels": [],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "search_hotels"
+    assert decision.forced_reason == "missing_concrete_hotel"

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 
@@ -111,35 +110,20 @@ def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
     assert "destination overview returned no photo" in browser_smoke
 
 
-def test_local_maps_browser_referrers_cover_sandbox_vite_ports() -> None:
+def test_local_maps_browser_key_has_no_http_referrer_restriction() -> None:
     root = Path(__file__).parents[1]
-    sandbox = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
-
-    def ps_int(name: str) -> int:
-        match = re.search(rf"\${name}\s*=\s*(\d+)", sandbox)
-        assert match, name
-        return int(match.group(1))
-
-    frontend_base = ps_int("FrontendBase")
-    labs_base = ps_int("LabsBase")
-    step = ps_int("Step")
-    max_slots = ps_int("MaxSlots")
+    apply_script = (root / "infra" / "gcp" / "apply-billing-guardrails.ps1").read_text(
+        encoding="utf-8"
+    )
     config = json.loads((root / "infra" / "billing-guardrails.json").read_text(encoding="utf-8"))
     local = next(env for env in config["gcp"]["environments"] if env["name"] == "local")
-    referrers = set(local["browserReferrers"])
-    ports = [5173, 5175]
-    for slot in range(max_slots):
-        ports.append(frontend_base + slot * step)
-        ports.append(labs_base + slot * step)
-    missing = [
-        f"http://{host}:{port}/*"
-        for host in ("localhost", "127.0.0.1")
-        for port in ports
-        if f"http://{host}:{port}/*" not in referrers and f"http://{host}:*/*" not in referrers
-    ]
-    assert not missing, missing
-    assert "http://localhost:5173/*" in referrers
-    assert "http://127.0.0.1:5173/*" in referrers
+    canary = next(env for env in config["gcp"]["environments"] if env["name"] == "canary")
+    prod = next(env for env in config["gcp"]["environments"] if env["name"] == "prod")
+
+    assert local["browserReferrers"] == []
+    assert "--clear-restrictions" in apply_script
+    assert canary["browserReferrers"]
+    assert prod["browserReferrers"]
 
 
 def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
@@ -170,11 +154,11 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
         assert "ENABLE_GOOGLE_MAPS=1" in profile
     assert (
         '"quotaId": "SearchTextRequestPerDayPerProject", '
-        '"local": 30, "canary": 5, "prod": 15'
+        '"local": 200, "canary": 50, "prod": 200'
     ) in guardrails
     assert (
         '"quotaId": "GetPhotoMediaRequestPerDayPerProject", '
-        '"local": 80, "canary": 5, "prod": 15'
+        '"local": 400, "canary": 80, "prod": 400'
     ) in guardrails
     guardrail_config = cloud_config["gcp"]
     maps_quotas = [
@@ -187,17 +171,17 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
             "service": "maps-backend.googleapis.com",
             "quotaId": "BillableDefaultPerDayPerProject",
             "preferenceId": "tp-mapsjs-billabledefaultperdayperproject",
-            "local": 100,
-            "canary": 20,
-            "prod": 50,
+            "local": 300,
+            "canary": 50,
+            "prod": 100,
         },
         {
             "service": "maps-backend.googleapis.com",
             "quotaId": "BillableDefaultPerMinutePerProject",
             "preferenceId": "tp-mapsjs-billabledefaultperminuteperproject",
-            "local": 30,
-            "canary": 10,
-            "prod": 20,
+            "local": 60,
+            "canary": 20,
+            "prod": 30,
         },
     ]
     places_javascript_quotas = [
@@ -209,7 +193,7 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
         "tp-placesjs-billabledefaultperdayperproject",
         "tp-placesjs-billabledefaultperminuteperproject",
     ]
-    assert [quota["prod"] for quota in places_javascript_quotas] == [20, 10]
+    assert [quota["prod"] for quota in places_javascript_quotas] == [50, 20]
     callable_services = set(guardrail_config["browserServices"]) | set(
         guardrail_config["serverServices"]
     )

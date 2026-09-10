@@ -419,7 +419,7 @@ conversation or explicit edit
 | `docs/operations/backup-recovery.md` | Guarded backup and restore drill |
 | `docs/operations/gcp-billing-guardrails.md` | Reproducible Google Cloud budget, quota, and billing-shutoff setup |
 | `docs/operations/azure-billing-guardrails.md` | Reproducible Azure budget and alert setup, including hard-cap limitations |
-| `infra/billing-guardrails.json` | Owner-facing cloud service state, budgets, quotas, account identifiers, and local Maps browser-key HTTP referrers (canonical plus sandbox Vite ports) |
+| `infra/billing-guardrails.json` | Owner-facing cloud service state, budgets, quotas, account identifiers, local Maps browser key with no HTTP referrer restriction, and hosted canary/prod browser-key HTTP referrers |
 | `infra/{gcp,azure}/apply-billing-guardrails.ps1` | Idempotent cross-platform guardrail provisioning scripts |
 | `infra/gcp/set-google-places-access.ps1` | Immediate no-deployment Places Service Usage control and central desired-state apply |
 | `infra/azure/set-azure-services-access.ps1` | Reversible Azure usage and serving-only control for `local`, `canary`, `prod`, or all allowlisted Tripplanner resource groups; disable is immediate, enable is approval-gated, shared Cosmos changes only with a full `all`, and no resource or data is deleted |
