@@ -32,7 +32,7 @@ import os
 import re
 import time
 from collections.abc import AsyncIterator
-from contextlib import nullcontext
+from contextlib import asynccontextmanager, nullcontext
 from typing import Any, Literal
 
 from fastapi import FastAPI, HTTPException, Request
@@ -81,7 +81,19 @@ from tripplanner.web.trip_http import router as trip_router
 
 setup_logging()
 
-app = FastAPI(title="Personal Assistant API", version="0.1.0")
+@asynccontextmanager
+async def _lifespan(_app: FastAPI):
+    yield
+    # Let places_cache's rate limiter bail out of any in-progress wait
+    # immediately, instead of a worker thread holding up process exit for as
+    # long as its remaining quota wait -- concurrent.futures.thread's atexit
+    # hook joins every ThreadPoolExecutor worker with no timeout.
+    from tripplanner.web import places_cache
+
+    places_cache.begin_shutdown()
+
+
+app = FastAPI(title="Personal Assistant API", version="0.1.0", lifespan=_lifespan)
 
 app.add_middleware(FlightRecorderMiddleware)
 
