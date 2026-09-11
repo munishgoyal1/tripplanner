@@ -2,8 +2,9 @@ import type { ReactNode } from "react";
 import ItineraryPanel from "./ItineraryPanel";
 import MapPanel from "./MapPanel";
 import TripSwitcher from "./TripSwitcher";
+import WorkspaceDayBar from "./WorkspaceDayBar";
 import type { DeselectItemOptions, SelectItemOptions } from "../api";
-import type { Itinerary, MapView, TripView, TripWorkspaceView } from "../types";
+import type { Itinerary, MapDay, MapView, TripView, TripWorkspaceView } from "../types";
 import type { ItineraryJump } from "../workspaceState";
 import type { ItineraryFilter } from "../lib/itineraryFilters";
 
@@ -30,6 +31,12 @@ interface Props {
   routeFocusDay?: number;
   routeFocusToken?: number;
   itineraryJump: ItineraryJump | null;
+  /** Shared day-selection row: driven by the itinerary as soon as it's
+   * ready, not by the (lazily-mounted, separately-loading) map. */
+  hasTrip: boolean;
+  days: MapDay[];
+  sequenceOpen: boolean;
+  onToggleSequence: () => void;
   onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void;
   onStopMap: (kind: string, name: string, day?: number, stop?: number) => void;
   onDayMap: (day: number) => void;
@@ -71,6 +78,10 @@ export default function RightRail({
   routeFocusDay,
   routeFocusToken,
   itineraryJump,
+  hasTrip,
+  days,
+  sequenceOpen,
+  onToggleSequence,
   onStopFocus,
   onStopMap,
   onDayMap,
@@ -103,6 +114,21 @@ export default function RightRail({
           <span>{mapOpen ? "Hide map" : "Map"}</span>
         </button>
       </div>
+
+      {/* Shared day-selection row: applies to both the itinerary below and
+          the (lazily-mounted, separately-loading) map, so it's driven by
+          itinerary readiness alone rather than waiting on the map's own
+          fetch. Always the same row a desktop layout shows. */}
+      {hasTrip && (
+        <WorkspaceDayBar
+          days={days}
+          activeDay={circuitFocusDay ?? routeFocusDay ?? focusDay ?? null}
+          sequenceOpen={sequenceOpen}
+          onAllDays={onMapAllDaysFocus}
+          onDay={onMapDayFocus}
+          onToggleSequence={onToggleSequence}
+        />
+      )}
 
       {/* Stacked panels — all visible at once (no tab switching). Each keeps
           its own scroll so long lists don't fight for space. */}
@@ -159,6 +185,9 @@ export default function RightRail({
                 onPinFocus={onStopFocus}
                 onDayFocus={onMapDayFocus}
                 onAllDaysFocus={onMapAllDaysFocus}
+                showWorkspaceNavigation={false}
+                sequenceOpen={sequenceOpen}
+                onSequenceOpenChange={() => onToggleSequence()}
                 onSelect={onSelect}
                 onDeselect={onDeselect}
               />
