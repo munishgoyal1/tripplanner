@@ -56,22 +56,26 @@ async def trip_view_endpoint(
     )
     view = await asyncio.to_thread(trip_operations.build_view, focus)
     trip_id = str(view.get("trip_id") or "")
-    # Warm the destination-guide dataset after responding so the first city/kind
-    # switch is instant while the user is still reading the itinerary.
+    # A focus response only blocks on the focused place; an unfocused response
+    # only blocks on its own small gallery slice (_MAX_GALLERY_ITEMS) -- either
+    # way, top up the rest of the trip's places afterwards so the next view
+    # (a focus, a panel switch, or a plain reload) stays a cache hit instead of
+    # blocking on a fresh, rate-limited Places lookup. Previously this only
+    # ran after a *focused* request, so the very first/general load of a large
+    # trip never got proactively warmed in the background at all.
+    background.add_task(
+        _run_agent_background,
+        trip_operations.warm_view_items,
+        route="warm_view_items",
+        trip_id=trip_id,
+    )
     if focus is None:
+        # Warm the destination-guide dataset too so the first city/kind switch
+        # is instant while the user is still reading the itinerary.
         background.add_task(
             _run_agent_background,
             trip_operations.warm_guide,
             route="warm_guide",
-            trip_id=trip_id,
-        )
-    else:
-        # A focus response only blocks on the focused place; top up the rest of
-        # the gallery afterwards so the next focus stays a cache hit.
-        background.add_task(
-            _run_agent_background,
-            trip_operations.warm_view_items,
-            route="warm_view_items",
             trip_id=trip_id,
         )
     return view
@@ -103,12 +107,21 @@ async def trip_workspace_endpoint(
     )
     payload = await asyncio.to_thread(trip_operations.active_workspace_payload, focus)
     trip_id = str((payload.get("view") or {}).get("trip_id") or "")
+    # See /trip/view above: warm the rest of the trip's places regardless of
+    # focus, not only after a focused request.
     background.add_task(
         _run_agent_background,
-        trip_operations.warm_guide if focus is None else trip_operations.warm_view_items,
-        route="warm_guide" if focus is None else "warm_view_items",
+        trip_operations.warm_view_items,
+        route="warm_view_items",
         trip_id=trip_id,
     )
+    if focus is None:
+        background.add_task(
+            _run_agent_background,
+            trip_operations.warm_guide,
+            route="warm_guide",
+            trip_id=trip_id,
+        )
     return payload
 
 
