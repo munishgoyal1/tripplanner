@@ -29,16 +29,17 @@ import json
 import logging
 import os
 import time
+from collections import defaultdict, deque
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
 from queue import Empty, Queue
-from threading import Condition, RLock, Thread
+from threading import Condition, Lock, RLock, Thread
 from typing import Any
 
 import httpx
 
-from tripplanner import http_client
+from tripplanner import billing_guardrails, http_client
 from tripplanner.config import get_settings
 from tripplanner.json_store import atomic_write_json
 from tripplanner.places_budget import consume, current_budget, use_budget
@@ -58,6 +59,36 @@ _PHOTO_TTL_S = 50 * 60  # re-sign photo URLs before Google's ~1h expiry
 _PHOTO_REFS_SCHEMA = 1
 _MAX_WORKERS = 8
 _MAX_ENTRIES = 800  # soft cap; evict the oldest beyond this
+
+# --- Rate limiting -----------------------------------------------------------
+# prefetch()'s worker pool is fast enough to blast past Google's own real
+# per-minute quota for a large trip (hundreds of places) well before that
+# quota's own multi-second window resets, drawing real 429s and opening the
+# provider circuit breaker. Self-pace to the same ceiling GCP enforces
+# (infra/billing-guardrails.json, applied via
+# infra/gcp/apply-billing-guardrails.ps1) instead of finding out the hard way.
+_RATE_WINDOW_SEC = 60.0
+_rate_lock = Lock()
+_rate_windows: dict[str, deque[float]] = defaultdict(deque)
+
+
+def _pace(quota_id: str, *, default: int) -> None:
+    """Block until another call under ``quota_id`` would stay within Google's
+    real per-minute quota for the current environment."""
+    limit = billing_guardrails.gcp_quota_per_minute(
+        "places.googleapis.com", quota_id, default=default
+    )
+    while True:
+        with _rate_lock:
+            window = _rate_windows[quota_id]
+            now = time.monotonic()
+            while window and now - window[0] >= _RATE_WINDOW_SEC:
+                window.popleft()
+            if len(window) < limit:
+                window.append(now)
+                return
+            wait = _RATE_WINDOW_SEC - (now - window[0])
+        time.sleep(max(0.05, min(wait, 1.0)))
 
 
 def _ttl(seconds: int | float) -> int:
@@ -522,6 +553,7 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
     for attempt in range(2):
         if not consume("text_search"):
             return None
+        _pace("SearchTextRequestPerMinutePerProject", default=30)
         try:
             resp = http_client.post(
                 f"{_BASE}/places:searchText",
@@ -531,6 +563,11 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
             )
             resp.raise_for_status()
             break
+        except http_client.CircuitOpenError:
+            # Transient: the breaker is protecting an already-rate-limited
+            # provider. Not "this place doesn't exist" -- don't let the
+            # caller cache/persist it as a miss.
+            raise
         except httpx.HTTPStatusError as exc:
             if attempt == 0 and exc.response.status_code >= 500:
                 continue
@@ -576,6 +613,7 @@ def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
         return None
     if not consume("photo"):
         return None
+    _pace("GetPhotoMediaRequestPerMinutePerProject", default=30)
     try:
         resp = http_client.get(
             f"{_BASE}/{photo_ref}/media",
@@ -666,7 +704,14 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
                 _persist_entry(k)
                 return {} if _is_miss(secondary) else secondary
         _record_cache("refresh" if refresh else "miss")
-        info = _lookup_place(name, lookup_city) or {}
+        try:
+            info = _lookup_place(name, lookup_city) or {}
+        except http_client.CircuitOpenError:
+            # The provider is circuit-broken, not "no such place" -- don't
+            # cache or durably persist a miss for a transient outage; let the
+            # next attempt (once the breaker closes) look it up for real.
+            _record_cache("provider_unavailable", operation="text_search", sku_class="pro")
+            return {}
         info["__at__"] = time.time()
         with _CACHE_LOCK:
             cache[k] = info

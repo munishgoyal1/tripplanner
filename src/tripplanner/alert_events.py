@@ -59,9 +59,6 @@ _LOCK = threading.Lock()
 _HOSTED_ENVIRONMENTS = {"canary", "prod", "production"}
 _LOCAL_RETENTION_DAYS = 180
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_GUARDRAILS_PATH = _REPO_ROOT / "infra" / "billing-guardrails.json"
-
 # --- KQL-mirroring thresholds (kept out of JSON config; see module docstring) ---
 _CHAT_LATENCY_MIN_SAMPLES = 5
 _CHAT_LATENCY_P95_THRESHOLD_MS = 120_000
@@ -95,17 +92,10 @@ def _parse_iso_duration_seconds(value: str, default: int = 900) -> int:
     return int(hours or 0) * 3600 + int(minutes or 0) * 60
 
 
-_guardrails_cache: dict[str, Any] | None = None
-
-
 def _guardrails() -> dict[str, Any]:
-    global _guardrails_cache
-    if _guardrails_cache is None:
-        try:
-            _guardrails_cache = json.loads(_GUARDRAILS_PATH.read_text(encoding="utf-8"))
-        except Exception:  # noqa: BLE001 - a bad/missing config file must not break the app
-            _guardrails_cache = {}
-    return _guardrails_cache
+    from tripplanner import billing_guardrails
+
+    return billing_guardrails.load()
 
 
 def _infra_alert(name: str) -> dict[str, Any]:
@@ -562,5 +552,6 @@ def reset_for_tests() -> None:
         window.clear()
     _circuit_open.clear()
     _open_state.clear()
-    global _guardrails_cache
-    _guardrails_cache = None
+    from tripplanner import billing_guardrails
+
+    billing_guardrails.reset_cache_for_tests()
