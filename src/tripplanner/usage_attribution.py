@@ -28,6 +28,10 @@ _TRACE_EVENT_FIELDS = frozenset(
     {
         "attempted",
         "billable",
+        "billing_status",
+        "call_id",
+        "flow_key",
+        "trip_key",
         "cache",
         "cache_hit",
         "cache_scope",
@@ -190,6 +194,14 @@ class UsageBatch:
         )
         return {
             "event_count": event_count,
+            "outcome": next(
+                (str(event.get("outcome") or event.get("status"))
+                 for event in reversed(events)
+                 if event.get("kind") == "chat_operation"
+                 and (event.get("outcome") or event.get("status"))),
+                "error" if any(_is_failure(event) for event in events) else "complete",
+            ),
+            "error_count": sum(1 for event in events if _is_failure(event)),
             "llm_calls": sum(1 for event in events if event.get("kind") == "llm_call"),
             "tool_calls": sum(1 for event in events if event.get("kind") == "tool_call"),
             "provider_calls": sum(

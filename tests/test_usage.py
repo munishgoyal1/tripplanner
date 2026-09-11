@@ -247,7 +247,9 @@ def test_stream_flushes_provider_usage_after_body_is_consumed(monkeypatch):
     monkeypatch.setattr(api, "_save_chat", lambda *_args, **_kwargs: "trip-1")
     monkeypatch.setattr(api, "_schedule_learning_sweep", lambda *_args: None)
     monkeypatch.setattr(api, "_should_auto_persist_itinerary", lambda _tools: False)
-    monkeypatch.setattr(provider_usage, "persist_batch", lambda records, events: writes.append((records, events)))
+    monkeypatch.setattr(
+        provider_usage, "persist_batch", lambda records, events: writes.append((records, events))
+    )
     asyncio.run(chat_admission.reset())
 
     try:
@@ -445,6 +447,29 @@ def test_the_logged_prompt_size_counts_tool_calls_too() -> None:
 
     assert _message_chars(plain) == 5
     assert _message_chars(with_call) > _message_chars(plain)
+
+
+def test_normalized_tool_arguments_are_in_prompt_counts():
+    from langchain_core.messages import AIMessage
+
+    from tripplanner.graph import _message_prompt_text
+
+    message = AIMessage(content="", tool_calls=[
+        {"name": "update_trip_plan", "args": {"day": 3}, "id": "call-1"}
+    ])
+    assert "update_trip_plan" in _message_prompt_text(message)
+    assert '"day": 3' in _message_prompt_text(message)
+
+
+def test_failed_model_call_is_unknown_cost_not_free(monkeypatch):
+    from tripplanner import provider_usage
+    from tripplanner.graph import _UsageCallback
+
+    records = []
+    monkeypatch.setattr(provider_usage, "record_call", lambda **fields: records.append(fields))
+    _UsageCallback("model").on_llm_error(RuntimeError("stream interrupted"), run_id="call-1")
+    assert records[0]["billable"] is True
+    assert records[0]["billing_status"] == "unknown"
 
 
 def test_cached_prompt_tokens_are_counted_when_the_provider_reports_them() -> None:

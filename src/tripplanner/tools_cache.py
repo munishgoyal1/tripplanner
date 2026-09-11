@@ -477,13 +477,15 @@ def _build_cached_copy(tool: BaseTool, structured_tool: Any) -> BaseTool:
             )
             raise
 
+        rejected = policy is None and str(result).lstrip().lower().startswith("error:")
         record_tool_call(
             tool_name,
             duration_ms=(time.time() - started) * 1000,
-            status="ok",
+            status="error" if rejected else "ok",
             cache_hit=False,
             user_id=user_id,
             cache_scope=cache_scope,
+            error="ToolResultRejected" if rejected else None,
         )
         if policy is None:
             _invalidate_user_scoped_cache(user_id)

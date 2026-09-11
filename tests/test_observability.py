@@ -573,3 +573,64 @@ def test_audit_enabled_default_off(monkeypatch):
     assert obs.audit_enabled_for_user_messages() is False
 
 
+def test_trip_flow_keys_survive_phone_redaction(monkeypatch, tmp_path, capsys):
+    target = tmp_path / "events.jsonl"
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    obs.setup_logging(force=True)
+    fields = {"interaction_id": "3401935c-55d0-4123-9876-123456789012",
+              "trip_id": "kashmir_20260911_1234567890"}
+    call_id = "3401935c-55d0-4123-9876-123456789012"
+    obs.app_event("chat_operation", outcome="error", error="RemoteProtocolError",
+                  call_id=call_id, **fields)
+    row = json.loads(target.read_text().strip())
+    assert row["flow_key"] == obs._correlation_fields(fields)["flow_key"]
+    assert row["trip_key"] == obs._correlation_fields(fields)["trip_key"]
+    assert row["level"] == "ERROR"
+    assert row["call_id"] == call_id
+    assert f"flow={row['flow_key']}" in capsys.readouterr().out
+
+
+def test_prompt_preview_changes_without_truncating_counted_prompt(monkeypatch, tmp_path, capsys):
+    target = tmp_path / "events.jsonl"
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    obs.setup_logging(force=True)
+    prompt = "boilerplate " * 200 + "move day three"
+    obs.log_llm_prompt("model", prompt, message_count=3, prompt_chars=len(prompt),
+                       preview_text="user: move day three", call_id="round-a")
+    row = json.loads(target.read_text().strip())
+    assert row["prompt_words"] == 203
+    assert row["prompt_preview"] == "user: move day three"
+    assert row["preview_source"] == "latest_user_and_message"
+    assert "boilerplate" not in capsys.readouterr().out
+
+
+def test_flow_reports_terminal_chat_error(capsys):
+    from tripplanner.usage_attribution import UsageBatch
+
+    batch = UsageBatch()
+    batch.append_event("llm_call", {"status": "error", "error": "RemoteProtocolError"})
+    batch.append_event("chat_operation", {"outcome": "error"})
+    obs.setup_logging(force=True)
+    obs.log_flow_summary({"route": "POST /chat/stream"}, batch.flow_summary(), 75000)
+    assert "FLOW POST /chat/stream error" in capsys.readouterr().out
+
+
+def test_rejected_itinerary_update_is_logged_as_failure(monkeypatch):
+    from langchain_core.tools import tool
+
+    from tripplanner.tools_cache import wrap_tools_with_cache
+
+    @tool
+    def update_trip_plan() -> str:
+        """Reject an invalid schedule."""
+        return "Error: itinerary times must increase in circuit order."
+
+    calls = []
+    monkeypatch.setattr(obs, "record_tool_call", lambda *args, **kwargs: calls.append(kwargs))
+    wrapped = wrap_tools_with_cache([update_trip_plan])[0]
+    assert wrapped.invoke({}).startswith("Error:")
+    assert calls[0]["status"] == "error"
+    assert calls[0]["error"] == "ToolResultRejected"
+
+
