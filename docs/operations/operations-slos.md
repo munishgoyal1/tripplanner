@@ -261,8 +261,8 @@ archive. A lost container disk can lose its unuploaded spool; use persistent sto
 when this residual window is unacceptable. No per-token Cosmos writes occur.
 
 The daemon drains at most 25 events per worker pass by default (configurable with
-`TRIPPLANNER_FLIGHT_RECORDER_BATCH_SIZE`, clamped to 1-500) and emits one batch
-completion line. Successful `storage_operation`, `cache_access`, duplicate
+`TRIPPLANNER_FLIGHT_RECORDER_BATCH_SIZE`, clamped to 1-500) and emits at most one
+progress summary per minute plus one caught-up summary. Successful `storage_operation`, `cache_access`, duplicate
 `outbound_call`, cache-served `provider_call`, and `llm_usage` events continue to feed
 alert observers, metrics, and content-free ledgers, but are intentionally absent as
 individual console/app-file and recorder-spool entries. One interaction-summary event

@@ -1772,3 +1772,12 @@ the outcome.
   should retain only shape and token metadata. Exact prompts already belong in the
   restricted flight recorder, so copying them into hosted operational logs adds risk
   without improving reconstruction.
+
+## 2026-09-11 - Bounded Work Still Needs Bounded Progress Logging
+
+- Limiting a recorder drain to 25 uploads protected each pass, but emitting one line
+  after every pass still dominated the console for a large legacy backlog. A batch is
+  an execution boundary, not necessarily a useful operator-reporting boundary.
+- Report continuous maintenance progress on a time window and once when caught up.
+  Keep batch size as the I/O control and reporting cadence as a separate, slower
+  human-signal control.

@@ -716,8 +716,9 @@ implemented capability baseline.
   Cosmos delivery; compressed chunks are verified on export and expire after seven days.
   Recorder failures preserve pending files and expose degraded status. This code-level
   capability still requires deployment and a live hosted recorder smoke check.
-  Its background Cosmos delivery drains bounded batches and reports one batch line
-  rather than printing one successful storage line per uploaded event.
+  Its background Cosmos delivery drains bounded batches and reports progress at most
+  once per minute plus one caught-up line, rather than printing per-event or per-batch
+  success lines.
   Browser Google SDK internals and infrastructure SDK wire retries are outside this
   server recorder; their existing application/status telemetry is not a full wire trace.
 - Hidden operations and owner-only backend access is authorized solely to the
