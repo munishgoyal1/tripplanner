@@ -517,6 +517,11 @@ def _human_event_message(kind: str, fields: dict[str, Any]) -> str:
         return f"STEP {operation} -> {status or 'complete'}{duration}"
     if kind == "cache_access" and fields.get("result") == "provider_unavailable":
         return f"CACHE provider unavailable{place_text}"
+    if kind == "provider_pacing":
+        quota_id = fields.get("quota_id") or "quota"
+        per_min = fields.get("limit_per_minute")
+        limit_text = f" limit={per_min}/min" if per_min is not None else ""
+        return f"PACING waiting on {quota_id}{limit_text}{duration}"
     return f"event {kind}"
 
 
