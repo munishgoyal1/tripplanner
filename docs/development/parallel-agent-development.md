@@ -45,11 +45,12 @@ finished.
 
 The primary checkout owns the canonical local app stack. Before starting it, run `scripts/win/user/run/Run-Latest-Master.cmd` on Windows or `scripts/mac/user/run/Run-Latest-Master.command` on macOS. Sandboxes use their own ports and server-free validation by default. `Copy-PrimaryEnvironment` refreshes the sandbox `.env` from the primary checkout so provider keys match. The local Maps browser key has no HTTP referrer restriction; cost is bounded by API-target allowlists and project quotas. Canary and production browser keys remain origin-restricted.
 
-Promotion requires the primary `master` checkout to be clean and exactly equal
-to `origin/master` before the pull request is merged. After GitHub merges the
+Promotion requires the primary `master` checkout to be clean. If it is behind
+`origin/master`, promotion fast-forwards it. If it is ahead or has diverged,
+promotion stops and tells you to park the extra commits and reset to
+`origin/master` instead of creating a divergent history. After GitHub merges the
 pull request, promotion fast-forwards the primary checkout before recording
-completion or discarding the sandbox. A stale or locally-ahead primary checkout
-stops the promotion instead of creating a divergent history.
+completion or discarding the sandbox.
 
 After a successful `Sync-Sbxs-FromMaster`, each registered sandbox may be ahead of
 `master`, but both its local branch and its pushed remote branch must contain the

@@ -3526,6 +3526,11 @@ file:// HTML. Embed photo bytes as data URIs, falling back to Places media
 bytes when the CDN URL is blocked. Keep Download PDF and Send busy states
 separate so one action does not relabel the other.
 
+[2026-09-11] Promote when primary is behind or ahead of origin/master
+Promotion stopped because local master was not exactly origin/master. Fast-forward
+a clean behind checkout. If local master is ahead, park those commits and reset
+to origin/master before retrying.
+
 
 
 

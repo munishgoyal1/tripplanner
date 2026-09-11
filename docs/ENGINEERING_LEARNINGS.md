@@ -1818,3 +1818,12 @@ the outcome.
 - Report continuous maintenance progress on a time window and once when caught up.
   Keep batch size as the I/O control and reporting cadence as a separate, slower
   human-signal control.
+
+## 2026-09-11 - Promotion Must Fast-Forward a Behind Primary
+
+- Requiring the primary checkout to already equal `origin/master` before
+  `merge --ff-only` blocks a clean behind checkout that the next line would have
+  repaired. Fast-forward when local is an ancestor of the remote.
+- A locally-ahead primary is a different failure. Name that relation and give
+  the park-then-reset recovery so promotion does not invent a second master
+  history.
