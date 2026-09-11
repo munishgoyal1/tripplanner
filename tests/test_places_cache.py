@@ -95,6 +95,11 @@ def test_places_cache_emits_miss_and_memory_hit(_isolate):
         if event.kind == "cache_access"
     ]
     assert results == ["miss", "memory_hit"]
+    cache_events = [
+        event.fields for event in collector.evidence.events if event.kind == "cache_access"
+    ]
+    assert {event["place"] for event in cache_events} == {"Harness-only Place"}
+    assert {event["city"] for event in cache_events} == {"Harness City"}
 
 
 def test_places_cache_emits_forced_refresh(_isolate):
