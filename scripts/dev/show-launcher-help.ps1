@@ -8,6 +8,7 @@ param(
         "start-dev-spa",
         "sync-across-master-sbx",
         "sync-sbxs-from-master",
+        "sync-all-from-master",
         "emergency-bringdown",
         "emergency-control",
         "apply-runtime-config",
@@ -115,6 +116,23 @@ Usage: Sync-Sbxs-FromMaster [sandbox] [-ValidateOnly] [-WhatIf]
 Examples:
   Sync-Sbxs-FromMaster
   Sync-Sbxs-FromMaster 4 -WhatIf
+"@
+    "sync-all-from-master" = @"
+Sync-All-FromMaster - fast-forward primary master, then pull it into every local lane.
+
+Usage: Sync-All-FromMaster [-BaseBranch master] [-AlwaysValidate] [-WhatIf]
+
+  -AlwaysValidate  Validate even documentation-only merges.
+  -WhatIf          Preview lane updates.
+
+Unlike Sync-Sbxs-FromMaster, this updates every local branch: registered
+sandboxes, multiagent worktrees, and branches without an attached worktree.
+It is a thin wrapper around Full-2Way-Sync's default "all" scope with
+-PullOnly, so lane work is never published back to master.
+
+Examples:
+  Sync-All-FromMaster
+  Sync-All-FromMaster -WhatIf
 "@
     "run-latest-master" = @"
 Run-Latest-Master - fast-forward primary master and start its canonical local stack.
