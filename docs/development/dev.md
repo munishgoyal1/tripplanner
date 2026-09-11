@@ -65,6 +65,7 @@ Use these launchers by outcome:
 | `scripts/win/user/run/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
 | `scripts/win/user/run/Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start the canonical `dev-spa.ps1` stack. |
 | `scripts/win/user/sync/Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`; without an argument update every registered sandbox, or update only the selected sandbox. |
+| `scripts/win/user/sync/Sync-All-FromMaster.cmd` | Fast-forward primary `master`, then pull it into every local lane: registered sandboxes, multiagent worktrees, and branches without an attached worktree. Never publishes lane work back. |
 | `scripts/win/user/sync/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync; without an argument merge every sandbox into `master`, or merge only the selected sandbox, then level all sandboxes. Requires typing `APPROVE_SANDBOX_TO_MASTER`. |
 | `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
