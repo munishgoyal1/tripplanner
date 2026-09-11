@@ -92,7 +92,8 @@ trip through shared API contracts.
 | `src/tripplanner/trip_events.py` | Durable trip event ownership |
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
-| `src/tripplanner/web/itinerary_trip_book.py` | Lab 5 Option B layered Trip Book HTML: contents and readiness, trip brief, executable days with optional circuit insets, then essentials, documents, and optional place context |
+| `src/tripplanner/web/itinerary_trip_book.py` | Lab 5 Option B layered Trip Book HTML: contents and readiness, trip brief, executable days with numbered circuit insets, then essentials, documents, and optional place context |
+| `src/tripplanner/web/itinerary_pdf.py` | PDF bytes from the same export HTML via Chromium/Edge print-to-PDF when available, with a ReportLab packet fallback that keeps the day/stop structure |
 | `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py` | Private diagnostic events: full model/tool and planner HTTP evidence, provider attempts, seven-day local/Cosmos spool, integrity-checked operator export; see operations SLO runbook |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics; low-level success telemetry still reaches observers/ledgers and one aggregate flight event, while console and rotating app logs show human-readable API, LLM, tool, provider, workflow, failure, and per-interaction summary lines instead of successful per-cache/per-storage noise |
 | `src/tripplanner/debug_store.py` | Internal implementation of the Trip Flight Recorder: automatic local-only history of real trip revisions for investigation and emulator restore; never active in hosted mode |
@@ -202,7 +203,7 @@ one physical cache backend.
 | `frontend/src/components/AccountSettingsController.tsx`, `accountSettings.ts` | Page-independent account/settings ownership, auth and privacy actions, destination routing, and reusable open command |
 | `frontend/src/components/AccountSettingsHub.tsx` | Account/settings render surface; delegates persisted destinations to existing auth, preferences, documents, analytics, and privacy boundaries |
 | `frontend/src/components/TravelDocumentsVault.tsx` | Travel-document capture, review, reveal, and deletion. The trip surface only shows the gap badge |
-| `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
+| `frontend/src/components/ExportModal.tsx` | Itinerary download dialog: Standard or Trip Book, budget/photo checkboxes, preview, PDF, and email |
 | `frontend/src/components/MapPanel.tsx` | Google Maps instance lifecycle, UI state, Places interaction, focus coordination, and compatibility re-exports |
 | `frontend/src/components/map/` | Google Maps SDK loading, map icon generation, focus matching, day and dedicated-drive route derivation, Google-place candidate conversion, React-independent overlay synchronization, and viewport mutation |
 | `frontend/src/components/ItineraryPanel.tsx`, `ItineraryStopRow.tsx` | Itinerary loading, mutation, day composition, and stop-row presentation ownership |

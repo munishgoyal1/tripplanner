@@ -1,16 +1,96 @@
-"""Server-side PDF generation for itinerary exports."""
+"""Server-side PDF generation for itinerary exports.
+
+The printable HTML is the source of truth. Chromium/Edge print-to-PDF is used
+when a browser is available so the file matches preview. ReportLab is only the
+fallback renderer and follows the same day/stop structure, not the old tables.
+"""
 
 from __future__ import annotations
 
-import base64
+import os
+import shutil
+import subprocess
+import tempfile
 from html import escape
 from io import BytesIO
+from pathlib import Path
 from typing import Any
 
-import httpx
+from tripplanner.web import itinerary_export, trip_view
 
-from tripplanner import http_client
-from tripplanner.web import itinerary_export, places_cache, trip_view
+
+def _browser_paths() -> list[str]:
+    found: list[str] = []
+    for name in (
+        "msedge",
+        "chrome",
+        "chromium",
+        "google-chrome",
+        "google-chrome-stable",
+        "chromium-browser",
+    ):
+        path = shutil.which(name)
+        if path:
+            found.append(path)
+    extra = [
+        Path(os.environ.get("PROGRAMFILES", r"C:\Program Files"))
+        / "Microsoft/Edge/Application/msedge.exe",
+        Path(os.environ.get("PROGRAMFILES(X86)", r"C:\Program Files (x86)"))
+        / "Microsoft/Edge/Application/msedge.exe",
+        Path(os.environ.get("PROGRAMFILES", r"C:\Program Files"))
+        / "Google/Chrome/Application/chrome.exe",
+        Path("/usr/bin/google-chrome"),
+        Path("/usr/bin/chromium"),
+        Path("/usr/bin/chromium-browser"),
+        Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+        Path("/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"),
+    ]
+    for path in extra:
+        if path.is_file():
+            found.append(str(path))
+    unique: list[str] = []
+    for path in found:
+        if path not in unique:
+            unique.append(path)
+    return unique
+
+
+def html_to_pdf_bytes(html: str) -> bytes | None:
+    """Print the export HTML to PDF with a local Chromium-family browser."""
+    if os.getenv("TRIPPLANNER_HTML_PDF", "1").strip().lower() in {"0", "false", "no"}:
+        return None
+    with tempfile.TemporaryDirectory() as tmp:
+        html_path = Path(tmp) / "itinerary.html"
+        pdf_path = Path(tmp) / "itinerary.pdf"
+        html_path.write_text(html, encoding="utf-8")
+        uri = html_path.resolve().as_uri()
+        for browser in _browser_paths():
+            cmd = [
+                browser,
+                "--headless=new",
+                "--disable-gpu",
+                "--no-sandbox",
+                "--disable-extensions",
+                "--no-first-run",
+                "--no-default-browser-check",
+                f"--print-to-pdf={pdf_path}",
+                "--print-to-pdf-no-header",
+                uri,
+            ]
+            try:
+                subprocess.run(
+                    cmd,
+                    check=True,
+                    timeout=12,
+                    capture_output=True,
+                )
+            except (OSError, subprocess.SubprocessError, subprocess.TimeoutExpired):
+                continue
+            if pdf_path.is_file() and pdf_path.stat().st_size > 8:
+                data = pdf_path.read_bytes()
+                if data.startswith(b"%PDF"):
+                    return data
+    return None
 
 
 def build_itinerary_pdf_bytes(
@@ -19,365 +99,105 @@ def build_itinerary_pdf_bytes(
     template: str = "standard",
     include_photos: bool = False,
     include_map_circuit: bool = True,
+    include_budgets: bool = False,
 ) -> bytes:
-    """Build a PDF bytes payload for the active itinerary.
+    """Build a PDF bytes payload for the active itinerary."""
+    html = itinerary_export.build_export_html(
+        trip,
+        include_photos=include_photos,
+        include_map_circuit=include_map_circuit,
+        include_budgets=include_budgets,
+        template=template,
+        auto_print=False,
+    )
+    printed = html_to_pdf_bytes(html)
+    if printed:
+        return printed
+    return _reportlab_packet_bytes(
+        trip,
+        template=template,
+        include_photos=include_photos,
+        include_map_circuit=include_map_circuit,
+        include_budgets=include_budgets,
+    )
 
-    Uses reportlab when available. Caller should catch ImportError and return
-    setup guidance if reportlab is not installed.
-    """
-    template_key = str(template or "detailed").strip().lower()
-    if template_key not in itinerary_export.TEMPLATES:
-        template_key = "detailed"
-    include_map_circuit = include_map_circuit and template_key in itinerary_export._MAP_TEMPLATES
-    seen_photos: set[str] = set()
-    from reportlab.lib import colors
-    from reportlab.lib.units import mm
+
+def _reportlab_packet_bytes(
+    trip: dict[str, Any] | None,
+    *,
+    template: str,
+    include_photos: bool,
+    include_map_circuit: bool,
+    include_budgets: bool,
+) -> bytes:
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-    from reportlab.lib.utils import ImageReader
-    from reportlab.graphics.barcode.qr import QrCodeWidget
-    from reportlab.graphics.shapes import Circle, Drawing, PolyLine, String
-    from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
-
-    def _image_from_source(source: str, width: float, height: float) -> Image | None:
-        try:
-            if source.startswith("data:image/") and ";base64," in source:
-                raw = base64.b64decode(source.split(";base64,", 1)[1])
-            else:
-                response = http_client.get(source, timeout=12)
-                response.raise_for_status()
-                raw = response.content
-            ImageReader(BytesIO(raw)).getSize()
-            image = Image(BytesIO(raw), width=width, height=height)
-            image.hAlign = "LEFT"
-            return image
-        except (OSError, ValueError, httpx.HTTPError):
-            return None
-
-    def _route_coords(pin_ids: list[str]) -> list[tuple[float, float]]:
-        out: list[tuple[float, float]] = []
-        for pid in pin_ids:
-            p = pin_by_id.get(pid) or {}
-            lat = p.get("lat")
-            lng = p.get("lng")
-            if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
-                out.append((float(lat), float(lng)))
-        return out
-
-    def _route_drawing(coords: list[tuple[float, float]]) -> Drawing | None:
-        if len(coords) < 2:
-            return None
-        width, height, pad = 120.0, 70.0, 8.0
-        lats = [c[0] for c in coords]
-        lngs = [c[1] for c in coords]
-        min_lat, max_lat = min(lats), max(lats)
-        min_lng, max_lng = min(lngs), max(lngs)
-        lat_span = max(max_lat - min_lat, 1e-6)
-        lng_span = max(max_lng - min_lng, 1e-6)
-
-        def _xy(lat: float, lng: float) -> tuple[float, float]:
-            x = pad + ((lng - min_lng) / lng_span) * (width - 2 * pad)
-            y = pad + ((max_lat - lat) / lat_span) * (height - 2 * pad)
-            return x, y
-
-        points = [_xy(lat, lng) for lat, lng in coords]
-        flat = [v for pt in points for v in pt]
-        d = Drawing(width, height)
-        d.add(PolyLine(flat, strokeColor=colors.HexColor("#0369a1"), strokeWidth=1.8))
-        for idx, (x, y) in enumerate(points, start=1):
-            d.add(Circle(x, y, 3.4, fillColor=colors.HexColor("#0d9488"), strokeColor=colors.white, strokeWidth=0.8))
-            d.add(String(x, y - 1.6, str(idx), fontName="Helvetica-Bold", fontSize=4.5, fillColor=colors.white, textAnchor="middle"))
-        return d
-
-    def _qr_drawing(value: str) -> Drawing | None:
-        text = str(value or "").strip()
-        if not text:
-            return None
-        qr = QrCodeWidget(text)
-        b = qr.getBounds()
-        w = float(b[2] - b[0])
-        h = float(b[3] - b[1])
-        if w <= 0 or h <= 0:
-            return None
-        size = 20 * mm
-        d = Drawing(size, size, transform=[size / w, 0, 0, size / h, 0, 0])
-        d.add(qr)
-        return d
+    from reportlab.lib.units import mm
+    from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
     buf = BytesIO()
-    doc = SimpleDocTemplate(buf, pagesize=A4, leftMargin=32, rightMargin=32, topMargin=28, bottomMargin=28)
+    doc = SimpleDocTemplate(
+        buf, pagesize=A4, leftMargin=32, rightMargin=32, topMargin=28, bottomMargin=28
+    )
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle("title", parent=styles["Heading1"], fontSize=20, leading=24, spaceAfter=10)
-    h2 = ParagraphStyle("h2", parent=styles["Heading2"], fontSize=14, leading=18, spaceAfter=6)
-    body = ParagraphStyle("body", parent=styles["BodyText"], fontSize=10, leading=14)
-
-    story = []
+    title_style = ParagraphStyle(
+        "title", parent=styles["Heading1"], fontSize=18, leading=22, spaceAfter=8
+    )
+    h2 = ParagraphStyle("h2", parent=styles["Heading2"], fontSize=13, leading=16, spaceAfter=4)
+    body = ParagraphStyle("body", parent=styles["BodyText"], fontSize=9, leading=12)
+    muted = ParagraphStyle("muted", parent=body, textColor="#475569")
+    story: list[Any] = []
     if not trip:
         story.append(Paragraph("No active trip to export.", body))
         doc.build(story)
         return buf.getvalue()
 
+    template_key = str(template or "standard").strip().lower()
+    if template_key == "detailed":
+        template_key = "standard"
+    include_map_circuit = template_key in itinerary_export._MAP_TEMPLATES
+    _ = include_photos, include_map_circuit
     destination = str(trip.get("destination") or "Trip")
     itinerary = trip_view.build_itinerary(trip)
-    map_vm = trip_view.build_map_view(trip) if include_map_circuit else {"days": [], "pins": []}
-    route_by_day = {int(d.get("day") or 0): d for d in (map_vm.get("days") or [])}
-    pin_by_id = {p.get("id"): p for p in (map_vm.get("pins") or [])}
+    label = "Trip Book" if template_key == "trip_book" else "Standard"
+    story.append(Paragraph(escape(f"{destination} itinerary ({label})"), title_style))
+    story.append(Paragraph(
+        escape(
+            f"From {trip.get('origin') or '—'} · "
+            f"{trip.get('departure_date') or '—'} to {trip.get('return_date') or '—'}"
+        ),
+        muted,
+    ))
+    if include_budgets:
+        total = trip_view.fmt_money(trip.get("total_cost"), trip_view.currency_symbol(trip))
+        story.append(Paragraph(escape(f"Total {total}"), body))
+    story.append(Spacer(1, 8))
 
-    title_labels = {
-        "standard": "Standard",
-        "detailed": "Detailed",
-        "trip_book": "Trip Book",
-        "trip_card": "Trip Card",
-    }
-    story.append(
-        Paragraph(f"{destination} Itinerary ({title_labels[template_key]})", title_style)
-    )
-    summary = (
-        f"From: {trip.get('origin') or '—'} &nbsp;&nbsp; "
-        f"Dates: {trip.get('departure_date') or '—'} to {trip.get('return_date') or '—'} &nbsp;&nbsp; "
-        f"Status: {str(trip.get('status') or 'draft').title()}"
-    )
-    story.append(Paragraph(summary, body))
-    story.append(Spacer(1, 10))
-
-    if template_key == "trip_book":
-        from tripplanner.web.itinerary_trip_book import stay_name, trip_book_readiness
-
-        readiness = trip_book_readiness(trip)
-        stay = stay_name(trip, itinerary)
-        story.append(Paragraph("Contents", h2))
-        story.append(Paragraph(
-            "Trip brief · Daily itinerary · Essentials and help · Travel documents"
-            + (" · Day circuit maps" if include_map_circuit else ""),
-            body,
-        ))
-        badge = str(readiness.get("badge") or "")
-        if badge:
-            story.append(Paragraph(escape(badge), body))
-        else:
-            story.append(
-                Paragraph(
-                    "Document groups on file look ready, or checks are silent for this trip.",
-                    body,
-                )
-            )
-        story.append(Spacer(1, 8))
-        story.append(Paragraph("Trip brief", h2))
-        if stay:
-            story.append(Paragraph(f"Stay: {escape(stay)}", body))
-        prefs = trip.get("preferences_snapshot") or {}
-        style = str(prefs.get("trip_style") or "").strip()
-        if style:
-            story.append(Paragraph(
-                f"Saved trip style: {escape(style.replace('_', ' '))} (preference snapshot).",
-                body,
-            ))
-        story.append(Spacer(1, 8))
-
-    if template_key == "trip_card":
-        rows = [["Day", "Date", "Title", "Highlights"]]
-        for day in itinerary.get("days") or []:
-            stops = [s for s in (day.get("stops") or []) if isinstance(s, dict)]
-            names = [str(s.get("name") or "").strip() for s in stops if s.get("name")]
-            rows.append([
-                str(int(day.get("day") or 0)),
-                str(day.get("date") or ""),
-                Paragraph(escape(str(day.get("title") or "")), body),
-                Paragraph(escape(" · ".join(names[:4])), body),
-            ])
-        if len(rows) > 1:
-            t = Table(rows, repeatRows=1)
-            t.setStyle(TableStyle([
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#fff7ed")),
-                ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#78350f")),
-                ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#fed7aa")),
-                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                ("FONTSIZE", (0, 0), (-1, -1), 9),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-            ]))
-            story.append(t)
-        story.append(Spacer(1, 12))
-
-    for day in ([] if template_key == "trip_card" else (itinerary.get("days") or [])):
+    for day in itinerary.get("days") or []:
         day_num = int(day.get("day") or 0)
-        story.append(Paragraph(f"Day {day_num}: {day.get('title') or ''}", h2))
-        if day.get("date"):
-            story.append(Paragraph(f"Date: {day.get('date')}", body))
+        day_date = itinerary_export.format_export_day_date(str(day.get("date") or ""))
+        story.append(Paragraph(escape(f"Day {day_num}: {day.get('title') or ''}"), h2))
+        if day_date:
+            story.append(Paragraph(escape(day_date), muted))
         if day.get("summary"):
-            story.append(Paragraph(str(day.get("summary")), body))
-
-        route = route_by_day.get(day_num) if include_map_circuit else None
-        maps_url = str(day.get("google_maps_url") or "")
-        if route:
-            stats = route.get("route") or {}
-            names = [str(pin_by_id.get(pid, {}).get("name") or pid) for pid in (route.get("pin_ids") or [])]
-            story.append(Paragraph(
-                "Circuit: " + " -> ".join(names),
-                body,
-            ))
-            story.append(Paragraph(
-                f"Route stats: {stats.get('distance_display') or ''} · {stats.get('duration_display') or ''} · {stats.get('mode') or ''}",
-                body,
-            ))
-            map_source = itinerary_export._static_map_data_uri(
-                route.get("pin_ids") or [], pin_by_id
-            )
-            map_image = _image_from_source(map_source, 170 * mm, 85 * mm) if map_source else None
-            mini_map = _route_drawing(_route_coords(route.get("pin_ids") or []))
-            if map_image is not None:
-                story.append(Spacer(1, 4))
-                story.append(map_image)
-            elif mini_map is not None:
-                story.append(Spacer(1, 4))
-                story.append(mini_map)
-
-        if maps_url:
-            story.append(Spacer(1, 4))
-            story.append(Paragraph(f"Open route: {maps_url}", body))
-            qr_img = _qr_drawing(maps_url)
-            if qr_img is not None:
-                story.append(Spacer(1, 3))
-                story.append(qr_img)
-                story.append(Paragraph("Scan to open this day route in Google Maps.", body))
-
-        rows = [["#", "Place details", "Type / time", "Status", "Photo"]]
-        for i, stop in enumerate(day.get("stops") or [], start=1):
+            story.append(Paragraph(escape(str(day.get("summary"))), body))
+        stops = [s for s in (day.get("stops") or []) if isinstance(s, dict)]
+        labels = itinerary_export._day_map_labels(stops)
+        for index, stop in enumerate(stops):
             name = str(stop.get("name") or "")
-            kind = str(stop.get("kind") or "")
-            place = (
-                places_cache.get_details(name, destination) or {}
-                if name and kind in {"hotel", "attraction", "meal", "restaurant"}
-                else {}
-            )
-            details = [f"<b>{escape(name)}</b>"]
-            address = str(place.get("address") or "")
-            rating = place.get("rating")
-            note = str(stop.get("note") or "")
-            if address:
-                details.append(escape(address))
-            if isinstance(rating, (int, float)):
-                details.append(f"Rating {rating:g}")
-            if note:
-                details.append(escape(note))
-            photo = None
-            flagship_key = name.strip().casefold()
-            if (
-                include_photos
-                and name
-                and kind in {"hotel", "attraction", "meal", "restaurant"}
-                and flagship_key not in seen_photos
-            ):
-                photos = places_cache.get_photos(name, destination, max_photos=1)
-                if photos:
-                    seen_photos.add(flagship_key)
-                    photo = _image_from_source(photos[0], 34 * mm, 23 * mm)
-            rows.append([
-                str(i),
-                Paragraph("<br/>".join(details), body),
-                f"{kind.title()} {str(stop.get('time') or '')}".strip(),
-                "Booked" if stop.get("booked") else "Pending",
-                photo or "",
-            ])
-        if len(rows) > 1:
-            t = Table(rows, repeatRows=1)
-            t.setStyle(TableStyle([
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f1f5f9")),
-                ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#334155")),
-                ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#cbd5e1")),
-                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
-                ("FONTSIZE", (0, 0), (-1, -1), 9),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-            ]))
-            story.append(Spacer(1, 6))
-            story.append(t)
-        story.append(Spacer(1, 12))
+            time = str(stop.get("time") or "")
+            marker = labels[index]
+            duration = itinerary_export._duration_text(stop)
+            hours = str(stop.get("opening_hours") or "").strip()
+            note = str(stop.get("note") or "").strip()
+            bits = [bit for bit in (marker, time, name, duration, hours, note) if bit]
+            story.append(Paragraph(escape(" · ".join(bits)), body))
+            story.append(Spacer(1, 3))
+        story.append(Spacer(1, 8 * mm))
 
-    if template_key in {"detailed", "trip_book"}:
-        weather = trip_view.build_weather(trip)
-        cost_breakdown = trip.get("cost_breakdown")
-        symbol = trip_view.currency_symbol(trip)
-        essential_lines: list[str] = []
-        if weather and weather.get("days"):
-            highs = [d["high_c"] for d in weather["days"] if d.get("high_c") is not None]
-            lows = [d["low_c"] for d in weather["days"] if d.get("low_c") is not None]
-            if highs and lows:
-                essential_lines.append(
-                    f"Weather: {min(lows):.0f}–{max(highs):.0f}°C · {weather.get('source_label') or ''}"
-                )
-            packing = "; ".join(weather.get("packing_advice") or [])
-            if packing:
-                essential_lines.append(f"Packing: {packing}")
-        if isinstance(cost_breakdown, dict) and cost_breakdown:
-            items = " · ".join(
-                f"{str(key).replace('_', ' ').title()} {trip_view.fmt_money(value, symbol)}"
-                for key, value in cost_breakdown.items()
-                if isinstance(value, (int, float))
-            )
-            if items:
-                essential_lines.append(f"Budget breakdown: {items}")
-        if essential_lines:
-            heading = "Essentials and help" if template_key == "trip_book" else "Trip essentials"
-            story.append(Paragraph(heading, h2))
-            for line in essential_lines:
-                story.append(Paragraph(escape(line), body))
-            story.append(Spacer(1, 12))
-
-    if template_key == "trip_book":
-        from tripplanner.web import travel_documents
-        from tripplanner.web.itinerary_trip_book import stay_name, trip_book_readiness
-
-        readiness = trip_book_readiness(trip)
-        stay = stay_name(trip, itinerary)
-        if stay:
-            story.append(Paragraph(f"Hotel: {escape(stay)}", body))
-        travelers = str(trip.get("travelers") or "").strip()
-        if travelers:
-            story.append(Paragraph(f"Travelling party: {escape(travelers)}", body))
-        story.append(Paragraph("Confirmations and entry", h2))
-        trip_id = str(trip.get("trip_id") or "")
-        records = [
-            record
-            for record in travel_documents.list_documents(scope=None)
-            if str(record.get("scope") or "traveler") != "trip"
-            or str(record.get("trip_id") or "") == trip_id
-        ]
-        doc_rows = [["Document", "Traveller", "Notes"]]
-        for item in trip.get("selected_flights") or []:
-            if isinstance(item, dict):
-                label = str(item.get("airline") or item.get("name") or "Flight")
-            else:
-                label = str(item)
-            doc_rows.append(["Flight", label, "Selected"])
-        for record in records:
-            doc_type = str(record.get("type") or "")
-            label = travel_documents.TYPE_LABELS.get(
-                doc_type, doc_type.title() or "Document"
-            )
-            holder = str(record.get("traveller_name") or "").strip() or "Traveller"
-            fields = record.get("fields") or {}
-            summary_fields = itinerary_export._DOCUMENT_SUMMARY_FIELDS.get(doc_type, ())
-            summary = " · ".join(str(fields[key]) for key in summary_fields if fields.get(key))
-            doc_rows.append([label, holder, summary or "On file"])
-        for check in readiness.get("checks") or []:
-            if check.get("severity") in {"blocker", "warning"}:
-                doc_rows.append([
-                    "Action needed",
-                    str(check.get("title") or ""),
-                    str(check.get("detail") or ""),
-                ])
-        if len(doc_rows) > 1:
-            t = Table(doc_rows, repeatRows=1)
-            t.setStyle(TableStyle([
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f1f5f9")),
-                ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#cbd5e1")),
-                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                ("FONTSIZE", (0, 0), (-1, -1), 9),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-            ]))
-            story.append(t)
-        story.append(Paragraph("Reference numbers are kept out of this file by design.", body))
-
+    story.append(Paragraph(
+        "This PDF fallback matches the preview structure when a browser printer is unavailable.",
+        muted,
+    ))
     doc.build(story)
     return buf.getvalue()
-

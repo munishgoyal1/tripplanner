@@ -37,25 +37,6 @@ def _circuit_labels(pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]) ->
     return labels
 
 
-def _booking_state(stop: dict[str, Any]) -> str:
-    if stop.get("booked"):
-        return "Booked"
-    if "free" in str(stop.get("note") or "").casefold():
-        return "Free entry"
-    return "Pending"
-
-
-def _travel_line(stop: dict[str, Any]) -> str:
-    travel = stop.get("travel_from_previous") or {}
-    if not isinstance(travel, dict):
-        return ""
-    mode = str(travel.get("mode") or "").strip()
-    duration = str(travel.get("duration_display") or "").strip()
-    if mode and duration:
-        return f"{mode} · {duration}"
-    return mode or duration
-
-
 def _selection_label(item: Any, fallback: str) -> str:
     if isinstance(item, str):
         return item.strip() or fallback
@@ -174,8 +155,9 @@ def _brief(
         ("From", origin or "—"),
         ("Stay", stay or "—"),
         ("Travelers", travelers or "—"),
-        ("Budget", total_display or "—"),
     ]
+    if total_display:
+        facts.append(("Budget", total_display))
     fact_html = "".join(
         f"<div><div class='k'>{_e(label)}</div><div class='v'>{_e(value)}</div></div>"
         for label, value in facts
@@ -234,52 +216,26 @@ def _stop_row(
     stop: dict[str, Any],
     *,
     marker: str,
+    is_first: bool,
+    is_last: bool,
+    circuit_return: bool,
     include_photos: bool,
+    include_budgets: bool,
     destination: str,
     seen_photos: set[str],
 ) -> str:
-    name = str(stop.get("name") or "")
-    kind = str(stop.get("kind") or "other")
-    time = str(stop.get("time") or "")
-    arrival = str(stop.get("arrival_time") or "")
-    note = str(stop.get("note") or "")
-    ref = str(stop.get("booking_ref") or "").strip()
-    travel = _travel_line(stop)
-    booked = _booking_state(stop)
-    photo_html = ""
-    place_meta_html = ""
-    if name and kind in {"hotel", "attraction", "meal", "restaurant"}:
-        place = places_cache.get_details(name, destination) or {}
-        address = str(place.get("address") or "")
-        rating = place.get("rating")
-        details = [address] if address else []
-        if isinstance(rating, (int, float)):
-            details.append(f"Rating {rating:g}")
-        if details:
-            place_meta_html = f"<div class='place-meta'>{_e(' · '.join(details))}</div>"
-        flagship_key = name.strip().casefold()
-        if include_photos and flagship_key not in seen_photos:
-            photos = places_cache.get_photos(name, destination, max_photos=1)
-            if photos:
-                seen_photos.add(flagship_key)
-                photo_html = (
-                    f"<div class='stop-photo-wrap'><img class='stop-photo' src='{_e(photos[0])}' alt='{_e(name)}' /></div>"
-                )
-    end_html = f"<span class='to'>to {_e(arrival)}</span>" if arrival and arrival != time else ""
-    hotel_class = " hotel" if kind == "hotel" else ""
-    ref_html = f"<div class='ref'>{_e(ref)}</div>" if ref else ""
-    travel_html = f"<div class='travel'>{_e(travel)}</div>" if travel else ""
-    note_html = f"<div class='note'>{_e(note)}</div>" if note else ""
-    return (
-        f"<li class='stop layered{hotel_class}'>"
-        "<div class='stop-main'>"
-        f"<div class='stop-line'><span class='ord'>{_e(marker)}</span>"
-        f"<span class='when'><strong>{_e(time or '—')}</strong>{end_html}</span>"
-        f"<span class='name'>{_e(name)}</span>"
-        f"<span class='state'>{_e(booked)}</span></div>"
-        f"{place_meta_html}{travel_html}{note_html}{ref_html}"
-        "</div>"
-        f"{photo_html}</li>"
+    from tripplanner.web import itinerary_export
+
+    return itinerary_export.export_stop_html(
+        stop,
+        marker=marker,
+        is_first=is_first,
+        is_last=is_last,
+        circuit_return=circuit_return,
+        include_photos=include_photos,
+        include_budgets=include_budgets,
+        destination=destination,
+        seen_photos=seen_photos,
     )
 
 
@@ -288,11 +244,14 @@ def _day_sections(
     *,
     include_photos: bool,
     include_map_circuit: bool,
+    include_budgets: bool,
     pin_by_id: dict[str, dict[str, Any]],
     route_by_day: dict[int, dict[str, Any]],
     destination: str,
     seen_photos: set[str],
 ) -> str:
+    from tripplanner.web import itinerary_export
+
     blocks: list[str] = []
     for day in itinerary.get("days") or []:
         day_num = int(day.get("day") or 0)
@@ -301,19 +260,38 @@ def _day_sections(
         schedule = day.get("schedule") or {}
         weather = day.get("weather") or {}
         visit = 0
+        stops = [s for s in (day.get("stops") or []) if isinstance(s, dict)]
+        last = stops[-1] if stops else None
+        circuit_return_index = (
+            len(stops) - 1
+            if last and str(last.get("kind") or "") == "hotel" and any(
+                str(item.get("kind") or "") == "hotel"
+                and str(item.get("name") or "") == str(last.get("name") or "")
+                for item in stops[:-1]
+            )
+            else -1
+        )
         stops_html: list[str] = []
-        for stop in day.get("stops") or []:
+        for index, stop in enumerate(stops):
             kind = str(stop.get("kind") or "")
             if kind == "hotel":
                 marker = "H"
-            else:
+            elif kind == "airport":
+                marker = "A"
+            elif kind in {"attraction", "meal", "restaurant"}:
                 visit += 1
                 marker = str(visit)
+            else:
+                marker = ""
             stops_html.append(
                 _stop_row(
                     stop,
                     marker=marker,
+                    is_first=index == 0,
+                    is_last=index == len(stops) - 1,
+                    circuit_return=index == circuit_return_index,
                     include_photos=include_photos,
+                    include_budgets=include_budgets,
                     destination=destination,
                     seen_photos=seen_photos,
                 )
@@ -376,7 +354,7 @@ def _day_sections(
         spend_bits = [
             str(stop.get("cost_display") or "").strip()
             for stop in (day.get("stops") or [])
-            if str(stop.get("cost_display") or "").strip()
+            if include_budgets and str(stop.get("cost_display") or "").strip()
         ]
         footer_bits = []
         if weather_bits:
@@ -410,7 +388,9 @@ def _day_sections(
             """.format(
                 day_num=day_num,
                 title=_e(day.get("title") or f"Day {day_num}"),
-                date=_e(day.get("date") or ""),
+                date=_e(
+                    itinerary_export.format_export_day_date(str(day.get("date") or ""))
+                ),
                 timing=f" · {_e(timing)}" if timing else "",
                 summary=(
                     f"<p class='summary'>{_e(day.get('summary') or '')}</p>"
@@ -425,10 +405,16 @@ def _day_sections(
     return "<div id='daily-plan'>" + "".join(blocks) + "</div>"
 
 
-def _essentials(trip: dict[str, Any], itinerary: dict[str, Any], stay: str) -> str:
+def _essentials(
+    trip: dict[str, Any],
+    itinerary: dict[str, Any],
+    stay: str,
+    *,
+    include_budgets: bool,
+) -> str:
     from tripplanner.web import itinerary_export
 
-    weather_budget = itinerary_export._essentials_section(trip)
+    weather_budget = itinerary_export._essentials_section(trip, include_budgets=include_budgets)
     help_rows: list[str] = []
     if stay:
         place = places_cache.get_details(stay, str(trip.get("destination") or "")) or {}
@@ -573,6 +559,7 @@ def render_layered_trip_book(
     *,
     include_photos: bool,
     include_map_circuit: bool,
+    include_budgets: bool,
     auto_print: bool,
     share_url: str,
     itinerary: dict[str, Any],
@@ -612,12 +599,13 @@ def render_layered_trip_book(
         itinerary,
         include_photos=include_photos,
         include_map_circuit=include_map_circuit,
+        include_budgets=include_budgets,
         pin_by_id=pin_by_id,
         route_by_day=route_by_day,
         destination=destination,
         seen_photos=seen_photos,
     )
-    essentials = _essentials(trip, itinerary, stay)
+    essentials = _essentials(trip, itinerary, stay, include_budgets=include_budgets)
     documents = _documents(trip, readiness)
     guide = _guide(itinerary)
     decisions = itinerary_export._decisions_section(trip)
@@ -685,17 +673,23 @@ def render_layered_trip_book(
     .qr {{ width:54px; height:54px; border-radius:8px; border:1px solid #bae6fd; background:#fff; }}
     .qr-cap {{ color:#0369a1; font-size:11px; }}
     .stops {{ margin:0; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:8px; }}
-    .stop {{ display:flex; gap:12px; justify-content:space-between; border-bottom:1px solid var(--line); padding:8px 0; }}
+    .stop {{ display:flex; flex-direction:column; gap:4px; border-bottom:1px solid var(--line); padding:8px 0; }}
+    .stop-card {{ display:flex; gap:12px; justify-content:space-between; }}
     .stop.hotel .ord {{ background:#334155; }}
     .stop-main {{ min-width:0; flex:1; }}
-    .stop-line {{ display:flex; align-items:baseline; gap:8px; }}
+    .stop-line {{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }}
     .ord {{ display:inline-grid; place-items:center; width:22px; height:22px; border-radius:999px; background:var(--accent); color:#fff; font-size:11px; font-weight:700; }}
-    .when {{ min-width:4.5rem; font-size:12px; }}
-    .when .to {{ display:block; color:var(--muted); font-weight:400; }}
+    .ord.ghost {{ background:#e2e8f0; color:transparent; }}
+    .when {{ min-width:4.5rem; font-size:12px; color:var(--muted); }}
     .name {{ font-weight:700; flex:1; }}
-    .state {{ font-size:11px; font-weight:700; color:#047857; }}
-    .place-meta, .travel, .note, .ref {{ margin-top:4px; font-size:12px; color:#475569; }}
-    .travel {{ color:#0f766e; }}
+    .state {{ margin-left:auto; font-size:11px; font-weight:700; color:#92400e; }}
+    .meta {{ margin-top:4px; color:var(--muted); font-size:12px; }}
+    .place-meta, .note, .ref {{ margin-top:4px; font-size:12px; color:#475569; }}
+    .travel {{ margin:0 0 2px 4px; color:#0f766e; font-size:12px; font-weight:600; }}
+    .travel-extra {{ margin-top:2px; font-weight:400; color:var(--muted); }}
+    .concern {{ margin-top:4px; color:#be123c; font-size:12px; font-weight:600; }}
+    .chips {{ margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }}
+    .chip {{ display:inline-block; border:1px solid var(--line); border-radius:999px; padding:2px 8px; font-size:11px; color:#334155; background:#fff; }}
     .stop-photo-wrap {{ width:120px; flex-shrink:0; }}
     .stop-photo {{ width:120px; height:84px; object-fit:cover; border-radius:8px; border:1px solid var(--line); }}
     .day-foot {{ margin-top:10px; color:var(--muted); font-size:12px; }}
@@ -737,7 +731,7 @@ def render_layered_trip_book(
     {documents}
     {guide}
     {decisions}
-    <p class='foot'>Generated by AI Trip Planner (Layered Trip Book). Tip: Use browser Print → Save as PDF for a carry-along copy.</p>
+    <p class='foot'>Generated by AI Trip Planner (Layered Trip Book). Preview and PDF share this layout.</p>
     {share_section}
   </div>
   {auto}

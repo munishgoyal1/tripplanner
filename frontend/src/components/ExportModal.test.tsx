@@ -10,9 +10,26 @@ vi.mock("../api", () => ({
   tripExportUrl: vi.fn(() => "/api/trip/export"),
 }));
 
-describe("ExportModal email delivery", () => {
+describe("ExportModal", () => {
   beforeEach(() => {
     emailTripExportMock.mockReset();
+  });
+
+  it("offers Standard and Trip Book with budget and photo checkboxes off", () => {
+    render(<ExportModal onClose={vi.fn()} />);
+
+    expect(screen.getByText("Standard")).toBeInTheDocument();
+    expect(screen.getByText("Trip Book")).toBeInTheDocument();
+    expect(screen.queryByText("Detailed+")).not.toBeInTheDocument();
+    expect(screen.queryByText("Trip Card")).not.toBeInTheDocument();
+    expect(screen.queryByText("Calendar+")).not.toBeInTheDocument();
+    expect(screen.queryByText("Print / Save PDF")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Preview" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Download PDF" })).toBeInTheDocument();
+    const budgets = screen.getByRole("checkbox", { name: "Show budgets" }) as HTMLInputElement;
+    const photos = screen.getByRole("checkbox", { name: "Include 1 photo per stop" }) as HTMLInputElement;
+    expect(budgets.checked).toBe(false);
+    expect(photos.checked).toBe(false);
   });
 
   it("reuses the operation id when an uncertain send is retried", async () => {

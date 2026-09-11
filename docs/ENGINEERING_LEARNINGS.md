@@ -1767,3 +1767,13 @@ the outcome.
 - Several local stacks may share the recorder spool. Delivery is idempotent, so a
   missing file after enumeration is a normal race to ignore rather than a degraded
   recorder condition.
+
+## 2026-09-11 - Export HTML Is The Packet, PDF Is A Print Of It
+
+- A second ReportLab table layout will drift from preview the moment stop facts
+  grow. Travelers notice that as "the old PDF." Generate PDF from the HTML packet
+  (browser print-to-PDF) and keep any library fallback on the same day/stop
+  structure rather than a parallel table design.
+- Download actions that both mean "make a PDF" (preview print vs download) make
+  the dialog feel unfinished. Preview is for reading; Download PDF is the file;
+  calendar stays outside the format picker.

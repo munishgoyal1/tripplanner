@@ -3506,6 +3506,15 @@ numbers are omitted unless already on the trip. Identity numbers stay out of
 the printable file. Extra full-page trip maps stay off by default (Lab day-inset
 setting). Promotion remains a separate owner step.
 
+[2026-09-11] Two itinerary download packets
+Keep Trip Book and rename Detailed+ to Standard. Drop the extra formats from the
+download dialog. Calendar stays on its own menu action. Preview and PDF share the
+HTML packet; email attaches that PDF plus a trip URL. Budgets and one photo per
+stop are optional and off by default; day circuits stay on. Stop rows carry the
+same timing, hours, and notes as the itinerary panel. Map circuits use numbered
+stops with curved connectors when legs sit close together.
+
+
 
 
 

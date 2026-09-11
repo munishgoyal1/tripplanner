@@ -156,19 +156,24 @@ def test_export_renders_complete_day_circuit(monkeypatch: pytest.MonkeyPatch) ->
 
 def test_pdf_embeds_map_place_photo_and_details(monkeypatch: pytest.MonkeyPatch) -> None:
     photo_calls: list[tuple[str, str]] = []
+    monkeypatch.setattr(itinerary_pdf, "html_to_pdf_bytes", lambda _html: None)
     monkeypatch.setattr(
-        itinerary_pdf.trip_view,
+        itinerary_export.trip_view,
         "build_itinerary",
         lambda _trip: {
             "days": [
                 {
                     "day": 1,
                     "title": "Paris food",
+                    "date": "2026-08-24",
                     "google_maps_url": "https://maps.example/day-1",
                     "stops": [
                         {
                             "name": "Louvre Cafe",
                             "kind": "meal",
+                            "time": "12:30",
+                            "duration_min": 75,
+                            "opening_hours": "11:00–22:00",
                             "note": "Lunch near the museum",
                         }
                     ],
@@ -177,41 +182,54 @@ def test_pdf_embeds_map_place_photo_and_details(monkeypatch: pytest.MonkeyPatch)
         },
     )
     monkeypatch.setattr(
-        itinerary_pdf.trip_view,
+        itinerary_export.trip_view,
         "build_map_view",
         lambda _trip: {
             "pins": [
-                {"id": "a", "name": "Louvre Cafe", "lat": 48.8606, "lng": 2.3376},
-                {"id": "b", "name": "Hotel", "lat": 48.8584, "lng": 2.2945},
+                {"id": "a", "name": "Louvre Cafe", "kind": "meal", "lat": 48.8606, "lng": 2.3376},
+                {"id": "b", "name": "Hotel", "kind": "hotel", "lat": 48.8584, "lng": 2.2945},
             ],
             "days": [{"day": 1, "pin_ids": ["a", "b"], "route": {}}],
         },
     )
     monkeypatch.setattr(
-        itinerary_pdf.itinerary_export,
+        itinerary_export,
         "_static_map_data_uri",
         lambda _pin_ids, _pins: _PNG_DATA_URI,
     )
     monkeypatch.setattr(
-        itinerary_pdf.places_cache,
-        "get_summary",
+        itinerary_export.places_cache,
+        "get_details",
         lambda _name, _destination: {"address": "1 Rue de Paris", "rating": 4.7},
     )
 
-    def photos(name: str, destination: str, max_photos: int) -> list[str]:
+    def photos(name: str, destination: str, max_photos: int = 1) -> list[str]:
         photo_calls.append((name, destination))
         return [_PNG_DATA_URI]
 
-    monkeypatch.setattr(itinerary_pdf.places_cache, "get_photos", photos)
+    monkeypatch.setattr(itinerary_export.places_cache, "get_photos", photos)
 
     pdf = itinerary_pdf.build_itinerary_pdf_bytes(
         {"destination": "Paris"},
         include_photos=True,
         include_map_circuit=True,
+        template="standard",
     )
 
     assert pdf.startswith(b"%PDF")
     assert photo_calls == [("Louvre Cafe", "Paris")]
+    html = itinerary_export.build_export_html(
+        {"destination": "Paris"},
+        include_photos=True,
+        include_map_circuit=True,
+        template="standard",
+    )
+    assert "Monday" in html
+    assert "24 August 2026" in html
+    assert "1 hr 15 min visit" in html
+    assert "11:00–22:00" in html
+    assert "Lunch near the museum" in html
+    assert "Daily map circuit" in html
 
 
 def test_layered_trip_book_orders_control_then_days_then_appendices(
@@ -402,3 +420,4 @@ def test_detailed_export_does_not_gain_trip_book_contents(
     )
     assert "id='contents'" not in html
     assert "Layered Trip Book" not in html
+    assert "Standard" in html

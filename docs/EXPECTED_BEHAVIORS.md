@@ -723,18 +723,21 @@ Selecting another trip clears the filters.
 **Trigger:** Choose Trip Book in export preview, print, PDF, or email.
 
 **Expected:** The packet opens with contents and a document-readiness summary,
-then a trip brief and executable day spreads. Optional numbered day-circuit
-insets match agenda order, with hotel endpoints marked `H`. Essentials,
-confirmations, and entry documents follow the days. Optional place context is
-last and names its source. Missing paperwork is visible before the appendix.
-Emergency numbers are omitted unless they already exist on the trip. Identity
-numbers stay out of the printable file. Standard and detailed templates keep
-their existing order.
+then a trip brief and executable day spreads. Numbered day-circuit insets match
+agenda order, with hotel endpoints marked `H`. Essentials, confirmations, and
+entry documents follow the days. Optional place context is last and names its
+source. Missing paperwork is visible before the appendix. Emergency numbers are
+omitted unless they already exist on the trip. Identity numbers stay out of the
+printable file. Standard (including the older `detailed` alias) keeps itinerary
+panel facts without Trip Book contents. PDF download uses the same HTML layout
+as preview. Email includes the PDF and a trip URL.
 
 **Executable proof:**
 
 - [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_layered_trip_book_orders_control_then_days_then_appendices`
 - [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_detailed_export_does_not_gain_trip_book_contents`
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_pdf_embeds_map_place_photo_and_details`
+- [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `offers Standard and Trip Book with budget and photo checkboxes off`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 
