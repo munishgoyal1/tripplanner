@@ -1,4 +1,23 @@
-"""Turn-scoped ceilings for paid Google Places requests."""
+"""Authorization scope for paid Google Places requests.
+
+This is an **authorization** boundary, not a budget. A paid Places call is only
+permitted while execution is inside a named ``user_interaction`` or
+``corpus_generation`` scope, which reusable view builders, audits, tests,
+issue-fix validation and background warming cannot create. That gate is what
+stopped the 2026-08-27 incident pattern (unbounded cold-cache enrichment across
+concurrent sandbox lanes, each with an isolated cache) from recurring, and it
+stays.
+
+What this module no longer does is *cap* how many calls an authorized scope may
+make. Per-scope counters (three text searches, one review-details, three photos)
+were a proxy for money that throttled quality on legitimately complex trips --
+a multi-city itinerary genuinely needs more lookups than a weekend break. Spend
+is now bounded by the measured INR ceiling in ``cost_ledger.py``, and per-trip
+call counts are recorded there so an unoptimized flow shows up as a dashboard
+anomaly instead of as a silently truncated itinerary.
+
+Counts are still tracked per scope, purely as telemetry.
+"""
 
 from __future__ import annotations
 
@@ -9,8 +28,6 @@ from dataclasses import dataclass, field
 from threading import Lock
 from typing import Literal
 
-from tripplanner.config import get_settings
-
 RequestKind = Literal["text_search", "review_details", "photo"]
 PaidProviderPurpose = Literal["user_interaction", "corpus_generation"]
 
@@ -18,16 +35,14 @@ PaidProviderPurpose = Literal["user_interaction", "corpus_generation"]
 @dataclass
 class PlacesBudget:
     purpose: PaidProviderPurpose
-    limits: dict[RequestKind, int]
     used: dict[RequestKind, int] = field(default_factory=dict)
     lock: Lock = field(default_factory=Lock)
 
     def consume(self, kind: RequestKind) -> bool:
+        """Record one authorized paid call. Always permits -- the scope's
+        existence is the permission; the count is observational."""
         with self.lock:
-            used = self.used.get(kind, 0)
-            if used >= self.limits[kind]:
-                return False
-            self.used[kind] = used + 1
+            self.used[kind] = self.used.get(kind, 0) + 1
             return True
 
 
@@ -42,15 +57,7 @@ def places_budget_scope(purpose: PaidProviderPurpose) -> Iterator[PlacesBudget]:
     if active is not None:
         yield active
         return
-    settings = get_settings()
-    budget = PlacesBudget(
-        purpose=purpose,
-        limits={
-            "text_search": settings.google_places_max_text_searches_per_trip,
-            "review_details": settings.google_places_max_review_details_per_trip,
-            "photo": settings.google_places_max_photos_per_trip,
-        }
-    )
+    budget = PlacesBudget(purpose=purpose)
     token = _BUDGET.set(budget)
     try:
         yield budget
@@ -79,5 +86,6 @@ def use_budget(budget: PlacesBudget | None) -> Iterator[None]:
 
 
 def consume(kind: RequestKind) -> bool:
+    """``True`` when a paid call of ``kind`` is authorized here, else ``False``."""
     budget = _BUDGET.get()
     return budget is not None and budget.consume(kind)

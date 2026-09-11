@@ -10,7 +10,6 @@ from typing import Any, Literal, TypeAlias
 
 from langchain_core.messages import BaseMessage, HumanMessage
 
-from tripplanner.config import get_settings
 from tripplanner.tools.trip_planner import (
     core_planning_completion_gaps,
     planning_completion_gaps,
@@ -29,13 +28,23 @@ COMPLETION_RESEARCH_TOOLS = frozenset({
     "check_visa_requirements",
     "find_local_events",
 })
-# Sourced from Settings (see config.py "Agent tool-call budgets") so these
-# turn-level ceilings are tweakable from the same config as the Google Places
-# per-trip counters, without editing code.
-_settings = get_settings()
-MAX_POST_RESEARCH_UPDATES = _settings.max_post_research_updates
-MAX_INITIAL_ITINERARY_UPDATES = _settings.max_initial_itinerary_updates
-MAX_TOOL_PHASES_PER_TURN = _settings.max_tool_phases_per_turn
+# Liveness guards, NOT cost controls, and deliberately not operator-tunable
+# config. Spend is bounded by the INR ceiling in cost_ledger.py, which measures
+# what a turn actually costs; the agent is free to make whatever calls a quality
+# itinerary needs. These three exist only to stop a loop that would otherwise
+# never terminate, so they are set far above any legitimate itinerary (a cold
+# multi-city build spends roughly 18 tool phases) and should never bind on
+# quality. A flow that approaches them is a bug to investigate via the per-trip
+# anomaly flag in the operations dashboard, not a budget to retune here.
+MAX_TOOL_PHASES_PER_TURN = 200
+# Bounds retries of a *failing* update_trip_plan (see the Error: branches below).
+# Without it a persistently failing save retries until the turn is killed.
+MAX_INITIAL_ITINERARY_UPDATES = 8
+# One post-research gap repair, not a budget: this is a product decision about
+# not churning a saved itinerary. A second forced rewrite re-shuffled a plan the
+# traveller had already seen, so the agent gets one pass to fill gaps with the
+# research it has and then finishes with what it has.
+MAX_POST_RESEARCH_UPDATES = 1
 
 ForcedReason: TypeAlias = Literal[
     "tool_phase_budget",

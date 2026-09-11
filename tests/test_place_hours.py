@@ -24,8 +24,7 @@ def _configured(monkeypatch):
             google_places_hours_cache_ttl_sec=7200,
         ),
     )
-    with places_budget_scope("user_interaction") as budget:
-        budget.limits["review_details"] = 10
+    with places_budget_scope("user_interaction"):
         yield
     place_hours._PLACE_HOURS_CACHE.clear()
 

@@ -1,8 +1,7 @@
-"""Per-user monthly LLM cost cap.
+"""Per-user monthly LLM token and cost accounting.
 
-Tracks prompt + completion tokens per `(user_id, YYYYMM)` and refuses new
-turns once the user's running cost crosses ``MONTHLY_LLM_COST_CAP_USD`` (env,
-default $20). Storage:
+Tracks prompt + completion tokens per `(user_id, YYYYMM)` so the operations
+dashboard can show what one user's model calls cost. Storage:
 
 - Hosted (`storage_cosmos.is_enabled()`): doc id ``usage_<YYYYMM>`` in the
   ``users`` container, partition ``/user_id``.
@@ -10,7 +9,14 @@ default $20). Storage:
 
 Pricing uses the versioned Azure OpenAI catalog in
 ``validation.harness.pricing``; unknown models fall back to that catalog's
-default so we never report zero cost.
+default so we never report zero cost. Amounts here are **USD**, matching that
+catalog -- this module reports, it does not enforce.
+
+Enforcement lives in ``cost_ledger.py``, which caps environment-wide spend in
+**INR** across Azure and Google together. The per-user ``MONTHLY_LLM_COST_CAP_USD``
+this module used to enforce was retired with the other proxy limits: it was the
+wrong currency for the owner's budget, the wrong scope (one user, not the
+environment), and covered only Azure.
 
 The module is intentionally side-effect-free at import time. ``record_usage``
 is what actually persists; everything else just reads.
@@ -25,7 +31,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from tripplanner import limits_config
 from tripplanner.observability import app_event
 from tripplanner.validation.harness.pricing import azure_openai_rate
 
@@ -49,11 +54,6 @@ def cost_for(model: str, prompt_tokens: int, completion_tokens: int) -> float:
         (prompt_tokens / 1_000_000.0) * rate.input_per_million_usd
         + (completion_tokens / 1_000_000.0) * rate.output_per_million_usd
     )
-
-
-def get_cap_usd() -> float:
-    """Read the monthly cap from env. Default 20.0; ``<= 0`` disables the cap."""
-    return limits_config.monthly_llm_cost_cap_usd()
 
 
 def _local_dir() -> Path:
@@ -156,29 +156,6 @@ def record_usage(
         month_cost_usd=doc["cost_usd"],
     )
     return doc
-
-
-def is_over_cap(user_id: str) -> tuple[bool, dict[str, Any]]:
-    """Return ``(over, usage_doc)``. Cap of ``<= 0`` disables the check."""
-    cap = get_cap_usd()
-    usage = get_usage(user_id)
-    if cap <= 0:
-        return False, usage
-    over = float(usage.get("cost_usd", 0.0)) >= cap
-    return over, usage
-
-
-def cap_message(usage: dict[str, Any]) -> str:
-    """Polite refusal text shown when the user trips the cap."""
-    cap = get_cap_usd()
-    spent = float(usage.get("cost_usd", 0.0))
-    month = usage.get("month", _month_key())
-    return (
-        f"You've reached this month's planning budget "
-        f"(${spent:.2f} of ${cap:.2f} for {month}). "
-        "New requests will resume next month — your saved trips and "
-        "preferences are untouched."
-    )
 
 
 def clear_usage(user_id: str) -> int:

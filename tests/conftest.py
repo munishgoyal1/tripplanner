@@ -34,6 +34,23 @@ def _isolate_local_preferences(
 
 
 @pytest.fixture(autouse=True)
+def _isolate_cost_ledger(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Give every test its own spend ledger.
+
+    Two reasons, both load-bearing. The ledger is durable and environment-wide by
+    design, so without this the suite would accumulate spend in the developer's
+    real ``~/.tripplanner`` ledger and eventually refuse their own chat turns.
+    And within one run the accumulation is order-dependent: a test that merely
+    posts to /chat starts getting 429s once earlier tests have spent the daily
+    ceiling, which surfaces as a baffling failure far from its cause.
+
+    Tests that exercise the ceiling itself set their own ``COST_CEILING_INR_*``
+    values on top of this.
+    """
+    monkeypatch.setenv("TRIPPLANNER_HOME", str(tmp_path / "tripplanner-home"))
+
+
+@pytest.fixture(autouse=True)
 def _force_local_storage(monkeypatch: pytest.MonkeyPatch) -> None:
     from tripplanner import storage_cosmos
     from tripplanner.web import places_cache

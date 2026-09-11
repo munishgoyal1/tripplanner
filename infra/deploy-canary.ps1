@@ -242,18 +242,13 @@ if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
 Write-Host "✓ Step 4: Updating Container App image to $ImageTag..."
 $stageName = "Container App rollout"
 $stageTimer = Start-DeploymentTimer
+$limitEnvArgs = Get-RuntimeLimitEnvArgs -ConfigFile $ConfigFile
+Write-Host "  Pushing $($limitEnvArgs.Count) runtime limits from $ConfigFile"
 az containerapp update `
     --resource-group $canaryRG `
     --name $deployment.containerAppName `
     --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
-    --set-env-vars `
-        "OAUTH_REDIRECT_BASE=$OAuthRedirectBase" `
-        "CHAT_NEW_TRIP_LIMIT_DAILY=$env:CHAT_NEW_TRIP_LIMIT_DAILY" `
-        "CHAT_EXISTING_TRIP_TURN_LIMIT_DAILY=$env:CHAT_EXISTING_TRIP_TURN_LIMIT_DAILY" `
-        "CHAT_NEW_TRIP_LIMIT_WEEKLY=$env:CHAT_NEW_TRIP_LIMIT_WEEKLY" `
-        "CHAT_EXISTING_TRIP_TURN_LIMIT_WEEKLY=$env:CHAT_EXISTING_TRIP_TURN_LIMIT_WEEKLY" `
-        "CHAT_NEW_TRIP_LIMIT_LIFETIME=$env:CHAT_NEW_TRIP_LIMIT_LIFETIME" `
-        "CHAT_EXISTING_TRIP_TURN_LIMIT_LIFETIME=$env:CHAT_EXISTING_TRIP_TURN_LIMIT_LIFETIME" `
+    --set-env-vars "OAUTH_REDIRECT_BASE=$OAuthRedirectBase" @limitEnvArgs `
     -o none
 if ($LASTEXITCODE -ne 0) {
     throw "Container App image update failed."

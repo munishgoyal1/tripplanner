@@ -293,40 +293,40 @@ def _completed_chat_request(request_id: str | None) -> dict[str, str] | None:
     return chat_store.completed_request(request_id)
 
 
-async def _reserve_conversation(req: ChatRequest, user_id: str, history: list[BaseMessage]) -> None:
-    from tripplanner import conversation_limits
+async def _reserve_cost(req: ChatRequest, request_id: str) -> None:
+    """Hold this turn's pessimistic INR estimate against the spend ceiling.
+
+    Keyed by the request id, which is also the interaction id, so the hold is
+    reconciled to actual spend when the turn's usage batch flushes without
+    anything being threaded through the turn coordinator.
+    """
+    from tripplanner import cost_ledger
     from tripplanner.tools.trip_planner import load_active_trip_dict
 
     active_trip = await asyncio.to_thread(load_active_trip_dict) or {}
-    category = conversation_limits.classify_conversation(history, req.message, active_trip)
+    category = "trip_update" if str(active_trip.get("destination") or "").strip() else "new_trip"
     await asyncio.to_thread(
-        conversation_limits.reserve,
-        category,
-        user_id=user_id,
-        request_id=req.request_id,
+        cost_ledger.reserve, category, interaction_id=request_id or req.request_id or ""
     )
 
 
-def _conversation_limit_response(exc: BaseException) -> JSONResponse:
-    from tripplanner.conversation_limits import ConversationLimitError
+def _cost_ceiling_response(exc: BaseException) -> JSONResponse:
+    from tripplanner.cost_ledger import CostCeilingError
 
-    if isinstance(exc, ConversationLimitError):
+    if isinstance(exc, CostCeilingError):
         detail = exc.as_detail()
-        reset = (
-            f" It resets at {exc.resets_at}."
-            if exc.resets_at
-            else " It does not reset automatically."
-        )
         detail["message"] = (
-            "This environment has reached its conversation planning limit."
-            f"{reset} Saved trips and preferences are unchanged."
+            f"This environment has reached its {exc.window} planning budget "
+            f"(INR {exc.spent_inr:.0f} of INR {exc.ceiling_inr:.0f}). "
+            f"It resets at {exc.resets_at}. "
+            "Saved trips and preferences are unchanged."
         )
         return JSONResponse(status_code=429, content=detail)
     return JSONResponse(
         status_code=503,
         content={
-            "code": "conversation_limit_unavailable",
-            "message": "Conversation cost controls are unavailable. Please retry shortly.",
+            "code": "cost_ceiling_unavailable",
+            "message": "Spend controls are unavailable. Please retry shortly.",
         },
     )
 
@@ -444,7 +444,7 @@ def _record_chat_operation(
     user_id: str,
     transport: Literal["json", "sse"],
     outcome: Literal[
-        "completed", "replayed", "capped", "conversation_limited", "rate_limited", "error"
+        "completed", "replayed", "cost_limited", "rate_limited", "error"
     ],
     error: str | None = None,
     exception: BaseException | None = None,
@@ -517,9 +517,8 @@ def _chat_turn_coordinator(
     request: Request,
     user_id: str,
     transport: Literal["json", "sse"],
+    request_id: str = "",
 ) -> ChatTurnCoordinator:
-    from tripplanner import usage
-
     return ChatTurnCoordinator(
         ChatTurnDependencies(
             acquire_replay=lambda _user_id: acquire_replay_access(user_id),
@@ -530,10 +529,8 @@ def _chat_turn_coordinator(
             acquire_chat=lambda: acquire_chat(request, user_id),
             release_chat=release_chat,
             load_request=_load_chat_request,
-            over_cap=usage.is_over_cap,
-            cap_message=usage.cap_message,
-            reserve=lambda history: _reserve_conversation(req, user_id, history),
-            limit_response=_conversation_limit_response,
+            reserve=lambda _history: _reserve_cost(req, request_id),
+            limit_response=_cost_ceiling_response,
             save_chat=_save_chat,
             auto_persist_needed=_should_auto_persist_itinerary,
             auto_persist=_auto_persist_itinerary,
@@ -558,7 +555,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
     user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_request", length=len(req.message), words=len(req.message.split()))
 
-    coordinator = _chat_turn_coordinator(req, request, user_id, "json")
+    coordinator = _chat_turn_coordinator(req, request, user_id, "json", request_id)
     try:
         turn = await coordinator.admit(
             started=started,
@@ -831,7 +828,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_stream_request", length=len(req.message))
 
-    coordinator = _chat_turn_coordinator(req, request, user_id, "sse")
+    coordinator = _chat_turn_coordinator(req, request, user_id, "sse", request_id)
     try:
         turn = await coordinator.admit(
             started=started,

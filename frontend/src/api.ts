@@ -146,15 +146,49 @@ export interface OpsOverview {
     completion_tokens: number;
     cost_usd: number;
   };
-  conversation_limits: Record<"daily" | "weekly" | "lifetime", {
-    key: string;
-    resets_at: string | null;
-    categories: Record<"new_trip" | "existing_trip_turn", {
-      used: number;
-      limit: number;
-      remaining: number | null;
+  /**
+   * The one cost control. All amounts are INR -- never mix these with the
+   * `*_usd` fields elsewhere in this payload, which come from provider
+   * catalogs and are ~88x smaller for the same spend.
+   */
+  cost_ceiling: {
+    currency: "INR";
+    enforced: boolean;
+    environment: string;
+    pending_inr: number;
+    windows: Record<"daily" | "weekly" | "monthly", {
+      key: string;
+      spent_inr: number;
+      ceiling_inr: number;
+      remaining_inr: number;
+      used_pct: number | null;
+      resets_at: string;
     }>;
-  }>;
+  };
+  trip_costs: {
+    aggregate: {
+      currency: "INR";
+      trips: number;
+      cumulative_inr: number;
+      average_per_trip_inr: number;
+      median_per_trip_inr: number;
+      p95_per_trip_inr: number;
+      turns: Record<"new_trip" | "trip_update", number>;
+      average_per_turn_inr: Record<"new_trip" | "trip_update", number>;
+      anomalies: number;
+    };
+    recent: Array<{
+      trip_id: string;
+      destination: string;
+      last_activity_at: string;
+      summary: string;
+      turns: Partial<Record<"new_trip" | "trip_update", number>>;
+      llm: { calls: number; prompt_tokens: number; completion_tokens: number; cost_inr: number };
+      providers: Record<string, { calls: number; cost_inr: number; by_operation: Record<string, number> }>;
+      totals: { calls: number; cache_hits: number; cost_inr: number; savings_inr: number; unknown_cost_calls: number };
+      anomaly: { flagged: boolean; ratio_to_median: number | null; reason: string };
+    }>;
+  };
   tools: Record<string, OpsMetricRow & {
     cache_hits: number;
     hit_rate: number;

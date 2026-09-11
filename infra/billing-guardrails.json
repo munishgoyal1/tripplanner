@@ -1,14 +1,20 @@
 {
   "$comment": "SINGLE SOURCE OF TRUTH for every Azure + GCP alert and cost guardrail (billing budgets/quotas AND infra-health/error alerts). Each block below has its own $comment explaining what it configures and which script/template consumes it. Existing top-level keys (alertEmail, thresholds, gcp, azure) and their nested paths are UNCHANGED on purpose -- ~15 PowerShell scripts (apply/migration/access-control scripts under infra/) read them by exact dotted path today, so this reorg only ADDS structure (comments + two new sections) rather than renesting the existing ones. Monthly cloud budgets use a 30-day planning month: local development is budgeted at 800 INR/day (raised 2026-09-11 to comfortably cover 2-3 full trips of local build/test in one sitting without tripping real-time quotas -- see docs/operations/gcp-billing-guardrails.md's 'Local testing headroom' note), canary at 20 INR/day, prod at 60 INR/day. Edit identifiers for a new account, then run the idempotent GCP and Azure apply scripts.",
-
   "alertEmail": "munishgoyal@aitripplanner.co",
-
   "thresholds": {
     "$comment": "BILLING (cost). Percent-of-budget notification thresholds shared by Azure Consumption Budgets and GCP Cloud Billing Budgets. Notify-only -- see azure.cutoff / gcp.shutoffEnabled below for the (separate) hard-stop mechanisms.",
-    "environment": [0.5, 0.8, 1.0],
-    "global": [0.5, 0.8, 0.9, 1.0]
+    "environment": [
+      0.5,
+      0.8,
+      1.0
+    ],
+    "global": [
+      0.5,
+      0.8,
+      0.9,
+      1.0
+    ]
   },
-
   "gcp": {
     "$comment": "BILLING + REAL-TIME THROTTLING (cost), GCP side. operatorAccount/billingAccount/opsProject identify the account; environments[].budget* feed GCP Cloud Billing Budgets (infra/gcp/apply-billing-guardrails.ps1, notify-only); quotas[] below are the only layer that actually REJECTS calls in real time (gcloud quotas preferences); shutoff* configures the Pub/Sub-triggered billing-detach backstop (infra/gcp/billing-shutoff/main.py), currently disarmed via shutoffEnabled=false.",
     "operatorAccount": "munishgoyal@aitripplanner.co",
@@ -19,14 +25,17 @@
     "shutoffRegion": "asia-south1",
     "shutoffServiceAccount": "billing-shutoff",
     "shutoffEnabled": false,
-    "globalBudget": { "name": "tripplanner-global-8000inr", "amount": 26400 },
+    "globalBudget": {
+      "name": "tripplanner-global-8000inr",
+      "amount": 15000
+    },
     "environments": [
       {
         "name": "local",
         "project": "aitripplanner-local",
         "budgetName": "tripplanner-local-2000inr",
-        "dailyBudget": 800,
-        "budget": 24000,
+        "dailyBudget": 500,
+        "budget": 5000,
         "browserKey": "aitripplanner-local-browser",
         "browserReferrers": [],
         "serverKey": "aitripplanner-local-server"
@@ -35,18 +44,20 @@
         "name": "canary",
         "project": "aitripplanner-canary",
         "budgetName": "tripplanner-canary-2000inr",
-        "dailyBudget": 20,
-        "budget": 600,
+        "dailyBudget": 500,
+        "budget": 5000,
         "browserKey": "aitripplanner-canary-browser",
-        "browserReferrers": ["https://canary-app-dxnpu3yepagpo.politestone-92347d47.eastus2.azurecontainerapps.io/*"],
+        "browserReferrers": [
+          "https://canary-app-dxnpu3yepagpo.politestone-92347d47.eastus2.azurecontainerapps.io/*"
+        ],
         "serverKey": "aitripplanner-canary-server"
       },
       {
         "name": "prod",
         "project": "project-8fc6cc28-590c-4f8b-987",
         "budgetName": "tripplanner-prod-2000inr",
-        "dailyBudget": 60,
-        "budget": 1800,
+        "dailyBudget": 500,
+        "budget": 5000,
         "browserKey": "aitripplanner-prod-browser",
         "browserReferrers": [
           "https://aitripplanner.co/*",
@@ -73,29 +84,152 @@
       "static-maps-backend.googleapis.com"
     ],
     "quotas": [
-      { "service": "places.googleapis.com", "quotaId": "SearchTextRequestPerDayPerProject", "local": 600, "canary": 50, "prod": 200 },
-      { "service": "places.googleapis.com", "quotaId": "SearchTextRequestPerMinutePerProject", "local": 60, "canary": 15, "prod": 30 },
-      { "service": "places.googleapis.com", "quotaId": "GetPlaceRequestPerDayPerProject", "local": 300, "canary": 20, "prod": 80 },
-      { "service": "places.googleapis.com", "quotaId": "GetPlaceRequestPerMinutePerProject", "local": 40, "canary": 10, "prod": 20 },
-      { "service": "places.googleapis.com", "quotaId": "SearchNearbyRequestPerDayPerProject", "local": 10, "canary": 2, "prod": 3 },
-      { "service": "places.googleapis.com", "quotaId": "SearchNearbyRequestPerMinutePerProject", "local": 10, "canary": 2, "prod": 3 },
-      { "service": "places.googleapis.com", "quotaId": "AutocompletePlacesRequestPerDayPerProject", "local": 60, "canary": 5, "prod": 20 },
-      { "service": "places.googleapis.com", "quotaId": "AutocompletePlacesRequestPerMinutePerProject", "local": 20, "canary": 5, "prod": 10 },
-      { "service": "places.googleapis.com", "quotaId": "GetPhotoMediaRequestPerDayPerProject", "local": 1200, "canary": 80, "prod": 400 },
-      { "service": "places.googleapis.com", "quotaId": "GetPhotoMediaRequestPerMinutePerProject", "local": 60, "canary": 15, "prod": 30 },
-      { "service": "places-backend.googleapis.com", "quotaId": "BillableDefaultPerDayPerProject", "preferenceId": "tp-placesjs-billabledefaultperdayperproject", "local": 400, "canary": 20, "prod": 50 },
-      { "service": "places-backend.googleapis.com", "quotaId": "BillableDefaultPerMinutePerProject", "preferenceId": "tp-placesjs-billabledefaultperminuteperproject", "local": 60, "canary": 10, "prod": 20 },
-      { "service": "routes.googleapis.com", "quotaId": "ComputeRoutesRequestsPerDay", "local": 200, "canary": 20, "prod": 50 },
-      { "service": "routes.googleapis.com", "quotaId": "ComputeRoutesRequestsPerMinutePerProject", "local": 60, "canary": 10, "prod": 20 },
-      { "service": "routes.googleapis.com", "quotaId": "ComputeRouteMatrixCellsPerDay", "local": 1000, "canary": 100, "prod": 250 },
-      { "service": "routes.googleapis.com", "quotaId": "ComputeRouteMatrixCellsPerMinutePerProject", "local": 240, "canary": 30, "prod": 60 },
-      { "service": "static-maps-backend.googleapis.com", "quotaId": "BillableDefaultPerDayPerProject", "local": 200, "canary": 20, "prod": 50 },
-      { "service": "static-maps-backend.googleapis.com", "quotaId": "BillableDefaultPerMinutePerProject", "local": 60, "canary": 10, "prod": 20 },
-      { "service": "maps-backend.googleapis.com", "quotaId": "BillableDefaultPerDayPerProject", "preferenceId": "tp-mapsjs-billabledefaultperdayperproject", "local": 500, "canary": 50, "prod": 100 },
-      { "service": "maps-backend.googleapis.com", "quotaId": "BillableDefaultPerMinutePerProject", "preferenceId": "tp-mapsjs-billabledefaultperminuteperproject", "local": 90, "canary": 20, "prod": 30 }
+      {
+        "service": "places.googleapis.com",
+        "quotaId": "SearchTextRequestPerDayPerProject",
+        "local": 849,
+        "canary": 441,
+        "prod": 674
+      },
+      {
+        "service": "places.googleapis.com",
+        "quotaId": "SearchTextRequestPerMinutePerProject",
+        "local": 60,
+        "canary": 60,
+        "prod": 60
+      },
+      {
+        "service": "places.googleapis.com",
+        "quotaId": "GetPlaceRequestPerDayPerProject",
+        "local": 456,
+        "canary": 375,
+        "prod": 421
+      },
+      {
+        "service": "places.googleapis.com",
+        "quotaId": "GetPlaceRequestPerMinutePerProject",
+        "local": 40,
+        "canary": 40,
+        "prod": 40
+      },
+      {
+        "service": "places.googleapis.com",
+        "quotaId": "SearchNearbyRequestPerDayPerProject",
+        "local": 10,
+        "canary": 2,
+        "prod": 3
+      },
+      {
+        "service": "places.googleapis.com",
+        "quotaId": "SearchNearbyRequestPerMinutePerProject",
+        "local": 10,
+        "canary": 10,
+        "prod": 10
+      },
+      {
+        "service": "places.googleapis.com",
+        "quotaId": "AutocompletePlacesRequestPerDayPerProject",
+        "local": 60,
+        "canary": 5,
+        "prod": 20
+      },
+      {
+        "service": "places.googleapis.com",
+        "quotaId": "AutocompletePlacesRequestPerMinutePerProject",
+        "local": 20,
+        "canary": 20,
+        "prod": 20
+      },
+      {
+        "service": "places.googleapis.com",
+        "quotaId": "GetPhotoMediaRequestPerDayPerProject",
+        "local": 1217,
+        "canary": 1217,
+        "prod": 1217
+      },
+      {
+        "service": "places.googleapis.com",
+        "quotaId": "GetPhotoMediaRequestPerMinutePerProject",
+        "local": 60,
+        "canary": 60,
+        "prod": 60
+      },
+      {
+        "service": "places-backend.googleapis.com",
+        "quotaId": "BillableDefaultPerDayPerProject",
+        "preferenceId": "tp-placesjs-billabledefaultperdayperproject",
+        "local": 400,
+        "canary": 20,
+        "prod": 50
+      },
+      {
+        "service": "places-backend.googleapis.com",
+        "quotaId": "BillableDefaultPerMinutePerProject",
+        "preferenceId": "tp-placesjs-billabledefaultperminuteperproject",
+        "local": 60,
+        "canary": 60,
+        "prod": 60
+      },
+      {
+        "service": "routes.googleapis.com",
+        "quotaId": "ComputeRoutesRequestsPerDay",
+        "local": 200,
+        "canary": 20,
+        "prod": 50
+      },
+      {
+        "service": "routes.googleapis.com",
+        "quotaId": "ComputeRoutesRequestsPerMinutePerProject",
+        "local": 60,
+        "canary": 60,
+        "prod": 60
+      },
+      {
+        "service": "routes.googleapis.com",
+        "quotaId": "ComputeRouteMatrixCellsPerDay",
+        "local": 1000,
+        "canary": 100,
+        "prod": 250
+      },
+      {
+        "service": "routes.googleapis.com",
+        "quotaId": "ComputeRouteMatrixCellsPerMinutePerProject",
+        "local": 240,
+        "canary": 240,
+        "prod": 240
+      },
+      {
+        "service": "static-maps-backend.googleapis.com",
+        "quotaId": "BillableDefaultPerDayPerProject",
+        "local": 200,
+        "canary": 20,
+        "prod": 50
+      },
+      {
+        "service": "static-maps-backend.googleapis.com",
+        "quotaId": "BillableDefaultPerMinutePerProject",
+        "local": 60,
+        "canary": 60,
+        "prod": 60
+      },
+      {
+        "service": "maps-backend.googleapis.com",
+        "quotaId": "BillableDefaultPerDayPerProject",
+        "preferenceId": "tp-mapsjs-billabledefaultperdayperproject",
+        "local": 500,
+        "canary": 50,
+        "prod": 100
+      },
+      {
+        "service": "maps-backend.googleapis.com",
+        "quotaId": "BillableDefaultPerMinutePerProject",
+        "preferenceId": "tp-mapsjs-billabledefaultperminuteperproject",
+        "local": 90,
+        "canary": 90,
+        "prod": 90
+      }
     ]
   },
-
   "azure": {
     "$comment": "BILLING (cost), Azure side. operatorAccount/subscriptionId/tenantId identify the account; environments[].budget* feed Azure Consumption Budgets (infra/azure/apply-billing-guardrails.ps1, notify-only -- Azure budgets cannot stop resources by themselves). cutoff configures the ONE hard-stop mechanism Azure has: an Automation Account runbook (infra/azure/budget-cutoff-runbook.ps1) wired to the global budget's Actual100 notification, which stops Container Apps/Jobs and disables Azure OpenAI public access across canary+prod. See docs/operations/azure-billing-guardrails.md.",
     "operatorAccount": "munishgoyal@aitripplanner.co",
@@ -105,7 +239,10 @@
     "actionGroupResourceGroup": "rg-tripplanner-data",
     "actionGroupName": "tripplanner-budget-alerts",
     "actionGroupShortName": "tpbudget",
-    "globalBudget": { "name": "tripplanner-global-8000inr", "amount": 6000 },
+    "globalBudget": {
+      "name": "tripplanner-global-8000inr",
+      "amount": 15000
+    },
     "cutoff": {
       "location": "eastus2",
       "automationAccountName": "tripplanner-budget-cutoff",
@@ -114,19 +251,38 @@
       "actionGroupName": "tripplanner-budget-cutoff"
     },
     "environments": [
-      { "name": "local", "resourceGroup": "rg-tripplanner-local", "budgetName": "tripplanner-local-2000inr", "dailyBudget": 120, "budget": 3600 },
-      { "name": "canary", "resourceGroup": "rg-tripplanner-canary", "budgetName": "tripplanner-canary-2000inr", "dailyBudget": 20, "budget": 600 },
-      { "name": "prod", "resourceGroup": "rg-tripplanner-prod", "budgetName": "tripplanner-prod-2000inr", "dailyBudget": 60, "budget": 1800 }
+      {
+        "name": "local",
+        "resourceGroup": "rg-tripplanner-local",
+        "budgetName": "tripplanner-local-2000inr",
+        "dailyBudget": 500,
+        "budget": 5000
+      },
+      {
+        "name": "canary",
+        "resourceGroup": "rg-tripplanner-canary",
+        "budgetName": "tripplanner-canary-2000inr",
+        "dailyBudget": 500,
+        "budget": 5000
+      },
+      {
+        "name": "prod",
+        "resourceGroup": "rg-tripplanner-prod",
+        "budgetName": "tripplanner-prod-2000inr",
+        "dailyBudget": 500,
+        "budget": 5000
+      }
     ]
   },
-
   "gcpQuotaAlertPolicies": {
     "$comment": "INFRA/ERROR ALERT (not billing), GCP side. Fires a GCP Monitoring alert policy when any entry in gcp.quotas above rejects a call (serviceruntime.googleapis.com/quota/exceeded). Consumed by infra/gcp/apply-billing-guardrails.ps1, which previously hardcoded these same values inline -- moved here so they're visible without reading the script. Notifies the 'Owner email' channel (created from alertEmail above if absent); auto-closes if the condition stops recurring.",
-    "severityByEnvironment": { "prod": "ERROR", "default": "WARNING" },
+    "severityByEnvironment": {
+      "prod": "ERROR",
+      "default": "WARNING"
+    },
     "alignmentPeriodSec": 300,
     "autoCloseSec": 3600
   },
-
   "azureInfraHealthAlerts": {
     "$comment": "INFRA/ERROR ALERTS (not billing), Azure side. Azure Monitor log/metric alerts on application & infra HEALTH -- errors, chat latency, provider throttling/circuit-breaker state, cache miss rate, Cosmos DB 429s. Prod-only, gated behind main.bicep's enableFailureAlerts param (off by default; see infra/prod.bicepparam). Consumed by infra/main.bicep via loadJsonContent() -- this JSON is the source of truth for severity/window/threshold; the KQL query bodies still live under infra/queries/*.kql (queryFile below) since Bicep's loadTextContent() requires a literal path per file. See docs/operations/operations-slos.md.",
     "failureAlert": {

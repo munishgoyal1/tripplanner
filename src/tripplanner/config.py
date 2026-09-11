@@ -228,37 +228,19 @@ class Settings(BaseModel):
             "GOOGLE_PLACES_PHOTO_URL_CACHE_TTL_SEC", 3000
         )
     )
-    # Per-trip Google Places call budgets. Values + env var names live in
-    # limits_config.py (single place for every throttle/budget); this just
-    # wires them into Settings.
-    google_places_max_text_searches_per_trip: int = Field(
-        default_factory=limits_config.google_places_max_text_searches_per_trip
-    )
-    google_places_max_review_details_per_trip: int = Field(
-        default_factory=limits_config.google_places_max_review_details_per_trip
-    )
-    google_places_max_photos_per_trip: int = Field(
-        default_factory=limits_config.google_places_max_photos_per_trip
-    )
+    # How many photos one place contributes to a gallery. A visual-density
+    # choice, not a cost control -- spend is bounded by the INR ceiling in
+    # cost_ledger.py. Value + env var name live in limits_config.py.
+    #
+    # ``default_factory`` rather than a plain default on purpose: a bare class
+    # attribute is evaluated once when this class body executes, which froze the
+    # per-turn budgets that used to live here at import time and made both
+    # deployed env values and monkeypatch.setenv silently ineffective.
     google_places_max_photos_per_place: int = Field(
         default_factory=limits_config.google_places_max_photos_per_place
     )
-
-    # Agent tool-call budgets. These bound how many tool-call rounds/searches
-    # a single chat turn can spend before the graph forces completion, which
-    # is the other lever (besides the Google Places counters above) that caps
-    # paid-provider spend per turn. Raising them lets a complex itinerary (e.g.
-    # a multi-city or 7+ day trip) finish researching before being cut off, at
-    # the cost of more provider calls and LLM tokens per turn. Values + env
-    # var names live in limits_config.py.
-    max_tool_phases_per_turn: int = limits_config.max_tool_phases_per_turn()
-    max_initial_itinerary_updates: int = limits_config.max_initial_itinerary_updates()
-    max_post_research_updates: int = limits_config.max_post_research_updates()
-    max_transport_comparisons_per_turn: int = (
-        limits_config.max_transport_comparisons_per_turn()
-    )
-    max_transport_comparisons_per_trip: int = (
-        limits_config.max_transport_comparisons_per_trip()
+    google_places_max_photos_per_request: int = Field(
+        default_factory=limits_config.google_places_max_photos_per_request
     )
 
     # Google Maps JavaScript API — browser-side key for the interactive trip

@@ -711,6 +711,7 @@ def test_new_trip_does_not_rewrite_incomplete_researched_plan_twice(monkeypatch)
 
 def test_new_trip_completion_retry_is_bounded(monkeypatch) -> None:
     from tripplanner import graph as graph_mod
+    from tripplanner import graph_policy
 
     monkeypatch.setattr(
         graph_mod,
@@ -724,26 +725,34 @@ def test_new_trip_completion_retry_is_bounded(monkeypatch) -> None:
             "selected_hotels": [],
         },
     )
-    messages = [
-        AIMessage(
-            content="",
-            tool_calls=[{"name": "create_trip_plan", "args": {}, "id": "create-1"}],
-        ),
-        AIMessage(
-            content="",
-            tool_calls=[{"name": "search_hotels", "args": {}, "id": "hotel-1"}],
-        ),
-        AIMessage(
-            content="",
-            tool_calls=[{"name": "update_trip_plan", "args": {}, "id": "update-1"}],
-        ),
-        AIMessage(
-            content="",
-            tool_calls=[{"name": "update_trip_plan", "args": {}, "id": "update-2"}],
-        ),
-    ]
+    def messages_with(update_count: int) -> list[BaseMessage]:
+        return [
+            AIMessage(
+                content="",
+                tool_calls=[{"name": "create_trip_plan", "args": {}, "id": "create-1"}],
+            ),
+            AIMessage(
+                content="",
+                tool_calls=[{"name": "search_hotels", "args": {}, "id": "hotel-1"}],
+            ),
+            *[
+                AIMessage(
+                    content="",
+                    tool_calls=[
+                        {"name": "update_trip_plan", "args": {}, "id": f"update-{index}"}
+                    ],
+                )
+                for index in range(1, update_count + 1)
+            ],
+        ]
 
-    assert graph_mod._trip_update_requirement(messages) is None
+    # Derived from the guard rather than a literal count: these bound retries of
+    # a failing save so a persistently failing update cannot loop forever. They
+    # are liveness guards in code, not tunable budgets, and raising one must not
+    # silently turn this assertion into a tautology.
+    bound = graph_policy.MAX_POST_RESEARCH_UPDATES
+    assert graph_mod._trip_update_requirement(messages_with(bound - 1)) is not None
+    assert graph_mod._trip_update_requirement(messages_with(bound)) is None
 
 
 def test_trip_agent_ends_with_summary_at_tool_phase_budget(monkeypatch) -> None:

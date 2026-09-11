@@ -134,11 +134,11 @@ def test_local_launcher_routes_secondary_cache_by_cosmos_backend() -> None:
 
 def test_google_places_cost_policy_is_owner_configurable(monkeypatch):
     monkeypatch.setenv("GOOGLE_PLACES_SEARCH_CACHE_TTL_SEC", "86400")
-    monkeypatch.setenv("GOOGLE_PLACES_MAX_TEXT_SEARCHES_PER_TRIP", "2")
+    monkeypatch.setenv("GOOGLE_PLACES_MAX_PHOTOS_PER_REQUEST", "7")
     settings = Settings()
 
     assert settings.google_places_search_cache_ttl_sec == 86400
-    assert settings.google_places_max_text_searches_per_trip == 2
+    assert settings.google_places_max_photos_per_request == 7
 
 
 def test_checked_in_environment_profiles_have_the_same_non_secret_keys() -> None:

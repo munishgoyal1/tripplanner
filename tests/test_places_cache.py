@@ -23,8 +23,7 @@ _REAL_PHOTO_URIS = pc._photo_uris
 
 @pytest.fixture
 def _authorized():
-    with places_budget_scope("user_interaction") as budget:
-        budget.limits["text_search"] = 10
+    with places_budget_scope("user_interaction"):
         yield
 
 

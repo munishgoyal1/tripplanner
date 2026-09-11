@@ -184,7 +184,7 @@ def run_hermetic_baseline(
                 "data": {"chunk": AIMessageChunk(content=text)},
             }
 
-    async def reserve_conversation(*_args: Any, **_kwargs: Any) -> None:
+    async def reserve_cost(*_args: Any, **_kwargs: Any) -> None:
         return None
 
     async def acquire_permit(*_args: Any, **_kwargs: Any) -> object:
@@ -228,14 +228,13 @@ def run_hermetic_baseline(
                 )
                 stack.enter_context(patch.object(api, "_save_chat", save_chat))
                 stack.enter_context(
-                    patch.object(api, "_reserve_conversation", reserve_conversation)
+                    patch.object(api, "_reserve_cost", reserve_cost)
                 )
                 stack.enter_context(patch.object(api, "acquire_chat", acquire_permit))
                 stack.enter_context(patch.object(api, "release_chat", release_permit))
                 stack.enter_context(patch.object(api, "acquire_replay_access", acquire_permit))
                 stack.enter_context(patch.object(api, "release_replay_access", release_permit))
                 stack.enter_context(patch.object(api, "check_replay_lookup", release_permit))
-                stack.enter_context(patch.object(usage, "is_over_cap", lambda _: (False, {})))
                 usage_before = usage.get_usage(BENCHMARK_USER)
                 asyncio.run(chat_admission.reset())
                 try:

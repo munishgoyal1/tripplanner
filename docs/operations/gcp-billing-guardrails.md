@@ -50,14 +50,29 @@ independent layers are therefore needed:
 Quotas are the only real-time control. Treat the shutoff as a backstop for a
 slow leak, not as protection against a runaway loop.
 
-The application adds an earlier real-time boundary. Paid travel-provider calls
-are denied unless execution is inside a named `user_interaction` or
-`corpus_generation` scope. Reusable view builders, audits, tests, issue-fix
-validation, and background work cannot create that scope. Places call sites
-consume the shared per-scope operation ceilings, and the common outbound HTTP
-runtime rejects unscoped requests to known billable Google hosts before opening
-the network client. This application boundary complements rather than replaces
-cloud quotas: quotas remain the protection against a compromised process or key.
+The application adds two earlier boundaries, and they do different jobs.
+
+**Authorization.** Paid travel-provider calls are denied unless execution is
+inside a named `user_interaction` or `corpus_generation` scope. Reusable view
+builders, audits, tests, issue-fix validation, and background work cannot create
+that scope, and the common outbound HTTP runtime rejects unscoped requests to
+known billable Google hosts before opening the network client. This scope does
+**not** cap how many calls an authorized request makes — see
+[Spend ceiling](#spend-ceiling).
+
+**Spend.** A measured INR ceiling (daily/weekly/monthly, Azure and Google
+combined) refuses new turns once the environment has spent its budget. Unlike a
+budget alert this reacts per turn rather than in hours, and unlike a quota it
+covers both clouds at once.
+
+| Layer | Reacts in | Stops spend? | Bounds |
+| --- | --- | --- | --- |
+| Paid-provider scope | real time | yes, denies the call | unauthorized callers |
+| INR spend ceiling | per turn | yes, HTTP 429 | environment-wide money, both clouds |
+| API quotas | real time | yes, rejects calls | one API in one project |
+
+These complement rather than replace cloud quotas: quotas remain the protection
+against a compromised process or key, where in-application controls cannot help.
 
 `shutoffEnabled` in the central JSON is the arming switch. It is currently
 `false`: the observation budget was lowered after this month's accrued spend had
@@ -121,16 +136,18 @@ short-lived and are not part of the durable place-metadata cache, so even a
 "fully cached" trip re-resolves photo URIs -- and therefore re-consumes the
 per-minute photo quota -- on every session.
 
-The local quotas are now sized so 2-3 full cold trips (at the per-trip ceiling
-described under "Cost model" below, roughly 12.50 INR each) comfortably fit
-within a single per-minute window without tripping the breaker, while the
-800 INR/day local budget stays about 20x below the single-day cost of the
-2026-08-27 incident documented at the bottom of this file -- an explicit
-constraint from the person who owns this budget: local testing spend should
-stay well under ~1,000 INR/day. The real-time protection against a repeat of
-that incident remains the **quotas**, not the budget (see "What a budget does
-and does not do" above), and the per-scope Places call ceiling described under
-"Cost model" is unchanged by this update.
+Per-minute quotas are therefore sized for **burst smoothness, not for cost**, and
+are identical across environments: several cold trips built back-to-back must fit
+inside one window without opening the breaker. Sizing them from a budget is what
+produced the stalls above. They are set from `quotaSizing.burstPerMinuteFloor` in
+`config/cost-model.json`.
+
+The owner's stated constraint -- testing spend should stay well under ~1,000
+INR/day -- is now enforced directly rather than approximated by quotas, by
+`COST_CEILING_INR_DAILY=1000` (see [Spend ceiling](#spend-ceiling)). Quotas
+remain the real-time protection against a repeat of the 2026-08-27 incident
+documented at the bottom of this file, because an in-application ceiling cannot
+help against a leaked key or a compromised process.
 
 The display names predate the lower observation-mode amounts. They are retained
 so the idempotent apply updates the existing budgets instead of creating
@@ -284,28 +301,53 @@ Both `--allow-*` flags are required when tightening a limit by more than ten
 percent or below current usage, which is almost always the case when moving from
 Google's generous defaults.
 
-Places limits are sized from the same daily allocation. Local, canary, and
-production each allow a cold destination guide at the application's
-fifty-search / 50-photo (one per place) ceiling for an allowed trip; conversation
-ceilings still bound how many trips can start. Cache hits do not consume these
-limits. Lower-volume API surfaces remain bounded so a leaked key cannot spend
-the full cloud allowance through an unused operation.
+**The quota rows below are derived, not hand-set.** `scripts/derive_limits.py`
+computes them from the INR ceilings in `config/environments/*.env` plus
+`config/cost-model.json`, and `tests/test_limits_derivation.py` fails if the
+checked-in values drift. Edit the ceiling or the cost model, then run:
+
+```powershell
+python scripts/derive_limits.py
+```
+
+Two sizing rules, deliberately different:
+
+- **Daily quotas are cost-derived**, sized as this environment's slice of the
+  pooled free monthly allowance *plus* what the daily INR ceiling can buy beyond
+  it. They sit **above** the budget on purpose: the ceiling must refuse first, so
+  a quota never throttles a legitimately complex trip. A quota's job is to stop a
+  compromised key or a runaway loop, not to manage spend.
+- **Per-minute quotas are not cost-derived.** They exist so `places_cache._pace`
+  can self-pace under the same ceiling Google enforces without tripping the
+  provider circuit breaker. Sizing them for cost is what produced the 40-60 second
+  stalls described under "Local testing headroom", so they come from
+  `quotaSizing.burstPerMinuteFloor` and are identical across environments.
+
+Cache hits do not consume these limits. Lower-volume API surfaces remain pinned
+low so a leaked key cannot spend the cloud allowance through an unused operation.
 
 | Quota | local | canary | prod |
 | --- | --- | --- | --- |
-| `SearchTextRequestPerDayPerProject` | 600 | 50 | 200 |
-| `SearchTextRequestPerMinutePerProject` | 60 | 15 | 30 |
-| `GetPlaceRequestPerDayPerProject` | 300 | 20 | 80 |
-| `GetPlaceRequestPerMinutePerProject` | 40 | 10 | 20 |
+| `SearchTextRequestPerDayPerProject` | 849 | 441 | 674 |
+| `SearchTextRequestPerMinutePerProject` | 60 | 60 | 60 |
+| `GetPlaceRequestPerDayPerProject` | 456 | 375 | 421 |
+| `GetPlaceRequestPerMinutePerProject` | 40 | 40 | 40 |
 | `SearchNearbyRequestPerDayPerProject` | 10 | 2 | 3 |
+| `SearchNearbyRequestPerMinutePerProject` | 10 | 10 | 10 |
 | `AutocompletePlacesRequestPerDayPerProject` | 60 | 5 | 20 |
-| `GetPhotoMediaRequestPerDayPerProject` | 1,200 | 80 | 400 |
-| `GetPhotoMediaRequestPerMinutePerProject` | 60 | 15 | 30 |
+| `AutocompletePlacesRequestPerMinutePerProject` | 20 | 20 | 20 |
+| `GetPhotoMediaRequestPerDayPerProject` | 1,217 | 1,217 | 1,217 |
+| `GetPhotoMediaRequestPerMinutePerProject` | 60 | 60 | 60 |
 | `BillableDefaultPerDayPerProject` (Places JavaScript) | 400 | 20 | 50 |
+| `BillableDefaultPerMinutePerProject` (Places JavaScript) | 60 | 60 | 60 |
 | `ComputeRoutesRequestsPerDay` | 200 | 20 | 50 |
+| `ComputeRoutesRequestsPerMinutePerProject` | 60 | 60 | 60 |
 | `ComputeRouteMatrixCellsPerDay` | 1,000 | 100 | 250 |
+| `ComputeRouteMatrixCellsPerMinutePerProject` | 240 | 240 | 240 |
 | `BillableDefaultPerDayPerProject` (Static Maps) | 200 | 20 | 50 |
+| `BillableDefaultPerMinutePerProject` (Static Maps) | 60 | 60 | 60 |
 | `BillableDefaultPerDayPerProject` (Maps JavaScript) | 500 | 50 | 100 |
+| `BillableDefaultPerMinutePerProject` (Maps JavaScript) | 90 | 90 | 90 |
 
 `requiredServices` must equal the union of `browserServices` and
 `serverServices`. The release contract requires every callable service to have
@@ -374,14 +416,59 @@ Asking for `rating` promotes a call to Pro; asking for `reviews` or
 tier. Resolving a place name to an ID and coordinates with an IDs-only mask is
 free and unbounded.
 
-The application now caps an authorized user/corpus scope at three Text Search calls, one
-review-details call, and three photo-media calls, with one photo maximum per
-place. Agent discovery results seed the structured UI cache, routine metadata
-omits `editorialSummary`, and unfocused views never fetch reviews. At global
-first-paid-tier list prices, the configured cold ceiling is roughly USD 0.142
-(about INR 12.50 at the planning assumption of INR 88/USD) before cache reuse.
+The application does **not** cap how many Places calls an authorized scope may
+make. Per-scope counters (three Text Search, one review-details, three photo-media)
+were retired: they were a proxy for money that throttled quality on legitimately
+complex trips, and this document and the deployed configuration had already
+drifted 14x apart on what those counters actually were. Spend is bounded instead
+by a measured INR ceiling — see [Spend ceiling](#spend-ceiling) below.
+
+What remains is the **authorization scope**, not a budget: a paid Places call is
+permitted only inside a named `user_interaction` or `corpus_generation` scope,
+which reusable view builders, audits, tests and background warming cannot create.
+That gate is the actual 2026-08-27 fix and is unchanged.
+
+Agent discovery results still seed the structured UI cache, routine metadata
+omits `editorialSummary`, and unfocused views never fetch reviews.
+
+**The agent's Text Search calls are Pro tier, not Essentials.** Its field masks
+request `rating`, `userRatingCount`, `priceLevel` and `websiteUri`
+([`tools/google_places.py`](../../src/tripplanner/tools/google_places.py)), any of
+which promotes the call past Essentials — `http_client.google_operation` classifies
+them correctly. In practice these calls are still free because Text Search Pro
+carries a 35,000/month allowance pooled across the billing account, and
+`config/cost-model.json` reserves a share of that pool per environment. Once a
+share is exhausted the SKU bills at list price and the INR ceiling absorbs it.
+
+### Spend ceiling
+
+One control governs cost, in **INR**, covering Azure OpenAI and Google Cloud
+together, environment-wide and identical in local, canary and production:
+
+```dotenv
+COST_CEILING_INR_DAILY=1000
+COST_CEILING_INR_WEEKLY=5000
+COST_CEILING_INR_MONTHLY=10000
+```
+
+Enforced by [`cost_ledger.py`](../../src/tripplanner/cost_ledger.py) against the
+`estimated_cost_usd` that `provider_usage.record_call` already persists for every
+Azure and Google call, converted once via `cost_model.usd_to_inr`. A turn reserves
+a pessimistic estimate at admission and reconciles it to actual spend when its
+usage batch flushes, so concurrent turns cannot collectively pass a ceiling none
+of them individually breaches. A billable call with no price estimate is charged
+the rolling P95 rather than zero.
+
+The three windows are not multiples of each other on purpose: daily is a burst
+allowance, monthly is the binding constraint. At the ~INR 42 average trip this
+model predicts, INR 10,000/month is roughly 13 full testing days.
+
+Per-trip cost, provider-call breakdown, LLM turn counts and anomaly flags are
+visible in the owner-only operations dashboard. An expensive trip is something to
+investigate there, not a reason to reintroduce a call budget.
+
 This is a catalog estimate, not billed cost; provider billing exports remain
-authoritative, and Azure OpenAI/Routes remain outside this figure.
+authoritative.
 
 ### Google API capability gates
 
