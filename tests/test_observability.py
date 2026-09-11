@@ -394,21 +394,74 @@ def test_meaningful_provider_event_names_local_place_in_console_and_file(
     obs.app_event(
         "provider_call",
         provider="google",
+        service="google_places",
+        dataset="places_search",
+        purpose="place_search",
         operation="text_search",
+        sku_class="pro",
         status="ok",
         attempted=True,
+        billable=True,
         place="Taj Mahal",
         city="Agra",
         ms=125,
     )
 
-    assert 'PROVIDER google.text_search place="Taj Mahal" city="Agra" -> ok 125ms' in (
-        capsys.readouterr().out
-    )
+    output = capsys.readouterr().out
+    assert "PROVIDER google.text_search for=place_search service=google_places" in output
+    assert 'sku=pro billing=billable place="Taj Mahal" city="Agra" -> ok 125ms' in output
     parsed = json.loads(target.read_text(encoding="utf-8").strip())
     assert parsed["event_kind"] == "provider_call"
     assert parsed["place"] == "Taj Mahal"
     assert parsed["city"] == "Agra"
+
+
+def test_local_llm_prompt_preview_is_redacted_and_capped_at_100_words(
+    tmp_path, monkeypatch, capsys
+):
+    target = tmp_path / "diagnostics" / "app.jsonl"
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    obs.setup_logging(force=True)
+    prompt = "alice@example.com " + " ".join(f"word-{index}" for index in range(1, 120))
+
+    obs.log_llm_prompt(
+        "gpt-4.1",
+        prompt,
+        message_count=4,
+        prompt_chars=len(prompt),
+    )
+
+    output = capsys.readouterr().out
+    assert "LLM PROMPT gpt-4.1 messages=4 words=120" in output
+    assert "alice@example.com" not in output
+    assert "word-99" in output
+    assert "word-100" not in output
+    parsed = json.loads(target.read_text(encoding="utf-8").strip())
+    assert parsed["prompt_words"] == 120
+    assert parsed["preview_words"] == 100
+    assert parsed["preview_truncated"] is True
+    assert "alice@example.com" not in parsed["prompt_preview"]
+
+
+def test_hosted_llm_prompt_log_is_metadata_only(tmp_path, monkeypatch, capsys):
+    target = tmp_path / "diagnostics" / "app.jsonl"
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "canary")
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    obs.setup_logging(force=True)
+
+    obs.log_llm_prompt(
+        "gpt-4.1",
+        "private traveller request",
+        message_count=2,
+        prompt_chars=25,
+    )
+
+    output = capsys.readouterr().out
+    assert "LLM PROMPT gpt-4.1 messages=2 words=3" in output
+    assert "private traveller request" not in output
+    parsed = json.loads(target.read_text(encoding="utf-8").strip())
+    assert "prompt_preview" not in parsed
 
 
 def test_low_level_failure_remains_visible(capsys):

@@ -54,6 +54,7 @@ _TRACE_EVENT_FIELDS = frozenset(
         "provider",
         "result",
         "route",
+        "service",
         "sku_class",
         "stage",
         "status",
@@ -61,6 +62,7 @@ _TRACE_EVENT_FIELDS = frozenset(
         "tool",
         "trip_id",
         "units",
+        "purpose",
     }
 )
 
@@ -87,16 +89,53 @@ _CONTEXT: contextvars.ContextVar[UsageAttribution | None] = contextvars.ContextV
 )
 
 
+def _is_failure(fields: dict[str, Any]) -> bool:
+    status = str(fields.get("status") or fields.get("outcome") or "").lower()
+    return bool(fields.get("error")) or status in {"error", "failed", "failure"}
+
+
+def _aggregate_event(kind: str, fields: dict[str, Any]) -> bool:
+    if _is_failure(fields):
+        return False
+    if kind == "cache_access":
+        return fields.get("result") != "provider_unavailable"
+    if kind == "provider_call":
+        return not bool(fields.get("attempted", True))
+    return kind in {"storage_operation", "outbound_call", "llm_usage"}
+
+
 @dataclass
 class UsageBatch:
     records: list[dict[str, Any]] = field(default_factory=list)
     events: list[dict[str, Any]] = field(default_factory=list)
     attribution: UsageAttribution | None = None
     flow_places: dict[str, str] = field(default_factory=dict)
+    total_event_count: int = 0
+    aggregate_event_counts: Counter[str] = field(default_factory=Counter)
+    cache_results: Counter[str] = field(default_factory=Counter)
+    cache_record_indexes: dict[tuple[str, ...], int] = field(default_factory=dict)
     lock: threading.Lock = field(default_factory=threading.Lock)
 
     def append(self, record: dict[str, Any]) -> None:
         with self.lock:
+            if record.get("event_type") == "cache_hit":
+                key = tuple(
+                    str(record.get(field) or "")
+                    for field in ("provider", "operation", "sku_class", "dataset")
+                )
+                existing_index = self.cache_record_indexes.get(key)
+                if existing_index is not None:
+                    existing = self.records[existing_index]
+                    existing["units"] = int(existing.get("units") or 1) + int(
+                        record.get("units") or 1
+                    )
+                    existing["estimated_savings_usd"] = round(
+                        float(existing.get("estimated_savings_usd") or 0)
+                        + float(record.get("estimated_savings_usd") or 0),
+                        8,
+                    )
+                    return
+                self.cache_record_indexes[key] = len(self.records)
             self.records.append(record)
 
     def append_event(self, kind: str, fields: dict[str, Any]) -> None:
@@ -107,6 +146,7 @@ class UsageBatch:
             and (value is None or isinstance(value, (bool, float, int, str)))
         }
         with self.lock:
+            self.total_event_count += 1
             if (
                 str(fields.get("environment") or "").lower() == "local"
                 and fields.get("place")
@@ -117,9 +157,15 @@ class UsageBatch:
                     label += f" ({fields['city']})"
                 decision = str(fields.get("result") or fields.get("status") or kind)
                 self.flow_places[label] = decision
+            if _aggregate_event(kind, fields):
+                self.aggregate_event_counts[kind] += 1
+                if kind == "cache_access":
+                    result = str(fields.get("result") or "unknown")
+                    self.cache_results[result] += max(1, int(fields.get("units") or 1))
+                return
             self.events.append(
                 {
-                    "sequence": len(self.events) + 1,
+                    "sequence": self.total_event_count,
                     "occurred_at": datetime.now(UTC).isoformat(),
                     "kind": kind,
                     **safe_fields,
@@ -131,11 +177,9 @@ class UsageBatch:
             events = list(self.events)
             records = list(self.records)
             places = list(self.flow_places.items())
-        cache_results = Counter(
-            str(event.get("result") or "")
-            for event in events
-            if event.get("kind") == "cache_access"
-        )
+            event_count = self.total_event_count
+            aggregate_counts = self.aggregate_event_counts.copy()
+            cache_results = self.cache_results.copy()
         hit_results = sum(
             count for result, count in cache_results.items() if result.endswith("hit")
         )
@@ -145,7 +189,7 @@ class UsageBatch:
             if result == "miss" or result.endswith("_miss") or result == "refresh"
         )
         return {
-            "event_count": len(events),
+            "event_count": event_count,
             "llm_calls": sum(1 for event in events if event.get("kind") == "llm_call"),
             "tool_calls": sum(1 for event in events if event.get("kind") == "tool_call"),
             "provider_calls": sum(
@@ -157,10 +201,41 @@ class UsageBatch:
             "cache_misses": miss_results,
             "storage_operations": sum(
                 1 for event in events if event.get("kind") == "storage_operation"
-            ),
+            )
+            + aggregate_counts["storage_operation"],
+            "aggregated_event_count": sum(aggregate_counts.values()),
+            "outbound_calls": aggregate_counts["outbound_call"],
+            "llm_usage_events": aggregate_counts["llm_usage"],
+            "cache_served_provider_calls": aggregate_counts["provider_call"],
             "places": [f"{label}={decision}" for label, decision in places[:5]],
             "place_count": len(places),
         }
+
+    def append_aggregate_summary(self, summary: dict[str, Any]) -> None:
+        if not summary.get("aggregated_event_count"):
+            return
+        attribution = (self.attribution or UsageAttribution()).fields()
+        with self.lock:
+            self.events.append(
+                {
+                    "sequence": self.total_event_count + 1,
+                    "occurred_at": datetime.now(UTC).isoformat(),
+                    "kind": "telemetry_summary",
+                    **attribution,
+                    **{
+                        key: summary[key]
+                        for key in (
+                            "aggregated_event_count",
+                            "cache_hits",
+                            "cache_misses",
+                            "storage_operations",
+                            "outbound_calls",
+                            "llm_usage_events",
+                            "cache_served_provider_calls",
+                        )
+                    },
+                }
+            )
 
     def promote_attribution(self, attribution: UsageAttribution) -> None:
         fields = attribution.fields()
@@ -266,11 +341,13 @@ def usage_scope(
             try:
                 from tripplanner.observability import log_flow_summary
 
+                summary = batch.flow_summary()
                 log_flow_summary(
                     (batch.attribution or attribution).fields(),
-                    batch.flow_summary(),
+                    summary,
                     (time.monotonic() - started_at) * 1000,
                 )
+                batch.append_aggregate_summary(summary)
             except Exception:
                 pass
         _CONTEXT.reset(token)

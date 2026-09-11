@@ -54,6 +54,12 @@ def persist_interaction(
     day = occurred_at[:10]
     interaction_id = attribution.get("interaction_id", "")
     path = _root() / day / f"{_safe_id(interaction_id)}.json"
+    semantic_events = [event for event in events if event.get("kind") != "telemetry_summary"]
+    aggregated_events = sum(
+        int(event.get("aggregated_event_count") or 0)
+        for event in events
+        if event.get("kind") == "telemetry_summary"
+    )
     try:
         atomic_write_json(
             path,
@@ -61,8 +67,10 @@ def persist_interaction(
                 "schema_version": SCHEMA_VERSION,
                 "interaction": attribution,
                 "occurred_at": occurred_at,
-                "event_count": len(events),
-                "provider_call_count": len(provider_calls),
+                "event_count": len(semantic_events) + aggregated_events,
+                "provider_call_count": sum(
+                    int(call.get("units") or 1) for call in provider_calls
+                ),
                 "events": events,
                 "provider_calls": provider_calls,
             },

@@ -164,6 +164,7 @@ def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) ->
 
     events: list[tuple[str, dict]] = []
     usage_calls: list[dict] = []
+    prompt_logs: list[tuple[str, str, dict]] = []
     ticks = iter([10.0, 10.25])
     monkeypatch.setattr(graph_mod.time, "monotonic", lambda: next(ticks))
     monkeypatch.setattr(
@@ -175,6 +176,11 @@ def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) ->
         graph_mod,
         "record_usage",
         lambda _user_id, **fields: usage_calls.append(fields),
+    )
+    monkeypatch.setattr(
+        graph_mod,
+        "log_llm_prompt",
+        lambda model, text, **fields: prompt_logs.append((model, text, fields)),
     )
     callback = graph_mod._UsageCallback("gpt-4.1-test")
     callback.on_chat_model_start(
@@ -200,6 +206,11 @@ def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) ->
         "prompt_tokens": 1200,
         "completion_tokens": 300,
     }]
+    assert prompt_logs == [(
+        "gpt-4.1-test",
+        "Plan a short Punjab trip",
+        {"message_count": 1, "prompt_chars": 24},
+    )]
 
 
 def test_usage_callback_records_model_error_latency(monkeypatch) -> None:
