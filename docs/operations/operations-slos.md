@@ -261,15 +261,20 @@ archive. A lost container disk can lose its unuploaded spool; use persistent sto
 when this residual window is unacceptable. No per-token Cosmos writes occur.
 
 The daemon drains at most 25 events per worker pass by default (configurable with
-`TRIPPLANNER_FLIGHT_RECORDER_BATCH_SIZE`, clamped to 1-500) and emits one batch
-completion line. Successful `storage_operation`, `cache_access`, duplicate
+`TRIPPLANNER_FLIGHT_RECORDER_BATCH_SIZE`, clamped to 1-500) and emits at most one
+progress summary per minute plus one caught-up summary. Successful `storage_operation`, `cache_access`, duplicate
 `outbound_call`, cache-served `provider_call`, and `llm_usage` events continue to feed
 alert observers, metrics, and content-free ledgers, but are intentionally absent as
 individual console/app-file and recorder-spool entries. One interaction-summary event
-retains their aggregate counts in private flight evidence. Failures remain visible. Human-facing
-logs retain API completions, LLM/tool/attempted-provider activity, workflow stages,
-and one interaction summary; local provider and summary lines may include the bounded
-Places names involved, while hosted logs remain content-free.
+retains their aggregate counts in private flight evidence and one content-free durable
+telemetry-summary row supports the operations dashboard. Cache-usage ledger rows are
+also coalesced by interaction/provider/operation while preserving exact `units` and
+estimated savings. Failures remain visible. Human-facing logs retain API completions,
+LLM/tool/attempted-provider activity, workflow stages, and one interaction summary.
+Local LLM prompt lines contain at most 100 PII-scrubbed words and the complete word
+count; hosted prompt lines contain counts only. Provider lines include service,
+purpose/dataset, SKU, billing posture, HTTP status, and duration. Local provider and
+summary lines may include bounded Places names, while hosted logs remain content-free.
 
 `GET /providers/status` includes non-sensitive `outbound.flight_recorder` health:
 enabled, last error type, last successful upload and pending event count. Watch

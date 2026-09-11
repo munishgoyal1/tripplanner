@@ -75,6 +75,26 @@ def _dataset(provider: str, operation: str) -> str:
     return f"{provider}_{operation}"
 
 
+def _purpose(provider: str, operation: str, dataset: str) -> str:
+    exact = {
+        ("azure_openai", "chat_completion"): "trip_planning_reasoning",
+        ("google", "text_search"): "place_search",
+        ("google", "place_details"): "place_details_reviews_hours",
+        ("google", "photo_media"): "place_photo",
+        ("google", "compute_routes"): "route_planning",
+        ("google", "static_map"): "map_rendering",
+        ("tavily", "request"): "destination_web_research",
+        ("open_meteo", "request"): "weather_forecast",
+        ("openrouteservice", "request"): "route_planning",
+        ("frankfurter", "request"): "currency_exchange_rates",
+        ("duffel", "request"): "flight_offer_search",
+        ("amadeus", "request"): "flight_offer_search",
+        ("liteapi", "request"): "hotel_offer_search",
+        ("viator", "request"): "activity_offer_search",
+    }
+    return exact.get((provider, operation), dataset or operation or "provider_request")
+
+
 def _write(record: dict[str, Any]) -> None:
     environment = str(record.get("environment", "local")).strip().lower()
     try:
@@ -174,6 +194,8 @@ def record_call(
     estimate = estimated_cost_usd
     if estimate is None and billable:
         estimate = _estimate(provider, operation, sku_class)
+    service = _service(provider, operation or "request")
+    dataset = _dataset(provider, operation or "request")
     record: dict[str, Any] = {
         "id": uuid.uuid4().hex,
         "occurred_at": occurred_at,
@@ -185,8 +207,9 @@ def record_call(
         "route": attribution.get("route", ""),
         "interaction_kind": attribution.get("interaction_kind", "other"),
         "provider": provider,
-        "service": _service(provider, operation or "request"),
-        "dataset": _dataset(provider, operation or "request"),
+        "service": service,
+        "dataset": dataset,
+        "purpose": _purpose(provider, operation or "request", dataset),
         "operation": operation or "request",
         "sku_class": sku_class or "unknown",
         "status": status,
@@ -219,6 +242,9 @@ def record_call(
         app_event(
             "provider_call",
             provider=record["provider"],
+            service=record["service"],
+            dataset=record["dataset"],
+            purpose=record["purpose"],
             operation=record["operation"],
             sku_class=record["sku_class"],
             status=record["status"],
@@ -331,6 +357,7 @@ def _expand(documents: list[dict[str, Any]]) -> list[dict[str, Any]]:
         operation = str(row.get("operation") or "request")
         row.setdefault("service", _service(provider, operation))
         row.setdefault("dataset", _dataset(provider, operation))
+        row.setdefault("purpose", _purpose(provider, operation, str(row["dataset"])))
         row.setdefault("estimated_savings_usd", 0.0)
     return rows
 

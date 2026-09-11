@@ -39,6 +39,7 @@ _INLINE = re.compile(
 _BEARER = re.compile(r"(?i)\bBearer\s+[A-Za-z0-9._~+/=-]+")
 _TTL = 7 * 24 * 60 * 60
 _DEFAULT_WORKER_BATCH_SIZE = 25
+_UPLOAD_REPORT_INTERVAL_SECONDS = 60
 
 
 def enabled():
@@ -222,6 +223,14 @@ def _worker_batch_size() -> int:
     return max(1, min(configured, 500))
 
 
+def _upload_report_due(
+    uploaded: int, uploaded_since_report: int, batch_size: int, elapsed_seconds: float
+) -> bool:
+    return bool(uploaded_since_report) and (
+        uploaded < batch_size or elapsed_seconds >= _UPLOAD_REPORT_INTERVAL_SECONDS
+    )
+
+
 def clear_user(user_id):
     from tripplanner import storage_cosmos
 
@@ -259,20 +268,36 @@ def _start_worker():
             return
 
         def run():
+            uploaded_since_report = 0
+            report_started = time.monotonic()
             while True:
                 batch_size = _worker_batch_size()
                 with _drain_lock:
                     uploaded = _drain_once(limit=batch_size)
-                if uploaded:
+                uploaded_since_report += uploaded
+                elapsed_seconds = time.monotonic() - report_started
+                if _upload_report_due(
+                    uploaded,
+                    uploaded_since_report,
+                    batch_size,
+                    elapsed_seconds,
+                ):
+                    pending = sum(1 for _ in root().glob("*.json"))
                     logging.getLogger(__name__).info(
-                        "FLIGHT RECORDER uploaded batch=%s",
-                        uploaded,
+                        "FLIGHT RECORDER uploaded=%s pending=%s window=%.0fs",
+                        uploaded_since_report,
+                        pending,
+                        elapsed_seconds,
                         extra={
-                            "event_kind": "flight_recorder_batch",
-                            "uploaded": uploaded,
+                            "event_kind": "flight_recorder_summary",
+                            "uploaded": uploaded_since_report,
+                            "pending": pending,
                             "batch_size": batch_size,
+                            "window_seconds": round(elapsed_seconds, 2),
                         },
                     )
+                    uploaded_since_report = 0
+                    report_started = time.monotonic()
                 time.sleep(2 if uploaded == batch_size else 10)
 
         _worker = threading.Thread(target=run, name="flight-recorder", daemon=True)

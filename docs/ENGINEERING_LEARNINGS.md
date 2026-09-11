@@ -1777,3 +1777,25 @@ the outcome.
 - Download actions that both mean "make a PDF" (preview print vs download) make
   the dialog feel unfinished. Preview is for reading; Download PDF is the file;
   calendar stays outside the format picker.
+## 2026-09-11 - Balanced Telemetry Preserves Units, Not Repeated Rows
+
+- Removing low-level events from console and flight evidence still left hundreds of
+  cache/provider-cache rows in each interaction ledger. The operations dashboard needs
+  exact counts and cost avoidance, not one durable row per identical cache decision.
+- Coalesce cache usage by interaction, provider, operation, SKU, and dataset while
+  summing `units` and estimated savings. Replace repetitive cache/storage/outbound
+  timeline entries with one content-free interaction summary; retain semantic calls,
+  workflow decisions, and failures individually for reconstruction.
+- Prompt previews are useful locally when bounded and scrubbed, but hosted app logs
+  should retain only shape and token metadata. Exact prompts already belong in the
+  restricted flight recorder, so copying them into hosted operational logs adds risk
+  without improving reconstruction.
+
+## 2026-09-11 - Bounded Work Still Needs Bounded Progress Logging
+
+- Limiting a recorder drain to 25 uploads protected each pass, but emitting one line
+  after every pass still dominated the console for a large legacy backlog. A batch is
+  an execution boundary, not necessarily a useful operator-reporting boundary.
+- Report continuous maintenance progress on a time window and once when caught up.
+  Keep batch size as the I/O control and reporting cadence as a separate, slower
+  human-signal control.
