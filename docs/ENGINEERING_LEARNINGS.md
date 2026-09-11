@@ -1758,3 +1758,17 @@ the outcome.
 - Several local stacks may share the recorder spool. Delivery is idempotent, so a
   missing file after enumeration is a normal race to ignore rather than a degraded
   recorder condition.
+
+## 2026-09-11 - Balanced Telemetry Preserves Units, Not Repeated Rows
+
+- Removing low-level events from console and flight evidence still left hundreds of
+  cache/provider-cache rows in each interaction ledger. The operations dashboard needs
+  exact counts and cost avoidance, not one durable row per identical cache decision.
+- Coalesce cache usage by interaction, provider, operation, SKU, and dataset while
+  summing `units` and estimated savings. Replace repetitive cache/storage/outbound
+  timeline entries with one content-free interaction summary; retain semantic calls,
+  workflow decisions, and failures individually for reconstruction.
+- Prompt previews are useful locally when bounded and scrubbed, but hosted app logs
+  should retain only shape and token metadata. Exact prompts already belong in the
+  restricted flight recorder, so copying them into hosted operational logs adds risk
+  without improving reconstruction.

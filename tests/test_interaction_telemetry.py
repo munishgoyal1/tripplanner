@@ -72,6 +72,30 @@ def test_local_interaction_trace_failure_does_not_fail_scope(monkeypatch, tmp_pa
         app_event("tool_call", tool="get_trip_plan", status="ok")
 
 
+def test_local_interaction_trace_retains_aggregate_units_not_cache_rows(
+    monkeypatch, tmp_path
+) -> None:
+    monkeypatch.setenv("TRIPPLANNER_HOME", str(tmp_path))
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
+
+    with usage_scope("user_action", interaction_id="turn-cache-summary"):
+        for _index in range(25):
+            provider_usage.record_cache_hit(
+                provider="google",
+                operation="text_search",
+                sku_class="essentials",
+            )
+
+    path = next((tmp_path / "trip-telemetry" / "interactions").glob("*/*.json"))
+    trace = json.loads(path.read_text(encoding="utf-8"))
+    assert trace["event_count"] == 25
+    assert trace["provider_call_count"] == 25
+    assert len(trace["provider_calls"]) == 1
+    assert trace["provider_calls"][0]["units"] == 25
+    assert [event["kind"] for event in trace["events"]] == ["telemetry_summary"]
+
+
 def test_nested_trip_scope_labels_the_shared_interaction_trace(monkeypatch, tmp_path) -> None:  # type: ignore[no-untyped-def]
     monkeypatch.setenv("TRIPPLANNER_HOME", str(tmp_path))
     monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")

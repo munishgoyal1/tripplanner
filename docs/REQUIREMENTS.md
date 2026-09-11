@@ -691,9 +691,21 @@ implemented capability baseline.
   interaction summary. Successful per-cache, per-storage, duplicate outbound,
   and LLM-accounting events remain available to observers, ledgers, and metrics,
   and are represented by one aggregate private flight event instead of thousands
-  of individual spool files. Local flow
-  summaries and provider lines may name the Places item being fetched; canary and
-  production summaries remain content-free.
+  of individual spool files. Their durable interaction entries and cache-usage
+  records are aggregated by interaction/provider/operation with exact unit counts,
+  rather than retaining one nested row per hit or miss. Local flow summaries and
+  provider lines may name the Places item being fetched; canary and production
+  summaries remain content-free.
+- Each model attempt emits one semantic prompt line before the call and one terminal
+  model line. Local console/file output includes a PII-scrubbed preview of at most
+  100 whitespace-delimited prompt words plus the complete prompt word, character,
+  message, input-token, output-token, and cached-token counts that are available.
+  Canary and production emit the counts but never the prompt preview. The private
+  recorder continues to retain the exact sanitized model request and response.
+- Attempted provider lines identify the provider, operation, service, business
+  purpose/dataset, SKU, billable posture, HTTP status, duration, and—only locally
+  when known—the Place and city. Cache-served provider records stay out of the
+  human log and are aggregated for the operations dashboard.
 - A private flight recorder is enabled by default across local, canary and production
   code paths. It captures exact model messages/tool schemas and returned messages,
   model HTTP attempts (including SDK retry counts), tool inputs/outputs/errors,
@@ -713,10 +725,12 @@ implemented capability baseline.
   identities do not grant application-owner access, and customers receive no owner role.
 - The owner operations view keeps an immutable 90-day content-free provider/model
   ledger in local JSONL or hosted Cosmos. A request-scoped batch normally produces
-  one storage document while retaining each provider/model call as a nested entry;
+  one storage document while retaining each attempted provider/model call and one
+  unit-counted cache rollup per provider/operation as nested entries;
   unusually large batches are bounded and chunked. The same document retains an
-  ordered, scalar-allowlisted timeline of tool, provider, HTTP, cache, and storage
-  events. Local development also writes one content-free interaction study artifact
+  ordered, scalar-allowlisted timeline of semantic tool/provider/workflow/failure
+  events plus one low-level telemetry summary. Local development also writes one
+  content-free interaction study artifact
   beneath `TRIPPLANNER_HOME`; those writes fail open and are disabled in hosted
   environments. User trip creation, existing-trip
   updates, other user actions, audits, agent background work, automation, and

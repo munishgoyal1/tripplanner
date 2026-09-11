@@ -28,7 +28,7 @@ from tripplanner.agents.trip_agent import (
     select_tools,
 )
 from tripplanner.config import get_settings
-from tripplanner.observability import app_event
+from tripplanner.observability import app_event, log_llm_prompt
 from tripplanner.tools.trip_planner import load_active_trip_dict
 from tripplanner.tools.user_preferences import load_preferences
 from tripplanner.tools_cache import wrap_tools_with_cache
@@ -107,6 +107,25 @@ def _message_chars(message: Any) -> int:
     return size
 
 
+def _message_prompt_text(message: Any) -> str:
+    content = getattr(message, "content", "") or ""
+    if isinstance(content, list):
+        fragments = [
+            str(block.get("text") or "")
+            for block in content
+            if isinstance(block, dict) and block.get("text")
+        ]
+    else:
+        fragments = [str(content)]
+    extra = getattr(message, "additional_kwargs", None) or {}
+    for call in extra.get("tool_calls") or []:
+        function = (call or {}).get("function") or {}
+        fragments.extend(
+            [str(function.get("name") or ""), str(function.get("arguments") or "")]
+        )
+    return " ".join(fragment for fragment in fragments if fragment)
+
+
 def _cached_tokens(response: Any) -> int:
     """Prompt tokens the provider served from its cache, when it says so.
 
@@ -154,13 +173,23 @@ class _UsageCallback(BaseCallbackHandler):
         **_: Any,
     ) -> None:
         batch = messages[0] if messages else []
+        prompt_chars = sum(_message_chars(message) for message in batch)
         context = _RunContext(
             started_at=time.monotonic(),
             message_count=len(batch),
-            prompt_chars=sum(_message_chars(message) for message in batch),
+            prompt_chars=prompt_chars,
         )
         with self._lock:
             self._runs[run_id] = context
+        try:
+            log_llm_prompt(
+                self._model,
+                "\n".join(_message_prompt_text(message) for message in batch),
+                message_count=len(batch),
+                prompt_chars=prompt_chars,
+            )
+        except Exception:
+            pass
 
     def on_llm_end(self, response: Any, run_id: Any = None, **_: Any) -> None:  # noqa: D401
         try:

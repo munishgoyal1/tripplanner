@@ -417,6 +417,45 @@ def _duration_text(value: Any) -> str:
     return f" {milliseconds / 1000:.2f}s" if milliseconds >= 1000 else f" {milliseconds:.0f}ms"
 
 
+def log_llm_prompt(
+    model: str,
+    prompt_text: str,
+    *,
+    message_count: int,
+    prompt_chars: int,
+) -> None:
+    words = re.findall(r"\S+", prompt_text)
+    preview = " ".join(words[:100])
+    truncated = len(words) > 100
+    try:
+        from tripplanner.usage_attribution import current_attribution
+
+        attribution = current_attribution().fields()
+    except Exception:
+        attribution = {"environment": os.getenv("TRIPPLANNER_ENVIRONMENT", "local")}
+    is_local = str(attribution.get("environment") or "").strip().lower() == "local"
+    preview_suffix = " …" if truncated else ""
+    preview_text = (
+        f' preview="{redact_text(preview)}{preview_suffix}"' if is_local else ""
+    )
+    fields: dict[str, Any] = {
+        **attribution,
+        "model": model,
+        "message_count": max(0, message_count),
+        "prompt_words": len(words),
+        "prompt_chars": max(0, prompt_chars),
+        "preview_words": min(100, len(words)),
+        "preview_truncated": truncated,
+        "event_kind": "llm_prompt",
+    }
+    if is_local:
+        fields["prompt_preview"] = preview
+    _APP_EVENT_LOGGER.info(
+        f"LLM PROMPT {model} messages={message_count} words={len(words)}{preview_text}",
+        extra=fields,
+    )
+
+
 def _human_event_message(kind: str, fields: dict[str, Any]) -> str:
     status = str(fields.get("status") or fields.get("outcome") or "").lower()
     duration = _duration_text(fields.get("ms"))
@@ -428,7 +467,17 @@ def _human_event_message(kind: str, fields: dict[str, Any]) -> str:
     if kind == "provider_call":
         provider = fields.get("provider") or "provider"
         operation = fields.get("operation") or "request"
-        return f"PROVIDER {provider}.{operation}{place_text} -> {status or 'complete'}{duration}"
+        purpose = fields.get("purpose") or fields.get("dataset") or operation
+        service = fields.get("service") or provider
+        sku = fields.get("sku_class") or "unknown"
+        http_status = fields.get("http_status")
+        http_text = f" http={http_status}" if http_status is not None else ""
+        billing = "billable" if fields.get("billable", True) else "nonbillable"
+        return (
+            f"PROVIDER {provider}.{operation} for={purpose} service={service}"
+            f" sku={sku} billing={billing}{place_text} -> "
+            f"{status or 'complete'}{duration}{http_text}"
+        )
     if kind == "storage_operation":
         store = fields.get("store") or "storage"
         container = fields.get("container") or "unknown"
@@ -439,8 +488,15 @@ def _human_event_message(kind: str, fields: dict[str, Any]) -> str:
         operation = fields.get("operation") or "request"
         return f"API OUT {provider}.{operation} -> {status or 'complete'}{duration}"
     if kind == "llm_call":
-        tokens = int(fields.get("prompt_tokens") or 0) + int(fields.get("completion_tokens") or 0)
-        token_text = f" tokens={tokens}" if tokens else ""
+        prompt_tokens = int(fields.get("prompt_tokens") or 0)
+        completion_tokens = int(fields.get("completion_tokens") or 0)
+        cached_tokens = int(fields.get("cached_tokens") or 0)
+        token_text = (
+            f" input_tokens={prompt_tokens} output_tokens={completion_tokens}"
+            f" cached_tokens={cached_tokens}"
+            if prompt_tokens or completion_tokens or cached_tokens
+            else ""
+        )
         return (
             f"LLM {fields.get('model') or 'model'} -> {status or 'complete'}"
             f"{duration}{token_text}"

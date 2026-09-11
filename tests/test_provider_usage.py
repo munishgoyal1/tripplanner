@@ -333,9 +333,38 @@ def test_usage_batch_builds_bounded_human_flow_summary() -> None:
         "cache_hits": 1,
         "cache_misses": 1,
         "storage_operations": 1,
+        "aggregated_event_count": 3,
+        "outbound_calls": 0,
+        "llm_usage_events": 0,
+        "cache_served_provider_calls": 0,
         "places": ["Taj Mahal (Agra)=memory_hit", "Agra Fort (Agra)=miss"],
         "place_count": 2,
     }
+
+
+def test_cache_usage_is_aggregated_per_interaction_without_losing_units(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    writes: list[dict] = []
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(
+        storage_cosmos,
+        "upsert_doc",
+        lambda _container, _partition, _id, body: writes.append(body),
+    )
+
+    with usage_scope("user_action", interaction_id="turn-many-cache-hits"):
+        for _index in range(100):
+            provider_usage.record_cache_hit(
+                provider="google",
+                operation="text_search",
+                sku_class="essentials",
+            )
+
+    assert len(writes) == 1
+    assert writes[0]["record_count"] == 1
+    assert writes[0]["entries"][0]["units"] == 100
+    assert writes[0]["telemetry_event_count"] == 1
+    assert writes[0]["telemetry_events"][0]["kind"] == "telemetry_summary"
+    assert writes[0]["telemetry_events"][0]["cache_served_provider_calls"] == 100
 
 
 def test_provider_log_context_is_local_only(monkeypatch) -> None:  # type: ignore[no-untyped-def]
@@ -370,6 +399,9 @@ def test_provider_log_context_is_local_only(monkeypatch) -> None:  # type: ignor
     )
     assert events[-1]["place"] == "Taj Mahal"
     assert events[-1]["city"] == "Agra"
+    assert events[-1]["service"] == "google_places"
+    assert events[-1]["dataset"] == "places_search"
+    assert events[-1]["purpose"] == "place_search"
 
 
 def test_persist_batch_chunks_records_and_events_at_their_limits(monkeypatch) -> None:  # type: ignore[no-untyped-def]
