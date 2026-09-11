@@ -1753,3 +1753,17 @@ the outcome.
   model, tool, attempted provider, error, and one bounded interaction or uploader
   summary. Keep local resource names ephemeral and bounded; keep hosted operational
   records content-free.
+
+## 2026-09-11 - Presentation Suppression Does Not Remove Recorder I/O
+
+- A live workspace smoke after suppressing low-level console lines created more than
+  3,000 recorder spool files in minutes. A quiet terminal therefore did not prove a
+  low-overhead diagnostic path; file counts and uploader behavior were the necessary
+  evidence.
+- Retain exact provider, model, tool, workflow, and failure evidence, but aggregate
+  successful cache, storage, duplicate outbound, cache-served provider, and accounting
+  events once per interaction. Observers and content-free ledgers can keep their
+  individual measurements without forcing one fsync and Cosmos upsert per measurement.
+- Several local stacks may share the recorder spool. Delivery is idempotent, so a
+  missing file after enumeration is a normal race to ignore rather than a degraded
+  recorder condition.

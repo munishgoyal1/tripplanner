@@ -483,6 +483,14 @@ def log_flow_summary(
         f"LLM={llm} tools={tools} providers={providers} "
         f"cache={cache_hits} hit/{cache_misses} miss storage={storage}{place_text}"
     )
+    from tripplanner.flight_recorder import record
+
+    record(
+        "log.flow_summary",
+        **attribution,
+        **summary,
+        ms=round(elapsed_ms, 2),
+    )
     _APP_EVENT_LOGGER.info(
         message,
         extra={
@@ -544,9 +552,11 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
         fields = {**current_attribution().fields(), **fields}
     except Exception:
         pass
-    from tripplanner.flight_recorder import record
+    retain_individual_event = _should_log_event(kind, fields)
+    if retain_individual_event:
+        from tripplanner.flight_recorder import record
 
-    record("log." + kind, user_id=user_id, **fields)
+        record("log." + kind, user_id=user_id, **fields)
     safe: dict[str, Any] = {}
     for k, v in fields.items():
         if k.lower() in _SENSITIVE_FIELDS:
@@ -568,7 +578,7 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
             observer(kind, safe)
         except Exception:
             continue
-    if _should_log_event(kind, safe):
+    if retain_individual_event:
         _APP_EVENT_LOGGER.info(_human_event_message(kind, safe), extra=safe)
 
 

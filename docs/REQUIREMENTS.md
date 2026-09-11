@@ -692,8 +692,9 @@ implemented capability baseline.
   not a dump of every telemetry event. They retain API completions, LLM rounds,
   tool and attempted-provider calls, workflow stages, failures, and one bounded
   interaction summary. Successful per-cache, per-storage, duplicate outbound,
-  and LLM-accounting events remain available to observers, ledgers, metrics, and
-  private flight evidence but do not each incur console/file logging. Local flow
+  and LLM-accounting events remain available to observers, ledgers, and metrics,
+  and are represented by one aggregate private flight event instead of thousands
+  of individual spool files. Local flow
   summaries and provider lines may name the Places item being fetched; canary and
   production summaries remain content-free.
 - A private flight recorder is enabled by default across local, canary and production

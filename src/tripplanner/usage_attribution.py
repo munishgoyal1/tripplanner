@@ -158,7 +158,7 @@ class UsageBatch:
             "storage_operations": sum(
                 1 for event in events if event.get("kind") == "storage_operation"
             ),
-            "places": [f"{label}={decision}" for label, decision in places[:8]],
+            "places": [f"{label}={decision}" for label, decision in places[:5]],
             "place_count": len(places),
         }
 
