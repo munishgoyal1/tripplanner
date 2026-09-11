@@ -310,16 +310,22 @@ def test_optional_app_log_file_is_rotating_json_and_redacted(tmp_path, monkeypat
     assert "alice@example.com" not in target.read_text(encoding="utf-8")
 
 
-def test_successful_low_level_events_skip_console_and_file_but_keep_telemetry(
+def test_successful_low_level_events_skip_console_file_and_individual_recorder_entries(
     tmp_path, monkeypatch, capsys
 ):
-    from tripplanner import flight_recorder
+    from tripplanner import flight_recorder, usage_attribution
 
     recorded: list[tuple[str, dict]] = []
+    batched: list[str] = []
     monkeypatch.setattr(
         flight_recorder,
         "record",
         lambda kind, **fields: recorded.append((kind, fields)),
+    )
+    monkeypatch.setattr(
+        usage_attribution,
+        "append_current_event",
+        lambda kind, _fields: batched.append(kind),
     )
     target = tmp_path / "diagnostics" / "app.jsonl"
     monkeypatch.setenv("APP_LOG_PATH", str(target))
@@ -342,10 +348,40 @@ def test_successful_low_level_events_skip_console_and_file_but_keep_telemetry(
 
     assert capsys.readouterr().out == ""
     assert not target.exists() or target.read_text(encoding="utf-8") == ""
-    assert [kind for kind, _fields in recorded] == [
-        "log.storage_operation",
-        "log.cache_access",
-    ]
+    assert recorded == []
+    assert batched == ["storage_operation", "cache_access"]
+
+
+def test_flow_summary_is_one_private_recorder_event(monkeypatch, capsys):
+    from tripplanner import flight_recorder
+
+    recorded: list[tuple[str, dict]] = []
+    monkeypatch.setattr(
+        flight_recorder,
+        "record",
+        lambda kind, **fields: recorded.append((kind, fields)),
+    )
+    obs.setup_logging(force=True)
+
+    obs.log_flow_summary(
+        {"route": "GET /trip/workspace", "environment": "local"},
+        {
+            "event_count": 300,
+            "llm_calls": 0,
+            "tool_calls": 0,
+            "provider_calls": 2,
+            "cache_hits": 120,
+            "cache_misses": 4,
+            "storage_operations": 8,
+            "places": ["Taj Mahal (Agra)=memory_hit"],
+            "place_count": 1,
+        },
+        1250,
+    )
+
+    assert [kind for kind, _fields in recorded] == ["log.flow_summary"]
+    assert recorded[0][1]["cache_hits"] == 120
+    assert "FLOW GET /trip/workspace complete 1.25s" in capsys.readouterr().out
 
 
 def test_meaningful_provider_event_names_local_place_in_console_and_file(

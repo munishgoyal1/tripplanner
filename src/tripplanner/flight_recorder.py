@@ -184,11 +184,15 @@ def _drain_once(limit: int | None = None) -> int:
         if limit is not None:
             paths = paths[:limit]
         for path in paths:
-            event = json.loads(path.read_text(encoding="utf-8"))
+            try:
+                event = json.loads(path.read_text(encoding="utf-8"))
+            except FileNotFoundError:
+                # Another local stack may share and win this idempotent spool race.
+                continue
             if remote:
                 _upload(event)
                 _last_uploaded = event["recorded_at"]
-                path.unlink()
+                path.unlink(missing_ok=True)
                 uploaded += 1
             elif time.time() - event["unix_time"] > _TTL:
                 path.unlink()
