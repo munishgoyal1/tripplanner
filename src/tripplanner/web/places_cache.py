@@ -34,7 +34,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
 from queue import Empty, Queue
-from threading import Condition, Lock, RLock, Thread
+from threading import Condition, Event, Lock, RLock, Thread
 from typing import Any
 
 import httpx
@@ -74,6 +74,21 @@ _RATE_WINDOW_SEC = 60.0
 _rate_lock = Lock()
 _rate_windows: dict[str, deque[float]] = defaultdict(deque)
 
+# Set on app shutdown (api.py's lifespan "shutdown" event) so a worker thread
+# blocked in _pace() bails out immediately instead of continuing to wait out
+# the remaining quota window. Without this, a prefetch()/_photo_uris()
+# ThreadPoolExecutor with a worker mid-wait here would hold up process exit:
+# concurrent.futures.thread registers an atexit hook (_python_exit) the first
+# time any ThreadPoolExecutor is created, which joins every worker thread
+# with NO timeout -- one paced worker can make Ctrl+C hang for as long as its
+# remaining wait, which pacing correctness deliberately makes minutes, not
+# milliseconds.
+_shutting_down = Event()
+
+
+def begin_shutdown() -> None:
+    _shutting_down.set()
+
 
 def _pace(quota_id: str, *, default: int) -> None:
     """Block until another call under ``quota_id`` would stay within Google's
@@ -81,7 +96,7 @@ def _pace(quota_id: str, *, default: int) -> None:
     limit = billing_guardrails.gcp_quota_per_minute(
         "places.googleapis.com", quota_id, default=default
     )
-    while True:
+    while not _shutting_down.is_set():
         with _rate_lock:
             window = _rate_windows[quota_id]
             now = time.monotonic()
