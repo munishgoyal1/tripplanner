@@ -238,6 +238,78 @@ def test_prefetch_cache_hits_do_not_serialize_on_logging(_isolate, monkeypatch):
     assert elapsed < delay * len(names) / 2
 
 
+def test_lookup_place_propagates_circuit_open_instead_of_swallowing_it(
+    _isolate, _authorized, monkeypatch
+):
+    def fake_post(*args, **kwargs):
+        raise pc.http_client.CircuitOpenError("places.googleapis.com is temporarily unavailable")
+
+    monkeypatch.setattr(pc.http_client, "post", fake_post)
+
+    with pytest.raises(pc.http_client.CircuitOpenError):
+        _REAL_LOOKUP_PLACE("Some Place", "Goa")
+
+
+def test_ensure_does_not_cache_or_persist_a_circuit_open_lookup(_isolate, _authorized, monkeypatch):
+    """Regression: a breaker-open failure is transient infra state, not
+    "this place doesn't exist" -- caching/persisting it as a miss wastes a
+    durable write per failed place during exactly the kind of provider outage
+    that also floods logs (see the prefetch rate-limit fix alongside this)."""
+
+    def raising_lookup(_name, _city):
+        raise pc.http_client.CircuitOpenError("circuit open")
+
+    monkeypatch.setattr(pc, "_lookup_place", raising_lookup)
+    persisted = {"count": 0}
+    real_persist = pc._persist_entry
+
+    def counting_persist(key):
+        persisted["count"] += 1
+        return real_persist(key)
+
+    monkeypatch.setattr(pc, "_persist_entry", counting_persist)
+
+    result = pc._ensure("Circuit Broken Place", "Goa")
+
+    assert result == {}
+    assert persisted["count"] == 0
+    assert pc._key("Circuit Broken Place", "Goa") not in pc._cache()
+
+
+def test_pace_blocks_once_the_configured_quota_is_reached(_isolate, monkeypatch):
+    clock = {"t": 0.0}
+    sleeps: list[float] = []
+    monkeypatch.setattr(pc.time, "monotonic", lambda: clock["t"])
+
+    def fake_sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+        clock["t"] += seconds
+
+    monkeypatch.setattr(pc.time, "sleep", fake_sleep)
+    monkeypatch.setattr(
+        pc.billing_guardrails, "gcp_quota_per_minute", lambda *a, **k: 2
+    )
+    pc._rate_windows.clear()
+
+    pc._pace("SearchTextRequestPerMinutePerProject", default=30)
+    pc._pace("SearchTextRequestPerMinutePerProject", default=30)
+    assert not sleeps  # first two calls fit the quota of 2/minute immediately
+
+    pc._pace("SearchTextRequestPerMinutePerProject", default=30)
+    assert sleeps  # third call within the same window had to wait
+
+
+def test_pace_reads_the_real_environment_quota(_isolate, monkeypatch):
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "canary")
+    pc.billing_guardrails.reset_cache_for_tests()
+    limit = pc.billing_guardrails.gcp_quota_per_minute(
+        "places.googleapis.com", "SearchTextRequestPerMinutePerProject", default=999
+    )
+    # canary's configured per-minute text-search quota, from
+    # infra/billing-guardrails.json -- not the fallback default.
+    assert limit != 999
+
+
 def test_places_executor_paths_preserve_usage_attribution(_isolate, monkeypatch):
     from tripplanner.usage_attribution import current_attribution, usage_scope
 
