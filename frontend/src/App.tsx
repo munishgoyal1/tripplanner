@@ -703,6 +703,24 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     onDecisionError: handleDecisionError,
   };
 
+  const workspaceDays = panelSeed?.map?.days
+    ?? (panelSeed?.itinerary?.days ?? []).map((day) => ({
+      day: day.day,
+      label: `Day ${day.day}`,
+      color: day.color,
+      pin_ids: day.stops.map((_, index) => `${day.day}-${index}`),
+      route: day.route ?? { distance_km: 0, duration_min: 0, mode: "", distance_display: "", duration_display: "" },
+    }));
+  const displayedWorkspaceDays = workspaceDays.length > 0
+    ? workspaceDays
+    : Array.from({ length: view?.overview?.counts.days ?? 0 }, (_, index) => ({
+      day: index + 1,
+      label: `Day ${index + 1}`,
+      color: "#bd542f",
+      pin_ids: [],
+      route: { distance_km: 0, duration_min: 0, mode: "", distance_display: "", duration_display: "" },
+    }));
+
   const railProps = {
     filters: itineraryFilters,
     onFilterToggle: handleItineraryFilterToggle,
@@ -721,6 +739,10 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     routeFocusId: routeFocusId ?? undefined,
     routeFocusToken,
     itineraryJump,
+    hasTrip: Boolean(view?.has_trip),
+    days: displayedWorkspaceDays,
+    sequenceOpen,
+    onToggleSequence: () => setSequenceOpen((open) => !open),
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
     onDayMap: handleDayFocus,
@@ -923,24 +945,6 @@ export default function App({ initialRequest = null }: { initialRequest?: string
       detail: "Use the Assistant to add a meal that fits the route and schedule.",
     });
   }, [mealGapDay?.day, mealGapDay?.title]);
-
-  const workspaceDays = panelSeed?.map?.days
-    ?? (panelSeed?.itinerary?.days ?? []).map((day) => ({
-      day: day.day,
-      label: `Day ${day.day}`,
-      color: day.color,
-      pin_ids: day.stops.map((_, index) => `${day.day}-${index}`),
-      route: day.route ?? { distance_km: 0, duration_min: 0, mode: "", distance_display: "", duration_display: "" },
-    }));
-  const displayedWorkspaceDays = workspaceDays.length > 0
-    ? workspaceDays
-    : Array.from({ length: view?.overview?.counts.days ?? 0 }, (_, index) => ({
-      day: index + 1,
-      label: `Day ${index + 1}`,
-      color: "#bd542f",
-      pin_ids: [],
-      route: { distance_km: 0, duration_min: 0, mode: "", distance_display: "", duration_display: "" },
-    }));
 
   return <>
     {!isDesktop && <FloatingStatusBar />}

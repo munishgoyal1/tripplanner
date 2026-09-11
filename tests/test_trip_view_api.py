@@ -39,6 +39,61 @@ def test_trip_view_preserves_exact_itinerary_occurrence(
     }
 
 
+def test_trip_view_warms_the_gallery_in_the_background_even_when_unfocused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Regression: previously warm_view_items only ran after a *focused*
+    request, so the very first/general load of a large trip never got
+    proactively warmed in the background at all."""
+    calls: list[str] = []
+    monkeypatch.setattr(trip_operations, "build_view", lambda _focus: {"trip_id": "t1"})
+    monkeypatch.setattr(trip_operations, "warm_guide", lambda: calls.append("warm_guide"))
+    monkeypatch.setattr(
+        trip_operations, "warm_view_items", lambda: calls.append("warm_view_items")
+    )
+
+    response = TestClient(api.app).get("/trip/view")
+
+    assert response.status_code == 200
+    assert set(calls) == {"warm_guide", "warm_view_items"}
+
+
+def test_trip_view_focused_request_warms_the_rest_but_not_the_guide(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr(trip_operations, "build_view", lambda _focus: {"trip_id": "t1"})
+    monkeypatch.setattr(trip_operations, "warm_guide", lambda: calls.append("warm_guide"))
+    monkeypatch.setattr(
+        trip_operations, "warm_view_items", lambda: calls.append("warm_view_items")
+    )
+
+    response = TestClient(api.app).get(
+        "/trip/view", params={"focus_kind": "attraction", "focus_name": "Jag Mandir"}
+    )
+
+    assert response.status_code == 200
+    assert calls == ["warm_view_items"]
+
+
+def test_trip_workspace_warms_the_gallery_in_the_background_even_when_unfocused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr(
+        trip_operations, "active_workspace_payload", lambda _focus: {"view": {"trip_id": "t1"}}
+    )
+    monkeypatch.setattr(trip_operations, "warm_guide", lambda: calls.append("warm_guide"))
+    monkeypatch.setattr(
+        trip_operations, "warm_view_items", lambda: calls.append("warm_view_items")
+    )
+
+    response = TestClient(api.app).get("/trip/workspace")
+
+    assert response.status_code == 200
+    assert set(calls) == {"warm_guide", "warm_view_items"}
+
+
 def test_http_request_authorizes_user_provider_scope(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
