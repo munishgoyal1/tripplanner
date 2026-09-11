@@ -154,11 +154,11 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
         assert "ENABLE_GOOGLE_MAPS=1" in profile
     assert (
         '"quotaId": "SearchTextRequestPerDayPerProject", '
-        '"local": 200, "canary": 50, "prod": 200'
+        '"local": 600, "canary": 50, "prod": 200'
     ) in guardrails
     assert (
         '"quotaId": "GetPhotoMediaRequestPerDayPerProject", '
-        '"local": 400, "canary": 80, "prod": 400'
+        '"local": 1200, "canary": 80, "prod": 400'
     ) in guardrails
     guardrail_config = cloud_config["gcp"]
     maps_quotas = [
@@ -171,7 +171,7 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
             "service": "maps-backend.googleapis.com",
             "quotaId": "BillableDefaultPerDayPerProject",
             "preferenceId": "tp-mapsjs-billabledefaultperdayperproject",
-            "local": 300,
+            "local": 500,
             "canary": 50,
             "prod": 100,
         },
@@ -179,7 +179,7 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
             "service": "maps-backend.googleapis.com",
             "quotaId": "BillableDefaultPerMinutePerProject",
             "preferenceId": "tp-mapsjs-billabledefaultperminuteperproject",
-            "local": 60,
+            "local": 90,
             "canary": 20,
             "prod": 30,
         },
@@ -215,28 +215,30 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
     assert "$AllowQuotaIncreases" in apply_script
     assert "ConvertFrom-GcloudJson" in apply_script
     assert "--set-notification-channels=" in apply_script
+    # GCP's local environment is deliberately budgeted much higher than Azure's
+    # (800 vs 120 INR/day): local dev/test spend is exclusively GCP (Places/Maps
+    # calls), never Azure (local Cosmos uses the free emulator, not a hosted
+    # Azure resource) -- see docs/operations/gcp-billing-guardrails.md's "Local
+    # testing headroom" note. Each cloud's globalBudget is still exactly the sum
+    # of its own three environment budgets, so the account-wide alert threshold
+    # stays meaningful relative to what the environments can actually spend.
+    expected_local_daily = {"azure": 120, "gcp": 800}
+    expected_local_monthly = {"azure": 3600, "gcp": 24000}
     for cloud in ("azure", "gcp"):
         environments = {
             environment["name"]: environment
             for environment in cloud_config[cloud]["environments"]
         }
-        assert cloud_config[cloud]["globalBudget"]["amount"] == 6000
-        assert environments["local"]["dailyBudget"] == 120
-        assert environments["local"]["budget"] == 3600
+        assert environments["local"]["dailyBudget"] == expected_local_daily[cloud]
+        assert environments["local"]["budget"] == expected_local_monthly[cloud]
         assert environments["canary"]["dailyBudget"] == 20
         assert environments["canary"]["budget"] == 600
         assert environments["prod"]["dailyBudget"] == 60
         assert environments["prod"]["budget"] == 1800
         daily_ceiling = sum(environment["dailyBudget"] for environment in environments.values())
-        monthly_ceiling = cloud_config[cloud]["globalBudget"]["amount"]
-        assert environments["local"]["dailyBudget"] + environments["canary"]["dailyBudget"] == (
-            daily_ceiling * 0.7
-        )
-        assert environments["local"]["budget"] + environments["canary"]["budget"] == (
-            monthly_ceiling * 0.7
-        )
-        assert environments["prod"]["dailyBudget"] == daily_ceiling * 0.3
-        assert environments["prod"]["budget"] == monthly_ceiling * 0.3
+        monthly_ceiling = sum(environment["budget"] for environment in environments.values())
+        assert cloud_config[cloud]["globalBudget"]["amount"] == monthly_ceiling
+        assert monthly_ceiling == daily_ceiling * 30
     assert '$policyDisplayName = "[$($env.name)] Maps API quota exceeded"' in apply_script
     # Severity/aggregation/auto-close for the quota-exceeded alert policy are
     # config-driven (infra/billing-guardrails.json -> gcpQuotaAlertPolicies),

@@ -120,15 +120,20 @@ Examples:
 Run-Latest-Master - fast-forward primary master and start its canonical local stack.
 
 Usage: Run-Latest-Master [-ValidateOnly] [-Watch] [-Logs] [-BackendOnly|-FrontendOnly]
-                         [-NoLabs] [-ApiPort n] [-FrontendPort n] [-LabsPort n]
+                         [-NoLabs] [-NoInspector] [-ApiPort n] [-FrontendPort n]
+                         [-LabsPort n] [-InspectorPort n]
                          [-CosmosBackend azure|emulator] [-UseCanaryData]
 
   -ValidateOnly   Check the fast-forward without starting servers.
   -Watch          Enable backend reload and frontend HMR.
   -NoLabs         Skip the UX Labs server.
+  -NoInspector    Skip the Quality Inspector server.
   -UseCanaryData  Use hosted canary data.
 
-Example: Run-Latest-Master -Watch -NoLabs
+For everyday trip-planning testing, -NoLabs -NoInspector skips both extra Vite
+dev servers so only FastAPI and the main SPA start.
+
+Example: Run-Latest-Master -Watch -NoLabs -NoInspector
 "@
     "start-dev-spa" = @"
 Start-Dev-Spa - start the local FastAPI, main SPA, Labs, and Inspector stack.

@@ -326,6 +326,72 @@ def test_pace_abandons_a_wait_immediately_once_shutdown_begins(_isolate, monkeyp
     pc._pace("SearchTextRequestPerMinutePerProject", default=30)
 
     assert not sleeps  # returned immediately instead of waiting out the window
+    # _shutting_down is a process-wide Event, not test-scoped state -- clear it
+    # so later tests in this module don't inherit a "shutting down" process.
+    pc._shutting_down.clear()
+
+
+def test_pace_reports_a_wait_that_crosses_the_visibility_threshold(_isolate, monkeypatch):
+    """Regression: a quota-exhausted burst previously made _pace() block
+    silently for tens of seconds with zero console/log output, which made a
+    throttled trip switch look identical to the app being stuck. A wait that
+    crosses _PACE_LOG_THRESHOLD_MS must now surface one app_event."""
+    clock = {"t": 0.0}
+    monkeypatch.setattr(pc.time, "monotonic", lambda: clock["t"])
+
+    def fake_sleep(seconds: float) -> None:
+        clock["t"] += seconds
+
+    monkeypatch.setattr(pc.time, "sleep", fake_sleep)
+    monkeypatch.setattr(pc.billing_guardrails, "gcp_quota_per_minute", lambda *a, **k: 1)
+    pc._rate_windows.clear()
+    # A prior test in this module (test_pace_abandons_a_wait_immediately_once_
+    # shutdown_begins) sets this process-wide Event and never clears it.
+    pc._shutting_down.clear()
+
+    events: list[tuple[str, dict]] = []
+    from tripplanner import observability
+
+    monkeypatch.setattr(
+        observability, "app_event", lambda kind, **fields: events.append((kind, fields))
+    )
+
+    pc._pace("SearchTextRequestPerMinutePerProject", default=30)  # uses up the only slot
+    pc._pace("SearchTextRequestPerMinutePerProject", default=30)  # waits out the full window
+
+    assert len(events) == 1
+    kind, fields = events[0]
+    assert kind == "provider_pacing"
+    assert fields["quota_id"] == "SearchTextRequestPerMinutePerProject"
+    assert fields["ms"] >= pc._PACE_LOG_THRESHOLD_MS
+
+
+def test_pace_stays_quiet_for_a_short_wait(_isolate, monkeypatch):
+    clock = {"t": 0.0}
+    monkeypatch.setattr(pc.time, "monotonic", lambda: clock["t"])
+
+    def fake_sleep(seconds: float) -> None:
+        clock["t"] += seconds
+
+    monkeypatch.setattr(pc.time, "sleep", fake_sleep)
+    # Window resets almost immediately, so any wait stays well under the
+    # visibility threshold.
+    monkeypatch.setattr(pc, "_RATE_WINDOW_SEC", 0.05)
+    monkeypatch.setattr(pc.billing_guardrails, "gcp_quota_per_minute", lambda *a, **k: 1)
+    pc._rate_windows.clear()
+    pc._shutting_down.clear()
+
+    events: list[tuple[str, dict]] = []
+    from tripplanner import observability
+
+    monkeypatch.setattr(
+        observability, "app_event", lambda kind, **fields: events.append((kind, fields))
+    )
+
+    pc._pace("SearchTextRequestPerMinutePerProject", default=30)
+    pc._pace("SearchTextRequestPerMinutePerProject", default=30)
+
+    assert not events
 
 
 def test_pace_reads_the_real_environment_quota(_isolate, monkeypatch):
