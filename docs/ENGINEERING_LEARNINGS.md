@@ -1791,6 +1791,13 @@ the outcome.
   restricted flight recorder, so copying them into hosted operational logs adds risk
   without improving reconstruction.
 
+## 2026-09-11 - Photo PDFs Must Inline Images Before file:// Print
+
+- Browser preview can load Google photo URLs. Headless print-to-PDF of a local
+  HTML file often times out or paints without those remote images, then a text
+  fallback is emailed. Inline http(s) `<img>` tags as data URIs and reuse the
+  already-built email HTML so the attachment matches preview.
+
 ## 2026-09-11 - Bounded Work Still Needs Bounded Progress Logging
 
 - Limiting a recorder drain to 25 uploads protected each pass, but emitting one line

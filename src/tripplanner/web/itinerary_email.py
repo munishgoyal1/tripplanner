@@ -46,6 +46,7 @@ def send_itinerary_email(
             include_photos=bool(req.include_photos),
             include_map_circuit=bool(req.include_map_circuit),
             include_budgets=bool(req.include_budgets),
+            html=html,
         )
     except Exception:
         pdf_bytes = None

@@ -3514,6 +3514,13 @@ stop are optional and off by default; day circuits stay on. Stop rows carry the
 same timing, hours, and notes as the itinerary panel. Map circuits use numbered
 stops with curved connectors when legs sit close together.
 
+[2026-09-11] Email photo PDF must match preview
+Photo-checked email was attaching the ReportLab text fallback because headless
+print-to-PDF of file:// HTML timed out on remote place photos. Inline those
+images and reuse the preview HTML for the attachment.
+
+
+
 
 
 

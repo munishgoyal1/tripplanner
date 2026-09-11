@@ -232,6 +232,41 @@ def test_pdf_embeds_map_place_photo_and_details(monkeypatch: pytest.MonkeyPatch)
     assert "Daily map circuit" in html
 
 
+def test_inline_remote_images_embeds_https_src(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Response:
+        content = b"img"
+        headers = {"content-type": "image/jpeg"}
+
+        def raise_for_status(self) -> None:
+            return None
+
+    monkeypatch.setattr(itinerary_pdf.http_client, "get", lambda *args, **kwargs: Response())
+    html = "<img class='stop-photo' src='https://photos.example/a.jpg' alt='x' />"
+    out = itinerary_pdf.inline_remote_images(html)
+    assert "data:image/jpeg;base64," in out
+    assert "https://photos.example/a.jpg" not in out
+
+
+def test_pdf_reuses_supplied_html_without_rebuilding(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        itinerary_export,
+        "build_export_html",
+        lambda *args, **kwargs: pytest.fail("supplied HTML must not rebuild"),
+    )
+    monkeypatch.setattr(
+        itinerary_pdf,
+        "html_to_pdf_bytes",
+        lambda html: b"%PDF-1.4 " + html.encode(),
+    )
+    pdf = itinerary_pdf.build_itinerary_pdf_bytes(
+        {"destination": "Goa"},
+        include_photos=True,
+        html="<html><body>Trip Book preview</body></html>",
+    )
+    assert pdf.startswith(b"%PDF-1.4")
+    assert b"Trip Book preview" in pdf
+
+
 def test_layered_trip_book_orders_control_then_days_then_appendices(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

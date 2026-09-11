@@ -7,7 +7,9 @@ fallback renderer and follows the same day/stop structure, not the old tables.
 
 from __future__ import annotations
 
+import base64
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -16,7 +18,16 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any
 
+import httpx
+
+from tripplanner import http_client
 from tripplanner.web import itinerary_export, trip_view
+
+_IMG_SRC = re.compile(
+    r"(<img\b[^>]*?\ssrc=)(['\"])(https?://[^'\"]+)\2",
+    re.IGNORECASE | re.DOTALL,
+)
+_MAX_INLINE_IMAGE_BYTES = 1_500_000
 
 
 def _browser_paths() -> list[str]:
@@ -55,6 +66,40 @@ def _browser_paths() -> list[str]:
     return unique
 
 
+def inline_remote_images(html: str) -> str:
+    """Embed http(s) <img> URLs as data URIs so file:// print-to-PDF can paint them."""
+    cache: dict[str, str] = {}
+
+    def replace(match: re.Match[str]) -> str:
+        url = match.group(3)
+        uri = cache.get(url)
+        if uri is None:
+            uri = _data_uri_for_url(url)
+            cache[url] = uri
+        if not uri:
+            return match.group(0)
+        quote = match.group(2)
+        return f"{match.group(1)}{quote}{uri}{quote}"
+
+    return _IMG_SRC.sub(replace, html)
+
+
+def _data_uri_for_url(url: str) -> str:
+    try:
+        response = http_client.get(url, timeout=12)
+        response.raise_for_status()
+    except httpx.HTTPError:
+        return ""
+    raw = response.content or b""
+    if not raw or len(raw) > _MAX_INLINE_IMAGE_BYTES:
+        return ""
+    content_type = (response.headers.get("content-type") or "image/jpeg").split(";", 1)[0]
+    if not content_type.startswith("image/"):
+        return ""
+    encoded = base64.b64encode(raw).decode("ascii")
+    return f"data:{content_type};base64,{encoded}"
+
+
 def html_to_pdf_bytes(html: str) -> bytes | None:
     """Print the export HTML to PDF with a local Chromium-family browser."""
     if os.getenv("TRIPPLANNER_HTML_PDF", "1").strip().lower() in {"0", "false", "no"}:
@@ -64,6 +109,8 @@ def html_to_pdf_bytes(html: str) -> bytes | None:
         pdf_path = Path(tmp) / "itinerary.pdf"
         html_path.write_text(html, encoding="utf-8")
         uri = html_path.resolve().as_uri()
+        wait_ms = "25000" if "data:image/" in html or len(html) > 150_000 else "8000"
+        timeout_s = 55 if wait_ms == "25000" else 20
         for browser in _browser_paths():
             cmd = [
                 browser,
@@ -73,6 +120,8 @@ def html_to_pdf_bytes(html: str) -> bytes | None:
                 "--disable-extensions",
                 "--no-first-run",
                 "--no-default-browser-check",
+                "--run-all-compositor-stages-before-draw",
+                f"--virtual-time-budget={wait_ms}",
                 f"--print-to-pdf={pdf_path}",
                 "--print-to-pdf-no-header",
                 uri,
@@ -81,7 +130,7 @@ def html_to_pdf_bytes(html: str) -> bytes | None:
                 subprocess.run(
                     cmd,
                     check=True,
-                    timeout=12,
+                    timeout=timeout_s,
                     capture_output=True,
                 )
             except (OSError, subprocess.SubprocessError, subprocess.TimeoutExpired):
@@ -100,9 +149,10 @@ def build_itinerary_pdf_bytes(
     include_photos: bool = False,
     include_map_circuit: bool = True,
     include_budgets: bool = False,
+    html: str | None = None,
 ) -> bytes:
     """Build a PDF bytes payload for the active itinerary."""
-    html = itinerary_export.build_export_html(
+    packet = html if html is not None else itinerary_export.build_export_html(
         trip,
         include_photos=include_photos,
         include_map_circuit=include_map_circuit,
@@ -110,7 +160,9 @@ def build_itinerary_pdf_bytes(
         template=template,
         auto_print=False,
     )
-    printed = html_to_pdf_bytes(html)
+    if "src='http" in packet or 'src="http' in packet:
+        packet = inline_remote_images(packet)
+    printed = html_to_pdf_bytes(packet)
     if printed:
         return printed
     return _reportlab_packet_bytes(
