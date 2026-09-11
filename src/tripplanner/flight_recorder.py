@@ -38,6 +38,7 @@ _INLINE = re.compile(
 )
 _BEARER = re.compile(r"(?i)\bBearer\s+[A-Za-z0-9._~+/=-]+")
 _TTL = 7 * 24 * 60 * 60
+_DEFAULT_WORKER_BATCH_SIZE = 25
 
 
 def enabled():
@@ -167,23 +168,28 @@ def _upload(event):
         )
 
 
-def _drain_once():
+def _drain_once(limit: int | None = None) -> int:
     """Retry spooled events idempotently; keep failed uploads for the next pass."""
     global _last_error, _last_uploaded
     from tripplanner import storage_cosmos
 
+    uploaded = 0
     token = _SUPPRESSED.set(True)
     try:
         remote = storage_cosmos.is_enabled()
         hosted = root().name in {"prod", "production", "canary"}
         if hosted and not remote:
             raise RuntimeError("Hosted recorder has no durable Cosmos sink")
-        for path in sorted(root().glob("*.json")):
+        paths = sorted(root().glob("*.json"))
+        if limit is not None:
+            paths = paths[:limit]
+        for path in paths:
             event = json.loads(path.read_text(encoding="utf-8"))
             if remote:
                 _upload(event)
                 _last_uploaded = event["recorded_at"]
                 path.unlink()
+                uploaded += 1
             elif time.time() - event["unix_time"] > _TTL:
                 path.unlink()
         _last_error = ""
@@ -191,11 +197,25 @@ def _drain_once():
         _failure(exc)
     finally:
         _SUPPRESSED.reset(token)
+    return uploaded
 
 
 def drain_once():
     with _drain_lock:
         _drain_once()
+
+
+def _worker_batch_size() -> int:
+    try:
+        configured = int(
+            os.getenv(
+                "TRIPPLANNER_FLIGHT_RECORDER_BATCH_SIZE",
+                str(_DEFAULT_WORKER_BATCH_SIZE),
+            )
+        )
+    except (TypeError, ValueError):
+        configured = _DEFAULT_WORKER_BATCH_SIZE
+    return max(1, min(configured, 500))
 
 
 def clear_user(user_id):
@@ -236,8 +256,20 @@ def _start_worker():
 
         def run():
             while True:
-                drain_once()
-                time.sleep(10)
+                batch_size = _worker_batch_size()
+                with _drain_lock:
+                    uploaded = _drain_once(limit=batch_size)
+                if uploaded:
+                    logging.getLogger(__name__).info(
+                        "FLIGHT RECORDER uploaded batch=%s",
+                        uploaded,
+                        extra={
+                            "event_kind": "flight_recorder_batch",
+                            "uploaded": uploaded,
+                            "batch_size": batch_size,
+                        },
+                    )
+                time.sleep(2 if uploaded == batch_size else 10)
 
         _worker = threading.Thread(target=run, name="flight-recorder", daemon=True)
         _worker.start()

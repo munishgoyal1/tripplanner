@@ -65,6 +65,15 @@ def test_provider_status_exposes_readiness_without_secrets(monkeypatch) -> None:
             }
         ],
     )
+    monkeypatch.setattr(
+        "tripplanner.flight_recorder.status",
+        lambda: {
+            "enabled": True,
+            "last_error": "",
+            "last_uploaded_at": "",
+            "spooled_events": 0,
+        },
+    )
     client = TestClient(api.app)
     http_client.reset_breakers_for_tests()
 
@@ -80,7 +89,15 @@ def test_provider_status_exposes_readiness_without_secrets(monkeypatch) -> None:
                 "access": "active_free_or_sandbox",
             }
         ],
-        "outbound": {"endpoints": {}},
+        "outbound": {
+            "endpoints": {},
+            "flight_recorder": {
+                "enabled": True,
+                "last_error": "",
+                "last_uploaded_at": "",
+                "spooled_events": 0,
+            },
+        },
     }
 
 

@@ -234,17 +234,20 @@ async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-unt
         status_code = response.status_code
         return response
     finally:
+        from tripplanner.observability import log_api_request
         from tripplanner.ops_metrics import record_request
 
         route = request.scope.get("route")
         route_path = getattr(route, "path", None) or "unmatched"
+        elapsed_ms = (time.monotonic() - started_at) * 1000
         if not str(route_path).startswith("/ops/"):
             record_request(
                 request.method,
                 str(route_path),
                 status_code,
-                (time.monotonic() - started_at) * 1000,
+                elapsed_ms,
             )
+        log_api_request(request.method, str(route_path), status_code, elapsed_ms)
 
 # Per-user chat history is persisted per active trip via ``web.chat_store`` so
 # the conversation + itinerary summary survive a browser refresh and follow

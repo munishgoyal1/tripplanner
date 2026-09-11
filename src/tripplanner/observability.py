@@ -382,6 +382,132 @@ _APP_EVENT_LOGGER = logging.getLogger("tripplanner.event")
 _EVENT_OBSERVERS_LOCK = threading.Lock()
 _EVENT_OBSERVERS: list[Any] = []
 
+_QUIET_SUCCESS_EVENTS = frozenset({"cache_access", "storage_operation", "outbound_call"})
+
+
+def _event_is_failure(fields: dict[str, Any]) -> bool:
+    status = str(fields.get("status") or "").lower()
+    outcome = str(fields.get("outcome") or "").lower()
+    return bool(fields.get("error")) or status in {"error", "failed", "failure"} or outcome in {
+        "error",
+        "failed",
+        "failure",
+    }
+
+
+def _should_log_event(kind: str, fields: dict[str, Any]) -> bool:
+    if _event_is_failure(fields):
+        return True
+    if kind == "cache_access" and fields.get("result") == "provider_unavailable":
+        return True
+    if kind in _QUIET_SUCCESS_EVENTS:
+        return False
+    if kind == "provider_call":
+        return bool(fields.get("attempted", True)) and fields.get("provider") != "azure_openai"
+    if kind == "llm_usage":
+        return False
+    return True
+
+
+def _duration_text(value: Any) -> str:
+    try:
+        milliseconds = float(value)
+    except (TypeError, ValueError):
+        return ""
+    return f" {milliseconds / 1000:.2f}s" if milliseconds >= 1000 else f" {milliseconds:.0f}ms"
+
+
+def _human_event_message(kind: str, fields: dict[str, Any]) -> str:
+    status = str(fields.get("status") or fields.get("outcome") or "").lower()
+    duration = _duration_text(fields.get("ms"))
+    place = str(fields.get("place") or "")
+    location = str(fields.get("city") or "")
+    place_text = f' place="{place}"' if place else ""
+    if location:
+        place_text += f' city="{location}"'
+    if kind == "provider_call":
+        provider = fields.get("provider") or "provider"
+        operation = fields.get("operation") or "request"
+        return f"PROVIDER {provider}.{operation}{place_text} -> {status or 'complete'}{duration}"
+    if kind == "storage_operation":
+        store = fields.get("store") or "storage"
+        container = fields.get("container") or "unknown"
+        operation = fields.get("operation") or "operation"
+        return f"STORAGE {store}.{container}.{operation} -> {status or 'complete'}{duration}"
+    if kind == "outbound_call":
+        provider = fields.get("provider") or fields.get("endpoint") or "provider"
+        operation = fields.get("operation") or "request"
+        return f"API OUT {provider}.{operation} -> {status or 'complete'}{duration}"
+    if kind == "llm_call":
+        tokens = int(fields.get("prompt_tokens") or 0) + int(fields.get("completion_tokens") or 0)
+        token_text = f" tokens={tokens}" if tokens else ""
+        return (
+            f"LLM {fields.get('model') or 'model'} -> {status or 'complete'}"
+            f"{duration}{token_text}"
+        )
+    if kind == "tool_call":
+        cache = " cache=hit" if fields.get("cache_hit") else ""
+        return (
+            f"TOOL {fields.get('tool') or 'unknown'} -> {status or 'complete'}"
+            f"{duration}{cache}"
+        )
+    if kind == "agent_model_round":
+        phases = fields.get("tool_phase") or "respond"
+        forced = fields.get("forced_tool") or fields.get("forced_reason") or ""
+        forced_text = f" next={forced}" if forced else ""
+        return f"FLOW agent round phase={phases}{forced_text}"
+    if kind in {"workflow_operation", "chat_phase", "chat_operation"}:
+        operation = fields.get("operation") or fields.get("phase") or kind
+        return f"STEP {operation} -> {status or 'complete'}{duration}"
+    if kind == "cache_access" and fields.get("result") == "provider_unavailable":
+        return f"CACHE provider unavailable{place_text}"
+    return f"event {kind}"
+
+
+def log_flow_summary(
+    attribution: dict[str, Any], summary: dict[str, Any], elapsed_ms: float
+) -> None:
+    if not summary.get("event_count"):
+        return
+    route = attribution.get("route") or attribution.get("initiator") or "interaction"
+    providers = summary.get("provider_calls", 0)
+    cache_hits = summary.get("cache_hits", 0)
+    cache_misses = summary.get("cache_misses", 0)
+    storage = summary.get("storage_operations", 0)
+    llm = summary.get("llm_calls", 0)
+    tools = summary.get("tool_calls", 0)
+    places = summary.get("places") or []
+    place_text = f" | places: {', '.join(places)}" if places else ""
+    message = (
+        f"FLOW {route} complete {_duration_text(elapsed_ms).strip()} | "
+        f"LLM={llm} tools={tools} providers={providers} "
+        f"cache={cache_hits} hit/{cache_misses} miss storage={storage}{place_text}"
+    )
+    _APP_EVENT_LOGGER.info(
+        message,
+        extra={
+            **attribution,
+            **summary,
+            "ms": round(elapsed_ms, 2),
+            "event_kind": "flow_summary",
+        },
+    )
+
+
+def log_api_request(method: str, route: str, status: int, elapsed_ms: float) -> None:
+    if route == "/health" or route.startswith("/ops/"):
+        return
+    _APP_EVENT_LOGGER.info(
+        f"API {method} {route} -> {status} {_duration_text(elapsed_ms).strip()}",
+        extra={
+            "method": method,
+            "route": route,
+            "status": status,
+            "ms": round(elapsed_ms, 2),
+            "event_kind": "api_request",
+        },
+    )
+
 
 def add_event_observer(observer: Any) -> None:
     with _EVENT_OBSERVERS_LOCK:
@@ -442,7 +568,8 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
             observer(kind, safe)
         except Exception:
             continue
-    _APP_EVENT_LOGGER.info("event %s", kind, extra=safe)
+    if _should_log_event(kind, safe):
+        _APP_EVENT_LOGGER.info(_human_event_message(kind, safe), extra=safe)
 
 
 @contextmanager

@@ -5,7 +5,9 @@ from __future__ import annotations
 import contextvars
 import os
 import threading
+import time
 import uuid
+from collections import Counter
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, replace
@@ -90,6 +92,7 @@ class UsageBatch:
     records: list[dict[str, Any]] = field(default_factory=list)
     events: list[dict[str, Any]] = field(default_factory=list)
     attribution: UsageAttribution | None = None
+    flow_places: dict[str, str] = field(default_factory=dict)
     lock: threading.Lock = field(default_factory=threading.Lock)
 
     def append(self, record: dict[str, Any]) -> None:
@@ -104,6 +107,16 @@ class UsageBatch:
             and (value is None or isinstance(value, (bool, float, int, str)))
         }
         with self.lock:
+            if (
+                str(fields.get("environment") or "").lower() == "local"
+                and fields.get("place")
+                and kind == "cache_access"
+            ):
+                label = str(fields["place"])
+                if fields.get("city"):
+                    label += f" ({fields['city']})"
+                decision = str(fields.get("result") or fields.get("status") or kind)
+                self.flow_places[label] = decision
             self.events.append(
                 {
                     "sequence": len(self.events) + 1,
@@ -112,6 +125,42 @@ class UsageBatch:
                     **safe_fields,
                 }
             )
+
+    def flow_summary(self) -> dict[str, Any]:
+        with self.lock:
+            events = list(self.events)
+            records = list(self.records)
+            places = list(self.flow_places.items())
+        cache_results = Counter(
+            str(event.get("result") or "")
+            for event in events
+            if event.get("kind") == "cache_access"
+        )
+        hit_results = sum(
+            count for result, count in cache_results.items() if result.endswith("hit")
+        )
+        miss_results = sum(
+            count
+            for result, count in cache_results.items()
+            if result == "miss" or result.endswith("_miss") or result == "refresh"
+        )
+        return {
+            "event_count": len(events),
+            "llm_calls": sum(1 for event in events if event.get("kind") == "llm_call"),
+            "tool_calls": sum(1 for event in events if event.get("kind") == "tool_call"),
+            "provider_calls": sum(
+                int(record.get("units") or 1)
+                for record in records
+                if record.get("attempted", True)
+            ),
+            "cache_hits": hit_results,
+            "cache_misses": miss_results,
+            "storage_operations": sum(
+                1 for event in events if event.get("kind") == "storage_operation"
+            ),
+            "places": [f"{label}={decision}" for label, decision in places[:8]],
+            "place_count": len(places),
+        }
 
     def promote_attribution(self, attribution: UsageAttribution) -> None:
         fields = attribution.fields()
@@ -186,6 +235,7 @@ def usage_scope(
     environment: str = "",
     interaction_kind: InteractionKind = "other",
 ) -> Iterator[UsageAttribution]:
+    started_at = time.monotonic()
     attribution = UsageAttribution(
         initiator=initiator,
         interaction_id=interaction_id or uuid.uuid4().hex,
@@ -212,6 +262,17 @@ def usage_scope(
         yield attribution
     finally:
         record("interaction.end", **(batch.attribution or attribution).fields())
+        if owns_batch:
+            try:
+                from tripplanner.observability import log_flow_summary
+
+                log_flow_summary(
+                    (batch.attribution or attribution).fields(),
+                    batch.flow_summary(),
+                    (time.monotonic() - started_at) * 1000,
+                )
+            except Exception:
+                pass
         _CONTEXT.reset(token)
         TRACE.reset(trace_token)
         if owns_batch:

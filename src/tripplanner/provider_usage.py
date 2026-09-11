@@ -166,6 +166,7 @@ def record_call(
     estimated_savings_usd: float = 0.0,
     event_type: str | None = None,
     units: int = 1,
+    log_context: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Persist one actual external call without request or response content."""
     occurred_at = _now().isoformat()
@@ -210,6 +211,11 @@ def record_call(
     try:
         from tripplanner.observability import app_event
 
+        local_context = (
+            dict(log_context or {})
+            if str(attribution.get("environment") or "").lower() == "local"
+            else {}
+        )
         app_event(
             "provider_call",
             provider=record["provider"],
@@ -224,6 +230,7 @@ def record_call(
             completion_tokens=record["completion_tokens"],
             estimated_cost_usd=record["estimated_cost_usd"],
             units=record["units"],
+            **local_context,
         )
     except Exception:
         pass

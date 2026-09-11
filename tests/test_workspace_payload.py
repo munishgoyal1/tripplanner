@@ -35,7 +35,7 @@ def test_build_workspace_payload_uses_one_plan_for_every_panel(monkeypatch) -> N
 
 
 def test_build_workspace_payload_emits_projection_timing(monkeypatch) -> None:
-    captured = {}
+    captured: list[dict] = []
     monkeypatch.setattr(
         workspace_payload,
         "timed_operation",
@@ -44,18 +44,20 @@ def test_build_workspace_payload_emits_projection_timing(monkeypatch) -> None:
 
     workspace_payload.build_workspace_payload(None)
 
-    assert captured == {
-        "kind": "workflow_operation",
-        "operation": "workspace_projection",
-        "entered": True,
-        "exited": True,
-    }
+    assert [item["operation"] for item in captured] == [
+        "workspace_projection",
+        "workspace_details_projection",
+        "workspace_map_projection",
+        "workspace_itinerary_projection",
+    ]
+    assert all(item["kind"] == "workflow_operation" for item in captured)
+    assert all(item["entered"] and item["exited"] for item in captured)
 
 
 class _CapturedOperation:
-    def __init__(self, captured: dict, kind: str, operation: str) -> None:
-        self.captured = captured
-        self.captured.update(kind=kind, operation=operation)
+    def __init__(self, captured: list[dict], kind: str, operation: str) -> None:
+        self.captured = {"kind": kind, "operation": operation}
+        captured.append(self.captured)
 
     def __enter__(self) -> None:
         self.captured["entered"] = True
