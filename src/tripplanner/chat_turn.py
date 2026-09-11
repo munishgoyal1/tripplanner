@@ -15,7 +15,7 @@ Transport = Literal["json", "sse"]
 
 @dataclass(frozen=True)
 class TurnTerminal:
-    outcome: Literal["replayed", "capped", "conversation_limited"]
+    outcome: Literal["replayed", "cost_limited"]
     reply: str = ""
     agent: str = "trip"
     trip_id: str | None = None
@@ -53,8 +53,6 @@ class ChatTurnDependencies:
     load_request: Callable[
         [str | None], tuple[str | None, list[BaseMessage], dict[str, str] | None]
     ]
-    over_cap: Callable[[str], tuple[bool, dict[str, Any]]]
-    cap_message: Callable[[dict[str, Any]], str]
     reserve: Callable[[list[BaseMessage]], Awaitable[None]]
     limit_response: Callable[[BaseException], Any]
     save_chat: Callable[..., str | None]
@@ -108,19 +106,6 @@ class ChatTurnCoordinator:
                     started, user_id=user_id, transport=transport, outcome="replayed"
                 )
                 return self._replay_terminal(replay)
-            over, usage = deps.over_cap(user_id)
-            if over:
-                await deps.release_chat(permit)
-                permit = None
-                reply = deps.cap_message(usage)
-                deps.event(
-                    "api_chat_capped" if transport == "json" else "api_chat_stream_capped",
-                    cost_usd=usage.get("cost_usd"),
-                )
-                deps.record_operation(
-                    started, user_id=user_id, transport=transport, outcome="capped"
-                )
-                return TurnTerminal(outcome="capped", reply=reply, agent="cap")
             try:
                 await deps.reserve(history)
             except Exception as exc:
@@ -130,11 +115,11 @@ class ChatTurnCoordinator:
                     started,
                     user_id=user_id,
                     transport=transport,
-                    outcome="conversation_limited",
+                    outcome="cost_limited",
                     error=type(exc).__name__,
                 )
                 return TurnTerminal(
-                    outcome="conversation_limited",
+                    outcome="cost_limited",
                     response=deps.limit_response(exc),
                 )
 

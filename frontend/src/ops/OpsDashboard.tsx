@@ -144,6 +144,101 @@ function DateRangeControl({ overview, days, startDate, endDate, onPreset, onStar
   </section>;
 }
 
+/**
+ * Amounts from the cost ledger are INR. Kept distinct from `estimatedCost`,
+ * which formats the USD figures that come straight from provider catalogs --
+ * rendering one with the other's symbol would understate spend ~88x.
+ */
+const inr = (amount: number, fractionDigits = 0) =>
+  `₹${amount.toLocaleString("en-IN", { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits })}`;
+
+function CeilingGauge({ window, spent_inr, ceiling_inr, remaining_inr, used_pct, resets_at }: {
+  window: string;
+  spent_inr: number;
+  ceiling_inr: number;
+  remaining_inr: number;
+  used_pct: number | null;
+  resets_at: string;
+}) {
+  const pct = Math.min(used_pct ?? 0, 100);
+  const tone = pct >= 90 ? "bg-rose-600" : pct >= 70 ? "bg-amber-500" : "bg-emerald-600";
+  return (
+    <div className="px-5 py-4 text-sm">
+      <div className="mb-2 flex items-baseline justify-between">
+        <span className="font-semibold capitalize text-stone-900">{window}</span>
+        <span className="text-xs text-stone-500">{pct.toFixed(0)}% used</span>
+      </div>
+      <div className="flex h-2 overflow-hidden bg-stone-100" aria-label={`${pct.toFixed(0)} percent of the ${window} ceiling used`}>
+        <div className={tone} style={{ width: `${pct}%` }} />
+      </div>
+      <p className="mt-2 font-display text-xl">{inr(spent_inr)} <span className="text-sm font-normal text-stone-500">of {inr(ceiling_inr)}</span></p>
+      <p className="mt-1 text-xs text-stone-500">{inr(remaining_inr)} left · resets {new Date(resets_at).toLocaleString()}</p>
+    </div>
+  );
+}
+
+function RecentTripCosts({ overview }: { overview: OpsOverview }) {
+  const { aggregate, recent } = overview.trip_costs;
+
+  return (
+    <section className="mt-8">
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-3 border-b border-stone-300 pb-3">
+        <div>
+          <h2 className="font-serif text-2xl text-stone-950">Measured trip cost</h2>
+          <p className="mt-1 text-sm text-stone-500">What each trip actually cost, Azure and Google combined</p>
+        </div>
+        <div className="flex flex-wrap gap-6 text-right text-sm">
+          <div><p className="text-xs uppercase text-stone-500">Cumulative</p><p className="mt-1 font-semibold">{inr(aggregate.cumulative_inr)}</p><p className="mt-1 text-xs text-stone-500">{aggregate.trips} trips</p></div>
+          <div><p className="text-xs uppercase text-stone-500">Average per trip</p><p className="mt-1 font-semibold">{inr(aggregate.average_per_trip_inr)}</p><p className="mt-1 text-xs text-stone-500">median {inr(aggregate.median_per_trip_inr)} · p95 {inr(aggregate.p95_per_trip_inr)}</p></div>
+          <div><p className="text-xs uppercase text-stone-500">Per turn</p><p className="mt-1 font-semibold">{inr(aggregate.average_per_turn_inr.new_trip)} / {inr(aggregate.average_per_turn_inr.trip_update)}</p><p className="mt-1 text-xs text-stone-500">new trip / update</p></div>
+          <div><p className="text-xs uppercase text-stone-500">Anomalies</p><p className={`mt-1 font-semibold ${aggregate.anomalies ? "text-rose-700" : ""}`}>{aggregate.anomalies}</p><p className="mt-1 text-xs text-stone-500">flagged for review</p></div>
+        </div>
+      </div>
+      <Panel title="Last 20 trips" note="Newest first · one line per trip">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[900px] text-left text-sm">
+            <thead className="bg-stone-50 text-xs uppercase text-stone-500">
+              <tr><th className="px-5 py-3">Trip</th><th>Cost</th><th>Turns</th><th>LLM calls</th><th>Provider calls</th><th>Cached</th><th>Summary</th></tr>
+            </thead>
+            <tbody>
+              {recent.map((trip) => {
+                const turns = Object.values(trip.turns).reduce((total, count) => total + (count ?? 0), 0);
+                const providerCalls = Object.values(trip.providers).reduce((total, row) => total + row.calls, 0);
+                const cachePct = trip.totals.calls + trip.totals.cache_hits
+                  ? Math.round((trip.totals.cache_hits / (trip.totals.calls + trip.totals.cache_hits)) * 100)
+                  : 0;
+                return (
+                  <tr key={trip.trip_id} className={`border-t border-stone-100 ${trip.anomaly.flagged ? "bg-rose-50" : ""}`}>
+                    <td className="px-5 py-3">
+                      <p className="font-semibold">{trip.destination || trip.trip_id}</p>
+                      <p className="mt-1 text-xs text-stone-500">{new Date(trip.last_activity_at).toLocaleDateString()}</p>
+                    </td>
+                    <td className={trip.anomaly.flagged ? "text-rose-700" : ""}>
+                      <p className="font-semibold">{trip.anomaly.flagged && <span className="mr-1 text-xs font-normal">⚠</span>}{inr(trip.totals.cost_inr)}</p>
+                      {trip.anomaly.flagged && <p className="mt-1 text-xs font-normal">{trip.anomaly.reason}</p>}
+                    </td>
+                    <td>{turns}</td>
+                    <td>{number.format(trip.llm.calls)}</td>
+                    <td>{number.format(providerCalls)}</td>
+                    <td className={cachePct >= 50 ? "text-emerald-700" : "text-amber-700"}>{cachePct}%</td>
+                    <td className="max-w-[340px] truncate text-xs text-stone-600" title={trip.summary}>{trip.summary}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {!recent.length && <Empty>No trip costs recorded yet.</Empty>}
+        </div>
+      </Panel>
+      {aggregate.anomalies > 0 && (
+        <p className="mt-3 text-xs text-stone-500">
+          Flagged trips cost far more than the rolling median for their kind. They are not blocked — investigate the flow rather than tightening a limit.
+        </p>
+      )}
+    </section>
+  );
+}
+
 function TripCostSection({ overview, kind, title, note }: {
   overview: OpsOverview;
   kind: "new_trip" | "trip_update";
@@ -252,6 +347,7 @@ function CostView({ overview, days, startDate, endDate, onPreset, onStartDate, o
           </div>
         </Panel>
       </div>
+      <RecentTripCosts overview={overview} />
       <TripCostSection overview={overview} kind="new_trip" title="New trip creation" note="Cost of producing the first saved itinerary" />
       <TripCostSection overview={overview} kind="trip_update" title="Existing trip updates" note="Cost of each later planning request" />
       <p className="mt-6 text-xs text-stone-500">{usage.trip_costs.infrastructure.basis} Provider estimates above exclude that shared cost.</p>
@@ -441,10 +537,12 @@ function SystemView({ overview }: { overview: OpsOverview }) {
   const toolErrors = tools.flatMap(([tool, row]) => Object.entries(row.error_types).map(([error, count]) => ({ tool, error, count }))).sort((a, b) => b.count - a.count);
   const errorRate = overview.requests.calls ? (overview.requests.errors / overview.requests.calls) * 100 : 0;
   const chatErrorRate = overview.chat_turns.calls ? (overview.chat_turns.errors / overview.chat_turns.calls) * 100 : 0;
-  const conversationWindows = (["daily", "weekly", "lifetime"] as const).map((window) => ({
-    window,
-    ...overview.conversation_limits[window],
-  }));
+  // `key` here is the ledger's window key (e.g. "2026-W37"), not a React key --
+  // spreading it into an element would silently override the reconciliation key.
+  const ceilingWindows = (["daily", "weekly", "monthly"] as const).map((window) => {
+    const { key: _windowKey, ...amounts } = overview.cost_ceiling.windows[window];
+    return { window, ...amounts };
+  });
   const cacheDatasets = overview.provider_usage.cache_effectiveness.by_dataset;
 
   return (
@@ -458,15 +556,10 @@ function SystemView({ overview }: { overview: OpsOverview }) {
       </section>
 
       <div className="mt-6">
-        <Panel title="Conversation capacity" note="Environment-wide cost guardrail">
+        <Panel title="Spend ceiling" note={`Environment-wide, Azure + Google, INR${overview.cost_ceiling.enforced ? "" : " · observe only"}`}>
           <div className="grid divide-y divide-stone-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            {conversationWindows.map(({ window, categories, resets_at: resetsAt }) => (
-              <div key={window} className="px-5 py-4 text-sm">
-                <div className="mb-3 font-semibold capitalize text-stone-900">{window}</div>
-                <div className="flex justify-between gap-4 py-1"><span>New trips</span><strong>{categories.new_trip.used} / {categories.new_trip.limit || "Off"}</strong></div>
-                <div className="flex justify-between gap-4 py-1"><span>Trip updates</span><strong>{categories.existing_trip_turn.used} / {categories.existing_trip_turn.limit || "Off"}</strong></div>
-                {resetsAt && <div className="mt-2 text-xs text-stone-500">Resets {new Date(resetsAt).toLocaleString()}</div>}
-              </div>
+            {ceilingWindows.map((row) => (
+              <CeilingGauge key={row.window} {...row} />
             ))}
           </div>
         </Panel>

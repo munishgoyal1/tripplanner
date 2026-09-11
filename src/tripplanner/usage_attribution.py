@@ -360,3 +360,13 @@ def usage_scope(
             persist_batch(batch.records, batch.events)
             final_attribution = batch.attribution or attribution
             persist_interaction(final_attribution.fields(), batch.events, batch.records)
+
+            # Reconcile this interaction's INR reservation against what it
+            # actually cost, and fold the same records into the trip's cost
+            # document. Runs after persist_batch so the ledger and the raw
+            # provider_usage rows can never disagree about what was recorded.
+            # The reservation is keyed by interaction_id, so nothing has to be
+            # threaded from the admission point down to here.
+            from tripplanner import cost_ledger
+
+            cost_ledger.settle(final_attribution.fields(), batch.records)

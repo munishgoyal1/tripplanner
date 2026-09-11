@@ -78,7 +78,7 @@ def _overview_places(
     attraction_names = places_cache.top_places(
         destination, "attraction", n=_MAX_OVERVIEW_ATTRACTIONS
     )
-    photo_limit = get_settings().google_places_max_photos_per_trip
+    photo_limit = get_settings().google_places_max_photos_per_request
     places_cache.prefetch(
         attraction_names[:photo_limit], destination, max_photos=1, with_reviews=False
     )

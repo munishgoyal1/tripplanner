@@ -1,0 +1,53 @@
+{
+  "$comment": "Cost-model inputs for deriving every real-time guardrail from the INR ceilings in config/environments/*.env. Per-SKU USD rates are NOT duplicated here -- src/tripplanner/validation/harness/pricing.py stays the single source for those. This file owns what pricing.py does not know: the USD->INR conversion, Google's account-wide free monthly allowances, how those pooled allowances split between environments, and the headroom used to size GCP quotas. Consumed by scripts/derive_limits.py and asserted by tests/test_limits_derivation.py.",
+  "fx": {
+    "$comment": "ALL ceilings and every persisted ledger amount are INR. USD appears only in provider pricing catalogs and is converted exactly once, at ledger ingestion, via cost_model.usd_to_inr(). Never compare a USD figure to an INR ceiling.",
+    "inrPerUsd": 88.0
+  },
+  "freePoolsPerMonth": {
+    "$comment": "Google Maps Platform free monthly allowances, pooled across EVERY project on the billing account rather than granted per project -- the three environments share one pool, so freePoolShare below must sum to <= 1.0.",
+    "text_search:pro": 35000,
+    "text_search:enterprise_atmosphere": 7000,
+    "place_details:enterprise_atmosphere": 7000,
+    "place_details:pro": 7000,
+    "compute_routes:routes_essentials": 70000,
+    "static_map:static_maps": 70000
+  },
+  "freePoolShare": {
+    "$comment": "Share of each pooled allowance reserved per environment. Must sum to <= 1.0. Local takes the largest share because owner testing is the dominant consumer.",
+    "local": 0.5,
+    "canary": 0.15,
+    "prod": 0.35
+  },
+  "quotaSizing": {
+    "$comment": "GCP quota preferences are the real-time hard net beneath the INR ceiling. A daily quota is sized so one SKU alone cannot consume more than googleShareOfDailyCeiling of the daily INR ceiling, times dailyHeadroom. Per-MINUTE quotas are deliberately NOT cost-derived -- they exist to keep places_cache._pace() from tripping the provider circuit breaker, so they come from burstPerMinuteFloor instead.",
+    "googleShareOfDailyCeiling": 0.5,
+    "dailyHeadroom": 1.5,
+    "burstPerMinuteFloor": {
+      "places.googleapis.com/SearchTextRequestPerMinutePerProject": 60,
+      "places.googleapis.com/GetPlaceRequestPerMinutePerProject": 40,
+      "places.googleapis.com/GetPhotoMediaRequestPerMinutePerProject": 60,
+      "places.googleapis.com/SearchNearbyRequestPerMinutePerProject": 10,
+      "places.googleapis.com/AutocompletePlacesRequestPerMinutePerProject": 20,
+      "places-backend.googleapis.com/BillableDefaultPerMinutePerProject": 60,
+      "routes.googleapis.com/ComputeRoutesRequestsPerMinutePerProject": 60,
+      "routes.googleapis.com/ComputeRouteMatrixCellsPerMinutePerProject": 240,
+      "static-maps-backend.googleapis.com/BillableDefaultPerMinutePerProject": 60,
+      "maps-backend.googleapis.com/BillableDefaultPerMinutePerProject": 90
+    }
+  },
+  "anomaly": {
+    "$comment": "A trip is flagged when its INR cost exceeds BOTH ratioToMedian x the rolling median for its interaction kind AND absoluteFloorInr. The floor stops a quiet day with a tiny median from flagging every ordinary trip.",
+    "ratioToMedian": 3.0,
+    "absoluteFloorInr": 150.0,
+    "minSamplesForMedian": 5
+  },
+  "reservation": {
+    "$comment": "Reserve-then-reconcile. A turn reserves a pessimistic INR estimate at admission and reconciles to actual at completion, so concurrent turns cannot all pass a check each of them sees as unspent. Percentiles are computed over recent trips of the same interaction kind; seeds apply until minSamples trips exist.",
+    "reservePercentile": 75,
+    "unknownCostPercentile": 95,
+    "minSamples": 5,
+    "seedReserveInr": { "new_trip": 60.0, "trip_update": 20.0 },
+    "seedUnknownInr": { "new_trip": 120.0, "trip_update": 40.0 }
+  }
+}

@@ -378,7 +378,6 @@ def test_live_chat_requests_enforce_same_user_concurrency(monkeypatch) -> None: 
     monkeypatch.setenv("CHAT_MAX_CONCURRENT_PER_USER", "1")
     monkeypatch.setenv("CHAT_USER_REQUESTS_PER_MINUTE", "10")
     monkeypatch.setattr(app_graph, "invoke", invoke)
-    monkeypatch.setattr(usage, "is_over_cap", lambda _user_id: (False, {}))
     monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: None)
     monkeypatch.setattr(api, "_load_chat_request", lambda _request_id: (None, [], None))
     monkeypatch.setattr(api, "_save_chat", lambda *_args, **_kwargs: "trip-1")
@@ -425,7 +424,6 @@ def test_live_chat_blocks_workspace_mutation_until_release(monkeypatch) -> None:
         return {"messages": [AIMessage(content="ready")], "current_agent": "trip"}
 
     monkeypatch.setattr(app_graph, "invoke", invoke)
-    monkeypatch.setattr(usage, "is_over_cap", lambda _user_id: (False, {}))
     monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: None)
     monkeypatch.setattr(api, "_load_chat_request", lambda _request_id: (None, [], None))
     monkeypatch.setattr(api, "_save_chat", lambda *_args, **_kwargs: "trip-1")

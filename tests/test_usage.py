@@ -75,48 +75,6 @@ def test_usage_is_per_user():
     assert usage_mod.get_usage("bob")["prompt_tokens"] == 2000
 
 
-def test_is_over_cap_false_under_cap(monkeypatch):
-    monkeypatch.setenv("MONTHLY_LLM_COST_CAP_USD", "5")
-    usage_mod.record_usage("alice", model="gpt-4o-mini", prompt_tokens=100, completion_tokens=100)
-    over, _ = usage_mod.is_over_cap("alice")
-    assert over is False
-
-
-def test_is_over_cap_true_when_cost_exceeds(monkeypatch):
-    # Tiny cap so a single small call trips it.
-    monkeypatch.setenv("MONTHLY_LLM_COST_CAP_USD", "0.0001")
-    usage_mod.record_usage("alice", model="gpt-4o", prompt_tokens=1000, completion_tokens=1000)
-    over, doc = usage_mod.is_over_cap("alice")
-    assert over is True
-    assert doc["cost_usd"] >= 0.0001
-
-
-def test_cap_disabled_when_zero_or_negative(monkeypatch):
-    monkeypatch.setenv("MONTHLY_LLM_COST_CAP_USD", "0")
-    usage_mod.record_usage("alice", model="gpt-4", prompt_tokens=100000, completion_tokens=100000)
-    over, _ = usage_mod.is_over_cap("alice")
-    assert over is False
-
-
-def test_cap_message_contains_amounts(monkeypatch):
-    monkeypatch.setenv("MONTHLY_LLM_COST_CAP_USD", "10")
-    doc = {"month": "202606", "cost_usd": 12.5}
-    msg = usage_mod.cap_message(doc)
-    assert "$12.50" in msg
-    assert "$10.00" in msg
-    assert "202606" in msg
-
-
-def test_get_cap_usd_default_when_env_missing(monkeypatch):
-    monkeypatch.delenv("MONTHLY_LLM_COST_CAP_USD", raising=False)
-    assert usage_mod.get_cap_usd() == 20.0
-
-
-def test_get_cap_usd_falls_back_on_bad_value(monkeypatch):
-    monkeypatch.setenv("MONTHLY_LLM_COST_CAP_USD", "not-a-number")
-    assert usage_mod.get_cap_usd() == 20.0
-
-
 def test_record_usage_zero_tokens_still_records_call():
     # Some models return zero usage on a cached lookup; we still increment
     # ``calls`` so the metric is honest.
@@ -131,7 +89,6 @@ def test_usage_endpoint_returns_current_bucket(monkeypatch):
 
     from tripplanner.api import app
 
-    monkeypatch.setenv("MONTHLY_LLM_COST_CAP_USD", "5")
     usage_mod.record_usage("alice", model="gpt-4o", prompt_tokens=500, completion_tokens=500)
     client = TestClient(app)
     resp = client.get("/usage", params={"user_id": "alice"})
@@ -140,29 +97,44 @@ def test_usage_endpoint_returns_current_bucket(monkeypatch):
     assert body["user_id"] == "alice"
     assert body["calls"] == 1
     assert body["prompt_tokens"] == 500
-    assert body["cap_usd"] == 5.0
-    assert body["over_cap"] is False
+    # Per-user figures stay USD (Azure token catalog); the ceiling is INR and
+    # environment-wide. Both units are named so neither can be read as the other.
+    assert "cost_usd" in body
+    assert body["cost_ceiling"]["currency"] == "INR"
+    assert body["cost_ceiling"]["windows"]["daily"]["ceiling_inr"] > 0
 
 
-def test_chat_endpoint_returns_cap_message_when_over(monkeypatch):
+def test_chat_endpoint_refuses_when_the_inr_ceiling_is_exhausted(monkeypatch, tmp_path):
     from fastapi.testclient import TestClient
 
-    from tripplanner import api
+    from tripplanner import api, cost_ledger
 
-    # Cap so low any prior call would trip it; record a small call first.
-    monkeypatch.setenv("MONTHLY_LLM_COST_CAP_USD", "0.0001")
-    usage_mod.record_usage("alice", model="gpt-4o", prompt_tokens=1000, completion_tokens=1000)
+    monkeypatch.setenv("TRIPPLANNER_HOME", str(tmp_path))
+    monkeypatch.setenv("COST_CEILING_INR_DAILY", "1")
+    monkeypatch.setattr(cost_ledger.storage_cosmos, "is_enabled", lambda: False)
     operations = []
     monkeypatch.setattr(
         api, "_record_chat_operation", lambda *_args, **kwargs: operations.append(kwargs)
     )
     client = TestClient(api.app)
     resp = client.post("/chat", json={"user_id": "alice", "message": "hello"})
-    assert resp.status_code == 200
+
+    # A spend ceiling is a real refusal (429 with a reset time), not a soft
+    # in-chat reply that a caller could mistake for a normal answer.
+    assert resp.status_code == 429
     body = resp.json()
-    assert body["agent"] == "cap"
-    assert "budget" in body["reply"].lower() or "reached" in body["reply"].lower()
-    assert operations == [{"user_id": "alice", "transport": "json", "outcome": "capped"}]
+    assert body["code"] == "cost_ceiling_reached"
+    assert body["currency"] == "INR"
+    assert body["ceiling_inr"] == 1.0
+    assert body["resets_at"]
+    assert operations == [
+        {
+            "user_id": "alice",
+            "transport": "json",
+            "outcome": "cost_limited",
+            "error": "CostCeilingError",
+        }
+    ]
 
 
 def test_completed_chat_request_replays_when_over_cap(monkeypatch):
@@ -180,7 +152,10 @@ def test_completed_chat_request_replays_when_over_cap(monkeypatch):
     monkeypatch.setattr(
         api, "_record_chat_operation", lambda *_args, **kwargs: operations.append(kwargs)
     )
-    monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (True, {}))
+    async def reject_reserve(*_args, **_kwargs):
+        raise AssertionError("completed replay reached the cost ceiling reservation")
+
+    monkeypatch.setattr(api, "_reserve_cost", reject_reserve)
     client = TestClient(api.app)
 
     response = client.post(
@@ -212,7 +187,10 @@ def test_completed_stream_request_replays_when_over_cap(monkeypatch):
     monkeypatch.setattr(
         api, "_record_chat_operation", lambda *_args, **kwargs: operations.append(kwargs)
     )
-    monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (True, {}))
+    async def reject_reserve(*_args, **_kwargs):
+        raise AssertionError("completed replay reached the cost ceiling reservation")
+
+    monkeypatch.setattr(api, "_reserve_cost", reject_reserve)
     client = TestClient(api.app)
 
     response = client.post(
@@ -270,7 +248,6 @@ def test_stream_flushes_provider_usage_after_body_is_consumed(monkeypatch):
     monkeypatch.setattr(api, "_schedule_learning_sweep", lambda *_args: None)
     monkeypatch.setattr(api, "_should_auto_persist_itinerary", lambda _tools: False)
     monkeypatch.setattr(provider_usage, "persist_batch", lambda records, events: writes.append((records, events)))
-    monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (False, {}))
     asyncio.run(chat_admission.reset())
 
     try:
@@ -309,7 +286,6 @@ def test_stream_surfaces_partial_turn_save_failure(monkeypatch):
     monkeypatch.setattr(api, "_load_chat_request", lambda _request_id: (None, [], None))
     monkeypatch.setattr(api, "_save_chat", lambda *_args, **_kwargs: 1 / 0)
     monkeypatch.setattr(api, "app_event", lambda name, **fields: events.append((name, fields)))
-    monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (False, {}))
     asyncio.run(chat_admission.reset())
 
     try:
