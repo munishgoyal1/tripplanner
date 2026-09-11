@@ -115,7 +115,7 @@ def search_places_with_reviews(query: str, city: str = "", max_results: int = 5)
         _remember_places(json.loads(cached), city)
         return cached
     if not consume("text_search"):
-        return "Google Places search budget reached for this planning turn. Reuse prior results."
+        return "Paid provider access is not authorized for this operation."
     field_mask = (
         "places.id,places.displayName,places.formattedAddress,places.rating,"
         "places.userRatingCount,places.priceLevel,places.types,places.websiteUri,"
@@ -168,7 +168,7 @@ def get_place_reviews(place_id: str, max_reviews: int = 5) -> str:
         )
         return cached
     if not consume("review_details"):
-        return "Google Places review budget reached for this planning turn. Reuse prior ratings."
+        return "Paid provider access is not authorized for this operation."
 
     field_mask = "id,displayName,rating,userRatingCount,reviews,editorialSummary"
     try:
@@ -239,7 +239,7 @@ def nearby_restaurants(
         _remember_places(json.loads(cached), city)
         return cached
     if not consume("text_search"):
-        return "Google Places search budget reached for this planning turn. Reuse prior results."
+        return "Paid provider access is not authorized for this operation."
     query = " ".join(parts)
     field_mask = (
         "places.id,places.displayName,places.formattedAddress,places.rating,"

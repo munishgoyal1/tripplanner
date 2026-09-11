@@ -23,7 +23,6 @@ def _coordinator(
     calls: list[tuple[str, Any]],
     *,
     replay: dict[str, str] | None = None,
-    over_cap: bool = False,
     reserve_error: Exception | None = None,
     save_result: str | None = "destination-trip",
     save: Callable[..., str | None] | None = None,
@@ -69,11 +68,6 @@ def _coordinator(
             acquire_chat=acquire_chat,
             release_chat=release_chat,
             load_request=lambda _request_id: ("origin-trip", [], None),
-            over_cap=lambda _user_id: (
-                over_cap,
-                {"cost_usd": 2.0, "cap_usd": 1.0},
-            ),
-            cap_message=lambda _usage: "Budget reached",
             reserve=reserve,
             limit_response=lambda exc: {"error": type(exc).__name__},
             save_chat=save_chat,
@@ -92,7 +86,7 @@ def _coordinator(
 
 
 @pytest.mark.parametrize("transport", ["json", "sse"])
-@pytest.mark.parametrize("terminal", ["replayed", "capped", "conversation_limited"])
+@pytest.mark.parametrize("terminal", ["replayed", "cost_limited"])
 def test_terminal_admission_matrix(transport: Transport, terminal: str) -> None:
     calls: list[tuple[str, Any]] = []
     replay = (
@@ -103,8 +97,7 @@ def test_terminal_admission_matrix(transport: Transport, terminal: str) -> None:
     coordinator = _coordinator(
         calls,
         replay=replay,
-        over_cap=terminal == "capped",
-        reserve_error=RuntimeError("limited") if terminal == "conversation_limited" else None,
+        reserve_error=RuntimeError("limited") if terminal == "cost_limited" else None,
     )
 
     result = asyncio.run(

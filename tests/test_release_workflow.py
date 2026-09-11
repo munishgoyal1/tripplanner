@@ -49,41 +49,87 @@ def test_all_runtime_profiles_authorize_only_the_personal_gmail_as_owner() -> No
         assert "OPS_DASHBOARD_OWNER_EMAIL=munishgoyal@aitripplanner.co" not in profile
 
 
-def test_hosted_conversation_cost_limits_are_explicit_and_deployed() -> None:
+def test_every_runtime_limit_in_a_profile_reaches_the_deployed_container() -> None:
+    """Deploys must push the whole throttling block, not a hand-kept subset.
+
+    The predecessor of this test froze six literal values, which is exactly how
+    the gap it now guards went unnoticed: the deploy scripts listed those six
+    by hand and silently dropped the other sixteen, so canary and production ran
+    limits_config.py's code defaults instead of their own profile -- production
+    ran a tool-phase budget of 10 while prod.env said 50. Asserting the
+    mechanism rather than the numbers means adding a limit cannot reintroduce
+    the gap, and retuning one does not have to edit this file.
+    """
     root = Path(__file__).parents[1]
-    local = (root / "config" / "environments" / "local.env").read_text(encoding="utf-8")
-    canary = (root / "config" / "environments" / "canary.env").read_text(
-        encoding="utf-8"
-    )
-    production = (root / "config" / "environments" / "prod.env").read_text(
-        encoding="utf-8"
-    )
+    common = (root / "infra" / "deployment-common.ps1").read_text(encoding="utf-8")
     canary_deploy = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")
     production_deploy = (root / "infra" / "deploy-prod.ps1").read_text(encoding="utf-8")
 
-    expected_local_and_production = {
-        "CHAT_NEW_TRIP_LIMIT_DAILY": "10",
-        "CHAT_EXISTING_TRIP_TURN_LIMIT_DAILY": "20",
-        "CHAT_NEW_TRIP_LIMIT_WEEKLY": "25",
-        "CHAT_EXISTING_TRIP_TURN_LIMIT_WEEKLY": "50",
-        "CHAT_NEW_TRIP_LIMIT_LIFETIME": "50",
-        "CHAT_EXISTING_TRIP_TURN_LIMIT_LIFETIME": "100",
+    assert "function Get-RuntimeLimitEnvArgs" in common
+    for deploy in (canary_deploy, production_deploy):
+        assert "Get-RuntimeLimitEnvArgs -ConfigFile $ConfigFile" in deploy
+        assert "@limitEnvArgs" in deploy
+        # No hand-maintained list may creep back in alongside the derived one.
+        assert "CHAT_NEW_TRIP_LIMIT_DAILY=$env:" not in deploy
+
+
+def test_the_spend_ceiling_is_identical_in_every_environment() -> None:
+    """One INR budget governs local, canary and production alike.
+
+    The owner sets three numbers; everything else is derived or is not a cost
+    control. Per-environment ceilings would reintroduce the situation where
+    canary throttles differently from local and a trip that works in one fails
+    in the other for reasons unrelated to the code.
+    """
+    root = Path(__file__).parents[1]
+    ceilings = {}
+    for environment in ("local", "canary", "prod"):
+        profile = (root / "config" / "environments" / f"{environment}.env").read_text(
+            encoding="utf-8"
+        )
+        ceilings[environment] = {
+            name: value
+            for line in profile.splitlines()
+            if line.startswith("COST_CEILING_INR_")
+            for name, _, value in [line.partition("=")]
+        }
+
+    assert ceilings["local"] == ceilings["canary"] == ceilings["prod"]
+    assert ceilings["local"] == {
+        "COST_CEILING_INR_DAILY": "1000",
+        "COST_CEILING_INR_WEEKLY": "5000",
+        "COST_CEILING_INR_MONTHLY": "10000",
     }
-    expected_canary = {
-        "CHAT_NEW_TRIP_LIMIT_DAILY": "3",
-        "CHAT_EXISTING_TRIP_TURN_LIMIT_DAILY": "6",
-        "CHAT_NEW_TRIP_LIMIT_WEEKLY": "10",
-        "CHAT_EXISTING_TRIP_TURN_LIMIT_WEEKLY": "20",
-        "CHAT_NEW_TRIP_LIMIT_LIFETIME": "20",
-        "CHAT_EXISTING_TRIP_TURN_LIMIT_LIFETIME": "40",
-    }
-    for name, value in expected_local_and_production.items():
-        assert f"{name}={value}" in local
-        assert f"{name}={value}" in production
-        assert f'"{name}=$env:{name}"' in canary_deploy
-        assert f'"{name}=$env:{name}"' in production_deploy
-    for name, value in expected_canary.items():
-        assert f"{name}={value}" in canary
+
+
+def test_retired_proxy_limits_are_gone_from_every_profile() -> None:
+    """The call-counting limits the INR ceiling replaced must not linger.
+
+    A stale name left in a profile is inert but reads as policy, and the next
+    person to tune spend would edit it and see nothing change.
+    """
+    root = Path(__file__).parents[1]
+    retired = (
+        "CHAT_NEW_TRIP_LIMIT_",
+        "CHAT_EXISTING_TRIP_TURN_LIMIT_",
+        "MONTHLY_LLM_COST_CAP_USD",
+        "MAX_TOOL_PHASES_PER_TURN",
+        "MAX_INITIAL_ITINERARY_UPDATES",
+        "MAX_POST_RESEARCH_UPDATES",
+        "MAX_TRANSPORT_COMPARISONS_PER_",
+        "GOOGLE_PLACES_MAX_TEXT_SEARCHES_PER_TRIP",
+        "GOOGLE_PLACES_MAX_REVIEW_DETAILS_PER_TRIP",
+        "GOOGLE_PLACES_MAX_PHOTOS_PER_TRIP",
+    )
+    for environment in ("local", "canary", "prod"):
+        profile = (root / "config" / "environments" / f"{environment}.env").read_text(
+            encoding="utf-8"
+        )
+        settings = [line.partition("=")[0] for line in profile.splitlines() if "=" in line]
+        for name in retired:
+            assert not any(setting.startswith(name) for setting in settings), (
+                f"{name} still set in {environment}.env"
+            )
 
 
 def test_production_declares_custom_domain_and_browser_photo_smoke() -> None:
@@ -152,38 +198,49 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
         assert "ENABLE_AZURE_OPENAI=1" in profile
         assert "ENABLE_GOOGLE_PLACES=1" in profile
         assert "ENABLE_GOOGLE_MAPS=1" in profile
-    assert (
-        '"quotaId": "SearchTextRequestPerDayPerProject", '
-        '"local": 600, "canary": 50, "prod": 200'
-    ) in guardrails
-    assert (
-        '"quotaId": "GetPhotoMediaRequestPerDayPerProject", '
-        '"local": 1200, "canary": 80, "prod": 400'
-    ) in guardrails
+    # Values are derived from the INR ceiling, not frozen here -- see
+    # tests/test_limits_derivation.py. What this file guards is that every paid
+    # SKU the application calls still carries a per-project daily AND per-minute
+    # quota, so a leaked key meets a hard limit on both axes.
+    quota_ids = {
+        (quota["service"], quota["quotaId"]) for quota in cloud_config["gcp"]["quotas"]
+    }
+    for service, prefix in (
+        ("places.googleapis.com", "SearchTextRequest"),
+        ("places.googleapis.com", "GetPlaceRequest"),
+        ("places.googleapis.com", "GetPhotoMediaRequest"),
+        ("routes.googleapis.com", "ComputeRoutesRequests"),
+    ):
+        assert any(
+            svc == service and qid.startswith(prefix) and "PerDay" in qid
+            for svc, qid in quota_ids
+        ), f"{service}/{prefix} has no daily quota"
+        assert any(
+            svc == service and qid.startswith(prefix) and "PerMinute" in qid
+            for svc, qid in quota_ids
+        ), f"{service}/{prefix} has no per-minute quota"
     guardrail_config = cloud_config["gcp"]
     maps_quotas = [
         quota
         for quota in guardrail_config["quotas"]
         if quota["service"] == "maps-backend.googleapis.com"
     ]
-    assert maps_quotas == [
-        {
-            "service": "maps-backend.googleapis.com",
-            "quotaId": "BillableDefaultPerDayPerProject",
-            "preferenceId": "tp-mapsjs-billabledefaultperdayperproject",
-            "local": 500,
-            "canary": 50,
-            "prod": 100,
-        },
-        {
-            "service": "maps-backend.googleapis.com",
-            "quotaId": "BillableDefaultPerMinutePerProject",
-            "preferenceId": "tp-mapsjs-billabledefaultperminuteperproject",
-            "local": 90,
-            "canary": 20,
-            "prod": 30,
-        },
+    # Maps JavaScript needs an explicit preferenceId because two services share
+    # the quotaId "BillableDefaultPerDayPerProject"; without it the apply script
+    # would overwrite one service's preference with the other's.
+    assert [quota["quotaId"] for quota in maps_quotas] == [
+        "BillableDefaultPerDayPerProject",
+        "BillableDefaultPerMinutePerProject",
     ]
+    assert [quota["preferenceId"] for quota in maps_quotas] == [
+        "tp-mapsjs-billabledefaultperdayperproject",
+        "tp-mapsjs-billabledefaultperminuteperproject",
+    ]
+    # Per-minute quotas are burst guards, identical everywhere; daily quotas are
+    # cost-derived. Both are owned by scripts/derive_limits.py, so this asserts
+    # the shape rather than the numbers.
+    for quota in maps_quotas:
+        assert all(isinstance(quota[env], int) for env in ("local", "canary", "prod"))
     places_javascript_quotas = [
         quota
         for quota in guardrail_config["quotas"]
@@ -193,7 +250,10 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
         "tp-placesjs-billabledefaultperdayperproject",
         "tp-placesjs-billabledefaultperminuteperproject",
     ]
-    assert [quota["prod"] for quota in places_javascript_quotas] == [50, 20]
+    # Values owned by scripts/derive_limits.py; what matters here is that the
+    # distinct preferenceId keeps this service's quota separate from Places API's.
+    for quota in places_javascript_quotas:
+        assert all(isinstance(quota[env], int) for env in ("local", "canary", "prod"))
     callable_services = set(guardrail_config["browserServices"]) | set(
         guardrail_config["serverServices"]
     )
@@ -215,30 +275,28 @@ def test_google_api_cloud_policy_comes_from_enabled_runtime_profiles() -> None:
     assert "$AllowQuotaIncreases" in apply_script
     assert "ConvertFrom-GcloudJson" in apply_script
     assert "--set-notification-channels=" in apply_script
-    # GCP's local environment is deliberately budgeted much higher than Azure's
-    # (800 vs 120 INR/day): local dev/test spend is exclusively GCP (Places/Maps
-    # calls), never Azure (local Cosmos uses the free emulator, not a hosted
-    # Azure resource) -- see docs/operations/gcp-billing-guardrails.md's "Local
-    # testing headroom" note. Each cloud's globalBudget is still exactly the sum
-    # of its own three environment budgets, so the account-wide alert threshold
-    # stays meaningful relative to what the environments can actually spend.
-    expected_local_daily = {"azure": 120, "gcp": 800}
-    expected_local_monthly = {"azure": 3600, "gcp": 24000}
+    # Cloud budgets are notify-only and derived from the INR spend ceiling by
+    # scripts/derive_limits.py, so the amounts are not frozen here. Each cloud
+    # takes its share of the ceiling (cost-model googleShareOfDailyCeiling), and
+    # the ceiling is identical in every environment -- the previous per-environment
+    # split (local 800/day GCP against canary's 20) predates that single ceiling.
+    #
+    # Deliberately NOT asserted: monthly == daily * 30. The owner's daily figure
+    # is a burst allowance and the monthly one is the binding constraint, so the
+    # two are not multiples of each other by design.
     for cloud in ("azure", "gcp"):
         environments = {
             environment["name"]: environment
             for environment in cloud_config[cloud]["environments"]
         }
-        assert environments["local"]["dailyBudget"] == expected_local_daily[cloud]
-        assert environments["local"]["budget"] == expected_local_monthly[cloud]
-        assert environments["canary"]["dailyBudget"] == 20
-        assert environments["canary"]["budget"] == 600
-        assert environments["prod"]["dailyBudget"] == 60
-        assert environments["prod"]["budget"] == 1800
-        daily_ceiling = sum(environment["dailyBudget"] for environment in environments.values())
-        monthly_ceiling = sum(environment["budget"] for environment in environments.values())
-        assert cloud_config[cloud]["globalBudget"]["amount"] == monthly_ceiling
-        assert monthly_ceiling == daily_ceiling * 30
+        assert set(environments) == {"local", "canary", "prod"}
+        budgets = {environment["budget"] for environment in environments.values()}
+        assert len(budgets) == 1, f"{cloud} budgets differ across environments: {budgets}"
+        # The account-wide alert is only meaningful if it equals what the
+        # environments can collectively spend.
+        assert cloud_config[cloud]["globalBudget"]["amount"] == sum(
+            environment["budget"] for environment in environments.values()
+        )
     assert '$policyDisplayName = "[$($env.name)] Maps API quota exceeded"' in apply_script
     # Severity/aggregation/auto-close for the quota-exceeded alert policy are
     # config-driven (infra/billing-guardrails.json -> gcpQuotaAlertPolicies),

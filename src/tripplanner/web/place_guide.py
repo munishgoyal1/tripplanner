@@ -460,7 +460,7 @@ def warm_view_items(trip: dict[str, Any] | None) -> None:
     if not trip or not places_cache.is_configured():
         return
     settings = get_settings()
-    refs = itinerary_items(trip, None)[: settings.google_places_max_photos_per_trip]
+    refs = itinerary_items(trip, None)[: settings.google_places_max_photos_per_request]
     places_cache.prefetch(
         [r["name"] for r in refs],
         str(trip.get("destination") or ""),

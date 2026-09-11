@@ -82,10 +82,53 @@ const overview: OpsOverview = {
   },
   models: { calls: 4, errors: 0, p50_ms: 800, p95_ms: 2200, recent: [] },
   usage: { month: "2026-08", model_calls: 20, prompt_tokens: 1000, completion_tokens: 500, cost_usd: 1.25 },
-  conversation_limits: {
-    daily: { key: "2026-08-28", resets_at: "2026-08-29T00:00:00Z", categories: { new_trip: { used: 4, limit: 10, remaining: 6 }, existing_trip_turn: { used: 7, limit: 20, remaining: 13 } } },
-    weekly: { key: "2026-W35", resets_at: "2026-08-31T00:00:00Z", categories: { new_trip: { used: 9, limit: 25, remaining: 16 }, existing_trip_turn: { used: 18, limit: 50, remaining: 32 } } },
-    lifetime: { key: "lifetime", resets_at: null, categories: { new_trip: { used: 19, limit: 50, remaining: 31 }, existing_trip_turn: { used: 38, limit: 100, remaining: 62 } } },
+  cost_ceiling: {
+    currency: "INR",
+    enforced: true,
+    environment: "local",
+    pending_inr: 60,
+    windows: {
+      daily: { key: "2026-08-28", spent_inr: 412.5, ceiling_inr: 1000, remaining_inr: 527.5, used_pct: 47.3, resets_at: "2026-08-29T00:00:00Z" },
+      weekly: { key: "2026-W35", spent_inr: 2100, ceiling_inr: 5000, remaining_inr: 2840, used_pct: 43.2, resets_at: "2026-08-31T00:00:00Z" },
+      monthly: { key: "2026-08", spent_inr: 6400, ceiling_inr: 10000, remaining_inr: 3540, used_pct: 64.6, resets_at: "2026-09-01T00:00:00Z" },
+    },
+  },
+  trip_costs: {
+    aggregate: {
+      currency: "INR",
+      trips: 2,
+      cumulative_inr: 89,
+      average_per_trip_inr: 44.5,
+      median_per_trip_inr: 44.5,
+      p95_per_trip_inr: 58,
+      turns: { new_trip: 2, trip_update: 3 },
+      average_per_turn_inr: { new_trip: 42, trip_update: 12 },
+      anomalies: 1,
+    },
+    recent: [
+      {
+        trip_id: "trip-kerala",
+        destination: "Kerala multi-city",
+        last_activity_at: "2026-08-28T09:00:00Z",
+        summary: "INR 58 · 5 turns · 47 LLM calls · 62 Google (30 text search / 40 photo media) · 71% cached",
+        turns: { new_trip: 1, trip_update: 4 },
+        llm: { calls: 47, prompt_tokens: 412000, completion_tokens: 23100, cost_inr: 23.1 },
+        providers: { google: { calls: 62, cost_inr: 31.2, by_operation: { text_search: 30, photo_media: 32 } } },
+        totals: { calls: 109, cache_hits: 83, cost_inr: 58, savings_inr: 41, unknown_cost_calls: 0 },
+        anomaly: { flagged: false, ratio_to_median: 1.29, reason: "" },
+      },
+      {
+        trip_id: "trip-ladakh",
+        destination: "Ladakh 9-day",
+        last_activity_at: "2026-08-27T09:00:00Z",
+        summary: "INR 31 · 2 turns · 19 LLM calls · 24 Google (8 text search / 16 photo media) · 84% cached",
+        turns: { new_trip: 1, trip_update: 1 },
+        llm: { calls: 19, prompt_tokens: 90000, completion_tokens: 7200, cost_inr: 5 },
+        providers: { google: { calls: 24, cost_inr: 26, by_operation: { text_search: 8, photo_media: 16 } } },
+        totals: { calls: 43, cache_hits: 226, cost_inr: 31, savings_inr: 12, unknown_cost_calls: 0 },
+        anomaly: { flagged: true, ratio_to_median: 3.4, reason: "3.4x the median new trip cost of INR 42" },
+      },
+    ],
   },
   tools: {
     search_hotels: { calls: 4, errors: 1, p50_ms: 100, p95_ms: 400, cache_hits: 2, hit_rate: 0.5, avg_ms: 180, error_types: { TimeoutError: 1 } },
@@ -178,11 +221,13 @@ describe("OpsDashboard", () => {
     expect(screen.getByText("Provider reliability")).toBeInTheDocument();
     expect(screen.getByText("Top cache hits")).toBeInTheDocument();
     expect(screen.getByText("Persisted inventory")).toBeInTheDocument();
-    expect(screen.getByText("Conversation capacity")).toBeInTheDocument();
+    expect(screen.getByText("Spend ceiling")).toBeInTheDocument();
     expect(screen.getByText("Cache health by dataset")).toBeInTheDocument();
     expect(screen.getByText("Places search and discovery")).toBeInTheDocument();
-    expect(screen.getByText("4 / 10")).toBeInTheDocument();
-    expect(screen.getByText("38 / 100")).toBeInTheDocument();
+    // Spend against each INR ceiling, not a count of conversations.
+    expect(screen.getByText("of ₹1,000")).toBeInTheDocument();
+    expect(screen.getByText("of ₹10,000")).toBeInTheDocument();
+    expect(screen.getByText(/₹528 left/)).toBeInTheDocument();
   });
 
   it("shows durable trip interactions and infrastructure snapshots", async () => {
@@ -217,6 +262,14 @@ describe("OpsDashboard", () => {
     expect(screen.getByText("Existing trip updates")).toBeInTheDocument();
     expect(screen.getAllByText("Kashmir")).toHaveLength(2);
     expect(screen.getByText("Unknown price")).toBeInTheDocument();
+
+    // Measured per-trip cost in INR, newest first, with the anomaly called out.
+    expect(screen.getByText("Measured trip cost")).toBeInTheDocument();
+    expect(screen.getByText("Last 20 trips")).toBeInTheDocument();
+    expect(screen.getByText("Kerala multi-city")).toBeInTheDocument();
+    expect(screen.getByText("Ladakh 9-day")).toBeInTheDocument();
+    expect(screen.getByText("₹89")).toBeInTheDocument();
+    expect(screen.getByText(/3.4x the median new trip cost/)).toBeInTheDocument();
     expect(screen.getAllByText(/\+ 1 unknown/).length).toBeGreaterThan(0);
     expect(screen.getAllByText("Cumulative provider cost").length).toBeGreaterThan(0);
     expect(screen.getByText("Cumulative cost by service")).toBeInTheDocument();

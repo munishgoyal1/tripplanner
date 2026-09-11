@@ -64,6 +64,12 @@ background and time-boxed, and the planner always renders the plan it already ha
 
 ## Capability index
 
+Operational trip flow logs correlate semantic events by stable trip/interaction
+keys and model call IDs, report terminal failures accurately, preview recent
+message context with full message-text counts, and distinguish unknown model
+billing from cache-served nonbillable calls. Low-level successful cache/storage
+events remain aggregated. Resolved Places photo URLs default to 180-day reuse.
+
 Future feature briefs should reference these stable capability IDs rather than
 re-describing the whole product.
 
@@ -88,7 +94,7 @@ re-describing the whole product.
 | ID-01 | Guest identity plus shared web/mobile Google identity | Implemented |
 | DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented; each complete trip has one canonical versioned document, the active-trip record is a lightweight pointer, conditional writes retry semantic mutations, stale detached saves return HTTP 409, tolerant contracts preserve legacy fields, and request-scoped snapshots reuse trip, preference, and transcript reads with read-your-writes behavior |
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented; all runtime cache families share one owner-controlled TTL policy, with environment-wide scaling, precise provider overrides, independent stable/volatile no-expiry switches, and an opt-in full-surface Places warm manifest supplied through checked-in local/sandbox, canary, and production non-secret profiles plus ignored secret overlays; local runtimes use an optional cache-only secondary durable Cosmos client for fresh shared Places and global tool results after primary misses and for best-effort timestamp-preserving write-through, while failures open a short circuit and never fail requests, user-scoped/application data is excluded, and canary/production keep the feature disabled; an approval-gated on-demand merge exchanges only eligible cache evidence between the local central cache and production without refreshing timestamps or deleting entries; complete snapshots bootstrap atomic per-source watermarks, then overlapping incremental scans fetch only candidate documents, retain the old checkpoint on any partial failure or conflict, and report measured RU, payload, and item outcomes; disposable and durable regions retain storage appropriate to their recovery contract |
-| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google and route-provider calls require an explicit user-interaction or budgeted-corpus execution scope and otherwise fail before network access; Places also remains fail-closed behind a production-only runtime switch, owner emergency Service Usage control, observation-scale provider quotas, configurable shared request ceilings, durable environment-wide conversation ceilings, shared discovery evidence, focused reviews, and one-photo-per-place enrichment with a 50-photo request ceiling |
+| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented; paid Google and route-provider calls require an explicit user-interaction or budgeted-corpus execution scope and otherwise fail before network access; Places also remains fail-closed behind a production-only runtime switch, owner emergency Service Usage control, observation-scale provider quotas derived from the spend ceiling, shared discovery evidence, focused reviews, and one-photo-per-place enrichment; spend itself is bounded by a single environment-wide INR ceiling (daily/weekly/monthly, Azure and Google combined) enforced from measured per-call cost with reserve-then-reconcile admission, replacing the per-trip call budgets and conversation counters that previously stood in for it |
 | TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, explicit place-fact rechecks with before/after changes and source-linked unusual-closure advisories, place-identity gate, and a rebalance that never moves a stop the traveller chose |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, rollback, and guarded same-image Google runtime toggles | Implemented |
 | OPS-02 | Production operational alerting and non-production error analysis | Implemented; the production Action Group receives guarded scheduled-query alerts for sustained chat latency, model throttling, provider circuit opening, and cache degradation, plus a Cosmos 429 metric alert |
@@ -628,9 +634,9 @@ implemented capability baseline.
 - Native rendered stop indexes are converted to the backend's one-based
   occurrence contract before exact repeated-place actions are sent.
 - Interrupted SSE exits busy state and preserves recoverable conversation state.
-- JSON and SSE chat share one turn coordinator for replay and admission, cost and
-  conversation limits, interrupted saves, final persistence, passive learning,
-  and completion telemetry; transports own only response and stream rendering.
+- JSON and SSE chat share one turn coordinator for replay and admission, the INR
+  spend ceiling, interrupted saves, final persistence, passive learning, and
+  completion telemetry; transports own only response and stream rendering.
 - Blocking backend trip operations run in worker threads rather than blocking
   the asynchronous API loop.
 - Local JSON writes are atomic with bounded Windows lock retry; same-user trip

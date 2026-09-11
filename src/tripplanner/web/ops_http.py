@@ -112,9 +112,18 @@ async def ops_overview(
         "completion_tokens": usage.get("completion_tokens", 0),
         "cost_usd": usage.get("cost_usd", 0.0),
     }
-    from tripplanner.conversation_limits import snapshot as conversation_limit_snapshot
+    from tripplanner import cost_ledger
 
-    runtime["conversation_limits"] = await asyncio.to_thread(conversation_limit_snapshot)
+    trip_destinations = {
+        str(trip["trip_id"]): str(trip.get("destination") or "")
+        for trip in trips
+        if trip.get("trip_id")
+    }
+    runtime["cost_ceiling"] = await asyncio.to_thread(cost_ledger.snapshot)
+    runtime["trip_costs"] = {
+        "aggregate": await asyncio.to_thread(cost_ledger.aggregate),
+        "recent": await asyncio.to_thread(cost_ledger.recent_trips, 20, trip_destinations),
+    }
     runtime["tools"] = tool_metrics_snapshot()
     provider_stats = get_provider_stats()
     provider_names = set(provider_stats["quote_success"]) | set(provider_stats["quote_failure"])
@@ -185,11 +194,17 @@ async def ops_overview(
 
 @router.get("/usage")
 async def usage_for_user(request: Request, user_id: str = "local") -> dict:
-    """Return this month's LLM token + cost usage for ``user_id`` and the cap."""
-    from tripplanner.usage import get_cap_usd, is_over_cap
+    """This month's LLM token + cost usage for ``user_id``, plus the INR ceiling.
+
+    Per-user figures stay USD because they come from the Azure token catalog;
+    the ceiling is environment-wide and INR. Both units are named in the field
+    names so a caller cannot compare one to the other by accident.
+    """
+    from tripplanner import cost_ledger
+    from tripplanner.usage import get_usage
 
     resolved_user_id = _set_request_user(request, user_id)
-    over, doc = is_over_cap(resolved_user_id)
+    doc = get_usage(resolved_user_id)
     return {
         "user_id": resolved_user_id,
         "month": doc.get("month"),
@@ -197,8 +212,7 @@ async def usage_for_user(request: Request, user_id: str = "local") -> dict:
         "completion_tokens": doc.get("completion_tokens", 0),
         "calls": doc.get("calls", 0),
         "cost_usd": round(float(doc.get("cost_usd", 0.0)), 4),
-        "cap_usd": get_cap_usd(),
-        "over_cap": over,
+        "cost_ceiling": cost_ledger.snapshot(),
     }
 
 

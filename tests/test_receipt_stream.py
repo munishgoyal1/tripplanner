@@ -59,7 +59,6 @@ def streamed(monkeypatch) -> str:  # type: ignore[no-untyped-def]
     monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: None)
     monkeypatch.setattr(api, "_load_chat_request", lambda _request_id: (None, [], None))
     monkeypatch.setattr(api, "_save_chat", lambda *_args, **_kwargs: None)
-    monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (False, {}))
     asyncio.run(chat_admission.reset())
     try:
         response = TestClient(api.app).post(

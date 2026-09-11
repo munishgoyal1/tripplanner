@@ -516,7 +516,7 @@ def build_view(
     if focus_name:
         warm_names = [n for n in warm_names if n.strip().lower() == focus_name] or warm_names[:1]
     settings = get_settings()
-    photo_limit = settings.google_places_max_photos_per_trip
+    photo_limit = settings.google_places_max_photos_per_request
     photo_names = warm_names[:photo_limit]
     places_cache.prefetch(photo_names, destination, max_photos=1, with_reviews=False)
     place_occurrences = _place_occurrence_index(trip)

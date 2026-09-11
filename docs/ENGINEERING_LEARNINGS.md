@@ -1827,3 +1827,18 @@ the outcome.
 - A locally-ahead primary is a different failure. Name that relation and give
   the park-then-reset recovery so promotion does not invent a second master
   history.
+## 2026-09-11 - Preserve Correlation And Billing Uncertainty
+
+- The Kashmir update received HTTP 200 then an incomplete chunked response on
+  its sixth model round. Full wire requests proved that repeated 100-word system
+  previews did not indicate truncated model input. Preview recent messages and
+  count normalized tool arguments; use private HTTP attempts for exact payloads.
+- Missing usage on a failed stream does not prove zero provider cost. Preserve an
+  unknown billing state and apply the existing conservative ledger allowance.
+- Phone redaction can corrupt generated trip/interaction IDs. Stable hashed join
+  keys keep ordinary logs traceable without weakening free-text redaction.
+- A FLOW summary must reflect the terminal chat outcome. Accounting settlement
+  and an HTTP 200 streaming handshake are not evidence of successful completion.
+- The same turn retried three chronology-rejected itinerary updates. Stateful
+  tools returning `Error:` must report a rejected result even without a Python
+  exception; a completed function call is not a successful trip mutation.

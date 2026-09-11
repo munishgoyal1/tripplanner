@@ -6,6 +6,7 @@ Single-agent graph focused on trip planning with tool-calling loop:
 
 from __future__ import annotations
 
+import json
 import operator
 import time
 from dataclasses import dataclass
@@ -99,12 +100,7 @@ def _message_chars(message: Any) -> int:
     Counting ``content`` alone hid the tool calls and their arguments, so the
     logged prompt size grew nine percent while real tokens more than doubled.
     """
-    size = len(str(getattr(message, "content", "") or ""))
-    extra = getattr(message, "additional_kwargs", None) or {}
-    for call in extra.get("tool_calls") or []:
-        function = (call or {}).get("function") or {}
-        size += len(str(function.get("name") or "")) + len(str(function.get("arguments") or ""))
-    return size
+    return len(_message_prompt_text(message))
 
 
 def _message_prompt_text(message: Any) -> str:
@@ -123,6 +119,9 @@ def _message_prompt_text(message: Any) -> str:
         fragments.extend(
             [str(function.get("name") or ""), str(function.get("arguments") or "")]
         )
+    if not extra.get("tool_calls"):
+        for call in getattr(message, "tool_calls", None) or []:
+            fragments.extend([str(call.get("name") or ""), json.dumps(call.get("args") or {})])
     return " ".join(fragment for fragment in fragments if fragment)
 
 
@@ -182,11 +181,21 @@ class _UsageCallback(BaseCallbackHandler):
         with self._lock:
             self._runs[run_id] = context
         try:
+            latest_user = next(
+                (message for message in reversed(batch) if message.type == "human"), None
+            )
+            preview = "user: " + " ".join(
+                _message_prompt_text(latest_user).split()[:40]
+            ) if latest_user else ""
+            if batch and batch[-1] is not latest_user:
+                preview += f" latest_{batch[-1].type}: " + _message_prompt_text(batch[-1])
             log_llm_prompt(
                 self._model,
                 "\n".join(_message_prompt_text(message) for message in batch),
                 message_count=len(batch),
                 prompt_chars=prompt_chars,
+                preview_text=preview,
+                call_id=str(run_id or ""),
             )
         except Exception:
             pass
@@ -202,6 +211,7 @@ class _UsageCallback(BaseCallbackHandler):
             app_event(
                 "llm_call",
                 status="ok",
+                call_id=str(run_id or ""),
                 model=self._model,
                 ms=round(duration_ms, 2) if context.started_at is not None else None,
                 message_count=context.message_count,
@@ -210,8 +220,6 @@ class _UsageCallback(BaseCallbackHandler):
                 completion_tokens=completion,
                 cached_tokens=_cached_tokens(response),
             )
-            if prompt == 0 and completion == 0:
-                return
             record_usage(
                 get_user_id() or "local",
                 model=self._model,
@@ -229,7 +237,9 @@ class _UsageCallback(BaseCallbackHandler):
                 duration_ms=duration_ms,
                 prompt_tokens=prompt,
                 completion_tokens=completion,
-                estimated_cost_usd=cost_for(self._model, prompt, completion),
+                estimated_cost_usd=cost_for(self._model, prompt, completion)
+                if prompt or completion else None,
+                billing_status="billable" if prompt or completion else "unknown",
             )
         except Exception:
             # Accounting must never break a turn.
@@ -245,11 +255,13 @@ class _UsageCallback(BaseCallbackHandler):
             app_event(
                 "llm_call",
                 status="error",
+                call_id=str(run_id or ""),
                 model=self._model,
                 ms=round(duration_ms, 2) if context.started_at is not None else None,
                 message_count=context.message_count,
                 prompt_chars=context.prompt_chars,
                 error=type(error).__name__,
+                error_detail=str(error)[:240],
             )
             from tripplanner.provider_usage import record_call
 
@@ -259,7 +271,8 @@ class _UsageCallback(BaseCallbackHandler):
                 sku_class=self._model,
                 status="error",
                 duration_ms=duration_ms,
-                billable=False,
+                billable=True,
+                billing_status="unknown",
             )
         except Exception:
             pass
@@ -514,6 +527,7 @@ def trip_agent(state: AgentState) -> AgentState:
         tool_phase=decision.tool_phases,
         forced_tool=decision.forced_tool,
         forced_reason=decision.forced_reason,
+        completion_gap_count=len(decision.completion_gaps),
         message_count=len(state["messages"]),
     )
     tools = select_tools(state["messages"], proposal_only=proposal_only)

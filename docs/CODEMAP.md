@@ -61,11 +61,13 @@ trip through shared API contracts.
 | `src/tripplanner/tools/trip_shape.py` | Read-only model tool exposing auditable trip-shape recommendations |
 | `src/tripplanner/request_identity.py` | Signed web, native, and guest principal resolution |
 | `src/tripplanner/request_limits.py` | Chat/replay rate limits, concurrency, and workspace exclusion |
-| `src/tripplanner/conversation_limits.py` | Durable environment-wide daily, ISO-week, and lifetime admission ceilings for new-trip and existing-trip model conversations |
+| `src/tripplanner/cost_ledger.py` | The one cost control: environment-wide INR spend ceilings (daily/ISO-week/calendar-month) across Azure OpenAI and Google Cloud together, enforced from measured per-call cost with reserve-then-reconcile admission so concurrent turns cannot collectively breach a ceiling none of them breaches alone; unpriced billable calls are charged the rolling P95 rather than zero. Also writes the per-trip cost documents (provider/operation breakdown, LLM turns, cache savings, anomaly flag) the operations dashboard reads |
+| `src/tripplanner/cost_model.py` | Cached `config/cost-model.json` loader and the single sanctioned USD->INR boundary; free-pool shares and quota-sizing inputs for `scripts/derive_limits.py` |
+| `src/tripplanner/limits_config.py` | Every runtime limit in one place: the INR spend ceilings, anti-abuse admission rates, and presentation caps. Deliberately holds no per-trip or per-turn call budget -- the agent makes whatever calls a quality itinerary needs and the ceiling bounds the money |
 | `src/tripplanner/cli.py` | Local command-line experience |
 | `src/tripplanner/config.py` | Pydantic environment settings |
 | `src/tripplanner/caching.py` | Shared memory/Redis backend and environment-wide TTL policy for disposable runtime caches; stable and volatile regions have independent no-expiry overrides |
-| `src/tripplanner/places_budget.py` | Default-deny paid-provider execution authorization for explicit user-interaction and corpus-generation scopes, plus shared Places text-search, review-details, and photo-media ceilings; parallel workers consume one thread-safe budget |
+| `src/tripplanner/places_budget.py` | Default-deny paid-provider execution **authorization** for explicit user-interaction and corpus-generation scopes; reusable view builders, audits, tests and background work cannot create a scope and so cannot spend. Per-scope call ceilings were retired in favour of the INR ceiling in `cost_ledger.py`; counts remain as telemetry and parallel workers share one thread-safe scope |
 | `src/tripplanner/tools/google_places.py`, `place_hours.py`, `routing.py`; `src/tripplanner/web/itinerary_export.py` | Lowest shared paid-Google cache boundaries for successful Places queries/reviews, hours payloads, Routes responses, and Static Maps images; reads precede paid-budget consumption so direct and graph callers share results |
 | `src/tripplanner/models.py` | Core trip and itinerary models |
 | `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
@@ -135,6 +137,10 @@ prices, availability, weather, events, web search, FX, and provider caches.
 `CACHE_WARM_EVERYTHING=1` expands the Places warm manifest and durable payload
 to all available fields, photo references, and signed photo URLs; it changes
 surface only, so each entry still follows its stable or volatile TTL policy.
+`GOOGLE_PLACES_PHOTO_URL_CACHE_TTL_SEC=15552000` retains resolved photo URLs for
+180 days by default in all profiles, subject to `CACHE_TTL_SCALE`; explicit photo
+refresh still bypasses the cache. This controls local reuse, not the provider's
+URL validity period, so a provider-expired URL can require earlier refresh.
 `SECONDARY_DURABLE_CACHE_ENABLED=1` adds a cache-only durable fallback after a
 primary durable miss. Its endpoint, database, emulator guard, authentication,
 and enablement are independent settings. Fresh shared Places and global tool
