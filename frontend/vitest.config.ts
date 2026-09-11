@@ -27,7 +27,18 @@ export default defineConfig({
     // (a full `vitest run` alongside tsc/build during sandbox promotion, or
     // several test workers competing for CPU). A hung test still fails; this
     // just stops ordinary contention from reading as a real regression.
-    testTimeout: 15_000,
+    // Observed a real (non-hung) integration test take ~16s under full
+    // concurrent load from other lanes, so the budget has headroom above that.
+    testTimeout: 20_000,
+    pool: "forks",
+    // Unbounded workers (default: one per logical CPU, 12 here) spawn all at
+    // once and produced "[vitest-pool-runner]: Timeout waiting for worker
+    // to respond" when several worktrees validate concurrently (full 2-way
+    // sync, sandbox promotion) plus AV scanning of a freshly npm-installed
+    // temp worktree. A fixed cap avoids that oversubscription (same
+    // rationale as pytest -n 2 in full-2way-sync.ps1) while still running
+    // files in parallel.
+    maxWorkers: 4,
     projects: [
       {
         extends: true,
