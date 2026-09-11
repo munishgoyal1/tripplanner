@@ -116,6 +116,27 @@ def test_worker_drain_is_bounded_without_changing_manual_drain(evidence, monkeyp
     assert not evidence()
 
 
+def test_low_level_successes_become_one_interaction_flight_summary(
+    evidence, monkeypatch, tmp_path
+):
+    from tripplanner import storage_cosmos
+    from tripplanner.observability import app_event
+    from tripplanner.usage_attribution import usage_scope
+
+    monkeypatch.setenv("TRIPPLANNER_HOME", str(tmp_path))
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
+
+    with usage_scope("user_action", interaction_id="flow-1", route="GET /trip/workspace"):
+        for _index in range(100):
+            app_event("cache_access", cache="google_places", result="memory_hit")
+
+    events = evidence()
+    assert not [event for event in events if event["kind"] == "log.cache_access"]
+    summaries = [event for event in events if event["kind"] == "log.flow_summary"]
+    assert len(summaries) == 1
+    assert summaries[0]["cache_hits"] == 100
+
+
 def test_http_attempts_preserve_errors_retry_number_and_body(evidence):
     responses = [429, 200]
 
