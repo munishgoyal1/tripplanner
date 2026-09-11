@@ -116,6 +116,13 @@ def test_worker_drain_is_bounded_without_changing_manual_drain(evidence, monkeyp
     assert not evidence()
 
 
+def test_uploader_reports_periodically_and_when_caught_up():
+    assert not recorder._upload_report_due(25, 25, 25, 10)
+    assert recorder._upload_report_due(25, 500, 25, 60)
+    assert recorder._upload_report_due(4, 29, 25, 12)
+    assert not recorder._upload_report_due(0, 0, 25, 120)
+
+
 def test_low_level_successes_become_one_interaction_flight_summary(
     evidence, monkeypatch, tmp_path
 ):
