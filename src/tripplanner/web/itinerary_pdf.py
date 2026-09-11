@@ -13,21 +13,26 @@ import re
 import shutil
 import subprocess
 import tempfile
-from html import escape
+from html import escape, unescape
 from io import BytesIO
 from pathlib import Path
 from typing import Any
-
-import httpx
 
 from tripplanner import http_client
 from tripplanner.web import itinerary_export, trip_view
 
 _IMG_SRC = re.compile(
-    r"(<img\b[^>]*?\ssrc=)(['\"])(https?://[^'\"]+)\2",
+    r"(<img\b[^>]*?\ssrc=)(['\"])([^'\"]+)\2",
     re.IGNORECASE | re.DOTALL,
 )
 _MAX_INLINE_IMAGE_BYTES = 1_500_000
+_IMAGE_FETCH_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    ),
+    "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+}
 
 
 def _browser_paths() -> list[str]:
@@ -71,11 +76,15 @@ def inline_remote_images(html: str) -> str:
     cache: dict[str, str] = {}
 
     def replace(match: re.Match[str]) -> str:
-        url = match.group(3)
-        uri = cache.get(url)
+        src = unescape(match.group(3)).strip()
+        uri = cache.get(src)
         if uri is None:
-            uri = _data_uri_for_url(url)
-            cache[url] = uri
+            payload, content_type = _image_bytes(src)
+            uri = ""
+            if payload and content_type:
+                encoded = base64.b64encode(payload).decode("ascii")
+                uri = f"data:{content_type};base64,{encoded}"
+            cache[src] = uri
         if not uri:
             return match.group(0)
         quote = match.group(2)
@@ -84,20 +93,67 @@ def inline_remote_images(html: str) -> str:
     return _IMG_SRC.sub(replace, html)
 
 
-def _data_uri_for_url(url: str) -> str:
+def materialize_images(html: str, folder: Path) -> str:
+    """Rewrite <img> tags to local files in ``folder`` for Chromium print-to-PDF."""
+    index = 0
+
+    def replace(match: re.Match[str]) -> str:
+        nonlocal index
+        src = unescape(match.group(3)).strip()
+        payload, content_type = _image_bytes(src)
+        if not payload:
+            return match.group(0)
+        index += 1
+        suffix = {
+            "image/png": ".png",
+            "image/webp": ".webp",
+            "image/gif": ".gif",
+            "image/jpeg": ".jpg",
+            "image/jpg": ".jpg",
+        }.get(content_type, ".jpg")
+        name = f"img-{index}{suffix}"
+        (folder / name).write_bytes(payload)
+        quote = match.group(2)
+        return f"{match.group(1)}{quote}{name}{quote}"
+
+    return _IMG_SRC.sub(replace, html)
+
+
+def _image_bytes(src: str) -> tuple[bytes, str]:
+    if src.startswith("data:image/") and ";base64," in src:
+        header, encoded = src.split(";base64,", 1)
+        content_type = header.split(":", 1)[1].split(";", 1)[0]
+        try:
+            raw = base64.b64decode(encoded)
+        except ValueError:
+            return b"", ""
+        return raw, content_type
+    if not src.startswith(("http://", "https://")):
+        return b"", ""
     try:
-        response = http_client.get(url, timeout=12)
+        response = http_client.get(
+            src,
+            timeout=12,
+            headers=_IMAGE_FETCH_HEADERS,
+            follow_redirects=True,
+        )
         response.raise_for_status()
-    except httpx.HTTPError:
-        return ""
+    except Exception:
+        return b"", ""
     raw = response.content or b""
     if not raw or len(raw) > _MAX_INLINE_IMAGE_BYTES:
-        return ""
-    content_type = (response.headers.get("content-type") or "image/jpeg").split(";", 1)[0]
+        return b"", ""
+    content_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip()
     if not content_type.startswith("image/"):
-        return ""
-    encoded = base64.b64encode(raw).decode("ascii")
-    return f"data:{content_type};base64,{encoded}"
+        if raw[:3] == b"\xff\xd8\xff":
+            content_type = "image/jpeg"
+        elif raw[:8] == b"\x89PNG\r\n\x1a\n":
+            content_type = "image/png"
+        elif raw[:4] == b"RIFF" and raw[8:12] == b"WEBP":
+            content_type = "image/webp"
+        else:
+            return b"", ""
+    return raw, content_type
 
 
 def html_to_pdf_bytes(html: str) -> bytes | None:
@@ -107,10 +163,11 @@ def html_to_pdf_bytes(html: str) -> bytes | None:
     with tempfile.TemporaryDirectory() as tmp:
         html_path = Path(tmp) / "itinerary.html"
         pdf_path = Path(tmp) / "itinerary.pdf"
-        html_path.write_text(html, encoding="utf-8")
+        printable = materialize_images(html, html_path.parent)
+        html_path.write_text(printable, encoding="utf-8")
         uri = html_path.resolve().as_uri()
-        wait_ms = "25000" if "data:image/" in html or len(html) > 150_000 else "8000"
-        timeout_s = 55 if wait_ms == "25000" else 20
+        wait_ms = "20000" if "img-" in printable else "8000"
+        timeout_s = 50 if wait_ms == "20000" else 20
         for browser in _browser_paths():
             cmd = [
                 browser,
@@ -120,6 +177,7 @@ def html_to_pdf_bytes(html: str) -> bytes | None:
                 "--disable-extensions",
                 "--no-first-run",
                 "--no-default-browser-check",
+                "--allow-file-access-from-files",
                 "--run-all-compositor-stages-before-draw",
                 f"--virtual-time-budget={wait_ms}",
                 f"--print-to-pdf={pdf_path}",
@@ -160,8 +218,6 @@ def build_itinerary_pdf_bytes(
         template=template,
         auto_print=False,
     )
-    if "src='http" in packet or 'src="http' in packet:
-        packet = inline_remote_images(packet)
     printed = html_to_pdf_bytes(packet)
     if printed:
         return printed

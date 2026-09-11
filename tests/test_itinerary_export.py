@@ -232,19 +232,44 @@ def test_pdf_embeds_map_place_photo_and_details(monkeypatch: pytest.MonkeyPatch)
     assert "Daily map circuit" in html
 
 
-def test_inline_remote_images_embeds_https_src(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_inline_remote_images_unescapes_html_entities(monkeypatch: pytest.MonkeyPatch) -> None:
+    seen: list[str] = []
+
     class Response:
-        content = b"img"
-        headers = {"content-type": "image/jpeg"}
+        content = b"\xff\xd8\xff"
+        headers = {"content-type": "application/octet-stream"}
+
+        def raise_for_status(self) -> None:
+            return None
+
+    def fake_get(url: str, **kwargs: object) -> Response:
+        seen.append(url)
+        return Response()
+
+    monkeypatch.setattr(itinerary_pdf.http_client, "get", fake_get)
+    html = (
+        "<img class='stop-photo' "
+        "src='https://lh3.googleusercontent.com/p/abc?maxwidth=800&amp;n=1' alt='x' />"
+    )
+    out = itinerary_pdf.inline_remote_images(html)
+    assert seen == ["https://lh3.googleusercontent.com/p/abc?maxwidth=800&n=1"]
+    assert "data:image/jpeg;base64," in out
+    assert "&amp;" not in out
+
+
+def test_materialize_images_writes_local_files(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    class Response:
+        content = b"\x89PNG\r\n\x1a\n" + b"x"
+        headers = {"content-type": "image/png"}
 
         def raise_for_status(self) -> None:
             return None
 
     monkeypatch.setattr(itinerary_pdf.http_client, "get", lambda *args, **kwargs: Response())
-    html = "<img class='stop-photo' src='https://photos.example/a.jpg' alt='x' />"
-    out = itinerary_pdf.inline_remote_images(html)
-    assert "data:image/jpeg;base64," in out
-    assert "https://photos.example/a.jpg" not in out
+    html = "<img class='stop-photo' src='https://photos.example/a.png?w=1&amp;h=2' alt='x' />"
+    out = itinerary_pdf.materialize_images(html, tmp_path)
+    assert "src='img-1.png'" in out
+    assert (tmp_path / "img-1.png").read_bytes().startswith(b"\x89PNG")
 
 
 def test_pdf_reuses_supplied_html_without_rebuilding(monkeypatch: pytest.MonkeyPatch) -> None:

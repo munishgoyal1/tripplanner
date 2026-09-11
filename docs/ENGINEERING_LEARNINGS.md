@@ -1797,6 +1797,9 @@ the outcome.
   HTML file often times out or paints without those remote images, then a text
   fallback is emailed. Inline http(s) `<img>` tags as data URIs and reuse the
   already-built email HTML so the attachment matches preview.
+- Export HTML escapes `&` in those photo URLs. Fetch the unescaped URL and write
+  the bytes as sibling files before Chromium prints, or the packet looks complete
+  with blank photo boxes.
 
 ## 2026-09-11 - Bounded Work Still Needs Bounded Progress Logging
 
