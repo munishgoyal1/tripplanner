@@ -64,6 +64,12 @@ background and time-boxed, and the planner always renders the plan it already ha
 
 ## Capability index
 
+Operational trip flow logs correlate semantic events by stable trip/interaction
+keys and model call IDs, report terminal failures accurately, preview recent
+message context with full message-text counts, and distinguish unknown model
+billing from cache-served nonbillable calls. Low-level successful cache/storage
+events remain aggregated. Resolved Places photo URLs default to 180-day reuse.
+
 Future feature briefs should reference these stable capability IDs rather than
 re-describing the whole product.
 

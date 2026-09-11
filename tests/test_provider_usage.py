@@ -327,6 +327,8 @@ def test_usage_batch_builds_bounded_human_flow_summary() -> None:
 
     assert summary == {
         "event_count": 3,
+        "outcome": "complete",
+        "error_count": 0,
         "llm_calls": 0,
         "tool_calls": 0,
         "provider_calls": 1,

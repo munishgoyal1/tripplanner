@@ -520,7 +520,7 @@ def settle(
 
     _log(
         "cost_settled",
-        interaction_id=interaction_id,
+        **attribution,
         category=category,
         cost_inr=round(charged_inr, 2),
         unknown_cost_calls=unknown_calls,

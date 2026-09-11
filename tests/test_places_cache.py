@@ -142,7 +142,7 @@ def test_places_cache_applies_environment_ttl_scale(monkeypatch):
     monkeypatch.setattr(settings, "cache_ttl_scale", 0.5)
 
     assert pc._ttl(pc._META_TTL_S) == pc._META_TTL_S // 2
-    assert pc._ttl(pc._PHOTO_TTL_S) == pc._PHOTO_TTL_S // 2
+    assert pc._ttl(pc._PHOTO_TTL_S) == settings.google_places_photo_url_cache_ttl_sec // 2
 
 
 def test_stable_cache_does_not_make_misses_or_signed_photos_permanent(monkeypatch):
@@ -581,10 +581,23 @@ def test_photos_resign_after_photo_ttl(_isolate, monkeypatch):
     assert _isolate["photos"] == 1  # still fresh
     # Age the resolved photo timestamp past the photo TTL.
     entry = pc._CACHE[pc._key("Taj", "Goa")]
-    entry["__photos_at__"] = time.time() - pc._PHOTO_TTL_S - 1
+    entry["__photos_at__"] = time.time() - pc._ttl(pc._PHOTO_TTL_S) - 1
     pc.get_photos("Taj", "Goa")
     assert _isolate["photos"] == 2  # re-signed, but no new lookup
     assert _isolate["lookup"] == 1
+
+
+def test_photo_urls_survive_179_days(_isolate, monkeypatch):
+    monkeypatch.setattr(pc.get_settings(), "google_places_photo_url_cache_ttl_sec", 15552000)
+    monkeypatch.setattr(pc.get_settings(), "cache_ttl_scale", 1)
+    pc.get_photos("Taj", "Goa")
+    entry = pc._CACHE[pc._key("Taj", "Goa")]
+    entry["__photos_at__"] = time.time() - 179 * 24 * 60 * 60
+    pc.get_photos("Taj", "Goa")
+    assert _isolate["photos"] == 1
+    entry["__photos_at__"] = time.time() - 181 * 24 * 60 * 60
+    pc.get_photos("Taj", "Goa")
+    assert _isolate["photos"] == 2
 
 
 def test_reviews_refresh_on_independent_review_ttl(_isolate, monkeypatch):

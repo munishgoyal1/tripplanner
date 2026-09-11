@@ -193,6 +193,7 @@ def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) ->
 
     assert events == [("llm_call", {
         "status": "ok",
+        "call_id": "",
         "model": "gpt-4.1-test",
         "ms": 250.0,
         "message_count": 1,
@@ -209,7 +210,8 @@ def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) ->
     assert prompt_logs == [(
         "gpt-4.1-test",
         "Plan a short Punjab trip",
-        {"message_count": 1, "prompt_chars": 24},
+        {"message_count": 1, "prompt_chars": 24,
+         "preview_text": "user: Plan a short Punjab trip", "call_id": ""},
     )]
 
 
@@ -233,11 +235,13 @@ def test_usage_callback_records_model_error_latency(monkeypatch) -> None:
 
     assert events == [("llm_call", {
         "status": "error",
+        "call_id": "",
         "model": "gpt-4.1-test",
         "ms": 500.0,
         "message_count": 1,
         "prompt_chars": 24,
         "error": "TimeoutError",
+        "error_detail": "timed out",
     })]
 
 

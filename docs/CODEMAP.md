@@ -135,6 +135,10 @@ prices, availability, weather, events, web search, FX, and provider caches.
 `CACHE_WARM_EVERYTHING=1` expands the Places warm manifest and durable payload
 to all available fields, photo references, and signed photo URLs; it changes
 surface only, so each entry still follows its stable or volatile TTL policy.
+`GOOGLE_PLACES_PHOTO_URL_CACHE_TTL_SEC=15552000` retains resolved photo URLs for
+180 days by default in all profiles, subject to `CACHE_TTL_SCALE`; explicit photo
+refresh still bypasses the cache. This controls local reuse, not the provider's
+URL validity period, so a provider-expired URL can require earlier refresh.
 `SECONDARY_DURABLE_CACHE_ENABLED=1` adds a cache-only durable fallback after a
 primary durable miss. Its endpoint, database, emulator guard, authentication,
 and enablement are independent settings. Fresh shared Places and global tool

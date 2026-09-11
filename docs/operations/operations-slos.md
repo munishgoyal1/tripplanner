@@ -282,6 +282,27 @@ enabled, last error type, last successful upload and pending event count. Watch
 crash/interruption or missing evidence; never infer successful completion from it.
 An integrity-checked event does not certify that the itinerary itself is correct.
 
+Trip flow reconstruction: semantic console lines carry `trip=<trip_key>` and
+`flow=<flow_key>` when attributed; model preview/result pairs also carry the
+same `call` ID as the private recorder span. Keys are the first 16 hex characters
+of SHA-256 of the original trip/interaction ID, preserving joins even when phone
+redaction scrubs digits in legacy ID fields. Filter `logs/diagnostics/local-app.jsonl`
+with `rg '<copied flow key>'` for a turn, or the trip key for all its turns.
+The FLOW terminal outcome follows `chat_operation`; failures print ERROR with
+their exception class instead of an ambiguous INFO event name.
+Prompt previews show the latest user request (up to 40 words) and latest message,
+still capped at 100 words overall. Full counts and the text hash cover message
+text and tool arguments, including normalized LangChain tool calls, but exclude
+tool schemas and wire serialization. Private `http.attempt` is the exact wire
+request evidence. Multiple model rounds follow tool results; round lines give
+the forced tool and reason. Successful cache/storage measurements remain aggregated.
+
+`COST settled` reconciles the interaction reservation with catalog-estimated
+spend and unknown-cost allowances; it is not a provider invoice or payment.
+An attempted model call without usage has `billing_status=unknown`, remains
+eligible for the ledger's conservative unknown-cost allowance, and must not be
+presented as free. Cache-served calls remain explicitly nonbillable.
+
 Export with the target environment's ordinary operator credentials (no public
 payload-read endpoint is exposed). Specify `--cosmos` when the environment uses
 Cosmos; otherwise this reads the private local spool/archive:

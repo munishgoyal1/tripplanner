@@ -225,7 +225,7 @@ class Settings(BaseModel):
     )
     google_places_photo_url_cache_ttl_sec: int = Field(
         default_factory=lambda: _env_positive_int(
-            "GOOGLE_PLACES_PHOTO_URL_CACHE_TTL_SEC", 3000
+            "GOOGLE_PLACES_PHOTO_URL_CACHE_TTL_SEC", 15552000
         )
     )
     # How many photos one place contributes to a gallery. A visual-density

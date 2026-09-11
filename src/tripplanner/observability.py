@@ -277,6 +277,8 @@ class JsonFormatter(logging.Formatter):
                 continue
             if key.lower() in _SENSITIVE_FIELDS:
                 base[key] = "<redacted>"
+            elif key in {"flow_key", "trip_key", "call_id", "prompt_sha256"}:
+                base[key] = value
             else:
                 base[key] = redact_value(value)
         if record.exc_info:
@@ -290,7 +292,13 @@ class _TextFormatterWithPid(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:  # noqa: D401
         ts = _dt.datetime.fromtimestamp(record.created, _dt.UTC).strftime("%H:%M:%S")
-        return f"{ts} {record.levelname:<5} {record.name}: {record.getMessage()}"
+        context = " ".join(
+            f"{label}={getattr(record, field)}"
+            for field, label in (("trip_key", "trip"), ("flow_key", "flow"), ("call_id", "call"))
+            if getattr(record, field, "")
+        )
+        suffix = f" [{context}]" if context else ""
+        return f"{ts} {record.levelname:<5} {record.name}: {record.getMessage()}{suffix}"
 
 
 # ---------------------------------------------------------------------------
@@ -417,16 +425,27 @@ def _duration_text(value: Any) -> str:
     return f" {milliseconds / 1000:.2f}s" if milliseconds >= 1000 else f" {milliseconds:.0f}ms"
 
 
+def _correlation_fields(fields: dict[str, Any]) -> dict[str, str]:
+    return {
+        target: hashlib.sha256(str(fields[source]).encode()).hexdigest()[:16]
+        for source, target in (("interaction_id", "flow_key"), ("trip_id", "trip_key"))
+        if fields.get(source)
+    }
+
+
 def log_llm_prompt(
     model: str,
     prompt_text: str,
     *,
     message_count: int,
     prompt_chars: int,
+    preview_text: str | None = None,
+    call_id: str = "",
 ) -> None:
     words = re.findall(r"\S+", prompt_text)
-    preview = " ".join(words[:100])
-    truncated = len(words) > 100
+    preview_words = re.findall(r"\S+", preview_text if preview_text is not None else prompt_text)
+    preview = " ".join(preview_words[:100])
+    truncated = len(preview_words) > 100
     try:
         from tripplanner.usage_attribution import current_attribution
 
@@ -440,11 +459,15 @@ def log_llm_prompt(
     )
     fields: dict[str, Any] = {
         **attribution,
+        **_correlation_fields(attribution),
+        "call_id": call_id,
+        "prompt_sha256": hashlib.sha256(prompt_text.encode()).hexdigest(),
+        "preview_source": "latest_user_and_message" if preview_text is not None else "prefix",
         "model": model,
         "message_count": max(0, message_count),
         "prompt_words": len(words),
         "prompt_chars": max(0, prompt_chars),
-        "preview_words": min(100, len(words)),
+        "preview_words": min(100, len(preview_words)),
         "preview_truncated": truncated,
         "event_kind": "llm_prompt",
     }
@@ -472,7 +495,9 @@ def _human_event_message(kind: str, fields: dict[str, Any]) -> str:
         sku = fields.get("sku_class") or "unknown"
         http_status = fields.get("http_status")
         http_text = f" http={http_status}" if http_status is not None else ""
-        billing = "billable" if fields.get("billable", True) else "nonbillable"
+        billing = fields.get("billing_status") or (
+            "billable" if fields.get("billable", True) else "nonbillable"
+        )
         return (
             f"PROVIDER {provider}.{operation} for={purpose} service={service}"
             f" sku={sku} billing={billing}{place_text} -> "
@@ -511,7 +536,16 @@ def _human_event_message(kind: str, fields: dict[str, Any]) -> str:
         phases = fields.get("tool_phase") or "respond"
         forced = fields.get("forced_tool") or fields.get("forced_reason") or ""
         forced_text = f" next={forced}" if forced else ""
-        return f"FLOW agent round phase={phases}{forced_text}"
+        reason = fields.get("forced_reason") or "model_choice"
+        return f"FLOW agent round phase={phases}{forced_text} reason={reason}"
+    if kind == "cost_settled":
+        return (
+            f"COST settled INR={fields.get('cost_inr', 0)}"
+            f" unknown_calls={fields.get('unknown_cost_calls', 0)}"
+            " (budget reconciliation; estimated spend)"
+        )
+    if kind == "api_chat_stream_error":
+        return f"CHAT stream -> error {fields.get('error') or 'unknown'}"
     if kind in {"workflow_operation", "chat_phase", "chat_operation"}:
         operation = fields.get("operation") or fields.get("phase") or kind
         return f"STEP {operation} -> {status or 'complete'}{duration}"
@@ -540,7 +574,8 @@ def log_flow_summary(
     places = summary.get("places") or []
     place_text = f" | places: {', '.join(places)}" if places else ""
     message = (
-        f"FLOW {route} complete {_duration_text(elapsed_ms).strip()} | "
+        f"FLOW {route} {summary.get('outcome', 'complete')}"
+        f" {_duration_text(elapsed_ms).strip()} | "
         f"LLM={llm} tools={tools} providers={providers} "
         f"cache={cache_hits} hit/{cache_misses} miss storage={storage}{place_text}"
     )
@@ -556,6 +591,7 @@ def log_flow_summary(
         message,
         extra={
             **attribution,
+            **_correlation_fields(attribution),
             **summary,
             "ms": round(elapsed_ms, 2),
             "event_kind": "flow_summary",
@@ -614,6 +650,7 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
     except Exception:
         pass
     retain_individual_event = _should_log_event(kind, fields)
+    correlation = _correlation_fields(fields) if retain_individual_event else {}
     if retain_individual_event:
         from tripplanner.flight_recorder import record
 
@@ -622,10 +659,13 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
     for k, v in fields.items():
         if k.lower() in _SENSITIVE_FIELDS:
             safe[k] = "<redacted>"
+        elif k == "call_id" and re.fullmatch(r"[a-fA-F0-9-]{32,36}", str(v)):
+            safe[k] = v
         else:
             safe[k] = redact_value(v)
     safe["user_id"] = user_id  # JsonFormatter hashes this
     safe["event_kind"] = kind
+    safe.update(correlation)
     try:
         from tripplanner.usage_attribution import append_current_event
 
@@ -640,7 +680,13 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
         except Exception:
             continue
     if retain_individual_event:
-        _APP_EVENT_LOGGER.info(_human_event_message(kind, safe), extra=safe)
+        message = _human_event_message(kind, safe)
+        if safe.get("error") and str(safe["error"]) not in message:
+            message += f" error={safe['error']}"
+        if safe.get("error_detail"):
+            message += f" detail={safe['error_detail']}"
+        log = _APP_EVENT_LOGGER.error if _event_is_failure(safe) else _APP_EVENT_LOGGER.info
+        log(message, extra=safe)
 
 
 @contextmanager
