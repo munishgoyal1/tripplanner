@@ -520,6 +520,23 @@ def remove_event_observer(observer: Any) -> None:
             _EVENT_OBSERVERS.remove(observer)
 
 
+def _flight_recorder_worthy(kind: str, fields: dict[str, Any]) -> bool:
+    """Cache hits are the overwhelming majority of app_event volume on a
+    large, fully-warmed trip -- nearly 1,000 events for a single view build
+    on a 400+ place itinerary -- and unlike a miss or a real provider call,
+    a hit reveals nothing useful for reconstructing one user's trace.
+    Mirroring every one into flight_recorder's fsync'd spool (see
+    flight_recorder.record()'s docstring -- durability is deliberate there,
+    "persist before returning") turned a single trip switch/view build into
+    tens of seconds of pure fsync overhead once a trip was large enough.
+    Misses, refreshes, and every non-cache event are unaffected."""
+    if kind == "cache_access":
+        return not str(fields.get("result") or "").endswith("hit")
+    if kind == "provider_call" and fields.get("status") == "cache_hit":
+        return False
+    return True
+
+
 def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
     """Emit a structured, PII-safe event to the APP log (stdout).
 
@@ -544,9 +561,10 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
         fields = {**current_attribution().fields(), **fields}
     except Exception:
         pass
-    from tripplanner.flight_recorder import record
+    if _flight_recorder_worthy(kind, fields):
+        from tripplanner.flight_recorder import record
 
-    record("log." + kind, user_id=user_id, **fields)
+        record("log." + kind, user_id=user_id, **fields)
     safe: dict[str, Any] = {}
     for k, v in fields.items():
         if k.lower() in _SENSITIVE_FIELDS:

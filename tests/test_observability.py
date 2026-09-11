@@ -336,6 +336,16 @@ def test_successful_low_level_events_skip_console_and_file_but_keep_telemetry(
     obs.app_event(
         "cache_access",
         cache="google_places",
+        result="miss",
+        place="Taj Mahal",
+    )
+    # A cache *hit* is the one exception: high-volume (hundreds per view on a
+    # large trip) and, unlike a miss, not worth its fsync'd flight_recorder
+    # write -- see _flight_recorder_worthy(). Still skips console/file same
+    # as everything else here.
+    obs.app_event(
+        "cache_access",
+        cache="google_places",
         result="memory_hit",
         place="Taj Mahal",
     )
@@ -346,6 +356,34 @@ def test_successful_low_level_events_skip_console_and_file_but_keep_telemetry(
         "log.storage_operation",
         "log.cache_access",
     ]
+
+
+@pytest.mark.parametrize(
+    ("kind", "fields", "expected"),
+    [
+        ("cache_access", {"result": "memory_hit"}, False),
+        ("cache_access", {"result": "coalesced_hit"}, False),
+        ("cache_access", {"result": "durable_hit"}, False),
+        ("cache_access", {"result": "secondary_hit"}, False),
+        ("cache_access", {"result": "photo_url_hit"}, False),
+        ("cache_access", {"result": "miss"}, True),
+        ("cache_access", {"result": "refresh"}, True),
+        ("cache_access", {"result": "provider_unavailable"}, True),
+        ("cache_access", {}, True),
+        ("provider_call", {"status": "cache_hit"}, False),
+        ("provider_call", {"status": "ok"}, True),
+        ("provider_call", {"status": "http_429"}, True),
+        ("provider_call", {}, True),
+        ("tool_call", {"status": "ok"}, True),
+        ("chat_operation", {"result": "memory_hit"}, True),  # field only matters for its own kind
+    ],
+)
+def test_flight_recorder_worthy_excludes_only_cache_hit_telemetry(kind, fields, expected):
+    """Regression: on a large, fully-warmed trip a single view build emits
+    nearly 1,000 app_events, ~93% of them cache hits -- mirroring every one
+    into flight_recorder's fsync'd spool turned a trip switch into 20-30
+    seconds of pure I/O. Everything except a cache hit must still reach it."""
+    assert obs._flight_recorder_worthy(kind, fields) is expected
 
 
 def test_meaningful_provider_event_names_local_place_in_console_and_file(
