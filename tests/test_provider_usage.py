@@ -291,6 +291,87 @@ def test_event_only_interaction_still_persists_telemetry(monkeypatch) -> None:  
     assert writes[0]["day"]
 
 
+def test_usage_batch_builds_bounded_human_flow_summary() -> None:
+    from tripplanner.usage_attribution import UsageBatch
+
+    batch = UsageBatch()
+    batch.append(
+        {
+            "provider": "google",
+            "operation": "text_search",
+            "attempted": True,
+            "units": 1,
+        }
+    )
+    batch.append_event(
+        "cache_access",
+        {
+            "environment": "local",
+            "result": "memory_hit",
+            "place": "Taj Mahal",
+            "city": "Agra",
+        },
+    )
+    batch.append_event(
+        "cache_access",
+        {
+            "environment": "local",
+            "result": "miss",
+            "place": "Agra Fort",
+            "city": "Agra",
+        },
+    )
+    batch.append_event("storage_operation", {"status": "ok"})
+
+    summary = batch.flow_summary()
+
+    assert summary == {
+        "event_count": 3,
+        "llm_calls": 0,
+        "tool_calls": 0,
+        "provider_calls": 1,
+        "cache_hits": 1,
+        "cache_misses": 1,
+        "storage_operations": 1,
+        "places": ["Taj Mahal (Agra)=memory_hit", "Agra Fort (Agra)=miss"],
+        "place_count": 2,
+    }
+
+
+def test_provider_log_context_is_local_only(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from tripplanner import observability
+
+    events: list[dict] = []
+    monkeypatch.setattr(
+        observability,
+        "app_event",
+        lambda _kind, **fields: events.append(fields),
+    )
+    monkeypatch.setattr(provider_usage, "_write", lambda _record: None)
+
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "canary")
+    provider_usage.record_call(
+        provider="google",
+        operation="text_search",
+        status="ok",
+        duration_ms=10,
+        log_context={"place": "Taj Mahal", "city": "Agra"},
+    )
+    assert "place" not in events[-1]
+    assert "city" not in events[-1]
+
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    provider_usage.record_call(
+        provider="google",
+        operation="text_search",
+        status="ok",
+        duration_ms=10,
+        log_context={"place": "Taj Mahal", "city": "Agra"},
+    )
+    assert events[-1]["place"] == "Taj Mahal"
+    assert events[-1]["city"] == "Agra"
+
+
 def test_persist_batch_chunks_records_and_events_at_their_limits(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     writes: list[dict] = []
     monkeypatch.setattr(provider_usage, "_write", writes.append)

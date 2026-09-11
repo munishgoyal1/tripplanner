@@ -1739,3 +1739,17 @@ the outcome.
 - Packet structure and map pages are independent. Implementing a layered book
   does not require the extra overview map pages unless that map setting was
   selected. Default to the Lab's day-circuit inset.
+## 2026-09-11 - Evidence Fidelity And Operator Logs Need Different Fan-Out
+
+- A full-fidelity flight recorder correctly retained each cache, provider, and
+  storage event, but routing the same successful low-level events to stdout and a
+  rotating file turned a 20,000-event spool drain into hours of repetitive console
+  output. The useful signal was still present, but effectively unreadable.
+- Suppress at the presentation boundary, after recorder, observer, ledger, and
+  metric fan-out. Deleting instrumentation at call sites would make the console
+  quieter by weakening the forensic evidence and alert inputs that justified the
+  instrumentation in the first place.
+- Human operational logs should narrate intent and terminal outcomes: API, workflow,
+  model, tool, attempted provider, error, and one bounded interaction or uploader
+  summary. Keep local resource names ephemeral and bounded; keep hosted operational
+  records content-free.

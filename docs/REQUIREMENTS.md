@@ -688,6 +688,14 @@ implemented capability baseline.
 - Tool latency, failures, cache hits, model-call latency/tokens/prompt size,
   forced completion-gate reasons, structured events, and hosted health are
   observable through API metrics and Azure logs.
+- Console and rotating application logs are a human-readable operational flow,
+  not a dump of every telemetry event. They retain API completions, LLM rounds,
+  tool and attempted-provider calls, workflow stages, failures, and one bounded
+  interaction summary. Successful per-cache, per-storage, duplicate outbound,
+  and LLM-accounting events remain available to observers, ledgers, metrics, and
+  private flight evidence but do not each incur console/file logging. Local flow
+  summaries and provider lines may name the Places item being fetched; canary and
+  production summaries remain content-free.
 - A private flight recorder is enabled by default across local, canary and production
   code paths. It captures exact model messages/tool schemas and returned messages,
   model HTTP attempts (including SDK retry counts), tool inputs/outputs/errors,
@@ -698,6 +706,8 @@ implemented capability baseline.
   Cosmos delivery; compressed chunks are verified on export and expire after seven days.
   Recorder failures preserve pending files and expose degraded status. This code-level
   capability still requires deployment and a live hosted recorder smoke check.
+  Its background Cosmos delivery drains bounded batches and reports one batch line
+  rather than printing one successful storage line per uploaded event.
   Browser Google SDK internals and infrastructure SDK wire retries are outside this
   server recorder; their existing application/status telemetry is not a full wire trace.
 - Hidden operations and owner-only backend access is authorized solely to the

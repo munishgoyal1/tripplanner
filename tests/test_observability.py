@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import logging
+import sys
 import time
 from pathlib import Path
 
@@ -249,7 +250,11 @@ def test_filter_scrubs_args(capsys):
 def _emit_and_parse(capsys, kind: str, **fields):
     obs.setup_logging(force=True)
     # Switch to JSON formatter regardless of env -- mirror what we do hosted.
-    handler = logging.getLogger().handlers[0]
+    handler = next(
+        item
+        for item in logging.getLogger().handlers
+        if isinstance(item, logging.StreamHandler) and item.stream is sys.stdout
+    )
     handler.setFormatter(obs.JsonFormatter())
     obs.app_event(kind, **fields)
     out = capsys.readouterr().out.strip().splitlines()
@@ -305,9 +310,93 @@ def test_optional_app_log_file_is_rotating_json_and_redacted(tmp_path, monkeypat
     assert "alice@example.com" not in target.read_text(encoding="utf-8")
 
 
+def test_successful_low_level_events_skip_console_and_file_but_keep_telemetry(
+    tmp_path, monkeypatch, capsys
+):
+    from tripplanner import flight_recorder
+
+    recorded: list[tuple[str, dict]] = []
+    monkeypatch.setattr(
+        flight_recorder,
+        "record",
+        lambda kind, **fields: recorded.append((kind, fields)),
+    )
+    target = tmp_path / "diagnostics" / "app.jsonl"
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    obs.setup_logging(force=True)
+
+    obs.app_event(
+        "storage_operation",
+        operation="upsert",
+        store="cosmos",
+        container="flight_recorder",
+        status="ok",
+        ms=12,
+    )
+    obs.app_event(
+        "cache_access",
+        cache="google_places",
+        result="memory_hit",
+        place="Taj Mahal",
+    )
+
+    assert capsys.readouterr().out == ""
+    assert not target.exists() or target.read_text(encoding="utf-8") == ""
+    assert [kind for kind, _fields in recorded] == [
+        "log.storage_operation",
+        "log.cache_access",
+    ]
+
+
+def test_meaningful_provider_event_names_local_place_in_console_and_file(
+    tmp_path, monkeypatch, capsys
+):
+    target = tmp_path / "diagnostics" / "app.jsonl"
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    obs.setup_logging(force=True)
+
+    obs.app_event(
+        "provider_call",
+        provider="google",
+        operation="text_search",
+        status="ok",
+        attempted=True,
+        place="Taj Mahal",
+        city="Agra",
+        ms=125,
+    )
+
+    assert 'PROVIDER google.text_search place="Taj Mahal" city="Agra" -> ok 125ms' in (
+        capsys.readouterr().out
+    )
+    parsed = json.loads(target.read_text(encoding="utf-8").strip())
+    assert parsed["event_kind"] == "provider_call"
+    assert parsed["place"] == "Taj Mahal"
+    assert parsed["city"] == "Agra"
+
+
+def test_low_level_failure_remains_visible(capsys):
+    obs.setup_logging(force=True)
+
+    obs.app_event(
+        "storage_operation",
+        operation="upsert",
+        store="cosmos",
+        status="error",
+        error="TimeoutError",
+        ms=500,
+    )
+
+    assert "STORAGE cosmos.unknown.upsert -> error 500ms" in capsys.readouterr().out
+
+
 def test_json_exception_trace_is_redacted(capsys):
     obs.setup_logging(force=True)
-    handler = logging.getLogger().handlers[0]
+    handler = next(
+        item
+        for item in logging.getLogger().handlers
+        if isinstance(item, logging.StreamHandler) and item.stream is sys.stdout
+    )
     handler.setFormatter(obs.JsonFormatter())
 
     try:

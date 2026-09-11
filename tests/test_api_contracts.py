@@ -18,6 +18,22 @@ def test_chat_request_validation_is_preserved() -> None:
     assert response.status_code == 422
 
 
+def test_app_shutdown_signals_places_cache_to_stop_pacing(monkeypatch) -> None:
+    """Regression: without this, a places_cache worker thread still waiting
+    out its rate-limit window can hold up process exit indefinitely (see
+    places_cache.py's begin_shutdown docstring) -- api.py's ASGI lifespan
+    "shutdown" event must actually reach it."""
+    from tripplanner.web import places_cache
+
+    places_cache._shutting_down.clear()
+    try:
+        with TestClient(api.app):
+            assert not places_cache._shutting_down.is_set()
+        assert places_cache._shutting_down.is_set()
+    finally:
+        places_cache._shutting_down.clear()
+
+
 def test_workspace_endpoint_returns_one_focused_snapshot(monkeypatch) -> None:
     captured: dict[str, object] = {}
 
@@ -65,6 +81,15 @@ def test_provider_status_exposes_readiness_without_secrets(monkeypatch) -> None:
             }
         ],
     )
+    monkeypatch.setattr(
+        "tripplanner.flight_recorder.status",
+        lambda: {
+            "enabled": True,
+            "last_error": "",
+            "last_uploaded_at": "",
+            "spooled_events": 0,
+        },
+    )
     client = TestClient(api.app)
     http_client.reset_breakers_for_tests()
 
@@ -80,7 +105,15 @@ def test_provider_status_exposes_readiness_without_secrets(monkeypatch) -> None:
                 "access": "active_free_or_sandbox",
             }
         ],
-        "outbound": {"endpoints": {}},
+        "outbound": {
+            "endpoints": {},
+            "flight_recorder": {
+                "enabled": True,
+                "last_error": "",
+                "last_uploaded_at": "",
+                "spooled_events": 0,
+            },
+        },
     }
 
 

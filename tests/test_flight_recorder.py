@@ -101,6 +101,21 @@ def test_cosmos_chunks_retries_and_checksum(evidence, monkeypatch):
         recorder.decode_chunks(broken)
 
 
+def test_worker_drain_is_bounded_without_changing_manual_drain(evidence, monkeypatch):
+    from tripplanner import storage_cosmos
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(storage_cosmos, "upsert_doc", lambda *_args, **_kwargs: None)
+    for index in range(3):
+        recorder.record("test", index=index, user_id="user-a")
+
+    assert recorder._drain_once(limit=2) == 2
+    assert len(evidence()) == 1
+
+    recorder.drain_once()
+    assert not evidence()
+
+
 def test_http_attempts_preserve_errors_retry_number_and_body(evidence):
     responses = [429, 200]
 

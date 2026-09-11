@@ -34,7 +34,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
 from queue import Empty, Queue
-from threading import Condition, Lock, RLock, Thread
+from threading import Condition, Event, Lock, RLock, Thread
 from typing import Any
 
 import httpx
@@ -46,6 +46,9 @@ from tripplanner.places_budget import consume, current_budget, use_budget
 from tripplanner.tools.google_places import _BASE, is_configured
 
 log = logging.getLogger(__name__)
+_PLACE_LOG_CONTEXT: contextvars.ContextVar[dict[str, str]] = contextvars.ContextVar(
+    "tripplanner_place_log_context", default={}
+)
 
 _MAX_PHOTOS_PER_PLACE = 1
 _HTTP_TIMEOUT_S = 10
@@ -71,6 +74,21 @@ _RATE_WINDOW_SEC = 60.0
 _rate_lock = Lock()
 _rate_windows: dict[str, deque[float]] = defaultdict(deque)
 
+# Set on app shutdown (api.py's lifespan "shutdown" event) so a worker thread
+# blocked in _pace() bails out immediately instead of continuing to wait out
+# the remaining quota window. Without this, a prefetch()/_photo_uris()
+# ThreadPoolExecutor with a worker mid-wait here would hold up process exit:
+# concurrent.futures.thread registers an atexit hook (_python_exit) the first
+# time any ThreadPoolExecutor is created, which joins every worker thread
+# with NO timeout -- one paced worker can make Ctrl+C hang for as long as its
+# remaining wait, which pacing correctness deliberately makes minutes, not
+# milliseconds.
+_shutting_down = Event()
+
+
+def begin_shutdown() -> None:
+    _shutting_down.set()
+
 
 def _pace(quota_id: str, *, default: int) -> None:
     """Block until another call under ``quota_id`` would stay within Google's
@@ -78,7 +96,7 @@ def _pace(quota_id: str, *, default: int) -> None:
     limit = billing_guardrails.gcp_quota_per_minute(
         "places.googleapis.com", quota_id, default=default
     )
-    while True:
+    while not _shutting_down.is_set():
         with _rate_lock:
             window = _rate_windows[quota_id]
             now = time.monotonic()
@@ -560,6 +578,7 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
                 headers=_headers(field_mask),
                 json={"textQuery": f"{name} {city}".strip(), "pageSize": 1},
                 timeout=_HTTP_TIMEOUT_S,
+                log_context={"place": name, "city": city},
             )
             resp.raise_for_status()
             break
@@ -623,6 +642,7 @@ def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
                 "skipHttpRedirect": "true",
             },
             timeout=_HTTP_TIMEOUT_S,
+            log_context=_PLACE_LOG_CONTEXT.get(),
         )
         resp.raise_for_status()
     except httpx.HTTPError as exc:
@@ -641,6 +661,7 @@ def _fetch_reviews(place_id: str) -> list[dict[str, Any]]:
             f"{_BASE}/places/{place_id}",
             headers=_headers("reviews"),
             timeout=_HTTP_TIMEOUT_S,
+            log_context=_PLACE_LOG_CONTEXT.get(),
         )
         resp.raise_for_status()
     except httpx.HTTPError as exc:
@@ -685,6 +706,8 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
                 "memory_hit" if fresh_before_lock else "coalesced_hit",
                 operation="text_search",
                 sku_class="pro",
+                place=name,
+                city=lookup_city,
             )
             return {} if _is_miss(entry) else entry  # type: ignore[return-value]
         if not refresh:
@@ -693,24 +716,42 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
                 with _CACHE_LOCK:
                     cache[k] = durable
                     _evict_if_needed()
-                _record_cache("durable_hit", operation="text_search", sku_class="pro")
+                _record_cache(
+                    "durable_hit",
+                    operation="text_search",
+                    sku_class="pro",
+                    place=name,
+                    city=lookup_city,
+                )
                 return {} if _is_miss(durable) else durable
             secondary = _secondary_read(k)
             if secondary is not None and _fresh(secondary):
                 with _CACHE_LOCK:
                     cache[k] = secondary
                     _evict_if_needed()
-                _record_cache("secondary_hit", operation="text_search", sku_class="pro")
+                _record_cache(
+                    "secondary_hit",
+                    operation="text_search",
+                    sku_class="pro",
+                    place=name,
+                    city=lookup_city,
+                )
                 _persist_entry(k)
                 return {} if _is_miss(secondary) else secondary
-        _record_cache("refresh" if refresh else "miss")
+        _record_cache("refresh" if refresh else "miss", place=name, city=lookup_city)
         try:
             info = _lookup_place(name, lookup_city) or {}
         except http_client.CircuitOpenError:
             # The provider is circuit-broken, not "no such place" -- don't
             # cache or durably persist a miss for a transient outage; let the
             # next attempt (once the breaker closes) look it up for real.
-            _record_cache("provider_unavailable", operation="text_search", sku_class="pro")
+            _record_cache(
+                "provider_unavailable",
+                operation="text_search",
+                sku_class="pro",
+                place=name,
+                city=lookup_city,
+            )
             return {}
         info["__at__"] = time.time()
         with _CACHE_LOCK:
@@ -720,8 +761,19 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
         return {} if _is_miss(info) else info
 
 
-def _record_cache(result: str, *, operation: str = "", sku_class: str = "", units: int = 1) -> None:
+def _record_cache(
+    result: str,
+    *,
+    operation: str = "",
+    sku_class: str = "",
+    units: int = 1,
+    place: str = "",
+    city: str = "",
+) -> None:
     from tripplanner.observability import app_event
+    from tripplanner.usage_attribution import current_attribution
+
+    environment = current_attribution().fields().get("environment", "local").lower()
 
     app_event(
         "cache_access",
@@ -729,6 +781,11 @@ def _record_cache(result: str, *, operation: str = "", sku_class: str = "", unit
         result=result,
         **({"dataset": _dataset_for_operation(operation)} if operation else {}),
         units=units,
+        **(
+            {"place": place, "city": city}
+            if environment == "local" and place
+            else {}
+        ),
     )
     if result.endswith("hit") and operation:
         from tripplanner.provider_usage import record_cache_hit
@@ -769,10 +826,20 @@ def get_photos(
                 operation="photo_media",
                 sku_class="photo_media",
                 units=units,
+                place=name,
+                city=_lookup_city(name, city),
             )
         return current
-    _record_cache("photo_url_refresh" if current else "photo_url_miss")
-    photo_urls = _photo_uris(refs)
+    _record_cache(
+        "photo_url_refresh" if current else "photo_url_miss",
+        place=name,
+        city=_lookup_city(name, city),
+    )
+    token = _PLACE_LOG_CONTEXT.set({"place": name, "city": _lookup_city(name, city)})
+    try:
+        photo_urls = _photo_uris(refs)
+    finally:
+        _PLACE_LOG_CONTEXT.reset(token)
     with _CACHE_LOCK:
         info["photo_urls"] = photo_urls
         info["__photos_at__"] = time.time()
@@ -829,7 +896,11 @@ def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
         needs_reviews = refresh or "reviews" not in info or reviews_stale
         place_id = info.get("place_id", "")
     if needs_reviews:
-        reviews = _fetch_reviews(place_id)
+        token = _PLACE_LOG_CONTEXT.set({"place": name, "city": _lookup_city(name, city)})
+        try:
+            reviews = _fetch_reviews(place_id)
+        finally:
+            _PLACE_LOG_CONTEXT.reset(token)
         with _CACHE_LOCK:
             info["reviews"] = reviews
             info["__reviews_at__"] = time.time()
@@ -839,6 +910,8 @@ def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
             "reviews_hit",
             operation="place_details",
             sku_class="enterprise_atmosphere",
+            place=name,
+            city=_lookup_city(name, city),
         )
     return info
 
@@ -858,7 +931,7 @@ def refresh_details(name: str, city: str) -> tuple[dict[str, Any] | None, bool]:
             previous = cache.get(key)
         if previous is None:
             previous = _durable_read(key)
-        _record_cache("refresh")
+        _record_cache("refresh", place=name, city=lookup_city)
         info = _lookup_place(name, lookup_city)
         if info is None:
             known = previous if previous and not _is_miss(previous) else None
@@ -897,19 +970,37 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
         with _CACHE_LOCK:
             entry = cache.get(ck)
             if not refresh and _fresh(entry):
-                _record_cache("discovery_hit", operation="text_search", sku_class="pro")
+                _record_cache(
+                    "discovery_hit",
+                    operation="text_search",
+                    sku_class="pro",
+                    place=f"{kind} discovery",
+                    city=destination,
+                )
                 return entry.get("names", [])  # type: ignore[union-attr]
         if not refresh:
             durable = _durable_read(ck)
             if durable is not None and _fresh(durable):
-                _record_cache("discovery_hit", operation="text_search", sku_class="pro")
+                _record_cache(
+                    "discovery_hit",
+                    operation="text_search",
+                    sku_class="pro",
+                    place=f"{kind} discovery",
+                    city=destination,
+                )
                 with _CACHE_LOCK:
                     cache[ck] = durable
                     _evict_if_needed()
                 return durable.get("names", [])
             secondary = _secondary_read(ck)
             if secondary is not None and _fresh(secondary):
-                _record_cache("discovery_hit", operation="text_search", sku_class="pro")
+                _record_cache(
+                    "discovery_hit",
+                    operation="text_search",
+                    sku_class="pro",
+                    place=f"{kind} discovery",
+                    city=destination,
+                )
                 with _CACHE_LOCK:
                     cache[ck] = secondary
                     _evict_if_needed()
@@ -931,6 +1022,7 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
                 headers=_headers("places.displayName,places.rating"),
                 json={"textQuery": query, "pageSize": max(n, 1)},
                 timeout=_HTTP_TIMEOUT_S,
+                log_context={"place": f"{kind} discovery", "city": destination},
             )
             resp.raise_for_status()
             for p in (resp.json().get("places") or [])[:n]:

@@ -69,9 +69,11 @@ def _isolate(monkeypatch, tmp_path):
     monkeypatch.setattr(pc, "_photo_uris", fake_photo_uris)
     monkeypatch.setattr(pc, "_fetch_reviews", fake_reviews)
 
+    pc._shutting_down.clear()
     pc.clear_cache()
     yield calls
     pc.clear_cache()
+    pc._shutting_down.clear()
 
 
 def test_details_cached_within_week(_isolate):
@@ -93,6 +95,11 @@ def test_places_cache_emits_miss_and_memory_hit(_isolate):
         if event.kind == "cache_access"
     ]
     assert results == ["miss", "memory_hit"]
+    cache_events = [
+        event.fields for event in collector.evidence.events if event.kind == "cache_access"
+    ]
+    assert {event["place"] for event in cache_events} == {"Harness-only Place"}
+    assert {event["city"] for event in cache_events} == {"Harness City"}
 
 
 def test_places_cache_emits_forced_refresh(_isolate):
@@ -297,6 +304,28 @@ def test_pace_blocks_once_the_configured_quota_is_reached(_isolate, monkeypatch)
 
     pc._pace("SearchTextRequestPerMinutePerProject", default=30)
     assert sleeps  # third call within the same window had to wait
+
+
+def test_pace_abandons_a_wait_immediately_once_shutdown_begins(_isolate, monkeypatch):
+    """Regression: a worker thread blocked here previously held up process
+    exit for as long as its remaining quota wait -- concurrent.futures.thread
+    joins every ThreadPoolExecutor worker at interpreter exit with no
+    timeout, and pacing correctness deliberately makes that wait minutes,
+    not milliseconds, on a large trip. api.py's shutdown event now calls
+    begin_shutdown() so a worker still waiting here bails out at once."""
+    clock = {"t": 0.0}
+    sleeps: list[float] = []
+    monkeypatch.setattr(pc.time, "monotonic", lambda: clock["t"])
+    monkeypatch.setattr(pc.time, "sleep", lambda seconds: sleeps.append(seconds))
+    monkeypatch.setattr(pc.billing_guardrails, "gcp_quota_per_minute", lambda *a, **k: 1)
+    pc._rate_windows.clear()
+
+    pc._pace("SearchTextRequestPerMinutePerProject", default=30)  # uses up the only slot
+
+    pc.begin_shutdown()
+    pc._pace("SearchTextRequestPerMinutePerProject", default=30)
+
+    assert not sleeps  # returned immediately instead of waiting out the window
 
 
 def test_pace_reads_the_real_environment_quota(_isolate, monkeypatch):

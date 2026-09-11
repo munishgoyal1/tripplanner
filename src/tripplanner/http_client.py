@@ -166,7 +166,12 @@ def close_client() -> None:
 
 
 def request(
-    method: str, url: str, *, endpoint: str | None = None, **kwargs: Any
+    method: str,
+    url: str,
+    *,
+    endpoint: str | None = None,
+    log_context: dict[str, str] | None = None,
+    **kwargs: Any,
 ) -> httpx.Response:
     import uuid
 
@@ -178,7 +183,13 @@ def request(
     record("provider.attempt", attempt_id=attempt_id, method=method, url=url,
            endpoint=endpoint, request=kwargs)
     try:
-        response = _request(method, url, endpoint=endpoint, **kwargs)
+        response = _request(
+            method,
+            url,
+            endpoint=endpoint,
+            log_context=log_context,
+            **kwargs,
+        )
         record("provider.result", attempt_id=attempt_id, status=response.status_code,
                duration_ms=(time.monotonic() - started) * 1000,
                body=body_data(response.content, response.headers.get("content-type", "")))
@@ -190,7 +201,12 @@ def request(
 
 
 def _request(
-    method: str, url: str, *, endpoint: str | None = None, **kwargs: Any
+    method: str,
+    url: str,
+    *,
+    endpoint: str | None = None,
+    log_context: dict[str, str] | None = None,
+    **kwargs: Any,
 ) -> httpx.Response:
     """Perform one pooled, budgeted, breakered outbound request."""
     name = endpoint or endpoint_for(url)
@@ -205,7 +221,7 @@ def _request(
         google_operation(url, kwargs) if name.endswith("googleapis.com") else ("", "")
     )
     if not breaker.allow():
-        _record(name, "circuit_open", 0.0, None, operation, sku_class)
+        _record(name, "circuit_open", 0.0, None, operation, sku_class, log_context)
         raise CircuitOpenError(f"{name} is temporarily unavailable (circuit open)")
 
     kwargs.setdefault("timeout", policy.timeout)
@@ -221,6 +237,7 @@ def _request(
             None,
             operation,
             sku_class,
+            log_context,
         )
         raise
 
@@ -235,6 +252,7 @@ def _request(
         response.status_code,
         operation,
         sku_class,
+        log_context,
     )
     return response
 
@@ -265,6 +283,7 @@ def _record(
     http_status: int | None,
     operation: str = "",
     sku_class: str = "",
+    log_context: dict[str, str] | None = None,
 ) -> None:
     from tripplanner.observability import app_event
     from tripplanner.provider_usage import record_call
@@ -305,6 +324,7 @@ def _record(
         http_status=http_status,
         attempted=status != "circuit_open",
         billable=billable,
+        log_context=log_context,
     )
 
     app_event(
