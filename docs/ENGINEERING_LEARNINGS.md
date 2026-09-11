@@ -1729,3 +1729,13 @@ the outcome.
   fail `(?m)^id$` matches. Parse from the first `{`/`[`, trim IDs, and treat
   "already in use" as exists. Cloud SDK 584 `alpha monitoring policies update`
   takes `--set-notification-channels`, not `--notification-channels`.
+
+## 2026-09-11 - Print Packets Must Not Invent Safety Facts
+
+- A Lab fixture can show emergency, consulate, and card-block numbers because
+  the mock trip invented them. Production export may only print contacts that
+  already exist on the trip or in saved place facts. A missing hotel phone is
+  omitted; a fabricated 999 is worse than an incomplete essentials page.
+- Packet structure and map pages are independent. Implementing a layered book
+  does not require the extra overview map pages unless that map setting was
+  selected. Default to the Lab's day-circuit inset.

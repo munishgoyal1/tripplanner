@@ -3498,12 +3498,14 @@ Product north star already covered the intent; stale GPT-4.1 lock replaced by
 that performance rule. Usage catalog now longest-prefix-matches so mini is not
 priced as GPT-5. Deployment was not changed.
 
-[2026-09-10] Lodging search outranks persist; local Maps referrers off; 50 photos
-Owner: stop the update_trip_plan loop when lodging is missing; remove local
-Maps HTTP referrer matching after the 27 Aug billing constraints blocked
-legitimate origins; 50 photos per allowed trip in every environment so a
-started trip is not quality-capped. Implemented: search_hotels outranks
-persist/repair; empty local browserReferrers + apply-script clear; app and GCP
-photo/search/maps quotas raised; conversation ceilings still bound trip count.
+[2026-09-11] Lab 5 Option B layered Trip Book in export
+Sandbox implementation of the selected layered packet: contents and document
+readiness first, trip brief and executable days with optional circuit insets,
+then essentials, confirmations, and optional sourced place context. Emergency
+numbers are omitted unless already on the trip. Identity numbers stay out of
+the printable file. Extra full-page trip maps stay off by default (Lab day-inset
+setting). Promotion remains a separate owner step.
+
+
 
 

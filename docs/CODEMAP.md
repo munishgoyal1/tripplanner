@@ -92,6 +92,7 @@ trip through shared API contracts.
 | `src/tripplanner/trip_events.py` | Durable trip event ownership |
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
+| `src/tripplanner/web/itinerary_trip_book.py` | Lab 5 Option B layered Trip Book HTML: contents and readiness, trip brief, executable days with optional circuit insets, then essentials, documents, and optional place context |
 | `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py` | Private diagnostic events: full model/tool and planner HTTP evidence, provider attempts, seven-day local/Cosmos spool, integrity-checked operator export; see operations SLO runbook |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics |
 | `src/tripplanner/debug_store.py` | Internal implementation of the Trip Flight Recorder: automatic local-only history of real trip revisions for investigation and emulator restore; never active in hosted mode |

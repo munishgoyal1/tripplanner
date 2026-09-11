@@ -27,7 +27,7 @@ const FORMATS: FormatOption[] = [
   {
     id: "trip_book",
     label: "Trip Book",
-    description: "The full pack: a trip overview map, day circuits, essentials, and your saved travel documents.",
+    description: "Layered packet: contents and readiness first, executable days with circuit insets, then essentials, confirmations, and optional place context.",
     supportsMap: true,
   },
   {

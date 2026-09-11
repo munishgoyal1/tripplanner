@@ -43,7 +43,9 @@ def _route_points(
   return out
 
 
-def _route_snippet_svg(coords: list[tuple[float, float]]) -> str:
+def _route_snippet_svg(
+  coords: list[tuple[float, float]], labels: list[str] | None = None
+) -> str:
   if len(coords) < 2:
     return ""
   width, height, pad = 220.0, 116.0, 12.0
@@ -63,11 +65,13 @@ def _route_snippet_svg(coords: list[tuple[float, float]]) -> str:
   poly = " ".join(f"{x},{y}" for x, y in points)
   nodes = []
   for i, (x, y) in enumerate(points, start=1):
+    label = (labels[i - 1] if labels and i - 1 < len(labels) else str(i)) or str(i)
     nodes.append(
       f"<circle cx='{x}' cy='{y}' r='5.5' fill='#0d9488' stroke='white' stroke-width='1.5' />"
     )
     nodes.append(
-      f"<text x='{x}' y='{y + 3.2}' text-anchor='middle' fill='white' font-size='7' font-weight='700'>{i}</text>"
+      f"<text x='{x}' y='{y + 3.2}' text-anchor='middle' fill='white'"
+      f" font-size='7' font-weight='700'>{_e(label)}</text>"
     )
 
   return (
@@ -216,8 +220,10 @@ def _decisions_section(trip: dict[str, Any]) -> str:
 
 
 #: The five download formats this renderer knows how to compose. "detailed"
-#: and "trip_book" keep the existing per-day circuit maps; "standard" and
-#: "trip_card" never show one, regardless of ``include_map_circuit``.
+#: and "trip_book" keep per-day circuit maps; "standard" and "trip_card" never
+#: show one, regardless of ``include_map_circuit``. ``trip_book`` is Lab 5
+#: Option B: contents, trip brief, executable days with optional insets, then
+#: essentials, documents, and optional place context.
 TEMPLATES = ("standard", "detailed", "trip_book", "trip_card")
 _MAP_TEMPLATES = {"detailed", "trip_book"}
 
@@ -391,6 +397,27 @@ def build_export_html(
     travelers = str(trip.get("travelers") or "")
     symbol = trip_view.currency_symbol(trip)
     total_display = trip_view.fmt_money(trip.get("total_cost"), symbol)
+
+    if template_key == "trip_book":
+        from tripplanner.web.itinerary_trip_book import render_layered_trip_book
+
+        return render_layered_trip_book(
+            trip,
+            include_photos=include_photos,
+            include_map_circuit=include_map_circuit,
+            auto_print=auto_print,
+            share_url=share_url,
+            itinerary=itinerary,
+            pin_by_id=pin_by_id,
+            route_by_day=route_by_day,
+            destination=destination,
+            origin=origin,
+            depart=depart,
+            ret=ret,
+            travelers=travelers,
+            total_display=total_display,
+            seen_photos=seen_photos,
+        )
 
     day_blocks: list[str] = []
     # Trip Card renders its own condensed rows below instead of full day

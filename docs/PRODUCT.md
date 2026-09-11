@@ -376,12 +376,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Itinerary scanning**: each day header shows stop count, `Schedule duration`,
   a separate `Day's travel` row with route distance/time/mode, and a direct Maps
   handoff before the stop details.
-  A complete exported Trip Book should remain executable away from the live app:
-  contents first, trip and day plans next, then booking confirmations and entry
-  documents, with optional place context last. Personal insights must identify
-  the saved preference and verified travel fact behind them. Packet structure is
-  currently an active UX Lab decision; document ingestion and merged-PDF storage
-  are not approved production scope.
+  A complete exported Trip Book remains executable away from the live app:
+  contents first, trip brief and day plans next with optional day-circuit insets,
+  then booking confirmations and entry documents, with optional place context last.
+  Personal insights identify the saved preference or verified place fact behind
+  them. The selected Lab 5 structure is **B · Layered Trip Book**. Document
+  ingestion and merged-PDF storage remain out of this packet: originals are never
+  kept, and identity numbers stay out of the printable file.
   The backend owns one day timing contract consumed by both Itinerary and Map:
   the schedule spans hotel departure through return (or the applicable transfer/
   transit endpoints), while `Day's travel` is the route-only subtotal. If

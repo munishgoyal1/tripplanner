@@ -140,6 +140,40 @@ def build_itinerary_pdf_bytes(
     story.append(Paragraph(summary, body))
     story.append(Spacer(1, 10))
 
+    if template_key == "trip_book":
+        from tripplanner.web.itinerary_trip_book import stay_name, trip_book_readiness
+
+        readiness = trip_book_readiness(trip)
+        stay = stay_name(trip, itinerary)
+        story.append(Paragraph("Contents", h2))
+        story.append(Paragraph(
+            "Trip brief · Daily itinerary · Essentials and help · Travel documents"
+            + (" · Day circuit maps" if include_map_circuit else ""),
+            body,
+        ))
+        badge = str(readiness.get("badge") or "")
+        if badge:
+            story.append(Paragraph(escape(badge), body))
+        else:
+            story.append(
+                Paragraph(
+                    "Document groups on file look ready, or checks are silent for this trip.",
+                    body,
+                )
+            )
+        story.append(Spacer(1, 8))
+        story.append(Paragraph("Trip brief", h2))
+        if stay:
+            story.append(Paragraph(f"Stay: {escape(stay)}", body))
+        prefs = trip.get("preferences_snapshot") or {}
+        style = str(prefs.get("trip_style") or "").strip()
+        if style:
+            story.append(Paragraph(
+                f"Saved trip style: {escape(style.replace('_', ' '))} (preference snapshot).",
+                body,
+            ))
+        story.append(Spacer(1, 8))
+
     if template_key == "trip_card":
         rows = [["Day", "Date", "Title", "Highlights"]]
         for day in itinerary.get("days") or []:
@@ -283,14 +317,24 @@ def build_itinerary_pdf_bytes(
             if items:
                 essential_lines.append(f"Budget breakdown: {items}")
         if essential_lines:
-            story.append(Paragraph("Trip essentials", h2))
+            heading = "Essentials and help" if template_key == "trip_book" else "Trip essentials"
+            story.append(Paragraph(heading, h2))
             for line in essential_lines:
                 story.append(Paragraph(escape(line), body))
             story.append(Spacer(1, 12))
 
     if template_key == "trip_book":
         from tripplanner.web import travel_documents
+        from tripplanner.web.itinerary_trip_book import stay_name, trip_book_readiness
 
+        readiness = trip_book_readiness(trip)
+        stay = stay_name(trip, itinerary)
+        if stay:
+            story.append(Paragraph(f"Hotel: {escape(stay)}", body))
+        travelers = str(trip.get("travelers") or "").strip()
+        if travelers:
+            story.append(Paragraph(f"Travelling party: {escape(travelers)}", body))
+        story.append(Paragraph("Confirmations and entry", h2))
         trip_id = str(trip.get("trip_id") or "")
         records = [
             record
@@ -298,17 +342,31 @@ def build_itinerary_pdf_bytes(
             if str(record.get("scope") or "traveler") != "trip"
             or str(record.get("trip_id") or "") == trip_id
         ]
-        if records:
-            story.append(Paragraph("Travel documents on file", h2))
-            doc_rows = [["Document", "Traveller", "Notes"]]
-            for record in records:
-                doc_type = str(record.get("type") or "")
-                label = travel_documents.TYPE_LABELS.get(doc_type, doc_type.title() or "Document")
-                holder = str(record.get("traveller_name") or "").strip() or "Traveller"
-                fields = record.get("fields") or {}
-                summary_fields = itinerary_export._DOCUMENT_SUMMARY_FIELDS.get(doc_type, ())
-                summary = " · ".join(str(fields[key]) for key in summary_fields if fields.get(key))
-                doc_rows.append([label, holder, summary or "On file"])
+        doc_rows = [["Document", "Traveller", "Notes"]]
+        for item in trip.get("selected_flights") or []:
+            if isinstance(item, dict):
+                label = str(item.get("airline") or item.get("name") or "Flight")
+            else:
+                label = str(item)
+            doc_rows.append(["Flight", label, "Selected"])
+        for record in records:
+            doc_type = str(record.get("type") or "")
+            label = travel_documents.TYPE_LABELS.get(
+                doc_type, doc_type.title() or "Document"
+            )
+            holder = str(record.get("traveller_name") or "").strip() or "Traveller"
+            fields = record.get("fields") or {}
+            summary_fields = itinerary_export._DOCUMENT_SUMMARY_FIELDS.get(doc_type, ())
+            summary = " · ".join(str(fields[key]) for key in summary_fields if fields.get(key))
+            doc_rows.append([label, holder, summary or "On file"])
+        for check in readiness.get("checks") or []:
+            if check.get("severity") in {"blocker", "warning"}:
+                doc_rows.append([
+                    "Action needed",
+                    str(check.get("title") or ""),
+                    str(check.get("detail") or ""),
+                ])
+        if len(doc_rows) > 1:
             t = Table(doc_rows, repeatRows=1)
             t.setStyle(TableStyle([
                 ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f1f5f9")),
@@ -318,7 +376,7 @@ def build_itinerary_pdf_bytes(
                 ("VALIGN", (0, 0), (-1, -1), "TOP"),
             ]))
             story.append(t)
-            story.append(Paragraph("Reference numbers are kept out of this file by design.", body))
+        story.append(Paragraph("Reference numbers are kept out of this file by design.", body))
 
     doc.build(story)
     return buf.getvalue()

@@ -576,7 +576,10 @@ implemented capability baseline.
 
 ### EXPORT-01 - Trip handoffs
 
-- Preview and print-friendly HTML with minimal, detailed, and family templates.
+- Preview and print-friendly HTML with standard, detailed, layered Trip Book, and
+  trip-card templates. The Trip Book opens with contents and document readiness,
+  then a trip brief and executable days (optional numbered circuit insets), then
+  essentials, confirmations, and optional place context.
 - Print/save PDF and direct PDF download, with a print fallback when the direct
   renderer is unavailable.
 - Optional place photos and embedded day maps/circuit diagrams are consistent
