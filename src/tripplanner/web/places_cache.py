@@ -90,12 +90,23 @@ def begin_shutdown() -> None:
     _shutting_down.set()
 
 
+_PACE_LOG_THRESHOLD_MS = 500.0  # only report waits a user could actually notice
+
+
 def _pace(quota_id: str, *, default: int) -> None:
     """Block until another call under ``quota_id`` would stay within Google's
-    real per-minute quota for the current environment."""
+    real per-minute quota for the current environment.
+
+    A wait here is silent by design for the common, sub-second case -- but a
+    quota-exhausted burst (several trips built back-to-back locally) can hold
+    a caller for tens of seconds, which previously produced zero console/log
+    output and looked identical to the app being stuck. Report only waits that
+    cross ``_PACE_LOG_THRESHOLD_MS`` so routine pacing stays quiet.
+    """
     limit = billing_guardrails.gcp_quota_per_minute(
         "places.googleapis.com", quota_id, default=default
     )
+    wait_started: float | None = None
     while not _shutting_down.is_set():
         with _rate_lock:
             window = _rate_windows[quota_id]
@@ -104,9 +115,23 @@ def _pace(quota_id: str, *, default: int) -> None:
                 window.popleft()
             if len(window) < limit:
                 window.append(now)
-                return
+                break
             wait = _RATE_WINDOW_SEC - (now - window[0])
+        if wait_started is None:
+            wait_started = time.monotonic()
         time.sleep(max(0.05, min(wait, 1.0)))
+    if wait_started is not None and not _shutting_down.is_set():
+        waited_ms = (time.monotonic() - wait_started) * 1000
+        if waited_ms >= _PACE_LOG_THRESHOLD_MS:
+            from tripplanner.observability import app_event
+
+            app_event(
+                "provider_pacing",
+                quota_id=quota_id,
+                limit_per_minute=limit,
+                ms=round(waited_ms, 2),
+                status="waited",
+            )
 
 
 def _ttl(seconds: int | float) -> int:

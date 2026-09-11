@@ -93,16 +93,44 @@ distort a per-environment number.
 
 | Budget | Amount | Scope | Thresholds |
 | --- | --- | --- | --- |
-| `tripplanner-local-2000inr` | 3,600 INR | local project | 50 / 80 / 100% |
+| `tripplanner-local-2000inr` | 24,000 INR | local project | 50 / 80 / 100% |
 | `tripplanner-canary-2000inr` | 600 INR | canary project | 50 / 80 / 100% |
 | `tripplanner-prod-2000inr` | 1,800 INR | prod project | 50 / 80 / 100% |
-| `tripplanner-global-8000inr` | 6,000 INR | whole billing account | 50 / 80 / 90 / 100% → Pub/Sub |
+| `tripplanner-global-8000inr` | 26,400 INR | whole billing account | 50 / 80 / 90 / 100% → Pub/Sub |
 
-Cloud Billing budgets are monthly. The 6,000 INR global amount models a 200
-INR/day average over a 30-day planning month. The 140 INR/day local development
-quota includes 120 INR/day local and 20 INR/day canary, with separate project
-limits preserving environment-specific alerts. Production receives 60 INR/day,
-or 30%.
+Cloud Billing budgets are monthly; the global amount is always the exact sum of
+the three per-environment amounts, so the account-wide alert stays meaningful
+relative to what the environments can actually spend. Local development is
+budgeted at 800 INR/day (raised 2026-09-11, see "Local testing headroom"
+below), canary at 20 INR/day, and production at 60 INR/day -- each with its own
+project-level budget so environment-specific alerts stay distinct.
+
+### Local testing headroom
+
+The local per-day budget and the local rows of the quota table below were
+raised on 2026-09-11 after ordinary local development -- building and testing
+2-3 trips back-to-back in one sitting -- was found to trip the app's
+`places.googleapis.com` circuit breaker (`src/tripplanner/circuit_breaker.py`,
+30-second fixed cooldown once open) purely from exhausting the previous
+30-per-minute local quota, not from any runaway loop. Once the breaker opens it
+blocks every Places call (search **and** photo-media share one breaker per
+provider), so an ordinary trip switch could stall for 40-60+ seconds waiting
+out the cooldown plus the rate limiter's own queued wait
+(`places_cache.py`'s `_pace()`). Google's signed photo-media URLs are
+short-lived and are not part of the durable place-metadata cache, so even a
+"fully cached" trip re-resolves photo URIs -- and therefore re-consumes the
+per-minute photo quota -- on every session.
+
+The local quotas are now sized so 2-3 full cold trips (at the per-trip ceiling
+described under "Cost model" below, roughly 12.50 INR each) comfortably fit
+within a single per-minute window without tripping the breaker, while the
+800 INR/day local budget stays about 20x below the single-day cost of the
+2026-08-27 incident documented at the bottom of this file -- an explicit
+constraint from the person who owns this budget: local testing spend should
+stay well under ~1,000 INR/day. The real-time protection against a repeat of
+that incident remains the **quotas**, not the budget (see "What a budget does
+and does not do" above), and the per-scope Places call ceiling described under
+"Cost model" is unchanged by this update.
 
 The display names predate the lower observation-mode amounts. They are retained
 so the idempotent apply updates the existing budgets instead of creating
@@ -265,18 +293,19 @@ the full cloud allowance through an unused operation.
 
 | Quota | local | canary | prod |
 | --- | --- | --- | --- |
-| `SearchTextRequestPerDayPerProject` | 200 | 50 | 200 |
-| `SearchTextRequestPerMinutePerProject` | 30 | 15 | 30 |
-| `GetPlaceRequestPerDayPerProject` | 80 | 20 | 80 |
-| `GetPlaceRequestPerMinutePerProject` | 20 | 10 | 20 |
-| `SearchNearbyRequestPerDayPerProject` | 5 | 2 | 3 |
-| `AutocompletePlacesRequestPerDayPerProject` | 20 | 5 | 20 |
-| `GetPhotoMediaRequestPerDayPerProject` | 400 | 80 | 400 |
-| `BillableDefaultPerDayPerProject` (Places JavaScript) | 200 | 20 | 50 |
-| `ComputeRoutesRequestsPerDay` | 100 | 20 | 50 |
-| `ComputeRouteMatrixCellsPerDay` | 500 | 100 | 250 |
-| `BillableDefaultPerDayPerProject` (Static Maps) | 100 | 20 | 50 |
-| `BillableDefaultPerDayPerProject` (Maps JavaScript) | 300 | 50 | 100 |
+| `SearchTextRequestPerDayPerProject` | 600 | 50 | 200 |
+| `SearchTextRequestPerMinutePerProject` | 60 | 15 | 30 |
+| `GetPlaceRequestPerDayPerProject` | 300 | 20 | 80 |
+| `GetPlaceRequestPerMinutePerProject` | 40 | 10 | 20 |
+| `SearchNearbyRequestPerDayPerProject` | 10 | 2 | 3 |
+| `AutocompletePlacesRequestPerDayPerProject` | 60 | 5 | 20 |
+| `GetPhotoMediaRequestPerDayPerProject` | 1,200 | 80 | 400 |
+| `GetPhotoMediaRequestPerMinutePerProject` | 60 | 15 | 30 |
+| `BillableDefaultPerDayPerProject` (Places JavaScript) | 400 | 20 | 50 |
+| `ComputeRoutesRequestsPerDay` | 200 | 20 | 50 |
+| `ComputeRouteMatrixCellsPerDay` | 1,000 | 100 | 250 |
+| `BillableDefaultPerDayPerProject` (Static Maps) | 200 | 20 | 50 |
+| `BillableDefaultPerDayPerProject` (Maps JavaScript) | 500 | 50 | 100 |
 
 `requiredServices` must equal the union of `browserServices` and
 `serverServices`. The release contract requires every callable service to have

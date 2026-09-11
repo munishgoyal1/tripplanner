@@ -5,9 +5,11 @@ param(
 	[int]$ApiPort = 8000,
 	[int]$FrontendPort = 5173,
 	[int]$LabsPort = 5175,
+	[int]$InspectorPort = 0,
 	[switch]$BackendOnly,
 	[switch]$FrontendOnly,
 	[switch]$NoLabs,
+	[switch]$NoInspector,
 	[switch]$Watch,
 	[switch]$Logs,
 	[ValidateSet("azure", "emulator")]
@@ -39,8 +41,8 @@ if ($ValidateOnly) {
 
 $devSpaParameters = @{}
 foreach ($name in @(
-	"ApiPort", "FrontendPort", "LabsPort", "BackendOnly", "FrontendOnly", "NoLabs",
-	"Watch", "Logs", "CosmosBackend", "UseCanaryData"
+	"ApiPort", "FrontendPort", "LabsPort", "InspectorPort", "BackendOnly", "FrontendOnly", "NoLabs",
+	"NoInspector", "Watch", "Logs", "CosmosBackend", "UseCanaryData"
 )) {
 	if ($PSBoundParameters.ContainsKey($name)) {
 		$devSpaParameters[$name] = $PSBoundParameters[$name]

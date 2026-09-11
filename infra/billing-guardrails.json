@@ -1,5 +1,5 @@
 {
-  "$comment": "SINGLE SOURCE OF TRUTH for every Azure + GCP alert and cost guardrail (billing budgets/quotas AND infra-health/error alerts). Each block below has its own $comment explaining what it configures and which script/template consumes it. Existing top-level keys (alertEmail, thresholds, gcp, azure) and their nested paths are UNCHANGED on purpose -- ~15 PowerShell scripts (apply/migration/access-control scripts under infra/) read them by exact dotted path today, so this reorg only ADDS structure (comments + two new sections) rather than renesting the existing ones. Monthly cloud budgets use a 30-day planning month: the 140 INR/day local development quota includes 120 INR local and 20 INR canary; prod receives 60 INR/day. Edit identifiers for a new account, then run the idempotent GCP and Azure apply scripts.",
+  "$comment": "SINGLE SOURCE OF TRUTH for every Azure + GCP alert and cost guardrail (billing budgets/quotas AND infra-health/error alerts). Each block below has its own $comment explaining what it configures and which script/template consumes it. Existing top-level keys (alertEmail, thresholds, gcp, azure) and their nested paths are UNCHANGED on purpose -- ~15 PowerShell scripts (apply/migration/access-control scripts under infra/) read them by exact dotted path today, so this reorg only ADDS structure (comments + two new sections) rather than renesting the existing ones. Monthly cloud budgets use a 30-day planning month: local development is budgeted at 800 INR/day (raised 2026-09-11 to comfortably cover 2-3 full trips of local build/test in one sitting without tripping real-time quotas -- see docs/operations/gcp-billing-guardrails.md's 'Local testing headroom' note), canary at 20 INR/day, prod at 60 INR/day. Edit identifiers for a new account, then run the idempotent GCP and Azure apply scripts.",
 
   "alertEmail": "munishgoyal@aitripplanner.co",
 
@@ -19,14 +19,14 @@
     "shutoffRegion": "asia-south1",
     "shutoffServiceAccount": "billing-shutoff",
     "shutoffEnabled": false,
-    "globalBudget": { "name": "tripplanner-global-8000inr", "amount": 6000 },
+    "globalBudget": { "name": "tripplanner-global-8000inr", "amount": 26400 },
     "environments": [
       {
         "name": "local",
         "project": "aitripplanner-local",
         "budgetName": "tripplanner-local-2000inr",
-        "dailyBudget": 120,
-        "budget": 3600,
+        "dailyBudget": 800,
+        "budget": 24000,
         "browserKey": "aitripplanner-local-browser",
         "browserReferrers": [],
         "serverKey": "aitripplanner-local-server"
@@ -73,26 +73,26 @@
       "static-maps-backend.googleapis.com"
     ],
     "quotas": [
-      { "service": "places.googleapis.com", "quotaId": "SearchTextRequestPerDayPerProject", "local": 200, "canary": 50, "prod": 200 },
-      { "service": "places.googleapis.com", "quotaId": "SearchTextRequestPerMinutePerProject", "local": 30, "canary": 15, "prod": 30 },
-      { "service": "places.googleapis.com", "quotaId": "GetPlaceRequestPerDayPerProject", "local": 80, "canary": 20, "prod": 80 },
-      { "service": "places.googleapis.com", "quotaId": "GetPlaceRequestPerMinutePerProject", "local": 20, "canary": 10, "prod": 20 },
-      { "service": "places.googleapis.com", "quotaId": "SearchNearbyRequestPerDayPerProject", "local": 5, "canary": 2, "prod": 3 },
-      { "service": "places.googleapis.com", "quotaId": "SearchNearbyRequestPerMinutePerProject", "local": 5, "canary": 2, "prod": 3 },
-      { "service": "places.googleapis.com", "quotaId": "AutocompletePlacesRequestPerDayPerProject", "local": 20, "canary": 5, "prod": 20 },
-      { "service": "places.googleapis.com", "quotaId": "AutocompletePlacesRequestPerMinutePerProject", "local": 10, "canary": 5, "prod": 10 },
-      { "service": "places.googleapis.com", "quotaId": "GetPhotoMediaRequestPerDayPerProject", "local": 400, "canary": 80, "prod": 400 },
-      { "service": "places.googleapis.com", "quotaId": "GetPhotoMediaRequestPerMinutePerProject", "local": 30, "canary": 15, "prod": 30 },
-      { "service": "places-backend.googleapis.com", "quotaId": "BillableDefaultPerDayPerProject", "preferenceId": "tp-placesjs-billabledefaultperdayperproject", "local": 200, "canary": 20, "prod": 50 },
-      { "service": "places-backend.googleapis.com", "quotaId": "BillableDefaultPerMinutePerProject", "preferenceId": "tp-placesjs-billabledefaultperminuteperproject", "local": 30, "canary": 10, "prod": 20 },
-      { "service": "routes.googleapis.com", "quotaId": "ComputeRoutesRequestsPerDay", "local": 100, "canary": 20, "prod": 50 },
-      { "service": "routes.googleapis.com", "quotaId": "ComputeRoutesRequestsPerMinutePerProject", "local": 30, "canary": 10, "prod": 20 },
-      { "service": "routes.googleapis.com", "quotaId": "ComputeRouteMatrixCellsPerDay", "local": 500, "canary": 100, "prod": 250 },
-      { "service": "routes.googleapis.com", "quotaId": "ComputeRouteMatrixCellsPerMinutePerProject", "local": 120, "canary": 30, "prod": 60 },
-      { "service": "static-maps-backend.googleapis.com", "quotaId": "BillableDefaultPerDayPerProject", "local": 100, "canary": 20, "prod": 50 },
-      { "service": "static-maps-backend.googleapis.com", "quotaId": "BillableDefaultPerMinutePerProject", "local": 30, "canary": 10, "prod": 20 },
-      { "service": "maps-backend.googleapis.com", "quotaId": "BillableDefaultPerDayPerProject", "preferenceId": "tp-mapsjs-billabledefaultperdayperproject", "local": 300, "canary": 50, "prod": 100 },
-      { "service": "maps-backend.googleapis.com", "quotaId": "BillableDefaultPerMinutePerProject", "preferenceId": "tp-mapsjs-billabledefaultperminuteperproject", "local": 60, "canary": 20, "prod": 30 }
+      { "service": "places.googleapis.com", "quotaId": "SearchTextRequestPerDayPerProject", "local": 600, "canary": 50, "prod": 200 },
+      { "service": "places.googleapis.com", "quotaId": "SearchTextRequestPerMinutePerProject", "local": 60, "canary": 15, "prod": 30 },
+      { "service": "places.googleapis.com", "quotaId": "GetPlaceRequestPerDayPerProject", "local": 300, "canary": 20, "prod": 80 },
+      { "service": "places.googleapis.com", "quotaId": "GetPlaceRequestPerMinutePerProject", "local": 40, "canary": 10, "prod": 20 },
+      { "service": "places.googleapis.com", "quotaId": "SearchNearbyRequestPerDayPerProject", "local": 10, "canary": 2, "prod": 3 },
+      { "service": "places.googleapis.com", "quotaId": "SearchNearbyRequestPerMinutePerProject", "local": 10, "canary": 2, "prod": 3 },
+      { "service": "places.googleapis.com", "quotaId": "AutocompletePlacesRequestPerDayPerProject", "local": 60, "canary": 5, "prod": 20 },
+      { "service": "places.googleapis.com", "quotaId": "AutocompletePlacesRequestPerMinutePerProject", "local": 20, "canary": 5, "prod": 10 },
+      { "service": "places.googleapis.com", "quotaId": "GetPhotoMediaRequestPerDayPerProject", "local": 1200, "canary": 80, "prod": 400 },
+      { "service": "places.googleapis.com", "quotaId": "GetPhotoMediaRequestPerMinutePerProject", "local": 60, "canary": 15, "prod": 30 },
+      { "service": "places-backend.googleapis.com", "quotaId": "BillableDefaultPerDayPerProject", "preferenceId": "tp-placesjs-billabledefaultperdayperproject", "local": 400, "canary": 20, "prod": 50 },
+      { "service": "places-backend.googleapis.com", "quotaId": "BillableDefaultPerMinutePerProject", "preferenceId": "tp-placesjs-billabledefaultperminuteperproject", "local": 60, "canary": 10, "prod": 20 },
+      { "service": "routes.googleapis.com", "quotaId": "ComputeRoutesRequestsPerDay", "local": 200, "canary": 20, "prod": 50 },
+      { "service": "routes.googleapis.com", "quotaId": "ComputeRoutesRequestsPerMinutePerProject", "local": 60, "canary": 10, "prod": 20 },
+      { "service": "routes.googleapis.com", "quotaId": "ComputeRouteMatrixCellsPerDay", "local": 1000, "canary": 100, "prod": 250 },
+      { "service": "routes.googleapis.com", "quotaId": "ComputeRouteMatrixCellsPerMinutePerProject", "local": 240, "canary": 30, "prod": 60 },
+      { "service": "static-maps-backend.googleapis.com", "quotaId": "BillableDefaultPerDayPerProject", "local": 200, "canary": 20, "prod": 50 },
+      { "service": "static-maps-backend.googleapis.com", "quotaId": "BillableDefaultPerMinutePerProject", "local": 60, "canary": 10, "prod": 20 },
+      { "service": "maps-backend.googleapis.com", "quotaId": "BillableDefaultPerDayPerProject", "preferenceId": "tp-mapsjs-billabledefaultperdayperproject", "local": 500, "canary": 50, "prod": 100 },
+      { "service": "maps-backend.googleapis.com", "quotaId": "BillableDefaultPerMinutePerProject", "preferenceId": "tp-mapsjs-billabledefaultperminuteperproject", "local": 90, "canary": 20, "prod": 30 }
     ]
   },
 
