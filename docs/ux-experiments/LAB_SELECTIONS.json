@@ -552,7 +552,7 @@
         "recordedAt": "2026-09-09T05:01:12.846Z"
       },
       {
-        "version": 2.0,
+        "version": 2,
         "selection": "refined",
         "selectionLabel": "C · Refined spatial workspace",
         "comment": "",
@@ -561,7 +561,7 @@
         "recordedAt": "2026-09-09T05:26:30.8021547Z"
       },
       {
-        "version": 3.0,
+        "version": 3,
         "selection": "refined",
         "selectionLabel": "C · Refined spatial workspace",
         "comment": "",
@@ -570,7 +570,7 @@
         "recordedAt": "2026-09-09T05:45:22.6045202Z"
       },
       {
-        "version": 4.0,
+        "version": 4,
         "selection": "refined",
         "selectionLabel": "C · Refined spatial workspace",
         "comment": "",
@@ -582,7 +582,7 @@
     "implementations": [
       {
         "version": 1,
-        "handoffVersion": 2.0,
+        "handoffVersion": 2,
         "selection": "refined",
         "selectionLabel": "C · Refined spatial workspace",
         "comment": "",
@@ -590,8 +590,8 @@
         "recordedAt": "2026-09-09T05:26:30.8021547Z"
       },
       {
-        "version": 2.0,
-        "handoffVersion": 3.0,
+        "version": 2,
+        "handoffVersion": 3,
         "selection": "refined",
         "selectionLabel": "C · Refined spatial workspace",
         "comment": "",
@@ -599,8 +599,8 @@
         "recordedAt": "2026-09-09T05:45:22.6045202Z"
       },
       {
-        "version": 3.0,
-        "handoffVersion": 4.0,
+        "version": 3,
+        "handoffVersion": 4,
         "selection": "refined",
         "selectionLabel": "C · Refined spatial workspace",
         "comment": "",
@@ -611,7 +611,7 @@
     "stateChangedAt": "2026-09-09T08:09:19.0393101Z",
     "updatedAt": "2026-09-09T08:09:19.0393101Z",
     "implementation": {
-      "handoffVersion": 4.0,
+      "handoffVersion": 4,
       "selection": "refined",
       "selectionLabel": "C · Refined spatial workspace",
       "comment": "",
@@ -619,5 +619,26 @@
       "recordedAt": "2026-09-09T08:09:19.0393101Z"
     },
     "implementationSummary": "Restored the persistent compact notification row, added the shared day and Sequence navigation row, matched the Lab download glyph, kept Workspace/Itinerary/Map/Guide labels visible, and added coherent Add/Reduce day controls with optional whole-trip replanning.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: 2e46ad3e5872; Recorded: 2026-09-09 08:09 UTC; Session: Restore planner navigation rows"
+  },
+  "itinerary-trip-book": {
+    "labId": "itinerary-trip-book",
+    "labTitle": "Execution-ready Trip Book",
+    "selection": "layered",
+    "selectionLabel": "B · Layered Trip Book",
+    "comment": "",
+    "disposition": "ready",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "layered",
+        "selectionLabel": "B · Layered Trip Book",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-09-11T03:52:11.574Z"
+      }
+    ],
+    "implementations": [],
+    "stateChangedAt": "2026-09-11T03:52:11.574Z",
+    "updatedAt": "2026-09-11T03:52:11.574Z"
   }
 }
