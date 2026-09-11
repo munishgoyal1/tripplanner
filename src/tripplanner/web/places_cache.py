@@ -651,6 +651,49 @@ def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
     return resp.json().get("photoUri")
 
 
+def get_photo_bytes(
+    name: str, city: str, max_width_px: int = 480
+) -> tuple[bytes, str]:
+    """Return JPEG/PNG bytes for a cached place photo (Places media, no URI hop)."""
+    info = _ensure(name, city)
+    if not info or not is_configured():
+        return b"", ""
+    refs = [ref for ref in (info.get("photo_refs") or []) if ref]
+    if not refs:
+        return b"", ""
+    if not consume("photo"):
+        return b"", ""
+    _pace("GetPhotoMediaRequestPerMinutePerProject", default=30)
+    try:
+        resp = http_client.get(
+            f"{_BASE}/{refs[0]}/media",
+            params={
+                "key": get_settings().google_places_api_key,
+                "maxWidthPx": max_width_px,
+            },
+            timeout=_HTTP_TIMEOUT_S,
+            follow_redirects=True,
+            log_context=_PLACE_LOG_CONTEXT.get(),
+        )
+        resp.raise_for_status()
+    except httpx.HTTPError as exc:
+        log.warning("places photo bytes fetch failed: %s", exc)
+        return b"", ""
+    raw = resp.content or b""
+    if not raw or raw[:1] in {b"{", b"<"}:
+        return b"", ""
+    content_type = (resp.headers.get("content-type") or "").split(";", 1)[0].strip()
+    if content_type.startswith("image/"):
+        return raw, content_type
+    if raw[:3] == b"\xff\xd8\xff":
+        return raw, "image/jpeg"
+    if raw[:8] == b"\x89PNG\r\n\x1a\n":
+        return raw, "image/png"
+    if raw[:4] == b"RIFF" and raw[8:12] == b"WEBP":
+        return raw, "image/webp"
+    return b"", ""
+
+
 def _fetch_reviews(place_id: str) -> list[dict[str, Any]]:
     if not place_id or not is_configured():
         return []

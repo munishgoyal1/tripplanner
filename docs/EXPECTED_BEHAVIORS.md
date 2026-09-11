@@ -730,7 +730,9 @@ source. Missing paperwork is visible before the appendix. Emergency numbers are
 omitted unless they already exist on the trip. Identity numbers stay out of the
 printable file. Standard (including the older `detailed` alias) keeps itinerary
 panel facts without Trip Book contents. PDF download uses the same HTML layout
-as preview. Email includes the PDF and a trip URL.
+as preview. Checked stop photos appear in the PDF, not only in HTML preview.
+Download PDF and Send show independent progress. Email includes the PDF and a
+trip URL.
 
 **Executable proof:**
 
@@ -738,6 +740,8 @@ as preview. Email includes the PDF and a trip URL.
 - [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_detailed_export_does_not_gain_trip_book_contents`
 - [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_pdf_embeds_map_place_photo_and_details`
 - [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `offers Standard and Trip Book with budget and photo checkboxes off`
+- [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `does not mark email as sending while a PDF download is in progress`
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_embed_packet_images_uses_places_bytes_when_url_fetch_fails`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 

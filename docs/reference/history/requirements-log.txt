@@ -3519,6 +3519,13 @@ Photo-checked email was attaching the ReportLab text fallback because headless
 print-to-PDF of file:// HTML timed out on remote place photos. Inline those
 images and reuse the preview HTML for the attachment.
 
+[2026-09-11] PDF photos via data URIs; independent export buttons
+Stop photos still vanished from downloaded and emailed PDFs after sibling-file
+materialization. Headless Chrome often will not paint local image files from
+file:// HTML. Embed photo bytes as data URIs, falling back to Places media
+bytes when the CDN URL is blocked. Keep Download PDF and Send busy states
+separate so one action does not relabel the other.
+
 
 
 

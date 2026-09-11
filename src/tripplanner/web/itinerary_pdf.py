@@ -19,12 +19,13 @@ from pathlib import Path
 from typing import Any
 
 from tripplanner import http_client
-from tripplanner.web import itinerary_export, trip_view
+from tripplanner.web import itinerary_export, places_cache, trip_view
 
 _IMG_SRC = re.compile(
     r"(<img\b[^>]*?\ssrc=)(['\"])([^'\"]+)\2",
     re.IGNORECASE | re.DOTALL,
 )
+_IMG_TAG = re.compile(r"<img\b[^>]*>", re.IGNORECASE | re.DOTALL)
 _MAX_INLINE_IMAGE_BYTES = 1_500_000
 _IMAGE_FETCH_HEADERS = {
     "User-Agent": (
@@ -32,6 +33,7 @@ _IMAGE_FETCH_HEADERS = {
         "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
     ),
     "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+    "Referer": "https://www.google.com/",
 }
 
 
@@ -73,24 +75,34 @@ def _browser_paths() -> list[str]:
 
 def inline_remote_images(html: str) -> str:
     """Embed http(s) <img> URLs as data URIs so file:// print-to-PDF can paint them."""
-    cache: dict[str, str] = {}
+    return embed_packet_images(html, "")
+
+
+def embed_packet_images(html: str, destination: str = "") -> str:
+    """Rewrite packet images to data URIs using URL bytes, then Places media."""
 
     def replace(match: re.Match[str]) -> str:
-        src = unescape(match.group(3)).strip()
-        uri = cache.get(src)
-        if uri is None:
-            payload, content_type = _image_bytes(src)
-            uri = ""
-            if payload and content_type:
-                encoded = base64.b64encode(payload).decode("ascii")
-                uri = f"data:{content_type};base64,{encoded}"
-            cache[src] = uri
-        if not uri:
-            return match.group(0)
-        quote = match.group(2)
-        return f"{match.group(1)}{quote}{uri}{quote}"
+        tag = match.group(0)
+        src_match = re.search(r"\bsrc=(['\"])([^'\"]+)\1", tag, re.IGNORECASE)
+        if not src_match:
+            return tag
+        src = unescape(src_match.group(2)).strip()
+        if src.startswith("data:image/"):
+            return tag
+        payload, content_type = _image_bytes(src)
+        if not payload and "stop-photo" in tag and destination:
+            alt_match = re.search(r"\balt=(['\"])(.*?)\1", tag, re.IGNORECASE | re.DOTALL)
+            alt = unescape(alt_match.group(2)).strip() if alt_match else ""
+            if alt:
+                payload, content_type = places_cache.get_photo_bytes(alt, destination)
+        if not payload or not content_type:
+            return tag
+        encoded = base64.b64encode(payload).decode("ascii")
+        uri = f"data:{content_type};base64,{encoded}"
+        start, end = src_match.start(2), src_match.end(2)
+        return f"{tag[:start]}{uri}{tag[end:]}"
 
-    return _IMG_SRC.sub(replace, html)
+    return _IMG_TAG.sub(replace, html)
 
 
 def materialize_images(html: str, folder: Path) -> str:
@@ -156,47 +168,49 @@ def _image_bytes(src: str) -> tuple[bytes, str]:
     return raw, content_type
 
 
-def html_to_pdf_bytes(html: str) -> bytes | None:
+def html_to_pdf_bytes(html: str, destination: str = "") -> bytes | None:
     """Print the export HTML to PDF with a local Chromium-family browser."""
     if os.getenv("TRIPPLANNER_HTML_PDF", "1").strip().lower() in {"0", "false", "no"}:
         return None
     with tempfile.TemporaryDirectory() as tmp:
         html_path = Path(tmp) / "itinerary.html"
         pdf_path = Path(tmp) / "itinerary.pdf"
-        printable = materialize_images(html, html_path.parent)
+        printable = embed_packet_images(html, destination)
         html_path.write_text(printable, encoding="utf-8")
         uri = html_path.resolve().as_uri()
-        wait_ms = "20000" if "img-" in printable else "8000"
-        timeout_s = 50 if wait_ms == "20000" else 20
+        wait_ms = "12000" if "data:image/" in printable else "8000"
+        timeout_s = 40 if wait_ms == "12000" else 20
         for browser in _browser_paths():
-            cmd = [
-                browser,
-                "--headless=new",
-                "--disable-gpu",
-                "--no-sandbox",
-                "--disable-extensions",
-                "--no-first-run",
-                "--no-default-browser-check",
-                "--allow-file-access-from-files",
-                "--run-all-compositor-stages-before-draw",
-                f"--virtual-time-budget={wait_ms}",
-                f"--print-to-pdf={pdf_path}",
-                "--print-to-pdf-no-header",
-                uri,
-            ]
-            try:
-                subprocess.run(
-                    cmd,
-                    check=True,
-                    timeout=timeout_s,
-                    capture_output=True,
-                )
-            except (OSError, subprocess.SubprocessError, subprocess.TimeoutExpired):
-                continue
-            if pdf_path.is_file() and pdf_path.stat().st_size > 8:
-                data = pdf_path.read_bytes()
-                if data.startswith(b"%PDF"):
-                    return data
+            for headless in ("--headless=new", "--headless"):
+                if pdf_path.exists():
+                    pdf_path.unlink()
+                cmd = [
+                    browser,
+                    headless,
+                    "--disable-gpu",
+                    "--no-sandbox",
+                    "--disable-extensions",
+                    "--no-first-run",
+                    "--no-default-browser-check",
+                    "--run-all-compositor-stages-before-draw",
+                    f"--virtual-time-budget={wait_ms}",
+                    f"--print-to-pdf={pdf_path}",
+                    "--print-to-pdf-no-header",
+                    uri,
+                ]
+                try:
+                    subprocess.run(
+                        cmd,
+                        check=True,
+                        timeout=timeout_s,
+                        capture_output=True,
+                    )
+                except (OSError, subprocess.SubprocessError, subprocess.TimeoutExpired):
+                    continue
+                if pdf_path.is_file() and pdf_path.stat().st_size > 8:
+                    data = pdf_path.read_bytes()
+                    if data.startswith(b"%PDF"):
+                        return data
     return None
 
 
@@ -218,7 +232,8 @@ def build_itinerary_pdf_bytes(
         template=template,
         auto_print=False,
     )
-    printed = html_to_pdf_bytes(packet)
+    destination = str((trip or {}).get("destination") or "")
+    printed = html_to_pdf_bytes(packet, destination)
     if printed:
         return printed
     return _reportlab_packet_bytes(
@@ -241,7 +256,8 @@ def _reportlab_packet_bytes(
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
     from reportlab.lib.units import mm
-    from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+    from reportlab.lib.utils import ImageReader
+    from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer
 
     buf = BytesIO()
     doc = SimpleDocTemplate(
@@ -263,8 +279,7 @@ def _reportlab_packet_bytes(
     template_key = str(template or "standard").strip().lower()
     if template_key == "detailed":
         template_key = "standard"
-    include_map_circuit = template_key in itinerary_export._MAP_TEMPLATES
-    _ = include_photos, include_map_circuit
+    _ = include_map_circuit
     destination = str(trip.get("destination") or "Trip")
     itinerary = trip_view.build_itinerary(trip)
     label = "Trip Book" if template_key == "trip_book" else "Standard"
@@ -300,6 +315,15 @@ def _reportlab_packet_bytes(
             note = str(stop.get("note") or "").strip()
             bits = [bit for bit in (marker, time, name, duration, hours, note) if bit]
             story.append(Paragraph(escape(" · ".join(bits)), body))
+            if include_photos and name:
+                payload, _ctype = places_cache.get_photo_bytes(name, destination)
+                if payload:
+                    try:
+                        story.append(
+                            Image(ImageReader(BytesIO(payload)), width=90, height=63)
+                        )
+                    except Exception:
+                        pass
             story.append(Spacer(1, 3))
         story.append(Spacer(1, 8 * mm))
 

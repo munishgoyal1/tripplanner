@@ -1801,6 +1801,15 @@ the outcome.
   the bytes as sibling files before Chromium prints, or the packet looks complete
   with blank photo boxes.
 
+## 2026-09-11 - Headless Chrome Needs Data URIs, Not Sibling Files
+
+- Sibling image files next to `file://` HTML often stay blank under
+  `--headless=new`. Put photo bytes in the HTML as data URIs. If the CDN URL
+  403s from the server, fetch Places photo media (binary, follow redirects)
+  using the cached photo ref.
+- One shared `busy` flag in an export dialog couples unrelated actions. Download
+  and email need their own in-flight state.
+
 ## 2026-09-11 - Bounded Work Still Needs Bounded Progress Logging
 
 - Limiting a recorder drain to 25 uploads protected each pass, but emitting one line

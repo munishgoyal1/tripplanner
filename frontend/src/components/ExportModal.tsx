@@ -28,7 +28,8 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
   const [includePhotos, setIncludePhotos] = useState(false);
   const [includeBudgets, setIncludeBudgets] = useState(false);
   const [email, setEmail] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [emailBusy, setEmailBusy] = useState(false);
   const [status, setStatus] = useState("");
   const [mailtoHref, setMailtoHref] = useState("");
   const emailRequestRef = useRef<{ key: string; requestId: string } | null>(null);
@@ -46,7 +47,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
   };
 
   const downloadPdf = async () => {
-    setBusy(true);
+    setPdfBusy(true);
     setStatus("");
     try {
       const result = await downloadTripPdf(options);
@@ -69,7 +70,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
       URL.revokeObjectURL(href);
       trackEvent("itinerary_exported", { method: "pdf", format });
     } finally {
-      setBusy(false);
+      setPdfBusy(false);
     }
   };
 
@@ -78,7 +79,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
       setStatus("Enter an email address first.");
       return;
     }
-    setBusy(true);
+    setEmailBusy(true);
     setStatus("");
     setMailtoHref("");
     try {
@@ -111,7 +112,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
     } catch {
       setStatus("Could not send email. Retry to safely check the same delivery attempt.");
     } finally {
-      setBusy(false);
+      setEmailBusy(false);
     }
   };
 
@@ -161,8 +162,8 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
           <button type="button" onClick={openPreview} className="btn-ghost">
             <Eye size={15} aria-hidden /> Preview
           </button>
-          <button type="button" onClick={downloadPdf} disabled={busy} className="btn-primary disabled:opacity-50">
-            <Download size={15} aria-hidden /> {busy ? "Preparing..." : "Download PDF"}
+          <button type="button" onClick={downloadPdf} disabled={pdfBusy} className="btn-primary disabled:opacity-50">
+            <Download size={15} aria-hidden /> {pdfBusy ? "Preparing..." : "Download PDF"}
           </button>
         </div>
         <p className="mt-2 text-xs text-slate-500">
@@ -173,8 +174,8 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
           <p className="mb-2 text-sm font-medium text-ink">Send to email</p>
           <div className="flex gap-2">
             <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@example.com" className="input" />
-            <button type="button" onClick={sendEmail} disabled={busy} className="btn-primary whitespace-nowrap disabled:opacity-50">
-              <Mail size={15} aria-hidden /> {busy ? "Sending..." : "Send"}
+            <button type="button" onClick={sendEmail} disabled={emailBusy} className="btn-primary whitespace-nowrap disabled:opacity-50">
+              <Mail size={15} aria-hidden /> {emailBusy ? "Sending..." : "Send"}
             </button>
           </div>
           <p className="mt-2 text-xs text-slate-500">

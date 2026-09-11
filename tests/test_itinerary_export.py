@@ -156,7 +156,7 @@ def test_export_renders_complete_day_circuit(monkeypatch: pytest.MonkeyPatch) ->
 
 def test_pdf_embeds_map_place_photo_and_details(monkeypatch: pytest.MonkeyPatch) -> None:
     photo_calls: list[tuple[str, str]] = []
-    monkeypatch.setattr(itinerary_pdf, "html_to_pdf_bytes", lambda _html: None)
+    monkeypatch.setattr(itinerary_pdf, "html_to_pdf_bytes", lambda _html, *_args, **_kwargs: None)
     monkeypatch.setattr(
         itinerary_export.trip_view,
         "build_itinerary",
@@ -257,6 +257,25 @@ def test_inline_remote_images_unescapes_html_entities(monkeypatch: pytest.Monkey
     assert "&amp;" not in out
 
 
+def test_embed_packet_images_uses_places_bytes_when_url_fetch_fails(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(itinerary_pdf, "_image_bytes", lambda _src: (b"", ""))
+    monkeypatch.setattr(
+        itinerary_pdf.places_cache,
+        "get_photo_bytes",
+        lambda *_args, **_kwargs: (b"\xff\xd8\xff", "image/jpeg"),
+    )
+    html = (
+        "<img class='stop-photo' "
+        "src='https://lh3.googleusercontent.com/p/abc?maxwidth=800&amp;n=1' "
+        "alt='Fort Aguada' />"
+    )
+    out = itinerary_pdf.embed_packet_images(html, "Goa")
+    assert "data:image/jpeg;base64," in out
+    assert "lh3.googleusercontent.com" not in out
+
+
 def test_materialize_images_writes_local_files(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     class Response:
         content = b"\x89PNG\r\n\x1a\n" + b"x"
@@ -281,7 +300,7 @@ def test_pdf_reuses_supplied_html_without_rebuilding(monkeypatch: pytest.MonkeyP
     monkeypatch.setattr(
         itinerary_pdf,
         "html_to_pdf_bytes",
-        lambda html: b"%PDF-1.4 " + html.encode(),
+        lambda html, *_args, **_kwargs: b"%PDF-1.4 " + html.encode(),
     )
     pdf = itinerary_pdf.build_itinerary_pdf_bytes(
         {"destination": "Goa"},

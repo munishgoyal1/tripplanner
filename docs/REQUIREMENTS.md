@@ -584,9 +584,10 @@ implemented capability baseline.
   duration, arrival/leave times, opening hours, and notes.
 - Preview and direct PDF download share that HTML layout. Chromium/Edge prints
   the HTML when available; ReportLab is only a structural fallback.
-- Optional place photos and budgets are off by default. Day maps/circuit diagrams
-  are always included for these two packets and stay consistent across preview,
-  PDF, and email.
+- Optional place photos and budgets are off by default. When photos are on, the
+  PDF inlines stop images so download and email match preview. Day maps/circuit
+  diagrams are always included for these two packets and stay consistent across
+  preview, PDF, and email. Download PDF and email Send do not share busy state.
 - Email uses configured server delivery or a prefilled local mail-app fallback.
   A successful send attaches the PDF and includes the share URL in the body.
   Each explicit send carries a stable client request ID. ACS receives a stable

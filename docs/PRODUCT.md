@@ -493,7 +493,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   day-by-day, matching the itinerary panel) and Trip Book. Preview and Download
   PDF share that HTML layout; calendar download stays on its own menu action.
   Optional checkboxes add budgets and one photo per stop; day circuits are always
-  included. Email sends the PDF plus a share URL. Enabled
+  included. Checked photos appear in preview, downloaded PDF, and emailed PDF.
+  Download PDF and Send keep independent progress states. Email sends the PDF plus a share URL. Enabled
   exports include embedded day route maps plus place photos, address/rating,
   itinerary notes, time, visit duration, opening hours, and booking status; every output path honors the same
   media toggles. The account control visibly distinguishes a signed-in identity
