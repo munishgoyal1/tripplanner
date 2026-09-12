@@ -375,6 +375,11 @@ Assistant pane being open.
 
 ## Project Structure
 
+An orientation sketch, not an inventory. [`docs/CODEMAP.md`](docs/CODEMAP.md) is
+the authoritative per-file ownership map and the one to trust when they differ;
+several backend subpackages below (`decisions/`, `validation/`, `providers/`,
+`tools/`) hold far more than the few files named here.
+
 ```
 tripplanner/
 ├── docs/README.md                # Documentation index and ownership guide
@@ -395,7 +400,8 @@ tripplanner/
 │
 ├── scripts/
 │   ├── README.md                 # Developer workflow + utility ownership
-│   ├── user/                     # Regular owner-facing launchers
+│   ├── win/user/                 # Regular owner-facing launchers (Windows .cmd)
+│   ├── mac/user/                 # The same launchers for macOS (.command)
 │   └── dev/                      # Local stack, worktrees, sync, and emulator
 │       └── cosmos-emulator.compose.yml  # Portable local persistence
 │
