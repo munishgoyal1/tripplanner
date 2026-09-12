@@ -2030,3 +2030,13 @@ the outcome.
   filenames, line numbers and function names without prompt text or exception
   payloads. The observed Goa AttributeError did not reproduce during setup replay
   against the archived draft on current code; that is not proof of a live fix.
+## 2026-09-12 - Separate Browser Boot From Workspace Data Latency
+
+- An empty HTML root and blocking remote font stylesheet can leave no visible
+  progress before React starts. Ship a small system-font status in HTML, keep
+  fonts optional, and preserve a status while route modules load.
+- A restart only loads the checked-out revision. An off-by-default diagnostic
+  flag on an unmerged PR cannot disable a running master build; verify publication
+  and process restart separately from the configuration change.
+- Backend request durations do not measure browser cold startup. Report the
+  observed timing layer and avoid claiming an unmeasured end-to-end speedup.

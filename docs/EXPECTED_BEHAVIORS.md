@@ -448,6 +448,21 @@ reachable without covering trip content. Deleting a trip deletes its feedback.
 - [`tests/test_trip_feedback.py`](../tests/test_trip_feedback.py)
 - [`frontend/src/components/TripFeedbackControl.test.tsx`](../frontend/src/components/TripFeedbackControl.test.tsx)
 
+### EB-STARTUP-001 - Show progress before planner code and data are ready
+
+**Trigger:** Open `/planner`, including immediately after restarting local development.
+
+**Expected:** The initial HTML shows an accessible startup status before React or
+trip data arrives. Optional Google Fonts CSS does not block rendering. Route code
+loads on demand: opening the planner does not import the public landing page or
+operations dashboard. The route-loading fallback stays visible until the workspace
+mounts, then the existing per-pane data-loading states take over. Vite warms the
+entry and planner modules on startup to reduce cold transformation work.
+This does not establish a fixed backend response-time guarantee.
+
+**Executable proof:** `frontend/src/publicEntry/Root.startup.test.tsx` and
+`frontend/src/publicEntry/Root.test.tsx`.
+
 ### EB-WORKSPACE-001 - Arrange visible desktop panes freely
 
 **Trigger:** Toggle Itinerary, Map, Details, or Assistant from the desktop

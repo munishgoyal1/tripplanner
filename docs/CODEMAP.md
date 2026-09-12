@@ -199,7 +199,7 @@ one physical cache backend.
 
 | Path | Owns |
 | --- | --- |
-| `frontend/src/publicEntry/Root.tsx`, `publicEntryState.ts` | The `/` public-entry route, `/planner` workspace route, legacy `/welcome` redirect, browser-history transitions, and page-independent account-controller mounting |
+| `frontend/src/publicEntry/Root.tsx`, `publicEntryState.ts` | The `/` public-entry route, `/planner` workspace route, legacy `/welcome` redirect, browser-history transitions, and page-independent account-controller mounting; route modules load on demand behind a visible startup status, with a pre-React HTML fallback and nonblocking optional fonts |
 | `frontend/src/publicEntry/publicDemoRuns.json`, `demoRun.ts` | Ten self-contained regional public-demo artifacts, deterministic mapping, whole-artifact API replacement, and display-currency presentation |
 | `frontend/src/App.tsx` | Web application composition; authoritative trip refresh, pane/resize state, and panel body ownership |
 | `frontend/src/hooks/useWorkspaceTripMutations.ts` | Serialized new/reset/add/remove coordination, conflict retry, duplicate-removal suppression, stale identity/epoch rejection, and authoritative mutation response application |

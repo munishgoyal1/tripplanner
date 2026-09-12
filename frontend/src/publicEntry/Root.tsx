@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import AccountSettingsController from "../components/AccountSettingsController";
-import PublicEntry from "./PublicEntry";
 import {
   isPlannerPath,
   isPublicEntryPath,
 } from "./publicEntryState";
-import App from "../App";
-import OpsDashboard from "../ops/OpsDashboard";
 import { trackPageView } from "../analytics";
 
+const PublicEntry = lazy(() => import("./PublicEntry"));
+const App = lazy(() => import("../App"));
+const OpsDashboard = lazy(() => import("../ops/OpsDashboard"));
+
 /** `/` owns the public entry, `/planner` owns the workspace, and `/welcome` redirects home. */
-export default function Root() {
+function Routes() {
   if (window.location.pathname === "/operations") {
     return <OpsDashboard />;
   }
@@ -64,5 +65,13 @@ export default function Root() {
       ) : <App initialRequest={initialRequest} />}
       <AccountSettingsController />
     </>
+  );
+}
+
+export default function Root() {
+  return (
+    <Suspense fallback={<main className="app-startup" role="status"><strong>AI Tripplanner</strong>Opening your planner…</main>}>
+      <Routes />
+    </Suspense>
   );
 }
