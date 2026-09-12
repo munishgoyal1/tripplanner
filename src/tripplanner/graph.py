@@ -506,7 +506,7 @@ def trip_agent(state: AgentState) -> AgentState:
             message_count=len(state["messages"]),
         )
         instructions = [
-            build_trip_system_prompt(),
+            build_trip_system_prompt(active_trip=active_trip),
             SystemMessage(content=(
                 "You have just asked the traveller one prefilled review and their answer "
                 "has not arrived yet. Do not call any tool and do not create or update a "
@@ -531,7 +531,7 @@ def trip_agent(state: AgentState) -> AgentState:
             message_count=len(state["messages"]),
         )
         instructions = [
-            build_trip_system_prompt(),
+            build_trip_system_prompt(active_trip=active_trip),
             SystemMessage(content=(
                 "The bounded planning-tool budget is exhausted. Do not call another tool. "
                 "Give a concise best-effort summary of the plan already persisted. "
@@ -567,7 +567,7 @@ def trip_agent(state: AgentState) -> AgentState:
         parallel_tool_calls=True,
         **({"tool_choice": decision.forced_tool} if decision.forced_tool else {}),
     )
-    instructions = [build_trip_system_prompt()]
+    instructions = [build_trip_system_prompt(active_trip=active_trip)]
     if decision.forced_reason == "new_trip_creation":
         instructions.append(SystemMessage(content=(
             "The user explicitly requested a different whole-trip destination. "

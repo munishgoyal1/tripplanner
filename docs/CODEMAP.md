@@ -32,7 +32,7 @@ trip through shared API contracts.
 | `src/tripplanner/graph.py` | Agent/tool loop, model invocation and telemetry, and model-facing tool-result budget |
 | `src/tripplanner/graph_policy.py` | Pure forced-tool and completion-requirement precedence, including the semantic tool-phase budget |
 | `src/tripplanner/state.py` | Shared graph state and merge behavior |
-| `src/tripplanner/prompts.py` | Agent instructions and dated prompt assembly |
+| `src/tripplanner/prompts.py` | Agent instructions, dated prompt assembly and compact current-trip facts supplied by the graph on every model call; full itinerary detail remains behind get_trip_plan |
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |
 | `src/tripplanner/agents/trip_agent.py` | Phase-selected tool sets and the exhaustive read/trip-write/profile-write/external-write capability registry used by proposal-only mode |
 | `src/tripplanner/chat_turn.py` | Transport-neutral replay/admission, cap and conversation-limit decisions, interrupted-turn persistence, final transcript persistence, passive learning, and completion telemetry shared by JSON and SSE chat |
