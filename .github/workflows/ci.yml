@@ -27,11 +27,14 @@ jobs:
         # merge gate focused on errors that can break execution; expand it as
         # the existing backlog is resolved.
         run: uv run ruff check --select E9,F63,F7,F82 src tests
-      - name: Test
-        # A dedicated runner isn't shared with other work the way a developer's
-        # sandbox machine is, so auto-detecting worker count is safe here (see
-        # sandbox.ps1 for why local scripts pin a fixed count instead).
-        run: uv run pytest -q -n auto
+      - name: Suite status
+        # The complete pytest suite moved to suite-health.yml, which runs it on
+        # every push to master. Announced rather than silently absent: a PR log
+        # that simply stopped mentioning tests would read as though they passed.
+        run: |
+          echo "pytest is NOT run on pull requests."
+          echo "It runs on every push to master via the Suite health workflow,"
+          echo "classified against scripts/dev/test-health-baseline.json."
 
   frontend:
     name: Frontend checks
@@ -50,8 +53,10 @@ jobs:
         run: npm ci
       - name: Type-check
         run: npm run typecheck
-      - name: Unit tests
-        run: npm run test:all
+      - name: Suite status
+        run: |
+          echo "vitest is NOT run on pull requests."
+          echo "It runs on every push to master via the Suite health workflow."
       - name: Production build
         run: npm run build
 

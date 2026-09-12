@@ -1,0 +1,81 @@
+name: Suite health
+
+# The complete suites, paid once per landed change rather than on every merge,
+# sync and pull request. Both halves always run -- continue-on-error -- because
+# "pytest broke so we learned nothing about vitest" is the outcome that made the
+# old per-merge gate worthless. The run is red only when something failed that
+# scripts/dev/test-health-baseline.json does not already record.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  suites:
+    name: Complete suites vs baseline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20.19.0"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install backend dependencies
+        run: uv sync --all-extras --locked
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Prepare report directory
+        run: mkdir -p suite-health
+
+      - name: pytest
+        continue-on-error: true
+        # -n auto here, unlike the local scripts: a dedicated runner is not
+        # shared with other sandboxes, so oversubscription is not a risk.
+        # -rfE gives verbatim node ids; --junitxml gives the totals they are
+        # checked against. COLUMNS keeps the summary from wrapping mid-id.
+        env:
+          COLUMNS: "400"
+        run: >
+          uv run pytest -q -n auto -rfE --color=no
+          --junitxml=suite-health/pytest-junit.xml
+          | tee suite-health/pytest.log
+
+      - name: vitest
+        continue-on-error: true
+        working-directory: frontend
+        run: >
+          npx vitest run --reporter=default --reporter=json
+          --outputFile.json=../suite-health/vitest.json
+          | tee ../suite-health/vitest.log
+
+      - name: Classify against the baseline
+        run: >
+          uv run python scripts/dev/suite_health.py
+          --pytest-junit suite-health/pytest-junit.xml
+          --pytest-log suite-health/pytest.log
+          --vitest-json suite-health/vitest.json
+          --baseline scripts/dev/test-health-baseline.json
+          --out suite-health
+          --ref master
+          --commit "${GITHUB_SHA::8}"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: suite-health
+          path: suite-health/

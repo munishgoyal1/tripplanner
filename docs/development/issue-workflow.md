@@ -53,7 +53,7 @@ An issue is not a place to keep truth. Durable knowledge keeps its existing owne
 | A durable lesson learned from a failure | `docs/ENGINEERING_LEARNINGS.md` |
 | Deferred cross-cutting engineering work | `docs/eng-backlog/` |
 | An idea not yet selected | `docs/roadmap/` |
-| An approved milestone's bounded scope | `docs/feature-briefs/` |
+| An approved milestone's bounded scope | `docs/feature-briefs-backlog/` |
 | A visual decision between options | `docs/ux-experiments/` and a UX Lab |
 
 When an issue produces a durable lesson, write the lesson in

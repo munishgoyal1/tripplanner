@@ -20,6 +20,25 @@ in this backlog.
 - Numbered briefs: scoped work records. Their document-control status says whether
   each is active, shipped, or superseded.
 
+**Brief numbers are unique keys.** Take the next unused number; never reuse one,
+even for unrelated work, because "brief 004" has to name exactly one document.
+Two collisions predate this rule and are left for the owner to renumber, since
+the IDs have been cited outside the repository: `001-assistant-led-itinerary` /
+`001-live-travel-availability`, and `004-auto-validation-harness` /
+`004-item-comparison-budget-what-if`.
+
+## Every feature starts here
+
+A brief is required before code for a new capability, or a material change to
+one — see [`../development/agent-workflow.md`](../development/agent-workflow.md).
+Bug fixes, behaviour-preserving refactors, and doc-only changes do not need one.
+
+The **acceptance criteria** and **validation matrix** carry more weight than they
+used to. The complete test suites no longer run in the lane gates, so the brief is
+the written record of what "done" meant — and it is what a later session reads
+when one of these tests fails months from now and nobody remembers what it was
+protecting. Write both so they survive that conversation.
+
 ## Lifecycle
 
 1. The owner raises a need directly or selects one candidate from `docs/roadmap/`.

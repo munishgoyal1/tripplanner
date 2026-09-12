@@ -207,7 +207,7 @@ Update the existing owner rather than creating another summary:
 | File ownership, architecture, or command | `docs/CODEMAP.md` |
 | Durable engineering lesson | `docs/ENGINEERING_LEARNINGS.md` |
 | New dated requirement or decision | `docs/reference/history/requirements-log.txt` |
-| Active milestone scope | `docs/feature-briefs/` |
+| Active milestone scope | `docs/feature-briefs-backlog/` |
 | Candidate or deferred idea | `docs/roadmap/` |
 | Current in-flight session state only | `/memories/session/` |
 
