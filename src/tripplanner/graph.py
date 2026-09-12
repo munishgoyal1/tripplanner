@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import operator
 import time
+from contextvars import ContextVar
 from dataclasses import dataclass
 from functools import lru_cache
 from threading import Lock
@@ -143,6 +144,16 @@ def _cached_tokens(response: Any) -> int:
     return int((usage.get("prompt_tokens_details") or {}).get("cached_tokens") or 0)
 
 
+#: (turn_number, phase_number) for the LLM call about to be made, set by
+#: trip_agent() right before each .invoke() and read inside
+#: _UsageCallback.on_chat_model_start -- LangChain's callback signature
+#: doesn't carry graph-node-local values, so this bridges the two the same
+#: way flight_recorder.py's TRACE/SPAN contextvars already do.
+_CURRENT_TURN_PHASE: ContextVar[tuple[int, int] | None] = ContextVar(
+    "current_turn_phase", default=None
+)
+
+
 class _UsageCallback(BaseCallbackHandler):
     """Record per-user LLM token usage after every chat completion.
 
@@ -189,6 +200,7 @@ class _UsageCallback(BaseCallbackHandler):
             ) if latest_user else ""
             if batch and batch[-1] is not latest_user:
                 preview += f" latest_{batch[-1].type}: " + _message_prompt_text(batch[-1])
+            turn_phase = _CURRENT_TURN_PHASE.get()
             log_llm_prompt(
                 self._model,
                 "\n".join(_message_prompt_text(message) for message in batch),
@@ -196,6 +208,11 @@ class _UsageCallback(BaseCallbackHandler):
                 prompt_chars=prompt_chars,
                 preview_text=preview,
                 call_id=str(run_id or ""),
+                turn_number=turn_phase[0] if turn_phase else None,
+                phase_number=turn_phase[1] if turn_phase else None,
+                full_prompt_text="\n\n".join(
+                    f"[{message.type}] {_message_prompt_text(message)}" for message in batch
+                ),
             )
         except Exception:
             pass
@@ -466,6 +483,11 @@ def trip_agent(state: AgentState) -> AgentState:
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
     interactive_questions = _interactive_trip_questions()
+    # 1-indexed count of user messages so far this conversation -- a stable,
+    # human-readable turn ordinal derived from existing state, no new
+    # persisted counter needed (mirrors how operations_reporting.py counts
+    # chat_turns per trip).
+    turn_number = sum(1 for m in state["messages"] if getattr(m, "type", "") == "human")
     decision = graph_policy.resolve_completion_policy(
         messages=state["messages"],
         active_trip=_active_trip_for_policy(),
@@ -490,6 +512,7 @@ def trip_agent(state: AgentState) -> AgentState:
                 "card or skip it to use the saved defaults."
             )),
         ]
+        _CURRENT_TURN_PHASE.set((turn_number, decision.tool_phases + 1))
         response = _get_llm().invoke(
             instructions + _messages_for_model(state["messages"])
         )
@@ -517,6 +540,7 @@ def trip_agent(state: AgentState) -> AgentState:
                 )
             )),
         ]
+        _CURRENT_TURN_PHASE.set((turn_number, decision.tool_phases + 1))
         response = _get_llm().invoke(
             instructions + _messages_for_model(state["messages"])
         )
@@ -602,6 +626,7 @@ def trip_agent(state: AgentState) -> AgentState:
             "Do not create, update, finalize, book, resume, or otherwise mutate trip or user data. "
             "Ask the user to approve an option before any later mutation turn."
         )))
+    _CURRENT_TURN_PHASE.set((turn_number, decision.tool_phases + 1))
     response = llm.invoke(instructions + _messages_for_model(state["messages"]))
     return {"messages": [response], "current_agent": "trip"}
 
