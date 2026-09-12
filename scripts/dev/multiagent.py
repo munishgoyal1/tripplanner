@@ -481,7 +481,7 @@ def hydrate_audit_policy(repo: str, assignment: core.Assignment) -> bool:
 
 
 def validate(space: Workspace, worktree: Path, *, frontend: bool) -> tuple[bool, str]:
-    """Gate an integration candidate, honouring scripts/dev/validation-policy.json.
+    """Gate an integration candidate, honouring config/environments/local.env.
 
     Every suspended gate still reports itself in the returned summary, because
     that summary reaches a human through the batch PR body. A gate that vanished

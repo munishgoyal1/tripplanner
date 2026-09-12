@@ -180,24 +180,47 @@ widening timing budgets, weakening assertions.
 pass serially and fail only under concurrent load; their fix is isolation or a
 budget that reflects real contention, never a logic change.
 
-### Turning the suites back on
+### Which gates run, and turning them back on
 
-[`scripts/dev/validation-policy.json`](../../scripts/dev/validation-policy.json)
-is the single source of truth for all three gate call sites — `sandbox.ps1`,
-`full-2way-sync.ps1`, and `multiagent.py`. No test invocation was deleted; every
-command still sits at its call site behind a `Test-GateEnabled` check.
+The gates are declared in the `Local validation gates` section of
+[`config/environments/local.env`](../../config/environments/local.env) — the same
+checked-in profile that holds every other non-secret knob, so there is one
+configuration file to look in rather than a dedicated one for this:
+
+```
+VALIDATION_GATE_LINT=required
+VALIDATION_GATE_TYPECHECK=suspended
+VALIDATION_GATE_BUILD=suspended
+VALIDATION_GATE_PYTEST=suspended
+VALIDATION_GATE_VITEST=suspended
+```
+
+That file is the single source of truth for all three call sites —
+`sandbox.ps1`, `full-2way-sync.ps1`, and `multiagent.py`, via
+`scripts/dev/lib/validation-policy.ps1` and `scripts/dev/validation_policy.py`.
+No invocation was deleted; every command still sits at its call site behind a
+`Test-GateEnabled` check.
 
 | Scope | How |
 | --- | --- |
-| Permanently, everywhere | Set that gate's `state` to `required`. One word. |
+| Permanently, everywhere | Set that gate to `required` in `local.env`. One word. |
 | One invocation | `sandbox.ps1 -Merge <lane> -FullSuites` |
-| One shell or agent session | `$env:TRIPPLANNER_FULL_SUITES = "1"` |
-| One gate only | `lint`, `typecheck`, `build`, `pytest` and `vitest` are independent entries |
+| One shell or agent session, every gate | `$env:TRIPPLANNER_FULL_SUITES = "1"` |
+| One shell or agent session, one gate | `$env:VALIDATION_GATE_PYTEST = "required"` |
 
-A missing or malformed policy file fails closed: every gate runs.
+Because the gates are declared as environment-variable names, a real environment
+variable simply overrides the file — which is how the last two rows work, with no
+extra machinery.
 
-The expected end state is a partial return — `vitest` first, `pytest` once the
-backlog is clear — which is why the gates are independent entries.
+Two deliberate safety properties:
+
+- **Only the exact word `suspended` skips a gate.** A typo runs the check rather
+  than quietly disabling it.
+- **A missing or unreadable `local.env` fails closed** — every gate runs, with a
+  warning. A policy that cannot be read must never be why a check stops running.
+
+The expected end state is a partial return — `typecheck` and `vitest` first,
+`pytest` once the backlog is clear — which is why every gate is its own key.
 
 ## Complete suite commands
 

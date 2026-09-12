@@ -86,7 +86,7 @@ cheaper, so context has to get better.
 ## 4. Validation
 
 Which gates run locally is decided in one place:
-[`scripts/dev/validation-policy.json`](../../scripts/dev/validation-policy.json).
+[`config/environments/local.env`](../../config/environments/local.env).
 
 The complete pytest and vitest suites are **suspended** from the lane gates. They
 are not gone — they run periodically on master via `suite-health.ps1`, measured

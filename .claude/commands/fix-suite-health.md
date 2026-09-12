@@ -4,7 +4,7 @@ description: Work through the current suite-health report and fix the failing te
 
 You are fixing the accumulated test debt that the lane gates no longer catch,
 because the complete suites are suspended from local validation (see
-`scripts/dev/validation-policy.json`). This is the one-pass, deep-investigation
+`config/environments/local.env`). This is the one-pass, deep-investigation
 session that suspension is paying for. Do it properly.
 
 ## Read first, do not re-run

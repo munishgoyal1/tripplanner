@@ -111,9 +111,11 @@ When Codex is acting in this workspace, it must follow the repository's Copilot 
   affected stack, and whether the primary or sandbox stack needs a restart.
 - Run focused checks once per milestone. Broaden only when changes or unresolved
   failures justify it; do not repeatedly run passing full suites.
-- The complete pytest and vitest suites are **suspended** from the lane gates by
-  `scripts/dev/validation-policy.json`; a green merge does not mean they pass.
-  The local floor is ruff plus the production build. See
-  `docs/development/testing.md`.
+- The complete pytest and vitest suites, the typecheck, and the production build
+  are **suspended** from the lane gates by the `VALIDATION_GATE_*` settings in
+  `config/environments/local.env`; a green merge does not mean any of them pass.
+  The local floor is ruff alone (~2s); typecheck and build run in CI on every PR
+  and every master push, and the suites run through
+  `scripts/dev/suite-health.ps1`. See `docs/development/testing.md`.
 - Original prompt must be verbatim when quoted; otherwise label it a summary.
 - Prompt logging remains paused; response summaries do not authorize log writes.

@@ -167,7 +167,7 @@ param(
     [switch]$SkipValidation,
 
     # Run every gate for this invocation, including any suspended in
-    # scripts/dev/validation-policy.json. Exported rather than passed so it also
+    # config/environments/local.env. Exported rather than passed so it also
     # reaches the nested sandbox.ps1/multiagent.py calls this script makes.
     [Parameter(ParameterSetName = "Promote")]
     [Parameter(ParameterSetName = "Merge")]

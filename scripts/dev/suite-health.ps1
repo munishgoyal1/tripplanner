@@ -5,7 +5,7 @@
 
 .DESCRIPTION
   The lane gates (sandbox.ps1, full-2way-sync.ps1) no longer run these suites --
-  see scripts/dev/validation-policy.json. This script is where that cost is paid
+  see config/environments/local.env. This script is where that cost is paid
   instead: deliberately, periodically, on master, in one pass whose output a
   single focused session can work through.
 

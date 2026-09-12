@@ -1,40 +1,63 @@
-# Read the shared validation-gate policy.
+# Read which validation gates the lane scripts should run.
 #
-# Three call sites decide whether to run a gate: sandbox.ps1 (-Merge/-Promote),
-# full-2way-sync.ps1 (branch-lane publish), and multiagent.py (coordinator
-# integration). Keeping the decision in scripts/dev/validation-policy.json means
-# flipping a gate is one word in one checked-in file rather than three edits that
-# drift apart. multiagent.py reads the same file through validation_policy.py.
+# The gates are declared as VALIDATION_GATE_<NAME> entries in
+# config/environments/local.env, beside every other checked-in non-secret knob,
+# so there is one configuration file to look in rather than a dedicated one for
+# this. scripts/dev/validation_policy.py reads the same keys for multiagent.py.
+# One file, one decision, three call sites that cannot drift apart.
 #
-# Nothing here deletes a gate: a suspended gate's command still lives at its call
-# site, wrapped in Test-GateEnabled, so restoring it is a policy edit and never a
+# Because the declarations are environment-variable names, a real environment
+# variable overrides the file for free -- which is how -FullSuites and the
+# per-gate overrides work.
+#
+# Nothing here deletes a gate: a suspended gate's command still sits at its call
+# site wrapped in Test-GateEnabled, so restoring it is a config edit and never a
 # code change.
 
-$script:ValidationPolicyPath = Join-Path (Split-Path -Parent $PSScriptRoot) "validation-policy.json"
+# $PSScriptRoot is <repo>/scripts/dev/lib, so the repository root is three
+# levels up, not two.
+$script:ValidationPolicyRepoRoot =
+    Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
+$script:ValidationPolicyPath =
+    Join-Path $script:ValidationPolicyRepoRoot "config/environments/local.env"
 $script:ValidationPolicyCache = $null
+$script:ValidationGates = @("lint", "typecheck", "build", "pytest", "vitest")
+
+function Get-ValidationGateVariable {
+    param([Parameter(Mandatory = $true)][string]$Gate)
+    return "VALIDATION_GATE_$($Gate.ToUpperInvariant())"
+}
 
 function Get-ValidationPolicy {
     <#
     .SYNOPSIS
-      Parsed validation-policy.json, or $null when it cannot be read.
+      The VALIDATION_GATE_* declarations from config/environments/local.env.
     .DESCRIPTION
-      Cached per process. A missing or malformed file returns $null, and every
-      caller treats that as "run everything" -- see Test-GateEnabled.
+      Cached per process. A missing or unreadable file returns an empty table,
+      and every caller treats that as "run everything" -- see Test-GateEnabled.
     #>
     if ($null -ne $script:ValidationPolicyCache) { return $script:ValidationPolicyCache }
 
+    $policy = @{}
     if (-not (Test-Path -LiteralPath $script:ValidationPolicyPath -PathType Leaf)) {
-        Write-Warning "validation-policy.json not found; every validation gate will run."
-        return $null
+        Write-Warning "config/environments/local.env not found; every validation gate will run."
+        $script:ValidationPolicyCache = $policy
+        return $policy
     }
-    try {
-        $script:ValidationPolicyCache = Get-Content -LiteralPath $script:ValidationPolicyPath -Raw |
-            ConvertFrom-Json
-    } catch {
-        Write-Warning "validation-policy.json is unreadable ($($_.Exception.Message)); every validation gate will run."
-        return $null
+
+    foreach ($line in Get-Content -LiteralPath $script:ValidationPolicyPath) {
+        $trimmed = $line.Trim()
+        if (-not $trimmed -or $trimmed.StartsWith("#") -or $trimmed -notmatch "=") { continue }
+        $key, $value = $trimmed -split "=", 2
+        $key = $key.Trim()
+        if (-not $key.StartsWith("VALIDATION_GATE_")) { continue }
+        # Trim an inline comment and surrounding quotes.
+        $value = ($value -split "#", 2)[0].Trim().Trim("'").Trim('"').ToLowerInvariant()
+        $policy[$key] = $value
     }
-    return $script:ValidationPolicyCache
+
+    $script:ValidationPolicyCache = $policy
+    return $policy
 }
 
 function Test-GateEnabled {
@@ -43,23 +66,28 @@ function Test-GateEnabled {
       True when the named gate should run in this invocation.
     .DESCRIPTION
       Resolution order, in full:
-        1. TRIPPLANNER_FULL_SUITES=1  -> every gate runs (the per-run override
-           that -FullSuites sets, and that child processes inherit).
-        2. The gate's "state" in validation-policy.json: "suspended" means skip.
-        3. Anything else -- unknown gate name, missing file, malformed JSON --
-           means run. Fail closed: a policy we cannot read must never be the
+        1. TRIPPLANNER_FULL_SUITES=1 -> every gate runs (what -FullSuites sets,
+           and what child processes inherit).
+        2. A VALIDATION_GATE_<NAME> environment variable, if one is set.
+        3. The same key in config/environments/local.env.
+        4. Anything else -- unknown gate name, missing file, unrecognised value
+           -- means run. Fail closed: a policy we cannot read must never be the
            reason a gate silently stops protecting the tree.
+
+      Only the exact word "suspended" skips a gate, so a typo runs the check
+      rather than quietly disabling it.
     #>
     param([Parameter(Mandatory = $true)][string]$Gate)
 
     if ($env:TRIPPLANNER_FULL_SUITES -eq "1") { return $true }
 
-    $policy = Get-ValidationPolicy
-    if (-not $policy) { return $true }
+    $variable = Get-ValidationGateVariable -Gate $Gate
+    $override = [System.Environment]::GetEnvironmentVariable($variable)
+    if ($null -ne $override) { return ($override.Trim().ToLowerInvariant() -ne "suspended") }
 
-    $entry = $policy.gates.$Gate
-    if (-not $entry) { return $true }
-    return ($entry.state -ne "suspended")
+    $policy = Get-ValidationPolicy
+    if (-not $policy.ContainsKey($variable)) { return $true }
+    return ($policy[$variable] -ne "suspended")
 }
 
 function Write-SuspendedGateNotice {
@@ -68,24 +96,17 @@ function Write-SuspendedGateNotice {
       Announce, in place of the gate, that it did not run.
     .DESCRIPTION
       Printed instead of the usual cyan "[check] <gate>" line so no transcript
-      ever reads as though the suite ran and passed. Yellow on purpose: the
+      ever reads as though the check ran and passed. Yellow on purpose: the
       "[check]" lines are cyan, and someone scanning a long log by colour must
       not confuse "skipped" with "passed".
     #>
     param([Parameter(Mandatory = $true)][string]$Gate)
 
-    $policy = Get-ValidationPolicy
-    $entry = if ($policy) { $policy.gates.$Gate } else { $null }
-    $since = if ($entry -and $entry.since) { ", suspended $($entry.since)" } else { "" }
-    $health = if ($policy -and $policy.health_check) { $policy.health_check } else { "scripts/dev/suite-health.ps1" }
-    $baseline = if ($policy -and $policy.baseline) { $policy.baseline } else { "scripts/dev/test-health-baseline.json" }
-
-    Write-Host "[SUSPENDED] $Gate is NOT part of this gate (scripts/dev/validation-policy.json$since)." -ForegroundColor Yellow
-    Write-Host "[SUSPENDED]   A green result here does NOT mean the $Gate suite passes." -ForegroundColor Yellow
-    Write-Host "[SUSPENDED]   Health: pwsh $health  |  Known debt: $baseline  |  Override: -FullSuites" -ForegroundColor Yellow
-    if ($entry -and $entry.reason) {
-        Write-Host "[SUSPENDED]   Why: $($entry.reason)" -ForegroundColor Yellow
-    }
+    $variable = Get-ValidationGateVariable -Gate $Gate
+    Write-Host "[SUSPENDED] $Gate did NOT run ($variable in config/environments/local.env)." -ForegroundColor Yellow
+    Write-Host "[SUSPENDED]   A green result here does NOT mean $Gate passes." -ForegroundColor Yellow
+    Write-Host "[SUSPENDED]   Suites: pwsh scripts/dev/suite-health.ps1  |  Debt: scripts/dev/test-health-baseline.json" -ForegroundColor Yellow
+    Write-Host "[SUSPENDED]   Re-enable: set $variable=required, or pass -FullSuites for one run." -ForegroundColor Yellow
 }
 
 function Enable-FullSuitesForThisRun {

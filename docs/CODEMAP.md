@@ -488,7 +488,7 @@ python scripts/dev/test_selection.py --behavior EB-PLAN-001
 # under real concurrent load)
 #
 # NOT a local gate: the complete suites are suspended from merge/promote/sync by
-# scripts/dev/validation-policy.json and run periodically on master through
+# config/environments/local.env and run periodically on master through
 # scripts/dev/suite-health.ps1. See docs/development/testing.md.
 .venv\Scripts\python.exe -m pytest -q -n 2
 

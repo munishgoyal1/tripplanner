@@ -32,7 +32,7 @@ jobs:
         # every push to master. Announced rather than silently absent: a PR log
         # that simply stopped mentioning tests would read as though they passed.
         run: |
-          echo "pytest is NOT run on pull requests (scripts/dev/validation-policy.json)."
+          echo "pytest is NOT run on pull requests."
           echo "It runs on every push to master via the Suite health workflow,"
           echo "classified against scripts/dev/test-health-baseline.json."
 
@@ -55,7 +55,7 @@ jobs:
         run: npm run typecheck
       - name: Suite status
         run: |
-          echo "vitest is NOT run on pull requests (scripts/dev/validation-policy.json)."
+          echo "vitest is NOT run on pull requests."
           echo "It runs on every push to master via the Suite health workflow."
       - name: Production build
         run: npm run build

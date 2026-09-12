@@ -51,7 +51,7 @@ param(
     # Skip the test suite entirely and still publish/land the syncs it would gate.
     [switch]$NoTest,
     # Run every gate for this invocation, including any suspended in
-    # scripts/dev/validation-policy.json. Exported rather than passed so the
+    # config/environments/local.env. Exported rather than passed so the
     # nested sandbox.ps1 -Merge calls below inherit it.
     [switch]$FullSuites
 )

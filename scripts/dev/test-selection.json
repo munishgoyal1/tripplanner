@@ -127,8 +127,8 @@
     {
       "patterns": [
         "scripts/dev/validation_policy.py",
-        "scripts/dev/validation-policy.json",
-        "scripts/dev/lib/validation-policy.ps1"
+        "scripts/dev/lib/validation-policy.ps1",
+        "config/environments/local.env"
       ],
       "backend": ["tests/test_validation_policy.py", "tests/test_dev_launchers.py"],
       "reason": "which validation gates run locally"
