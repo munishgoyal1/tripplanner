@@ -56,7 +56,9 @@ _SPOOL_MAX_BYTES = 50 * 1024 * 1024
 
 
 def enabled():
-    return os.getenv("TRIPPLANNER_FLIGHT_RECORDER", "1").lower() not in {"0", "false", "off"}
+    from tripplanner.config import flight_recorder_enabled
+
+    return flight_recorder_enabled()
 
 
 def capture_provider_bodies():
@@ -66,7 +68,7 @@ def capture_provider_bodies():
     actively reproducing a provider issue, when full replay is worth the write
     amplification. Failures are recorded either way.
     """
-    return os.getenv("TRIPPLANNER_FLIGHT_RECORDER_VERBOSE", "0").lower() in {
+    return enabled() and os.getenv("TRIPPLANNER_FLIGHT_RECORDER_VERBOSE", "0").lower() in {
         "1",
         "true",
         "on",

@@ -347,9 +347,10 @@ def setup_logging(force: bool = False) -> None:
         handler.setLevel(level)
         handler.addFilter(PiiRedactingFilter())
         handler.setFormatter(JsonFormatter() if use_json else _TextFormatterWithPid())
-        from tripplanner.flight_recorder import RecorderLogHandler
+        from tripplanner.flight_recorder import RecorderLogHandler, enabled
 
-        root.addHandler(RecorderLogHandler(level))
+        if enabled():
+            root.addHandler(RecorderLogHandler(level))
         root.addHandler(handler)
 
         from tripplanner import alert_events

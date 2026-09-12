@@ -383,7 +383,8 @@ az containerapp update `
     --resource-group $prodRG `
     --name $deployment.containerAppName `
     --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
-    --set-env-vars "OAUTH_REDIRECT_BASE=$OAuthRedirectBase" @limitEnvArgs `
+    --set-env-vars "OAUTH_REDIRECT_BASE=$OAuthRedirectBase" `
+        "TRIPPLANNER_FLIGHT_RECORDER=$env:TRIPPLANNER_FLIGHT_RECORDER" @limitEnvArgs `
     -o none
 if ($LASTEXITCODE -ne 0) {
     throw "Container App image update failed."

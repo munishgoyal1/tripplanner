@@ -983,8 +983,8 @@ than guessing.
 
 ### EB-TRACE-001 - Reconstruct a planning turn privately
 
-**Trigger:** Build or edit a trip in local, canary or production with the default
-flight recorder enabled.
+**Trigger:** Build or edit a trip in local, canary or production with `TRIPPLANNER_FLIGHT_RECORDER=1` explicitly enabled in the environment profile
+and the backend restarted. The flag defaults to `0` in local, canary and prod.
 
 **Expected:** Model/tool/API metadata, shared provider attempts, semantic logs and
 saved revisions share trace identifiers and UTC times. Model/provider attempts keep
@@ -1003,3 +1003,21 @@ and includes research preceding trip identity assignment. Browser SDK internals 
 outside this contract.
 
 **Executable proof:** `tests/test_flight_recorder.py`.
+
+
+### EB-TRACE-002 - Skip optional recorder work
+
+**Trigger:** Run with `TRIPPLANNER_FLIGHT_RECORDER=0` (the default), or without
+an explicit truthy value. Configure it in `config/environments/<environment>.env`
+and restart the backend to apply changes consistently to cached clients/graphs.
+
+**Expected:** No recorder model/tool callbacks or recording HTTP clients are
+installed. ASGI and shared provider requests bypass recorder capture, including
+failure-body parsing. No diagnostic serialization, enqueue, worker startup or
+automatic local trip archive occurs. `TRIPPLANNER_FLIGHT_RECORDER_VERBOSE=1` and
+`TRIPPLANNER_DEBUG_STORE=1` cannot override the master flag. Normal logs, alerts,
+usage/cost accounting and primary trip persistence continue. Existing recorder
+history is retained and remains inspectable. Enabling the master flag restores
+EB-TRACE-001; hosted environments still prohibit the local raw trip archive.
+
+**Executable proof:** `tests/test_flight_recorder_flag.py`, `tests/test_debug_store.py`.

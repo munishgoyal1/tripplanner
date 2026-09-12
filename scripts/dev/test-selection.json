@@ -7,6 +7,16 @@
   ],
   "rules": [
     {
+      "patterns": ["src/tripplanner/flight_*.py", "src/tripplanner/http_client.py"],
+      "backend": [
+        "tests/test_flight_recorder.py",
+        "tests/test_flight_recorder_flag.py",
+        "tests/test_flight_recorder_volume.py",
+        "tests/test_outbound_runtime.py"
+      ],
+      "reason": "optional recorder and outbound capture boundary"
+    },
+    {
       "patterns": ["tests/conftest.py"],
       "backend_all": true,
       "reason": "global pytest isolation and fixture contract"

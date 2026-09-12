@@ -176,7 +176,10 @@ def request(
     import uuid
 
     from tripplanner.flight_http import body_data
-    from tripplanner.flight_recorder import capture_provider_bodies, record
+    from tripplanner.flight_recorder import capture_provider_bodies, enabled, record
+
+    if not enabled():
+        return _request(method, url, endpoint=endpoint, log_context=log_context, **kwargs)
 
     attempt_id = uuid.uuid4().hex
     started = time.monotonic()

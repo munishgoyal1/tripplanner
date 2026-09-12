@@ -243,7 +243,13 @@ sanitized operational stream.
 
 ## Private flight recorder
 
-Enabled by default (`TRIPPLANNER_FLIGHT_RECORDER=1`) in every environment. This is
+Disabled by default (`TRIPPLANNER_FLIGHT_RECORDER=0`) in every environment. Set it
+to `1` in `config/environments/<environment>.env` and restart the backend to
+record a diagnostic session; set it back to `0` and restart when finished. Process
+environment overrides retain precedence. This master flag also gates the local
+trip archive (`TRIPPLANNER_DEBUG_STORE` remains its local-only sub-control).
+Disabling preserves existing history and ordinary logs, alerts and usage ledgers,
+while skipping recorder callbacks, custom model transports and capture work. This is
 separate from content-free rotating logs and the local-only `debug-store` archive.
 Set `TRIPPLANNER_FLIGHT_RECORDER_DIR` to a private writable path; by default it uses
 `~/.tripplanner/flight-recorder/<environment>`. Callers enqueue bounded snapshots;

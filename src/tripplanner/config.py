@@ -33,7 +33,15 @@ def _env_positive_float(name: str, default: float) -> float:
         return default
 
 
+def flight_recorder_enabled() -> bool:
+    return os.getenv("TRIPPLANNER_FLIGHT_RECORDER", "0").strip().lower() in {
+        "1", "true", "on", "yes",
+    }
+
+
 class Settings(BaseModel):
+    flight_recorder_enabled: bool = Field(default_factory=flight_recorder_enabled)
+
     # Azure OpenAI
     enable_azure_openai: bool = Field(
         default_factory=lambda: os.getenv("ENABLE_AZURE_OPENAI", "0").strip() == "1"
