@@ -958,7 +958,12 @@ def _record_cache(
     from tripplanner.observability import app_event
     from tripplanner.usage_attribution import current_attribution
 
-    environment = current_attribution().fields().get("environment", "local").lower()
+    # Only the environment is wanted here, so read the field rather than
+    # building the whole attribution dict for every cache access.
+    attribution = current_attribution()
+    environment = (
+        attribution.environment or os.getenv("TRIPPLANNER_ENVIRONMENT", "local")
+    ).lower()
 
     app_event(
         "cache_access",

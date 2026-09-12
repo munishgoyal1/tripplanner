@@ -10,7 +10,9 @@ import uuid
 from collections import Counter
 from collections.abc import Iterator
 from contextlib import contextmanager
-from dataclasses import asdict, dataclass, field, replace
+from dataclasses import dataclass, field
+from dataclasses import fields as dataclass_fields
+from dataclasses import replace
 from datetime import UTC, datetime
 from typing import Any, Literal
 
@@ -81,11 +83,26 @@ class UsageAttribution:
     interaction_kind: InteractionKind = "other"
 
     def fields(self) -> dict[str, str]:
-        values = asdict(self)
-        values["environment"] = values["environment"] or os.getenv(
-            "TRIPPLANNER_ENVIRONMENT", "local"
-        )
-        return {key: str(value) for key, value in values.items() if value}
+        """This attribution as plain strings, ready to merge into an event.
+
+        Computed once. It used to go through ``dataclasses.asdict``, which deep
+        copies recursively -- and this is called six times for every cache hit,
+        so one warm trip view spent four of its nineteen seconds deep-copying
+        six short strings, over and over. The instance is frozen, so the answer
+        cannot change; the copy on the way out keeps callers free to merge into
+        the result.
+        """
+        cached = self.__dict__.get("_fields")
+        if cached is None:
+            values = {
+                field.name: getattr(self, field.name) for field in dataclass_fields(self)
+            }
+            values["environment"] = values["environment"] or os.getenv(
+                "TRIPPLANNER_ENVIRONMENT", "local"
+            )
+            cached = {key: str(value) for key, value in values.items() if value}
+            object.__setattr__(self, "_fields", cached)
+        return dict(cached)
 
 
 _CONTEXT: contextvars.ContextVar[UsageAttribution | None] = contextvars.ContextVar(
@@ -119,6 +136,33 @@ class UsageBatch:
     cache_results: Counter[str] = field(default_factory=Counter)
     cache_record_indexes: dict[tuple[str, ...], int] = field(default_factory=dict)
     lock: threading.Lock = field(default_factory=threading.Lock)
+
+    def merge_cache_hit(
+        self, key: tuple[str, ...], units: int, savings_usd: float
+    ) -> bool:
+        """Fold one more cache hit into the row this batch already holds.
+
+        ``False`` when this batch has no row for ``key`` yet, so the caller has
+        to build the full record once. Every hit after that lands here.
+
+        The rows were already coalesced by ``append``, but only after the caller
+        had built the record and emitted its event -- work thrown away for all
+        but the first hit of each kind, and a warm trip view makes hundreds. The
+        aggregate counters are kept in step here so the interaction summary still
+        reports the same totals.
+        """
+        with self.lock:
+            existing_index = self.cache_record_indexes.get(key)
+            if existing_index is None:
+                return False
+            existing = self.records[existing_index]
+            existing["units"] = int(existing.get("units") or 1) + max(1, int(units))
+            existing["estimated_savings_usd"] = round(
+                float(existing.get("estimated_savings_usd") or 0) + savings_usd, 8
+            )
+            self.total_event_count += 1
+            self.aggregate_event_counts["provider_call"] += 1
+            return True
 
     def append(self, record: dict[str, Any]) -> None:
         with self.lock:

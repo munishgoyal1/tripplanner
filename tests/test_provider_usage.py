@@ -540,3 +540,71 @@ def test_summary_uses_inclusive_custom_date_range(monkeypatch) -> None:  # type:
     assert result["period_days"] == 3
     assert captured[0][0] == datetime(2026, 8, 10, tzinfo=UTC)
     assert captured[0][1] == datetime(2026, 8, 13, tzinfo=UTC)
+
+
+def test_repeated_cache_hits_coalesce_without_rebuilding_each_record() -> None:
+    """A warm trip view serves hundreds of identical cache hits.
+
+    They were already merged into one row, but only after each had built a full
+    record and emitted its own event -- nineteen milliseconds of telemetry for a
+    dictionary lookup, and one warm workspace read spent fourteen seconds there.
+    The merge now happens up front; the totals must not move.
+    """
+    from tripplanner.provider_usage import record_cache_hit
+    from tripplanner.usage_attribution import current_batch, usage_scope
+
+    with usage_scope("user_action", route="GET /trip/workspace"):
+        for _ in range(50):
+            record_cache_hit(
+                provider="google", operation="text_search", sku_class="pro", units=1
+            )
+        record_cache_hit(
+            provider="google", operation="photo_media", sku_class="photo_media", units=2
+        )
+        batch = current_batch()
+        assert batch is not None
+        rows = {record["operation"]: record for record in batch.records}
+        summary = batch.flow_summary()
+
+    assert len(rows) == 2  # one row per operation, not one per hit
+    assert rows["text_search"]["units"] == 50
+    assert rows["photo_media"]["units"] == 2
+    # Every hit still counts towards the interaction's own totals.
+    assert summary["cache_served_provider_calls"] == 51
+
+
+def test_coalesced_cache_hits_sum_their_estimated_savings() -> None:
+    from tripplanner.provider_usage import _estimate, record_cache_hit
+    from tripplanner.usage_attribution import current_batch, usage_scope
+
+    per_call = _estimate("google", "text_search", "pro")
+    assert per_call  # the catalog prices this one, or the test proves nothing
+
+    with usage_scope("user_action", route="GET /trip/workspace"):
+        for _ in range(4):
+            record_cache_hit(
+                provider="google", operation="text_search", sku_class="pro", units=1
+            )
+        batch = current_batch()
+        assert batch is not None
+        row = batch.records[0]
+
+    assert row["units"] == 4
+    assert row["estimated_savings_usd"] == round(per_call * 4, 8)
+
+
+def test_attribution_fields_are_stable_and_independent() -> None:
+    """fields() is memoised, so it must still hand every caller its own dict."""
+    from tripplanner.usage_attribution import UsageAttribution
+
+    attribution = UsageAttribution(initiator="user_action", route="GET /trip/view")
+    first = attribution.fields()
+    first["route"] = "mutated"
+
+    assert attribution.fields()["route"] == "GET /trip/view"
+    assert attribution.fields() == {
+        "initiator": "user_action",
+        "route": "GET /trip/view",
+        "environment": attribution.fields()["environment"],
+        "interaction_kind": "other",
+    }

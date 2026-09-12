@@ -18,6 +18,28 @@ stays in [`.github/copilot-instructions.md`](../../.github/copilot-instructions.
 `master`. An agent that edits it directly takes the owner's stack out from under
 them mid-session.
 
+**Put the worktree in `..\tripplanner.worktrees\<branch-with-slashes-as-dashes>`.**
+That sibling directory is the only location the owner's VS Code windows can see:
+`tripplanner.code-workspace` and `tripplanner-integration.code-workspace` both add
+it as a second workspace folder, so each worktree lands one level down and VS Code's
+repository scan — depth 1 by default — picks it up in the Source Control view. A
+worktree anywhere else inside the primary checkout is invisible there: it sits two
+levels below the workspace root, and `.git/info/exclude` hides it from `git status`
+as well, so work in it cannot be reviewed without opening a separate window.
+
+Claude Code's `EnterWorktree` tool has no setting for where it puts a worktree; it
+always creates one under `.claude/worktrees/`. So create the worktree first and
+enter it by path:
+
+```powershell
+git fetch origin master
+git worktree add ..\tripplanner.worktrees\claude-<slug> -b claude/<slug> origin/master
+```
+
+then call `EnterWorktree` with the resulting absolute path. Entering by path also
+means `ExitWorktree` will not delete the tree — remove it deliberately with
+`git worktree remove` once the branch is merged.
+
 **Name the branch `<agent>/<task-slug>`:**
 
 | Agent | Prefix | Example |
