@@ -385,12 +385,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Itinerary scanning**: each day header shows stop count, `Schedule duration`,
   a separate `Day's travel` row with route distance/time/mode, and a direct Maps
   handoff before the stop details.
-  A complete exported Trip Book should remain executable away from the live app:
-  contents first, trip and day plans next, then booking confirmations and entry
-  documents, with optional place context last. Personal insights must identify
-  the saved preference and verified travel fact behind them. Packet structure is
-  currently an active UX Lab decision; document ingestion and merged-PDF storage
-  are not approved production scope.
+  A complete exported Trip Book remains executable away from the live app:
+  contents first, trip brief and day plans next with numbered day-circuit insets,
+  then booking confirmations and entry documents, with optional place context last.
+  Personal insights identify the saved preference or verified place fact behind
+  them. The selected Lab 5 structure is **B · Layered Trip Book**. Document
+  ingestion and merged-PDF storage remain out of this packet: originals are never
+  kept, and identity numbers stay out of the printable file.
   The backend owns one day timing contract consumed by both Itinerary and Map:
   the schedule spans hotel departure through return (or the applicable transfer/
   transit endpoints), while `Day's travel` is the route-only subtotal. If
@@ -497,9 +498,14 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   authoritative itinerary day. Restaurant POIs persist as meal stops.
 - **Common commands**: trip-wide Export, Share, and Add to calendar actions
   belong in one compact menu in the common command bar, not scattered through
-  Details. Export supports photo-rich preview, print/save PDF, direct PDF, and email. Enabled
+  Details. Export offers two itinerary packets: Standard (the former Detailed+
+  day-by-day, matching the itinerary panel) and Trip Book. Preview and Download
+  PDF share that HTML layout; calendar download stays on its own menu action.
+  Optional checkboxes add budgets and one photo per stop; day circuits are always
+  included. Checked photos appear in preview, downloaded PDF, and emailed PDF.
+  Download PDF and Send keep independent progress states. Email sends the PDF plus a share URL. Enabled
   exports include embedded day route maps plus place photos, address/rating,
-  itinerary notes, time, and booking status; every output path honors the same
+  itinerary notes, time, visit duration, opening hours, and booking status; every output path honors the same
   media toggles. The account control visibly distinguishes a signed-in identity
   from a local guest. Hosted account data is authorized by signed sessions, not
   by a client-supplied identifier; anonymous browser/device identities receive a

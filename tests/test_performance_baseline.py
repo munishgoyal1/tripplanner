@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from itertools import count
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -65,7 +67,16 @@ def test_run_baseline_rejects_errors(monkeypatch) -> None:  # type: ignore[no-un
         performance_baseline.run_baseline(FakeClient(), samples=1, warmups=0)
 
 
-def test_hermetic_baseline_invokes_routes_and_records_zero_cost() -> None:
+def test_hermetic_baseline_invokes_routes_and_records_zero_cost(monkeypatch) -> None:
+    ticks = count(step=1_000_000)
+    monkeypatch.setattr(
+        performance_baseline,
+        "time",
+        SimpleNamespace(
+            time=performance_baseline.time.time,
+            perf_counter_ns=lambda: next(ticks),
+        ),
+    )
     report = performance_baseline.run_hermetic_baseline(
         samples=5,
         warmups=1,
@@ -88,3 +99,25 @@ def test_hermetic_baseline_invokes_routes_and_records_zero_cost() -> None:
     }
     assert all(result["errors"] == 0 for result in report["scenarios"].values())
     assert all(result["p95_ms"] <= 750.0 for result in report["scenarios"].values())
+
+
+@pytest.mark.parametrize("duration_ns,passes", [(750_000_000, True), (751_000_000, False)])
+def test_baseline_enforces_p95_limit(monkeypatch, duration_ns, passes) -> None:
+    ticks = count(step=duration_ns)
+    monkeypatch.setattr(
+        performance_baseline,
+        "time",
+        SimpleNamespace(
+            time=performance_baseline.time.time,
+            perf_counter_ns=lambda: next(ticks),
+        ),
+    )
+    if passes:
+        assert performance_baseline.run_baseline(
+            FakeClient(), samples=1, warmups=0, p95_limit_ms=750.0,
+        )["status"] == "passed"
+    else:
+        with pytest.raises(performance_baseline.PerformanceRegressionError):
+            performance_baseline.run_baseline(
+                FakeClient(), samples=1, warmups=0, p95_limit_ms=750.0,
+            )

@@ -1730,6 +1730,15 @@ the outcome.
   "already in use" as exists. Cloud SDK 584 `alpha monitoring policies update`
   takes `--set-notification-channels`, not `--notification-channels`.
 
+## 2026-09-11 - Print Packets Must Not Invent Safety Facts
+
+- A Lab fixture can show emergency, consulate, and card-block numbers because
+  the mock trip invented them. Production export may only print contacts that
+  already exist on the trip or in saved place facts. A missing hotel phone is
+  omitted; a fabricated 999 is worse than an incomplete essentials page.
+- Packet structure and map pages are independent. Implementing a layered book
+  does not require the extra overview map pages unless that map setting was
+  selected. Default to the Lab's day-circuit inset.
 ## 2026-09-11 - Evidence Fidelity And Operator Logs Need Different Fan-Out
 
 - A full-fidelity flight recorder correctly retained each cache, provider, and
@@ -1759,6 +1768,15 @@ the outcome.
   missing file after enumeration is a normal race to ignore rather than a degraded
   recorder condition.
 
+## 2026-09-11 - Export HTML Is The Packet, PDF Is A Print Of It
+
+- A second ReportLab table layout will drift from preview the moment stop facts
+  grow. Travelers notice that as "the old PDF." Generate PDF from the HTML packet
+  (browser print-to-PDF) and keep any library fallback on the same day/stop
+  structure rather than a parallel table design.
+- Download actions that both mean "make a PDF" (preview print vs download) make
+  the dialog feel unfinished. Preview is for reading; Download PDF is the file;
+  calendar stays outside the format picker.
 ## 2026-09-11 - Balanced Telemetry Preserves Units, Not Repeated Rows
 
 - Removing low-level events from console and flight evidence still left hundreds of
@@ -1773,6 +1791,25 @@ the outcome.
   restricted flight recorder, so copying them into hosted operational logs adds risk
   without improving reconstruction.
 
+## 2026-09-11 - Photo PDFs Must Inline Images Before file:// Print
+
+- Browser preview can load Google photo URLs. Headless print-to-PDF of a local
+  HTML file often times out or paints without those remote images, then a text
+  fallback is emailed. Inline http(s) `<img>` tags as data URIs and reuse the
+  already-built email HTML so the attachment matches preview.
+- Export HTML escapes `&` in those photo URLs. Fetch the unescaped URL and write
+  the bytes as sibling files before Chromium prints, or the packet looks complete
+  with blank photo boxes.
+
+## 2026-09-11 - Headless Chrome Needs Data URIs, Not Sibling Files
+
+- Sibling image files next to `file://` HTML often stay blank under
+  `--headless=new`. Put photo bytes in the HTML as data URIs. If the CDN URL
+  403s from the server, fetch Places photo media (binary, follow redirects)
+  using the cached photo ref.
+- One shared `busy` flag in an export dialog couples unrelated actions. Download
+  and email need their own in-flight state.
+
 ## 2026-09-11 - Bounded Work Still Needs Bounded Progress Logging
 
 - Limiting a recorder drain to 25 uploads protected each pass, but emitting one line
@@ -1782,6 +1819,14 @@ the outcome.
   Keep batch size as the I/O control and reporting cadence as a separate, slower
   human-signal control.
 
+## 2026-09-11 - Promotion Must Fast-Forward a Behind Primary
+
+- Requiring the primary checkout to already equal `origin/master` before
+  `merge --ff-only` blocks a clean behind checkout that the next line would have
+  repaired. Fast-forward when local is an ancestor of the remote.
+- A locally-ahead primary is a different failure. Name that relation and give
+  the park-then-reset recovery so promotion does not invent a second master
+  history.
 ## 2026-09-11 - Preserve Correlation And Billing Uncertainty
 
 - The Kashmir update received HTTP 200 then an incomplete chunked response on
@@ -1798,7 +1843,64 @@ the outcome.
   tools returning `Error:` must report a rejected result even without a Python
   exception; a completed function call is not a successful trip mutation.
 
+## 2026-09-12 - A Read Of An Existing Trip Must Not Be Allowed To Spend
 
+- Every HTTP request opened a `user_interaction` paid-provider scope, so re-opening
+  the planner authorized eleven reads to buy Google Text Searches for a trip that
+  was already built. Measured on one afternoon of local telemetry: `GET /trip/map`
+  made 17 billable text searches and 17 photo fetches on a plain reload, and one
+  `GET /trip/workspace` waited 41 seconds on the per-minute Places quota it had
+  just exhausted. Authorization belongs to the interaction, not to the process: a
+  projection of stored state is a read whoever asked for it.
+- Warming is the one read-triggered path that may still spend, so it has to claim a
+  trip revision before it runs. `warm_view_items` was unguarded and re-prefetched up
+  to forty places on every view and workspace request -- the work the cache exists
+  to avoid, repeated on the request that should have been free.
+- A cache must distinguish "the provider answered: nothing" from "no answer was
+  obtained", on every field, not just the one that prompted the last fix. Empty
+  reviews and an empty photo-URL list were both stamped with a fresh timestamp
+  after a declined or failed call, recording an absence as fact for the whole TTL.
+- A lapsed TTL means "worth re-checking when someone is paying", never "forget the
+  place". A read that may not spend should serve the stale entry it holds.
+- One paid provider had no cache at all: Tavily destination news was bought again
+  on every planner open. Auditing spend per provider, not per subsystem, is what
+  surfaced it -- the Places work would never have found it.
+- Paid-provider authorization travels in a context variable, so any thread fan-out
+  on a paid path must copy the context. `trip_freshness` did not, which would have
+  made an explicit recheck silently check nothing.
+- Rolling alert windows are appended to and summed from whichever thread emitted
+  the event. Unsynchronized, an eight-way prefetch raised "deque mutated during
+  iteration" from inside the cache-hit path; re-summing the window per event also
+  made every cache hit O(window). Keep the running total, and hold the lock over
+  the arithmetic only -- never over the alert's own file I/O.
+## 2026-09-12 - Count View Work And Distinguish Quota Rejections
+
+- Creation counts do not measure provider load: map, gallery, switch, and
+  destination requests can spend independently. Bind their resolved trip ID to
+  the shared usage batch before provider work, including across worker contexts.
+- Lock the entire photo cache-check/fetch/update operation per place. Locking
+  only dictionary access lets simultaneous panels resolve the same photo twice.
+  A failed refresh must not replace usable URLs or advance their freshness.
+- Keep quota-rejected attempts observable without pricing them as successful
+  responses; retain the precise quota limit in alerts. Gross catalog estimates,
+  eligible regional rates, free allowances, and provider invoices are distinct.
+
+## 2026-09-12 - Count Bytes And Writes, Not Only Events
+
+- Kashmir's 83 retained events contained 5.36 MB of uncompressed data: 12 model
+  starts plus six wire requests and duplicate nested tool callbacks. Give bodies
+  one owner, keep normal successes metadata-only, and bound failure excerpts.
+- An asynchronous diagnostic queue may lose events on overload/crash; expose that
+  explicitly and keep trip persistence and monetary accounting outside it.
+- Test-contaminated provider ledgers cannot establish real API usage. Cache-hit
+  rows marked attempted=false are not remote requests; attribution alone does not
+  prove that a record is real or synthetic.
+- Use task-named agent branches for features. Reuse gpt-bugfixes only when clean
+  and idle; generic Coordinator branches obscure ownership across active agents.
+- Offline replay of the six recorded Kashmir HTTP attempts reduced that layer
+  from 4,417,663 to 157,761 uncompressed bytes (96.4%) while retaining all attempt
+  metadata and bounded error evidence. This measures stored representation, not
+  live application latency or the whole telemetry footprint.
 ## 2026-09-12 - Persist The Draft And Learn Without Approval Gates
 
 - A profile suggestion is not saved memory. Explicit conversational facts need an
@@ -1812,3 +1914,40 @@ the outcome.
   retrying older failed messages; do not make provider latency a chat input gate.
 - Agent-identifiable task branches keep concurrent ownership clear. Git branches
   are cheap; isolated dependency installs and runtimes are separate choices.
+
+
+## 2026-09-12 - Prove Concurrency Without Racing The Host
+
+- Full two-way sync ran overlapping suites, and elapsed-time assertions confused
+  host contention with serialization. Rendezvous barriers prove tool calls and
+  cache-hit logging overlap; a timeout remains only a deadlock guard.
+- Search correctness needs a controlled clock, with deadline exhaustion tested
+  separately. Likewise, route-contract tests use deterministic measurement ticks
+  while explicit boundary tests preserve the benchmark's real p95 rejection gate.
+- Live request admission tests should isolate background learning and release
+  blocked model work before joining their executor, even when an assertion fails.
+- Native validation output must be piped into PowerShell's transcript. An exit
+  code saying pytest failed without the failed nodes is insufficient repair evidence.
+## 2026-09-12 - Inspect Full Process Identity and Wait for Exit State
+
+- POSIX process ownership must use untruncated command output (`ps -ww`); long interpreter arguments can hide the session marker and falsely classify a live worker as stale. A long-command regression protects the shutdown boundary.
+- Pipe EOF precedes final process exit, and a killed descendant can remain a zombie until its parent or init reaps it. Lifecycle tests must wait for bounded exit/reaping and distinguish executing processes from zombies rather than assume PID disappearance is immediate.
+
+
+## 2026-09-12 - Bound Frontend Workers And Flush External Updates
+
+- A fresh worktree with four Vitest workers still timed out starting jsdom
+  workers under concurrent validation. Limit the shared pool to two instead
+  of increasing every test timeout.
+- Wrap externally dispatched preference changes in React act so assertions
+  observe the resulting effects, rather than racing a one-second polling window.
+
+
+## 2026-09-12 - Preserve Mock Types Across Integration
+
+- Assertions that inspect recorded mock arguments need a declared argument
+  signature. A zero-argument mock records an empty tuple, and a generic unknown
+  record cannot prove a polyline path is an array; declare the inspected fields.
+- A second fan-out regression exceeded its 500 ms ceiling by only 15 ms under
+  integration load. Use a rendezvous to prove overlapping execution in every
+  concurrency contract, including shared outbound fan-out.

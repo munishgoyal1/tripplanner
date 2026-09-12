@@ -822,6 +822,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Every operational fact, and the complete appendix behind all three.",
+    chosen: "B · Layered Trip Book",
     verdict:
       "B wins because a printed packet gets asked two kinds of question - what now, and is this actually booked - and the layered book is the only one that answers both, for four pages more than the binder. A is the least to carry and the fastest to reprint, with almost nothing around the facts to reassure you. C is the one you would keep afterwards and the most to print. Take B; A is right only if the packet is purely operational.",
   },

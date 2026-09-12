@@ -1,10 +1,59 @@
 from __future__ import annotations
 
+import contextvars
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 
 from tripplanner import provider_usage, storage_cosmos
 from tripplanner.usage_attribution import annotate_current_batch, usage_scope
 from tripplanner.validation.harness.context import harness_scope
+
+
+def test_view_trip_annotation_survives_worker_context(monkeypatch):
+    from tripplanner.usage_attribution import (
+        attribute_trip_view,
+        current_attribution,
+        current_batch,
+    )
+
+    monkeypatch.setattr(provider_usage, "persist_batch", lambda *args: None)
+    with usage_scope("user_action", interaction_id="view", route="GET /trip/map"):
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            executor.submit(contextvars.copy_context().run, attribute_trip_view, "kashmir").result()
+        assert current_attribution().trip_id == "kashmir"
+        provider_usage.record_call(
+            provider="google", operation="photo_media", sku_class="photo_media",
+            status="ok", duration_ms=1,
+        )
+        assert current_batch().records[0]["trip_id"] == "kashmir"
+        assert current_batch().attribution.trip_id == "kashmir"
+
+
+def test_view_trip_annotation_preserves_chat_and_unrelated_request_attribution(monkeypatch):
+    from tripplanner.usage_attribution import attribute_trip_view, current_attribution
+
+    monkeypatch.setattr(provider_usage, "persist_batch", lambda *args: None)
+    for initiator, route in [("user_trip", "POST /chat"), ("audit", "GET /trip/map"),
+                             ("user_action", "GET /destination/overview")]:
+        with usage_scope(initiator, route=route, trip_id="original"):
+            attribute_trip_view("different")
+            assert current_attribution().trip_id == "original"
+
+
+def test_switch_attributes_only_the_successfully_activated_trip(monkeypatch):
+    from types import SimpleNamespace
+
+    from tripplanner.tools import trip_history
+    from tripplanner.usage_attribution import current_attribution
+
+    monkeypatch.setattr(trip_history, "_repository", lambda: SimpleNamespace(
+        load_active=lambda: {"trip_id": "previous"}, set_active=lambda plan: None,
+    ))
+    with usage_scope("user_action", route="POST /trips/switch"):
+        assert trip_history.load_active_trip()["trip_id"] == "previous"
+        assert current_attribution().trip_id == ""
+        trip_history.activate_trip({"trip_id": "kashmir"})
+        assert current_attribution().trip_id == "kashmir"
 
 
 def test_summary_preserves_attribution_and_unknown_costs(monkeypatch, tmp_path) -> None:  # type: ignore[no-untyped-def]
@@ -339,7 +388,10 @@ def test_usage_batch_builds_bounded_human_flow_summary() -> None:
         "outbound_calls": 0,
         "llm_usage_events": 0,
         "cache_served_provider_calls": 0,
-        "places": ["Taj Mahal (Agra)=memory_hit", "Agra Fort (Agra)=miss"],
+        # Misses first: the summary names at most five places, and a warm trip
+        # view produces hundreds of hits, so listing them in arrival order said
+        # nothing about the handful that actually cost money.
+        "places": ["Agra Fort (Agra)=miss", "Taj Mahal (Agra)=memory_hit"],
         "place_count": 2,
     }
 

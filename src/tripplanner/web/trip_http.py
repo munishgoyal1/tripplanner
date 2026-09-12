@@ -286,9 +286,17 @@ async def destination_overview_endpoint(
     from tripplanner.web import trip_view
 
     _set_request_user(request, user_id)
+    trip = await asyncio.to_thread(trip_planner.load_active_trip_dict)
+    trip_destination = str((trip or {}).get("destination") or "")
     if not destination:
-        trip = trip_planner.load_active_trip_dict()
-        destination = str((trip or {}).get("destination") or "")
+        destination = trip_destination
+    if destination.strip().casefold() == trip_destination.strip().casefold() and trip:
+        from tripplanner.usage_attribution import annotate_current_batch, current_attribution
+
+        annotate_current_batch(
+            interaction_id=current_attribution().interaction_id,
+            trip_id=str(trip.get("trip_id") or ""),
+        )
     return await asyncio.to_thread(
         trip_view.build_destination_overview, destination, include_news=news
     )
@@ -694,6 +702,7 @@ async def trip_export_print(
     include_map_circuit: str = "1",
     template: str = "standard",
     auto_print: str = "0",
+    include_budgets: str = "0",
 ) -> Response:
     """Return a print-ready HTML itinerary suitable for Save-as-PDF."""
     from tripplanner.tools import trip_planner
@@ -705,6 +714,7 @@ async def trip_export_print(
         plan,
         include_photos=parse_export_bool(include_photos, default=False),
         include_map_circuit=parse_export_bool(include_map_circuit, default=True),
+        include_budgets=parse_export_bool(include_budgets, default=False),
         template=template,
         auto_print=parse_export_bool(auto_print, default=False),
     )
@@ -718,6 +728,7 @@ async def trip_export_pdf(
     template: str = "standard",
     include_photos: str = "0",
     include_map_circuit: str = "1",
+    include_budgets: str = "0",
 ) -> Response:
     """Return a downloadable itinerary PDF generated server-side."""
     from tripplanner.tools import trip_planner
@@ -736,6 +747,7 @@ async def trip_export_pdf(
             template=template,
             include_photos=parse_export_bool(include_photos, default=False),
             include_map_circuit=parse_export_bool(include_map_circuit, default=True),
+            include_budgets=parse_export_bool(include_budgets, default=False),
         )
     except ImportError:
         return JSONResponse(

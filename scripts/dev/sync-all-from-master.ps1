@@ -14,7 +14,9 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [string]$BaseBranch = "master",
-    [switch]$AlwaysValidate
+    [switch]$AlwaysValidate,
+    # Skip the test suite entirely and still pull every lane current.
+    [switch]$NoTest
 )
 
 $ErrorActionPreference = "Stop"
@@ -23,6 +25,7 @@ $fullSyncScript = Join-Path $PSScriptRoot "full-2way-sync.ps1"
 # Array splats bind positionally only; named/switch parameters need a hashtable splat.
 $namedArguments = @{ BaseBranch = $BaseBranch; PullOnly = $true }
 if ($AlwaysValidate) { $namedArguments.AlwaysValidate = $true }
+if ($NoTest) { $namedArguments.NoTest = $true }
 if ($WhatIfPreference) { $namedArguments.WhatIf = $true }
 
 & $fullSyncScript "all" @namedArguments

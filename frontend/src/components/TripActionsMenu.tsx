@@ -81,7 +81,7 @@ export default function TripActionsMenu({ disabled = false, onExport, compactTri
             <FileDown size={16} className="text-muted" aria-hidden />
             <span>
               <strong className="block font-medium">Export itinerary</strong>
-              <small className="text-muted">PDF, print, or email</small>
+              <small className="text-muted">Preview, PDF, or email</small>
             </span>
           </button>
           <button

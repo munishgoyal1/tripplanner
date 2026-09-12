@@ -22,6 +22,8 @@ interface Props {
   tripId?: string | null;
   /** Itinerary handed over by a trip switch; consumed once, then refetches. */
   seed?: Itinerary | null;
+  /** A workspace fetch that will deliver `seed` is in flight. */
+  seedPending?: boolean;
   /** Click a stop to focus it (loads its photos + highlights its map pin). */
   onStopFocus?: (kind: string, name: string, day: number, stop: number, routeCircuitId?: string) => void;
   /** Jump to the map focused on a stop (and optionally details). */
@@ -352,6 +354,7 @@ export default function ItineraryPanel({
   reloadToken = 0,
   tripId = null,
   seed = null,
+  seedPending = false,
   onStopFocus,
   onStopMap,
   onDayMap,
@@ -374,9 +377,10 @@ export default function ItineraryPanel({
   const [flashTarget, setFlashTarget] = useState<{ day: number; name: string; token: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const previousTripIdRef = useRef(tripId);
-  const seedRef = useRef(seed);
-  seedRef.current = seed;
   const consumedSeedRef = useRef<Itinerary | null>(null);
+  // Set while a seed has been applied during render and the effect below has
+  // not yet seen it, so that effect knows the data question is already answered.
+  const seedJustAppliedRef = useRef(false);
   const allDaysActive = circuitFocusToken > 0 && circuitFocusDay == null;
   const filterControls = onFilterToggle
     ? <ItineraryFilterControls filters={filters} onToggle={onFilterToggle} target={headerTarget} />
@@ -389,16 +393,35 @@ export default function ItineraryPanel({
     if (it) setIt(null);
   }
 
+  // The workspace payload already carries this itinerary, so it is applied here
+  // during render rather than from an effect. An effect only runs after the
+  // commit, which left one render showing the loading state for data the panel
+  // already had -- and made the hand-off depend on effect ordering across three
+  // components. A render-phase update to this component's own state is the
+  // supported way to derive state from props.
+  if (seed && seed !== consumedSeedRef.current) {
+    consumedSeedRef.current = seed;
+    seedJustAppliedRef.current = true;
+    setIt(seed);
+    setError(null);
+    setLoading(false);
+  }
+
   useEffect(() => {
     let cancelled = false;
     const controller = new AbortController();
-    // A trip switch already returned this panel's view-model — use it directly.
-    const seeded = seedRef.current;
-    if (seeded && seeded !== consumedSeedRef.current) {
-      consumedSeedRef.current = seeded;
-      setIt(seeded);
+    // The render above already applied a seed for this reload, so there is
+    // nothing to fetch.
+    if (seedJustAppliedRef.current) {
+      seedJustAppliedRef.current = false;
+      return;
+    }
+    // A workspace payload carrying this itinerary is on its way. Racing it with
+    // /trip/itinerary made the server assemble the same trip twice per page
+    // load, and the two builds then contended for the same place lookups.
+    if (seedPending) {
+      setLoading(true);
       setError(null);
-      setLoading(false);
       return;
     }
     setLoading(true);
@@ -417,7 +440,7 @@ export default function ItineraryPanel({
       cancelled = true;
       controller.abort();
     };
-  }, [reloadToken, retryToken, tripId]);
+  }, [reloadToken, retryToken, tripId, seed, seedPending]);
 
   const handleToggleBooked = useCallback(
     async (day: number, name: string, next: boolean) => {

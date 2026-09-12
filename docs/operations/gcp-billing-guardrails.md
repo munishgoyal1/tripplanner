@@ -470,6 +470,26 @@ investigate there, not a reason to reintroduce a call budget.
 This is a catalog estimate, not billed cost; provider billing exports remain
 authoritative.
 
+The estimator currently uses conservative global Places list prices before
+monthly free allowances, taxes, and account-specific discounts. India pricing
+must be verified against the billing account before changing those rates;
+the India free-pool assumptions used for quota sizing do not establish billing
+eligibility. A lower displayed estimate is not itself a reduction in usage.
+
+As of 2026-09-12, trip view and successful switch requests attach the resolved
+trip identity before provider work. The matching destination overview is also
+attributed; browsing a different destination is not charged to the active trip.
+Google HTTP 429 attempts remain visible as failures, with `quota_rejected`
+billing status and zero estimated spend. Historical rows are not rewritten, so
+older per-trip totals can still have missing attribution or rejected-call estimates.
+
+Quota alerts retain `limit_name` as well as `quota_metric` and service, so an
+email distinguishes per-minute bursts from daily exhaustion. Quotas and spend
+ceilings remain unchanged by the photo deduplication/accounting fix. Photo pacing
+still uses process-local state: independent processes sharing a project can
+collectively reach its quota. Measure remaining bursts before raising headroom;
+deduplication does not establish a project-wide rate limiter or a INR 20 trip cost.
+
 ### Google API capability gates
 
 One checked-in environment-profile flag owns the desired state for each paid

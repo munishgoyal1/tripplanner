@@ -626,7 +626,7 @@
     "selection": "layered",
     "selectionLabel": "B · Layered Trip Book",
     "comment": "",
-    "disposition": "ready",
+    "disposition": "implemented-review",
     "handoffs": [
       {
         "version": 1,
@@ -635,10 +635,38 @@
         "comment": "",
         "disposition": "ready",
         "recordedAt": "2026-09-11T03:52:11.574Z"
+      },
+      {
+        "version": 2.0,
+        "selection": "layered",
+        "selectionLabel": "B · Layered Trip Book",
+        "comment": "",
+        "disposition": "implemented-review",
+        "summary": "Implemented Option B layered Trip Book in production export: contents and document readiness, trip brief, executable days with optional H/numbered circuit insets, then essentials, confirmations, and sourced place context. Emergency numbers are omitted unless already on the trip. Extra full-page trip maps stay off by default.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: ae262c53; Recorded: 2026-09-11 04:00 UTC; Session: Implement lab5 layered trip book",
+        "recordedAt": "2026-09-11T04:13:52.6717293Z"
       }
     ],
-    "implementations": [],
-    "stateChangedAt": "2026-09-11T03:52:11.574Z",
-    "updatedAt": "2026-09-11T03:52:11.574Z"
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2.0,
+        "selection": "layered",
+        "selectionLabel": "B · Layered Trip Book",
+        "comment": "",
+        "summary": "Implemented Option B layered Trip Book in production export: contents and document readiness, trip brief, executable days with optional H/numbered circuit insets, then essentials, confirmations, and sourced place context. Emergency numbers are omitted unless already on the trip. Extra full-page trip maps stay off by default.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: ae262c53; Recorded: 2026-09-11 04:00 UTC; Session: Implement lab5 layered trip book",
+        "recordedAt": "2026-09-11T04:13:52.6717293Z"
+      }
+    ],
+    "stateChangedAt": "2026-09-11T04:13:52.6717293Z",
+    "updatedAt": "2026-09-11T04:13:52.6717293Z",
+    "implementation": {
+      "handoffVersion": 2.0,
+      "selection": "layered",
+      "selectionLabel": "B · Layered Trip Book",
+      "comment": "",
+      "summary": "Implemented Option B layered Trip Book in production export: contents and document readiness, trip brief, executable days with optional H/numbered circuit insets, then essentials, confirmations, and sourced place context. Emergency numbers are omitted unless already on the trip. Extra full-page trip maps stay off by default.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: ae262c53; Recorded: 2026-09-11 04:00 UTC; Session: Implement lab5 layered trip book",
+      "recordedAt": "2026-09-11T04:13:52.6717293Z"
+    },
+    "implementationSummary": "Implemented Option B layered Trip Book in production export: contents and document readiness, trip brief, executable days with optional H/numbered circuit insets, then essentials, confirmations, and sourced place context. Emergency numbers are omitted unless already on the trip. Extra full-page trip maps stay off by default.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: ae262c53; Recorded: 2026-09-11 04:00 UTC; Session: Implement lab5 layered trip book"
   }
 }

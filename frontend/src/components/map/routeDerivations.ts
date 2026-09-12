@@ -144,7 +144,7 @@ export function routeStyleForLeg(
     };
   }
   if (!leg.intercity) {
-    return { strokeColor: dayColor, strokeOpacity: 0.85, strokeWeight: 3 };
+    return { strokeColor: dayColor, strokeOpacity: 0.95, strokeWeight: 4 };
   }
   return intercityRouteStyle(leg.mode);
 }
@@ -163,28 +163,41 @@ export function parallelLegPath(
   slot: number,
   total: number,
 ): Array<{ lat: number; lng: number }> {
-  const endpoints = [
-    { lat: start.lat, lng: start.lng },
-    { lat: end.lat, lng: end.lng },
-  ];
-  if (total <= 1) return endpoints;
-
-  // Use one canonical direction for both A→B and B→A, otherwise reversing the
-  // leg also reverses its normal and puts both curves on the same side.
   const [canonicalStart, canonicalEnd] = start.id.localeCompare(end.id) <= 0
     ? [start, end]
     : [end, start];
   const deltaLat = canonicalEnd.lat - canonicalStart.lat;
   const deltaLng = canonicalEnd.lng - canonicalStart.lng;
   const span = Math.hypot(deltaLat, deltaLng);
-  if (span === 0) return endpoints;
-  const position = slot - (total - 1) / 2;
-  const bend = Math.min(0.6, Math.max(0.08, span * 0.03)) * position;
-  const midpoint = {
+  if (span === 0) {
+    return [
+      { lat: start.lat, lng: start.lng },
+      { lat: end.lat, lng: end.lng },
+    ];
+  }
+  const close = span < 0.08;
+  const position = total <= 1
+    ? (close ? 1 : 0.45)
+    : slot - (total - 1) / 2 || (close ? 0.8 : 0.45);
+  const magnitude = close
+    ? Math.min(0.014, Math.max(0.0025, span * 0.38))
+    : Math.min(0.55, Math.max(0.06, span * 0.028));
+  const bend = magnitude * position;
+  const mid = {
     lat: (start.lat + end.lat) / 2 - (deltaLng / span) * bend,
     lng: (start.lng + end.lng) / 2 + (deltaLat / span) * bend,
   };
-  return [endpoints[0], midpoint, endpoints[1]];
+  const steps = close ? 10 : 6;
+  const path: Array<{ lat: number; lng: number }> = [];
+  for (let index = 0; index <= steps; index += 1) {
+    const t = index / steps;
+    const rest = 1 - t;
+    path.push({
+      lat: rest * rest * start.lat + 2 * rest * t * mid.lat + t * t * end.lat,
+      lng: rest * rest * start.lng + 2 * rest * t * mid.lng + t * t * end.lng,
+    });
+  }
+  return path;
 }
 
 const visitOrdersCache = new WeakMap<MapView, Map<number, Map<string, number>>>();
