@@ -13,6 +13,9 @@ in this backlog.
 
 ## Files
 
+- [`009-booking-readiness.md`](009-booking-readiness.md): budget-constrained
+  selections, saved alternatives, explicit readiness and external handoffs;
+  provider feasibility and implementation validation remain pending.
 - [`NEXT_INCREMENT.md`](NEXT_INCREMENT.md): reusable owner-editable intake for the
   next coherent milestone. It is a draft until scope and approval are explicit.
 - [`FEATURE_BRIEF_TEMPLATE.md`](FEATURE_BRIEF_TEMPLATE.md): full structure used to

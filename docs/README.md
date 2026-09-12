@@ -21,7 +21,7 @@ canonical set below instead of reading every file.
 | [`roadmap/`](roadmap/README.md) | Possible future outcomes and deferred decisions; never implementation approval |
 | [`feature-briefs-backlog/`](feature-briefs-backlog/README.md) | One owner-approved outcome translated into bounded scope and acceptance criteria |
 | [`ux-experiments/`](ux-experiments/README.md) | Isolated visual decisions tested before production implementation |
-| [`research/`](research/) | Dated external findings — market and competitive landscape, provider access, cost, and terms — that inform a decision but are not themselves approval. Includes the 2026-09 Azure OpenAI planning-model comparison. |
+| [`research/`](research/) | Dated external findings — market and competitive landscape, provider access, cost, and terms — that inform a decision but are not themselves approval. Includes the 2026-09 Azure OpenAI planning-model comparison and [booking-readiness provider access](research/provider-api-access.md). |
 
 ## How planning becomes current truth
 
