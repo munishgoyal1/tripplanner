@@ -2017,3 +2017,16 @@ the outcome.
   card answers cannot authorize creating another trip.
 - Share departure-notice decisions across JSON and SSE. Stream the notice before
   model work and persist it in the final reply so refresh and replay retain context.
+
+
+## 2026-09-12 - Require Consent Before Leaving The Selected Trip
+
+- Detecting lifecycle intent is not consent. Keep creation and resume tools out of
+  ordinary follow-ups, return a deterministic confirmation before model work, and
+  admit only an affirmative answer to the immediately preceding question.
+- A graph-generated answer has no model token stream. Test JSON and SSE against
+  the real graph so confirmation questions reach the client and persisted chat.
+- Exception class alone cannot locate a failed setup step. Record bounded source
+  filenames, line numbers and function names without prompt text or exception
+  payloads. The observed Goa AttributeError did not reproduce during setup replay
+  against the archived draft on current code; that is not proof of a live fix.

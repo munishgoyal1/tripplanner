@@ -510,10 +510,11 @@ def test_chat_preserves_trip_departure_notice(monkeypatch, transport, user_text,
     import json
 
     from fastapi.testclient import TestClient
-    from langchain_core.messages import AIMessage, AIMessageChunk
+    from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 
     from tripplanner import api
     from tripplanner.graph import app_graph
+    from tripplanner.graph_policy import trip_change_confirmation
     from tripplanner.request_limits import chat_admission
     from tripplanner.tools import trip_planner
 
@@ -534,7 +535,12 @@ def test_chat_preserves_trip_departure_notice(monkeypatch, transport, user_text,
     })
     monkeypatch.setattr(api, '_reserve_cost', reserve)
     monkeypatch.setattr(api, '_completed_chat_request', lambda _request_id: None)
-    monkeypatch.setattr(api, '_load_chat_request', lambda _request_id: ('goa', [], None))
+    history = []
+    if departing:
+        history = [HumanMessage(content=user_text)]
+        history.append(AIMessage(content=trip_change_confirmation(history, trip)))
+        user_text = 'yes, switch trips'
+    monkeypatch.setattr(api, '_load_chat_request', lambda _request_id: ('goa', history, None))
     monkeypatch.setattr(api, '_save_chat', lambda *args: saved.append(args) or 'goa')
     monkeypatch.setattr(api, '_schedule_learning_sweep', lambda *_args: None)
     monkeypatch.setattr(api, '_should_auto_persist_itinerary', lambda _tools: False)
@@ -567,3 +573,59 @@ def test_chat_preserves_trip_departure_notice(monkeypatch, transport, user_text,
     assert reply.count('current Goa trip saved') == int(departing)
     assert saved[-1][2][-1].content == reply
     assert trip['trip_id'] == 'goa'
+
+
+@pytest.mark.parametrize("transport", ["json", "sse"])
+def test_trip_change_confirmation_is_delivered_and_saved_without_model(monkeypatch, transport):
+    import asyncio
+
+    from fastapi.testclient import TestClient
+
+    from tripplanner import api, graph
+    from tripplanner.request_limits import chat_admission
+    from tripplanner.tools import trip_planner
+
+    trip = {"trip_id": "goa", "destination": "Goa", "day_wise_itinerary": []}
+    saved = []
+
+    async def reserve(*_args):
+        return None
+
+    monkeypatch.setattr(api, "_reserve_cost", reserve)
+    monkeypatch.setattr(api, "_completed_chat_request", lambda _id: None)
+    monkeypatch.setattr(api, "_load_chat_request", lambda _id: ("goa", [], None))
+    monkeypatch.setattr(api, "_save_chat", lambda *args: saved.append(args) or "goa")
+    monkeypatch.setattr(api, "_schedule_learning_sweep", lambda *_args: None)
+    monkeypatch.setattr(graph, "load_active_trip_dict", lambda: trip)
+    monkeypatch.setattr(trip_planner, "load_active_trip_dict", lambda: trip)
+    monkeypatch.setattr(graph, "_get_llm", lambda: pytest.fail("no model before confirmation"))
+    asyncio.run(chat_admission.reset())
+    try:
+        response = TestClient(api.app).post(
+            "/chat/stream" if transport == "sse" else "/chat",
+            json={"user_id": "confirmation-test", "message": "Plan a separate trip to Japan"},
+        )
+    finally:
+        asyncio.run(chat_admission.reset())
+    assert response.status_code == 200
+    assert "yes, switch trips" in response.text
+    assert "yes, switch trips" in saved[-1][2][-1].content
+    assert trip == {"trip_id": "goa", "destination": "Goa", "day_wise_itinerary": []}
+
+
+def test_chat_error_records_stack_locations_without_exception_payload(monkeypatch):
+    import time
+
+    from tripplanner import api
+
+    events = []
+    monkeypatch.setattr(api, "app_event", lambda name, **fields: events.append((name, fields)))
+    try:
+        raise AttributeError("private prompt must not be logged")
+    except AttributeError as exc:
+        api._record_chat_operation(time.monotonic(), user_id="test", transport="sse",
+                                   outcome="error", exception=exc)
+    fields = events[0][1]
+    assert fields["error"] == "AttributeError"
+    assert "test_usage.py:" in fields["error_frames"][-1]
+    assert "private prompt" not in str(fields)

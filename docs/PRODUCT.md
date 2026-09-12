@@ -108,12 +108,11 @@ transport and experience fit. After the first complete plan, Details and Map
 support visual refinement while Assistant remains available for broader changes.
 
 Within a selected trip, the Assistant's default task is to work on that trip.
-Short requests inherit its itinerary, dates, lodging, party and constraints;
-explicit changes override those facts. Starting another trip is secondary. Only
-a clear whole-trip request initiates departure, with an in-chat notice that the
-current trip remains saved and planning is moving to a separate trip. Ambiguous
-place mentions and ordinary edits stay in context. Use a notification rather
-than adding another routine confirmation gate.
+Apply all follow-ups to its dates, party, route, lodging and itinerary. A new city
+may be an origin, stop or comparison. Even a clear request for a separate trip
+must receive confirmation before leaving the selected trip or resuming another
+saved one. Until the user confirms, preserve the current trip and its context.
+Ordinary flight, hotel, date and itinerary edits never create a replacement trip.
 
 ## 2) Non-goals (resist scope creep)
 

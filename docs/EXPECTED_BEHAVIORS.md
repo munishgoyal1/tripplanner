@@ -35,11 +35,14 @@ and saved dates unless explicitly overridden. Do not re-ask known facts.
 Trip creation is unavailable to ordinary follow-ups. Another city name alone,
 component edits, hypothetical/negated requests, and old refinement-card answers
 do not authorize departure. Ambiguous wording stays in context and may receive a
-focused clarification. For a clear whole-trip request, a deterministic in-chat
-notice says the current trip remains saved and planning is moving to a separate
-trip. SSE sends it before model work; JSON and saved transcripts retain it.
-This is a notification, not an additional confirmation gate. Empty-workspace
-planning and proposal-only review do not announce departure. Unknown indispensable
+focused clarification. A clear separate-trip or saved-trip switch request receives
+a deterministic confirmation question before any model call or trip mutation.
+Only an affirmative reply to that question authorizes departure; unrelated,
+negative, qualified and stale replies do not. Creation and resume tools are
+withheld for ordinary edits, including flights to/from a newly stated origin.
+JSON, SSE and saved transcripts retain the question. After confirmation, new-trip
+planning loads preferences and duration advice before one creation. Empty-workspace
+planning and proposal-only review do not require this departure confirmation. Unknown indispensable
 facts and past saved dates may require clarification; provider facts stay grounded.
 
 **Executable proof:**
@@ -73,7 +76,7 @@ either enabled (the default) or disabled.
 - Submitted party counts and relationship are persisted with the trip, used for
   whole-party budgets and provider occupancy, and shape lodging, pace, transport,
   meal timing, accessibility, and age-appropriate experiences.
-- A clear whole-trip request for another destination announces departure before
+- A clear whole-trip request for another destination asks for confirmation before
   the new-trip workflow. Merely naming another place or modifying a component
   stays in the active trip (EB-PLAN-CTX-001).
 - The Assistant batches hotel research for every overnight city in one parallel

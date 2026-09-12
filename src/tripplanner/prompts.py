@@ -103,13 +103,14 @@ STEP 2 — UNDERSTAND THE REQUEST
   references a place they planned before ("continue my Mumbai trip", "back to
   the Vietnam plan") or asks what they were working on, call resume_trip
   (by destination or trip_id) — or list_past_trips to show the options — so
-  they pick up where they left off instead of restarting. create_trip_plan
+  they pick up where they left off instead of restarting. If a trip is already
+  selected, ask for confirmation before resuming a different saved trip. create_trip_plan
   itself auto-resumes when the destination AND both dates match a saved trip;
   different dates/duration are kept as a separate, date-tagged trip.
   SWITCHING TO A NEW DESTINATION MID-CHAT: if, while planning one place, the
   user pivots to a DIFFERENT destination ("actually, plan me a trip to Kashmir"),
-  treat it exactly like starting a new trip — call create_trip_plan for the new
-  place. This opens a fresh trip and a fresh chat for it; portable details the
+  first ask for confirmation to leave the current trip. Only after confirmation,
+  call create_trip_plan for the new place. This opens a fresh trip and chat; details the
   user already shared (budget, pace, dietary/accessibility needs, interests) carry
   over automatically. Explicit party details win; otherwise direct mode uses saved
   travel-party/family defaults as labelled assumptions. Interactive mode may review them.
@@ -403,7 +404,7 @@ my 8yo son is allergic to peanuts. We did Goa last year and it was too crowded."
   • update_user_profile(display_name="Munish", home_city="Bengaluru", home_country="India")
   • add_family_member(relationship="spouse", name="Priya", interests=["beaches"])
   • add_family_member(relationship="child", age=8, dietary=["nut-free"])
-  • record_trip_mention(destination="Goa", when="last year", sentiment="negative", notes="too crowded")
+  • record_trip_mention(destination="Goa", when="last year", notes="too crowded")
   • add_user_dislike("crowded places")
 
 REFINEMENT RULES (keep prior data fresh as you learn more):
@@ -560,7 +561,7 @@ def build_trip_system_prompt(
             "specifies one-way travel or a different return city. Use a newly stated base or "
             "departure city immediately even if profile learning has not completed; persist "
             "the trip origin and round_trip travel_scope when adding these journeys. "
-            "Explicit requests for arrival/return transport supersede an old destination_only scope. "
+            "Explicit arrival/return transport requests supersede an old destination_only scope. "
             "Read get_trip_plan before editing to preserve existing stops, lodging and "
             "constraints and identify arrival/departure cities for multi-city trips. "
             "For requested flight planning, search grounded options for both journey edges "
@@ -569,10 +570,11 @@ def build_trip_system_prompt(
             "needs future dates and the saved dates are past, explain "
             "that conflict and ask for new dates instead of silently replacing them. "
             "Starting a new trip is secondary to working on this one. Only a clear whole-trip "
-            "request may use the new-trip workflow. The app announces departure from this "
-            "trip before that workflow; do not carry its dates or party over automatically. "
+            "request may propose the new-trip workflow. The user must confirm departure from this "
+            "trip before creation or resuming another trip; do not carry dates or party "
+            "over automatically. "
             "If creation is unavailable and the user means a separate trip, ask them to "
-            "explicitly request a new trip or use New trip. Do not rename/overwrite the "
+            "confirm switching trips or use New trip. Do not rename/overwrite the "
             "current destination as a substitute for creating another trip.\n"
         )
     return SystemMessage(content=content)
