@@ -38,11 +38,19 @@ def itinerary_items(
     items: list[dict[str, str]] = []
     seen: set[tuple[str, str]] = set()
 
-    def _add(kind: str, name: str) -> None:
+    def _add(kind: str, name: str, *, force: bool = False) -> None:
         key = (kind, name.strip().lower())
-        if name and key not in seen:
-            seen.add(key)
-            items.append({"kind": kind, "name": name})
+        if not name or key in seen:
+            return
+        # A stop like "Drive: Srinagar to Gulmarg" or "Hotel TBD, Srinagar" is
+        # an activity or a gap, not somewhere to show a photo of. It used to
+        # consume one of the ten gallery slots and trigger a paid lookup that
+        # could never succeed. ``force`` keeps an explicit focus target visible
+        # whatever it is named, so focusing never yields an empty pane.
+        if not force and not places_cache.is_lookupable_place_name(name):
+            return
+        seen.add(key)
+        items.append({"kind": kind, "name": name})
 
     for h in trip.get("selected_hotels") or []:
         if isinstance(h, dict) and h.get("name"):
@@ -65,7 +73,12 @@ def itinerary_items(
                 _add(kind or "attraction", name)
 
     destination = str(trip.get("destination") or "").strip()
-    if destination and len(items) < _MAX_GALLERY_ITEMS:
+    # Destination highlights are a *cold start* aid: they fill the panels before
+    # the traveller has locked anything in. Once the trip has its own days, its
+    # own places are the answer, and asking Google for "top attractions in
+    # Kashmir" on every render is a paid call whose result is never shown.
+    has_own_itinerary = bool(trip.get("day_wise_itinerary"))
+    if destination and not has_own_itinerary and len(items) < _MAX_GALLERY_ITEMS:
         for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
             _add("hotel", name)
         remaining = max(0, _MAX_GALLERY_ITEMS - len(items))
@@ -78,8 +91,10 @@ def itinerary_items(
         fk = str(focus.get("kind") or "attraction").strip().lower() or "attraction"
         fn = str(focus.get("name") or "").strip()
         if fn:
-            # Ensure focus target exists and appears first.
-            _add(fk, fn)
+            # Ensure focus target exists and appears first. Forced: the
+            # traveller asked for this one by name, so it is shown even if it
+            # reads as a placeholder.
+            _add(fk, fn, force=True)
             key = (fk, fn.lower())
             items.sort(key=lambda it: 0 if (it["kind"], it["name"].strip().lower()) == key else 1)
 

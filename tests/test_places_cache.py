@@ -430,13 +430,18 @@ def test_places_executor_paths_preserve_usage_attribution(_isolate, monkeypatch)
     assert observed == ["turn-parallel"] * 4
 
 
-def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
+def test_incomplete_lookup_is_not_cached_and_retries_immediately(_isolate, monkeypatch):
+    """A lookup that never got an answer must not be remembered as one.
+
+    Caching it would state a fact nobody established; the next request should
+    simply try again rather than wait out a TTL.
+    """
     calls = {"count": 0}
 
     def flaky_lookup(name: str, city: str):
         calls["count"] += 1
         if calls["count"] == 1:
-            return None
+            raise pc.PlaceLookupUnavailableError("network went away")
         return {
             "place_id": "fort-aguada",
             "name": name,
@@ -448,15 +453,59 @@ def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
     monkeypatch.setattr(pc, "_lookup_place", flaky_lookup)
 
     assert pc.get_details("Fort Aguada", "Goa") is None
-    assert pc.get_details("Fort Aguada", "Goa") is None
-    assert calls["count"] == 1
-
-    entry = pc._CACHE[pc._key("Fort Aguada", "Goa")]
-    entry["__at__"] = time.time() - pc._MISS_TTL_S - 1
+    assert pc._key("Fort Aguada", "Goa") not in pc._CACHE
 
     details = pc.get_details("Fort Aguada", "Goa")
     assert details and details["place_id"] == "fort-aguada"
     assert calls["count"] == 2
+
+
+def test_absent_place_is_remembered_and_never_re_searched(_isolate, monkeypatch):
+    """"Google has no such place" is knowledge, and keeps the metadata TTL.
+
+    Itinerary stops like "Hotel TBD, Srinagar" used to be re-searched every
+    sixty seconds for the life of the trip because an absent place and a failed
+    lookup were stored identically.
+    """
+    calls = {"count": 0}
+
+    def absent_lookup(name: str, city: str):
+        calls["count"] += 1
+        return None
+
+    monkeypatch.setattr(pc, "_lookup_place", absent_lookup)
+
+    assert pc.get_details("Nowhere At All", "Goa") is None
+    assert pc.get_details("Nowhere At All", "Goa") is None
+    assert calls["count"] == 1
+
+    entry = pc._CACHE[pc._key("Nowhere At All", "Goa")]
+    assert pc._is_absent(entry)
+
+    # Well past the short retry window that used to apply here.
+    entry["__at__"] = time.time() - pc._MISS_TTL_S - 1
+    assert pc.get_details("Nowhere At All", "Goa") is None
+    assert calls["count"] == 1
+
+
+def test_names_that_cannot_be_places_are_never_looked_up(_isolate, monkeypatch):
+    """An activity or a gap is not somewhere to search for."""
+    monkeypatch.setattr(
+        pc, "_lookup_place", lambda *_a, **_k: pytest.fail("should not reach a paid lookup")
+    )
+
+    for name in (
+        "Drive: Srinagar to Gulmarg",
+        "Hotel TBD, Srinagar",
+        "Pahalgam hotel check-in",
+        "Srinagar Airport to Hotel transfer",
+        "Free time",
+    ):
+        assert pc.get_details(name, "Kashmir") is None
+
+    # Real places still resolve.
+    assert pc.is_lookupable_place_name("Gulmarg Gondola")
+    assert pc.is_lookupable_place_name("The Troutbeat / Pahalgam lunch")
 
 
 def test_lookup_retries_one_transient_server_error(_isolate, _authorized, monkeypatch):
@@ -503,7 +552,9 @@ def test_lookup_does_not_retry_client_error(_isolate, _authorized, monkeypatch):
 
     monkeypatch.setattr(pc.http_client, "post", fake_post)
 
-    assert _REAL_LOOKUP_PLACE("Missing Place", "Goa") is None
+    # A client error is an incomplete lookup, not "no such place".
+    with pytest.raises(pc.PlaceLookupUnavailableError):
+        _REAL_LOOKUP_PLACE("Missing Place", "Goa")
     assert calls["count"] == 1
 
 

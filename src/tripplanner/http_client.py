@@ -176,12 +176,20 @@ def request(
     import uuid
 
     from tripplanner.flight_http import body_data
-    from tripplanner.flight_recorder import record
+    from tripplanner.flight_recorder import capture_provider_bodies, record
 
     attempt_id = uuid.uuid4().hex
     started = time.monotonic()
-    record("provider.attempt", attempt_id=attempt_id, method=method, url=url,
-           endpoint=endpoint, request=kwargs)
+    # Every recorded event is one fsync'd file. A single trip build makes dozens
+    # of outbound calls, and capturing request + response for each of them wrote
+    # far more than anyone reads while slowing the request path. A *successful*
+    # call is summarised in one line by the provider-usage ledger already, so
+    # full capture is opt-in; failures always carry their detail, because that
+    # is the case worth reconstructing.
+    verbose = capture_provider_bodies()
+    if verbose:
+        record("provider.attempt", attempt_id=attempt_id, method=method, url=url,
+               endpoint=endpoint, request=kwargs)
     try:
         response = _request(
             method,
@@ -190,12 +198,18 @@ def request(
             log_context=log_context,
             **kwargs,
         )
-        record("provider.result", attempt_id=attempt_id, status=response.status_code,
-               duration_ms=(time.monotonic() - started) * 1000,
-               body=body_data(response.content, response.headers.get("content-type", "")))
+        failed = response.status_code >= 400
+        if verbose or failed:
+            record("provider.result", attempt_id=attempt_id, status=response.status_code,
+                   method=method, url=url, endpoint=endpoint,
+                   duration_ms=(time.monotonic() - started) * 1000,
+                   body=body_data(response.content, response.headers.get("content-type", "")))
         return response
     except BaseException as exc:
+        # Carry what was sent: without the verbose attempt record above, an
+        # error event on its own would not say what the call actually was.
         record("provider.error", attempt_id=attempt_id, error=str(exc),
+               method=method, url=url, endpoint=endpoint,
                error_type=type(exc).__name__, duration_ms=(time.monotonic() - started) * 1000)
         raise
 

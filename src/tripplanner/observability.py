@@ -392,6 +392,44 @@ _EVENT_OBSERVERS: list[Any] = []
 
 _QUIET_SUCCESS_EVENTS = frozenset({"cache_access", "storage_operation", "outbound_call"})
 
+#: Event kinds worth one durable, fsync'd flight-recorder file *on success*.
+#:
+#: The recorder writes and fsyncs one file per event, so its cost is paid on the
+#: request path. It used to record every kind that was not explicitly silenced,
+#: which meant a single chat turn wrote a file for every tool call, model round,
+#: provider call and phase transition -- tens of fsyncs to describe one turn, and
+#: a haystack to search when something actually broke.
+#:
+#: This is an allowlist instead: the spine of a request, the things you would
+#: reconstruct a session from. Failures are recorded regardless of kind (see
+#: ``_should_log_event``), so narrowing this never loses an error. Everything
+#: else still reaches the console logs and the durable provider-usage ledger,
+#: which is where per-call detail belongs.
+_FLIGHT_RECORDED_EVENTS = frozenset(
+    {
+        # One per chat turn: how it was admitted and how it ended.
+        "chat_operation",
+        "api_chat_request",
+        "api_chat_response",
+        "api_chat_stream_request",
+        "api_chat_stream_done",
+        # Spend and capacity decisions -- rare, and the first thing you check
+        # when a turn was refused.
+        "cost_ceiling_would_block",
+        "cost_ledger_unavailable",
+        "trip_cost_anomaly",
+        "api_chat_budget_exhausted",
+        "api_chat_stream_budget_exhausted",
+        # Account and privacy actions: infrequent, and auditable.
+        "api_oauth_login",
+        "api_guest_migrate",
+        "api_privacy_action",
+        # Itinerary persistence, the step whose silent failure is hardest to
+        # reconstruct after the fact.
+        "itinerary_auto_persist",
+    }
+)
+
 
 def _event_is_failure(fields: dict[str, Any]) -> bool:
     status = str(fields.get("status") or "").lower()
@@ -404,6 +442,12 @@ def _event_is_failure(fields: dict[str, Any]) -> bool:
 
 
 def _should_log_event(kind: str, fields: dict[str, Any]) -> bool:
+    """Whether this event is worth a line in the console log.
+
+    Console logs are cheap and are what you read while working, so this stays
+    permissive. What a *durable, fsync'd* recorder file costs is a different
+    question -- see ``_should_record_event``.
+    """
     if _event_is_failure(fields):
         return True
     if kind == "cache_access" and fields.get("result") == "provider_unavailable":
@@ -415,6 +459,26 @@ def _should_log_event(kind: str, fields: dict[str, Any]) -> bool:
     if kind == "llm_usage":
         return False
     return True
+
+
+def _should_record_event(kind: str, fields: dict[str, Any]) -> bool:
+    """Whether this event earns a durable flight-recorder file.
+
+    Failures always do, whatever their kind -- that is the point of the
+    recorder. Successes only do if they are part of the request spine
+    (``_FLIGHT_RECORDED_EVENTS``). An unrecognised new event kind is therefore
+    quiet by default rather than loud by default, which is the inversion that
+    keeps the recorder readable as the app grows.
+
+    Deliberately separate from ``_should_log_event``: the two used to be one
+    decision, so narrowing what is written to disk would also have gone and
+    silenced the console.
+    """
+    if _event_is_failure(fields):
+        return True
+    if kind == "cache_access" and fields.get("result") == "provider_unavailable":
+        return True
+    return kind in _FLIGHT_RECORDED_EVENTS
 
 
 def _duration_text(value: Any) -> str:
@@ -651,7 +715,7 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
         pass
     retain_individual_event = _should_log_event(kind, fields)
     correlation = _correlation_fields(fields) if retain_individual_event else {}
-    if retain_individual_event:
+    if _should_record_event(kind, fields):
         from tripplanner.flight_recorder import record
 
         record("log." + kind, user_id=user_id, **fields)

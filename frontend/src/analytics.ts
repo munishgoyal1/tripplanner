@@ -75,13 +75,29 @@ export function setAnalyticsPreference(preference: AnalyticsPreference): void {
   localStorage.setItem(CONSENT_KEY, preference);
 }
 
+// Static per deployment, so fetched once per page rather than per caller.
+let analyticsConfigCache: Promise<{ enabled: boolean; measurement_id: string }> | null = null;
+
+/** Drop the cached config. Tests need this because the cache outlives a test. */
+export function resetAnalyticsConfigCache(): void {
+  analyticsConfigCache = null;
+}
+
 export async function fetchAnalyticsConfig(): Promise<{
   enabled: boolean;
   measurement_id: string;
 }> {
-  const response = await fetch("/api/analytics/config", { credentials: "same-origin" });
-  if (!response.ok) return { enabled: false, measurement_id: "" };
-  return response.json();
+  if (!analyticsConfigCache) {
+    analyticsConfigCache = (async () => {
+      const response = await fetch("/api/analytics/config", { credentials: "same-origin" });
+      if (!response.ok) {
+        analyticsConfigCache = null;
+        return { enabled: false, measurement_id: "" };
+      }
+      return response.json();
+    })();
+  }
+  return analyticsConfigCache;
 }
 
 export function enableAnalytics(id: string): void {

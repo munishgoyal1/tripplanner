@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+
 from tripplanner.observability import app_event
 from tripplanner.validation.harness import EvidenceCollector, harness_scope
 
@@ -32,6 +34,9 @@ def test_harness_scope_correlates_and_collects_app_events() -> None:
                 "status": "ok",
                 "user_id": None,
                 "event_kind": "provider_call",
+                # Correlation key app_event stamps on every retained event so a
+                # flow can be followed without the raw interaction id.
+                "flow_key": hashlib.sha256(b"run-1").hexdigest()[:16],
             },
         }
     ]
