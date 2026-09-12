@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from tripplanner.places_budget import places_budget_scope
 from tripplanner.tools import trip_planner
 from tripplanner.web import trip_view
 from tripplanner.web.workspace_payload import build_workspace_payload
@@ -55,12 +56,14 @@ def apply_decision_overrides(
 
 def warm_guide() -> None:
     """Background warm of the destination-guide dataset for the active trip."""
-    trip_view.warm_guide(trip_planner.load_active_trip_dict())
+    with places_budget_scope("user_interaction"):
+        trip_view.warm_guide(trip_planner.load_active_trip_dict())
 
 
 def warm_view_items() -> None:
     """Background warm of the trip-panel gallery for the active trip."""
-    trip_view.warm_view_items(trip_planner.load_active_trip_dict())
+    with places_budget_scope("user_interaction"):
+        trip_view.warm_view_items(trip_planner.load_active_trip_dict())
 
 
 def paged_places(

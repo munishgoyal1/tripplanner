@@ -169,6 +169,8 @@ def _normalize_stop(
             "distance_km": distance if isinstance(distance, (int, float)) else None,
             "note": str(raw.get("note") or "").strip(),
             "booked": bool(raw.get("booked")),
+            "booking_ref": str(raw.get("booking_ref") or raw.get("confirmation") or "").strip(),
+            "ticket_url": str(raw.get("ticket_url") or "").strip(),
             "selected": name.lower()
             in (hotels if kind == "hotel" else activities),
             "opening_hours": str(raw.get("opening_hours") or "").strip(),

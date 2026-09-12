@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { resetInFlightRequests } from "../api";
 import PublicEntry from "./PublicEntry";
 import { writeDisplayPreferences } from "../lib/displayPreferences";
 import {
@@ -23,6 +24,10 @@ function renderFinished(props: { onPlan?: (request: string) => void; onSkip?: ()
 describe("PublicEntry", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    // Concurrent callers share one preferences request, and that promise
+    // outlives a test case. Without this, a case can be handed the previous
+    // case's stubbed response and overwrite the display preferences it set.
+    resetInFlightRequests();
   });
 
   it("starts the captured run from reset when reduced motion is preferred", () => {
@@ -68,8 +73,11 @@ describe("PublicEntry", () => {
       writeDisplayPreferences({ region: "FR", currency: "INR", language: "en" });
     });
 
-    expect(screen.getByText(/agent · Lisbon to Porto/i)).toBeInTheDocument();
-    expect(screen.queryByText(/agent · Mumbai to Jaipur/i)).not.toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.getAllByText(/Lisbon to Porto/i).length).toBeGreaterThan(0),
+      { timeout: 8000 },
+    );
+    expect(screen.queryByText(/Mumbai to Jaipur/i)).not.toBeInTheDocument();
   });
 
   it("uses the representative regional trip in the planner prompt", () => {

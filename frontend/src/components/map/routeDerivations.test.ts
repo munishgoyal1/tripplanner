@@ -24,10 +24,10 @@ describe("parallelLegPath", () => {
     const start = pin("blr", 13.2, 77.7);
     const end = pin("del", 28.6, 77.1);
 
-    expect(parallelLegPath(start, end, 0, 1)).toEqual([
-      { lat: start.lat, lng: start.lng },
-      { lat: end.lat, lng: end.lng },
-    ]);
+    const path = parallelLegPath(start, end, 0, 1);
+    expect(path[0]).toEqual({ lat: start.lat, lng: start.lng });
+    expect(path[path.length - 1]).toEqual({ lat: end.lat, lng: end.lng });
+    expect(path.length).toBeGreaterThan(2);
   });
 
   it("separates outbound and return while keeping both attached to the terminals", () => {

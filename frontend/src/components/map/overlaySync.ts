@@ -275,7 +275,7 @@ export function synchronizeMapOverlays({
       pairSlots.set(key, slot + 1);
       overlays.push(new google.maps.Polyline({
         path: parallelLegPath(start, end, slot, total),
-        geodesic: true,
+        geodesic: false,
         ...routeStyleForLeg(
           leg,
           day.color,
@@ -295,11 +295,8 @@ export function synchronizeMapOverlays({
         const start = routePins[index - 1];
         const end = routePins[index];
         overlays.push(new google.maps.Polyline({
-          path: [
-            { lat: start.lat, lng: start.lng },
-            { lat: end.lat, lng: end.lng },
-          ],
-          geodesic: true,
+          path: parallelLegPath(start, end, index - 1, routePins.length - 1),
+          geodesic: false,
           ...routeStyleForLeg(
             { ...day.route, from_pin_id: start.id, to_pin_id: end.id },
             day.color,

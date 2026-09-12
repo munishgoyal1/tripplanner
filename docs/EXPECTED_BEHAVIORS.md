@@ -730,6 +730,31 @@ Selecting another trip clears the filters.
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `shows arrival and departure days for legacy flight legs`
 - [`frontend/src/components/map/overlaySync.test.ts`](../frontend/src/components/map/overlaySync.test.ts) - `does not invent fallback connectors for an explicitly filtered day`
 
+### EB-EXPORT-001 - Export a layered Trip Book
+
+**Trigger:** Choose Trip Book in export preview, print, PDF, or email.
+
+**Expected:** The packet opens with contents and a document-readiness summary,
+then a trip brief and executable day spreads. Numbered day-circuit insets match
+agenda order, with hotel endpoints marked `H`. Essentials, confirmations, and
+entry documents follow the days. Optional place context is last and names its
+source. Missing paperwork is visible before the appendix. Emergency numbers are
+omitted unless they already exist on the trip. Identity numbers stay out of the
+printable file. Standard (including the older `detailed` alias) keeps itinerary
+panel facts without Trip Book contents. PDF download uses the same HTML layout
+as preview. Checked stop photos appear in the PDF, not only in HTML preview.
+Download PDF and Send show independent progress. Email includes the PDF and a
+trip URL.
+
+**Executable proof:**
+
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_layered_trip_book_orders_control_then_days_then_appendices`
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_detailed_export_does_not_gain_trip_book_contents`
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_pdf_embeds_map_place_photo_and_details`
+- [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `offers Standard and Trip Book with budget and photo checkboxes off`
+- [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `does not mark email as sending while a PDF download is in progress`
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_embed_packet_images_uses_places_bytes_when_url_fetch_fails`
+
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 
 **Trigger:** View a day whose ordered map route contains two or more distinct

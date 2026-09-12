@@ -144,9 +144,24 @@ _chat_ops: deque[tuple[float, bool, bool]] = deque()  # (ts, is_error, is_thrott
 _chat_durations: deque[tuple[float, float]] = deque()  # (ts, duration_ms)
 _circuit_open: dict[str, deque[float]] = defaultdict(deque)
 _cache_access: deque[tuple[float, bool]] = deque()  # (ts, is_miss)
+#: Misses currently inside ``_cache_access``, maintained as the window slides.
+#: Recounting them per event made every cache hit O(window) -- and one warm trip
+#: view is hundreds of hits against a fifteen-minute window.
+_cache_misses_in_window = 0
 _cosmos_429: deque[float] = deque()
 _gcp_429: deque[float] = deque()
 _application_failures: deque[float] = deque()
+
+#: Guards the rolling windows above. Each one is appended to, pruned and summed
+#: from whichever thread emitted the event, and a single cache prefetch fans one
+#: request across eight of them -- which raised "deque mutated during iteration"
+#: from inside the cache-hit path, logged a traceback, and (because failures are
+#: always recorded) wrote a flight-recorder file for every occurrence.
+#:
+#: Held only across the window arithmetic, never across an ``_open``/``_resolve``
+#: write: those do file or Cosmos I/O, and serializing eight worker threads on
+#: that would trade a crash for the latency the prefetch pool exists to avoid.
+_WINDOWS_LOCK = threading.RLock()
 
 # Open (firing, not yet resolved) records, keyed by signal or "signal:key".
 _open_state: dict[str, dict[str, Any]] = {}
@@ -327,9 +342,11 @@ def observe_log_record(level_name: str) -> None:
 
 def _observe_application_failure(now: float) -> None:
     window = _window_seconds("application_failure", _APPLICATION_FAILURE_WINDOW_SEC)
-    _application_failures.append(now)
-    _prune(_application_failures, window, now)
-    if _application_failures:
+    with _WINDOWS_LOCK:
+        _application_failures.append(now)
+        _prune(_application_failures, window, now)
+        failures = len(_application_failures)
+    if failures:
         _open(
             "application_failure",
             severity=_severity("application_failure", 1),
@@ -344,12 +361,13 @@ def _observe_chat_operation(fields: dict[str, Any], now: float) -> None:
 
     window = _window_seconds("chat_latency_burn", 900)
     duration_ms = fields.get("duration_ms")
-    if isinstance(duration_ms, (int, float)):
-        _chat_durations.append((now, float(duration_ms)))
-    _prune_pairs(_chat_durations, window, now)
-    samples = len(_chat_durations)
-    if samples >= _CHAT_LATENCY_MIN_SAMPLES:
+    with _WINDOWS_LOCK:
+        if isinstance(duration_ms, (int, float)):
+            _chat_durations.append((now, float(duration_ms)))
+        _prune_pairs(_chat_durations, window, now)
+        samples = len(_chat_durations)
         ordered = sorted(ms for _, ms in _chat_durations)
+    if samples >= _CHAT_LATENCY_MIN_SAMPLES:
         p95 = ordered[min(len(ordered) - 1, round(0.95 * (len(ordered) - 1)))]
         if p95 > _CHAT_LATENCY_P95_THRESHOLD_MS:
             _open(
@@ -363,11 +381,12 @@ def _observe_chat_operation(fields: dict[str, Any], now: float) -> None:
         _resolve("chat_latency_burn")
 
     throttled = outcome == "rate_limited" or bool(fields.get("rate_limit_scope"))
-    _chat_ops.append((now, outcome == "error", throttled))
-    while _chat_ops and now - _chat_ops[0][0] > window:
-        _chat_ops.popleft()
-    throttle_samples = len(_chat_ops)
-    throttles = sum(1 for _, _, t in _chat_ops if t)
+    with _WINDOWS_LOCK:
+        _chat_ops.append((now, outcome == "error", throttled))
+        while _chat_ops and now - _chat_ops[0][0] > window:
+            _chat_ops.popleft()
+        throttle_samples = len(_chat_ops)
+        throttles = sum(1 for _, _, t in _chat_ops if t)
     if throttle_samples >= _MODEL_THROTTLE_MIN_SAMPLES:
         rate = throttles / throttle_samples
         if throttles >= _MODEL_THROTTLE_MIN_COUNT and rate >= _MODEL_THROTTLE_MIN_RATE:
@@ -388,16 +407,19 @@ def _observe_outbound_call(fields: dict[str, Any], now: float) -> None:
     endpoint = str(fields.get("endpoint") or "")
 
     if status == "circuit_open" and provider:
-        window = _circuit_open[provider]
-        window.append(now)
-        while window and now - window[0] > 3600:  # generous horizon; span check does the real work
-            window.popleft()
-        if len(window) >= _CIRCUIT_OPEN_MIN_SIGNALS and (window[-1] - window[0]) >= _CIRCUIT_OPEN_MIN_SPAN_SEC:
+        with _WINDOWS_LOCK:
+            window = _circuit_open[provider]
+            window.append(now)
+            while window and now - window[0] > 3600:  # generous horizon; span check does the real work
+                window.popleft()
+            signals = len(window)
+            span = window[-1] - window[0] if window else 0.0
+        if signals >= _CIRCUIT_OPEN_MIN_SIGNALS and span >= _CIRCUIT_OPEN_MIN_SPAN_SEC:
             _open(
                 "provider_circuit_open",
                 key=provider,
                 severity=_severity("provider_circuit_open", 3),
-                detail={"provider": provider, "open_signals": len(window), "span_seconds": round(window[-1] - window[0], 1)},
+                detail={"provider": provider, "open_signals": signals, "span_seconds": round(span, 1)},
             )
         else:
             _resolve("provider_circuit_open", key=provider)
@@ -407,28 +429,37 @@ def _observe_outbound_call(fields: dict[str, Any], now: float) -> None:
     http_status = fields.get("http_status")
     if provider == "google" and http_status == 429:
         window = _GCP_QUOTA_WINDOW_SEC
-        _gcp_429.append(now)
-        _prune(_gcp_429, window, now)
+        with _WINDOWS_LOCK:
+            _gcp_429.append(now)
+            _prune(_gcp_429, window, now)
+            window_count = len(_gcp_429)
         _open(
             "gcp_quota_exceeded",
             severity=_gcp_quota_severity(),
-            detail={"endpoint": endpoint, "window_count": len(_gcp_429), "window_seconds": window},
+            detail={"endpoint": endpoint, "window_count": window_count, "window_seconds": window},
         )
     elif provider == "google":
         # A clean (non-429) Google call: age out old 429s and resolve if none remain.
-        _prune(_gcp_429, _GCP_QUOTA_WINDOW_SEC, now)
-        if not _gcp_429:
+        with _WINDOWS_LOCK:
+            _prune(_gcp_429, _GCP_QUOTA_WINDOW_SEC, now)
+            remaining = len(_gcp_429)
+        if not remaining:
             _resolve("gcp_quota_exceeded")
 
 
 def _observe_cache_access(fields: dict[str, Any], now: float) -> None:
     window = _window_seconds("cache_degradation", 900)
     result = str(fields.get("result") or "")
-    _cache_access.append((now, result in ("miss", "refresh")))
-    _prune_pairs(_cache_access, window, now)
-    accesses = len(_cache_access)
+    global _cache_misses_in_window
+    is_miss = result in ("miss", "refresh")
+    with _WINDOWS_LOCK:
+        _cache_access.append((now, is_miss))
+        _cache_misses_in_window += int(is_miss)
+        while _cache_access and now - _cache_access[0][0] > window:
+            _cache_misses_in_window -= int(_cache_access.popleft()[1])
+        accesses = len(_cache_access)
+        misses = _cache_misses_in_window
     if accesses >= _CACHE_DEGRADATION_MIN_ACCESSES:
-        misses = sum(1 for _, is_miss in _cache_access if is_miss)
         rate = misses / accesses
         if rate >= _CACHE_DEGRADATION_MIN_MISS_RATE:
             _open(
@@ -548,8 +579,10 @@ class LogHandler(logging.Handler):
 
 def reset_for_tests() -> None:
     """Clear in-process state between tests."""
+    global _cache_misses_in_window
     for window in (_chat_ops, _chat_durations, _cache_access, _cosmos_429, _gcp_429, _application_failures):
         window.clear()
+    _cache_misses_in_window = 0
     _circuit_open.clear()
     _open_state.clear()
     from tripplanner import billing_guardrails

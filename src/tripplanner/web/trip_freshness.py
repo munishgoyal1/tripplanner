@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextvars
 import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
@@ -51,8 +52,14 @@ def refresh(plan: dict[str, Any]) -> dict[str, Any]:
             result = (None, False)
         return key, result
 
+    # The paid-provider authorization this recheck was granted lives in a context
+    # variable, and a worker thread does not inherit one by itself. Without the
+    # copy, every branch of the fan-out would be an unauthorized caller and the
+    # recheck would quietly check nothing. The copies are taken here, on the
+    # calling thread -- taken inside the worker they would copy its empty context.
+    tasks = [(contextvars.copy_context(), row) for row in places]
     with ThreadPoolExecutor(max_workers=min(_MAX_PARALLEL_CHECKS, len(places) or 1)) as pool:
-        results = dict(pool.map(check, places))
+        results = dict(pool.map(lambda task: task[0].run(check, task[1]), tasks))
     changes: list[dict[str, Any]] = []
     failed: list[dict[str, Any]] = []
     checked = 0

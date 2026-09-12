@@ -67,7 +67,7 @@ trip through shared API contracts.
 | `src/tripplanner/cli.py` | Local command-line experience |
 | `src/tripplanner/config.py` | Pydantic environment settings |
 | `src/tripplanner/caching.py` | Shared memory/Redis backend and environment-wide TTL policy for disposable runtime caches; stable and volatile regions have independent no-expiry overrides |
-| `src/tripplanner/places_budget.py` | Default-deny paid-provider execution **authorization** for explicit user-interaction and corpus-generation scopes; reusable view builders, audits, tests and background work cannot create a scope and so cannot spend. Per-scope call ceilings were retired in favour of the INR ceiling in `cost_ledger.py`; counts remain as telemetry and parallel workers share one thread-safe scope |
+| `src/tripplanner/places_budget.py` | Default-deny paid-provider execution **authorization** for explicit user-interaction and corpus-generation scopes; reusable view builders, audits, tests and background work cannot create a scope and so cannot spend. `route_may_spend` extends that to HTTP: a `GET` is a projection of a trip that already exists and gets no scope, so re-opening the planner cannot buy anything, while mutations, exports, shared-trip reads and an explicit corpus-generation header keep theirs. Per-scope call ceilings were retired in favour of the INR ceiling in `cost_ledger.py`; counts remain as telemetry and parallel workers share one thread-safe scope |
 | `src/tripplanner/tools/google_places.py`, `place_hours.py`, `routing.py`; `src/tripplanner/web/itinerary_export.py` | Lowest shared paid-Google cache boundaries for successful Places queries/reviews, hours payloads, Routes responses, and Static Maps images; reads precede paid-budget consumption so direct and graph callers share results |
 | `src/tripplanner/models.py` | Core trip and itinerary models |
 | `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
@@ -76,7 +76,7 @@ trip through shared API contracts.
 | `src/tripplanner/concurrency.py` | Shared bounded fan-out for independent remote work; a failed branch degrades to `None` |
 | `src/tripplanner/web/trip_view.py` | UI-independent trip view-model facade and display semantics |
 | `src/tripplanner/web/itinerary_view.py` | Structured itinerary assembly; geocoding still resolves through `trip_view._place_coords` |
-| `src/tripplanner/web/place_guide.py` | Destination-guide discovery pool, paging, and gallery item shaping |
+| `src/tripplanner/web/place_guide.py` | Destination-guide discovery pool, paging, gallery item shaping, and the revision-claimed guide/gallery warms -- the one read-triggered path still allowed to spend, and so at most once per trip revision per process |
 | `src/tripplanner/web/destination_overview.py` | Destination-level photos, attractions, reviews, and news overview |
 | `src/tripplanner/web/map_view.py` | Interactive-map view-model assembly from resolved pins |
 | `src/tripplanner/web/day_journey.py` | Transfer-day journey model: path, terminals, inter-city edges, map framing |
@@ -94,6 +94,8 @@ trip through shared API contracts.
 | `src/tripplanner/trip_events.py` | Durable trip event ownership |
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
+| `src/tripplanner/web/itinerary_trip_book.py` | Lab 5 Option B layered Trip Book HTML: contents and readiness, trip brief, executable days with numbered circuit insets, then essentials, documents, and optional place context |
+| `src/tripplanner/web/itinerary_pdf.py` | PDF bytes from the same export HTML via Chromium/Edge print-to-PDF when available; stop photos are inlined as data URIs (Places media fallback) before print; ReportLab keeps the day/stop structure and can embed the same photo bytes |
 | `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py`, `diagnostic_retention.py` | Bounded private diagnostic metadata and failure excerpts; asynchronous 25-event batches, seven-day retention, 50 MiB local spool cap, and integrity-checked legacy/batch export; successful model/tool/workspace payloads are omitted by default |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics; low-level success telemetry still reaches observers/aggregate ledgers and one aggregate flight event, while console and rotating app logs show human-readable API, capped local LLM-prompt preview plus full counts, tool, detailed provider, workflow, failure, and per-interaction summary lines instead of successful per-cache/per-storage noise |
 | `src/tripplanner/debug_store.py` | Internal implementation of the Trip Flight Recorder: automatic local-only history of real trip revisions for investigation and emulator restore; never active in hosted mode |
@@ -215,7 +217,7 @@ one physical cache backend.
 | `frontend/src/components/AccountSettingsController.tsx`, `accountSettings.ts` | Page-independent account/settings ownership, auth and privacy actions, destination routing, and reusable open command |
 | `frontend/src/components/AccountSettingsHub.tsx` | Account/settings render surface; delegates persisted destinations to existing auth, preferences, documents, analytics, and privacy boundaries |
 | `frontend/src/components/TravelDocumentsVault.tsx` | Travel-document capture, review, reveal, and deletion. The trip surface only shows the gap badge |
-| `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
+| `frontend/src/components/ExportModal.tsx` | Itinerary download dialog: Standard or Trip Book, budget/photo checkboxes, preview, PDF, and email |
 | `frontend/src/components/MapPanel.tsx` | Google Maps instance lifecycle, UI state, Places interaction, focus coordination, and compatibility re-exports |
 | `frontend/src/components/map/` | Google Maps SDK loading, map icon generation, focus matching, day and dedicated-drive route derivation, Google-place candidate conversion, React-independent overlay synchronization, and viewport mutation |
 | `frontend/src/components/ItineraryPanel.tsx`, `ItineraryStopRow.tsx` | Itinerary loading, mutation, day composition, and stop-row presentation ownership |

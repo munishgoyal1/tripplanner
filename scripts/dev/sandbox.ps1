@@ -1052,10 +1052,18 @@ function Sync-PrimaryCheckout {
         throw "Primary checkout has uncommitted changes. Commit or stash them before promotion."
     }
     Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "-q", "origin", $Base) | Out-Null
-    $localHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "HEAD")
-    $remoteHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "origin/$Base")
-    if ($RequireExact -and $localHead -ne $remoteHead -and -not ($changes -and $AllowDirtyPrimary)) {
-        throw "Primary checkout must match origin/$Base before promotion (local $localHead, remote $remoteHead)."
+    $localHead = (Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "HEAD")).Trim()
+    $remoteHead = (Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "origin/$Base")).Trim()
+    if ($localHead -eq $remoteHead) {
+        return
+    }
+
+    & git -C $primaryRoot merge-base --is-ancestor $localHead "origin/$Base"
+    $localIsAncestor = ($LASTEXITCODE -eq 0)
+    if ($RequireExact -and -not $localIsAncestor -and -not ($changes -and $AllowDirtyPrimary)) {
+        & git -C $primaryRoot merge-base --is-ancestor "origin/$Base" $localHead
+        $relation = if ($LASTEXITCODE -eq 0) { "ahead of" } else { "has diverged from" }
+        throw "Primary checkout must match origin/$Base before promotion (local $localHead, remote $remoteHead). Local master is $relation origin/$Base. Park extra commits (git branch keep/local-master) then git reset --hard origin/$Base."
     }
     & git -C $primaryRoot merge --ff-only "origin/$Base"
     if ($LASTEXITCODE -ne 0) {

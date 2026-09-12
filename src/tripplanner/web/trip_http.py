@@ -702,6 +702,7 @@ async def trip_export_print(
     include_map_circuit: str = "1",
     template: str = "standard",
     auto_print: str = "0",
+    include_budgets: str = "0",
 ) -> Response:
     """Return a print-ready HTML itinerary suitable for Save-as-PDF."""
     from tripplanner.tools import trip_planner
@@ -713,6 +714,7 @@ async def trip_export_print(
         plan,
         include_photos=parse_export_bool(include_photos, default=False),
         include_map_circuit=parse_export_bool(include_map_circuit, default=True),
+        include_budgets=parse_export_bool(include_budgets, default=False),
         template=template,
         auto_print=parse_export_bool(auto_print, default=False),
     )
@@ -726,6 +728,7 @@ async def trip_export_pdf(
     template: str = "standard",
     include_photos: str = "0",
     include_map_circuit: str = "1",
+    include_budgets: str = "0",
 ) -> Response:
     """Return a downloadable itinerary PDF generated server-side."""
     from tripplanner.tools import trip_planner
@@ -744,6 +747,7 @@ async def trip_export_pdf(
             template=template,
             include_photos=parse_export_bool(include_photos, default=False),
             include_map_circuit=parse_export_bool(include_map_circuit, default=True),
+            include_budgets=parse_export_bool(include_budgets, default=False),
         )
     except ImportError:
         return JSONResponse(
