@@ -1207,11 +1207,29 @@ def create_trip_plan(
         planning_recommendation = parsed_recommendation
     fam = prefs["family"]
     if not travelers_summary:
-        travelers_summary = f"{fam['adults']} adults"
-        if fam["children"]:
-            travelers_summary += f", {fam['children']} children (ages {fam['child_ages']})"
-        if fam["elderly"]:
-            travelers_summary += f", {fam['elderly']} elderly"
+        members = prefs.get("family_members") or []
+        if members:
+            party = [] if any(m.get("relationship") == "self" for m in members) else [
+                str(profile.get("display_name") or "You")
+            ]
+            for member in members:
+                who = member.get("name") or member.get("relationship") or "traveller"
+                age = member.get("age")
+                party.append(f"{who} (age {age})" if age is not None else str(who))
+            travelers_summary = ", ".join(party)
+        else:
+            travelers_summary = f"{fam['adults']} adults"
+            if fam["children"]:
+                travelers_summary += f", {fam['children']} children (ages {fam['child_ages']})"
+            if fam["elderly"]:
+                travelers_summary += f", {fam['elderly']} elderly"
+        notes = (
+            notes + "\nAssumed travel party from saved profile; editable for this trip."
+        ).strip()
+    if not origin and travel_scope != "destination_only":
+        notes = (
+            notes + "\nOrigin and arrival/return travel TBD; destination planning continues."
+        ).strip()
 
     # Same destination + same dates -> resume the saved trip instead of wiping
     # it, so the user never restarts from scratch. Different dates/duration get

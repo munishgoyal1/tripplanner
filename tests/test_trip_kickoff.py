@@ -38,7 +38,7 @@ def test_direct_mode_uses_party_defaults_after_duration_advice() -> None:
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) is None
+    assert _trip_kickoff_tool_choice(messages) == "create_trip_plan"
 
 
 @pytest.mark.parametrize(
@@ -56,7 +56,7 @@ def test_direct_mode_skips_review_when_party_is_explicit(trip_prompt: str) -> No
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) is None
+    assert _trip_kickoff_tool_choice(messages) == "create_trip_plan"
 
 
 def test_direct_mode_builds_destination_plan_without_origin() -> None:
@@ -66,7 +66,7 @@ def test_direct_mode_builds_destination_plan_without_origin() -> None:
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) is None
+    assert _trip_kickoff_tool_choice(messages) == "create_trip_plan"
 
 
 def test_direct_mode_accepts_explicit_self_arranged_arrival() -> None:
@@ -76,7 +76,7 @@ def test_direct_mode_accepts_explicit_self_arranged_arrival() -> None:
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) is None
+    assert _trip_kickoff_tool_choice(messages) == "create_trip_plan"
 
 
 def test_saved_home_city_satisfies_the_origin_review() -> None:
@@ -93,7 +93,7 @@ def test_saved_home_city_satisfies_the_origin_review() -> None:
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) is None
+    assert _trip_kickoff_tool_choice(messages) == "create_trip_plan"
 
 
 def test_adult_count_does_not_force_relationship_review() -> None:
@@ -103,7 +103,7 @@ def test_adult_count_does_not_force_relationship_review() -> None:
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) is None
+    assert _trip_kickoff_tool_choice(messages) == "create_trip_plan"
 
 
 def test_interactive_mode_forces_the_prefilled_review_before_planning() -> None:
@@ -113,7 +113,7 @@ def test_interactive_mode_forces_the_prefilled_review_before_planning() -> None:
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages, interactive=True) == "request_trip_input"
+    assert _trip_kickoff_tool_choice(messages, interactive=True) == "create_trip_plan"
 
 
 def test_interactive_kickoff_is_asked_once_and_then_yields_to_creation() -> None:
@@ -196,7 +196,7 @@ def test_destination_switch_uses_smart_defaults_after_duration_advice(
         _tool_message("recommend_trip_duration"),
     ]
 
-    assert _trip_kickoff_tool_choice(messages) is None
+    assert _trip_kickoff_tool_choice(messages) == "create_trip_plan"
 
 
 def test_same_destination_follow_up_still_has_no_kickoff(
@@ -265,7 +265,7 @@ def test_day_trip_does_not_replace_active_trip(monkeypatch: pytest.MonkeyPatch) 
     ) is None
 
 
-def test_trip_agent_forces_the_prefilled_kickoff_in_interactive_mode(
+def test_trip_agent_forces_draft_creation_even_in_interactive_mode(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     messages = [
@@ -294,8 +294,8 @@ def test_trip_agent_forces_the_prefilled_kickoff_in_interactive_mode(
         "proposal_only": False,
     })
 
-    assert bound_options["tool_choice"] == "request_trip_input"
-    assert bound_options["tools"] == ["request_trip_input"]
+    assert bound_options["tool_choice"] == "create_trip_plan"
+    assert bound_options["tools"] == ["create_trip_plan"]
 
 
 def test_trip_agent_does_not_offer_routine_review_in_direct_mode(
@@ -331,7 +331,7 @@ def test_trip_agent_does_not_offer_routine_review_in_direct_mode(
     assert "request_trip_input" not in bound_options["tools"]
 
 
-def test_trip_agent_waits_for_the_kickoff_answer_before_planning(
+def test_trip_agent_supersedes_stale_kickoff_before_planning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     messages = [
@@ -345,10 +345,11 @@ def test_trip_agent_waits_for_the_kickoff_answer_before_planning(
     class FakeModel:
         def bind_tools(self, *_args: object, **_options: object) -> object:
             bound["called"] = True
-            raise AssertionError("no tool may be bound while the review is unanswered")
+            assert _options["tool_choice"] == "create_trip_plan"
+            return self
 
         def invoke(self, _messages: list) -> AIMessage:
-            return AIMessage(content="Which city are you travelling from?")
+            return AIMessage(content="Building the draft")
 
     monkeypatch.setattr(graph_mod, "_interactive_trip_questions", lambda: True)
     monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
@@ -359,8 +360,8 @@ def test_trip_agent_waits_for_the_kickoff_answer_before_planning(
         "proposal_only": False,
     })
 
-    assert bound["called"] is False
-    assert "travelling from" in result["messages"][0].content
+    assert bound["called"] is True
+    assert "Building" in result["messages"][0].content
 
 
 def test_trip_agent_forces_creation_after_kickoff_answer(
@@ -447,7 +448,7 @@ def test_new_trip_intent_preempts_incomplete_active_trip_gate(
                 _tool_message("get_travel_preferences"),
                 _tool_message("recommend_trip_duration"),
             ],
-            None,
+            "create_trip_plan",
         ),
     ],
 )

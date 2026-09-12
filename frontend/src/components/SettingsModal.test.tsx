@@ -83,7 +83,7 @@ describe("SettingsModal preference shelf", () => {
     const { container } = render(<SettingsModal section="travel" embedded onClose={vi.fn()} />);
 
     await screen.findByRole("heading", { name: "A better trip starts here" });
-    expect(screen.getByText("Let the agent decide with smart defaults")).toBeInTheDocument();
+    expect(screen.getByText("Automatically refine using my preferences")).toBeInTheDocument();
     const toggle = container.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
     expect(toggle).toBeChecked();
 

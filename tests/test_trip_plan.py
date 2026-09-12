@@ -2249,3 +2249,40 @@ class TestTripPlanState:
         # Check history
         result = list_past_trips.invoke({})
         assert "manali" in result.lower()
+
+
+class TestProfileDefaults:
+    def test_saved_family_roster_and_bangalore_origin_are_used(self, monkeypatch):
+        from tripplanner.tools import trip_planner, user_preferences
+        from copy import deepcopy
+        prefs = deepcopy(user_preferences._DEFAULT_PREFS)
+        prefs["profile"].update({"display_name": "Munish", "home_city": "Bangalore"})
+        prefs["family_members"] = [
+            {"relationship": "spouse"}, {"relationship": "child", "age": 10}
+        ]
+        monkeypatch.setattr(trip_planner, "load_preferences", lambda: prefs)
+        create_trip_plan.invoke({
+            "destination": "Thailand", "departure_date": "2026-10-09",
+            "return_date": "2026-10-16",
+        })
+        plan = trip_planner.load_active_trip_dict()
+        assert plan["origin"] == "Bangalore"
+        assert plan["travel_scope"] == "round_trip"
+        assert plan["travelers"] == "Munish, spouse, child (age 10)"
+        assert "Assumed travel party" in plan["notes"]
+
+    def test_explicit_party_overrides_profile_without_changing_it(self, monkeypatch):
+        from tripplanner.tools import trip_planner, user_preferences
+        from copy import deepcopy
+        prefs = deepcopy(user_preferences._DEFAULT_PREFS)
+        prefs["family_members"] = [{"relationship": "spouse"}]
+        monkeypatch.setattr(trip_planner, "load_preferences", lambda: prefs)
+        create_trip_plan.invoke({
+            "destination": "Thailand", "departure_date": "2026-10-09",
+            "return_date": "2026-10-16", "travelers_summary": "Solo: 1 adult",
+        })
+        plan = trip_planner.load_active_trip_dict()
+        assert plan["travelers"] == "Solo: 1 adult"
+        assert plan["travel_scope"] == ""
+        assert "arrival/return travel TBD" in plan["notes"]
+        assert prefs["family_members"] == [{"relationship": "spouse"}]
