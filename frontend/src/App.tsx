@@ -36,6 +36,11 @@ const ITINERARY_MIN_PCT = 18;
 const MAP_MIN_PCT = 20;
 const INSPECTOR_MIN_PCT = 22;
 const REFINED_LAYOUT_VERSION = "refined-spatial-v1";
+//: How long the itinerary and map panels wait for the workspace payload that
+//: already contains them before fetching their own. Long enough that a healthy
+//: server answers first and the duplicate fetches stay collapsed; short enough
+//: that a slow one does not read as a hung page.
+const SEED_WAIT_MS = 1_500;
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
@@ -94,6 +99,11 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   // the itinerary and map panels wait for it instead of each asking the server
   // to rebuild the very trip that payload already carries.
   const [seedPending, setSeedPending] = useState(true);
+  // Which refresh generation the panels are waiting on. A view-only refresh --
+  // a focus click, say -- bumps `refreshGeneration` without producing a seed,
+  // so the workspace fetch in flight has to be tracked separately or its
+  // completion is mistaken for a superseded one and the panes wait forever.
+  const seedGeneration = useRef(0);
   const [loading, setLoading] = useState(true);
   const [plannerReview, setPlannerReview] = useState<PlannerReview | null>(null);
   const [assistantRequest, setAssistantRequest] = useState<{ id: number; message: string; proposalOnly?: boolean } | null>(
@@ -318,7 +328,10 @@ export default function App({ initialRequest = null }: { initialRequest?: string
       // silently — flipping the panel into its loading state made the round-trip
       // feel like the app had stalled.
       if (!options.silent) setLoading(true);
-      if (!options.viewOnly) setSeedPending(true);
+      if (!options.viewOnly) {
+        seedGeneration.current = generation;
+        setSeedPending(true);
+      }
       try {
         const workspaceView = options.viewOnly
           ? {
@@ -343,9 +356,12 @@ export default function App({ initialRequest = null }: { initialRequest?: string
         }
         return null;
       } finally {
-        if (generation === refreshGeneration.current) {
-          if (!options.silent) setLoading(false);
-          if (!options.viewOnly) setSeedPending(false);
+        if (generation === refreshGeneration.current && !options.silent) setLoading(false);
+        // Cleared whenever this was the last workspace fetch started, even if a
+        // view-only refresh has since superseded it: nothing else will deliver
+        // the seed the panels are waiting for.
+        if (!options.viewOnly && generation === seedGeneration.current) {
+          setSeedPending(false);
         }
       }
     },
@@ -357,6 +373,17 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     return () => refreshController.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Waiting for the workspace payload saves the server from rebuilding the same
+  // trip three times, but it must never be the reason the workspace sits empty.
+  // Past this point the panels load their own view-models, as they did before,
+  // so a slow or wedged workspace request costs a duplicate fetch rather than a
+  // blank screen.
+  useEffect(() => {
+    if (!seedPending) return;
+    const timer = window.setTimeout(() => setSeedPending(false), SEED_WAIT_MS);
+    return () => window.clearTimeout(timer);
+  }, [seedPending]);
 
   const handleIdentityChanged = useCallback(async () => {
     workspaceEpoch.current += 1;
