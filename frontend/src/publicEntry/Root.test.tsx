@@ -29,50 +29,50 @@ describe("public entry routing", () => {
     window.history.replaceState({}, "", "/");
   });
 
-  it("always shows the landing page at the public root", () => {
+  it("always shows the landing page at the public root", async () => {
     render(<Root />);
 
-    expect(screen.getByRole("heading", { name: "Public landing" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Public landing" })).toBeInTheDocument();
   });
 
-  it("redirects the legacy welcome route to the public root", () => {
+  it("redirects the legacy welcome route to the public root", async () => {
     window.history.replaceState({}, "", "/welcome/");
 
     render(<Root />);
 
     expect(window.location.pathname).toBe("/");
-    expect(screen.getByRole("heading", { name: "Public landing" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Public landing" })).toBeInTheDocument();
   });
 
-  it("opens the planner workspace when the landing page is skipped", () => {
+  it("opens the planner workspace when the landing page is skipped", async () => {
     render(<Root />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Skip to the app" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Skip to the app" }));
 
     expect(window.location.pathname).toBe("/planner");
-    expect(screen.getByText("Workspace request: none")).toBeInTheDocument();
+    expect(await screen.findByText("Workspace request: none")).toBeInTheDocument();
   });
 
   it("returns to the landing page with the browser back button", async () => {
     const historyLength = window.history.length;
     render(<Root />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Skip to the app" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Skip to the app" }));
     expect(window.history.length).toBe(historyLength + 1);
 
     window.history.back();
 
     await waitFor(() => expect(window.location.pathname).toBe("/"));
-    expect(screen.getByRole("heading", { name: "Public landing" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Public landing" })).toBeInTheDocument();
   });
 
-  it("carries a landing request into the planner workspace", () => {
+  it("carries a landing request into the planner workspace", async () => {
     render(<Root />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Plan mine" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Plan mine" }));
 
     expect(window.location.pathname).toBe("/planner");
-    expect(screen.getByText("Workspace request: Kyoto in April")).toBeInTheDocument();
+    expect(await screen.findByText("Workspace request: Kyoto in April")).toBeInTheDocument();
   });
 });
 
@@ -82,9 +82,9 @@ describe("the /planner route", () => {
     window.history.replaceState({}, "", "/planner");
   });
 
-  it("opens the workspace directly", () => {
+  it("opens the workspace directly", async () => {
     render(<Root />);
 
-    expect(screen.getByText("Workspace request: none")).toBeInTheDocument();
+    expect(await screen.findByText("Workspace request: none")).toBeInTheDocument();
   });
 });
