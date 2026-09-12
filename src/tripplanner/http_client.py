@@ -234,6 +234,14 @@ def _request(
     operation, sku_class = (
         google_operation(url, kwargs) if name.endswith("googleapis.com") else ("", "")
     )
+    if name == "api.tavily.com":
+        operation = urlsplit(str(url)).path.strip("/") or "other"
+        if operation == "search":
+            payload = kwargs.get("json") or {}
+            sku_class = (
+                "advanced" if payload.get("auto_parameters")
+                else payload.get("search_depth", "basic")
+            )
     if not breaker.allow():
         _record(name, "circuit_open", 0.0, None, operation, sku_class, log_context)
         raise CircuitOpenError(f"{name} is temporarily unavailable (circuit open)")
@@ -328,7 +336,11 @@ def _record(
         else status
     )
     quota_rejected = provider == "google" and http_status == 429
-    billable = status != "circuit_open" and not quota_rejected
+    # Only the public free weather endpoints qualify, never customer-api hosts.
+    free_weather = endpoint in {
+        "api.open-meteo.com", "geocoding-api.open-meteo.com", "archive-api.open-meteo.com",
+    }
+    billable = status != "circuit_open" and not quota_rejected and not free_weather
 
     record_call(
         provider=provider,
@@ -340,7 +352,9 @@ def _record(
         attempted=status != "circuit_open",
         billable=billable,
         estimated_cost_usd=0.0 if not billable else None,
-        billing_status="quota_rejected" if quota_rejected else "",
+        billing_status=(
+            "quota_rejected" if quota_rejected else "free_public_api" if free_weather else ""
+        ),
         log_context=log_context,
     )
 

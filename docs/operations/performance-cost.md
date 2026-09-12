@@ -11,6 +11,35 @@ and a quiet Azure bill does not prove acceptable latency.
 
 ## Unified harness reports
 
+### Daily ceiling estimate reconciliation (2026-09-12)
+
+The cost ledger's unknown-call P95 floor is a safety fallback, not a provider
+price. Missing Tavily prices and classifying free weather as billable caused
+ordinary background views to settle at INR 40 each. The provider catalog now
+estimates basic search at $0.009 and advanced/legacy unspecified search at
+$0.018: [Tavily PAYG](https://docs.tavily.com/documentation/api-credits) is
+$0.008 per credit, with one/two credits respectively; the estimate includes
+12.5% headroom and assumes no available free credits. Other Tavily endpoints
+remain unpriced rather than inheriting a search price.
+
+Only the public forecast, archive and geocoding Open-Meteo hosts are excluded
+from spend ([public API pricing](https://open-meteo.com/en/pricing)). Customer
+hosts remain subject to pricing/fallback. Unknown paid providers still trigger
+the existing P95 floor. Azure uses the existing measured-token catalog.
+
+Google remains priced at conservative global gross rates. India eligibility
+and billing-account-wide free-pool consumption must be verified before lowering
+admission charges using [India prices](https://developers.google.com/maps/billing-and-pricing/pricing-india).
+Free pools in `cost-model.json` size quotas; they are not proof of a remaining
+credit balance and must not be blindly subtracted once per project or day.
+
+Historical counters do not change automatically when a catalog changes. Repair
+only identified settled interactions with complete evidence, retain unknown or
+truncated evidence at its original charge, back up the window document, apply
+each credit once with an ETag check, preserve holds and unmatched spend, and
+record the source IDs and old/new estimates with the correction. Never reset a
+whole counter to zero to unblock the stack.
+
 `tripplanner.validation.harness.run_scenario` wraps a callable in a scenario/run
 context, captures correlated `app_event` evidence, and returns one versioned report.
 Pass `output_path` to write the same report as JSON. Its sections cover cost, cache

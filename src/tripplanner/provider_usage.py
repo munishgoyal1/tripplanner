@@ -16,6 +16,7 @@ from tripplanner.usage_attribution import current_attribution, current_batch
 from tripplanner.validation.harness.pricing import (
     CATALOG_VERSION,
     GOOGLE_PLACES_USD_PER_REQUEST,
+    TAVILY_USD_PER_SEARCH,
 )
 
 _CONTAINER = "provider_usage"
@@ -45,6 +46,9 @@ def _local_path(day: str) -> Path:
 def _estimate(provider: str, operation: str, sku_class: str) -> float | None:
     if provider == "google":
         return GOOGLE_PLACES_USD_PER_REQUEST.get(f"{operation}:{sku_class}")
+    if provider == "tavily" and operation in {"request", "search"}:
+        # Older search records omitted depth; use the higher two-credit price.
+        return TAVILY_USD_PER_SEARCH.get(sku_class, TAVILY_USD_PER_SEARCH["advanced"])
     return None
 
 
