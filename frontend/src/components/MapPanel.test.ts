@@ -580,8 +580,8 @@ describe("map stop selection", () => {
 
     expect(routeStyleForLeg(leg, "#2563eb")).toMatchObject({
       strokeColor: "#2563eb",
-      strokeOpacity: 0.85,
-      strokeWeight: 3,
+      strokeOpacity: 0.95,
+      strokeWeight: 4,
     });
     const roadStyle = routeStyleForLeg({ ...leg, intercity: true, mode: "Drive" }, "#2563eb");
     const busStyle = routeStyleForLeg({ ...leg, intercity: true, mode: "Bus" }, "#2563eb");
@@ -941,8 +941,14 @@ describe("map stop selection", () => {
       .toContain(">H1</text>");
     expect(decodeURIComponent(markerIcon("Mount Abu Hotel")))
       .toContain(">H2</text>");
-    expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
-      path: [{ lat: 15.1, lng: 73.1 }, { lat: 15.15, lng: 73.15 }],
+    const hotelHop = polyline.mock.calls
+      .map(([options]) => options)
+      .find((options) => options.strokeColor === "#0d9488" && options.path?.[0]?.lat === 15.1);
+    expect(hotelHop?.geodesic).toBe(false);
+    expect(hotelHop?.path[0]).toEqual({ lat: 15.1, lng: 73.1 });
+    expect(hotelHop?.path[hotelHop.path.length - 1]).toEqual({ lat: 15.15, lng: 73.15 });
+    expect(hotelHop?.path.length).toBeGreaterThan(2);
+    expect(hotelHop).toEqual(expect.objectContaining({
       strokeColor: "#0d9488",
       strokeOpacity: 0,
       icons: [{
@@ -1155,19 +1161,27 @@ describe("map stop selection", () => {
 
     const rendered = render(createElement(MapPanel));
 
-    await waitFor(() => expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
-      path: [{ lat: 13.1986, lng: 77.7066 }, { lat: 24.6177, lng: 73.8961 }],
-      strokeColor: "#2563eb",
-      strokeOpacity: 0,
-      icons: expect.arrayContaining([
-        expect.objectContaining({ offset: "50%", icon: expect.objectContaining({ fillColor: "#2563eb" }) }),
-      ]),
-    })));
-    expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
-      path: [{ lat: 26.8887, lng: 70.8649 }, { lat: 13.1986, lng: 77.7066 }],
-      strokeColor: "#2563eb",
-      strokeOpacity: 0,
-    }));
+    await waitFor(() => {
+      const outbound = polyline.mock.calls
+        .map(([options]) => options)
+        .find((options) => options.path?.[0]?.lat === 13.1986 && options.strokeColor === "#2563eb");
+      expect(outbound?.geodesic).toBe(false);
+      expect(outbound?.path[0]).toEqual({ lat: 13.1986, lng: 77.7066 });
+      expect(outbound?.path[outbound.path.length - 1]).toEqual({ lat: 24.6177, lng: 73.8961 });
+      expect(outbound?.path.length).toBeGreaterThan(2);
+      expect(outbound).toEqual(expect.objectContaining({
+        strokeOpacity: 0,
+        icons: expect.arrayContaining([
+          expect.objectContaining({ offset: "50%", icon: expect.objectContaining({ fillColor: "#2563eb" }) }),
+        ]),
+      }));
+    });
+    const inbound = polyline.mock.calls
+      .map(([options]) => options)
+      .find((options) => options.path?.[0]?.lat === 26.8887 && options.strokeColor === "#2563eb");
+    expect(inbound?.path[0]).toEqual({ lat: 26.8887, lng: 70.8649 });
+    expect(inbound?.path[inbound.path.length - 1]).toEqual({ lat: 13.1986, lng: 77.7066 });
+    expect(inbound?.path.length).toBeGreaterThan(2);
 
     rendered.rerender(createElement(MapPanel, {
       circuitFocusDay: 1,

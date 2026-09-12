@@ -6,7 +6,7 @@
 - Owner: Munish Goyal
 - Date started: `2026-07-30`
 - Date ended: pending
-- Status: `testing`
+- Status: `implementing`
 
 ## Hypothesis
 
@@ -162,9 +162,10 @@ this experiment.
 
 ## Decision
 
-- Decision: pending
+- Decision: selected `B - Layered Trip Book` for production implementation
 - Working recommendation: `B - Layered Trip Book`
 - Rationale: it best separates fast day execution from completeness evidence and
   optional enrichment while preserving one predictable packet.
-- Next action: save the preferred Lab option and requested modifications; scope
-  production contracts only after the owner separately approves implementation.
+- Next action: sandbox `sandbox/4-implement-labs` implements Option B with the
+  Lab default day-circuit inset (no extra map pages). Promotion remains a
+  separate owner step.

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import os
 import smtplib
 import time
@@ -14,7 +15,7 @@ from fastapi.responses import JSONResponse
 from tripplanner.api_contracts import ExportEmailRequest
 from tripplanner.observability import app_event
 from tripplanner.tools import trip_planner
-from tripplanner.web import external_operations, itinerary_export, share
+from tripplanner.web import external_operations, itinerary_export, itinerary_pdf, share
 
 
 def send_itinerary_email(
@@ -32,10 +33,23 @@ def send_itinerary_email(
         plan,
         include_photos=bool(req.include_photos),
         include_map_circuit=bool(req.include_map_circuit),
+        include_budgets=bool(req.include_budgets),
         template=req.template,
         auto_print=False,
         share_url=share_url,
     )
+    pdf_bytes: bytes | None = None
+    try:
+        pdf_bytes = itinerary_pdf.build_itinerary_pdf_bytes(
+            plan,
+            template=req.template,
+            include_photos=bool(req.include_photos),
+            include_map_circuit=bool(req.include_map_circuit),
+            include_budgets=bool(req.include_budgets),
+            html=html,
+        )
+    except Exception:
+        pdf_bytes = None
     destination = str(plan.get("destination") or "Trip")
     subject = f"{destination} itinerary export"
     fingerprint = external_operations.payload_fingerprint(
@@ -44,6 +58,7 @@ def send_itinerary_email(
             "email": req.email.strip().casefold(),
             "include_photos": req.include_photos,
             "include_map_circuit": req.include_map_circuit,
+            "include_budgets": req.include_budgets,
             "template": req.template,
         }
     )
@@ -58,9 +73,8 @@ def send_itinerary_email(
         return {**dict(existing.get("result") or {}), "replayed": True}
 
     plain = (
-        f"Your trip itinerary for {destination} is attached as HTML.\n"
-        "Open it in a browser and Print -> Save as PDF for a carry-along copy.\n"
-        + (f"\nContinue planning or share this trip:\n{share_url}\n" if share_url else "")
+        f"Your trip itinerary for {destination} is attached as a PDF.\n"
+        + (f"\nOpen this trip in the planner:\n{share_url}\n" if share_url else "")
     )
 
     acs_conn = os.getenv("AZURE_COMMUNICATION_CONNECTION_STRING", "").strip()
@@ -86,6 +100,14 @@ def send_itinerary_email(
                 "recipients": {"to": [{"address": req.email}]},
                 "content": {"subject": subject, "plainText": plain, "html": html},
             }
+            if pdf_bytes:
+                message["attachments"] = [
+                    {
+                        "name": "trip-itinerary.pdf",
+                        "contentType": "application/pdf",
+                        "contentInBase64": base64.b64encode(pdf_bytes).decode("ascii"),
+                    }
+                ]
             email_started = time.monotonic()
             poller = client.begin_send(
                 message,
@@ -175,12 +197,20 @@ def send_itinerary_email(
     message["To"] = req.email
     message.set_content(plain)
     message.add_alternative(html, subtype="html")
-    message.add_attachment(
-        html.encode("utf-8"),
-        maintype="text",
-        subtype="html",
-        filename="trip-itinerary.html",
-    )
+    if pdf_bytes:
+        message.add_attachment(
+            pdf_bytes,
+            maintype="application",
+            subtype="pdf",
+            filename="trip-itinerary.pdf",
+        )
+    else:
+        message.add_attachment(
+            html.encode("utf-8"),
+            maintype="text",
+            subtype="html",
+            filename="trip-itinerary.html",
+        )
 
     email_started = time.monotonic()
     try:

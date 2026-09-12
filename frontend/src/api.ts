@@ -472,6 +472,7 @@ export type ExportTemplate = "standard" | "detailed" | "trip_book" | "trip_card"
 export interface ExportOptions {
   include_photos: boolean;
   include_map_circuit: boolean;
+  include_budgets: boolean;
   template: ExportTemplate;
 }
 
@@ -479,7 +480,8 @@ export function tripExportUrl(options: ExportOptions, autoPrint = false): string
   const params = new URLSearchParams({
     user_id: getUserId(),
     include_photos: options.include_photos ? "1" : "0",
-    include_map_circuit: options.include_map_circuit ? "1" : "0",
+    include_map_circuit: "1",
+    include_budgets: options.include_budgets ? "1" : "0",
     template: options.template,
     auto_print: autoPrint ? "1" : "0",
   });
@@ -491,7 +493,8 @@ export function tripExportPdfUrl(options: ExportOptions): string {
     user_id: getUserId(),
     template: options.template,
     include_photos: options.include_photos ? "1" : "0",
-    include_map_circuit: options.include_map_circuit ? "1" : "0",
+    include_map_circuit: "1",
+    include_budgets: options.include_budgets ? "1" : "0",
   });
   return `${BASE}/trip/export.pdf?${params.toString()}`;
 }
@@ -544,7 +547,8 @@ export async function emailTripExport(
       user_id: getUserId(),
       email,
       include_photos: options.include_photos,
-      include_map_circuit: options.include_map_circuit,
+      include_map_circuit: true,
+      include_budgets: options.include_budgets,
       template: options.template,
       request_id: requestId,
     }),

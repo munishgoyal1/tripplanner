@@ -349,12 +349,10 @@ can be retried once the Labs server is running again.
 ## Active Trip Book Experiment (2026-07-30)
 
 The Execution-ready Trip Book lab is available at
-`http://127.0.0.1:5175/lab-5-itinerary-trip-book.html`. It compares a compact
-Operations binder, the recommended Layered Trip Book, and a Visual journey
-book using the same family-trip facts. The experiment tests packet structure,
-navigation, document readiness, and evidence-labeled personalization only;
-secure document ingestion and merged-PDF production behavior remain out of
-scope until a direction is selected and separately approved. See
+`http://127.0.0.1:5175/lab-5-itinerary-trip-book.html`. The owner selected
+**B · Layered Trip Book**. Sandbox `sandbox/4-implement-labs` is implementing
+that packet structure in the production Trip Book export. The Lab page stays
+for comparison until promotion. See
 [`ITINERARY_TRIP_BOOK.md`](ITINERARY_TRIP_BOOK.md). Document ingestion itself was
 approved on 6-Aug-2026 and is now decided in
 [`TRAVEL_DOCUMENTS.md`](TRAVEL_DOCUMENTS.md), which also rules out merged-PDF storage

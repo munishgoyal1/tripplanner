@@ -1730,6 +1730,15 @@ the outcome.
   "already in use" as exists. Cloud SDK 584 `alpha monitoring policies update`
   takes `--set-notification-channels`, not `--notification-channels`.
 
+## 2026-09-11 - Print Packets Must Not Invent Safety Facts
+
+- A Lab fixture can show emergency, consulate, and card-block numbers because
+  the mock trip invented them. Production export may only print contacts that
+  already exist on the trip or in saved place facts. A missing hotel phone is
+  omitted; a fabricated 999 is worse than an incomplete essentials page.
+- Packet structure and map pages are independent. Implementing a layered book
+  does not require the extra overview map pages unless that map setting was
+  selected. Default to the Lab's day-circuit inset.
 ## 2026-09-11 - Evidence Fidelity And Operator Logs Need Different Fan-Out
 
 - A full-fidelity flight recorder correctly retained each cache, provider, and
@@ -1759,6 +1768,15 @@ the outcome.
   missing file after enumeration is a normal race to ignore rather than a degraded
   recorder condition.
 
+## 2026-09-11 - Export HTML Is The Packet, PDF Is A Print Of It
+
+- A second ReportLab table layout will drift from preview the moment stop facts
+  grow. Travelers notice that as "the old PDF." Generate PDF from the HTML packet
+  (browser print-to-PDF) and keep any library fallback on the same day/stop
+  structure rather than a parallel table design.
+- Download actions that both mean "make a PDF" (preview print vs download) make
+  the dialog feel unfinished. Preview is for reading; Download PDF is the file;
+  calendar stays outside the format picker.
 ## 2026-09-11 - Balanced Telemetry Preserves Units, Not Repeated Rows
 
 - Removing low-level events from console and flight evidence still left hundreds of
@@ -1773,6 +1791,25 @@ the outcome.
   restricted flight recorder, so copying them into hosted operational logs adds risk
   without improving reconstruction.
 
+## 2026-09-11 - Photo PDFs Must Inline Images Before file:// Print
+
+- Browser preview can load Google photo URLs. Headless print-to-PDF of a local
+  HTML file often times out or paints without those remote images, then a text
+  fallback is emailed. Inline http(s) `<img>` tags as data URIs and reuse the
+  already-built email HTML so the attachment matches preview.
+- Export HTML escapes `&` in those photo URLs. Fetch the unescaped URL and write
+  the bytes as sibling files before Chromium prints, or the packet looks complete
+  with blank photo boxes.
+
+## 2026-09-11 - Headless Chrome Needs Data URIs, Not Sibling Files
+
+- Sibling image files next to `file://` HTML often stay blank under
+  `--headless=new`. Put photo bytes in the HTML as data URIs. If the CDN URL
+  403s from the server, fetch Places photo media (binary, follow redirects)
+  using the cached photo ref.
+- One shared `busy` flag in an export dialog couples unrelated actions. Download
+  and email need their own in-flight state.
+
 ## 2026-09-11 - Bounded Work Still Needs Bounded Progress Logging
 
 - Limiting a recorder drain to 25 uploads protected each pass, but emitting one line
@@ -1782,6 +1819,14 @@ the outcome.
   Keep batch size as the I/O control and reporting cadence as a separate, slower
   human-signal control.
 
+## 2026-09-11 - Promotion Must Fast-Forward a Behind Primary
+
+- Requiring the primary checkout to already equal `origin/master` before
+  `merge --ff-only` blocks a clean behind checkout that the next line would have
+  repaired. Fast-forward when local is an ancestor of the remote.
+- A locally-ahead primary is a different failure. Name that relation and give
+  the park-then-reset recovery so promotion does not invent a second master
+  history.
 ## 2026-09-11 - Preserve Correlation And Billing Uncertainty
 
 - The Kashmir update received HTTP 200 then an incomplete chunked response on
