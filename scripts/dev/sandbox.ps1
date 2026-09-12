@@ -323,7 +323,7 @@ function Invoke-SandboxValidation {
         # timing/iteration-budgeted tests (trip_rebalance's search budget, the
         # performance-baseline p95 gate) flake under real concurrent load from
         # other lanes/agents. -n 2 keeps most of the speedup with less of that.
-        & $python -m pytest tests -q -n 2
+        & $python -m pytest tests -q -n 2 2>&1 | Out-Host
         if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
     } finally {
         Pop-Location
@@ -340,14 +340,14 @@ function Invoke-SandboxValidation {
         # package literally named "tsc" instead of failing loudly.
         if (-not (Test-Path (Join-Path $frontend "node_modules") -PathType Container)) {
             Write-Host "[check]   npm install (no node_modules in this worktree)" -ForegroundColor Cyan
-            & npm install
+            & npm install 2>&1 | Out-Host
             if ($LASTEXITCODE -ne 0) { throw "npm install failed; fix it before shipping." }
         }
         Write-Host "[check]   tsc" -ForegroundColor Cyan
-        & npx tsc --noEmit
+        & npx tsc --noEmit 2>&1 | Out-Host
         if ($LASTEXITCODE -ne 0) { throw "tsc failed; fix it before shipping." }
         Write-Host "[check]   vitest" -ForegroundColor Cyan
-        & npx vitest run
+        & npx vitest run 2>&1 | Out-Host
         if ($LASTEXITCODE -ne 0) { throw "vitest failed; fix it before shipping." }
     } finally {
         Pop-Location

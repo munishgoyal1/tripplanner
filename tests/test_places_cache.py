@@ -7,8 +7,10 @@ network layer so they're deterministic and never touch Google or Cosmos.
 
 from __future__ import annotations
 
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier
 
 import httpx
 import pytest
@@ -80,6 +82,66 @@ def test_details_cached_within_week(_isolate):
     pc.get_summary("Taj", "Goa")
     pc.get_summary("Taj", "Goa")
     assert calls["lookup"] == 1  # second call served from cache
+
+
+@pytest.mark.parametrize("refresh", [False, True])
+def test_simultaneous_photo_views_resolve_once(_isolate, monkeypatch, refresh):
+    barrier = Barrier(4)
+    resolve = pc._photo_uris
+
+    def slow_resolve(refs):
+        time.sleep(0.05)
+        return resolve(refs)
+
+    def view():
+        barrier.wait(timeout=5)
+        return pc.get_photos("Taj", "Goa", refresh=refresh)
+
+    monkeypatch.setattr(pc, "_photo_uris", slow_resolve)
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        results = list(executor.map(lambda _: view(), range(4)))
+    assert all(result == results[0] for result in results)
+    assert results[0]
+    assert _isolate["photos"] == 1
+
+
+@pytest.mark.parametrize("refresh", [False, True])
+def test_failed_photo_refresh_keeps_urls_and_retries_after_cooldown(_isolate, monkeypatch, refresh):
+    original = pc.get_photos("Taj", "Goa")
+    entry = pc._cache()[pc._key("Taj", "Goa")]
+    entry["__photos_at__"] = time.time() - pc._ttl(pc._PHOTO_TTL_S) - 1
+    stale_at = entry["__photos_at__"]
+    attempts = []
+
+    def rejected(refs):
+        attempts.append(refs)
+        return []
+
+    monkeypatch.setattr(pc, "_photo_uris", rejected)
+    assert pc.get_photos("Taj", "Goa", refresh=refresh) == original
+    entry = pc._cache()[pc._key("Taj", "Goa")]
+    assert pc.get_photos("Taj", "Goa", refresh=refresh) == original
+    assert len(attempts) == 1
+    assert entry["__photos_at__"] == stale_at
+    entry["__photos_retry_after__"] = 0
+    monkeypatch.setattr(pc, "_photo_uris", lambda refs: ["https://new-photo"])
+    assert pc.get_photos("Taj", "Goa") == ["https://new-photo"]
+    assert "__photos_retry_after__" not in entry
+
+
+def test_zero_photo_request_does_not_lookup_place(_isolate):
+    assert pc.get_photos("Taj", "Goa", max_photos=0) == []
+    assert _isolate == {"lookup": 0, "photos": 0, "reviews": 0}
+
+
+def test_full_warming_photo_result_is_persisted_after_resolution(_isolate, monkeypatch):
+    monkeypatch.setattr(pc.get_settings(), "cache_warm_everything", True)
+    original = pc.get_photos("Taj", "Goa")
+    assert pc.flush_writes()
+    pc._CACHE.clear()
+    pc._loaded = False
+    assert pc.get_photos("Taj", "Goa") == original
+    assert _isolate["photos"] == 1
 
 
 def test_places_cache_emits_miss_and_memory_hit(_isolate):
@@ -216,32 +278,23 @@ def test_photos_do_not_refresh_entry_with_known_empty_refs(_isolate, _authorized
 
 
 def test_prefetch_cache_hits_do_not_serialize_on_logging(_isolate, monkeypatch):
-    """Regression: _record_cache (app_event -> flight_recorder's synchronous,
-    fsync-based write, tens of ms in production) must run outside _CACHE_LOCK.
-    Otherwise prefetch()'s worker pool serializes on that lock and a warm
-    multi-place prefetch takes seconds instead of the intended one slow-item's
-    worth of wall time. Simulated here with a monkeypatched delay standing in
-    for that real disk-I/O cost."""
-    names = [f"Place{i}" for i in range(8)]
+    """Cache-hit logging must overlap without holding the shared cache lock."""
+    names = ["Place0", "Place1"]
     for name in names:
-        pc.get_details(name, "Goa")  # warm the cache: each becomes a hit below
+        pc.get_details(name, "Goa")
 
-    delay = 0.05
-    real_record_cache = pc._record_cache
+    ready = threading.Barrier(len(names), timeout=15)
+    logged = []
 
-    def slow_record_cache(*args, **kwargs):
-        time.sleep(delay)
-        return real_record_cache(*args, **kwargs)
+    def concurrent_record_cache(result, **fields):
+        if result == "memory_hit":
+            ready.wait()
+            logged.append(result)
 
-    monkeypatch.setattr(pc, "_record_cache", slow_record_cache)
-
-    start = time.perf_counter()
+    monkeypatch.setattr(pc, "_record_cache", concurrent_record_cache)
     pc.prefetch(names, "Goa", max_photos=0, with_reviews=False)
-    elapsed = time.perf_counter() - start
 
-    # Serialized (logging inside the lock): ~len(names) * delay (0.4s).
-    # Parallel (logging outside the lock): close to one `delay` (0.05s).
-    assert elapsed < delay * len(names) / 2
+    assert logged == ["memory_hit"] * len(names)
 
 
 def test_lookup_place_propagates_circuit_open_instead_of_swallowing_it(

@@ -94,7 +94,7 @@ trip through shared API contracts.
 | `src/tripplanner/trip_events.py` | Durable trip event ownership |
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
-| `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py` | Private diagnostic events: full model/tool and planner HTTP evidence, provider attempts, seven-day local/Cosmos spool, integrity-checked operator export; see operations SLO runbook |
+| `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py`, `diagnostic_retention.py` | Bounded private diagnostic metadata and failure excerpts; asynchronous 25-event batches, seven-day retention, 50 MiB local spool cap, and integrity-checked legacy/batch export; successful model/tool/workspace payloads are omitted by default |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics; low-level success telemetry still reaches observers/aggregate ledgers and one aggregate flight event, while console and rotating app logs show human-readable API, capped local LLM-prompt preview plus full counts, tool, detailed provider, workflow, failure, and per-interaction summary lines instead of successful per-cache/per-storage noise |
 | `src/tripplanner/debug_store.py` | Internal implementation of the Trip Flight Recorder: automatic local-only history of real trip revisions for investigation and emulator restore; never active in hosted mode |
 | `src/tripplanner/validation/` | Trip Quality Audit implementation: Trip Quality Corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, comparable-run summaries (brief 004), and durable provenance aliases used by local inspection links |
@@ -139,6 +139,14 @@ surface only, so each entry still follows its stable or volatile TTL policy.
 180 days by default in all profiles, subject to `CACHE_TTL_SCALE`; explicit photo
 refresh still bypasses the cache. This controls local reuse, not the provider's
 URL validity period, so a provider-expired URL can require earlier refresh.
+Photo resolution serializes overlapping requests for the same place; a failed
+refresh preserves existing URLs without advancing their freshness timestamp
+and pauses repeat resolution for 30 seconds. Full-warming mode schedules a
+durable write after successful photo resolution, under its existing cache policy.
+Trip view loads and successful switches attach their resolved trip ID to the
+shared usage batch, including worker-thread provider calls and cost settlement.
+Google HTTP 429 attempts remain failures in usage telemetry but carry zero
+estimated spend and `billing_status=quota_rejected`.
 `SECONDARY_DURABLE_CACHE_ENABLED=1` adds a cache-only durable fallback after a
 primary durable miss. Its endpoint, database, emulator guard, authentication,
 and enablement are independent settings. Fresh shared Places and global tool

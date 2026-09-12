@@ -1798,7 +1798,34 @@ the outcome.
   tools returning `Error:` must report a rejected result even without a Python
   exception; a completed function call is not a successful trip mutation.
 
+## 2026-09-12 - Count View Work And Distinguish Quota Rejections
 
+- Creation counts do not measure provider load: map, gallery, switch, and
+  destination requests can spend independently. Bind their resolved trip ID to
+  the shared usage batch before provider work, including across worker contexts.
+- Lock the entire photo cache-check/fetch/update operation per place. Locking
+  only dictionary access lets simultaneous panels resolve the same photo twice.
+  A failed refresh must not replace usable URLs or advance their freshness.
+- Keep quota-rejected attempts observable without pricing them as successful
+  responses; retain the precise quota limit in alerts. Gross catalog estimates,
+  eligible regional rates, free allowances, and provider invoices are distinct.
+
+## 2026-09-12 - Count Bytes And Writes, Not Only Events
+
+- Kashmir's 83 retained events contained 5.36 MB of uncompressed data: 12 model
+  starts plus six wire requests and duplicate nested tool callbacks. Give bodies
+  one owner, keep normal successes metadata-only, and bound failure excerpts.
+- An asynchronous diagnostic queue may lose events on overload/crash; expose that
+  explicitly and keep trip persistence and monetary accounting outside it.
+- Test-contaminated provider ledgers cannot establish real API usage. Cache-hit
+  rows marked attempted=false are not remote requests; attribution alone does not
+  prove that a record is real or synthetic.
+- Use task-named agent branches for features. Reuse gpt-bugfixes only when clean
+  and idle; generic Coordinator branches obscure ownership across active agents.
+- Offline replay of the six recorded Kashmir HTTP attempts reduced that layer
+  from 4,417,663 to 157,761 uncompressed bytes (96.4%) while retaining all attempt
+  metadata and bounded error evidence. This measures stored representation, not
+  live application latency or the whole telemetry footprint.
 ## 2026-09-12 - Persist The Draft And Learn Without Approval Gates
 
 - A profile suggestion is not saved memory. Explicit conversational facts need an
@@ -1812,3 +1839,30 @@ the outcome.
   retrying older failed messages; do not make provider latency a chat input gate.
 - Agent-identifiable task branches keep concurrent ownership clear. Git branches
   are cheap; isolated dependency installs and runtimes are separate choices.
+
+
+## 2026-09-12 - Prove Concurrency Without Racing The Host
+
+- Full two-way sync ran overlapping suites, and elapsed-time assertions confused
+  host contention with serialization. Rendezvous barriers prove tool calls and
+  cache-hit logging overlap; a timeout remains only a deadlock guard.
+- Search correctness needs a controlled clock, with deadline exhaustion tested
+  separately. Likewise, route-contract tests use deterministic measurement ticks
+  while explicit boundary tests preserve the benchmark's real p95 rejection gate.
+- Live request admission tests should isolate background learning and release
+  blocked model work before joining their executor, even when an assertion fails.
+- Native validation output must be piped into PowerShell's transcript. An exit
+  code saying pytest failed without the failed nodes is insufficient repair evidence.
+## 2026-09-12 - Inspect Full Process Identity and Wait for Exit State
+
+- POSIX process ownership must use untruncated command output (`ps -ww`); long interpreter arguments can hide the session marker and falsely classify a live worker as stale. A long-command regression protects the shutdown boundary.
+- Pipe EOF precedes final process exit, and a killed descendant can remain a zombie until its parent or init reaps it. Lifecycle tests must wait for bounded exit/reaping and distinguish executing processes from zombies rather than assume PID disappearance is immediate.
+
+
+## 2026-09-12 - Bound Frontend Workers And Flush External Updates
+
+- A fresh worktree with four Vitest workers still timed out starting jsdom
+  workers under concurrent validation. Limit the shared pool to two instead
+  of increasing every test timeout.
+- Wrap externally dispatched preference changes in React act so assertions
+  observe the resulting effects, rather than racing a one-second polling window.
