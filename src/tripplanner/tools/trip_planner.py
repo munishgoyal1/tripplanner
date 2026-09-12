@@ -253,7 +253,8 @@ def add_hotel_stay(
         return {
             "ok": True,
             "alerts": [
-                f"Added {hotel_name}. Once your day-by-day itinerary is structured, you can assign stay dates."
+                f"Added {hotel_name}. Once your day-by-day itinerary is structured, "
+                "you can assign stay dates."
             ],
             "trip": plan,
             "placement": None,
@@ -357,7 +358,10 @@ def add_hotel_stay(
             key = nm.lower()
             if key in seen:
                 continue
-            if key in replaced_old_names and key not in still_used_hotels and key != hotel_name.lower():
+            if (
+                key in replaced_old_names and key not in still_used_hotels
+                and key != hotel_name.lower()
+            ):
                 continue
             cleaned.append(item)
             seen.add(key)
@@ -1375,7 +1379,10 @@ def _ensure_selected_flight_legs(plan: dict[str, Any], previous_origin: str = ""
     origin = str(plan.get("origin") or "").strip()
     destination = str(plan.get("destination") or "").strip()
     itinerary = plan.get("day_wise_itinerary")
-    if not origin or not destination or origin.casefold() == destination.casefold() or not itinerary:
+    if (
+        not origin or not destination or origin.casefold() == destination.casefold()
+        or not itinerary
+    ):
         return []
     days = [day for day in itinerary if isinstance(day, dict)]
     if not days:
@@ -1471,6 +1478,13 @@ def update_trip_plan(updates_json: str) -> str:
     except json.JSONDecodeError:
         return "Error: invalid JSON."
 
+    flight_edit = updates.get("_edit_scope") == "flights"
+    if flight_edit and set(updates) - {
+        "_edit_scope", "selected_flights", "origin", "travel_scope",
+        "cost_breakdown", "total_cost", "notes", "day_wise_itinerary",
+    }:
+        return "Error: a flight-only request may not change unrelated trip selections."
+
     if "day_wise_itinerary" in updates and not has_structured_itinerary(updates):
         return (
             "Error: day_wise_itinerary must contain the full structured itinerary "
@@ -1547,9 +1561,20 @@ def update_trip_plan(updates_json: str) -> str:
             plan[key] = val
 
     resettled_days: list[int] = []
+    if flight_edit:
+        old_days = before.get("day_wise_itinerary") or []
+        new_days = plan.get("day_wise_itinerary") or []
+        if len(old_days) != len(new_days) or old_days[1:-1] != new_days[1:-1]:
+            return (
+                "Error: a flight-only request must preserve all intermediate itinerary days. "
+                "Update only flight selections and the arrival/departure days."
+            )
     if "day_wise_itinerary" in updates:
         resettled_days = _fit_plan_to_departure(plan)
         time_errors = _itinerary_time_errors(plan.get("day_wise_itinerary"))
+        if flight_edit:
+            old_errors = set(_itinerary_time_errors(before.get("day_wise_itinerary")))
+            time_errors = [error for error in time_errors if error not in old_errors]
         if time_errors:
             return (
                 "Error: itinerary times must increase in circuit order. "
@@ -1591,10 +1616,16 @@ def update_trip_plan(updates_json: str) -> str:
         }
     restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
 
-    resettled_days = list(dict.fromkeys([*resettled_days, *_settle_plan_legs(plan)]))
-    closed_day_repairs = _repair_known_closed_days(plan)
-    opening_hours_repairs = _repair_known_opening_hours(plan)
-    feasibility_repairs = _repair_temporal_infeasibility(plan)
+    repair_plan = plan
+    if flight_edit:
+        days = plan.get("day_wise_itinerary") or []
+        repair_plan = {
+            **plan, "day_wise_itinerary": days[:1] + (days[-1:] if len(days) > 1 else []),
+        }
+    resettled_days = list(dict.fromkeys([*resettled_days, *_settle_plan_legs(repair_plan)]))
+    closed_day_repairs = [] if flight_edit else _repair_known_closed_days(plan)
+    opening_hours_repairs = [] if flight_edit else _repair_known_opening_hours(plan)
+    feasibility_repairs = [] if flight_edit else _repair_temporal_infeasibility(plan)
     violations = validate_plan(plan)
     calendar_errors = [
         violation.message for violation in violations if violation.code == "I14"
@@ -1896,7 +1927,9 @@ def execute_bookings() -> str:
     _delete_active_trip()
 
     results.append("\n✅ All bookings executed! Trip saved to your history.")
-    results.append("After your trip, update the rating with record_past_trip to improve future suggestions.")
+    results.append(
+        "After your trip, update the rating with record_past_trip to improve future suggestions."
+    )
     return "\n".join(results)
 
 

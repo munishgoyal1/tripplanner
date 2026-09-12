@@ -493,6 +493,21 @@ def test_full_prompt_strips_secret_shaped_strings(tmp_path, monkeypatch):
     assert "<redacted>" in parsed["prompt_full"]
 
 
+def test_full_local_prompt_retains_tail_beyond_old_limit(tmp_path, monkeypatch):
+    target = tmp_path / "app.jsonl"
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    monkeypatch.setenv("LOG_FULL_LLM_PROMPTS", "1")
+    obs.setup_logging(force=True)
+    prompt = "[system] " + "instructions " * 7000 + "[human] add Bangalore flights"
+    obs.log_llm_prompt(
+        "test", prompt, message_count=2, prompt_chars=len(prompt), full_prompt_text=prompt,
+    )
+    parsed = json.loads(target.read_text(encoding="utf-8").strip())
+    assert parsed["prompt_full"] == prompt
+    assert parsed["prompt_full_truncated"] is False
+
+
 def test_full_prompt_is_absent_when_flag_is_off(tmp_path, monkeypatch):
     target = tmp_path / "diagnostics" / "app.jsonl"
     monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")

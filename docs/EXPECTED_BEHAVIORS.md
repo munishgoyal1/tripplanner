@@ -45,8 +45,16 @@ planning loads preferences and duration advice before one creation. Empty-worksp
 planning and proposal-only review do not require this departure confirmation. Unknown indispensable
 facts and past saved dates may require clarification; provider facts stay grounded.
 
+Flight-only follow-ups preserve intermediate itinerary days and do not force
+hotel, restaurant or attraction research to repair pre-existing gaps. Flights
+may adjust arrival/departure timing and transfers. Two no-material-change saves
+or identical rejected saves end further tool work with an honest status instead
+of an unbounded repair loop.
+
 **Executable proof:**
 
+- [`tests/test_flight_followup.py`](../tests/test_flight_followup.py) exercises flight
+  scope, no-progress termination, model tool selection, and persistence preservation.
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_receives_fresh_trip_context_without_history` and `test_existing_trip_followups_cannot_create_another_trip` cover fresh context and tool availability across destinations and request types.
 - [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_trip_departure_requires_a_clear_whole_trip_request` covers conservative detection and proposal-only behavior.
 - [`tests/test_usage.py`](../tests/test_usage.py) - `test_chat_preserves_trip_departure_notice` covers JSON/SSE notice delivery and transcript persistence. Natural-language compliance still requires a live model check.

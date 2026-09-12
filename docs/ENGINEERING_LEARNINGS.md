@@ -2040,3 +2040,16 @@ the outcome.
   and process restart separately from the configuration change.
 - Backend request durations do not measure browser cold startup. Report the
   observed timing layer and avoid claiming an unmeasured end-to-end speedup.
+
+## 2026-09-12 - Keep Flight Edits Out Of Whole-Trip Repair
+
+- Kashmir's flight-only request ran 53 model rounds and 49 saves because generic
+  completion gates forced hotel/meal research and then repeatedly repaired old
+  gaps. Scope completion checks and tool availability to the requested component;
+  enforce preservation at persistence, not only in prompt wording.
+- A successful tool return can say "no material changes". Treat consecutive no-op
+  saves and identical rejected saves as lack of progress and end tool work. A
+  second completion rule must not bypass the first rule's bounded save attempts.
+- A setting named full prompt logging still truncated after 20,000 characters.
+  Verify the retained tail and tool configuration, not merely that a log field
+  exists. Turn ordinals count user requests; many model rounds can share one turn.
