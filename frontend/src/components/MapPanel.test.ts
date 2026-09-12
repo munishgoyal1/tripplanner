@@ -33,6 +33,12 @@ import {
 } from "./MapPanel";
 import MapPanel from "./MapPanel";
 
+interface TestPolylineOptions {
+  path: Array<{ lat: number; lng: number }>;
+  strokeColor?: string;
+  geodesic?: boolean;
+}
+
 const { fetchMapsConfigMock, fetchMapViewMock } = vi.hoisted(() => ({
   fetchMapsConfigMock: vi.fn(),
   fetchMapViewMock: vi.fn(),
@@ -868,7 +874,7 @@ describe("map stop selection", () => {
         setZIndex: vi.fn(),
       };
     });
-    const polyline = vi.fn(function () { return { setMap: vi.fn() }; });
+    const polyline = vi.fn(function (_options: TestPolylineOptions) { return { setMap: vi.fn() }; });
     const map = {
       addListener: vi.fn(() => ({ remove: vi.fn() })),
       fitBounds,
@@ -1077,7 +1083,7 @@ describe("map stop selection", () => {
       panTo,
       setZoom: vi.fn(),
     };
-    const polyline = vi.fn(function (_options: Record<string, unknown>) {
+    const polyline = vi.fn(function (_options: TestPolylineOptions) {
       return { setMap: vi.fn() };
     });
     const marker = vi.fn(function (_options: {
