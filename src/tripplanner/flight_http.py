@@ -1,5 +1,6 @@
 """Capture each model HTTP attempt, including SDK retries and interrupted streams."""
 
+import hashlib
 import json
 import time
 import uuid
@@ -8,7 +9,37 @@ from functools import lru_cache
 import httpx
 
 from tripplanner.flight_callbacks import FlightRecorderCallback
-from tripplanner.flight_recorder import record
+from tripplanner.flight_recorder import capture_provider_bodies, enabled, record
+
+
+class BodyCapture:
+    """Count all bytes while retaining at most 64 KiB for failure diagnostics."""
+
+    limit = 64 * 1024
+
+    def __init__(self, retain=True):
+        self.data = bytearray()
+        self.size = 0
+        self.digest = hashlib.sha256()
+        self.retain = retain and enabled()
+
+    def append(self, chunk):
+        self.size += len(chunk)
+        self.digest.update(chunk)
+        if self.retain:
+            self.data.extend(chunk[:max(0, self.limit - len(self.data))])
+
+    def summary(self):
+        return {"bytes": self.size, "sha256": self.digest.hexdigest(),
+                "truncated": self.size > len(self.data)}
+
+    def body(self, content_type, include):
+        if not include or not self.retain:
+            return {"omitted": "metadata only", **self.summary()}
+        if self.size > len(self.data):
+            return {"excerpt": bytes(self.data).decode("utf-8", errors="replace"),
+                    **self.summary()}
+        return body_data(bytes(self.data), content_type)
 
 
 def body_data(body, content_type=""):
@@ -27,7 +58,12 @@ class Capture:
         self.id = uuid.uuid4().hex
         self.start = time.monotonic()
         self.sensitive = sensitive
-        self.parts = []
+        self.parts = BodyCapture(not sensitive)
+        self.request_body = BodyCapture(not sensitive)
+        self.request_body.append(request.content)
+        self.request_type = request.headers.get("content-type", "")
+        self.done = False
+        self.tail = b""
         self.finished = False
         self.status = None
         self.headers = {}
@@ -41,13 +77,23 @@ class Capture:
             retry_count=request.headers.get("x-stainless-retry-count"),
             body="<sensitive>"
             if sensitive
-            else body_data(request.content, request.headers.get("content-type", "")),
+            else self.request_body.body(self.request_type, capture_provider_bodies()),
         )
+
+    def append(self, chunk):
+        self.parts.append(chunk)
+        boundary = self.tail + chunk
+        self.done = self.done or b"data: [DONE]" in boundary
+        self.tail = boundary[-32:]
 
     def end(self, outcome, error=None):
         if self.finished:
             return
         self.finished = True
+        if outcome == "interrupted" and self.done:
+            outcome = "complete"
+        failed = outcome != "complete" or (self.status is not None and self.status >= 400)
+        include = failed or capture_provider_bodies()
         record(
             "http.result",
             attempt_id=self.id,
@@ -58,7 +104,10 @@ class Capture:
             error=str(error) if error else None,
             body="<sensitive>"
             if self.sensitive
-            else body_data(b"".join(self.parts), self.content_type),
+            else self.parts.body(self.content_type, include),
+            request_body="<sensitive>" if self.sensitive else self.request_body.body(
+                self.request_type, failed and not capture_provider_bodies()
+            ),
         )
 
 
@@ -70,7 +119,7 @@ class RecordingStream(httpx.SyncByteStream):
         try:
             for chunk in self.stream:
                 if not self.capture.sensitive:
-                    self.capture.parts.append(chunk)
+                    self.capture.append(chunk)
                 yield chunk
             self.capture.end("complete")
         except BaseException as exc:
@@ -92,7 +141,7 @@ class AsyncRecordingStream(httpx.AsyncByteStream):
         try:
             async for chunk in self.stream:
                 if not self.capture.sensitive:
-                    self.capture.parts.append(chunk)
+                    self.capture.append(chunk)
                 yield chunk
             self.capture.end("complete")
         except BaseException as exc:
@@ -112,6 +161,8 @@ class RecordingTransport(httpx.BaseTransport):
         self.sensitive = sensitive
 
     def handle_request(self, request):
+        if not enabled():
+            return self.inner.handle_request(request)
         capture = Capture(request, self.sensitive)
         try:
             response = self.inner.handle_request(request)
@@ -119,7 +170,7 @@ class RecordingTransport(httpx.BaseTransport):
             capture.headers = dict(response.headers)
             capture.content_type = response.headers.get("content-type", "")
             if response.is_stream_consumed:
-                capture.parts.append(response.content)
+                capture.append(response.content)
                 capture.end("complete")
             else:
                 response.stream = RecordingStream(response.stream, capture)
@@ -138,6 +189,8 @@ class AsyncRecordingTransport(httpx.AsyncBaseTransport):
         self.sensitive = sensitive
 
     async def handle_async_request(self, request):
+        if not enabled():
+            return await self.inner.handle_async_request(request)
         capture = Capture(request, self.sensitive)
         try:
             response = await self.inner.handle_async_request(request)
@@ -145,7 +198,7 @@ class AsyncRecordingTransport(httpx.AsyncBaseTransport):
             capture.headers = dict(response.headers)
             capture.content_type = response.headers.get("content-type", "")
             if response.is_stream_consumed:
-                capture.parts.append(response.content)
+                capture.append(response.content)
                 capture.end("complete")
             else:
                 response.stream = AsyncRecordingStream(response.stream, capture)

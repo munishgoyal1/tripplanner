@@ -10,6 +10,7 @@ from __future__ import annotations
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier
 
 import httpx
 import pytest
@@ -81,6 +82,66 @@ def test_details_cached_within_week(_isolate):
     pc.get_summary("Taj", "Goa")
     pc.get_summary("Taj", "Goa")
     assert calls["lookup"] == 1  # second call served from cache
+
+
+@pytest.mark.parametrize("refresh", [False, True])
+def test_simultaneous_photo_views_resolve_once(_isolate, monkeypatch, refresh):
+    barrier = Barrier(4)
+    resolve = pc._photo_uris
+
+    def slow_resolve(refs):
+        time.sleep(0.05)
+        return resolve(refs)
+
+    def view():
+        barrier.wait(timeout=5)
+        return pc.get_photos("Taj", "Goa", refresh=refresh)
+
+    monkeypatch.setattr(pc, "_photo_uris", slow_resolve)
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        results = list(executor.map(lambda _: view(), range(4)))
+    assert all(result == results[0] for result in results)
+    assert results[0]
+    assert _isolate["photos"] == 1
+
+
+@pytest.mark.parametrize("refresh", [False, True])
+def test_failed_photo_refresh_keeps_urls_and_retries_after_cooldown(_isolate, monkeypatch, refresh):
+    original = pc.get_photos("Taj", "Goa")
+    entry = pc._cache()[pc._key("Taj", "Goa")]
+    entry["__photos_at__"] = time.time() - pc._ttl(pc._PHOTO_TTL_S) - 1
+    stale_at = entry["__photos_at__"]
+    attempts = []
+
+    def rejected(refs):
+        attempts.append(refs)
+        return []
+
+    monkeypatch.setattr(pc, "_photo_uris", rejected)
+    assert pc.get_photos("Taj", "Goa", refresh=refresh) == original
+    entry = pc._cache()[pc._key("Taj", "Goa")]
+    assert pc.get_photos("Taj", "Goa", refresh=refresh) == original
+    assert len(attempts) == 1
+    assert entry["__photos_at__"] == stale_at
+    entry["__photos_retry_after__"] = 0
+    monkeypatch.setattr(pc, "_photo_uris", lambda refs: ["https://new-photo"])
+    assert pc.get_photos("Taj", "Goa") == ["https://new-photo"]
+    assert "__photos_retry_after__" not in entry
+
+
+def test_zero_photo_request_does_not_lookup_place(_isolate):
+    assert pc.get_photos("Taj", "Goa", max_photos=0) == []
+    assert _isolate == {"lookup": 0, "photos": 0, "reviews": 0}
+
+
+def test_full_warming_photo_result_is_persisted_after_resolution(_isolate, monkeypatch):
+    monkeypatch.setattr(pc.get_settings(), "cache_warm_everything", True)
+    original = pc.get_photos("Taj", "Goa")
+    assert pc.flush_writes()
+    pc._CACHE.clear()
+    pc._loaded = False
+    assert pc.get_photos("Taj", "Goa") == original
+    assert _isolate["photos"] == 1
 
 
 def test_places_cache_emits_miss_and_memory_hit(_isolate):

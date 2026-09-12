@@ -190,6 +190,19 @@ def test_preflight_finds_copilot_without_launching_it(tmp_path, monkeypatch) -> 
     assert all(command[0] != "copilot" for command in calls)
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX process inspection only")
+def test_process_info_preserves_long_command_ownership_marker() -> None:
+    marker = "multiagent-long-command-marker"
+    process = subprocess.Popen(  # noqa: S603 - fixed interpreter and test program
+        [sys.executable, "-c", "import time; time.sleep(60)", "x" * 4096, marker],
+    )
+    try:
+        assert runtime.owned_process_running(process.pid, marker)
+    finally:
+        process.kill()
+        process.wait(timeout=5)
+
+
 @pytest.mark.skipif(os.name == "nt", reason="POSIX child reaping only")
 def test_exited_worker_child_is_reaped_without_remaining_running() -> None:
     process = subprocess.Popen(  # noqa: S603 - fixed interpreter and inline test program
@@ -200,10 +213,18 @@ def test_exited_worker_child_is_reaped_without_remaining_running() -> None:
     assert process.stdout
     assert process.stdout.read() == "finished\n"
 
-    assert not runtime.worker_running(process.pid)
-    with pytest.raises(ChildProcessError):
-        os.waitpid(process.pid, os.WNOHANG)
-    process.returncode = 0
+    try:
+        deadline = time.monotonic() + 5
+        while runtime.worker_running(process.pid):
+            assert time.monotonic() < deadline, "child did not exit and get reaped"
+            time.sleep(0.01)
+        with pytest.raises(ChildProcessError):
+            os.waitpid(process.pid, os.WNOHANG)
+        process.returncode = 0
+    finally:
+        if process.poll() is None:
+            process.kill()
+        process.wait(timeout=5)
 
 
 @pytest.mark.skipif(os.name == "nt", reason="POSIX process groups only")
@@ -229,8 +250,13 @@ def test_stop_owned_process_forces_the_complete_process_group(tmp_path) -> None:
     try:
         assert runtime.stop_owned_process(process.pid, marker) == "forced"
         assert not runtime.owned_process_running(process.pid, marker)
-        with pytest.raises(ProcessLookupError):
-            os.kill(child_pid, 0)
+        deadline = time.monotonic() + 5
+        while True:
+            state, command = runtime.process_info(child_pid)
+            if not command or state.startswith("Z"):
+                break
+            assert time.monotonic() < deadline, "child survived process-group shutdown"
+            time.sleep(0.01)
     finally:
         try:
             os.killpg(process.pid, signal.SIGKILL)
