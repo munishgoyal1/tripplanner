@@ -9,10 +9,17 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <style>
+      .app-startup { min-height: 100vh; display: grid; place-content: center; margin: 0; padding: 24px; box-sizing: border-box; background: #f8fafc; color: #334155; font: 16px/1.6 system-ui, sans-serif; text-align: center; }
+      .app-startup strong { display: block; font-size: 24px; color: #0f172a; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><main class="app-startup" role="status"><strong>AI Tripplanner</strong>Opening your planner…</main></div>
+    <noscript>JavaScript is required to open the planner. Enable it and reload this page.</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
