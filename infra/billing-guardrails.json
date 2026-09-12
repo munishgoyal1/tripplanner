@@ -94,7 +94,7 @@
       {
         "service": "places.googleapis.com",
         "quotaId": "SearchTextRequestPerMinutePerProject",
-        "local": 60,
+        "local": 90,
         "canary": 60,
         "prod": 60
       },
@@ -150,7 +150,7 @@
       {
         "service": "places.googleapis.com",
         "quotaId": "GetPhotoMediaRequestPerMinutePerProject",
-        "local": 60,
+        "local": 120,
         "canary": 60,
         "prod": 60
       },

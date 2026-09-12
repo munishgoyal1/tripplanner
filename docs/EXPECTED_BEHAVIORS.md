@@ -339,6 +339,23 @@ or configured route-provider request.
 - [`tests/test_trip_view_api.py`](../tests/test_trip_view_api.py) - `test_corpus_header_selects_budgeted_provider_scope`
 - [`tests/test_validation_harness.py`](../tests/test_validation_harness.py) - stored-fact render coverage
 
+### EB-COST-002 - Fit one local trip burst before pacing overlapping work
+
+**Trigger:** A local trip builds and warms its itinerary and destination guide.
+
+**Expected:** A fresh quota window admits a representative burst of 80 Text
+Search and 112 Photo Media calls without an application pacing wait. The local
+limits are 90 and 120 calls/minute respectively; a second such burst in the
+same window waits. Existing daily quotas, spend admission, and alert sensitivity
+remain enforced. Canary and production retain their previous minute limits.
+This capacity target does not guarantee unbounded itineraries or isolate one
+trip from other processes sharing the Google project.
+
+**Executable proof:**
+
+- [`tests/test_places_cache.py`](../tests/test_places_cache.py) - `test_local_single_trip_burst_fits_but_overlap_waits`
+- [`tests/test_limits_derivation.py`](../tests/test_limits_derivation.py) - `test_local_burst_tuning_preserves_other_environments_and_daily_limits`
+
 ### EB-OPS-001 - Inspect interaction cost and provider flow without trip content
 
 **Trigger:** The verified owner opens API & Cost, selects a date range, or expands
