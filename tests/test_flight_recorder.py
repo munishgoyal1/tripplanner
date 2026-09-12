@@ -28,14 +28,17 @@ def evidence(monkeypatch, tmp_path):
     monkeypatch.setenv("TRIPPLANNER_FLIGHT_RECORDER_DIR", str(tmp_path))
     monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
     token = recorder.TRACE.set("test-trace")
-    yield lambda: [
-        json.loads(p.read_text(encoding="utf-8")) for p in sorted(recorder.root().glob("*.json"))
-    ]
+    def read_events():
+        recorder.flush_pending()
+        return [event for p in sorted(recorder.root().glob("*.json"))
+                for event in recorder._events(json.loads(p.read_text(encoding="utf-8")))]
+    yield read_events
+    recorder.flush_pending()
     recorder.TRACE.reset(token)
 
 
 @pytest.mark.parametrize("environment", ["local", "canary", "prod"])
-def test_records_full_prompts_in_every_environment(evidence, monkeypatch, environment):
+def test_model_callbacks_keep_metadata_in_every_environment(evidence, monkeypatch, environment):
     monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", environment)
     callback = FlightRecorderCallback()
     prompt = "Plan Kashmir 2027-04-05 for 2 adults" * 10000
@@ -62,8 +65,9 @@ def test_records_full_prompts_in_every_environment(evidence, monkeypatch, enviro
         run_id="model-1",
     )
     events = evidence()
-    assert events[0]["payload"]["messages"][0][0]["content"] == prompt
-    assert events[1]["payload"]["response"]["generations"][0][0]["message"]["tool_calls"]
+    assert events[0]["payload"]["message_count"] == 1
+    assert prompt not in json.dumps(events)
+    assert "generations" not in json.dumps(events)
     assert events[1]["duration_ms"] >= 0
     assert {e["trace_id"] for e in events} == {"test-trace"}
     assert recorder.root().name == environment
@@ -104,7 +108,7 @@ def test_cosmos_chunks_retries_and_checksum(evidence, monkeypatch):
     assert evidence() and recorder.status()["last_error"] == "TimeoutError"
     recorder.drain_once()
     assert not evidence()
-    assert recorder.decode_chunks(list(stored.values())) == original
+    assert recorder._events(recorder.decode_chunks(list(stored.values()))) == [original]
     assert recorder.status()["last_error"] == ""
     broken = [dict(next(iter(stored.values())), chunks=2)]
     with pytest.raises(ValueError, match="Incomplete"):
@@ -118,6 +122,7 @@ def test_worker_drain_is_bounded_without_changing_manual_drain(evidence, monkeyp
     monkeypatch.setattr(storage_cosmos, "upsert_doc", lambda *_args, **_kwargs: None)
     for index in range(3):
         recorder.record("test", index=index, user_id="user-a")
+        recorder.flush_pending()
 
     assert recorder._drain_once(limit=2) == 2
     assert len(evidence()) == 1
@@ -219,8 +224,8 @@ async def test_middleware_preserves_sse_and_authenticated_owner(evidence):
     terminal = evidence()[-1]
     assert terminal["complete"] is True
     assert terminal["user_id"] == "google-test"
-    assert terminal["request"] == {"message": "Plan Kashmir"}
-    assert terminal["response"] == response.text
+    assert terminal["request"]["omitted"] == "metadata only"
+    assert terminal["response"]["bytes"] == len(response.content)
 
 
 def test_trace_export_includes_research_before_trip_created(evidence):
@@ -312,7 +317,7 @@ def test_graph_tools_inherit_one_trace_without_http(evidence):
     events = evidence()
     assert {e["kind"] for e in events} >= {"graph.start", "graph.end", "tool.start", "tool.end"}
     assert len({e["trace_id"] for e in events}) == 1
-    assert "Ujjain" in json.dumps(events)
+    assert "Ujjain" not in json.dumps(events)
 
 
 def test_multichunk_payload_roundtrips_without_truncation(evidence, monkeypatch):
@@ -323,10 +328,120 @@ def test_multichunk_payload_roundtrips_without_truncation(evidence, monkeypatch)
 
     stored = []
     monkeypatch.setattr(storage_cosmos, "upsert_doc", lambda *args: stored.append(args[-1]))
-    recorder.record("test", content=base64.b64encode(os.urandom(300000)).decode())
-    original = evidence()[0]
+    original = {"kind": "test", "event_id": "large", "user_id": "test", "trace_id": "test-trace",
+                "recorded_at": "2026-09-12",
+                "content": base64.b64encode(os.urandom(300000)).decode()}
     recorder._upload(original)
     assert len(stored) > 1
     assert recorder.decode_chunks(stored) == original
     with pytest.raises(ValueError, match="Incomplete"):
         recorder.decode_chunks(stored[:-1])
+
+
+def test_events_are_batched_off_the_callers_disk_path(evidence, monkeypatch):
+    syncs = []
+    monkeypatch.setattr(recorder.os, "fsync", lambda fd: syncs.append(fd))
+    for index in range(25):
+        recorder.record("log.tool_call", user_id="batch-user", index=index)
+    assert not list(recorder.root().glob("*.json"))
+    assert not syncs
+    assert len(evidence()) == 25
+    assert len(syncs) == 1
+    assert len(list(recorder.root().glob("*.json"))) == 1
+    assert len(recorder.export_events("batch-user")) == 25
+
+
+def test_failed_batch_write_counts_loss_and_removes_partial_file(evidence, monkeypatch):
+    monkeypatch.setattr(recorder, "_dropped_events", 0)
+    monkeypatch.setattr(recorder.os, "fsync", lambda _fd: (_ for _ in ()).throw(OSError("full")))
+    recorder.record("test")
+    recorder.flush_pending()
+    assert recorder.status()["dropped_events"] == 1
+    assert not list(recorder.root().glob("*.tmp"))
+    assert not evidence()
+
+
+def test_queue_overload_is_bounded_and_failure_gets_priority(evidence, monkeypatch):
+    monkeypatch.setattr(recorder, "_QUEUE_MAX_EVENTS", 2)
+    monkeypatch.setattr(recorder, "_dropped_events", 0)
+    for _ in range(3):
+        recorder.record("log.tool_call")
+    recorder.record("llm.error", error="connection closed")
+    assert recorder.status()["queued_events"] == 2
+    assert recorder.status()["dropped_events"] == 2
+    assert any(event["kind"] == "llm.error" for event in evidence())
+
+
+def test_bodies_are_bounded_and_success_has_no_payload(evidence):
+    from tripplanner.flight_http import BodyCapture, Capture
+
+    capture = BodyCapture()
+    capture.append(b"x" * 1000000)
+    assert len(capture.data) == 65536
+    assert capture.body("text/plain", True)["truncated"] is True
+    assert "excerpt" not in capture.body("text/plain", False)
+    attempt = Capture(httpx.Request("POST", "https://model.example", json={"prompt": "large"}),
+                      sensitive=False)
+    attempt.status = 200
+    attempt.append(b"data: [DO")
+    attempt.append(b"NE]\n\n")
+    attempt.end("interrupted")
+    result = evidence()[-1]
+    assert result["outcome"] == "complete"
+    assert result["body"]["omitted"] == "metadata only"
+
+
+def test_graph_callback_does_not_duplicate_model_or_nested_tool(evidence):
+    from tripplanner.flight_callbacks import ToolRecorderCallback
+
+    callback = ToolRecorderCallback()
+    callback.on_chat_model_start({}, [[HumanMessage(content="secret itinerary")]], run_id="llm")
+    callback.on_tool_start({"name": "update"}, "big input", run_id="outer")
+    callback.on_tool_start({"name": "update"}, "big input", run_id="inner", parent_run_id="outer")
+    callback.on_tool_end("big result", run_id="inner", parent_run_id="outer")
+    callback.on_tool_end("big result", run_id="outer")
+    assert [event["kind"] for event in evidence()] == ["tool.start", "tool.end"]
+
+
+def test_retention_enforces_age_and_disk_cap(tmp_path):
+    import os
+    import time
+
+    from tripplanner.diagnostic_retention import prune
+
+    for name in ("expired.json", "old.json", "new.json"):
+        (tmp_path / name).write_bytes(b"x" * 10)
+    os.utime(tmp_path / "expired.json", (0, 0))
+    os.utime(tmp_path / "old.json", (time.time() - 2, time.time() - 2))
+    prune(tmp_path, "*.json", max_bytes=10, max_age=100)
+    assert [path.name for path in tmp_path.glob("*.json")] == ["new.json"]
+
+
+def test_six_large_successful_model_requests_have_small_evidence(evidence):
+    content = "large itinerary context " * 10000
+    callback = FlightRecorderCallback()
+    with httpx.Client(transport=RecordingTransport(httpx.MockTransport(
+        lambda request: httpx.Response(200, json={"reply": content})
+    ))) as client:
+        for index in range(6):
+            callback.on_chat_model_start({}, [[HumanMessage(content=content)]], run_id=str(index))
+            response = client.post("https://model.example/chat", json={"prompt": content})
+            callback.on_llm_end(None, run_id=str(index))
+            assert response.json()["reply"] == content
+    events = evidence()
+    assert len(events) == 24
+    assert len(json.dumps(events).encode()) < 25000
+    assert content not in json.dumps(events)
+
+
+def test_verbose_http_capture_is_opt_in_and_bounded(evidence, monkeypatch):
+    monkeypatch.setenv("TRIPPLANNER_FLIGHT_RECORDER_VERBOSE", "1")
+    content = "z" * 100000
+    with httpx.Client(transport=RecordingTransport(httpx.MockTransport(
+        lambda request: httpx.Response(200, text=content)
+    ))) as client:
+        assert client.post("https://model.example/chat", content=content).text == content
+    events = evidence()
+    assert events[0]["body"]["truncated"] is True
+    assert events[1]["body"]["truncated"] is True
+    assert len(events[1]["body"]["excerpt"]) == 65536

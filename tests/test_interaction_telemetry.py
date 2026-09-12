@@ -79,7 +79,7 @@ def test_local_interaction_trace_retains_aggregate_units_not_cache_rows(
     monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
 
-    with usage_scope("user_action", interaction_id="turn-cache-summary"):
+    with usage_scope("user_trip", interaction_id="turn-cache-summary"):
         for _index in range(25):
             provider_usage.record_cache_hit(
                 provider="google",
@@ -117,3 +117,11 @@ def test_nested_trip_scope_labels_the_shared_interaction_trace(monkeypatch, tmp_
     assert trace["interaction"]["interaction_kind"] == "trip_update"
     assert trace["interaction"]["trip_id"] == "trip-1"
     assert {event["interaction_id"] for event in trace["events"]} == {"turn-nested"}
+
+
+def test_successful_workspace_reads_do_not_create_study_files(monkeypatch, tmp_path):
+    monkeypatch.setenv("TRIPPLANNER_HOME", str(tmp_path))
+    with usage_scope("user_action", route="GET /trip/workspace"):
+        app_event("storage_operation", status="ok")
+        provider_usage.record_cache_hit(provider="google", operation="place_details")
+    assert not list((tmp_path / "trip-telemetry").rglob("*.json"))

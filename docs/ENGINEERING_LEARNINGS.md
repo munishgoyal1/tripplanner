@@ -1810,6 +1810,22 @@ the outcome.
   responses; retain the precise quota limit in alerts. Gross catalog estimates,
   eligible regional rates, free allowances, and provider invoices are distinct.
 
+## 2026-09-12 - Count Bytes And Writes, Not Only Events
+
+- Kashmir's 83 retained events contained 5.36 MB of uncompressed data: 12 model
+  starts plus six wire requests and duplicate nested tool callbacks. Give bodies
+  one owner, keep normal successes metadata-only, and bound failure excerpts.
+- An asynchronous diagnostic queue may lose events on overload/crash; expose that
+  explicitly and keep trip persistence and monetary accounting outside it.
+- Test-contaminated provider ledgers cannot establish real API usage. Cache-hit
+  rows marked attempted=false are not remote requests; attribution alone does not
+  prove that a record is real or synthetic.
+- Use task-named agent branches for features. Reuse gpt-bugfixes only when clean
+  and idle; generic Coordinator branches obscure ownership across active agents.
+- Offline replay of the six recorded Kashmir HTTP attempts reduced that layer
+  from 4,417,663 to 157,761 uncompressed bytes (96.4%) while retaining all attempt
+  metadata and bounded error evidence. This measures stored representation, not
+  live application latency or the whole telemetry footprint.
 ## 2026-09-12 - Persist The Draft And Learn Without Approval Gates
 
 - A profile suggestion is not saved memory. Explicit conversational facts need an
