@@ -38,7 +38,7 @@ export default defineConfig({
     // temp worktree. A fixed cap avoids that oversubscription (same
     // rationale as pytest -n 2 in full-2way-sync.ps1) while still running
     // files in parallel.
-    maxWorkers: 4,
+    maxWorkers: 2,
     projects: [
       {
         extends: true,

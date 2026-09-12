@@ -364,7 +364,6 @@ def test_chat_admission_rejects_overlapping_turn_for_same_user(monkeypatch) -> N
 def test_live_chat_requests_enforce_same_user_concurrency(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     from langchain_core.messages import AIMessage
 
-    from tripplanner import usage
     from tripplanner.graph import app_graph
 
     entered_model = threading.Event()
@@ -372,11 +371,12 @@ def test_live_chat_requests_enforce_same_user_concurrency(monkeypatch) -> None: 
 
     def invoke(_state, **_config):  # type: ignore[no-untyped-def]
         entered_model.set()
-        assert release_model.wait(timeout=2)
+        assert release_model.wait(timeout=15)
         return {"messages": [AIMessage(content="ready")], "current_agent": "trip"}
 
     monkeypatch.setenv("CHAT_MAX_CONCURRENT_PER_USER", "1")
     monkeypatch.setenv("CHAT_USER_REQUESTS_PER_MINUTE", "10")
+    monkeypatch.setattr(api, "_schedule_learning_sweep", lambda *_args: None)
     monkeypatch.setattr(app_graph, "invoke", invoke)
     monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: None)
     monkeypatch.setattr(api, "_load_chat_request", lambda _request_id: (None, [], None))
@@ -394,12 +394,14 @@ def test_live_chat_requests_enforce_same_user_concurrency(monkeypatch) -> None: 
     try:
         with ThreadPoolExecutor(max_workers=2) as pool:
             first = pool.submit(post_chat, "request-1")
-            assert entered_model.wait(timeout=2)
-            overlapping = post_chat("request-2")
-            assert overlapping.status_code == 429
-            assert "already in progress" in overlapping.json()["detail"]
-            release_model.set()
-            assert first.result(timeout=2).status_code == 200
+            try:
+                assert entered_model.wait(timeout=15)
+                overlapping = post_chat("request-2")
+                assert overlapping.status_code == 429
+                assert "already in progress" in overlapping.json()["detail"]
+            finally:
+                release_model.set()
+            assert first.result(timeout=15).status_code == 200
 
         follow_up = post_chat("request-3")
         assert follow_up.status_code == 200
@@ -411,7 +413,6 @@ def test_live_chat_requests_enforce_same_user_concurrency(monkeypatch) -> None: 
 def test_live_chat_blocks_workspace_mutation_until_release(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     from langchain_core.messages import AIMessage
 
-    from tripplanner import usage
     from tripplanner.graph import app_graph
     from tripplanner.web import trip_operations
 
@@ -420,9 +421,10 @@ def test_live_chat_blocks_workspace_mutation_until_release(monkeypatch) -> None:
 
     def invoke(_state, **_config):  # type: ignore[no-untyped-def]
         entered_model.set()
-        assert release_model.wait(timeout=2)
+        assert release_model.wait(timeout=15)
         return {"messages": [AIMessage(content="ready")], "current_agent": "trip"}
 
+    monkeypatch.setattr(api, "_schedule_learning_sweep", lambda *_args: None)
     monkeypatch.setattr(app_graph, "invoke", invoke)
     monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: None)
     monkeypatch.setattr(api, "_load_chat_request", lambda _request_id: (None, [], None))
@@ -442,15 +444,17 @@ def test_live_chat_blocks_workspace_mutation_until_release(monkeypatch) -> None:
                 "/chat",
                 json={"message": "plan goa", "request_id": "request-1"},
             )
-            assert entered_model.wait(timeout=2)
-            blocked = client().post(
-                "/trip/select",
-                json={"kind": "attraction", "name": "Fort Aguada"},
-            )
-            assert blocked.status_code == 409
-            assert "active Assistant request" in blocked.json()["detail"]
-            release_model.set()
-            assert first.result(timeout=2).status_code == 200
+            try:
+                assert entered_model.wait(timeout=15)
+                blocked = client().post(
+                    "/trip/select",
+                    json={"kind": "attraction", "name": "Fort Aguada"},
+                )
+                assert blocked.status_code == 409
+                assert "active Assistant request" in blocked.json()["detail"]
+            finally:
+                release_model.set()
+            assert first.result(timeout=15).status_code == 200
 
         succeeded = client().post(
             "/trip/select",
@@ -626,7 +630,11 @@ def test_local_inspection_restores_an_exact_audit_record(monkeypatch) -> None:  
     monkeypatch.setattr(
         trip_operations,
         "workspace_payload",
-        lambda plan: {"ok": True, "view": {"trip_id": plan["trip_id"]}, "itinerary": plan["day_wise_itinerary"]},
+        lambda plan: {
+            "ok": True,
+            "view": {"trip_id": plan["trip_id"]},
+            "itinerary": plan["day_wise_itinerary"],
+        },
     )
     client = _local(monkeypatch)
 

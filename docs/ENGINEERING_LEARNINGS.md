@@ -1840,7 +1840,29 @@ the outcome.
 - Agent-identifiable task branches keep concurrent ownership clear. Git branches
   are cheap; isolated dependency installs and runtimes are separate choices.
 
+
+## 2026-09-12 - Prove Concurrency Without Racing The Host
+
+- Full two-way sync ran overlapping suites, and elapsed-time assertions confused
+  host contention with serialization. Rendezvous barriers prove tool calls and
+  cache-hit logging overlap; a timeout remains only a deadlock guard.
+- Search correctness needs a controlled clock, with deadline exhaustion tested
+  separately. Likewise, route-contract tests use deterministic measurement ticks
+  while explicit boundary tests preserve the benchmark's real p95 rejection gate.
+- Live request admission tests should isolate background learning and release
+  blocked model work before joining their executor, even when an assertion fails.
+- Native validation output must be piped into PowerShell's transcript. An exit
+  code saying pytest failed without the failed nodes is insufficient repair evidence.
 ## 2026-09-12 - Inspect Full Process Identity and Wait for Exit State
 
 - POSIX process ownership must use untruncated command output (`ps -ww`); long interpreter arguments can hide the session marker and falsely classify a live worker as stale. A long-command regression protects the shutdown boundary.
 - Pipe EOF precedes final process exit, and a killed descendant can remain a zombie until its parent or init reaps it. Lifecycle tests must wait for bounded exit/reaping and distinguish executing processes from zombies rather than assume PID disappearance is immediate.
+
+
+## 2026-09-12 - Bound Frontend Workers And Flush External Updates
+
+- A fresh worktree with four Vitest workers still timed out starting jsdom
+  workers under concurrent validation. Limit the shared pool to two instead
+  of increasing every test timeout.
+- Wrap externally dispatched preference changes in React act so assertions
+  observe the resulting effects, rather than racing a one-second polling window.

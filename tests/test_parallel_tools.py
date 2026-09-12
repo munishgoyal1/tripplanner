@@ -9,6 +9,7 @@ sequential round-trip per tool.
 from __future__ import annotations
 
 import operator
+import threading
 import time
 from types import SimpleNamespace
 from typing import Annotated, TypedDict
@@ -54,23 +55,23 @@ def _make_graph(tools):
 
 
 def test_tool_node_runs_parallel_tool_calls_concurrently() -> None:
-    app = _make_graph([slow_one, slow_two, slow_three])
+    ready = threading.Barrier(3, timeout=15)
+
+    @tool
+    def rendezvous(name: str) -> str:
+        """Return only after all three tool calls have entered."""
+        ready.wait()
+        return name
+
+    app = _make_graph([rendezvous])
     ai = AIMessage(
         content="",
         tool_calls=[
-            {"name": "slow_one", "args": {}, "id": "c1"},
-            {"name": "slow_two", "args": {}, "id": "c2"},
-            {"name": "slow_three", "args": {}, "id": "c3"},
+            {"name": "rendezvous", "args": {"name": name}, "id": f"c{index}"}
+            for index, name in enumerate(("one", "two", "three"))
         ],
     )
-    start = time.monotonic()
     out = app.invoke({"messages": [ai]})
-    elapsed = time.monotonic() - start
-
-    # Three 300ms sleeps run in parallel should finish well under the serial
-    # 900ms. Be generous on the CI ceiling but still well below the serial
-    # baseline.
-    assert elapsed < 0.7, f"ToolNode ran serially (took {elapsed:.2f}s)"
 
     tool_messages = [
         message
