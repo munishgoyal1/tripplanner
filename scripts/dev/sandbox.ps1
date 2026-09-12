@@ -166,6 +166,13 @@ param(
     [Parameter(ParameterSetName = "Merge")]
     [switch]$SkipValidation,
 
+    # Run every gate for this invocation, including any suspended in
+    # scripts/dev/validation-policy.json. Exported rather than passed so it also
+    # reaches the nested sandbox.ps1/multiagent.py calls this script makes.
+    [Parameter(ParameterSetName = "Promote")]
+    [Parameter(ParameterSetName = "Merge")]
+    [switch]$FullSuites,
+
     [Parameter(ParameterSetName = "Merge")]
     [switch]$AllowDirtyPrimary,
 
@@ -182,6 +189,13 @@ $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/vscode-cli.ps1"
 . "$PSScriptRoot/lib/sandbox-registry.ps1"
 . "$PSScriptRoot/lib/gh-cli.ps1"
+. "$PSScriptRoot/lib/validation-policy.ps1"
+
+# Set before anything validates, and left set for the lifetime of this process so
+# the nested sandbox.ps1 -Merge and multiagent.py calls this script makes inherit
+# it. Threading a parameter through those call sites instead is how the three
+# gate implementations drifted apart last time.
+if ($FullSuites) { $null = Enable-FullSuitesForThisRun }
 
 # Isolated port slots. Canonical stack uses 8000/5173/5175 and stays untouched.
 $ApiBase = 8100
@@ -308,7 +322,6 @@ function Get-VenvPython {
 function Invoke-SandboxValidation {
     param([Parameter(Mandatory = $true)][string]$Worktree)
 
-    Write-Host "[check]   pytest" -ForegroundColor Cyan
     $python = Get-VenvPython
     # The shared venv installs tripplanner from the primary checkout, so without
     # PYTHONPATH the suite silently imports the wrong tree and "passes".
@@ -316,15 +329,34 @@ function Invoke-SandboxValidation {
     $env:PYTHONPATH = Join-Path $Worktree "src"
     Push-Location $Worktree
     try {
-        # A fixed worker count beats "auto": this machine normally runs several
-        # sandboxes/dev stacks at once, and letting xdist claim every logical
-        # core (`-n auto`) measured 2x SLOWER than serial from the contention.
-        # -n 4 was faster still, but its own worker-vs-worker contention made
-        # timing/iteration-budgeted tests (trip_rebalance's search budget, the
-        # performance-baseline p95 gate) flake under real concurrent load from
-        # other lanes/agents. -n 2 keeps most of the speedup with less of that.
-        & $python -m pytest tests -q -n 2 2>&1 | Out-Host
-        if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
+        if (Test-GateEnabled "lint") {
+            # Seconds, and it catches the syntax errors and undefined names that a
+            # suspended pytest would otherwise only reveal at the next health run.
+            #
+            # The same narrow selection CI uses, not the project's full ruff config:
+            # `ruff check src tests` under the configured E,F,I,N,W,UP currently
+            # reports ~145 findings (mostly E501) on master, so gating on it would
+            # be red from the first run. That backlog is real but it is a cleanup
+            # task, not a merge gate. See docs/development/testing.md.
+            Write-Host "[check]   ruff" -ForegroundColor Cyan
+            & $python -m ruff check --select E9,F63,F7,F82 src tests 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { throw "ruff failed; fix it before shipping." }
+        }
+
+        if (Test-GateEnabled "pytest") {
+            Write-Host "[check]   pytest" -ForegroundColor Cyan
+            # A fixed worker count beats "auto": this machine normally runs several
+            # sandboxes/dev stacks at once, and letting xdist claim every logical
+            # core (`-n auto`) measured 2x SLOWER than serial from the contention.
+            # -n 4 was faster still, but its own worker-vs-worker contention made
+            # timing/iteration-budgeted tests (trip_rebalance's search budget, the
+            # performance-baseline p95 gate) flake under real concurrent load from
+            # other lanes/agents. -n 2 keeps most of the speedup with less of that.
+            & $python -m pytest tests -q -n 2 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
+        } else {
+            Write-SuspendedGateNotice "pytest"
+        }
     } finally {
         Pop-Location
         $env:PYTHONPATH = $previousPythonPath
@@ -343,12 +375,22 @@ function Invoke-SandboxValidation {
             & npm install 2>&1 | Out-Host
             if ($LASTEXITCODE -ne 0) { throw "npm install failed; fix it before shipping." }
         }
-        Write-Host "[check]   tsc" -ForegroundColor Cyan
-        & npx tsc --noEmit 2>&1 | Out-Host
-        if ($LASTEXITCODE -ne 0) { throw "tsc failed; fix it before shipping." }
-        Write-Host "[check]   vitest" -ForegroundColor Cyan
-        & npx vitest run 2>&1 | Out-Host
-        if ($LASTEXITCODE -ne 0) { throw "vitest failed; fix it before shipping." }
+        if (Test-GateEnabled "build") {
+            # `npm run build` is `tsc -b && vite build`, so this IS the typecheck
+            # as well as the build -- and a broader one than the `npx tsc --noEmit`
+            # it replaced, which ran without -b and so never walked the project
+            # references that labs/ and inspector/ sit behind.
+            Write-Host "[check]   typecheck + build" -ForegroundColor Cyan
+            & npm run build 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { throw "build failed; fix it before shipping." }
+        }
+        if (Test-GateEnabled "vitest") {
+            Write-Host "[check]   vitest" -ForegroundColor Cyan
+            & npx vitest run 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { throw "vitest failed; fix it before shipping." }
+        } else {
+            Write-SuspendedGateNotice "vitest"
+        }
     } finally {
         Pop-Location
     }

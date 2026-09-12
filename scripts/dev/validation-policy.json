@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "_comment": [
+    "Single source of truth for which validation gates run locally.",
+    "Read by scripts/dev/lib/validation-policy.ps1 (sandbox.ps1, full-2way-sync.ps1)",
+    "and scripts/dev/validation_policy.py (multiagent.py). Changing a gate here",
+    "changes every local call site at once; no code edit is needed.",
+    "Set TRIPPLANNER_FULL_SUITES=1 to force every gate on for one shell or one run.",
+    "A missing or unreadable file fails closed: every gate runs."
+  ],
+  "gates": {
+    "lint": {
+      "state": "required"
+    },
+    "typecheck": {
+      "state": "required"
+    },
+    "build": {
+      "state": "required"
+    },
+    "pytest": {
+      "state": "required"
+    },
+    "vitest": {
+      "state": "required"
+    }
+  },
+  "health_check": "scripts/dev/suite-health.ps1",
+  "baseline": "scripts/dev/test-health-baseline.json",
+  "doc": "docs/development/testing.md"
+}

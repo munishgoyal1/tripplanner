@@ -30,6 +30,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import multiagent_core as core  # noqa: E402
+import validation_policy  # noqa: E402
 
 SLOT_COUNT = 3
 LEASE_MINUTES = 15
@@ -480,23 +481,56 @@ def hydrate_audit_policy(repo: str, assignment: core.Assignment) -> bool:
 
 
 def validate(space: Workspace, worktree: Path, *, frontend: bool) -> tuple[bool, str]:
+    """Gate an integration candidate, honouring scripts/dev/validation-policy.json.
+
+    Every suspended gate still reports itself in the returned summary, because
+    that summary reaches a human through the batch PR body. A gate that vanished
+    silently would let a reduced check read as a complete one.
+
+    The summary text must never contain "frontend/" or "packages/": integrate()
+    decides whether to run the web suite by searching an assignment's *previous*
+    validation text for exactly those substrings, and then overwrites that field
+    with this summary. suspension_note() is written to respect that.
+    """
     env = dict(os.environ)
     env["PYTHONPATH"] = str(worktree / "src")
     env["TRIPPLANNER_DEBUG_STORE"] = "0"
-    backend = run(
-        [space.python(), "-m", "pytest", "-q"],
-        cwd=worktree,
-        env=env,
-        timeout=TEST_TIMEOUT_SECONDS,
-    )
-    tail = (backend.stdout or backend.stderr).strip().splitlines()
-    summary = tail[-1] if tail else "no output"
-    if backend.returncode != 0:
-        return False, f"pytest failed: {summary}"
-    report = f"pytest: {summary}"
+    parts: list[str] = []
+
+    if validation_policy.gate_enabled("lint"):
+        # CI's narrow selection, matching the PowerShell gates: the project's full
+        # ruff config is ~145 findings behind on master, so gating on it would be
+        # red from the first run.
+        lint_targets = ["--select", "E9,F63,F7,F82", "src", "tests"]
+        lint = run(
+            [space.python(), "-m", "ruff", "check", *lint_targets],
+            cwd=worktree,
+            env=env,
+            timeout=TEST_TIMEOUT_SECONDS,
+        )
+        if lint.returncode != 0:
+            lint_tail = (lint.stdout or lint.stderr).strip().splitlines()
+            return False, f"ruff failed: {lint_tail[-1] if lint_tail else 'no output'}"
+        parts.append("ruff: clean")
+
+    if validation_policy.gate_enabled("pytest"):
+        backend = run(
+            [space.python(), "-m", "pytest", "-q"],
+            cwd=worktree,
+            env=env,
+            timeout=TEST_TIMEOUT_SECONDS,
+        )
+        tail = (backend.stdout or backend.stderr).strip().splitlines()
+        summary = tail[-1] if tail else "no output"
+        if backend.returncode != 0:
+            return False, f"pytest failed: {summary}"
+        parts.append(f"pytest: {summary}")
+    else:
+        parts.append(validation_policy.suspension_note("pytest"))
 
     if not frontend:
-        return True, report + "; frontend untouched"
+        return True, "; ".join(parts) + "; web untouched"
+
     node_modules = worktree / "frontend" / "node_modules"
     if not node_modules.exists():
         install = run(
@@ -505,7 +539,28 @@ def validate(space: Workspace, worktree: Path, *, frontend: bool) -> tuple[bool,
             timeout=TEST_TIMEOUT_SECONDS,
         )
         if install.returncode != 0:
-            return False, report + "; frontend dependencies would not install"
+            return False, "; ".join(parts) + "; web dependencies would not install"
+
+    if validation_policy.gate_enabled("build"):
+        # With the web suite suspended this is the only thing standing between a
+        # broken component and the integration branch, so it is not optional
+        # parity -- it is what keeps this function meaningful.
+        built = run(
+            ["npm", "run", "build"],
+            cwd=worktree / "frontend",
+            timeout=TEST_TIMEOUT_SECONDS,
+        )
+        if built.returncode != 0:
+            build_tail = (built.stdout or built.stderr).strip().splitlines()
+            return False, "; ".join(parts) + (
+                f"; web build failed: {build_tail[-1] if build_tail else 'no output'}"
+            )
+        parts.append("web build: ok")
+
+    if not validation_policy.gate_enabled("vitest"):
+        parts.append(validation_policy.suspension_note("vitest"))
+        return True, "; ".join(parts)
+
     web = run(
         ["npm", "test", "--silent"],
         cwd=worktree / "frontend",
@@ -514,8 +569,8 @@ def validate(space: Workspace, worktree: Path, *, frontend: bool) -> tuple[bool,
     lines = (web.stdout or web.stderr).strip().splitlines()
     web_summary = next((line for line in reversed(lines) if "Tests" in line), lines[-1:] or [""])[0]
     if web.returncode != 0:
-        return False, report + f"; frontend failed: {web_summary}"
-    return True, report + f"; frontend: {web_summary}"
+        return False, "; ".join(parts) + f"; web suite failed: {web_summary}"
+    return True, "; ".join(parts) + f"; web suite: {web_summary}"
 
 
 # ----------------------------------------------------------------------------

@@ -49,12 +49,20 @@ param(
     # Bring lanes up to the base without publishing any lane work to it.
     [switch]$PullOnly,
     # Skip the test suite entirely and still publish/land the syncs it would gate.
-    [switch]$NoTest
+    [switch]$NoTest,
+    # Run every gate for this invocation, including any suspended in
+    # scripts/dev/validation-policy.json. Exported rather than passed so the
+    # nested sandbox.ps1 -Merge calls below inherit it.
+    [switch]$FullSuites
 )
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
 . "$PSScriptRoot/lib/sandbox-registry.ps1"
+. "$PSScriptRoot/lib/node-tools.ps1"
+. "$PSScriptRoot/lib/validation-policy.ps1"
+
+if ($FullSuites) { $null = Enable-FullSuitesForThisRun }
 
 $scriptRepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $commonGitDir = & git -C $scriptRepoRoot rev-parse --path-format=absolute --git-common-dir
@@ -249,14 +257,27 @@ function Invoke-BranchValidation {
     $env:PYTHONPATH = Join-Path $WorkingDirectory "src"
     Push-Location $WorkingDirectory
     try {
-        Write-Host "[check]   pytest" -ForegroundColor Cyan
-        # See sandbox.ps1: a fixed worker count avoids the oversubscription
-        # that made `-n auto` slower than serial when several worktrees run
-        # their own validation at once. -n 2 rather than -n 4: worker-vs-worker
-        # contention was flaking timing/iteration-budgeted tests under real
-        # concurrent load from other lanes/agents on this machine.
-        & $python -m pytest tests -q -n 2 2>&1 | Out-Host
-        if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
+        if (Test-GateEnabled "lint") {
+            # See sandbox.ps1: CI's narrow selection, because the project's full
+            # ruff config is ~145 findings behind on master and would make this
+            # gate red from the first run.
+            Write-Host "[check]   ruff" -ForegroundColor Cyan
+            & $python -m ruff check --select E9,F63,F7,F82 src tests 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { throw "ruff failed; fix it before shipping." }
+        }
+
+        if (Test-GateEnabled "pytest") {
+            Write-Host "[check]   pytest" -ForegroundColor Cyan
+            # See sandbox.ps1: a fixed worker count avoids the oversubscription
+            # that made `-n auto` slower than serial when several worktrees run
+            # their own validation at once. -n 2 rather than -n 4: worker-vs-worker
+            # contention was flaking timing/iteration-budgeted tests under real
+            # concurrent load from other lanes/agents on this machine.
+            & $python -m pytest tests -q -n 2 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
+        } else {
+            Write-SuspendedGateNotice "pytest"
+        }
     } finally {
         Pop-Location
         $env:PYTHONPATH = $previousPythonPath
@@ -264,6 +285,11 @@ function Invoke-BranchValidation {
 
     $frontend = Join-Path $WorkingDirectory "frontend"
     if (-not (Test-Path (Join-Path $frontend "package.json") -PathType Leaf)) { return }
+    # sandbox.ps1 pins the Node it validates with and this path never did, so a
+    # branch lane validated through a temporary worktree could run npm against an
+    # old Node shadowing a current one on PATH. It matters more now that this
+    # block runs a real build rather than a typecheck.
+    Use-CompatibleNode
     Push-Location $frontend
     try {
         # A branch validated through a fresh temporary worktree (any branch
@@ -275,12 +301,22 @@ function Invoke-BranchValidation {
             & npm install 2>&1 | Out-Host
             if ($LASTEXITCODE -ne 0) { throw "npm install failed; fix it before shipping." }
         }
-        Write-Host "[check]   tsc" -ForegroundColor Cyan
-        & npx tsc --noEmit 2>&1 | Out-Host
-        if ($LASTEXITCODE -ne 0) { throw "tsc failed; fix it before shipping." }
-        Write-Host "[check]   vitest" -ForegroundColor Cyan
-        & npx vitest run 2>&1 | Out-Host
-        if ($LASTEXITCODE -ne 0) { throw "vitest failed; fix it before shipping." }
+        if (Test-GateEnabled "build") {
+            # `npm run build` is `tsc -b && vite build`: the typecheck and the
+            # build in one pass, and broader than the `npx tsc --noEmit` it
+            # replaced, which ran without -b and skipped the project references
+            # that labs/ and inspector/ sit behind.
+            Write-Host "[check]   typecheck + build" -ForegroundColor Cyan
+            & npm run build 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { throw "build failed; fix it before shipping." }
+        }
+        if (Test-GateEnabled "vitest") {
+            Write-Host "[check]   vitest" -ForegroundColor Cyan
+            & npx vitest run 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { throw "vitest failed; fix it before shipping." }
+        } else {
+            Write-SuspendedGateNotice "vitest"
+        }
     } finally {
         Pop-Location
     }
