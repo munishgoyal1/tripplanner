@@ -211,7 +211,9 @@ def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) ->
         "gpt-4.1-test",
         "Plan a short Punjab trip",
         {"message_count": 1, "prompt_chars": 24,
-         "preview_text": "user: Plan a short Punjab trip", "call_id": ""},
+         "preview_text": "user: Plan a short Punjab trip", "call_id": "",
+         "turn_number": None, "phase_number": None,
+         "full_prompt_text": "[human] Plan a short Punjab trip"},
     )]
 
 
@@ -282,6 +284,59 @@ def test_trip_agent_compacts_tool_results_only_for_model_input(monkeypatch) -> N
     assert sum(len(str(message.content)) for message in sent_results) <= 12_000
     assert all("truncated for synthesis" in str(message.content) for message in sent_results)
     assert all(message.content == full_result for message in tool_messages)
+
+
+def test_trip_agent_tags_the_llm_call_with_turn_and_phase_number(monkeypatch) -> None:
+    """turn_number/phase_number are derived from existing message state (no
+    new persisted counter) and must be set via _CURRENT_TURN_PHASE before
+    the model is invoked, so on_chat_model_start's callback can read them."""
+    from tripplanner import graph as graph_mod
+
+    captured: list[tuple[int, int] | None] = []
+
+    class FakeBoundModel:
+        def invoke(self, _messages):
+            captured.append(graph_mod._CURRENT_TURN_PHASE.get())
+            return AIMessage(content="Done")
+
+    class FakeModel:
+        def bind_tools(self, _tools, **_options):
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(graph_mod, "select_tools", lambda *_args, **_kwargs: [])
+    monkeypatch.setattr(graph_mod, "load_active_trip_dict", lambda: {})
+
+    # Second turn of the conversation (2 human messages), with one prior
+    # tool-calling phase already spent this turn.
+    messages: list[BaseMessage] = [
+        HumanMessage(content="Plan a trip to Goa"),
+        AIMessage(content="Sure, one moment."),
+        HumanMessage(content="Make it 5 days"),
+        *_tool_phases(1),
+    ]
+
+    graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    # Turn 2 (second human message), phase 2 (one prior phase already spent
+    # this turn, this is the next/2nd LLM call).
+    assert captured == [(2, 2)]
+
+
+def _tool_phases(count: int) -> list[BaseMessage]:
+    phases: list[BaseMessage] = []
+    for index in range(count):
+        call_id = f"phase-{index}"
+        phases.append(AIMessage(
+            content="",
+            tool_calls=[{"name": "get_trip_plan", "args": {}, "id": call_id}],
+        ))
+        phases.append(ToolMessage(content="ok", tool_call_id=call_id))
+    return phases
 
 
 def test_model_tool_result_budget_is_strict_for_large_batches() -> None:

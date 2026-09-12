@@ -444,6 +444,89 @@ def test_local_llm_prompt_preview_is_redacted_and_capped_at_100_words(
     assert "alice@example.com" not in parsed["prompt_preview"]
 
 
+def test_full_prompt_is_logged_only_when_local_and_flag_enabled(
+    tmp_path, monkeypatch, capsys
+):
+    target = tmp_path / "diagnostics" / "app.jsonl"
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    monkeypatch.setenv("LOG_FULL_LLM_PROMPTS", "1")
+    obs.setup_logging(force=True)
+
+    obs.log_llm_prompt(
+        "gpt-4.1",
+        "hi",
+        message_count=1,
+        prompt_chars=2,
+        turn_number=3,
+        phase_number=2,
+        full_prompt_text="[human] my son Aarav (age 7) has a peanut allergy",
+    )
+
+    output = capsys.readouterr().out
+    assert "turn=3 call=2" in output
+    parsed = json.loads(target.read_text(encoding="utf-8").strip())
+    assert parsed["turn_number"] == 3
+    assert parsed["phase_number"] == 2
+    # Ordinary trip/preference content is NOT redacted -- that's the point.
+    assert parsed["prompt_full"] == "[human] my son Aarav (age 7) has a peanut allergy"
+    assert parsed["prompt_full_truncated"] is False
+
+
+def test_full_prompt_strips_secret_shaped_strings(tmp_path, monkeypatch):
+    target = tmp_path / "diagnostics" / "app.jsonl"
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    monkeypatch.setenv("LOG_FULL_LLM_PROMPTS", "1")
+    obs.setup_logging(force=True)
+
+    obs.log_llm_prompt(
+        "gpt-4.1",
+        "hi",
+        message_count=1,
+        prompt_chars=2,
+        full_prompt_text="[tool] error calling provider: Authorization: Bearer sk-abc123DEF456",
+    )
+
+    parsed = json.loads(target.read_text(encoding="utf-8").strip())
+    assert "sk-abc123DEF456" not in parsed["prompt_full"]
+    assert "<redacted>" in parsed["prompt_full"]
+
+
+def test_full_prompt_is_absent_when_flag_is_off(tmp_path, monkeypatch):
+    target = tmp_path / "diagnostics" / "app.jsonl"
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    monkeypatch.delenv("LOG_FULL_LLM_PROMPTS", raising=False)
+    obs.setup_logging(force=True)
+
+    obs.log_llm_prompt(
+        "gpt-4.1", "hi", message_count=1, prompt_chars=2,
+        full_prompt_text="[human] secret trip details",
+    )
+
+    parsed = json.loads(target.read_text(encoding="utf-8").strip())
+    assert "prompt_full" not in parsed
+
+
+def test_full_prompt_is_absent_outside_local_even_with_flag_on(tmp_path, monkeypatch):
+    """The environment check is hardcoded alongside the flag -- a
+    misconfigured canary/prod deploy must never write full prompts."""
+    target = tmp_path / "diagnostics" / "app.jsonl"
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "canary")
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    monkeypatch.setenv("LOG_FULL_LLM_PROMPTS", "1")
+    obs.setup_logging(force=True)
+
+    obs.log_llm_prompt(
+        "gpt-4.1", "hi", message_count=1, prompt_chars=2,
+        full_prompt_text="[human] secret trip details",
+    )
+
+    parsed = json.loads(target.read_text(encoding="utf-8").strip())
+    assert "prompt_full" not in parsed
+
+
 def test_hosted_llm_prompt_log_is_metadata_only(tmp_path, monkeypatch, capsys):
     target = tmp_path / "diagnostics" / "app.jsonl"
     monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "canary")

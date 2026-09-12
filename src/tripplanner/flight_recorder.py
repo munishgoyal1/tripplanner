@@ -90,7 +90,12 @@ def sanitize(value):
     if isinstance(value, str):
         if re.match(r"^data:[^\s;,]+[;,]", value):
             return {"omitted": "inline binary", "characters": len(value)}
-        return _BEARER.sub("Bearer <redacted>", _INLINE.sub(r"\1\2<redacted>", value))
+        # _BEARER must run BEFORE _INLINE: "Authorization: Bearer <token>" is
+        # also an _INLINE match on "Authorization:" whose captured "value" is
+        # just the word "Bearer" (stops at the next space) -- running _INLINE
+        # first consumes "Bearer" and strands the actual token, unredacted,
+        # right after it.
+        return _INLINE.sub(r"\1\2<redacted>", _BEARER.sub("Bearer <redacted>", value))
     if value is None or isinstance(value, (int, float, bool)):
         return value
     return sanitize(str(value))

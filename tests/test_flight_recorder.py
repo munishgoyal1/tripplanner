@@ -11,6 +11,16 @@ from tripplanner.flight_http import AsyncRecordingTransport, RecordingTransport
 from tripplanner.flight_middleware import FlightRecorderMiddleware
 
 
+def test_sanitize_fully_redacts_an_authorization_bearer_header():
+    """Regression: applying _INLINE before _BEARER let "Authorization:
+    Bearer <token>" strand the real token unredacted, because _INLINE's
+    "value" capture for "Authorization:" stopped at the first space (just
+    the word "Bearer"), consuming it before _BEARER ever saw the token."""
+    text = recorder.sanitize("Authorization: Bearer sk-abc123DEF456")
+    assert "sk-abc123DEF456" not in text
+    assert "<redacted>" in text
+
+
 @pytest.fixture
 def evidence(monkeypatch, tmp_path):
     monkeypatch.setenv("TRIPPLANNER_FLIGHT_RECORDER", "1")

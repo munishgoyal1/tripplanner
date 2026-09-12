@@ -497,6 +497,22 @@ def _correlation_fields(fields: dict[str, Any]) -> dict[str, str]:
     }
 
 
+_MAX_FULL_PROMPT_CHARS = 20_000
+
+
+def full_llm_prompt_logging_enabled() -> bool:
+    """Honor the ``LOG_FULL_LLM_PROMPTS`` env switch. Off by default.
+
+    Deliberately combined with a hardcoded ``environment == "local"`` check
+    at the one call site below, not just this flag -- a misconfigured
+    canary/prod deploy must never be able to write full, unredacted prompts
+    (which can carry free-text trip preferences, family details, etc. that
+    the normal structured-field redaction doesn't reach) into the app log.
+    """
+    val = os.environ.get("LOG_FULL_LLM_PROMPTS", "")
+    return val.lower() in ("1", "true", "yes", "on")
+
+
 def log_llm_prompt(
     model: str,
     prompt_text: str,
@@ -505,6 +521,9 @@ def log_llm_prompt(
     prompt_chars: int,
     preview_text: str | None = None,
     call_id: str = "",
+    turn_number: int | None = None,
+    phase_number: int | None = None,
+    full_prompt_text: str | None = None,
 ) -> None:
     words = re.findall(r"\S+", prompt_text)
     preview_words = re.findall(r"\S+", preview_text if preview_text is not None else prompt_text)
@@ -521,6 +540,11 @@ def log_llm_prompt(
     preview_text = (
         f' preview="{redact_text(preview)}{preview_suffix}"' if is_local else ""
     )
+    turn_phase_text = (
+        f" turn={turn_number} call={phase_number}"
+        if turn_number is not None and phase_number is not None
+        else ""
+    )
     fields: dict[str, Any] = {
         **attribution,
         **_correlation_fields(attribution),
@@ -535,10 +559,25 @@ def log_llm_prompt(
         "preview_truncated": truncated,
         "event_kind": "llm_prompt",
     }
+    if turn_number is not None:
+        fields["turn_number"] = turn_number
+    if phase_number is not None:
+        fields["phase_number"] = phase_number
     if is_local:
         fields["prompt_preview"] = preview
+        if full_prompt_text and full_llm_prompt_logging_enabled():
+            from tripplanner.flight_recorder import _BEARER, _INLINE
+
+            # Strip secret-shaped substrings (API keys, bearer tokens) the
+            # same way flight_recorder.sanitize() does -- this is the one
+            # safety net kept here; ordinary trip/preference content is
+            # deliberately left untouched, that's the point of the feature.
+            # Order matters: _BEARER before _INLINE (see flight_recorder.sanitize()).
+            scrubbed = _INLINE.sub(r"\1\2<redacted>", _BEARER.sub("Bearer <redacted>", full_prompt_text))
+            fields["prompt_full_truncated"] = len(scrubbed) > _MAX_FULL_PROMPT_CHARS
+            fields["prompt_full"] = scrubbed[:_MAX_FULL_PROMPT_CHARS]
     _APP_EVENT_LOGGER.info(
-        f"LLM PROMPT {model} messages={message_count} words={len(words)}{preview_text}",
+        f"LLM PROMPT {model}{turn_phase_text} messages={message_count} words={len(words)}{preview_text}",
         extra=fields,
     )
 
