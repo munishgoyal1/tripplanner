@@ -4,6 +4,13 @@ This repository follows the same engineering and reporting rules as the Copilot 
 
 ## Required operating rules
 
+- Owner preference (2026-09-12): Codex/GPT starts features on a fresh,
+  descriptive `gpt-<feature>` branch. Bug fixes may reuse `gpt-bugfixes` only
+  when it is clean, synchronized, and not owned by another active task;
+  otherwise use `gpt-bugfixes-<topic>`. Do not use `multiagent/coordinator`
+  or other generic agent branches. Use a separate worktree when other agents
+  or the running primary stack share the repository. This owner preference
+  overrides older Coordinator/default-master workflow instructions for Codex.
 - Read the canonical docs before changing code:
   - docs/README.md
   - docs/CODEMAP.md

@@ -327,7 +327,8 @@ def _record(
         if status == "ok" and http_status is not None
         else status
     )
-    billable = status != "circuit_open"
+    quota_rejected = provider == "google" and http_status == 429
+    billable = status != "circuit_open" and not quota_rejected
 
     record_call(
         provider=provider,
@@ -338,6 +339,8 @@ def _record(
         http_status=http_status,
         attempted=status != "circuit_open",
         billable=billable,
+        estimated_cost_usd=0.0 if not billable else None,
+        billing_status="quota_rejected" if quota_rejected else "",
         log_context=log_context,
     )
 

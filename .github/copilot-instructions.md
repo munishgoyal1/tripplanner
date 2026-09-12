@@ -18,6 +18,13 @@ not override the canonical documents above, which govern current behavior.
 
 ## Agent workflow
 
+- Owner preference (2026-09-12), for Codex/GPT: use a fresh descriptive
+  `gpt-<feature>` branch for features; bug fixes may reuse an unoccupied,
+  clean, synchronized `gpt-bugfixes` branch, otherwise use
+  `gpt-bugfixes-<topic>`. Use a separate worktree when sharing the repository
+  with other agents or a running stack. Do not use Coordinator or generic
+  agent branches. This takes precedence over the older Coordinator and
+  default-master rules below for Codex; publish via an ordinary reviewed PR.
 - Keep the current chat title to a concrete 4-5 word summary of the latest task.
   Reconsider it after every prompt in the primary or sandbox VS Code window.
 - A chat session titled or opened for a specific sandbox (`sbx-N` / `sandbox/N-*`)

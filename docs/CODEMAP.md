@@ -139,6 +139,14 @@ surface only, so each entry still follows its stable or volatile TTL policy.
 180 days by default in all profiles, subject to `CACHE_TTL_SCALE`; explicit photo
 refresh still bypasses the cache. This controls local reuse, not the provider's
 URL validity period, so a provider-expired URL can require earlier refresh.
+Photo resolution serializes overlapping requests for the same place; a failed
+refresh preserves existing URLs without advancing their freshness timestamp
+and pauses repeat resolution for 30 seconds. Full-warming mode schedules a
+durable write after successful photo resolution, under its existing cache policy.
+Trip view loads and successful switches attach their resolved trip ID to the
+shared usage batch, including worker-thread provider calls and cost settlement.
+Google HTTP 429 attempts remain failures in usage telemetry but carry zero
+estimated spend and `billing_status=quota_rejected`.
 `SECONDARY_DURABLE_CACHE_ENABLED=1` adds a cache-only durable fallback after a
 primary durable miss. Its endpoint, database, emulator guard, authentication,
 and enablement are independent settings. Fresh shared Places and global tool

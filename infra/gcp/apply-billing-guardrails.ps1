@@ -467,7 +467,7 @@ foreach ($env in $gcp.environments) {
                         "alignmentPeriod": "$($quotaAlertPolicy.alignmentPeriodSec)s",
                         "perSeriesAligner": "ALIGN_COUNT_TRUE",
                         "crossSeriesReducer": "REDUCE_SUM",
-                        "groupByFields": ["metric.label.quota_metric", "resource.label.service"]
+                        "groupByFields": ["metric.label.quota_metric", "metric.label.limit_name", "resource.label.service"]
                     }
                 ]
             }

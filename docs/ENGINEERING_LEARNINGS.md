@@ -1797,3 +1797,15 @@ the outcome.
 - The same turn retried three chronology-rejected itinerary updates. Stateful
   tools returning `Error:` must report a rejected result even without a Python
   exception; a completed function call is not a successful trip mutation.
+
+## 2026-09-12 - Count View Work And Distinguish Quota Rejections
+
+- Creation counts do not measure provider load: map, gallery, switch, and
+  destination requests can spend independently. Bind their resolved trip ID to
+  the shared usage batch before provider work, including across worker contexts.
+- Lock the entire photo cache-check/fetch/update operation per place. Locking
+  only dictionary access lets simultaneous panels resolve the same photo twice.
+  A failed refresh must not replace usable URLs or advance their freshness.
+- Keep quota-rejected attempts observable without pricing them as successful
+  responses; retain the precise quota limit in alerts. Gross catalog estimates,
+  eligible regional rates, free allowances, and provider invoices are distinct.
