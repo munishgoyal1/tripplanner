@@ -413,24 +413,30 @@ def _save_chat(
 _BG_TASKS: set[asyncio.Task] = set()
 
 
-def _schedule_learning_sweep(user_id: str, message: str) -> None:
+def _schedule_learning_sweep(
+    user_id: str, message: str, context: list[dict] | None = None
+) -> None:
     """Run the post-turn passive-learning sweep without blocking the response.
 
     The extractor makes a blocking LLM call, so it runs in a worker thread; the
-    user's ``user_id`` is re-bound inside the thread (ContextVars don't cross
-    threads). Best-effort — all failures are swallowed.
+    user identity is re-bound and its request snapshot is isolated from the
+    response. Extraction failures remain queued for retry on a later turn.
     """
     def _worker() -> None:
+        from tripplanner.request_state import request_state_scope
         from tripplanner.tools import passive_learning, profile_summary
         from tripplanner.usage_attribution import usage_scope
 
         set_user_id(user_id)
-        with usage_scope("agent_background", route="passive_learning"):
-            passive_learning.learn_from_message(message)
+        with request_state_scope(), usage_scope("agent_background", route="passive_learning"):
+            passive_learning.learn_from_message(message, context)
             # Refresh the system-authored profile summary. Gated internally by a
             # durable-facts digest, so this is a no-op (no LLM call) when nothing
             # durable changed — including trip-scoped one-offs.
-            profile_summary.update_summary()
+            try:
+                profile_summary.update_summary()
+            except Exception as exc:
+                app_event("profile_summary_deferred", error=type(exc).__name__)
 
     try:
         task = asyncio.create_task(asyncio.to_thread(_worker))

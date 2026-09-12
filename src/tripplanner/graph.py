@@ -482,7 +482,10 @@ def trip_agent(state: AgentState) -> AgentState:
     # select_tools() binds only the relevant subset (heavy search tools are
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
-    interactive_questions = _interactive_trip_questions()
+    active_trip = _active_trip_for_policy()
+    interactive_questions = bool(
+        _interactive_trip_questions() and active_trip.get("day_wise_itinerary")
+    )
     # 1-indexed count of user messages so far this conversation -- a stable,
     # human-readable turn ordinal derived from existing state, no new
     # persisted counter needed (mirrors how operations_reporting.py counts
@@ -490,7 +493,7 @@ def trip_agent(state: AgentState) -> AgentState:
     turn_number = sum(1 for m in state["messages"] if getattr(m, "type", "") == "human")
     decision = graph_policy.resolve_completion_policy(
         messages=state["messages"],
-        active_trip=_active_trip_for_policy(),
+        active_trip=active_trip,
         proposal_only=proposal_only,
         has_planning_intent=latest_user_has_planning_intent(state["messages"]),
         interactive_questions=interactive_questions,
@@ -601,9 +604,9 @@ def trip_agent(state: AgentState) -> AgentState:
             "Otherwise estimate a fitting duration from destination scope, saved pace, "
             "and a concise set of likely preference-matched anchor experiences."
         )))
-    if not interactive_questions and not proposal_only:
+    if not proposal_only:
         instructions.append(SystemMessage(content=(
-            "Smart defaults are enabled. Build the itinerary now using the request first, "
+            "Build a useful itinerary before offering optional refinement. Use the request first, "
             "then saved travel party/family, preferences and relevant history, then sensible "
             "editable assumptions. Do not ask to confirm days, dates, party or preferences. "
             "Record assumptions in trip notes and summarize them. Never invent an origin; "

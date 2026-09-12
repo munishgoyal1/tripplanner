@@ -1815,3 +1815,16 @@ the outcome.
   from 4,417,663 to 157,761 uncompressed bytes (96.4%) while retaining all attempt
   metadata and bounded error evidence. This measures stored representation, not
   live application latency or the whole telemetry footprint.
+## 2026-09-12 - Persist The Draft And Learn Without Approval Gates
+
+- A profile suggestion is not saved memory. Explicit conversational facts need an
+  automatic durable write, a visible receipt and conditional Undo; uncertain facts
+  should not become permanent defaults. Schema defaults must not defeat stated facts.
+- First-plan completion belongs in the graph policy and persisted state, not just
+  prompt wording. Obsolete kickoff cards must not block an empty itinerary, and
+  the saved family roster must outrank stale legacy counters.
+- Background extraction needs recent context, durable pending work, idempotency,
+  and isolated request snapshots. Preserve concurrent edits and newer facts when
+  retrying older failed messages; do not make provider latency a chat input gate.
+- Agent-identifiable task branches keep concurrent ownership clear. Git branches
+  are cheap; isolated dependency installs and runtimes are separate choices.

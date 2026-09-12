@@ -1,20 +1,17 @@
 # Sandbox development
 
-Keep primary `master` for the shared runtime. Start each feature/enhancement on a
-fresh agent-prefixed task branch from `origin/master` (for example
-`gpt-telemetry-footprint`), using an isolated worktree when agents run concurrently.
-Bug fixes may reuse `gpt-bugfixes` only when clean and not owned by another active
-session. Do not use generic Coordinator branches for owner-requested work.
+Keep primary `master` for the local app stack and merged work. Start features and
+bug fixes on fresh agent-identifiable branches from `origin/master`; Codex/GPT uses
+`gpt-<task-name>`. Do not use generic Coordinator branches. Branch creation does
+not copy files or reinstall dependencies. Create a worktree or sandbox only when
+concurrent edits or an isolated runtime require one.
 
 ## Choose a lane (keep this simple)
 
 Do not invent extra git workflows. Pick one:
 
-1. **Agent-prefixed task branch (default).** Branch from current `origin/master`,
-   finish one coherent change, validate, commit/push, and publish through a PR.
-   Fast-forward primary only when clean. Never switch another session's branch.
-2. **Reusable bug-fix branch.** `gpt-bugfixes` may collect related fixes only when
-   clean and idle at the start; otherwise use a fresh task-named branch.
+1. **Named task branch (default).** Use `gpt-<task-name>` for Codex/GPT work and clearly identify other agents in their branch names. Finish one coherent change, push, open a PR, merge, and fast-forward clean primary `master`. Keep unfinished follow-ups on the same branch.
+2. **Reusable bug-fix branch.** Codex may reuse `gpt-bugfixes` when it is clean, synchronized with current `origin/master`, and not owned by another active agent. Never reuse an active agent's branch or silently bundle unfinished work.
 3. **Sandbox.** Use this when the change needs its own ports, emulator database, UX Lab, or parallel runtime. Create it with the sandbox launchers. Promotion (or `Merge-Sandbox`) is the only path back to `master`; do not also keep a duplicate feature branch for the same work.
 
 An in-chat sandbox fix stays in that sandbox and does not need a GitHub issue.

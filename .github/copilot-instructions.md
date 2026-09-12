@@ -43,15 +43,20 @@ not override the canonical documents above, which govern current behavior.
 - Before every new code change, require a clean worktree, fetch `origin`, and
   synchronize the active branch with latest `origin/master`. Resolve conflicts
   and re-read affected files before editing.
-- Start features and enhancements on a fresh branch from `origin/master`, named
-  for the agent and task (for example `gpt-telemetry-footprint`). Bug fixes may
-  reuse `gpt-bugfixes` only when clean and not in use by another active session;
-  otherwise create a fresh agent-prefixed bug-fix branch. Never use generic
-  Coordinator branches for owner work. Use an isolated worktree when other agents
-  are active, commit and push, and publish through a pull request. Fast-forward
-  primary `master` only when clean; do not switch or overwrite another agent's lane.
-- Primary `master` owns the runtime, not in-progress implementation. Keep the
-  agent and purpose visible in branch names and final status reports.
+- Start every feature or bug fix on a fresh, agent-identifiable branch from current
+  `origin/master`. Codex/GPT branches use `gpt-<task-name>`; do not use generic
+  `coordinator` or `multiagent/coordinator` branches. Git branches are cheap and
+  do not require a new worktree, dependency install, or running stack.
+- For bug fixes, Codex may reuse `gpt-bugfixes` only when it is clean, synchronized,
+  and not being used by another agent. Never share an active branch between agents.
+  Keep the current branch for follow-ups to the same unfinished feature.
+- Commit and push completed work, merge through a pull request, fast-forward clean
+  primary `master`, and synchronize registered sandboxes. Use the ordinary PR flow
+  for named GPT branches rather than `Publish-Coordinator`. Do not dispatch other
+  agents or create an issue unless the owner's request or intake rules require it.
+- Primary `master` owns the local stack and receives merged work; do not implement
+  features or bug fixes directly on it. A separate sandbox is needed only for an
+  isolated runtime or UX Lab and returns through its validated promotion flow.
 - When the owner asks for a reviewable branch in the primary checkout, branch
   from current `origin/master`, land one coherent change, merge through a pull
   request, fast-forward local `master`, and delete the branch. Do not leave

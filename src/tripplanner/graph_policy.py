@@ -494,8 +494,7 @@ def trip_kickoff_tool_choice(
     has_planning_intent: bool,
     interactive: bool = False,
 ) -> str | None:
-    # A turn that will create a different trip must still run the kickoff; otherwise the
-    # creation policy silently replaces the workspace without asking anything.
+    # New destinations load preferences and duration advice before creation.
     if active_trip.get("destination") and not (
         latest_user_starts_new_trip(messages)
         or latest_user_requests_different_trip(messages, active_trip)
@@ -503,14 +502,7 @@ def trip_kickoff_tool_choice(
         return None
 
     positions = _tool_call_positions(messages)
-    latest_create = max(
-        (index for index, name in positions if name == "create_trip_plan"),
-        default=-1,
-    )
-    if any(
-        name == "request_trip_input" and index > latest_create
-        for index, name in positions
-    ):
+    if pending_trip_kickoff_answer(messages):
         return None
     if not has_planning_intent:
         return None
@@ -526,10 +518,8 @@ def trip_kickoff_tool_choice(
         return "get_travel_preferences"
     if "recommend_trip_duration" not in turn_tools:
         return "recommend_trip_duration"
-    # Direct mode explicitly authorizes editable assumptions, including party and dates.
-    if interactive:
-        return "request_trip_input"
-    return None
+    # Every mode starts with a draft. Interactive controls refine it afterwards.
+    return "create_trip_plan"
 
 
 def trip_creation_tool_choice(
@@ -600,9 +590,13 @@ def resolve_completion_policy(
         or " minutes before " in gap
         for gap in core_gaps_for_planning_turn
     )
-    # Asking the review and then planning anyway would make it decoration, so the
-    # turn stops at the question until the traveller answers or skips it.
-    if not proposal_only and awaiting_trip_kickoff_answer(messages):
+    # Only a refinement of an already persisted itinerary may await an answer.
+    if (
+        not proposal_only
+        and interactive_questions
+        and active_trip.get("day_wise_itinerary")
+        and awaiting_trip_kickoff_answer(messages)
+    ):
         return CompletionPolicyDecision(
             tool_phases=tool_phases,
             forced_tool=None,
@@ -620,7 +614,15 @@ def resolve_completion_policy(
             if name == "update_trip_plan" and index > latest_human
         ]
         can_attempt_completion_repair = (
-            created_this_turn
+            (
+                created_this_turn
+                or (
+                    has_planning_intent
+                    and active_trip.get("destination")
+                    and not latest_user_starts_new_trip(messages)
+                    and not latest_user_requests_different_trip(messages, active_trip)
+                )
+            )
             and len(current_updates) < MAX_INITIAL_ITINERARY_UPDATES
             and (
                 not active_trip.get("day_wise_itinerary")
@@ -649,6 +651,28 @@ def resolve_completion_policy(
         or latest_user_requests_different_trip(messages, active_trip)
         or pending_trip_kickoff_answer(messages)
     )
+    if (
+        not proposal_only
+        and not new_trip_flow
+        and active_trip.get("destination")
+        and not active_trip.get("day_wise_itinerary")
+        and (created_this_turn or has_planning_intent)
+    ):
+        requirement = trip_update_requirement(
+            messages, active_trip, has_planning_intent=has_planning_intent
+        )
+        if requirement:
+            return CompletionPolicyDecision(
+                tool_phases=tool_phases,
+                forced_tool="update_trip_plan",
+                forced_reason="persist_or_repair_plan",
+                requirement=requirement + (
+                    " Persist the useful first draft before further provider research. "
+                    "Propose cities and experiences from the request and saved preferences; "
+                    "label unverified suggestions and unknown travel or hotels as TBD. "
+                    "Do not invent prices, reservations, hours or provider availability."
+                ),
+            )
     hotel_fallback_requirement = (
         None
         if proposal_only or creation_tool or new_trip_flow
@@ -728,8 +752,7 @@ def resolve_completion_policy(
         )
     )
     kickoff_answered = pending_trip_kickoff_answer(messages)
-    # The kickoff outranks creation, otherwise switching destination would build the new
-    # trip before asking anything. Creation resumes once the kickoff is answered.
+    # Load preferences and duration advice before creating a replacement trip.
     if kickoff_tool:
         creation_tool = None
     forced_tool = (

@@ -1,50 +1,21 @@
-"""Post-turn passive-learning sweep (safety net).
+"""Automatic, retryable learning of explicitly stated conversational preferences."""
 
-Continuous learning during chat normally relies on the agent *choosing* to call
-the extraction tools (``update_user_profile``, ``add_family_member``,
-``add_user_interest``, ...). When the model is busy planning — or a cheaper
-model is in use — those calls get dropped and the durable signal is lost.
-
-This module is the deterministic safety net: after each user turn it runs the
-same conservative LLM extractor used by the "About me" settings blurb over the
-latest user message. What it finds is queued as a pending *suggestion* rather
-than saved, so nothing becomes durable until the user confirms it in chat.
-
-Best-effort: every entry point swallows errors and never raises into the chat
-turn.
-"""
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 import re
-from typing import Any
+from copy import deepcopy
+from threading import Lock
 
 from tripplanner.tools import about_me_extractor, profile_suggestions
+from tripplanner.tools.user_preferences import mutate_preferences
+from tripplanner.user_context import get_user_id
 
 log = logging.getLogger(__name__)
 
-# Cheap pre-filter: only spend an LLM call when the message plausibly carries a
-# durable personal signal. Skips control phrases ("book it", "yes", "ok"), bare
-# logistics, and very short replies.
-_SIGNAL_RE = re.compile(
-    r"\b("
-    r"i\s*am|i'm|i\s*love|i\s*like|i\s*hate|i\s*prefer|i\s*enjoy|i\s*avoid|"
-    r"my\s+(wife|husband|partner|son|daughter|kid|kids|child|children|mother|"
-    r"father|mom|dad|parents|family|friend|dog|cat|pet)|"
-    r"we\s+(went|visited|loved|stayed|usually|always|prefer)|"
-    r"allergic|allergy|vegetarian|vegan|halal|kosher|gluten|jain|"
-    r"live\s+in|based\s+in|i\s+work|i'm\s+a|i\s+am\s+a|"
-    r"never|always|usually|afraid\s+of|scared\s+of|wheelchair|mobility"
-    r")\b",
-    re.I,
-)
-
-_MIN_CHARS = 12
-
-# Trip-scoped cues: when present, the statement is a ONE-OFF exception for the
-# current trip, NOT a durable preference. Routing it to the active trip's
-# constraints prevents "3-star is fine just this time" from being learned as a
-# permanent "prefers 3-star hotels" preference.
+# Kept for callers classifying trip-local exceptions; mixed messages still extract.
 _TRIP_SCOPE_RE = re.compile(
     r"\b("
     r"just\s+(for\s+)?this\s+(trip|time|one)|"
@@ -63,43 +34,107 @@ def has_trip_scope_cue(text: str) -> bool:
 
 
 def has_learnable_signal(text: str) -> bool:
-    """True when ``text`` is worth running the (billed) extractor over."""
-    text = (text or "").strip()
-    if len(text) < _MIN_CHARS:
-        return False
-    return bool(_SIGNAL_RE.search(text))
+    """Skip only control messages; personal facts need no particular keywords."""
+    text = (text or "").strip().casefold()
+    return bool(text) and text not in {
+        "ok", "okay", "yes", "no", "book it", "do it", "sounds good", "continue", "thanks",
+    }
 
 
-def learn_from_message(text: str) -> list[str]:
-    """Extract durable prefs from one user message and queue them for review.
+_LOCKS: dict[str, Lock] = {}
+_LOCKS_GUARD = Lock()
+_QUEUE_KEY = "_learning_pending"
+_DONE_KEY = "_learning_processed"
 
-    Returns the ids of the suggestions raised (empty on no-op or on any
-    failure). Nothing is written to the durable profile here: the user confirms
-    each suggestion through :mod:`tripplanner.tools.profile_suggestions`.
-    Trip-scoped one-offs ("just for this trip") are still routed straight to the
-    active trip's constraints and return ``["trip_constraint"]``. Never raises.
+
+def _user_lock() -> Lock:
+    with _LOCKS_GUARD:
+        return _LOCKS.setdefault(get_user_id(), Lock())
+
+
+def learn_from_message(text: str, context: list[dict] | None = None) -> list[str]:
+    """Persist work before extraction; retry unfinished messages on the next sweep.
+
+    Recent context resolves short answers, but only newly stated durable facts
+    are saved. All extraction runs outside the chat's response path.
     """
+    text = (text or "").strip()[:8000]
+    context = (context or [])[-6:]
+    skip = not has_learnable_signal(text) and not context
+    identity = hashlib.sha256(json.dumps([text, context], sort_keys=True).encode()).hexdigest()
+    changed: list[str] = []
     try:
-        text = (text or "").strip()
-        # One-off exceptions go to the trip, never to durable preferences.
-        if has_trip_scope_cue(text):
-            try:
-                from tripplanner.tools import trip_planner
+        with _user_lock():
+            def enqueue(prefs):
+                pending = prefs.get(_QUEUE_KEY) or []
+                if skip or identity in (prefs.get(_DONE_KEY) or []):
+                    return None
+                if any(job["id"] == identity for job in pending):
+                    return None
+                # Never silently evict failed work to make room for newer turns.
+                sequence = int(prefs.get("_learning_sequence") or 0) + 1
+                prefs["_learning_sequence"] = sequence
+                pending.append({
+                    "id": identity, "text": text, "context": context, "sequence": sequence,
+                    "baseline": {
+                        key: deepcopy(prefs.get(key)) for key in (
+                            "profile", "trip_style", "budget_level", "interests", "dislikes",
+                            "food_preferences", "transport_preferences", "hotel_preferences",
+                            "family_members", "learned_notes",
+                        )
+                    },
+                })
+                prefs[_QUEUE_KEY] = pending
+                return prefs
 
-                if trip_planner.add_trip_constraint(text):
-                    return ["trip_constraint"]
-            except Exception as exc:  # pragma: no cover - best-effort
-                log.warning("trip-scope constraint capture failed: %s", exc)
-            return []
-        if not has_learnable_signal(text):
-            return []
-        extracted: dict[str, Any] = about_me_extractor.extract_about_me(text) or {}
-        learned = extracted.pop("_learned_notes_to_append", None)
-        if not extracted and not learned:
-            return []
+            prefs = mutate_preferences(enqueue)
+            # A bounded drain protects the chat service after an outage. New turns
+            # continue draining the durable backlog, oldest first.
+            for job in (prefs.get(_QUEUE_KEY) or [])[:4]:
+                baseline = job.get("baseline") or deepcopy(prefs)
+                prompt = (
+                    "RECENT CONTEXT (reference only):\n"
+                    + json.dumps(job.get("context") or [], ensure_ascii=False)
+                    + "\nNEW MESSAGE:\n" + job["text"]
+                )
+                try:
+                    extracted = about_me_extractor.extract_about_me(
+                        prompt, conversation=True, raise_on_error=True
+                    )
+                except Exception as exc:
+                    log.warning("passive learning deferred: %s", type(exc).__name__)
+                    def defer(current):
+                        pending = current.get(_QUEUE_KEY) or []
+                        failed = [item for item in pending if item["id"] == job["id"]]
+                        if not failed:
+                            return None
+                        current[_QUEUE_KEY] = [
+                            item for item in pending if item["id"] != job["id"]
+                        ] + failed
+                        return current
 
-        records = profile_suggestions.build_suggestions(extracted, learned, text)
-        return [record["id"] for record in profile_suggestions.queue_suggestions(records)]
-    except Exception as exc:  # never break the chat turn
-        log.warning("passive learning sweep failed: %s", exc)
-        return []
+                    mutate_preferences(defer)
+                    continue
+
+                def apply(current):
+                    changed.clear()
+                    if job["id"] in (current.get(_DONE_KEY) or []):
+                        return None
+                    if not any(
+                        item["id"] == job["id"] for item in (current.get(_QUEUE_KEY) or [])
+                    ):
+                        return None
+                    changed.extend(profile_suggestions.save_extracted(
+                        current, extracted, job["text"], baseline,
+                        sequence=job.get("sequence", 0),
+                    ))
+                    current[_QUEUE_KEY] = [
+                        item for item in (current.get(_QUEUE_KEY) or []) if item["id"] != job["id"]
+                    ]
+                    current[_DONE_KEY] = [*(current.get(_DONE_KEY) or []), job["id"]][-128:]
+                    return current
+
+                prefs = mutate_preferences(apply)
+    except Exception as exc:
+        log.warning("passive learning sweep failed: %s", type(exc).__name__)
+    return changed
