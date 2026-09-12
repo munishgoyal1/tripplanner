@@ -383,6 +383,40 @@ def test_pace_blocks_once_the_configured_quota_is_reached(_isolate, monkeypatch)
     assert sleeps  # third call within the same window had to wait
 
 
+@pytest.mark.parametrize(
+    ("quota_id", "single_trip_calls"),
+    [
+        ("SearchTextRequestPerMinutePerProject", 80),
+        ("GetPhotoMediaRequestPerMinutePerProject", 112),
+    ],
+)
+def test_local_single_trip_burst_fits_but_overlap_waits(
+    _isolate, monkeypatch, quota_id, single_trip_calls
+):
+    clock = {"t": 0.0}
+    sleeps = []
+    monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
+    pc.billing_guardrails.reset_cache_for_tests()
+    pc._rate_windows.clear()
+    pc._shutting_down.clear()
+    monkeypatch.setattr(pc.time, "monotonic", lambda: clock["t"])
+
+    def fake_sleep(seconds):
+        sleeps.append(seconds)
+        clock["t"] += seconds
+
+    monkeypatch.setattr(pc.time, "sleep", fake_sleep)
+    for _ in range(single_trip_calls):
+        pc._pace(quota_id, default=30)
+    assert not sleeps
+
+    for _ in range(single_trip_calls):
+        pc._pace(quota_id, default=30)
+    assert sleeps
+    assert clock["t"] >= 60
+    pc._rate_windows.clear()
+
+
 def test_pace_abandons_a_wait_immediately_once_shutdown_begins(_isolate, monkeypatch):
     """Regression: a worker thread blocked here previously held up process
     exit for as long as its remaining quota wait -- concurrent.futures.thread

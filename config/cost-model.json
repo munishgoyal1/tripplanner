@@ -24,9 +24,9 @@
     "googleShareOfDailyCeiling": 0.5,
     "dailyHeadroom": 1.5,
     "burstPerMinuteFloor": {
-      "places.googleapis.com/SearchTextRequestPerMinutePerProject": 60,
+      "places.googleapis.com/SearchTextRequestPerMinutePerProject": { "local": 90, "canary": 60, "prod": 60 },
       "places.googleapis.com/GetPlaceRequestPerMinutePerProject": 40,
-      "places.googleapis.com/GetPhotoMediaRequestPerMinutePerProject": 60,
+      "places.googleapis.com/GetPhotoMediaRequestPerMinutePerProject": { "local": 120, "canary": 60, "prod": 60 },
       "places.googleapis.com/SearchNearbyRequestPerMinutePerProject": 10,
       "places.googleapis.com/AutocompletePlacesRequestPerMinutePerProject": 20,
       "places-backend.googleapis.com/BillableDefaultPerMinutePerProject": 60,

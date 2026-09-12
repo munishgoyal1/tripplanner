@@ -64,6 +64,19 @@ def test_checked_in_quotas_match_the_derivation():
     )
 
 
+def test_local_burst_tuning_preserves_other_environments_and_daily_limits():
+    derive = _derive_module()
+    model = derive.load_cost_model()
+    baseline = derive.derived_quota_rows(model)
+    key = "places.googleapis.com/GetPhotoMediaRequestPerMinutePerProject"
+    model["quotaSizing"]["burstPerMinuteFloor"][key]["local"] += 10
+    updated = derive.derived_quota_rows(model)
+    row = tuple(key.split("/"))
+    assert updated[row]["local"] == baseline[row]["local"] + 10
+    updated[row]["local"] = baseline[row]["local"]
+    assert updated == baseline
+
+
 def test_free_pool_shares_do_not_oversubscribe_the_account():
     """Google's free allowances are pooled across all projects, not per project.
 

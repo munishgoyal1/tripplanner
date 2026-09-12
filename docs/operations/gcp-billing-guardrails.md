@@ -136,11 +136,30 @@ short-lived and are not part of the durable place-metadata cache, so even a
 "fully cached" trip re-resolves photo URIs -- and therefore re-consumes the
 per-minute photo quota -- on every session.
 
-Per-minute quotas are therefore sized for **burst smoothness, not for cost**, and
-are identical across environments: several cold trips built back-to-back must fit
-inside one window without opening the breaker. Sizing them from a budget is what
-produced the stalls above. They are set from `quotaSizing.burstPerMinuteFloor` in
-`config/cost-model.json`.
+Per-minute quotas are sized for **burst smoothness, not for cost**. Since
+2026-09-12, local testing allows 90 Text Search and 120 Photo Media requests per
+minute; Place Details stays at 40. Canary and production retain 60/60/40.
+`quotaSizing.burstPerMinuteFloor` in `config/cost-model.json` accepts either a
+shared integer or an explicit local/canary/prod object. Run
+`python scripts/derive_limits.py` after changing it; the generated quota rows
+also supply the application's per-process pacing limit.
+
+The sizing target is one ordinary cold trip, with overlap allowed to wait:
+40 itinerary places plus 18 guide suggestions per city across four cities is
+112 one-photo places before deduplication. The regression burst uses 112 photo
+calls and 80 searches (40 itinerary lookups, 12 city/category searches, and 28
+additional planning lookups). The first burst fits without pacing sleep; a
+second overlapping burst waits. This is a bounded capacity test, not a promise
+that an arbitrarily long trip or an already-used quota window cannot throttle.
+Daily quotas, spend ceilings, and quota alert sensitivity are unchanged.
+
+Apply the two local quota preferences before restarting the local backend with
+the updated generated configuration. The full guardrails apply command also
+manages budgets and services; for this targeted change use `gcloud quotas
+preferences update` for `tp-searchtextrequestperminuteperproject` and
+`tp-getphotomediarequestperminuteperproject` in `aitripplanner-local`, then verify
+their effective values through Cloud Quotas. Google counts all processes in the
+project together; the app's in-memory pacing window is per process.
 
 The owner's stated constraint -- testing spend should stay well under ~1,000
 INR/day -- is now enforced directly rather than approximated by quotas, by

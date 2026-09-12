@@ -109,7 +109,10 @@ def derived_quota_rows(model: dict[str, Any]) -> dict[tuple[str, str], dict[str,
         }
     for key, floor in floors.items():
         service, _, quota_id = key.partition("/")
-        derived[(service, quota_id)] = {environment: int(floor) for environment in ENVIRONMENTS}
+        derived[(service, quota_id)] = {
+            environment: int(floor[environment] if isinstance(floor, dict) else floor)
+            for environment in ENVIRONMENTS
+        }
     return derived
 
 
