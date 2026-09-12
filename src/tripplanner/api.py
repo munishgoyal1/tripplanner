@@ -91,6 +91,9 @@ async def _lifespan(_app: FastAPI):
     from tripplanner.web import places_cache
 
     places_cache.begin_shutdown()
+    from tripplanner.flight_recorder import flush_pending
+
+    await asyncio.to_thread(flush_pending)
 
 
 app = FastAPI(title="Personal Assistant API", version="0.1.0", lifespan=_lifespan)

@@ -1,13 +1,20 @@
 # Sandbox development
 
-Use the primary `tripplanner` checkout on `master` and a fresh, task-named sandbox for each isolated feature or UX Lab. A sandbox starts from `origin/master`, carries one coherent change, and returns only through its validated promotion flow.
+Keep primary `master` for the shared runtime. Start each feature/enhancement on a
+fresh agent-prefixed task branch from `origin/master` (for example
+`gpt-telemetry-footprint`), using an isolated worktree when agents run concurrently.
+Bug fixes may reuse `gpt-bugfixes` only when clean and not owned by another active
+session. Do not use generic Coordinator branches for owner-requested work.
 
 ## Choose a lane (keep this simple)
 
 Do not invent extra git workflows. Pick one:
 
-1. **Primary `master` (default).** In-chat fixes and docs in the primary checkout land on `master`. This is the least confusing path for work that does not need an isolated app stack.
-2. **Short-lived task branch.** Use this only when the owner asks for a reviewable branch, or a single coherent change is easier to merge through a pull request. Branch from current `origin/master` in the primary checkout, finish the work, open a PR, merge it, fast-forward local `master`, and delete the branch in the same session. Do not leave long-lived feature branches beside sandboxes.
+1. **Agent-prefixed task branch (default).** Branch from current `origin/master`,
+   finish one coherent change, validate, commit/push, and publish through a PR.
+   Fast-forward primary only when clean. Never switch another session's branch.
+2. **Reusable bug-fix branch.** `gpt-bugfixes` may collect related fixes only when
+   clean and idle at the start; otherwise use a fresh task-named branch.
 3. **Sandbox.** Use this when the change needs its own ports, emulator database, UX Lab, or parallel runtime. Create it with the sandbox launchers. Promotion (or `Merge-Sandbox`) is the only path back to `master`; do not also keep a duplicate feature branch for the same work.
 
 An in-chat sandbox fix stays in that sandbox and does not need a GitHub issue.

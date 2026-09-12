@@ -1026,3 +1026,13 @@ Use `docs/feature-briefs/FEATURE_BRIEF_TEMPLATE.md` for new work. The owner may
 write only the short required section and leave the rest for the agent to
 normalize, but unresolved product choices must remain visible rather than being
 silently invented.
+
+
+### Bounded diagnostic footprint
+
+Recorder defaults preserve semantic metadata and bounded failure excerpts while
+omitting duplicate model/tool and successful API bodies. Recording is asynchronous,
+uses bounded memory and batched disk/Cosmos writes, reports diagnostic loss, and
+preserves the independent complete accounting path. Local recorder and interaction
+study stores have seven-day / 50 MiB retention; routine successful cache-only reads
+no longer generate local study files. Verbose HTTP capture remains opt-in and bounded.

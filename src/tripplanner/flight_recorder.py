@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import atexit
 import base64
 import contextvars
 import gzip
@@ -14,6 +15,7 @@ import re
 import threading
 import time
 import uuid
+from collections import deque
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -40,6 +42,17 @@ _BEARER = re.compile(r"(?i)\bBearer\s+[A-Za-z0-9._~+/=-]+")
 _TTL = 7 * 24 * 60 * 60
 _DEFAULT_WORKER_BATCH_SIZE = 25
 _UPLOAD_REPORT_INTERVAL_SECONDS = 60
+_pending = deque()
+_pending_bytes = 0
+_pending_lock = threading.Lock()
+_flush_lock = threading.Lock()
+_wake = threading.Event()
+_dropped_events = 0
+_QUEUE_MAX_BYTES = 8 * 1024 * 1024
+_QUEUE_MAX_EVENTS = 512
+_EVENT_MAX_BYTES = 256 * 1024
+_BATCH_MAX_EVENTS = 25
+_SPOOL_MAX_BYTES = 50 * 1024 * 1024
 
 
 def enabled():
@@ -110,7 +123,8 @@ def _failure(exc):
 
 
 def record(kind, **payload):
-    """Persist before returning; telemetry failures never fail a traveller's request."""
+    """Enqueue a bounded snapshot; diagnostic I/O never blocks the caller."""
+    global _pending_bytes, _dropped_events
     if not enabled() or _SUPPRESSED.get():
         return
     token = _SUPPRESSED.set(True)
@@ -143,22 +157,96 @@ def record(kind, **payload):
                 "pid": os.getpid(),
             }
         )
-        directory = root()
-        directory.mkdir(parents=True, exist_ok=True, mode=0o700)
-        target = directory / f"{time.time_ns()}-{sequence:012d}-{event_id}.json"
         raw = json.dumps(event, ensure_ascii=False).encode("utf-8")
-        with target.with_suffix(".tmp").open("wb") as stream:
-            if os.name != "nt":
-                os.fchmod(stream.fileno(), 0o600)
-            stream.write(raw)
-            stream.flush()
-            os.fsync(stream.fileno())
-        target.with_suffix(".tmp").replace(target)
+        if len(raw) > _EVENT_MAX_BYTES:
+            for key in tuple(event):
+                if len(json.dumps(event[key], ensure_ascii=False).encode()) > 8192:
+                    event[key] = {"omitted": "event size limit"}
+            event["truncated"] = True
+            raw = json.dumps(event, ensure_ascii=False).encode("utf-8")
+        with _pending_lock:
+            if len(raw) > _EVENT_MAX_BYTES:
+                _dropped_events += 1
+                return
+            if (len(_pending) >= _QUEUE_MAX_EVENTS
+                    or _pending_bytes + len(raw) > _QUEUE_MAX_BYTES):
+                failed = ("error" in kind or bool(payload.get("error"))
+                          or payload.get("outcome") in {"error", "interrupted"})
+                if not failed:
+                    _dropped_events += 1
+                    return
+                while _pending and (len(_pending) >= _QUEUE_MAX_EVENTS
+                                    or _pending_bytes + len(raw) > _QUEUE_MAX_BYTES):
+                    _directory, _event, removed = _pending.popleft()
+                    _pending_bytes -= removed
+                    _dropped_events += 1
+            _pending.append((root(), event, len(raw)))
+            _pending_bytes += len(raw)
         _start_worker()
+        _wake.set()
     except Exception as exc:
         _failure(exc)
     finally:
         _SUPPRESSED.reset(token)
+
+
+def flush_pending():
+    """Persist queued events in batches; no network. Used on worker/shutdown/export."""
+    global _pending_bytes, _dropped_events
+    with _flush_lock:
+        with _pending_lock:
+            pending = list(_pending)
+            _pending.clear()
+            _pending_bytes = 0
+        groups = {}
+        for directory, event, _size in pending:
+            groups.setdefault((directory, event["user_id"], event["trace_id"]), []).append(event)
+        for (directory, _user, _trace), events in groups.items():
+            written = 0
+            target = None
+            try:
+                directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+                for offset in range(0, len(events), _BATCH_MAX_EVENTS):
+                    batch = events[offset:offset + _BATCH_MAX_EVENTS]
+                    envelope = {**batch[0], "kind": "event.batch", "events": batch}
+                    # Envelope contains correlation only, never a duplicate of the first payload.
+                    envelope = {key: envelope[key] for key in (
+                        "kind", "events", "event_id", "user_id", "trace_id", "trip_id",
+                        "recorded_at", "unix_time",
+                    ) if key in envelope}
+                    target = directory / f"{time.time_ns()}-{batch[0]['event_id']}.json"
+                    raw = json.dumps(envelope, ensure_ascii=False).encode("utf-8")
+                    with target.with_suffix(".tmp").open("wb") as stream:
+                        if os.name != "nt":
+                            os.fchmod(stream.fileno(), 0o600)
+                        stream.write(raw)
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                    target.with_suffix(".tmp").replace(target)
+                    written += len(batch)
+                prune_spool(directory)
+            except Exception as exc:
+                if target is not None:
+                    try:
+                        target.with_suffix(".tmp").unlink(missing_ok=True)
+                    except OSError:
+                        pass
+                with _pending_lock:
+                    _dropped_events += len(events) - written
+                _failure(exc)
+
+
+def prune_spool(directory):
+    from tripplanner.diagnostic_retention import prune
+
+    prune(directory, "*.json", max_bytes=_SPOOL_MAX_BYTES, max_age=_TTL)
+
+
+def _events(envelope):
+    return envelope.get("events", []) if envelope.get("kind") == "event.batch" else [envelope]
+
+
+atexit.register(flush_pending)
 
 
 def _upload(event):
@@ -196,6 +284,8 @@ def _drain_once(limit: int | None = None) -> int:
     uploaded = 0
     token = _SUPPRESSED.set(True)
     try:
+        flush_pending()
+        prune_spool(root())
         remote = storage_cosmos.is_enabled()
         hosted = root().name in {"prod", "production", "canary"}
         if hosted and not remote:
@@ -254,6 +344,7 @@ def clear_user(user_id):
     from tripplanner import storage_cosmos
 
     with _drain_lock:
+        flush_pending()
         for path in root().glob("*.json"):
             if json.loads(path.read_text(encoding="utf-8")).get("user_id") == user_id:
                 path.unlink()
@@ -302,13 +393,19 @@ def _start_worker():
         def run():
             uploaded_since_report = 0
             report_started = time.monotonic()
+            last_drops = 0
             while True:
                 batch_size = _worker_batch_size()
                 with _drain_lock:
                     uploaded = _drain_once(limit=batch_size)
                 uploaded_since_report += uploaded
                 elapsed_seconds = time.monotonic() - report_started
-                if _upload_report_due(
+                if _dropped_events != last_drops and elapsed_seconds >= 60:
+                    logging.getLogger(__name__).warning(
+                        "flight_recorder_overflow dropped_events=%s", _dropped_events
+                    )
+                    last_drops = _dropped_events
+                if elapsed_seconds >= 60 and _upload_report_due(
                     uploaded,
                     uploaded_since_report,
                     batch_size,
@@ -330,7 +427,10 @@ def _start_worker():
                     )
                     uploaded_since_report = 0
                     report_started = time.monotonic()
-                time.sleep(2 if uploaded == batch_size else 10)
+                _wake.wait(2)
+                _wake.clear()
+                # Coalesce a burst rather than fsync once for every wakeup.
+                time.sleep(0.25)
 
         _worker = threading.Thread(target=run, name="flight-recorder", daemon=True)
         _worker.start()
@@ -342,6 +442,9 @@ def status():
         "last_error": _last_error,
         "last_uploaded_at": _last_uploaded,
         "spooled_events": sum(1 for _ in root().glob("*.json")),
+        "queued_events": len(_pending),
+        "queued_bytes": _pending_bytes,
+        "dropped_events": _dropped_events,
     }
 
 
@@ -361,10 +464,11 @@ def decode_chunks(chunks):
 def export_events(user_id, *, trip_id="", trace_id="", cosmos=False):
     """Return a user's trace, including early research before a new trip acquired its ID."""
     events = {}
+    flush_pending()
     for path in root().glob("*.json"):
-        event = json.loads(path.read_text(encoding="utf-8"))
-        if event.get("user_id") == user_id:
-            events[event["event_id"]] = event
+        for event in _events(json.loads(path.read_text(encoding="utf-8"))):
+            if event.get("user_id") == user_id:
+                events[event["event_id"]] = event
     if cosmos:
         from tripplanner import storage_cosmos
 
@@ -376,7 +480,8 @@ def export_events(user_id, *, trip_id="", trace_id="", cosmos=False):
         finally:
             _SUPPRESSED.reset(token)
         for event_id, chunks in groups.items():
-            events[event_id] = decode_chunks(chunks)
+            for event in _events(decode_chunks(chunks)):
+                events[event["event_id"]] = event
     values = list(events.values())
     traces = {e["trace_id"] for e in values if not trip_id or e.get("trip_id") == trip_id}
     return sorted(

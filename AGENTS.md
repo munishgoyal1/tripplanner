@@ -54,6 +54,12 @@ Examples: engineeering review, refactor planning, deterministic guardrails, tool
 
 ## Required workflow expectations
 
+- Start each feature or enhancement on a fresh, task-named agent branch such as
+  `gpt-telemetry-footprint`. Bug fixes may reuse `gpt-bugfixes` only when it is
+  clean and not owned by another active session. Never use generic Coordinator
+  branches for owner-requested work. Keep the agent identity visible in branch
+  names, use isolated worktrees for concurrent agents, and publish through a PR.
+
 - Keep the current task title concrete and task-specific.
 - If a task is a bug fix or feature change, keep the work narrow and scoped to a single coherent milestone.
 - Validate with the smallest proving command that checks the changed behavior.
