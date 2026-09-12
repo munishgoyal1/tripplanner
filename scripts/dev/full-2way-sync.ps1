@@ -36,6 +36,7 @@
   ./scripts/dev/full-2way-sync.ps1
     ./scripts/dev/full-2way-sync.ps1 sbx
   ./scripts/dev/full-2way-sync.ps1 -PullOnly
+  ./scripts/dev/full-2way-sync.ps1 -NoTest
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
@@ -46,7 +47,9 @@ param(
     [string]$BaseBranch = "master",
     [switch]$AlwaysValidate,
     # Bring lanes up to the base without publishing any lane work to it.
-    [switch]$PullOnly
+    [switch]$PullOnly,
+    # Skip the test suite entirely and still publish/land the syncs it would gate.
+    [switch]$NoTest
 )
 
 $ErrorActionPreference = "Stop"
@@ -424,6 +427,7 @@ function Test-NeedsValidation {
     #>
     param([object]$Entry, [string[]]$Commits)
 
+    if ($NoTest) { return $false }
     if ($AlwaysValidate) { return $true }
     $workingDirectory = if ($Entry.worktree) { $Entry.worktree } else { $primaryRoot }
     $head = if ($Entry.worktree) { "HEAD" } else { $Entry.branch }
