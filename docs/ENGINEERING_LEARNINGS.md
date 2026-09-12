@@ -1992,3 +1992,9 @@ the outcome.
 - A generation counter shared by two kinds of refresh cannot tell "superseded"
   from "a different request started". The view-only refresh a focus click makes
   produces no seed, so the panels waiting on a seed need their own generation.
+
+## 2026-09-12 - Price known calls before applying interaction safety floors
+
+- Missing Tavily pricing and free weather marked billable made cost_ledger apply its INR 40 fallback to ordinary views. Give known operations explicit prices or a narrowly scoped nonbillable classification; retain fallback for genuinely unpriced paid operations.
+- A pricing fix does not repair persisted counters. Reconcile identified complete settled interactions with an idempotent, version-checked credit; preserve unmatched spend and avoid claiming provider billing or unverified monthly credits.
+

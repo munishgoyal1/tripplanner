@@ -319,6 +319,14 @@ or configured route-provider request.
   and cache lookup happens before paid-call budget consumption. Fresh cache hits
   consume neither provider quota nor the turn's allowance. Transient errors and
   empty provider results are not stored as successful responses.
+- Cost settlement prices Tavily search by depth (basic $0.009, advanced or
+  missing depth $0.018 including a 12.5% buffer over PAYG). Public Open-Meteo
+  forecast, geocoding and archive hosts are nonbillable; customer hosts and
+  unknown paid operations retain the unknown-cost fallback. These known calls
+  must not turn a sub-rupee lookup into a whole-interaction INR 40/120 charge.
+  The daily ceiling and concurrent reservations remain enforced. Google global
+  list estimates and Azure token estimates remain conservative gross usage
+  estimates, not invoices or estimates net of shared free monthly allowances.
 
 **Executable proof:**
 

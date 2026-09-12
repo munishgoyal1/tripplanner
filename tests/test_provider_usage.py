@@ -79,7 +79,7 @@ def test_summary_preserves_attribution_and_unknown_costs(monkeypatch, tmp_path) 
             duration_ms=100,
         )
         provider_usage.record_call(
-            provider="tavily",
+            provider="unpriced_provider",
             operation="request",
             status="ok",
             duration_ms=200,

@@ -27,6 +27,61 @@ class FakeClock:
         return self.now
 
 
+@pytest.mark.parametrize("path,payload,expected", [
+    ("search", {}, 0.009),
+    ("search", {"search_depth": "advanced"}, 0.018),
+    ("search", {"auto_parameters": True}, 0.018),
+    ("extract", {}, None),
+])
+def test_tavily_estimates_search_depth_without_hiding_unknown_operations(
+    monkeypatch, path, payload, expected,
+):
+    from tripplanner import provider_usage
+
+    records = []
+    monkeypatch.setattr(provider_usage, "persist_batch", lambda batch: records.extend(batch))
+    transport = httpx.MockTransport(lambda req: httpx.Response(200, request=req))
+    with httpx.Client(transport=transport) as client:
+        monkeypatch.setattr(http_client, "get_client", lambda: client)
+        http_client._request("POST", f"https://api.tavily.com/{path}", json=payload)
+    assert records[0]["estimated_cost_usd"] == expected
+    assert records[0]["billable"] is True
+
+
+@pytest.mark.parametrize("host,free", [
+    ("api.open-meteo.com", True),
+    ("geocoding-api.open-meteo.com", True),
+    ("archive-api.open-meteo.com", True),
+    ("customer-api.open-meteo.com", False),
+    ("unpriced.example", False),
+])
+def test_only_public_weather_hosts_are_free(monkeypatch, host, free):
+    from tripplanner import provider_usage
+
+    records = []
+    monkeypatch.setattr(provider_usage, "persist_batch", lambda batch: records.extend(batch))
+    http_client._record(host, "ok", 1.0, 200)
+    record = records[0]
+    assert record["billable"] is not free
+    assert record["estimated_cost_usd"] == (0.0 if free else None)
+
+
+def test_known_search_and_weather_do_not_trigger_unknown_interaction_floor(monkeypatch):
+    from tripplanner import cost_ledger, provider_usage
+
+    records = []
+    monkeypatch.setattr(provider_usage, "persist_batch", lambda batch: records.extend(batch))
+    http_client._record("api.tavily.com", "ok", 1.0, 200, "search", "basic")
+    http_client._record("api.open-meteo.com", "ok", 1.0, 200)
+    amount, unknown = cost_ledger._batch_cost(records, "trip_update", {})
+    assert amount == pytest.approx(0.792)
+    assert unknown == 0
+    http_client._record("unpriced.example", "ok", 1.0, 200)
+    amount, unknown = cost_ledger._batch_cost(records, "trip_update", {})
+    assert amount == 40.0
+    assert unknown == 1
+
+
 def _breaker(clock: FakeClock, **policy: object) -> CircuitBreaker:
     return CircuitBreaker(
         "test",

@@ -13,7 +13,11 @@ class TokenRate:
     cached_input_per_million_usd: float | None = None
 
 
-CATALOG_VERSION = "2026-09-10"
+CATALOG_VERSION = "2026-09-12"
+
+# https://docs.tavily.com/documentation/api-credits: $0.008/credit PAYG.
+# Reserve 12.5% headroom and do not assume remaining monthly free credits.
+TAVILY_USD_PER_SEARCH = {"basic": 0.009, "advanced": 0.018}
 
 # Azure Global Standard list-price planning assumptions, verified 2026-09-09
 # against public Azure OpenAI token tables (not the owner's billed invoice).
