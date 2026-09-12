@@ -9,7 +9,7 @@
 - Status: Selected — B · Account vault, trip shows gaps
 - Lab: `http://127.0.0.1:5175/lab-20-travel-documents.html`
 - Full-size preview: append `?preview=readiness`, `?preview=vault`, or `?preview=inbox`
-- Feature brief: [`../feature-briefs/002-travel-documents.md`](../feature-briefs/002-travel-documents.md)
+- Feature brief: [`../feature-briefs-backlog/002-travel-documents.md`](../feature-briefs-backlog/002-travel-documents.md)
 
 ## The gap this Lab answers
 

@@ -6,7 +6,7 @@ This is the consolidated candidate backlog for meaningful future product work.
 It complements the implemented capability baseline in
 [`../REQUIREMENTS.md`](../REQUIREMENTS.md) and does not approve any item
 for implementation. Before work begins, the owner selects one coherent outcome
-and scopes it through [`../feature-briefs/NEXT_INCREMENT.md`](../feature-briefs/NEXT_INCREMENT.md).
+and scopes it through [`../feature-briefs-backlog/NEXT_INCREMENT.md`](../feature-briefs-backlog/NEXT_INCREMENT.md).
 
 ## Prioritization principles
 

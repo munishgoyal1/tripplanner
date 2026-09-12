@@ -74,7 +74,10 @@ function Invoke-Suite {
     $previous = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
-        & $Command 2>&1 | Tee-Object -FilePath $LogPath
+        # Out-Host, not a bare pipeline: anything left on the pipeline becomes
+        # part of this function's return value, and the caller wants the exit
+        # code alone.
+        & $Command 2>&1 | Tee-Object -FilePath $LogPath | Out-Host
         return $LASTEXITCODE
     } finally {
         $ErrorActionPreference = $previous
@@ -131,7 +134,7 @@ try {
 
     if (-not $FrontendOnly) {
         Write-Host "== pytest ==" -ForegroundColor Cyan
-        $python = Resolve-TripplannerPython -RepoRoot $worktree
+        $python = (Resolve-TripplannerPython -RepoRoot $worktree).Python
         $junit = Join-Path $outputRoot "pytest-junit.xml"
         $pytestLog = Join-Path $outputRoot "pytest.log"
         $target = if ($PytestTarget) { $PytestTarget } else { "tests" }
@@ -174,7 +177,7 @@ try {
     if ($UpdateBaseline) { $arguments += "--update-baseline" }
 
     Write-Host "== classifying against the baseline ==" -ForegroundColor Cyan
-    $python = Resolve-TripplannerPython -RepoRoot $worktree
+    $python = (Resolve-TripplannerPython -RepoRoot $worktree).Python
     & $python (Join-Path $PSScriptRoot "suite_health.py") @arguments
     $classifyExit = $LASTEXITCODE
 

@@ -19,10 +19,16 @@
       "state": "required"
     },
     "pytest": {
-      "state": "required"
+      "state": "suspended",
+      "since": "2026-09-12",
+      "reason": "2082 tests, 20m22s at -n 2, on every merge, promote and branch-lane publish. Paid once on master by suite-health.ps1 instead.",
+      "tracked_by": "scripts/dev/test-health-baseline.json"
     },
     "vitest": {
-      "state": "required"
+      "state": "suspended",
+      "since": "2026-09-12",
+      "reason": "Runs with pytest at every gate; jsdom setup costs tens of seconds per file. Paid once on master by suite-health.ps1 instead.",
+      "tracked_by": "scripts/dev/test-health-baseline.json"
     }
   },
   "health_check": "scripts/dev/suite-health.ps1",

@@ -433,7 +433,7 @@ snapshots. `graph_policy.py` enforces draft creation/persistence before refineme
 | `docs/PRODUCT.md` | Product intent and interaction rules |
 | `docs/REQUIREMENTS.md` | Current capabilities, gaps, and roadmap |
 | `docs/ENGINEERING_LEARNINGS.md` | Durable lessons from observed failures |
-| `docs/feature-briefs/` | Owner-approved active milestone scope |
+| `docs/feature-briefs-backlog/` | Owner-approved active milestone scope |
 | `docs/roadmap/` | Candidate and deferred ideas |
 | `docs/ux-experiments/` | UX Lab decisions and lifecycle records; `LAB_SELECTIONS.json` is the tracked canonical handoff and implementation history |
 | `docs/operations/deployment-flow.md` | Canonical canary, production, monitoring, and rollback runbook |
@@ -484,6 +484,10 @@ python scripts/dev/test_selection.py --behavior EB-PLAN-001
 # `-n auto` hits when several sandboxes/dev stacks are already running;
 # kept low because higher counts flake timing/iteration-budgeted tests
 # under real concurrent load)
+#
+# NOT a local gate: the complete suites are suspended from merge/promote/sync by
+# scripts/dev/validation-policy.json and run periodically on master through
+# scripts/dev/suite-health.ps1. See docs/development/testing.md.
 .venv\Scripts\python.exe -m pytest -q -n 2
 
 # Python lint
