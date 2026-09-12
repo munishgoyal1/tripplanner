@@ -30,7 +30,7 @@ function renderCard(remaining = 1) {
 describe("ProfileSuggestionCard", () => {
   it("shows the fact as not yet saved", () => {
     renderCard();
-    expect(screen.getByText(/not saved yet/i)).toBeTruthy();
+    expect(screen.getByText(/optional suggestion/i)).toBeTruthy();
     expect(screen.getByText(suggestion.summary)).toBeTruthy();
   });
 
@@ -50,4 +50,15 @@ describe("ProfileSuggestionCard", () => {
     renderCard(3);
     expect(screen.getByText(/2 more noticed/i)).toBeTruthy();
   });
+});
+
+
+it("acknowledges automatic saves and lets the user undo without confirming", () => {
+  const onResolve = vi.fn();
+  render(<ProfileSuggestionCard suggestion={{ ...suggestion, status: "saved" }}
+    remaining={1} busy={false} onResolve={onResolve} />);
+  expect(screen.getByText(/saved automatically/i)).toBeTruthy();
+  expect(screen.queryByRole("button", { name: /remember this/i })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: /undo/i }));
+  expect(onResolve).toHaveBeenCalledWith("sug_1", "undo");
 });

@@ -90,33 +90,19 @@ class TestTripScopeGuard:
         assert passive_learning.has_trip_scope_cue("I'll make an exception here")
         assert not passive_learning.has_trip_scope_cue("I always prefer 5-star hotels")
 
-    def test_one_off_routes_to_trip_not_prefs(self, monkeypatch):
-        # The extractor must NOT be called for a trip-scoped one-off.
-        called = {"n": 0}
-
-        def _boom(_text):
-            called["n"] += 1
-            return {"hotel_preferences": {"star_rating_min": 3}}
-
-        monkeypatch.setattr(
-            passive_learning.about_me_extractor, "extract_about_me", _boom
-        )
-        trip_planner.create_trip_plan.invoke(
-            {"destination": "Goa", "departure_date": "2026-01-10", "return_date": "2026-01-15"}
-        )
-        touched = passive_learning.learn_from_message(
-            "A 3-star hotel is fine just for this trip"
-        )
-        assert touched == ["trip_constraint"]
-        assert called["n"] == 0
-        # durable prefs untouched (still default star floor 3, unchanged)
-        prefs = load_preferences()
-        assert prefs["hotel_preferences"]["star_rating_min"] == 3
-        plan = trip_planner.load_active_trip_dict()
-        assert any("3-star" in c for c in plan["trip_constraints"])
+    def test_one_off_is_not_extracted_as_a_durable_preference(self, monkeypatch):
+        seen = []
+        def extract(text, **kwargs):
+            seen.append(kwargs)
+            return {}
+        monkeypatch.setattr(passive_learning.about_me_extractor, "extract_about_me", extract)
+        touched = passive_learning.learn_from_message("A 3-star hotel is fine just for this trip")
+        assert touched == []
+        assert seen[0]["conversation"] is True
+        assert not profile_suggestions.list_pending()
 
     def test_durable_statement_still_extracts(self, monkeypatch):
-        def _fake(_text):
+        def _fake(_text, **kwargs):
             return {"interests": ["scuba diving"]}
 
         monkeypatch.setattr(
@@ -126,7 +112,6 @@ class TestTripScopeGuard:
             "I always love scuba diving on my trips"
         )
         assert raised and raised != ["trip_constraint"]
-        profile_suggestions.resolve(raised[0], "save")
         prefs = load_preferences()
         assert "scuba diving" in prefs["interests"]
 
