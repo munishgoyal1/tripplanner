@@ -1017,6 +1017,43 @@ describe("map stop selection", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
   });
 
+  it("refetches the map after a trip edit instead of replaying the switch seed", async () => {
+    const dayView = (destination: string) => ({
+      enabled: true,
+      destination,
+      center: { lat: 34, lng: 74.8 },
+      pins: [],
+      days: [
+        { day: 1, label: "Day 1", color: "#e11d48", pin_ids: [], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
+      ],
+      available_days: [1],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+    const seed = dayView("Kashmir");
+    fetchMapsConfigMock.mockResolvedValue({ enabled: false, key: "" });
+    fetchMapViewMock.mockResolvedValue(dayView("Kashmir (refetched)"));
+
+    const rendered = render(createElement(MapPanel, {
+      tripId: "kashmir",
+      reloadToken: 1,
+      seed,
+    }));
+    // The seed stands in for the first load, so nothing is requested yet.
+    await screen.findByRole("button", { name: "Day 1" });
+    expect(fetchMapViewMock).not.toHaveBeenCalled();
+
+    // A stay added from Details bumps the reload token without a new seed.
+    rendered.rerender(createElement(MapPanel, {
+      tripId: "kashmir",
+      reloadToken: 2,
+      seed,
+    }));
+
+    await waitFor(() => expect(fetchMapViewMock).toHaveBeenCalledTimes(1));
+  });
+
   it("shows arrival and departure days for legacy flight legs", async () => {
     fetchMapsConfigMock.mockResolvedValue({ enabled: false, key: "" });
     const airport = (id: string, day: number) => ({

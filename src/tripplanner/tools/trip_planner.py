@@ -271,6 +271,19 @@ def add_hotel_stay(
     summary = _summary_for_place(hotel_name, destination)
     hotel_stop = _make_stop(hotel_name, "hotel", summary)
 
+    lodging_locations = _itinerary_hotel_locations(plan)
+    if destination:
+        lodging_locations = lodging_locations | {destination.strip().lower()} | {
+            part.strip().lower()
+            for part in re.split(r"[,&/()]| and ", destination)
+            if part.strip()
+        }
+
+    def _is_placeholder_stay(stay_name: str) -> bool:
+        return bool(_HOTEL_PLACEHOLDER_RE.search(stay_name)) or unnamed_lodging(
+            stay_name, lodging_locations
+        )
+
     placements: list[dict[str, Any]] = []
     replaced_old_names: set[str] = set()
     for day in range(start, end + 1):
@@ -280,14 +293,10 @@ def add_hotel_stay(
             placements.append({"day": day, "stop": 1, "name": hotel_name})
             continue
 
-        existing_idx = next(
-            (
-                idx
-                for idx, raw in enumerate(stops)
-                if _stop_kind(raw) == "hotel"
-            ),
-            None,
-        )
+        hotel_indexes = [
+            idx for idx, raw in enumerate(stops) if _stop_kind(raw) == "hotel"
+        ]
+        existing_idx = hotel_indexes[0] if hotel_indexes else None
         if existing_idx is not None:
             existing_name = _stop_name(stops[existing_idx])
             if existing_name.lower() == hotel_name.lower() or replace_existing:
@@ -295,6 +304,24 @@ def add_hotel_stay(
                     replaced_old_names.add(existing_name.lower())
                 stops[existing_idx] = dict(hotel_stop)
                 placements.append({"day": day, "stop": existing_idx + 1, "name": hotel_name})
+                # A day usually anchors its stay twice -- check-in and the
+                # return for the night. Replacing only the first left the
+                # evening anchor reading "Hotel TBD" after the traveller had
+                # already chosen where they sleep. Take the other anchors that
+                # named the same stay or named nobody; a genuinely different
+                # property on a transfer day stays where the planner put it.
+                for other_idx in hotel_indexes[1:]:
+                    other_name = _stop_name(stops[other_idx])
+                    if other_name.lower() == hotel_name.lower():
+                        continue
+                    if (
+                        other_name.lower() != existing_name.lower()
+                        and not _is_placeholder_stay(other_name)
+                    ):
+                        continue
+                    if other_name:
+                        replaced_old_names.add(other_name.lower())
+                    stops[other_idx] = dict(hotel_stop)
                 continue
 
         # Make hotel the day anchor at stop 1 when no replace target exists.

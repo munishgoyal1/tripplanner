@@ -1810,6 +1810,72 @@ class TestTripPlanState:
         assert day3[0]["name"] == "Taj Goa"
         assert day3[0]["kind"] == "hotel"
 
+    def test_add_hotel_stay_replaces_every_placeholder_anchor_in_the_day(self):
+        create_trip_plan.invoke({
+            "destination": "Kashmir",
+            "departure_date": "2027-04-05",
+            "return_date": "2027-04-07",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [
+                    {"name": "Hotel TBD, Srinagar", "kind": "hotel"},
+                    {"name": "Dal Lake Shikara Ride", "kind": "attraction"},
+                    {"name": "Hotel TBD, Srinagar", "kind": "hotel"},
+                ]},
+                {"day": 2, "stops": [
+                    {"name": "Drive: Srinagar to Pahalgam", "kind": "transport"},
+                    {"name": "Hotel TBD, Srinagar", "kind": "hotel"},
+                    {"name": "Betaab Valley", "kind": "attraction"},
+                    {"name": "Pahalgam hotel", "kind": "hotel"},
+                ]},
+            ],
+        })})
+
+        result = add_hotel_stay(
+            "Welcomhotel By ITC Hotels Pine N Peak, Pahalgam",
+            start_day=1,
+            end_day=2,
+            replace_existing=True,
+        )
+
+        assert result["ok"] is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        stays = [
+            stop["name"]
+            for day in plan["day_wise_itinerary"]
+            for stop in day["stops"]
+            if stop.get("kind") == "hotel"
+        ]
+        assert stays, "the days should still anchor a stay"
+        assert set(stays) == {"Welcomhotel By ITC Hotels Pine N Peak, Pahalgam"}
+
+    def test_add_hotel_stay_keeps_a_second_named_hotel_on_a_transfer_day(self):
+        create_trip_plan.invoke({
+            "destination": "Kashmir",
+            "departure_date": "2027-04-05",
+            "return_date": "2027-04-06",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [
+                    {"name": "Vivanta Dal View", "kind": "hotel"},
+                    {"name": "Drive: Srinagar to Gulmarg", "kind": "transport"},
+                    {"name": "Hotel Highlands Park", "kind": "hotel"},
+                ]},
+            ],
+        })})
+
+        add_hotel_stay("Taj Srinagar", start_day=1, end_day=1, replace_existing=True)
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        stays = [
+            stop["name"]
+            for stop in plan["day_wise_itinerary"][0]["stops"]
+            if stop.get("kind") == "hotel"
+        ]
+        assert stays == ["Taj Srinagar", "Hotel Highlands Park"]
+
     def test_add_hotel_stay_replacement_prunes_old_selected_hotel(self):
         create_trip_plan.invoke({
             "destination": "Goa",
