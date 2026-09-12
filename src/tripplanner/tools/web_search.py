@@ -14,9 +14,17 @@ import httpx
 from langchain_core.tools import tool
 
 from tripplanner import http_client
+from tripplanner.caching import get_cache
 from tripplanner.config import get_settings
 
 _TAVILY_URL = "https://api.tavily.com/search"
+
+# Tavily is billed per search and had no cache at all, so the destination
+# overview bought the same "latest travel news for <destination>" every time the
+# planner was opened. Six hours is well inside how fast travel news moves, and
+# the shared volatile TTL policy still governs it.
+_SEARCH_TTL_S = 6 * 60 * 60
+_WEB_SEARCH_CACHE = get_cache("web-search", default_ttl_seconds=_SEARCH_TTL_S)
 
 
 def is_configured() -> bool:
@@ -39,11 +47,23 @@ def search_raw(
     if not is_configured():
         raise RuntimeError("Tavily web search not configured (set TAVILY_API_KEY).")
 
+    depth = search_depth if search_depth in ("basic", "advanced") else "basic"
+    results = min(max(max_results, 1), 10)
+    cache_key = "|".join(
+        [" ".join(query.lower().split()), str(results), depth, topic or ""]
+    )
+    cached = _WEB_SEARCH_CACHE.get(cache_key)
+    if isinstance(cached, dict):
+        from tripplanner.provider_usage import record_cache_hit
+
+        record_cache_hit(provider="tavily", operation="request")
+        return cached
+
     payload: dict = {
         "api_key": get_settings().tavily_api_key,
         "query": query,
-        "max_results": min(max(max_results, 1), 10),
-        "search_depth": search_depth if search_depth in ("basic", "advanced") else "basic",
+        "max_results": results,
+        "search_depth": depth,
         "include_answer": True,
     }
     if topic in ("news", "general"):
@@ -51,7 +71,7 @@ def search_raw(
     resp = http_client.post(_TAVILY_URL, json=payload)
     resp.raise_for_status()
     data = resp.json()
-    return {
+    out = {
         "answer": data.get("answer", "") or "",
         "results": [
             {
@@ -62,6 +82,8 @@ def search_raw(
             for r in data.get("results", [])
         ],
     }
+    _WEB_SEARCH_CACHE.set(cache_key, out)
+    return out
 
 
 @tool

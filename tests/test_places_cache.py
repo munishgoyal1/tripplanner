@@ -7,9 +7,11 @@ network layer so they're deterministic and never touch Google or Cosmos.
 
 from __future__ import annotations
 
+import contextvars
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from threading import Barrier
 
 import httpx
@@ -23,10 +25,28 @@ _REAL_LOOKUP_PLACE = pc._lookup_place
 _REAL_PHOTO_URIS = pc._photo_uris
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def _authorized():
+    """Every test here exercises cache mechanics, which needs a paid scope.
+
+    Whether a *caller* gets one is an HTTP-layer policy (``route_may_spend``),
+    not a property of the cache, so it is granted by default and the tests that
+    are about the read-only path drop it explicitly with ``_read_only``.
+    """
     with places_budget_scope("user_interaction"):
         yield
+
+
+@contextmanager
+def _read_only():
+    """Run the block as a read-only caller: no paid-provider authorization."""
+    from tripplanner import places_budget
+
+    token = places_budget._BUDGET.set(None)
+    try:
+        yield
+    finally:
+        places_budget._BUDGET.reset(token)
 
 
 @pytest.fixture(autouse=True)
@@ -99,7 +119,12 @@ def test_simultaneous_photo_views_resolve_once(_isolate, monkeypatch, refresh):
 
     monkeypatch.setattr(pc, "_photo_uris", slow_resolve)
     with ThreadPoolExecutor(max_workers=4) as executor:
-        results = list(executor.map(lambda _: view(), range(4)))
+        # Copied on this thread, as prefetch() does: a worker inherits no context
+        # variables, so the caller's paid-provider authorization has to travel.
+        futures = [
+            executor.submit(contextvars.copy_context().run, view) for _ in range(4)
+        ]
+        results = [future.result() for future in futures]
     assert all(result == results[0] for result in results)
     assert results[0]
     assert _isolate["photos"] == 1
@@ -785,7 +810,14 @@ def test_concurrent_cache_updates_and_snapshots_remain_valid(_isolate):
     names = [f"Place {index}" for index in range(40)]
 
     with ThreadPoolExecutor(max_workers=8) as executor:
-        summaries = list(executor.map(lambda name: pc.get_summary(name, "Goa"), names))
+        # Same as prefetch() does: a worker thread inherits no context variables,
+        # so each context is copied here, on the calling thread, and carries the
+        # caller's paid-provider authorization into the worker.
+        futures = [
+            executor.submit(contextvars.copy_context().run, pc.get_summary, name, "Goa")
+            for name in names
+        ]
+        summaries = [future.result() for future in futures]
 
     assert all(summary and summary["place_id"] for summary in summaries)
     assert len(pc._CACHE) == len(names)
@@ -971,7 +1003,11 @@ def test_concurrent_same_place_lookup_is_coalesced(_isolate, monkeypatch):
     monkeypatch.setattr(pc, "_lookup_place", slow_lookup)
 
     with ThreadPoolExecutor(max_workers=8) as executor:
-        summaries = list(executor.map(lambda _: pc.get_details("Taj", "Goa"), range(8)))
+        futures = [
+            executor.submit(contextvars.copy_context().run, pc.get_details, "Taj", "Goa")
+            for _ in range(8)
+        ]
+        summaries = [future.result() for future in futures]
 
     assert all(summary and summary["place_id"] == "id-Taj" for summary in summaries)
     assert _isolate["lookup"] == 1
@@ -985,3 +1021,122 @@ def test_an_entry_without_coordinates_expires_like_a_miss() -> None:
 
     located = {**no_coords, "lat": 48.86, "lng": 2.32}
     assert pc._fresh(located)
+
+
+def test_read_only_caller_serves_the_cache_and_never_looks_up(_isolate):
+    """The reload case: a finished trip is rendered without buying anything."""
+    pc.get_details("Taj", "Goa")
+    assert _isolate["lookup"] == 1
+
+    with _read_only():
+        again = pc.get_details("Taj", "Goa")
+
+    assert again and again["place_id"] == "id-Taj"
+    assert _isolate["lookup"] == 1
+
+
+def test_read_only_caller_never_looks_up_an_unknown_place(_isolate):
+    with _read_only():
+        assert pc.get_details("Never Seen", "Goa") is None
+
+    assert _isolate["lookup"] == 0
+    assert pc._key("Never Seen", "Goa") not in pc._CACHE  # nothing invented
+
+
+def test_read_only_caller_serves_a_lapsed_entry_rather_than_nothing(_isolate):
+    """A lapsed TTL means "re-check when someone is paying", not "forget it".
+
+    Half-resolved entries (no coordinates) lapse after a minute, so a read-only
+    view that dropped them would lose a rating and a photo it already owns.
+    """
+    key = pc._key("Half Known", "Goa")
+    pc._CACHE[key] = {
+        "place_id": "half-id",
+        "name": "Half Known",
+        "rating": 4.2,
+        "__at__": time.time() - pc._MISS_TTL_S - 5,
+    }
+
+    with _read_only():
+        served = pc.get_details("Half Known", "Goa")
+
+    assert served and served["rating"] == 4.2
+    assert _isolate["lookup"] == 0
+
+
+def test_read_only_caller_records_its_decision_without_a_provider_event(_isolate):
+    with harness_scope("cache", run_id="read-only-run"):
+        with EvidenceCollector("read-only-run", "cache") as collector:
+            with _read_only():
+                pc.get_details("Unknown Place", "Goa")
+
+    results = [
+        event.fields["result"]
+        for event in collector.evidence.events
+        if event.kind == "cache_access"
+    ]
+    assert results == ["read_only_miss"]
+
+
+def test_photo_urls_are_not_stamped_when_resolution_is_declined(_isolate, monkeypatch):
+    """Recording "no photos" for a call that never happened hid the place's
+    photo for the whole 180-day photo TTL."""
+    pc.get_photos("Taj", "Goa")
+    key = pc._key("Taj", "Goa")
+    before = pc._CACHE[key]["photo_urls"]
+    assert before
+
+    monkeypatch.setattr(pc, "_photo_uris", lambda *_args, **_kwargs: [])
+    with pc._CACHE_LOCK:
+        pc._CACHE[key]["__photos_at__"] = 0.0  # force a re-resolve
+
+    photos = pc.get_photos("Taj", "Goa")
+
+    assert photos == before
+    assert pc._CACHE[key]["photo_urls"] == before
+
+
+def test_absent_reviews_are_not_cached_when_the_fetch_fails(_isolate, monkeypatch):
+    monkeypatch.setattr(pc, "_fetch_reviews", lambda _place_id: None)
+
+    summary = pc.get_summary("Taj", "Goa")
+
+    assert summary is not None
+    assert "reviews" not in pc._CACHE[pc._key("Taj", "Goa")]
+
+
+def test_top_places_read_only_serves_cached_names(_isolate, monkeypatch):
+    posts: list[str] = []
+
+    def fake_post(url, **kwargs):
+        posts.append(url)
+        return httpx.Response(
+            200,
+            json={"places": [{"displayName": {"text": "Hotel A"}}]},
+            request=httpx.Request("POST", url),
+        )
+
+    monkeypatch.setattr(pc.http_client, "post", fake_post)
+
+    assert pc.top_places("Goa", "hotel") == ["Hotel A"]
+    with _read_only():
+        assert pc.top_places("Goa", "hotel") == ["Hotel A"]
+        assert pc.top_places("Kerala", "hotel") == []
+
+    assert len(posts) == 1
+
+
+def test_top_places_does_not_cache_a_failed_lookup(_isolate, monkeypatch):
+    """Caching the empty list recorded "this destination has no hotels"."""
+    attempts: list[str] = []
+
+    def failing_post(url, **kwargs):
+        attempts.append(url)
+        raise httpx.ConnectError("boom")
+
+    monkeypatch.setattr(pc.http_client, "post", failing_post)
+
+    assert pc.top_places("Goa", "hotel") == []
+    assert pc.top_places("Goa", "hotel") == []
+
+    assert len(attempts) == 2  # retried, not remembered as an answer

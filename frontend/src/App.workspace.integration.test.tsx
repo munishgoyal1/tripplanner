@@ -226,9 +226,10 @@ describe("App real workspace panes", () => {
   it("keeps real panes on the authoritative removal after an older focus refresh resolves", async () => {
     const staleFocus = deferred<typeof parisView>();
     mocks.fetchTripView.mockReturnValue(staleFocus.promise);
-    mocks.fetchItinerary
-      .mockResolvedValueOnce(parisWorkspace.itinerary)
-      .mockResolvedValue(itinerary("Paris", "Louvre Museum", false));
+    // The first itinerary the panel shows now comes from the workspace payload,
+    // not from a /trip/itinerary call of its own, so every call this mock serves
+    // is a post-removal reload.
+    mocks.fetchItinerary.mockResolvedValue(itinerary("Paris", "Louvre Museum", false));
     mocks.deselectItem.mockResolvedValue({
       view: {
         ...parisView,

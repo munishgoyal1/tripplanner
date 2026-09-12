@@ -1843,6 +1843,36 @@ the outcome.
   tools returning `Error:` must report a rejected result even without a Python
   exception; a completed function call is not a successful trip mutation.
 
+## 2026-09-12 - A Read Of An Existing Trip Must Not Be Allowed To Spend
+
+- Every HTTP request opened a `user_interaction` paid-provider scope, so re-opening
+  the planner authorized eleven reads to buy Google Text Searches for a trip that
+  was already built. Measured on one afternoon of local telemetry: `GET /trip/map`
+  made 17 billable text searches and 17 photo fetches on a plain reload, and one
+  `GET /trip/workspace` waited 41 seconds on the per-minute Places quota it had
+  just exhausted. Authorization belongs to the interaction, not to the process: a
+  projection of stored state is a read whoever asked for it.
+- Warming is the one read-triggered path that may still spend, so it has to claim a
+  trip revision before it runs. `warm_view_items` was unguarded and re-prefetched up
+  to forty places on every view and workspace request -- the work the cache exists
+  to avoid, repeated on the request that should have been free.
+- A cache must distinguish "the provider answered: nothing" from "no answer was
+  obtained", on every field, not just the one that prompted the last fix. Empty
+  reviews and an empty photo-URL list were both stamped with a fresh timestamp
+  after a declined or failed call, recording an absence as fact for the whole TTL.
+- A lapsed TTL means "worth re-checking when someone is paying", never "forget the
+  place". A read that may not spend should serve the stale entry it holds.
+- One paid provider had no cache at all: Tavily destination news was bought again
+  on every planner open. Auditing spend per provider, not per subsystem, is what
+  surfaced it -- the Places work would never have found it.
+- Paid-provider authorization travels in a context variable, so any thread fan-out
+  on a paid path must copy the context. `trip_freshness` did not, which would have
+  made an explicit recheck silently check nothing.
+- Rolling alert windows are appended to and summed from whichever thread emitted
+  the event. Unsynchronized, an eight-way prefetch raised "deque mutated during
+  iteration" from inside the cache-hit path; re-summing the window per event also
+  made every cache hit O(window). Keep the running total, and hold the lock over
+  the arithmetic only -- never over the alert's own file I/O.
 ## 2026-09-12 - Count View Work And Distinguish Quota Rejections
 
 - Creation counts do not measure provider load: map, gallery, switch, and

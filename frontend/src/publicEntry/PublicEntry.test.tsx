@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { resetInFlightRequests } from "../api";
 import PublicEntry from "./PublicEntry";
 import { writeDisplayPreferences } from "../lib/displayPreferences";
 import {
@@ -23,6 +24,10 @@ function renderFinished(props: { onPlan?: (request: string) => void; onSkip?: ()
 describe("PublicEntry", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    // Concurrent callers share one preferences request, and that promise
+    // outlives a test case. Without this, a case can be handed the previous
+    // case's stubbed response and overwrite the display preferences it set.
+    resetInFlightRequests();
   });
 
   it("starts the captured run from reset when reduced motion is preferred", () => {

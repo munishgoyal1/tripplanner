@@ -8,6 +8,7 @@ public names so existing callers and tests stay on the facade.
 from __future__ import annotations
 
 import re
+from threading import Lock
 from typing import Any
 
 from tripplanner.config import get_settings
@@ -421,7 +422,36 @@ def paged_places(
     }
 
 
-_warmed_guides: set[str] = set()
+#: Trip revisions this process has already warmed, per warm kind. Warming is the
+#: one read-triggered path still allowed to spend, so it has to be bounded: the
+#: revision is claimed *before* the work runs, so a warm that fails or is cut
+#: short is not retried by the next reload either. A saved revision is warmed at
+#: most once per process, and reopening an unchanged trip costs nothing.
+_warmed: dict[str, set[str]] = {}
+_warm_lock = Lock()
+
+
+def _trip_revision(trip: dict[str, Any]) -> str:
+    return f"{trip.get('trip_id') or trip.get('id') or ''}|{trip.get('updated_at') or ''}"
+
+
+def _claim_warm(kind: str, trip: dict[str, Any]) -> bool:
+    """Claim this revision for ``kind``. ``False`` when it is already claimed."""
+    signature = _trip_revision(trip)
+    with _warm_lock:
+        done = _warmed.setdefault(kind, set())
+        if signature in done:
+            return False
+        if len(done) > 64:  # crude bound — warming is idempotent anyway
+            done.clear()
+        done.add(signature)
+    return True
+
+
+def reset_warm_state() -> None:
+    """Forget which revisions were warmed. For tests, which reuse one process."""
+    with _warm_lock:
+        _warmed.clear()
 
 
 def warm_guide(trip: dict[str, Any] | None) -> None:
@@ -436,13 +466,8 @@ def warm_guide(trip: dict[str, Any] | None) -> None:
     """
     if not trip or not places_cache.is_configured():
         return
-    sig = f"{trip.get('trip_id') or trip.get('id') or ''}|{trip.get('updated_at') or ''}"
-    if sig in _warmed_guides:
+    if not _claim_warm("guide", trip):
         return
-    _warmed_guides.add(sig)
-    if len(_warmed_guides) > 64:  # crude bound — warming is idempotent anyway
-        _warmed_guides.clear()
-        _warmed_guides.add(sig)
 
     by_city: dict[str, list[str]] = {}
     for entry in discovery_pool(trip):
@@ -456,8 +481,15 @@ def warm_view_items(trip: dict[str, Any] | None) -> None:
 
     Focus requests only block on the focused place; this runs afterwards from a
     background task so the rest of the gallery is warm for the next focus.
+
+    Guarded per trip revision like ``warm_guide``. It used to run on every
+    ``/trip/view`` and ``/trip/workspace``, so re-opening a finished trip
+    re-prefetched up to forty places each time — the work the cache exists to
+    avoid, repeated on the one request that should have been free.
     """
     if not trip or not places_cache.is_configured():
+        return
+    if not _claim_warm("view_items", trip):
         return
     settings = get_settings()
     refs = itinerary_items(trip, None)[: settings.google_places_max_photos_per_request]

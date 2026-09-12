@@ -68,6 +68,8 @@ interface Props {
   tripId?: string | null;
   /** Map view-model handed over by a trip switch; consumed once, then refetches. */
   seed?: MapView | null;
+  /** A workspace fetch that will deliver `seed` is in flight. */
+  seedPending?: boolean;
   /** When set, highlight the pin with this name (filter to its day, pan, open info). */
   focusName?: string | null;
   /** Exact itinerary occurrence day for repeated places such as a multi-day hotel. */
@@ -111,7 +113,7 @@ interface Props {
   ) => void | Promise<boolean>;
 }
 
-function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, showWorkspaceNavigation = true, sequenceOpen: controlledSequenceOpen, onSequenceOpenChange, onSelect, onDeselect }: Props) {
+function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, seedPending = false, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, showWorkspaceNavigation = true, sequenceOpen: controlledSequenceOpen, onSequenceOpenChange, onSelect, onDeselect }: Props) {
   const [sourceView, setView] = useState<MapView | null>(null);
   const [confirmingStop, setConfirmingStop] = useState<string | null>(null);
   const view = useMemo(
@@ -257,7 +259,9 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
     let cancelled = false;
     const controller = new AbortController();
     // A trip switch already returned this panel's view-model. Use it instead of
-    // asking the server to rebuild the same thing a second time.
+    // asking the server to rebuild the same thing a second time. Applied here
+    // rather than during render because the first load still needs the maps
+    // config, which only this effect fetches.
     const seeded = seedRef.current;
     if (seeded && seeded !== consumedSeedRef.current) {
       consumedSeedRef.current = seeded;
@@ -267,6 +271,14 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
         setLoading(false);
         return;
       }
+    }
+    // A workspace payload carrying this map is on its way. Racing it with
+    // /trip/map made the server resolve the same trip's places twice per page
+    // load, in parallel, against a rate-limited provider.
+    if (seedPending && !seeded) {
+      setLoading(true);
+      setError(null);
+      return;
     }
     (async () => {
       setLoading(true);
@@ -295,7 +307,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
     };
     // tripId participates so the eager clear above always has a matching
     // reload, even when the caller switches trips without bumping reloadToken.
-  }, [reloadToken, retryToken, tripId]);
+  }, [reloadToken, retryToken, tripId, seed, seedPending]);
 
   useEffect(() => {
     if (!view) return;

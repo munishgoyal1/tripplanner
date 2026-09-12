@@ -20,6 +20,8 @@ interface Props {
   /** View-models handed over by a trip switch, so the panels skip a refetch. */
   mapSeed?: MapView | null;
   itinerarySeed?: Itinerary | null;
+  /** A workspace fetch that will deliver the seeds above is in flight. */
+  seedPending?: boolean;
   /** Name of the stop to highlight (drives both itinerary + map). */
   focusName: string | null;
   /** Exact itinerary day when the focused place occurs more than once. */
@@ -69,6 +71,7 @@ export default function RightRail({
   tripId,
   mapSeed,
   itinerarySeed,
+  seedPending = false,
   focusName,
   focusDay,
   focusStop,
@@ -143,6 +146,7 @@ export default function RightRail({
               reloadToken={reloadToken}
               tripId={tripId}
               seed={itinerarySeed}
+              seedPending={seedPending}
               focusName={focusName}
               focusDay={focusDay}
               focusStop={focusStop}
@@ -174,6 +178,7 @@ export default function RightRail({
                 reloadToken={reloadToken}
                 tripId={tripId}
                 seed={mapSeed}
+                seedPending={seedPending}
                 focusName={focusName}
                 focusDay={focusDay}
                 focusStop={focusStop}

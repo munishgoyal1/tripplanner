@@ -388,7 +388,10 @@ def test_usage_batch_builds_bounded_human_flow_summary() -> None:
         "outbound_calls": 0,
         "llm_usage_events": 0,
         "cache_served_provider_calls": 0,
-        "places": ["Taj Mahal (Agra)=memory_hit", "Agra Fort (Agra)=miss"],
+        # Misses first: the summary names at most five places, and a warm trip
+        # view produces hundreds of hits, so listing them in arrival order said
+        # nothing about the handful that actually cost money.
+        "places": ["Agra Fort (Agra)=miss", "Taj Mahal (Agra)=memory_hit"],
         "place_count": 2,
     }
 
