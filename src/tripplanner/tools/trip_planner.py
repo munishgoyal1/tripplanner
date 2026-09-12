@@ -698,6 +698,15 @@ def _save_active_trip(plan: dict[str, Any]) -> None:
     if not plan.get("trip_id"):
         plan["trip_id"] = _compute_trip_id(plan)
     _normalize_hotel_endpoints(plan)
+    # Carry forward what we already know about each stop. Cache-only, so this
+    # adds no provider call; it just stops a saved trip from depending on a
+    # volatile process cache for coordinates it has already paid to learn.
+    try:
+        from tripplanner.web import places_cache
+
+        places_cache.annotate_stops_with_known_identity(plan)
+    except Exception:  # noqa: BLE001 - enrichment is an optimisation, never a save failure
+        pass
     plan["updated_at"] = datetime.now().isoformat()
 
     trip_history.persist_active_trip(plan)

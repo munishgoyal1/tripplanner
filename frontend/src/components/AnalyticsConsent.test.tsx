@@ -1,10 +1,14 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { resetAnalyticsConfigCache } from "../analytics";
 import AnalyticsConsent, { AnalyticsPreferences } from "./AnalyticsConsent";
 
 describe("AnalyticsConsent", () => {
   beforeEach(() => {
     localStorage.clear();
+    // The config is fetched once per page and cached, so each test must start
+    // from a cold cache or it inherits the previous test's stubbed response.
+    resetAnalyticsConfigCache();
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({
       enabled: false,
       measurement_id: "",

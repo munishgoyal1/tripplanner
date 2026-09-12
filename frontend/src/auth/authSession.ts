@@ -124,13 +124,25 @@ export interface AuthSession {
   picture?: string;
 }
 
+// Which sign-in providers this deployment offers is fixed at deploy time, so it
+// is fetched once per page rather than once per component that wants to know.
+let authConfigCache: Promise<{ google: boolean; redirect_uri?: string }> | null = null;
+
 export async function fetchAuthConfig(): Promise<{ google: boolean; redirect_uri?: string }> {
-  try {
-    const res = await fetch(`${BASE}/auth/config`);
-    return res.json();
-  } catch {
-    return { google: false };
+  if (!authConfigCache) {
+    authConfigCache = (async () => {
+      try {
+        const res = await fetch(`${BASE}/auth/config`);
+        return await res.json();
+      } catch {
+        // Not cached as a result: a failed probe should be retried, not
+        // remembered as "this deployment has no Google sign-in".
+        authConfigCache = null;
+        return { google: false };
+      }
+    })();
   }
+  return authConfigCache;
 }
 
 // Reads the session cookie. If authenticated, mirrors the identity into
@@ -138,7 +150,26 @@ export async function fetchAuthConfig(): Promise<{ google: boolean; redirect_uri
 // Returns both the session and the identity that was active BEFORE the mirror
 // (so callers can offer to migrate guest data or reset stale UI state when a
 // sign-in just occurred).
-export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string; prev_user_id?: string }> {
+// Several components sync the session as they mount, which meant /auth/me was
+// fetched twice on every page load. Concurrent callers now share one request.
+// Only the in-flight promise is shared, never a settled result -- signing in or
+// out must re-read the cookie, not be told what it said a moment ago.
+let syncAuthInFlight: Promise<
+  AuthSession & { prev_guest_id?: string; prev_user_id?: string }
+> | null = null;
+
+export function syncAuth(): Promise<
+  AuthSession & { prev_guest_id?: string; prev_user_id?: string }
+> {
+  if (!syncAuthInFlight) {
+    syncAuthInFlight = _syncAuth().finally(() => {
+      syncAuthInFlight = null;
+    });
+  }
+  return syncAuthInFlight;
+}
+
+async function _syncAuth(): Promise<AuthSession & { prev_guest_id?: string; prev_user_id?: string }> {
   try {
     const res = await fetch(`${BASE}/auth/me`, { credentials: "include" });
     if (!res.ok) throw new Error(`auth status ${res.status}`);
