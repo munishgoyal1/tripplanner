@@ -1823,3 +1823,8 @@ the outcome.
   retrying older failed messages; do not make provider latency a chat input gate.
 - Agent-identifiable task branches keep concurrent ownership clear. Git branches
   are cheap; isolated dependency installs and runtimes are separate choices.
+
+## 2026-09-12 - Inspect Full Process Identity and Wait for Exit State
+
+- POSIX process ownership must use untruncated command output (`ps -ww`); long interpreter arguments can hide the session marker and falsely classify a live worker as stale. A long-command regression protects the shutdown boundary.
+- Pipe EOF precedes final process exit, and a killed descendant can remain a zombie until its parent or init reaps it. Lifecycle tests must wait for bounded exit/reaping and distinguish executing processes from zombies rather than assume PID disappearance is immediate.
