@@ -19,6 +19,26 @@ ID. Changed-path selection and publication tiers are documented in
 
 ## Assistant planning
 
+### EB-PLAN-CTX-001 - Resolve follow-ups against the current trip
+
+**Trigger:** With a Goa itinerary saved, ask "plan flights from Bangalore",
+including after resuming the trip with no earlier tool history in the chat.
+
+**Expected:** Each model call receives fresh active-trip identity, destination,
+origin, dates, party, constraints and itinerary-presence facts. The request means
+Bangalore to Goa and back on the saved dates unless the traveller states a
+one-way journey or different return city. Explicit current instructions override
+saved trip facts and profile defaults, including an old destination-only scope.
+Do not re-ask known facts or restart trip creation. Read the full plan before
+editing, research grounded options, and preserve the existing itinerary while
+integrating both journey edges. Unknown indispensable search facts or past saved
+dates may require a focused clarification; availability and prices are never
+invented. An explicit new-trip request still uses the new-trip workflow.
+
+**Executable proof:**
+
+- [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_receives_fresh_trip_context_without_history` verifies model input, refresh after a trip switch, absence without an active trip, and no forced kickoff for the flight follow-up. Natural-language compliance still requires a live model check.
+
 ### EB-PLAN-001 - Complete a bounded new-trip planning turn
 
 **Trigger:** Start a new trip, with the travel-profile smart-defaults checkbox

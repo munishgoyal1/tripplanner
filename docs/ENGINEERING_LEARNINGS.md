@@ -1998,3 +1998,11 @@ the outcome.
 - Missing Tavily pricing and free weather marked billable made cost_ledger apply its INR 40 fallback to ordinary views. Give known operations explicit prices or a narrowly scoped nonbillable classification; retain fallback for genuinely unpriced paid operations.
 - A pricing fix does not repair persisted counters. Reconcile identified complete settled interactions with an idempotent, version-checked credit; preserve unmatched spend and avoid claiming provider billing or unverified monthly credits.
 
+
+## 2026-09-12 - Give The Model The State Its Policy Already Knows
+
+- Loading the active trip for completion policy does not make those facts visible
+  to the model. Inject a compact fresh snapshot on every invocation so resumed
+  conversations and trimmed tool history can resolve short follow-ups correctly.
+- Test the actual model input with no prior chat history and after switching trips.
+  This proves context delivery; it does not prove a live model obeys the instructions.

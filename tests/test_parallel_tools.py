@@ -287,6 +287,58 @@ def test_trip_agent_compacts_tool_results_only_for_model_input(monkeypatch) -> N
     assert all(message.content == full_result for message in tool_messages)
 
 
+def test_trip_agent_receives_fresh_trip_context_without_history(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    captured = []
+    bound_options = []
+    trip = {
+        "trip_id": "goa", "revision": 3, "destination": "Goa", "origin": "",
+        "departure_date": "2026-11-01", "return_date": "2026-11-05",
+        "travelers": "2 adults", "travel_scope": "destination_only",
+        "day_wise_itinerary": [{"day": 1, "stops": [{"name": "Keep this stop"}]}],
+    }
+
+    class FakeModel:
+        def bind_tools(self, tools, **options):
+            bound_options.append(options)
+            return self
+
+        def invoke(self, messages):
+            captured.append(messages)
+            return AIMessage(content="Flight options")
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(graph_mod, "load_active_trip_dict", lambda: trip)
+    monkeypatch.setattr(graph_mod, "select_tools", lambda *_args, **_kwargs: [])
+    state = {
+        "messages": [HumanMessage(content="plan flights from Bangalore")],
+        "proposal_only": False,
+    }
+    graph_mod.trip_agent(state)
+    prompt = captured[-1][0].content
+    assert '"destination": "Goa"' in prompt
+    assert '"departure_date": "2026-11-01"' in prompt
+    assert '"return_date": "2026-11-05"' in prompt
+    assert '"travelers": "2 adults"' in prompt
+    assert '"has_saved_itinerary": true' in prompt
+    assert "Bangalore to Goa and back to Bangalore" in prompt
+    assert bound_options[-1].get("tool_choice") not in {
+        "create_trip_plan", "recommend_trip_duration", "request_trip_input",
+    }
+    assert "Keep this stop" not in prompt
+    assert len(state["messages"]) == 1
+
+    trip.update(destination="Kochi", revision=4)
+    graph_mod.trip_agent(state)
+    assert '"destination": "Kochi"' in captured[-1][0].content
+    assert '"destination": "Goa"' not in captured[-1][0].content
+
+    trip.clear()
+    graph_mod.trip_agent(state)
+    assert "CURRENT TRIP CONTEXT" not in captured[-1][0].content
+
+
 def test_trip_agent_tags_the_llm_call_with_turn_and_phase_number(monkeypatch) -> None:
     """turn_number/phase_number are derived from existing message state (no
     new persisted counter) and must be set via _CURRENT_TURN_PHASE before
