@@ -21,23 +21,32 @@ ID. Changed-path selection and publication tiers are documented in
 
 ### EB-PLAN-CTX-001 - Resolve follow-ups against the current trip
 
-**Trigger:** With a Goa itinerary saved, ask "plan flights from Bangalore",
-including after resuming the trip with no earlier tool history in the chat.
+**Trigger:** Ask any follow-up with a trip selected, including after resuming it
+with no earlier tool history in the chat.
 
 **Expected:** Each model call receives fresh active-trip identity, destination,
-origin, dates, party, constraints and itinerary-presence facts. The request means
-Bangalore to Goa and back on the saved dates unless the traveller states a
-one-way journey or different return city. Explicit current instructions override
-saved trip facts and profile defaults, including an old destination-only scope.
-Do not re-ask known facts or restart trip creation. Read the full plan before
-editing, research grounded options, and preserve the existing itinerary while
-integrating both journey edges. Unknown indispensable search facts or past saved
-dates may require a focused clarification; availability and prices are never
-invented. An explicit new-trip request still uses the new-trip workflow.
+origin, dates, party, constraints, day/route summaries and selected lodging facts.
+Flights, stays, meals, budget, party and date changes, day trips and relative
+references all use this context. Explicit current instructions override saved
+facts and profile defaults. Read the full plan for details before edits; preserve
+unaffected stops and commitments. Arrival/return planning uses both journey edges
+and saved dates unless explicitly overridden. Do not re-ask known facts.
+
+Trip creation is unavailable to ordinary follow-ups. Another city name alone,
+component edits, hypothetical/negated requests, and old refinement-card answers
+do not authorize departure. Ambiguous wording stays in context and may receive a
+focused clarification. For a clear whole-trip request, a deterministic in-chat
+notice says the current trip remains saved and planning is moving to a separate
+trip. SSE sends it before model work; JSON and saved transcripts retain it.
+This is a notification, not an additional confirmation gate. Empty-workspace
+planning and proposal-only review do not announce departure. Unknown indispensable
+facts and past saved dates may require clarification; provider facts stay grounded.
 
 **Executable proof:**
 
-- [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_receives_fresh_trip_context_without_history` verifies model input, refresh after a trip switch, absence without an active trip, and no forced kickoff for the flight follow-up. Natural-language compliance still requires a live model check.
+- [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_receives_fresh_trip_context_without_history` and `test_existing_trip_followups_cannot_create_another_trip` cover fresh context and tool availability across destinations and request types.
+- [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_trip_departure_requires_a_clear_whole_trip_request` covers conservative detection and proposal-only behavior.
+- [`tests/test_usage.py`](../tests/test_usage.py) - `test_chat_preserves_trip_departure_notice` covers JSON/SSE notice delivery and transcript persistence. Natural-language compliance still requires a live model check.
 
 ### EB-PLAN-001 - Complete a bounded new-trip planning turn
 
@@ -64,10 +73,9 @@ either enabled (the default) or disabled.
 - Submitted party counts and relationship are persisted with the trip, used for
   whole-party budgets and provider occupancy, and shape lodging, pace, transport,
   meal timing, accessibility, and age-appropriate experiences.
-- Asking to plan a destination other than the active trip runs the kickoff before the
-  replacement trip is created, without requiring the words "new" or "another". A
-  follow-up naming the active destination, and a day trip elsewhere, still skip the
-  kickoff and leave the active trip in place.
+- A clear whole-trip request for another destination announces departure before
+  the new-trip workflow. Merely naming another place or modifying a component
+  stays in the active trip (EB-PLAN-CTX-001).
 - The Assistant batches hotel research for every overnight city in one parallel
   tool phase and accepts usable results when another city-specific query fails.
 - While planning is active, the top command bar beside the trip selector shows

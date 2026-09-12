@@ -534,6 +534,14 @@ def _record_chat_phase(
     record_operation("chat_phase", f"{transport}.{phase}", status, duration_ms)
 
 
+def _chat_departure_notice(messages: list, *, proposal_only: bool) -> str:
+    from tripplanner.tools.trip_planner import load_active_trip_dict
+
+    return graph_policy.trip_departure_notice(
+        messages, load_active_trip_dict() or {}, proposal_only=proposal_only
+    )
+
+
 def _chat_turn_coordinator(
     req: ChatRequest,
     request: Request,
@@ -560,6 +568,9 @@ def _chat_turn_coordinator(
             record_operation=_record_chat_operation,
             record_phase=_record_chat_phase,
             event=app_event,
+            departure_notice=lambda messages: _chat_departure_notice(
+                messages, proposal_only=req.proposal_only
+            ),
         )
     )
 
@@ -635,7 +646,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             await coordinator.persist_interrupted(
                 turn,
                 message=req.message,
-                partial_reply="",
+                partial_reply=turn.departure_notice,
                 error=exc,
                 tool_names=set(),
             )
@@ -662,6 +673,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             if issues:
                 app_event("hallucination_critic", issues=len(issues), claims=issues)
 
+        reply = turn.departure_notice + reply
         turn_tools = set(_ran_tools(result.get("messages") or [], len(turn.history)).get(
             graph_policy.RAN_TOOLS_KEY, []
         ))
@@ -888,6 +900,9 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         tool_names_called: set[str] = set()  # track which tools fired this turn
         receipts = ReceiptLog()
         yield _sse("progress", {"stage": "thinking"})
+        if turn.departure_notice:
+            reply_parts.append(turn.departure_notice)
+            yield _sse("token", {"text": turn.departure_notice})
         try:
             async def budgeted_events():
                 with usage_scope(

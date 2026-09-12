@@ -71,6 +71,11 @@ durable facts automatically with Undo, recent-message context, durable retry wor
 deduplication and protection against concurrent edits. Temporary trip choices remain
 trip-scoped; missing origin stays TBD instead of implying self-arranged travel.
 
+Existing-trip follow-ups receive fresh itinerary, lodging and trip facts on every
+model call. Creation is withheld for ordinary edits and ambiguous place mentions;
+clear whole-trip requests show a departure notice before streamed planning,
+retained in JSON responses and chat history. The current trip remains saved.
+
 Operational trip flow logs correlate semantic events by stable trip/interaction
 keys and model call IDs, report terminal failures accurately, preview recent
 message context with full message-text counts, and distinguish unknown model

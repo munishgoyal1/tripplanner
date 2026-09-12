@@ -107,6 +107,14 @@ and the group relationship. These facts drive total budget, occupancy, pace,
 transport and experience fit. After the first complete plan, Details and Map
 support visual refinement while Assistant remains available for broader changes.
 
+Within a selected trip, the Assistant's default task is to work on that trip.
+Short requests inherit its itinerary, dates, lodging, party and constraints;
+explicit changes override those facts. Starting another trip is secondary. Only
+a clear whole-trip request initiates departure, with an in-chat notice that the
+current trip remains saved and planning is moving to a separate trip. Ambiguous
+place mentions and ordinary edits stay in context. Use a notification rather
+than adding another routine confirmation gate.
+
 ## 2) Non-goals (resist scope creep)
 
 - ❌ Multi-tenant features (orgs, teams, sharing) until explicitly asked.

@@ -558,6 +558,8 @@ def trip_agent(state: AgentState) -> AgentState:
         message_count=len(state["messages"]),
     )
     tools = select_tools(state["messages"], proposal_only=proposal_only)
+    if not graph_policy.permits_trip_creation(state["messages"], active_trip):
+        tools = [tool for tool in tools if tool.name != "create_trip_plan"]
     if not interactive_questions and decision.forced_tool != "request_trip_input":
         tools = [tool for tool in tools if tool.name != "request_trip_input"]
     if decision.forced_tool:

@@ -364,7 +364,7 @@ def test_trip_agent_supersedes_stale_kickoff_before_planning(
     assert "Building" in result["messages"][0].content
 
 
-def test_trip_agent_forces_creation_after_kickoff_answer(
+def test_trip_agent_keeps_stale_kickoff_answers_in_the_active_trip(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     messages = [
@@ -395,8 +395,8 @@ def test_trip_agent_forces_creation_after_kickoff_answer(
         "proposal_only": False,
     })
 
-    assert bound_options["tool_choice"] == "create_trip_plan"
-    assert bound_options["tools"] == ["create_trip_plan"]
+    assert bound_options.get("tool_choice") != "create_trip_plan"
+    assert "create_trip_plan" not in bound_options["tools"]
 
 
 def test_new_trip_intent_preempts_incomplete_active_trip_gate(

@@ -30,12 +30,12 @@ trip through shared API contracts.
 | Path | Owns |
 | --- | --- |
 | `src/tripplanner/graph.py` | Agent/tool loop, model invocation and telemetry, and model-facing tool-result budget |
-| `src/tripplanner/graph_policy.py` | Pure forced-tool and completion-requirement precedence, including the semantic tool-phase budget |
+| `src/tripplanner/graph_policy.py` | Pure forced-tool and completion-requirement precedence, semantic tool-phase budget, conservative whole-trip intent, creation eligibility and departure-notice text |
 | `src/tripplanner/state.py` | Shared graph state and merge behavior |
 | `src/tripplanner/prompts.py` | Agent instructions, dated prompt assembly and compact current-trip facts supplied by the graph on every model call; full itinerary detail remains behind get_trip_plan |
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |
 | `src/tripplanner/agents/trip_agent.py` | Phase-selected tool sets and the exhaustive read/trip-write/profile-write/external-write capability registry used by proposal-only mode |
-| `src/tripplanner/chat_turn.py` | Transport-neutral replay/admission, cap and conversation-limit decisions, interrupted-turn persistence, final transcript persistence, passive learning, and completion telemetry shared by JSON and SSE chat |
+| `src/tripplanner/chat_turn.py` | Transport-neutral replay/admission, departure-notice snapshot, cap and conversation-limit decisions, interrupted-turn persistence, final transcript persistence, passive learning, and completion telemetry shared by JSON and SSE chat |
 | `src/tripplanner/api.py` | FastAPI assembly, hosted identity boundary, JSON/SSE chat transport, production SPA mount |
 | `src/tripplanner/web/http_context.py` | Shared request-identity helpers used by HTTP routers |
 | `src/tripplanner/web/trip_http.py` | Trip workspace HTTP routes: view, mutate, export, share, and history |

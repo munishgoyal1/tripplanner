@@ -32,6 +32,7 @@ class AdmittedTurn:
     history_trip_id: str | None
     history: list[BaseMessage]
     base_history: list[BaseMessage]
+    departure_notice: str = ""
 
 
 @dataclass(frozen=True)
@@ -62,6 +63,7 @@ class ChatTurnDependencies:
     record_operation: Callable[..., None]
     record_phase: Callable[..., None]
     event: Callable[..., None]
+    departure_notice: Callable[[list[BaseMessage]], str] = lambda _messages: ""
 
 
 class ChatTurnCoordinator:
@@ -126,6 +128,7 @@ class ChatTurnCoordinator:
             deps.record_phase(started, transport=transport, phase="admission")
             base_history = list(history)
             history.append(HumanMessage(content=message))
+            departure_notice = await asyncio.to_thread(deps.departure_notice, history)
             return AdmittedTurn(
                 started=started,
                 transport=transport,
@@ -135,6 +138,7 @@ class ChatTurnCoordinator:
                 history_trip_id=history_trip_id,
                 history=history,
                 base_history=base_history,
+                departure_notice=departure_notice,
             )
         except Exception:
             if permit is not None:
