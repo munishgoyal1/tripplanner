@@ -1,8 +1,13 @@
 # Testing and Validation
 
 Use the narrowest test set that exercises a changed ownership boundary while
-editing. Complete suites remain publication and release gates; they are not the
-default feedback loop after every small change.
+editing.
+
+**The complete suites are suspended from the local lane gates.** They no longer
+run on merge, promote, or branch-lane publish. They run periodically on master
+through [`suite-health.ps1`](#suite-health), classified against a checked-in
+known-failure baseline. See [Suite health](#suite-health) for why, and for the
+one-word way to turn them back on.
 
 ## Select tests for a change
 
@@ -82,22 +87,149 @@ npm --prefix frontend exec vitest run -- src/App.test.tsx -t "refreshed itinerar
 | --- | --- | --- |
 | Iteration | Fast feedback while editing | Selector output plus lint/typecheck for changed files |
 | Milestone | One coherent behavior or refactor boundary | All directly owned tests and linked expected-behavior proofs |
-| Publication | Sandbox promotion, multiagent integration, or branch convergence | Complete backend and applicable frontend/mobile suites |
-| Release | Canary or production preparation | Publication tier plus build, smoke, and release-specific gates |
+| Publication | Sandbox promotion, multiagent integration, or branch convergence | Selector output and ruff. Typecheck, build, and the complete suites are **not** run locally; see the floor below and Suite health |
+| Suite health | Periodic full-suite truth on master | Complete backend and frontend suites via `suite-health.ps1`, classified against the baseline |
+| Release | Canary or production preparation | Publication tier, plus a current suite-health run with zero NEW failures, plus smoke and release-specific gates |
 
 The `integration` marker means a test crosses real internal component boundaries
 while external dependencies remain isolated. It is not a product-domain label.
 Do not use broad domain markers such as `trip` or `provider`; changed-path policy
 and exact targets are more precise and easier to keep current.
 
-## Complete publication commands
+## Local publication floor
+
+What actually runs at a merge, promote, or branch-lane publish — about two
+seconds, where it used to be over twenty minutes:
+
+```powershell
+python -m ruff check --select E9,F63,F7,F82 src tests
+```
+
+That is the whole local gate. Everything else is measured, not assumed:
+
+| Check | Measured on this machine | Where it runs now |
+| --- | --- | --- |
+| `ruff` (narrow selection) | 1.9s | Local gate, and CI |
+| `npm run typecheck` (`tsc -b`) | 143.9s | CI only — every PR and every master push |
+| `npm run build` (`tsc -b` + `vite build`) | 230s cold, 500s under load | CI only — every PR and every master push |
+| `pytest` (complete) | 20m 22s at `-n 2` | Suite health only |
+| `vitest` (complete) | not separately measured | Suite health only |
+
+Typecheck and build are suspended locally because CI already runs both on a
+dedicated runner for every pull request *and* every push to master, so paying for
+them again on a loaded developer machine buys minutes of delay and no new
+information. Breakage still surfaces — asynchronously, within minutes, without
+blocking a merge.
+
+The narrow ruff selection is CI's, not the project's full config. `ruff check src
+tests` under the configured `E,F,I,N,W,UP` currently reports around 145 findings
+on master, mostly `E501`; gating on it would be red from the first run. That
+backlog is real, and it is a cleanup task rather than a merge gate.
+
+When every web gate is suspended the gate skips the frontend entirely rather than
+running `npm install` in a fresh worktree to do nothing with it.
+
+Run mobile typecheck and lint when `mobile/` or the shared client changes. Paid
+providers and hosted stores remain prohibited in automated tests; shared pytest
+fixtures block outbound network and select hermetic local storage by default.
+
+## Suite health
+
+The complete suites are suspended from the lane gates. The measured reason: the
+last recorded gate run took **20m 22s** for 2082 backend tests at `-n 2` and
+still failed on seven of them. Every merge either paid twenty minutes to fail or
+was waved through with `-SkipValidation`, so the cost was real and the protection
+was not.
+
+They are paid for instead in one deliberate pass:
+
+```powershell
+pwsh scripts/dev/suite-health.ps1                 # measure master, report
+pwsh scripts/dev/suite-health.ps1 -UpdateBaseline # accept the current failures
+```
+
+This fast-forwards the primary checkout to `origin/master`, runs both complete
+suites — neither one aborting the other — and classifies every failure against
+[`test-health-baseline.json`](../../scripts/dev/test-health-baseline.json):
+
+| Bucket | Meaning |
+| --- | --- |
+| NEW | Failed now, absent from the baseline. **The only red signal.** |
+| KNOWN | Failed now and recorded, reported with its age and category |
+| FIXED | Recorded but passing now; retire it with `-UpdateBaseline` |
+| MISSING | Recorded, and did not run at all — renamed, deleted, or skipped |
+
+`MISSING` is never folded into `FIXED`. Deleting a failing test is the cheapest
+way to make a system like this lie, and that bucket is what catches it.
+
+`first_seen`, `owner`, `note`, and `category` survive every update, so the debt
+ages visibly instead of resetting. An entry whose `first_seen` is months old is
+the point of the file, not a bug in it.
+
+Reports land in `logs/suite-health/<timestamp>/` with `report.md` and
+`report.json`, and `logs/suite-health/latest.json` points at the newest. Read the
+JSON for numbers; this document deliberately records none, because a transcribed
+failure list goes stale within a week.
+
+To work the backlog, hand the report to a dedicated session with the
+`/fix-suite-health` command. It reads the report rather than re-running the
+suites, and it prohibits the cheap fake fixes — deleting tests, `skip`/`xfail`,
+widening timing budgets, weakening assertions.
+
+`category` distinguishes `real` from `flaky-under-load`. Several known failures
+pass serially and fail only under concurrent load; their fix is isolation or a
+budget that reflects real contention, never a logic change.
+
+### Which gates run, and turning them back on
+
+The gates are declared in the `Local validation gates` section of
+[`config/environments/local.env`](../../config/environments/local.env) — the same
+checked-in profile that holds every other non-secret knob, so there is one
+configuration file to look in rather than a dedicated one for this:
+
+```
+VALIDATION_GATE_LINT=required
+VALIDATION_GATE_TYPECHECK=suspended
+VALIDATION_GATE_BUILD=suspended
+VALIDATION_GATE_PYTEST=suspended
+VALIDATION_GATE_VITEST=suspended
+```
+
+That file is the single source of truth for all three call sites —
+`sandbox.ps1`, `full-2way-sync.ps1`, and `multiagent.py`, via
+`scripts/dev/lib/validation-policy.ps1` and `scripts/dev/validation_policy.py`.
+No invocation was deleted; every command still sits at its call site behind a
+`Test-GateEnabled` check.
+
+| Scope | How |
+| --- | --- |
+| Permanently, everywhere | Set that gate to `required` in `local.env`. One word. |
+| One invocation | `sandbox.ps1 -Merge <lane> -FullSuites` |
+| One shell or agent session, every gate | `$env:TRIPPLANNER_FULL_SUITES = "1"` |
+| One shell or agent session, one gate | `$env:VALIDATION_GATE_PYTEST = "required"` |
+
+Because the gates are declared as environment-variable names, a real environment
+variable simply overrides the file — which is how the last two rows work, with no
+extra machinery.
+
+Two deliberate safety properties:
+
+- **Only the exact word `suspended` skips a gate.** A typo runs the check rather
+  than quietly disabling it.
+- **A missing or unreadable `local.env` fails closed** — every gate runs, with a
+  warning. A policy that cannot be read must never be why a check stops running.
+
+The expected end state is a partial return — `typecheck` and `vitest` first,
+`pytest` once the backlog is clear — which is why every gate is its own key.
+
+## Complete suite commands
+
+These are what suite health runs. Running them by hand produces no baseline diff,
+so prefer the script:
 
 ```powershell
 python -m pytest -q -n 2
-python -m ruff check src tests scripts/dev/test_selection.py
-npm --prefix frontend run typecheck
 npm --prefix frontend run test:all
-npm --prefix frontend run build
 ```
 
 `-n 2` is a fixed worker count, not `-n auto`: this suite is usually run on a
@@ -108,7 +240,3 @@ contention under that same real concurrent load flaked tests with their own
 timing or iteration budgets (trip_rebalance's search budget, the
 performance-baseline p95 gate) even though they pass reliably alone. CI runs
 on a dedicated GitHub runner and uses `-n auto` there instead.
-
-Run mobile typecheck and lint when `mobile/` or the shared client changes. Paid
-providers and hosted stores remain prohibited in automated tests; shared pytest
-fixtures block outbound network and select hermetic local storage by default.

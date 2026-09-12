@@ -19,7 +19,7 @@ canonical set below instead of reading every file.
 | Location | Purpose |
 | --- | --- |
 | [`roadmap/`](roadmap/README.md) | Possible future outcomes and deferred decisions; never implementation approval |
-| [`feature-briefs/`](feature-briefs/README.md) | One owner-approved outcome translated into bounded scope and acceptance criteria |
+| [`feature-briefs-backlog/`](feature-briefs-backlog/README.md) | One owner-approved outcome translated into bounded scope and acceptance criteria |
 | [`ux-experiments/`](ux-experiments/README.md) | Isolated visual decisions tested before production implementation |
 | [`research/`](research/) | Dated external findings — market and competitive landscape, provider access, cost, and terms — that inform a decision but are not themselves approval. Includes the 2026-09 Azure OpenAI planning-model comparison. |
 
@@ -27,7 +27,7 @@ canonical set below instead of reading every file.
 
 1. Capture an unselected future idea in `roadmap/`.
 2. When the owner selects an outcome, define its bounded implementation scope in
-  `feature-briefs/`.
+  `feature-briefs-backlog/`.
 3. If the uncertainty is visual, compare explicit options in `ux-experiments/`
   and record the owner's selection before changing production UI.
 4. Implement and validate the approved scope.
@@ -45,6 +45,8 @@ choose." Canonical documents answer "what is true now."
 | Document | Purpose |
 | --- | --- |
 | [`development/`](development/README.md) | Scope and index for contributor workflow guides |
+| [`development/agent-workflow.md`](development/agent-workflow.md) | Cross-agent process contract: branch and worktree convention, the feature-brief requirement, the definition of done, and the validation floor |
+| [`development/testing.md`](development/testing.md) | Test selection, validation tiers, and suite health — the periodic full-suite run and its known-failure baseline |
 | [`development/architecture-onboarding.md`](development/architecture-onboarding.md) | Guided architecture and codebase onboarding for new engineers |
 | [`development/dev.md`](development/dev.md) | Local development guidance |
 | [`development/new-machine-setup.md`](development/new-machine-setup.md) | Reproduce the Windows/macOS toolchain, VS Code/Copilot settings, and four-agent layout |
@@ -102,7 +104,7 @@ active Word document while that lock exists.
 - Keep the canonical documents listed above at the `docs/` root for stable,
   prominent paths.
 - Put future product candidates in `docs/roadmap/`.
-- Put active milestone intake in `docs/feature-briefs/`.
+- Put active milestone intake in `docs/feature-briefs-backlog/`.
 - Put UX experiments in `docs/ux-experiments/`.
 - Put dated external research in `docs/research/`, and state the verification
   date in the document so a stale finding is obvious.

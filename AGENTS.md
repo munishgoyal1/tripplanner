@@ -4,13 +4,21 @@ This repository follows the same engineering and reporting rules as the Copilot 
 
 ## Required operating rules
 
-- Every feature or bug fix starts on a fresh agent-identifiable branch from current
-  `origin/master`: Codex/GPT uses `gpt-<task-name>`. Never use a generic Coordinator
-  branch. Bug fixes may reuse clean, synchronized `gpt-bugfixes` when no other agent
-  owns it. Follow-ups to unfinished work stay on their existing named branch.
-- A branch is sufficient unless an isolated worktree/runtime is needed. Publish
-  named GPT branches through a normal PR, then update clean primary `master` and
-  synchronize sandboxes; do not use `Publish-Coordinator` for these branches.
+- **The cross-agent process contract lives in
+  [`docs/development/agent-workflow.md`](docs/development/agent-workflow.md)**:
+  branch and worktree convention, the feature-brief requirement, the definition of
+  done, and how validation works now that the complete suites are suspended from
+  the lane gates. Read it first; it is the owner of those rules, and this file no
+  longer restates them.
+- In short: every feature or bug fix starts in a **new worktree** on a fresh
+  `<agent>/<task-slug>` branch from current `origin/master` — `gpt/` for
+  Codex/GPT, `claude/` for Claude. The primary checkout stays on `master`. Never
+  use a generic Coordinator branch. Bug fixes may reuse a clean, synchronized
+  `gpt/bugfixes` when no other agent owns it. Follow-ups to unfinished work stay
+  on their existing named branch.
+- Publish named agent branches through a normal PR, then update clean primary
+  `master` and synchronize sandboxes; do not use `Publish-Coordinator` for these
+  branches.
 
 - Read the canonical docs before changing code:
   - docs/README.md
@@ -97,10 +105,17 @@ When Codex is acting in this workspace, it must follow the repository's Copilot 
 
 ## Completion and validation
 
-- Read `.github/copilot-instructions.md` for shared lane and publication rules.
+- Read `.github/copilot-instructions.md` for shared lane and publication rules,
+  and `docs/development/agent-workflow.md` for the definition of done.
 - Commit and push completed changes; report the lane, commit, publication status,
   affected stack, and whether the primary or sandbox stack needs a restart.
 - Run focused checks once per milestone. Broaden only when changes or unresolved
   failures justify it; do not repeatedly run passing full suites.
+- The complete pytest and vitest suites, the typecheck, and the production build
+  are **suspended** from the lane gates by the `VALIDATION_GATE_*` settings in
+  `config/environments/local.env`; a green merge does not mean any of them pass.
+  The local floor is ruff alone (~2s); typecheck and build run in CI on every PR
+  and every master push, and the suites run through
+  `scripts/dev/suite-health.ps1`. See `docs/development/testing.md`.
 - Original prompt must be verbatim when quoted; otherwise label it a summary.
 - Prompt logging remains paused; response summaries do not authorize log writes.

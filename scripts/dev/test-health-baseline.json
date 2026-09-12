@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "_comment": [
+    "Known-failing tests on master, written only by:",
+    "  pwsh scripts/dev/suite-health.ps1 -UpdateBaseline",
+    "",
+    "Empty until the first full health run accepts a baseline. Until then every",
+    "failure that run finds is reported as NEW, which is correct: nothing has",
+    "been accepted as known debt yet.",
+    "",
+    "first_seen, owner, note and category survive every update. An entry whose",
+    "first_seen is months old is the point of this file, not a bug in it.",
+    "category: real | flaky-under-load | unreviewed"
+  ],
+  "generated": "",
+  "ref": "master",
+  "commit": "",
+  "pytest": {
+    "command": "python -m pytest tests -q -n 2",
+    "failures": []
+  },
+  "vitest": {
+    "command": "npx vitest run",
+    "failures": []
+  }
+}

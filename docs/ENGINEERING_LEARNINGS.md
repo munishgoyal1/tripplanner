@@ -4,6 +4,27 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## How to find the lesson you need
+
+121 entries and growing, append-only, newest at the tail. Do not read it
+top to bottom, and do not skim only the recent entries — the lesson that applies
+to the file you are editing is as likely to be three years old as three days.
+
+**Search by bare module or symbol name, not by path.** Entries name things the
+way the code does — `trip_view`, `graph_policy`, `_place_coords`, `http_client` —
+and no entry contains a full `src/tripplanner/...` path:
+
+```powershell
+Select-String -Path docs/ENGINEERING_LEARNINGS.md -Pattern "trip_view" -Context 2,8
+```
+
+Do this before changing an unfamiliar module. Several entries exist precisely
+because someone rediscovered the hard way what one of them already recorded.
+
+Entries are dated `## YYYY-MM-DD - Title`. Append at the tail; never renumber,
+reorder, or rewrite an existing entry — `.gitattributes` sets `merge=union` on
+this file so concurrent appends from different lanes both survive.
+
 ## 2026-08-05 - Split Modules at the Substitution Boundary
 
 - A module can only be split where its callers do not reach inside it. Tests

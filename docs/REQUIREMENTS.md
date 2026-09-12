@@ -24,7 +24,7 @@ Source-of-truth boundaries:
 - `docs/reference/history/requirements-log.txt`: chronological decision history; old entries may be obsolete.
 - `docs/ENGINEERING_LEARNINGS.md`: durable lessons from observed failures.
 - `docs/roadmap/FUTURE_FEATURES.md`: consolidated future feature candidates.
-- `docs/feature-briefs/NEXT_INCREMENT.md`: editable scope for the next milestone.
+- `docs/feature-briefs-backlog/NEXT_INCREMENT.md`: editable scope for the next milestone.
 
 When a shipped feature changes the capability baseline, update this document in
 the same commit. A roadmap entry is not implementation approval by itself.
@@ -1038,7 +1038,7 @@ Every increment must:
 8. Pass the relevant local checks, then use immutable canary promotion and explicit
    production approval for hosted changes.
 
-Use `docs/feature-briefs/FEATURE_BRIEF_TEMPLATE.md` for new work. The owner may
+Use `docs/feature-briefs-backlog/FEATURE_BRIEF_TEMPLATE.md` for new work. The owner may
 write only the short required section and leave the rest for the agent to
 normalize, but unresolved product choices must remain visible rather than being
 silently invented.

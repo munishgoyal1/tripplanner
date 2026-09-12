@@ -4,9 +4,13 @@ This folder explains how humans and coding agents work on the repository. It own
 local setup and collaboration procedures, not product requirements, architecture,
 or deployment policy.
 
+- [`agent-workflow.md`](agent-workflow.md): the cross-agent process contract —
+  branch and worktree convention, the feature-brief requirement, the definition
+  of done, and the validation floor. Every coding agent reads this first.
 - [`dev.md`](dev.md): local application, test, and UX Lab commands.
 - [`testing.md`](testing.md): changed-path and expected-behavior test selection,
-  validation tiers, and publication gates.
+  validation tiers, the local publication floor, and suite health — the periodic
+  full-suite run on master and its checked-in known-failure baseline.
 - [`new-machine-setup.md`](new-machine-setup.md): one-click Windows/macOS toolchain,
   VS Code/Copilot configuration, sandboxes, and manual sign-ins.
 - [`architecture-onboarding.md`](architecture-onboarding.md): guided system
