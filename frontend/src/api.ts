@@ -634,6 +634,7 @@ export async function fetchPreferences(): Promise<Preferences> {
 
 /** A fact chat noticed that is waiting for the user to confirm or decline. */
 export interface ProfileSuggestion {
+  status?: "saved";
   id: string;
   kind: "preference" | "family_member" | "note";
   label: string;
@@ -654,7 +655,7 @@ export async function fetchProfileSuggestions(): Promise<ProfileSuggestion[]> {
 
 export async function resolveProfileSuggestion(
   id: string,
-  action: "save" | "dismiss",
+  action: "save" | "dismiss" | "undo",
 ): Promise<ProfileSuggestion[]> {
   const res = await apiFetch(`${BASE}/profile/suggestions/${encodeURIComponent(id)}`, {
     method: "POST",

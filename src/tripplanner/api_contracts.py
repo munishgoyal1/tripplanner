@@ -128,7 +128,7 @@ class PrivacyActionRequest(BaseModel):
 
 class ProfileSuggestionRequest(BaseModel):
     user_id: str = "local"
-    action: Literal["save", "dismiss"]
+    action: Literal["save", "dismiss", "undo"]
 
 
 class FamilyMemberRequest(BaseModel):

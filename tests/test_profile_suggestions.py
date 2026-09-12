@@ -1,58 +1,37 @@
-from pathlib import Path
-
 import pytest
 
-from tripplanner.tools import passive_learning, profile_suggestions, user_preferences
+from tripplanner.tools import profile_suggestions, user_preferences
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def isolated_preferences(tmp_path, monkeypatch):
     monkeypatch.setattr(user_preferences, "_PREFS_DIR", tmp_path)
-    monkeypatch.setattr(user_preferences, "_PREFS_FILE", tmp_path / "user_preferences.json")
+    monkeypatch.setattr(user_preferences, "_PREFS_FILE", tmp_path / "preferences.json")
 
 
-def test_chat_learning_queues_without_durable_write(isolated_preferences, monkeypatch):
-    monkeypatch.setattr(
-        passive_learning.about_me_extractor,
-        "extract_about_me",
-        lambda _text: {"family_members": [{"name": "Rhea", "relationship": "partner"}]},
+def queue(payload):
+    return profile_suggestions.queue_suggestions(
+        profile_suggestions.build_suggestions(payload, [], "A possible preference")
     )
 
-    [suggestion_id] = passive_learning.learn_from_message("My partner Rhea prefers relaxed mornings")
 
-    assert user_preferences.load_preferences().get("family_members") in (None, [])
-    pending = profile_suggestions.list_pending()
-    assert pending[0]["id"] == suggestion_id
-    assert pending[0]["provenance"] == "suggested_from_chat"
+def test_optional_suggestion_does_not_change_durable_profile():
+    [notice] = queue({"family_members": [{"name": "Rhea", "relationship": "partner"}]})
+    assert not user_preferences.load_preferences()["family_members"]
+    assert profile_suggestions.list_pending()[0]["id"] == notice["id"]
 
 
-def test_save_suggestion_adds_family_member(isolated_preferences, monkeypatch):
-    monkeypatch.setattr(
-        passive_learning.about_me_extractor,
-        "extract_about_me",
-        lambda _text: {"family_members": [{"name": "Rhea", "relationship": "partner"}]},
-    )
-    [suggestion_id] = passive_learning.learn_from_message("My partner Rhea prefers relaxed mornings")
-
-    resolved = profile_suggestions.resolve(suggestion_id, "save")
-
-    assert resolved and resolved["status"] == "saved"
+def test_save_optional_suggestion_adds_family_member():
+    [notice] = queue({"family_members": [{"name": "Rhea", "relationship": "partner"}]})
+    assert profile_suggestions.resolve(notice["id"], "save")["status"] == "saved"
     assert user_preferences.load_preferences()["family_members"] == [
         {"name": "Rhea", "relationship": "partner"}
     ]
     assert profile_suggestions.list_pending() == []
 
 
-def test_dismiss_suggestion_does_not_write_or_repeat(isolated_preferences, monkeypatch):
-    monkeypatch.setattr(
-        passive_learning.about_me_extractor,
-        "extract_about_me",
-        lambda _text: {"interests": ["hiking"]},
-    )
-    [suggestion_id] = passive_learning.learn_from_message("I love hiking in the mountains")
-
-    resolved = profile_suggestions.resolve(suggestion_id, "dismiss")
-
-    assert resolved and resolved["status"] == "dismissed"
-    assert user_preferences.load_preferences().get("interests") in (None, [])
-    assert passive_learning.learn_from_message("I love hiking in the mountains") == []
+def test_dismissed_optional_suggestion_does_not_repeat():
+    [notice] = queue({"interests": ["hiking"]})
+    assert profile_suggestions.resolve(notice["id"], "dismiss")["status"] == "dismissed"
+    assert not user_preferences.load_preferences()["interests"]
+    assert queue({"interests": ["hiking"]}) == []

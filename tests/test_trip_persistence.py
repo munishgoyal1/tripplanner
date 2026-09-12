@@ -336,6 +336,8 @@ class TestSystemPromptDateInjection:
 
     def test_interactive_questions_use_structured_prefilled_input(self):
         msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "Only AFTER saving that itinerary, use request_trip_input" in msg.content
+        assert "No traveller, place, date or preference input card may precede the first itinerary" in msg.content
         assert "request_trip_input" in msg.content
         assert "pre-filled controls" in msg.content
         assert "adults: number of travellers age 13+" in msg.content

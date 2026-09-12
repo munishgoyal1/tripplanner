@@ -28,6 +28,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import time
 from collections import defaultdict, deque
 from concurrent.futures import ThreadPoolExecutor
@@ -60,6 +61,21 @@ _META_TTL_S = 7 * 24 * 60 * 60  # 1 week
 _MISS_TTL_S = 60  # transient lookup failures must not hide itinerary pins for a week
 _PHOTO_TTL_S = 50 * 60  # re-sign photo URLs before Google's ~1h expiry
 _PHOTO_REFS_SCHEMA = 1
+
+# Marks "Google searched and this place does not exist", as distinct from
+# "the lookup did not complete". The two used to be indistinguishable: both
+# produced an empty entry held for _MISS_TTL_S, so a stop named "Hotel TBD,
+# Srinagar" or "Drive: Srinagar to Gulmarg" -- which can never be a Google
+# place -- was re-searched every 60 seconds for the life of the trip. An
+# absent place is as stable a fact as a present one, so it now keeps the
+# metadata TTL, while a failed lookup is not cached at all.
+_ABSENT_MARKER = "__absent__"
+
+
+class PlaceLookupUnavailableError(RuntimeError):
+    """The lookup did not complete. Says nothing about whether the place exists."""
+
+
 _MAX_WORKERS = 8
 _MAX_ENTRIES = 800  # soft cap; evict the oldest beyond this
 
@@ -474,6 +490,11 @@ def _is_miss(entry: Any) -> bool:
     return isinstance(entry, dict) and not any(key for key in entry if not key.startswith("__"))
 
 
+def _is_absent(entry: Any) -> bool:
+    """Whether this entry records a completed search that found nothing."""
+    return isinstance(entry, dict) and bool(entry.get(_ABSENT_MARKER))
+
+
 def _has_location(entry: dict[str, Any]) -> bool:
     return entry.get("lat") is not None and entry.get("lng") is not None
 
@@ -489,10 +510,12 @@ def _fresh(entry: dict[str, Any] | None, ttl: float | None = None) -> bool:
         return False
     if ttl is None and not _is_miss(entry) and not _has_location(entry):
         ttl = _ttl(_MISS_TTL_S)
-    effective_ttl = (
-        ttl if ttl is not None else _ttl(_MISS_TTL_S if _is_miss(entry) else _META_TTL_S)
-    )
-    return effective_ttl == -1 or (time.time() - entry.get("__at__", 0.0)) < effective_ttl
+    if ttl is None:
+        # A completed search that found nothing is knowledge, and it keeps the
+        # same TTL as a place that was found. Only an *incomplete* lookup gets
+        # the short retry window.
+        ttl = _ttl(_META_TTL_S if _is_absent(entry) or not _is_miss(entry) else _MISS_TTL_S)
+    return ttl == -1 or (time.time() - entry.get("__at__", 0.0)) < ttl
 
 
 def _is_explicit_airport_name(name: str) -> bool:
@@ -513,6 +536,37 @@ def _is_explicit_airport_name(name: str) -> bool:
         or normalized.startswith("airport,")
         or has_terminal_suffix
     )
+
+
+#: Itinerary stop names that describe an *activity or a gap*, not somewhere a
+#: traveller stands. An agent legitimately writes these -- "Drive: Srinagar to
+#: Gulmarg", "Hotel TBD, Srinagar", "Pahalgam hotel check-in" -- and Google will
+#: never have a matching place, so searching for them is money spent to learn
+#: nothing. Measured on one real 7-day trip: 18 of 43 stops.
+#:
+#: Deliberately structural rather than keyword-based. "The Troutbeat / Pahalgam
+#: lunch" names a real restaurant and must still resolve, so a bare meal word is
+#: not a signal; only the shapes below are.
+_NON_PLACE_NAME_RE = re.compile(
+    r"""
+      ^\s*(?:drive|transfer|travel|journey|depart|departure|arrive|arrival|
+            return|free\ time|at\ leisure|leisure|rest|overnight)\b[:\s]
+    | \bTBD\b
+    | \bto\ be\ decided\b
+    | \bcheck[-\s]?(?:in|out)\b
+    | \btransfer\s*$
+    | ^\s*(?:free\ time|at\ leisure|leisure)\s*$
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+
+
+def is_lookupable_place_name(name: str) -> bool:
+    """Whether ``name`` could plausibly be a Google place worth searching for."""
+    text = str(name or "").strip()
+    if len(text) < 3:
+        return False
+    return not _NON_PLACE_NAME_RE.search(text)
 
 
 def _lookup_city(name: str, city: str) -> str:
@@ -583,9 +637,15 @@ def remember_places(places: list[dict[str, Any]], city: str) -> None:
 
 
 def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
-    """One Text Search call to grab routine place metadata and photo references."""
+    """One Text Search call to grab routine place metadata and photo references.
+
+    Returns the place, or ``None`` when Google answered and the place does not
+    exist. Raises ``PlaceLookupUnavailableError`` when no answer was obtained -- an
+    unconfigured key, an unauthorized scope, or a transport failure say nothing
+    about the place and must never be cached as though they did.
+    """
     if not is_configured() or not name:
-        return None
+        raise PlaceLookupUnavailableError("Places is not configured")
     field_mask = (
         "places.id,places.displayName,places.formattedAddress,places.rating,"
         "places.userRatingCount,places.priceLevel,places.photos,"
@@ -595,7 +655,7 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
     )
     for attempt in range(2):
         if not consume("text_search"):
-            return None
+            raise PlaceLookupUnavailableError("paid provider access is not authorized here")
         _pace("SearchTextRequestPerMinutePerProject", default=30)
         try:
             resp = http_client.post(
@@ -616,13 +676,15 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
             if attempt == 0 and exc.response.status_code >= 500:
                 continue
             log.warning("places lookup failed for %s: %s", name, exc)
-            return None
+            raise PlaceLookupUnavailableError(str(exc)) from exc
         except httpx.HTTPError as exc:
             log.warning("places lookup failed for %s: %s", name, exc)
-            return None
+            raise PlaceLookupUnavailableError(str(exc)) from exc
 
     places = resp.json().get("places") or []
     if not places:
+        # Google answered, and the answer is "no such place". Distinct from the
+        # failures above, which tell us nothing and must not be cached as fact.
         return None
     return normalize_place(places[0], name)
 
@@ -756,6 +818,19 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
 
     Always returns a dict — empty `{}` for known-misses so we don't retry
     within the TTL window. Pass ``refresh=True`` to force a re-fetch."""
+    # Cheapest possible answer first: a name that describes an activity or a
+    # gap can never be a Google place, so it costs nothing to decline here.
+    # Guarding the shared entry point rather than each caller means the trip
+    # view, the map, the itinerary and the gallery all benefit at once.
+    if not is_lookupable_place_name(name):
+        _record_cache(
+            "not_a_place",
+            operation="text_search",
+            sku_class="pro",
+            place=name,
+            city=city,
+        )
+        return {}
     cache = _cache()
     lookup_city = _lookup_city(name, city)
     k = _key(name, lookup_city)
@@ -808,11 +883,12 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
                 return {} if _is_miss(secondary) else secondary
         _record_cache("refresh" if refresh else "miss", place=name, city=lookup_city)
         try:
-            info = _lookup_place(name, lookup_city) or {}
-        except http_client.CircuitOpenError:
-            # The provider is circuit-broken, not "no such place" -- don't
-            # cache or durably persist a miss for a transient outage; let the
-            # next attempt (once the breaker closes) look it up for real.
+            found = _lookup_place(name, lookup_city)
+        except (http_client.CircuitOpenError, PlaceLookupUnavailableError):
+            # No answer was obtained -- a broken circuit, an unauthorized scope,
+            # an unconfigured key, a transport failure. None of these is "no
+            # such place", so nothing is cached or persisted; the next attempt
+            # looks it up for real.
             _record_cache(
                 "provider_unavailable",
                 operation="text_search",
@@ -821,6 +897,7 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
                 city=lookup_city,
             )
             return {}
+        info = found if found is not None else {_ABSENT_MARKER: True}
         info["__at__"] = time.time()
         with _CACHE_LOCK:
             cache[k] = info
@@ -1000,7 +1077,13 @@ def refresh_details(name: str, city: str) -> tuple[dict[str, Any] | None, bool]:
         if previous is None:
             previous = _durable_read(key)
         _record_cache("refresh", place=name, city=lookup_city)
-        info = _lookup_place(name, lookup_city)
+        try:
+            info = _lookup_place(name, lookup_city)
+        except (http_client.CircuitOpenError, PlaceLookupUnavailableError):
+            # No answer: keep whatever we already knew and report failure, so a
+            # transient outage never downgrades a good entry.
+            known = previous if previous and not _is_miss(previous) else None
+            return known, False
         if info is None:
             known = previous if previous and not _is_miss(previous) else None
             return known, False
@@ -1082,6 +1165,17 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
         else:
             query = f"top tourist attractions in {destination}"
         names: list[str] = []
+        # Recorded before the call, not after: this path previously went from
+        # cache-check straight to a paid search with no miss event, so its spend
+        # was invisible -- /trip/places showed 139 paid text searches against 23
+        # recorded misses, and the gap was entirely here.
+        _record_cache(
+            "miss",
+            operation="text_search",
+            sku_class="pro",
+            place=f"{kind} discovery",
+            city=destination,
+        )
         if not consume("text_search"):
             return names
         try:
@@ -1105,6 +1199,40 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
             _evict_if_needed()
         _persist_entry(ck)
         return names
+
+
+def annotate_stops_with_known_identity(plan: dict[str, Any]) -> int:
+    """Stamp ``place_id``/``lat``/``lng`` onto itinerary stops we already resolved.
+
+    Reads the cache only -- never issues a lookup -- so this is free to call on
+    the save path. The point is that a saved trip stops depending on a volatile
+    process cache for facts it already established: map pins and route building
+    read coordinates straight off the stop, and a cold process no longer has to
+    re-derive them from a name.
+
+    Returns the number of stops annotated, for logging.
+    """
+    destination = str(plan.get("destination") or "").strip()
+    annotated = 0
+    for day in plan.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict):
+            continue
+        for stop in day.get("stops") or []:
+            if not isinstance(stop, dict) or stop.get("lat") is not None:
+                continue
+            name = str(stop.get("name") or "").strip()
+            if not name or not is_lookupable_place_name(name):
+                continue
+            key = _key(name, _lookup_city(name, destination))
+            with _CACHE_LOCK:
+                entry = _CACHE.get(key)
+            if not entry or _is_miss(entry) or not _has_location(entry):
+                continue
+            stop["place_id"] = entry.get("place_id") or ""
+            stop["lat"] = entry.get("lat")
+            stop["lng"] = entry.get("lng")
+            annotated += 1
+    return annotated
 
 
 def clear_cache() -> None:

@@ -16,8 +16,11 @@ from typing import Any
 log = logging.getLogger(__name__)
 
 # Allowed enum values (kept in sync with _DEFAULT_PREFS / ChatSettings widgets).
-_TRIP_STYLES = {"balanced", "relaxed", "adventurous", "cultural", "foodie", "luxury", "budget"}
-_BUDGET_LEVELS = {"budget", "moderate", "comfortable", "luxury"}
+_TRIP_STYLES = {
+    "balanced", "leisure", "packed_sightseeing", "adventure",
+    "relaxed", "adventurous", "cultural", "foodie", "luxury", "budget",
+}
+_BUDGET_LEVELS = {"budget", "moderate", "premium", "comfortable", "luxury"}
 _FLIGHT_CLASSES = {"economy", "premium_economy", "business", "first"}
 _ROAD_TRANSPORT = {"own_car", "taxi", "either"}
 _AGE_BANDS = {"under_20", "20-30", "30-40", "40-50", "50-60", "60+"}
@@ -40,8 +43,8 @@ Allowed keys and types:
 - profile.home_country        string
 - profile.age_band            one of: "under_20", "20-30", "30-40", "40-50", "50-60", "60+"
 - profile.occupation          string
-- trip_style                  one of: "balanced", "relaxed", "adventurous", "cultural", "foodie", "luxury", "budget"
-- budget_level                one of: "budget", "moderate", "comfortable", "luxury"
+- trip_style                  one of: "balanced", "leisure", "packed_sightseeing", "adventure"
+- budget_level                one of: "budget", "moderate", "premium", "luxury"
 - interests                   list of short strings (e.g. ["hiking", "museums"])
 - dislikes                    list of short strings
 - food_preferences.dietary             list of strings (e.g. ["vegetarian", "no-beef"])
@@ -294,7 +297,9 @@ def _strip_fence(s: str) -> str:
     return s
 
 
-def extract_about_me(text: str) -> dict[str, Any]:
+def extract_about_me(
+    text: str, *, conversation: bool = False, raise_on_error: bool = False
+) -> dict[str, Any]:
     """Call the LLM to extract structured preferences from a free-text blurb.
 
     Returns a dict ready for ``_deep_merge`` over saved prefs. On any error
@@ -317,6 +322,8 @@ def extract_about_me(text: str) -> dict[str, Any]:
         from tripplanner.config import get_settings
         from tripplanner.flight_http import model_recording_options
     except Exception as exc:  # pragma: no cover - import errors are environmental
+        if raise_on_error:
+            raise
         log.warning("about_me extractor: imports failed (%s); skipping", exc)
         return {}
 
@@ -332,11 +339,24 @@ def extract_about_me(text: str) -> dict[str, Any]:
         )
         response = llm.invoke(
             [
-                SystemMessage(content=_SYSTEM_PROMPT),
+                SystemMessage(content=_SYSTEM_PROMPT + (
+                    "\nThis is conversational learning. Extract ONLY durable facts explicitly "
+                    "stated by the user in the NEW MESSAGE. RECENT CONTEXT only resolves "
+                    "references and short answers; never extract assistant assertions as facts "
+                    "or reapply older preferences. A temporary departure city is not a home city. "
+                    "Do not save temporary budgets, dates, parties or exceptions as defaults. "
+                    "A message can contain both a durable fact and a trip-only exception: "
+                    "extract the durable part only. Clear current scalar facts and corrections "
+                    "replace older values. Do not infer preferences from selecting a destination. "
+                    "Return {} for uncertain or hypothetical statements."
+                    if conversation else ""
+                )),
                 HumanMessage(content=text),
             ]
         )
     except Exception as exc:
+        if raise_on_error:
+            raise
         log.warning("about_me extractor: LLM call failed (%s); skipping", exc)
         return {}
 
@@ -347,8 +367,12 @@ def extract_about_me(text: str) -> dict[str, Any]:
     try:
         parsed = json.loads(_strip_fence(content))
     except json.JSONDecodeError as exc:
+        if raise_on_error:
+            raise
         log.warning("about_me extractor: model returned non-JSON (%s); skipping", exc)
         return {}
 
+    if raise_on_error and not isinstance(parsed, dict):
+        raise ValueError("Preference extraction must be an object")
     return _sanitize_extraction(parsed)
 

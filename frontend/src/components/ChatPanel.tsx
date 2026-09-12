@@ -174,22 +174,24 @@ export default function ChatPanel({
     sendRequestedMessageRef.current(assistantRequest.message, assistantRequest.proposalOnly);
   }, [assistantRequest, busy, transcriptReady]);
 
-  // Facts the planner noticed this turn are only offered once the turn settles,
-  // so a confirm-or-save card never competes with a streaming reply.
+  // Background learning can finish after the reply; refresh briefly while idle.
   useEffect(() => {
     if (busy || !transcriptReady) return;
     let cancelled = false;
-    void fetchProfileSuggestions()
+    const refresh = () => void fetchProfileSuggestions()
       .then((items) => {
         if (!cancelled) setProfileSuggestions(items);
       })
       .catch(() => undefined);
+    refresh();
+    const timers = [2000, 6000, 15000, 30000].map((delay) => window.setTimeout(refresh, delay));
     return () => {
       cancelled = true;
+      timers.forEach(window.clearTimeout);
     };
   }, [busy, transcriptReady]);
 
-  const resolveSuggestion = useCallback((id: string, action: "save" | "dismiss") => {
+  const resolveSuggestion = useCallback((id: string, action: "save" | "dismiss" | "undo") => {
     setProfileSuggestions((current) => current.filter((item) => item.id !== id));
     void resolveProfileSuggestion(id, action)
       .then(setProfileSuggestions)
@@ -883,15 +885,15 @@ export default function ChatPanel({
             {busy ? <Square size={15} fill="currentColor" /> : <Send size={18} />}
           </button>
         </div>
-        <label title="Let the agent decide with smart defaults" className={`${docked ? "w-[7.75rem] shrink-0 justify-end gap-1.5" : "mt-2 gap-2 px-1"} flex cursor-pointer items-center text-[11px] text-muted`}>
+        <label title="Automatically refine using my preferences" className={`${docked ? "w-[7.75rem] shrink-0 justify-end gap-1.5" : "mt-2 gap-2 px-1"} flex cursor-pointer items-center text-[11px] text-muted`}>
           <input
             type="checkbox"
             checked={smartDefaults}
             onChange={(event) => updateSmartDefaults(event.target.checked)}
             disabled={busy || !transcriptReady}
           />
-          <span className={docked ? "sr-only" : ""}>Let the agent decide with smart defaults</span>
-          {docked && <span aria-hidden className="whitespace-nowrap text-[10px] font-medium">Default preferences</span>}
+          <span className={docked ? "sr-only" : ""}>Automatically refine using my preferences</span>
+          {docked && <span aria-hidden className="whitespace-nowrap text-[10px] font-medium">Auto refine</span>}
         </label>
       </div>
   );

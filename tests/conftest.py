@@ -58,6 +58,11 @@ def _force_local_storage(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
     yield
     assert places_cache.flush_writes(), "places cache writes did not drain before test teardown"
+    # The places cache is process-wide and now remembers "no such place" for as
+    # long as it remembers a real one, so a name resolved (or not resolved) by
+    # one test would otherwise decide the answer for every later test in the
+    # run. That made outcomes depend on file order.
+    places_cache.clear_cache()
 
 
 @pytest.fixture(autouse=True)

@@ -73,7 +73,7 @@ def _coordinator(
             save_chat=save_chat,
             auto_persist_needed=lambda _tools: False,
             auto_persist=lambda _reply: True,
-            schedule_learning=lambda user_id, message: calls.append(
+            schedule_learning=lambda user_id, message, context: calls.append(
                 ("schedule_learning", (user_id, message))
             ),
             record_operation=lambda *_args, **kwargs: calls.append(

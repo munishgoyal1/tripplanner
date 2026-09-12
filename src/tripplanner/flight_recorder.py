@@ -46,6 +46,20 @@ def enabled():
     return os.getenv("TRIPPLANNER_FLIGHT_RECORDER", "1").lower() not in {"0", "false", "off"}
 
 
+def capture_provider_bodies():
+    """Whether to record request/response bodies for *successful* provider calls.
+
+    Off by default. Turn on with ``TRIPPLANNER_FLIGHT_RECORDER_VERBOSE=1`` while
+    actively reproducing a provider issue, when full replay is worth the write
+    amplification. Failures are recorded either way.
+    """
+    return os.getenv("TRIPPLANNER_FLIGHT_RECORDER_VERBOSE", "0").lower() in {
+        "1",
+        "true",
+        "on",
+    }
+
+
 def root():
     environment = os.getenv("TRIPPLANNER_ENVIRONMENT", "local").strip().lower()
     # Never allow configuration to escape the private recorder directory.
@@ -76,7 +90,12 @@ def sanitize(value):
     if isinstance(value, str):
         if re.match(r"^data:[^\s;,]+[;,]", value):
             return {"omitted": "inline binary", "characters": len(value)}
-        return _BEARER.sub("Bearer <redacted>", _INLINE.sub(r"\1\2<redacted>", value))
+        # _BEARER must run BEFORE _INLINE: "Authorization: Bearer <token>" is
+        # also an _INLINE match on "Authorization:" whose captured "value" is
+        # just the word "Bearer" (stops at the next space) -- running _INLINE
+        # first consumes "Bearer" and strands the actual token, unredacted,
+        # right after it.
+        return _INLINE.sub(r"\1\2<redacted>", _BEARER.sub("Bearer <redacted>", value))
     if value is None or isinstance(value, (int, float, bool)):
         return value
     return sanitize(str(value))
@@ -243,10 +262,23 @@ def clear_user(user_id):
 
 
 class RecorderLogHandler(logging.Handler):
+    """Mirror application logs into the recorder -- but only ones worth keeping.
+
+    Every recorded event is its own fsync'd file, so mirroring INFO turned
+    routine progress chatter into disk writes on the request path and buried
+    real failures among them. WARNING is the floor: a recorder you can read is
+    worth more than one that captured everything.
+    """
+
+    #: Below this, a log line is progress, not evidence.
+    LEVEL_FLOOR = logging.WARNING
+
     def emit(self, entry):
         if not entry.name.startswith("tripplanner") or entry.name == __name__:
             return
         if hasattr(entry, "event_kind"):
+            return
+        if entry.levelno < self.LEVEL_FLOOR:
             return
         record(
             "log.message",

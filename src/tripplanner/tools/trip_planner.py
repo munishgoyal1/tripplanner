@@ -698,6 +698,15 @@ def _save_active_trip(plan: dict[str, Any]) -> None:
     if not plan.get("trip_id"):
         plan["trip_id"] = _compute_trip_id(plan)
     _normalize_hotel_endpoints(plan)
+    # Carry forward what we already know about each stop. Cache-only, so this
+    # adds no provider call; it just stops a saved trip from depending on a
+    # volatile process cache for coordinates it has already paid to learn.
+    try:
+        from tripplanner.web import places_cache
+
+        places_cache.annotate_stops_with_known_identity(plan)
+    except Exception:  # noqa: BLE001 - enrichment is an optimisation, never a save failure
+        pass
     plan["updated_at"] = datetime.now().isoformat()
 
     trip_history.persist_active_trip(plan)
@@ -1171,11 +1180,29 @@ def create_trip_plan(
         planning_recommendation = parsed_recommendation
     fam = prefs["family"]
     if not travelers_summary:
-        travelers_summary = f"{fam['adults']} adults"
-        if fam["children"]:
-            travelers_summary += f", {fam['children']} children (ages {fam['child_ages']})"
-        if fam["elderly"]:
-            travelers_summary += f", {fam['elderly']} elderly"
+        members = prefs.get("family_members") or []
+        if members:
+            party = [] if any(m.get("relationship") == "self" for m in members) else [
+                str(profile.get("display_name") or "You")
+            ]
+            for member in members:
+                who = member.get("name") or member.get("relationship") or "traveller"
+                age = member.get("age")
+                party.append(f"{who} (age {age})" if age is not None else str(who))
+            travelers_summary = ", ".join(party)
+        else:
+            travelers_summary = f"{fam['adults']} adults"
+            if fam["children"]:
+                travelers_summary += f", {fam['children']} children (ages {fam['child_ages']})"
+            if fam["elderly"]:
+                travelers_summary += f", {fam['elderly']} elderly"
+        notes = (
+            notes + "\nAssumed travel party from saved profile; editable for this trip."
+        ).strip()
+    if not origin and travel_scope != "destination_only":
+        notes = (
+            notes + "\nOrigin and arrival/return travel TBD; destination planning continues."
+        ).strip()
 
     # Same destination + same dates -> resume the saved trip instead of wiping
     # it, so the user never restarts from scratch. Different dates/duration get

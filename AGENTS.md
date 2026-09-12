@@ -4,6 +4,14 @@ This repository follows the same engineering and reporting rules as the Copilot 
 
 ## Required operating rules
 
+- Every feature or bug fix starts on a fresh agent-identifiable branch from current
+  `origin/master`: Codex/GPT uses `gpt-<task-name>`. Never use a generic Coordinator
+  branch. Bug fixes may reuse clean, synchronized `gpt-bugfixes` when no other agent
+  owns it. Follow-ups to unfinished work stay on their existing named branch.
+- A branch is sufficient unless an isolated worktree/runtime is needed. Publish
+  named GPT branches through a normal PR, then update clean primary `master` and
+  synchronize sandboxes; do not use `Publish-Coordinator` for these branches.
+
 - Read the canonical docs before changing code:
   - docs/README.md
   - docs/CODEMAP.md
