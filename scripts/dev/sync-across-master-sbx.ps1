@@ -27,13 +27,16 @@
     ./scripts/dev/sync-across-master-sbx.ps1
     ./scripts/dev/sync-across-master-sbx.ps1 all
     ./scripts/dev/sync-across-master-sbx.ps1 2
+    ./scripts/dev/sync-across-master-sbx.ps1 -NoTest
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [Parameter(Position = 0)]
     [string]$Sandbox = "",
-    [string]$BaseBranch = "master"
+    [string]$BaseBranch = "master",
+    # Skip each sandbox's test suite and still merge and resynchronize as planned.
+    [switch]$NoTest
 )
 
 $ErrorActionPreference = "Stop"
@@ -135,7 +138,7 @@ Write-Host ""
 
 if ($withWork.Count -eq 0) {
     Write-Host "[current] No sandbox has work for $BaseBranch; refreshing sandboxes only." -ForegroundColor Green
-    & (Join-Path $PSScriptRoot "sync-sbxs-from-master.ps1") -Confirm:$false
+    & (Join-Path $PSScriptRoot "sync-sbxs-from-master.ps1") -NoTest:$NoTest -Confirm:$false
     Stop-RunLog
     return
 }
@@ -166,7 +169,7 @@ foreach ($item in $withWork) {
     Write-Host "== merging $($item.Label) into $BaseBranch ==" -ForegroundColor Green
     # Stop at the first failure: later merges would build on a base this one
     # was supposed to establish.
-    & $sandboxScript -Merge $item.Entry.slug -BaseBranch $BaseBranch -Confirm:$false
+    & $sandboxScript -Merge $item.Entry.slug -BaseBranch $BaseBranch -SkipValidation:$NoTest -Confirm:$false
     if ($LASTEXITCODE -ne 0) {
         throw "Merging $($item.Label) failed after $($merged.Count) sandbox(es) landed: $($merged -join ', '). Fix it, then re-run."
     }
@@ -175,7 +178,7 @@ foreach ($item in $withWork) {
 
 Write-Host ""
 Write-Host "== bringing every sandbox up to $BaseBranch ==" -ForegroundColor Green
-& (Join-Path $PSScriptRoot "sync-sbxs-from-master.ps1") -Confirm:$false
+& (Join-Path $PSScriptRoot "sync-sbxs-from-master.ps1") -NoTest:$NoTest -Confirm:$false
 if ($LASTEXITCODE -ne 0) {
     throw "Sandbox work reached $BaseBranch, but the final refresh failed. Re-run Sync-Sbxs-FromMaster."
 }
