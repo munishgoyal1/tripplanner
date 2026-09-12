@@ -247,21 +247,20 @@ def test_run_parallel_returns_every_branch_and_degrades_failures() -> None:
 
 
 def test_run_parallel_is_concurrent_not_sequential() -> None:
-    import time
+    from threading import Barrier
 
-    def slow(value: str):
+    ready = Barrier(3, timeout=15)
+
+    def task(value: str):
         def run() -> str:
-            time.sleep(0.2)
+            ready.wait()
             return value
 
         return run
 
-    started = time.monotonic()
-    results = concurrency.run_parallel({name: slow(name) for name in ("a", "b", "c")})
-    elapsed = time.monotonic() - started
+    results = concurrency.run_parallel({name: task(name) for name in ("a", "b", "c")})
 
     assert results == {"a": "a", "b": "b", "c": "c"}
-    assert elapsed < 0.5
 
 
 def test_run_parallel_propagates_context_to_worker_threads() -> None:
