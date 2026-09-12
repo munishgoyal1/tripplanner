@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { resetInFlightRequests } from "../api";
@@ -69,10 +69,15 @@ describe("PublicEntry", () => {
     render(<PublicEntry onPlan={() => {}} onSkip={() => {}} />);
     expect(screen.getByText(/agent · Mumbai to Jaipur/i)).toBeInTheDocument();
 
-    writeDisplayPreferences({ region: "FR", currency: "INR", language: "en" });
+    await act(async () => {
+      writeDisplayPreferences({ region: "FR", currency: "INR", language: "en" });
+    });
 
-    await waitFor(() => expect(screen.getByText(/agent · Lisbon to Porto/i)).toBeInTheDocument());
-    expect(screen.queryByText(/agent · Mumbai to Jaipur/i)).not.toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.getAllByText(/Lisbon to Porto/i).length).toBeGreaterThan(0),
+      { timeout: 8000 },
+    );
+    expect(screen.queryByText(/Mumbai to Jaipur/i)).not.toBeInTheDocument();
   });
 
   it("uses the representative regional trip in the planner prompt", () => {

@@ -69,7 +69,7 @@ describe("ChatPanel progress", () => {
     render(<ChatPanel onTurnComplete={vi.fn()} />);
 
     const toggle = await screen.findByRole("checkbox", {
-      name: "Let the agent decide with smart defaults",
+      name: "Automatically refine using my preferences",
     });
     expect(toggle).toBeChecked();
 
@@ -492,8 +492,8 @@ describe("ChatPanel progress", () => {
 
     expect(await readyComposer()).toHaveAttribute("rows", "1");
     expect(screen.queryByTestId("chat-transcript")).not.toBeInTheDocument();
-    expect(screen.getByText("Default preferences")).toBeInTheDocument();
-    expect(screen.getByTitle("Let the agent decide with smart defaults")).toBeInTheDocument();
+    expect(screen.getByText("Auto refine")).toBeInTheDocument();
+    expect(screen.getByTitle("Automatically refine using my preferences")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Conversation" })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /Maximize/ }));

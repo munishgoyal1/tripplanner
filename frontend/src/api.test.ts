@@ -289,6 +289,7 @@ describe("PDF export URL", () => {
       tripExportPdfUrl({
         include_photos: false,
         include_map_circuit: true,
+        include_budgets: true,
         template: "trip_book",
       }),
       "https://trip.example",
@@ -296,6 +297,7 @@ describe("PDF export URL", () => {
 
     expect(url.searchParams.get("include_photos")).toBe("0");
     expect(url.searchParams.get("include_map_circuit")).toBe("1");
+    expect(url.searchParams.get("include_budgets")).toBe("1");
     expect(url.searchParams.get("template")).toBe("trip_book");
   });
 });

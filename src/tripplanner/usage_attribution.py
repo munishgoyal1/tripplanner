@@ -300,7 +300,16 @@ def current_attribution() -> UsageAttribution:
             route=harness.action_id,
             environment=harness.environment,
         )
-    return _CONTEXT.get() or UsageAttribution()
+    attribution = _CONTEXT.get() or UsageAttribution()
+    batch = current_batch()
+    if (
+        batch is not None
+        and batch.attribution is not None
+        and batch.attribution.interaction_id == attribution.interaction_id
+        and batch.attribution.trip_id
+    ):
+        return replace(attribution, trip_id=batch.attribution.trip_id)
+    return attribution
 
 
 def current_batch() -> UsageBatch | None:
@@ -311,6 +320,15 @@ def annotate_current_batch(*, interaction_id: str, trip_id: str) -> None:
     batch = current_batch()
     if batch is not None:
         batch.annotate_trip(interaction_id, trip_id)
+
+
+def attribute_trip_view(trip_id: str) -> None:
+    attribution = current_attribution()
+    if attribution.initiator != "user_action" or not trip_id:
+        return
+    path = attribution.route.partition(" ")[2]
+    if path.startswith("/trip/") or path == "/trips/switch":
+        annotate_current_batch(interaction_id=attribution.interaction_id, trip_id=trip_id)
 
 
 def append_current_event(kind: str, fields: dict[str, Any]) -> None:

@@ -12,7 +12,10 @@
 param(
     [Parameter(Position = 0)]
     [string]$Sandbox = "",
-    [switch]$ValidateOnly
+    [switch]$ValidateOnly,
+    # Accepted for consistency with the other sync launchers. -Update never
+    # runs the test suite, so this sync always proceeds regardless.
+    [switch]$NoTest
 )
 
 $ErrorActionPreference = "Stop"

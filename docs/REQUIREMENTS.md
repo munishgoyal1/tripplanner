@@ -64,6 +64,13 @@ background and time-boxed, and the planner always renders the plan it already ha
 
 ## Capability index
 
+First itineraries are persisted before additional research in every planning mode;
+traveller/place/preference cards are optional refinement afterwards. Saved family
+rosters supply editable party defaults. Conversational learning saves explicit
+durable facts automatically with Undo, recent-message context, durable retry work,
+deduplication and protection against concurrent edits. Temporary trip choices remain
+trip-scoped; missing origin stays TBD instead of implying self-arranged travel.
+
 Operational trip flow logs correlate semantic events by stable trip/interaction
 keys and model call IDs, report terminal failures accurately, preview recent
 message context with full message-text counts, and distinguish unknown model
@@ -172,17 +179,17 @@ re-describing the whole product.
 
 ### PLAN-01 - Preference-aware planning flow
 
-- The agent loads known preferences before the one-step new-trip kickoff. Direct
-  mode uses that review and then builds without further questions; interactive
-  mode may include unresolved critical facts in the same review.
+- The agent loads known preferences and duration advice, then creates and persists
+  the first itinerary without a review gate in either mode. Interactive mode may
+  offer optional refinements after the draft is saved.
 - Explicit requests for a new, separate, another, or different trip start the
-  new-trip kickoff even when another trip's chat is active. After the user submits
-  or skips that kickoff, the graph requires `create_trip_plan`; the prior trip and
+  new-trip flow even when another trip's chat is active. After loading preferences
+  and duration advice, the graph requires `create_trip_plan`; the prior trip and
   its transcript remain separate.
 - Trip dates, travelers, origin, destination, budget, pace, food, mobility, and
   lodging needs shape the plan.
-- Every new trip runs an explainable duration advisor before the structured
-  kickoff. Explicit user duration remains authoritative; otherwise destination
+- Every new trip runs an explainable duration advisor before creation.
+  Explicit user duration remains authoritative; otherwise destination
   scope, likely preference-matched places, visit/travel workload, arrival and
   departure capacity, desired free time, and major-attractions-per-day determine
   a fitting recommendation instead of a universal seven-day fallback.
@@ -582,18 +589,27 @@ implemented capability baseline.
 
 ### EXPORT-01 - Trip handoffs
 
-- Preview and print-friendly HTML with minimal, detailed, and family templates.
-- Print/save PDF and direct PDF download, with a print fallback when the direct
-  renderer is unavailable.
-- Optional place photos and embedded day maps/circuit diagrams are consistent
-  across preview, print, PDF, and email.
+- Preview and print-friendly HTML with Standard and layered Trip Book templates
+  (`detailed` remains an alias of Standard). The Trip Book opens with contents and
+  document readiness, then a trip brief and executable days with numbered circuit
+  insets, then essentials, confirmations, and optional place context. Standard
+  carries the same stop facts as the itinerary panel, including weekday, visit
+  duration, arrival/leave times, opening hours, and notes.
+- Preview and direct PDF download share that HTML layout. Chromium/Edge prints
+  the HTML when available; ReportLab is only a structural fallback.
+- Optional place photos and budgets are off by default. When photos are on, the
+  PDF inlines stop images so download and email match preview. Day maps/circuit
+  diagrams are always included for these two packets and stay consistent across
+  preview, PDF, and email. Download PDF and email Send do not share busy state.
 - Email uses configured server delivery or a prefilled local mail-app fallback.
+  A successful send attaches the PDF and includes the share URL in the body.
   Each explicit send carries a stable client request ID. ACS receives a stable
   provider operation ID and completed requests replay without another send;
   ambiguous ACS outcomes never fall through to SMTP. SMTP is claimed at most
   once and reports uncertain delivery rather than risking a duplicate retry.
+- Calendar export remains a separate Add to calendar action, not an itinerary
+  format in the download dialog. RFC 5545 `.ics` export is unchanged.
 - Signed, sanitized, read-only public share links.
-- RFC 5545 calendar export.
 
 ## 5. Native mobile clients
 
@@ -1026,3 +1042,13 @@ Use `docs/feature-briefs/FEATURE_BRIEF_TEMPLATE.md` for new work. The owner may
 write only the short required section and leave the rest for the agent to
 normalize, but unresolved product choices must remain visible rather than being
 silently invented.
+
+
+### Bounded diagnostic footprint
+
+Recorder defaults preserve semantic metadata and bounded failure excerpts while
+omitting duplicate model/tool and successful API bodies. Recording is asynchronous,
+uses bounded memory and batched disk/Cosmos writes, reports diagnostic loss, and
+preserves the independent complete accounting path. Local recorder and interaction
+study stores have seven-day / 50 MiB retention; routine successful cache-only reads
+no longer generate local study files. Verbose HTTP capture remains opt-in and bounded.

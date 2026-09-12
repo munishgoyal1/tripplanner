@@ -2,9 +2,18 @@ from __future__ import annotations
 
 import json
 
+import pytest
 from langchain_core.messages import ToolMessage
 
 from tripplanner.chat_interactions import extract_input_request, request_trip_input
+
+
+@pytest.fixture(autouse=True)
+def saved_itinerary(monkeypatch):
+    from tripplanner.tools import trip_planner
+    monkeypatch.setattr(trip_planner, "load_active_trip_dict", lambda: {
+        "destination": "Thailand", "day_wise_itinerary": [{"day": 1, "stops": []}]
+    })
 
 
 def _fields() -> list[dict]:
@@ -274,3 +283,11 @@ def test_request_rejects_an_empty_questionnaire() -> None:
     )
 
     assert "at least one field" in result
+
+
+def test_empty_trip_cannot_show_a_blocking_input_card(monkeypatch):
+    from tripplanner.tools import trip_planner
+    monkeypatch.setattr(trip_planner, "load_active_trip_dict", lambda: {"destination": "Thailand"})
+    result = request_trip_input.invoke({"question": "Who is travelling?", "fields_json": "[]"})
+    assert extract_input_request(result) is None
+    assert "Build and save the first itinerary" in result

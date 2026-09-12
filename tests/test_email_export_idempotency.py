@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 
 from tripplanner import api
 from tripplanner.tools import trip_planner
-from tripplanner.web import external_operations, itinerary_export, share
+from tripplanner.web import external_operations, itinerary_export, itinerary_pdf, share
 
 
 class _Poller:
@@ -39,6 +39,11 @@ def _configure_export(monkeypatch, tmp_path, email_client: _EmailClient) -> Test
     )
     monkeypatch.setattr(trip_planner, "active_trip_id", lambda: "goa-trip")
     monkeypatch.setattr(itinerary_export, "build_export_html", lambda *args, **kwargs: "<p>Goa</p>")
+    monkeypatch.setattr(
+        itinerary_pdf,
+        "build_itinerary_pdf_bytes",
+        lambda *args, **kwargs: b"%PDF-1.4 test",
+    )
     monkeypatch.setattr(share, "mint_for_active_trip", lambda: "share-token")
     monkeypatch.setattr(
         EmailClient,
@@ -75,6 +80,8 @@ def test_email_export_replays_without_second_provider_send(monkeypatch, tmp_path
     assert replay.json()["replayed"] is True
     assert len(email_client.calls) == 1
     assert email_client.calls[0][1] == external_operations.provider_operation_id("send-1")
+    assert email_client.calls[0][0]["attachments"][0]["name"] == "trip-itinerary.pdf"
+    assert "Open this trip in the planner" in email_client.calls[0][0]["content"]["plainText"]
 
 
 def test_email_export_rejects_request_id_reuse_for_different_payload(

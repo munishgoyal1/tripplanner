@@ -3,8 +3,15 @@
 import time
 import uuid
 
-from tripplanner.flight_http import body_data
-from tripplanner.flight_recorder import IDENTITY, SPAN, TRACE, record
+from tripplanner.flight_http import BodyCapture
+from tripplanner.flight_recorder import (
+    IDENTITY,
+    SPAN,
+    TRACE,
+    capture_provider_bodies,
+    enabled,
+    record,
+)
 
 
 class FlightRecorderMiddleware:
@@ -12,7 +19,7 @@ class FlightRecorderMiddleware:
         self.app = app
 
     async def __call__(self, scope, receive, send):
-        if scope["type"] != "http":
+        if scope["type"] != "http" or not enabled():
             return await self.app(scope, receive, send)
         path = scope.get("path", "").removeprefix("/api")
         # Auth/document bodies contain credentials or identity documents. Static resources
@@ -24,7 +31,7 @@ class FlightRecorderMiddleware:
         identity_token = IDENTITY.set({})
         span_token = SPAN.set("")
         started = time.monotonic()
-        request_parts, response_parts = [], []
+        request_parts, response_parts = BodyCapture(not sensitive), BodyCapture(not sensitive)
         headers = dict(scope.get("headers", []))
         content_type = ""
         status = None
@@ -61,6 +68,9 @@ class FlightRecorderMiddleware:
             error = type(exc).__name__
             raise
         finally:
+            include = capture_provider_bodies() or bool(error) or disconnected or (
+                status is not None and status >= 400
+            )
             record(
                 "api.end",
                 method=scope["method"],
@@ -72,10 +82,10 @@ class FlightRecorderMiddleware:
                 error=error,
                 request="<sensitive>"
                 if sensitive or status in {401, 403}
-                else body_data(b"".join(request_parts), headers.get(b"content-type", b"").decode()),
+                else request_parts.body(headers.get(b"content-type", b"").decode(), include),
                 response="<sensitive>"
                 if sensitive
-                else body_data(b"".join(response_parts), content_type),
+                else response_parts.body(content_type, include),
             )
             TRACE.reset(token)
             SPAN.reset(span_token)

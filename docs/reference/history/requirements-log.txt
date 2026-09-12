@@ -3498,12 +3498,42 @@ Product north star already covered the intent; stale GPT-4.1 lock replaced by
 that performance rule. Usage catalog now longest-prefix-matches so mini is not
 priced as GPT-5. Deployment was not changed.
 
-[2026-09-10] Lodging search outranks persist; local Maps referrers off; 50 photos
-Owner: stop the update_trip_plan loop when lodging is missing; remove local
-Maps HTTP referrer matching after the 27 Aug billing constraints blocked
-legitimate origins; 50 photos per allowed trip in every environment so a
-started trip is not quality-capped. Implemented: search_hotels outranks
-persist/repair; empty local browserReferrers + apply-script clear; app and GCP
-photo/search/maps quotas raised; conversation ceilings still bound trip count.
+[2026-09-11] Lab 5 Option B layered Trip Book in export
+Sandbox implementation of the selected layered packet: contents and document
+readiness first, trip brief and executable days with optional circuit insets,
+then essentials, confirmations, and optional sourced place context. Emergency
+numbers are omitted unless already on the trip. Identity numbers stay out of
+the printable file. Extra full-page trip maps stay off by default (Lab day-inset
+setting). Promotion remains a separate owner step.
+
+[2026-09-11] Two itinerary download packets
+Keep Trip Book and rename Detailed+ to Standard. Drop the extra formats from the
+download dialog. Calendar stays on its own menu action. Preview and PDF share the
+HTML packet; email attaches that PDF plus a trip URL. Budgets and one photo per
+stop are optional and off by default; day circuits stay on. Stop rows carry the
+same timing, hours, and notes as the itinerary panel. Map circuits use numbered
+stops with curved connectors when legs sit close together.
+
+[2026-09-11] Email photo PDF must match preview
+Photo-checked email was attaching the ReportLab text fallback because headless
+print-to-PDF of file:// HTML timed out on remote place photos. Inline those
+images and reuse the preview HTML for the attachment.
+
+[2026-09-11] PDF photos via data URIs; independent export buttons
+Stop photos still vanished from downloaded and emailed PDFs after sibling-file
+materialization. Headless Chrome often will not paint local image files from
+file:// HTML. Embed photo bytes as data URIs, falling back to Places media
+bytes when the CDN URL is blocked. Keep Download PDF and Send busy states
+separate so one action does not relabel the other.
+
+[2026-09-11] Promote when primary is behind or ahead of origin/master
+Promotion stopped because local master was not exactly origin/master. Fast-forward
+a clean behind checkout. If local master is ahead, park those commits and reset
+to origin/master before retrying.
+
+
+
+
+
 
 

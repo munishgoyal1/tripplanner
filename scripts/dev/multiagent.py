@@ -189,7 +189,7 @@ def process_info(pid: int) -> tuple[str, str]:
         )
         result = run(["pwsh", "-NoProfile", "-Command", script], timeout=5)
         return "", result.stdout.strip() if result.returncode == 0 else ""
-    result = run(["ps", "-p", str(pid), "-o", "stat=", "-o", "command="], timeout=5)
+    result = run(["ps", "-ww", "-p", str(pid), "-o", "stat=", "-o", "command="], timeout=5)
     if result.returncode != 0 or not result.stdout.strip():
         return "", ""
     state, _, command = result.stdout.strip().partition(" ")

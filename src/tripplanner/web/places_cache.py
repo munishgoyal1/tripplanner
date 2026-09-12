@@ -743,6 +743,49 @@ def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
     return resp.json().get("photoUri")
 
 
+def get_photo_bytes(
+    name: str, city: str, max_width_px: int = 480
+) -> tuple[bytes, str]:
+    """Return JPEG/PNG bytes for a cached place photo (Places media, no URI hop)."""
+    info = _ensure(name, city)
+    if not info or not is_configured():
+        return b"", ""
+    refs = [ref for ref in (info.get("photo_refs") or []) if ref]
+    if not refs:
+        return b"", ""
+    if not consume("photo"):
+        return b"", ""
+    _pace("GetPhotoMediaRequestPerMinutePerProject", default=30)
+    try:
+        resp = http_client.get(
+            f"{_BASE}/{refs[0]}/media",
+            params={
+                "key": get_settings().google_places_api_key,
+                "maxWidthPx": max_width_px,
+            },
+            timeout=_HTTP_TIMEOUT_S,
+            follow_redirects=True,
+            log_context=_PLACE_LOG_CONTEXT.get(),
+        )
+        resp.raise_for_status()
+    except httpx.HTTPError as exc:
+        log.warning("places photo bytes fetch failed: %s", exc)
+        return b"", ""
+    raw = resp.content or b""
+    if not raw or raw[:1] in {b"{", b"<"}:
+        return b"", ""
+    content_type = (resp.headers.get("content-type") or "").split(";", 1)[0].strip()
+    if content_type.startswith("image/"):
+        return raw, content_type
+    if raw[:3] == b"\xff\xd8\xff":
+        return raw, "image/jpeg"
+    if raw[:8] == b"\x89PNG\r\n\x1a\n":
+        return raw, "image/png"
+    if raw[:4] == b"RIFF" and raw[8:12] == b"WEBP":
+        return raw, "image/webp"
+    return b"", ""
+
+
 def _fetch_reviews(place_id: str) -> list[dict[str, Any]] | None:
     """The place's reviews, or ``None`` when no answer was obtained.
 
@@ -947,10 +990,35 @@ def get_photos(
     name: str, city: str, max_photos: int = _MAX_PHOTOS_PER_PLACE, *, refresh: bool = False
 ) -> list[str]:
     """Return up to ``max_photos`` renderable image URLs for ``name``."""
+    if max_photos <= 0:
+        return []
+    requested_at = time.time()
+    key = _key(name, _lookup_city(name, city))
+    with _key_lock(key):
+        with _CACHE_LOCK:
+            previous = _CACHE.get(key) or {}
+            refreshed_at = previous.get("__photos_at__", 0.0)
+            if previous.get("__photos_retry_after__", 0.0) > requested_at:
+                limit = min(max_photos, get_settings().google_places_max_photos_per_place)
+                return list(previous.get("photo_urls") or [])[:limit]
+        if refreshed_at >= requested_at:
+            refresh = False
+        return _get_photos(name, city, max_photos, refresh=refresh)
+
+
+def _get_photos(
+    name: str, city: str, max_photos: int, *, refresh: bool
+) -> list[str]:
     max_photos = min(max_photos, get_settings().google_places_max_photos_per_place)
+    with _CACHE_LOCK:
+        previous = dict(_CACHE.get(_key(name, _lookup_city(name, city))) or {})
     info = _ensure(name, city, refresh=refresh)
     if not info:
-        return []
+        return list(previous.get("photo_urls") or [])[:max_photos]
+    if refresh and previous.get("photo_urls") and "photo_urls" not in info:
+        with _CACHE_LOCK:
+            info["photo_urls"] = list(previous["photo_urls"])
+            info["__photos_at__"] = previous.get("__photos_at__", 0.0)
     # Upgrading an entry written before ``photo_refs`` existed costs a paid
     # lookup, so it waits for an interaction that is allowed to pay. A read-only
     # projection used to trigger it on every single view of the same trip.
@@ -967,6 +1035,9 @@ def get_photos(
         needs_photos = refresh or "photo_urls" not in info or stale
         refs = list((info.get("photo_refs") or [])[:max_photos])
         current = list(info.get("photo_urls") or [])
+        retry_after = info.get("__photos_retry_after__", 0.0)
+    if retry_after > time.time():
+        return current[:max_photos]
     if not needs_photos:
         units = min(len(current), max_photos)
         if units:
@@ -978,7 +1049,7 @@ def get_photos(
                 place=name,
                 city=_lookup_city(name, city),
             )
-        return current
+        return current[:max_photos]
     _record_cache(
         "photo_url_refresh" if current else "photo_url_miss",
         place=name,
@@ -989,15 +1060,15 @@ def get_photos(
         photo_urls = _photo_uris(refs)
     finally:
         _PLACE_LOG_CONTEXT.reset(token)
-    if refs and not photo_urls:
-        # Nothing came back for references we hold: the resolution was declined
-        # (read-only caller) or failed. Stamping that as the answer would record
-        # "this place has no photos" for the whole photo TTL -- 180 days by
-        # default -- so leave the entry alone and keep the previous URLs.
-        return current
     with _CACHE_LOCK:
+        if refs and len(photo_urls) < len(refs):
+            info["__photos_retry_after__"] = time.time() + 30
+            return (current or photo_urls)[:max_photos]
+        info.pop("__photos_retry_after__", None)
         info["photo_urls"] = photo_urls
         info["__photos_at__"] = time.time()
+    if get_settings().cache_warm_everything:
+        _persist_entry(_key(name, _lookup_city(name, city)))
     return photo_urls
 
 

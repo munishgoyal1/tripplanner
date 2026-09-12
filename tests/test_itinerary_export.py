@@ -156,19 +156,24 @@ def test_export_renders_complete_day_circuit(monkeypatch: pytest.MonkeyPatch) ->
 
 def test_pdf_embeds_map_place_photo_and_details(monkeypatch: pytest.MonkeyPatch) -> None:
     photo_calls: list[tuple[str, str]] = []
+    monkeypatch.setattr(itinerary_pdf, "html_to_pdf_bytes", lambda _html, *_args, **_kwargs: None)
     monkeypatch.setattr(
-        itinerary_pdf.trip_view,
+        itinerary_export.trip_view,
         "build_itinerary",
         lambda _trip: {
             "days": [
                 {
                     "day": 1,
                     "title": "Paris food",
+                    "date": "2026-08-24",
                     "google_maps_url": "https://maps.example/day-1",
                     "stops": [
                         {
                             "name": "Louvre Cafe",
                             "kind": "meal",
+                            "time": "12:30",
+                            "duration_min": 75,
+                            "opening_hours": "11:00–22:00",
                             "note": "Lunch near the museum",
                         }
                     ],
@@ -177,38 +182,321 @@ def test_pdf_embeds_map_place_photo_and_details(monkeypatch: pytest.MonkeyPatch)
         },
     )
     monkeypatch.setattr(
-        itinerary_pdf.trip_view,
+        itinerary_export.trip_view,
         "build_map_view",
         lambda _trip: {
             "pins": [
-                {"id": "a", "name": "Louvre Cafe", "lat": 48.8606, "lng": 2.3376},
-                {"id": "b", "name": "Hotel", "lat": 48.8584, "lng": 2.2945},
+                {"id": "a", "name": "Louvre Cafe", "kind": "meal", "lat": 48.8606, "lng": 2.3376},
+                {"id": "b", "name": "Hotel", "kind": "hotel", "lat": 48.8584, "lng": 2.2945},
             ],
             "days": [{"day": 1, "pin_ids": ["a", "b"], "route": {}}],
         },
     )
     monkeypatch.setattr(
-        itinerary_pdf.itinerary_export,
+        itinerary_export,
         "_static_map_data_uri",
         lambda _pin_ids, _pins: _PNG_DATA_URI,
     )
     monkeypatch.setattr(
-        itinerary_pdf.places_cache,
-        "get_summary",
+        itinerary_export.places_cache,
+        "get_details",
         lambda _name, _destination: {"address": "1 Rue de Paris", "rating": 4.7},
     )
 
-    def photos(name: str, destination: str, max_photos: int) -> list[str]:
+    def photos(name: str, destination: str, max_photos: int = 1) -> list[str]:
         photo_calls.append((name, destination))
         return [_PNG_DATA_URI]
 
-    monkeypatch.setattr(itinerary_pdf.places_cache, "get_photos", photos)
+    monkeypatch.setattr(itinerary_export.places_cache, "get_photos", photos)
 
     pdf = itinerary_pdf.build_itinerary_pdf_bytes(
         {"destination": "Paris"},
         include_photos=True,
         include_map_circuit=True,
+        template="standard",
     )
 
     assert pdf.startswith(b"%PDF")
     assert photo_calls == [("Louvre Cafe", "Paris")]
+    html = itinerary_export.build_export_html(
+        {"destination": "Paris"},
+        include_photos=True,
+        include_map_circuit=True,
+        template="standard",
+    )
+    assert "Monday" in html
+    assert "24 August 2026" in html
+    assert "1 hr 15 min visit" in html
+    assert "11:00–22:00" in html
+    assert "Lunch near the museum" in html
+    assert "Daily map circuit" in html
+
+
+def test_inline_remote_images_unescapes_html_entities(monkeypatch: pytest.MonkeyPatch) -> None:
+    seen: list[str] = []
+
+    class Response:
+        content = b"\xff\xd8\xff"
+        headers = {"content-type": "application/octet-stream"}
+
+        def raise_for_status(self) -> None:
+            return None
+
+    def fake_get(url: str, **kwargs: object) -> Response:
+        seen.append(url)
+        return Response()
+
+    monkeypatch.setattr(itinerary_pdf.http_client, "get", fake_get)
+    html = (
+        "<img class='stop-photo' "
+        "src='https://lh3.googleusercontent.com/p/abc?maxwidth=800&amp;n=1' alt='x' />"
+    )
+    out = itinerary_pdf.inline_remote_images(html)
+    assert seen == ["https://lh3.googleusercontent.com/p/abc?maxwidth=800&n=1"]
+    assert "data:image/jpeg;base64," in out
+    assert "&amp;" not in out
+
+
+def test_embed_packet_images_uses_places_bytes_when_url_fetch_fails(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(itinerary_pdf, "_image_bytes", lambda _src: (b"", ""))
+    monkeypatch.setattr(
+        itinerary_pdf.places_cache,
+        "get_photo_bytes",
+        lambda *_args, **_kwargs: (b"\xff\xd8\xff", "image/jpeg"),
+    )
+    html = (
+        "<img class='stop-photo' "
+        "src='https://lh3.googleusercontent.com/p/abc?maxwidth=800&amp;n=1' "
+        "alt='Fort Aguada' />"
+    )
+    out = itinerary_pdf.embed_packet_images(html, "Goa")
+    assert "data:image/jpeg;base64," in out
+    assert "lh3.googleusercontent.com" not in out
+
+
+def test_materialize_images_writes_local_files(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    class Response:
+        content = b"\x89PNG\r\n\x1a\n" + b"x"
+        headers = {"content-type": "image/png"}
+
+        def raise_for_status(self) -> None:
+            return None
+
+    monkeypatch.setattr(itinerary_pdf.http_client, "get", lambda *args, **kwargs: Response())
+    html = "<img class='stop-photo' src='https://photos.example/a.png?w=1&amp;h=2' alt='x' />"
+    out = itinerary_pdf.materialize_images(html, tmp_path)
+    assert "src='img-1.png'" in out
+    assert (tmp_path / "img-1.png").read_bytes().startswith(b"\x89PNG")
+
+
+def test_pdf_reuses_supplied_html_without_rebuilding(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        itinerary_export,
+        "build_export_html",
+        lambda *args, **kwargs: pytest.fail("supplied HTML must not rebuild"),
+    )
+    monkeypatch.setattr(
+        itinerary_pdf,
+        "html_to_pdf_bytes",
+        lambda html, *_args, **_kwargs: b"%PDF-1.4 " + html.encode(),
+    )
+    pdf = itinerary_pdf.build_itinerary_pdf_bytes(
+        {"destination": "Goa"},
+        include_photos=True,
+        html="<html><body>Trip Book preview</body></html>",
+    )
+    assert pdf.startswith(b"%PDF-1.4")
+    assert b"Trip Book preview" in pdf
+
+
+def test_layered_trip_book_orders_control_then_days_then_appendices(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from tripplanner.web import itinerary_trip_book
+
+    monkeypatch.setattr(
+        itinerary_trip_book,
+        "trip_book_readiness",
+        lambda _trip: {
+            "blockers": 0,
+            "warnings": 1,
+            "badge": "1 document to check",
+            "checks": [
+                {
+                    "severity": "warning",
+                    "title": "UK ETA · Munish",
+                    "detail": "Application reference required",
+                }
+            ],
+            "reason": "",
+        },
+    )
+    monkeypatch.setattr(
+        itinerary_export,
+        "_documents_wallet_section",
+        lambda _trip: "",
+    )
+    monkeypatch.setattr(
+        itinerary_export,
+        "_static_map_data_uri",
+        lambda _pin_ids, _pins: "",
+    )
+    monkeypatch.setattr(
+        itinerary_export.places_cache,
+        "get_details",
+        lambda name, _destination: (
+            {"address": "St Katharine's EC3N 4AB", "rating": 4.6}
+            if name == "Tower of London"
+            else {"address": "Aldgate", "phone": "+44 20 3319 7460"}
+        ),
+    )
+    monkeypatch.setattr(
+        itinerary_export.places_cache,
+        "get_photos",
+        lambda *_args, **_kwargs: [],
+    )
+    monkeypatch.setattr(
+        itinerary_trip_book.places_cache,
+        "get_details",
+        itinerary_export.places_cache.get_details,
+    )
+    monkeypatch.setattr(
+        itinerary_trip_book.places_cache,
+        "get_photos",
+        lambda *_args, **_kwargs: [],
+    )
+    monkeypatch.setattr(
+        itinerary_export.trip_view,
+        "build_itinerary",
+        lambda _trip: {
+            "days": [
+                {
+                    "day": 1,
+                    "title": "Tower and skyline",
+                    "date": "2026-08-26",
+                    "google_maps_url": "https://maps.example/day-1",
+                    "summary": "City through time",
+                    "schedule": {
+                        "start": "09:10",
+                        "end": "18:30",
+                        "travel_duration_display": "1 hr 29",
+                    },
+                    "route": {"distance_display": "16.8 km", "mode": "Metro"},
+                    "weather": {"high_c": 23, "low_c": 17, "summary": "light rain"},
+                    "stops": [
+                        {"name": "Wilde Aldgate", "kind": "hotel", "time": "07:40"},
+                        {
+                            "name": "Tower of London",
+                            "kind": "attraction",
+                            "time": "09:10",
+                            "booked": True,
+                            "booking_ref": "HRP-8842014",
+                            "travel_from_previous": {
+                                "mode": "Taxi",
+                                "duration_display": "18 min",
+                            },
+                            "insight": "The fortress still runs a family trail on the walls.",
+                        },
+                        {"name": "Wilde Aldgate", "kind": "hotel", "time": "19:20"},
+                    ],
+                }
+            ]
+        },
+    )
+    monkeypatch.setattr(
+        itinerary_export.trip_view,
+        "build_map_view",
+        lambda _trip: {
+            "pins": [
+                {
+                    "id": "h",
+                    "name": "Wilde Aldgate",
+                    "kind": "hotel",
+                    "lat": 51.51,
+                    "lng": -0.07,
+                },
+                {
+                    "id": "t",
+                    "name": "Tower of London",
+                    "kind": "attraction",
+                    "lat": 51.508,
+                    "lng": -0.076,
+                },
+            ],
+            "days": [
+                {
+                    "day": 1,
+                    "pin_ids": ["h", "t", "h"],
+                    "route": {
+                        "distance_display": "16.8 km",
+                        "duration_display": "1 hr 29",
+                        "mode": "Metro",
+                    },
+                }
+            ],
+        },
+    )
+
+    html = itinerary_export.build_export_html(
+        {
+            "destination": "London",
+            "origin": "Delhi",
+            "departure_date": "2026-08-24",
+            "return_date": "2026-08-31",
+            "travelers": "Munish · Ritu · Aarav · Sana",
+            "selected_hotels": [{"name": "Wilde Aldgate"}],
+            "selected_flights": [{"airline": "British Airways", "flight_number": "BA142"}],
+            "preferences_snapshot": {
+                "trip_style": "leisure",
+                "food_preferences": {"dietary": ["vegetarian"]},
+            },
+        },
+        include_photos=False,
+        include_map_circuit=True,
+        template="trip_book",
+    )
+
+    contents_at = html.find("id='contents'")
+    brief_at = html.find("id='trip-brief'")
+    days_at = html.find("id='daily-plan'")
+    essentials_at = html.find("id='essentials'")
+    documents_at = html.find("id='documents'")
+    guide_at = html.find("id='place-guide'")
+    assert 0 < contents_at < brief_at < days_at < essentials_at < documents_at < guide_at
+    assert "Layered Trip Book" in html
+    assert "Trip overview" not in html
+    assert "Day circuit inset" in html
+    assert ">H<" in html
+    assert "HRP-8842014" in html
+    assert "Taxi · 18 min" in html
+    assert "1 document to check" in html
+    assert "UK ETA · Munish" in html
+    assert "British Airways" in html
+    assert "Saved trip style: leisure" in html
+    assert "Place facts on file" in html
+    assert "Emergency (UK)" not in html
+    assert "+91 124 415 0000" not in html
+    assert html.find("Your complete travel book") < html.find("Day 1:")
+    assert html.find("Day 1:") < html.find("Confirmations and entry")
+
+
+def test_detailed_export_does_not_gain_trip_book_contents(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(itinerary_export.trip_view, "build_itinerary", lambda _trip: {"days": []})
+    monkeypatch.setattr(
+        itinerary_export.trip_view,
+        "build_map_view",
+        lambda _trip: {"days": [], "pins": []},
+    )
+    html = itinerary_export.build_export_html(
+        {"destination": "Paris"},
+        include_photos=False,
+        include_map_circuit=False,
+        template="detailed",
+    )
+    assert "id='contents'" not in html
+    assert "Layered Trip Book" not in html
+    assert "Standard" in html

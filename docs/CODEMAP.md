@@ -94,7 +94,9 @@ trip through shared API contracts.
 | `src/tripplanner/trip_events.py` | Durable trip event ownership |
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
-| `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py` | Private diagnostic events: full model/tool and planner HTTP evidence, provider attempts, seven-day local/Cosmos spool, integrity-checked operator export; see operations SLO runbook |
+| `src/tripplanner/web/itinerary_trip_book.py` | Lab 5 Option B layered Trip Book HTML: contents and readiness, trip brief, executable days with numbered circuit insets, then essentials, documents, and optional place context |
+| `src/tripplanner/web/itinerary_pdf.py` | PDF bytes from the same export HTML via Chromium/Edge print-to-PDF when available; stop photos are inlined as data URIs (Places media fallback) before print; ReportLab keeps the day/stop structure and can embed the same photo bytes |
+| `src/tripplanner/flight_recorder.py`, `flight_callbacks.py`, `flight_http.py`, `flight_middleware.py`, `diagnostic_retention.py` | Bounded private diagnostic metadata and failure excerpts; asynchronous 25-event batches, seven-day retention, 50 MiB local spool cap, and integrity-checked legacy/batch export; successful model/tool/workspace payloads are omitted by default |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics; low-level success telemetry still reaches observers/aggregate ledgers and one aggregate flight event, while console and rotating app logs show human-readable API, capped local LLM-prompt preview plus full counts, tool, detailed provider, workflow, failure, and per-interaction summary lines instead of successful per-cache/per-storage noise |
 | `src/tripplanner/debug_store.py` | Internal implementation of the Trip Flight Recorder: automatic local-only history of real trip revisions for investigation and emulator restore; never active in hosted mode |
 | `src/tripplanner/validation/` | Trip Quality Audit implementation: Trip Quality Corpus reader, deterministic and owner-rated gates, non-gating experiential scores, grouped findings, baseline, immutable `audit/reports/` history, comparable-run summaries (brief 004), and durable provenance aliases used by local inspection links |
@@ -139,6 +141,14 @@ surface only, so each entry still follows its stable or volatile TTL policy.
 180 days by default in all profiles, subject to `CACHE_TTL_SCALE`; explicit photo
 refresh still bypasses the cache. This controls local reuse, not the provider's
 URL validity period, so a provider-expired URL can require earlier refresh.
+Photo resolution serializes overlapping requests for the same place; a failed
+refresh preserves existing URLs without advancing their freshness timestamp
+and pauses repeat resolution for 30 seconds. Full-warming mode schedules a
+durable write after successful photo resolution, under its existing cache policy.
+Trip view loads and successful switches attach their resolved trip ID to the
+shared usage batch, including worker-thread provider calls and cost settlement.
+Google HTTP 429 attempts remain failures in usage telemetry but carry zero
+estimated spend and `billing_status=quota_rejected`.
 `SECONDARY_DURABLE_CACHE_ENABLED=1` adds a cache-only durable fallback after a
 primary durable miss. Its endpoint, database, emulator guard, authentication,
 and enablement are independent settings. Fresh shared Places and global tool
@@ -207,7 +217,7 @@ one physical cache backend.
 | `frontend/src/components/AccountSettingsController.tsx`, `accountSettings.ts` | Page-independent account/settings ownership, auth and privacy actions, destination routing, and reusable open command |
 | `frontend/src/components/AccountSettingsHub.tsx` | Account/settings render surface; delegates persisted destinations to existing auth, preferences, documents, analytics, and privacy boundaries |
 | `frontend/src/components/TravelDocumentsVault.tsx` | Travel-document capture, review, reveal, and deletion. The trip surface only shows the gap badge |
-| `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
+| `frontend/src/components/ExportModal.tsx` | Itinerary download dialog: Standard or Trip Book, budget/photo checkboxes, preview, PDF, and email |
 | `frontend/src/components/MapPanel.tsx` | Google Maps instance lifecycle, UI state, Places interaction, focus coordination, and compatibility re-exports |
 | `frontend/src/components/map/` | Google Maps SDK loading, map icon generation, focus matching, day and dedicated-drive route derivation, Google-place candidate conversion, React-independent overlay synchronization, and viewport mutation |
 | `frontend/src/components/ItineraryPanel.tsx`, `ItineraryStopRow.tsx` | Itinerary loading, mutation, day composition, and stop-row presentation ownership |
@@ -403,10 +413,17 @@ user action
 ```text
 conversation or explicit edit
   -> extract structured preference
-  -> additive merge
+  -> merge stated scalars and additive lists, preserving concurrent edits
   -> persist About Me profile
   -> apply only at relevant planning boundaries
 ```
+
+`tools/passive_learning.py` queues background extraction in the user's preference
+document and drains up to four pending messages per sweep; failures retry on later
+turns. `tools/profile_suggestions.py` owns automatic-save receipts and conditional
+Undo as well as optional suggestions. `chat_turn.py` supplies recent conversational
+context on completed and interrupted turns; background workers use separate request
+snapshots. `graph_policy.py` enforces draft creation/persistence before refinement.
 
 ## Repository Map
 

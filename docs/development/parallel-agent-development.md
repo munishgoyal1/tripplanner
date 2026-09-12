@@ -1,13 +1,17 @@
 # Sandbox development
 
-Use the primary `tripplanner` checkout on `master` and a fresh, task-named sandbox for each isolated feature or UX Lab. A sandbox starts from `origin/master`, carries one coherent change, and returns only through its validated promotion flow.
+Keep primary `master` for the local app stack and merged work. Start features and
+bug fixes on fresh agent-identifiable branches from `origin/master`; Codex/GPT uses
+`gpt-<task-name>`. Do not use generic Coordinator branches. Branch creation does
+not copy files or reinstall dependencies. Create a worktree or sandbox only when
+concurrent edits or an isolated runtime require one.
 
 ## Choose a lane (keep this simple)
 
 Do not invent extra git workflows. Pick one:
 
-1. **Primary `master` (default).** In-chat fixes and docs in the primary checkout land on `master`. This is the least confusing path for work that does not need an isolated app stack.
-2. **Short-lived task branch.** Use this only when the owner asks for a reviewable branch, or a single coherent change is easier to merge through a pull request. Branch from current `origin/master` in the primary checkout, finish the work, open a PR, merge it, fast-forward local `master`, and delete the branch in the same session. Do not leave long-lived feature branches beside sandboxes.
+1. **Named task branch (default).** Use `gpt-<task-name>` for Codex/GPT work and clearly identify other agents in their branch names. Finish one coherent change, push, open a PR, merge, and fast-forward clean primary `master`. Keep unfinished follow-ups on the same branch.
+2. **Reusable bug-fix branch.** Codex may reuse `gpt-bugfixes` when it is clean, synchronized with current `origin/master`, and not owned by another active agent. Never reuse an active agent's branch or silently bundle unfinished work.
 3. **Sandbox.** Use this when the change needs its own ports, emulator database, UX Lab, or parallel runtime. Create it with the sandbox launchers. Promotion (or `Merge-Sandbox`) is the only path back to `master`; do not also keep a duplicate feature branch for the same work.
 
 An in-chat sandbox fix stays in that sandbox and does not need a GitHub issue.
@@ -45,11 +49,12 @@ finished.
 
 The primary checkout owns the canonical local app stack. Before starting it, run `scripts/win/user/run/Run-Latest-Master.cmd` on Windows or `scripts/mac/user/run/Run-Latest-Master.command` on macOS. Sandboxes use their own ports and server-free validation by default. `Copy-PrimaryEnvironment` refreshes the sandbox `.env` from the primary checkout so provider keys match. The local Maps browser key has no HTTP referrer restriction; cost is bounded by API-target allowlists and project quotas. Canary and production browser keys remain origin-restricted.
 
-Promotion requires the primary `master` checkout to be clean and exactly equal
-to `origin/master` before the pull request is merged. After GitHub merges the
+Promotion requires the primary `master` checkout to be clean. If it is behind
+`origin/master`, promotion fast-forwards it. If it is ahead or has diverged,
+promotion stops and tells you to park the extra commits and reset to
+`origin/master` instead of creating a divergent history. After GitHub merges the
 pull request, promotion fast-forwards the primary checkout before recording
-completion or discarding the sandbox. A stale or locally-ahead primary checkout
-stops the promotion instead of creating a divergent history.
+completion or discarding the sandbox.
 
 After a successful `Sync-Sbxs-FromMaster`, each registered sandbox may be ahead of
 `master`, but both its local branch and its pushed remote branch must contain the

@@ -39,7 +39,11 @@ def test_promotion_synchronizes_primary_before_and_after_remote_merge() -> None:
     assert 'merge --ff-only "origin/$Base"' in source
     assert "Primary checkout has uncommitted changes" in source
     assert "Primary checkout must match origin/$Base before promotion" in source
+    assert "Park extra commits" in source
+    assert "git reset --hard origin/$Base" in source
     assert "Primary checkout is not a clean fast-forward" in source
+    assert 'if ($localHead -eq $remoteHead)' in source
+    assert "merge-base --is-ancestor $localHead" in source
 
 
 def test_worktree_cleanup_retries_transient_windows_lock(tmp_path: Path) -> None:

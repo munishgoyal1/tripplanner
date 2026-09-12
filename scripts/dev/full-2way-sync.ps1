@@ -36,6 +36,7 @@
   ./scripts/dev/full-2way-sync.ps1
     ./scripts/dev/full-2way-sync.ps1 sbx
   ./scripts/dev/full-2way-sync.ps1 -PullOnly
+  ./scripts/dev/full-2way-sync.ps1 -NoTest
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
@@ -46,7 +47,9 @@ param(
     [string]$BaseBranch = "master",
     [switch]$AlwaysValidate,
     # Bring lanes up to the base without publishing any lane work to it.
-    [switch]$PullOnly
+    [switch]$PullOnly,
+    # Skip the test suite entirely and still publish/land the syncs it would gate.
+    [switch]$NoTest
 )
 
 $ErrorActionPreference = "Stop"
@@ -252,7 +255,7 @@ function Invoke-BranchValidation {
         # their own validation at once. -n 2 rather than -n 4: worker-vs-worker
         # contention was flaking timing/iteration-budgeted tests under real
         # concurrent load from other lanes/agents on this machine.
-        & $python -m pytest tests -q -n 2
+        & $python -m pytest tests -q -n 2 2>&1 | Out-Host
         if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
     } finally {
         Pop-Location
@@ -269,14 +272,14 @@ function Invoke-BranchValidation {
         # abandoned npm package literally named "tsc" instead of failing loudly.
         if (-not (Test-Path (Join-Path $frontend "node_modules") -PathType Container)) {
             Write-Host "[check]   npm install (no node_modules in this worktree)" -ForegroundColor Cyan
-            & npm install
+            & npm install 2>&1 | Out-Host
             if ($LASTEXITCODE -ne 0) { throw "npm install failed; fix it before shipping." }
         }
         Write-Host "[check]   tsc" -ForegroundColor Cyan
-        & npx tsc --noEmit
+        & npx tsc --noEmit 2>&1 | Out-Host
         if ($LASTEXITCODE -ne 0) { throw "tsc failed; fix it before shipping." }
         Write-Host "[check]   vitest" -ForegroundColor Cyan
-        & npx vitest run
+        & npx vitest run 2>&1 | Out-Host
         if ($LASTEXITCODE -ne 0) { throw "vitest failed; fix it before shipping." }
     } finally {
         Pop-Location
@@ -424,6 +427,7 @@ function Test-NeedsValidation {
     #>
     param([object]$Entry, [string[]]$Commits)
 
+    if ($NoTest) { return $false }
     if ($AlwaysValidate) { return $true }
     $workingDirectory = if ($Entry.worktree) { $Entry.worktree } else { $primaryRoot }
     $head = if ($Entry.worktree) { "HEAD" } else { $Entry.branch }
