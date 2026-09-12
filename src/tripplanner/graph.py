@@ -201,6 +201,10 @@ class _UsageCallback(BaseCallbackHandler):
             if batch and batch[-1] is not latest_user:
                 preview += f" latest_{batch[-1].type}: " + _message_prompt_text(batch[-1])
             turn_phase = _CURRENT_TURN_PHASE.get()
+            tool_config = {
+                key: value for key, value in (_.get("invocation_params") or {}).items()
+                if key in {"tools", "tool_choice", "parallel_tool_calls", "response_format"}
+            }
             log_llm_prompt(
                 self._model,
                 "\n".join(_message_prompt_text(message) for message in batch),
@@ -212,7 +216,9 @@ class _UsageCallback(BaseCallbackHandler):
                 phase_number=turn_phase[1] if turn_phase else None,
                 full_prompt_text="\n\n".join(
                     f"[{message.type}] {_message_prompt_text(message)}" for message in batch
-                ),
+                ) + ("\n\n[tool configuration] " + json.dumps(
+                    tool_config, ensure_ascii=False, default=str,
+                ) if tool_config else ""),
             )
         except Exception:
             pass
@@ -527,7 +533,7 @@ def trip_agent(state: AgentState) -> AgentState:
         )
         return {"messages": [response], "current_agent": "trip"}
 
-    if decision.budget_exhausted:
+    if decision.budget_exhausted or decision.stopped_for_no_progress:
         gaps = list(decision.completion_gaps)
         app_event(
             "agent_model_round",
@@ -539,8 +545,10 @@ def trip_agent(state: AgentState) -> AgentState:
         instructions = [
             build_trip_system_prompt(active_trip=active_trip),
             SystemMessage(content=(
-                "The bounded planning-tool budget is exhausted. Do not call another tool. "
-                "Give a concise best-effort summary of the plan already persisted. "
+                ("Repeated saves made no progress. Do not call another tool. "
+                 if decision.stopped_for_no_progress else
+                 "The bounded planning-tool budget is exhausted. Do not call another tool. ")
+                + "Give a concise best-effort summary of the plan already persisted. "
                 + (
                     "State these unresolved details honestly without discarding the usable "
                     "itinerary: " + " ".join(gaps)
@@ -564,6 +572,13 @@ def trip_agent(state: AgentState) -> AgentState:
         message_count=len(state["messages"]),
     )
     tools = select_tools(state["messages"], proposal_only=proposal_only)
+    if graph_policy.is_flight_followup(state["messages"], active_trip):
+        flight_tools = {
+            "get_trip_plan", "get_travel_preferences", "search_flights",
+            "search_flights_duffel", "verify_flight_offer", "compute_route",
+            "web_search", "update_trip_plan",
+        }
+        tools = [tool for tool in tools if tool.name in flight_tools]
     if not graph_policy.permits_trip_creation(state["messages"], active_trip):
         tools = [tool for tool in tools if tool.name != "create_trip_plan"]
     if active_trip.get("destination") and graph_policy.confirmed_trip_change(
@@ -580,6 +595,18 @@ def trip_agent(state: AgentState) -> AgentState:
         **({"tool_choice": decision.forced_tool} if decision.forced_tool else {}),
     )
     instructions = [build_trip_system_prompt(active_trip=active_trip)]
+    flight_followup = graph_policy.is_flight_followup(state["messages"], active_trip)
+    if flight_followup:
+        instructions.append(SystemMessage(content=(
+            "This is a flight-only follow-up on a saved trip. Read get_trip_plan for "
+            "the existing plan, then search outbound and return flights for its saved dates "
+            "and party, using the user's stated origin. Do not research hotels, restaurants "
+            "or attractions, re-ask known facts, or rebuild the itinerary. Preserve all "
+            "unaffected days and commitments. Save flight selections and origin with a "
+            "partial update; change arrival/departure days only as required by grounded "
+            "flight times and airport transfers. Missing inventory is an honest gap, not "
+            "permission to invent flights or repair unrelated old gaps."
+        )))
     if decision.forced_reason == "new_trip_creation":
         instructions.append(SystemMessage(content=(
             "The user explicitly requested a different whole-trip destination. "
@@ -643,6 +670,16 @@ def trip_agent(state: AgentState) -> AgentState:
         )))
     _CURRENT_TURN_PHASE.set((turn_number, decision.tool_phases + 1))
     response = llm.invoke(instructions + _messages_for_model(state["messages"]))
+    if flight_followup:
+        for call in response.tool_calls:
+            if call["name"] == "update_trip_plan":
+                try:
+                    updates = json.loads(call["args"].get("updates_json", ""))
+                    if isinstance(updates, dict):
+                        updates["_edit_scope"] = "flights"
+                        call["args"]["updates_json"] = json.dumps(updates)
+                except (ValueError, TypeError):
+                    pass
     return {"messages": [response], "current_agent": "trip"}
 
 

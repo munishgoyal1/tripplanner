@@ -25,6 +25,13 @@ The project has one trip agent. Do not add router or personal-assistant agents.
 The Assistant builds the itinerary; Details and Map mutate the same persisted
 trip through shared API contracts.
 
+Flight-only follow-ups are identified by `graph_policy.is_flight_followup`.
+`graph.py` binds flight-relevant tools, adds scoped instructions and stamps
+`_edit_scope=flights` into update arguments. `tools/trip_planner.py` rejects
+unrelated selections and intermediate-day rewrites and skips whole-trip repair
+on that path. Repeated no-op/rejected saves terminate through the policy's
+`stopped_for_no_progress` result and a final model call without tools.
+
 ## Runtime Ownership
 
 | Path | Owns |

@@ -735,14 +735,20 @@ implemented capability baseline.
   when known—the Place and city. Cache-served provider records stay out of the
   human log and are aggregated for the operations dashboard.
 - A private flight recorder is opt-in across local, canary and production. The
-  master `TRIPPLANNER_FLIGHT_RECORDER` flag defaults to `0` in all environment
-  profiles and also gates automatic local trip archives. Restart the backend after
+  master `TRIPPLANNER_FLIGHT_RECORDER` flag is enabled in the local profile for
+  debugging, with verbose body capture; hosted profiles remain off. It also gates
+  automatic local trip archives. Restart the backend after
   changing it. Disabled paths skip recorder callbacks, custom model transports,
   body capture and diagnostic writes while retaining normal logs and accounting.
-  When enabled, it captures exact model messages/tool schemas and returned messages,
-  model HTTP attempts (including SDK retry counts), tool inputs/outputs/errors,
-  shared provider HTTP payloads/statuses, application events, planner API/SSE bodies,
-  graph/interaction lifecycle and saved trip revisions. Events carry UTC time,
+  Local `LOG_FULL_LLM_PROMPTS=1` records all model-facing messages and tool
+  configuration without the former 20,000-character truncation, while stripping
+  credentials. This opt-in field remains unavailable outside local. A turn counts
+  user messages; call counts model/tool rounds within that turn, not new requests.
+  When enabled, it captures model/tool lifecycle metadata, HTTP attempts (including
+  SDK retry counts), application events and saved trip revisions. Failure and
+  verbose HTTP bodies retain at most 64 KiB per capture with byte counts and
+  truncation metadata; use the complete local prompt log for larger model inputs.
+  Events carry UTC time,
   trace/run/attempt identifiers, user/trip attribution and durations. Credentials
   and document-processing content are excluded. Private files spool before asynchronous
   Cosmos delivery; compressed chunks are verified on export and expire after seven days.

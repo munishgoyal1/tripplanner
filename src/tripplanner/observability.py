@@ -498,9 +498,6 @@ def _correlation_fields(fields: dict[str, Any]) -> dict[str, str]:
     }
 
 
-_MAX_FULL_PROMPT_CHARS = 20_000
-
-
 def full_llm_prompt_logging_enabled() -> bool:
     """Honor the ``LOG_FULL_LLM_PROMPTS`` env switch. Off by default.
 
@@ -574,11 +571,14 @@ def log_llm_prompt(
             # safety net kept here; ordinary trip/preference content is
             # deliberately left untouched, that's the point of the feature.
             # Order matters: _BEARER before _INLINE (see flight_recorder.sanitize()).
-            scrubbed = _INLINE.sub(r"\1\2<redacted>", _BEARER.sub("Bearer <redacted>", full_prompt_text))
-            fields["prompt_full_truncated"] = len(scrubbed) > _MAX_FULL_PROMPT_CHARS
-            fields["prompt_full"] = scrubbed[:_MAX_FULL_PROMPT_CHARS]
+            scrubbed = _INLINE.sub(
+                r"\1\2<redacted>", _BEARER.sub("Bearer <redacted>", full_prompt_text),
+            )
+            fields["prompt_full_truncated"] = False
+            fields["prompt_full"] = scrubbed
     _APP_EVENT_LOGGER.info(
-        f"LLM PROMPT {model}{turn_phase_text} messages={message_count} words={len(words)}{preview_text}",
+        f"LLM PROMPT {model}{turn_phase_text} messages={message_count} "
+        f"words={len(words)}{preview_text}",
         extra=fields,
     )
 
