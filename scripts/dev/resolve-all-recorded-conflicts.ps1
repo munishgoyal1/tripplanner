@@ -18,7 +18,11 @@
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
-param()
+param(
+    # Accepted for consistency with the other sync launchers. This script
+    # never runs the test suite, so it always proceeds regardless.
+    [switch]$NoTest
+)
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
