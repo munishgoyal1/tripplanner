@@ -1941,3 +1941,13 @@ the outcome.
   of increasing every test timeout.
 - Wrap externally dispatched preference changes in React act so assertions
   observe the resulting effects, rather than racing a one-second polling window.
+
+
+## 2026-09-12 - Preserve Mock Types Across Integration
+
+- Assertions that inspect recorded mock arguments need a declared argument
+  signature. A zero-argument mock records an empty tuple, and a generic unknown
+  record cannot prove a polyline path is an array; declare the inspected fields.
+- A second fan-out regression exceeded its 500 ms ceiling by only 15 ms under
+  integration load. Use a rendezvous to prove overlapping execution in every
+  concurrency contract, including shared outbound fan-out.
