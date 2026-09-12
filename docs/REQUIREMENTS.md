@@ -73,8 +73,8 @@ trip-scoped; missing origin stays TBD instead of implying self-arranged travel.
 
 Existing-trip follow-ups receive fresh itinerary, lodging and trip facts on every
 model call. Creation is withheld for ordinary edits and ambiguous place mentions;
-clear whole-trip requests show a departure notice before streamed planning,
-retained in JSON responses and chat history. The current trip remains saved.
+clear whole-trip and saved-trip switch requests require confirmation before leaving
+the selected trip, retained in JSON/SSE responses and chat history. The current trip remains saved.
 
 Operational trip flow logs correlate semantic events by stable trip/interaction
 keys and model call IDs, report terminal failures accurately, preview recent
@@ -212,7 +212,8 @@ re-describing the whole product.
 - A completed planning turn persists the authoritative trip and refreshes every
   dependent pane together.
 - An explicit whole-trip request for a destination different from the active trip
-  creates or resumes that destination-specific trip before any itinerary update.
+  first asks for confirmation; only the subsequent affirmative reply may create
+  or resume that destination-specific trip before any itinerary update.
   Prose fallback persistence may repair only a trip created in that same turn, so
   it cannot overwrite an unrelated active trip.
 - A turn that creates a trip cannot finish with an empty itinerary: the graph

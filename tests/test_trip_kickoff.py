@@ -164,7 +164,7 @@ def test_explicit_destination_switch_requires_new_trip(monkeypatch: pytest.Monke
     )
 
     assert _trip_creation_tool_choice(
-        [HumanMessage(content="plan a trip to hawaii")]
+        _confirmed_change("plan a trip to hawaii", "London")
     ) == "create_trip_plan"
 
 
@@ -178,7 +178,7 @@ def test_destination_switch_asks_the_kickoff_before_creating(
     )
 
     assert _trip_kickoff_tool_choice(
-        [HumanMessage(content="plan a trip to dehradun")]
+        _confirmed_change("plan a trip to dehradun", "Mussoorie")
     ) == "get_travel_preferences"
 
 
@@ -190,8 +190,7 @@ def test_destination_switch_uses_smart_defaults_after_duration_advice(
         "load_active_trip_dict",
         lambda: {"destination": "Mussoorie"},
     )
-    messages = [
-        HumanMessage(content="plan a trip to dehradun"),
+    messages = _confirmed_change("plan a trip to dehradun", "Mussoorie") + [
         _tool_message("get_travel_preferences"),
         _tool_message("recommend_trip_duration"),
     ]
@@ -235,7 +234,7 @@ def test_active_trip_explicit_new_trip_starts_fresh_kickoff(
     )
 
     assert _trip_kickoff_tool_choice(
-        [HumanMessage(content="Create a separate new Hawaii trip")]
+        _confirmed_change("Create a separate new Hawaii trip", "Paris")
     ) == "get_travel_preferences"
 
 
@@ -402,7 +401,7 @@ def test_trip_agent_keeps_stale_kickoff_answers_in_the_active_trip(
 def test_new_trip_intent_preempts_incomplete_active_trip_gate(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    messages = [HumanMessage(content="Create a separate new Hawaii trip")]
+    messages = _confirmed_change("Create a separate new Hawaii trip", "Paris")
     bound_options: dict = {}
 
     class FakeBoundModel:
@@ -509,3 +508,13 @@ def test_direct_mode_hides_the_optional_input_tool(monkeypatch: pytest.MonkeyPat
     })
 
     assert "request_trip_input" not in bound_tools
+
+
+def _confirmed_change(user_text, destination):
+    from tripplanner.graph_policy import trip_change_confirmation
+
+    messages = [HumanMessage(content=user_text)]
+    return messages + [
+        AIMessage(content=trip_change_confirmation(messages, {"destination": destination})),
+        HumanMessage(content="yes, switch trips"),
+    ]

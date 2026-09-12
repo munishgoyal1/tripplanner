@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, TypeAlias
 
-from langchain_core.messages import BaseMessage, HumanMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
 from tripplanner.tools.trip_planner import (
     core_planning_completion_gaps,
@@ -49,6 +49,7 @@ MAX_POST_RESEARCH_UPDATES = 1
 ForcedReason: TypeAlias = Literal[
     "tool_phase_budget",
     "new_trip_creation",
+    "trip_change_confirmation",
     "origin_correction",
     "hotel_provider_fallback",
     "missing_named_restaurant",
@@ -485,6 +486,54 @@ def latest_user_requests_different_trip(
     )
 
 
+def _trip_change_request(messages: Sequence[BaseMessage], active_trip: dict[str, Any]) -> str:
+    if latest_user_starts_new_trip(messages) or latest_user_requests_different_trip(
+        messages, active_trip
+    ):
+        return "create"
+    request = next((str(m.content) for m in reversed(messages) if isinstance(m, HumanMessage)), "")
+    destination = str(active_trip.get("destination") or "").strip()
+    if destination and re.search(r"(?<!\w)" + re.escape(destination) + r"(?!\w)", request, re.I):
+        return ""
+    if re.search(
+        r"^(?:please\s+)?(?:switch to|resume|continue|go back to|back to)\b.*\b(?:trip|plan)\b",
+        request.strip(), re.I,
+    ):
+        return "resume"
+    return ""
+
+
+def trip_change_confirmation(messages: Sequence[BaseMessage], active_trip: dict[str, Any]) -> str:
+    if (
+        current_turn_tool_phases(messages)
+        or not active_trip.get("destination")
+        or not _trip_change_request(messages, active_trip)
+    ):
+        return ""
+    request = next(str(m.content) for m in reversed(messages) if isinstance(m, HumanMessage))
+    return (
+        f"Keep working on your current {active_trip['destination']} trip, or leave it saved "
+        f"and switch trips for this request: {request.strip()}\n\n"
+        "Please reply 'yes, switch trips' to confirm. Until then, I'll keep this trip selected."
+    )
+
+
+def confirmed_trip_change(messages: Sequence[BaseMessage], active_trip: dict[str, Any]) -> str:
+    latest = max((i for i, m in enumerate(messages) if isinstance(m, HumanMessage)), default=-1)
+    if latest < 2 or not re.fullmatch(
+        r"(?:yes(?:,?\s+(?:please|switch trips))?|confirm(?:ed)?|go ahead)[.!]?",
+        str(messages[latest].content).strip(), re.I,
+    ):
+        return ""
+    question = messages[latest - 1]
+    prior = messages[:latest - 1]
+    if not isinstance(question, AIMessage) or question.content != trip_change_confirmation(
+        prior, active_trip
+    ):
+        return ""
+    return _trip_change_request(prior, active_trip)
+
+
 def permits_trip_creation(
     messages: Sequence[BaseMessage], active_trip: dict[str, Any]
 ) -> bool:
@@ -499,8 +548,7 @@ def permits_trip_creation(
         return False
     return bool(
         not active_trip.get("destination")
-        or latest_user_starts_new_trip(messages)
-        or latest_user_requests_different_trip(messages, active_trip)
+        or confirmed_trip_change(messages, active_trip) == "create"
     )
 
 
@@ -559,16 +607,13 @@ def trip_kickoff_tool_choice(
     interactive: bool = False,
 ) -> str | None:
     # New destinations load preferences and duration advice before creation.
-    if active_trip.get("destination") and not (
-        latest_user_starts_new_trip(messages)
-        or latest_user_requests_different_trip(messages, active_trip)
-    ):
+    if active_trip.get("destination") and not permits_trip_creation(messages, active_trip):
         return None
 
     positions = _tool_call_positions(messages)
     if pending_trip_kickoff_answer(messages):
         return None
-    if not has_planning_intent:
+    if not has_planning_intent and not confirmed_trip_change(messages, active_trip):
         return None
 
     latest_human = max(
@@ -606,7 +651,7 @@ def trip_creation_tool_choice(
     if "create_trip_plan" in turn_tools:
         return None
 
-    if not latest_user_requests_different_trip(messages, active_trip):
+    if not permits_trip_creation(messages, active_trip):
         return None
     return "create_trip_plan"
 
@@ -620,6 +665,12 @@ def resolve_completion_policy(
     interactive_questions: bool = False,
 ) -> CompletionPolicyDecision:
     tool_phases = current_turn_tool_phases(messages)
+    confirmation = trip_change_confirmation(messages, active_trip)
+    if confirmation and not proposal_only:
+        return CompletionPolicyDecision(
+            tool_phases=tool_phases, forced_tool=None,
+            forced_reason="trip_change_confirmation", requirement=confirmation,
+        )
     positions = _tool_call_positions(messages)
     latest_human = max(
         (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
@@ -711,8 +762,7 @@ def resolve_completion_policy(
         None if proposal_only else trip_creation_tool_choice(messages, active_trip)
     )
     new_trip_flow = not created_this_turn and (
-        latest_user_starts_new_trip(messages)
-        or latest_user_requests_different_trip(messages, active_trip)
+        permits_trip_creation(messages, active_trip)
         or (pending_trip_kickoff_answer(messages) and not active_trip.get("destination"))
     )
     if (

@@ -31,6 +31,7 @@ import json
 import os
 import re
 import time
+import traceback
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager, nullcontext
 from typing import Any, Literal
@@ -485,6 +486,10 @@ def _record_chat_operation(
         outcome=outcome,
         duration_ms=round((time.monotonic() - started) * 1000, 2),
         **({"error": error_name} if error_name else {}),
+        **({"error_frames": [
+            f"{Path(frame.filename).name}:{frame.lineno}:{frame.name}"
+            for frame in traceback.extract_tb(exception.__traceback__)[-12:]
+        ]} if exception else {}),
         **model_fields,
     )
     from tripplanner.ops_metrics import record_chat_turn
@@ -510,7 +515,7 @@ def _record_chat_error(
         user_id=user_id,
         transport=transport,
         outcome="error",
-        error=type(exc).__name__,
+        exception=exc,
     )
 
 
@@ -946,6 +951,15 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                     if text:
                         reply_parts.append(text)
                         yield _sse("token", {"text": text})
+                elif kind == "on_chain_end" and name == "trip_agent":
+                    output = data.get("output") or {}
+                    for message in output.get("messages", []):
+                        if getattr(message, "additional_kwargs", {}).get(
+                            "trip_change_confirmation"
+                        ):
+                            text = str(message.content)
+                            reply_parts.append(text)
+                            yield _sse("token", {"text": text})
                 elif kind == "on_tool_start":
                     tool_starts[run_id] = time.monotonic()
                     tool_names_called.add(name)

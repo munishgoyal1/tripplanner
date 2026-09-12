@@ -16,7 +16,7 @@ from threading import Lock
 from typing import Annotated, Any, TypedDict
 
 from langchain_core.callbacks import BaseCallbackHandler
-from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
+from langchain_core.messages import AIMessage, BaseMessage, SystemMessage, ToolMessage
 from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
@@ -484,6 +484,11 @@ def trip_agent(state: AgentState) -> AgentState:
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
     active_trip = _active_trip_for_policy()
+    confirmation = graph_policy.trip_change_confirmation(state["messages"], active_trip)
+    if confirmation and not proposal_only:
+        return {"messages": [AIMessage(
+            content=confirmation, additional_kwargs={"trip_change_confirmation": True},
+        )], "current_agent": "trip"}
     interactive_questions = bool(
         _interactive_trip_questions() and active_trip.get("day_wise_itinerary")
     )
@@ -561,6 +566,10 @@ def trip_agent(state: AgentState) -> AgentState:
     tools = select_tools(state["messages"], proposal_only=proposal_only)
     if not graph_policy.permits_trip_creation(state["messages"], active_trip):
         tools = [tool for tool in tools if tool.name != "create_trip_plan"]
+    if active_trip.get("destination") and graph_policy.confirmed_trip_change(
+        state["messages"], active_trip
+    ) != "resume":
+        tools = [tool for tool in tools if tool.name != "resume_trip"]
     if not interactive_questions and decision.forced_tool != "request_trip_input":
         tools = [tool for tool in tools if tool.name != "request_trip_input"]
     if decision.forced_tool:

@@ -401,8 +401,8 @@ def test_new_trip_kickoff_preempts_incomplete_active_trip() -> None:
         has_planning_intent=True,
     )
 
-    assert decision.forced_tool == "get_travel_preferences"
-    assert decision.forced_reason == "trip_kickoff"
+    assert decision.forced_tool is None
+    assert decision.forced_reason == "trip_change_confirmation"
 
 
 def test_explicit_destination_switch_preempts_old_trip_completion() -> None:
@@ -413,10 +413,9 @@ def test_explicit_destination_switch_preempts_old_trip_completion() -> None:
         has_planning_intent=True,
     )
 
-    # Switching destination starts the kickoff rather than completing Paris; the new
-    # trip is created after the kickoff is answered.
-    assert decision.forced_tool == "get_travel_preferences"
-    assert decision.forced_reason == "trip_kickoff"
+    # An unconfirmed switch must not complete or mutate the old trip.
+    assert decision.forced_tool is None
+    assert decision.forced_reason == "trip_change_confirmation"
 
 
 def test_unphrased_planning_request_leaves_creation_to_the_model() -> None:
@@ -1378,10 +1377,19 @@ def test_existing_empty_thailand_draft_is_persisted_before_more_research():
     ('Plan my trip, not a new trip', False),
 ])
 def test_trip_departure_requires_a_clear_whole_trip_request(user_text, expected):
-    from tripplanner.graph_policy import permits_trip_creation, trip_departure_notice
+    from tripplanner.graph_policy import (
+        permits_trip_creation,
+        trip_change_confirmation,
+        trip_departure_notice,
+    )
 
     messages = [HumanMessage(content=user_text)]
     trip = {'destination': 'Goa', 'day_wise_itinerary': [{'day': 1}]}
+    assert not permits_trip_creation(messages, trip)
+    assert bool(trip_change_confirmation(messages, trip)) is expected
+    if expected:
+        messages += [AIMessage(content=trip_change_confirmation(messages, trip)),
+                     HumanMessage(content="yes, switch trips")]
     assert permits_trip_creation(messages, trip) is expected
     notice = trip_departure_notice(messages, trip)
     assert bool(notice) is expected
@@ -1401,3 +1409,32 @@ def test_current_route_places_remain_in_trip_context(destination, cities, user_t
     assert not permits_trip_creation([HumanMessage(content=user_text)], {
         'destination': destination, 'day_wise_itinerary': [{'city': city} for city in cities],
     })
+
+
+@pytest.mark.parametrize("answer", ["no", "keep Goa", "yes, add flights", "yes, but use Delhi"])
+def test_unconfirmed_or_modified_reply_cannot_leave_active_trip(answer):
+    from tripplanner.graph_policy import permits_trip_creation, trip_change_confirmation
+
+    trip = {"destination": "Goa"}
+    messages = [HumanMessage(content="Plan a separate trip to Japan")]
+    messages += [AIMessage(content=trip_change_confirmation(messages, trip)),
+                 HumanMessage(content=answer)]
+    assert not permits_trip_creation(messages, trip)
+    assert not permits_trip_creation([HumanMessage(content="yes")], trip)
+    assert not permits_trip_creation(messages, {"destination": "Lisbon"})
+
+
+def test_confirmed_creation_runs_preferences_and_duration_before_one_creation():
+    from tripplanner.graph_policy import permits_trip_creation, trip_change_confirmation
+
+    trip = {"destination": "Goa", "day_wise_itinerary": [{"day": 1}]}
+    messages = [HumanMessage(content="Plan a separate trip to Japan")]
+    messages += [AIMessage(content=trip_change_confirmation(messages, trip)),
+                 HumanMessage(content="yes, switch trips")]
+    for expected in ("get_travel_preferences", "recommend_trip_duration", "create_trip_plan"):
+        decision = resolve_completion_policy(
+            messages=messages, active_trip=trip, proposal_only=False, has_planning_intent=False,
+        )
+        assert decision.forced_tool == expected
+        messages.append(_tool_call(expected, expected))
+    assert not permits_trip_creation(messages, trip)

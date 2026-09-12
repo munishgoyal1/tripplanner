@@ -347,6 +347,7 @@ def test_trip_agent_receives_fresh_trip_context_without_history(monkeypatch) -> 
 
 
 @pytest.mark.parametrize("user_text", [
+    "Add flights to and from bangalore because thats where i will be travelling from",
     "Plan flights from Bangalore", "Find a quieter hotel here", "Move lunch to the last day",
     "Plan my trip flights to Mumbai", "Change our dates to November 12",
     "Add a day trip to Sintra", "Make the budget cheaper", "What about Kyoto?",
@@ -372,11 +373,13 @@ def test_existing_trip_followups_cannot_create_another_trip(monkeypatch, user_te
         "destination": destination, "day_wise_itinerary": [{"day": 1}],
     })
     monkeypatch.setattr(graph_mod, "select_tools", lambda *_args, **_kwargs: [
-        SimpleNamespace(name="create_trip_plan"), SimpleNamespace(name="get_trip_plan"),
+        SimpleNamespace(name="create_trip_plan"), SimpleNamespace(name="resume_trip"),
+        SimpleNamespace(name="get_trip_plan"),
         SimpleNamespace(name="update_trip_plan"),
     ])
     graph_mod.trip_agent({"messages": [HumanMessage(content=user_text)], "proposal_only": False})
     assert "create_trip_plan" not in captured
+    assert "resume_trip" not in captured
     assert "get_trip_plan" in captured
     assert "update_trip_plan" in captured
 
@@ -986,3 +989,21 @@ def test_proposal_only_never_forces_initial_itinerary(monkeypatch) -> None:
     })
 
     assert "tool_choice" not in bound_options
+
+
+@pytest.mark.parametrize("user_request", ["Plan a separate trip to Japan", "Resume my Mumbai trip"])
+def test_trip_change_asks_before_any_model_or_mutation(monkeypatch, user_request):
+    from tripplanner import graph
+    from tripplanner.graph_policy import confirmed_trip_change
+
+    trip = {"trip_id": "goa", "destination": "Goa", "day_wise_itinerary": [{"day": 1}]}
+    monkeypatch.setattr(graph, "load_active_trip_dict", lambda: trip)
+    monkeypatch.setattr(graph, "_get_llm", lambda: pytest.fail("model ran before confirmation"))
+    messages = [HumanMessage(content=user_request)]
+    response = graph.trip_agent({"messages": messages, "proposal_only": False})["messages"][0]
+    assert "yes, switch trips" in response.content
+    assert not response.tool_calls
+    assert trip["trip_id"] == "goa"
+    messages += [response, HumanMessage(content="yes, switch trips")]
+    expected = "resume" if user_request.startswith("Resume") else "create"
+    assert confirmed_trip_change(messages, trip) == expected
