@@ -19,6 +19,7 @@ or quote the wildcard as `'?'` so the shell passes it to the launcher.
 | `sync/Full-2Way-Sync.cmd [all\|sbx]` | Converge all local lanes and automatically replay recorded conflict resolutions without hiding active edits |
 | `sync/Resolve-All-Recorded-Conflicts.cmd` | Scan all attached worktrees and finish pending merges covered by recorded resolutions; report new conflicts without aborting them |
 | `sync/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox into `master`, or merge one selected sandbox, then refresh all sandboxes. Requires typing `APPROVE_SANDBOX_TO_MASTER` |
+| `sync/Prune-Merged-Branches.cmd` | Delete local branches already merged into `master` with no lost commits; skips anything checked out in a worktree or registered sandbox |
 | `sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
 | `sandbox/Rename-Sandbox.cmd <sandbox> <new-name>` | Rename a sandbox, keeping its number and ports |
 | `sandbox/Merge-Sandbox.cmd <sandbox>` | Merge the sandbox into `master` and resynchronize it, keeping the sandbox active |

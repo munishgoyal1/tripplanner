@@ -9,6 +9,7 @@ param(
         "sync-across-master-sbx",
         "sync-sbxs-from-master",
         "sync-all-from-master",
+        "prune-merged-branches",
         "emergency-bringdown",
         "emergency-control",
         "apply-runtime-config",
@@ -133,6 +134,27 @@ It is a thin wrapper around Full-2Way-Sync's default "all" scope with
 Examples:
   Sync-All-FromMaster
   Sync-All-FromMaster -WhatIf
+"@
+    "prune-merged-branches" = @"
+Prune-Merged-Branches - delete local branches already merged into master with no lost commits.
+
+Usage: Prune-Merged-Branches [-BaseBranch master] [-NoFetch] [-IncludeRemote] [-WhatIf]
+
+  -NoFetch        Compare against the local base branch instead of fetching origin first.
+  -IncludeRemote  Also delete origin's matching branch once the local delete succeeds.
+  -WhatIf         Preview which branches would be deleted.
+
+A branch is only deleted with the safe `git branch -d`, which itself refuses
+anything Git cannot prove is fully merged, so the ancestor check and the delete
+are a double guarantee against losing commits. Branches checked out in the
+primary checkout, a registered sandbox, or a multiagent worktree are always
+skipped; branches with commits master does not have yet are reported and left
+alone.
+
+Examples:
+  Prune-Merged-Branches -WhatIf
+  Prune-Merged-Branches
+  Prune-Merged-Branches -IncludeRemote
 "@
     "run-latest-master" = @"
 Run-Latest-Master - fast-forward primary master and start its canonical local stack.
