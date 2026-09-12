@@ -1330,3 +1330,29 @@ def test_other_research_cannot_defer_missing_hotel_search() -> None:
 
     assert decision.forced_tool == "search_hotels"
     assert decision.forced_reason == "missing_concrete_hotel"
+
+
+@pytest.mark.parametrize("interactive", [False, True])
+def test_thailand_old_review_cannot_block_first_draft(interactive):
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan Thailand"),
+            _tool_call("get_travel_preferences", "prefs"),
+            _tool_call("recommend_trip_duration", "duration"),
+            _tool_call("request_trip_input", "legacy-review"),
+        ],
+        active_trip={}, proposal_only=False, has_planning_intent=True,
+        interactive_questions=interactive,
+    )
+    assert not decision.awaiting_kickoff_answer
+    assert decision.forced_tool == "create_trip_plan"
+
+
+def test_existing_empty_thailand_draft_is_persisted_before_more_research():
+    decision = resolve_completion_policy(
+        messages=[HumanMessage(content="Build my Thailand itinerary")],
+        active_trip={"destination": "Thailand", "day_wise_itinerary": []},
+        proposal_only=False, has_planning_intent=True,
+    )
+    assert decision.forced_tool == "update_trip_plan"
+    assert "first draft before further provider research" in decision.requirement

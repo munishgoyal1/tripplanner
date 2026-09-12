@@ -301,9 +301,9 @@ def request_trip_input(
     submit_label: str = "Use these and continue",
     allow_skip: bool = True,
 ) -> str:
-    """Present one compact, prefilled input request when critical trip facts are unresolved.
+    """Offer optional refinement controls after the first itinerary is saved.
 
-    Use for the one new-trip review. ``fields_json`` is a JSON array of 1-6
+    Never use to block initial planning. ``fields_json`` is a JSON array of 1-6
     fields. Supported kinds are ``single``, ``multi``, ``boolean``, ``number``,
     ``text``, and ``date``. Every field must include a sensible prefilled ``value``.
     Choice fields also include 2-6 ``options`` with ``value``, ``label``, and optional
@@ -318,6 +318,13 @@ def request_trip_input(
     ``known_context_json`` lists the saved preferences or inferred facts already
     applied, as short strings such as ``["Balanced pace", "Moderate budget"]``.
     """
+    from tripplanner.tools.trip_planner import load_active_trip_dict
+
+    if not (load_active_trip_dict() or {}).get("day_wise_itinerary"):
+        return (
+            "No input card was shown. Build and save the first itinerary now using "
+            "the request, saved preferences and editable assumptions. Offer refinements afterwards."
+        )
     try:
         fields = json.loads(fields_json)
         known_context = json.loads(known_context_json)

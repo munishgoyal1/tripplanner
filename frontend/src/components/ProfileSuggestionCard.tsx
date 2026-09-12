@@ -1,7 +1,7 @@
 import { Check, Sparkles, X } from "lucide-react";
 import type { ProfileSuggestion } from "../api";
 
-/** One tiny confirm-or-save moment for a fact the planner noticed in chat. */
+/** Nonblocking acknowledgement with undo for automatically learned facts. */
 export default function ProfileSuggestionCard({
   suggestion,
   remaining,
@@ -11,7 +11,7 @@ export default function ProfileSuggestionCard({
   suggestion: ProfileSuggestion;
   remaining: number;
   busy: boolean;
-  onResolve: (id: string, action: "save" | "dismiss") => void;
+  onResolve: (id: string, action: "save" | "dismiss" | "undo") => void;
 }) {
   return (
     <div className="mt-3 rounded-xl bg-amber-50/70 p-3 ring-1 ring-amber-200">
@@ -21,7 +21,7 @@ export default function ProfileSuggestionCard({
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-bold uppercase tracking-wide text-amber-700">
-            {suggestion.label} · not saved yet
+            {suggestion.label} · {suggestion.status === "saved" ? "saved automatically" : "optional suggestion"}
           </p>
           <p className="mt-0.5 text-xs font-semibold leading-relaxed text-ink">{suggestion.summary}</p>
           {suggestion.source_text && (
@@ -33,10 +33,10 @@ export default function ProfileSuggestionCard({
         <button
           type="button"
           disabled={busy}
-          onClick={() => onResolve(suggestion.id, "save")}
+          onClick={() => onResolve(suggestion.id, suggestion.status === "saved" ? "undo" : "save")}
           className="inline-flex h-8 items-center gap-1.5 rounded-full bg-ink px-3 text-xs font-semibold text-white transition hover:bg-ink/90 disabled:opacity-40"
         >
-          <Check size={13} aria-hidden /> Remember this
+          <Check size={13} aria-hidden /> {suggestion.status === "saved" ? "Undo" : "Remember this"}
         </button>
         <button
           type="button"
@@ -44,7 +44,7 @@ export default function ProfileSuggestionCard({
           onClick={() => onResolve(suggestion.id, "dismiss")}
           className="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold text-slate-500 ring-1 ring-slate-200 transition hover:bg-white disabled:opacity-40"
         >
-          <X size={13} aria-hidden /> Not now
+          <X size={13} aria-hidden /> {suggestion.status === "saved" ? "Dismiss" : "Not now"}
         </button>
         {remaining > 1 && (
           <span className="ml-auto text-[11px] text-slate-500">{remaining - 1} more noticed</span>

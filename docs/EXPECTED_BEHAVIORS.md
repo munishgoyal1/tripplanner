@@ -26,13 +26,16 @@ either enabled (the default) or disabled.
 
 **Expected:**
 
-- With smart defaults enabled, build immediately using explicit trip facts first,
+- In every planning mode, build immediately using explicit trip facts first,
   then saved travel-party/family context, preferences and relevant history, then
   sensible editable assumptions. Do not ask to confirm party, days, dates or routine
   preferences. Record assumptions in trip notes and the final summary. Never invent
   an origin: build the destination plan and flag unresolved arrival/return travel.
   Only a fact without which no useful plan is possible merits a blocking question.
-  With smart defaults disabled, one bounded prefilled review remains available.
+  Interactive mode permits optional refinement after the first saved itinerary.
+  A stale review cannot block creation or repair of an empty draft. Persist a useful
+  initial itinerary before additional provider research. Unknown origin remains TBD;
+  destination-only travel requires the user's actual instruction.
 - Search hotels and try a place fallback. If neither yields suitable evidence, save
   the useful itinerary with city-specific Hotel TBD anchors, no fabricated selected
   hotel/rate, and a clear final-summary and persistent workspace gap. Missing inventory
@@ -86,8 +89,8 @@ either enabled (the default) or disabled.
 
 **Expected:**
 
-- Preferences load first, then the duration advisor runs before the one-step kickoff.
-- Explicit dates or duration remain authoritative. Otherwise the kickoff uses an
+- Preferences load first, then the duration advisor runs before automatic creation.
+- Explicit dates or duration remain authoritative. Otherwise creation uses an
   auditable recommendation derived from destination scope, likely matching places,
   daily capacity, desired free time, and learned pace outcomes.
 - The recommendation is persisted with the trip. Accidentally sparse full days

@@ -150,10 +150,10 @@ function PreferenceShelf({
           onChange={(event) => choose("planning_mode", event.target.checked ? "direct" : "interactive")}
         />
         <span>
-          <span className="text-xs font-semibold text-ink">Let the agent decide with smart defaults</span>
+          <span className="text-xs font-semibold text-ink">Automatically refine using my preferences</span>
           <span className="mt-0.5 block text-[11px] leading-relaxed text-muted">
-            It uses your request, travel profile, and history without stopping to confirm defaults.
-            Turn this off to let it ask one quick question when an answer would meaningfully help.
+            The first itinerary always uses your request, travel profile, and sensible defaults.
+            Turn this off to allow optional refinement questions after the itinerary is ready.
           </span>
         </span>
       </label>

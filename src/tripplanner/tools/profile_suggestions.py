@@ -1,13 +1,7 @@
-"""Pending profile suggestions: what chat noticed, before it becomes durable.
+"""Automatic profile-save receipts with conditional Undo and optional suggestions.
 
-The passive-learning sweep used to overlay whatever it extracted straight onto
-the saved preferences. Lab #26 (option D, "chat-led profile") makes that step
-explicit instead: a noticed fact is queued here as a *suggestion*, the user
-confirms or dismisses it in chat, and only a confirmed suggestion is merged
-through the normal additive overlay.
-
-Dismissed suggestions are remembered by fingerprint so the same sentence does
-not produce the same question on every trip.
+Clear conversational facts are saved immediately by the background learner.
+Uncertain optional suggestions still support explicit save or dismissal.
 """
 
 from __future__ import annotations
@@ -15,16 +9,18 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-from datetime import datetime, timezone
+from copy import deepcopy
+from datetime import UTC, datetime
 from typing import Any
 
-from tripplanner.tools.preferences_merge import additive_overlay_extracted
+from tripplanner.tools.preferences_merge import additive_overlay_extracted, union_keep_existing_case
 from tripplanner.tools.user_preferences import load_preferences, mutate_preferences
 
 log = logging.getLogger(__name__)
 
 PENDING_KEY = "profile_suggestions"
 DISMISSED_KEY = "dismissed_profile_suggestions"
+UPDATES_KEY = "profile_updates"
 
 MAX_PENDING = 12
 MAX_DISMISSED = 200
@@ -41,7 +37,7 @@ _SCALAR_KEYS = ("trip_style", "budget_level")
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _fingerprint(kind: str, payload: Any) -> str:
@@ -52,7 +48,12 @@ def _fingerprint(kind: str, payload: Any) -> str:
 
 def _humanize(value: Any) -> str:
     if isinstance(value, list):
-        return ", ".join(str(item) for item in value)
+        return ", ".join(_humanize(item) for item in value)
+    if isinstance(value, dict):
+        if value.get("note"):
+            return str(value["note"])
+        who = str(value.get("name") or value.get("relationship") or "traveller")
+        return f"{who} (age {value['age']})" if value.get("age") is not None else who
     if isinstance(value, bool):
         return "yes" if value else "no"
     return str(value)
@@ -187,7 +188,92 @@ def queue_suggestions(records: list[dict]) -> list[dict]:
 
 def list_pending() -> list[dict]:
     prefs = load_preferences()
-    return [item for item in (prefs.get(PENDING_KEY) or []) if isinstance(item, dict)]
+    return [
+        item for item in [*(prefs.get(UPDATES_KEY) or []), *(prefs.get(PENDING_KEY) or [])]
+        if isinstance(item, dict)
+    ]
+
+
+def save_extracted(
+    prefs: dict, extracted: dict, source: str, baseline: dict, *, sequence: int = 0
+) -> list[str]:
+    """Apply stated facts atomically, preserving edits made while extraction ran."""
+    changes = {}
+    for group, incoming in extracted.items():
+        if group == "_learned_notes_to_append":
+            group = "learned_notes"
+        values = incoming.items() if isinstance(incoming, dict) else [(None, incoming)]
+        for key, value in values:
+            target = prefs.setdefault(group, {}) if key else prefs
+            prior = baseline.get(group, {}) if key else baseline
+            field = key or group
+            path = f"{group}.{key}" if key else group
+            versions = prefs.setdefault("_learned_field_versions", {})
+            version = versions.get(path) or {}
+            if version.get("sequence", -1) > sequence:
+                continue
+            before = deepcopy(target.get(field))
+            if before != prior.get(field) and before != version.get("value"):
+                continue
+            if isinstance(value, list):
+                if group == "family_members":
+                    members = deepcopy(before or [])
+                    for member in value:
+                        matches = [
+                            item for item in members
+                            if item.get("relationship") == member.get("relationship")
+                            and (item.get("name") or "").casefold()
+                            == (member.get("name") or "").casefold()
+                        ]
+                        if not matches:
+                            relatives = [
+                                item for item in members
+                                if item.get("relationship") == member.get("relationship")
+                            ]
+                            if len(relatives) == 1 and (
+                                not relatives[0].get("name") or not member.get("name")
+                            ):
+                                matches = relatives
+                        if len(matches) == 1:
+                            for member_key, member_value in member.items():
+                                if member_value in (None, ""):
+                                    continue
+                                matches[0][member_key] = (
+                                    union_keep_existing_case(
+                                        matches[0].get(member_key) or [], member_value
+                                    ) if isinstance(member_value, list) else member_value
+                                )
+                        elif member not in members:
+                            members.append(deepcopy(member))
+                    value = members
+                elif group == "learned_notes":
+                    value = deepcopy(before or []) + [
+                        item for item in value if item not in (before or [])
+                    ]
+                else:
+                    value = union_keep_existing_case(before or [], value)
+            if value == before or value in (None, "", [], {}):
+                continue
+            target[field] = deepcopy(value)
+            versions[path] = {"sequence": sequence, "value": deepcopy(value)}
+            changes[path] = {"before": before, "after": deepcopy(value)}
+    if not changes:
+        return []
+    record = _record(
+        "preference", "Travel profile", "Saved from your conversation",
+        {}, source,
+    )
+    record.update({
+        "id": _fingerprint("saved", {"source": source, "changes": changes}),
+        "status": "saved", "provenance": "stated_in_chat", "changes": changes,
+        "detail": ", ".join(path.replace("_", " ") for path in changes),
+    })
+    record["summary"] = "Remembered: " + "; ".join(
+        f"{path.split('.')[-1].replace('_', ' ')}: {_humanize(change['after'])}"
+        for path, change in changes.items()
+    )[:240]
+    prefs[UPDATES_KEY] = [*(prefs.get(UPDATES_KEY) or []), record][-MAX_PENDING:]
+    return list(changes)
 
 
 def _apply_payload(prefs: dict[str, Any], payload: dict[str, Any]) -> dict[str, Any]:
@@ -210,17 +296,32 @@ def _apply_payload(prefs: dict[str, Any], payload: dict[str, Any]) -> dict[str, 
 
 
 def resolve(suggestion_id: str, action: str) -> dict | None:
-    """Confirm ("save") or decline ("dismiss") one pending suggestion."""
-    if action not in {"save", "dismiss"}:
-        raise ValueError("action must be 'save' or 'dismiss'")
+    """Resolve an optional suggestion or undo/dismiss an automatic-save receipt."""
+    if action not in {"save", "dismiss", "undo"}:
+        raise ValueError("action must be 'save', 'dismiss' or 'undo'")
 
     resolved: dict[str, Any] = {}
 
     def apply(prefs: dict[str, Any]) -> dict[str, Any] | None:
         resolved.clear()
+        updates = prefs.get(UPDATES_KEY) or []
+        saved = next((item for item in updates if item.get("id") == suggestion_id), None)
+        if saved:
+            if action == "undo":
+                for path, change in saved.get("changes", {}).items():
+                    parts = path.split(".")
+                    target = prefs.get(parts[0], {}) if len(parts) > 1 else prefs
+                    field = parts[-1]
+                    if target.get(field) == change["after"]:
+                        target[field] = change["before"]
+            prefs[UPDATES_KEY] = [item for item in updates if item.get("id") != suggestion_id]
+            resolved.update({**saved, "status": "undone" if action == "undo" else "dismissed"})
+            return prefs
         pending = [item for item in (prefs.get(PENDING_KEY) or []) if isinstance(item, dict)]
         match = next((item for item in pending if item.get("id") == suggestion_id), None)
         if match is None:
+            return None
+        if action == "undo":
             return None
         prefs[PENDING_KEY] = [item for item in pending if item.get("id") != suggestion_id]
         if action == "save":

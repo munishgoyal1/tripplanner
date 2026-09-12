@@ -58,7 +58,7 @@ class ChatTurnDependencies:
     save_chat: Callable[..., str | None]
     auto_persist_needed: Callable[[set[str]], bool]
     auto_persist: Callable[[str], bool]
-    schedule_learning: Callable[[str, str], None]
+    schedule_learning: Callable[..., None]
     record_operation: Callable[..., None]
     record_phase: Callable[..., None]
     event: Callable[..., None]
@@ -179,7 +179,19 @@ class ChatTurnCoordinator:
                 error=type(save_error).__name__,
                 turn_error=type(error).__name__,
             )
+        self._schedule_learning(turn, message)
         return not failed
+
+    def _schedule_learning(self, turn: AdmittedTurn, message: str) -> None:
+        context = [
+            {"role": item.type, "text": str(item.content or "")[:1200]}
+            for item in turn.base_history[-6:]
+            if isinstance(item, (HumanMessage, AIMessage))
+        ]
+        try:
+            self._deps.schedule_learning(turn.user_id, message, context)
+        except Exception as exc:
+            self._deps.event("preference_learning_deferred", error=type(exc).__name__)
 
     async def finalize(
         self,
@@ -210,7 +222,7 @@ class ChatTurnCoordinator:
                 max(int(time.monotonic() - turn.started), 0),
             )
             if not proposal_only:
-                self._deps.schedule_learning(turn.user_id, message)
+                self._schedule_learning(turn, message)
         except Exception:
             self._deps.record_phase(
                 finalization_started,
