@@ -26,8 +26,11 @@ from repository-wide scans: `docs/README.md`, `docs/CODEMAP.md`,
 
 ## The three things most easily got wrong
 
-- **Work in a new worktree on a `claude/<slug>` branch.** The primary checkout is
-  the owner's testing tree and stays on `master`.
+- **Work in a new worktree on a `claude/<slug>` branch, created under
+  `..\tripplanner.worktrees\`.** The primary checkout is the owner's testing tree
+  and stays on `master`. `EnterWorktree` defaults to `.claude/worktrees/`, which the
+  owner's VS Code windows cannot see — `git worktree add` into the sibling directory
+  first, then enter it by path.
 - **The complete test suites do not run in the lane gates.** A green merge does
   not mean the suites pass. See
   [`docs/development/testing.md`](docs/development/testing.md); use
