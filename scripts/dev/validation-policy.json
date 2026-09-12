@@ -13,10 +13,16 @@
       "state": "required"
     },
     "typecheck": {
-      "state": "required"
+      "state": "suspended",
+      "since": "2026-09-12",
+      "reason": "npm run typecheck (tsc -b) measured 143.9s on this machine. CI runs it on every pull request and every push to master, on a dedicated runner, at no local cost.",
+      "tracked_by": ".github/workflows/ci.yml"
     },
     "build": {
-      "state": "required"
+      "state": "suspended",
+      "since": "2026-09-12",
+      "reason": "npm run build measured 230s cold and 500s under load on this machine. CI runs it on every pull request and every push to master.",
+      "tracked_by": ".github/workflows/ci.yml"
     },
     "pytest": {
       "state": "suspended",

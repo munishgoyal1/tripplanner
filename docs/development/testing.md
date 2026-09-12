@@ -87,7 +87,7 @@ npm --prefix frontend exec vitest run -- src/App.test.tsx -t "refreshed itinerar
 | --- | --- | --- |
 | Iteration | Fast feedback while editing | Selector output plus lint/typecheck for changed files |
 | Milestone | One coherent behavior or refactor boundary | All directly owned tests and linked expected-behavior proofs |
-| Publication | Sandbox promotion, multiagent integration, or branch convergence | Selector output, ruff, and the production build. Complete suites are **not** run; see Suite health |
+| Publication | Sandbox promotion, multiagent integration, or branch convergence | Selector output and ruff. Typecheck, build, and the complete suites are **not** run locally; see the floor below and Suite health |
 | Suite health | Periodic full-suite truth on master | Complete backend and frontend suites via `suite-health.ps1`, classified against the baseline |
 | Release | Canary or production preparation | Publication tier, plus a current suite-health run with zero NEW failures, plus smoke and release-specific gates |
 
@@ -98,23 +98,36 @@ and exact targets are more precise and easier to keep current.
 
 ## Local publication floor
 
-What actually runs at a merge, promote, or branch-lane publish. Seconds to a
-couple of minutes, not twenty:
+What actually runs at a merge, promote, or branch-lane publish — about two
+seconds, where it used to be over twenty minutes:
 
 ```powershell
 python -m ruff check --select E9,F63,F7,F82 src tests
-npm --prefix frontend run build
 ```
 
-`npm run build` is `tsc -b && vite build`, so it is the typecheck as well as the
-build — and a broader typecheck than the `npx tsc --noEmit` it replaced, which
-ran without `-b` and so never walked the project references that `labs/` and
-`inspector/` sit behind.
+That is the whole local gate. Everything else is measured, not assumed:
+
+| Check | Measured on this machine | Where it runs now |
+| --- | --- | --- |
+| `ruff` (narrow selection) | 1.9s | Local gate, and CI |
+| `npm run typecheck` (`tsc -b`) | 143.9s | CI only — every PR and every master push |
+| `npm run build` (`tsc -b` + `vite build`) | 230s cold, 500s under load | CI only — every PR and every master push |
+| `pytest` (complete) | 20m 22s at `-n 2` | Suite health only |
+| `vitest` (complete) | not separately measured | Suite health only |
+
+Typecheck and build are suspended locally because CI already runs both on a
+dedicated runner for every pull request *and* every push to master, so paying for
+them again on a loaded developer machine buys minutes of delay and no new
+information. Breakage still surfaces — asynchronously, within minutes, without
+blocking a merge.
 
 The narrow ruff selection is CI's, not the project's full config. `ruff check src
 tests` under the configured `E,F,I,N,W,UP` currently reports around 145 findings
 on master, mostly `E501`; gating on it would be red from the first run. That
 backlog is real, and it is a cleanup task rather than a merge gate.
+
+When every web gate is suspended the gate skips the frontend entirely rather than
+running `npm install` in a fresh worktree to do nothing with it.
 
 Run mobile typecheck and lint when `mobile/` or the shared client changes. Paid
 providers and hosted stores remain prohibited in automated tests; shared pytest
@@ -179,7 +192,7 @@ command still sits at its call site behind a `Test-GateEnabled` check.
 | Permanently, everywhere | Set that gate's `state` to `required`. One word. |
 | One invocation | `sandbox.ps1 -Merge <lane> -FullSuites` |
 | One shell or agent session | `$env:TRIPPLANNER_FULL_SUITES = "1"` |
-| One suite only | Flip `pytest` and `vitest` independently |
+| One gate only | `lint`, `typecheck`, `build`, `pytest` and `vitest` are independent entries |
 
 A missing or malformed policy file fails closed: every gate runs.
 

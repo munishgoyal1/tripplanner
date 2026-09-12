@@ -541,21 +541,25 @@ def validate(space: Workspace, worktree: Path, *, frontend: bool) -> tuple[bool,
         if install.returncode != 0:
             return False, "; ".join(parts) + "; web dependencies would not install"
 
-    if validation_policy.gate_enabled("build"):
-        # With the web suite suspended this is the only thing standing between a
-        # broken component and the integration branch, so it is not optional
-        # parity -- it is what keeps this function meaningful.
-        built = run(
-            ["npm", "run", "build"],
+    # With the web suite suspended, these are the only things standing between a
+    # broken component and the integration branch.
+    for gate, script, label in (
+        ("typecheck", "typecheck", "web typecheck"),
+        ("build", "build", "web build"),
+    ):
+        if not validation_policy.gate_enabled(gate):
+            parts.append(validation_policy.suspension_note(gate))
+            continue
+        checked = run(
+            ["npm", "run", script],
             cwd=worktree / "frontend",
             timeout=TEST_TIMEOUT_SECONDS,
         )
-        if built.returncode != 0:
-            build_tail = (built.stdout or built.stderr).strip().splitlines()
-            return False, "; ".join(parts) + (
-                f"; web build failed: {build_tail[-1] if build_tail else 'no output'}"
-            )
-        parts.append("web build: ok")
+        if checked.returncode != 0:
+            tail_lines = (checked.stdout or checked.stderr).strip().splitlines()
+            detail = tail_lines[-1] if tail_lines else "no output"
+            return False, "; ".join(parts) + f"; {label} failed: {detail}"
+        parts.append(f"{label}: ok")
 
     if not validation_policy.gate_enabled("vitest"):
         parts.append(validation_policy.suspension_note("vitest"))

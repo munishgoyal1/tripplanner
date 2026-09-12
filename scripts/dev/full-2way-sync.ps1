@@ -285,6 +285,15 @@ function Invoke-BranchValidation {
 
     $frontend = Join-Path $WorkingDirectory "frontend"
     if (-not (Test-Path (Join-Path $frontend "package.json") -PathType Leaf)) { return }
+    # Every web gate suspended means there is nothing here to run, and a branch
+    # validated through a temporary worktree would otherwise pay a multi-minute
+    # npm install to do none of it.
+    $webGates = @("typecheck", "build", "vitest") | Where-Object { Test-GateEnabled $_ }
+    if (-not $webGates) {
+        foreach ($gate in @("typecheck", "build", "vitest")) { Write-SuspendedGateNotice $gate }
+        return
+    }
+
     # sandbox.ps1 pins the Node it validates with and this path never did, so a
     # branch lane validated through a temporary worktree could run npm against an
     # old Node shadowing a current one on PATH. It matters more now that this
@@ -301,14 +310,21 @@ function Invoke-BranchValidation {
             & npm install 2>&1 | Out-Host
             if ($LASTEXITCODE -ne 0) { throw "npm install failed; fix it before shipping." }
         }
+        if (Test-GateEnabled "typecheck") {
+            Write-Host "[check]   typecheck" -ForegroundColor Cyan
+            & npm run typecheck 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { throw "typecheck failed; fix it before shipping." }
+        } else {
+            Write-SuspendedGateNotice "typecheck"
+        }
         if (Test-GateEnabled "build") {
-            # `npm run build` is `tsc -b && vite build`: the typecheck and the
-            # build in one pass, and broader than the `npx tsc --noEmit` it
-            # replaced, which ran without -b and skipped the project references
-            # that labs/ and inspector/ sit behind.
-            Write-Host "[check]   typecheck + build" -ForegroundColor Cyan
+            # See sandbox.ps1: the vite half of this costs minutes on this
+            # machine, so it is a separate switch from the typecheck.
+            Write-Host "[check]   build" -ForegroundColor Cyan
             & npm run build 2>&1 | Out-Host
             if ($LASTEXITCODE -ne 0) { throw "build failed; fix it before shipping." }
+        } else {
+            Write-SuspendedGateNotice "build"
         }
         if (Test-GateEnabled "vitest") {
             Write-Host "[check]   vitest" -ForegroundColor Cyan

@@ -364,6 +364,15 @@ function Invoke-SandboxValidation {
 
     $frontend = Join-Path $Worktree "frontend"
     if (-not (Test-Path (Join-Path $frontend "package.json") -PathType Leaf)) { return }
+
+    # Every web gate suspended means there is nothing here to run, and a fresh
+    # worktree would otherwise pay a multi-minute npm install to do none of it.
+    $webGates = @("typecheck", "build", "vitest") | Where-Object { Test-GateEnabled $_ }
+    if (-not $webGates) {
+        foreach ($gate in @("typecheck", "build", "vitest")) { Write-SuspendedGateNotice $gate }
+        return
+    }
+
     Use-CompatibleNode
     Push-Location $frontend
     try {
@@ -375,14 +384,26 @@ function Invoke-SandboxValidation {
             & npm install 2>&1 | Out-Host
             if ($LASTEXITCODE -ne 0) { throw "npm install failed; fix it before shipping." }
         }
+        if (Test-GateEnabled "typecheck") {
+            # `tsc -b`, unlike the `npx tsc --noEmit` this replaced, walks the
+            # project references that labs/ and inspector/ sit behind.
+            Write-Host "[check]   typecheck" -ForegroundColor Cyan
+            & npm run typecheck 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { throw "typecheck failed; fix it before shipping." }
+        } else {
+            Write-SuspendedGateNotice "typecheck"
+        }
         if (Test-GateEnabled "build") {
-            # `npm run build` is `tsc -b && vite build`, so this IS the typecheck
-            # as well as the build -- and a broader one than the `npx tsc --noEmit`
-            # it replaced, which ran without -b and so never walked the project
-            # references that labs/ and inspector/ sit behind.
-            Write-Host "[check]   typecheck + build" -ForegroundColor Cyan
+            # Separate from typecheck on purpose. `npm run build` is `tsc -b &&
+            # vite build`, and the vite half measured 230-500s on this machine
+            # depending on load -- minutes, not seconds. It catches bundler-level
+            # breakage that tsc cannot see, which is worth paying at a promotion
+            # and usually not at every lane sync, so it is its own switch.
+            Write-Host "[check]   build" -ForegroundColor Cyan
             & npm run build 2>&1 | Out-Host
             if ($LASTEXITCODE -ne 0) { throw "build failed; fix it before shipping." }
+        } else {
+            Write-SuspendedGateNotice "build"
         }
         if (Test-GateEnabled "vitest") {
             Write-Host "[check]   vitest" -ForegroundColor Cyan
