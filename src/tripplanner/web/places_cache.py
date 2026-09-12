@@ -907,10 +907,35 @@ def get_photos(
     name: str, city: str, max_photos: int = _MAX_PHOTOS_PER_PLACE, *, refresh: bool = False
 ) -> list[str]:
     """Return up to ``max_photos`` renderable image URLs for ``name``."""
+    if max_photos <= 0:
+        return []
+    requested_at = time.time()
+    key = _key(name, _lookup_city(name, city))
+    with _key_lock(key):
+        with _CACHE_LOCK:
+            previous = _CACHE.get(key) or {}
+            refreshed_at = previous.get("__photos_at__", 0.0)
+            if previous.get("__photos_retry_after__", 0.0) > requested_at:
+                limit = min(max_photos, get_settings().google_places_max_photos_per_place)
+                return list(previous.get("photo_urls") or [])[:limit]
+        if refreshed_at >= requested_at:
+            refresh = False
+        return _get_photos(name, city, max_photos, refresh=refresh)
+
+
+def _get_photos(
+    name: str, city: str, max_photos: int, *, refresh: bool
+) -> list[str]:
     max_photos = min(max_photos, get_settings().google_places_max_photos_per_place)
+    with _CACHE_LOCK:
+        previous = dict(_CACHE.get(_key(name, _lookup_city(name, city))) or {})
     info = _ensure(name, city, refresh=refresh)
     if not info:
-        return []
+        return list(previous.get("photo_urls") or [])[:max_photos]
+    if refresh and previous.get("photo_urls") and "photo_urls" not in info:
+        with _CACHE_LOCK:
+            info["photo_urls"] = list(previous["photo_urls"])
+            info["__photos_at__"] = previous.get("__photos_at__", 0.0)
     if info.get("__photo_refs_schema") != _PHOTO_REFS_SCHEMA and not refresh:
         refreshed, succeeded = refresh_details(name, city)
         if succeeded and refreshed:
@@ -920,6 +945,9 @@ def get_photos(
         needs_photos = refresh or "photo_urls" not in info or stale
         refs = list((info.get("photo_refs") or [])[:max_photos])
         current = list(info.get("photo_urls") or [])
+        retry_after = info.get("__photos_retry_after__", 0.0)
+    if retry_after > time.time():
+        return current[:max_photos]
     if not needs_photos:
         units = min(len(current), max_photos)
         if units:
@@ -931,7 +959,7 @@ def get_photos(
                 place=name,
                 city=_lookup_city(name, city),
             )
-        return current
+        return current[:max_photos]
     _record_cache(
         "photo_url_refresh" if current else "photo_url_miss",
         place=name,
@@ -943,8 +971,14 @@ def get_photos(
     finally:
         _PLACE_LOG_CONTEXT.reset(token)
     with _CACHE_LOCK:
+        if refs and len(photo_urls) < len(refs):
+            info["__photos_retry_after__"] = time.time() + 30
+            return (current or photo_urls)[:max_photos]
+        info.pop("__photos_retry_after__", None)
         info["photo_urls"] = photo_urls
         info["__photos_at__"] = time.time()
+    if get_settings().cache_warm_everything:
+        _persist_entry(_key(name, _lookup_city(name, city)))
     return photo_urls
 
 

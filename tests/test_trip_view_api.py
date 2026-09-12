@@ -8,6 +8,65 @@ from tripplanner.trip_repository import TripConflictError
 from tripplanner.web import trip_operations
 
 
+def test_map_provider_cost_is_attributed_to_loaded_trip(monkeypatch):
+    from types import SimpleNamespace
+
+    from tripplanner import cost_ledger, provider_usage
+    from tripplanner.tools import trip_history
+    from tripplanner.web import trip_view
+
+    settled = []
+    monkeypatch.setattr(
+        trip_history, "_repository",
+        lambda: SimpleNamespace(load_active=lambda: {
+            "trip_id": "kashmir", "destination": "Kashmir",
+        }),
+    )
+    monkeypatch.setattr(provider_usage, "persist_batch", lambda *args: None)
+    monkeypatch.setattr(cost_ledger, "settle", lambda attribution, records: settled.append(
+        (attribution, list(records))
+    ))
+
+    def build_map(plan):
+        provider_usage.record_call(
+            provider="google", operation="photo_media", sku_class="photo_media",
+            status="ok", duration_ms=1,
+        )
+        return {"trip_id": plan["trip_id"]}
+
+    monkeypatch.setattr(trip_view, "build_map_view", build_map)
+    response = TestClient(api.app).get("/trip/map")
+    assert response.status_code == 200
+    attribution, records = next(item for item in settled if item[0]["route"] == "GET /trip/map")
+    assert attribution["trip_id"] == "kashmir"
+    assert records[0]["trip_id"] == "kashmir"
+    assert records[0]["estimated_cost_usd"] == 0.007
+
+
+@pytest.mark.parametrize("destination, expected_trip", [
+    ("", "kashmir"), ("Kashmir", "kashmir"), ("Goa", ""),
+])
+def test_destination_cost_only_belongs_to_matching_active_trip(
+    monkeypatch, destination, expected_trip,
+):
+    from tripplanner import cost_ledger, provider_usage
+    from tripplanner.web import trip_view
+
+    settled = []
+    monkeypatch.setattr(trip_operations.trip_planner, "load_active_trip_dict", lambda: {
+        "trip_id": "kashmir", "destination": "Kashmir",
+    })
+    monkeypatch.setattr(provider_usage, "persist_batch", lambda *args: None)
+    monkeypatch.setattr(
+        cost_ledger, "settle", lambda attribution, records: settled.append(attribution),
+    )
+    monkeypatch.setattr(trip_view, "build_destination_overview", lambda *args, **kwargs: {})
+    response = TestClient(api.app).get("/destination/overview", params={"destination": destination})
+    assert response.status_code == 200
+    attribution = next(item for item in settled if item["route"] == "GET /destination/overview")
+    assert attribution.get("trip_id", "") == expected_trip
+
+
 def test_trip_view_preserves_exact_itinerary_occurrence(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

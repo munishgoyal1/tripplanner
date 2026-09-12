@@ -1798,6 +1798,17 @@ the outcome.
   tools returning `Error:` must report a rejected result even without a Python
   exception; a completed function call is not a successful trip mutation.
 
+## 2026-09-12 - Count View Work And Distinguish Quota Rejections
+
+- Creation counts do not measure provider load: map, gallery, switch, and
+  destination requests can spend independently. Bind their resolved trip ID to
+  the shared usage batch before provider work, including across worker contexts.
+- Lock the entire photo cache-check/fetch/update operation per place. Locking
+  only dictionary access lets simultaneous panels resolve the same photo twice.
+  A failed refresh must not replace usable URLs or advance their freshness.
+- Keep quota-rejected attempts observable without pricing them as successful
+  responses; retain the precise quota limit in alerts. Gross catalog estimates,
+  eligible regional rates, free allowances, and provider invoices are distinct.
 
 ## 2026-09-12 - Count Bytes And Writes, Not Only Events
 
@@ -1828,3 +1839,8 @@ the outcome.
   retrying older failed messages; do not make provider latency a chat input gate.
 - Agent-identifiable task branches keep concurrent ownership clear. Git branches
   are cheap; isolated dependency installs and runtimes are separate choices.
+
+## 2026-09-12 - Inspect Full Process Identity and Wait for Exit State
+
+- POSIX process ownership must use untruncated command output (`ps -ww`); long interpreter arguments can hide the session marker and falsely classify a live worker as stale. A long-command regression protects the shutdown boundary.
+- Pipe EOF precedes final process exit, and a killed descendant can remain a zombie until its parent or init reaps it. Lifecycle tests must wait for bounded exit/reaping and distinguish executing processes from zombies rather than assume PID disappearance is immediate.

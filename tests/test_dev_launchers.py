@@ -527,7 +527,11 @@ def test_sync_across_reuses_merge_gates_and_refreshes_sandboxes() -> None:
 
     # Sandbox work reaches master only through the gated -Merge verb.
     assert "& $sandboxScript -Merge" in script
-    assert "-SkipValidation" not in script
+    # The owner-approved NoTest switch is opt-in; default merges still validate.
+    assert "[switch]$NoTest" in script
+    assert "$NoTest =" not in script
+    assert "-SkipValidation:$NoTest" in script
+    assert "-SkipValidation" not in script.replace("-SkipValidation:$NoTest", "")
     # Every sandbox ends on the resulting base, and that is verified.
     assert "sync-sbxs-from-master.ps1" in script
     assert "merge-base --is-ancestor $baseHead HEAD" in script
