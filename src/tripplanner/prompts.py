@@ -528,6 +528,16 @@ def build_trip_system_prompt(
             if key in active_trip
         }
         facts["has_saved_itinerary"] = bool(active_trip.get("day_wise_itinerary"))
+        facts["itinerary_days"] = [
+            {key: day[key] for key in ("day", "date", "title", "city") if key in day}
+            for day in (active_trip.get("day_wise_itinerary") or [])
+            if isinstance(day, dict)
+        ]
+        facts["selected_hotels"] = [
+            {key: hotel[key] for key in ("name", "city", "check_in", "check_out") if key in hotel}
+            for hotel in (active_trip.get("selected_hotels") or [])
+            if isinstance(hotel, dict)
+        ]
         content += (
             "\n\nCURRENT TRIP CONTEXT (fresh persisted facts for this model call):\n"
             + json.dumps(facts, ensure_ascii=False, default=str)
@@ -537,20 +547,33 @@ def build_trip_system_prompt(
             "profile defaults. Do not restart planning, recommend a new duration, or ask again "
             "for the known destination, dates, origin or party. A flight/hotel/transport "
             "request alone is an update to this trip, not a request to create another trip. "
-            "For example, with a saved Goa itinerary, 'plan flights from Bangalore' means "
-            "Bangalore to Goa and back to Bangalore on the saved trip dates, unless the user "
+            "Apply current-trip context to ALL follow-ups: lodging, transport, meals, sights, "
+            "day schedules, dates, budgets, party changes and preferences. Resolve 'here', "
+            "'there', 'our hotel', 'the last day' and similar references from this itinerary; "
+            "read get_trip_plan when the compact facts do not contain the needed detail. "
+            "A new place name may be a departure city, stop, day trip, comparison or edit, "
+            "not a new destination. Keep ambiguous requests in this trip and clarify only "
+            "the ambiguous change. Never create another trip merely to implement an edit. "
+            "An explicit date change updates this trip unless a separate trip is requested. "
+            "For arrival/return travel, use the stated origin, the itinerary's arrival and "
+            "departure cities, and saved dates; include both journey edges unless the user "
             "specifies one-way travel or a different return city. Use a newly stated base or "
             "departure city immediately even if profile learning has not completed; persist "
             "the trip origin and round_trip travel_scope when adding these journeys. "
-            "Explicit requests for flights supersede an old destination_only scope. "
+            "Explicit requests for arrival/return transport supersede an old destination_only scope. "
             "Read get_trip_plan before editing to preserve existing stops, lodging and "
             "constraints and identify arrival/departure cities for multi-city trips. "
-            "Search grounded flight options for both journey edges and integrate them into "
-            "the existing itinerary. Do not invent availability or prices. Ask only for "
-            "indispensable unresolved flight-search facts; if saved dates are past, explain "
+            "For requested flight planning, search grounded options for both journey edges "
+            "and integrate them into the existing itinerary. Do not invent availability or prices. "
+            "Ask only for indispensable unresolved facts for the requested task. If a search "
+            "needs future dates and the saved dates are past, explain "
             "that conflict and ask for new dates instead of silently replacing them. "
-            "If the user explicitly requests a new/different trip, follow the new-trip "
-            "workflow and do not carry this trip's dates or party into it automatically.\n"
+            "Starting a new trip is secondary to working on this one. Only a clear whole-trip "
+            "request may use the new-trip workflow. The app announces departure from this "
+            "trip before that workflow; do not carry its dates or party over automatically. "
+            "If creation is unavailable and the user means a separate trip, ask them to "
+            "explicitly request a new trip or use New trip. Do not rename/overwrite the "
+            "current destination as a substitute for creating another trip.\n"
         )
     return SystemMessage(content=content)
 

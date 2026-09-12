@@ -74,12 +74,23 @@ class CompletionPolicyDecision:
 
 
 _NEW_TRIP_REQUEST_RE = re.compile(
-    r"\b(?:plan|create|start|build|organize|organise)\b.{0,40}"
-    r"\b(?:trip|vacation|holiday|getaway)\b.{0,24}\b(?:to|in)\b",
+    r"\b(?:plan|create|start|build|organize|organise)\s+"
+    r"(?:(?:a|an|the|my|our|new|another|separate|different|\d+|day|days|week|weekend)\s+)*"
+    r"(?:trip|vacation|holiday|getaway)\s+(?:to|in)\s+\S",
     re.IGNORECASE,
 )
 _NEW_TRIP_INTENT_RE = re.compile(
-    r"\b(?:new|separate|another|different)\s+(?:\w+\s+){0,3}(?:trip|vacation|holiday|getaway)\b",
+    r"(?:(?:a|an|the|my|our)\s+)*"
+    r"(?:new\s+(?:trip|vacation|holiday|getaway)\b|(?:separate|another|different)\s+"
+    r"(?:(?!(?:for|of|on|in|to|with|from|this|that|existing|current)\b)\w+\s+){0,3}"
+    r"(?:trip|vacation|holiday|getaway)\b)",
+    re.IGNORECASE,
+)
+_TRIP_REQUEST_START_RE = re.compile(
+    r"^(?:(?:please|now|instead|actually|ok|okay)[, ]+)*"
+    r"(?:(?:can|could|would) you (?:please )?|"
+    r"(?:i|we) (?:want|would like|need) (?:you )?to )?"
+    r"(?P<action>plan|create|start|build|organize|organise)\b",
     re.IGNORECASE,
 )
 _ORIGIN_CORRECTION_RE = re.compile(
@@ -389,7 +400,13 @@ def trip_hotel_fallback_requirement(
 def latest_user_starts_new_trip(messages: Sequence[BaseMessage]) -> bool:
     for message in reversed(messages):
         if isinstance(message, HumanMessage):
-            return bool(_NEW_TRIP_INTENT_RE.search(str(message.content or "")))
+            request = str(message.content or "").strip()
+            action = _TRIP_REQUEST_START_RE.search(request)
+            return bool(
+                action
+                and not re.search(r"\bday[ -]trip\b", request, re.I)
+                and _NEW_TRIP_INTENT_RE.match(request[action.end():].strip())
+            )
     return False
 
 
@@ -449,9 +466,56 @@ def latest_user_requests_different_trip(
     if latest_human < 0:
         return False
     request = str(messages[latest_human].content or "").strip()
-    if "day trip" in request.lower() or not _NEW_TRIP_REQUEST_RE.search(request):
+    action = _TRIP_REQUEST_START_RE.search(request)
+    if (
+        re.search(r"\bday[ -]trip\b", request, re.I)
+        or not action
+        or not _NEW_TRIP_REQUEST_RE.match(request, action.start("action"))
+    ):
         return False
-    return active_destination.lower() not in request.lower()
+    current_places = re.split(r"[,;/]|\s+(?:and|to)\s+|→|->", active_destination, flags=re.I)
+    current_places.extend(
+        str(day.get("city") or "")
+        for day in (active_trip.get("day_wise_itinerary") or [])
+        if isinstance(day, dict)
+    )
+    return not any(
+        re.search(r"(?<!\w)" + re.escape(place.strip()) + r"(?!\w)", request, re.I)
+        for place in current_places if place.strip()
+    )
+
+
+def permits_trip_creation(
+    messages: Sequence[BaseMessage], active_trip: dict[str, Any]
+) -> bool:
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    if any(
+        name == "create_trip_plan" and index > latest_human
+        for index, name in _tool_call_positions(messages)
+    ):
+        return False
+    return bool(
+        not active_trip.get("destination")
+        or latest_user_starts_new_trip(messages)
+        or latest_user_requests_different_trip(messages, active_trip)
+    )
+
+
+def trip_departure_notice(
+    messages: Sequence[BaseMessage], active_trip: dict[str, Any], *, proposal_only: bool = False
+) -> str:
+    if proposal_only or not active_trip.get("destination"):
+        return ""
+    if not permits_trip_creation(messages, active_trip):
+        return ""
+    destination = str(active_trip["destination"]).strip()
+    return (
+        f"I'll leave your current {destination} trip saved and move to planning a separate trip "
+        "for this new request. You can return to the current trip from the trip selector.\n\n"
+    )
 
 
 def pending_trip_kickoff_answer(messages: Sequence[BaseMessage]) -> bool:
@@ -649,7 +713,7 @@ def resolve_completion_policy(
     new_trip_flow = not created_this_turn and (
         latest_user_starts_new_trip(messages)
         or latest_user_requests_different_trip(messages, active_trip)
-        or pending_trip_kickoff_answer(messages)
+        or (pending_trip_kickoff_answer(messages) and not active_trip.get("destination"))
     )
     if (
         not proposal_only
@@ -695,6 +759,7 @@ def resolve_completion_policy(
     hotel_search_requirement = (
         None
         if proposal_only
+        or (journey_safety_gap and updated_this_turn and not created_this_turn)
         or new_trip_flow
         or hotel_fallback_requirement
         or origin_requirement
@@ -751,7 +816,9 @@ def resolve_completion_policy(
             interactive=interactive_questions,
         )
     )
-    kickoff_answered = pending_trip_kickoff_answer(messages)
+    kickoff_answered = pending_trip_kickoff_answer(messages) and permits_trip_creation(
+        messages, active_trip
+    )
     # Load preferences and duration advice before creating a replacement trip.
     if kickoff_tool:
         creation_tool = None

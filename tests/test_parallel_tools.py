@@ -296,7 +296,11 @@ def test_trip_agent_receives_fresh_trip_context_without_history(monkeypatch) -> 
         "trip_id": "goa", "revision": 3, "destination": "Goa", "origin": "",
         "departure_date": "2026-11-01", "return_date": "2026-11-05",
         "travelers": "2 adults", "travel_scope": "destination_only",
-        "day_wise_itinerary": [{"day": 1, "stops": [{"name": "Keep this stop"}]}],
+        "day_wise_itinerary": [{
+            "day": 1, "date": "2026-11-01", "city": "Panaji",
+            "stops": [{"name": "Keep this stop"}],
+        }],
+        "selected_hotels": [{"name": "River House", "city": "Panaji"}],
     }
 
     class FakeModel:
@@ -322,7 +326,10 @@ def test_trip_agent_receives_fresh_trip_context_without_history(monkeypatch) -> 
     assert '"return_date": "2026-11-05"' in prompt
     assert '"travelers": "2 adults"' in prompt
     assert '"has_saved_itinerary": true' in prompt
-    assert "Bangalore to Goa and back to Bangalore" in prompt
+    assert '"city": "Panaji"' in prompt
+    assert '"name": "River House"' in prompt
+    assert "Apply current-trip context to ALL follow-ups" in prompt
+    assert "the itinerary's arrival and departure cities" in prompt
     assert bound_options[-1].get("tool_choice") not in {
         "create_trip_plan", "recommend_trip_duration", "request_trip_input",
     }
@@ -337,6 +344,41 @@ def test_trip_agent_receives_fresh_trip_context_without_history(monkeypatch) -> 
     trip.clear()
     graph_mod.trip_agent(state)
     assert "CURRENT TRIP CONTEXT" not in captured[-1][0].content
+
+
+@pytest.mark.parametrize("user_text", [
+    "Plan flights from Bangalore", "Find a quieter hotel here", "Move lunch to the last day",
+    "Plan my trip flights to Mumbai", "Change our dates to November 12",
+    "Add a day trip to Sintra", "Make the budget cheaper", "What about Kyoto?",
+])
+@pytest.mark.parametrize("destination", ["Goa", "Lisbon", "Tokyo"])
+def test_existing_trip_followups_cannot_create_another_trip(monkeypatch, user_text, destination):
+    from tripplanner import graph as graph_mod
+
+    captured = []
+
+    class FakeModel:
+        def bind_tools(self, tools, **options):
+            captured.extend(tool.name for tool in tools)
+            assert options.get("tool_choice") != "create_trip_plan"
+            return self
+
+        def invoke(self, messages):
+            assert f'"destination": "{destination}"' in messages[0].content
+            return AIMessage(content="Updated")
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(graph_mod, "load_active_trip_dict", lambda: {
+        "destination": destination, "day_wise_itinerary": [{"day": 1}],
+    })
+    monkeypatch.setattr(graph_mod, "select_tools", lambda *_args, **_kwargs: [
+        SimpleNamespace(name="create_trip_plan"), SimpleNamespace(name="get_trip_plan"),
+        SimpleNamespace(name="update_trip_plan"),
+    ])
+    graph_mod.trip_agent({"messages": [HumanMessage(content=user_text)], "proposal_only": False})
+    assert "create_trip_plan" not in captured
+    assert "get_trip_plan" in captured
+    assert "update_trip_plan" in captured
 
 
 def test_trip_agent_tags_the_llm_call_with_turn_and_phase_number(monkeypatch) -> None:

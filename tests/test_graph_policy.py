@@ -434,7 +434,7 @@ def test_unphrased_planning_request_leaves_creation_to_the_model() -> None:
     assert decision.forced_reason == "model_choice"
 
 
-def test_answered_optional_review_can_force_creation() -> None:
+def test_answered_optional_review_cannot_replace_the_active_trip() -> None:
     decision = resolve_completion_policy(
         messages=[
             HumanMessage(content="plan a 6 day leh ladakh trip"),
@@ -447,10 +447,10 @@ def test_answered_optional_review_can_force_creation() -> None:
         has_planning_intent=True,
     )
 
-    assert decision.forced_tool == "create_trip_plan"
+    assert decision.forced_tool == "update_trip_plan"
 
 
-def test_answered_kickoff_preempts_old_trip_completion() -> None:
+def test_stale_kickoff_answer_does_not_depart_from_the_current_trip() -> None:
     decision = resolve_completion_policy(
         messages=[
             HumanMessage(content="Create a separate new Hawaii trip"),
@@ -463,8 +463,8 @@ def test_answered_kickoff_preempts_old_trip_completion() -> None:
         has_planning_intent=False,
     )
 
-    assert decision.forced_tool == "create_trip_plan"
-    assert decision.forced_reason == "kickoff_answered"
+    assert decision.forced_tool is None
+    assert decision.forced_reason == "model_choice"
 
 
 def test_hotel_provider_fallback_preempts_enrichment_persistence() -> None:
@@ -1356,3 +1356,48 @@ def test_existing_empty_thailand_draft_is_persisted_before_more_research():
     )
     assert decision.forced_tool == "update_trip_plan"
     assert "first draft before further provider research" in decision.requirement
+
+@pytest.mark.parametrize('user_text, expected', [
+    ('Plan a trip to Japan', True),
+    ('Please create another trip to Paris', True),
+    ('Can you plan a separate new Hawaii trip', True),
+    ('Plan a trip to Goa', False),
+    ('Plan my trip flights to Bangalore', False),
+    ('Plan a day trip to Mumbai', False),
+    ('Plan another day-trip to Mumbai', False),
+    ('Plan different transport for this trip', False),
+    ('Find a hotel in Paris', False),
+    ('What about Japan?', False),
+    ("Do not plan a new trip to Japan", False),
+    ('If we plan a new trip to Japan, what changes?', False),
+    ('Could we plan a new trip someday?', False),
+    ('Change the dates of this trip', False),
+    ('Plan a new hotel for this trip', False),
+    ('Plan my New York trip flights', False),
+    ('Plan my flights, do not plan a new trip', False),
+    ('Plan my trip, not a new trip', False),
+])
+def test_trip_departure_requires_a_clear_whole_trip_request(user_text, expected):
+    from tripplanner.graph_policy import permits_trip_creation, trip_departure_notice
+
+    messages = [HumanMessage(content=user_text)]
+    trip = {'destination': 'Goa', 'day_wise_itinerary': [{'day': 1}]}
+    assert permits_trip_creation(messages, trip) is expected
+    notice = trip_departure_notice(messages, trip)
+    assert bool(notice) is expected
+    if expected:
+        assert 'current Goa trip saved' in notice
+    assert trip_departure_notice(messages, trip, proposal_only=True) == ''
+    assert trip_departure_notice(messages, {}) == ''
+
+@pytest.mark.parametrize('destination, cities, user_text', [
+    ('Goa, India', [], 'Plan a trip to Goa'),
+    ('Paris and Lyon', [], 'Plan a trip to Lyon'),
+    ('Japan', ['Kyoto'], 'Plan a trip to Kyoto'),
+])
+def test_current_route_places_remain_in_trip_context(destination, cities, user_text):
+    from tripplanner.graph_policy import permits_trip_creation
+
+    assert not permits_trip_creation([HumanMessage(content=user_text)], {
+        'destination': destination, 'day_wise_itinerary': [{'city': city} for city in cities],
+    })

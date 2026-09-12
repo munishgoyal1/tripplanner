@@ -2006,3 +2006,14 @@ the outcome.
   conversations and trimmed tool history can resolve short follow-ups correctly.
 - Test the actual model input with no prior chat history and after switching trips.
   This proves context delivery; it does not prove a live model obeys the instructions.
+
+## 2026-09-12 - Default To The Selected Trip, Gate Departure
+
+- Generalize from the owner's example into a contract across destinations and
+  request types. Prompt examples alone do not prevent lifecycle mistakes: remove
+  trip creation from ordinary follow-up tool bindings and test the bound tools.
+- Broad new-trip regexes confuse component edits and place names such as New York
+  with lifecycle intent. Use conservative whole-trip request detection; old input
+  card answers cannot authorize creating another trip.
+- Share departure-notice decisions across JSON and SSE. Stream the notice before
+  model work and persist it in the final reply so refresh and replay retain context.

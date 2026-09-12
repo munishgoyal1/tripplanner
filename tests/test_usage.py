@@ -497,3 +497,73 @@ def test_cached_prompt_tokens_are_counted_when_the_provider_reports_them() -> No
     assert _cached_tokens(modern) == 6144
     assert _cached_tokens(legacy) == 2048
     assert _cached_tokens(SimpleNamespace(generations=[], llm_output={})) == 0
+
+@pytest.mark.parametrize('transport', ['json', 'sse'])
+@pytest.mark.parametrize('user_text, proposal_only, departing', [
+    ('Plan a separate trip to Japan', False, True),
+    ('Plan my trip flights to Mumbai', False, False),
+    ('Plan a separate trip to Japan', True, False),
+])
+def test_chat_preserves_trip_departure_notice(monkeypatch, transport, user_text,
+                                             proposal_only, departing):
+    import asyncio
+    import json
+
+    from fastapi.testclient import TestClient
+    from langchain_core.messages import AIMessage, AIMessageChunk
+
+    from tripplanner import api
+    from tripplanner.graph import app_graph
+    from tripplanner.request_limits import chat_admission
+    from tripplanner.tools import trip_planner
+
+    saved = []
+    trip = {'trip_id': 'goa', 'destination': 'Goa', 'day_wise_itinerary': [{'day': 1}]}
+
+    async def reserve(*_args):
+        return None
+
+    async def stream(*_args, **_kwargs):
+        yield {'event': 'on_chat_model_stream', 'data': {
+            'chunk': AIMessageChunk(content='Model reply'),
+        }}
+
+    monkeypatch.setattr(app_graph, 'astream_events', stream)
+    monkeypatch.setattr(app_graph, 'invoke', lambda *_args, **_kwargs: {
+        'messages': [AIMessage(content='Model reply')], 'current_agent': 'trip',
+    })
+    monkeypatch.setattr(api, '_reserve_cost', reserve)
+    monkeypatch.setattr(api, '_completed_chat_request', lambda _request_id: None)
+    monkeypatch.setattr(api, '_load_chat_request', lambda _request_id: ('goa', [], None))
+    monkeypatch.setattr(api, '_save_chat', lambda *args: saved.append(args) or 'goa')
+    monkeypatch.setattr(api, '_schedule_learning_sweep', lambda *_args: None)
+    monkeypatch.setattr(api, '_should_auto_persist_itinerary', lambda _tools: False)
+    monkeypatch.setattr(trip_planner, 'load_active_trip_dict', lambda: trip)
+    asyncio.run(chat_admission.reset())
+    try:
+        response = TestClient(api.app).post(
+            '/chat/stream' if transport == 'sse' else '/chat',
+            json={'user_id': 'notice-test', 'message': user_text, 'proposal_only': proposal_only},
+        )
+    finally:
+        asyncio.run(chat_admission.reset())
+    assert response.status_code == 200
+    if transport == 'sse':
+        events = []
+        for frame in response.text.split('\n\n'):
+            lines = frame.splitlines()
+            if len(lines) >= 2:
+                events.append((lines[0].removeprefix('event: '),
+                               json.loads(lines[1].removeprefix('data: '))))
+        reply = next(data['reply'] for event, data in events if event == 'done')
+        tokens = [data['text'] for event, data in events if event == 'token']
+        assert ''.join(tokens) == reply
+        assert tokens[-1] == 'Model reply'
+        if departing:
+            assert 'current Goa trip saved' in tokens[0]
+    else:
+        reply = response.json()['reply']
+    assert ('current Goa trip saved' in reply) is departing
+    assert reply.count('current Goa trip saved') == int(departing)
+    assert saved[-1][2][-1].content == reply
+    assert trip['trip_id'] == 'goa'
