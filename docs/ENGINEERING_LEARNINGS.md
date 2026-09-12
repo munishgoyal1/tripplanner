@@ -1857,3 +1857,12 @@ the outcome.
 
 - POSIX process ownership must use untruncated command output (`ps -ww`); long interpreter arguments can hide the session marker and falsely classify a live worker as stale. A long-command regression protects the shutdown boundary.
 - Pipe EOF precedes final process exit, and a killed descendant can remain a zombie until its parent or init reaps it. Lifecycle tests must wait for bounded exit/reaping and distinguish executing processes from zombies rather than assume PID disappearance is immediate.
+
+
+## 2026-09-12 - Bound Frontend Workers And Flush External Updates
+
+- A fresh worktree with four Vitest workers still timed out starting jsdom
+  workers under concurrent validation. Limit the shared pool to two instead
+  of increasing every test timeout.
+- Wrap externally dispatched preference changes in React act so assertions
+  observe the resulting effects, rather than racing a one-second polling window.
