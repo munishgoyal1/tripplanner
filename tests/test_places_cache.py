@@ -7,6 +7,7 @@ network layer so they're deterministic and never touch Google or Cosmos.
 
 from __future__ import annotations
 
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -216,32 +217,23 @@ def test_photos_do_not_refresh_entry_with_known_empty_refs(_isolate, _authorized
 
 
 def test_prefetch_cache_hits_do_not_serialize_on_logging(_isolate, monkeypatch):
-    """Regression: _record_cache (app_event -> flight_recorder's synchronous,
-    fsync-based write, tens of ms in production) must run outside _CACHE_LOCK.
-    Otherwise prefetch()'s worker pool serializes on that lock and a warm
-    multi-place prefetch takes seconds instead of the intended one slow-item's
-    worth of wall time. Simulated here with a monkeypatched delay standing in
-    for that real disk-I/O cost."""
-    names = [f"Place{i}" for i in range(8)]
+    """Cache-hit logging must overlap without holding the shared cache lock."""
+    names = ["Place0", "Place1"]
     for name in names:
-        pc.get_details(name, "Goa")  # warm the cache: each becomes a hit below
+        pc.get_details(name, "Goa")
 
-    delay = 0.05
-    real_record_cache = pc._record_cache
+    ready = threading.Barrier(len(names), timeout=15)
+    logged = []
 
-    def slow_record_cache(*args, **kwargs):
-        time.sleep(delay)
-        return real_record_cache(*args, **kwargs)
+    def concurrent_record_cache(result, **fields):
+        if result == "memory_hit":
+            ready.wait()
+            logged.append(result)
 
-    monkeypatch.setattr(pc, "_record_cache", slow_record_cache)
-
-    start = time.perf_counter()
+    monkeypatch.setattr(pc, "_record_cache", concurrent_record_cache)
     pc.prefetch(names, "Goa", max_photos=0, with_reviews=False)
-    elapsed = time.perf_counter() - start
 
-    # Serialized (logging inside the lock): ~len(names) * delay (0.4s).
-    # Parallel (logging outside the lock): close to one `delay` (0.05s).
-    assert elapsed < delay * len(names) / 2
+    assert logged == ["memory_hit"] * len(names)
 
 
 def test_lookup_place_propagates_circuit_open_instead_of_swallowing_it(

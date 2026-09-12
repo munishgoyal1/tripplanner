@@ -1812,3 +1812,17 @@ the outcome.
   retrying older failed messages; do not make provider latency a chat input gate.
 - Agent-identifiable task branches keep concurrent ownership clear. Git branches
   are cheap; isolated dependency installs and runtimes are separate choices.
+
+
+## 2026-09-12 - Prove Concurrency Without Racing The Host
+
+- Full two-way sync ran overlapping suites, and elapsed-time assertions confused
+  host contention with serialization. Rendezvous barriers prove tool calls and
+  cache-hit logging overlap; a timeout remains only a deadlock guard.
+- Search correctness needs a controlled clock, with deadline exhaustion tested
+  separately. Likewise, route-contract tests use deterministic measurement ticks
+  while explicit boundary tests preserve the benchmark's real p95 rejection gate.
+- Live request admission tests should isolate background learning and release
+  blocked model work before joining their executor, even when an assertion fails.
+- Native validation output must be piped into PowerShell's transcript. An exit
+  code saying pytest failed without the failed nodes is insufficient repair evidence.

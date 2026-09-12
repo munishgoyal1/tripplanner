@@ -7,6 +7,8 @@ a plan that was already fine. Improvement is the easy half.
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import pytest
 
 from tripplanner.tools import trip_common, trip_effort, trip_guard, trip_rebalance
@@ -43,6 +45,8 @@ def located(monkeypatch: pytest.MonkeyPatch) -> None:
             "business_status": "OPERATIONAL",
             "weekday_descriptions": _OPEN_ALL_WEEK,
         }
+
+    monkeypatch.setattr(trip_rebalance, "time", SimpleNamespace(perf_counter=lambda: 0.0))
 
     for module in (trip_common, trip_guard, trip_effort):
         monkeypatch.setattr(module, "_summary_for_place", summary, raising=False)
@@ -138,7 +142,9 @@ def test_a_stop_named_by_another_days_title_counts_as_misplaced() -> None:
     assert trip_rebalance.score(titled).misplaced == 1
 
 
-def test_it_stays_within_its_time_budget() -> None:
+def test_it_stays_within_its_time_budget(monkeypatch) -> None:
+    ticks = iter([0.0, *([1.0] * 100)])
+    monkeypatch.setattr(trip_rebalance.time, "perf_counter", lambda: next(ticks))
     result = trip_rebalance.rebalance(_MIXED, budget_ms=0)
     assert result.exhausted
     assert result.rounds <= 1
