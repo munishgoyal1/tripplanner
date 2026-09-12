@@ -211,8 +211,14 @@ class AsyncRecordingTransport(httpx.AsyncBaseTransport):
         await self.inner.aclose()
 
 
-@lru_cache(maxsize=2)
 def model_recording_options(*, sensitive=False):
+    if not enabled():
+        return {}
+    return _model_recording_options(sensitive=sensitive)
+
+
+@lru_cache(maxsize=2)
+def _model_recording_options(*, sensitive=False):
     return {
         "callbacks": [FlightRecorderCallback(sensitive=sensitive)],
         "http_client": httpx.Client(transport=RecordingTransport(sensitive=sensitive), timeout=600),

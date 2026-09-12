@@ -492,3 +492,13 @@ def test_container_app_job_name_stays_within_azure_limit() -> None:
 
     assert "var publicDemoJobName = '${namePrefix}-demo-refresh-${take(suffix, 8)}'" in template
     assert "var publicDemoJobName = '${namePrefix}-public-demo-refresh-${suffix}'" not in template
+
+
+def test_hosted_deployments_export_the_master_recorder_flag() -> None:
+    root = Path(__file__).parents[1]
+    for environment in ("canary", "prod"):
+        script = (root / "infra" / f"deploy-{environment}.ps1").read_text(encoding="utf-8")
+        assert '"TRIPPLANNER_FLIGHT_RECORDER=$env:TRIPPLANNER_FLIGHT_RECORDER"' in script
+        assert script.index("Import-DeploymentEnvironment -Path $ConfigFile") < script.index(
+            '"TRIPPLANNER_FLIGHT_RECORDER=$env:TRIPPLANNER_FLIGHT_RECORDER"'
+        )

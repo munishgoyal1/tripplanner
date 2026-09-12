@@ -728,8 +728,12 @@ implemented capability baseline.
   purpose/dataset, SKU, billable posture, HTTP status, duration, and—only locally
   when known—the Place and city. Cache-served provider records stay out of the
   human log and are aggregated for the operations dashboard.
-- A private flight recorder is enabled by default across local, canary and production
-  code paths. It captures exact model messages/tool schemas and returned messages,
+- A private flight recorder is opt-in across local, canary and production. The
+  master `TRIPPLANNER_FLIGHT_RECORDER` flag defaults to `0` in all environment
+  profiles and also gates automatic local trip archives. Restart the backend after
+  changing it. Disabled paths skip recorder callbacks, custom model transports,
+  body capture and diagnostic writes while retaining normal logs and accounting.
+  When enabled, it captures exact model messages/tool schemas and returned messages,
   model HTTP attempts (including SDK retry counts), tool inputs/outputs/errors,
   shared provider HTTP payloads/statuses, application events, planner API/SSE bodies,
   graph/interaction lifecycle and saved trip revisions. Events carry UTC time,

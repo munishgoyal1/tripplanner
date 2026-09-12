@@ -10,6 +10,8 @@ def store_dir(tmp_path, monkeypatch):
     monkeypatch.setenv("TRIPPLANNER_DEBUG_STORE_DIR", str(tmp_path / "debug-store"))
     monkeypatch.setenv("TRIPPLANNER_ENVIRONMENT", "local")
     monkeypatch.setenv("TRIPPLANNER_DEBUG_STORE", "1")
+    monkeypatch.setenv("TRIPPLANNER_FLIGHT_RECORDER", "1")
+    monkeypatch.setenv("TRIPPLANNER_FLIGHT_RECORDER_WORKER", "0")
     return tmp_path
 
 

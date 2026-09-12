@@ -86,7 +86,9 @@ def is_hosted_environment() -> bool:
 
 
 def is_enabled() -> bool:
-    if is_hosted_environment():
+    from tripplanner.config import flight_recorder_enabled
+
+    if not flight_recorder_enabled() or is_hosted_environment():
         return False
     return os.getenv("TRIPPLANNER_DEBUG_STORE", "1").strip() != "0"
 
