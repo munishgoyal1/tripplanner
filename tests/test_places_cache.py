@@ -119,7 +119,12 @@ def test_simultaneous_photo_views_resolve_once(_isolate, monkeypatch, refresh):
 
     monkeypatch.setattr(pc, "_photo_uris", slow_resolve)
     with ThreadPoolExecutor(max_workers=4) as executor:
-        results = list(executor.map(lambda _: view(), range(4)))
+        # Copied on this thread, as prefetch() does: a worker inherits no context
+        # variables, so the caller's paid-provider authorization has to travel.
+        futures = [
+            executor.submit(contextvars.copy_context().run, view) for _ in range(4)
+        ]
+        results = [future.result() for future in futures]
     assert all(result == results[0] for result in results)
     assert results[0]
     assert _isolate["photos"] == 1
