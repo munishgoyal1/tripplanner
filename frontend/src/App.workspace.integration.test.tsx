@@ -275,4 +275,23 @@ describe("App real workspace panes", () => {
     expect(screen.getByRole("heading", { name: "Ancient Rome" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Louvre Museum" })).not.toBeInTheDocument();
   });
+
+  it("loads the panels itself when the workspace payload is too slow", async () => {
+    // Waiting saves the server from rebuilding the same trip three times, but it
+    // must never be the reason the workspace stays empty.
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      mocks.fetchWorkspace.mockReturnValue(deferred<typeof parisWorkspace>().promise);
+      mocks.fetchItinerary.mockResolvedValue(parisWorkspace.itinerary);
+      render(<App />);
+
+      expect(mocks.fetchItinerary).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(2_000);
+
+      expect(await screen.findByRole("heading", { name: "Museums and river" })).toBeInTheDocument();
+      expect(mocks.fetchItinerary).toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

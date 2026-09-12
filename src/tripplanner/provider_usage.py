@@ -275,6 +275,22 @@ def record_cache_hit(
 ) -> dict[str, Any]:
     """Record one provider request served from cache, without claiming billed cost."""
     estimate = _estimate(provider, operation, sku_class)
+    # A warm trip view serves hundreds of these, and the batch coalesces them
+    # into one row per (provider, operation, SKU, dataset) anyway -- but only
+    # after record_call had built the whole record and emitted its event. Once
+    # this batch holds that row, fold the units straight into it.
+    batch = current_batch()
+    if batch is not None:
+        # Must match the key ``UsageBatch.append`` builds from the full record.
+        key = (
+            provider,
+            operation or "request",
+            sku_class or "unknown",
+            _dataset(provider, operation or "request"),
+        )
+        savings = estimate * max(1, int(units)) if estimate is not None else 0.0
+        if batch.merge_cache_hit(key, units, savings):
+            return {}
     record = record_call(
         provider=provider,
         operation=operation,

@@ -1951,3 +1951,23 @@ the outcome.
 - A second fan-out regression exceeded its 500 ms ceiling by only 15 ms under
   integration load. Use a rendezvous to prove overlapping execution in every
   concurrency contract, including shared outbound fan-out.
+
+## 2026-09-12 - Telemetry On The Cache-Hit Path Became The Cost It Measured
+
+- A fully cached `GET /trip/workspace` took nineteen seconds with zero provider
+  calls. Profiling the hit path, not the trip logic, found it: 19.7 ms of
+  telemetry per cache hit, and a warm trip view serves 736 of them. Forty-one
+  percent of that was `dataclasses.asdict` deep-copying a frozen six-string
+  attribution, six times per hit.
+- Coalescing a ledger row after the caller has already built the record and
+  emitted its event saves the storage, not the work. Merge at the point of
+  entry and keep the aggregate counters in step there.
+- Deduplicating requests moves the user-visible paint onto the slowest one. The
+  itinerary used to appear at 2.5 s from its own endpoint while the workspace
+  payload ground on for 19 s; making the panels wait for that payload was a net
+  win for the server and a regression for the person watching a blank pane. A
+  wait like that needs a bound, so the fallback is a duplicate fetch rather
+  than an empty screen.
+- A generation counter shared by two kinds of refresh cannot tell "superseded"
+  from "a different request started". The view-only refresh a focus click makes
+  produces no seed, so the panels waiting on a seed need their own generation.
