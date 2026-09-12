@@ -99,15 +99,40 @@ def test_http_request_authorizes_user_provider_scope(
 ) -> None:
     monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
 
-    def fake_build_view(_focus):
+    def fake_select(*_args, **_kwargs):
         budget = places_budget.current_budget()
         return {"purpose": budget.purpose if budget else None}
 
-    monkeypatch.setattr(trip_operations, "build_view", fake_build_view)
+    monkeypatch.setattr(trip_operations, "select", fake_select)
 
-    response = TestClient(api.app).get("/trip/view")
+    response = TestClient(api.app).post(
+        "/trip/select", json={"kind": "attraction", "name": "Jag Mandir"}
+    )
 
     assert response.json()["purpose"] == "user_interaction"
+
+
+def test_reading_an_existing_trip_is_not_authorized_to_spend(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The reload path. Re-opening the planner replays these reads, and each one
+    used to be allowed to buy Google Text Searches for a trip already built."""
+    monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
+    monkeypatch.setattr(trip_operations, "warm_guide", lambda: None)
+    monkeypatch.setattr(trip_operations, "warm_view_items", lambda: None)
+
+    def fake_build_view(_focus):
+        return {"authorized": places_budget.paid_provider_authorized()}
+
+    def fake_workspace(_focus):
+        return {"view": {"authorized": places_budget.paid_provider_authorized()}}
+
+    monkeypatch.setattr(trip_operations, "build_view", fake_build_view)
+    monkeypatch.setattr(trip_operations, "active_workspace_payload", fake_workspace)
+
+    client = TestClient(api.app)
+    assert client.get("/trip/view").json()["authorized"] is False
+    assert client.get("/trip/workspace").json()["view"]["authorized"] is False
 
 
 def test_corpus_header_selects_budgeted_provider_scope(

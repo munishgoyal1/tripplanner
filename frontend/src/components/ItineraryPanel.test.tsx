@@ -968,4 +968,29 @@ describe("ItineraryPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "Reduce day and update trip" }));
     expect(onAdjustDays).toHaveBeenCalledWith("reduce", true);
   });
+
+  it("waits for the workspace payload instead of fetching the same itinerary again", async () => {
+    // The workspace payload already carries this itinerary. Racing it with
+    // /trip/itinerary made the server assemble the same trip twice on every
+    // page load, and both builds then queued behind the same place lookups.
+    const { rerender } = render(<ItineraryPanel seedPending />);
+
+    expect(await screen.findByText("Loading itinerary…")).toBeTruthy();
+    expect(fetchItineraryMock).not.toHaveBeenCalled();
+
+    rerender(<ItineraryPanel seedPending={false} seed={itinerary} />);
+
+    expect(await screen.findByText("Museums and river")).toBeTruthy();
+    expect(fetchItineraryMock).not.toHaveBeenCalled();
+  });
+
+  it("fetches for itself when the workspace payload never arrives", async () => {
+    fetchItineraryMock.mockResolvedValue(itinerary);
+    const { rerender } = render(<ItineraryPanel seedPending />);
+
+    rerender(<ItineraryPanel seedPending={false} />);
+
+    expect(await screen.findByText("Museums and river")).toBeTruthy();
+    expect(fetchItineraryMock).toHaveBeenCalledTimes(1);
+  });
 });

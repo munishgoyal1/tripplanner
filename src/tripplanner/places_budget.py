@@ -89,3 +89,33 @@ def consume(kind: RequestKind) -> bool:
     """``True`` when a paid call of ``kind`` is authorized here, else ``False``."""
     budget = _BUDGET.get()
     return budget is not None and budget.consume(kind)
+
+
+#: ``GET`` requests that legitimately produce new paid work.
+#:
+#: Every other ``GET`` is a projection of a trip that already exists -- the
+#: itinerary, the map, the workspace, the gallery, the verification certificate.
+#: Re-opening the planner replays all of them, so authorizing them meant a
+#: well-built trip bought Google Text Searches again on every reload, and each
+#: reload waited out the per-minute quota it had just exhausted. Reads now serve
+#: what is cached; the learning happens in the interactions below and in the
+#: once-per-revision warm they schedule.
+_PAID_GET_PREFIXES: tuple[str, ...] = (
+    # Export renders a Static Maps image of the itinerary.
+    "/trip/export",
+    # A share link is opened by a process that has never seen that trip.
+    "/trip/shared/",
+)
+
+
+def route_may_spend(method: str, path: str) -> bool:
+    """Whether an HTTP request is allowed to open a paid-provider scope.
+
+    Pure, so the policy is one readable list rather than a condition repeated
+    down the view builders. ``method``/``path`` are the request's own, after the
+    ``/api`` prefix has been stripped.
+    """
+    if (method or "").upper() != "GET":
+        return True
+    normalized = "/" + (path or "").lstrip("/")
+    return normalized.startswith(_PAID_GET_PREFIXES)

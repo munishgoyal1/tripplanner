@@ -90,6 +90,10 @@ export default function App({ initialRequest = null }: { initialRequest?: string
   // Map + itinerary view-models handed over by a trip switch, so those panels
   // can render the new trip without a second and third round-trip.
   const [panelSeed, setPanelSeed] = useState<TripWorkspaceView | null>(null);
+  // True while a workspace fetch that will produce `panelSeed` is in flight, so
+  // the itinerary and map panels wait for it instead of each asking the server
+  // to rebuild the very trip that payload already carries.
+  const [seedPending, setSeedPending] = useState(true);
   const [loading, setLoading] = useState(true);
   const [plannerReview, setPlannerReview] = useState<PlannerReview | null>(null);
   const [assistantRequest, setAssistantRequest] = useState<{ id: number; message: string; proposalOnly?: boolean } | null>(
@@ -314,6 +318,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
       // silently — flipping the panel into its loading state made the round-trip
       // feel like the app had stalled.
       if (!options.silent) setLoading(true);
+      if (!options.viewOnly) setSeedPending(true);
       try {
         const workspaceView = options.viewOnly
           ? {
@@ -338,7 +343,10 @@ export default function App({ initialRequest = null }: { initialRequest?: string
         }
         return null;
       } finally {
-        if (generation === refreshGeneration.current && !options.silent) setLoading(false);
+        if (generation === refreshGeneration.current) {
+          if (!options.silent) setLoading(false);
+          if (!options.viewOnly) setSeedPending(false);
+        }
       }
     },
     [focus, applyView]
@@ -729,6 +737,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     tripId: chatTripId,
     mapSeed: panelSeed?.map ?? null,
     itinerarySeed: panelSeed?.itinerary ?? null,
+    seedPending,
     focusName: stopFocusName,
     focusDay: focus?.day,
     focusStop: focus?.stop,
@@ -767,6 +776,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           reloadToken={tripVersion}
           tripId={chatTripId}
           seed={panelSeed?.itinerary ?? null}
+          seedPending={seedPending}
           focusName={stopFocusName}
           focusDay={focus?.day}
           focusStop={focus?.stop}
@@ -792,6 +802,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
         reloadToken={tripVersion}
         tripId={chatTripId}
         seed={panelSeed?.map ?? null}
+        seedPending={seedPending}
         focusName={stopFocusName}
         focusDay={focus?.day}
         focusStop={focus?.stop}

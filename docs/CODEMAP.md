@@ -67,7 +67,7 @@ trip through shared API contracts.
 | `src/tripplanner/cli.py` | Local command-line experience |
 | `src/tripplanner/config.py` | Pydantic environment settings |
 | `src/tripplanner/caching.py` | Shared memory/Redis backend and environment-wide TTL policy for disposable runtime caches; stable and volatile regions have independent no-expiry overrides |
-| `src/tripplanner/places_budget.py` | Default-deny paid-provider execution **authorization** for explicit user-interaction and corpus-generation scopes; reusable view builders, audits, tests and background work cannot create a scope and so cannot spend. Per-scope call ceilings were retired in favour of the INR ceiling in `cost_ledger.py`; counts remain as telemetry and parallel workers share one thread-safe scope |
+| `src/tripplanner/places_budget.py` | Default-deny paid-provider execution **authorization** for explicit user-interaction and corpus-generation scopes; reusable view builders, audits, tests and background work cannot create a scope and so cannot spend. `route_may_spend` extends that to HTTP: a `GET` is a projection of a trip that already exists and gets no scope, so re-opening the planner cannot buy anything, while mutations, exports, shared-trip reads and an explicit corpus-generation header keep theirs. Per-scope call ceilings were retired in favour of the INR ceiling in `cost_ledger.py`; counts remain as telemetry and parallel workers share one thread-safe scope |
 | `src/tripplanner/tools/google_places.py`, `place_hours.py`, `routing.py`; `src/tripplanner/web/itinerary_export.py` | Lowest shared paid-Google cache boundaries for successful Places queries/reviews, hours payloads, Routes responses, and Static Maps images; reads precede paid-budget consumption so direct and graph callers share results |
 | `src/tripplanner/models.py` | Core trip and itinerary models |
 | `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
@@ -76,7 +76,7 @@ trip through shared API contracts.
 | `src/tripplanner/concurrency.py` | Shared bounded fan-out for independent remote work; a failed branch degrades to `None` |
 | `src/tripplanner/web/trip_view.py` | UI-independent trip view-model facade and display semantics |
 | `src/tripplanner/web/itinerary_view.py` | Structured itinerary assembly; geocoding still resolves through `trip_view._place_coords` |
-| `src/tripplanner/web/place_guide.py` | Destination-guide discovery pool, paging, and gallery item shaping |
+| `src/tripplanner/web/place_guide.py` | Destination-guide discovery pool, paging, gallery item shaping, and the revision-claimed guide/gallery warms -- the one read-triggered path still allowed to spend, and so at most once per trip revision per process |
 | `src/tripplanner/web/destination_overview.py` | Destination-level photos, attractions, reviews, and news overview |
 | `src/tripplanner/web/map_view.py` | Interactive-map view-model assembly from resolved pins |
 | `src/tripplanner/web/day_journey.py` | Transfer-day journey model: path, terminals, inter-city edges, map framing |

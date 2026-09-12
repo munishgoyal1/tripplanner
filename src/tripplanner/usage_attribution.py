@@ -219,7 +219,15 @@ class UsageBatch:
             "outbound_calls": aggregate_counts["outbound_call"],
             "llm_usage_events": aggregate_counts["llm_usage"],
             "cache_served_provider_calls": aggregate_counts["provider_call"],
-            "places": [f"{label}={decision}" for label, decision in places[:5]],
+            # Cache hits are the boring case and there are hundreds of them, so
+            # naming the first five told you nothing about the ones that cost
+            # money. Anything that was not a hit is listed first.
+            "places": [
+                f"{label}={decision}"
+                for label, decision in sorted(
+                    places, key=lambda item: item[1].endswith("hit")
+                )[:5]
+            ],
             "place_count": len(places),
         }
 

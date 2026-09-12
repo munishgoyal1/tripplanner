@@ -43,7 +43,12 @@ import httpx
 from tripplanner import billing_guardrails, http_client
 from tripplanner.config import get_settings
 from tripplanner.json_store import atomic_write_json
-from tripplanner.places_budget import consume, current_budget, use_budget
+from tripplanner.places_budget import (
+    consume,
+    current_budget,
+    paid_provider_authorized,
+    use_budget,
+)
 from tripplanner.tools.google_places import _BASE, is_configured
 
 log = logging.getLogger(__name__)
@@ -738,11 +743,18 @@ def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
     return resp.json().get("photoUri")
 
 
-def _fetch_reviews(place_id: str) -> list[dict[str, Any]]:
+def _fetch_reviews(place_id: str) -> list[dict[str, Any]] | None:
+    """The place's reviews, or ``None`` when no answer was obtained.
+
+    An empty list means Google answered and the place has no reviews worth
+    showing. ``None`` means the call never happened or failed -- a distinction
+    the caller needs, because recording "no reviews" for an unanswered call
+    caches that absence for the whole reviews TTL.
+    """
     if not place_id or not is_configured():
-        return []
+        return None
     if not consume("review_details"):
-        return []
+        return None
     try:
         resp = http_client.get(
             f"{_BASE}/places/{place_id}",
@@ -753,7 +765,7 @@ def _fetch_reviews(place_id: str) -> list[dict[str, Any]]:
         resp.raise_for_status()
     except httpx.HTTPError as exc:
         log.warning("places reviews fetch failed: %s", exc)
-        return []
+        return None
     reviews = resp.json().get("reviews") or []
     out: list[dict[str, Any]] = []
     for r in reviews[:5]:
@@ -810,34 +822,62 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
                 city=lookup_city,
             )
             return {} if _is_miss(entry) else entry  # type: ignore[return-value]
+        # Whatever we already know about this place, fresh or not. A read that
+        # may not spend serves this rather than nothing: a lapsed TTL means
+        # "worth re-checking when someone is paying", never "forget the place".
+        known: dict[str, Any] | None = entry
         if not refresh:
             durable = _durable_read(k)
-            if durable is not None and _fresh(durable):
-                with _CACHE_LOCK:
-                    cache[k] = durable
-                    _evict_if_needed()
-                _record_cache(
-                    "durable_hit",
-                    operation="text_search",
-                    sku_class="pro",
-                    place=name,
-                    city=lookup_city,
-                )
-                return {} if _is_miss(durable) else durable
+            if durable is not None:
+                if _fresh(durable):
+                    with _CACHE_LOCK:
+                        cache[k] = durable
+                        _evict_if_needed()
+                    _record_cache(
+                        "durable_hit",
+                        operation="text_search",
+                        sku_class="pro",
+                        place=name,
+                        city=lookup_city,
+                    )
+                    return {} if _is_miss(durable) else durable
+                known = known if known is not None else durable
             secondary = _secondary_read(k)
-            if secondary is not None and _fresh(secondary):
+            if secondary is not None:
+                if _fresh(secondary):
+                    with _CACHE_LOCK:
+                        cache[k] = secondary
+                        _evict_if_needed()
+                    _record_cache(
+                        "secondary_hit",
+                        operation="text_search",
+                        sku_class="pro",
+                        place=name,
+                        city=lookup_city,
+                    )
+                    _persist_entry(k)
+                    return {} if _is_miss(secondary) else secondary
+                known = known if known is not None else secondary
+        if not paid_provider_authorized():
+            # Rendering an existing trip is not a reason to buy anything. The
+            # caller is a read-only projection, so answer from what is cached
+            # and let an authorized interaction (a chat turn, an explicit
+            # refresh, the once-per-revision warm) do the learning.
+            if known is not None and entry is None:
+                # Adopt the durable copy so the next read does not repeat the
+                # point-read. It keeps its original ``__at__``, so it is still
+                # stale and an authorized caller will still re-resolve it.
                 with _CACHE_LOCK:
-                    cache[k] = secondary
+                    cache[k] = known
                     _evict_if_needed()
-                _record_cache(
-                    "secondary_hit",
-                    operation="text_search",
-                    sku_class="pro",
-                    place=name,
-                    city=lookup_city,
-                )
-                _persist_entry(k)
-                return {} if _is_miss(secondary) else secondary
+            _record_cache(
+                "read_only_miss",
+                operation="text_search",
+                sku_class="pro",
+                place=name,
+                city=lookup_city,
+            )
+            return {} if known is None or _is_miss(known) else known
         _record_cache("refresh" if refresh else "miss", place=name, city=lookup_city)
         try:
             found = _lookup_place(name, lookup_city)
@@ -911,7 +951,14 @@ def get_photos(
     info = _ensure(name, city, refresh=refresh)
     if not info:
         return []
-    if info.get("__photo_refs_schema") != _PHOTO_REFS_SCHEMA and not refresh:
+    # Upgrading an entry written before ``photo_refs`` existed costs a paid
+    # lookup, so it waits for an interaction that is allowed to pay. A read-only
+    # projection used to trigger it on every single view of the same trip.
+    if (
+        info.get("__photo_refs_schema") != _PHOTO_REFS_SCHEMA
+        and not refresh
+        and paid_provider_authorized()
+    ):
         refreshed, succeeded = refresh_details(name, city)
         if succeeded and refreshed:
             info = refreshed
@@ -942,6 +989,12 @@ def get_photos(
         photo_urls = _photo_uris(refs)
     finally:
         _PLACE_LOG_CONTEXT.reset(token)
+    if refs and not photo_urls:
+        # Nothing came back for references we hold: the resolution was declined
+        # (read-only caller) or failed. Stamping that as the answer would record
+        # "this place has no photos" for the whole photo TTL -- 180 days by
+        # default -- so leave the entry alone and keep the previous URLs.
+        return current
     with _CACHE_LOCK:
         info["photo_urls"] = photo_urls
         info["__photos_at__"] = time.time()
@@ -1003,10 +1056,11 @@ def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
             reviews = _fetch_reviews(place_id)
         finally:
             _PLACE_LOG_CONTEXT.reset(token)
-        with _CACHE_LOCK:
-            info["reviews"] = reviews
-            info["__reviews_at__"] = time.time()
-        _persist_entry(_key(name, _lookup_city(name, city)))
+        if reviews is not None:
+            with _CACHE_LOCK:
+                info["reviews"] = reviews
+                info["__reviews_at__"] = time.time()
+            _persist_entry(_key(name, _lookup_city(name, city)))
     else:
         _record_cache(
             "reviews_hit",
@@ -1033,6 +1087,9 @@ def refresh_details(name: str, city: str) -> tuple[dict[str, Any] | None, bool]:
             previous = cache.get(key)
         if previous is None:
             previous = _durable_read(key)
+        if not paid_provider_authorized():
+            known = previous if previous and not _is_miss(previous) else None
+            return known, False
         _record_cache("refresh", place=name, city=lookup_city)
         try:
             info = _lookup_place(name, lookup_city)
@@ -1086,6 +1143,7 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
                     city=destination,
                 )
                 return entry.get("names", [])  # type: ignore[union-attr]
+        known: dict[str, Any] | None = entry if isinstance(entry, dict) else None
         if not refresh:
             durable = _durable_read(ck)
             if durable is not None and _fresh(durable):
@@ -1100,6 +1158,7 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
                     cache[ck] = durable
                     _evict_if_needed()
                 return durable.get("names", [])
+            known = known if known is not None else durable
             secondary = _secondary_read(ck)
             if secondary is not None and _fresh(secondary):
                 _record_cache(
@@ -1114,6 +1173,20 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
                     _evict_if_needed()
                 _persist_entry(ck)
                 return secondary.get("names", [])
+            known = known if known is not None else secondary
+
+        if not paid_provider_authorized():
+            # Same rule as ``_ensure``: a read-only projection serves the list it
+            # has (even a lapsed one) rather than buying a new discovery search
+            # every time the workspace is opened.
+            _record_cache(
+                "read_only_miss",
+                operation="text_search",
+                sku_class="pro",
+                place=f"{kind} discovery",
+                city=destination,
+            )
+            return list(known.get("names") or []) if known else []
 
         if kind == "hotel":
             query = f"best hotels in {destination}"
@@ -1149,7 +1222,10 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
                 if name:
                     names.append(name)
         except httpx.HTTPError as exc:
+            # No answer, so nothing was learned. Caching the empty list here
+            # recorded "this destination has no hotels" for the metadata TTL.
             log.warning("top_places lookup failed for %s: %s", destination, exc)
+            return list(known.get("names") or []) if known else []
 
         with _CACHE_LOCK:
             cache[ck] = {"names": names, "__at__": time.time()}

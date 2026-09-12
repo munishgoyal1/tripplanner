@@ -221,15 +221,28 @@ async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-unt
     from tripplanner.usage_attribution import usage_scope
 
     interaction_id = request.headers.get("x-request-id", "")
-    from tripplanner.places_budget import PaidProviderPurpose, places_budget_scope
+    from tripplanner.places_budget import (
+        PaidProviderPurpose,
+        places_budget_scope,
+        route_may_spend,
+    )
 
     purpose: PaidProviderPurpose = (
         "corpus_generation"
         if request.headers.get("x-tripplanner-paid-provider-purpose") == "corpus_generation"
         else "user_interaction"
     )
+    # A read-only projection of an existing trip gets no scope at all, so it can
+    # only serve what is cached. See ``route_may_spend``. Corpus generation is
+    # the deliberate exception: that run exists to populate the cache and says so
+    # in its own header, so its reads stay authorized.
+    may_spend = purpose == "corpus_generation" or route_may_spend(
+        request.method, str(request.scope.get("path", ""))
+    )
     provider_scope = (
-        nullcontext() if os.environ.get("PYTEST_CURRENT_TEST") else places_budget_scope(purpose)
+        nullcontext()
+        if os.environ.get("PYTEST_CURRENT_TEST") or not may_spend
+        else places_budget_scope(purpose)
     )
     try:
         with request_state_scope():

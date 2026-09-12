@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   deselectItem,
+  fetchPreferences,
   fetchTripView,
   fetchSavedTrips,
+  resetInFlightRequests,
   savePreferences,
   streamChat,
   tripExportPdfUrl,
@@ -36,6 +38,7 @@ function handlers(): StreamHandlers {
 beforeEach(() => {
   localStorage.clear();
   localStorage.setItem("tripplanner_user_id", "local");
+  resetInFlightRequests();
 });
 
 describe("fetchTripView", () => {
@@ -319,5 +322,59 @@ describe("place removal", () => {
       stop: 3,
       all_occurrences: false,
     });
+  });
+});
+
+
+describe("coalesced reads", () => {
+  it("asks for the preferences once while several callers are waiting", async () => {
+    // Five components read the preferences as they mount, so opening the
+    // planner asked the server for them five times.
+    let release!: (value: Response) => void;
+    const pending = new Promise<Response>((resolve) => {
+      release = resolve;
+    });
+    const fetchMock = vi.fn().mockReturnValue(pending);
+    vi.stubGlobal("fetch", fetchMock);
+
+    const waiting = [fetchPreferences(), fetchPreferences(), fetchPreferences()];
+    release(new Response(JSON.stringify({ display_name: "Munish" }), { status: 200 }));
+    const results = await Promise.all(waiting);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(results.map((preferences) => preferences.display_name)).toEqual([
+      "Munish",
+      "Munish",
+      "Munish",
+    ]);
+  });
+
+  it("re-reads the preferences once the shared request has settled", async () => {
+    // Only the in-flight request is shared, never a settled result: saving a
+    // preference has to re-read it, not be handed what it said a moment ago.
+    const fetchMock = vi.fn().mockImplementation(() =>
+      Promise.resolve(new Response(JSON.stringify({ display_name: "Munish" }), { status: 200 })),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await fetchPreferences();
+    await fetchPreferences();
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("shares one saved-trip request between both trip switchers", async () => {
+    let release!: (value: Response) => void;
+    const pending = new Promise<Response>((resolve) => {
+      release = resolve;
+    });
+    const fetchMock = vi.fn().mockReturnValue(pending);
+    vi.stubGlobal("fetch", fetchMock);
+
+    const waiting = [fetchSavedTrips(), fetchSavedTrips()];
+    release(new Response(JSON.stringify({ trips: [{ trip_id: "t1" }] }), { status: 200 }));
+    await Promise.all(waiting);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

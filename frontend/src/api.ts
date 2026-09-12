@@ -373,9 +373,19 @@ export async function restoreDecision(
   return sharedClient.restoreDecision(decisionId, updatedAt);
 }
 
+// The trip switcher is mounted twice on a desktop workspace (toolbar and rail),
+// so both copies asked for the list on every page load. As with preferences,
+// only the in-flight request is shared.
+let savedTripsInFlight: Promise<SavedTrip[]> | null = null;
+
 /** List the user's saved trips (the "My trips" switcher). */
-export async function fetchSavedTrips(): Promise<SavedTrip[]> {
-  return sharedClient.fetchSavedTrips();
+export function fetchSavedTrips(): Promise<SavedTrip[]> {
+  if (!savedTripsInFlight) {
+    savedTripsInFlight = sharedClient.fetchSavedTrips().finally(() => {
+      savedTripsInFlight = null;
+    });
+  }
+  return savedTripsInFlight;
 }
 
 /** Load every planner panel from one active-trip snapshot. */
@@ -621,7 +631,32 @@ export interface Preferences {
   family_members?: FamilyMember[];
 }
 
-export async function fetchPreferences(): Promise<Preferences> {
+// Five components read the preferences as they mount, so opening the planner
+// asked for them five times. Only the in-flight request is shared, never a
+// settled result — saving a preference must re-read it, not be handed what it
+// said a moment earlier.
+let preferencesInFlight: Promise<Preferences> | null = null;
+
+export function fetchPreferences(): Promise<Preferences> {
+  if (!preferencesInFlight) {
+    preferencesInFlight = loadPreferences().finally(() => {
+      preferencesInFlight = null;
+    });
+  }
+  return preferencesInFlight;
+}
+
+/** Drop any coalesced request still in flight.
+ *
+ * Tests share one module instance across cases, so a request a previous case
+ * left pending would otherwise be handed to the next one and answer it with the
+ * previous case's stubbed response. */
+export function resetInFlightRequests(): void {
+  preferencesInFlight = null;
+  savedTripsInFlight = null;
+}
+
+async function loadPreferences(): Promise<Preferences> {
   const params = new URLSearchParams({ user_id: getUserId() });
   const res = await apiFetch(`${BASE}/preferences?${params.toString()}`);
   ensureOk(res, "Could not load preferences");
