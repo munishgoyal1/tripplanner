@@ -259,14 +259,16 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, s
     let cancelled = false;
     const controller = new AbortController();
     // A trip switch already returned this panel's view-model. Use it instead of
-    // asking the server to rebuild the same thing a second time. Applied here
-    // rather than during render because the first load still needs the maps
-    // config, which only this effect fetches.
+    // asking the server to rebuild the same thing a second time. Only an
+    // unconsumed seed replaces a fetch, so later trip edits refresh the map.
+    // Apply it here because the first load still needs the maps config,
+    // which only this effect fetches.
     const seeded = seedRef.current;
-    if (seeded && seeded !== consumedSeedRef.current) {
-      consumedSeedRef.current = seeded;
+    const freshSeed = seeded && seeded !== consumedSeedRef.current ? seeded : null;
+    if (freshSeed) {
+      consumedSeedRef.current = freshSeed;
       if (configLoadedRef.current) {
-        setView(seeded);
+        setView(freshSeed);
         setError(null);
         setLoading(false);
         return;
@@ -286,7 +288,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, s
       try {
         const [cfg, mv] = await Promise.all([
           fetchMapsConfig(),
-          seeded ? Promise.resolve(seeded) : fetchMapView(controller.signal),
+          freshSeed ? Promise.resolve(freshSeed) : fetchMapView(controller.signal),
         ]);
         if (cancelled) return;
         setView(mv);
