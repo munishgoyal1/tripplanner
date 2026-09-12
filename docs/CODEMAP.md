@@ -462,6 +462,7 @@ snapshots. `graph_policy.py` enforces draft creation/persistence before refineme
 | `scripts/README.md` | Developer workflow and utility script ownership |
 | `scripts/win/user/` | Windows owner-facing run and prompt-log launchers |
 | `scripts/win/user/sandbox/` | Windows owner-facing sandbox launchers (new, run, serve, stop, update, promote, discard, list) |
+| `scripts/win/user/testing/` | Windows owner-facing suite-health launcher (full pytest + vitest run against the known-failure baseline) |
 | `scripts/win/canary/` | Windows owner-facing launcher for the canary deployment |
 | `scripts/win/prod/` | Windows owner-facing launchers for the approval-gated production deployment and rollback |
 | `scripts/mac/` | macOS launcher equivalents with the same subfolder layout and base names |

@@ -148,6 +148,10 @@ pwsh scripts/dev/suite-health.ps1                 # measure master, report
 pwsh scripts/dev/suite-health.ps1 -UpdateBaseline # accept the current failures
 ```
 
+The owner launchers `scripts/win/user/testing/Suite-Health.cmd` and
+`scripts/mac/user/testing/Suite-Health.command` forward every argument to the
+same script; pass `help` for usage.
+
 This fast-forwards the primary checkout to `origin/master`, runs both complete
 suites — neither one aborting the other — and classifies every failure against
 [`test-health-baseline.json`](../../scripts/dev/test-health-baseline.json):

@@ -15,7 +15,8 @@ param(
         "apply-runtime-config",
         "azure-services-control",
         "google-maps-control",
-        "google-places-control"
+        "google-places-control",
+        "suite-health"
     )]
     [string]$Launcher
 )
@@ -134,6 +135,31 @@ It is a thin wrapper around Full-2Way-Sync's default "all" scope with
 Examples:
   Sync-All-FromMaster
   Sync-All-FromMaster -WhatIf
+"@
+    "suite-health" = @"
+Suite-Health - run the complete pytest and vitest suites once and classify them
+against scripts/dev/test-health-baseline.json.
+
+Usage: Suite-Health [-Ref master] [-BackendOnly|-FrontendOnly] [-UpdateBaseline] [-PytestTarget <path>]
+
+  -Ref             Branch to measure. master fast-forwards the primary checkout
+                   from origin/master first; any other ref runs in a temporary
+                   worktree that is removed afterwards.
+  -BackendOnly     Run pytest only.
+  -FrontendOnly    Run vitest only.
+  -UpdateBaseline  Retire fixed entries and record new ones.
+  -PytestTarget    Narrow pytest for smoke-testing this script; refuses -UpdateBaseline.
+
+Exit codes: 0 no NEW failures, 1 NEW failures, 2 a suite could not run.
+Reports land in logs/suite-health/<timestamp>/report.md, and
+logs/suite-health/latest.json points at the newest. Work the backlog with
+/fix-suite-health.
+
+Examples:
+  Suite-Health
+  Suite-Health -BackendOnly
+  Suite-Health -Ref claude/some-branch
+  Suite-Health -UpdateBaseline
 "@
     "prune-merged-branches" = @"
 Prune-Merged-Branches - delete local branches already merged into master with no lost commits.

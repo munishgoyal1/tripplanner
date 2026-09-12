@@ -4,7 +4,7 @@ This folder contains the regular owner-facing launchers. Their implementation
 stays under `scripts/dev/` so everyday commands remain easy to find.
 Windows launchers are grouped by purpose; matching macOS launchers use the same
 subfolder and base name under `scripts/mac/user/`, with a `.command` extension.
-Every launcher listed under `run/`, `sync/`, `google/`, and `azure/` accepts `help` or `?`
+Every launcher listed under `run/`, `sync/`, `google/`, `azure/`, and `testing/` accepts `help` or `?`
 as its first argument and exits after printing usage. On macOS zsh, use `help`
 or quote the wildcard as `'?'` so the shell passes it to the launcher.
 
@@ -20,6 +20,7 @@ or quote the wildcard as `'?'` so the shell passes it to the launcher.
 | `sync/Resolve-All-Recorded-Conflicts.cmd` | Scan all attached worktrees and finish pending merges covered by recorded resolutions; report new conflicts without aborting them |
 | `sync/Sync-Across-MasterSbx.cmd [sandbox]` | Rare, gated cross-lane sync: merge every sandbox into `master`, or merge one selected sandbox, then refresh all sandboxes. Requires typing `APPROVE_SANDBOX_TO_MASTER` |
 | `sync/Prune-Merged-Branches.cmd` | Delete local branches already merged into `master` with no lost commits; skips anything checked out in a worktree or registered sandbox |
+| `testing/Suite-Health.cmd [-BackendOnly\|-FrontendOnly] [-UpdateBaseline]` | Fast-forward primary `master`, run the complete pytest and vitest suites, and classify failures against the known-failure baseline; `-Ref <branch>` measures a branch in a temporary worktree |
 | `sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
 | `sandbox/Rename-Sandbox.cmd <sandbox> <new-name>` | Rename a sandbox, keeping its number and ports |
 | `sandbox/Merge-Sandbox.cmd <sandbox>` | Merge the sandbox into `master` and resynchronize it, keeping the sandbox active |
