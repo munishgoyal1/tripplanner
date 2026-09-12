@@ -45,6 +45,11 @@ def persist_interaction(
     environment = attribution.get("environment", "local")
     if not _is_enabled(environment):
         return None
+    failed = any(event.get("error") or event.get("status") in {"error", "failed"}
+                 or event.get("outcome") in {"error", "failed"} for event in events)
+    if (attribution.get("initiator") != "user_trip" and not failed
+            and not any(call.get("attempted", True) for call in provider_calls)):
+        return None
 
     occurred_at = str(
         (events[0] if events else provider_calls[0] if provider_calls else {}).get(
@@ -71,10 +76,15 @@ def persist_interaction(
                 "provider_call_count": sum(
                     int(call.get("units") or 1) for call in provider_calls
                 ),
-                "events": events,
-                "provider_calls": provider_calls,
+                "events": events if len(events) <= 200 else events[:100] + events[-100:],
+                "provider_calls": provider_calls[:100],
+                "detail_truncated": len(events) > 200 or len(provider_calls) > 100,
             },
         )
+        from tripplanner.diagnostic_retention import schedule_prune
+
+        schedule_prune(_root(), "*/*.json", max_bytes=50 * 1024 * 1024,
+                       max_age=7 * 24 * 60 * 60)
     except Exception as exc:  # noqa: BLE001 - telemetry must never fail a request
         _LOGGER.warning("interaction telemetry write failed: %s", type(exc).__name__)
         return None

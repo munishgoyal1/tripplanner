@@ -246,11 +246,11 @@ sanitized operational stream.
 Enabled by default (`TRIPPLANNER_FLIGHT_RECORDER=1`) in every environment. This is
 separate from content-free rotating logs and the local-only `debug-store` archive.
 Set `TRIPPLANNER_FLIGHT_RECORDER_DIR` to a private writable path; by default it uses
-`~/.tripplanner/flight-recorder/<environment>`. Files are written atomically and
-fsynced before returning. Windows inherits the private user's directory ACL;
+`~/.tripplanner/flight-recorder/<environment>`. Callers enqueue bounded snapshots;
+the worker writes atomic fsynced batches. Windows inherits the private user's directory ACL;
 POSIX files use mode 0600. Never commit or publish these records.
 
-When Cosmos is configured, a daemon retries the spool every ten seconds into the
+When Cosmos is configured, a daemon periodically retries the spool into the
 environment database's `flight_recorder` container (`/user_id` partition). Successful
 uploads remove the spool file. JSON is gzip/base64 encoded into <=128,000-character
 chunks with an event checksum/count. An interrupted upload retries idempotently;
@@ -260,9 +260,9 @@ worker runs. Hosted missing/unavailable Cosmos is degraded, not a successful dur
 archive. A lost container disk can lose its unuploaded spool; use persistent storage
 when this residual window is unacceptable. No per-token Cosmos writes occur.
 
-The daemon drains at most 25 events per worker pass by default (configurable with
+The daemon drains at most 25 spool batches per worker pass by default (configurable with
 `TRIPPLANNER_FLIGHT_RECORDER_BATCH_SIZE`, clamped to 1-500) and emits at most one
-progress summary per minute plus one caught-up summary. Successful `storage_operation`, `cache_access`, duplicate
+progress summary per minute. Successful `storage_operation`, `cache_access`, duplicate
 `outbound_call`, cache-served `provider_call`, and `llm_usage` events continue to feed
 alert observers, metrics, and content-free ledgers, but are intentionally absent as
 individual console/app-file and recorder-spool entries. One interaction-summary event
@@ -294,7 +294,8 @@ Prompt previews show the latest user request (up to 40 words) and latest message
 still capped at 100 words overall. Full counts and the text hash cover message
 text and tool arguments, including normalized LangChain tool calls, but exclude
 tool schemas and wire serialization. Private `http.attempt` is the exact wire
-request evidence. Multiple model rounds follow tool results; round lines give
+request evidence when verbose capture is enabled; failures retain bounded excerpts.
+Multiple model rounds follow tool results; round lines give
 the forced tool and reason. Successful cache/storage measurements remain aggregated.
 
 `COST settled` reconciles the interaction reservation with catalog-estimated
@@ -334,3 +335,31 @@ After deploying to each hosted environment, run one normal authorized planning t
 and export its trace. Verify the model/tool pairs, retry status if one occurred,
 final transcript and saved revision, and a drained healthy spool. This task's
 hermetic tests do not substitute for that live deployment smoke check.
+
+
+### Bounded recorder defaults (2026-09-12)
+
+Normal HTTP successes retain byte counts/hashes and correlation, not bodies.
+Failures retain at most 64 KiB per HTTP request/response, marked truncated when
+necessary. `TRIPPLANNER_FLIGHT_RECORDER_VERBOSE=1` enables successful HTTP body
+capture with the same bound. Model and tool callbacks retain metadata only; exact
+wire evidence has one owner at the HTTP boundary. The independent opt-in local
+`LOG_FULL_LLM_PROMPTS` console facility is unchanged.
+
+Recorder callers enqueue snapshots (at most 256 KiB each) into an 8 MiB / 512-event
+queue. A worker groups up to 25 events for the same user/trace into one spool write
+and one compressed Cosmos envelope. Queue overflow is counted and logged, with
+failure events prioritized. Normal shutdown flushes to disk without waiting for
+Cosmos. A hard crash can lose the last unflushed diagnostic events; accounting and
+trip persistence do not use this lossy queue. Export expands both old individual
+records and new batch envelopes before filtering/sorting, preserving original IDs.
+`spooled_events` is a legacy status name counting spool files/batches; queued event
+and byte counts and dropped events are exposed separately.
+
+The local recorder spool is capped at 50 MiB and seven days. The local interaction
+study archive keeps only trip turns, actual provider attempts and failures; successful
+cache-only/read-only requests do not create study files. Its details are bounded
+(200 events / 100 provider entries with truncation metadata) and retention runs
+asynchronously, at most once per ten minutes, to seven days / 50 MiB. The complete
+provider/cost ledger remains separate and is not sampled or pruned by these caps.
+Historical test-contaminated data must not be treated as verified real API usage.

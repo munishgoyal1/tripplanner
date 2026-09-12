@@ -61,9 +61,15 @@ def _repository() -> TripRepository:
 
 def load_active_trip() -> dict[str, Any] | None:
     user_id = get_user_id()
-    return request_state.get_or_load(
+    plan = request_state.get_or_load(
         ("trip", user_id, "active"), _repository().load_active
     )
+    if plan:
+        from tripplanner.usage_attribution import attribute_trip_view, current_attribution
+
+        if current_attribution().route != "POST /trips/switch":
+            attribute_trip_view(str(plan.get("trip_id") or ""))
+    return plan
 
 
 def delete_active_trip() -> None:
@@ -98,6 +104,9 @@ def load_history_trip(trip_id: str) -> dict[str, Any] | None:
 def activate_trip(plan: dict[str, Any]) -> None:
     _repository().set_active(plan)
     request_state.store(("trip", get_user_id(), "active"), plan)
+    from tripplanner.usage_attribution import attribute_trip_view
+
+    attribute_trip_view(str(plan.get("trip_id") or ""))
 
 
 def all_history_trips() -> list[dict[str, Any]]:

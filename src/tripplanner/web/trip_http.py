@@ -286,9 +286,17 @@ async def destination_overview_endpoint(
     from tripplanner.web import trip_view
 
     _set_request_user(request, user_id)
+    trip = await asyncio.to_thread(trip_planner.load_active_trip_dict)
+    trip_destination = str((trip or {}).get("destination") or "")
     if not destination:
-        trip = trip_planner.load_active_trip_dict()
-        destination = str((trip or {}).get("destination") or "")
+        destination = trip_destination
+    if destination.strip().casefold() == trip_destination.strip().casefold() and trip:
+        from tripplanner.usage_attribution import annotate_current_batch, current_attribution
+
+        annotate_current_batch(
+            interaction_id=current_attribution().interaction_id,
+            trip_id=str(trip.get("trip_id") or ""),
+        )
     return await asyncio.to_thread(
         trip_view.build_destination_overview, destination, include_news=news
     )

@@ -146,6 +146,24 @@ def test_google_operation_classifies_billable_request(
     assert http_client.google_operation(url, {"headers": headers}) == expected
 
 
+def test_google_quota_rejection_is_an_attempt_without_estimated_spend(monkeypatch):
+    from tripplanner import provider_usage
+    from tripplanner.usage_attribution import current_batch, usage_scope
+
+    monkeypatch.setattr(provider_usage, "persist_batch", lambda *args: None)
+    with usage_scope("user_action", route="GET /trip/map"):
+        http_client._record("places.googleapis.com", "ok", 10, 429, "photo_media", "photo_media")
+        http_client._record("places.googleapis.com", "ok", 10, 200, "photo_media", "photo_media")
+        rejected, accepted = current_batch().records
+        assert rejected["attempted"] is True
+        assert rejected["status"] == "http_429"
+        assert rejected["billable"] is False
+        assert rejected["billing_status"] == "quota_rejected"
+        assert rejected["estimated_cost_usd"] == 0
+        assert accepted["billable"] is True
+        assert accepted["estimated_cost_usd"] == 0.007
+
+
 def test_request_uses_the_pooled_client_and_endpoint_budget(monkeypatch) -> None:
     http_client.reset_breakers_for_tests()
     seen: dict = {}

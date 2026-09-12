@@ -941,14 +941,20 @@ than guessing.
 **Trigger:** Build or edit a trip in local, canary or production with the default
 flight recorder enabled.
 
-**Expected:** Model prompts/replies, tools, shared travel-provider attempts,
-application logs, planner API responses and saved revisions share trace identifiers
-and UTC times. Model and provider attempts retain durations, errors and observable
-retry counts. Streaming remains streaming, including partial failure evidence.
-Credential/document exclusions do not mask dates or silently truncate trip prompts.
-A spool/upload failure does not fail the user's trip; it surfaces degraded recorder
-health and retries pending files. Export detects incomplete/corrupt chunks and includes
-research preceding new-trip identity assignment. Full payloads are private operator
-data, never public analytics. Browser SDK internal requests are outside this contract.
+**Expected:** Model/tool/API metadata, shared provider attempts, semantic logs and
+saved revisions share trace identifiers and UTC times. Model/provider attempts keep
+durations, errors and retry counts. Normal success does not duplicate prompt,
+tool-result or workspace-response bodies. Failed HTTP attempts keep bounded request
+and response excerpts; `TRIPPLANNER_FLIGHT_RECORDER_VERBOSE=1` enables the same
+bounded body capture for successful HTTP calls. Each body is capped at 64 KiB;
+omission/truncation is explicit, and sensitive documents/credentials remain excluded.
+Streaming is unchanged. Recording uses a bounded asynchronous queue and batches;
+overflow is reported and prioritizes failure evidence, never blocks trip work or
+drops financial accounting. A process crash may lose unflushed diagnostic events.
+Local spool/history retention is seven days with a 50 MiB cap per diagnostic store;
+Cosmos recorder data expires after seven days. Failed uploads retain pending files
+within that budget. Export detects corrupt chunks, reads legacy and batched formats,
+and includes research preceding trip identity assignment. Browser SDK internals are
+outside this contract.
 
 **Executable proof:** `tests/test_flight_recorder.py`.
