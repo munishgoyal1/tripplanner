@@ -82,7 +82,7 @@ _NEW_TRIP_REQUEST_RE = re.compile(
 _NEW_TRIP_INTENT_RE = re.compile(
     r"(?:(?:a|an|the|my|our)\s+)*"
     r"(?:new\s+(?:trip|vacation|holiday|getaway)\b|(?:separate|another|different)\s+"
-    r"(?:(?!(?:flights?|hotels?|meals?|stops?|dates?|budget|restaurants?)\b)\w+\s+){0,3}"
+    r"(?:(?!(?:for|of|on|in|to|with|from|this|that|existing|current)\b)\w+\s+){0,3}"
     r"(?:trip|vacation|holiday|getaway)\b)",
     re.IGNORECASE,
 )
@@ -403,7 +403,9 @@ def latest_user_starts_new_trip(messages: Sequence[BaseMessage]) -> bool:
             request = str(message.content or "").strip()
             action = _TRIP_REQUEST_START_RE.search(request)
             return bool(
-                action and _NEW_TRIP_INTENT_RE.match(request[action.end():].strip())
+                action
+                and not re.search(r"\bday[ -]trip\b", request, re.I)
+                and _NEW_TRIP_INTENT_RE.match(request[action.end():].strip())
             )
     return False
 
@@ -466,7 +468,7 @@ def latest_user_requests_different_trip(
     request = str(messages[latest_human].content or "").strip()
     action = _TRIP_REQUEST_START_RE.search(request)
     if (
-        "day trip" in request.lower()
+        re.search(r"\bday[ -]trip\b", request, re.I)
         or not action
         or not _NEW_TRIP_REQUEST_RE.match(request, action.start("action"))
     ):

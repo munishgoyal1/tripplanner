@@ -1364,6 +1364,8 @@ def test_existing_empty_thailand_draft_is_persisted_before_more_research():
     ('Plan a trip to Goa', False),
     ('Plan my trip flights to Bangalore', False),
     ('Plan a day trip to Mumbai', False),
+    ('Plan another day-trip to Mumbai', False),
+    ('Plan different transport for this trip', False),
     ('Find a hotel in Paris', False),
     ('What about Japan?', False),
     ("Do not plan a new trip to Japan", False),
