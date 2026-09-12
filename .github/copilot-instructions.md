@@ -18,13 +18,6 @@ not override the canonical documents above, which govern current behavior.
 
 ## Agent workflow
 
-- Owner preference (2026-09-12), for Codex/GPT: use a fresh descriptive
-  `gpt-<feature>` branch for features; bug fixes may reuse an unoccupied,
-  clean, synchronized `gpt-bugfixes` branch, otherwise use
-  `gpt-bugfixes-<topic>`. Use a separate worktree when sharing the repository
-  with other agents or a running stack. Do not use Coordinator or generic
-  agent branches. This takes precedence over the older Coordinator and
-  default-master rules below for Codex; publish via an ordinary reviewed PR.
 - Keep the current chat title to a concrete 4-5 word summary of the latest task.
   Reconsider it after every prompt in the primary or sandbox VS Code window.
 - A chat session titled or opened for a specific sandbox (`sbx-N` / `sandbox/N-*`)
@@ -50,19 +43,20 @@ not override the canonical documents above, which govern current behavior.
 - Before every new code change, require a clean worktree, fetch `origin`, and
   synchronize the active branch with latest `origin/master`. Resolve conflicts
   and re-read affected files before editing.
-- In the primary Coordinator chat, every fix the owner asks for belongs to the
-  dedicated `multiagent/coordinator` worktree and branch by default. Do not create
-  an issue, dispatch a worker,
-  or move the fix to a sandbox because it is large or touches several files; only
-  do so when the owner explicitly requests that handoff. At the start of every
-  owner request that may edit files, verify the Coordinator worktree is clean,
-  fetch `origin`, and merge current `origin/master` into the Coordinator branch.
-  Commit the completed fix, then use `Publish-Coordinator` to merge it through a
-  pull request, fast-forward primary `master`, and synchronize all registered
-  sandboxes before reporting it done.
-- The primary `master` workspace is the default development lane. Use a fresh,
-  task-named sandbox only for an isolated feature or UX Lab. A sandbox returns to
-  `master` only through its validated promotion flow.
+- Start every feature or bug fix on a fresh, agent-identifiable branch from current
+  `origin/master`. Codex/GPT branches use `gpt-<task-name>`; do not use generic
+  `coordinator` or `multiagent/coordinator` branches. Git branches are cheap and
+  do not require a new worktree, dependency install, or running stack.
+- For bug fixes, Codex may reuse `gpt-bugfixes` only when it is clean, synchronized,
+  and not being used by another agent. Never share an active branch between agents.
+  Keep the current branch for follow-ups to the same unfinished feature.
+- Commit and push completed work, merge through a pull request, fast-forward clean
+  primary `master`, and synchronize registered sandboxes. Use the ordinary PR flow
+  for named GPT branches rather than `Publish-Coordinator`. Do not dispatch other
+  agents or create an issue unless the owner's request or intake rules require it.
+- Primary `master` owns the local stack and receives merged work; do not implement
+  features or bug fixes directly on it. A separate sandbox is needed only for an
+  isolated runtime or UX Lab and returns through its validated promotion flow.
 - When the owner asks for a reviewable branch in the primary checkout, branch
   from current `origin/master`, land one coherent change, merge through a pull
   request, fast-forward local `master`, and delete the branch. Do not leave

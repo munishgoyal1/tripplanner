@@ -411,10 +411,17 @@ user action
 ```text
 conversation or explicit edit
   -> extract structured preference
-  -> additive merge
+  -> merge stated scalars and additive lists, preserving concurrent edits
   -> persist About Me profile
   -> apply only at relevant planning boundaries
 ```
+
+`tools/passive_learning.py` queues background extraction in the user's preference
+document and drains up to four pending messages per sweep; failures retry on later
+turns. `tools/profile_suggestions.py` owns automatic-save receipts and conditional
+Undo as well as optional suggestions. `chat_turn.py` supplies recent conversational
+context on completed and interrupted turns; background workers use separate request
+snapshots. `graph_policy.py` enforces draft creation/persistence before refinement.
 
 ## Repository Map
 

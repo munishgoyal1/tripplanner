@@ -64,6 +64,13 @@ background and time-boxed, and the planner always renders the plan it already ha
 
 ## Capability index
 
+First itineraries are persisted before additional research in every planning mode;
+traveller/place/preference cards are optional refinement afterwards. Saved family
+rosters supply editable party defaults. Conversational learning saves explicit
+durable facts automatically with Undo, recent-message context, durable retry work,
+deduplication and protection against concurrent edits. Temporary trip choices remain
+trip-scoped; missing origin stays TBD instead of implying self-arranged travel.
+
 Operational trip flow logs correlate semantic events by stable trip/interaction
 keys and model call IDs, report terminal failures accurately, preview recent
 message context with full message-text counts, and distinguish unknown model
@@ -172,17 +179,17 @@ re-describing the whole product.
 
 ### PLAN-01 - Preference-aware planning flow
 
-- The agent loads known preferences before the one-step new-trip kickoff. Direct
-  mode uses that review and then builds without further questions; interactive
-  mode may include unresolved critical facts in the same review.
+- The agent loads known preferences and duration advice, then creates and persists
+  the first itinerary without a review gate in either mode. Interactive mode may
+  offer optional refinements after the draft is saved.
 - Explicit requests for a new, separate, another, or different trip start the
-  new-trip kickoff even when another trip's chat is active. After the user submits
-  or skips that kickoff, the graph requires `create_trip_plan`; the prior trip and
+  new-trip flow even when another trip's chat is active. After loading preferences
+  and duration advice, the graph requires `create_trip_plan`; the prior trip and
   its transcript remain separate.
 - Trip dates, travelers, origin, destination, budget, pace, food, mobility, and
   lodging needs shape the plan.
-- Every new trip runs an explainable duration advisor before the structured
-  kickoff. Explicit user duration remains authoritative; otherwise destination
+- Every new trip runs an explainable duration advisor before creation.
+  Explicit user duration remains authoritative; otherwise destination
   scope, likely preference-matched places, visit/travel workload, arrival and
   departure capacity, desired free time, and major-attractions-per-day determine
   a fitting recommendation instead of a universal seven-day fallback.

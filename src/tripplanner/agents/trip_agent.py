@@ -65,6 +65,11 @@ def get_travel_preferences() -> str:
     # never surface it to the agent — it's noise in the reasoning context.
     prefs.pop("behavior_signals", None)
     prefs.pop("_promoted_signals", None)
+    prefs.pop("_learning_pending", None)
+    prefs.pop("_learning_processed", None)
+    prefs.pop("_learning_sequence", None)
+    prefs.pop("_learned_field_versions", None)
+    prefs.pop("profile_updates", None)
     prefs["configured_preference_fields"] = sorted(
         str(field) for field in prefs.get("_explicit_fields") or []
     )

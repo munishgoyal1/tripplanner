@@ -1809,3 +1809,17 @@ the outcome.
 - Keep quota-rejected attempts observable without pricing them as successful
   responses; retain the precise quota limit in alerts. Gross catalog estimates,
   eligible regional rates, free allowances, and provider invoices are distinct.
+
+## 2026-09-12 - Persist The Draft And Learn Without Approval Gates
+
+- A profile suggestion is not saved memory. Explicit conversational facts need an
+  automatic durable write, a visible receipt and conditional Undo; uncertain facts
+  should not become permanent defaults. Schema defaults must not defeat stated facts.
+- First-plan completion belongs in the graph policy and persisted state, not just
+  prompt wording. Obsolete kickoff cards must not block an empty itinerary, and
+  the saved family roster must outrank stale legacy counters.
+- Background extraction needs recent context, durable pending work, idempotency,
+  and isolated request snapshots. Preserve concurrent edits and newer facts when
+  retrying older failed messages; do not make provider latency a chat input gate.
+- Agent-identifiable task branches keep concurrent ownership clear. Git branches
+  are cheap; isolated dependency installs and runtimes are separate choices.

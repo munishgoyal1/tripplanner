@@ -45,12 +45,15 @@ inventory. World knowledge proposes; grounded tools verify. The current default
 and the change rubric live in
 [research/azure-openai-planning-model-2026-09.md](research/azure-openai-planning-model-2026-09.md).
 
-New-trip planning is automation-first. With smart defaults enabled, start from a
+New-trip planning is automation-first in every planning mode. Start from a
 one-line destination request: explicit facts win, then saved traveller/family
 context and relevant history, then labelled editable assumptions. Do not require
 confirmation of ordinary party, date, duration or preference defaults. Never invent
 an origin or provider facts. Ask only when an indispensable answer prevents any
-useful itinerary. With defaults disabled, offer one consolidated prefilled review.
+useful itinerary. Interactive mode permits optional refinement after the first
+saved itinerary. Old kickoff cards cannot block an empty draft. Persist the useful
+day-by-day proposal before additional research, then enrich it with provider facts.
+Missing origin remains unresolved travel, not self-arranged arrival.
 Research hotels with a bounded place fallback; unavailable inventory becomes a
 city-specific Hotel TBD with visible workspace and final-summary gaps. Preserve
 date, geography and journey integrity, and distinguish a useful draft from a
@@ -86,10 +89,16 @@ cross-user learning may influence this estimate only through privacy-safe,
 versioned cohort aggregates with minimum sample and confidence gates; another
 traveler's itinerary is never exposed or copied.
 
+Clear durable personal facts are saved automatically in the background, with a
+nonblocking acknowledgement and Undo. Recent context resolves short answers;
+failed extraction is retained and retried on later turns. Explicit scalar facts
+replace stale values, while edits made during extraction are preserved. Uncertain
+statements and one-trip exceptions must not become permanent preferences.
+
 The Assistant is the primary itinerary-building surface. It starts from saved
 preferences and trip history, distinguishes durable defaults from one-trip
 exceptions, and asks at most one consolidated question when an unresolved fact
-would materially change the plan. Capable clients should render that question as
+would materially improve a saved draft. Capable clients render that question as
 prefilled structured controls with a skip/default path; typed data, not model-authored
 markup, owns those interactions. Who joins is a trip fact: use explicit counts first,
 then saved context as an editable assumption when smart defaults are enabled.
@@ -367,10 +376,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   revision as a new corrective turn because completed turns may already have
   changed the authoritative itinerary.
 - **Assistant input**: show the saved or inferred defaults already being applied,
-  then ask only for useful trip-specific changes. Every new trip begins with this
-  single compact review after preferences load and before plan creation; direct
-  mode proceeds without follow-up questions after submit or skip. Structured prompts
-  prefill every field and offer one build/continue action plus a default skip path.
+  and build the first itinerary immediately. Optional controls refine the saved
+  itinerary afterwards; ordinary traveller, place and preference choices never
+  require a pre-plan review. Structured refinements prefill known values and offer
+  a skip path while the useful itinerary stays visible.
   The selected Option B corner conversation sheet and structured controls are implemented in
   the main web app. No hosted deployment is implied.
 - **Itinerary scanning**: each day header shows stop count, `Schedule duration`,
