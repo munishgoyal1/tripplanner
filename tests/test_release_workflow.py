@@ -425,6 +425,27 @@ def test_hosted_deployments_surface_azure_cli_failures() -> None:
         assert "$deployExitCode = $LASTEXITCODE" in deploy_block
         assert "if ($deployExitCode -ne 0)" in deploy_block
 
+        # What-if is the only pre-deploy template validation, so its errors
+        # must be captured, never discarded.
+        what_if_block = script.split("$whatIfOutput = @(az deployment group what-if", 1)[1]
+        what_if_block = what_if_block.split("Assert-DeploymentHasNoDeletes", 1)[0]
+        assert "--output json 2>&1)" in what_if_block
+        assert "2>$null" not in what_if_block
+        assert "Azure CLI output:`n$whatIfErrors" in what_if_block
+
+
+def test_hosted_deployments_do_not_compile_bicep_for_a_redundant_validate() -> None:
+    root = Path(__file__).parents[1]
+    common = (root / "infra" / "deployment-common.ps1").read_text(encoding="utf-8")
+
+    for name in ("deploy-canary.ps1", "deploy-prod.ps1"):
+        script = (root / "infra" / name).read_text(encoding="utf-8")
+        # what-if runs ARM preflight validation and `create` repeats it; a
+        # standalone validate only paid for another full Bicep compile.
+        assert "az deployment group validate" not in script
+        assert '$stageName = "Prerequisite checks"' in script
+    assert '$env:AZURE_BICEP_CHECK_VERSION = "false"' in common
+
 
 def test_production_cache_sync_defaults_to_approval_gated_two_way_merge() -> None:
     script = (
@@ -503,7 +524,7 @@ def test_image_is_built_from_the_pinned_commit_not_the_live_checkout() -> None:
 
     pin = canary.index("$buildCommit = (git rev-parse --verify --quiet HEAD")
     preflight = canary.index("Resolve-GhcrPublishCredential")
-    validation = canary.index("az deployment group validate")
+    validation = canary.index("az deployment group what-if")
     push = canary.index('"$PSScriptRoot/push-image.ps1" -Tag $ImageTag -Commit $buildCommit')
     assert pin < preflight < validation < push
 

@@ -2109,3 +2109,17 @@ the outcome.
 - A size cap is also a scan cost. Raising the spool cap to 500 MiB meant walking
   tens of thousands of files after every batch and every 2-second drain, so
   `prune_spool` now runs at most once a minute per directory.
+
+## 2026-09-13 - Find the slow layer before blaming the remote service
+
+- "Bicep validation" measured 60s and 255s on the same template. A timestamped
+  `az --debug` trace put about 5s in ARM and the rest locally, before any request:
+  `az` launches `bicep.exe` for the template and again for the `.bicepparam`, and
+  each launch ranged from ~4s warm to tens of seconds under memory pressure or
+  just after Modern Standby. The slow deploy had started 72s after resume.
+- The fix was to stop paying for a redundant compile, not to tune Azure: what-if
+  already runs ARM template validation and `create` repeats it, so a standalone
+  `validate` bought nothing. When removing a step that produced diagnostics,
+  make the surviving step report them; what-if had been discarding stderr.
+- A timing loop that crosses standby reports sleep as work. Check Kernel-Power
+  506/507 events before believing an outlier.
