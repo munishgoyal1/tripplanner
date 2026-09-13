@@ -272,7 +272,22 @@
         "dailyBudget": 500,
         "budget": 5000
       }
-    ]
+    ],
+    "cosmos": {
+      "$comment": "DERIVED by scripts/derive_limits.py from cosmosSizing in config/cost-model.json plus COST_CEILING_INR_HOURLY and CHAT_MAX_CONCURRENT_GLOBAL in config/environments/*.env. Do not hand-edit. ruPerSecond is the shared database throughput infra/data.bicep provisions; freeTierShareRuPerSecond records each environment's slice of the account-wide 1000 RU/s free grant, so it is visible when the three databases together outgrow it.",
+      "local": {
+        "ruPerSecond": 600,
+        "freeTierShareRuPerSecond": 500
+      },
+      "canary": {
+        "ruPerSecond": 600,
+        "freeTierShareRuPerSecond": 150
+      },
+      "prod": {
+        "ruPerSecond": 600,
+        "freeTierShareRuPerSecond": 350
+      }
+    }
   },
   "gcpQuotaAlertPolicies": {
     "$comment": "INFRA/ERROR ALERT (not billing), GCP side. Fires a GCP Monitoring alert policy when any entry in gcp.quotas above rejects a call (serviceruntime.googleapis.com/quota/exceeded). Consumed by infra/gcp/apply-billing-guardrails.ps1, which previously hardcoded these same values inline -- moved here so they're visible without reading the script. Notifies the 'Owner email' channel (created from alertEmail above if absent); auto-closes if the condition stops recurring.",
@@ -331,11 +346,11 @@
       }
     ],
     "cosmosThrottlingAlert": {
-      "description": "Alerts when Cosmos DB returns at least twenty throttled requests in fifteen minutes.",
+      "description": "Alerts when Cosmos DB returns at least 40 throttled requests in 15 minutes, which is about 1 percent of the operations a peak burst may legitimately issue.",
       "severity": 3,
       "evaluationFrequency": "PT5M",
       "windowSize": "PT15M",
-      "threshold": 20
+      "threshold": 40
     }
   }
 }

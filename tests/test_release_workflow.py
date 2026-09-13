@@ -76,7 +76,7 @@ def test_every_runtime_limit_in_a_profile_reaches_the_deployed_container() -> No
 def test_the_spend_ceiling_is_identical_in_every_environment() -> None:
     """One INR budget governs local, canary and production alike.
 
-    The owner sets three numbers; everything else is derived or is not a cost
+    The owner sets four numbers; everything else is derived or is not a cost
     control. Per-environment ceilings would reintroduce the situation where
     canary throttles differently from local and a trip that works in one fails
     in the other for reasons unrelated to the code.
@@ -96,6 +96,7 @@ def test_the_spend_ceiling_is_identical_in_every_environment() -> None:
 
     assert ceilings["local"] == ceilings["canary"] == ceilings["prod"]
     assert ceilings["local"] == {
+        "COST_CEILING_INR_HOURLY": "400",
         "COST_CEILING_INR_DAILY": "1000",
         "COST_CEILING_INR_WEEKLY": "5000",
         "COST_CEILING_INR_MONTHLY": "10000",

@@ -128,9 +128,20 @@ Investigate a repeated production regression in this order:
 5. Change code, cache policy, throughput, or hosting only when that evidence identifies
    the controlling cost or latency source.
 
-Cosmos request-charge (RU) capture is not implemented. Current application timings show
-client-observed duration and write payload bytes, while Azure Cosmos metrics remain the
-authoritative source for normalized RU consumption and throttling.
+Cosmos request-charge (RU) capture is implemented. Every point operation in
+`storage_cosmos.py` passes a `response_hook` that records the service's
+`x-ms-request-charge` onto that operation's `storage_operation` event as `ru`,
+alongside the client-observed duration and write payload bytes it already carried.
+Azure Cosmos metrics remain the authoritative source for account-level normalized RU
+consumption and throttling; the per-operation `ru` field is what makes an individual
+container or document shape attributable.
+
+That field is also how the provisioned throughput stays honest. `ruPerSecond` in
+`infra/billing-guardrails.json` is derived from the `cosmosSizing.tripOpProfile`
+estimate in [`config/cost-model.json`](../../config/cost-model.json), not measured.
+Compare observed `ru` per container against that profile when reviewing spend, and
+correct the profile rather than the derived output — editing the guardrails file by
+hand is what the derivation exists to prevent.
 
 ## Cost review
 

@@ -4,7 +4,19 @@ ContainerAppConsoleLogs_CL
     level = toupper(tostring(event.level)),
     event_kind = tostring(event.event_kind),
     outcome = tostring(event.outcome),
-    status = tostring(event.status)
+    status = tostring(event.status),
+    status_code = toint(event.status_code),
+    store = tostring(event.store)
+// Cosmos throttling is not an application failure. A 429 is retried by the
+// Cosmos SDK and the caller never sees it, but app_event() still logs the
+// attempt at ERROR, which swept every throttled operation into this severity-1
+// rule -- one page per five-minute window for a condition that is only
+// meaningful in aggregate. It has its own rule (cosmosThrottlingAlert, severity
+// 3) with a derived threshold over a fifteen-minute window, which is where
+// throttling is actually assessed. Excluding it here matches how the in-app
+// mirror in src/tripplanner/alert_events.py has always routed these events:
+// to cosmos_throttling only, never to application_failure.
+| where not(event_kind == "storage_operation" and store == "cosmos" and status_code == 429)
 | where level in ("ERROR", "CRITICAL")
     or (event_kind == "chat_operation" and outcome == "error")
     or (event_kind == "tool_call" and status == "error")
