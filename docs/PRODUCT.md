@@ -54,8 +54,10 @@ useful itinerary. Interactive mode permits optional refinement after the first
 saved itinerary. Old kickoff cards cannot block an empty draft. Persist the useful
 day-by-day proposal before additional research, then enrich it with provider facts.
 Missing origin remains unresolved travel, not self-arranged arrival.
-Research hotels with a bounded place fallback; unavailable inventory becomes a
-city-specific Hotel TBD with visible workspace and final-summary gaps. Preserve
+Research hotels with a bounded place fallback. Recommend a suitable grounded
+property even when its room rate and date availability remain unverified. Only
+missing suitable property evidence becomes a city-specific Hotel TBD, with the
+research reason visible in the workspace and final summary. Preserve
 date, geography and journey integrity, and distinguish a useful draft from a
 booking-ready plan. The traveller refines a useful proposal, rather than doing the
 planner's research or resolving every provider failure.

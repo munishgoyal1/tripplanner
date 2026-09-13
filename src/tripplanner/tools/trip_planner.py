@@ -190,6 +190,13 @@ def _sync_replaced_hotel_anchors(
                     for location in lodging_locations
                     if re.search(rf"\b{re.escape(location)}\b", anchor_text)
                 }
+                named_city = re.search(
+                    r"\bhotel\s+(?:tbd|tbc)\s*[-,:]\s*(.+)$", stop_name, re.I
+                )
+                if named_city:
+                    anchor_locations.add(named_city.group(1).strip().lower())
+                if anchor_locations - {destination}:
+                    anchor_locations.discard(destination)
                 location_matches = [
                     hotel
                     for hotel in selected_values
@@ -205,8 +212,13 @@ def _sync_replaced_hotel_anchors(
                     replacement_locations = explicit_locations(placeholder_replacement)
                     if (
                         not anchor_locations
-                        or not replacement_locations
                         or anchor_locations & replacement_locations
+                        or (not replacement_locations and any(
+                            re.search(rf"\b{re.escape(anchor)}\b", str(
+                                placeholder_replacement.get("name", "")
+                            ) + " " + str(placeholder_replacement.get("address", "")), re.I)
+                            for anchor in anchor_locations
+                        ))
                     ):
                         replacement = placeholder_replacement
             if replacement is None:
@@ -1513,12 +1525,17 @@ def update_trip_plan(updates_json: str) -> str:
         "selected_flights", "selected_hotels", "selected_activities",
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
         "origin", "budget", "currency", "weather", "trip_constraints",
-        "visa", "travel_scope",
+        "visa", "travel_scope", "lodging_research",
     }
     before = json.loads(json.dumps(plan))  # deep copy for diff
     merged_partial_itinerary = False
     for key, val in updates.items():
         if key in allowed_keys:
+            if key == "lodging_research":
+                if not isinstance(val, dict):
+                    continue
+                val = {**(plan.get("lodging_research") or {}),
+                       **{city: row for city, row in val.items() if isinstance(row, dict)}}
             if key == "budget":
                 if isinstance(val, int | float) and not isinstance(val, bool):
                     val = {

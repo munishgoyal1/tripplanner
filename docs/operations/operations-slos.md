@@ -72,7 +72,7 @@ user's existing Azure CLI session and sends no email.
 Every terminal `POST /chat` and `POST /chat/stream` path emits one
 `chat_operation` event with:
 
-- `outcome`: `completed`, `replayed`, `capped`, or `error`.
+- `outcome`: `completed`, `replayed`, `cost_limited`, `rate_limited`, `interrupted`, or `error`.
 - `duration_ms`: elapsed time from request admission through terminal result.
 - `transport`: `json` or `sse`.
 - `error`: exception class for failures, never the exception message.
@@ -83,10 +83,11 @@ metadata: deployment, HTTP status, inferred token/request scope, retry delay,
 and remaining token/request headers when Azure returns them. Response bodies,
 prompts, credentials, and user text are never included.
 
-`completed` and `replayed` are successful service outcomes. `capped` is an
-intentional product-policy outcome and is excluded from the reliability
-numerator and denominator. `error` includes admission, persistence, usage-check,
-model, tool-graph, and final transcript-save failures.
+`completed` is a successful newly executed request. Replay and policy rejection
+(`cost_limited`, legacy `capped`, and `rate_limited`) are excluded from the request
+completion denominator. `error` includes admission/setup, persistence, usage-check,
+model, tool-graph, and final transcript-save failures. `interrupted` means the SSE
+response closed before a terminal event; it is unsuccessful even when user initiated.
 
 ## Initial objectives
 
@@ -105,6 +106,25 @@ hosted smoke suite before and after promotion. A true uptime SLO needs an
 external scheduled probe; Container App logs alone cannot detect requests that
 never reach the app.
 
+## Request completion and model recovery measurements
+
+The process-local operations snapshot adds `chat_turns.attempted` and
+`chat_turns.completion_rate` (0-1). The denominator includes `completed`, `error`
+and `interrupted` requests; replay and policy rejection are excluded. Empty
+samples return null. This measures finishing the request and saving its response,
+not itinerary quality or booking readiness. The window is the last 500 recorded
+chat outcomes in this process and resets on restart.
+
+`model_recovery` reports `calls`, `recovered`, `exhausted` and `recovery_rate`.
+Its independent sample is the last 500 model calls needing the additional retry,
+not all requests. Attributed `model_recovery` events retain `retrying`, `recovered`
+and `exhausted` outcomes for durable investigation; flow summaries also count
+recovered and exhausted model calls. Failed attempts may coexist with a completed
+request, so use terminal `chat_operation` for request success. Closing an unfinished
+SSE stream records `interrupted`; include this outcome alongside `error` in chat
+success-rate queries. Fault-injection tests prove behavior, not a production rate.
+Keep reporting insufficient data below the existing SLO sample threshold.
+
 ## Log Analytics queries
 
 Replace the app-name predicate only if resource naming changes. Container Apps
@@ -121,11 +141,11 @@ ContainerAppConsoleLogs_CL
 | extend event = parse_json(Log_s)
 | where tostring(event.event_kind) == "chat_operation"
 | extend outcome = tostring(event.outcome), duration_ms = todouble(event.duration_ms)
-| where outcome != "capped"
+| where outcome in ("completed", "error", "interrupted")
 | summarize
     accepted = count(),
-    succeeded = countif(outcome in ("completed", "replayed")),
-    errors = countif(outcome == "error"),
+    succeeded = countif(outcome == "completed"),
+    errors = countif(outcome in ("error", "interrupted")),
     p95_ms = percentile(duration_ms, 95)
 | extend
     success_rate_pct = round(100.0 * succeeded / accepted, 2),

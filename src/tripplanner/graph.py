@@ -30,6 +30,7 @@ from tripplanner.agents.trip_agent import (
     select_tools,
 )
 from tripplanner.config import get_settings
+from tripplanner.model_recovery import invoke_model
 from tripplanner.observability import app_event, log_llm_prompt
 from tripplanner.tools.trip_planner import load_active_trip_dict
 from tripplanner.tools.user_preferences import load_preferences
@@ -528,8 +529,8 @@ def trip_agent(state: AgentState) -> AgentState:
             )),
         ]
         _CURRENT_TURN_PHASE.set((turn_number, decision.tool_phases + 1))
-        response = _get_llm().invoke(
-            instructions + _messages_for_model(state["messages"])
+        response = invoke_model(
+            _get_llm(), instructions + _messages_for_model(state["messages"])
         )
         return {"messages": [response], "current_agent": "trip"}
 
@@ -558,8 +559,8 @@ def trip_agent(state: AgentState) -> AgentState:
             )),
         ]
         _CURRENT_TURN_PHASE.set((turn_number, decision.tool_phases + 1))
-        response = _get_llm().invoke(
-            instructions + _messages_for_model(state["messages"])
+        response = invoke_model(
+            _get_llm(), instructions + _messages_for_model(state["messages"])
         )
         return {"messages": [response], "current_agent": "trip"}
 
@@ -658,7 +659,10 @@ def trip_agent(state: AgentState) -> AgentState:
             "Keep the usable itinerary and clearly summarize these unresolved gaps: "
             + " ".join(decision.completion_gaps)
             + " After hotel provider and place fallback research, do not repeat searches "
-            "or stop to ask for a hotel. Keep a city-specific Hotel TBD itinerary anchor, "
+            "or stop to ask for a hotel. If a suitable real property was returned, select it "
+            "with its city and availability_status=unverified when no room offer is verified. "
+            "One suitable hotel is enough; unknown prices alone do not justify Hotel TBD. "
+            "Only when no suitable property was returned, keep a city-specific Hotel TBD anchor, "
             "never a fabricated selected property, rate or booking. Call out that transfer "
             "times and totals affected by missing evidence remain provisional."
         )))
@@ -669,7 +673,20 @@ def trip_agent(state: AgentState) -> AgentState:
             "Ask the user to approve an option before any later mutation turn."
         )))
     _CURRENT_TURN_PHASE.set((turn_number, decision.tool_phases + 1))
-    response = llm.invoke(instructions + _messages_for_model(state["messages"]))
+    response = invoke_model(llm, instructions + _messages_for_model(state["messages"]))
+    if not flight_followup:
+        from tripplanner.hotel_research import current_hotel_research
+
+        research = current_hotel_research(state["messages"])
+        for call in response.tool_calls:
+            if call["name"] == "update_trip_plan" and research:
+                try:
+                    updates = json.loads(call["args"].get("updates_json", ""))
+                    if isinstance(updates, dict):
+                        updates["lodging_research"] = research
+                        call["args"]["updates_json"] = json.dumps(updates)
+                except (ValueError, TypeError):
+                    pass
     if flight_followup:
         for call in response.tool_calls:
             if call["name"] == "update_trip_plan":

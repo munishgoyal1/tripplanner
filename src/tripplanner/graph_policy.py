@@ -116,7 +116,7 @@ _OWN_ARRIVAL_RE = re.compile(
     re.IGNORECASE,
 )
 _LODGING_GAP_RE = re.compile(
-    r"\b(?:no concrete hotel|hotel placeholders?|no bookable property|"
+    r"\b(?:no concrete hotel|hotel tbd|hotel placeholders?|no bookable property|"
     r"no concrete lodging anchor)\b",
     re.IGNORECASE,
 )

@@ -32,11 +32,22 @@ unrelated selections and intermediate-day rewrites and skips whole-trip repair
 on that path. Repeated no-op/rejected saves terminate through the policy's
 `stopped_for_no_progress` result and a final model call without tools.
 
+Hotel searches return structured `hotel_research` alongside fallback `candidates`
+or normalized live offers. `graph.py` attaches current-turn evidence to the next
+non-flight update as `lodging_research`; `tools/trip_planner.py` merges it by city.
+The itinerary and completion-gap projection expose matching date/city reasons.
+The SSE adapter publishes successful `trip_agent` outputs rather than partial
+model stream events, so retrying a model invocation cannot duplicate displayed text.
+`day_journey.py` retains completed local path segments when an unresolved transfer
+resets the active path; `map_view.py` builds legs separately for each segment.
+
 ## Runtime Ownership
 
 | Path | Owns |
 | --- | --- |
 | `src/tripplanner/graph.py` | Agent/tool loop, model invocation and telemetry, and model-facing tool-result budget |
+| `src/tripplanner/model_recovery.py` | One retry for transient model read/protocol failures at the invocation boundary, never the graph/tool boundary; recovery events and sampled metrics |
+| `src/tripplanner/hotel_research.py` | Current-turn hotel tool evidence, city/date research persistence payload and lodging concerns; rates and availability stay distinct from property recommendations |
 | `src/tripplanner/graph_policy.py` | Pure forced-tool and completion-requirement precedence, semantic tool-phase budget, conservative whole-trip intent, creation/resume confirmation eligibility and departure-notice text |
 | `src/tripplanner/state.py` | Shared graph state and merge behavior |
 | `src/tripplanner/prompts.py` | Agent instructions, dated prompt assembly and compact current-trip facts supplied by the graph on every model call; full itinerary detail remains behind get_trip_plan |

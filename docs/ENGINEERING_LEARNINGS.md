@@ -2053,3 +2053,16 @@ the outcome.
 - A setting named full prompt logging still truncated after 20,000 characters.
   Verify the retained tail and tool configuration, not merely that a log field
   exists. Turn ordinals count user requests; many model rounds can share one turn.
+
+
+## 2026-09-12 - Recover model calls without replaying trip writes
+
+- Retry an incomplete model invocation rather than its surrounding graph. A real
+  streamed-model fault test proves that an already executed save happens once,
+  failed fragments never reach the response, and a persistent disconnect terminates.
+- A new human-readable hotel gap can accidentally become a hard completion gate.
+  Classify research explanations as lodging gaps and test bounded completion as
+  well as persistence. Keep property identity separate from room inventory.
+- Resetting a route at an unresolved transfer must preserve prior local segments.
+  Measure and render segments independently; flattening them before calculating
+  legs invents a connection across the unresolved gap.

@@ -81,6 +81,20 @@ either enabled (the default) or disabled.
   hotel/rate, and a clear final-summary and persistent workspace gap. Missing inventory
   does not trigger an indefinite completion-repair loop or a request to choose a hotel.
   Such a draft is not booking-ready; date, geography and journey-integrity checks remain.
+- A missing inventory provider, empty room inventory, or provider failure triggers
+  one bounded hotel-specific Places fallback within the hotel search. One suitable
+  grounded property is enough for a recommendation; unverified room price,
+  occupancy, refundability and date availability remain explicit. Research results
+  carry city, dates, status, candidate count and reason into the next saved update.
+  Each Hotel TBD shows its matching reason, or explicitly says research is not
+  recorded. A city-specific placeholder cannot borrow a name-only hotel in another
+  city. Hotel research gaps never extend the completion repair loop.
+- A transient model read/protocol failure retries only that model invocation, once.
+  Previously executed tools are not replayed. SSE publishes text from successful
+  agent responses, discarding failed-attempt fragments while progress and tool
+  events continue. Repeated failure preserves the existing interrupted-turn path.
+  Request completion and recovery-attempt outcomes are measured independently;
+  closing an unfinished SSE response records an interrupted request.
 - Submitted party counts and relationship are persisted with the trip, used for
   whole-party budgets and provider occupancy, and shape lodging, pace, transport,
   meal timing, accessibility, and age-appropriate experiences.
@@ -110,6 +124,8 @@ either enabled (the default) or disabled.
 
 **Executable proof:**
 
+- [`tests/test_trip_reliability.py`](../tests/test_trip_reliability.py) - bounded model fault injection, SSE fragment isolation, tool non-replay, hotel evidence, and completion/recovery denominators
+- [`tests/test_trip_plan.py`](../tests/test_trip_plan.py) - `test_lodging_research_is_saved_and_city_results_are_merged`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_hotel_fallback_uses_successful_result_from_parallel_batch`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `keeps timely build progress in the top bar until the refreshed itinerary is ready`
 - [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `shows immediate and friendly progress while a turn is running`
@@ -867,6 +883,13 @@ starts from a city/home-area point connects that `O` endpoint to the first
 destination place; both endpoints remain in the day circuit and route focus.
 Clicking a route-shaped drive or toy-train itinerary row frames the complete
 dotted day route, including for legacy rows persisted with a generic kind.
+Local travel before, between and after transfers remains represented. An unresolved
+flight or rail gap splits the path into separately drawable segments; it must not
+erase earlier local edges or fabricate a ground bridge. Itinerary travel totals
+sum local sections independently and do not offer a single Google Maps route
+across separated sections. A missing hotel coordinate remains a visible evidence
+gap; route rendering does not repair historical schedule or geography errors.
+
 
 **Executable proof:**
 
@@ -874,6 +897,7 @@ dotted day route, including for legacy rows persisted with a generic kind.
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `routes legacy drive and toy-train rows to the complete day route`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_map_view_connects_city_origin_to_hotel_for_road_trip`
+- [`tests/test_trip_reliability.py`](../tests/test_trip_reliability.py) - complete return-drive circuits and preserved segments across unresolved flights
 
 ### EB-STATE-001 - Keep planner surfaces synchronized
 

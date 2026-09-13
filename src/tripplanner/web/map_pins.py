@@ -166,28 +166,14 @@ def _trip_day_count(trip: dict[str, Any]) -> int:
 
 
 def _local_route_stop_indexes(stops: list[Any]) -> set[int]:
-    transfer_indexes = [
+    return {
         index
-        for index, stop in enumerate(stops)
+        for index, stop in enumerate(stops, start=1)
         if isinstance(stop, dict)
-        and _resolved_transfer_mode(
+        and not _resolved_transfer_mode(
             str(stop.get("name") or ""), str(stop.get("kind") or "")
         )
-    ]
-    if not transfer_indexes:
-        return set(range(1, len(stops) + 1))
-
-    first_after_transfer = transfer_indexes[-1] + 1
-    after_transfer = set(range(first_after_transfer + 1, len(stops) + 1))
-    has_destination_stop = any(
-        isinstance(stop, dict)
-        and str(stop.get("kind") or "").strip().lower()
-        not in {"airport", "station", "bus_station", "flight", "transport"}
-        for stop in stops[first_after_transfer:]
-    )
-    if has_destination_stop:
-        return after_transfer
-    return set(range(1, transfer_indexes[0] + 1))
+    }
 
 
 def _provider_name_matches(source_name: str, provider_name: str) -> bool:

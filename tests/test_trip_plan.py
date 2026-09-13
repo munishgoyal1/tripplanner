@@ -4,6 +4,19 @@
 
 from tests.support.trip import *  # noqa: F403
 
+
+def test_lodging_research_is_saved_and_city_results_are_merged():
+    create_trip_plan.invoke({"destination": "Kashmir", "departure_date": "2027-04-05",
+                             "return_date": "2027-04-12"})
+    srinagar = {"city": "Srinagar", "checkin": "2027-04-05", "checkout": "2027-04-12",
+                "status": "unresolved", "reason": "provider_unavailable"}
+    pahalgam = {"city": "Pahalgam", "status": "candidates_available", "candidate_count": 1}
+    for city, row in (("srinagar", srinagar), ("pahalgam", pahalgam)):
+        result = update_trip_plan.invoke({"updates_json": json.dumps({"lodging_research": {city: row}})})
+        assert not result.startswith("Error:")
+    plan = trip_planner.load_active_trip_dict()
+    assert plan["lodging_research"] == {"srinagar": srinagar, "pahalgam": pahalgam}
+
 class TestPartialItineraryMerge:
     """A single-stop edit must not delete the days the model did not resend."""
 
