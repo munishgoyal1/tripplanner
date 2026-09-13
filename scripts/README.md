@@ -13,8 +13,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `setup-dev-machine-macos.sh` | Restore the full macOS toolchain and VS Code/Copilot profile |
 | `analyze-errors.ps1` | Generate local or canary error reports |
 | `cosmos_copy.py` | Guarded Cosmos data copy and verification utility |
-| `prod_cache_sync.py` | Merge-only local central cache and production Cosmos synchronizer; limited to the bucketed Places partitions and the global tool-cache partition, and refuses to run until legacy `_shared` places are migrated |
-| `migrate_places_cache_partitions.py` | One-time, re-runnable move of `places_cache` rows from the legacy `_shared` partition into their id buckets: merge, verify, ETag-conditional delete; dry run unless `--apply` |
+| `prod_cache_sync.py` | Merge-only local central cache and production Cosmos synchronizer; fixed to shared Places and global tool-cache partitions |
 | `dev/corpus_cache.py` | Reviewable Places corpus save/status utility; `--sync` remains an explicit lane/central recovery import rather than a startup requirement |
 | `prod-cache-sync.ps1` | Guarded operator entry point for cache status, pull, push, and two-way synchronization |
 | `hosted_smoke.py` | Read-only hosted HTTP smoke implementation |

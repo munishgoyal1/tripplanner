@@ -16,12 +16,12 @@ kept indefinitely. See docs/CODEMAP.md under "Cached external data".
 
 from __future__ import annotations
 
+import hashlib
 import json
 import time
 from pathlib import Path
 from typing import Any
 
-from tripplanner import place_cache_layout
 from tripplanner.config import get_settings
 from tripplanner.validation.emulator import (
     LIVE_DATABASE_NAMES,
@@ -32,7 +32,8 @@ from tripplanner.validation.emulator import (
 
 CACHE_FILE = "places.json"
 CACHE_VERSION = 1
-_CONTAINER = place_cache_layout.CONTAINER
+_CONTAINER = "places_cache"
+_PARTITION = "_shared"  # places are global, not per-user
 #: The primary development database is a legitimate cache target even though it
 #: is not a sandbox: it is never discarded, so it only ever fills by hand.
 PRIMARY_DATABASE = "tripplanner-local"
@@ -63,7 +64,7 @@ _MAX_PHOTO_REFS = 1
 
 
 def _doc_id(key: str) -> str:
-    return place_cache_layout.doc_id(key)
+    return hashlib.sha1(key.encode("utf-8")).hexdigest()
 
 
 def _worth_keeping(entry: Any) -> bool:
@@ -192,11 +193,10 @@ def restore(database: str, places: dict[str, Any]) -> int:
         for key, entry in places.items():
             if not _worth_keeping(entry):
                 continue
-            item_id = _doc_id(key)
             container.upsert_item(
                 {
-                    "id": item_id,
-                    "user_id": place_cache_layout.partition(item_id),
+                    "id": _doc_id(key),
+                    "user_id": _PARTITION,
                     "key": key,
                     "entry": {**_portable(entry), "__at__": now},
                 }

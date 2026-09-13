@@ -166,69 +166,30 @@ observed charges; replace it with observed `ru` once traffic exists.
 
 ### Partitioning
 
-Partition key *values* cost nothing. Billing is provisioned RU/s plus storage;
-the number of distinct logical partitions does not appear on the bill, and a point
-read or write costs the same RU whatever its partition value. What partitioning
-decides is how load can spread once Cosmos splits a container across several
-*physical* partitions. It does that past roughly 10,000 RU/s or 50 GB of data, and
-each logical partition value stays on exactly one physical partition. A value
-every request names can then use only that partition's share of throughput, however
-much RU/s is bought, and it is also capped at 20 GB. **At this account's size
-(1000 RU/s, a few GB) every container is one physical partition, so today the
-bucketing below changes neither cost nor throughput.** It removes a ceiling that
-would only bind at a scale far beyond the free tier, and it keeps a
-never-expiring cache away from the 20 GB limit. Its present costs are small:
-one extra ~1 RU point read the first time each place is looked up (until the
-legacy fallback is removed), and cross-partition fan-out on the two owner tooling
-queries (`prod_cache_sync`, the cost dashboard), which is free while there is one
-physical partition. Every container is partitioned on
-`/user_id`. Data with no user writes a synthetic value into that path; changing
-the value needs no container rebuild, but it is a data migration for rows already
-stored.
+**Decision (2026-09-13): no partitioning changes at this scale.** Every container
+is partitioned on `/user_id`, and global data uses one synthetic value
+(`places_cache/_shared`, `tool_cache/_global_`, `shared_trips/_shared`). That stays.
 
-- **`places_cache`**: the busiest container in a build, with reads fanned eight at
-  a time. It used to keep every place under `_shared`. Each item now lives under
-  `place-<first two hex chars of its SHA-1 id>`, giving 256 buckets derived from
-  the id, so a place is still a point read (`src/tripplanner/place_cache_layout.py`).
-  **Existing rows** were written with `ttl: -1` under `CACHE_STABLE_FOREVER=1`, so
-  they never expire, and dropping them would re-buy every place from Google.
-  Readers therefore fall back to `_shared` on a bucket miss and re-home what they
-  find: the app cache through its background writer, and the secondary cache by
-  merging on first write. `scripts/migrate_places_cache_partitions.py` moves the
-  rest. It merges each row into its bucket with the shared cache merge policy,
-  verifies the result, then deletes the legacy row only if its ETag is unchanged.
-  It is a dry run without `--apply` and safe to re-run. Run it on every database
-  after deploying: `tripplanner-local`, `tripplanner-cache`, canary and prod.
-  `prod_cache_sync.py` refuses to run while legacy rows remain. Once every database
-  reports zero legacy rows, the fallback read can be deleted, along with the 20
-  fallback reads counted in `tripOpProfile`.
-- **`trip_costs` window document**: stays one document per environment on
-  purpose. It is the spend ceiling's single source of truth. Sharding it into N
-  counters summed on read would let a reservation checked against one shard
-  miss a concurrent reservation on another, so turns could together pass checks
-  that together breach the ceiling. Contention is reduced instead.
-  `cost_ledger._mutate_windows` funnels every mutation in the process through
-  one group commit. The caller holding the commit lock applies every queued
-  reserve, settle and release, in order, to a single read. Each sees the ones
-  before it, and the result is written once. Within a process, collisions
-  become batching rather than ETag conflicts. Across processes the ETag check
-  still re-reads and re-applies with jittered backoff. Hosting runs
-  `maxReplicas = 1`, so cross-process conflicts come only from a deploy overlap
-  or an operator tool. Settled-interaction ids are stored as 16-hex digests,
-  which cut the document from 11.6 KB to 8.1 KB; every commit rewrites the whole
-  document, so write RU scales with its size. **Existing documents** keep their
-  balances untouched. Ids already stored in full still count as settled and age
-  out of the 200-entry list naturally.
-- **`trip_costs` per-trip documents**: moved off the environment partition to
-  `<environment>:trip_<id>`, taking one read and one write per settle off the
-  partition admission uses. **Existing trip documents** are folded into the new
-  location the next time that trip is costed, and the old copy is then deleted.
-  The dashboard query covers both locations and de-duplicates by id, so a trip
-  not costed since the change still appears.
+Partition key values cost nothing: billing is provisioned RU/s plus storage, and
+a point read or write costs the same RU whatever its partition. A single hot
+value only becomes a limit once Cosmos splits a container across several
+physical partitions, which happens past roughly 10,000 RU/s or 50 GB, and a
+logical partition holds at most 20 GB. This account runs at 1000 RU/s with a few
+GB, so every container is one physical partition. Even 5x today's traffic stays
+far below either threshold. Bucketing `places_cache` by id was built and then
+reverted: it changed neither cost nor throughput here, and it needed a legacy
+fallback read, a migration script run against every database, and a sync guard.
+Revisit only if a container approaches 10,000 RU/s or a synthetic partition
+approaches 20 GB.
 
-`tool_cache` (`_global_`) and `shared_trips` (`_shared`) still use one synthetic
-partition. `tool_cache` is the second-busiest container in the build profile and
-is the next candidate; `shared_trips` is low volume.
+Contention on the cost ledger's window document is not a partitioning problem,
+and that fix stays. The document remains one per environment, because sharding a
+ceiling counter would let a check on one shard miss a concurrent hold on another.
+`cost_ledger._mutate_windows` group-commits instead: every reserve, settle and
+release queued in the process is applied in order to one read and written once,
+with an ETag re-read and jittered retry across processes. Settled-interaction ids
+are stored as 16-hex digests, taking the document from 11.6 KB to 8.1 KB (ids
+already stored in full still count), and settle no longer reads the document back.
 
 ## Cost review
 

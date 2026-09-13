@@ -348,11 +348,11 @@
       }
     ],
     "cosmosThrottlingAlert": {
-      "description": "Alerts when Cosmos DB returns at least 47 throttled requests in 15 minutes, which is about 1 percent of the operations a peak burst may legitimately issue.",
+      "description": "Alerts when Cosmos DB returns at least 42 throttled requests in 15 minutes, which is about 1 percent of the operations a peak burst may legitimately issue.",
       "severity": 3,
       "evaluationFrequency": "PT5M",
       "windowSize": "PT15M",
-      "threshold": 47
+      "threshold": 42
     }
   }
 }

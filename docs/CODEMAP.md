@@ -108,8 +108,7 @@ resets the active path; `map_view.py` builds legs separately for each segment.
 | `src/tripplanner/web/itinerary_email.py` | Itinerary email composition handoff, ACS/SMTP delivery, provider usage telemetry, mail-client fallback, and durable idempotency orchestration; `api.py` retains identity and HTTP adaptation |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
 | `src/tripplanner/storage_cosmos.py` | Cosmos implementation and conditional replacement |
-| `src/tripplanner/secondary_cache.py`, `cache_merge.py` | Optional cache-only Cosmos client and shared timestamp-aware merge policy; bucketed Places and fixed global-tool partitions, a legacy `_shared` fallback that merges on first write, fail-open reads, asynchronous tool writes, and ETag retries |
-| `src/tripplanner/place_cache_layout.py` | The one definition of a cached place's Cosmos item id and bucketed partition, shared by the app cache, secondary cache, production cache sync, corpus place cache and debug-store restore |
+| `src/tripplanner/secondary_cache.py`, `cache_merge.py` | Optional cache-only Cosmos client and shared timestamp-aware merge policy; fixed Places/global-tool partitions, fail-open reads, asynchronous tool writes, and ETag retries |
 | `src/tripplanner/trip_events.py` | Durable trip event ownership |
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
@@ -178,10 +177,9 @@ emulator database `tripplanner-cache`; canary and production explicitly disable
 the feature. User-scoped tool rows and all application data are structurally
 excluded.
 The production cache synchronizer moves that eligible surface only on owner
-request. It merges the bucketed `places_cache/place-*` partitions and, when enabled by each destination,
+request. It merges `places_cache/_shared` and, when enabled by each destination,
 `tool_cache/_global_`; user-scoped tool rows and application data never cross
-this boundary. It refuses to run while either database still holds legacy
-`places_cache/_shared` rows, which its bucket scan cannot see. Places metadata, reviews, and photos resolve freshness
+this boundary. Places metadata, reviews, and photos resolve freshness
 independently, while tool rows retain an explicit `cached_at`. Copying never
 refreshes evidence timestamps or deletes a destination-only entry.
 The first successful apply bootstraps from complete snapshots. Subsequent runs
@@ -308,8 +306,8 @@ Cosmos containers have explicit ownership:
 | `email_exports` | Idempotent export records |
 | `guest_credentials` | Guest capability records |
 | `public_demo_runs` | Immutable regional public-demo artifacts and the shared `_public` active manifest |
-| `places_cache` | Google Places details, shared across users; each item under partition `place-<first two hex chars of its id>` (256 buckets, `place_cache_layout.py`). Rows from before bucketing sit under `_shared` and are read only as a fallback until `scripts/migrate_places_cache_partitions.py` moves them |
-| `trip_costs` | Cost ledger: the one `_windows_v1` document per environment (partition = environment) that admission serialises on, plus one per-trip cost document each under its own partition `<environment>:trip_<id>` |
+| `places_cache` | Google Places details, shared across users at partition `_shared` |
+| `trip_costs` | Cost ledger, partitioned by environment: the one `_windows_v1` document admission serialises on, plus one cost document per trip |
 | `tool_cache` | Results of read-only tools, shared unless the tool is user-specific |
 | `provider_usage` | Immutable content-free provider/model interaction batches, partitioned by environment with a 90-day TTL; nested call entries preserve provider, operation, model/SKU, tokens, estimated cost, cache hits/savings, and failures, while allowlisted ordered telemetry events preserve flow and reduce hosted writes to normally one per interaction |
 

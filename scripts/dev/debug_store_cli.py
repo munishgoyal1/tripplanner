@@ -18,7 +18,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
-from tripplanner import debug_store, place_cache_layout  # noqa: E402
+from tripplanner import debug_store  # noqa: E402
 
 LOCAL_DATABASE = "tripplanner-local"
 SANDBOX_PREFIX = "tripplanner-sbx-"
@@ -29,7 +29,8 @@ EMULATOR_KEY = (
 )
 TRIPS_CONTAINER = "trips"
 USERS_CONTAINER = "users"
-PLACES_CONTAINER = place_cache_layout.CONTAINER
+PLACES_CONTAINER = "places_cache"
+PLACES_PARTITION = "_shared"
 PREFERENCES_DOC_ID = "preferences"
 CHAT_OPERATIONS_DOC_ID = "chat_operations"
 
@@ -268,6 +269,8 @@ def _emulator_database(name: str):
 
 def _restore_bundle(database, record: dict[str, Any], user_id: str) -> dict[str, int]:
     """Rehydrate chat, preferences, and cached places for one archived trip."""
+    from tripplanner.web.places_cache import _doc_id  # noqa: PLC2701 - shared id scheme
+
     bundle = record.get("bundle") or {}
     written = {"chat": 0, "preferences": 0, "places": 0}
     users = database.get_container_client(USERS_CONTAINER)
@@ -294,13 +297,12 @@ def _restore_bundle(database, record: dict[str, Any], user_id: str) -> dict[str,
     if places:
         container = database.get_container_client(PLACES_CONTAINER)
         for key, entry in places.items():
-            item_id = place_cache_layout.doc_id(key)
             container.upsert_item(
                 body={
                     "key": key,
                     "entry": entry,
-                    "id": item_id,
-                    "user_id": place_cache_layout.partition(item_id),
+                    "id": _doc_id(key),
+                    "user_id": PLACES_PARTITION,
                 }
             )
             written["places"] += 1
