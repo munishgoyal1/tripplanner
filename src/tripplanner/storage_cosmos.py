@@ -180,11 +180,16 @@ def _ru_recorder(fields: dict[str, Any]):
     -- and therefore the provisioned RU/s derived from it -- an estimate nothing
     could check. Every operation already emits a timing event, so the charge
     rides along on that rather than adding a second telemetry path.
+
+    The SDK calls a ``response_hook`` as ``hook(response_headers, result)`` after
+    the request has already succeeded. A hook with any other arity raises from
+    inside the SDK call and fails an operation Cosmos completed, so the signature
+    is pinned by a test that drives the real client.
     """
 
-    def hook(response) -> None:
+    def hook(headers, _result=None) -> None:
         try:
-            charge = response.http_response.headers.get("x-ms-request-charge")
+            charge = headers.get("x-ms-request-charge")
             if charge is not None:
                 fields["ru"] = round(float(charge), 3)
         except Exception:  # noqa: BLE001 - telemetry must never fail a write

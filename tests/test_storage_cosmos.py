@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from contextlib import contextmanager
+
 import pytest
 from azure.cosmos.exceptions import CosmosHttpResponseError
 
@@ -179,3 +182,102 @@ def test_conditional_delete_maps_precondition_failure(monkeypatch) -> None:
         storage_cosmos.delete_doc_if_version(
             "users", "user-1", "active_trip", '"stale"'
         )
+
+
+def _sdk_container():
+    """A real azure-cosmos ContainerProxy over a faked HTTP transport.
+
+    A fake *container* cannot catch a hook the SDK rejects, because the SDK --
+    not the fake -- decides how a ``response_hook`` is called.
+    """
+    from azure.core.pipeline.transport import HttpTransport
+    from azure.core.rest._http_response_impl import HttpResponseImpl
+    from azure.cosmos import CosmosClient
+
+    endpoint = "https://account.documents.azure.com:443/"
+    location = [{"name": "local", "databaseAccountEndpoint": endpoint}]
+    account = {
+        "id": "account",
+        "_rid": "account",
+        "writableLocations": location,
+        "readableLocations": location,
+        "userReplicationPolicy": {},
+        "userConsistencyPolicy": {"defaultConsistencyLevel": "Session"},
+        "systemReplicationPolicy": {},
+        "readPolicy": {},
+        "queryEngineConfiguration": "{}",
+    }
+    collection = {
+        "id": "users",
+        "_rid": "abc=",
+        "_self": "dbs/abc=/colls/abc=/",
+        "partitionKey": {"paths": ["/user_id"], "kind": "Hash", "version": 2},
+    }
+    item = {"id": "active_trip", "user_id": "user-1", "destination": "Goa", "_etag": '"1"'}
+
+    class Response(HttpResponseImpl):
+        def __init__(self, request, body: dict) -> None:
+            super().__init__(
+                request=request,
+                internal_response=None,
+                status_code=200,
+                headers={"Content-Type": "application/json", "x-ms-request-charge": "2.5"},
+                reason="OK",
+                content_type="application/json",
+                stream_download_generator=None,
+            )
+            self._content = json.dumps(body).encode("utf-8")
+
+        def body(self) -> bytes:
+            return self._content
+
+        def text(self, encoding=None) -> str:
+            return self._content.decode("utf-8")
+
+    class Transport(HttpTransport):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+        def open(self) -> None:
+            return None
+
+        def close(self) -> None:
+            return None
+
+        def send(self, request, **_kwargs):
+            if "/docs" in request.url:
+                return Response(request, item)
+            if "/colls/" in request.url:
+                return Response(request, collection)
+            return Response(request, account)
+
+    client = CosmosClient(endpoint, credential="a2V5", transport=Transport())
+    return client.get_database_client("db").get_container_client("users")
+
+
+def test_request_charge_hook_matches_how_the_sdk_calls_it(monkeypatch) -> None:
+    """Every point operation passes a response_hook; a wrong arity fails the call.
+
+    The first version of the hook took one argument. The SDK calls it with two
+    after the request succeeds, so every Cosmos read and write raised TypeError
+    while every test -- each of which faked the container -- stayed green.
+    """
+    recorded: list[dict] = []
+
+    @contextmanager
+    def capture(*_args, **_kwargs):
+        fields: dict = {}
+        yield fields
+        recorded.append(fields)
+
+    container = _sdk_container()
+    monkeypatch.setattr(storage_cosmos, "_container", lambda _name: container)
+    monkeypatch.setattr(storage_cosmos, "timed_operation", capture)
+
+    assert storage_cosmos.read_doc("users", "user-1", "active_trip") == {"destination": "Goa"}
+    storage_cosmos.upsert_doc("users", "user-1", "active_trip", {"destination": "Goa"})
+
+    assert [fields.get("ru") for fields in recorded] == [2.5, 2.5]
