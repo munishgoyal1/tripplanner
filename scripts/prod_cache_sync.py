@@ -1,8 +1,14 @@
 """Merge eligible cache entries between the local emulator and production Cosmos.
 
 This utility is intentionally narrower than ``cosmos_copy.py``: it reads only
-the shared Places partition and global tool-cache partition, never deletes, and
-preserves the time at which provider evidence was originally observed.
+the bucketed Places partitions and the global tool-cache partition, never
+deletes, and preserves the time at which provider evidence was originally
+observed.
+
+It refuses to run while either side still holds places under the legacy
+``_shared`` partition: those rows are invisible to it, so pushing an older copy
+of a place into its bucket would shadow the newer legacy row the app still falls
+back to. Run ``scripts/migrate_places_cache_partitions.py`` on both sides first.
 """
 
 from __future__ import annotations
@@ -23,19 +29,15 @@ from azure.core import MatchConditions
 from azure.core.exceptions import ServiceRequestError, ServiceResponseTimeoutError
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 
-from tripplanner import tools_cache
+from tripplanner import place_cache_layout, tools_cache
 from tripplanner.cache_merge import merge_cache_documents
 from tripplanner.validation.emulator import EMULATOR_ENDPOINT, EMULATOR_KEY
 
 SYSTEM_FIELDS = frozenset({"_rid", "_self", "_etag", "_attachments", "_ts"})
-PLACES_CONTAINER = "places_cache"
-PLACES_PARTITION = "_shared"
+PLACES_CONTAINER = place_cache_layout.CONTAINER
 TOOLS_CONTAINER = "tool_cache"
 TOOLS_PARTITION = "_global_"
-ALLOWED_PARTITIONS = {
-    PLACES_CONTAINER: PLACES_PARTITION,
-    TOOLS_CONTAINER: TOOLS_PARTITION,
-}
+ALLOWED_CONTAINERS = (PLACES_CONTAINER, TOOLS_CONTAINER)
 PRODUCTION_DATABASE = "tripplanner-prod"
 LOCAL_DATABASE = "tripplanner-cache"
 CHECKPOINT_VERSION = 1
@@ -157,6 +159,47 @@ class Snapshot:
     metrics: ActivityMetrics
 
 
+def _partition(container: str, item_id: str) -> str:
+    """The partition an item of ``container`` is stored under."""
+    if container == PLACES_CONTAINER:
+        return place_cache_layout.partition(item_id)
+    if container == TOOLS_CONTAINER:
+        return TOOLS_PARTITION
+    raise ValueError(f"unsupported shared cache container: {container}")
+
+
+def _scan_query(container: str, projection: str, extra_filter: str = "") -> dict[str, Any]:
+    """Query arguments selecting every syncable row of ``container``.
+
+    Places span one bucket per id prefix, so they are a cross-partition query on
+    the bucket prefix; that prefix is also what keeps legacy ``_shared`` rows and
+    anything else out. Tool results still share one partition.
+    """
+    if container == PLACES_CONTAINER:
+        where = "STARTSWITH(c.user_id, @partition)"
+        parameters = [{"name": "@partition", "value": place_cache_layout.PARTITION_PREFIX}]
+        scope: dict[str, Any] = {"enable_cross_partition_query": True}
+    else:
+        where = "c.user_id = @partition"
+        parameters = [{"name": "@partition", "value": _partition(container, "")}]
+        scope = {"partition_key": _partition(container, "")}
+    return {
+        "query": f"SELECT {projection} FROM c WHERE {where}{extra_filter}",
+        "parameters": parameters,
+        **scope,
+    }
+
+
+def _legacy_place_rows(database: Any) -> int:
+    """How many places are still under the pre-bucketing ``_shared`` partition."""
+    rows = database.get_container_client(PLACES_CONTAINER).query_items(
+        query="SELECT VALUE COUNT(1) FROM c WHERE c.user_id = @legacy",
+        parameters=[{"name": "@legacy", "value": place_cache_layout.LEGACY_PARTITION}],
+        partition_key=place_cache_layout.LEGACY_PARTITION,
+    )
+    return sum(int(_number(row)) for row in rows)
+
+
 def _number(value: Any) -> float:
     try:
         number = float(value)
@@ -268,7 +311,7 @@ def prepare_for_destination(
     now: float,
 ) -> dict[str, Any] | None:
     body = _portable(record.body)
-    body["user_id"] = ALLOWED_PARTITIONS[container]
+    body["user_id"] = _partition(container, str(body.get("id", "")))
     if container == PLACES_CONTAINER:
         entry = body.get("entry") if isinstance(body.get("entry"), dict) else {}
         observed_at = _number(entry.get("__at__"))
@@ -340,7 +383,6 @@ def plan_direction(
 ) -> tuple[list[PlannedWrite], int]:
     writes: list[PlannedWrite] = []
     stale = 0
-    partition = ALLOWED_PARTITIONS[container]
     for item_id, source_record in source.items():
         target_record = target.get(item_id)
         merged = (
@@ -357,7 +399,7 @@ def plan_direction(
         writes.append(
             PlannedWrite(
                 container=container,
-                partition=partition,
+                partition=_partition(container, item_id),
                 item_id=item_id,
                 body=prepared,
                 etag=target_record.etag if target_record else "",
@@ -367,13 +409,10 @@ def plan_direction(
 
 
 def _snapshot(database: Any, container_name: str) -> Snapshot:
-    partition = ALLOWED_PARTITIONS[container_name]
     container = database.get_container_client(container_name)
     metrics = ActivityMetrics()
     rows = container.query_items(
-        query="SELECT * FROM c WHERE c.user_id = @partition",
-        parameters=[{"name": "@partition", "value": partition}],
-        partition_key=partition,
+        **_scan_query(container_name, "*"),
         response_hook=metrics.response_hook,
     )
     records: dict[str, CacheRecord] = {}
@@ -399,7 +438,7 @@ def _read_record(
     try:
         row = container.read_item(
             item=item_id,
-            partition_key=ALLOWED_PARTITIONS[container_name],
+            partition_key=_partition(container_name, item_id),
             response_hook=metrics.response_hook,
         )
     except exceptions.CosmosResourceNotFoundError:
@@ -424,21 +463,14 @@ def _changed_snapshot(
     ActivityMetrics,
     ActivityMetrics,
 ]:
-    partition = ALLOWED_PARTITIONS[container_name]
     query_since = max(0.0, watermark - max(0, overlap_seconds))
     query_metrics = ActivityMetrics()
     source_read_metrics = ActivityMetrics()
     target_read_metrics = ActivityMetrics()
+    scan = _scan_query(container_name, "c.id, c._ts", " AND c._ts >= @since")
+    scan["parameters"] = [*scan["parameters"], {"name": "@since", "value": query_since}]
     rows = source_database.get_container_client(container_name).query_items(
-        query=(
-            "SELECT c.id, c._ts FROM c "
-            "WHERE c.user_id = @partition AND c._ts >= @since"
-        ),
-        parameters=[
-            {"name": "@partition", "value": partition},
-            {"name": "@since", "value": query_since},
-        ],
-        partition_key=partition,
+        **scan,
         response_hook=query_metrics.response_hook,
     )
     changed_ids: list[str] = []
@@ -616,7 +648,7 @@ def _production_client(endpoint: str) -> CosmosClient:
 
 def _local_database(client: CosmosClient, name: str) -> Any:
     database = client.create_database_if_not_exists(name)
-    for container, partition in ALLOWED_PARTITIONS.items():
+    for container in ALLOWED_CONTAINERS:
         database.create_container_if_not_exists(
             id=container,
             partition_key=PartitionKey(path="/user_id"),
@@ -660,6 +692,13 @@ def synchronize(args: argparse.Namespace) -> dict[str, Any]:
         local_db = _database("local", args)
         prod_db = _database("production", args)
         databases = {"local": local_db, "production": prod_db}
+        unmigrated = {name: _legacy_place_rows(db) for name, db in databases.items()}
+        if any(unmigrated.values()):
+            report["legacy_place_rows"] = unmigrated
+            raise RuntimeError(
+                "places_cache still holds rows under the legacy _shared partition "
+                f"({unmigrated}); run scripts/migrate_places_cache_partitions.py first"
+            )
         containers = [PLACES_CONTAINER]
         if local_policy.warm_everything or prod_policy.warm_everything:
             containers.append(TOOLS_CONTAINER)

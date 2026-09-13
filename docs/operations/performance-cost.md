@@ -143,6 +143,72 @@ Compare observed `ru` per container against that profile when reviewing spend, a
 correct the profile rather than the derived output — editing the guardrails file by
 hand is what the derivation exists to prevent.
 
+`storage_operation` is a quiet success event, so a local `logs/diagnostics`
+file holds `ru` only for failed or slow operations; read successful charges from
+Log Analytics. As of 2026-09-13 no environment had produced any: capture merged
+that day, and its first version failed every call (see
+`docs/ENGINEERING_LEARNINGS.md`). The 2026-09-13 profile revision therefore
+measures document sizes by driving the code's own mutators rather than from
+observed charges; replace it with observed `ru` once traffic exists.
+
+### Partitioning
+
+More RU/s does not fix a hot partition. Provisioned throughput is spread across
+*physical* partitions, and each logical partition value lives on exactly one of
+them. A workload that names the same partition value on every request can use at
+most that one partition's share, and it also grows toward Cosmos's 20 GB
+logical-partition storage limit. At today's 700 RU/s the account likely has one
+physical partition per container, so the cap is not what binds yet. It starts
+binding the moment throughput or storage splits a container, and at that point
+raising RU/s does nothing for the hot key. Every container is partitioned on
+`/user_id`. Data with no user writes a synthetic value into that path; changing
+the value needs no container rebuild, but it is a data migration for rows already
+stored.
+
+- **`places_cache`**: the busiest container in a build, with reads fanned eight at
+  a time. It used to keep every place under `_shared`. Each item now lives under
+  `place-<first two hex chars of its SHA-1 id>`, giving 256 buckets derived from
+  the id, so a place is still a point read (`src/tripplanner/place_cache_layout.py`).
+  **Existing rows** were written with `ttl: -1` under `CACHE_STABLE_FOREVER=1`, so
+  they never expire, and dropping them would re-buy every place from Google.
+  Readers therefore fall back to `_shared` on a bucket miss and re-home what they
+  find: the app cache through its background writer, and the secondary cache by
+  merging on first write. `scripts/migrate_places_cache_partitions.py` moves the
+  rest. It merges each row into its bucket with the shared cache merge policy,
+  verifies the result, then deletes the legacy row only if its ETag is unchanged.
+  It is a dry run without `--apply` and safe to re-run. Run it on every database
+  after deploying: `tripplanner-local`, `tripplanner-cache`, canary and prod.
+  `prod_cache_sync.py` refuses to run while legacy rows remain. Once every database
+  reports zero legacy rows, the fallback read can be deleted, along with the 20
+  fallback reads counted in `tripOpProfile`.
+- **`trip_costs` window document**: stays one document per environment on
+  purpose. It is the spend ceiling's single source of truth. Sharding it into N
+  counters summed on read would let a reservation checked against one shard
+  miss a concurrent reservation on another, so turns could together pass checks
+  that together breach the ceiling. Contention is reduced instead.
+  `cost_ledger._mutate_windows` funnels every mutation in the process through
+  one group commit. The caller holding the commit lock applies every queued
+  reserve, settle and release, in order, to a single read. Each sees the ones
+  before it, and the result is written once. Within a process, collisions
+  become batching rather than ETag conflicts. Across processes the ETag check
+  still re-reads and re-applies with jittered backoff. Hosting runs
+  `maxReplicas = 1`, so cross-process conflicts come only from a deploy overlap
+  or an operator tool. Settled-interaction ids are stored as 16-hex digests,
+  which cut the document from 11.6 KB to 8.1 KB; every commit rewrites the whole
+  document, so write RU scales with its size. **Existing documents** keep their
+  balances untouched. Ids already stored in full still count as settled and age
+  out of the 200-entry list naturally.
+- **`trip_costs` per-trip documents**: moved off the environment partition to
+  `<environment>:trip_<id>`, taking one read and one write per settle off the
+  partition admission uses. **Existing trip documents** are folded into the new
+  location the next time that trip is costed, and the old copy is then deleted.
+  The dashboard query covers both locations and de-duplicates by id, so a trip
+  not costed since the change still appears.
+
+`tool_cache` (`_global_`) and `shared_trips` (`_shared`) still use one synthetic
+partition. `tool_cache` is the second-busiest container in the build profile and
+is the next candidate; `shared_trips` is low volume.
+
 ## Cost review
 
 Application LLM cost is available through the existing per-user monthly usage ledger
