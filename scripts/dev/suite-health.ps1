@@ -122,7 +122,7 @@ $commit = (& git -C $worktree rev-parse --short HEAD).Trim()
 Write-Host "Measuring $Ref at $commit" -ForegroundColor Cyan
 Write-Host "Report: $outputRoot" -ForegroundColor DarkGray
 
-$arguments = @("--baseline", $baseline, "--out", $outputRoot, "--ref", $Ref, "--commit", $commit)
+$arguments = @("--baseline", $baseline, "--out", $outputRoot, "--ref", $Ref, "--commit", $commit, "--repo-root", $worktree)
 
 try {
     # Every gate on, whatever the policy says: this script IS the full run.
@@ -209,7 +209,9 @@ try {
     $classifyExit = $LASTEXITCODE
 
     # A stable pointer at the newest report, mirroring logs/audit/latest.json.
-    Copy-Item (Join-Path $outputRoot "report.json") (Join-Path $repoRoot "logs/suite-health/latest.json") -Force
+    if (-not $PytestTarget) {
+        Copy-Item (Join-Path $outputRoot "report.json") (Join-Path $repoRoot "logs/suite-health/latest.json") -Force
+    }
 
     switch ($classifyExit) {
         0 { Write-Host "No NEW failures." -ForegroundColor Green }

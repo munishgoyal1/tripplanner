@@ -598,10 +598,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--update-baseline", action="store_true")
     parser.add_argument("--ref", default="")
     parser.add_argument("--commit", default="")
+    parser.add_argument("--repo-root", type=Path)
     parser.add_argument("--today", default=date.today().isoformat())
     args = parser.parse_args(argv)
 
-    repo_root = Path(__file__).resolve().parents[2]
+    repo_root = args.repo_root or Path(__file__).resolve().parents[2]
     baseline_path = Path(args.baseline)
     baseline = load_baseline(baseline_path)
 

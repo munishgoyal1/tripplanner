@@ -491,6 +491,22 @@ def test_missing_vitest_inventory_is_incomplete(tmp_path):
     ]) == 2
 
 
+def test_vitest_ids_are_relative_to_the_measured_worktree(tmp_path):
+    measured = tmp_path / "measured"
+    report = tmp_path / "vitest.json"
+    report.write_text(json.dumps({"testResults": [{
+        "name": str(measured / "frontend/src/App.test.tsx"),
+        "assertionResults": [{"fullName": "renders", "status": "failed"}],
+    }]}), encoding="utf-8")
+    out = tmp_path / "out"
+    assert suite_health.main([
+        "--baseline", str(tmp_path / "baseline.json"), "--out", str(out),
+        "--vitest-json", str(report), "--repo-root", str(measured),
+    ]) == 1
+    result = json.loads((out / "report.json").read_text(encoding="utf-8"))
+    assert result["suites"]["vitest"]["new"][0]["id"] == "frontend/src/App.test.tsx::renders"
+
+
 def test_pytest_baseline_requires_evidence_of_execution(tmp_path):
     passed = "tests/test_a.py::test_one"
     missing = "tests/test_a.py::test_missing"
