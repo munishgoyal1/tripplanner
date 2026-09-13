@@ -89,20 +89,11 @@ write the same record. See
 [issue-workflow.md](../docs/development/issue-workflow.md) for the full protocol
 and the comment templates.
 
-A fix requested and completed in the current chat does not need an issue, in
-`master` or any sandbox. Keep the full conversational context in that lane and
-finish the work there. Do not create an issue merely because a bug was found, the
-change spans several files, or the fix is substantive.
-
-Create issues only for these durable intake paths:
-
-- the owner explicitly creates an issue or asks an agent to create one;
-- the deterministic trip-audit producer files a finding;
-- a specific audit run is being requested or scheduled as tracked work; or
-- known work cannot be handled now and is intentionally parked as backlog.
-
-An immediate in-chat fix that happens to reveal a separate deferred item may
-create an issue for that deferred item only; the current fix remains chat-local.
+Every feature or material enhancement needs a GitHub issue, including work
+requested and completed in-chat. Reuse matching issues. Use issues as the default
+work and backlog board, retain repository feature briefs, and cross-link them.
+The intake policy and required issue details live in
+[`issue-workflow.md`](../docs/development/issue-workflow.md).
 These rules never authorise any agent to add `owner:ready` or
 `owner:approval-required`.
 
@@ -200,7 +191,7 @@ Update the existing owner rather than creating another summary:
 | Change | Update |
 | --- | --- |
 | Cross-project preference | `/memories/preferences.md` |
-| Owner-explicit, audited, scheduled, or intentionally deferred work | GitHub issue |
+| Feature/enhancement work, tracked fixes, audits and backlog progress | GitHub issue |
 | Repository-specific fact or landmine | `/memories/repo/tripplanner.md` |
 | Product intent, scope, or design taste | `docs/PRODUCT.md` |
 | Current capability or status | `docs/REQUIREMENTS.md` |

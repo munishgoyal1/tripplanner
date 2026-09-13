@@ -10,7 +10,7 @@ from tripplanner.config import get_settings
 from tripplanner.decisions.flights import build_flight_decision
 from tripplanner.decisions.provenance import note_price_check
 from tripplanner.providers.cache import ProviderTTLCache
-from tripplanner.providers.models import FlightSearchQuery
+from tripplanner.providers.models import FlightSearchQuery, QuoteStatus
 from tripplanner.providers.registry import get_flight_providers
 from tripplanner.providers.runtime import run_provider_chain
 from tripplanner.tools import amadeus_client
@@ -184,6 +184,16 @@ def search_flights(
                 ensure_ascii=False,
                 default=str,
             )
+
+    if get_settings().travel_flight_provider.strip().lower() == "liteapi":
+        return json.dumps({
+            "quote_status": QuoteStatus.UNAVAILABLE.value,
+            "provider": "liteapi",
+            "offers": [],
+            "errors": result.errors if providers else [],
+            "notice": "LiteAPI returned no flight offers. Try other dates or explicitly recheck. "
+            "Other flight inventory providers are disabled by the selected configuration.",
+        })
 
     if not amadeus_client.is_configured():
         return (

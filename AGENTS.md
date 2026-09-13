@@ -78,8 +78,8 @@ Examples: engineeering review, refactor planning, deterministic guardrails, tool
 
 ## Issue handling and backlog handling
 
-- Do not create issues casually. Only create or work an issue when the repo's documented durable intake paths apply.
-- A fix requested and completed in-chat does not need a separate issue if it stays local to the current lane.
+- Every feature or material enhancement needs a GitHub issue, including work requested in-chat. Reuse a matching issue before creating one.
+- Manage work and backlog progress through GitHub issues; retain repository feature briefs and cross-link them. Follow `docs/development/issue-workflow.md` for intake and lifecycle details.
 - Use the repository's backlog docs and tech-debt proposals as the authoritative source for deferred work.
 
 ## Product and architecture boundaries

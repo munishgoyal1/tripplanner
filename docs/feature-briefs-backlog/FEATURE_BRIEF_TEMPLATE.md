@@ -67,6 +67,7 @@ Everything below may be completed collaboratively with the AI agent.
 | Updated | YYYY-MM-DD |
 | Baseline | `docs/REQUIREMENTS.md` commit |
 | Target milestone | TBD |
+| GitHub issue | Required feature issue URL; cross-link this brief in its body |
 | Related capability IDs | TBD |
 
 ## One-sentence requirement
@@ -259,6 +260,8 @@ Unless this brief overrides them:
 - Keep equivalent actions consistent across panes and native clients.
 - Validate the affected behavior, then the milestone-level checks once.
 - Update this brief with resolved decisions and validation evidence.
+- Track ownership, milestone progress and backlog in the linked GitHub issue;
+  close it only when its whole acceptance scope is complete.
 - Update canonical docs when capability, architecture, taste, or operations change.
 - Commit and push the completed milestone. Never deploy production without explicit
   owner approval.

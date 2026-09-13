@@ -3,12 +3,18 @@
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 
 import pytest
 
 from tripplanner.providers.liteapi import LiteAPIError
 from tripplanner.providers.models import QuoteStatus
-from tripplanner.tools import duffel_flights
+from tripplanner.tools import duffel_flights, flight_search
+
+
+@pytest.fixture(autouse=True)
+def automatic_provider_selection(monkeypatch):
+    monkeypatch.setattr(duffel_flights.get_settings(), "travel_flight_provider", "auto")
 
 
 class StubProvider:
@@ -87,3 +93,45 @@ def test_with_no_provider_and_no_fallback_the_message_is_actionable(
     monkeypatch.setattr(duffel_flights, "is_configured", lambda: False)
 
     assert "DUFFEL_API_KEY" in call_tool()
+
+
+@pytest.mark.parametrize("error", [None, LiteAPIError("LiteAPI returned HTTP 403")])
+def test_explicit_liteapi_never_falls_back_to_duffel(monkeypatch, error):
+    monkeypatch.setattr(duffel_flights.get_settings(), "travel_flight_provider", "liteapi")
+    provider = StubProvider("liteapi", error=error)
+    monkeypatch.setattr(duffel_flights, "get_flight_provider", lambda: provider)
+    monkeypatch.setattr(duffel_flights, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        duffel_flights.http_client, "post",
+        lambda *a, **kw: pytest.fail("Explicit LiteAPI must not call Duffel"),
+    )
+
+    result = json.loads(call_tool())
+
+    assert provider.calls == 1
+    assert result["provider"] == "liteapi"
+    assert result["quote_status"] == "unavailable"
+    assert result["offers"] == []
+    assert "DUFFEL_API_KEY" not in result["notice"]
+
+
+@pytest.mark.parametrize("error", ["no availability", "HTTP 403"])
+def test_explicit_liteapi_never_falls_back_to_amadeus(monkeypatch, error):
+    monkeypatch.setattr(flight_search.get_settings(), "travel_flight_provider", "liteapi")
+    monkeypatch.setattr(flight_search, "get_flight_providers", lambda: [StubProvider("liteapi")])
+    monkeypatch.setattr(
+        flight_search, "run_provider_chain",
+        lambda **kw: SimpleNamespace(value=[], errors=[error]),
+    )
+    monkeypatch.setattr(
+        flight_search.amadeus_client, "is_configured",
+        lambda: pytest.fail("Explicit LiteAPI must not enter the Amadeus fallback"),
+    )
+
+    result = json.loads(flight_search.search_flights.invoke({
+        "origin": "DEL", "destination": "GOI", "departure_date": "2026-11-12",
+    }))
+
+    assert result["provider"] == "liteapi"
+    assert result["quote_status"] == "unavailable"
+    assert result["offers"] == []
