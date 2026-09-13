@@ -468,21 +468,43 @@ def test_production_repairs_missing_canary_gate_before_approval() -> None:
 
 
 def test_image_push_requires_fresh_publish_authentication_before_build() -> None:
-    script = (
-        Path(__file__).parents[1] / "infra" / "push-image.ps1"
-    ).read_text(encoding="utf-8")
+    root = Path(__file__).parents[1]
+    script = (root / "infra" / "push-image.ps1").read_text(encoding="utf-8")
+    common = (root / "infra" / "deployment-common.ps1").read_text(encoding="utf-8")
 
+    resolve = script.index("Resolve-GhcrPublishCredential")
     login = script.index("docker login $Registry")
     build = script.index('Invoke-LoggedNative -FilePath "docker" -ArgumentList $buildArgs')
 
-    assert login < build
+    assert resolve < login < build
     assert "assuming an existing session" not in script
-    assert "gh auth token --hostname github.com" in script
-    assert '$ghLogin -eq $GhcrUser -and $ghScopes -contains "write:packages"' in script
-    assert 'docker manifest inspect "$repo`:latest"' in script
-    assert "Docker credential store" in script
     assert '"build", "--platform", "linux/amd64"' in script
-    assert "gh auth refresh -h github.com -s write:packages" in script
+    # The package is public, so a readable manifest passes with no credential
+    # at all; it must never again stand in for push authorisation.
+    assert "docker manifest inspect" not in script
+    assert "docker manifest inspect" not in common
+    assert "https://api.github.com/user" in common
+    assert '$scopes -notcontains "write:packages"' in common
+    assert "gh auth token --hostname github.com" in common
+    assert "Docker credential store" in common
+    assert "gh auth refresh -h github.com -s write:packages" in common
+
+
+def test_image_is_built_from_the_pinned_commit_not_the_live_checkout() -> None:
+    root = Path(__file__).parents[1]
+    script = (root / "infra" / "push-image.ps1").read_text(encoding="utf-8")
+    canary = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")
+
+    assert "git archive --format=tar -o $contextArchive $commitSha" in script
+    assert "$buildArgs += $contextRoot" in script
+    assert '$buildArgs += "."' not in script
+    assert '"manual"' not in script
+
+    pin = canary.index("$buildCommit = (git rev-parse --verify --quiet HEAD")
+    preflight = canary.index("Resolve-GhcrPublishCredential")
+    validation = canary.index("az deployment group validate")
+    push = canary.index('"$PSScriptRoot/push-image.ps1" -Tag $ImageTag -Commit $buildCommit')
+    assert pin < preflight < validation < push
 
 
 def test_container_app_job_name_stays_within_azure_limit() -> None:

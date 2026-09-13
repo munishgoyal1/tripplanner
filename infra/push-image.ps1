@@ -13,18 +13,26 @@
   builds on every commit, so the local loop stays fast. Run this only when you
   actually want to ship a new image.
 
-    Auth: set a GitHub PAT (with `write:packages`) in GHCR_TOKEN, CR_PAT, or
-    GITHUB_TOKEN. If none is set, an authenticated Docker credential is verified
-    against GHCR and reused. An eligible GitHub CLI token is also supported.
+  The image is built from a clean export of one commit (-Commit, default HEAD),
+  never from the live checkout. The primary checkout is fast-forwarded by other
+  sessions while a deploy runs, so a live-tree build could carry code from a
+  different commit than the SHA tag names; uncommitted edits are excluded too.
+
+    Auth: GHCR_TOKEN, CR_PAT, GITHUB_TOKEN, the GitHub CLI token, and Docker's
+    stored ghcr.io credential are tried in that order. Each is verified with
+    GitHub to belong to the publisher and carry `write:packages` before the
+    build starts; a public package's readable manifest is not proof of push.
 
 .EXAMPLE
   ./infra/push-image.ps1
   ./infra/push-image.ps1 -Tag v2          # also tag :v2 alongside :latest
   ./infra/push-image.ps1 -SkipLatest      # push only the SHA tag
+  ./infra/push-image.ps1 -Commit d5cded67 # build that commit, not HEAD
 #>
 
 param(
     [string]$Tag = "",
+    [string]$Commit = "HEAD",
     [string]$Registry = "ghcr.io",
     [string]$Image = "munishgoyal1/tripplanner",
     [string]$GhcrUser = "munishgoyal1",
@@ -46,9 +54,12 @@ Write-Host "`n╔═════════════════════
 Write-Host "║  📦 BUILD & PUSH IMAGE → GHCR                            ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
-# Resolve the git short SHA for an immutable tag.
-$sha = (git rev-parse --short HEAD 2>$null)
-if ([string]::IsNullOrWhiteSpace($sha)) { $sha = "manual" }
+# Resolve the commit once; every later step uses this SHA, not HEAD.
+$commitSha = (git rev-parse --verify --quiet "$Commit^{commit}" 2>$null)
+if ([string]::IsNullOrWhiteSpace($commitSha)) {
+    throw "Could not resolve '$Commit' to a Git commit for the immutable image tag."
+}
+$sha = (git rev-parse --short $commitSha)
 
 $repo = "$Registry/$Image"
 $tags = @("$repo`:$sha")
@@ -57,80 +68,50 @@ if (-not [string]::IsNullOrWhiteSpace($Tag)) { $tags += "$repo`:$Tag" }
 $tags = @($tags | Select-Object -Unique)
 
 Write-Host "Image:    $repo"
+Write-Host "Commit:   $commitSha"
 Write-Host "Tags:     $($tags -join ', ')`n"
 
 # Ensure Docker is available.
 docker --version *> $null
 if ($LASTEXITCODE -ne 0) { throw "Docker is not available. Start Docker Desktop and retry." }
 
-# Always establish a fresh GHCR session before building. A cached Docker credential
-# can be expired while still appearing present and would fail only after the build.
-$token = $null
-$tokenSource = $null
-if (-not [string]::IsNullOrWhiteSpace($env:GHCR_TOKEN)) {
-    $token = $env:GHCR_TOKEN
-    $tokenSource = "GHCR_TOKEN"
-} elseif (-not [string]::IsNullOrWhiteSpace($env:CR_PAT)) {
-    $token = $env:CR_PAT
-    $tokenSource = "CR_PAT"
-} elseif (-not [string]::IsNullOrWhiteSpace($env:GITHUB_TOKEN)) {
-    $token = $env:GITHUB_TOKEN
-    $tokenSource = "GITHUB_TOKEN"
+# Establish a verified GHCR session before building, so a missing or stale
+# credential fails in seconds instead of after the build.
+$credential = Resolve-GhcrPublishCredential -Registry $Registry -User $GhcrUser
+Write-Host "✓ Logging in to $Registry as $GhcrUser using $($credential.Source) ..."
+$credential.Token | docker login $Registry --username $GhcrUser --password-stdin
+$loginExitCode = $LASTEXITCODE
+$credential = $null
+if ($loginExitCode -ne 0) {
+    throw "docker login to $Registry failed. Refresh the token's write:packages access and retry."
+}
+Write-Host "  ✓ Logged in`n"
+
+$headSha = (git rev-parse HEAD 2>$null)
+if ($headSha -eq $commitSha -and -not [string]::IsNullOrWhiteSpace((git status --porcelain --untracked-files=no | Out-String))) {
+    Write-Host -ForegroundColor Yellow "ℹ Uncommitted changes are not part of the image; it contains $sha exactly.`n"
 }
 
-if ([string]::IsNullOrWhiteSpace($token) -and (Get-Command gh -ErrorAction SilentlyContinue)) {
-    $ghLogin = (& gh api user --jq .login 2>$null | Out-String).Trim()
-    $loginExitCode = $LASTEXITCODE
-    $ghHeaders = (& gh api --include user 2>$null | Out-String)
-    $headersExitCode = $LASTEXITCODE
-    $scopeMatch = [regex]::Match($ghHeaders, '(?im)^x-oauth-scopes:\s*(.+)$')
-    $ghScopes = if ($scopeMatch.Success) {
-        @($scopeMatch.Groups[1].Value.Split(',') | ForEach-Object { $_.Trim() })
-    } else {
-        @()
-    }
-
-    if ($loginExitCode -eq 0 -and $headersExitCode -eq 0 -and
-        $ghLogin -eq $GhcrUser -and $ghScopes -contains "write:packages") {
-        $token = (& gh auth token --hostname github.com 2>$null | Out-String).Trim()
-        if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($token)) {
-            $tokenSource = "GitHub CLI"
-        }
-    }
-}
-
-if ([string]::IsNullOrWhiteSpace($token)) {
-    Write-Host "ℹ No token variable or eligible GitHub CLI token found. Verifying the existing Docker credential ..."
-    docker manifest inspect "$repo`:latest" *> $null
-    if ($LASTEXITCODE -eq 0) {
-        $tokenSource = "Docker credential store"
-        Write-Host "  ✓ Existing Docker credential authenticated to $Registry`n"
-    } else {
-        $remedy = "Set GHCR_TOKEN to a GitHub PAT with write:packages, run " +
-            "'gh auth refresh -h github.com -s write:packages', or run " +
-            "'docker login $Registry' and retry."
-        throw "No valid GHCR publish token is available. $remedy"
-    }
-}
-
-if (-not [string]::IsNullOrWhiteSpace($token)) {
-    Write-Host "✓ Logging in to $Registry as $GhcrUser using $tokenSource ..."
-    $token | docker login $Registry --username $GhcrUser --password-stdin
-    $token = $null
-    if ($LASTEXITCODE -ne 0) {
-        throw "docker login to $Registry failed. Refresh the token's write:packages access and retry."
-    }
-    Write-Host "  ✓ Logged in`n"
-}
-
-# Build with all tags. Azure Container Apps runs linux/amd64, including when
-# the publisher is running Docker Desktop on Apple Silicon.
+# Build with all tags from a clean export of the commit. Azure Container Apps
+# runs linux/amd64, including when the publisher is on Apple Silicon.
 Write-Host "✓ Building image ..."
 $buildTimer = [System.Diagnostics.Stopwatch]::StartNew()
-$buildArgs = @("build", "--platform", "linux/amd64")
-foreach ($t in $tags) { $buildArgs += @("-t", $t) }
-$buildArgs += "."
-Invoke-LoggedNative -FilePath "docker" -ArgumentList $buildArgs -FailureMessage "docker build failed."
+$contextRoot = Join-Path ([System.IO.Path]::GetTempPath()) "tripplanner-image-$sha-$PID"
+$contextArchive = "$contextRoot.tar"
+try {
+    git archive --format=tar -o $contextArchive $commitSha
+    if ($LASTEXITCODE -ne 0) { throw "git archive failed for $commitSha." }
+    New-Item -ItemType Directory -Force -Path $contextRoot | Out-Null
+    tar -xf $contextArchive -C $contextRoot
+    if ($LASTEXITCODE -ne 0) { throw "Could not extract the build context for $commitSha." }
+
+    $buildArgs = @("build", "--platform", "linux/amd64")
+    foreach ($t in $tags) { $buildArgs += @("-t", $t) }
+    $buildArgs += $contextRoot
+    Invoke-LoggedNative -FilePath "docker" -ArgumentList $buildArgs -FailureMessage "docker build failed."
+} finally {
+    Remove-Item -Recurse -Force -LiteralPath $contextRoot, $contextArchive -ErrorAction SilentlyContinue
+}
 $buildTimer.Stop()
 $imageDetails = docker image inspect $tags[0] --format '{{json .}}' | ConvertFrom-Json
 if ($LASTEXITCODE -ne 0 -or $null -eq $imageDetails) {
