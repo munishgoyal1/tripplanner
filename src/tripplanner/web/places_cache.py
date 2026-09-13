@@ -24,7 +24,6 @@ from __future__ import annotations
 
 import atexit
 import contextvars
-import hashlib
 import json
 import logging
 import os
@@ -40,7 +39,7 @@ from typing import Any
 
 import httpx
 
-from tripplanner import billing_guardrails, http_client
+from tripplanner import billing_guardrails, http_client, place_cache_layout
 from tripplanner.config import get_settings
 from tripplanner.json_store import atomic_write_json
 from tripplanner.places_budget import (
@@ -175,10 +174,12 @@ def _reviews_ttl() -> int:
 
 # Durable L2 store so warm data survives container restarts. Each place is one
 # small Cosmos item (keyed by a hash of the cache key) so the store scales well
-# past Cosmos's 2 MiB per-item limit; ``_COSMOS_DOC_ID`` is the legacy monolithic
-# document we delete once after migrating to the sharded layout.
-_COSMOS_CONTAINER = "places_cache"
-_COSMOS_PARTITION = "_shared"  # places are global, not per-user
+# past Cosmos's 2 MiB per-item limit, stored under a partition bucketed from that
+# hash so no single logical partition carries every place (see
+# ``place_cache_layout``). ``_COSMOS_DOC_ID`` is the older monolithic document we
+# delete once after migrating to the sharded layout.
+_COSMOS_CONTAINER = place_cache_layout.CONTAINER
+_COSMOS_LEGACY_PARTITION = place_cache_layout.LEGACY_PARTITION
 _COSMOS_DOC_ID = "cache"  # legacy single-document store; deleted after first shard write
 
 # Process-wide cache shared across FastAPI request and prefetch threads.
@@ -192,6 +193,9 @@ _suppress_persist = 0  # >0 while a batch is in flight (one write at the end)
 _dirty_keys: set[str] = set()  # keys awaiting a durable write while a batch is in flight
 _persist_retry_after = 0.0
 _legacy_doc_cleaned = False
+# Entries found only under the pre-bucketing ``_shared`` partition, waiting for
+# the background writer to re-home them. Keyed by cache key; guarded by _CACHE_LOCK.
+_legacy_adoptions: dict[str, dict[str, Any]] = {}
 
 # Durable writes are best-effort, so they run on a single background thread: a
 # slow or stalled store must never add latency to the request that warmed the
@@ -254,7 +258,7 @@ def _load_once() -> None:
 
 def _doc_id(key: str) -> str:
     """Cosmos-safe item id for a cache key (keys contain spaces, '/', '|')."""
-    return hashlib.sha1(key.encode("utf-8")).hexdigest()
+    return place_cache_layout.doc_id(key)
 
 
 def _persistable(entry: dict[str, Any]) -> dict[str, Any]:
@@ -283,18 +287,38 @@ def _live_snapshot() -> dict[str, dict[str, Any]]:
 
 
 def _durable_read(key: str) -> dict[str, Any] | None:
-    """Point-read one key's entry from the sharded Cosmos store (or None)."""
+    """Point-read one key's entry from the sharded Cosmos store (or None).
+
+    A miss under the bucketed partition falls back to the legacy ``_shared``
+    partition, where every place lived before bucketing. Those rows carry
+    ``ttl: -1`` under ``CACHE_STABLE_FOREVER``, so they would never age out on
+    their own, and dropping them would re-buy each place from Google. A row found
+    there is served and handed to the background writer to be re-homed.
+    """
+    item_id = _doc_id(key)
     try:
         from tripplanner import storage_cosmos
 
         if not storage_cosmos.is_enabled():
             return None
-        doc = storage_cosmos.read_doc(_COSMOS_CONTAINER, _COSMOS_PARTITION, _doc_id(key))
+        doc = storage_cosmos.read_doc(
+            _COSMOS_CONTAINER, place_cache_layout.partition(item_id), item_id
+        )
+        legacy = False
+        if doc is None:
+            doc = storage_cosmos.read_doc(_COSMOS_CONTAINER, _COSMOS_LEGACY_PARTITION, item_id)
+            legacy = doc is not None
     except Exception as exc:  # noqa: BLE001 - durable cache is best-effort
         log.warning("places_cache cosmos load failed: %s", exc)
         return None
     entry = doc.get("entry") if isinstance(doc, dict) else None
-    return entry if isinstance(entry, dict) else None
+    if not isinstance(entry, dict):
+        return None
+    if legacy:
+        with _CACHE_LOCK:
+            _legacy_adoptions[key] = dict(entry)
+        _schedule_durable({key})
+    return entry
 
 
 def _secondary_read(key: str) -> dict[str, Any] | None:
@@ -315,7 +339,7 @@ def _cleanup_legacy_doc() -> None:
     try:
         from tripplanner import storage_cosmos
 
-        storage_cosmos.delete_doc(_COSMOS_CONTAINER, _COSMOS_PARTITION, _COSMOS_DOC_ID)
+        storage_cosmos.delete_doc(_COSMOS_CONTAINER, _COSMOS_LEGACY_PARTITION, _COSMOS_DOC_ID)
     except Exception:  # noqa: BLE001 - orphan cleanup must never break a write
         pass
 
@@ -397,6 +421,14 @@ def _write_durable(keys: set[str]) -> None:
     global _persist_retry_after
     with _CACHE_LOCK:
         entries = {k: _persistable(_CACHE[k]) for k in keys if k in _CACHE}
+        # A re-homed legacy row may never have entered the L1 cache (a stale one
+        # served read-only, say); the copy read from ``_shared`` is written as is.
+        # The legacy row itself is left for scripts/migrate_places_cache_partitions.py,
+        # which deletes it conditionally: once this write lands, reads stop reaching it.
+        for k in keys:
+            adopted = _legacy_adoptions.pop(k, None)
+            if adopted is not None and k not in entries:
+                entries[k] = _persistable(adopted)
         retry_after = _persist_retry_after
     now = time.time()
     primary_ok = False
@@ -406,11 +438,12 @@ def _write_durable(keys: set[str]) -> None:
         if storage_cosmos.is_enabled() and now >= retry_after:
             ok = True
             for k, entry in entries.items():
+                item_id = _doc_id(k)
                 try:
                     storage_cosmos.upsert_doc(
                         _COSMOS_CONTAINER,
-                        _COSMOS_PARTITION,
-                        _doc_id(k),
+                        place_cache_layout.partition(item_id),
+                        item_id,
                         {
                             "key": k,
                             "entry": entry,
@@ -1351,6 +1384,7 @@ def clear_cache() -> None:
     with _CACHE_LOCK:
         _CACHE.clear()
         _dirty_keys.clear()
+        _legacy_adoptions.clear()
         _loaded = False
         _legacy_doc_cleaned = False
         _persist_retry_after = 0.0

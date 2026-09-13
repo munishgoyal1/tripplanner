@@ -314,6 +314,7 @@ def _stub_sync_databases(monkeypatch):
     monkeypatch.setattr(cache_sync, "_local_client", lambda: object())
     monkeypatch.setattr(cache_sync, "_local_database", lambda _client, _name: local)
     monkeypatch.setattr(cache_sync, "_production_client", lambda _endpoint: ProductionClient())
+    monkeypatch.setattr(cache_sync, "_legacy_place_rows", lambda _database: 0)
     return local, production
 
 
@@ -510,6 +511,60 @@ def test_successful_incremental_run_advances_checkpoint(tmp_path, monkeypatch):
     assert report["status"] == "passed"
     assert report["checkpoint"]["advanced"] is True
     assert checkpoint["sources"]["local"][PLACES_CONTAINER] == 200
+
+
+def test_planned_place_writes_target_their_bucketed_partition(tmp_path, monkeypatch):
+    from tripplanner import place_cache_layout
+
+    checkpoint_path = tmp_path / "checkpoint.json"
+    args = _sync_args(tmp_path, checkpoint_path)
+    _seed_checkpoint(checkpoint_path, args)
+    _stub_sync_databases(monkeypatch)
+    _stub_incremental_scan(monkeypatch)
+    written: list[PlannedWrite] = []
+
+    def write(_container, planned, metrics):
+        written.append(planned)
+        return "inserted", metrics, _written_body(planned)
+
+    monkeypatch.setattr(cache_sync, "_write", write)
+
+    assert cache_sync.synchronize(args)["status"] == "passed"
+    assert {(planned.item_id, planned.partition) for planned in written} == {
+        ("p1", place_cache_layout.partition("p1")),
+        ("p2", place_cache_layout.partition("p2")),
+    }
+    assert all(planned.body["user_id"] == planned.partition for planned in written)
+
+
+def test_sync_refuses_while_legacy_shared_places_remain(tmp_path, monkeypatch):
+    """Unmigrated rows are invisible to the bucket scan, so a push could shadow newer ones."""
+    checkpoint_path = tmp_path / "checkpoint.json"
+    args = _sync_args(tmp_path, checkpoint_path)
+    _stub_sync_databases(monkeypatch)
+    counts = iter([0, 3])
+    monkeypatch.setattr(cache_sync, "_legacy_place_rows", lambda _database: next(counts))
+    monkeypatch.setattr(
+        cache_sync, "_write", lambda *_args: pytest.fail("wrote before migration")
+    )
+
+    report = cache_sync.synchronize(args)
+
+    assert report["status"] == "failed"
+    assert report["legacy_place_rows"] == {"local": 0, "production": 3}
+    assert "migrate_places_cache_partitions.py" in report["error"]
+
+
+def test_place_scan_is_cross_partition_on_the_bucket_prefix():
+    places = cache_sync._scan_query(PLACES_CONTAINER, "*")
+    tools = cache_sync._scan_query(TOOLS_CONTAINER, "c.id, c._ts", " AND c._ts >= @since")
+
+    assert places["enable_cross_partition_query"] is True
+    assert "partition_key" not in places
+    assert places["parameters"] == [{"name": "@partition", "value": "place-"}]
+    assert "STARTSWITH(c.user_id, @partition)" in places["query"]
+    assert tools["partition_key"] == "_global_"
+    assert tools["query"].endswith("c.user_id = @partition AND c._ts >= @since")
 
 
 def test_etag_conflict_keeps_checkpoint_for_conservative_retry(tmp_path, monkeypatch):

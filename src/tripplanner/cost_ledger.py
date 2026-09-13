@@ -38,14 +38,17 @@ exactly once, through ``cost_model.usd_to_inr``, at ingestion in ``_batch_cost``
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import random
+import time
 import uuid
-from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
+from collections.abc import Callable, Iterable, Sequence
+from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from threading import Lock
+from threading import Event, Lock
 from typing import Any, Literal
 
 from tripplanner import cost_model, limits_config, storage_cosmos
@@ -57,9 +60,14 @@ _CONTAINER = "trip_costs"
 _WINDOWS_DOC_ID = "_windows_v1"
 _TRIP_DOC_PREFIX = "trip_"
 _MAX_WRITE_ATTEMPTS = 5
+_CONFLICT_BACKOFF_SEC = 0.05  # doubled per attempt, fully jittered
 _MAX_RECENT_COSTS = 200
 _RESERVATION_TTL_SEC = 900  # a turn that has not settled in 15 minutes is gone
 _LOCAL_LOCK = Lock()
+# Window-document group commit; see ``_mutate_windows``.
+_COMMIT_LOCK = Lock()
+_PENDING_LOCK = Lock()
+_pending: list[_PendingMutation] = []
 
 
 class CostCeilingError(RuntimeError):
@@ -344,6 +352,16 @@ def _with_reservation(
     return updated, reservation
 
 
+def _settled_marker(interaction_id: str) -> str:
+    """What the window document remembers about a settled interaction.
+
+    Only membership is ever asked of ``settled_interactions``, so a 64-bit digest
+    serves as well as the id. The ids were 60% of the document, and every
+    reservation and settlement rewrites all of it -- write RU scale with size.
+    """
+    return hashlib.sha1(interaction_id.encode("utf-8")).hexdigest()[:16]
+
+
 def _with_settlement(
     body: dict[str, Any],
     *,
@@ -355,7 +373,9 @@ def _with_settlement(
     records: Sequence[dict[str, Any]],
 ) -> tuple[dict[str, Any], float, int] | None:
     settled = [str(value) for value in body.get("settled_interactions") or []]
-    if interaction_id and interaction_id in settled:
+    marker = _settled_marker(interaction_id)
+    # Full ids written before markers were introduced still count as settled.
+    if interaction_id and (marker in settled or interaction_id in settled):
         return None
 
     windows = _rolled_windows(body, now)
@@ -381,7 +401,7 @@ def _with_settlement(
             "reservations": reservations,
             "recent_costs_inr": recent,
             "settled_interactions": (
-                settled + ([interaction_id] if interaction_id else [])
+                settled + ([marker] if interaction_id else [])
             )[-_MAX_RECENT_COSTS:],
             "updated_at": now.isoformat().replace("+00:00", "Z"),
         }
@@ -389,49 +409,130 @@ def _with_settlement(
     return updated, charged_inr, unknown_calls
 
 
-def _mutate_windows(mutator) -> Any:
-    """Apply ``mutator(body) -> (updated_body, result) | None`` under optimistic
-    concurrency.
+Mutator = Callable[[dict[str, Any]], "tuple[dict[str, Any], Any] | None"]
 
-    Read-modify-write with a version check and bounded retries, rather than a
-    blind upsert: two turns settling at once would otherwise each write a total
-    computed from the state before the other, and the ceiling would drift down
-    from real spend exactly when traffic is heaviest.
+
+@dataclass
+class _PendingMutation:
+    mutator: Mutator
+    done: Event = field(default_factory=Event)
+    result: Any = None
+    error: BaseException | None = None
+
+
+def _mutate_windows(mutator: Mutator) -> Any:
+    """Apply ``mutator(body) -> (updated_body, result) | None`` to the window document.
+
+    The window document is the one place every turn in the environment must
+    agree on, and it cannot be sharded without giving up exactness: a reservation
+    checked against one shard cannot see a concurrent reservation on another, so
+    two turns could each pass a check that together they breach. So it stays one
+    document, and what is reduced instead is how often turns collide on it.
+
+    Every mutation in this process is funnelled through one committer. Whichever
+    caller holds the commit lock takes *all* the mutations queued so far, applies
+    them in order to a single read of the document -- each one seeing every
+    earlier one, so a second reservation is checked against the first -- and
+    writes the result once. Callers that arrived while it was writing are picked
+    up by the next commit. Under a burst this turns N read-modify-writes that
+    would conflict with each other into a few that cannot, and N writes of the
+    whole document into one.
+
+    Across processes the version check still does the work: a conflicting write
+    re-reads and re-applies the batch, with jittered backoff, and only a document
+    that keeps changing for ``_MAX_WRITE_ATTEMPTS`` rounds is reported unavailable.
+    Hosting runs one replica (``maxReplicas`` in ``infra/*.bicepparam``), so today
+    that is a deploy overlap or an operator tool, not steady-state traffic.
+
+    A mutator that raises -- a reservation over its ceiling -- fails only its own
+    caller; the rest of the batch is still written.
     """
-    if storage_cosmos.is_enabled():
-        environment = _environment()
-        for attempt in range(_MAX_WRITE_ATTEMPTS):
-            current = storage_cosmos.read_doc_versioned(
-                _CONTAINER, environment, _WINDOWS_DOC_ID
-            )
-            body = dict(current.body) if current is not None else _empty_windows()
-            outcome = mutator(body)
-            if outcome is None:
-                return None
-            updated, result = outcome
-            try:
-                if current is None:
-                    storage_cosmos.create_doc_if_absent(
-                        _CONTAINER, environment, _WINDOWS_DOC_ID, updated
-                    )
-                else:
-                    storage_cosmos.replace_doc_if_version(
-                        _CONTAINER, environment, _WINDOWS_DOC_ID, updated, current.version
-                    )
-                return result
-            except storage_cosmos.WriteConflictError:
-                if attempt == _MAX_WRITE_ATTEMPTS - 1:
-                    raise LedgerUnavailableError("cost ledger kept changing under contention")
-        raise LedgerUnavailableError("cost ledger kept changing under contention")
+    mutation = _PendingMutation(mutator)
+    with _PENDING_LOCK:
+        _pending.append(mutation)
+    while not mutation.done.is_set():
+        with _COMMIT_LOCK:
+            # Taken and finished entirely under the commit lock, so a caller that
+            # acquires it and is not yet done is still in the queue.
+            with _PENDING_LOCK:
+                batch = list(_pending)
+                _pending.clear()
+            if batch:
+                _commit(batch)
+    if mutation.error is not None:
+        raise mutation.error
+    return mutation.result
 
+
+def _commit(batch: list[_PendingMutation]) -> None:
+    try:
+        outcomes = _apply_batch(batch)
+    except Exception as exc:  # noqa: BLE001 - handed to every waiter, never lost
+        for mutation in batch:
+            error = LedgerUnavailableError(f"{type(exc).__name__}: {exc}")
+            error.__cause__ = exc
+            mutation.error = error
+    else:
+        for mutation, (result, error) in zip(batch, outcomes, strict=True):
+            mutation.result, mutation.error = result, error
+    finally:
+        for mutation in batch:
+            mutation.done.set()
+
+
+def _apply_batch(batch: list[_PendingMutation]) -> list[tuple[Any, BaseException | None]]:
+    for attempt in range(_MAX_WRITE_ATTEMPTS):
+        body, version = _load_windows()
+        outcomes: list[tuple[Any, BaseException | None]] = []
+        changed = False
+        for mutation in batch:
+            try:
+                outcome = mutation.mutator(body)
+            except Exception as exc:  # noqa: BLE001 - fails this caller only
+                outcomes.append((None, exc))
+                continue
+            if outcome is None:
+                outcomes.append((None, None))
+                continue
+            body, result = outcome
+            changed = True
+            outcomes.append((result, None))
+        if not changed:
+            return outcomes
+        try:
+            _store_windows(body, version)
+            return outcomes
+        except storage_cosmos.WriteConflictError:
+            if attempt < _MAX_WRITE_ATTEMPTS - 1:
+                time.sleep(random.uniform(0.0, _CONFLICT_BACKOFF_SEC * 2**attempt))
+    raise LedgerUnavailableError("cost ledger kept changing under contention")
+
+
+def _load_windows() -> tuple[dict[str, Any], str | None]:
+    """The window document and its version; ``None`` when it does not exist yet."""
+    if storage_cosmos.is_enabled():
+        current = storage_cosmos.read_doc_versioned(_CONTAINER, _environment(), _WINDOWS_DOC_ID)
+        if current is None:
+            return _empty_windows(), None
+        return dict(current.body), current.version
     with _LOCAL_LOCK:
-        body = _read_local_windows()
-        outcome = mutator(body)
-        if outcome is None:
-            return None
-        updated, result = outcome
-        atomic_write_json(_local_windows_path(), updated, indent=2)
-        return result
+        return _read_local_windows(), None
+
+
+def _store_windows(body: dict[str, Any], version: str | None) -> None:
+    """Write the window document, failing with ``WriteConflictError`` if it moved."""
+    if storage_cosmos.is_enabled():
+        if version is None:
+            storage_cosmos.create_doc_if_absent(_CONTAINER, _environment(), _WINDOWS_DOC_ID, body)
+        else:
+            storage_cosmos.replace_doc_if_version(
+                _CONTAINER, _environment(), _WINDOWS_DOC_ID, body, version
+            )
+        return
+    # The commit lock already serialises this process, which is the only writer
+    # of the local file.
+    with _LOCAL_LOCK:
+        atomic_write_json(_local_windows_path(), body, indent=2)
 
 
 # --- Public admission API ----------------------------------------------------
@@ -491,7 +592,9 @@ def settle(
     interaction_id = str(attribution.get("interaction_id") or "")
     reservation_id = interaction_id
 
-    def mutator(body: dict[str, Any]) -> tuple[dict[str, Any], tuple[float, int]] | None:
+    def mutator(
+        body: dict[str, Any],
+    ) -> tuple[dict[str, Any], tuple[float, int, list[float]]] | None:
         result = _with_settlement(
             body,
             reservation_id=reservation_id,
@@ -504,7 +607,12 @@ def settle(
         if result is None:
             return None
         updated, charged, unknown = result
-        return updated, (charged, unknown)
+        # The anomaly check needs this category's recent costs; they are in the
+        # document just written, so the trip update does not read it back.
+        recent = [
+            float(value) for value in (updated.get("recent_costs_inr") or {}).get(category) or []
+        ]
+        return updated, (charged, unknown, recent)
 
     try:
         outcome = _mutate_windows(mutator)
@@ -513,11 +621,16 @@ def settle(
         return
     if outcome is None:
         return
-    charged_inr, unknown_calls = outcome
+    charged_inr, unknown_calls, recent = outcome
 
     try:
         _update_trip_document(
-            attribution, records, charged_inr=charged_inr, category=category, now=now
+            attribution,
+            records,
+            charged_inr=charged_inr,
+            category=category,
+            now=now,
+            recent=recent,
         )
     except Exception as exc:  # noqa: BLE001
         _log("trip_cost_write_failed", error=type(exc).__name__)
@@ -556,6 +669,17 @@ def release(interaction_id: str, *, now: datetime | None = None) -> None:
 
 def _trip_doc_id(trip_id: str) -> str:
     return f"{_TRIP_DOC_PREFIX}{_safe_id(trip_id)}"
+
+
+def _trip_partition(environment: str, doc_id: str) -> str:
+    """A trip's cost document gets a logical partition of its own.
+
+    They used to share the environment's partition with the window document, so
+    every settled turn put a second read-and-write on the one partition every
+    turn already has to touch. Nothing reads a trip's cost document except by its
+    id or through the cross-partition dashboard query, so nothing is lost.
+    """
+    return f"{environment}:{doc_id}"
 
 
 def _empty_trip_doc(trip_id: str, destination: str, now: datetime) -> dict[str, Any]:
@@ -675,6 +799,7 @@ def _update_trip_document(
     charged_inr: float,
     category: str,
     now: datetime,
+    recent: Sequence[float],
 ) -> None:
     trip_id = str(attribution.get("trip_id") or "").strip()
     if not trip_id or trip_id == "unattributed":
@@ -695,12 +820,20 @@ def _update_trip_document(
         _fold_records(doc, records)
         return doc
 
-    recent = _recent_costs_for(category)
     if storage_cosmos.is_enabled():
-        existing = storage_cosmos.read_doc(_CONTAINER, environment, doc_id)
-        doc = build(existing)
+        partition = _trip_partition(environment, doc_id)
+        existing = storage_cosmos.read_doc(_CONTAINER, partition, doc_id)
+        # A trip first costed before per-trip partitions has its running totals
+        # under the environment partition. Fold them in and remove that copy, or
+        # the trip would restart from zero and appear twice on the dashboard.
+        legacy = (
+            storage_cosmos.read_doc(_CONTAINER, environment, doc_id) if existing is None else None
+        )
+        doc = build(existing if existing is not None else legacy)
         _flag_anomaly(doc, category, recent)
-        storage_cosmos.upsert_doc(_CONTAINER, environment, doc_id, doc)
+        storage_cosmos.upsert_doc(_CONTAINER, partition, doc_id, doc)
+        if legacy is not None:
+            storage_cosmos.delete_doc(_CONTAINER, environment, doc_id)
         return
 
     path = _local_trips_dir() / f"{_safe_id(trip_id)}.json"
@@ -714,14 +847,6 @@ def _update_trip_document(
         doc = build(existing)
         _flag_anomaly(doc, category, recent)
         atomic_write_json(path, doc, indent=2)
-
-
-def _recent_costs_for(category: str) -> list[float]:
-    try:
-        body = _read_windows_body()
-    except Exception:  # noqa: BLE001
-        return []
-    return [float(value) for value in (body.get("recent_costs_inr") or {}).get(category) or []]
 
 
 def _read_windows_body() -> dict[str, Any]:
@@ -774,17 +899,36 @@ def snapshot(now: datetime | None = None) -> dict[str, Any]:
 def _load_all_trip_docs() -> list[dict[str, Any]]:
     if storage_cosmos.is_enabled():
         try:
-            return storage_cosmos.operations_query(
+            rows = storage_cosmos.operations_query(
                 _CONTAINER,
-                "SELECT * FROM c WHERE c.user_id = @env AND STARTSWITH(c.id, @prefix) "
+                # Per-trip partitions (``_trip_partition``) plus any trip not
+                # settled since they were introduced, still under the environment.
+                "SELECT * FROM c WHERE STARTSWITH(c.id, @prefix) "
+                "AND (STARTSWITH(c.user_id, @trip_partition) OR c.user_id = @env) "
                 "ORDER BY c.last_activity_at DESC",
                 [
                     {"name": "@env", "value": _environment()},
+                    {"name": "@trip_partition", "value": f"{_environment()}:"},
                     {"name": "@prefix", "value": _TRIP_DOC_PREFIX},
                 ],
             )
         except Exception:  # noqa: BLE001
             return []
+        # Between a legacy copy being folded into its new partition and being
+        # deleted, both can exist; the newer one is the one that carries both.
+        newest: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            doc_id = str(row.get("id") or row.get("trip_id") or "")
+            kept = newest.get(doc_id)
+            if kept is None or str(row.get("last_activity_at") or "") > str(
+                kept.get("last_activity_at") or ""
+            ):
+                newest[doc_id] = row
+        return sorted(
+            newest.values(),
+            key=lambda doc: str(doc.get("last_activity_at") or ""),
+            reverse=True,
+        )
     docs: list[dict[str, Any]] = []
     for path in _local_trips_dir().glob("*.json"):
         try:

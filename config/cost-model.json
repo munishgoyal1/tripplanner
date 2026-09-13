@@ -82,14 +82,14 @@
     "freeTierRuPerSecond": 1000,
     "$freeTierComment": "enableFreeTier on the account discounts the first 1000 RU/s ACCOUNT-WIDE, not per database -- the same pooled-allowance shape as Google's free monthly quotas, so the three environments split it through freePoolShare above. Three databases at the 400 RU/s floor already provision 1200 and bill for the overflow.",
     "tripOpProfile": {
-      "$comment": "Cosmos operations one new_trip build issues, per container, with the document size used to price them. Document sizes for 'trips' are measured from corpus/trips (median 6.4 KB, p95 15.4 KB -- p95 is used, since sizing on the median is what under-provisions). The remaining rows are the call sites in each module: places_cache and tool_cache read-then-write once per resolved place or tool call for a ~5-day, ~20-place trip; provider_usage writes once per outbound provider call; trip_costs is the ledger's reserve/settle read-and-conditional-write pair per turn.",
+      "$comment": "Cosmos operations one new_trip build issues, per container, with the document size used to price them. Document sizes for 'trips' are measured from corpus/trips (median 6.4 KB, p95 15.4 KB -- p95 is used, since sizing on the median is what under-provisions). The remaining rows are the call sites in each module: places_cache and tool_cache read-then-write once per resolved place or tool call for a ~5-day, ~20-place trip; provider_usage writes once per outbound provider call. places_cache carries one extra point read per place whose bucketed item does not exist yet -- the fallback read of the legacy _shared partition (see place_cache_layout.py); drop those 20 reads once that fallback is removed. trip_costs is the cost ledger over the build's four turns, in two rows because its two documents differ in size by an order of magnitude: the window document takes a read and a conditional write at reserve and again at settle (8 + 8), priced at its size measured by driving cost_ledger's own mutators to steady state (200 settled-interaction markers, 200 cost samples per category, 12 turns in flight: 8.1 KB); each settle then reads and upserts the trip's own cost document (0.7 KB, so the 1 KB floor), plus one read of its pre-partitioning location the first time a trip is costed. The previous single row priced the window document at 2 KB when it measured 11.6 KB, and omitted the trip-document operations and a per-settle read-back of the window document that no longer happens.",
       "trips": {
         "reads": 6,
         "writes": 8,
         "docKb": 16
       },
       "places_cache": {
-        "reads": 40,
+        "reads": 60,
         "writes": 20,
         "docKb": 2
       },
@@ -106,7 +106,12 @@
       "trip_costs": {
         "reads": 8,
         "writes": 8,
-        "docKb": 2
+        "docKb": 8.1
+      },
+      "trip_costs:trip_documents": {
+        "reads": 5,
+        "writes": 4,
+        "docKb": 1
       },
       "audit_events": {
         "reads": 0,

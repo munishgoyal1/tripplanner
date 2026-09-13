@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import copy
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 
 import pytest
@@ -268,3 +272,271 @@ def test_cache_hits_add_savings_not_spend():
     trip = cost_ledger.recent_trips(1)[0]
     assert trip["totals"]["cache_hits"] == 4
     assert trip["totals"]["savings_inr"] == pytest.approx(0.128 * 88.0)
+
+
+# --- Cosmos contention -------------------------------------------------------
+
+
+class FakeCosmos:
+    """Documents keyed by (container, partition, id) with versions, like Cosmos.
+
+    ``write_delay`` holds each conditional write open long enough for concurrent
+    turns to interleave, which is when read-modify-write loses without a version
+    check and conflicts without batching.
+    """
+
+    def __init__(self, write_delay: float = 0.0) -> None:
+        self.docs: dict[tuple[str, str, str], tuple[dict, int]] = {}
+        self.lock = threading.Lock()
+        self.write_delay = write_delay
+        self.reads: list[tuple[str, str, str]] = []
+        self.writes: list[tuple[str, str, str]] = []
+        self.conflicts = 0
+
+    def install(self, monkeypatch) -> None:
+        storage = cost_ledger.storage_cosmos
+        monkeypatch.setattr(storage, "is_enabled", lambda: True)
+        for name in (
+            "read_doc",
+            "read_doc_versioned",
+            "create_doc_if_absent",
+            "replace_doc_if_version",
+            "upsert_doc",
+            "delete_doc",
+            "operations_query",
+        ):
+            monkeypatch.setattr(storage, name, getattr(self, name))
+
+    def read_doc(self, container, partition, doc_id):
+        with self.lock:
+            self.reads.append((container, partition, doc_id))
+            found = self.docs.get((container, partition, doc_id))
+            return copy.deepcopy(found[0]) if found else None
+
+    def read_doc_versioned(self, container, partition, doc_id):
+        with self.lock:
+            self.reads.append((container, partition, doc_id))
+            found = self.docs.get((container, partition, doc_id))
+            if not found:
+                return None
+            return cost_ledger.storage_cosmos.VersionedDocument(
+                body=copy.deepcopy(found[0]), version=str(found[1])
+            )
+
+    def create_doc_if_absent(self, container, partition, doc_id, body):
+        time.sleep(self.write_delay)
+        with self.lock:
+            key = (container, partition, doc_id)
+            if key in self.docs:
+                self.conflicts += 1
+                raise cost_ledger.storage_cosmos.WriteConflictError("created")
+            self.writes.append(key)
+            self.docs[key] = (copy.deepcopy(body), 1)
+
+    def replace_doc_if_version(self, container, partition, doc_id, body, version):
+        time.sleep(self.write_delay)
+        with self.lock:
+            key = (container, partition, doc_id)
+            current = self.docs.get(key)
+            if current is None or str(current[1]) != version:
+                self.conflicts += 1
+                raise cost_ledger.storage_cosmos.WriteConflictError("changed")
+            self.writes.append(key)
+            self.docs[key] = (copy.deepcopy(body), current[1] + 1)
+
+    def upsert_doc(self, container, partition, doc_id, body):
+        with self.lock:
+            key = (container, partition, doc_id)
+            self.writes.append(key)
+            previous = self.docs.get(key)
+            self.docs[key] = (copy.deepcopy(body), (previous[1] + 1) if previous else 1)
+
+    def delete_doc(self, container, partition, doc_id):
+        with self.lock:
+            self.docs.pop((container, partition, doc_id), None)
+
+    def operations_query(self, container, query, parameters):
+        values = {parameter["name"]: parameter["value"] for parameter in parameters}
+        with self.lock:
+            return [
+                {**copy.deepcopy(body), "id": doc_id, "user_id": partition}
+                for (stored, partition, doc_id), (body, _version) in self.docs.items()
+                if stored == container
+                and doc_id.startswith(values["@prefix"])
+                and (partition == values["@env"] or partition.startswith(values["@trip_partition"]))
+            ]
+
+
+def _concurrently(count: int, action) -> list:
+    barrier = threading.Barrier(count)
+
+    def run(index: int):
+        barrier.wait()
+        try:
+            return action(index)
+        except Exception as exc:  # noqa: BLE001 - the outcome is what is asserted
+            return exc
+
+    with ThreadPoolExecutor(max_workers=count) as pool:
+        return list(pool.map(run, range(count)))
+
+
+def test_concurrent_reservations_admit_exactly_what_the_ceiling_allows(monkeypatch):
+    """Group commit must keep the invariant: no turn is checked against state
+    that ignores a concurrent turn. Twelve turns race for room for five."""
+    monkeypatch.setenv("COST_CEILING_INR_DAILY", "300")  # five INR 60 seeded holds
+    cosmos = FakeCosmos(write_delay=0.01)
+    cosmos.install(monkeypatch)
+
+    outcomes = _concurrently(
+        12, lambda index: cost_ledger.reserve("new_trip", interaction_id=f"turn-{index}", now=NOW)
+    )
+
+    admitted = [outcome for outcome in outcomes if isinstance(outcome, cost_ledger.Reservation)]
+    denied = [outcome for outcome in outcomes if isinstance(outcome, cost_ledger.CostCeilingError)]
+    assert len(admitted) == 5
+    assert len(denied) == 7
+    assert cost_ledger.snapshot(now=NOW)["pending_inr"] == pytest.approx(300.0)
+    # Collisions inside one process are batched away rather than retried.
+    assert cosmos.conflicts == 0
+    assert len(cosmos.writes) < len(admitted)
+
+
+def test_concurrent_settlements_lose_no_spend_and_raise_no_ledger_error(monkeypatch):
+    """Under COST_CEILING_DENY_ON_LEDGER_ERROR=1, five exhausted retries denied a turn."""
+    monkeypatch.setenv("COST_CEILING_DENY_ON_LEDGER_ERROR", "1")
+    cosmos = FakeCosmos(write_delay=0.005)
+    cosmos.install(monkeypatch)
+    turns = 16
+    for index in range(turns):
+        cost_ledger.reserve("trip_update", interaction_id=f"turn-{index}", now=NOW)
+
+    _concurrently(
+        turns,
+        lambda index: cost_ledger.settle(
+            attribution(f"turn-{index}", trip_id=f"trip-{index}", kind="trip_update"),
+            [google_call(0.25)],
+            now=NOW,
+        ),
+    )
+
+    snapshot = cost_ledger.snapshot(now=NOW)
+    assert snapshot["windows"]["daily"]["spent_inr"] == pytest.approx(turns * 0.25 * 88.0)
+    assert snapshot["pending_inr"] == pytest.approx(0.0)
+    assert cosmos.conflicts == 0
+
+
+def test_a_write_from_another_process_is_reread_not_overwritten(monkeypatch):
+    """The version check still guards against writers outside this process."""
+    cosmos = FakeCosmos()
+    cosmos.install(monkeypatch)
+    cost_ledger.reserve("new_trip", interaction_id="first", now=NOW)
+    replace = cosmos.replace_doc_if_version
+    interfered = {"done": False}
+
+    def replace_after_another_process_reserves(container, partition, doc_id, body, version):
+        if not interfered["done"]:
+            interfered["done"] = True
+            current, stored_version = cosmos.docs[(container, partition, doc_id)]
+            other = cost_ledger._with_reservation(
+                current, category="new_trip", reservation_id="other-process", now=NOW
+            )[0]
+            cosmos.docs[(container, partition, doc_id)] = (other, stored_version + 1)
+        return replace(container, partition, doc_id, body, version)
+
+    monkeypatch.setattr(
+        cost_ledger.storage_cosmos, "replace_doc_if_version", replace_after_another_process_reserves
+    )
+    monkeypatch.setattr(cost_ledger.time, "sleep", lambda _seconds: None)
+
+    cost_ledger.reserve("new_trip", interaction_id="second", now=NOW)
+
+    assert cosmos.conflicts == 1
+    assert cost_ledger.snapshot(now=NOW)["pending_inr"] == pytest.approx(180.0)
+
+
+def test_a_document_that_never_settles_is_reported_unavailable(monkeypatch):
+    cosmos = FakeCosmos()
+    cosmos.install(monkeypatch)
+    monkeypatch.setenv("COST_CEILING_DENY_ON_LEDGER_ERROR", "1")
+    cost_ledger.reserve("new_trip", interaction_id="first", now=NOW)
+
+    def always_conflict(*_args):
+        raise cost_ledger.storage_cosmos.WriteConflictError("changed")
+
+    monkeypatch.setattr(cost_ledger.storage_cosmos, "replace_doc_if_version", always_conflict)
+    monkeypatch.setattr(cost_ledger.time, "sleep", lambda _seconds: None)
+
+    with pytest.raises(cost_ledger.LedgerUnavailableError):
+        cost_ledger.reserve("new_trip", interaction_id="second", now=NOW)
+
+
+def test_settlement_idempotency_survives_the_switch_to_markers():
+    """Ids stored in full before digests were introduced must still stop a double charge."""
+    body = cost_ledger._empty_windows()
+    body["settled_interactions"] = ["legacy-full-interaction-id"]
+
+    replay = cost_ledger._with_settlement(
+        body,
+        reservation_id="legacy-full-interaction-id",
+        interaction_id="legacy-full-interaction-id",
+        category="new_trip",
+        is_trip=True,
+        now=NOW,
+        records=[google_call(1.0)],
+    )
+    fresh = cost_ledger._with_settlement(
+        body,
+        reservation_id="new-id",
+        interaction_id="new-id",
+        category="new_trip",
+        is_trip=True,
+        now=NOW,
+        records=[google_call(1.0)],
+    )
+
+    assert replay is None
+    assert fresh is not None
+    assert fresh[0]["settled_interactions"][-1] == cost_ledger._settled_marker("new-id")
+    assert "new-id" not in fresh[0]["settled_interactions"]
+
+
+def test_trip_cost_documents_leave_the_window_partition(monkeypatch):
+    """Each settle used to add a read and a write to the partition every turn shares."""
+    cosmos = FakeCosmos()
+    cosmos.install(monkeypatch)
+    cost_ledger.reserve("new_trip", interaction_id="i1", now=NOW)
+    cosmos.reads.clear()
+
+    cost_ledger.settle(attribution("i1"), [google_call(1.0)], now=NOW)
+
+    environment = cost_ledger._environment()
+    trip_key = ("trip_costs", f"{environment}:trip_trip-1", "trip_trip-1")
+    assert trip_key in cosmos.docs
+    in_window_partition = {
+        doc_id for _container, partition, doc_id in cosmos.docs if partition == environment
+    }
+    assert in_window_partition == {"_windows_v1"}
+    window_reads = [read for read in cosmos.reads if read[2] == "_windows_v1"]
+    assert len(window_reads) == 1  # the settlement itself; no read-back for percentiles
+    assert cost_ledger.recent_trips(5)[0]["totals"]["cost_inr"] == pytest.approx(88.0)
+
+
+def test_legacy_trip_cost_document_is_folded_in_and_removed(monkeypatch):
+    cosmos = FakeCosmos()
+    cosmos.install(monkeypatch)
+    environment = cost_ledger._environment()
+    legacy = cost_ledger._empty_trip_doc("trip-1", "Goa", NOW)
+    legacy["turns"] = {"new_trip": 1}
+    legacy["totals"]["cost_inr"] = 50.0
+    legacy["totals"]["calls"] = 3
+    cosmos.docs[("trip_costs", environment, "trip_trip-1")] = (legacy, 1)
+
+    cost_ledger.reserve("trip_update", interaction_id="i2", now=NOW)
+    cost_ledger.settle(attribution("i2", kind="trip_update"), [google_call(1.0)], now=NOW)
+
+    assert ("trip_costs", environment, "trip_trip-1") not in cosmos.docs
+    trips = cost_ledger.recent_trips(5)
+    assert len(trips) == 1
+    assert trips[0]["turns"] == {"new_trip": 1, "trip_update": 1}
+    assert trips[0]["totals"]["cost_inr"] == pytest.approx(50.0 + 88.0)
