@@ -1042,7 +1042,9 @@ than guessing.
 ### EB-TRACE-001 - Reconstruct a planning turn privately
 
 **Trigger:** Build or edit a trip in local, canary or production with `TRIPPLANNER_FLIGHT_RECORDER=1` explicitly enabled in the environment profile
-and the backend restarted. The flag defaults to `0` in local, canary and prod.
+and the backend restarted. The checked-in profiles set it to `1` in local only and
+`0` in canary and prod; `TRIPPLANNER_FLIGHT_RECORDER_VERBOSE` is `0` in all three.
+The code default, with no value set, remains off.
 
 **Expected:** Model/tool/API metadata, shared provider attempts, semantic logs and
 saved revisions share trace identifiers and UTC times. Model/provider attempts keep
@@ -1054,9 +1056,10 @@ omission/truncation is explicit, and sensitive documents/credentials remain excl
 Streaming is unchanged. Recording uses a bounded asynchronous queue and batches;
 overflow is reported and prioritizes failure evidence, never blocks trip work or
 drops financial accounting. A process crash may lose unflushed diagnostic events.
-Local spool/history retention is seven days with a 50 MiB cap per diagnostic store;
-Cosmos recorder data expires after seven days. Failed uploads retain pending files
-within that budget. Export detects corrupt chunks, reads legacy and batched formats,
+The local recorder spool keeps files for 180 days within a 500 MiB cap, pruned at
+most once a minute, so it can briefly exceed the cap; Cosmos recorder data expires
+after 180 days. Failed uploads retain pending files within that budget. The separate
+interaction study store keeps its seven-day / 50 MiB retention. Export detects corrupt chunks, reads legacy and batched formats,
 and includes research preceding trip identity assignment. Browser SDK internals are
 outside this contract.
 

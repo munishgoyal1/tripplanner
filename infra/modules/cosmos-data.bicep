@@ -171,7 +171,8 @@ resource flightRecorderContainers 'Microsoft.DocumentDB/databaseAccounts/sqlData
         paths: ['/user_id']
         kind: 'Hash'
       }
-      defaultTtl: 604800
+      // 180 days; matches _TTL in src/tripplanner/flight_recorder.py.
+      defaultTtl: 15552000
     }
   }
 }]

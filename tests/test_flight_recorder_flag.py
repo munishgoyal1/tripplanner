@@ -26,10 +26,15 @@ def test_master_flag_defaults_off_and_requires_explicit_opt_in(monkeypatch, valu
     assert flight_recorder.enabled() is expected
 
 
-@pytest.mark.parametrize("environment", ["local", "canary", "prod"])
-def test_environment_profiles_disable_recording(environment):
+@pytest.mark.parametrize("environment, recorder", [
+    ("local", "1"), ("canary", "0"), ("prod", "0"),
+])
+def test_environment_profiles_record_only_locally_and_never_verbosely(environment, recorder):
     path = Path(__file__).parents[1] / "config/environments" / f"{environment}.env"
-    assert dotenv_values(path)["TRIPPLANNER_FLIGHT_RECORDER"] == "0"
+    values = dotenv_values(path)
+    assert values["TRIPPLANNER_FLIGHT_RECORDER"] == recorder
+    # Verbose capture is a reproduce-one-issue switch, never a profile default.
+    assert values["TRIPPLANNER_FLIGHT_RECORDER_VERBOSE"] == "0"
 
 
 def test_disabled_recording_skips_serialization_worker_and_archive(monkeypatch):

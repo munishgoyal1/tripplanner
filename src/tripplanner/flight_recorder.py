@@ -39,7 +39,9 @@ _INLINE = re.compile(
     r"authorization|cookie|key|sig)[\"']?\s*[:=]\s*)([\"']?)([^\s\"'&,;}]+)"
 )
 _BEARER = re.compile(r"(?i)\bBearer\s+[A-Za-z0-9._~+/=-]+")
-_TTL = 7 * 24 * 60 * 60
+# Owner retention policy: 180 days, matching the Cosmos `flight_recorder`
+# container's defaultTtl in storage_cosmos.py and infra/modules/cosmos-data.bicep.
+_TTL = 180 * 24 * 60 * 60
 _DEFAULT_WORKER_BATCH_SIZE = 25
 _UPLOAD_REPORT_INTERVAL_SECONDS = 60
 _pending = deque()
@@ -52,7 +54,11 @@ _QUEUE_MAX_BYTES = 8 * 1024 * 1024
 _QUEUE_MAX_EVENTS = 512
 _EVENT_MAX_BYTES = 256 * 1024
 _BATCH_MAX_EVENTS = 25
-_SPOOL_MAX_BYTES = 50 * 1024 * 1024
+_SPOOL_MAX_BYTES = 500 * 1024 * 1024
+# A full scan stats every spool file. At a 500 MiB cap that is tens of thousands
+# of files, too many to walk after every batch write and every 2-second drain.
+_SPOOL_PRUNE_INTERVAL_SECONDS = 60
+_spool_pruned_at: dict[str, float] = {}
 
 
 def enabled():
@@ -239,8 +245,14 @@ def flush_pending():
 
 
 def prune_spool(directory):
+    """Enforce spool age and size, at most once a minute per directory."""
     from tripplanner.diagnostic_retention import prune
 
+    key = str(directory)
+    now = time.monotonic()
+    if now - _spool_pruned_at.get(key, float("-inf")) < _SPOOL_PRUNE_INTERVAL_SECONDS:
+        return
+    _spool_pruned_at[key] = now
     prune(directory, "*.json", max_bytes=_SPOOL_MAX_BYTES, max_age=_TTL)
 
 
