@@ -57,10 +57,22 @@ if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
     $OAuthRedirectBase = $env:OAUTH_REDIRECT_BASE
 }
 
-if (-not $NoBuild -and $ImageTag -eq "latest") {
-    $ImageTag = (git rev-parse --short HEAD 2>$null)
-    if ([string]::IsNullOrWhiteSpace($ImageTag)) {
+if (-not $NoBuild) {
+    # Pin the commit now. The primary checkout can be fast-forwarded during the
+    # minutes of Azure validation below, and the image must hold the commit
+    # its tag names, not whatever HEAD is when the build finally starts.
+    $buildCommit = $null
+    if ($ImageTag -ne "latest") {
+        $buildCommit = (git rev-parse --verify --quiet "$ImageTag^{commit}" 2>$null)
+    }
+    if ([string]::IsNullOrWhiteSpace($buildCommit)) {
+        $buildCommit = (git rev-parse --verify --quiet HEAD 2>$null)
+    }
+    if ([string]::IsNullOrWhiteSpace($buildCommit)) {
         throw "Could not resolve the current Git commit for the immutable image tag."
+    }
+    if ($ImageTag -eq "latest") {
+        $ImageTag = (git rev-parse --short $buildCommit)
     }
 }
 
@@ -84,6 +96,13 @@ Write-Host "Image Tag: $ImageTag`n"
 
 # Step 1: Validate prerequisites
 Write-Host "✓ Step 1: Validating prerequisites..."
+if (-not $NoBuild) {
+    # Publishing is the last thing to fail and the cheapest to check, so check
+    # it before several minutes of Bicep validation and what-if.
+    $ghcrCredential = Resolve-GhcrPublishCredential
+    Write-Host "  ✓ GHCR publish credential verified ($($ghcrCredential.Source))"
+    $ghcrCredential = $null
+}
 if (-not (Test-Path $bicepFile)) {
     throw "Bicep file not found: $bicepFile"
 }
@@ -203,7 +222,7 @@ if (-not $NoBuild) {
     Write-Host "✓ Step 0: Building & pushing image from current code..."
     $stageName = "Image build and push"
     $stageTimer = Start-DeploymentTimer
-    & "$PSScriptRoot/push-image.ps1" -Tag $ImageTag
+    & "$PSScriptRoot/push-image.ps1" -Tag $ImageTag -Commit $buildCommit
     if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
     Write-Host "  ✓ Image ready`n"
     Complete-DeploymentTimer -Name $stageName -Timer $stageTimer | Out-Null

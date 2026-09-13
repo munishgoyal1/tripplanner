@@ -138,6 +138,157 @@ function Assert-DeploymentHasNoDeletes {
     }
 }
 
+function Test-GhcrPublishToken {
+    <#
+    .SYNOPSIS
+    Why a token cannot publish to GHCR as $User, or $null when it can.
+
+    .DESCRIPTION
+    GHCR's own read endpoints prove nothing: the package is public, so an
+    anonymous manifest read succeeds with no credential at all.
+    That is how an empty Docker credential store passed the old preflight and
+    failed only at `docker push`, eleven minutes into a canary deploy. GitHub's
+    /user endpoint reports the token's owner and classic scopes, which are what
+    GHCR checks on push.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$Token,
+        [Parameter(Mandatory)][string]$User
+    )
+
+    try {
+        $response = Invoke-WebRequest `
+            -Uri "https://api.github.com/user" `
+            -Headers @{ Authorization = "Bearer $Token"; "User-Agent" = "tripplanner-deploy" } `
+            -TimeoutSec 20 `
+            -ErrorAction Stop
+    } catch {
+        $status = $_.Exception.Response.StatusCode.value__
+        if ($status -eq 401) {
+            return "GitHub rejected it as expired or revoked"
+        }
+        return "GitHub could not verify it ($($_.Exception.Message))"
+    }
+
+    $login = ($response.Content | ConvertFrom-Json).login
+    if ($login -ne $User) {
+        return "it belongs to '$login', not '$User'"
+    }
+    $scopes = @((@($response.Headers['X-OAuth-Scopes']) -join ',').Split(',') |
+        ForEach-Object { $_.Trim() } |
+        Where-Object { $_ })
+    if ($scopes -notcontains "write:packages") {
+        $held = if ($scopes.Count -eq 0) { "none" } else { $scopes -join ', ' }
+        return "it lacks the classic write:packages scope (scopes: $held)"
+    }
+    return $null
+}
+
+function Get-DockerStoredRegistryToken {
+    param([Parameter(Mandatory)][string]$Registry)
+
+    $configDir = if ($env:DOCKER_CONFIG) { $env:DOCKER_CONFIG } else { Join-Path $HOME ".docker" }
+    $configPath = Join-Path $configDir "config.json"
+    if (-not (Test-Path $configPath)) {
+        return $null
+    }
+    try {
+        $config = Get-Content $configPath -Raw | ConvertFrom-Json
+    } catch {
+        return $null
+    }
+
+    $inline = $config.auths.$Registry.auth
+    if (-not [string]::IsNullOrWhiteSpace($inline)) {
+        $pair = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($inline))
+        return ($pair -split ':', 2)[1]
+    }
+
+    $store = $config.credHelpers.$Registry
+    if ([string]::IsNullOrWhiteSpace($store)) {
+        $store = $config.credsStore
+    }
+    if ([string]::IsNullOrWhiteSpace($store)) {
+        return $null
+    }
+    $helper = Get-Command "docker-credential-$store" -ErrorAction SilentlyContinue
+    if ($null -eq $helper) {
+        return $null
+    }
+    foreach ($server in @($Registry, "https://$Registry")) {
+        $raw = ($server | & $helper.Source get 2>$null | Out-String)
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($raw)) {
+            continue
+        }
+        try {
+            $secret = ($raw | ConvertFrom-Json).Secret
+        } catch {
+            continue
+        }
+        if (-not [string]::IsNullOrWhiteSpace($secret)) {
+            return $secret
+        }
+    }
+    return $null
+}
+
+function Resolve-GhcrPublishCredential {
+    <#
+    .SYNOPSIS
+    The first available token that can push to GHCR, with where it came from.
+
+    .DESCRIPTION
+    Candidates, in order: GHCR_TOKEN, CR_PAT, GITHUB_TOKEN, the GitHub CLI token,
+    and the ghcr.io credential in Docker's store. Every candidate is verified
+    the same way, and a rejected one is reported by source (never by value) so
+    the owner knows which credential to refresh. Throws when none qualifies.
+    #>
+    param(
+        [string]$Registry = "ghcr.io",
+        [string]$User = "munishgoyal1"
+    )
+
+    $candidates = [System.Collections.Generic.List[object]]::new()
+    foreach ($name in @("GHCR_TOKEN", "CR_PAT", "GITHUB_TOKEN")) {
+        $value = [Environment]::GetEnvironmentVariable($name, 'Process')
+        if (-not [string]::IsNullOrWhiteSpace($value)) {
+            $candidates.Add([pscustomobject]@{ Source = $name; Token = $value })
+        }
+    }
+    if (Get-Command gh -ErrorAction SilentlyContinue) {
+        $ghToken = (& gh auth token --hostname github.com 2>$null | Out-String).Trim()
+        if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($ghToken)) {
+            $candidates.Add([pscustomobject]@{ Source = "GitHub CLI"; Token = $ghToken })
+        }
+    }
+    $storedToken = Get-DockerStoredRegistryToken -Registry $Registry
+    if (-not [string]::IsNullOrWhiteSpace($storedToken)) {
+        $candidates.Add([pscustomobject]@{ Source = "Docker credential store"; Token = $storedToken })
+    }
+
+    $rejections = @()
+    foreach ($candidate in $candidates) {
+        # An Actions installation token cannot call /user; the workflow's
+        # packages: write permission is what authorises it.
+        if ($candidate.Source -eq "GITHUB_TOKEN" -and $env:GITHUB_ACTIONS -eq "true") {
+            return $candidate
+        }
+        $reason = Test-GhcrPublishToken -Token $candidate.Token -User $User
+        if ($null -eq $reason) {
+            return $candidate
+        }
+        $rejections += "$($candidate.Source): $reason"
+    }
+
+    $found = if ($rejections.Count -eq 0) {
+        "No GHCR credential was found (checked GHCR_TOKEN, CR_PAT, GITHUB_TOKEN, GitHub CLI, Docker credential store)."
+    } else {
+        "No GHCR credential can publish as ${User}:`n  - " + ($rejections -join "`n  - ")
+    }
+    throw ("$found`nFix one, then retry: run 'gh auth refresh -h github.com -s write:packages', " +
+        "or set GHCR_TOKEN to a classic PAT with write:packages.")
+}
+
 function Start-DeploymentTimer {
     return [System.Diagnostics.Stopwatch]::StartNew()
 }

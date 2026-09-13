@@ -2080,3 +2080,17 @@ the outcome.
 - `restoreMocks: true` does not clear call history on a hoisted `vi.fn()` in
   Vitest 4. A `not.toHaveBeenCalled()` passed alone and failed after earlier
   tests in the same file; clear hoisted mocks in `beforeEach`.
+## 2026-09-13 - Prove push rights and pin the commit before a deploy builds
+
+- A canary deploy failed at `docker push` eleven minutes in, after Bicep
+  validation, what-if and a full build, although its credential preflight had
+  passed. The preflight read the image manifest; the package is public, so the
+  read succeeded anonymously while Docker's credential store held nothing for
+  `ghcr.io`. A read against a public resource proves no identity. Verify the
+  credential that the failing step will use, with the authority that grants it
+  (GitHub's `/user` owner and `write:packages` scope), and do it before slow work.
+- The same run named its image after the commit it started on, but the primary
+  checkout was fast-forwarded mid-run and the build read the live tree, so the
+  tag and the contents could disagree. Resolve the commit once, then build from
+  a `git archive` export of it. BuildKit caches by content, so a fresh export
+  directory still reuses every layer.
