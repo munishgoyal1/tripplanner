@@ -152,6 +152,12 @@ The owner launchers `scripts/win/user/testing/Suite-Health.cmd` and
 `scripts/mac/user/testing/Suite-Health.command` forward every argument to the
 same script; pass `help` for usage.
 
+The health run starts vitest with `node node_modules/vitest/vitest.mjs`, not
+`npx` — on Windows `npx vitest --version` alone measured 28.3s against 0.5s
+direct — and passes `--maxWorkers=4`, overriding `vitest.config.ts`'s cap of 2
+for this deliberate pass only. The cap stays for lane gates, where several
+worktrees validate at once.
+
 This fast-forwards the primary checkout to `origin/master`, runs both complete
 suites — neither one aborting the other — and classifies every failure against
 [`test-health-baseline.json`](../../scripts/dev/test-health-baseline.json):

@@ -164,8 +164,15 @@ try {
             }
             $vitestJson = Join-Path $outputRoot "vitest.json"
             $vitestLog = Join-Path $outputRoot "vitest.log"
+            # node on vitest.mjs, not npx: on Windows npx goes through npx-cli.js
+            # and two cmd.exe shims first, which cost about a minute before vitest
+            # existed on a loaded machine.
+            $vitestEntry = Join-Path $frontend "node_modules/vitest/vitest.mjs"
+            # --maxWorkers=4 overrides the config's cap of 2 for this run only. That
+            # cap guards lane gates running beside other worktrees; a health run is
+            # one deliberate pass, and jsdom files are the long pole at 2 workers.
             $code = Invoke-Suite -LogPath $vitestLog -Command {
-                & npx vitest run --reporter=default --reporter=json --outputFile.json=$vitestJson
+                & node $vitestEntry run --maxWorkers=4 --reporter=default --reporter=json --outputFile.json=$vitestJson
             }
             Write-Host "vitest exit code: $code" -ForegroundColor DarkGray
         } finally {
