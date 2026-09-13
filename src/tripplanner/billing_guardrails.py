@@ -45,6 +45,23 @@ def gcp_quota_per_minute(service: str, quota_id: str, *, default: int) -> int:
     return default
 
 
+def cosmos_ru_per_second(*, default: int = 400) -> int:
+    """Provisioned RU/s for the current environment's Cosmos database.
+
+    Derived by ``scripts/derive_limits.py`` from ``COST_CEILING_INR_HOURLY`` and
+    ``CHAT_MAX_CONCURRENT_GLOBAL``; read here so the running app can report the
+    number it was actually sized for alongside the RU it is observed to spend,
+    rather than leaving the two knowable only from separate places.
+    """
+    environment = os.getenv("TRIPPLANNER_ENVIRONMENT", "local").strip().lower()
+    cosmos = (load().get("azure") or {}).get("cosmos") or {}
+    row = cosmos.get(environment) or cosmos.get("local") or {}
+    try:
+        return int(row.get("ruPerSecond", default))
+    except (TypeError, ValueError):
+        return default
+
+
 def reset_cache_for_tests() -> None:
     global _cache
     _cache = None

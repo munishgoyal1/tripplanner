@@ -60,7 +60,11 @@ def test_emulator_tls_warning_filter_is_limited_to_loopback_urllib3(monkeypatch)
 
 def test_versioned_read_keeps_etag_out_of_application_body(monkeypatch) -> None:
     class FakeContainer:
-        def read_item(self, *, item, partition_key):
+        # ``**_kwargs`` mirrors the real SDK, which takes azure-core options
+        # such as response_hook -- storage_cosmos passes one to capture the RU
+        # charge, and a double that rejects it fails on a signature the service
+        # accepts rather than on behaviour.
+        def read_item(self, *, item, partition_key, **_kwargs):
             assert (item, partition_key) == ("active_trip", "user-1")
             return {
                 "id": item,

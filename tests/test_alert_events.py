@@ -29,8 +29,21 @@ def test_thresholds_are_sourced_from_billing_guardrails_json():
     assert ae._window_seconds("chat_latency_burn", 0) == 15 * 60
     assert ae._severity("chat_latency_burn", 0) == 2
     assert ae._severity("cache_degradation", 0) == 3
+
+    # The Cosmos numbers are read from the file rather than restated here. The
+    # threshold is derived from the INR ceilings (scripts/derive_limits.py), so
+    # a literal in this test would have to be edited every time the budget moves
+    # -- which is exactly the hardcoded duplicate this test exists to forbid.
+    configured = (
+        ae._guardrails()["azureInfraHealthAlerts"]["cosmosThrottlingAlert"]
+    )
     threshold, window, severity = ae._cosmos_throttling_config()
-    assert (threshold, window, severity) == (20, 15 * 60, 3)
+    assert threshold == configured["threshold"]
+    assert window == 15 * 60
+    assert severity == configured["severity"]
+    # Cosmos throttling must stay below the severity-1 band: a 429 is retried by
+    # the SDK, and paging on it is what made these alerts noise.
+    assert severity >= 3
 
 
 def test_chat_latency_burn_fires_then_resolves(_isolated):

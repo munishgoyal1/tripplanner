@@ -7,9 +7,14 @@ param location string
 @description('Environment database names hosted by this account.')
 param databaseNames array
 
-@description('Fixed shared throughput for each environment database.')
-@minValue(400)
-param databaseThroughput int = 400
+@description('''Shared throughput for each environment database, positionally
+matching databaseNames. DERIVED -- see infra/billing-guardrails.json azure.cosmos,
+written by scripts/derive_limits.py from the INR ceilings. Do not hand-tune: a
+number raised here and nowhere else drifts from the budget it is meant to serve.
+Cosmos rejects a shared database below 400 RU/s; the derivation clamps to that
+floor (cosmosSizing.minimumRuPerSecond) and tests/test_limits_derivation.py
+asserts it, since @minValue cannot decorate an array parameter.''')
+param databaseThroughputs int[]
 
 resource account 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
   name: accountName
@@ -33,7 +38,7 @@ resource account 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
   }
 }
 
-resource databases 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-05-15' = [for databaseName in databaseNames: {
+resource databases 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-05-15' = [for (databaseName, index) in databaseNames: {
   parent: account
   name: databaseName
   properties: {
@@ -41,7 +46,7 @@ resource databases 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-05-1
       id: databaseName
     }
     options: {
-      throughput: databaseThroughput
+      throughput: databaseThroughputs[index]
     }
   }
 }]
@@ -201,6 +206,54 @@ resource publicDemoRunsContainers 'Microsoft.DocumentDB/databaseAccounts/sqlData
         paths: ['/user_id']
         kind: 'Hash'
       }
+    }
+  }
+}]
+
+// These three were previously created at runtime by
+// storage_cosmos._container()'s create_container_if_not_exists, so they never
+// appeared in any throughput plan even though trip_costs is the cost ledger's
+// hot path. Declaring them keeps the provisioned container set equal to the one
+// cosmosSizing.tripOpProfile prices.
+resource tripCostsContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'trip_costs'
+  properties: {
+    resource: {
+      id: 'trip_costs'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+    }
+  }
+}]
+
+resource alertEventsContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'alert_events'
+  properties: {
+    resource: {
+      id: 'alert_events'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+    }
+  }
+}]
+
+resource productEventsContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'product_events'
+  properties: {
+    resource: {
+      id: 'product_events'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+      defaultTtl: 7776000
     }
   }
 }]

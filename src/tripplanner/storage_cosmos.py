@@ -172,13 +172,38 @@ def _payload_bytes(body: dict[str, Any] | None) -> int:
     return len(json.dumps(body, separators=(",", ":"), default=str).encode("utf-8"))
 
 
+def _ru_recorder(fields: dict[str, Any]):
+    """Capture the real RU charge of one Cosmos call into its timing event.
+
+    ``docs/operations/performance-cost.md`` recorded that request-charge capture
+    was not implemented, which left ``cosmosSizing`` in ``config/cost-model.json``
+    -- and therefore the provisioned RU/s derived from it -- an estimate nothing
+    could check. Every operation already emits a timing event, so the charge
+    rides along on that rather than adding a second telemetry path.
+    """
+
+    def hook(response) -> None:
+        try:
+            charge = response.http_response.headers.get("x-ms-request-charge")
+            if charge is not None:
+                fields["ru"] = round(float(charge), 3)
+        except Exception:  # noqa: BLE001 - telemetry must never fail a write
+            return
+
+    return hook
+
+
 def read_doc(container: str, user_id: str, doc_id: str) -> dict[str, Any] | None:
     """Point read. Returns app-level payload or ``None`` if not found."""
     from azure.cosmos.exceptions import CosmosResourceNotFoundError
 
-    with timed_operation("storage_operation", "read", store="cosmos", container=container):
+    with timed_operation(
+        "storage_operation", "read", store="cosmos", container=container
+    ) as fields:
         try:
-            item = _container(container).read_item(item=doc_id, partition_key=user_id)
+            item = _container(container).read_item(
+                item=doc_id, partition_key=user_id, response_hook=_ru_recorder(fields)
+            )
         except CosmosResourceNotFoundError:
             return None
     return _strip_system_fields(item)
@@ -192,9 +217,11 @@ def read_doc_versioned(
 
     with timed_operation(
         "storage_operation", "read_versioned", store="cosmos", container=container
-    ):
+    ) as fields:
         try:
-            item = _container(container).read_item(item=doc_id, partition_key=user_id)
+            item = _container(container).read_item(
+                item=doc_id, partition_key=user_id, response_hook=_ru_recorder(fields)
+            )
         except CosmosResourceNotFoundError:
             return None
     return VersionedDocument(
@@ -214,8 +241,8 @@ def upsert_doc(container: str, user_id: str, doc_id: str, body: dict[str, Any]) 
         store="cosmos",
         container=container,
         payload_bytes=_payload_bytes(payload),
-    ):
-        _container(container).upsert_item(body=payload)
+    ) as fields:
+        _container(container).upsert_item(body=payload, response_hook=_ru_recorder(fields))
 
 
 def create_doc_if_absent(
@@ -233,9 +260,11 @@ def create_doc_if_absent(
         store="cosmos",
         container=container,
         payload_bytes=_payload_bytes(payload),
-    ):
+    ) as fields:
         try:
-            _container(container).create_item(body=payload)
+            _container(container).create_item(
+                body=payload, response_hook=_ru_recorder(fields)
+            )
         except CosmosHttpResponseError as exc:
             if exc.status_code == 409:
                 raise WriteConflictError(
@@ -264,13 +293,14 @@ def replace_doc_if_version(
         store="cosmos",
         container=container,
         payload_bytes=_payload_bytes(payload),
-    ):
+    ) as fields:
         try:
             _container(container).replace_item(
                 item=doc_id,
                 body=payload,
                 etag=version,
                 match_condition=MatchConditions.IfNotModified,
+                response_hook=_ru_recorder(fields),
             )
         except CosmosHttpResponseError as exc:
             if exc.status_code == 412:

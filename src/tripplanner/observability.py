@@ -794,14 +794,20 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
 
 
 @contextmanager
-def timed_operation(kind: str, operation: str, **fields: Any) -> Iterator[None]:
-    """Emit one content-free terminal duration event for an operation."""
+def timed_operation(kind: str, operation: str, **fields: Any) -> Iterator[dict[str, Any]]:
+    """Emit one content-free terminal duration event for an operation.
+
+    Yields the mutable field dict so a caller can attach something only knowable
+    once the call has returned -- ``storage_cosmos`` uses it to record the real
+    ``x-ms-request-charge`` in RU. The fields are read in the ``finally`` block,
+    so anything set inside the ``with`` body is included in the emitted event.
+    """
     started = time.perf_counter()
     status = "ok"
     error = None
     status_code = None
     try:
-        yield
+        yield fields
     except Exception as exc:
         status = "error"
         error = type(exc).__name__
