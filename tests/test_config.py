@@ -143,8 +143,15 @@ def test_google_places_cost_policy_is_owner_configurable(monkeypatch):
 
 def test_checked_in_environment_profiles_have_the_same_non_secret_keys() -> None:
     profiles = {name: _profile_values(name) for name in ("local", "canary", "prod")}
+    # The developer-machine lane gates (scripts/dev/validation_policy.py) are read
+    # from local.env alone; they have no meaning in a hosted profile.
+    local_only = {key for key in profiles["local"] if key.startswith("VALIDATION_GATE_")}
+    assert local_only, "local.env no longer declares the validation gates"
+    assert not any(key.startswith("VALIDATION_GATE_") for key in profiles["canary"])
+    assert not any(key.startswith("VALIDATION_GATE_") for key in profiles["prod"])
 
-    assert profiles["local"].keys() == profiles["canary"].keys() == profiles["prod"].keys()
+    shared_local = profiles["local"].keys() - local_only
+    assert shared_local == profiles["canary"].keys() == profiles["prod"].keys()
     assert not (profiles["local"].keys() & SECRET_KEYS)
     for name, values in profiles.items():
         assert values["TRIPPLANNER_ENVIRONMENT"] == name

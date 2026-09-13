@@ -30,8 +30,13 @@ def evidence(monkeypatch, tmp_path):
     token = recorder.TRACE.set("test-trace")
     def read_events():
         recorder.flush_pending()
-        return [event for p in sorted(recorder.root().glob("*.json"))
-                for event in recorder._events(json.loads(p.read_text(encoding="utf-8")))]
+        events = [event for p in recorder.root().glob("*.json")
+                  for event in recorder._events(json.loads(p.read_text(encoding="utf-8")))]
+        # Order as export does. One flush writes a file per (user, trace) group,
+        # named `<time_ns>-<uuid>`; on Windows two files often share a time_ns,
+        # so file-name order fell back to the random uuid and "last event" was a
+        # coin flip whenever a request changed user mid-flight.
+        return sorted(events, key=lambda e: (e["unix_time"], e.get("sequence", 0)))
     yield read_events
     recorder.flush_pending()
     recorder.TRACE.reset(token)
@@ -415,6 +420,41 @@ def test_retention_enforces_age_and_disk_cap(tmp_path):
     os.utime(tmp_path / "old.json", (time.time() - 2, time.time() - 2))
     prune(tmp_path, "*.json", max_bytes=10, max_age=100)
     assert [path.name for path in tmp_path.glob("*.json")] == ["new.json"]
+
+
+def test_recorder_retention_is_180_days_and_500_mib_everywhere_it_is_declared():
+    import re
+    from pathlib import Path
+
+    from tripplanner import storage_cosmos
+
+    days_180 = 180 * 24 * 60 * 60
+    assert recorder._TTL == days_180
+    assert recorder._SPOOL_MAX_BYTES == 500 * 1024 * 1024
+    # Every uploaded row carries _TTL, but Cosmos only honours a per-item ttl
+    # when the container has a default: the runtime and Bicep must agree.
+    assert storage_cosmos._CONTAINER_TTLS["flight_recorder"] == days_180
+    bicep = (Path(__file__).parents[1] / "infra/modules/cosmos-data.bicep").read_text(
+        encoding="utf-8"
+    )
+    container = bicep.split("name: 'flight_recorder'", 1)[1].split("resource ", 1)[0]
+    assert re.search(r"defaultTtl:\s*(\d+)", container).group(1) == str(days_180)
+
+
+def test_spool_prune_walks_the_directory_at_most_once_a_minute(monkeypatch, tmp_path):
+    from tripplanner import diagnostic_retention
+
+    calls = []
+    pruned_at = {}
+    monkeypatch.setattr(diagnostic_retention, "prune", lambda *args, **kwargs: calls.append(kwargs))
+    monkeypatch.setattr(recorder, "_spool_pruned_at", pruned_at)
+
+    recorder.prune_spool(tmp_path)
+    recorder.prune_spool(tmp_path)
+    assert len(calls) == 1
+    pruned_at[str(tmp_path)] -= 60
+    recorder.prune_spool(tmp_path)
+    assert calls == [{"max_bytes": 500 * 1024 * 1024, "max_age": 180 * 24 * 60 * 60}] * 2
 
 
 def test_six_large_successful_model_requests_have_small_evidence(evidence):

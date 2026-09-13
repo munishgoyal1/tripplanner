@@ -67,9 +67,16 @@ def _force_local_storage(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture(autouse=True)
 def _disable_debug_store(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Keep fixture trips out of the committed debug archive."""
+    """Keep fixture trips out of the committed debug archive.
+
+    Both recorder flags are pinned because importing ``tripplanner.config``
+    loads the checked-in ``local.env`` into the process environment: a test that
+    turns the recorder on would otherwise inherit whatever verbosity the owner's
+    profile currently sets, and pass or fail with it.
+    """
     monkeypatch.setenv("TRIPPLANNER_DEBUG_STORE", "0")
     monkeypatch.setenv("TRIPPLANNER_FLIGHT_RECORDER", "0")
+    monkeypatch.setenv("TRIPPLANNER_FLIGHT_RECORDER_VERBOSE", "0")
 
 
 _LOCAL_HOSTS = {"127.0.0.1", "::1", "localhost", "0.0.0.0"}
