@@ -2181,3 +2181,14 @@ the outcome.
   once a container spans several physical partitions (past about 10,000 RU/s or
   50 GB), so say plainly when a partitioning change is future-proofing rather than
   a fix.
+
+## 2026-09-13 - Check a Fix Against Today's Scale Before Paying for Its Migration
+
+- The `places_cache` bucketing from #319 was reverted the same day. At 1000 RU/s
+  and a few GB, even 5x growth never reaches the thresholds where a hot logical
+  partition binds. It added a fallback read, a migration script to run on every
+  database, and a sync guard, for no present or near-term return. Before
+  building an infrastructure-shaped fix, state the scale at which the problem
+  begins, compare it with measured and projected load, and only proceed if they
+  are close. The ledger group commit stayed: contention on one document happens
+  at any throughput.

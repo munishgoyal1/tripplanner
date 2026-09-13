@@ -671,17 +671,6 @@ def _trip_doc_id(trip_id: str) -> str:
     return f"{_TRIP_DOC_PREFIX}{_safe_id(trip_id)}"
 
 
-def _trip_partition(environment: str, doc_id: str) -> str:
-    """A trip's cost document gets a logical partition of its own.
-
-    They used to share the environment's partition with the window document, so
-    every settled turn put a second read-and-write on the one partition every
-    turn already has to touch. Nothing reads a trip's cost document except by its
-    id or through the cross-partition dashboard query, so nothing is lost.
-    """
-    return f"{environment}:{doc_id}"
-
-
 def _empty_trip_doc(trip_id: str, destination: str, now: datetime) -> dict[str, Any]:
     stamp = now.isoformat().replace("+00:00", "Z")
     return {
@@ -821,19 +810,10 @@ def _update_trip_document(
         return doc
 
     if storage_cosmos.is_enabled():
-        partition = _trip_partition(environment, doc_id)
-        existing = storage_cosmos.read_doc(_CONTAINER, partition, doc_id)
-        # A trip first costed before per-trip partitions has its running totals
-        # under the environment partition. Fold them in and remove that copy, or
-        # the trip would restart from zero and appear twice on the dashboard.
-        legacy = (
-            storage_cosmos.read_doc(_CONTAINER, environment, doc_id) if existing is None else None
-        )
-        doc = build(existing if existing is not None else legacy)
+        existing = storage_cosmos.read_doc(_CONTAINER, environment, doc_id)
+        doc = build(existing)
         _flag_anomaly(doc, category, recent)
-        storage_cosmos.upsert_doc(_CONTAINER, partition, doc_id, doc)
-        if legacy is not None:
-            storage_cosmos.delete_doc(_CONTAINER, environment, doc_id)
+        storage_cosmos.upsert_doc(_CONTAINER, environment, doc_id, doc)
         return
 
     path = _local_trips_dir() / f"{_safe_id(trip_id)}.json"
@@ -899,36 +879,17 @@ def snapshot(now: datetime | None = None) -> dict[str, Any]:
 def _load_all_trip_docs() -> list[dict[str, Any]]:
     if storage_cosmos.is_enabled():
         try:
-            rows = storage_cosmos.operations_query(
+            return storage_cosmos.operations_query(
                 _CONTAINER,
-                # Per-trip partitions (``_trip_partition``) plus any trip not
-                # settled since they were introduced, still under the environment.
-                "SELECT * FROM c WHERE STARTSWITH(c.id, @prefix) "
-                "AND (STARTSWITH(c.user_id, @trip_partition) OR c.user_id = @env) "
+                "SELECT * FROM c WHERE c.user_id = @env AND STARTSWITH(c.id, @prefix) "
                 "ORDER BY c.last_activity_at DESC",
                 [
                     {"name": "@env", "value": _environment()},
-                    {"name": "@trip_partition", "value": f"{_environment()}:"},
                     {"name": "@prefix", "value": _TRIP_DOC_PREFIX},
                 ],
             )
         except Exception:  # noqa: BLE001
             return []
-        # Between a legacy copy being folded into its new partition and being
-        # deleted, both can exist; the newer one is the one that carries both.
-        newest: dict[str, dict[str, Any]] = {}
-        for row in rows:
-            doc_id = str(row.get("id") or row.get("trip_id") or "")
-            kept = newest.get(doc_id)
-            if kept is None or str(row.get("last_activity_at") or "") > str(
-                kept.get("last_activity_at") or ""
-            ):
-                newest[doc_id] = row
-        return sorted(
-            newest.values(),
-            key=lambda doc: str(doc.get("last_activity_at") or ""),
-            reverse=True,
-        )
     docs: list[dict[str, Any]] = []
     for path in _local_trips_dir().glob("*.json"):
         try:

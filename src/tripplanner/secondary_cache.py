@@ -13,19 +13,12 @@ from urllib.parse import urlparse
 
 from urllib3.exceptions import InsecureRequestWarning
 
-from tripplanner import place_cache_layout
 from tripplanner.cache_merge import merge_cache_documents
 from tripplanner.config import get_settings
 
 log = logging.getLogger(__name__)
 
-#: The containers this cache may touch, with the one partition each used to keep
-#: every row under. ``tool_cache`` still does; ``places_cache`` rows are bucketed by
-#: id (``place_cache_layout``) and ``_shared`` is only read as a legacy fallback.
-_ALLOWED_PARTITIONS = {
-    place_cache_layout.CONTAINER: place_cache_layout.LEGACY_PARTITION,
-    "tool_cache": "_global_",
-}
+_ALLOWED_PARTITIONS = {"places_cache": "_shared", "tool_cache": "_global_"}
 _SYSTEM_FIELDS = {"_rid", "_self", "_etag", "_attachments", "_ts"}
 _FAILURE_COOLDOWN_SECONDS = 30.0
 _MAX_WRITE_ATTEMPTS = 3
@@ -151,40 +144,19 @@ def _record_failure(operation: str, exc: Exception) -> None:
     log.warning("secondary durable cache %s failed: %s", operation, exc)
 
 
-def _partition(container: str, doc_id: str) -> str:
-    """Where ``doc_id`` is stored; raises for a container outside the boundary."""
-    if container == place_cache_layout.CONTAINER:
-        return place_cache_layout.partition(doc_id)
-    return _ALLOWED_PARTITIONS[container]
-
-
-def _read_legacy_place(target: Any, container: str, doc_id: str) -> dict[str, Any] | None:
-    """The pre-bucketing copy of a place, or ``None``. Raises non-404 failures."""
-    if container != place_cache_layout.CONTAINER:
-        return None
-    try:
-        return target.read_item(item=doc_id, partition_key=place_cache_layout.LEGACY_PARTITION)
-    except Exception as exc:  # noqa: BLE001 - classify SDK 404 without importing early
-        if getattr(exc, "status_code", None) != 404:
-            raise
-        return None
-
-
 def read_doc(container: str, doc_id: str) -> dict[str, Any] | None:
     """Best-effort point read from an allowed global cache partition."""
     if not _available():
         return None
+    from azure.cosmos.exceptions import CosmosResourceNotFoundError
+
     try:
-        target = _container(container)
-        partition = _partition(container, doc_id)
-        try:
-            item = target.read_item(item=doc_id, partition_key=partition)
-        except Exception as exc:  # noqa: BLE001 - classify SDK 404 without importing early
-            if getattr(exc, "status_code", None) != 404:
-                raise
-            item = _read_legacy_place(target, container, doc_id)
-            if item is None:
-                return None
+        item = _container(container).read_item(
+            item=doc_id,
+            partition_key=_ALLOWED_PARTITIONS[container],
+        )
+    except CosmosResourceNotFoundError:
+        return None
     except Exception as exc:  # noqa: BLE001 - secondary cache must fail open
         _record_failure("read", exc)
         return None
@@ -192,29 +164,19 @@ def read_doc(container: str, doc_id: str) -> dict[str, Any] | None:
 
 
 def merge_write(container: str, doc_id: str, body: dict[str, Any]) -> bool:
-    """Best-effort ETag-protected merge into an allowed global partition.
-
-    A place with no bucketed copy yet is merged with its legacy ``_shared`` copy,
-    if any, so re-homing it never discards evidence only the old row holds.
-    """
+    """Best-effort ETag-protected merge into an allowed global partition."""
     if not _available():
         return False
     try:
         target = _container(container)
-        partition = _partition(container, doc_id)
+        partition = _ALLOWED_PARTITIONS[container]
         for _attempt in range(_MAX_WRITE_ATTEMPTS):
             try:
                 current = target.read_item(item=doc_id, partition_key=partition)
             except Exception as exc:  # noqa: BLE001 - classify SDK 404 without importing early
                 if getattr(exc, "status_code", None) != 404:
                     raise
-                legacy = _read_legacy_place(target, container, doc_id)
-                merged_body = (
-                    merge_cache_documents(container, _clean(legacy), body)
-                    if legacy is not None
-                    else body
-                )
-                payload = copy.deepcopy(merged_body)
+                payload = copy.deepcopy(body)
                 payload.update({"id": doc_id, "user_id": partition})
                 try:
                     target.create_item(body=payload)

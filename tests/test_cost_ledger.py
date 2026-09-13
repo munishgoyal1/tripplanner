@@ -363,7 +363,7 @@ class FakeCosmos:
                 for (stored, partition, doc_id), (body, _version) in self.docs.items()
                 if stored == container
                 and doc_id.startswith(values["@prefix"])
-                and (partition == values["@env"] or partition.startswith(values["@trip_partition"]))
+                and partition == values["@env"]
             ]
 
 
@@ -501,8 +501,8 @@ def test_settlement_idempotency_survives_the_switch_to_markers():
     assert "new-id" not in fresh[0]["settled_interactions"]
 
 
-def test_trip_cost_documents_leave_the_window_partition(monkeypatch):
-    """Each settle used to add a read and a write to the partition every turn shares."""
+def test_settle_reads_the_window_document_once(monkeypatch):
+    """The anomaly check reuses the settled document instead of reading it back."""
     cosmos = FakeCosmos()
     cosmos.install(monkeypatch)
     cost_ledger.reserve("new_trip", interaction_id="i1", now=NOW)
@@ -511,32 +511,7 @@ def test_trip_cost_documents_leave_the_window_partition(monkeypatch):
     cost_ledger.settle(attribution("i1"), [google_call(1.0)], now=NOW)
 
     environment = cost_ledger._environment()
-    trip_key = ("trip_costs", f"{environment}:trip_trip-1", "trip_trip-1")
-    assert trip_key in cosmos.docs
-    in_window_partition = {
-        doc_id for _container, partition, doc_id in cosmos.docs if partition == environment
-    }
-    assert in_window_partition == {"_windows_v1"}
+    assert ("trip_costs", environment, "trip_trip-1") in cosmos.docs
     window_reads = [read for read in cosmos.reads if read[2] == "_windows_v1"]
-    assert len(window_reads) == 1  # the settlement itself; no read-back for percentiles
+    assert len(window_reads) == 1
     assert cost_ledger.recent_trips(5)[0]["totals"]["cost_inr"] == pytest.approx(88.0)
-
-
-def test_legacy_trip_cost_document_is_folded_in_and_removed(monkeypatch):
-    cosmos = FakeCosmos()
-    cosmos.install(monkeypatch)
-    environment = cost_ledger._environment()
-    legacy = cost_ledger._empty_trip_doc("trip-1", "Goa", NOW)
-    legacy["turns"] = {"new_trip": 1}
-    legacy["totals"]["cost_inr"] = 50.0
-    legacy["totals"]["calls"] = 3
-    cosmos.docs[("trip_costs", environment, "trip_trip-1")] = (legacy, 1)
-
-    cost_ledger.reserve("trip_update", interaction_id="i2", now=NOW)
-    cost_ledger.settle(attribution("i2", kind="trip_update"), [google_call(1.0)], now=NOW)
-
-    assert ("trip_costs", environment, "trip_trip-1") not in cosmos.docs
-    trips = cost_ledger.recent_trips(5)
-    assert len(trips) == 1
-    assert trips[0]["turns"] == {"new_trip": 1, "trip_update": 1}
-    assert trips[0]["totals"]["cost_inr"] == pytest.approx(50.0 + 88.0)
