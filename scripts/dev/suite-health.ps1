@@ -16,7 +16,7 @@
   Exit codes:
     0  no NEW failures (known debt alone is not red, or it would be red forever)
     1  at least one NEW failure
-    2  a suite could not run at all
+    2  a suite could not run at all, or some of its test files never executed
 
 .EXAMPLE
   pwsh scripts/dev/suite-health.ps1
@@ -168,6 +168,13 @@ try {
             # and two cmd.exe shims first, which cost about a minute before vitest
             # existed on a loaded machine.
             $vitestEntry = Join-Path $frontend "node_modules/vitest/vitest.mjs"
+            # Every file vitest would run. A file whose worker never starts is
+            # simply absent from the json report -- no failure, no skip -- so
+            # comparing against this list is the only way to notice it.
+            $vitestFiles = Join-Path $outputRoot "vitest-files.json"
+            $listCode = Invoke-Suite -LogPath (Join-Path $outputRoot "vitest-list.log") -Command {
+                & node $vitestEntry list --filesOnly --json=$vitestFiles
+            }
             # --maxWorkers=4 overrides the config's cap of 2 for this run only. That
             # cap guards lane gates running beside other worktrees; a health run is
             # one deliberate pass, and jsdom files are the long pole at 2 workers.
@@ -179,6 +186,11 @@ try {
             Pop-Location
         }
         $arguments += @("--vitest-json", $vitestJson)
+        if ($listCode -eq 0 -and (Test-Path $vitestFiles)) {
+            $arguments += @("--vitest-files", $vitestFiles)
+        } else {
+            Write-Host "vitest file list unavailable (exit $listCode); the report cannot verify that every file ran." -ForegroundColor Yellow
+        }
     }
 
     if ($UpdateBaseline) { $arguments += "--update-baseline" }
@@ -194,7 +206,7 @@ try {
     switch ($classifyExit) {
         0 { Write-Host "No NEW failures." -ForegroundColor Green }
         1 { Write-Host "NEW failures found. See $outputRoot/report.md" -ForegroundColor Red }
-        default { Write-Host "A suite could not run. See $outputRoot/report.md" -ForegroundColor Red }
+        default { Write-Host "A suite could not run, or some of its test files did not. See $outputRoot/report.md" -ForegroundColor Red }
     }
     exit $classifyExit
 } finally {

@@ -2066,3 +2066,17 @@ the outcome.
 - Resetting a route at an unresolved transfer must preserve prior local segments.
   Measure and render segments independently; flattening them before calculating
   legs invents a connection across the unresolved gap.
+
+## 2026-09-13 - Test Parsers Against the Tool's Real Output
+
+- `suite_health` refused every real pytest run that had a failure: it matched on
+  junit's `file` attribute, which pytest's default `xunit2` never writes. Its
+  test fixture invented `file=`, so the parser passed its tests and failed its
+  only job. When code parses another tool's output, generate the fixture by
+  running that tool, not by writing the shape you expect.
+- A vitest file whose worker never starts is absent from the json report, not
+  failed or skipped, so the totals still read as a clean run. Compare the
+  executed files against `vitest list --filesOnly` to catch it.
+- `restoreMocks: true` does not clear call history on a hoisted `vi.fn()` in
+  Vitest 4. A `not.toHaveBeenCalled()` passed alone and failed after earlier
+  tests in the same file; clear hoisted mocks in `beforeEach`.

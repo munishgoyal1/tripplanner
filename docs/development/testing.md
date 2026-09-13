@@ -172,6 +172,17 @@ suites — neither one aborting the other — and classifies every failure again
 `MISSING` is never folded into `FIXED`. Deleting a failing test is the cheapest
 way to make a system like this lie, and that bucket is what catches it.
 
+A whole test file can also fail to run without failing: when a vitest worker
+never starts, the file is simply absent from `vitest.json`, with no failure and
+no skip. The script lists every file vitest would run (`vitest list --filesOnly`)
+and reports any that did not execute under **DID NOT RUN**, with the verdict
+marked `INCOMPLETE` and exit code 2. Baseline entries in those files are
+`MISSING`, and `-UpdateBaseline` leaves that suite's section untouched.
+
+pytest failures are matched between the `-rfE` summary (exact node ids) and
+junit (the counts). pytest's default junit carries a dotted `classname`, not a
+file path, so matching derives the expected classname from each node id.
+
 `first_seen`, `owner`, `note`, and `category` survive every update, so the debt
 ages visibly instead of resetting. An entry whose `first_seen` is months old is
 the point of the file, not a bug in it.

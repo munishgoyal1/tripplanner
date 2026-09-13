@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -45,10 +47,17 @@ ing_the_day - AssertionError: assert False
 
 
 def junit(cases: list[tuple[str, str, bool]], **suite_attrs: str) -> str:
+    """Render junit the way pytest's default ``xunit2`` family does.
+
+    That means a dotted ``classname`` and *no* ``file`` attribute. An earlier
+    version of this helper invented ``file=``, so the parser was only ever
+    tested against a shape pytest never writes, and every real run with a
+    failure was refused as "truncated".
+    """
     tests = len(cases)
     failures = sum(1 for _, _, failed in cases if failed)
     body = "".join(
-        f'<testcase file="{source}" name="{name}">'
+        f'<testcase classname="{source.removesuffix(".py").replace("/", ".")}" name="{name}">'
         + ("<failure>boom</failure>" if failed else "")
         + "</testcase>"
         for source, name, failed in cases
@@ -99,7 +108,9 @@ def test_junit_supplies_totals_and_the_failing_file_and_name(tmp_path: Path) -> 
 
     failed, totals = suite_health.parse_pytest_junit(path)
 
-    assert ("tests/test_trip_rebalance.py", "test_it_reduces_travel_by_grouping_the_day") in failed
+    assert suite_health.JunitFailure(
+        "", "tests.test_trip_rebalance", "test_it_reduces_travel_by_grouping_the_day"
+    ) in failed
     assert totals["failed"] == 3
     assert totals["duration_seconds"] == 1222.56
 
@@ -140,6 +151,64 @@ def test_reconcile_refuses_a_node_id_junit_never_saw(tmp_path: Path) -> None:
         )
 
 
+REAL_RUN_TESTS = '''\
+import pytest
+
+
+def test_passes():
+    assert True
+
+
+def test_plain_failure():
+    assert 1 == 2
+
+
+class TestGrouped:
+    def test_method_failure(self):
+        assert False
+
+
+@pytest.mark.parametrize("profile", ["local", "canary", "prod"])
+def test_parametrized_failure(profile):
+    assert profile == "prod"
+'''
+
+
+def test_reconcile_accepts_what_a_real_pytest_run_writes(tmp_path: Path) -> None:
+    # No hand-written fixture: run pytest itself, so the parser is held to the
+    # junit and -rfE shapes pytest actually produces -- a class method, and two
+    # failing parametrizations of one test that must count as two failures.
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / "__init__.py").write_text("", encoding="utf-8")
+    (tmp_path / "tests" / "test_sample.py").write_text(REAL_RUN_TESTS, encoding="utf-8")
+    (tmp_path / "pytest.ini").write_text("[pytest]\n", encoding="utf-8")
+    junit_path = tmp_path / "junit.xml"
+
+    completed = subprocess.run(  # noqa: S603 - fixed interpreter, local temp test file
+        [sys.executable, "-m", "pytest", "tests", "-q", "-rfE", "--color=no",
+         "-p", "no:cacheprovider", "-p", "no:xdist", f"--junitxml={junit_path}"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        env={**os.environ, "COLUMNS": "400"},
+        timeout=120,
+    )
+    assert completed.returncode == 1, completed.stdout + completed.stderr
+
+    junit_failures, totals = suite_health.parse_pytest_junit(junit_path)
+    summary = suite_health.parse_pytest_summary(completed.stdout)
+    reconciled = suite_health.reconcile_pytest(summary, junit_failures)
+
+    assert sorted(failure.id for failure in reconciled) == [
+        "tests/test_sample.py::TestGrouped::test_method_failure",
+        "tests/test_sample.py::test_parametrized_failure[canary]",
+        "tests/test_sample.py::test_parametrized_failure[local]",
+        "tests/test_sample.py::test_plain_failure",
+    ]
+    assert totals["failed"] == 4
+    assert totals["passed"] == 2
+
+
 # ---------------------------------------------------------------------------
 # vitest parsing
 # ---------------------------------------------------------------------------
@@ -165,11 +234,63 @@ def test_vitest_failures_are_keyed_by_repo_relative_path(tmp_path: Path) -> None
     path = tmp_path / "vitest.json"
     path.write_text(json.dumps(payload), encoding="utf-8")
 
-    failures, totals = suite_health.parse_vitest_json(path, ROOT)
+    failures, totals, ran_files = suite_health.parse_vitest_json(path, ROOT)
 
     assert failures[0].id == "frontend/src/App.test.tsx::App shows the refreshed itinerary"
     assert failures[0].message == "AssertionError: expected 1 to be 2"
+    observed = totals.pop("observed_ids")
     assert totals == {"tests": 3, "passed": 1, "failed": 1, "skipped": 1}
+    assert "frontend/src/App.test.tsx::App renders" in observed
+    assert ran_files == {"frontend/src/App.test.tsx"}
+
+
+def test_a_vitest_file_whose_worker_never_started_makes_the_run_incomplete(
+    tmp_path: Path,
+) -> None:
+    # Observed for real: "Failed to start forks worker for test files App.test.tsx"
+    # left 47 tests absent from vitest.json -- no failure, no skip -- and the
+    # report read as a clean 0-skipped run.
+    frontend = ROOT / "frontend" / "src"
+    ran = {
+        "name": str(frontend / "MapPanel.test.ts"),
+        "assertionResults": [{"fullName": "map works", "status": "passed"}],
+    }
+    (tmp_path / "vitest.json").write_text(json.dumps({"testResults": [ran]}), encoding="utf-8")
+    (tmp_path / "vitest-files.json").write_text(
+        json.dumps([
+            {"file": (frontend / "MapPanel.test.ts").as_posix(), "projectName": "dom"},
+            {"file": (frontend / "App.test.tsx").as_posix(), "projectName": "dom"},
+        ]),
+        encoding="utf-8",
+    )
+    baseline_path = tmp_path / "baseline.json"
+    baseline = {
+        "version": 1,
+        "vitest": {
+            "failures": [{"id": "frontend/src/App.test.tsx::App flaky", "first_seen": "2026-09-01"}]
+        },
+    }
+    baseline_path.write_text(json.dumps(baseline), encoding="utf-8")
+    out = tmp_path / "out"
+
+    code = suite_health.main([
+        "--vitest-json", str(tmp_path / "vitest.json"),
+        "--vitest-files", str(tmp_path / "vitest-files.json"),
+        "--baseline", str(baseline_path),
+        "--out", str(out),
+        "--update-baseline",
+    ])
+
+    report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+    assert code == 2
+    assert report["suites"]["vitest"]["unrun"] == ["frontend/src/App.test.tsx"]
+    # The known failure in the file that never ran was not observed, so it is
+    # MISSING -- never FIXED -- and the partial run must not retire it.
+    assert report["suites"]["vitest"]["missing"] == ["frontend/src/App.test.tsx::App flaky"]
+    assert report["suites"]["vitest"]["fixed"] == []
+    assert json.loads(baseline_path.read_text(encoding="utf-8"))["vitest"] == baseline["vitest"]
+    markdown = (out / "report.md").read_text(encoding="utf-8")
+    assert "INCOMPLETE: 1 TEST FILE(S) DID NOT RUN" in markdown
 
 
 # ---------------------------------------------------------------------------
