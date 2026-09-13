@@ -276,15 +276,15 @@
     "cosmos": {
       "$comment": "DERIVED by scripts/derive_limits.py from cosmosSizing in config/cost-model.json plus COST_CEILING_INR_HOURLY and CHAT_MAX_CONCURRENT_GLOBAL in config/environments/*.env. Do not hand-edit. ruPerSecond is the shared database throughput infra/data.bicep provisions; freeTierShareRuPerSecond records each environment's slice of the account-wide 1000 RU/s free grant, so it is visible when the three databases together outgrow it.",
       "local": {
-        "ruPerSecond": 600,
+        "ruPerSecond": 700,
         "freeTierShareRuPerSecond": 500
       },
       "canary": {
-        "ruPerSecond": 600,
+        "ruPerSecond": 700,
         "freeTierShareRuPerSecond": 150
       },
       "prod": {
-        "ruPerSecond": 600,
+        "ruPerSecond": 700,
         "freeTierShareRuPerSecond": 350
       }
     }
@@ -346,11 +346,11 @@
       }
     ],
     "cosmosThrottlingAlert": {
-      "description": "Alerts when Cosmos DB returns at least 40 throttled requests in 15 minutes, which is about 1 percent of the operations a peak burst may legitimately issue.",
+      "description": "Alerts when Cosmos DB returns at least 47 throttled requests in 15 minutes, which is about 1 percent of the operations a peak burst may legitimately issue.",
       "severity": 3,
       "evaluationFrequency": "PT5M",
       "windowSize": "PT15M",
-      "threshold": 40
+      "threshold": 47
     }
   }
 }

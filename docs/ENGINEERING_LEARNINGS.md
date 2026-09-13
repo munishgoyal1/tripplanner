@@ -2123,3 +2123,28 @@ the outcome.
   make the surviving step report them; what-if had been discarding stderr.
 - A timing loop that crosses standby reports sleep as work. Check Kernel-Power
   506/507 events before believing an outlier.
+## 2026-09-13 - Fakes Cannot Check a Callback Contract; More RU/s Cannot Fix One Partition Key
+
+- `storage_cosmos._ru_recorder` returned a one-argument `response_hook`.
+  azure-cosmos calls it as `hook(headers, result)` after a request succeeds, so
+  every Cosmos read and write raised `TypeError`, even though Cosmos had completed
+  the operation. Every test faked the container object, so the SDK never got to
+  call the hook. When code hands a callback to a library, the test has to let the
+  library make the call: drive the real client over a fake HTTP transport, as
+  `test_request_charge_hook_matches_how_the_sdk_calls_it` now does.
+- A synthetic partition value (`_shared`, `_global_`) that every request names
+  confines that workload to one physical partition's slice of throughput and to
+  20 GB of storage, however much RU/s is provisioned. Derive the value from the
+  item id instead (`place_cache_layout.partition`), which keeps point reads intact.
+  Changing the value is a data migration, not a config change. Rows that never
+  expire (`CACHE_STABLE_FOREVER`) will not age out, so readers need a legacy
+  fallback plus a migration script.
+- Do not shard a counter that enforces a ceiling: a check against one shard
+  cannot see a concurrent hold on another. Keep the single document and remove
+  the contention instead. `cost_ledger` group-commits every mutation in the
+  process into one read and one write, and shrinks the document, since every
+  commit rewrites all of it.
+- A sizing profile entry nobody measured can be wrong by 6x. `trip_costs` was
+  priced at 2 KB; the real window document was 11.6 KB. When real traffic RU is
+  unavailable, measure document size by running the code's own mutators to
+  steady state, not by reading the code.
