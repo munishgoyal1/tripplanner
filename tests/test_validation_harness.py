@@ -393,7 +393,8 @@ def test_unresolved_shinkansen_does_not_draw_kyoto_meal_to_tokyo_airport_as_taxi
     circuit_names = [pins[pin_id]["name"] for pin_id in view["days"][0]["circuit_pin_ids"]]
 
     assert not any(finding.rule == render.RULE_GROUND_LEG for finding in reported)
-    assert circuit_names == ["Tokyo Airport"]
+    assert circuit_names == ["GYUKATSU Kyoto Katsugyu Teramachi Kyogoku", "Tokyo Airport"]
+    assert view["days"][0]["legs"] == []
 
 
 def test_an_unresolved_flight_endpoint_is_not_drawn_as_ground_travel() -> None:

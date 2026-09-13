@@ -378,6 +378,8 @@ def test_usage_batch_builds_bounded_human_flow_summary() -> None:
         "event_count": 3,
         "outcome": "complete",
         "error_count": 0,
+        "model_recovered": 0,
+        "model_recovery_exhausted": 0,
         "llm_calls": 0,
         "tool_calls": 0,
         "provider_calls": 1,

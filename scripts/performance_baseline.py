@@ -158,7 +158,7 @@ def run_hermetic_baseline(
 ) -> dict[str, Any]:
     import asyncio
 
-    from langchain_core.messages import AIMessage, AIMessageChunk
+    from langchain_core.messages import AIMessage
 
     from tripplanner import api, storage_cosmos, usage
     from tripplanner.graph import app_graph
@@ -176,13 +176,12 @@ def run_hermetic_baseline(
         }
 
     async def fake_stream(*_args: Any, **_kwargs: Any):
-        for text in ("Benchmark itinerary ", "ready."):
-            yield {
-                "event": "on_chat_model_stream",
-                "name": "benchmark-model",
-                "run_id": "benchmark-run",
-                "data": {"chunk": AIMessageChunk(content=text)},
-            }
+        yield {
+            "event": "on_chain_end",
+            "name": "trip_agent",
+            "run_id": "benchmark-run",
+            "data": {"output": {"messages": [AIMessage(content=benchmark_reply)]}},
+        }
 
     async def reserve_cost(*_args: Any, **_kwargs: Any) -> None:
         return None
@@ -197,8 +196,8 @@ def run_hermetic_baseline(
         return "benchmark-trip"
 
     with TemporaryDirectory(prefix="tripplanner-performance-") as home:
-        previous_home = os.environ.get("tripplanner_HOME")
-        os.environ["tripplanner_HOME"] = home
+        previous_home = os.environ.get("TRIPPLANNER_HOME")
+        os.environ["TRIPPLANNER_HOME"] = home
         try:
             with ExitStack() as stack:
                 stack.enter_context(patch.object(storage_cosmos, "is_enabled", lambda: False))
@@ -266,9 +265,9 @@ def run_hermetic_baseline(
                 usage_after = usage.get_usage(BENCHMARK_USER)
         finally:
             if previous_home is None:
-                os.environ.pop("tripplanner_HOME", None)
+                os.environ.pop("TRIPPLANNER_HOME", None)
             else:
-                os.environ["tripplanner_HOME"] = previous_home
+                os.environ["TRIPPLANNER_HOME"] = previous_home
 
     cost_delta = round(
         float(usage_after.get("cost_usd", 0.0))

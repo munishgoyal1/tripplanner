@@ -448,3 +448,68 @@ def test_a_clean_run_against_a_nonempty_baseline_still_reads_as_green() -> None:
     # Known debt alone must not turn the report red, or it goes permanently red
     # and people stop reading it.
     assert "NO NEW FAILURES" in markdown
+
+
+@pytest.mark.parametrize("suite,exit_code", [("pytest", 2), ("pytest", 5), ("vitest", 1)])
+def test_runner_failure_cannot_be_green_or_retire_baseline(tmp_path, suite, exit_code):
+    baseline = {"version": 1, suite: {"failures": [{"id": "existing", "first_seen": "2026-09-01"}]}}
+    baseline_path = tmp_path / "baseline.json"
+    baseline_path.write_text(json.dumps(baseline), encoding="utf-8")
+    out = tmp_path / "out"
+    args = ["--baseline", str(baseline_path), "--out", str(out), "--update-baseline",
+            f"--{suite}-exit-code", str(exit_code)]
+    if suite == "pytest":
+        report = tmp_path / "junit.xml"
+        report.write_text(junit([("tests/test_a.py", "test_one", False)]), encoding="utf-8")
+        log = tmp_path / "pytest.log"
+        log.write_text("1 passed", encoding="utf-8")
+        args += ["--pytest-junit", str(report), "--pytest-log", str(log)]
+    else:
+        report = tmp_path / "vitest.json"
+        report.write_text(json.dumps({"testResults": [{
+            "name": str(ROOT / "frontend/src/App.test.tsx"),
+            "assertionResults": [{"fullName": "renders", "status": "passed"}],
+        }]}), encoding="utf-8")
+        args += ["--vitest-json", str(report)]
+
+    assert suite_health.main(args) == 2
+    assert json.loads(baseline_path.read_text(encoding="utf-8"))[suite] == baseline[suite]
+    result = json.loads((out / "report.json").read_text(encoding="utf-8"))["suites"][suite]
+    assert result["ran"] is False
+    assert f"exited {exit_code}" in result["error"]
+
+
+def test_missing_vitest_inventory_is_incomplete(tmp_path):
+    report = tmp_path / "vitest.json"
+    report.write_text(json.dumps({"testResults": [{
+        "name": str(ROOT / "frontend/src/App.test.tsx"),
+        "assertionResults": [{"fullName": "renders", "status": "passed"}],
+    }]}), encoding="utf-8")
+    assert suite_health.main([
+        "--baseline", str(tmp_path / "baseline.json"), "--out", str(tmp_path / "out"),
+        "--vitest-json", str(report), "--vitest-files", str(tmp_path / "missing.json"),
+    ]) == 2
+
+
+def test_pytest_baseline_requires_evidence_of_execution(tmp_path):
+    passed = "tests/test_a.py::test_one"
+    missing = "tests/test_a.py::test_missing"
+    baseline = baseline_with(passed, missing)
+    baseline["vitest"] = {"failures": [{"id": "untouched-ui-test"}]}
+    baseline_path = tmp_path / "baseline.json"
+    baseline_path.write_text(json.dumps(baseline), encoding="utf-8")
+    report = tmp_path / "junit.xml"
+    report.write_text(junit([("tests/test_a.py", "test_one", False)]), encoding="utf-8")
+    log = tmp_path / "pytest.log"
+    log.write_text("1 passed", encoding="utf-8")
+    out = tmp_path / "out"
+    assert suite_health.main([
+        "--baseline", str(baseline_path), "--out", str(out), "--update-baseline",
+        "--pytest-junit", str(report), "--pytest-log", str(log),
+    ]) == 0
+    result = json.loads((out / "report.json").read_text(encoding="utf-8"))["suites"]["pytest"]
+    assert result["fixed"] == [passed]
+    assert result["missing"] == [missing]
+    updated = json.loads(baseline_path.read_text(encoding="utf-8"))
+    assert updated["vitest"] == baseline["vitest"]
+    assert [entry["id"] for entry in updated["pytest"]["failures"]] == [missing]

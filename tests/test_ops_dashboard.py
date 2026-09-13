@@ -85,6 +85,8 @@ def test_ops_metrics_snapshot_aggregates_privacy_safe_chat_turns() -> None:
     assert result == {
         "calls": 3,
         "completed": 2,
+        "attempted": 3,
+        "completion_rate": 2 / 3,
         "errors": 1,
         "distinct_users": 2,
         "p50_ms": 2000,

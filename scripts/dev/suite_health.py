@@ -267,8 +267,9 @@ def parse_vitest_json(
         ran_files.add(relative)
         for assertion in file_result.get("assertionResults", []) or []:
             full = assertion.get("fullName") or assertion.get("title") or "<unnamed>"
-            observed.add(f"{relative}::{full}")
             status = assertion.get("status")
+            if status not in {"skipped", "pending", "todo"}:
+                observed.add(f"{relative}::{full}")
             if status == "passed":
                 passed += 1
                 continue
@@ -370,7 +371,7 @@ def merge_baseline(
     ``first_seen``, ``owner``, ``note`` and ``category`` survive; that is what
     makes the debt measurable over time rather than a rolling snapshot.
     """
-    merged: dict[str, Any] = {"version": BASELINE_VERSION, "generated": today}
+    merged: dict[str, Any] = {**baseline, "version": BASELINE_VERSION, "generated": today}
     for key in ("ref", "commit"):
         if baseline.get(key):
             merged[key] = baseline[key]
@@ -538,13 +539,33 @@ def build_results(args: argparse.Namespace, repo_root: Path) -> list[SuiteResult
             junit_failures, totals = parse_pytest_junit(Path(args.pytest_junit))
             summary = parse_pytest_summary(Path(args.pytest_log).read_text(encoding="utf-8"))
             failures = reconcile_pytest(summary, junit_failures)
+            exit_code = getattr(args, "pytest_exit_code", None)
+            if exit_code not in (None, 0, 1) or (exit_code == 1 and not failures):
+                raise ValueError(f"pytest exited {exit_code}; the run did not complete normally")
+            if not totals["tests"]:
+                raise ValueError("pytest executed no tests")
+            cases = [
+                JunitFailure((case.get("file") or "").replace("\\", "/"),
+                             case.get("classname") or "", case.get("name") or "")
+                for case in ElementTree.parse(args.pytest_junit).getroot().iter("testcase")
+                if case.find("skipped") is None
+            ]
+            known = baseline_entries(load_baseline(Path(args.baseline)), "pytest")
+            totals["observed_ids"] = {
+                node for node in known if any(_junit_matches(node, case) for case in cases)
+            } | {failure.id for failure in failures}
             results.append(SuiteResult("pytest", True, failures, totals))
-        except (TruncatedOutputError, OSError, ElementTree.ParseError) as error:
+        except (TruncatedOutputError, OSError, ElementTree.ParseError, ValueError) as error:
             results.append(SuiteResult("pytest", False, error=str(error)))
 
     if args.vitest_json:
         try:
             failures, totals, ran_files = parse_vitest_json(Path(args.vitest_json), repo_root)
+            exit_code = getattr(args, "vitest_exit_code", None)
+            if exit_code not in (None, 0) and not failures:
+                raise ValueError(f"vitest exited {exit_code} without assertion failures; check vitest.log")
+            if not totals["tests"]:
+                raise ValueError("vitest executed no tests")
             unrun: tuple[str, ...] = ()
             totals["files_ran"] = len(ran_files)
             if args.vitest_files:
@@ -554,7 +575,7 @@ def build_results(args: argparse.Namespace, repo_root: Path) -> list[SuiteResult
             else:
                 totals["files_expected"] = "unknown (no file list; completeness not verified)"
             results.append(SuiteResult("vitest", True, failures, totals, unrun=unrun))
-        except (OSError, json.JSONDecodeError, KeyError, TypeError) as error:
+        except (OSError, ValueError, KeyError, TypeError) as error:
             results.append(SuiteResult("vitest", False, error=str(error)))
 
     return results
@@ -564,7 +585,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pytest-junit")
     parser.add_argument("--pytest-log")
+    parser.add_argument("--pytest-exit-code", type=int)
     parser.add_argument("--vitest-json")
+    parser.add_argument("--vitest-exit-code", type=int)
     parser.add_argument(
         "--vitest-files",
         help="`vitest list --filesOnly --json` output, to detect files that never ran",
@@ -602,7 +625,7 @@ def main(argv: list[str] | None = None) -> int:
 
     print((out / "report.md").read_text(encoding="utf-8"))
 
-    if any(not c.ran or c.unrun for c in classifications):
+    if not classifications or any(not c.ran or c.unrun for c in classifications):
         return 2
     return 1 if payload["new_failure_count"] else 0
 
