@@ -2123,6 +2123,20 @@ the outcome.
   make the surviving step report them; what-if had been discarding stderr.
 - A timing loop that crosses standby reports sleep as work. Check Kernel-Power
   506/507 events before believing an outlier.
+
+## 2026-09-13 - Keep suite evidence aligned with successful completion
+
+- The API now publishes assistant text on a successful `trip_agent` completion;
+  a benchmark fake emitting only raw model chunks no longer exercises that
+  contract. Update the producer fixture when its event protocol changes, while
+  retaining exact JSON/SSE reply parity assertions.
+- Hotel fallback and disconnected map segments changed intentionally. Stub both
+  hotel inventory and Places research, assert unresolved inventory explicitly,
+  and prove absent ground legs while retaining pins on both sides of the gap.
+- A passing report artifact is insufficient evidence when its runner exited
+  abnormally. Preserve runner status and expected file inventory through report
+  generation; require execution evidence before retiring a baseline entry and
+  preserve the other suite when updating only one.
 ## 2026-09-13 - Fakes Cannot Check a Callback Contract; More RU/s Cannot Fix One Partition Key
 
 - `storage_cosmos._ru_recorder` returned a one-argument `response_hook`.

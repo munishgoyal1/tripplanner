@@ -146,6 +146,7 @@ They are paid for instead in one deliberate pass:
 ```powershell
 pwsh scripts/dev/suite-health.ps1                 # measure master, report
 pwsh scripts/dev/suite-health.ps1 -UpdateBaseline # accept the current failures
+pwsh scripts/dev/suite-health.ps1 -CurrentWorktree # verify fixes in this checkout
 ```
 
 The owner launchers `scripts/win/user/testing/Suite-Health.cmd` and
@@ -191,6 +192,17 @@ Reports land in `logs/suite-health/<timestamp>/` with `report.md` and
 `report.json`, and `logs/suite-health/latest.json` points at the newest. Read the
 JSON for numbers; this document deliberately records none, because a transcribed
 failure list goes stale within a week.
+
+Use `-CurrentWorktree` in an existing agent worktree to validate local fixes
+without fetching or creating another temporary checkout. Commit first when the
+report must identify an immutable revision. Reports still land in the primary
+checkout's logs. Backend output is unbuffered, and tests that spend 120 seconds
+in one phase dump thread stacks for diagnosis without changing pass/fail budgets.
+Runs include the 15 slowest test phases so follow-up work starts from measured
+costs. Runner exit codes are checked alongside the
+artifacts: an interrupted pytest run or a vitest worker error cannot become green
+merely because the tests recorded before it passed. A missing vitest inventory
+is incomplete, and incomplete runs cannot retire baseline debt.
 
 To work the backlog, hand the report to a dedicated session with the
 `/fix-suite-health` command. It reads the report rather than re-running the

@@ -348,6 +348,13 @@ def test_hotel_search_exposes_empty_provider_result_to_completion_fallback(monke
 
     hotel_search._HOTEL_RESULT_CACHE.clear()
     monkeypatch.setattr(hotel_search, "get_hotel_providers", lambda: [EmptyHotels()])
+    places_calls = []
+
+    def empty_places(query):
+        places_calls.append(query)
+        return "[]"
+
+    monkeypatch.setattr(hotel_search, "search_places_with_reviews", SimpleNamespace(invoke=empty_places))
 
     result = hotel_search.search_hotels.invoke(
         {
@@ -357,9 +364,19 @@ def test_hotel_search_exposes_empty_provider_result_to_completion_fallback(monke
         }
     )
 
-    assert result == (
-        "No hotels found for Gokarna. Provider details: empty-hotels: no availability"
-    )
+    payload = json.loads(result)
+    assert payload["quote_status"] == "unverified"
+    assert payload["provider"] == "google_places"
+    assert payload["candidates"] == []
+    research = payload["hotel_research"]
+    assert research.pop("checked_at")
+    assert research == {
+        "city": "Gokarna", "checkin": "2027-01-14", "checkout": "2027-01-21",
+        "status": "unresolved", "reason": "no_results",
+        "inventory_reason": "no_availability", "fallback_attempted": True,
+        "candidate_count": 0,
+    }
+    assert places_calls == [{"query": "well-rated hotel", "city": "Gokarna", "max_results": 5}]
 
 
 def test_liteapi_normalizes_flight_search_and_verify(monkeypatch):

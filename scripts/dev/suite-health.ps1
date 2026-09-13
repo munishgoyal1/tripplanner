@@ -33,6 +33,8 @@ param(
     [switch]$UpdateBaseline,
     [switch]$BackendOnly,
     [switch]$FrontendOnly,
+    # Measure this existing checkout, including local fixes, without another clone.
+    [switch]$CurrentWorktree,
     # Narrow the backend run. For smoke-testing this script itself, not for a
     # real health run -- a partial run would retire baseline entries it never
     # executed, which is why -UpdateBaseline refuses to combine with it.
@@ -46,6 +48,9 @@ $ErrorActionPreference = "Stop"
 
 if ($PytestTarget -and $UpdateBaseline) {
     throw "-PytestTarget is a smoke-test switch; it must never rewrite the baseline."
+}
+if ($BackendOnly -and $FrontendOnly) {
+    throw "Choose at most one of -BackendOnly and -FrontendOnly."
 }
 
 Start-RunLog -Name "suite-health" | Out-Null
@@ -88,7 +93,10 @@ function Invoke-Suite {
 $worktree = $repoRoot
 $temporary = ""
 $currentBranch = (& git -C $repoRoot branch --show-current).Trim()
-if ($Ref -eq "master" -and $currentBranch -eq "master") {
+if ($CurrentWorktree) {
+    $worktree = $scriptRepoRoot
+    $Ref = (& git -C $worktree branch --show-current).Trim()
+} elseif ($Ref -eq "master" -and $currentBranch -eq "master") {
     # A tree mid-merge is a blend of two commits that never existed. Measuring it
     # would file failures against a baseline keyed to real commits, so refuse.
     $unmerged = & git -C $repoRoot diff --name-only --diff-filter=U
@@ -114,7 +122,7 @@ $commit = (& git -C $worktree rev-parse --short HEAD).Trim()
 Write-Host "Measuring $Ref at $commit" -ForegroundColor Cyan
 Write-Host "Report: $outputRoot" -ForegroundColor DarkGray
 
-$arguments = @("--baseline", $baseline, "--out", $outputRoot, "--ref", $Ref, "--commit", $commit)
+$arguments = @("--baseline", $baseline, "--out", $outputRoot, "--ref", $Ref, "--commit", $commit, "--repo-root", $worktree)
 
 try {
     # Every gate on, whatever the policy says: this script IS the full run.
@@ -144,13 +152,13 @@ try {
             # verbatim node ids; --junitxml gives the totals they are checked
             # against. Neither alone is enough.
             $code = Invoke-Suite -LogPath $pytestLog -Command {
-                & $python -m pytest $target -q -n 2 -rfE --color=no --junitxml=$junit
+                & $python -u -m pytest $target -q -n 2 -rfE --durations=15 -o faulthandler_timeout=120 --color=no --junitxml=$junit
             }
             Write-Host "pytest exit code: $code" -ForegroundColor DarkGray
         } finally {
             Pop-Location
         }
-        $arguments += @("--pytest-junit", $junit, "--pytest-log", $pytestLog)
+        $arguments += @("--pytest-junit", $junit, "--pytest-log", $pytestLog, "--pytest-exit-code", "$code")
     }
 
     if (-not $BackendOnly) {
@@ -185,9 +193,9 @@ try {
         } finally {
             Pop-Location
         }
-        $arguments += @("--vitest-json", $vitestJson)
+        $arguments += @("--vitest-json", $vitestJson, "--vitest-exit-code", "$code", "--vitest-files", $vitestFiles)
         if ($listCode -eq 0 -and (Test-Path $vitestFiles)) {
-            $arguments += @("--vitest-files", $vitestFiles)
+            Write-Host "vitest file inventory captured." -ForegroundColor DarkGray
         } else {
             Write-Host "vitest file list unavailable (exit $listCode); the report cannot verify that every file ran." -ForegroundColor Yellow
         }
@@ -201,7 +209,9 @@ try {
     $classifyExit = $LASTEXITCODE
 
     # A stable pointer at the newest report, mirroring logs/audit/latest.json.
-    Copy-Item (Join-Path $outputRoot "report.json") (Join-Path $repoRoot "logs/suite-health/latest.json") -Force
+    if (-not $PytestTarget) {
+        Copy-Item (Join-Path $outputRoot "report.json") (Join-Path $repoRoot "logs/suite-health/latest.json") -Force
+    }
 
     switch ($classifyExit) {
         0 { Write-Host "No NEW failures." -ForegroundColor Green }
