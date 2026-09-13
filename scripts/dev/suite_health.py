@@ -400,6 +400,7 @@ def merge_baseline(
                     "note": prior.get("note", ""),
                 }
             )
+        entries.extend(dict(previous[node]) for node in classification.missing)
         section = dict(baseline.get(classification.suite) or {})
         section["failures"] = entries
         section["totals"] = {
