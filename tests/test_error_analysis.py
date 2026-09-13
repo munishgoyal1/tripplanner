@@ -223,7 +223,13 @@ def test_infrastructure_alerts_on_runtime_degradation_with_volume_guards() -> No
     cosmos_alert = infra_alerts["cosmosThrottlingAlert"]
     assert cosmos_alert["severity"] == 3
     assert cosmos_alert["windowSize"] == "PT15M"
-    assert cosmos_alert["threshold"] == 20
+    # The threshold is derived from the INR ceilings by scripts/derive_limits.py
+    # (tests/test_limits_derivation.py asserts it equals the derivation), so this
+    # checks the property that must hold however the budget is retuned: it stays
+    # above the handful of 429s the Cosmos SDK retries without the caller ever
+    # noticing. A literal here would be the hardcoded duplicate this file exists
+    # to keep out.
+    assert cosmos_alert["threshold"] >= 20
     assert "Samples >= 5 and P95DurationMs > 120000" in queries[
         "chat-latency-burn.kql"
     ]

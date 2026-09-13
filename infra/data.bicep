@@ -6,6 +6,13 @@ param cosmosAccountName string = toLower('tripplanner-data-${uniqueString(subscr
 @description('Azure region for the shared data plane.')
 param location string = resourceGroup().location
 
+// Throughput is DERIVED, not chosen here: scripts/derive_limits.py sizes it from
+// COST_CEILING_INR_HOURLY and CHAT_MAX_CONCURRENT_GLOBAL and writes it to
+// infra/billing-guardrails.json. Reading it back keeps the provisioned database
+// in step with the budget that is supposed to bound it -- the same contract the
+// GCP quota preferences in that file already follow.
+var cosmosConfig = loadJsonContent('billing-guardrails.json').azure.cosmos
+
 module cosmosData './modules/cosmos-data.bicep' = {
   params: {
     accountName: cosmosAccountName
@@ -14,7 +21,10 @@ module cosmosData './modules/cosmos-data.bicep' = {
       'tripplanner-canary'
       'tripplanner-prod'
     ]
-    databaseThroughput: 400
+    databaseThroughputs: [
+      cosmosConfig.canary.ruPerSecond
+      cosmosConfig.prod.ruPerSecond
+    ]
   }
 }
 

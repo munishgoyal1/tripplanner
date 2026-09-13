@@ -763,7 +763,7 @@ implemented capability baseline.
   Events carry UTC time,
   trace/run/attempt identifiers, user/trip attribution and durations. Credentials
   and document-processing content are excluded. Private files spool before asynchronous
-  Cosmos delivery; compressed chunks are verified on export and expire after seven days.
+  Cosmos delivery; compressed chunks are verified on export and expire after 180 days.
   Recorder failures preserve pending files and expose degraded status. This code-level
   capability still requires deployment and a live hosted recorder smoke check.
   Its background Cosmos delivery drains bounded batches and reports progress at most
@@ -1077,6 +1077,6 @@ silently invented.
 Recorder defaults preserve semantic metadata and bounded failure excerpts while
 omitting duplicate model/tool and successful API bodies. Recording is asynchronous,
 uses bounded memory and batched disk/Cosmos writes, reports diagnostic loss, and
-preserves the independent complete accounting path. Local recorder and interaction
-study stores have seven-day / 50 MiB retention; routine successful cache-only reads
+preserves the independent complete accounting path. The local recorder spool has
+180-day / 500 MiB retention and the interaction study store seven-day / 50 MiB; routine successful cache-only reads
 no longer generate local study files. Verbose HTTP capture remains opt-in and bounded.

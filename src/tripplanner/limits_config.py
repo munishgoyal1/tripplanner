@@ -88,10 +88,33 @@ def _flag_setting(name: str, default: bool) -> bool:
 # Enforced by cost_ledger.py across Azure OpenAI + Google Cloud combined,
 # environment-wide (not per user). Breach -> HTTP 429 carrying resets_at.
 #
-# These three windows are deliberately NOT multiples of each other: daily is a
-# burst allowance, monthly is the real constraint. At the ~INR 42 average trip
-# this model predicts, INR 10,000/month is roughly 13 full testing days, and a
-# run of INR 1,000 days will exhaust the month well before day 30.
+# These four windows are deliberately NOT multiples of each other: each is a
+# burst allowance relative to the one below it, and the longest is the real
+# constraint. At the ~INR 42 average trip this model predicts, INR 10,000/month
+# is roughly 13 full testing days, and a run of INR 1,000 days will exhaust the
+# month well before day 30.
+#
+# HOURLY is the *burst-shaped* ceiling, and it is the one every rate-shaped
+# infra threshold is derived from (scripts/derive_limits.py). The daily ceiling
+# cannot do that job: spend does not arrive smoothly, so "daily / 86400" is not
+# a rate anything real ever runs at. Before this window existed, a scripted
+# caller staying inside CHAT_USER_REQUESTS_PER_MINUTE could spend the whole
+# daily ceiling in well under a minute, and every per-minute infra limit
+# (GCP quota floors, Cosmos RU/s) had to be hand-tuned because no configured
+# number described a legitimate burst. This one does.
+
+
+def cost_ceiling_inr_hourly() -> float:
+    """Burst allowance: the most this environment may spend in one clock hour.
+
+    Sized from the reservation seeds below it -- a new trip reserves INR 60 at
+    P75 and INR 120 at P95 -- so the default buys three worst-case trips or
+    about six typical ones back to back, which is what "build two or three
+    trips without tripping anything" costs. A sustained run of full hours
+    exhausts the daily ceiling in two and a half hours, keeping the same
+    relationship daily has to monthly.
+    """
+    return _inr_setting("COST_CEILING_INR_HOURLY", 400.0)
 
 
 def cost_ceiling_inr_daily() -> float:
@@ -107,7 +130,9 @@ def cost_ceiling_inr_monthly() -> float:
 
 
 def cost_ceiling_inr(window: str) -> float:
-    """INR ceiling for ``daily`` | ``weekly`` | ``monthly``."""
+    """INR ceiling for ``hourly`` | ``daily`` | ``weekly`` | ``monthly``."""
+    if window == "hourly":
+        return cost_ceiling_inr_hourly()
     if window == "daily":
         return cost_ceiling_inr_daily()
     if window == "weekly":
@@ -117,7 +142,10 @@ def cost_ceiling_inr(window: str) -> float:
     raise ValueError(f"unknown cost ceiling window: {window!r}")
 
 
-COST_CEILING_WINDOWS: tuple[str, ...] = ("daily", "weekly", "monthly")
+#: Checked in this order, so the breach a caller is told about is the tightest
+#: window that actually stopped them -- an hourly burst reports "retry in
+#: minutes", not the monthly ceiling's "retry in three weeks".
+COST_CEILING_WINDOWS: tuple[str, ...] = ("hourly", "daily", "weekly", "monthly")
 
 
 def cost_ceiling_enforced() -> bool:

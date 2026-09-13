@@ -2094,3 +2094,32 @@ the outcome.
   tag and the contents could disagree. Resolve the commit once, then build from
   a `git archive` export of it. BuildKit caches by content, so a fresh export
   directory still reuses every layer.
+
+## 2026-09-13 - Tests Inherit the Checked-In Profile
+
+- Importing `tripplanner.config` loads `local.env` into the test process. When
+  the owner set `TRIPPLANNER_FLIGHT_RECORDER_VERBOSE=1` there, three recorder
+  tests failed: they pinned the recorder on but not verbosity. Pin every flag a
+  test's assertion depends on in the shared autouse fixture, not only the master
+  switch.
+- Do not order recorder evidence by spool file name. Files are named
+  `<time_ns>-<uuid>`, one per (user, trace) group per flush, and on Windows two
+  files often share a `time_ns`, so a request that changes user mid-flight made
+  "last event" a coin flip. Sort by `(unix_time, sequence)` as export does.
+- A size cap is also a scan cost. Raising the spool cap to 500 MiB meant walking
+  tens of thousands of files after every batch and every 2-second drain, so
+  `prune_spool` now runs at most once a minute per directory.
+
+## 2026-09-13 - Find the slow layer before blaming the remote service
+
+- "Bicep validation" measured 60s and 255s on the same template. A timestamped
+  `az --debug` trace put about 5s in ARM and the rest locally, before any request:
+  `az` launches `bicep.exe` for the template and again for the `.bicepparam`, and
+  each launch ranged from ~4s warm to tens of seconds under memory pressure or
+  just after Modern Standby. The slow deploy had started 72s after resume.
+- The fix was to stop paying for a redundant compile, not to tune Azure: what-if
+  already runs ARM template validation and `create` repeats it, so a standalone
+  `validate` bought nothing. When removing a step that produced diagnostics,
+  make the surviving step report them; what-if had been discarding stderr.
+- A timing loop that crosses standby reports sleep as work. Check Kernel-Power
+  506/507 events before believing an outlier.

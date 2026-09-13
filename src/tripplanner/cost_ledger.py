@@ -1,4 +1,4 @@
-"""The one cost control: measured INR spend against daily/weekly/monthly ceilings.
+"""The one cost control: measured INR spend against hourly/daily/weekly/monthly ceilings.
 
 This module replaces the previous family of proxy limits (per-trip Places call
 counters, per-turn tool-phase budgets, durable new-trip/turn counters, a per-user
@@ -108,6 +108,8 @@ class Reservation:
 
 
 def _window_key(window: str, now: datetime) -> str:
+    if window == "hourly":
+        return now.strftime("%Y-%m-%dT%H")
     if window == "daily":
         return now.strftime("%Y-%m-%d")
     if window == "weekly":
@@ -117,7 +119,9 @@ def _window_key(window: str, now: datetime) -> str:
 
 def _resets_at(window: str, now: datetime) -> str:
     midnight = datetime(now.year, now.month, now.day, tzinfo=UTC)
-    if window == "daily":
+    if window == "hourly":
+        reset = datetime(now.year, now.month, now.day, now.hour, tzinfo=UTC) + timedelta(hours=1)
+    elif window == "daily":
         reset = midnight + timedelta(days=1)
     elif window == "weekly":
         reset = midnight + timedelta(days=7 - now.weekday())

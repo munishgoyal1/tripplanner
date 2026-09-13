@@ -20,6 +20,13 @@ Two sizing rules, deliberately different:
   can self-pace under the same ceiling Google enforces without tripping the
   provider circuit breaker. Sizing them for cost is what produced the documented
   40-60 second stalls, so they come from ``burstPerMinuteFloor``.
+* **Cosmos RU/s IS cost-derived, but from the hourly ceiling, not the daily
+  one.** Provisioned throughput is a rate, and a daily total divided by 86400 is
+  not a rate anything real runs at -- spend arrives in bursts. So Cosmos sizing
+  starts at ``COST_CEILING_INR_HOURLY``, converts it to trips that may be in
+  flight at once, caps that by ``CHAT_MAX_CONCURRENT_GLOBAL`` (the anti-abuse
+  control), and prices the Cosmos work one trip does. See ``cosmosSizing`` in
+  ``config/cost-model.json``.
 """
 
 from __future__ import annotations
@@ -57,15 +64,25 @@ def load_cost_model() -> dict[str, Any]:
     return json.loads(COST_MODEL_PATH.read_text(encoding="utf-8"))
 
 
-def daily_ceiling_inr(environment: str) -> float:
-    """Read COST_CEILING_INR_DAILY straight from the profile the app reads."""
+def _profile_number(environment: str, name: str) -> float:
+    """Read one setting straight from the profile the running app reads.
+
+    Deliberately the .env file rather than ``limits_config``: the derivation
+    must reflect what the environment is actually deployed with, not what the
+    code defaults to when a profile forgets to set it.
+    """
     profile = (ROOT / "config" / "environments" / f"{environment}.env").read_text(
         encoding="utf-8"
     )
-    match = re.search(r"^COST_CEILING_INR_DAILY=(.+)$", profile, re.MULTILINE)
+    match = re.search(rf"^{name}=(.+)$", profile, re.MULTILINE)
     if not match:
-        raise SystemExit(f"COST_CEILING_INR_DAILY missing from {environment}.env")
+        raise SystemExit(f"{name} missing from {environment}.env")
     return float(match.group(1).strip())
+
+
+def daily_ceiling_inr(environment: str) -> float:
+    """Read COST_CEILING_INR_DAILY straight from the profile the app reads."""
+    return _profile_number(environment, "COST_CEILING_INR_DAILY")
 
 
 def derive_daily_quota(environment: str, sku: str, model: dict[str, Any]) -> int:
@@ -116,14 +133,183 @@ def derived_quota_rows(model: dict[str, Any]) -> dict[tuple[str, str], dict[str,
     return derived
 
 
-def monthly_ceiling_inr(environment: str) -> float:
-    profile = (ROOT / "config" / "environments" / f"{environment}.env").read_text(
-        encoding="utf-8"
+# --- Cosmos DB -----------------------------------------------------------------
+# Everything below derives from two numbers the owner already sets: the hourly
+# INR ceiling (config/environments/*.env) and CHAT_MAX_CONCURRENT_GLOBAL (the
+# anti-abuse admission control in the same file). Nothing here is hand-tuned.
+
+
+def hourly_ceiling_inr(environment: str) -> float:
+    return _profile_number(environment, "COST_CEILING_INR_HOURLY")
+
+
+def max_concurrent_global(environment: str) -> int:
+    return int(_profile_number(environment, "CHAT_MAX_CONCURRENT_GLOBAL"))
+
+
+def peak_concurrent_trips(environment: str, model: dict[str, Any]) -> int:
+    """Trips that may legitimately be building at the same instant.
+
+    Two independent ceilings already in config, whichever binds first:
+
+    * **Money.** The hourly ceiling affords ``hourly / p95TripCostInr`` trips in
+      an hour, and the worst case is all of them starting together.
+    * **Abuse.** ``CHAT_MAX_CONCURRENT_GLOBAL`` admits no more than that many
+      concurrent chat turns however cheap they are.
+
+    At the shipped defaults money binds first (INR 400/hour buys 3 worst-case
+    trips; the concurrency control admits 12), which is the intended
+    relationship: the anti-abuse limit is a backstop against scripted traffic,
+    not the thing that sizes infrastructure.
+    """
+    sizing = model["cosmosSizing"]
+    affordable = int(hourly_ceiling_inr(environment) / float(sizing["p95TripCostInr"]))
+    return max(1, min(affordable, max_concurrent_global(environment)))
+
+
+def ru_per_trip(model: dict[str, Any]) -> float:
+    """RU one new_trip build spends across every container it touches."""
+    sizing = model["cosmosSizing"]
+    read_rate = float(sizing["ruPerReadKb"])
+    write_rate = float(sizing["ruPerWriteKb"])
+    total = 0.0
+    for container, profile in sizing["tripOpProfile"].items():
+        if container.startswith("$"):
+            continue
+        doc_kb = float(profile["docKb"])
+        # A point operation is never cheaper than its 1 KB floor, whatever the
+        # document weighs -- pricing a 0.2 KB write at one fifth of a KB write
+        # would understate every small-document container here.
+        total += int(profile["reads"]) * max(read_rate, doc_kb * read_rate)
+        total += int(profile["writes"]) * max(write_rate, doc_kb * write_rate)
+    return total
+
+
+def derive_cosmos_ru_per_second(environment: str, model: dict[str, Any]) -> int:
+    """Provisioned RU/s for this environment's shared-throughput database.
+
+    Average demand is ``concurrent trips x RU per trip / build seconds``.
+    ``burstFactor`` lifts that to the instantaneous peak, because a build fans
+    its Cosmos work across ``places_cache._MAX_WORKERS`` threads rather than
+    spreading it evenly -- sizing on the average is precisely what let a 400
+    RU/s database serve a modest-looking workload and still return 429s.
+    """
+    sizing = model["cosmosSizing"]
+    average = (
+        peak_concurrent_trips(environment, model)
+        * ru_per_trip(model)
+        / float(sizing["tripBuildSeconds"])
     )
-    match = re.search(r"^COST_CEILING_INR_MONTHLY=(.+)$", profile, re.MULTILINE)
+    demand = average * float(sizing["burstFactor"]) * float(sizing["provisionHeadroom"])
+    step = int(sizing["roundRuToMultipleOf"])
+    rounded = int(-(-demand // step) * step)
+    return max(int(sizing["minimumRuPerSecond"]), rounded)
+
+
+def derive_cosmos_throttle_threshold(model: dict[str, Any]) -> int:
+    """429s in the alert window that mean the sizing above is genuinely wrong.
+
+    A 429 is not an incident on its own -- the Cosmos SDK retries it and the
+    caller never sees it. What matters is the *rate*: once more than
+    ``toleratedThrottleRate`` of a peak burst's operations are being rejected,
+    provisioned RU/s no longer matches what the ceilings admit.
+    """
+    sizing = model["cosmosSizing"]
+    alert = sizing["throttleAlert"]
+    ops_per_trip = sum(
+        int(profile["reads"]) + int(profile["writes"])
+        for container, profile in sizing["tripOpProfile"].items()
+        if not container.startswith("$")
+    )
+    window_minutes = _alert_window_minutes()
+    # Peak operations the window can legitimately contain, at the busiest
+    # environment -- the alert is one ARM rule over one shared account.
+    peak_trips_per_minute = max(
+        peak_concurrent_trips(environment, model) for environment in ENVIRONMENTS
+    ) * (60.0 / float(sizing["tripBuildSeconds"]))
+    ops_in_window = ops_per_trip * peak_trips_per_minute * window_minutes
+    tolerated = int(ops_in_window * float(alert["toleratedThrottleRate"]))
+    return max(int(alert["minimumThreshold"]), tolerated)
+
+
+def _alert_window_minutes() -> float:
+    """Minutes in the Cosmos alert's evaluation window.
+
+    Read from the guardrails file rather than the cost model: windowSize is a
+    genuine ARM value that main.bicep deploys, so it has exactly one home and
+    this derivation follows it instead of keeping a second copy.
+    """
+    guardrails = json.loads(GUARDRAILS_PATH.read_text(encoding="utf-8"))
+    alert = (guardrails.get("azureInfraHealthAlerts") or {}).get("cosmosThrottlingAlert") or {}
+    window = str(alert.get("windowSize") or "PT15M")
+    match = re.match(r"^PT(?:(\d+)H)?(?:(\d+)M)?$", window)
     if not match:
-        raise SystemExit(f"COST_CEILING_INR_MONTHLY missing from {environment}.env")
-    return float(match.group(1).strip())
+        return 15.0
+    hours, minutes = match.groups()
+    return int(hours or 0) * 60 + int(minutes or 0)
+
+
+def derive_cosmos(guardrails: dict[str, Any], model: dict[str, Any]) -> list[str]:
+    """Write the derived RU/s and 429 threshold into the guardrails file."""
+    changes: list[str] = []
+    cosmos = guardrails.setdefault("azure", {}).setdefault("cosmos", {})
+    cosmos.setdefault(
+        "$comment",
+        "DERIVED by scripts/derive_limits.py from cosmosSizing in "
+        "config/cost-model.json plus COST_CEILING_INR_HOURLY and "
+        "CHAT_MAX_CONCURRENT_GLOBAL in config/environments/*.env. Do not hand-edit. "
+        "ruPerSecond is the shared database throughput infra/data.bicep provisions; "
+        "freeTierShareRuPerSecond records each environment's slice of the "
+        "account-wide 1000 RU/s free grant, so it is visible when the three "
+        "databases together outgrow it.",
+    )
+    for environment in ENVIRONMENTS:
+        derived = derive_cosmos_ru_per_second(environment, model)
+        row = cosmos.setdefault(environment, {})
+        if row.get("ruPerSecond") != derived:
+            changes.append(
+                f"cosmos ruPerSecond [{environment}]: {row.get('ruPerSecond')} -> {derived}"
+            )
+            row["ruPerSecond"] = derived
+        share = int(
+            float(model["cosmosSizing"]["freeTierRuPerSecond"])
+            * float(model["freePoolShare"][environment])
+        )
+        if row.get("freeTierShareRuPerSecond") != share:
+            changes.append(
+                f"cosmos freeTierShareRuPerSecond [{environment}]: "
+                f"{row.get('freeTierShareRuPerSecond')} -> {share}"
+            )
+            row["freeTierShareRuPerSecond"] = share
+
+    threshold = derive_cosmos_throttle_threshold(model)
+    alert = guardrails.setdefault("azureInfraHealthAlerts", {}).setdefault(
+        "cosmosThrottlingAlert", {}
+    )
+    if alert.get("threshold") != threshold:
+        changes.append(f"cosmosThrottlingAlert threshold: {alert.get('threshold')} -> {threshold}")
+        alert["threshold"] = threshold
+    # The description is rendered into the alert email, so a stale one misreports
+    # the condition that fired. It carries the number, so it is derived too.
+    window = int(_alert_window_minutes())
+    description = (
+        f"Alerts when Cosmos DB returns at least {threshold} throttled requests in "
+        f"{window} minutes, which is about {alert_tolerance_percent(model)} percent of "
+        "the operations a peak burst may legitimately issue."
+    )
+    if alert.get("description") != description:
+        changes.append("cosmosThrottlingAlert description: regenerated")
+        alert["description"] = description
+    return changes
+
+
+def alert_tolerance_percent(model: dict[str, Any]) -> str:
+    rate = float(model["cosmosSizing"]["throttleAlert"]["toleratedThrottleRate"]) * 100
+    return f"{rate:g}"
+
+
+def monthly_ceiling_inr(environment: str) -> float:
+    return _profile_number(environment, "COST_CEILING_INR_MONTHLY")
 
 
 def derive_cloud_budgets(guardrails: dict[str, Any], model: dict[str, Any]) -> list[str]:
@@ -181,6 +367,7 @@ def apply(write: bool) -> int:
                 )
                 quota[environment] = value
 
+    stale.extend(derive_cosmos(guardrails, model))
     stale.extend(derive_cloud_budgets(guardrails, model))
 
     if not stale:

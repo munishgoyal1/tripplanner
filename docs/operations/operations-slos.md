@@ -26,6 +26,15 @@ by `infra/prod.bicepparam`; local and canary never create email alerts. Creating
 or changing the production Action Group still requires the normal
 `APPROVE_PROD_DEPLOYMENT` gate and a deletion-free production `what-if`.
 
+The query excludes Cosmos 429s. They are logged at `ERROR` like any other failed
+storage operation, so they used to match this catch-all rule and open a severity-1
+alert every five minutes — but a 429 is retried by the Cosmos SDK and never reaches
+the caller, so it is only meaningful in aggregate. Throttling is assessed by its own
+rule below, at severity 3 over a 15-minute window, which is how the in-app mirror in
+`alert_events.py` had always routed it. If Cosmos throttling is firing, the question
+is whether provisioned RU/s still matches the ceilings that admit the traffic; see
+`azure.cosmos` in [`infra/billing-guardrails.json`](../../infra/billing-guardrails.json).
+
 This alert, the four operational alerts below (latency burn, model throttling,
 circuit breaker, cache degradation), and the Cosmos 429 alert are all **infra
 health / error signals, not billing/cost alerts** — their severity, evaluation
@@ -36,6 +45,14 @@ same file, under `gcp`/`azure`/`gcpQuotaAlertPolicies`). `infra/main.bicep`
 reads that JSON via `loadJsonContent()`; only the KQL query bodies stay as
 separate files under `infra/queries/`, since Bicep needs a literal path to
 load file content.
+
+Two of those values are **derived, not chosen**: the Cosmos 429 threshold and the
+`ruPerSecond` each Cosmos database is provisioned with. `scripts/derive_limits.py`
+computes both from `COST_CEILING_INR_HOURLY` and `CHAT_MAX_CONCURRENT_GLOBAL` in
+[`config/environments/*.env`](../../config/environments/) plus `cosmosSizing` in
+[`config/cost-model.json`](../../config/cost-model.json), and `derive_limits.py --check`
+fails if the checked-in values drift from it. Retune the ceiling or the sizing model
+and re-run the script; never hand-edit the derived rows.
 
 After the approved first deployment, send an Action Group test notification and
 confirm delivery. Then validate the query with a controlled PII-safe error event;
@@ -263,9 +280,13 @@ sanitized operational stream.
 
 ## Private flight recorder
 
-Disabled by default (`TRIPPLANNER_FLIGHT_RECORDER=0`) in every environment. Set it
-to `1` in `config/environments/<environment>.env` and restart the backend to
-record a diagnostic session; set it back to `0` and restart when finished. Process
+On in the local profile (`TRIPPLANNER_FLIGHT_RECORDER=1`) and off in canary and
+prod; the code default with no value set is off. To record a hosted diagnostic
+session, set it to `1` in `config/environments/<environment>.env` and restart the
+backend; set it back to `0` and restart when finished.
+`TRIPPLANNER_FLIGHT_RECORDER_VERBOSE` is `0` in every profile: it adds successful
+model and provider request/response bodies (about 50 times the volume for large
+model calls), so enable it only while reproducing one issue. Process
 environment overrides retain precedence. This master flag also gates the local
 trip archive (`TRIPPLANNER_DEBUG_STORE` remains its local-only sub-control).
 Disabling preserves existing history and ordinary logs, alerts and usage ledgers,
@@ -281,8 +302,10 @@ environment database's `flight_recorder` container (`/user_id` partition). Succe
 uploads remove the spool file. JSON is gzip/base64 encoded into <=128,000-character
 chunks with an event checksum/count. An interrupted upload retries idempotently;
 export rejects missing or corrupt chunks. Runtime container creation and IaC both
-set a seven-day TTL. Without Cosmos, local files expire after seven days when the
-worker runs. Hosted missing/unavailable Cosmos is degraded, not a successful durable
+set a 180-day TTL; rows uploaded before that change keep the seven-day `ttl` they
+were written with. Without Cosmos, local files expire after 180 days, and the spool
+is capped at 500 MiB (oldest files removed first), checked at most once a minute
+when the worker runs. Cosmos rows have no size cap, only the TTL. Hosted missing/unavailable Cosmos is degraded, not a successful durable
 archive. A lost container disk can lose its unuploaded spool; use persistent storage
 when this residual window is unacceptable. No per-token Cosmos writes occur.
 
