@@ -42,6 +42,7 @@ jobs:
         run: mkdir -p suite-health
 
       - name: pytest
+        id: pytest
         continue-on-error: true
         # -n auto here, unlike the local scripts: a dedicated runner is not
         # shared with other sandboxes, so oversubscription is not a risk.
@@ -49,28 +50,43 @@ jobs:
         # checked against. COLUMNS keeps the summary from wrapping mid-id.
         env:
           COLUMNS: "400"
-        run: >
-          uv run pytest -q -n auto -rfE --color=no
-          --junitxml=suite-health/pytest-junit.xml
-          | tee suite-health/pytest.log
+        run: |
+          set +e
+          uv run pytest -q -n auto -rfE --durations=15 --color=no \
+            --junitxml=suite-health/pytest-junit.xml | tee suite-health/pytest.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit "$code"
 
-      - name: vitest
+      - name: Inventory frontend tests
         continue-on-error: true
         working-directory: frontend
-        run: >
-          npx vitest run --reporter=default --reporter=json
-          --outputFile.json=../suite-health/vitest.json
-          | tee ../suite-health/vitest.log
+        run: node node_modules/vitest/vitest.mjs list --filesOnly --json=../suite-health/vitest-files.json
+
+      - name: vitest
+        id: vitest
+        continue-on-error: true
+        working-directory: frontend
+        run: |
+          set +e
+          node node_modules/vitest/vitest.mjs run --reporter=default --reporter=json \
+            --outputFile.json=../suite-health/vitest.json | tee ../suite-health/vitest.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit "$code"
 
       - name: Classify against the baseline
         run: >
           uv run python scripts/dev/suite_health.py
           --pytest-junit suite-health/pytest-junit.xml
           --pytest-log suite-health/pytest.log
+          --pytest-exit-code ${{ steps.pytest.outputs.exit_code || '2' }}
           --vitest-json suite-health/vitest.json
+          --vitest-exit-code ${{ steps.vitest.outputs.exit_code || '2' }}
+          --vitest-files suite-health/vitest-files.json
           --baseline scripts/dev/test-health-baseline.json
           --out suite-health
-          --ref master
+          --ref "${{ github.ref_name }}"
           --commit "${GITHUB_SHA::8}"
 
       - name: Upload report
