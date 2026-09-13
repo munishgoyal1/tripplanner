@@ -1,5 +1,10 @@
 . "$PSScriptRoot/../scripts/dev/lib/run-log.ps1"
 
+# Every `az deployment` call compiles Bicep and, by default, first asks GitHub
+# whether a newer Bicep exists: ~2.7s and a network round trip per compile,
+# for a nag. Upgrade deliberately with `az bicep upgrade` instead.
+$env:AZURE_BICEP_CHECK_VERSION = "false"
+
 function Get-DeploymentUser {
     foreach ($candidate in @($env:USERNAME, $env:USER, $env:LOGNAME)) {
         if (-not [string]::IsNullOrWhiteSpace($candidate)) {
