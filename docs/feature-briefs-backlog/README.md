@@ -32,6 +32,11 @@ the IDs have been cited outside the repository: `001-assistant-led-itinerary` /
 
 ## Every feature starts here
 
+Create or reuse a GitHub issue for every feature or material enhancement,
+including work completed in-chat. Cross-link it with the brief and track progress
+in the issue; keep this folder as the coding-agent scope and acceptance contract.
+See [issue workflow](../development/issue-workflow.md).
+
 A brief is required before code for a new capability, or a material change to
 one — see [`../development/agent-workflow.md`](../development/agent-workflow.md).
 Bug fixes, behaviour-preserving refactors, and doc-only changes do not need one.

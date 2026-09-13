@@ -150,8 +150,7 @@ def search_flights_duffel(
         refresh: Bypass the short-lived shared result cache.
     """
     del refresh
-    # A registry provider is tried first, but an empty or failed result must fall
-    # through to Duffel rather than ending the search.
+    # Automatic selection can fall through to Duffel; explicit LiteAPI cannot.
     registry_errors: list[str] = []
     provider = get_flight_provider()
     if provider:
@@ -184,6 +183,16 @@ def search_flights_duffel(
             registry_errors.append(f"{provider.name}: no availability")
         except (LiteAPIError, ValueError) as exc:
             registry_errors.append(f"{provider.name}: {exc}")
+
+    if get_settings().travel_flight_provider.strip().lower() == "liteapi":
+        return json.dumps({
+            "quote_status": QuoteStatus.UNAVAILABLE.value,
+            "provider": "liteapi",
+            "offers": [],
+            "errors": registry_errors,
+            "notice": "LiteAPI returned no flight offers. Try other dates or explicitly recheck. "
+            "Other flight inventory providers are disabled by the selected configuration.",
+        })
 
     if not is_configured():
         if registry_errors:

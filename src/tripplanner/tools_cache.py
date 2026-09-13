@@ -196,7 +196,20 @@ def _cache_key(tool_name: str, args: dict[str, Any] | None, *, scope: str) -> st
     We include the tool name in the digest to avoid any chance of a
     cross-tool collision; the doc id then doubles as a debug label.
     """
-    blob = f"{tool_name}|{_canonical_args(args, scope=scope)}".encode()
+    provider_scope = ""
+    inventory_kind = {
+        "search_flights": "flight",
+        "search_flights_duffel": "flight",
+        "verify_flight_offer": "flight",
+        "search_hotels": "hotel",
+    }.get(tool_name)
+    if inventory_kind:
+        from tripplanner.config import get_settings
+
+        selected = getattr(get_settings(), f"travel_{inventory_kind}_provider", "auto")
+        if selected.strip().lower() == "liteapi":
+            provider_scope = "liteapi|"
+    blob = f"{tool_name}|{provider_scope}{_canonical_args(args, scope=scope)}".encode()
     digest = hashlib.sha256(blob).hexdigest()[:32]
     return f"{tool_name}-{digest}"
 

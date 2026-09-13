@@ -252,8 +252,14 @@ re-describing the whole product.
   ordered fallback on timeout, throttling, unavailable credentials, provider
   errors, or no availability. Returned evidence includes provider, cache hit,
   checked time, expiry, and quote status.
-- LiteAPI is the preferred read-only active source for date/party-specific hotel
-  rates, flight rates, and selected-flight verification when configured.
+- The local, canary and production profiles explicitly select LiteAPI as the only
+  flight/hotel inventory source. Flight tools do not fall through to Duffel or
+  Amadeus after LiteAPI returns no offers or an error. Other selector modes retain
+  their existing fallback behavior; Places hotel metadata is not priced inventory.
+  Explicit LiteAPI tool-result keys isolate previous legacy/automatic results
+  without deleting retained research.
+  LiteAPI supplies date/party-specific hotel rates, flight rates and selected-flight
+  verification when the account supports them; selection does not confer access.
   Normalized hotel results retain the searched destination as query context, not
   physical locality proof; all results retain opaque provider references, quote
   time/expiry, total provider currency, and explicit evidence.
@@ -269,7 +275,11 @@ re-describing the whole product.
   they never establish room availability or a live rate.
 - Explicit inventory refresh bypasses shared cache. MVP cache TTLs are
   configurable by capability and intentionally favor low cost over exact
-  real-time behavior.
+  real-time behavior. All three profiles retain the existing stable/volatile
+  forever flags. Retention does not renew observation timestamps or offer expiry.
+  The booking-intent review/export/reconciliation feature remains planned in
+  [brief 009](feature-briefs-backlog/009-booking-readiness.md) and
+  [issue #315](https://github.com/munishgoyal1/tripplanner/issues/315).
 - Google Places supplies place search, ratings, reviews, photos, restaurants,
   addresses, coordinates, and opening hours. Agent discovery seeds the durable
   structured Places cache so Map and Details reuse the same paid result. Routine

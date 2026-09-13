@@ -19,6 +19,21 @@ ID. Changed-path selection and publication tiers are documented in
 
 ## Assistant planning
 
+### EB-PROVIDER-001 - Honor explicit LiteAPI-only flight inventory
+
+**Trigger:** Search flights with `TRAVEL_FLIGHT_PROVIDER=liteapi` and receive
+no availability or a provider error.
+
+**Expected:** Both flight tools expose unavailable evidence without attempting
+Duffel or Amadeus. A missing key remains a configuration error, not permission
+to select another inventory source. Other selector modes keep existing fallback.
+Explicit LiteAPI uses a separate tool-result cache namespace, so previous legacy
+search results cannot satisfy the new selection. Old research is retained.
+Saved prices keep their original evidence; indefinite retention is not a hold.
+
+**Proof:** [test_flight_provider_fallback.py](../tests/test_flight_provider_fallback.py)
+and cache retention/refresh cases in [test_tools_cache.py](../tests/test_tools_cache.py).
+
 ### EB-PLAN-CTX-001 - Resolve follow-ups against the current trip
 
 **Trigger:** Ask any follow-up with a trip selected, including after resuming it

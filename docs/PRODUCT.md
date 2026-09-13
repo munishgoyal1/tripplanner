@@ -187,9 +187,16 @@ Ordinary flight, hotel, date and itinerary edits never create a replacement trip
   practical trip cost, time, comfort, reliability, preference fit, and risk.
   Affiliate relationships are disclosed and never change the ranking objective.
 - **Booking stays external.** The future booking bridge sends the user to the
-  selected provider or affiliate, preserves verified handoff details, and
-  ingests booking confirmations. Tripplanner does not take booking payment or
-  become the merchant of record.
+  selected provider or affiliate and exports a versioned booking-intent list
+  through download, email or sharing. Locking saves the user's final research
+  choices, not inventory. Users may book elsewhere or offline, then report actual
+  bookings for reconciliation into the main itinerary. Tripplanner does not take
+  booking payment or become the merchant of record.
+- **Initial inventory scope is LiteAPI-only for flights and hotels.** Start with
+  search using available account access. Retain research indefinitely under the
+  current owner-directed cache settings, while preserving original checked times
+  and separating retained observations from current price/availability. Tiqets is
+  the next attraction-ticket candidate; multi-provider comparison is later work.
 
 The durable promise is a surprising amount of time and effort saved: a smooth,
 preference-aware, realistic, intelligent itinerary that is more practical and

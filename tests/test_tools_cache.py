@@ -39,6 +39,26 @@ def test_cache_lookup_returns_none_for_miss():
     assert tools_cache.cache_lookup("web_search", {"q": "x"}) is None
 
 
+@pytest.mark.parametrize("tool_name,kind", [
+    ("search_flights", "flight"), ("search_flights_duffel", "flight"),
+    ("verify_flight_offer", "flight"), ("search_hotels", "hotel"),
+])
+def test_liteapi_selection_isolates_retained_legacy_tool_results(monkeypatch, tool_name, kind):
+    from tripplanner.config import get_settings
+
+    settings = get_settings()
+    monkeypatch.setattr(settings, f"travel_{kind}_provider", "auto")
+    tools_cache.cache_store(tool_name, {"query": "same trip"}, "legacy research")
+    monkeypatch.setattr(settings, f"travel_{kind}_provider", "liteapi")
+
+    assert tools_cache.cache_lookup(tool_name, {"query": "same trip"}) is None
+    tools_cache.cache_store(tool_name, {"query": "same trip"}, "LiteAPI research")
+    assert tools_cache.cache_lookup(tool_name, {"query": "same trip"}) == "LiteAPI research"
+
+    monkeypatch.setattr(settings, f"travel_{kind}_provider", "auto")
+    assert tools_cache.cache_lookup(tool_name, {"query": "same trip"}) == "legacy research"
+
+
 def test_cache_store_then_lookup_returns_value():
     tools_cache.cache_store("web_search", {"q": "x"}, "first hit")
     assert tools_cache.cache_lookup("web_search", {"q": "x"}) == "first hit"
