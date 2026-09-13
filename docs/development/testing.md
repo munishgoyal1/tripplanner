@@ -196,8 +196,10 @@ failure list goes stale within a week.
 Use `-CurrentWorktree` in an existing agent worktree to validate local fixes
 without fetching or creating another temporary checkout. Commit first when the
 report must identify an immutable revision. Reports still land in the primary
-checkout's logs. Backend runs include the 15 slowest test phases so follow-up
-work starts from measured costs. Runner exit codes are checked alongside the
+checkout's logs. Backend output is unbuffered, and tests that spend 120 seconds
+in one phase dump thread stacks for diagnosis without changing pass/fail budgets.
+Runs include the 15 slowest test phases so follow-up work starts from measured
+costs. Runner exit codes are checked alongside the
 artifacts: an interrupted pytest run or a vitest worker error cannot become green
 merely because the tests recorded before it passed. A missing vitest inventory
 is incomplete, and incomplete runs cannot retire baseline debt.

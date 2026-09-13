@@ -152,7 +152,7 @@ try {
             # verbatim node ids; --junitxml gives the totals they are checked
             # against. Neither alone is enough.
             $code = Invoke-Suite -LogPath $pytestLog -Command {
-                & $python -m pytest $target -q -n 2 -rfE --durations=15 --color=no --junitxml=$junit
+                & $python -u -m pytest $target -q -n 2 -rfE --durations=15 -o faulthandler_timeout=120 --color=no --junitxml=$junit
             }
             Write-Host "pytest exit code: $code" -ForegroundColor DarkGray
         } finally {
