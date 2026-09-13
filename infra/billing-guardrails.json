@@ -274,18 +274,20 @@
       }
     ],
     "cosmos": {
-      "$comment": "DERIVED by scripts/derive_limits.py from cosmosSizing in config/cost-model.json plus COST_CEILING_INR_HOURLY and CHAT_MAX_CONCURRENT_GLOBAL in config/environments/*.env. Do not hand-edit. ruPerSecond is the shared database throughput infra/data.bicep provisions; freeTierShareRuPerSecond records each environment's slice of the account-wide 1000 RU/s free grant, so it is visible when the three databases together outgrow it.",
+      "$comment": "DERIVED by scripts/derive_limits.py from cosmosSizing in config/cost-model.json plus COST_CEILING_INR_HOURLY and CHAT_MAX_CONCURRENT_GLOBAL in config/environments/*.env. Do not hand-edit. ruPerSecond is the shared database throughput infra/data.bicep provisions for canary and prod in the free-tier account: burst demand sizes it, but it never exceeds that database's freeTierCapRuPerSecond, and the caps together fit the account's free 1000 RU/s, so provisioned throughput is never billed. burstDemandRuPerSecond is what a peak burst would use; when it exceeds the cap, the excess is served as retried 429s. The local row is informational: no local database is provisioned from this file.",
       "local": {
         "ruPerSecond": 700,
-        "freeTierShareRuPerSecond": 500
+        "burstDemandRuPerSecond": 700
       },
       "canary": {
-        "ruPerSecond": 700,
-        "freeTierShareRuPerSecond": 150
+        "ruPerSecond": 400,
+        "burstDemandRuPerSecond": 700,
+        "freeTierCapRuPerSecond": 400
       },
       "prod": {
-        "ruPerSecond": 700,
-        "freeTierShareRuPerSecond": 350
+        "ruPerSecond": 600,
+        "burstDemandRuPerSecond": 700,
+        "freeTierCapRuPerSecond": 600
       }
     }
   },
