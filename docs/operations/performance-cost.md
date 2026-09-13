@@ -143,6 +143,19 @@ Compare observed `ru` per container against that profile when reviewing spend, a
 correct the profile rather than the derived output — editing the guardrails file by
 hand is what the derivation exists to prevent.
 
+**Free-tier ceiling (owner policy, 2026-09-13).** The data account has
+`enableFreeTier`, so the first 1000 RU/s provisioned across the whole account
+are free; anything above that is billed every hour, whether or not it is used.
+`infra/data.bicep` provisions two databases there. Their hard caps live in
+`cosmosSizing.freeTierAllocationRuPerSecond`: canary 400 (Azure's floor) and prod
+600, which sum to exactly 1000. Burst sizing (`burstDemandRuPerSecond` in the
+guardrails file, 700 today) may ask for more, but `ruPerSecond` never exceeds the
+cap, and `derive_limits.py` refuses caps that sum past the free tier. A burst
+above the cap does not fail: Cosmos answers 429 with a retry-after of
+milliseconds, the SDK retries, and the call is slower. The throttling alert
+reports when that stops being occasional. Only a deliberate decision to pay
+raises a cap. On 2026-09-13 both databases were deployed at 400 RU/s (800 total).
+
 `storage_operation` is a quiet success event, so a local `logs/diagnostics`
 file holds `ru` only for failed or slow operations; read successful charges from
 Log Analytics. As of 2026-09-13 no environment had produced any: capture merged
@@ -153,14 +166,22 @@ observed charges; replace it with observed `ru` once traffic exists.
 
 ### Partitioning
 
-More RU/s does not fix a hot partition. Provisioned throughput is spread across
-*physical* partitions, and each logical partition value lives on exactly one of
-them. A workload that names the same partition value on every request can use at
-most that one partition's share, and it also grows toward Cosmos's 20 GB
-logical-partition storage limit. At today's 700 RU/s the account likely has one
-physical partition per container, so the cap is not what binds yet. It starts
-binding the moment throughput or storage splits a container, and at that point
-raising RU/s does nothing for the hot key. Every container is partitioned on
+Partition key *values* cost nothing. Billing is provisioned RU/s plus storage;
+the number of distinct logical partitions does not appear on the bill, and a point
+read or write costs the same RU whatever its partition value. What partitioning
+decides is how load can spread once Cosmos splits a container across several
+*physical* partitions. It does that past roughly 10,000 RU/s or 50 GB of data, and
+each logical partition value stays on exactly one physical partition. A value
+every request names can then use only that partition's share of throughput, however
+much RU/s is bought, and it is also capped at 20 GB. **At this account's size
+(1000 RU/s, a few GB) every container is one physical partition, so today the
+bucketing below changes neither cost nor throughput.** It removes a ceiling that
+would only bind at a scale far beyond the free tier, and it keeps a
+never-expiring cache away from the 20 GB limit. Its present costs are small:
+one extra ~1 RU point read the first time each place is looked up (until the
+legacy fallback is removed), and cross-partition fan-out on the two owner tooling
+queries (`prod_cache_sync`, the cost dashboard), which is free while there is one
+physical partition. Every container is partitioned on
 `/user_id`. Data with no user writes a synthetic value into that path; changing
 the value needs no container rebuild, but it is a data migration for rows already
 stored.

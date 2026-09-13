@@ -234,19 +234,19 @@ def test_hourly_ceiling_is_a_burst_of_the_daily_one():
         )
 
 
-def test_cosmos_throughput_covers_a_peak_burst_of_trips():
-    """The derived RU/s must exceed what the ceilings actually admit.
+def test_cosmos_burst_demand_covers_a_peak_burst_of_trips():
+    """The recorded burst demand must cover what the ceilings actually admit.
 
-    This is the check the 400 RU/s default never had: three concurrent builds
-    fanned across places_cache._MAX_WORKERS threads demand several hundred RU/s,
-    so the database throttled while its average utilisation looked modest.
+    Three concurrent builds fanned across places_cache._MAX_WORKERS threads demand
+    several hundred RU/s. Where the free-tier cap is lower, that gap is recorded
+    rather than silently hidden.
     """
     derive = _derive_module()
     model = derive.load_cost_model()
     guardrails = json.loads((ROOT / "infra" / "billing-guardrails.json").read_text("utf-8"))
 
     for environment in ENVIRONMENTS:
-        provisioned = int(guardrails["azure"]["cosmos"][environment]["ruPerSecond"])
+        row = guardrails["azure"]["cosmos"][environment]
         peak = derive.peak_concurrent_trips(environment, model)
         burst_demand = (
             peak
@@ -254,11 +254,42 @@ def test_cosmos_throughput_covers_a_peak_burst_of_trips():
             / float(model["cosmosSizing"]["tripBuildSeconds"])
             * float(model["cosmosSizing"]["burstFactor"])
         )
-        assert provisioned >= burst_demand, (
-            f"{environment}: {provisioned} RU/s is below the {burst_demand:.0f} RU/s "
-            f"a {peak}-trip burst demands"
-        )
-        assert provisioned >= int(model["cosmosSizing"]["minimumRuPerSecond"])
+        assert int(row["burstDemandRuPerSecond"]) >= burst_demand
+        assert int(row["ruPerSecond"]) >= int(model["cosmosSizing"]["minimumRuPerSecond"])
+
+
+def test_provisioned_cosmos_throughput_is_never_billed():
+    """Owner policy: canary and prod together stay inside the account's free 1000 RU/s.
+
+    Burst sizing once derived 700 RU/s for each database -- 1400 in an account whose
+    free tier covers 1000, so every deploy would have billed 400 RU/s around the clock
+    for bursts a retried 429 absorbs.
+    """
+    derive = _derive_module()
+    model = derive.load_cost_model()
+    guardrails = json.loads((ROOT / "infra" / "billing-guardrails.json").read_text("utf-8"))
+    data_bicep = (ROOT / "infra" / "data.bicep").read_text("utf-8")
+    caps = derive.free_tier_caps(model)
+
+    provisioned_in_account = {
+        environment
+        for environment in ENVIRONMENTS
+        if f"cosmosConfig.{environment}.ruPerSecond" in data_bicep
+    }
+    assert provisioned_in_account == set(caps), "every database in the account needs a cap"
+    total = sum(int(guardrails["azure"]["cosmos"][name]["ruPerSecond"]) for name in caps)
+    assert total <= int(model["cosmosSizing"]["freeTierRuPerSecond"])
+    for name, cap in caps.items():
+        assert int(guardrails["azure"]["cosmos"][name]["ruPerSecond"]) <= cap
+
+
+def test_derivation_refuses_caps_that_would_bill():
+    derive = _derive_module()
+    model = derive.load_cost_model()
+    model["cosmosSizing"]["freeTierAllocationRuPerSecond"]["prod"] = 700
+
+    with pytest.raises(SystemExit, match="over the 1000 RU/s free tier"):
+        derive.check_free_tier_budget(model)
 
 
 def test_peak_concurrency_is_bounded_by_both_controls():
@@ -275,18 +306,19 @@ def test_peak_concurrency_is_bounded_by_both_controls():
 
 
 def test_cosmos_throughput_tracks_the_hourly_ceiling():
-    """Raising the burst ceiling must raise the database sized to serve it.
+    """Raising the burst ceiling must raise the demand the database is sized from.
 
     A guardrail that stays put when the budget moves is the drift this whole
-    derivation exists to prevent.
+    derivation exists to prevent. Provisioning itself stops at the free-tier cap.
     """
     derive = _derive_module()
     model = derive.load_cost_model()
-    baseline = derive.derive_cosmos_ru_per_second("prod", model)
+    baseline = derive.cosmos_burst_demand_ru_per_second("prod", model)
     model["cosmosSizing"]["p95TripCostInr"] = (
         float(model["cosmosSizing"]["p95TripCostInr"]) / 4
     )
-    assert derive.derive_cosmos_ru_per_second("prod", model) > baseline
+    assert derive.cosmos_burst_demand_ru_per_second("prod", model) > baseline
+    assert derive.derive_cosmos_ru_per_second("prod", model) == derive.free_tier_caps(model)["prod"]
 
 
 def test_cosmos_throttling_alert_does_not_page_at_severity_one():

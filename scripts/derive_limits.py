@@ -185,14 +185,13 @@ def ru_per_trip(model: dict[str, Any]) -> float:
     return total
 
 
-def derive_cosmos_ru_per_second(environment: str, model: dict[str, Any]) -> int:
-    """Provisioned RU/s for this environment's shared-throughput database.
+def cosmos_burst_demand_ru_per_second(environment: str, model: dict[str, Any]) -> int:
+    """RU/s a peak burst of trip builds would use, rounded up. Not what is provisioned.
 
     Average demand is ``concurrent trips x RU per trip / build seconds``.
     ``burstFactor`` lifts that to the instantaneous peak, because a build fans
     its Cosmos work across ``places_cache._MAX_WORKERS`` threads rather than
-    spreading it evenly -- sizing on the average is precisely what let a 400
-    RU/s database serve a modest-looking workload and still return 429s.
+    spreading it evenly.
     """
     sizing = model["cosmosSizing"]
     average = (
@@ -202,8 +201,46 @@ def derive_cosmos_ru_per_second(environment: str, model: dict[str, Any]) -> int:
     )
     demand = average * float(sizing["burstFactor"]) * float(sizing["provisionHeadroom"])
     step = int(sizing["roundRuToMultipleOf"])
-    rounded = int(-(-demand // step) * step)
-    return max(int(sizing["minimumRuPerSecond"]), rounded)
+    return int(-(-demand // step) * step)
+
+
+def free_tier_caps(model: dict[str, Any]) -> dict[str, int]:
+    """Hard RU/s ceilings for the databases provisioned in the free-tier account."""
+    allocation = model["cosmosSizing"]["freeTierAllocationRuPerSecond"]
+    return {name: int(value) for name, value in allocation.items() if not name.startswith("$")}
+
+
+def derive_cosmos_ru_per_second(environment: str, model: dict[str, Any]) -> int:
+    """Provisioned RU/s for this environment's shared-throughput database.
+
+    Burst demand sizes it, but a database in the free-tier account can never be
+    provisioned above its ``freeTierAllocationRuPerSecond`` cap. RU/s above the
+    account's free 1000 is billed every hour whether or not it is used, while a
+    burst above the cap only costs a retried 429. So the owner's no-billing policy
+    wins over burst sizing, and the throttling alert reports when that trade stops
+    holding.
+    """
+    sizing = model["cosmosSizing"]
+    floor = int(sizing["minimumRuPerSecond"])
+    demand = max(floor, cosmos_burst_demand_ru_per_second(environment, model))
+    cap = free_tier_caps(model).get(environment)
+    return demand if cap is None else min(demand, cap)
+
+
+def check_free_tier_budget(model: dict[str, Any]) -> None:
+    """Refuse an allocation that would bill: the caps must fit the free grant."""
+    sizing = model["cosmosSizing"]
+    caps = free_tier_caps(model)
+    budget = int(sizing["freeTierRuPerSecond"])
+    floor = int(sizing["minimumRuPerSecond"])
+    if sum(caps.values()) > budget:
+        raise SystemExit(
+            f"cosmosSizing.freeTierAllocationRuPerSecond sums to {sum(caps.values())} RU/s, "
+            f"over the {budget} RU/s free tier: the overflow would be billed hourly"
+        )
+    below_floor = {name: cap for name, cap in caps.items() if cap < floor}
+    if below_floor:
+        raise SystemExit(f"free-tier caps below Azure's {floor} RU/s database floor: {below_floor}")
 
 
 def derive_cosmos_throttle_threshold(model: dict[str, Any]) -> int:
@@ -251,36 +288,40 @@ def _alert_window_minutes() -> float:
 
 def derive_cosmos(guardrails: dict[str, Any], model: dict[str, Any]) -> list[str]:
     """Write the derived RU/s and 429 threshold into the guardrails file."""
+    check_free_tier_budget(model)
     changes: list[str] = []
     cosmos = guardrails.setdefault("azure", {}).setdefault("cosmos", {})
-    cosmos.setdefault(
-        "$comment",
+    comment = (
         "DERIVED by scripts/derive_limits.py from cosmosSizing in "
         "config/cost-model.json plus COST_CEILING_INR_HOURLY and "
         "CHAT_MAX_CONCURRENT_GLOBAL in config/environments/*.env. Do not hand-edit. "
-        "ruPerSecond is the shared database throughput infra/data.bicep provisions; "
-        "freeTierShareRuPerSecond records each environment's slice of the "
-        "account-wide 1000 RU/s free grant, so it is visible when the three "
-        "databases together outgrow it.",
+        "ruPerSecond is the shared database throughput infra/data.bicep provisions for "
+        "canary and prod in the free-tier account: burst demand sizes it, but it never "
+        "exceeds that database's freeTierCapRuPerSecond, and the caps together fit the "
+        "account's free 1000 RU/s, so provisioned throughput is never billed. "
+        "burstDemandRuPerSecond is what a peak burst would use; when it exceeds the "
+        "cap, the excess is served as retried 429s. The local row is informational: "
+        "no local database is provisioned from this file."
     )
+    if cosmos.get("$comment") != comment:
+        changes.append("cosmos $comment: regenerated")
+        cosmos["$comment"] = comment
+    caps = free_tier_caps(model)
     for environment in ENVIRONMENTS:
-        derived = derive_cosmos_ru_per_second(environment, model)
         row = cosmos.setdefault(environment, {})
-        if row.get("ruPerSecond") != derived:
-            changes.append(
-                f"cosmos ruPerSecond [{environment}]: {row.get('ruPerSecond')} -> {derived}"
-            )
-            row["ruPerSecond"] = derived
-        share = int(
-            float(model["cosmosSizing"]["freeTierRuPerSecond"])
-            * float(model["freePoolShare"][environment])
-        )
-        if row.get("freeTierShareRuPerSecond") != share:
-            changes.append(
-                f"cosmos freeTierShareRuPerSecond [{environment}]: "
-                f"{row.get('freeTierShareRuPerSecond')} -> {share}"
-            )
-            row["freeTierShareRuPerSecond"] = share
+        wanted = {
+            "ruPerSecond": derive_cosmos_ru_per_second(environment, model),
+            "burstDemandRuPerSecond": cosmos_burst_demand_ru_per_second(environment, model),
+        }
+        if environment in caps:
+            wanted["freeTierCapRuPerSecond"] = caps[environment]
+        for field, value in wanted.items():
+            if row.get(field) != value:
+                changes.append(f"cosmos {field} [{environment}]: {row.get(field)} -> {value}")
+                row[field] = value
+        for stale_field in set(row) - set(wanted):
+            changes.append(f"cosmos {stale_field} [{environment}]: removed")
+            del row[stale_field]
 
     threshold = derive_cosmos_throttle_threshold(model)
     alert = guardrails.setdefault("azureInfraHealthAlerts", {}).setdefault(

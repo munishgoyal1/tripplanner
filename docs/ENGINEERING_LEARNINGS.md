@@ -2162,3 +2162,22 @@ the outcome.
   priced at 2 KB; the real window document was 11.6 KB. When real traffic RU is
   unavailable, measure document size by running the code's own mutators to
   steady state, not by reading the code.
+
+## 2026-09-13 - A Derived Capacity Needs a Billing Ceiling, and the Real Deployment Checked
+
+- Burst sizing raised provisioned Cosmos throughput first to 600 and then to 700
+  RU/s per database, 1400 RU/s in an account whose free tier covers 1000. The
+  next infra deploy would have billed 400 RU/s around the clock, against the
+  owner's explicit no-billing policy. The derivation had one input nobody
+  enforced: what the owner is willing to pay. Put that policy in the model as a
+  hard cap (`freeTierAllocationRuPerSecond`) that the derivation cannot exceed
+  and refuses to break. Over-provisioning is billed hourly whether used or not;
+  an under-provisioned burst costs only a retried 429.
+- Before telling the owner what their account costs, query it. `az cosmosdb`
+  showed two databases at 400 RU/s, 800 total and free, while the guardrails file
+  implied three databases and an overflow that did not exist.
+- Partition key cardinality is not a cost lever. RU are charged per operation and
+  per provisioned RU/s, never per logical partition. A hot partition only binds
+  once a container spans several physical partitions (past about 10,000 RU/s or
+  50 GB), so say plainly when a partitioning change is future-proofing rather than
+  a fix.
