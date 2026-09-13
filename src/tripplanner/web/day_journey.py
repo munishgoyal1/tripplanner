@@ -74,6 +74,7 @@ class DayJourney:
     detached_pin_ids: list[str] = field(default_factory=list)
     transfer_mode: str | None = None
     route_disconnected: bool = False
+    completed_segments: list[list[str]] = field(default_factory=list)
 
     @property
     def is_transfer(self) -> bool:
@@ -123,6 +124,8 @@ class _JourneyWalk:
             self.journey.detached_pin_ids.append(pin_id)
 
     def _reset_route(self) -> None:
+        if self.journey.route_ids:
+            self.journey.completed_segments.append(list(self.journey.route_ids))
         for pin_id in self.journey.route_ids:
             self._detach(pin_id)
         self.journey.route_ids.clear()

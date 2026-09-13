@@ -119,7 +119,9 @@ def test_hotel_search_uses_google_fallback_when_amadeus_unconfigured(monkeypatch
     class FakeGoogleSearch:
         @staticmethod
         def invoke(args):
-            return json.dumps([{"name": "Grounded Hotel", "rating": 4.7, **args}])
+            return json.dumps([{"name": "Grounded Hotel", "rating": 4.7,
+                                "place_id": "grounded", "address": "Paris, France",
+                                "types": ["lodging"], **args}])
 
     # No live provider configured, so best-effort falls through to Amadeus then Google.
     monkeypatch.setattr(hotel_search, "get_hotel_providers", lambda: [])

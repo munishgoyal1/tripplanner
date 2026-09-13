@@ -467,7 +467,7 @@ def _record_chat_operation(
     user_id: str,
     transport: Literal["json", "sse"],
     outcome: Literal[
-        "completed", "replayed", "cost_limited", "rate_limited", "error"
+        "completed", "replayed", "cost_limited", "rate_limited", "error", "interrupted"
     ],
     error: str | None = None,
     exception: BaseException | None = None,
@@ -945,19 +945,13 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 name = ev.get("name", "")
                 run_id = ev.get("run_id", "")
                 data = ev.get("data", {}) or {}
-                if kind == "on_chat_model_stream":
-                    chunk = data.get("chunk")
-                    text = getattr(chunk, "content", "") if chunk is not None else ""
-                    if text:
-                        reply_parts.append(text)
-                        yield _sse("token", {"text": text})
-                elif kind == "on_chain_end" and name == "trip_agent":
+                if kind == "on_chain_end" and name == "trip_agent":
+                    # Commit text only after the model call succeeds. A recovered
+                    # stream must not leak its discarded partial response.
                     output = data.get("output") or {}
                     for message in output.get("messages", []):
-                        if getattr(message, "additional_kwargs", {}).get(
-                            "trip_change_confirmation"
-                        ):
-                            text = str(message.content)
+                        text = getattr(message, "content", "")
+                        if text:
                             reply_parts.append(text)
                             yield _sse("token", {"text": text})
                 elif kind == "on_tool_start":
@@ -1117,8 +1111,18 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             route="POST /chat/stream",
             interaction_kind="trip_update" if turn.history_trip_id else "new_trip",
         ):
-            async for event in gen():
-                yield event
+            terminal_emitted = False
+            try:
+                async for event in gen():
+                    terminal_emitted = terminal_emitted or event.startswith(
+                        ("event: done\n", "event: error\n")
+                    )
+                    yield event
+            except (asyncio.CancelledError, GeneratorExit) as exc:
+                if not terminal_emitted:
+                    _record_chat_operation(started, user_id=user_id, transport="sse",
+                                           outcome="interrupted", exception=exc)
+                raise
 
     return StreamingResponse(
         attributed_gen(),

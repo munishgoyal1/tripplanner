@@ -368,6 +368,15 @@ def _lodging_name_warnings(
         elif any(unnamed_lodging(_stop_name(stop), cities) for stop in stays):
             unnamed_days.append(day_num)
     if include_placeholders and placeholder_days:
+        from tripplanner.hotel_research import lodging_concern
+
+        warnings.extend(dict.fromkeys(
+            lodging_concern(stop, plan, str(day.get("date") or ""))
+            for day in itinerary if isinstance(day, dict)
+            for stop in day.get("stops", []) if isinstance(stop, dict)
+            and _stop_kind(stop) == "hotel" and _HOTEL_PLACEHOLDER_RE.search(_stop_name(stop))
+        ))
+    if include_placeholders and placeholder_days:
         warnings.append(
             f"Hotel placeholders remain on Day(s) {', '.join(placeholder_days)}."
         )
@@ -776,7 +785,8 @@ def assess_itinerary_change(
     prompt = (
         f"Review my recent itinerary change: I {action} {name}. {summary} "
         "Explain the most important trade-off and propose up to three practical options. "
-        "Do not change the itinerary or call any mutation tool until I explicitly approve an option."
+        "Do not change the itinerary or call any mutation tool "
+        "until I explicitly approve an option."
     )
     return {
         "severity": "warning",

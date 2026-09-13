@@ -10,9 +10,8 @@ import uuid
 from collections import Counter
 from collections.abc import Iterator
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from dataclasses import fields as dataclass_fields
-from dataclasses import replace
 from datetime import UTC, datetime
 from typing import Any, Literal
 
@@ -246,6 +245,12 @@ class UsageBatch:
                 "error" if any(_is_failure(event) for event in events) else "complete",
             ),
             "error_count": sum(1 for event in events if _is_failure(event)),
+            "model_recovered": sum(1 for event in events
+                                   if event.get("kind") == "model_recovery"
+                                   and event.get("outcome") == "recovered"),
+            "model_recovery_exhausted": sum(1 for event in events
+                                            if event.get("kind") == "model_recovery"
+                                            and event.get("outcome") == "exhausted"),
             "llm_calls": sum(1 for event in events if event.get("kind") == "llm_call"),
             "tool_calls": sum(1 for event in events if event.get("kind") == "tool_call"),
             "provider_calls": sum(

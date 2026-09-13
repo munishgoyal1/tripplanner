@@ -76,6 +76,18 @@ model call. Creation is withheld for ordinary edits and ambiguous place mentions
 clear whole-trip and saved-trip switch requests require confirmation before leaving
 the selected trip, retained in JSON/SSE responses and chat history. The current trip remains saved.
 
+Hotel search now includes one bounded Places fallback on missing configuration,
+empty inventory and provider failure. A grounded property recommendation is distinct
+from verified room availability; city/date research reasons persist with saves and
+appear beside unresolved lodging anchors. Local route sections survive transfers
+without inventing connections across unresolved air or rail gaps.
+
+Transient model read/protocol failures receive one model-only retry. Completed tools
+are preserved and failed stream fragments are withheld from the chat response.
+Process-local operations metrics expose request completion and model recovery rates
+with independent sample counts; interrupted streams are unsuccessful requests.
+These are implemented recovery mechanisms, not a measured production error-rate claim.
+
 Operational trip flow logs correlate semantic events by stable trip/interaction
 keys and model call IDs, report terminal failures accurately, preview recent
 message context with full message-text counts, and distinguish unknown model

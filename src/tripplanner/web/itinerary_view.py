@@ -1042,16 +1042,21 @@ def _append_return_to_stay(
 def _measure_local_route(
     stops: list[dict[str, Any]],
     place_coords_map: dict[str, tuple[float, float]],
-) -> tuple[list[dict[str, Any]], list[tuple[float, float]]]:
+) -> tuple[list[dict[str, Any]], list[list[tuple[float, float]]]]:
     """Annotate leg-by-leg travel between local stops and collect their coords."""
     local_indexes = _local_route_stop_indexes(stops)
     local_stops = [
         stop for stop_index, stop in enumerate(stops, start=1) if stop_index in local_indexes
     ]
-    day_coords: list[tuple[float, float]] = []
+    groups: list[list[tuple[float, float]]] = [[]]
     previous_coords: tuple[float, float] | None = None
     previous_name = ""
-    for stop in local_stops:
+    for index, stop in enumerate(stops, start=1):
+        if index not in local_indexes:
+            previous_coords = None
+            if groups[-1]:
+                groups.append([])
+            continue
         coords = place_coords_map.get(str(stop.get("name") or "").strip().lower())
         if not coords:
             continue
@@ -1061,10 +1066,10 @@ def _measure_local_route(
                 from_name=previous_name,
                 to_name=str(stop.get("name") or ""),
             )
-        day_coords.append(coords)
+        groups[-1].append(coords)
         previous_coords = coords
         previous_name = str(stop.get("name") or "")
-    return local_stops, day_coords
+    return local_stops, [group for group in groups if group]
 
 
 def _estimate_hotel_arrival_times(stops: list[dict[str, Any]]) -> None:
@@ -1163,18 +1168,36 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 selected_prices,
             )
 
+        from tripplanner.hotel_research import lodging_concern
+
+        for stop in stops:
+            if stop.get("kind") == "hotel":
+                concern = lodging_concern(stop, trip, str(entry.get("date") or ""))
+                if concern:
+                    stop["concern"] = " ".join(filter(None, [stop.get("concern"), concern]))
+
         rendered_hotels = [stop for stop in stops if stop["kind"] == "hotel"]
         if rendered_hotels:
             current_hotel = str(rendered_hotels[-1].get("name") or current_hotel)
 
-        local_stops, day_coords = _measure_local_route(stops, place_coords_map)
+        local_stops, route_groups = _measure_local_route(stops, place_coords_map)
         total_stops += sum(
             stop["kind"] not in {"airport", "station", "bus_station", "origin"}
             for stop in stops
         )
 
         # Calculate route stats for the day.
-        route = _route_stats_for_day_coords(day_coords)
+        routes = [_route_stats_for_day_coords(group) for group in route_groups]
+        route = _route_stats_for_day_coords([])
+        if len(routes) == 1:
+            route = routes[0]
+        elif routes:
+            distance = round(sum(item["distance_km"] for item in routes), 1)
+            duration = sum(item["duration_min"] for item in routes)
+            route.update(distance_km=distance, duration_min=duration,
+                         distance_display=f"{distance:.1f} km",
+                         duration_display=_route_duration_display(duration),
+                         mode=" + ".join(dict.fromkeys(item["mode"] for item in routes)))
         _enrich_drive_transfer_timing(stops, place_coords_map, transport_preferences)
         _enrich_stop_timing(stops)
         _estimate_hotel_arrival_times(stops)
@@ -1196,7 +1219,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "reachability": _reachability_hint(local_stops, route),
                 "google_maps_url": _google_maps_day_url(
                     destination, local_stops, route.get("mode", "")
-                ),
+                ) if len(route_groups) <= 1 else "",
             }
         )
 
