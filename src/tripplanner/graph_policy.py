@@ -10,6 +10,7 @@ from typing import Any, Literal, TypeAlias
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
+from tripplanner.hotel_research import current_hotel_research, unresearched_hotel_cities
 from tripplanner.tools.trip_planner import (
     core_planning_completion_gaps,
     planning_completion_gaps,
@@ -331,7 +332,8 @@ def trip_hotel_search_requirement(
     current_turn_names = {
         name for index, name in positions if index > latest_human
     }
-    if "search_hotels" in current_turn_names:
+    pending_cities = unresearched_hotel_cities(messages, active_trip)
+    if "search_hotels" in current_turn_names and not pending_cities:
         return None
     if not active_trip.get("destination") or not active_trip.get("day_wise_itinerary"):
         return None
@@ -346,6 +348,8 @@ def trip_hotel_search_requirement(
     return (
         "The saved itinerary still has no concrete hotel: "
         + " ".join(hotel_gaps)
+        + (" Still research these overnight cities: " + ", ".join(pending_cities) + "."
+           if pending_cities else "")
         + " Search real hotels for every overnight city in one parallel tool-call batch "
         "so the strongest preference-matched options can be selected by default in the "
         "next full-plan update. Do not defer another city's hotel search to a later turn."
@@ -861,6 +865,21 @@ def resolve_completion_policy(
             has_planning_intent=has_planning_intent,
         )
     )
+    hotel_evidence = current_hotel_research(messages)
+    if (
+        not proposal_only and not flight_followup and not new_trip_flow
+        and not hotel_fallback_requirement and not origin_requirement
+        and len(repair_results) < 2
+        and any(row.get("properties") for row in hotel_evidence.values())
+        and any(_LODGING_GAP_RE.search(gap) for gap in planning_completion_gaps(active_trip))
+    ):
+        update_requirement = (
+            "Hotel research returned real properties. Select the best suitable property for "
+            "each researched overnight city in selected_hotels and replace matching Hotel TBD "
+            "stops in the full day_wise_itinerary. Use availability_status=unverified when "
+            "rates or rooms are not verified. Do not save only research metadata or notes. "
+            "If no candidate is suitable, record the specific reason instead of inventing one."
+        )
     hotel_search_requirement = (
         None
         if proposal_only or flight_followup

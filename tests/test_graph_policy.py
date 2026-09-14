@@ -1251,7 +1251,10 @@ def test_hotel_tbd_can_finish_after_provider_and_place_attempts() -> None:
         "create_trip_plan", "search_hotels", "search_places_with_reviews", "update_trip_plan"
     ):
         messages.extend([
-            _tool_call(name, name),
+            AIMessage(content="", tool_calls=[{
+                "name": name, "id": name,
+                "args": {"city": "Srinagar"} if name == "search_hotels" else {},
+            }]),
             ToolMessage(
                 content="No hotels found" if name == "search_hotels" else "Done", tool_call_id=name,
             ),

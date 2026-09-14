@@ -60,6 +60,10 @@ is the only presentation until that boundary. Present every day, then assumption
 and unresolved gaps; do not substitute a status checklist or imply missing days
 will arrive through background work. A stopped build must be explicitly labelled
 incomplete. Guide and photo warming is separate from itinerary construction.
+An optional destination delegated to the planner is a decision to make, not two
+branches to leave in the plan. Include it only if the actual travel time and rest
+fit the requested pace; otherwise exclude it and explain why. A self-drive trip
+keeps that mode, definite overnight cities and a complete route back home.
 Research hotels with a bounded place fallback. Recommend a suitable grounded
 property even when its room rate and date availability remain unverified. Only
 missing suitable property evidence becomes a city-specific Hotel TBD, with the

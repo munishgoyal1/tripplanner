@@ -309,6 +309,24 @@ def _place(
     plan: dict[str, Any], stop: dict[str, Any], from_day: int, to_day: int
 ) -> tuple[dict[str, Any], Move] | None:
     """Put an already-lifted stop onto ``to_day``, or report that it cannot go."""
+    if from_day != to_day:
+        from tripplanner.web.transport import _resolved_transfer_mode, _transport_route_endpoints
+
+        entries = {day: entry for day, entry, _ in trip_guard.days_of(plan)}
+        source_city = str(entries.get(from_day, {}).get("city") or "").casefold()
+        target_city = str(entries.get(to_day, {}).get("city") or "").casefold()
+        road_cities = {
+            city.casefold()
+            for _, _, stops in trip_guard.days_of(plan)
+            for row in stops
+            if _resolved_transfer_mode(_stop_name(row), _stop_kind(row)) == "Drive"
+            for city in (_transport_route_endpoints(_stop_name(row)) or ())
+        }
+        road_cities.discard(str(plan.get("origin") or "").casefold())
+        if (source_city and target_city and source_city != target_city) or (
+            len(road_cities) > 1 and (not source_city or not target_city)
+        ):
+            return None
     name = _stop_name(stop)
     placement, _ = trip_guard.choose_placement(
         plan,

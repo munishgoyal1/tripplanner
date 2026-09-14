@@ -353,7 +353,7 @@ def _build_road_circuits(
             origin_fallbacks.append(carried_stay)
         if day and day["pin_ids"]:
             first_pin = pin_by_id.get(day["pin_ids"][0])
-            if first_pin and first_pin["kind"] in {"hotel", "origin"}:
+            if first_pin and first_pin["kind"] == "hotel":
                 origin_fallbacks.append(str(first_pin["id"]))
         for stop_index, stop in enumerate(normalized, start=1):
             mode = str(stop["mode"] or "")

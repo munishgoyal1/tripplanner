@@ -520,6 +520,8 @@ def _ground_leg_distance_warnings(plan: dict[str, Any]) -> list[str]:
             mode = str(stop.get("mode") or "")
             if not _GROUND_MODE_RE.search(f"{mode} {name}"):
                 continue
+            if re.search(r"\b(?:drive|driving|car|road)\b", f"{mode} {name}", re.I):
+                continue
             try:
                 distance = float(stop.get("distance_km"))
             except (TypeError, ValueError):

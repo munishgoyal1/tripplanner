@@ -44,6 +44,37 @@ def current_hotel_research(messages):
     return research
 
 
+def unresearched_hotel_cities(messages, plan):
+    attempted = set()
+    for message in messages:
+        if isinstance(message, HumanMessage):
+            attempted.clear()
+        elif isinstance(message, AIMessage):
+            attempted.update(
+                str(call["args"].get("city") or "").strip().casefold()
+                for call in message.tool_calls if call["name"] == "search_hotels"
+            )
+    cities = set()
+    for day in plan.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict):
+            continue
+        for stop in day.get("stops") or []:
+            if not isinstance(stop, dict) or stop.get("kind") != "hotel":
+                continue
+            name = str(stop.get("name") or "")
+            if not re.search(r"\b(?:tbd|tbc|to be decided|to be confirmed)\b", name, re.I):
+                continue
+            city = str(stop.get("city") or day.get("city") or "").strip()
+            if not city:
+                city = re.sub(
+                    r"\b(?:hotel|stay|tbd|tbc|to be decided|to be confirmed|in|at)\b",
+                    "", name, flags=re.I,
+                ).strip(" ()-,")
+            if city and city.casefold() not in attempted:
+                cities.add(city)
+    return sorted(cities)
+
+
 def lodging_concern(stop, plan, day_date=""):
     rows = plan.get("lodging_research")
     rows = rows if isinstance(rows, dict) else {}

@@ -44,6 +44,13 @@ the final reply replaces buffered text in one update. `graph_policy.py` prioriti
 missing date-range coverage over research and scopes stalled-save detection to
 the latest research batch. `trip_validation._itinerary_time_errors` propagates
 earliest corrected times so a rejected circuit can be fixed in one resubmission.
+Hotel completion tracks city-specific attempts and requires bounded selection
+when property candidates exist. `update_trip_plan` rejects unselected route
+alternatives and prepares road endpoints plus day-locality place metadata inside
+the authorized mutation. `map_pins` registers both driving cities; `day_journey`
+uses the destination city when a stay is unresolved. `trip_rebalance._place`
+prevents cross-city relocation and refuses ambiguous cross-day moves on multi-city
+road trips. Explicit drives are exempt from the local-leg distance inference cap.
 `day_journey.py` retains completed local path segments when an unresolved transfer
 resets the active path; `map_view.py` builds legs separately for each segment.
 

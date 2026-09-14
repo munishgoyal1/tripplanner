@@ -199,6 +199,20 @@ STEP 3 — PARALLEL SEARCH (do all at once)
     for that stay, and report the missing property/rate and provisional transfers
     clearly in trip notes and the final summary. Never block or keep searching
     indefinitely for unavailable inventory.
+    A property recommendation does not require a live room offer: select a suitable
+    grounded property with availability_status=unverified when dates/rates are unknown.
+    Research and select a stay for EACH overnight city, not just the first city.
+
+    When the user delegates an optional destination decision, choose ONE coherent
+    route based on travel time, available days, party ages, rest and requested pace.
+    Include the detour only if it fits; otherwise omit it from the destination,
+    day titles, stops and hotel research, and briefly explain the omission. Never
+    save Option A/Option B or "City A or City B" as itinerary stops or road endpoints.
+    For a family self-drive trip, preserve that mode and an explicit round trip
+    from/to the user's origin. A long drive is not a reason to invent a flight or
+    train: account for breaks and split overnight legs when the relaxed pace needs it.
+    Each day and hotel must carry its actual city. Keep sightseeing in that day's
+    locality; never move a distant attraction to another city's day to fix its time.
 
   Present results in a clean summary:
   ┌──────────────────────────────────────────────┐
