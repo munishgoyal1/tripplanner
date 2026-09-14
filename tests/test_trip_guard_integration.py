@@ -861,7 +861,7 @@ def test_a_travel_infeasible_planner_update_is_retimed_before_persistence(
     monkeypatch.setattr(
         places_cache,
         "get_details",
-        lambda name, _destination: {
+        lambda name, _destination, **_kwargs: {
             "lat": coordinates[name][0],
             "lng": coordinates[name][1],
         },

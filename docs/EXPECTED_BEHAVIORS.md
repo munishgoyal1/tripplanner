@@ -29,6 +29,8 @@ Known city spelling aliases (Bangalore/Bengaluru, Rameshwaram/Rameswaram,
 Kanyakumari/Kanniyakumari) match hotel addresses without accepting other cities.
 The same identity is used for research coverage and saved lodging evidence, so
 a successful alias search cannot leave the city gate stuck in repeated searches.
+Map name/address matching uses those aliases too: Bengaluru is a valid Bangalore
+endpoint, and Rameswaram/Kanniyakumari addresses do not hide the selected hotels.
 Rejected itinerary errors take priority over hotel-selection nudges. A forced
 full-trip repair must submit all days; notes or selections alone cannot satisfy
 it. If planning stops at a safety limit, render the actual saved days and gaps
@@ -46,6 +48,13 @@ remain the preferred departure anchor. The local 300 km inference cutoff does
 not prohibit an explicit drive; chronology and routing evidence still apply.
 Automatic repair cannot move an attraction between different day cities, or
 between unspecified localities on a multi-city road trip.
+Timing settlement uses the validator's hotel duration and keeps checkout on the
+departure side of a drive. A return drive precedes home arrival; flight-style
+departure ordering must not move home arrival before driving. Removed unresolved
+route alternatives are not protected transport commitments to restore later.
+Forced full repairs receive the actual saved stop list, not only day titles.
+Do not fill remaining days with hotels or sightseeing in the traveller's home
+city unless requested; use them to balance the return journey.
 
 Proof: `tests/test_roadtrip_completeness.py`, `tests/test_trip_plan.py`,
 `tests/test_trip_view_journeys_transfers.py`, `tests/test_trip_guard.py`.

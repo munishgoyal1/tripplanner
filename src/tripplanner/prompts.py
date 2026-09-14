@@ -211,6 +211,10 @@ STEP 3 — PARALLEL SEARCH (do all at once)
     For a family self-drive trip, preserve that mode and an explicit round trip
     from/to the user's origin. A long drive is not a reason to invent a flight or
     train: account for breaks and split overnight legs when the relaxed pace needs it.
+    The origin is home, not another holiday stop: do not add origin-city hotels or
+    sightseeing after returning unless explicitly requested. Use remaining days to
+    split the return drive and rest before getting home, rather than filling them
+    with an invented stay at home. End the final day with home arrival after driving.
     Each day and hotel must carry its actual city. Keep sightseeing in that day's
     locality; never move a distant attraction to another city's day to fix its time.
 
