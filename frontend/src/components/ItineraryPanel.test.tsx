@@ -179,7 +179,7 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Travel from previous stop: 2.1 km, 28 min")).toBeInTheDocument();
     expect(screen.getByText("Walk from Louvre Museum to Seine cruise.")).toBeInTheDocument();
-    expect(screen.getByText("Est. arrive 12:28 · 2 hr 32 min free before 15:00")).toBeInTheDocument();
+    expect(screen.getByText("Earliest arrival 12:28 · 2 hr 32 min free before 15:00")).toBeInTheDocument();
     expect(screen.getByLabelText("Seine cruise rating 4.7 out of 5")).toHaveTextContent("12.5K reviews");
     expect(screen.getByText("Must-visit score 91/100")).toBeInTheDocument();
     expect(screen.getAllByText("Arrive")).toHaveLength(2);

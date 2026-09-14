@@ -131,7 +131,10 @@ def _day_schedule(stops: list[dict[str, Any]], route: dict[str, Any]) -> dict[st
         for index, stop in enumerate(stops)
         if (minutes := _clock_minutes(stop.get("time"))) is not None
     ]
-    travel_minutes = int(route.get("duration_min") or 0)
+    travel_minutes = int(route.get("duration_min") or 0) + sum(
+        int(stop.get("duration_min") or 0) for stop in stops
+        if _intercity_transfer_mode(str(stop.get("name") or ""), str(stop.get("kind") or "")) == "Drive"
+    )
     if not timed:
         visit_minutes = sum(
             int(stop.get("duration_min") or 0)
@@ -155,6 +158,7 @@ def _day_schedule(stops: list[dict[str, Any]], route: dict[str, Any]) -> dict[st
         (stops[first_index].get("travel_from_previous") or {}).get("duration_min") or 0
     )
     end = last_time
+    end += int(stops[last_index].get("timing_conflict_min") or 0)
     if end < first_time:
         end += 24 * 60
     end += sum(
@@ -168,7 +172,7 @@ def _day_schedule(stops: list[dict[str, Any]], route: dict[str, Any]) -> dict[st
     )
     return {
         "start": _clock_display(start),
-        "end": _clock_display(end),
+        "end": _arrival_display(end),
         "duration_min": max(0, end - start),
         "duration_display": _route_duration_display(max(0, end - start)),
         "travel_duration_min": travel_minutes,
@@ -178,41 +182,52 @@ def _day_schedule(stops: list[dict[str, Any]], route: dict[str, Any]) -> dict[st
 
 
 def _enrich_stop_timing(stops: list[dict[str, Any]]) -> None:
+    ready: int | None = None
     for index, stop in enumerate(stops):
-        arrival = _clock_minutes(stop.get("time"))
-        if arrival is None:
+        for key in ("expected_arrival_time", "buffer_before_min", "buffer_before_display",
+                    "timing_conflict_min", "timing_conflict_display"):
+            stop.pop(key, None)
+        planned = _clock_minutes(stop.get("time"))
+        travel = int((stop.get("travel_from_previous") or {}).get("duration_min") or 0)
+        earliest = ready + travel if ready is not None else planned
+        if planned is None and earliest is None:
             continue
-
+        actual = max(planned or 0, earliest or 0)
+        if index and earliest is not None:
+            stop["expected_arrival_time"] = _arrival_display(earliest)
+            if planned is not None:
+                buffer = planned - earliest
+                if buffer > 0:
+                    stop["buffer_before_min"] = buffer
+                    stop["buffer_before_display"] = _route_duration_display(buffer)
+                elif buffer < 0:
+                    stop["timing_conflict_min"] = -buffer
+                    stop["timing_conflict_display"] = _route_duration_display(-buffer)
         duration = int(stop.get("duration_min") or 0)
         if stop.get("kind") == "flight" and stop.get("arrival_time"):
-            stop["departure_time"] = str(stop["arrival_time"])
-        elif duration > 0 and stop.get("kind") not in {"hotel", "flight"}:
-            stop["departure_time"] = _clock_display(arrival + duration)
+            flight_end = _clock_minutes(stop["arrival_time"])
+            if flight_end is not None:
+                if flight_end < actual:
+                    flight_end += 1440
+                duration = flight_end - actual
+        if stop.get("kind") == "hotel" and 0 < index < len(stops) - 1:
+            duration = duration or 45
+        drive = _intercity_transfer_mode(str(stop.get("name") or ""), str(stop.get("kind") or "")) == "Drive"
+        if drive:
+            stop["departure_time"] = _clock_display(actual)
+            stop["arrival_time"] = _arrival_display(actual + duration)
+            # The drive row describes the journey; its allocated road legs below
+            # already account for the same travel, including any waypoints.
+            if index + 1 < len(stops) and (stops[index + 1].get("travel_from_previous") or {}).get("mode") == "Drive":
+                duration = 0
+        elif duration > 0:
+            stop["departure_time"] = _arrival_display(actual + duration)
+        ready = actual + duration
 
-        if index == 0:
-            continue
-        previous = stops[index - 1]
-        previous_arrival = _clock_minutes(previous.get("time"))
-        if previous_arrival is None:
-            continue
-        previous_duration = int(previous.get("duration_min") or 0)
-        if previous.get("kind") == "hotel":
-            previous_duration = 0
-        travel_minutes = int(
-            (stop.get("travel_from_previous") or {}).get("duration_min") or 0
-        )
-        expected_arrival = previous_arrival + previous_duration + travel_minutes
-        actual_arrival = arrival
-        while actual_arrival < previous_arrival:
-            actual_arrival += 24 * 60
-        buffer_minutes = actual_arrival - expected_arrival
-        stop["expected_arrival_time"] = _clock_display(expected_arrival)
-        if buffer_minutes > 0:
-            stop["buffer_before_min"] = buffer_minutes
-            stop["buffer_before_display"] = _route_duration_display(buffer_minutes)
-        elif buffer_minutes < 0:
-            stop["timing_conflict_min"] = abs(buffer_minutes)
-            stop["timing_conflict_display"] = _route_duration_display(abs(buffer_minutes))
+
+def _arrival_display(minutes: int) -> str:
+    days, _ = divmod(minutes, 1440)
+    return _clock_display(minutes) + (f" (+{days} day)" if days else "")
 
 
 def _enrich_drive_transfer_timing(

@@ -1231,3 +1231,21 @@ checked every three seconds; normal refreshes remain every 30 seconds.
 **Proof:** `tests/test_ops_dashboard.py`, `tests/test_operations_reporting.py`,
 `tests/test_operations_usage_report.py`, `tests/test_provider_usage.py`, and
 `frontend/src/ops/OpsDashboard.test.tsx`.
+
+### Locality and itinerary timing (2026-09-14)
+
+Saved stop coordinates are authoritative for itinerary distances as well as map pins
+and feasibility checks. Unresolved stops are looked up in their stop/day city, not
+the combined multi-city destination; a different provider business is not accepted
+as the requested stop. Unknown locations break the measured route instead of
+silently connecting the stops on either side. Hotel/rest visits retain their
+saved order; an added final hotel return never inherits an afternoon visit time.
+
+A drive row states departure and arrival; allocated road segments count its travel
+once. Local travel estimates use the same calculation in rendering and validation.
+Check-in time and accumulated lateness carry forward. The UI and export distinguish
+planned card times from earliest possible arrival and explicitly label next-day
+arrivals. Day travel totals include explicit drives. Known overlapping durations
+remain validation failures even when coordinates are unavailable. These checks feed
+the existing graph completion gate; saved invalid plans are not silently repaired
+by reading the itinerary.

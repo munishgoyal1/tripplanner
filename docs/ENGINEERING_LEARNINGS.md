@@ -2318,3 +2318,16 @@ the outcome.
   used the broad trip destination and stamped a Kanyakumari business onto Bangalore
   home. Use the day locality for regular stops and known origin identity for a
   generic home-arrival row, while preserving explicit confirmed bindings.
+
+
+### 2026-09-14 — Reproduce projection and validation, not only repaired state
+
+The Rameshwaram replay exposed correct saved coordinates being replaced by a
+multi-city cache lookup in the itinerary projection, while the guard ignored saved
+coordinates. Independently, transfer travel was counted twice and hotel wrapping
+moved an afternoon rest after dinner. A repaired trip with all days present did not
+prove a fresh plan would have coherent geography or clocks. Regressions now cover
+saved identity versus stale lookup results, cold-cache physical feasibility,
+transfer allocation, cumulative lateness/midnight, and preserved hotel ordering.
+Keep planned clock values distinct from feasible arrivals and share route arithmetic
+between the validator and renderer; unknown geography is not zero travel.

@@ -281,8 +281,8 @@ def export_stop_html(
             if buffer and time:
                 suffix = f" · {buffer} free before {time}"
             elif conflict:
-                suffix = f" · schedule is {conflict} too tight"
-            extra.append(f"Est. arrive {expected}{suffix}")
+                suffix = f" · {conflict} after planned {time}; schedule needs revision"
+            extra.append(f"Earliest arrival {expected}{suffix}")
         extra_html = "".join(f"<div class='travel-extra'>{_e(item)}</div>" for item in extra)
         travel_html = f"<div class='travel'>{_e(travel_line)}{extra_html}</div>"
 

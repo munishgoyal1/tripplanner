@@ -702,7 +702,7 @@ def test_a_few_minutes_late_for_something_that_waits_is_not_a_violation(
         [
             [
                 stop("Rajwada Palace", "10:00", "attraction", 60),
-                stop("Sarafa Bazaar", "11:05", "meal", 60),
+                stop("Sarafa Bazaar", "11:00", "meal", 60),
             ]
         ]
     )
@@ -717,7 +717,7 @@ def test_the_same_few_minutes_late_for_a_booked_stop_is_a_violation(
         [
             [
                 stop("Rajwada Palace", "10:00", "attraction", 60),
-                {**stop("Sarafa Bazaar", "11:05", "meal", 60), "booked": True},
+                {**stop("Sarafa Bazaar", "11:00", "meal", 60), "booked": True},
             ]
         ]
     )

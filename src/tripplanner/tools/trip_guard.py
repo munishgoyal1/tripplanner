@@ -448,6 +448,11 @@ def _calendar_violations(
 
 
 def _coords(stop: Any, destination: str) -> tuple[float, float] | None:
+    if isinstance(stop, dict):
+        saved = _coords_from_summary(stop)
+        if saved:
+            return saved
+        destination = str(stop.get("city") or destination)
     name = _stop_name(stop)
     if not name:
         return None
@@ -458,7 +463,9 @@ def _coords(stop: Any, destination: str) -> tuple[float, float] | None:
 
 
 def travel_min(a: tuple[float, float], b: tuple[float, float]) -> int:
-    return max(TURNAROUND_MIN, round((_haversine_km(a, b) / ROAD_SPEED_KMH) * 60) + TURNAROUND_MIN)
+    from tripplanner.web.schedule import _route_stats_for_distance
+
+    return int(_route_stats_for_distance(_haversine_km(a, b))["duration_min"])
 
 
 # --------------------------------------------------------------------------- #
@@ -472,6 +479,13 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
     destination = str(plan.get("destination") or "")
     env = envelope(plan)
     structured = days_of(plan)
+    from tripplanner.web.map_pins import _day_place_context
+
+    structured = [
+        (day, entry, [dict(stop, city=stop.get("city") or _day_place_context(entry, destination))
+                      if isinstance(stop, dict) else stop for stop in stops])
+        for day, entry, stops in structured
+    ]
 
     out.extend(_envelope_violations(structured, env, str(plan.get("origin") or "")))
     out.extend(_presence_violations(structured, env, str(plan.get("origin") or "")))
@@ -595,7 +609,7 @@ def _hours_violations(
             name = _stop_name(stop)
             if not name:
                 continue
-            facts = facts_for(name, destination)
+            facts = facts_for(name, str(stop.get("city") or destination) if isinstance(stop, dict) else destination)
             if facts.closed_on(day_iso):
                 weekday = place_facts.weekday_of(day_iso)
                 named = (
@@ -709,11 +723,14 @@ def _feasibility_violations(
     for day, _entry, stops in structured:
         timed = [(stop, _time_of(stop)) for stop in stops]
         timed = [(stop, at) for stop, at in timed if at is not None]
-        timed.sort(key=lambda pair: pair[1])
+        ready = None
         for index in range(len(timed) - 1):
             current, current_at = timed[index]
             following, following_at = timed[index + 1]
-            ends = current_at + _duration_of(current)
+            duration = _duration_of(current)
+            if index == 0 and _stop_kind(current) == "hotel" and not current.get("duration_min"):
+                duration = 0
+            ends = max(current_at, ready or current_at) + duration
             if buffer_min := _departure_buffer(following):
                 # Two hours is an airport, not a car. Asking for check-in time
                 # before a drive turns a real rule into background noise.
@@ -730,12 +747,12 @@ def _feasibility_violations(
                             _stop_name(following),
                         )
                     )
+                ready = max(needed, following_at)
                 continue
             here = _coords(current, destination)
             there = _coords(following, destination)
-            if not here or not there:
-                continue
-            needed = ends + travel_min(here, there)
+            needed = ends + (travel_min(here, there) if here and there else 0)
+            ready = max(needed, following_at)
             grace = 0 if _has_a_time_of_its_own(following) else FEASIBILITY_GRACE_MIN
             if needed > following_at + grace:
                 out.append(

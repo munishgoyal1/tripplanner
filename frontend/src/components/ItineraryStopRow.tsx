@@ -177,11 +177,11 @@ export default function ItineraryStopRow({
             )}
             {stop.expected_arrival_time && (
               <span className="basis-full font-normal text-muted">
-                Est. arrive {stop.expected_arrival_time}
+                Earliest arrival {stop.expected_arrival_time}
                 {stop.buffer_before_display && stop.time
                   ? ` · ${stop.buffer_before_display} free before ${stop.time}`
                   : stop.timing_conflict_display
-                    ? ` · schedule is ${stop.timing_conflict_display} too tight`
+                    ? ` · ${stop.timing_conflict_display} after planned ${stop.time}; schedule needs revision`
                     : ""}
               </span>
             )}
