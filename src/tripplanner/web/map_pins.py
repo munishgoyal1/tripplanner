@@ -340,7 +340,6 @@ def _map_pins(
         if not isinstance(stops, list):
             continue
         day_context = _day_place_context(entry, destination)
-        has_route_anchor = False
         for s in stops:
             if isinstance(s, dict):
                 name = str(s.get("name") or "").strip()
@@ -361,8 +360,10 @@ def _map_pins(
             )
             terminal_refs = _transport_terminal_refs(name, kind)
             if terminal_refs:
-                if _resolved_transfer_mode(name, kind) == "Drive" and has_route_anchor:
-                    continue
+                if _resolved_transfer_mode(name, kind) == "Drive":
+                    endpoints = _transport_route_endpoints(name)
+                    if endpoints:
+                        terminal_refs = [("origin", endpoint) for endpoint in endpoints]
                 for terminal_kind, terminal_name in terminal_refs:
                     _add(terminal_kind, terminal_name, "")
                     explicit_day_by_name.setdefault(terminal_name.lower(), day_num)
@@ -380,7 +381,6 @@ def _map_pins(
             explicit_day_by_name.setdefault(name.lower(), day_num)
             tier_by_name.setdefault(name.lower(), tier)
             from_itinerary.add(name.lower())
-            has_route_anchor = True
 
     # 2) User selected places (ensure presence even if stops list is absent).
     for h in trip.get("selected_hotels") or []:
@@ -704,6 +704,8 @@ def _resolve_road_circuit_pin_ids(
         if not nxt["name"]:
             continue
         pin = resolve_pin(nxt["name"], nxt["kind"])
+        if nxt["kind"] == "hotel" and not pin:
+            break
         if not pin:
             continue
         pin_id = str(pin["id"])

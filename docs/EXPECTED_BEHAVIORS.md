@@ -19,6 +19,29 @@ ID. Changed-path selection and publication tiers are documented in
 
 ## Assistant planning
 
+### EB-ROAD-001 - One complete self-drive route
+
+For a self-drive itinerary, research each overnight city and select suitable
+grounded hotels even when room prices/availability remain unverified. A search
+for one city cannot satisfy the other cities. A returned property candidate
+requires a bounded selection pass, not a metadata-only save with Hotel TBD.
+When the traveller delegates an optional detour decision, choose one route that
+fits dates, pace and party needs. Do not persist competing Option A/B stops or
+ambiguous road origins/destinations. Explain excluded detours in notes.
+
+Prepare named place coordinates in their day locality and both road endpoint
+cities during the authorized save. Read-only map loads do not buy missing facts.
+Every explicit driving leg can include its origin and destination on the map,
+including home on return. A missing hotel ends the transfer at its named city;
+later sightseeing must not become transfer waypoints. Concrete previous stays
+remain the preferred departure anchor. The local 300 km inference cutoff does
+not prohibit an explicit drive; chronology and routing evidence still apply.
+Automatic repair cannot move an attraction between different day cities, or
+between unspecified localities on a multi-city road trip.
+
+Proof: `tests/test_roadtrip_completeness.py`, `tests/test_trip_plan.py`,
+`tests/test_trip_view_journeys_transfers.py`, `tests/test_trip_guard.py`.
+
 ### EB-PROVIDER-001 - Honor explicit LiteAPI-only flight inventory
 
 **Trigger:** Search flights with `TRAVEL_FLIGHT_PROVIDER=liteapi` and receive

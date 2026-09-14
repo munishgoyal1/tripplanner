@@ -201,6 +201,13 @@ re-describing the whole product.
 
 ### PLAN-01 - Preference-aware planning flow
 
+- Self-drive builds select one route, research all overnight cities, and require
+  a bounded real-property selection pass before accepting hotel placeholders.
+  Place metadata and both road endpoints are prepared during saves for read-only
+  map projection. Explicit long drives remain representable; an unresolved stay
+  cannot extend its driving circuit through destination sightseeing. Cross-city
+  automatic attraction relocation is blocked.
+
 - The agent loads known preferences and duration advice, then creates and persists
   the first itinerary without a review gate in either mode. Interactive mode may
   offer optional refinements after the draft is saved.

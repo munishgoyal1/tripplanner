@@ -510,7 +510,7 @@ def test_core_completion_rejects_a_hotel_only_day() -> None:
     ]
 
 
-def test_core_completion_rejects_an_implausibly_long_ground_leg() -> None:
+def test_core_completion_accepts_explicit_long_drive_for_route_evaluation() -> None:
     plan = {
         "destination": "Gangtok and North Sikkim",
         "origin": "Kolkata",
@@ -533,8 +533,8 @@ def test_core_completion_rejects_an_implausibly_long_ground_leg() -> None:
     core_gaps = trip_validation.core_planning_completion_gaps(plan)
     persistence_errors = trip_validation.persistence_sanity_errors(plan)
 
-    assert any("Drive: Kolkata to Gangtok" in gap for gap in core_gaps)
-    assert any("ground-leg distance" in error for error in persistence_errors)
+    assert not any("ground-leg distance" in gap for gap in core_gaps)
+    assert not any("ground-leg distance" in error for error in persistence_errors)
 
 
 def test_a_day_cannot_begin_where_the_trip_never_travelled(located: None) -> None:

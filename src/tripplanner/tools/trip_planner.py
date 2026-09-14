@@ -1527,6 +1527,19 @@ def update_trip_plan(updates_json: str) -> str:
         )
 
     validation_plan = dict(plan)
+    for day in updates.get("day_wise_itinerary") or []:
+        for stop in day.get("stops") or []:
+            name = _stop_name(stop)
+            if re.search(r"^\s*option\s+[A-Z0-9]\s*:", name, re.I) or (
+                _stop_kind(stop) in {"transport", "hotel"}
+                and re.search(r"\s+or\s+", name, re.I)
+            ):
+                return (
+                    "Error: the saved itinerary must contain one chosen route, not alternatives. "
+                    "Decide which optional destinations fit the requested pace and dates, "
+                    "remove the rejected alternative, and resubmit all days with definite "
+                    "overnight cities and outbound/return endpoints."
+                )
     if isinstance(updates.get("day_wise_itinerary"), list):
         validation_plan["day_wise_itinerary"] = [
             *(plan.get("day_wise_itinerary") or []),
@@ -1665,6 +1678,29 @@ def update_trip_plan(updates_json: str) -> str:
     restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
 
     repair_plan = plan
+    if "day_wise_itinerary" in updates:
+        from tripplanner.web.map_pins import _day_place_context
+        from tripplanner.web.place_confidence import LABEL, stop_place_tier
+        from tripplanner.web.transport import _resolved_transfer_mode, _transport_route_endpoints
+
+        road_cities = set()
+        for day in plan.get("day_wise_itinerary") or []:
+            context = _day_place_context(day, str(plan.get("destination") or ""))
+            names = []
+            for stop in day.get("stops") or []:
+                if _resolved_transfer_mode(_stop_name(stop), _stop_kind(stop)) == "Drive":
+                    road_cities.update(_transport_route_endpoints(_stop_name(stop)) or ())
+                elif _stop_kind(stop) in {"hotel", "attraction", "meal", "restaurant"}:
+                    name = _stop_name(stop)
+                    if (
+                        not re.search(r"\b(?:tbd|tbc)\b", name, re.I)
+                        and stop_place_tier(name, _stop_kind(stop)) != LABEL
+                    ):
+                        names.append(name)
+            if names:
+                places_cache.prefetch(names, context, max_photos=0, with_reviews=False)
+        if road_cities:
+            places_cache.prefetch(sorted(road_cities), "", max_photos=0, with_reviews=False)
     if flight_edit:
         days = plan.get("day_wise_itinerary") or []
         repair_plan = {

@@ -625,7 +625,7 @@ class TestTripPlanState:
         )
         monkeypatch.setattr(
             "tripplanner.tools.trip_guard._summary_for_place",
-            lambda name, _destination: {
+            lambda name, _destination, **_kwargs: {
                 "name": name,
                 "weekday_descriptions": [
                     f"{day}: 6:00 AM - 12:00 PM, 6:00 PM - 9:00 PM"
@@ -1556,7 +1556,7 @@ class TestTripPlanState:
     def test_add_selection_keeps_explicit_itinerary_day(self, monkeypatch):
         monkeypatch.setattr(
             "tripplanner.tools.trip_planner.places_cache.get_details",
-            lambda name, _destination: {
+            lambda name, _destination, **_kwargs: {
                 "North Stay": {"lat": 15.60, "lng": 73.75},
                 "South Stay": {"lat": 15.20, "lng": 74.00},
                 "North Market": {"lat": 15.59, "lng": 73.76},
@@ -1919,7 +1919,7 @@ class TestTripPlanState:
         }
         monkeypatch.setattr(
             "tripplanner.tools.trip_planner.places_cache.get_details",
-            lambda name, _destination: coords.get(name, {}),
+            lambda name, _destination, **_kwargs: coords.get(name, {}),
         )
         create_trip_plan.invoke({
             "destination": "Goa",
@@ -1950,7 +1950,7 @@ class TestTripPlanState:
     def test_itinerary_reflow_keeps_booked_attraction_on_its_day(self, monkeypatch):
         monkeypatch.setattr(
             "tripplanner.tools.trip_planner.places_cache.get_details",
-            lambda *_args: {"lat": 15.5, "lng": 73.8},
+            lambda *_args, **_kwargs: {"lat": 15.5, "lng": 73.8},
         )
         create_trip_plan.invoke({
             "destination": "Goa",
@@ -1985,7 +1985,7 @@ class TestTripPlanState:
         }
         monkeypatch.setattr(
             "tripplanner.tools.trip_planner.places_cache.get_details",
-            lambda name, _destination: coords.get(name, {}),
+            lambda name, _destination, **_kwargs: coords.get(name, {}),
         )
         create_trip_plan.invoke({
             "destination": "Goa",
@@ -2299,3 +2299,10 @@ class TestProfileDefaults:
         assert plan["travel_scope"] == ""
         assert "arrival/return travel TBD" in plan["notes"]
         assert prefs["family_members"] == [{"relationship": "spouse"}]
+
+@pytest.mark.parametrize("name", ["Option A: Drive to Kodaikanal", "Drive: Madurai or Kodaikanal to Bangalore"])
+def test_itinerary_rejects_unselected_route_alternatives(name):
+    create_trip_plan.invoke({"destination": "Tamil Nadu", "departure_date": "2026-10-12", "return_date": "2026-10-19"})
+    result = update_trip_plan.invoke({"updates_json": json.dumps({"day_wise_itinerary": [{"day": 7, "stops": [{"name": name, "kind": "transport"}]}]})})
+    assert result.startswith("Error: the saved itinerary must contain one chosen route")
+    assert not trip_planner.load_active_trip_dict()["day_wise_itinerary"]

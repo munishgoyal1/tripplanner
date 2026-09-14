@@ -2255,3 +2255,20 @@ the outcome.
 - A successful workspace HTTP response does not prove what the browser rendered.
   Keep the confirmed backend stop distinct from an unverified persistent empty-pane
   report; guide/photo warming after a turn is not background itinerary generation.
+
+## 2026-09-14 - A complete road trip needs identities and decisions
+
+- The eight-day Rameshwaram draft contained two Day 7 alternatives as real stops,
+  no selected hotels, and a Kanyakumari attraction on its Rameshwaram day. A day
+  count is not coherence: reject unselected route branches at persistence, track
+  hotel research by city, and require selection when grounded candidates exist.
+- A map GET cannot resolve uncached Bangalore coordinates under the read-only
+  provider policy. Prepare endpoint and day-locality metadata during the authorized
+  save, without requiring a later background task to complete the circuit.
+- Drive pin extraction registered only the departure city and skipped that when
+  another anchor existed. Register both ends; an unresolved hotel closes the
+  transfer at its named city, rather than absorbing subsequent sightseeing.
+  Preserve a concrete carried stay ahead of the city-center fallback.
+- The 300 km cutoff for inferred local hops was also used to reject explicit
+  drives. Keep inference limits distinct from declared intercity transport, and
+  prevent timing repair from moving an attraction into a different overnight city.
