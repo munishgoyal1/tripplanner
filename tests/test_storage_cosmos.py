@@ -11,6 +11,97 @@ from tripplanner.config import Settings
 from tripplanner.storage_cosmos import _client_options
 
 
+def test_provider_usage_indexes_every_path_its_query_filters_and_nothing_else() -> None:
+    """Indexing every nested entry was most of a ~150 KB usage write's RU."""
+    import inspect
+    import re
+    from pathlib import Path
+
+    from tripplanner import provider_usage
+
+    policy = storage_cosmos._CONTAINER_INDEXING["provider_usage"]
+    included, excluded = storage_cosmos._indexed_paths(policy)
+    queried = set(re.findall(r"\bc\.(\w+)", inspect.getsource(provider_usage._read)))
+
+    assert queried, "provider_usage._read no longer queries a field; revisit the policy"
+    assert {f"/{field}/?" for field in queried} <= included
+    assert excluded == {"/*"}
+    bicep = (Path(__file__).resolve().parents[1] / "infra/modules/cosmos-data.bicep").read_text(
+        "utf-8"
+    )
+    usage_block = bicep[bicep.index("name: 'provider_usage'") :]
+    usage_block = usage_block[: usage_block.index("}]")]
+    for path in included | excluded:
+        assert f"path: '{path}'" in usage_block, f"bicep provider_usage policy lacks {path}"
+
+
+class _SettingsDatabase:
+    def __init__(self) -> None:
+        self.replaced: list[dict] = []
+
+    def replace_container(self, **kwargs) -> None:
+        self.replaced.append(kwargs)
+
+
+class _SettingsContainer:
+    id = "provider_usage"
+
+    def __init__(self, properties: dict) -> None:
+        self.properties = properties
+
+    def read(self) -> dict:
+        return self.properties
+
+
+def test_existing_container_gets_indexing_and_ttl_in_one_replace(monkeypatch) -> None:
+    """A replace that omitted indexingPolicy would reset the container to index everything."""
+    database = _SettingsDatabase()
+    monkeypatch.setattr(storage_cosmos, "_database", database)
+    policy = storage_cosmos._CONTAINER_INDEXING["provider_usage"]
+    default_policy = {"includedPaths": [{"path": "/*"}], "excludedPaths": [{"path": '/"_etag"/?'}]}
+
+    storage_cosmos._apply_container_settings(
+        _SettingsContainer({"defaultTtl": 7776000, "indexingPolicy": default_policy}),
+        7776000,
+        policy,
+    )
+
+    assert len(database.replaced) == 1
+    assert database.replaced[0]["indexing_policy"] == policy
+    assert database.replaced[0]["default_ttl"] == 7776000
+
+
+def test_container_already_matching_is_not_replaced(monkeypatch) -> None:
+    database = _SettingsDatabase()
+    monkeypatch.setattr(storage_cosmos, "_database", database)
+    policy = storage_cosmos._CONTAINER_INDEXING["provider_usage"]
+    as_cosmos_returns_it = {
+        **policy,
+        "excludedPaths": [*policy["excludedPaths"], {"path": '/"_etag"/?'}],
+    }
+
+    storage_cosmos._apply_container_settings(
+        _SettingsContainer({"defaultTtl": 7776000, "indexingPolicy": as_cosmos_returns_it}),
+        7776000,
+        policy,
+    )
+
+    assert database.replaced == []
+
+
+def test_ttl_update_keeps_a_containers_existing_indexing_policy(monkeypatch) -> None:
+    database = _SettingsDatabase()
+    monkeypatch.setattr(storage_cosmos, "_database", database)
+    existing = {"includedPaths": [{"path": "/*"}], "excludedPaths": []}
+
+    storage_cosmos._apply_container_settings(
+        _SettingsContainer({"defaultTtl": None, "indexingPolicy": existing}), 2592000, None
+    )
+
+    assert database.replaced[0]["default_ttl"] == 2592000
+    assert database.replaced[0]["indexing_policy"] == existing
+
+
 def test_cosmos_dev_backend_defaults_to_emulator(monkeypatch) -> None:
     monkeypatch.delenv("COSMOS_DEV_BACKEND", raising=False)
 

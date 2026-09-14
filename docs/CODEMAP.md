@@ -309,7 +309,7 @@ Cosmos containers have explicit ownership:
 | `places_cache` | Google Places details, shared across users at partition `_shared` |
 | `trip_costs` | Cost ledger, partitioned by environment: the one `_windows_v1` document admission serialises on, plus one cost document per trip |
 | `tool_cache` | Results of read-only tools, shared unless the tool is user-specific |
-| `provider_usage` | Immutable content-free provider/model interaction batches, partitioned by environment with a 90-day TTL; nested call entries preserve provider, operation, model/SKU, tokens, estimated cost, cache hits/savings, and failures, while allowlisted ordered telemetry events preserve flow and reduce hosted writes to normally one per interaction |
+| `provider_usage` | Immutable content-free provider/model interaction batches, partitioned by environment with a 90-day TTL; nested call entries preserve provider, operation, model/SKU, tokens, estimated cost, cache hits/savings, and failures, while allowlisted ordered telemetry events preserve flow and reduce hosted writes to normally one per interaction. Indexes only `occurred_at`, `environment` and `interaction_id` (nothing queries the nested values), and Cosmos writes go through a background writer so a throttled write never holds the request; `provider_usage.flush` drains it at shutdown |
 
 Canary and production databases are isolated within the shared Cosmos account.
 Local emulator data is also isolated and must never be reset automatically. Data

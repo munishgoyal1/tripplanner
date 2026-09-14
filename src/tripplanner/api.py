@@ -95,6 +95,11 @@ async def _lifespan(_app: FastAPI):
     from tripplanner.flight_recorder import flush_pending
 
     await asyncio.to_thread(flush_pending)
+    # Usage documents are written to Cosmos off the request path; write the
+    # last turn's before the replica stops.
+    from tripplanner import provider_usage
+
+    await asyncio.to_thread(provider_usage.flush)
 
 
 app = FastAPI(title="Personal Assistant API", version="0.1.0", lifespan=_lifespan)

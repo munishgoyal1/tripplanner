@@ -119,6 +119,27 @@ _CONTAINER_TTLS = {
     "alert_events": 180 * 24 * 60 * 60,
 }
 
+#: Containers that index only the paths their queries filter on, instead of
+#: Cosmos's default of indexing every property of every document. Write RU grow
+#: with the number of indexed values, and a trip-building turn writes one
+#: ``provider_usage`` document of ~150 KB -- 55 call entries and 212 telemetry
+#: events -- where the only query is ``provider_usage._read``'s range on
+#: ``occurred_at``. ``environment`` and ``interaction_id`` stay indexed for
+#: operator lookups. Changing a policy re-indexes in place, online, with no data
+#: migration. Must match ``infra/modules/cosmos-data.bicep``.
+_CONTAINER_INDEXING = {
+    "provider_usage": {
+        "indexingMode": "consistent",
+        "automatic": True,
+        "includedPaths": [
+            {"path": "/occurred_at/?"},
+            {"path": "/environment/?"},
+            {"path": "/interaction_id/?"},
+        ],
+        "excludedPaths": [{"path": "/*"}],
+    },
+}
+
 
 def _container(name: str):
     if name in _containers:
@@ -127,36 +148,60 @@ def _container(name: str):
     from azure.cosmos import PartitionKey  # imported lazily
 
     ttl = _CONTAINER_TTLS.get(name)
+    indexing_policy = _CONTAINER_INDEXING.get(name)
     container = _database.create_container_if_not_exists(
         id=name,
         partition_key=PartitionKey(path="/user_id"),
         default_ttl=ttl,
+        indexing_policy=indexing_policy,
     )
-    if ttl is not None:
-        _apply_cache_ttl(container, ttl)
+    if ttl is not None or indexing_policy is not None:
+        _apply_container_settings(container, ttl, indexing_policy)
     _containers[name] = container
     return container
 
 
-def _apply_cache_ttl(container, ttl: int) -> None:
-    """Set the expiry on a cache container that predates this policy.
+def _indexed_paths(policy: dict[str, Any] | None) -> tuple[frozenset[str], frozenset[str]]:
+    """Included and excluded paths, ignoring the ``_etag`` exclusion Cosmos adds itself."""
+    policy = policy or {}
+    included = frozenset(str(entry.get("path")) for entry in policy.get("includedPaths") or [])
+    excluded = frozenset(
+        str(entry.get("path"))
+        for entry in policy.get("excludedPaths") or []
+        if entry.get("path") != '/"_etag"/?'
+    )
+    return included, excluded
+
+
+def _apply_container_settings(
+    container, ttl: int | None, indexing_policy: dict[str, Any] | None
+) -> None:
+    """Bring an existing container's expiry and indexing policy up to date.
 
     ``create_container_if_not_exists`` returns an existing container untouched,
-    so without this an already-deployed cache would keep every row forever.
+    so without this an already-deployed cache would keep every row forever, and a
+    container created before its indexing policy would keep indexing everything.
+    Both settings go in one replace: a replace that omits ``indexingPolicy``
+    resets the container to index every path.
     """
     from azure.cosmos import PartitionKey
 
     try:
         properties = container.read()
-        if properties.get("defaultTtl") == ttl:
+        ttl_current = ttl is None or properties.get("defaultTtl") == ttl
+        indexing_current = indexing_policy is None or _indexed_paths(
+            properties.get("indexingPolicy")
+        ) == _indexed_paths(indexing_policy)
+        if ttl_current and indexing_current:
             return
         _database.replace_container(
             container=container,
             partition_key=PartitionKey(path="/user_id"),
-            default_ttl=ttl,
+            default_ttl=ttl if ttl is not None else properties.get("defaultTtl"),
+            indexing_policy=indexing_policy or properties.get("indexingPolicy"),
         )
-    except Exception as exc:  # noqa: BLE001 - a cache that cannot expire still works
-        log.warning("could not set ttl on %s: %s", container.id, exc)
+    except Exception as exc:  # noqa: BLE001 - a container with old settings still works
+        log.warning("could not update settings on %s: %s", container.id, exc)
 
 
 def _strip_system_fields(doc: dict[str, Any]) -> dict[str, Any]:

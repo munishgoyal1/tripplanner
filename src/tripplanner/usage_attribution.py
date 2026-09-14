@@ -450,9 +450,11 @@ def usage_scope(
 
             # Reconcile this interaction's INR reservation against what it
             # actually cost, and fold the same records into the trip's cost
-            # document. Runs after persist_batch so the ledger and the raw
-            # provider_usage rows can never disagree about what was recorded.
-            # The reservation is keyed by interaction_id, so nothing has to be
+            # document, from the same records persist_batch just handed to
+            # provider_usage, so the two describe the same calls. The
+            # provider_usage document itself may land a moment later: its Cosmos
+            # write runs on a background thread so a throttled write never
+            # holds this request. The reservation is keyed by interaction_id, so nothing has to be
             # threaded from the admission point down to here.
             from tripplanner import cost_ledger
 

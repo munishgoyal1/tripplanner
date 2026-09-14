@@ -162,6 +162,22 @@ resource providerUsageContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatab
         kind: 'Hash'
       }
       defaultTtl: 7776000
+      // Index only what queries filter on. A trip-building turn writes one ~150 KB
+      // document of nested call entries and telemetry events; indexing every one
+      // of those values is most of that write's RU, and nothing queries them.
+      // Must match _CONTAINER_INDEXING in src/tripplanner/storage_cosmos.py.
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        automatic: true
+        includedPaths: [
+          { path: '/occurred_at/?' }
+          { path: '/environment/?' }
+          { path: '/interaction_id/?' }
+        ]
+        excludedPaths: [
+          { path: '/*' }
+        ]
+      }
     }
   }
 }]
