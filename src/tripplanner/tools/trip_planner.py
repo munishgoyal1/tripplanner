@@ -1514,6 +1514,16 @@ def update_trip_plan(updates_json: str) -> str:
         return "Error: invalid JSON."
 
     flight_edit = updates.get("_edit_scope") == "flights"
+    if updates.pop("_require_full_itinerary", False):
+        from tripplanner.tools.trip_validation import _day_count_gap
+
+        if not has_structured_itinerary(updates) or _day_count_gap({**plan, **updates}):
+            return (
+                "Error: this full-trip repair requires day_wise_itinerary containing ALL "
+                "days together in updates_json, with corrected stops and actual city fields. "
+                "Notes, research metadata, selections alone, or a subset of days do not "
+                "save the requested repair. Resubmit the complete itinerary."
+            )
     if flight_edit and set(updates) - {
         "_edit_scope", "selected_flights", "origin", "travel_scope",
         "cost_breakdown", "total_cost", "notes", "day_wise_itinerary",

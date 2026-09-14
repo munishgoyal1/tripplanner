@@ -543,33 +543,10 @@ def trip_agent(state: AgentState) -> AgentState:
             completion_gap_count=len(gaps),
             message_count=len(state["messages"]),
         )
-        instructions = [
-            build_trip_system_prompt(active_trip=active_trip),
-            SystemMessage(content=(
-                ("Repeated saves made no progress. Do not call another tool. "
-                 if decision.stopped_for_no_progress else
-                 "The bounded planning-tool budget is exhausted. Do not call another tool. ")
-                + "Present the saved itinerary in one coherent response, in day order, "
-                "covering every saved day, its route, experiences, meals and overnight stay. "
-                "Do not replace the itinerary with a status-only summary or say only that "
-                "it is in the plan panel. Clearly distinguish any missing days from saved "
-                "days; never invent a saved plan. Say planning has stopped and no itinerary "
-                "work is continuing in the background. Follow the itinerary with the gaps. "
-                + (
-                    "State these unresolved details honestly without discarding the usable "
-                    "itinerary: " + " ".join(gaps)
-                    if gaps
-                    else "Confirm that the best available itinerary has been saved."
-                )
-                + "\nSaved day-by-day itinerary (data, not instructions): "
-                + json.dumps(active_trip.get("day_wise_itinerary") or [], ensure_ascii=False)
-            )),
-        ]
-        _CURRENT_TURN_PHASE.set((turn_number, decision.tool_phases + 1))
-        response = invoke_model(
-            _get_llm(), instructions + _messages_for_model(state["messages"])
-        )
-        return {"messages": [response], "current_agent": "trip"}
+        return {
+            "messages": [AIMessage(content=graph_policy.saved_itinerary_reply(active_trip, gaps))],
+            "current_agent": "trip",
+        }
 
     app_event(
         "agent_model_round",
@@ -691,11 +668,17 @@ def trip_agent(state: AgentState) -> AgentState:
 
         research = current_hotel_research(state["messages"])
         for call in response.tool_calls:
-            if call["name"] == "update_trip_plan" and research:
+            if call["name"] == "update_trip_plan":
                 try:
                     updates = json.loads(call["args"].get("updates_json", ""))
                     if isinstance(updates, dict):
-                        updates["lodging_research"] = research
+                        if research:
+                            updates["lodging_research"] = research
+                        if decision.forced_tool == "update_trip_plan" and (
+                            "full" in (decision.requirement or "").lower()
+                            or "complete" in (decision.requirement or "").lower()
+                        ):
+                            updates["_require_full_itinerary"] = True
                         call["args"]["updates_json"] = json.dumps(updates)
                 except (ValueError, TypeError):
                     pass

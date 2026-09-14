@@ -2272,3 +2272,15 @@ the outcome.
 - The 300 km cutoff for inferred local hops was also used to reject explicit
   drives. Keep inference limits distinct from declared intercity transport, and
   prevent timing repair from moving an attraction into a different overnight city.
+
+## 2026-09-14 - Verify the save, not the assistant's repair claim
+
+- Live replay exposed hotel locality false negatives for Rameshwaram/Rameswaram.
+  Canonicalize known aliases with whole-place boundaries; arbitrary substring or
+  fuzzy address matches can select the wrong city.
+- A hotel-selection nudge overrode the previous chronology rejection, and notes-only
+  saves retired the repair loop. Preserve rejection details and enforce all-day
+  coverage at the tool boundary whenever the graph requires a full repair.
+- Even a final prompt containing saved JSON did not prevent the model from narrating
+  rejected changes as saved. Render stopped-run replies directly from persisted
+  days and gaps, and test both the graph and API safety-limit exits.

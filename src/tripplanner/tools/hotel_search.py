@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import UTC, datetime
 
 from langchain_core.tools import tool
@@ -19,6 +20,20 @@ from tripplanner.tools.flight_search import _IATA_CODES, resolve_iata
 from tripplanner.tools.google_places import search_places_with_reviews
 
 _HOTEL_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache("hotel-search")
+
+
+def _city_in_address(city, address):
+    def normalized(value):
+        text = re.sub(r"[^a-z0-9]+", " ", str(value).casefold()).strip()
+        for alias, canonical in {
+            "bangalore": "bengaluru", "rameshwaram": "rameswaram",
+            "kanyakumari": "kanniyakumari",
+        }.items():
+            text = re.sub(rf"\b{alias}\b", canonical, text)
+        return text
+
+    locality = normalized(city)
+    return bool(locality and re.search(rf"\b{re.escape(locality)}\b", normalized(address)))
 
 
 def _format_hotels(data: dict) -> str:
@@ -93,7 +108,7 @@ def _places_fallback(city, checkin, checkout, max_results, reason):
                       and place.get("address")
                       and any(kind in {"lodging", "hotel", "resort_hotel"}
                               for kind in place.get("types", []))
-                      and city.strip().casefold() in str(place["address"]).casefold()]
+                      and _city_in_address(city, place["address"])]
         fallback_reason = ("no_suitable_property" if places else
                            "no_results" if (str(raw).startswith("No places found")
                                             or raw.strip() == "[]") else

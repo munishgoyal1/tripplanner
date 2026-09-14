@@ -292,6 +292,7 @@ def test_graph_attaches_actual_hotel_research_to_the_save(monkeypatch):
         {"messages": history, "current_agent": "", "proposal_only": False}
     )
     patch = json.loads(output["messages"][0].tool_calls[0]["args"]["updates_json"])
+    assert patch["_require_full_itinerary"] is True
     assert patch["lodging_research"]["srinagar"]["reason"] == research["reason"]
     assert lodging_concern({"name": "Lake Hotel"}, patch).startswith("Recommended property;")
 

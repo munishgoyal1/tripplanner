@@ -23,6 +23,20 @@ class TestPartialItineraryMerge:
     def _days(self, *numbers: int) -> list[dict]:
         return [{"day": n, "stops": [{"name": f"Stop {n}", "kind": "attraction"}]} for n in numbers]
 
+    @pytest.mark.parametrize("updates", [
+        {"notes": "All repaired"},
+        {"day_wise_itinerary": [{"day": 2, "stops": [{"name": "Stop", "kind": "attraction"}]}]},
+    ])
+    def test_full_repair_cannot_be_satisfied_by_metadata_or_subset(self, updates):
+        create_trip_plan.invoke({"destination": "Madurai", "departure_date": "2026-10-12",
+                                 "return_date": "2026-10-19"})
+        before = trip_planner.load_active_trip_dict()
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            **updates, "_require_full_itinerary": True,
+        })})
+        assert result.startswith("Error: this full-trip repair requires")
+        assert trip_planner.load_active_trip_dict() == before
+
     def test_subset_of_planned_days_is_merged_in_place(self):
         existing = self._days(1, 2, 3)
         incoming = [{"day": 2, "stops": [{"name": "Budget Inn Indore", "kind": "hotel"}]}]

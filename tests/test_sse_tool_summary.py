@@ -220,7 +220,8 @@ def test_best_effort_plan_reply_reports_saved_plan_gaps(monkeypatch) -> None:
 
     reply, gap_count = _best_effort_plan_reply()
 
-    assert "saved the best available Punjab itinerary" in reply
+    assert "actual saved itinerary" in reply
+    assert "no itinerary work is continuing" in reply
     assert "Day 1" in reply
     assert gap_count == 1
 
