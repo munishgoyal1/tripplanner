@@ -618,7 +618,13 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
             + " ".join(coherence_gaps[:3])
             + " Replan the affected day or days as a whole rather than moving one stop."
         ]
+    from tripplanner.decisions.booking_intent import budget_summary
+    cap_gaps = [f"The {key} category cap is exceeded; research alternatives or ask to revise that cap."
+                for key, value in budget_summary(plan).items() if value["status"] == "over_cap"]
+    if plan.get("cost_total_needs_review"):
+        cap_gaps.append("The whole-trip total needs recalculation after booking adjustments; some amounts or currencies were not comparable.")
     return [
+        *cap_gaps,
         *missing_itinerary,
         *_restaurant_itinerary_warnings(
             plan.get("day_wise_itinerary"),
@@ -642,7 +648,10 @@ def finalization_gaps(plan: dict[str, Any]) -> list[str]:
         for violation in validate_plan(plan)
         if violation.code in KNOWN_FACT_CODES
     ]
-    return [*planning_completion_gaps(plan), *known_fact_gaps]
+    from tripplanner.decisions.booking_intent import budget_summary
+    cap_gaps = [f"The {key} cap has unverified price, fee, currency or freshness evidence."
+                for key, value in budget_summary(plan).items() if value["status"] == "unverified"]
+    return [*planning_completion_gaps(plan), *known_fact_gaps, *cap_gaps]
 
 
 def _itinerary_time_errors(itinerary: Any) -> list[str]:

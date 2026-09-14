@@ -23,8 +23,11 @@ const FORMATS: FormatOption[] = [
   },
 ];
 
-export default function ExportModal({ onClose }: { onClose: () => void }) {
-  const [format, setFormat] = useState<ExportTemplate>("standard");
+export default function ExportModal({ onClose, bookingTrip }: {
+  onClose: () => void;
+  bookingTrip?: { trip_id: string; updated_at: string };
+}) {
+  const [format, setFormat] = useState<ExportTemplate>(bookingTrip ? "booking_intent" : "standard");
   const [includePhotos, setIncludePhotos] = useState(false);
   const [includeBudgets, setIncludeBudgets] = useState(false);
   const [email, setEmail] = useState("");
@@ -35,6 +38,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
   const emailRequestRef = useRef<{ key: string; requestId: string } | null>(null);
 
   const options = {
+    ...bookingTrip,
     include_photos: includePhotos,
     include_map_circuit: true,
     include_budgets: includeBudgets,
@@ -120,14 +124,15 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl" onClick={(event) => event.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-ink">Download itinerary</h2>
+          <h2 className="text-lg font-semibold text-ink">{bookingTrip ? "Export booking intent list" : "Download itinerary"}</h2>
           <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full text-slate-400 hover:bg-slate-50 hover:text-ink" aria-label="Close export dialog">
             <X size={17} aria-hidden />
           </button>
         </div>
 
         <div className="space-y-1.5">
-          {FORMATS.map((item) => (
+          {(bookingTrip ? [{ id: "booking_intent" as ExportTemplate, label: "Booking intent list",
+            description: "Saved choices, alternatives, research prices, provider links and reported bookings. Confirmation references are excluded." }] : FORMATS).map((item) => (
             <button
               key={item.id}
               type="button"
@@ -147,7 +152,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
           ))}
         </div>
 
-        <div className="mt-3 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+        {!bookingTrip && <div className="mt-3 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={includeBudgets} onChange={(event) => setIncludeBudgets(event.target.checked)} />
             Show budgets
@@ -156,7 +161,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
             <input type="checkbox" checked={includePhotos} onChange={(event) => setIncludePhotos(event.target.checked)} />
             Include 1 photo per stop
           </label>
-        </div>
+        </div>}
 
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="button" onClick={openPreview} className="btn-ghost">

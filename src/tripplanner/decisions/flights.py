@@ -58,6 +58,7 @@ def options_from_offers(
     return_date: str,
     cabin_class: str,
     cached: bool,
+    search_context: dict[str, Any] | None = None,
 ) -> list[Option]:
     options: list[Option] = []
     for offer in offers:
@@ -97,6 +98,7 @@ def options_from_offers(
                     baggage=offer.baggage,
                     terms=offer.terms,
                     provider_ref=dict(offer.provider_ref),
+                    search_context=dict(search_context or {}),
                 ),
                 source=Source(
                     provider=offer.provider,
@@ -155,6 +157,7 @@ def build_flight_decision(
     return_date: str,
     cabin_class: str,
     cached: bool,
+    search_context: dict[str, Any] | None = None,
 ) -> Decision | None:
     options = options_from_offers(
         offers,
@@ -164,9 +167,10 @@ def build_flight_decision(
         return_date=return_date,
         cabin_class=cabin_class,
         cached=cached,
+        search_context=search_context,
     )
     ranked = rank_flights(options)
-    if ranked is None or len(options) < 2:
+    if ranked is None:
         return None
     chosen_id, rule, rejected = ranked
     for option in options:

@@ -661,6 +661,9 @@ def build_export_html(
     include_budgets: bool = False,
 ) -> str:
     """Render a self-contained, print-ready itinerary HTML document."""
+    if template == "booking_intent":
+        from tripplanner.web.booking_export import build_html
+        return build_html(trip, auto_print=auto_print)
     if not trip:
         return """<!doctype html><html><head><meta charset='utf-8'><title>Trip Export</title></head><body><p>No active trip to export.</p></body></html>"""
 

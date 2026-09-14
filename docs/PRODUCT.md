@@ -186,7 +186,7 @@ Ordinary flight, hotel, date and itinerary edits never create a replacement trip
 - **Optimize for the traveler, not the provider.** Ranking may optimize total
   practical trip cost, time, comfort, reliability, preference fit, and risk.
   Affiliate relationships are disclosed and never change the ranking objective.
-- **Booking stays external.** The future booking bridge sends the user to the
+- **Booking stays external.** The Bookings review surface sends the user to the
   selected provider or affiliate and exports a versioned booking-intent list
   through download, email or sharing. Locking saves the user's final research
   choices, not inventory. Users may book elsewhere or offline, then report actual
@@ -645,8 +645,10 @@ If a redesign violates the above without a stated reason, push back.
   `learned_notes` / `past_trip_mentions` / `interests` / `dislikes` richer.
 - The trip panel is the showroom. Anything that makes it feel more like an
   Airbnb listing page (photos, ratings, reviews, attractions) is on-brand.
-- Booking handoffs through verified provider actions are a future direction; the
-  current "finalize → manual booking" loop is fine for now.
+- Bookings now supports research, previewed adjustments, locked intentions,
+  versioned exports and reported external purchases. Provider product links and
+  offline checklists are useful without claiming exact-rate checkout continuity.
+  Verified provider-specific checkout handoffs remain a future direction.
 
 ## 9) When this file goes out of date
 

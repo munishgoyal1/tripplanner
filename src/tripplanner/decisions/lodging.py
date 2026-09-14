@@ -38,6 +38,10 @@ def _option_id(offer: HotelOffer) -> str:
             str(offer.provider_ref.get("offer_id") or ""),
             str(offer.provider_ref.get("rate_id") or ""),
             offer.hotel_name,
+            offer.room_name,
+            str(offer.board_name or ""),
+            str(offer.refundable),
+            str(offer.cancellation_summary or ""),
         ]
     )
     return f"opt_stay_{hashlib.sha256(identity.encode()).hexdigest()[:12]}"
@@ -51,10 +55,10 @@ def options_from_offers(
     cached: bool,
     search_context: dict[str, object] | None = None,
 ) -> list[Option]:
-    """Keep the cheapest verified room rate per property from this exact response."""
+    """Keep distinct room/rate variants from this exact provider response."""
     cheapest: dict[str, HotelOffer] = {}
     for offer in offers:
-        key = _property_key(offer)
+        key = _option_id(offer)
         current = cheapest.get(key)
         if current is None or offer.total.amount < current.total.amount:
             cheapest[key] = offer
@@ -195,7 +199,7 @@ def build_lodging_decision(
         search_context=search_context,
     )
     ranked = rank_stays(options)
-    if ranked is None or len(options) < 2:
+    if ranked is None:
         return None
     chosen_id, rule, rejected = ranked
     for option in options:
@@ -233,6 +237,8 @@ def reconcile_selected_lodging(plan: dict) -> None:
     selected_names.discard("")
     for decision in list_decisions(plan):
         if decision.kind != DecisionKind.LODGING or decision.override is not None:
+            continue
+        if any(item.get("decision_id") == decision.id for item in selected if isinstance(item, dict)):
             continue
         chosen = next(
             (

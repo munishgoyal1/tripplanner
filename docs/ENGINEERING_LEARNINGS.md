@@ -2192,3 +2192,15 @@ the outcome.
   begins, compare it with measured and projected load, and only proceed if they
   are close. The ledger group commit stayed: contention on one document happens
   at any throughput.
+## 2026-09-14 - Booking intent must outlive a provider quote
+
+- A provider may reuse an offer ID while changing its price. An override path
+  that treats the active ID as an unconditional no-op cannot accept that refreshed
+  price. Keep the selected intention separate from refreshed evidence, then apply
+  the explicitly accepted facts and calculate the delta from the saved selection.
+- Changing a reported product must clear old room/fare terms and coordinates;
+  retaining its original intention in a separate snapshot preserves history
+  without presenting the previous product's evidence as the actual booking.
+- Prove these boundaries with exact-ID refresh and product-replacement tests,
+  plus redacted packet and fake-email checks. A UI that looks correct alone does
+  not establish price continuity, privacy or idempotent external delivery.
