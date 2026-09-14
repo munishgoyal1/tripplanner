@@ -1131,3 +1131,20 @@ history is retained and remains inspectable. Enabling the master flag restores
 EB-TRACE-001; hosted environments still prohibit the local raw trip archive.
 
 **Executable proof:** `tests/test_flight_recorder_flag.py`, `tests/test_debug_store.py`.
+
+
+### EB-OPS-LOAD-001 - Operations reporting must not stall the workspace
+
+**Trigger:** Open or refresh Operations on a local database with large usage
+batches, or before any consented analytics event has been saved.
+
+**Expected:** The usage report reads accounting entries without diagnostic event
+arrays, retaining legacy entries and date filtering. An absent product-events
+collection means no saved analytics events. Other database failures remain errors.
+Synchronous reporting and usage reads run in the HTTP worker pool so health and
+workspace requests remain responsive. The dashboard permits one refresh at a
+time, cancels stale range reads, bounds its request wait to 45 seconds, and shows
+an error with Retry instead of Loading after a failed initial fetch.
+
+**Proof:** `tests/test_ops_dashboard.py`, `tests/test_operations_reporting.py`,
+`tests/test_provider_usage.py`, and `frontend/src/ops/OpsDashboard.test.tsx`.

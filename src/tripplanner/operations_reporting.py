@@ -89,14 +89,19 @@ def _range(
 
 def _read_product_events(since: datetime, until: datetime) -> list[dict[str, Any]]:
     if storage_cosmos.is_enabled():
-        return storage_cosmos.operations_query(
-            _PRODUCT_CONTAINER,
-            "SELECT * FROM c WHERE c.occurred_at >= @since AND c.occurred_at < @until",
-            [
-                {"name": "@since", "value": since.isoformat()},
-                {"name": "@until", "value": until.isoformat()},
-            ],
-        )
+        from azure.cosmos.exceptions import CosmosResourceNotFoundError
+
+        try:
+            return storage_cosmos.operations_query(
+                _PRODUCT_CONTAINER,
+                "SELECT * FROM c WHERE c.occurred_at >= @since AND c.occurred_at < @until",
+                [
+                    {"name": "@since", "value": since.isoformat()},
+                    {"name": "@until", "value": until.isoformat()},
+                ],
+            )
+        except CosmosResourceNotFoundError:
+            return []
     rows: list[dict[str, Any]] = []
     day = since.date()
     while day < until.date():

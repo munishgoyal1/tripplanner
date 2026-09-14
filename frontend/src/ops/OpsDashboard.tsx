@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -629,32 +629,42 @@ export default function OpsDashboard() {
   const [rangeError, setRangeError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
+  const activeRequest = useRef<AbortSignal | null>(null);
+  const scopeSignal = useRef<AbortSignal | null>(null);
+
   const load = async (signal?: AbortSignal) => {
+    if (activeRequest.current && !activeRequest.current.aborted) return;
+    const requestSignal = signal ?? scopeSignal.current ?? new AbortController().signal;
+    activeRequest.current = requestSignal;
     setRefreshing(true);
     try {
-      setOverview(await fetchOpsOverview(days, signal, startDate || undefined, endDate || undefined));
+      const result = await fetchOpsOverview(days, requestSignal, startDate || undefined, endDate || undefined);
+      if (requestSignal.aborted) return;
+      setOverview(result);
       setNotFound(false);
       setRangeError("");
     } catch (error) {
-      if (!signal?.aborted) {
+      if (!requestSignal.aborted) {
         const status = (error as { status?: number }).status;
         setNotFound(status === 404);
-        setRangeError(status === 422 ? "Choose a valid reporting range ending today or earlier." : "");
+        setRangeError(status === 422 ? "Choose a valid reporting range ending today or earlier." : "Operations overview unavailable. Please retry.");
       }
     } finally {
-      if (!signal?.aborted) setRefreshing(false);
+      if (activeRequest.current === requestSignal) activeRequest.current = null;
+      if (!requestSignal.aborted) setRefreshing(false);
     }
   };
 
   useEffect(() => {
     const controller = new AbortController();
+    scopeSignal.current = controller.signal;
     void load(controller.signal);
     const timer = window.setInterval(() => void load(controller.signal), 30_000);
     return () => { controller.abort(); window.clearInterval(timer); };
   }, [days, startDate, endDate]);
 
   if (notFound) return <main className="grid min-h-full place-items-center bg-stone-100 px-6 text-center"><div><p className="font-display text-7xl text-stone-900">404</p><p className="mt-3 text-sm text-stone-500">Page not found.</p></div></main>;
-  if (!overview) return <main className="grid min-h-full place-items-center bg-stone-100 text-sm text-stone-500">Loading</main>;
+  if (!overview) return <main className="grid min-h-full place-items-center bg-stone-100 text-sm text-stone-500">{rangeError ? <div role="alert" className="text-center"><p>{rangeError}</p><button type="button" className="mt-3 underline" onClick={() => void load()}>Retry</button></div> : "Loading"}</main>;
   const rangeProps = { days, startDate, endDate, onPreset: (period: number) => { setDays(period); setStartDate(""); setEndDate(""); }, onStartDate: setStartDate, onEndDate: setEndDate };
 
   return (

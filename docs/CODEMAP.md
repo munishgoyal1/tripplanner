@@ -58,7 +58,7 @@ resets the active path; `map_view.py` builds legs separately for each segment.
 | `src/tripplanner/web/http_context.py` | Shared request-identity helpers used by HTTP routers |
 | `src/tripplanner/web/trip_http.py` | Trip workspace HTTP routes: view, mutate, export, share, and history |
 | `src/tripplanner/web/account_http.py` | Preferences, documents, privacy, guest migrate, and auth HTTP routes |
-| `src/tripplanner/web/ops_http.py` | Owner ops, analytics ingest, and usage HTTP routes |
+| `src/tripplanner/web/ops_http.py` | Owner ops, analytics ingest, and usage HTTP routes; synchronous reporting/usage use the worker pool so database latency cannot block the API event loop |
 | `src/tripplanner/web/runtime_routes.py` | Independent health, public demo (including ETag), provider readiness, and tool metrics routes; registered before the SPA catch-all |
 | `src/tripplanner/public_demo.py` | Validated bundled regional demo fallback, Cosmos active-manifest reads, ETags, and atomic monthly refresh |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |

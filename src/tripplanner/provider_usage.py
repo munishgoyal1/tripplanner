@@ -415,23 +415,49 @@ def _read(since: datetime, until: datetime | None = None) -> list[dict[str, Any]
 
         if storage_cosmos.is_enabled():
             container = storage_cosmos._container(_CONTAINER)  # noqa: SLF001
-            query = "SELECT * FROM c WHERE c.occurred_at >= @since"
-            parameters = [{"name": "@since", "value": since.isoformat()}]
-            if until is not None:
-                query += " AND c.occurred_at < @until"
+            # Read accounting entries, not the much larger diagnostic event arrays.
+            # The emulator materializes whole parent documents for filtered scans;
+            # its 4 MiB result buffer overflows even when the final projection is small.
+            emulator = storage_cosmos.get_settings().cosmos_emulator
+            condition = "" if emulator else " WHERE c.occurred_at >= @since"
+            parameters = [] if emulator else [{"name": "@since", "value": since.isoformat()}]
+            if until is not None and not emulator:
+                condition += " AND c.occurred_at < @until"
                 parameters.append({"name": "@until", "value": until.isoformat()})
-            documents = list(
-                container.query_items(
-                    query=query,
+            documents = list(container.query_items(
+                query="SELECT VALUE e FROM c JOIN e IN c.entries" + condition,
+                parameters=parameters,
+                enable_cross_partition_query=True,
+                max_item_count=1000,
+            ))
+            # Retain compatibility with the original one-call-per-document ledger.
+            legacy_condition = " WHERE NOT IS_DEFINED(c.entries)"
+            if condition:
+                legacy_condition += " AND " + condition.removeprefix(" WHERE ")
+            if emulator:
+                # An unfiltered metadata scan avoids decompressing every diagnostic
+                # document just to discover that there are no legacy rows.
+                metadata = container.query_items(
+                    query="SELECT c.id, c.user_id, c.record_count FROM c",
+                    enable_cross_partition_query=True,
+                    max_item_count=1000,
+                )
+                for item in metadata:
+                    if "record_count" not in item:
+                        document = container.read_item(item["id"], partition_key=item["user_id"])
+                        if not isinstance(document.get("entries"), list):
+                            documents.append(document)
+            else:
+                documents.extend(container.query_items(
+                    query="SELECT * FROM c" + legacy_condition,
                     parameters=parameters,
                     enable_cross_partition_query=True,
-                )
-            )
-            rows = _expand(documents)
+                    max_item_count=10,
+                ))
             return [
-                row
-                for row in rows
-                if until is None or datetime.fromisoformat(str(row["occurred_at"])) < until
+                row for row in _expand(documents)
+                if datetime.fromisoformat(str(row["occurred_at"])) >= since
+                and (until is None or datetime.fromisoformat(str(row["occurred_at"])) < until)
             ]
     except Exception as exc:  # noqa: BLE001
         _LOGGER.warning("provider usage Cosmos read failed: %s", type(exc).__name__)

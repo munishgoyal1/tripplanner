@@ -327,4 +327,24 @@ describe("OpsDashboard", () => {
     expect(screen.getByRole("tab", { name: /api & cost/i })).toBeInTheDocument();
     expect(screen.queryByText("Page not found.")).not.toBeInTheDocument();
   });
+  it("shows server failures and allows retry instead of loading forever", async () => {
+    vi.mocked(fetchOpsOverview).mockRejectedValueOnce(Object.assign(new Error("server"), { status: 500 }));
+    render(<OpsDashboard />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Operations overview unavailable");
+    expect(screen.queryByText("Loading")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    await screen.findByText("Activation funnel");
+  });
+
+  it("does not overlap refresh requests", async () => {
+    render(<OpsDashboard />);
+    await screen.findByText("Activation funnel");
+    vi.mocked(fetchOpsOverview).mockImplementationOnce(() => new Promise(() => {}));
+    const beforeRefresh = vi.mocked(fetchOpsOverview).mock.calls.length;
+    const refresh = screen.getByRole("button", { name: "Refresh metrics" });
+    fireEvent.click(refresh);
+    fireEvent.click(refresh);
+    expect(fetchOpsOverview).toHaveBeenCalledTimes(beforeRefresh + 1);
+  });
+
 });
