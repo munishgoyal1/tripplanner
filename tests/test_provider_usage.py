@@ -472,10 +472,69 @@ def test_persist_batch_chunks_records_and_events_at_their_limits(monkeypatch) ->
     records = [{**base, "provider": "google"} for _ in range(101)]
     events = [{**base, "kind": "tool_call"} for _ in range(501)]
 
+    monkeypatch.setattr(provider_usage, "_cosmos_enabled", lambda: False)
+
     provider_usage.persist_batch(records, events)
 
     assert [row["record_count"] for row in writes] == [100, 1]
     assert [row["telemetry_event_count"] for row in writes] == [500, 1]
+
+
+def _usage_rows(count: int) -> list[dict]:
+    base = {
+        "occurred_at": "2026-09-13T12:00:00+00:00",
+        "day": "2026-09-13",
+        "environment": "prod",
+        "interaction_id": "turn",
+    }
+    return [{**base, "provider": "google"} for _ in range(count)]
+
+
+def test_cosmos_usage_write_never_holds_the_request(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """A throttled Cosmos write used to run inline as the turn's usage scope closed."""
+    import threading
+
+    release = threading.Event()
+    written: list[tuple[str, int]] = []
+
+    def slow_cosmos_write(document: dict) -> None:
+        release.wait(5)  # stands in for the SDK retrying a 429
+        written.append((threading.current_thread().name, document["record_count"]))
+
+    monkeypatch.setattr(provider_usage, "_cosmos_enabled", lambda: True)
+    monkeypatch.setattr(provider_usage, "_write", slow_cosmos_write)
+
+    provider_usage.persist_batch(_usage_rows(150))  # two documents: 100 + 50
+
+    assert written == []  # the caller returned while the write is still blocked
+    release.set()
+    assert provider_usage.flush(timeout=5)
+    assert written == [("provider-usage-writer", 100), ("provider-usage-writer", 50)]
+
+
+def test_full_usage_queue_writes_inline_rather_than_dropping(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    import queue
+
+    written: list[int] = []
+    monkeypatch.setattr(provider_usage, "_cosmos_enabled", lambda: True)
+    monkeypatch.setattr(provider_usage, "_ensure_writer", lambda: None)  # no drain
+    monkeypatch.setattr(provider_usage, "_QUEUE", queue.Queue(maxsize=1))
+    monkeypatch.setattr(provider_usage, "_write", lambda doc: written.append(doc["record_count"]))
+
+    provider_usage.persist_batch(_usage_rows(100))
+    provider_usage.persist_batch(_usage_rows(7))
+
+    assert written == [7]
+    assert provider_usage._QUEUE.qsize() == 1
+
+
+def test_flush_reports_a_writer_that_did_not_finish(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    import queue
+
+    monkeypatch.setattr(provider_usage, "_QUEUE", queue.Queue())
+    provider_usage._QUEUE.put({"record_count": 1})  # queued, never drained
+
+    assert provider_usage.flush(timeout=0.05) is False
 
 
 def test_summary_calculates_trip_cost_averages_and_names(monkeypatch) -> None:  # type: ignore[no-untyped-def]

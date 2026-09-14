@@ -191,6 +191,34 @@ with an ETag re-read and jittered retry across processes. Settled-interaction id
 are stored as 16-hex digests, taking the document from 11.6 KB to 8.1 KB (ids
 already stored in full still count), and settle no longer reads the document back.
 
+### Write cost during trip-build bursts
+
+The largest single Cosmos write in a trip build is the turn's `provider_usage`
+document. A full build turn on 2026-09-12 wrote 151 KB: 55 call entries and 212
+telemetry events. Two changes (2026-09-13) keep it from causing 429s for the
+turn:
+
+- **Indexing.** No container had an indexing policy, so Cosmos indexed every
+  property of every document, and write RU grow with the number of indexed
+  values. `provider_usage` now indexes only `occurred_at` (the one field
+  `provider_usage._read` filters on), `environment` and `interaction_id`, and
+  excludes everything else. The policy is in `infra/modules/cosmos-data.bicep`
+  and `storage_cosmos._CONTAINER_INDEXING`, and a test keeps both in step with the
+  query. Cosmos applies a changed policy in place and online, with no data
+  migration. `storage_cosmos._apply_container_settings` also brings an
+  app-created container up to date, setting TTL and indexing in one replace,
+  because a replace that omits the indexing policy resets it to index everything.
+- **Off the request path.** `provider_usage.persist_batch` hands Cosmos-bound
+  documents to a single background writer, so a throttled write's SDK retries
+  no longer delay the response. A full queue (1000 documents) writes inline
+  rather than dropping. `provider_usage.flush` runs at application shutdown and
+  at interpreter exit. Local-file writes stay inline.
+
+Neither change has a measured before/after RU figure yet. Compare the `ru` on
+`provider_usage` writes in Log Analytics after deploy. If other containers show
+large writes, the same indexing approach applies to any container that is only
+point-read (`trips`, `places_cache`, `tool_cache`).
+
 ## Cost review
 
 Application LLM cost is available through the existing per-user monthly usage ledger
