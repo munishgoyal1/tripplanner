@@ -8,6 +8,8 @@ from datetime import UTC, datetime
 
 from langchain_core.tools import tool
 
+from tripplanner.hotel_research import normalize_hotel_locality
+
 from tripplanner.config import get_settings
 from tripplanner.decisions.lodging import build_lodging_decision
 from tripplanner.decisions.provenance import note_price_check
@@ -23,17 +25,9 @@ _HOTEL_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache("hotel-search")
 
 
 def _city_in_address(city, address):
-    def normalized(value):
-        text = re.sub(r"[^a-z0-9]+", " ", str(value).casefold()).strip()
-        for alias, canonical in {
-            "bangalore": "bengaluru", "rameshwaram": "rameswaram",
-            "kanyakumari": "kanniyakumari",
-        }.items():
-            text = re.sub(rf"\b{alias}\b", canonical, text)
-        return text
-
-    locality = normalized(city)
-    return bool(locality and re.search(rf"\b{re.escape(locality)}\b", normalized(address)))
+    locality = normalize_hotel_locality(city)
+    return bool(locality and re.search(rf"\b{re.escape(locality)}\b",
+                                      normalize_hotel_locality(address)))
 
 
 def _format_hotels(data: dict) -> str:

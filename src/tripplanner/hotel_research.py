@@ -16,6 +16,16 @@ _REASONS = {
 }
 
 
+def normalize_hotel_locality(value):
+    text = re.sub(r"[^a-z0-9]+", " ", str(value).casefold()).strip()
+    for alias, canonical in {
+        "bangalore": "bengaluru", "rameshwaram": "rameswaram",
+        "kanyakumari": "kanniyakumari",
+    }.items():
+        text = re.sub(rf"\b{alias}\b", canonical, text)
+    return text
+
+
 def current_hotel_research(messages):
     calls = {}
     research = {}
@@ -40,7 +50,7 @@ def current_hotel_research(messages):
                     for place in result.get("candidates", [])
                     if isinstance(place, dict)
                 ]
-                research[str(row["city"]).strip().casefold()] = row
+                research[normalize_hotel_locality(row["city"])] = row
     return research
 
 
@@ -51,7 +61,7 @@ def unresearched_hotel_cities(messages, plan):
             attempted.clear()
         elif isinstance(message, AIMessage):
             attempted.update(
-                str(call["args"].get("city") or "").strip().casefold()
+                normalize_hotel_locality(call["args"].get("city") or "")
                 for call in message.tool_calls if call["name"] == "search_hotels"
             )
     cities = set()
@@ -70,7 +80,7 @@ def unresearched_hotel_cities(messages, plan):
                     r"\b(?:hotel|stay|tbd|tbc|to be decided|to be confirmed|in|at)\b",
                     "", name, flags=re.I,
                 ).strip(" ()-,")
-            if city and city.casefold() not in attempted:
+            if city and normalize_hotel_locality(city) not in attempted:
                 cities.add(city)
     return sorted(cities)
 
@@ -110,7 +120,8 @@ def lodging_concern(stop, plan, day_date=""):
         row
         for city, row in rows.items()
         if isinstance(row, dict)
-        and re.search(rf"\b{re.escape(city)}\b", name, re.I)
+        and re.search(rf"\b{re.escape(normalize_hotel_locality(city))}\b",
+                      normalize_hotel_locality(name))
         and (
             not day_date
             or (str(row.get("checkin") or "") <= day_date <= str(row.get("checkout") or "9999"))

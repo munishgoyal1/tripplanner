@@ -27,6 +27,8 @@ for one city cannot satisfy the other cities. A returned property candidate
 requires a bounded selection pass, not a metadata-only save with Hotel TBD.
 Known city spelling aliases (Bangalore/Bengaluru, Rameshwaram/Rameswaram,
 Kanyakumari/Kanniyakumari) match hotel addresses without accepting other cities.
+The same identity is used for research coverage and saved lodging evidence, so
+a successful alias search cannot leave the city gate stuck in repeated searches.
 Rejected itinerary errors take priority over hotel-selection nudges. A forced
 full-trip repair must submit all days; notes or selections alone cannot satisfy
 it. If planning stops at a safety limit, render the actual saved days and gaps
