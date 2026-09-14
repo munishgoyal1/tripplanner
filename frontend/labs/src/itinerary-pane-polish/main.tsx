@@ -104,15 +104,15 @@ function App() {
             <h1>A sleeker<br />itinerary pane.</h1>
             <p className="ipp-lede">
               Today's pane is complete but long and dense: every fact is printed at the same volume, in a box, above another box.
-              These five options keep every rating, must-visit score, summary, travel leg and control, and change only how the pane
-              looks and reads. Three change the pane alone; two also retune the workspace finish around it so the itinerary blends
-              in, without moving any pane or control.
+              These seven options keep every rating, must-visit score, summary, travel leg and control, and change only how the pane
+              looks and reads. Three change the pane alone; four also retune the workspace finish around it so the itinerary blends
+              in, without moving any pane or control. F and G are a second round built on the preferred A.
             </p>
           </div>
           <div className="ipp-principle">
             <span>The design test</span>
             <strong>Every fact stays.<br />Less effort to read it.</strong>
-            <small>Same fixture · same controls · five visual languages</small>
+            <small>Same fixture · same controls · seven visual languages</small>
           </div>
         </header>
 
@@ -120,7 +120,7 @@ function App() {
         <OptionContrast labId={LAB_ID} />
 
         <section className="ipp-section" aria-label="Options">
-          <p className="ipp-kicker">Five options, best first</p>
+          <p className="ipp-kicker">Seven options, best first · F and G refine A</p>
           <div className="ipp-options">
             {options.map((entry) => (
               <button key={entry.id} type="button" className={`ipp-option ${entry.id === option.id ? "selected" : ""}`} onClick={() => setOptionId(entry.id)} aria-pressed={entry.id === option.id}>
@@ -151,7 +151,7 @@ function App() {
         </section>
         <div className="ipp-controls">
           <Segmented<View> label="View" value={view} onChange={setView} choices={[["workspace", "In workspace"], ["compare", "Side by side with today"], ["today", "Today only"]]} />
-          {view === "workspace" && <Segmented<PaneWidth> label="Pane width" value={width} onChange={setWidth} choices={[["narrow", "340 px"], ["default", "27%"], ["wide", "38%"], ["maximized", "Maximized"]]} />}
+          {view === "workspace" && <Segmented<PaneWidth> label="Pane width" value={width} onChange={setWidth} choices={[["narrow", "340 px"], ["default", "27%"], ["wide", "38%"], ["half", "50%"], ["maximized", "Maximized"]]} />}
           <Segmented label="Plan checks" value={state.scenario} onChange={state.setScenario} choices={[["gaps", "Gaps"], ["contradiction", "Contradiction"]]} />
           <span className="ipp-action" role="status" aria-live="polite">Last action · {state.lastAction}</span>
         </div>
