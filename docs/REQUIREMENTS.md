@@ -130,6 +130,7 @@ re-describing the whole product.
 | DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Implemented for persisted provider evidence; exact products compare only with complete mandatory costs and published FX, consented public benefit terms apply without card numbers, and finalized unbooked expired flight/stay quotes can be explicitly rechecked without replacing selections |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
+| BOOK-02 | Booking intent research, review, lock, export and external-booking reconciliation | Implemented on responsive web; LiteAPI flight/hotel search and manual ticket/ground research; live account and exact redirect validation remain separate |
 
 ## 1. Planning intelligence
 
@@ -277,9 +278,10 @@ re-describing the whole product.
   configurable by capability and intentionally favor low cost over exact
   real-time behavior. All three profiles retain the existing stable/volatile
   forever flags. Retention does not renew observation timestamps or offer expiry.
-  The booking-intent review/export/reconciliation feature remains planned in
-  [brief 009](feature-briefs-backlog/009-booking-readiness.md) and
-  [issue #315](https://github.com/munishgoyal1/tripplanner/issues/315).
+  The responsive web workflow ships in [milestone 009](implemented/009-booking-intent-workflow.md)
+  and [issue #323](https://github.com/munishgoyal1/tripplanner/issues/323).
+  Provider expansion and remaining evidence stay under [brief 009](feature-briefs-backlog/009-booking-readiness.md)
+  and [parent #315](https://github.com/munishgoyal1/tripplanner/issues/315).
 - Google Places supplies place search, ratings, reviews, photos, restaurants,
   addresses, coordinates, and opening hours. Agent discovery seeds the durable
   structured Places cache so Map and Details reuse the same paid result. Routine
@@ -638,6 +640,39 @@ implemented capability baseline.
 - Calendar export remains a separate Add to calendar action, not an itinerary
   format in the download dialog. RFC 5545 `.ics` export is unchanged.
 - Signed, sanitized, read-only public share links.
+
+### BOOK-02 - Booking intent workflow
+
+- Trip actions opens `/bookings`; the page reads the active authoritative trip.
+  Every adjustment/export carries its trip ID and revision. A changed active trip
+  or revision requires reload; previews do not persist, and application saves once.
+- Flight and hotel research invokes existing LiteAPI tools explicitly. Rendering,
+  saved alternatives and booking packets do not fetch providers. Single-offer
+  results remain usable; room/board/refund variants remain separate options.
+- Independent category caps apply during planning and adjustment. Known breaches
+  block selection/locking. Unknown occupancy, bags, fees, freshness or currency
+  prevent verified-fit claims. Different currencies are not added without FX;
+  an incomparable whole-trip total is retained as historical and flagged for review.
+- Saved recommendations survive refresh; accepting a changed quote is explicit,
+  including when the provider reuses its offer ID. Lock/unlock stores intent only.
+  Changes to travelers, dates or itinerary schedule conservatively require lock review.
+- Users can record researched ticket/transport variants and public HTTPS provider
+  links manually. Product-page links make no exact checkout-continuity claim;
+  absent links leave a copyable checklist usable with any provider or offline.
+- Export booking intent list provides HTML, PDF, JSON, email and immutable public
+  share snapshots. Each records trip revision, export time, selected/proposed items,
+  alternatives, freshness, terms, gaps and provider mapping. Private confirmation
+  references/notes and internal provider handles are excluded. Email reuses the
+  existing retry/idempotency and mail-client fallback behavior.
+- Reporting actuals updates the existing purchase/occurrence, retains the original
+  intention, and records provider, product, dates/time, amount/currency and optional
+  private reference. Repeated edits do not add another purchase or cost; a duplicate
+  confirmation across units is rejected. Tickets/flight anchors can move to an
+  existing trip day; missing days must be added first. Changed products lose stale
+  location/offer terms, and unresolved timing/cost conflicts remain explicit.
+- No provider purchase, hold, payment or confirmation verification is performed.
+  Live entitlement, Tiqets integration, document import, full dependency repair
+  and native Bookings UI parity remain tracked under #315.
 
 ## 5. Native mobile clients
 

@@ -182,9 +182,11 @@ class GuestMigrateRequest(BaseModel):
 
 class ExportEmailRequest(BaseModel):
     user_id: str = "local"
+    trip_id: str = ""
+    updated_at: str = ""
     email: str
     include_photos: bool = False
     include_map_circuit: bool = True
     include_budgets: bool = False
-    template: Literal["standard", "detailed", "trip_book", "trip_card"] = "standard"
+    template: Literal["standard", "detailed", "trip_book", "trip_card", "booking_intent"] = "standard"
     request_id: str = Field(min_length=1, max_length=128)

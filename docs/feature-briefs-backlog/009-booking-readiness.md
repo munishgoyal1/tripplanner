@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Brief ID | `009` |
-| Status | LiteAPI-only configuration foundation; booking-intent UI/export/reconciliation pending |
+| Status | Web intent workflow shipped in child #323; provider/dependency/native follow-ups remain |
 | Owner | Munish Goyal |
 | Created / Updated | 2026-09-12 / 2026-09-13 |
 | Baseline | `origin/master` at `f07f96dd` |
-| Current milestone | LiteAPI-only search configuration and issue-first intake |
+| Shipped milestone | [009 web workflow](../implemented/009-booking-intent-workflow.md), child [#323](https://github.com/munishgoyal1/tripplanner/issues/323) |
 | Feature issue | [#315](https://github.com/munishgoyal1/tripplanner/issues/315) — keep open until all feature criteria pass |
 | Foundation issue | [#316](https://github.com/munishgoyal1/tripplanner/issues/316) — configuration, fallback boundary and workflow |
 | Related capabilities | `PLAN-01`, `PLAN-02`, `DEAL-01`, `LIFE-01`, `ITIN-01`, `MUT-01`, `EXPORT-01` |
@@ -45,6 +45,19 @@ New work: early category-cap feasibility, booking readiness, product-versus-sell
 comparison, dependency-aware overrides and a dedicated booking review surface.
 
 ## Scope and milestones
+
+The shipped portion is split into the linked implemented brief. This backlog
+retains the broader design contract and the remaining work under #315, not a
+second queue entry for the completed web implementation. Current behavior is
+authoritative in BOOK-02 and EB-BOOKING-001.
+
+Implementation lane: `gpt/booking-intent-flow`, claimed under #315. Deliver the
+responsive Bookings surface, exact saved alternatives, preview/apply, category
+caps, lock/unlock, explicit research, PDF/HTML/JSON/email/share intent exports,
+and manual external/offline booking reconciliation in one coherent feature.
+Reuse existing LiteAPI adapters and export delivery. Ticket/ground items support
+manual intent, reported actuals and sourced links; Tiqets live integration remains
+conditional on selected, verified account access and is not invented here.
 
 ### Current milestone — LiteAPI-only search foundation
 
@@ -110,7 +123,7 @@ enter the existing exact-price ranking tier as quotes.
 
 ### Bookings page
 
-Proposed route: `/trips/:tripId/bookings`, scoped to the selected trip.
+Implemented route: `/bookings`, optionally `?trip_id=...`, bound to the active trip and revision.
 Read persisted state. Page GET/render causes no provider calls; research/recheck
 is an explicit action or part of the authorized itinerary-building turn.
 
@@ -276,27 +289,27 @@ it cannot manufacture amounts or provider facts.
 | Layer | Smallest proving check | Status |
 | --- | --- | --- |
 | Research | First-party sources and accurate access/claim labels | Refreshed 2026-09-13; live access untested |
-| Domain | Caps, party totals, unknown fees/FX, equivalence, grouping | Pending implementation |
+| Domain | Caps, party totals, unknown fees/FX, equivalence, grouping | Web milestone focused checks pass; richer FX/dependency optimization remains |
 | Provider | LiteAPI-only empty/error boundary; dated live coverage probes | Focused fallback checks in milestone #316; live access untested |
-| API/state | Revision conflict, atomic rollback, ownership, zero fetch on GET | Pending implementation |
-| Web | Compare, preview, apply, restore/recheck, lock, degraded handoff | Pending implementation |
-| Accessibility | Keyboard/focus/errors; 320px and desktop | Pending implementation |
+| API/state | Revision conflict, atomic rollback, ownership, zero fetch on GET | Web milestone focused checks pass; existing authenticated request context reused |
+| Web | Compare, preview, apply, restore/recheck, lock, degraded handoff | Implemented; component and Chromium checks pass |
+| Accessibility | Keyboard/focus/errors; 320px and desktop | Chromium keyboard and overflow checks pass; screenshots inspected |
 | Shared/mobile | Contract compatibility and changed device surfaces | Pending; no parity claim |
 | Handoff | Browser continuity check through redirect; stop before purchase | Pending permitted provider access |
-| Export/reconcile | Snapshot formats, privacy, partial/duplicate/conflicting actuals | Pending implementation |
+| Export/reconcile | Snapshot formats, privacy, partial/duplicate/conflicting actuals | HTML/PDF/JSON/email/share and manual actuals tested; document extraction remains |
 | Local/CI | Ruff, focused fallback/cache tests; existing CI typecheck/build | Recorded in milestone #316 |
 
 ## Next work and unresolved evidence
 
-1. Engineering: land #316 and validate LiteAPI-only fallback plus existing retention.
-2. Engineering/account owner: exercise search with available credentials and exact
+1. Engineering/account owner: exercise search with available credentials and exact
    trip context. Flight production enablement is separate from hotel access;
    surface actual access failures without inventing live evidence.
-3. Engineering: implement the flight/stay review, export and reconciliation
-   milestones under #315, preserving source gaps and the single-agent boundary.
-4. Engineering: evaluate Tiqets Essential for attraction/experience variants,
+2. Engineering: extend dependency-aware repair, sourced multi-currency category
+   feasibility and exact seller/redirect continuity beyond the shipped web flow.
+3. Engineering: evaluate Tiqets Essential for attraction/experience variants,
    exact totals and affiliate URL continuity; no Full Booking API is needed.
-5. Later: second-source comparisons and ground coverage. Booking.com admission
+4. Later: confirmation-document ingestion, native Bookings UI, second-source
+   comparisons and ground coverage. Booking.com admission
    and broader commercial negotiations are not prerequisites for this milestone.
 
 Provider names and current access evidence belong in the linked research

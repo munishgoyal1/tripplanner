@@ -787,6 +787,21 @@ def record_trip_decision(decision) -> bool:
     plan = _load_active_trip()
     if not plan:
         return False
+    from tripplanner.decisions.booking_intent import constrain_recommendation
+    decision = constrain_recommendation(plan, decision)
+    from tripplanner.decisions.store import find_decision
+    previous = find_decision(plan, decision.id)
+    if previous and previous.chosen:
+        selected = any(item.get("decision_id") == decision.id for bucket in (
+            "selected_flights", "selected_hotels",
+        ) for item in plan.get(bucket) or [] if isinstance(item, dict))
+        locked = bool(((plan.get("booking_intent") or {}).get("records") or {}).get(decision.id, {}).get("lock"))
+        if selected or locked or previous.override:
+            if not decision.option(previous.active_option_id):
+                decision.options.append(previous.chosen)
+            decision.chosen_option_id = previous.chosen_option_id
+            decision.override = previous.override
+            decision.state = previous.state
     upsert_decision(plan, decision)
     _save_active_trip(plan)
     return True
@@ -834,6 +849,9 @@ def apply_decision_override(
         else restore(plan, decision_id)
     )
     if result.ok:
+        from tripplanner.decisions.booking_intent import budget_summary
+        if any(v["status"] == "over_cap" for v in budget_summary(plan).values()):
+            return {"ok": False, "stale": False, "message": "This choice exceeds a category cap. Revise that cap explicitly first."}
         _save_active_trip(plan)
     return {"stale": False, **result.as_dict()}
 
@@ -885,6 +903,9 @@ def apply_decision_overrides(
                 "results": results,
             }
 
+    from tripplanner.decisions.booking_intent import budget_summary
+    if any(v["status"] == "over_cap" for v in budget_summary(candidate).values()):
+        return {"ok": False, "stale": False, "message": "These choices exceed a category cap. No changes were saved.", "results": results}
     _save_active_trip(candidate)
     total_delta = round(sum(float(result.get("delta") or 0) for result in results), 2)
     return {
@@ -1448,6 +1469,8 @@ def update_trip_plan(updates_json: str) -> str:
     """Update the active trip plan with selected flights, hotels, activities, or itinerary.
 
     Pass a JSON string with any of these keys to update:
+    - category_caps: explicit user category limits, e.g. {"flights": {"amount": 100000, "currency": "INR"}, "hotels": {"amount": 80000, "currency": "INR"}}.
+      Whole-party/all-night limits; persist before researching and selecting.
     - selected_flights: list of flight selections
     - selected_hotels: list of hotel selections
     - selected_activities: list of activity selections
@@ -1525,12 +1548,20 @@ def update_trip_plan(updates_json: str) -> str:
         "selected_flights", "selected_hotels", "selected_activities",
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
         "origin", "budget", "currency", "weather", "trip_constraints",
-        "visa", "travel_scope", "lodging_research",
+        "visa", "travel_scope", "lodging_research", "category_caps",
     }
     before = json.loads(json.dumps(plan))  # deep copy for diff
     merged_partial_itinerary = False
     for key, val in updates.items():
         if key in allowed_keys:
+            if key == "category_caps":
+                from tripplanner.decisions.booking_intent import caps_for
+                try:
+                    val = caps_for({"category_caps": val})
+                except (ValueError, TypeError, AttributeError):
+                    return "Error: category_caps must map flights/hotels/tickets/transport to amount and ISO currency."
+            if key == "total_cost" and isinstance(val, (int, float)) and not isinstance(val, bool):
+                plan.pop("cost_total_needs_review", None)
             if key == "lodging_research":
                 if not isinstance(val, dict):
                     continue
@@ -1686,6 +1717,11 @@ def update_trip_plan(updates_json: str) -> str:
     # Rejecting here discarded the turn's only copy of the itinerary, so a plan that
     # was merely incomplete ended up saved as no plan at all.
     sanity_errors = persistence_sanity_errors(plan)
+    from tripplanner.decisions.booking_intent import budget_summary
+    if {"selected_flights", "selected_hotels"}.intersection(updates):
+        breached = [key for key, value in budget_summary(plan).items() if value["status"] == "over_cap"]
+        if breached:
+            return "Error: selections exceed the " + ", ".join(breached) + " cap. Research alternatives or ask the user to revise that cap; nothing was saved."
     _save_active_trip(plan)
     broken_invariants = _newly_broken(before, plan)
     restaurant_warnings = _restaurant_itinerary_warnings(
@@ -1864,8 +1900,8 @@ def finalize_trip() -> str:
             f"\n  TOTAL ESTIMATED COST: {money(plan.get('total_cost', 0) or 0, plan_currency)}"
         )
     lines.append(f"\n{'='*60}")
-    lines.append("  Status: FINALIZED — ready for booking")
-    lines.append("  Say 'execute' to proceed with bookings.")
+    lines.append("  Status: FINALIZED — review your booking intentions")
+    lines.append("  Open Bookings to compare, lock and export choices. Complete purchases externally.")
     lines.append(f"{'='*60}")
 
     # Self-correction critic — deterministic rules over the finalized plan.

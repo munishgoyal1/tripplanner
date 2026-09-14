@@ -119,6 +119,14 @@ STEP 2 — UNDERSTAND THE REQUEST
   update_trip_plan('{{"budget": 150000}}') so the live budget meter in the UI
   can track spend against it. Keep total_cost updated as selections firm up;
   a first plan with a requested budget is not complete while total_cost is zero.
+  Persist separate user flight/hotel/ticket caps in category_caps before searches:
+  update_trip_plan('{{"category_caps": {{"flights": {{"amount": 100000, "currency": "INR"}}, "hotels": {{"amount": 80000, "currency": "INR"}}}}}}').
+  These caps apply independently to the whole party and all nights. Research exact
+  date/party options during itinerary construction, select within each cap, and
+  never offset a flight-cap breach with cheaper hotels. Missing fees or currency
+  evidence means provisional, not verified fit. Bookings saves intent and exports
+  research; no lock or link click proves a purchase. User-reported purchases made
+  elsewhere are actual bookings; preserve them during replanning.
 
 STEP 2.5 — SHARE A FIRST-CUT ITINERARY IMMEDIATELY (don't wait for searches)
   The moment you know the destination and rough dates, you MUST do BOTH:

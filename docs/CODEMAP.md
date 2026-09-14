@@ -105,6 +105,10 @@ resets the active path; `map_view.py` builds legs separately for each segment.
 | `src/tripplanner/web/place_country.py` | Resolves a free-text place to its country via Open-Meteo geocoding, cached per string |
 | `src/tripplanner/web/document_extract.py` | Single-pass field extraction from a photo or pasted text; keeps nothing |
 | `src/tripplanner/web/external_operations.py` | Idempotency ledger for outbound provider writes |
+| `src/tripplanner/decisions/booking_intent.py` | Pure purchase grouping, category feasibility, intent fingerprints, isolated adjustment candidates and external-booking reconciliation |
+| `src/tripplanner/web/booking_http.py` | Authenticated active-trip/revision binding, serialized preview/apply, explicit research and booking snapshot routes; saves through `tools/trip_planner.py` |
+| `src/tripplanner/web/booking_export.py` | Cache-only redacted booking-intent packets shared by HTML/PDF/JSON/email/share; no provider calls |
+| `frontend/src/components/BookingPage.tsx`, `frontend/src/bookingApi.ts` | Responsive `/bookings` research/review/lock/report surface and revision-bound API; Trip actions navigation and existing ExportModal delivery |
 | `src/tripplanner/web/itinerary_email.py` | Itinerary email composition handoff, ACS/SMTP delivery, provider usage telemetry, mail-client fallback, and durable idempotency orchestration; `api.py` retains identity and HTTP adaptation |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
 | `src/tripplanner/storage_cosmos.py` | Cosmos implementation and conditional replacement |
@@ -384,6 +388,18 @@ that the reviewable one does not, which is when `--save` is worth running.
 
 Booking means grounded selection and verified handoff material. The application
 does not purchase, pay, cancel, or manage provider orders.
+
+Booking intent persists as backward-compatible `category_caps` and
+`booking_intent.records[item_id]` alongside existing selections/decisions.
+Selected items and repeated anchors receive `booking_item_id`; actual provider
+references remain private in the record, never copied into itinerary stop notes.
+GET `/trip/bookings` projects the existing document. POST uses the workspace
+exclusive guard and per-user mutation lock, compares `trip_id`/`updated_at`, builds
+a private candidate, and requires the exact command's preview token before one
+authoritative save. Returning to `/planner` reloads all main trip surfaces.
+`graph.py` keeps completion ownership; planning validation reads category gaps.
+Quote/source time and lock/booking state are independent. Rechecks cannot change
+selected intentions, and normal selection overrides cannot replace booked items.
 
 ### Outbound call rules
 

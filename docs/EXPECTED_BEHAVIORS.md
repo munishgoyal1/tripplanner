@@ -307,6 +307,40 @@ the evidence that produced the finding.
 
 ## Planner workspace
 
+### EB-BOOKING-001 - Research, lock, export and report external bookings
+
+**Trigger:** Open Bookings from Trip actions, adjust a saved alternative, export
+an intention, or record a purchase made through any provider/offline.
+
+**Expected:**
+
+- Opening/reloading reads saved evidence only. Explicit flight/hotel research
+  retains the existing intention and exposes refreshed alternatives separately.
+- Whole-party flight and all-night stay caps are independent; known over-cap
+  choices fail without a write. Missing fees/party/baggage/freshness/currency remain
+  unverified. Same-property room variants are not collapsed into one product.
+- Before saving, show before/after product, price, terms, affected day schedule,
+  category totals and conflicts. Stale/cross-trip commands are rejected atomically.
+- Lock creates a reversible intention, never a booking or price hold. Changes to
+  relevant context require review. A link click never records a purchase.
+- Packet formats carry trip/revision, selected versus proposed items, alternatives,
+  source/expiry and provider handoff gaps. Unknown links are copyable checklists;
+  product-page links make no exact-rate guarantee. Exports omit private references.
+- Actual reports update existing units, preserve intended versus actual, accept
+  unknown paid amounts without inventing zero, and reject duplicate confirmations.
+  Old coordinates and product-specific terms cannot masquerade as the new product.
+  Timing/cost mismatches are previewed and retained as review warnings.
+- Keyboard confirmation and a 320px layout retain the same review step as desktop.
+
+**Executable proof:**
+
+- [`tests/test_booking_intent.py`](../tests/test_booking_intent.py)
+- [`frontend/src/components/BookingPage.test.tsx`](../frontend/src/components/BookingPage.test.tsx)
+- [`frontend/e2e/booking-intent.spec.ts`](../frontend/e2e/booking-intent.spec.ts)
+
+Live account/redirect continuity and native device parity are not established by
+mocked provider tests or Chromium mobile-width checks.
+
 ### EB-DEAL-001 - Compare and recheck exact finalized-trip offers
 
 **Trigger:** Open a trip whose persisted decisions contain equivalent provider

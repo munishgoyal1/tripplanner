@@ -245,7 +245,9 @@ def _apply_lodging_shape(
             if not isinstance(item, dict):
                 continue
             name = str(item.get("name") or item.get("hotel_name") or "").strip().lower()
-            if previous_name and name == previous_name:
+            if item.get("decision_id") == decision.id or previous_name and name == previous_name and (
+                not previous or not previous.lodging or not item.get("checkin") or item["checkin"] == previous.lodging.checkin
+            ):
                 selected[index] = replacement
                 replaced = True
                 break
@@ -265,6 +267,16 @@ def _apply_lodging_shape(
             name = str(stop.get("name") or "").strip().lower()
             if previous_name and name != previous_name:
                 continue
+            if stop.get("decision_id") and stop["decision_id"] != decision.id:
+                continue
+            if previous and previous.lodging and day.get("date") and (
+                previous.lodging.checkin and day["date"] < previous.lodging.checkin
+                or previous.lodging.checkout and day["date"] > previous.lodging.checkout
+            ):
+                continue
+            for key in ("provider_ref", "source", "lat", "lng", "latitude", "longitude", "place_id",
+                        "google_place_id", "address", "location", "place", "place_summary", "booking_intent_details"):
+                stop.pop(key, None)
             stop.update(
                 {
                     key: value
@@ -312,6 +324,7 @@ def _flight_item(option: Option, decision: Decision) -> dict[str, Any]:
                 "segments": [dict(segment) for segment in flight.segments],
                 "stops": flight.stops,
                 "provider_ref": dict(flight.provider_ref),
+                "search_context": dict(flight.search_context),
             }
         )
         for key, value in (
@@ -344,7 +357,7 @@ def _apply_flight_shape(
             if isinstance(provider_ref, dict)
             else str(item.get("offer_id") or "")
         )
-        if previous_offer_id and offer_id == previous_offer_id:
+        if item.get("decision_id") == decision.id or previous_offer_id and offer_id == previous_offer_id:
             selected[index] = replacement
             return []
     selected.append(replacement)
@@ -480,6 +493,10 @@ def _apply(plan: dict[str, Any], decision: Decision, chosen: Option) -> ApplyRes
 
 def apply_override(plan: dict[str, Any], decision_id: str, option_id: str) -> ApplyResult:
     """Swap the plan onto the option the traveller picked."""
+    if any(item.get("decision_id") == decision_id and item.get("booked")
+           for bucket in ("selected_flights", "selected_hotels") for item in plan.get(bucket) or []
+           if isinstance(item, dict)):
+        return ApplyResult(ok=False, message="This item is already booked. Edit its reported booking instead.")
     decision = find_decision(plan, decision_id)
     if decision is None:
         return ApplyResult(ok=False, message="That comparison is no longer on this trip.")

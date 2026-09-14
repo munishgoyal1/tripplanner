@@ -165,6 +165,8 @@ def search_flights(
                 return_date=return_date,
                 cabin_class=travel_class,
                 cached=result.cache_hit,
+                search_context={"adults": adults, "children": children, "infants": infants,
+                                "currency": currency, "cabin_class": travel_class},
             )
             if decision is not None:
                 from tripplanner.tools import trip_planner

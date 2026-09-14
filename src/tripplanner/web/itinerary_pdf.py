@@ -224,6 +224,9 @@ def build_itinerary_pdf_bytes(
     html: str | None = None,
 ) -> bytes:
     """Build a PDF bytes payload for the active itinerary."""
+    if template == "booking_intent":
+        from tripplanner.web.booking_export import build_pdf
+        return build_pdf(trip)
     packet = html if html is not None else itinerary_export.build_export_html(
         trip,
         include_photos=include_photos,
