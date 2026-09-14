@@ -690,5 +690,26 @@
     ],
     "stateChangedAt": "2026-09-14T11:01:32.694Z",
     "updatedAt": "2026-09-14T11:01:32.694Z"
+  },
+  "itinerary-pane-polish": {
+    "labId": "itinerary-pane-polish",
+    "labTitle": "A sleeker itinerary pane",
+    "selection": "flow",
+    "selectionLabel": "F · Crisp flow rows",
+    "comment": "",
+    "disposition": "ready",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "flow",
+        "selectionLabel": "F · Crisp flow rows",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-09-14T13:11:55.493Z"
+      }
+    ],
+    "implementations": [],
+    "stateChangedAt": "2026-09-14T13:11:55.493Z",
+    "updatedAt": "2026-09-14T13:11:55.493Z"
   }
 }
