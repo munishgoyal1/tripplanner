@@ -29,6 +29,8 @@ Known city spelling aliases (Bangalore/Bengaluru, Rameshwaram/Rameswaram,
 Kanyakumari/Kanniyakumari) match hotel addresses without accepting other cities.
 The same identity is used for research coverage and saved lodging evidence, so
 a successful alias search cannot leave the city gate stuck in repeated searches.
+Map name/address matching uses those aliases too: Bengaluru is a valid Bangalore
+endpoint, and Rameswaram/Kanniyakumari addresses do not hide the selected hotels.
 Rejected itinerary errors take priority over hotel-selection nudges. A forced
 full-trip repair must submit all days; notes or selections alone cannot satisfy
 it. If planning stops at a safety limit, render the actual saved days and gaps

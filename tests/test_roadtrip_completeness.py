@@ -9,7 +9,11 @@ from tripplanner.tools.hotel_search import _city_in_address
 from tripplanner.tools.itinerary_edit import _restore_undeclared_legs, _settle_plan_legs
 from tripplanner.tools.trip_validation import _ground_leg_distance_warnings
 from tripplanner.web.day_journey import plan_day_journeys
-from tripplanner.web.map_pins import _resolve_road_circuit_pin_ids
+from tripplanner.web.map_pins import (
+    _hotel_address_matches_context,
+    _provider_name_matches,
+    _resolve_road_circuit_pin_ids,
+)
 
 
 def test_hotel_search_must_cover_each_overnight_city():
@@ -29,6 +33,19 @@ def test_hotel_city_matching_accepts_known_spellings_but_not_other_cities():
     assert _city_in_address("Kanyakumari", "Beach Road, Kanniyakumari, Tamil Nadu")
     assert not _city_in_address("Rameshwaram", "Beach Road, Kanniyakumari, Tamil Nadu")
     assert not _city_in_address("Goa", "Hotel in Goalpara, Assam")
+
+
+def test_map_accepts_bangalore_and_hotel_address_city_aliases():
+    assert _provider_name_matches("Bangalore", "Bengaluru")
+    assert _hotel_address_matches_context(
+        {"address": "Railway Feeder Rd, Rameswaram, Tamil Nadu"}, "Rameshwaram", "Madurai",
+    )
+    assert _hotel_address_matches_context(
+        {"address": "E Car St, Kanniyakumari, Tamil Nadu"}, "Kanyakumari", "Madurai",
+    )
+    assert not _hotel_address_matches_context(
+        {"address": "E Car St, Kanniyakumari, Tamil Nadu"}, "Rameshwaram", "Madurai",
+    )
 
 
 def test_hotel_alias_search_retires_the_same_city_gate():

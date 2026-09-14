@@ -2300,3 +2300,7 @@ the outcome.
 - A forced write cannot read get_trip_plan first. Supply its actual persisted
   stops with the repair instruction rather than asking the model to preserve
   details it cannot access in that phase.
+- Inspect unmapped candidates as well as missing coordinates. Bangalore was fully
+  geocoded to Bengaluru but rejected as a name mismatch; the Rameswaram and
+  Kanniyakumari hotel addresses also failed locality checks. Reuse known aliases
+  at map identity boundaries, retaining rejection of genuinely different cities.

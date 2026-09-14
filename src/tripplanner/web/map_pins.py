@@ -14,6 +14,7 @@ from difflib import SequenceMatcher
 from typing import Any
 from urllib.parse import quote
 
+from tripplanner.hotel_research import normalize_hotel_locality
 from tripplanner.web import places_cache
 from tripplanner.web.gallery import (
     _FALLBACK_HOTELS,
@@ -180,7 +181,7 @@ def _provider_name_matches(source_name: str, provider_name: str) -> bool:
     def _tokens(value: str) -> set[str]:
         return {
             token
-            for token in re.findall(r"[a-z0-9]+", value.lower())
+            for token in re.findall(r"[a-z0-9]+", normalize_hotel_locality(value))
             if len(token) > 2
         }
 
@@ -256,7 +257,7 @@ def _day_place_context(entry: dict[str, Any], destination: str) -> str:
 def _location_tokens(value: Any) -> set[str]:
     return {
         token
-        for token in re.findall(r"[a-z0-9]+", str(value or "").casefold())
+        for token in re.findall(r"[a-z0-9]+", normalize_hotel_locality(value or ""))
         if len(token) > 2 and token not in _LOCATION_NOISE
     }
 
