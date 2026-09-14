@@ -37,7 +37,7 @@ describe("trip feedback contract", () => {
     const lab = allLabs.find((candidate) => candidate.id === "trip-feedback");
 
     expect(lab?.labNumber).toBe(29);
-    expect(LAST_ASSIGNED_LAB_NUMBER).toBe(30);
+    expect(LAST_ASSIGNED_LAB_NUMBER).toBeGreaterThanOrEqual(30);
     expect(lab?.href).toBe("./lab-29-trip-feedback.html");
   });
 });

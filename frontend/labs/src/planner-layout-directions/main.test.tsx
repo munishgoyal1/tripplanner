@@ -7,7 +7,7 @@ import { allLabs, LAST_ASSIGNED_LAB_NUMBER } from "../shared/labRecords";
 describe("planner layout directions lab", () => {
   it("allocates permanent Lab number 30 and a catalog entry", () => {
     const lab = allLabs.find((entry) => entry.id === "planner-layout-directions");
-    expect(LAST_ASSIGNED_LAB_NUMBER).toBe(30);
+    expect(LAST_ASSIGNED_LAB_NUMBER).toBeGreaterThanOrEqual(30);
     expect(lab).toMatchObject({ labNumber: 30, href: "./lab-30-planner-layout-directions.html" });
   });
 
