@@ -409,7 +409,9 @@ def _read_local(since: datetime) -> list[dict[str, Any]]:
     return rows
 
 
-def _read(since: datetime, until: datetime | None = None) -> list[dict[str, Any]]:
+def _read(
+    since: datetime, until: datetime | None = None, *, strict: bool = False,
+) -> list[dict[str, Any]]:
     try:
         from tripplanner import storage_cosmos
 
@@ -460,6 +462,8 @@ def _read(since: datetime, until: datetime | None = None) -> list[dict[str, Any]
                 and (until is None or datetime.fromisoformat(str(row["occurred_at"])) < until)
             ]
     except Exception as exc:  # noqa: BLE001
+        if strict:
+            raise
         _LOGGER.warning("provider usage Cosmos read failed: %s", type(exc).__name__)
     environment = os.getenv("TRIPPLANNER_ENVIRONMENT", "local").strip().lower()
     if environment in _HOSTED_ENVIRONMENTS:
@@ -643,6 +647,7 @@ def summary(
     start_date: date | None = None,
     end_date: date | None = None,
     trip_names: dict[str, str] | None = None,
+    strict: bool = False,
 ) -> dict[str, Any]:
     if start_date is not None or end_date is not None:
         last_day = min(end_date or _now().date(), _now().date())
@@ -652,12 +657,12 @@ def summary(
         since = datetime.combine(first_day, time.min, tzinfo=UTC)
         until = datetime.combine(last_day + timedelta(days=1), time.min, tzinfo=UTC)
         period_days = (last_day - first_day).days + 1
-        rows = _read(since, until)
+        rows = _read(since, until, strict=True) if strict else _read(since, until)
     else:
         period_days = max(1, min(90, int(days)))
         since = _now() - timedelta(days=period_days)
         until = None
-        rows = _read(since)
+        rows = _read(since, strict=True) if strict else _read(since)
     totals = _rollup(rows, ())
     total = (
         totals[0]

@@ -1138,16 +1138,37 @@ EB-TRACE-001; hosted environments still prohibit the local raw trip archive.
 **Trigger:** Open or refresh Operations on a local database with large usage
 batches, or before any consented analytics event has been saved.
 
-**Expected:** The usage report reads accounting entries without diagnostic event
-arrays, retaining legacy entries and date filtering. Local emulator usage reports
-are shared for up to 60 seconds for an identical database/range/trip-name key;
-concurrent refreshes share that calculation. Other runtime figures stay live.
-An absent product-events
-collection means no saved analytics events. Other database failures remain errors.
-Synchronous reporting and usage reads run in the HTTP worker pool so health and
-workspace requests remain responsive. The dashboard permits one refresh at a
-time, cancels stale range reads, bounds its request wait to 45 seconds, and shows
-an error with Retry instead of Loading after a failed initial fetch.
+**Expected:** Operations opens without waiting for a historical usage scan.
+Local emulator overview and usage snapshots survive backend restarts and remain
+visible while expired snapshots refresh in the background. A timestamp identifies
+the saved figures; failures retain the last good report and show an error instead
+of replacing it with zero totals. On the first-ever range without a saved usage
+report, Business/Trips are usable while that section prepares independently.
+Requests for the same range share one calculation; trip names are applied per
+response without duplicating global ledger scans across signed-in/local sessions.
+
+Overview snapshots are scoped by database, user and range; global usage snapshots
+by database and range. Memory is bounded to eight snapshots and disk to 32 files
+under `TRIPPLANNER_HOME/operations/usage-reports`. Snapshots become eligible for
+background refresh after 60 seconds; the timestamp remains the actual successful
+calculation time, not the time the page was opened. The dashboard transfers only
+creation/update interaction drilldowns that it renders, retaining all provider,
+service, cost, token and cache totals; the source ledger is unchanged.
+
+The local acceptance target is useful dashboard content within 2.5 seconds and
+snapshot API p95 below 1 second with the existing local dataset, including a
+backend restart with persisted snapshots and expiry. These are measured local
+service objectives, not a claim of a production SLA or field Core Web Vitals.
+The one-time first overview inventory may require a short database read; usage
+history rebuilding is never awaited by page navigation.
+
+An absent product-events collection means no saved analytics events. Other database
+failures remain errors. Synchronous reporting and usage reads run in the HTTP
+worker pool so health and workspace requests remain responsive. The dashboard
+permits one refresh at a time, cancels stale range reads, bounds its request wait
+to 45 seconds, and shows Retry after a failed initial fetch. Pending usage is
+checked every three seconds; normal refreshes remain every 30 seconds.
 
 **Proof:** `tests/test_ops_dashboard.py`, `tests/test_operations_reporting.py`,
-`tests/test_provider_usage.py`, and `frontend/src/ops/OpsDashboard.test.tsx`.
+`tests/test_operations_usage_report.py`, `tests/test_provider_usage.py`, and
+`frontend/src/ops/OpsDashboard.test.tsx`.

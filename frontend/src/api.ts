@@ -250,6 +250,12 @@ export interface OpsOverview {
     by_provider: OpsUsageRollup[];
     by_operation: OpsUsageRollup[];
     by_interaction: OpsUsageRollup[];
+  } | null;
+  overview_status?: { state: "ready" | "refreshing" | "error"; error?: string | null };
+  provider_usage_status?: {
+    state: "pending" | "refreshing" | "ready" | "error";
+    generated_at: string | null;
+    error?: string | null;
   };
   cache: {
     configured: boolean;
