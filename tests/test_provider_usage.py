@@ -669,3 +669,45 @@ def test_attribution_fields_are_stable_and_independent() -> None:
         "environment": attribution.fields()["environment"],
         "interaction_kind": "other",
     }
+
+
+def test_cosmos_reporting_reads_entries_and_preserves_legacy_and_date_bounds(monkeypatch):
+    from types import SimpleNamespace
+
+    from tripplanner import storage_cosmos
+
+    calls = []
+
+    class Container:
+        def query_items(self, **kwargs):
+            calls.append(kwargs)
+            if "JOIN" in kwargs["query"]:
+                return [
+                    {"occurred_at": "2026-08-01T00:00:00+00:00", "provider": "old"},
+                    {"occurred_at": "2026-08-02T00:00:00+00:00", "provider": "batch"},
+                    {"occurred_at": "2026-08-03T00:00:00+00:00", "provider": "future"},
+                ]
+            if "c.record_count" in kwargs["query"]:
+                return [{"id": "legacy", "user_id": "local"}, {"id": "batch", "record_count": 3}]
+            return [self.read_item("legacy", "local")]
+
+        def read_item(self, item, partition_key):
+            assert (item, partition_key) == ("legacy", "local")
+            return {"occurred_at": "2026-08-02T12:00:00+00:00", "provider": "legacy"}
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(storage_cosmos, "_container", lambda name: Container())
+    monkeypatch.setattr(
+        storage_cosmos, "get_settings", lambda: SimpleNamespace(cosmos_emulator=True)
+    )
+    rows = provider_usage._read(datetime(2026, 8, 2, tzinfo=UTC), datetime(2026, 8, 3, tzinfo=UTC))
+    assert [row["provider"] for row in rows] == ["batch", "legacy"]
+    assert calls[0]["query"] == "SELECT VALUE e FROM c JOIN e IN c.entries"
+    assert calls[0]["max_item_count"] == 1000
+    assert "c.record_count" in calls[1]["query"]
+    calls.clear()
+    monkeypatch.setattr(
+        storage_cosmos, "get_settings", lambda: SimpleNamespace(cosmos_emulator=False)
+    )
+    provider_usage._read(datetime(2026, 8, 2, tzinfo=UTC), datetime(2026, 8, 3, tzinfo=UTC))
+    assert all("c.occurred_at >= @since AND c.occurred_at < @until" in c["query"] for c in calls)

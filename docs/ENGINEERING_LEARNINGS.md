@@ -2204,3 +2204,21 @@ the outcome.
 - Prove these boundaries with exact-ID refresh and product-replacement tests,
   plus redacted packet and fake-email checks. A UI that looks correct alone does
   not establish price continuity, privacy or idempotent external delivery.
+
+
+## 2026-09-14 - Large diagnostic rows can freeze an otherwise small local workspace
+
+- Local had only six trips, but 6,563 usage documents and 67,917 recorder rows.
+  Emulator PostgreSQL logs identified the actual failure: query results exceeded
+  its 4,096 KiB buffer. Inventory queries were fast; selecting full usage batches
+  included large telemetry arrays and retried HTTP 500s. Read nested accounting
+  entries directly. On this emulator, filtered parent scans also materialize
+  whole documents; use unfiltered entry/metadata scans and filter dates in Python,
+  while hosted Cosmos retains server-side date predicates and legacy-row reads.
+- A synchronous SDK call inside an async HTTP route blocks unrelated requests.
+  Use FastAPI's worker-pool route for synchronous reporting and prove a health
+  request completes while a reporting read is deliberately held open.
+- A missing lazily created analytics collection is an empty dataset, not a
+  dashboard failure. Catch only that absence. Surface other errors, prevent
+  overlapping refreshes, and discard stale range responses so failures cannot
+  masquerade as endless Loading.

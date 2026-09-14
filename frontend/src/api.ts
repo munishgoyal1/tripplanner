@@ -291,7 +291,10 @@ export async function fetchOpsOverview(
   const params = new URLSearchParams({ days: String(days) });
   if (startDate) params.set("start_date", startDate);
   if (endDate) params.set("end_date", endDate);
-  const response = await apiFetch(`${BASE}/ops/overview?${params}`, { signal });
+  const timeout = AbortSignal.timeout(45_000);
+  const response = await apiFetch(`${BASE}/ops/overview?${params}`, {
+    signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
+  });
   ensureOk(response, "Operations overview unavailable");
   return response.json() as Promise<OpsOverview>;
 }

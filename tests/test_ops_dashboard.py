@@ -295,3 +295,57 @@ def test_provider_cache_status_reports_redis_when_it_answers(monkeypatch) -> Non
     assert status["redis_connected"] is True
     assert status["redis_entries"] == 1
     assert status["redis_bytes"] == 64
+
+
+def test_slow_ops_storage_does_not_block_health(monkeypatch):
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+
+    from tripplanner.tools import trip_planner
+
+    entered = threading.Event()
+    release = threading.Event()
+
+    def slow_trips():
+        entered.set()
+        assert release.wait(5)
+        return []
+
+    monkeypatch.setattr(trip_planner, "list_saved_trips", slow_trips)
+    monkeypatch.setattr("tripplanner.provider_usage._read", lambda _since: [])
+    owner = _client(monkeypatch, "owner@example.com")
+    with owner, ThreadPoolExecutor(max_workers=2) as executor:
+        pending = executor.submit(owner.get, "/ops/overview")
+        try:
+            assert entered.wait(5)
+            response = executor.submit(owner.get, "/health").result(timeout=2)
+            assert response.status_code == 200
+            assert not pending.done()
+        finally:
+            release.set()
+        assert pending.result(timeout=5).status_code == 200
+
+
+def test_local_usage_report_cache_reuses_reads_and_expires(monkeypatch):
+    from types import SimpleNamespace
+
+    from tripplanner.web import ops_http
+
+    clock = [100.0]
+    calls = []
+    monkeypatch.setattr(ops_http, "_USAGE_REPORT_CACHE", None)
+    monkeypatch.setattr(ops_http, "monotonic", lambda: clock[0])
+    monkeypatch.setattr("tripplanner.config.get_settings", lambda: SimpleNamespace(
+        cosmos_emulator=True, cosmos_endpoint="https://localhost:8081", cosmos_database="test",
+    ))
+
+    def report(**kwargs):
+        calls.append(kwargs)
+        return {"value": len(calls)}
+
+    monkeypatch.setattr("tripplanner.provider_usage.summary", report)
+    assert ops_http._provider_usage_report(days=30) == {"value": 1}
+    assert ops_http._provider_usage_report(days=30) == {"value": 1}
+    clock[0] = 161
+    assert ops_http._provider_usage_report(days=30) == {"value": 2}
+    assert ops_http._provider_usage_report(days=7) == {"value": 3}
