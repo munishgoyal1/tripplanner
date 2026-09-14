@@ -332,6 +332,8 @@ def _map_pins(
 
     # 1) Structured itinerary stops first, preserving day/stop order so route
     #    lines follow the actual itinerary sequence.
+    from tripplanner.tools.trip_guard import _is_home_endpoint
+
     for idx, entry in enumerate(itinerary):
         if not isinstance(entry, dict):
             continue
@@ -360,6 +362,8 @@ def _map_pins(
                 booked=stop_is_booked(s),
             )
             terminal_refs = _transport_terminal_refs(name, kind)
+            if kind not in {"flight", "transport"} and _is_home_endpoint(s, str(trip.get("origin") or "")):
+                terminal_refs = [("origin", str(trip["origin"]))]
             if terminal_refs:
                 if _resolved_transfer_mode(name, kind) == "Drive":
                     endpoints = _transport_route_endpoints(name)

@@ -200,6 +200,16 @@ def _journey_endpoints(stop: Any) -> tuple[str, str] | None:
     return (source, target) if source and target else None
 
 
+def _departure_buffer(stop: Any) -> int:
+    if _stop_kind(stop) == "flight":
+        return PRE_DEPARTURE_BUFFER_MIN
+    if _stop_kind(stop) == "transport" and (
+        _journey_endpoints(stop) or _MODE_PREFIX_RE.match(_stop_name(stop))
+    ):
+        return TURNAROUND_MIN
+    return 0
+
+
 def _home_bound_leg(stop: Any, home: str) -> tuple[bool, bool]:
     """``(leaves_home, arrives_home)`` for one transport stop.
 
@@ -464,7 +474,7 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
     structured = days_of(plan)
 
     out.extend(_envelope_violations(structured, env, str(plan.get("origin") or "")))
-    out.extend(_presence_violations(structured, env))
+    out.extend(_presence_violations(structured, env, str(plan.get("origin") or "")))
     out.extend(_hours_violations(structured, destination, day_dates(plan)))
     out.extend(_availability_violations(structured, destination))
     out.extend(_repeat_visit_violations(structured))
@@ -517,7 +527,7 @@ def _envelope_violations(
 
 
 def _presence_violations(
-    structured: list[tuple[int, dict[str, Any], list[Any]]], env: Envelope
+    structured: list[tuple[int, dict[str, Any], list[Any]]], env: Envelope, origin: str = ""
 ) -> list[Violation]:
     """Ordering-based presence, for the times a leg carries no clock time."""
     out: list[Violation] = []
@@ -533,7 +543,8 @@ def _presence_violations(
             )
             if leg_at is not None:
                 for stop in stops[leg_at + 1:]:
-                    if _stop_kind(stop) in _TRANSPORT_KINDS or _stop_kind(stop) == "hotel":
+                    if (_stop_kind(stop) in _TRANSPORT_KINDS or _stop_kind(stop) == "hotel"
+                            or _is_home_endpoint(stop, origin)):
                         continue
                     name = _stop_name(stop) or "An untitled stop"
                     out.append(
@@ -703,14 +714,9 @@ def _feasibility_violations(
             current, current_at = timed[index]
             following, following_at = timed[index + 1]
             ends = current_at + _duration_of(current)
-            if _stop_kind(following) in _TRANSPORT_KINDS:
+            if buffer_min := _departure_buffer(following):
                 # Two hours is an airport, not a car. Asking for check-in time
                 # before a drive turns a real rule into background noise.
-                buffer_min = (
-                    PRE_DEPARTURE_BUFFER_MIN
-                    if _stop_kind(following) == "flight"
-                    else TURNAROUND_MIN
-                )
                 needed = ends + buffer_min
                 if needed > following_at:
                     out.append(

@@ -2304,3 +2304,13 @@ the outcome.
   geocoded to Bengaluru but rejected as a name mismatch; the Rameswaram and
   Kanniyakumari hotel addresses also failed locality checks. Reuse known aliases
   at map identity boundaries, retaining rejection of genuinely different cities.
+
+## 2026-09-14 - Validate the endpoint semantics as well as stop order
+
+- The road circuit was finally correct but the presence guard still rejected
+  arrival home after the return drive. Reuse the existing home-endpoint identity
+  in both presence validation and map anchors rather than treating it as a sight
+  or searching for a business named Bangalore home.
+- Checkout fitting, chronology and feasibility disagreed about the 10-minute
+  road departure buffer. Share the departure-buffer calculation and distinguish
+  an actual journey from its terminal-arrival marker; preserve airport buffers.
