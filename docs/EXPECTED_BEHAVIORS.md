@@ -52,6 +52,10 @@ Timing settlement uses the validator's hotel duration and keeps checkout on the
 departure side of a drive. A return drive precedes home arrival; flight-style
 departure ordering must not move home arrival before driving. Removed unresolved
 route alternatives are not protected transport commitments to restore later.
+Presence checks accept arrival at home after returning, and its map row reuses
+the origin-city anchor instead of searching for a business named "City home".
+Checkout fitting, chronology and feasibility agree on a 10-minute road departure
+buffer. A terminal-arrival marker is not another departure needing that buffer.
 Forced full repairs receive the actual saved stop list, not only day titles.
 Do not fill remaining days with hotels or sightseeing in the traveller's home
 city unless requested; use them to balance the return journey.

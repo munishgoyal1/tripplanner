@@ -691,6 +691,8 @@ def _itinerary_time_errors(itinerary: Any) -> list[str]:
             ):
                 current_start += 1440
             turnaround = 0 if previous_kind in {"hotel", "flight", "transport"} else 30
+            if previous_day == day and _stop_kind(stop) == "transport":
+                turnaround = max(turnaround, validate_guard._departure_buffer(stop))
             minimum_start = previous_end + turnaround if previous_end is not None else None
             if minimum_start is not None and current_start < minimum_start:
                 errors.append(

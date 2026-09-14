@@ -88,6 +88,10 @@ def _fit_stops_before_leg(stops: list[Any], leg_index: int) -> None:
         if current is None:
             continue
         turnaround = 0 if _stop_kind(stop) == "hotel" else 30
+        if _stop_kind(leg) == "transport":
+            from tripplanner.tools.trip_guard import _departure_buffer
+
+            turnaround = max(turnaround, _departure_buffer(leg))
         latest_start = next_start - turnaround - _duration_of(stop)
         if current > latest_start and latest_start >= 0:
             current = latest_start

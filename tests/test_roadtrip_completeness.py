@@ -7,6 +7,7 @@ from tripplanner.hotel_research import unresearched_hotel_cities
 from tripplanner.tools import trip_rebalance
 from tripplanner.tools.hotel_search import _city_in_address
 from tripplanner.tools.itinerary_edit import _restore_undeclared_legs, _settle_plan_legs
+from tripplanner.tools.trip_guard import validate_plan
 from tripplanner.tools.trip_validation import _ground_leg_distance_warnings
 from tripplanner.web.day_journey import plan_day_journeys
 from tripplanner.web.map_pins import (
@@ -46,6 +47,26 @@ def test_map_accepts_bangalore_and_hotel_address_city_aliases():
     assert not _hotel_address_matches_context(
         {"address": "E Car St, Kanniyakumari, Tamil Nadu"}, "Rameshwaram", "Madurai",
     )
+
+
+def test_home_arrival_reuses_city_map_anchor_without_geocoding_home_label(monkeypatch):
+    from tripplanner.web import map_pins
+
+    lookups = []
+    def details(name, context, **kwargs):
+        lookups.append(name)
+        return {"name": "Bengaluru", "lat": 12.97, "lng": 77.59} if name == "Bangalore" else {}
+
+    monkeypatch.setattr(map_pins.places_cache, "get_details", details)
+    monkeypatch.setattr(map_pins.places_cache, "get_photos", lambda *args, **kwargs: [])
+    unmapped = []
+    pins = map_pins._map_pins({"origin": "Bangalore", "destination": "Madurai",
+        "day_wise_itinerary": [{"day": 8, "stops": [{
+            "name": "Bangalore home", "kind": "other", "time": "17:30",
+        }]}]}, "Madurai", unmapped)
+    assert any(pin["name"] == "Bangalore" for pin in pins)
+    assert "Bangalore home" not in lookups
+    assert not any(row["name"] == "Bangalore home" for row in unmapped)
 
 
 def test_hotel_alias_search_retires_the_same_city_gate():
@@ -190,6 +211,7 @@ def test_return_drive_keeps_home_arrival_after_journey():
             }]}, {"day": 8, "stops": stops}]}
     assert _settle_plan_legs(plan) == []
     assert plan["day_wise_itinerary"][-1]["stops"][-1]["name"] == "Home arrival in Bangalore"
+    assert not [v for v in validate_plan(plan) if v.code in {"I1", "I2", "I5"}]
 
 
 def test_obsolete_alternative_leg_is_not_restored_over_chosen_route():
