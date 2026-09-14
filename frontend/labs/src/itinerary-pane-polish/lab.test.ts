@@ -41,18 +41,19 @@ describe("itinerary pane polish lab", () => {
     expect(html).toContain("./src/itinerary-pane-polish/main.tsx");
   });
 
-  it("offers five options best first, exactly two of which retune the workspace", () => {
-    expect(options.map((option) => option.id)).toEqual(["crisp", "timeline", "warm", "agenda", "cards"]);
-    expect(options.map((option) => option.score)).toEqual([92, 90, 85, 82, 78]);
-    expect(options.filter((option) => option.chrome !== "today").map((option) => option.id)).toEqual(["crisp", "warm"]);
+  it("orders seven options best first without renaming the letters the owner already used", () => {
+    expect(options.map((option) => option.id)).toEqual(["flow", "sections", "crisp", "timeline", "warm", "agenda", "cards"]);
+    expect(options.map((option) => option.score)).toEqual([95, 93, 92, 90, 85, 82, 78]);
+    expect(options.map((option) => option.label.slice(0, 1))).toEqual(["F", "G", "A", "B", "C", "D", "E"]);
+    expect(options.filter((option) => option.chrome !== "today").map((option) => option.id)).toEqual(["flow", "sections", "crisp", "warm"]);
   });
 
   it("derives production wording for timing labels across circuit, transition and road days", () => {
     const [day1, , day3] = itinerary.days.map((day) => deriveDay(day, [], (value) => value));
-    expect(day1.rows.at(-1)).toMatchObject({ name: "Return to ITC Rajputana", timingLabel: "Return", kindLabel: "Hotel return" });
+    expect(day1.rows[day1.rows.length - 1]).toMatchObject({ name: "Return to ITC Rajputana", timingLabel: "Return", kindLabel: "Hotel return" });
     expect(day1.rows[1].timingLabel).toBe("Land");
     expect(day3.rows[0].timingLabel).toBe("Check out");
-    expect(day3.rows.at(-1)?.timingLabel).toBe("Check in");
+    expect(day3.rows[day3.rows.length - 1]?.timingLabel).toBe("Check in");
     expect(day3.rows.find((row) => row.stop.name === "Drive: Chittorgarh to Udaipur")?.timingLabel).toBe("Depart from Chittorgarh");
     expect(day3.transition).toEqual({ from: "ITC Rajputana", to: "Taj Lake Palace" });
     const lunch = itinerary.days[1].stops.findIndex((stop) => stop.name === "Lunch at 1135 AD");
@@ -90,7 +91,6 @@ describe("itinerary pane polish lab", () => {
     "Via MI Road; old-city lanes slow down after 11:00",
     "Est. arrive 10:40 · 50 min free before 11:30",
     "The last 2 km is a steep single-lane road",
-    "Needs booking",
     "Confirmed",
     "Return to ITC Rajputana",
     "Amber Fort and the palace circuit",
@@ -113,6 +113,8 @@ describe("itinerary pane polish lab", () => {
     const text = renderedText(id);
     const missing = alwaysVisible.filter((fact) => !includesText(text, fact));
     expect(missing).toEqual([]);
+    // F and G shorten the unbooked status to "To book", matching the day header's wording.
+    expect(includesText(text, "Needs booking") || includesText(text, "To book")).toBe(true);
     // Clean stop cards folds days that are not in focus; the fact matrix declares that.
     const stopsFold = factMatrix.find((row) => row.fact === "Stops of a day that is not in focus")?.[id] === "tap";
     const missingOpen = openDayFacts.filter((fact) => !includesText(text, fact));
