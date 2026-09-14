@@ -158,3 +158,12 @@ def test_compact_dashboard_keeps_global_totals_and_visible_trip_drilldowns():
     assert compact["by_provider_total"] == [{"calls": 103}]
     assert compact["by_operation"] == [trip]
     assert report["by_operation"] == [trip, background]
+
+
+def test_hosted_report_is_ready_with_a_real_timestamp(monkeypatch):
+    monkeypatch.setattr(reports, "get_settings", lambda: SimpleNamespace(cosmos_emulator=False))
+    monkeypatch.setattr(reports, "summary", lambda **kwargs: {"totals": {"calls": 1}})
+    report, status = reports.get_report(days=30)
+    assert report["totals"]["calls"] == 1
+    assert status["state"] == "ready"
+    assert status["generated_at"] is not None

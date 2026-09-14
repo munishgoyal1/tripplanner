@@ -121,7 +121,8 @@ def _with_names(report: dict[str, Any] | None, names: dict[str, str]) -> dict[st
 def get_report(**kwargs) -> tuple[dict[str, Any] | None, dict[str, Any]]:
     names = kwargs.pop("trip_names", {})
     if not get_settings().cosmos_emulator:
-        return summary(**kwargs, trip_names=names), {"state": "ready", "generated_at": None}
+        report = summary(**kwargs, trip_names=names)
+        return report, {"state": "ready", "generated_at": datetime.now(UTC).isoformat()}
     path = _path(kwargs)
     key = str(path)
     with _LOCK:

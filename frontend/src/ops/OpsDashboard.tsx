@@ -695,12 +695,12 @@ export default function OpsDashboard() {
 
       {overview.overview_status?.state === "error" && <div role="alert" className="bg-amber-50 px-5 py-2 text-sm">Overview refresh failed. Showing the last successful snapshot.</div>}
       {usageStatus && <div role="status" className="border-b border-stone-200 bg-white px-5 py-2 text-xs text-stone-600 sm:px-8">
-        {usageStatus.generated_at ? `Usage report as of ${new Date(usageStatus.generated_at).toLocaleString()}.` : "Preparing usage history in the background."}
+        {usageStatus.generated_at ? `Usage report as of ${new Date(usageStatus.generated_at).toLocaleString()}.` : usageStatus.state === "error" ? "Usage report unavailable." : "Preparing usage history in the background."}
         {usageStatus.state === "refreshing" && " Updating..."}
-        {usageStatus.state === "error" && " Refresh failed; the last successful figures are retained."}
+        {usageStatus.state === "error" && (readyOverview ? " Refresh failed; the last successful figures are retained." : " Use Refresh metrics to retry.")}
       </div>}
       {rangeError && <div role="alert" className="border-b border-amber-300 bg-amber-50 px-5 py-3 text-sm text-amber-950 sm:px-8">{rangeError}</div>}
-      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} rangeProps={rangeProps} /> : view === "trips" ? <TripsView overview={overview} /> : view === "cost" ? readyOverview ? <CostView overview={readyOverview} {...rangeProps} /> : <><DateRangeControl overview={overview} {...rangeProps} /><Panel title="Usage report"><Empty>{usageStatus?.state === "error" ? "Usage report unavailable. Please retry." : "Preparing the first usage report. You can use the other dashboard views while it is prepared."}</Empty></Panel></> : view === "infra" ? <InfraView overview={overview} /> : view === "alerts" ? <AlertsView overview={overview} /> : readyOverview ? <SystemView overview={readyOverview} /> : <Panel title="System health"><Empty>Usage history is being prepared. The other dashboard views are available.</Empty></Panel>}</div>
+      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} rangeProps={rangeProps} /> : view === "trips" ? <TripsView overview={overview} /> : view === "cost" ? readyOverview ? <CostView overview={readyOverview} {...rangeProps} /> : <><DateRangeControl overview={overview} {...rangeProps} /><Panel title="Usage report"><Empty>{usageStatus?.state === "error" ? "Usage report unavailable. Please retry." : "Preparing the first usage report. You can use the other dashboard views while it is prepared."}</Empty></Panel></> : view === "infra" ? <InfraView overview={overview} /> : view === "alerts" ? <AlertsView overview={overview} /> : readyOverview ? <SystemView overview={readyOverview} /> : <Panel title="System health"><Empty>{usageStatus?.state === "error" ? "Usage report unavailable. Please retry." : "Usage history is being prepared. The other dashboard views are available."}</Empty></Panel>}</div>
     </main>
   );
 }
