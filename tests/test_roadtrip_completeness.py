@@ -69,6 +69,30 @@ def test_home_arrival_reuses_city_map_anchor_without_geocoding_home_label(monkey
     assert not any(row["name"] == "Bangalore home" for row in unmapped)
 
 
+def test_saved_identity_uses_day_locality_and_repairs_stale_home_coordinates(monkeypatch):
+    from tripplanner.web import places_cache
+
+    for name, city, latitude in [("Ahaan Restaurant", "Rameshwaram", 9.28),
+                                  ("Bangalore", "", 12.97)]:
+        monkeypatch.setitem(places_cache._CACHE, places_cache._key(name, city), {
+            "name": name, "lat": latitude, "lng": 77.59, "place_id": name,
+        })
+    plan = {"origin": "Bangalore", "destination": "Madurai and Rameshwaram",
+            "day_wise_itinerary": [
+                {"day": 3, "city": "Rameshwaram", "stops": [{
+                    "name": "Ahaan Restaurant", "kind": "meal",
+                }]},
+                {"day": 8, "city": "Bangalore", "stops": [{
+                    "name": "Bangalore home", "kind": "other", "lat": 8.09,
+                    "lng": 77.54, "place_id": "wrong-business",
+                }]},
+            ]}
+    assert places_cache.annotate_stops_with_known_identity(plan) == 2
+    assert plan["day_wise_itinerary"][0]["stops"][0]["lat"] == 9.28
+    home = plan["day_wise_itinerary"][1]["stops"][0]
+    assert home["lat"] == 12.97 and home["place_id"] == "Bangalore"
+
+
 def test_hotel_alias_search_retires_the_same_city_gate():
     messages = [HumanMessage(content="Repair this road trip"), AIMessage(content="", tool_calls=[
         {"name": "search_hotels", "args": {"city": "Rameswaram"}, "id": "hotels"},

@@ -2314,3 +2314,7 @@ the outcome.
 - Checkout fitting, chronology and feasibility disagreed about the 10-minute
   road departure buffer. Share the departure-buffer calculation and distinguish
   an actual journey from its terminal-arrival marker; preserve airport buffers.
+- Verify persisted coordinates, not only visible map anchors. Cache annotation
+  used the broad trip destination and stamped a Kanyakumari business onto Bangalore
+  home. Use the day locality for regular stops and known origin identity for a
+  generic home-arrival row, while preserving explicit confirmed bindings.
