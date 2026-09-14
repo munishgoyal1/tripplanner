@@ -696,7 +696,7 @@ export default function OpsDashboard() {
       {overview.overview_status?.state === "error" && <div role="alert" className="bg-amber-50 px-5 py-2 text-sm">Overview refresh failed. Showing the last successful snapshot.</div>}
       {usageStatus && <div role="status" className="border-b border-stone-200 bg-white px-5 py-2 text-xs text-stone-600 sm:px-8">
         {usageStatus.generated_at ? `Usage report as of ${new Date(usageStatus.generated_at).toLocaleString()}.` : "Preparing usage history in the background."}
-        {usageStatus.state === "refreshing" && " Updating…"}
+        {usageStatus.state === "refreshing" && " Updating..."}
         {usageStatus.state === "error" && " Refresh failed; the last successful figures are retained."}
       </div>}
       {rangeError && <div role="alert" className="border-b border-amber-300 bg-amber-50 px-5 py-3 text-sm text-amber-950 sm:px-8">{rangeError}</div>}
