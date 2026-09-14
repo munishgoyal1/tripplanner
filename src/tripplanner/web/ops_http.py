@@ -18,7 +18,7 @@ from tripplanner.web.http_context import set_request_user as _set_request_user
 router = APIRouter()
 
 _USAGE_REPORT_LOCK = threading.Lock()
-_USAGE_REPORT_CACHE: tuple[tuple, float, dict[str, Any]] | None = None
+_USAGE_REPORT_CACHE: dict[tuple, tuple[float, dict[str, Any]]] = {}
 
 
 def _provider_usage_report(**kwargs) -> dict[str, Any]:
@@ -33,14 +33,14 @@ def _provider_usage_report(**kwargs) -> dict[str, Any]:
         kwargs.get("days"), kwargs.get("start_date"), kwargs.get("end_date"),
         tuple(sorted(kwargs.get("trip_names", {}).items())),
     )
-    global _USAGE_REPORT_CACHE
     with _USAGE_REPORT_LOCK:
-        if _USAGE_REPORT_CACHE is not None:
-            previous_key, expires, report = _USAGE_REPORT_CACHE
-            if previous_key == key and monotonic() < expires:
-                return report
+        cached = _USAGE_REPORT_CACHE.get(key)
+        if cached is not None and monotonic() < cached[0]:
+            return cached[1]
         report = summary(**kwargs)
-        _USAGE_REPORT_CACHE = (key, monotonic() + 60, report)
+        if key not in _USAGE_REPORT_CACHE and len(_USAGE_REPORT_CACHE) >= 4:
+            del _USAGE_REPORT_CACHE[next(iter(_USAGE_REPORT_CACHE))]
+        _USAGE_REPORT_CACHE[key] = (monotonic() + 60, report)
         return report
 
 
