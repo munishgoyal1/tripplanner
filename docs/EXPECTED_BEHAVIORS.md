@@ -125,6 +125,18 @@ either enabled (the default) or disabled.
   unmount, and active-trip changes clear in-flight status.
 - Research is followed by one enriched full-plan persistence pass rather than
   repeated full-itinerary rewrites.
+- Present the itinerary once, after planning and the workspace refresh finish.
+  Intermediate tool-call prose stays out of the answer; progress remains visible
+  and Send remains unavailable until the panes load. The final answer covers every
+  saved day in order, then states assumptions and gaps. Missing days take precedence
+  over enrichment; a partial two-day save cannot satisfy an eight-day build. A
+  stopped run identifies missing days honestly and never implies background
+  itinerary completion. Background guide/photo loading does not build missing days.
+  New research between saves resets the consecutive no-progress guard; two
+  unproductive saves against unchanged evidence still stop the loop. Chronology
+  rejection reports cascading earliest times together, avoiding one-stop retries.
+  Proof: `tests/test_graph_policy.py`, `tests/test_itinerary_completion.py`,
+  `tests/test_trip_reliability.py`, and `frontend/src/components/ChatPanel.test.tsx`.
 - A planning turn normally uses at most ten tool phases. A first planning turn
   that reaches that semantic budget permits bounded initial repairs for
   journey edges, named meal coverage on substantial days, and positive

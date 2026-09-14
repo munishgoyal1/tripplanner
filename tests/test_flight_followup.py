@@ -47,6 +47,15 @@ def test_broad_requests_are_not_flight_only(prompt):
     assert not is_flight_followup([HumanMessage(content=prompt)], saved_trip())
 
 
+def test_flight_followup_does_not_fill_preexisting_missing_days():
+    trip = {**saved_trip(), "departure_date": "2026-10-12", "return_date": "2026-10-19"}
+    decision = resolve_completion_policy(
+        messages=[HumanMessage(content="add return flights to Bangalore")],
+        active_trip=trip, proposal_only=False, has_planning_intent=True,
+    )
+    assert decision.forced_tool is None
+
+
 @pytest.mark.parametrize("result", [
     "Trip plan updated (no material changes). Status: draft", "Error: invalid chronology",
 ])

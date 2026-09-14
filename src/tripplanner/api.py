@@ -955,6 +955,8 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                     # stream must not leak its discarded partial response.
                     output = data.get("output") or {}
                     for message in output.get("messages", []):
+                        if getattr(message, "tool_calls", None):
+                            continue
                         text = getattr(message, "content", "")
                         if text:
                             reply_parts.append(text)

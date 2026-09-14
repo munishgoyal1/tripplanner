@@ -191,6 +191,10 @@ re-describing the whole product.
   bar. New-trip completion is announced only after every trip pane reloads; existing
   itinerary changes use the refreshed authoritative mutation summary, and proposal-only
   reviews explicitly say that the itinerary remains unchanged.
+- The complete answer is revealed after workspace refresh, with Send held busy
+  through that boundary. Tool-call preambles are excluded. Full-trip replies
+  present all saved days followed by gaps; missing date-range coverage is repaired
+  before enrichment, and stopped builds do not promise background completion.
 - The inline chip/control surface appears when interactive mode opts into a useful review. Explicit party details preserve autonomous
   planning without another confirmation gate.
   A new hosted deployment remains pending explicit approval.

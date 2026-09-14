@@ -2238,3 +2238,20 @@ the outcome.
 - Validate cold process memory, expired snapshots, blocked rebuilds, absent
   snapshots, and identity/range isolation. A single warm request or an early
   loading label is not evidence that the useful page meets its latency target.
+
+## 2026-09-14 - Finish planning before inviting itinerary review
+
+- The local Rameshwaram turn made five chronology-rejected saves, persisted eight
+  draft days, then hit no_progress after hotel and restaurant research separated
+  two no-op saves. Compare consecutive saves against the same evidence; a new
+  research batch is progress, while repeated unchanged saves still need a guard.
+- Chronology diagnostics used the rejected start time to validate the next stop,
+  forcing repeated small repairs. Propagate the minimum corrected start through
+  the circuit so one rejection describes all downstream corrections together.
+- A completed model call can still contain tool calls, and an SSE done event can
+  precede pane loading. Publish terminal prose only, await the workspace refresh,
+  then reveal the reply and release Send together. Test this with a deferred
+  refresh promise and a real graph containing a tool-call preamble.
+- A successful workspace HTTP response does not prove what the browser rendered.
+  Keep the confirmed backend stop distinct from an unverified persistent empty-pane
+  report; guide/photo warming after a turn is not background itinerary generation.

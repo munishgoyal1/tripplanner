@@ -38,6 +38,12 @@ non-flight update as `lodging_research`; `tools/trip_planner.py` merges it by ci
 The itinerary and completion-gap projection expose matching date/city reasons.
 The SSE adapter publishes successful `trip_agent` outputs rather than partial
 model stream events, so retrying a model invocation cannot duplicate displayed text.
+Only terminal outputs without tool calls enter the answer. `useChatStream.ts`
+holds that answer and the busy state until `onTurnComplete` reloads the workspace;
+the final reply replaces buffered text in one update. `graph_policy.py` prioritizes
+missing date-range coverage over research and scopes stalled-save detection to
+the latest research batch. `trip_validation._itinerary_time_errors` propagates
+earliest corrected times so a rejected circuit can be fixed in one resubmission.
 `day_journey.py` retains completed local path segments when an unresolved transfer
 resets the active path; `map_view.py` builds legs separately for each segment.
 

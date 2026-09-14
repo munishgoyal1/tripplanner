@@ -14,6 +14,7 @@ from tripplanner.tools.trip_planner import (
     core_planning_completion_gaps,
     planning_completion_gaps,
 )
+from tripplanner.tools.trip_validation import _day_count_gap
 
 COMPLETION_RESEARCH_TOOLS = frozenset({
     "search_flights_duffel",
@@ -704,10 +705,15 @@ def resolve_completion_policy(
     created_this_turn = "create_trip_plan" in current_turn_names
     updated_this_turn = "update_trip_plan" in current_turn_names
     flight_followup = not created_this_turn and is_flight_followup(messages, active_trip)
-    update_results = _tool_result_texts(messages, "update_trip_plan", after_index=latest_human)
-    stalled = len(update_results) >= 2 and (
-        all("updated (no material changes)" in result for result in update_results[-2:])
-        or (update_results[-1].startswith("Error:") and update_results[-1] == update_results[-2])
+    latest_research = max(
+        (index for index, name in positions
+         if index > latest_human and name in COMPLETION_RESEARCH_TOOLS),
+        default=latest_human,
+    )
+    repair_results = _tool_result_texts(messages, "update_trip_plan", after_index=latest_research)
+    stalled = len(repair_results) >= 2 and (
+        all("updated (no material changes)" in result for result in repair_results[-2:])
+        or (repair_results[-1].startswith("Error:") and repair_results[-1] == repair_results[-2])
     )
     if not proposal_only and stalled:
         return CompletionPolicyDecision(
@@ -808,13 +814,22 @@ def resolve_completion_policy(
     if (
         not proposal_only
         and not new_trip_flow
+        and not flight_followup
         and active_trip.get("destination")
-        and not active_trip.get("day_wise_itinerary")
+        and (not active_trip.get("day_wise_itinerary") or _day_count_gap(active_trip))
         and (created_this_turn or has_planning_intent)
+        and len(repair_results) < MAX_INITIAL_ITINERARY_UPDATES
     ):
         requirement = trip_update_requirement(
             messages, active_trip, has_planning_intent=has_planning_intent
         )
+        if _day_count_gap(active_trip):
+            requirement = (
+                "The itinerary must cover the entire trip before further research or a final "
+                "reply. " + " ".join(_day_count_gap(active_trip))
+                + " Submit every day together in one full structured day_wise_itinerary, "
+                "including the outbound and return journeys. Preserve useful saved stops."
+            )
         if requirement:
             return CompletionPolicyDecision(
                 tool_phases=tool_phases,
@@ -877,7 +892,7 @@ def resolve_completion_policy(
     )
     if (
         non_lodging_core_gaps
-        and len(update_results) < MAX_INITIAL_ITINERARY_UPDATES
+        and len(repair_results) < MAX_INITIAL_ITINERARY_UPDATES
         and not hotel_fallback_requirement
         and not origin_requirement
         and not update_requirement
