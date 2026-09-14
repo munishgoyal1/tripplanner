@@ -347,4 +347,28 @@ describe("OpsDashboard", () => {
     expect(fetchOpsOverview).toHaveBeenCalledTimes(beforeRefresh + 1);
   });
 
+  it("shows business data while the first usage report is prepared", async () => {
+    vi.mocked(fetchOpsOverview).mockResolvedValue({
+      ...overview, provider_usage: null,
+      provider_usage_status: { state: "pending", generated_at: null },
+    });
+    render(<OpsDashboard />);
+    await screen.findByText("Activation funnel");
+    fireEvent.click(screen.getByRole("tab", { name: /api & cost/i }));
+    expect(screen.getByText(/Preparing the first usage report/)).toBeInTheDocument();
+    expect(screen.queryByText("Measured calls")).not.toBeInTheDocument();
+  });
+
+  it("keeps last-good cost figures visible during a background refresh", async () => {
+    vi.mocked(fetchOpsOverview).mockResolvedValue({
+      ...overview, provider_usage_status: { state: "refreshing", generated_at: "2026-08-10T12:00:00Z" },
+    });
+    render(<OpsDashboard />);
+    await screen.findByText("Activation funnel");
+    fireEvent.click(screen.getByRole("tab", { name: /api & cost/i }));
+    expect(screen.getByText("Measured calls")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Usage report as of");
+    expect(screen.getByRole("status")).toHaveTextContent("Updating");
+  });
+
 });

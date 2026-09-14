@@ -2222,3 +2222,19 @@ the outcome.
   dashboard failure. Catch only that absence. Surface other errors, prevent
   overlapping refreshes, and discard stale range responses so failures cannot
   masquerade as endless Loading.
+
+
+## 2026-09-14 - A fast cache hit is not a page-load performance fix
+
+- The first local Operations fix removed emulator errors and event-loop stalls,
+  but a 60-second blocking cache still imposed a 24-second scan after expiry or
+  process restart. Persist the last successful snapshot and refresh it outside
+  navigation. Keep freshness visible and preserve old data on a failed rebuild;
+  an unavailable report must never masquerade as zero measured cost.
+- Measure browser content readiness as well as API duration. The original
+  dashboard transferred roughly 3 MB of drilldown data, mostly background
+  interactions that its UI never rendered. Filter those detail groups at the
+  dashboard boundary while retaining all aggregate totals and the source ledger.
+- Validate cold process memory, expired snapshots, blocked rebuilds, absent
+  snapshots, and identity/range isolation. A single warm request or an early
+  loading label is not evidence that the useful page meets its latency target.

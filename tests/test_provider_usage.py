@@ -711,3 +711,18 @@ def test_cosmos_reporting_reads_entries_and_preserves_legacy_and_date_bounds(mon
     )
     provider_usage._read(datetime(2026, 8, 2, tzinfo=UTC), datetime(2026, 8, 3, tzinfo=UTC))
     assert all("c.occurred_at >= @since AND c.occurred_at < @until" in c["query"] for c in calls)
+
+
+def test_strict_report_read_does_not_replace_database_failure_with_local_data(monkeypatch):
+    import pytest
+
+    from tripplanner import storage_cosmos
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+
+    def broken(name):
+        raise RuntimeError("database unavailable")
+
+    monkeypatch.setattr(storage_cosmos, "_container", broken)
+    with pytest.raises(RuntimeError, match="database unavailable"):
+        provider_usage.summary(strict=True)

@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { fetchOpsOverview, type OpsOverview } from "../api";
 
+type ReadyOverview = OpsOverview & { provider_usage: NonNullable<OpsOverview["provider_usage"]> };
+
 const number = new Intl.NumberFormat("en-US");
 const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
 const labels: Record<string, string> = {
@@ -240,7 +242,7 @@ function RecentTripCosts({ overview }: { overview: OpsOverview }) {
 }
 
 function TripCostSection({ overview, kind, title, note }: {
-  overview: OpsOverview;
+  overview: ReadyOverview;
   kind: "new_trip" | "trip_update";
   title: string;
   note: string;
@@ -294,7 +296,7 @@ function TripCostSection({ overview, kind, title, note }: {
 }
 
 function CostView({ overview, days, startDate, endDate, onPreset, onStartDate, onEndDate }: {
-  overview: OpsOverview;
+  overview: ReadyOverview;
   days: number;
   startDate: string;
   endDate: string;
@@ -530,7 +532,7 @@ function AlertsView({ overview }: { overview: OpsOverview }) {
   );
 }
 
-function SystemView({ overview }: { overview: OpsOverview }) {
+function SystemView({ overview }: { overview: ReadyOverview }) {
   const routes = Object.entries(overview.requests.by_route).sort(([, a], [, b]) => b.p95_ms - a.p95_ms);
   const tools = Object.entries(overview.tools).sort(([, a], [, b]) => b.calls - a.calls);
   const providers = Object.entries(overview.providers).sort(([, a], [, b]) => b.failure_rate - a.failure_rate || b.calls - a.calls);
@@ -631,6 +633,7 @@ export default function OpsDashboard() {
 
   const activeRequest = useRef<AbortSignal | null>(null);
   const scopeSignal = useRef<AbortSignal | null>(null);
+  const reportPending = useRef(false);
 
   const load = async (signal?: AbortSignal) => {
     if (activeRequest.current && !activeRequest.current.aborted) return;
@@ -641,6 +644,7 @@ export default function OpsDashboard() {
       const result = await fetchOpsOverview(days, requestSignal, startDate || undefined, endDate || undefined);
       if (requestSignal.aborted) return;
       setOverview(result);
+      reportPending.current = ["pending", "refreshing"].includes(result.provider_usage_status?.state ?? "ready");
       setNotFound(false);
       setRangeError("");
     } catch (error) {
@@ -660,11 +664,16 @@ export default function OpsDashboard() {
     scopeSignal.current = controller.signal;
     void load(controller.signal);
     const timer = window.setInterval(() => void load(controller.signal), 30_000);
-    return () => { controller.abort(); window.clearInterval(timer); };
+    const reportTimer = window.setInterval(() => {
+      if (reportPending.current) void load(controller.signal);
+    }, 3_000);
+    return () => { controller.abort(); window.clearInterval(timer); window.clearInterval(reportTimer); };
   }, [days, startDate, endDate]);
 
   if (notFound) return <main className="grid min-h-full place-items-center bg-stone-100 px-6 text-center"><div><p className="font-display text-7xl text-stone-900">404</p><p className="mt-3 text-sm text-stone-500">Page not found.</p></div></main>;
   if (!overview) return <main className="grid min-h-full place-items-center bg-stone-100 text-sm text-stone-500">{rangeError ? <div role="alert" className="text-center"><p>{rangeError}</p><button type="button" className="mt-3 underline" onClick={() => void load()}>Retry</button></div> : "Loading"}</main>;
+  const readyOverview = overview.provider_usage ? { ...overview, provider_usage: overview.provider_usage } : null;
+  const usageStatus = overview.provider_usage_status;
   const rangeProps = { days, startDate, endDate, onPreset: (period: number) => { setDays(period); setStartDate(""); setEndDate(""); }, onStartDate: setStartDate, onEndDate: setEndDate };
 
   return (
@@ -684,8 +693,14 @@ export default function OpsDashboard() {
         </div>
       </header>
 
+      {overview.overview_status?.state === "error" && <div role="alert" className="bg-amber-50 px-5 py-2 text-sm">Overview refresh failed. Showing the last successful snapshot.</div>}
+      {usageStatus && <div role="status" className="border-b border-stone-200 bg-white px-5 py-2 text-xs text-stone-600 sm:px-8">
+        {usageStatus.generated_at ? `Usage report as of ${new Date(usageStatus.generated_at).toLocaleString()}.` : "Preparing usage history in the background."}
+        {usageStatus.state === "refreshing" && " Updating…"}
+        {usageStatus.state === "error" && " Refresh failed; the last successful figures are retained."}
+      </div>}
       {rangeError && <div role="alert" className="border-b border-amber-300 bg-amber-50 px-5 py-3 text-sm text-amber-950 sm:px-8">{rangeError}</div>}
-      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} rangeProps={rangeProps} /> : view === "trips" ? <TripsView overview={overview} /> : view === "cost" ? <CostView overview={overview} {...rangeProps} /> : view === "infra" ? <InfraView overview={overview} /> : view === "alerts" ? <AlertsView overview={overview} /> : <SystemView overview={overview} />}</div>
+      <div className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8">{view === "business" ? <BusinessView overview={overview} rangeProps={rangeProps} /> : view === "trips" ? <TripsView overview={overview} /> : view === "cost" ? readyOverview ? <CostView overview={readyOverview} {...rangeProps} /> : <><DateRangeControl overview={overview} {...rangeProps} /><Panel title="Usage report"><Empty>{usageStatus?.state === "error" ? "Usage report unavailable. Please retry." : "Preparing the first usage report. You can use the other dashboard views while it is prepared."}</Empty></Panel></> : view === "infra" ? <InfraView overview={overview} /> : view === "alerts" ? <AlertsView overview={overview} /> : readyOverview ? <SystemView overview={readyOverview} /> : <Panel title="System health"><Empty>Usage history is being prepared. The other dashboard views are available.</Empty></Panel>}</div>
     </main>
   );
 }

@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import re
-import threading
 from datetime import date
-from time import monotonic
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
@@ -16,33 +14,6 @@ from tripplanner.user_context import set_user_id
 from tripplanner.web.http_context import set_request_user as _set_request_user
 
 router = APIRouter()
-
-_USAGE_REPORT_LOCK = threading.Lock()
-_USAGE_REPORT_CACHE: dict[tuple, tuple[float, dict[str, Any]]] = {}
-
-
-def _provider_usage_report(**kwargs) -> dict[str, Any]:
-    from tripplanner.config import get_settings
-    from tripplanner.provider_usage import summary
-
-    settings = get_settings()
-    if not settings.cosmos_emulator:
-        return summary(**kwargs)
-    key = (
-        settings.cosmos_endpoint, settings.cosmos_database,
-        kwargs.get("days"), kwargs.get("start_date"), kwargs.get("end_date"),
-        tuple(sorted(kwargs.get("trip_names", {}).items())),
-    )
-    with _USAGE_REPORT_LOCK:
-        cached = _USAGE_REPORT_CACHE.get(key)
-        if cached is not None and monotonic() < cached[0]:
-            return cached[1]
-        report = summary(**kwargs)
-        if key not in _USAGE_REPORT_CACHE and len(_USAGE_REPORT_CACHE) >= 4:
-            del _USAGE_REPORT_CACHE[next(iter(_USAGE_REPORT_CACHE))]
-        _USAGE_REPORT_CACHE[key] = (monotonic() + 60, report)
-        return report
-
 
 @router.post("/analytics/event", include_in_schema=False, status_code=204)
 async def analytics_event(request: Request) -> Response:
@@ -81,6 +52,26 @@ def ops_overview(
     session = require_owner(request)
     set_user_id(str(session["user_id"]))
 
+    from tripplanner.operations_reporting import _range
+    from tripplanner.operations_usage_report import get_base, get_report
+
+    try:
+        _range(days, start_date, end_date)
+        runtime = get_base(
+            lambda: _build_overview(str(session["user_id"]), days, start_date, end_date),
+            user_id=str(session["user_id"]), days=days, start_date=start_date, end_date=end_date,
+        )
+        runtime["provider_usage"], runtime["provider_usage_status"] = get_report(
+            days=days, start_date=start_date, end_date=end_date,
+            trip_names=runtime.pop("_trip_names", {}),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return runtime
+
+
+def _build_overview(user_id: str, days: int, start_date: date | None, end_date: date | None):
+    set_user_id(user_id)
     from datetime import UTC, datetime, timedelta
 
     from tripplanner.observability import tool_metrics_snapshot
@@ -131,7 +122,7 @@ def ops_overview(
             ),
         },
     }
-    usage = get_owner_usage(str(session["user_id"]))
+    usage = get_owner_usage(user_id)
     runtime["usage"] = {
         "month": usage.get("month"),
         "model_calls": usage.get("calls", 0),
@@ -174,19 +165,7 @@ def ops_overview(
         for provider in sorted(provider_names)
     }
     runtime["cache"] = provider_cache_status()
-    try:
-        runtime["provider_usage"] = _provider_usage_report(
-            days=days,
-            start_date=start_date,
-            end_date=end_date,
-            trip_names={
-                str(trip["trip_id"]): str(trip.get("destination") or "")
-                for trip in trips
-                if trip.get("trip_id")
-            },
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    runtime["_trip_names"] = trip_destinations
     from tripplanner.operations_reporting import snapshot as operations_snapshot
 
     try:
