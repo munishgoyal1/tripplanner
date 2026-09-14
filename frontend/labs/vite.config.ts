@@ -60,6 +60,7 @@ export default defineConfig({
         itineraryCanvas: resolve(__dirname, "lab-17-itinerary-canvas.html"),
         itineraryDensity: resolve(__dirname, "lab-11-itinerary-density.html"),
         itineraryInformation: resolve(__dirname, "lab-2-itinerary-information.html"),
+        itineraryPanePolish: resolve(__dirname, "lab-31-itinerary-pane-polish.html"),
         itinerarySummary: resolve(__dirname, "lab-3-itinerary-summary.html"),
         itineraryTripBook: resolve(__dirname, "lab-5-itinerary-trip-book.html"),
         localization: resolve(__dirname, "lab-24-localization.html"),

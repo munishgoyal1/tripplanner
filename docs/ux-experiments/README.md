@@ -143,6 +143,18 @@ experiment must include a production-scale preview that shows the option inside
 a realistic full application viewport; a miniature specimen alone is not enough
 to judge or approve a direction.
 
+## Open Itinerary Pane Polish Experiment (2026-09-14)
+
+The itinerary pane polish lab is available at
+`http://127.0.0.1:5175/lab-31-itinerary-pane-polish.html`. Starting from today's production
+`ItineraryPanel` — rendered unmodified in the Lab as the *Today* baseline — it compares five
+look-and-feel directions that keep every fact and control: a crisp list with a matching
+workspace finish, a quiet timeline rail, warm editorial tiles with a softer workspace finish, a
+precise ledger agenda, and structured cards with collapsible days. Only the two harmonised
+options touch chrome outside the pane, and neither moves a pane or control. A fact matrix records
+where every production fact lives in each option, and a node-project test enforces it. No
+production code is changed by the Lab. See [`ITINERARY_PANE_POLISH.md`](ITINERARY_PANE_POLISH.md).
+
 ## Open Planner Layout Directions Experiment (2026-09-08)
 
 The planner layout directions lab is available at
