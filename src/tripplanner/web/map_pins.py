@@ -296,6 +296,14 @@ def _map_pins(
     }
     itinerary_names = _itinerary_names(trip)
     bindings = _confirmed_bindings(trip)
+    for entry in itinerary:
+        if not isinstance(entry, dict):
+            continue
+        for stop in entry.get("stops") or []:
+            if (isinstance(stop, dict) and stop.get("place_id")
+                    and isinstance(stop.get("lat"), (int, float))
+                    and isinstance(stop.get("lng"), (int, float))):
+                bindings.setdefault(str(stop.get("name") or "").lower(), stop)
     chosen_names = selected["hotel"] | selected["attraction"]
 
     # Structured itinerary stops are authoritative for what should appear on
@@ -379,7 +387,7 @@ def _map_pins(
                 continue
             if kind not in {"hotel", "attraction", "meal", "restaurant"}:
                 kind = _infer_kind_from_name(name)
-            context = day_context
+            context = str(s.get("city") or day_context) if isinstance(s, dict) else day_context
             if kind == "hotel":
                 context = selected_hotel_context.get(name.lower()) or day_context
             _add(kind, name, context)

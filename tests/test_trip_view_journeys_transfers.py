@@ -2264,7 +2264,7 @@ def test_road_transfer_estimates_duration_arrival_and_hotel_check_in(
     assert drive["duration_min"] > 0
     assert drive["duration_estimated"] is True
     assert drive["departure_time"]
-    assert hotel["time"] == drive["departure_time"]
+    assert hotel["time"] == drive["arrival_time"]
     assert hotel["time_estimated"] is True
 
 

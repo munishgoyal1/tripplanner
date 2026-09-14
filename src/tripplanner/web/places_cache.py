@@ -1351,6 +1351,14 @@ def annotate_stops_with_known_identity(plan: dict[str, Any]) -> int:
                 entry = _CACHE.get(key)
             if not entry or _is_miss(entry) or not _has_location(entry):
                 continue
+            from tripplanner import place_facts
+            from tripplanner.hotel_research import normalize_hotel_locality
+
+            if not place_facts.names_match(
+                normalize_hotel_locality(name),
+                normalize_hotel_locality(str(entry.get("name") or "")),
+            ):
+                continue
             stop["place_id"] = entry.get("place_id") or ""
             stop["lat"] = entry.get("lat")
             stop["lng"] = entry.get("lng")
