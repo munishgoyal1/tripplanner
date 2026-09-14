@@ -538,8 +538,8 @@
   "planner-layout-directions": {
     "labId": "planner-layout-directions",
     "labTitle": "Four ways to inhabit a trip",
-    "selection": "storyboard",
-    "selectionLabel": "B · Trip storyboard",
+    "selection": "refined",
+    "selectionLabel": "C · Refined spatial workspace",
     "comment": "",
     "disposition": "completed",
     "handoffs": [
@@ -585,6 +585,14 @@
         "comment": "",
         "disposition": "completed",
         "recordedAt": "2026-09-14T11:02:20.492Z"
+      },
+      {
+        "version": 6,
+        "selection": "refined",
+        "selectionLabel": "C · Refined spatial workspace",
+        "comment": "",
+        "disposition": "completed",
+        "recordedAt": "2026-09-14T11:02:35.891Z"
       }
     ],
     "implementation": {
@@ -625,7 +633,7 @@
       }
     ],
     "stateChangedAt": "2026-09-14T11:02:20.492Z",
-    "updatedAt": "2026-09-14T11:02:20.492Z"
+    "updatedAt": "2026-09-14T11:02:35.891Z"
   },
   "itinerary-trip-book": {
     "labId": "itinerary-trip-book",
