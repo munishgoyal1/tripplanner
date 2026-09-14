@@ -121,7 +121,7 @@ breaches and incomparable whole-trip totals.
 | Email retry does not duplicate sends | Existing idempotency tests plus booking-template test |
 | Responsive keyboard review flow | Desktop and 320px Chromium test; screenshots inspected |
 
-Focused validation: 91 backend tests across booking, decision apply/API/store/
+Focused validation: 92 backend tests across booking, decision apply/API/store/
 receipts, provider boundary, price recheck and email orchestration; seven web
 component tests; two Chromium scenarios. Critical Ruff and frontend typecheck/
 production build pass. Full suites remain suspended from lane gates and were not

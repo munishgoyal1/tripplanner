@@ -99,6 +99,8 @@ def _facts(raw: dict, plan: dict) -> dict:
         }
     source = raw.get("source") if isinstance(raw.get("source"), dict) else {}
     price = raw.get("price") if isinstance(raw.get("price"), dict) else {}
+    if not price and isinstance(raw.get("total"), dict):
+        price = raw["total"]
     composition = raw.get("price_composition") or price
     amount = next(
         (
@@ -109,7 +111,11 @@ def _facts(raw: dict, plan: dict) -> dict:
         number(price.get("amount")),
     )
     url = safe_url(
-        source.get("url") or raw.get("booking_url") or raw.get("url") or raw.get("website")
+        source.get("url")
+        or raw.get("booking_url")
+        or raw.get("provider_url")
+        or raw.get("url")
+        or raw.get("website")
     )
     context = raw.get("search_context") or {}
     context_warning = ""
@@ -132,7 +138,11 @@ def _facts(raw: dict, plan: dict) -> dict:
             )
     return {
         "name": str(
-            raw.get("name") or raw.get("hotel_name") or raw.get("airline") or "Unspecified item"
+            raw.get("name")
+            or raw.get("title")
+            or raw.get("hotel_name")
+            or raw.get("airline")
+            or "Unspecified item"
         ),
         "amount": amount,
         "currency": str(
@@ -193,11 +203,21 @@ def units(plan: dict) -> list[dict]:
     decisions = [d for d in list_decisions(plan) if d.kind in {"flight", "lodging"}]
     rows: list[dict] = []
     represented: set[str] = set()
-    for bucket, category in (("selected_flights", "flights"), ("selected_hotels", "hotels")):
+    for bucket, category in (
+        ("selected_flights", "flights"),
+        ("selected_hotels", "hotels"),
+        ("selected_activities", "tickets"),
+    ):
         for index, raw in enumerate(plan.get(bucket) or []):
             if not isinstance(raw, dict):
                 continue
-            name = str(raw.get("name") or raw.get("hotel_name") or raw.get("airline") or "")
+            name = str(
+                raw.get("name")
+                or raw.get("title")
+                or raw.get("hotel_name")
+                or raw.get("airline")
+                or ""
+            )
             ref = raw.get("provider_ref") or {}
             decision = next((d for d in decisions if d.id == raw.get("decision_id")), None)
             if decision is None:
@@ -302,12 +322,21 @@ def units(plan: dict) -> list[dict]:
                             not row["start_date"] or str(day.get("date") or "") >= row["start_date"]
                         )
                         and (not row["end_date"] or str(day.get("date") or "") <= row["end_date"])
+                        or category == "tickets"
+                        and row["category"] == "tickets"
+                        and len(row["_targets"]) == 1
+                        and row["_targets"][0][0] == "selected_activities"
+                        and row["name"].casefold() == str(stop.get("name") or "").casefold()
+                        and (not row["start_date"] or day.get("date") == row["start_date"])
                     )
                 ),
                 None,
             )
             if existing:
                 existing["_targets"].append(target)
+                if category == "tickets":
+                    existing["start_date"] = existing["start_date"] or str(day.get("date") or "")
+                    existing["time"] = existing["time"] or str(stop.get("time") or "")
                 continue
             # Selected flight bundles already represent the journey's purchase;
             # itinerary flight anchors are scheduling views of those purchases.
@@ -791,6 +820,7 @@ def prepare_change(plan: dict, command: dict) -> tuple[dict, list[str]]:
                 "expires_at",
                 "booking_intent_details",
                 "booking_url",
+                "provider_url",
                 "url",
                 "website",
             ):

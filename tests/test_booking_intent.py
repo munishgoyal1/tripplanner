@@ -127,6 +127,31 @@ def test_purchase_grouping_caps_and_zero_external_reads(monkeypatch):
     assert "secret-" not in json.dumps(view)
 
 
+def test_selected_activity_and_occurrence_share_one_purchase():
+    plan = make_plan()
+    plan["selected_activities"] = [
+        {
+            "title": "Museum",
+            "total": {"amount": 1000, "currency": "INR"},
+            "provider_url": "https://example.com/museum",
+        }
+    ]
+    rows = [row for row in booking.units(plan) if row["category"] == "tickets"]
+    assert len(rows) == 1 and len(rows[0]["_targets"]) == 2 and rows[0]["amount"] == 1000
+    candidate, _ = booking.prepare_change(
+        plan,
+        {
+            "action": "report",
+            "item_id": rows[0]["id"],
+            "actual": {"product": "Museum guided entry", "provider": "Venue", "amount": 1200},
+        },
+    )
+    assert candidate["selected_activities"][0]["booked"]
+    assert candidate["day_wise_itinerary"][0]["stops"][1]["booked"]
+    assert candidate["total_cost"] == 161200
+    assert len([row for row in booking.units(candidate) if row["category"] == "tickets"]) == 1
+
+
 def test_choose_is_atomic_separate_caps_and_no_duplicate_purchase():
     plan = make_plan()
     before = deepcopy(plan)
