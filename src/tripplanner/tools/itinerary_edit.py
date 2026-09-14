@@ -284,6 +284,13 @@ def _is_leg(stop: Any) -> bool:
     return _stop_kind(stop) in {"flight", "transport"} or _reads_as_journey(_stop_name(stop))
 
 
+def _unresolved_route_choice(stop: Any) -> bool:
+    name = _stop_name(stop)
+    return bool(re.search(r"^\s*option\s+[A-Z0-9]\s*:", name, re.I) or (
+        _stop_kind(stop) in {"transport", "hotel"} and re.search(r"\s+or\s+", name, re.I)
+    ))
+
+
 def _restore_undeclared_legs(
     before: dict[str, Any], after: dict[str, Any], declared: set[str]
 ) -> list[str]:
@@ -319,7 +326,7 @@ def _restore_undeclared_legs(
             name = _stop_name(stop)
             if not name or name.casefold() in surviving or name.casefold() in allowed:
                 continue
-            if not _is_leg(stop):
+            if not _is_leg(stop) or _unresolved_route_choice(stop):
                 continue
             stops = target.setdefault("stops", [])
             if not isinstance(stops, list):
@@ -779,8 +786,12 @@ def _settle_around_legs(stops: list[Any], day_number: int, env: Envelope) -> lis
     if not legs:
         return stops
     body = [stop for stop in stops if not _is_leg(stop)]
-    lead = legs if day_number == env.arrival_day and day_number != env.departure_day else []
-    trail = legs if day_number == env.departure_day and day_number != env.arrival_day else []
+    from tripplanner.web.transport import _resolved_transfer_mode
+
+    road_day = any(_resolved_transfer_mode(_stop_name(stop), _stop_kind(stop)) == "Drive"
+                   for stop in legs)
+    lead = legs if not road_day and day_number == env.arrival_day and day_number != env.departure_day else []
+    trail = legs if not road_day and day_number == env.departure_day and day_number != env.arrival_day else []
     if lead or trail:
         return lead + body + trail
 
@@ -805,8 +816,7 @@ def _settle_around_legs(stops: list[Any], day_number: int, env: Envelope) -> lis
         after: list[Any] = []
         for stop in remaining:
             at = _parse_hhmm(str(stop.get("time") or "")) if isinstance(stop, dict) else None
-            duration = stop.get("duration_min") if isinstance(stop, dict) else None
-            length = max(15, int(duration)) if isinstance(duration, (int, float)) else 90
+            length = _duration_of(stop)
             (before if at is not None and at + length <= departs else after).append(stop)
         settled.extend(before)
         settled.append(leg)

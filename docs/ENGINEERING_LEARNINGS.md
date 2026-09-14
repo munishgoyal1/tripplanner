@@ -2287,3 +2287,16 @@ the outcome.
 - Apply locality normalization to research coverage as well as provider filtering.
   Otherwise a successful Rameswaram search leaves Rameshwaram pending forever.
   An end-to-end policy test must show that alias evidence advances to selection.
+
+## 2026-09-14 - Repair must preserve which side of a drive a stop belongs to
+
+- Live saved-state validation found that settlement assumed a 90-minute hotel
+  stop while chronology allowed 45. Valid checkout anchors moved after drives,
+  creating false intercity jumps. Reuse the validator duration rather than a
+  second default; test the saved circuit order, not just increasing clock times.
+- A flight-style departure rule placed all stops before a return drive, including
+  home arrival. Road journeys need chronological endpoint handling. Obsolete
+  Option A/B legs also must not be restored as if they were booked commitments.
+- A forced write cannot read get_trip_plan first. Supply its actual persisted
+  stops with the repair instruction rather than asking the model to preserve
+  details it cannot access in that phase.

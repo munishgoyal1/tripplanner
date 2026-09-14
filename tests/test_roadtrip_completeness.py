@@ -6,6 +6,7 @@ from tripplanner.graph_policy import resolve_completion_policy, saved_itinerary_
 from tripplanner.hotel_research import unresearched_hotel_cities
 from tripplanner.tools import trip_rebalance
 from tripplanner.tools.hotel_search import _city_in_address
+from tripplanner.tools.itinerary_edit import _restore_undeclared_legs, _settle_plan_legs
 from tripplanner.tools.trip_validation import _ground_leg_distance_warnings
 from tripplanner.web.day_journey import plan_day_journeys
 from tripplanner.web.map_pins import _resolve_road_circuit_pin_ids
@@ -147,3 +148,39 @@ def test_rebalance_does_not_move_attractions_between_overnight_cities():
     assert trip_rebalance._place(plan, {
         "name": "Vivekananda Rock Memorial", "kind": "attraction",
     }, 6, 3) is None
+
+
+def test_timing_settlement_keeps_departure_hotel_before_drive():
+    stops = [
+        {"name": "Madurai Hotel", "kind": "hotel", "time": "07:30"},
+        {"name": "Drive: Madurai to Rameshwaram", "kind": "transport", "time": "08:15", "duration_min": 240},
+        {"name": "Rameshwaram Hotel", "kind": "hotel", "time": "12:45"},
+    ]
+    plan = {"day_wise_itinerary": [{"day": 3, "stops": stops}]}
+    assert _settle_plan_legs(plan) == []
+    assert plan["day_wise_itinerary"][0]["stops"][0]["name"] == "Madurai Hotel"
+
+
+def test_return_drive_keeps_home_arrival_after_journey():
+    stops = [
+        {"name": "Madurai Hotel", "kind": "hotel", "time": "06:00"},
+        {"name": "Drive: Madurai to Bangalore", "kind": "transport", "time": "07:00", "duration_min": 540},
+        {"name": "Home arrival in Bangalore", "kind": "other", "time": "16:30"},
+    ]
+    plan = {"origin": "Bangalore", "destination": "Madurai",
+            "day_wise_itinerary": [{"day": 1, "stops": [{
+                "name": "Drive: Bangalore to Madurai", "kind": "transport", "time": "07:00",
+            }]}, {"day": 8, "stops": stops}]}
+    assert _settle_plan_legs(plan) == []
+    assert plan["day_wise_itinerary"][-1]["stops"][-1]["name"] == "Home arrival in Bangalore"
+
+
+def test_obsolete_alternative_leg_is_not_restored_over_chosen_route():
+    before = {"day_wise_itinerary": [{"day": 1, "stops": [{
+        "name": "Drive: Madurai or Kodaikanal to Bangalore", "kind": "transport",
+    }]}]}
+    after = {"day_wise_itinerary": [{"day": 1, "stops": [{
+        "name": "Home arrival in Bangalore", "kind": "other",
+    }]}]}
+    assert _restore_undeclared_legs(before, after, set()) == []
+    assert len(after["day_wise_itinerary"][0]["stops"]) == 1

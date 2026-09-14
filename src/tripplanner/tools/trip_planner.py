@@ -1536,14 +1536,12 @@ def update_trip_plan(updates_json: str) -> str:
             "with a stops list for every day. The saved itinerary was not changed."
         )
 
+    from tripplanner.tools.itinerary_edit import _unresolved_route_choice
+
     validation_plan = dict(plan)
     for day in updates.get("day_wise_itinerary") or []:
         for stop in day.get("stops") or []:
-            name = _stop_name(stop)
-            if re.search(r"^\s*option\s+[A-Z0-9]\s*:", name, re.I) or (
-                _stop_kind(stop) in {"transport", "hotel"}
-                and re.search(r"\s+or\s+", name, re.I)
-            ):
+            if _unresolved_route_choice(stop):
                 return (
                     "Error: the saved itinerary must contain one chosen route, not alternatives. "
                     "Decide which optional destinations fit the requested pace and dates, "
@@ -1720,6 +1718,16 @@ def update_trip_plan(updates_json: str) -> str:
     closed_day_repairs = [] if flight_edit else _repair_known_closed_days(plan)
     opening_hours_repairs = [] if flight_edit else _repair_known_opening_hours(plan)
     feasibility_repairs = [] if flight_edit else _repair_temporal_infeasibility(plan)
+    if "day_wise_itinerary" in updates and any(
+        _unresolved_route_choice(stop)
+        for day in plan.get("day_wise_itinerary") or []
+        for stop in day.get("stops") or []
+    ):
+        return (
+            "Error: unresolved route alternatives remain after itinerary repair. "
+            "Resubmit the full itinerary with one chosen route and definite endpoints. "
+            "The saved itinerary was not changed."
+        )
     violations = validate_plan(plan)
     calendar_errors = [
         violation.message for violation in violations if violation.code == "I14"
