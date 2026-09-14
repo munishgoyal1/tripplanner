@@ -2,9 +2,10 @@ import json
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from tripplanner.graph_policy import resolve_completion_policy
+from tripplanner.graph_policy import resolve_completion_policy, saved_itinerary_reply
 from tripplanner.hotel_research import unresearched_hotel_cities
 from tripplanner.tools import trip_rebalance
+from tripplanner.tools.hotel_search import _city_in_address
 from tripplanner.tools.trip_validation import _ground_leg_distance_warnings
 from tripplanner.web.day_journey import plan_day_journeys
 from tripplanner.web.map_pins import _resolve_road_circuit_pin_ids
@@ -19,6 +20,14 @@ def test_hotel_search_must_cover_each_overnight_city():
         {"name": "search_hotels", "args": {"city": "Madurai"}, "id": "hotels"},
     ])]
     assert unresearched_hotel_cities(messages, plan) == ["Kanyakumari", "Rameshwaram"]
+
+
+def test_hotel_city_matching_accepts_known_spellings_but_not_other_cities():
+    assert _city_in_address("Rameshwaram", "Temple Road, Rameswaram, Tamil Nadu")
+    assert _city_in_address("Bangalore", "MG Road, Bengaluru, Karnataka")
+    assert _city_in_address("Kanyakumari", "Beach Road, Kanniyakumari, Tamil Nadu")
+    assert not _city_in_address("Rameshwaram", "Beach Road, Kanniyakumari, Tamil Nadu")
+    assert not _city_in_address("Goa", "Hotel in Goalpara, Assam")
 
 
 def test_property_candidates_force_selection_without_requiring_room_rates():
@@ -36,6 +45,44 @@ def test_property_candidates_force_selection_without_requiring_room_rates():
     assert decision.forced_tool == "update_trip_plan"
     assert "availability_status=unverified" in decision.requirement
     assert "selected_hotels" in decision.requirement
+
+
+def test_rejected_itinerary_keeps_retry_instructions_ahead_of_hotel_selection():
+    messages = [HumanMessage(content="Finish this road trip")]
+    for name, args, result in [
+        ("search_hotels", {"city": "Madurai"}, json.dumps({
+            "hotel_research": {"city": "Madurai", "reason": "rate_and_availability_unverified"},
+            "candidates": [{"name": "Heritage Madurai", "place_id": "property"}],
+        })),
+        ("update_trip_plan", {}, "Error: Day 2 lunch must start at 13:15 or later"),
+    ]:
+        messages.extend([
+            AIMessage(content="", tool_calls=[{"name": name, "args": args, "id": name}]),
+            ToolMessage(tool_call_id=name, content=result),
+        ])
+    decision = resolve_completion_policy(
+        messages=messages, active_trip={"destination": "Madurai", "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Madurai hotel TBD", "kind": "hotel"}]},
+        ]}, proposal_only=False, has_planning_intent=True,
+    )
+    assert decision.forced_tool == "update_trip_plan"
+    assert "13:15" in decision.requirement
+    assert "full itinerary" in decision.requirement
+
+
+def test_stopped_reply_contains_all_saved_days_and_missing_coverage():
+    reply = saved_itinerary_reply({
+        "departure_date": "2026-10-12", "return_date": "2026-10-19",
+        "day_wise_itinerary": [
+            {"day": day, "stops": [{"name": f"Saved stay {day}", "kind": "hotel"}]}
+            for day in [7, 3]
+        ],
+    }, ["Room availability unverified"])
+    assert reply.index("Day 3") < reply.index("Day 7")
+    assert "Saved stay 3" in reply and "Saved stay 7" in reply
+    assert "6 days missing" in reply
+    assert "Room availability unverified" in reply
+    assert "no itinerary work is continuing" in reply
 
 
 def test_long_explicit_drive_is_not_rejected_as_unsupported_local_transport():

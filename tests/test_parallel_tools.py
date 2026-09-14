@@ -948,9 +948,9 @@ def test_trip_agent_ends_with_summary_at_tool_phase_budget(monkeypatch) -> None:
         "proposal_only": False,
     })
 
-    assert result["messages"][0].content == "Saved the best available plan."
-    assert any("bounded planning-tool budget" in str(message.content)
-               for message in captured_messages)
+    assert "No day-by-day itinerary has been saved" in result["messages"][0].content
+    assert "Planning has stopped" in result["messages"][0].content
+    assert captured_messages == []
 
 
 def test_proposal_only_never_forces_initial_itinerary(monkeypatch) -> None:

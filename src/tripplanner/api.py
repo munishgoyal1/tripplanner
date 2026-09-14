@@ -198,18 +198,9 @@ def _best_effort_plan_reply() -> tuple[str, int]:
     except Exception:
         trip = {}
         gaps = []
-    destination = str(trip.get("destination") or "your trip").strip()
-    itinerary = trip.get("day_wise_itinerary")
-    if not isinstance(itinerary, list) or not itinerary:
-        return (
-            "Planning reached its safety limit before a usable itinerary was saved. "
-            "Please retry with a shorter trip scope.",
-            len(gaps),
-        )
-    reply = f"I saved the best available {destination} itinerary."
-    if gaps:
-        reply += " It is usable, but these details still need refinement: " + " ".join(gaps)
-    return reply, len(gaps)
+    from tripplanner.graph_policy import saved_itinerary_reply
+
+    return saved_itinerary_reply(trip, gaps), len(gaps)
 
 
 @app.middleware("http")

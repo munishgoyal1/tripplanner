@@ -25,6 +25,12 @@ For a self-drive itinerary, research each overnight city and select suitable
 grounded hotels even when room prices/availability remain unverified. A search
 for one city cannot satisfy the other cities. A returned property candidate
 requires a bounded selection pass, not a metadata-only save with Hotel TBD.
+Known city spelling aliases (Bangalore/Bengaluru, Rameshwaram/Rameswaram,
+Kanyakumari/Kanniyakumari) match hotel addresses without accepting other cities.
+Rejected itinerary errors take priority over hotel-selection nudges. A forced
+full-trip repair must submit all days; notes or selections alone cannot satisfy
+it. If planning stops at a safety limit, render the actual saved days and gaps
+directly, without a model claiming that rejected proposed changes were saved.
 When the traveller delegates an optional detour decision, choose one route that
 fits dates, pace and party needs. Do not persist competing Option A/B stops or
 ambiguous road origins/destinations. Explain excluded detours in notes.
