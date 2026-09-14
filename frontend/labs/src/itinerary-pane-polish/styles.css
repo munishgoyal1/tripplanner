@@ -15,7 +15,7 @@
 .ipp-principle span, .ipp-principle small { display: block; color: #947f6d; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .ipp-principle strong { display: block; margin: 12px 0 20px; font: 600 30px/1.04 "Newsreader", serif; }
 .ipp-section { margin: 28px 0; }
-.ipp-options { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.ipp-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .ipp-option { display: flex; flex-direction: column; min-height: 230px; text-align: left; border: 1px solid #ddd2c3; border-radius: 16px; background: #fffcf7; padding: 16px; transition: .18s; }
 .ipp-option:hover { transform: translateY(-2px); border-color: #c89578; box-shadow: 0 10px 25px #5e3c2014; }
 .ipp-option.selected { border-color: #b54c2d; box-shadow: 0 0 0 3px #b54c2d22, 0 12px 28px #5e3c2018; background: #fff; }
@@ -74,6 +74,98 @@
   --foreground: 0.21 0.012 50;
   --muted-foreground: 0.49 0.01 60;
 }
+/* F and G: the crisp finish with stronger secondary text for readability. */
+.ipp-readable {
+  --ink: 0.19 0.012 50;
+  --foreground: 0.19 0.012 50;
+  --muted-foreground: 0.43 0.012 60;
+  --border: 0.89 0.006 85;
+}
+
+/*
+ * F and G stop rows respond to the pane's own width, not the viewport, so a
+ * wider itinerary pane spends its width on one-line rows instead of height.
+ */
+.ippx-pane { container-type: inline-size; }
+
+/*
+ * Row anatomy shared by F and G. On a narrow pane only the name shares its line
+ * with the status; everything below it spans to the right edge, so the status
+ * pill never narrows the lines that carry most of the text. Once the pane has
+ * room, signals and status join the name's line and rows get shorter.
+ */
+
+/* F · Crisp flow rows */
+.ippf-stop {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-areas: "time name status" ". detail detail" ". sig sig" ". extra extra";
+  column-gap: 10px;
+  align-items: start;
+}
+.ippf-time { grid-area: time; }
+/* Narrow: main dissolves so name and detail take separate grid areas. */
+.ippf-main, .ippg-main { display: contents; }
+.ippf-name { grid-area: name; min-width: 0; }
+.ippf-detail { grid-area: detail; min-width: 0; }
+.ippf-sig { grid-area: sig; min-width: 0; }
+.ippf-status { grid-area: status; }
+.ippf-extra { grid-area: extra; min-width: 0; }
+.ippf-sig:empty, .ippf-extra:empty { display: none; }
+.ippf-leg { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 10px; }
+.ippf-leg-arrival { display: block; }
+@container (min-width: 600px) {
+  .ippf-stop {
+    grid-template-columns: 46px minmax(0, 1fr) minmax(0, 1fr) auto;
+    grid-template-areas: "time main sig status" ". extra extra extra";
+  }
+  /* Wide: name and detail stack inside one cell beside the signals. */
+  .ippf-main { display: block; grid-area: main; min-width: 0; }
+  .ippf-sig { padding-top: 1px; padding-left: 0; }
+  .ippf-leg { grid-template-columns: 46px minmax(0, 1fr); }
+  .ippf-leg-text { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .ippf-leg-arrival { order: 2; flex-shrink: 0; white-space: nowrap; }
+}
+@container (min-width: 880px) {
+  .ippf-stop { grid-template-columns: 54px minmax(0, 1fr) minmax(0, 1.3fr) 124px; }
+  .ippf-leg { grid-template-columns: 54px minmax(0, 1fr); }
+  .ippf-status { justify-self: end; }
+}
+
+/* G · Crisp day sections */
+.ippg-head { display: none; }
+.ippg-row {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  grid-template-areas: "mark name status" ". detail detail" ". sig sig" ". extra extra";
+  column-gap: 9px;
+  align-items: start;
+}
+.ippg-mark { grid-area: mark; padding-top: 1px; }
+.ippg-time { grid-area: time; display: none; }
+.ippg-name { grid-area: name; min-width: 0; }
+.ippg-detail { grid-area: detail; min-width: 0; }
+.ippg-sig { grid-area: sig; min-width: 0; }
+.ippg-status { grid-area: status; }
+.ippg-extra { grid-area: extra; min-width: 0; }
+.ippg-sig:empty, .ippg-extra:empty { display: none; }
+@container (min-width: 600px) {
+  .ippg-head {
+    display: grid;
+    grid-template-columns: 20px 62px minmax(0, 1.2fr) minmax(0, 1fr) 128px;
+    column-gap: 10px;
+  }
+  .ippg-row {
+    grid-template-columns: 20px 62px minmax(0, 1.2fr) minmax(0, 1fr) 128px;
+    grid-template-areas: "mark time main sig status" ". . extra extra extra";
+    column-gap: 10px;
+  }
+  .ippg-main { display: block; grid-area: main; min-width: 0; }
+  .ippg-time { display: block; }
+  .ippg-time-inline { display: none; }
+  .ippg-status { justify-self: end; }
+  .ippg-list > li:nth-child(even) .ippg-row { background: oklch(var(--sand) / 0.55); }
+}
 
 @media (max-width: 1100px) {
   .ipp-header { grid-template-columns: 1fr; }
@@ -83,3 +175,4 @@
   .ipp-options { grid-template-columns: 1fr; }
   .ipp-compare { flex-direction: column; align-items: center; }
 }
+

@@ -8,8 +8,12 @@ import type { ItineraryFilter } from "../../../src/lib/itineraryFilters";
 import type { PlannerState } from "./state";
 
 /** Surrounding workspace chrome. Only the two harmonised options may restyle it. */
-export type Chrome = "today" | "soft" | "crisp";
-export type PaneWidth = "narrow" | "default" | "wide" | "maximized";
+export type Chrome = "today" | "soft" | "crisp" | "crisp2";
+
+/** "crisp2" is A's crisp finish plus the F/G refinements: stronger text contrast,
+ * dated day-bar chips with booking counts, and readiness in the itinerary header. */
+const isCrisp = (chrome: Chrome): boolean => chrome === "crisp" || chrome === "crisp2";
+export type PaneWidth = "narrow" | "default" | "wide" | "half" | "maximized";
 
 const FILTERS = [
   { value: "flight", label: "Flights", Icon: Plane },
@@ -22,6 +26,7 @@ const COLUMNS: Record<PaneWidth, string> = {
   narrow: "340px minmax(0,1fr) 25%",
   default: "27% minmax(0,1fr) 25%",
   wide: "38% minmax(0,1fr) 23%",
+  half: "50% minmax(0,1fr) 20%",
   maximized: "minmax(0,1fr)",
 };
 
@@ -30,7 +35,7 @@ function FilterGroup({ state, chrome }: { state: PlannerState; chrome: Chrome })
     <div
       role="group"
       aria-label="Filter itinerary and map"
-      className={`flex min-w-0 items-center gap-0.5 p-0.5 ${chrome === "crisp" ? "rounded-md border border-border bg-paper" : "rounded-full border border-border bg-sand"}`}
+      className={`flex min-w-0 items-center gap-0.5 p-0.5 ${isCrisp(chrome) ? "rounded-md border border-border bg-paper" : "rounded-full border border-border bg-sand"}`}
     >
       {FILTERS.map(({ value, label, Icon }) => {
         const active = state.filters.includes(value as ItineraryFilter);
@@ -42,9 +47,9 @@ function FilterGroup({ state, chrome }: { state: PlannerState; chrome: Chrome })
             aria-label={`Filter by ${label}`}
             aria-pressed={active}
             title={label}
-            className={`grid h-7 w-7 shrink-0 place-items-center transition ${chrome === "crisp" ? "rounded" : "rounded-full"} ${
+            className={`grid h-7 w-7 shrink-0 place-items-center transition ${isCrisp(chrome) ? "rounded" : "rounded-full"} ${
               active
-                ? chrome === "crisp" ? "bg-ink text-white" : "bg-paper text-ink shadow-sm ring-1 ring-border"
+                ? isCrisp(chrome) ? "bg-ink text-white" : "bg-paper text-ink shadow-sm ring-1 ring-border"
                 : "text-muted hover:bg-paper hover:text-ink"
             }`}
           >
@@ -54,6 +59,10 @@ function FilterGroup({ state, chrome }: { state: PlannerState; chrome: Chrome })
       })}
     </div>
   );
+}
+
+function ReadyHint({ state }: { state: PlannerState }) {
+  return <span className="shrink-0 text-[11px] font-medium tabular-nums text-muted" title="Planned stops confirmed">{state.stats.booked}/{state.stats.stops} ready</span>;
 }
 
 function PaneHeader({ chrome, label, context, Icon, maximized, onToggleMaximize, children }: {
@@ -66,11 +75,11 @@ function PaneHeader({ chrome, label, context, Icon, maximized, onToggleMaximize,
   children?: ReactNode;
 }) {
   const controls = (
-    <div role="group" aria-label={`${label} pane controls`} className={`ml-auto flex shrink-0 items-center p-0.5 ${chrome === "crisp" ? "gap-0.5" : "rounded-full bg-sand ring-1 ring-inset ring-border"}`}>
-      <button type="button" className={`grid h-7 w-7 place-items-center text-muted transition hover:text-ink ${chrome === "crisp" ? "rounded hover:bg-sand" : "rounded-full hover:bg-paper hover:shadow-sm"}`} aria-label={`Hide ${label}`} title={`Hide ${label}`}>
+    <div role="group" aria-label={`${label} pane controls`} className={`ml-auto flex shrink-0 items-center p-0.5 ${isCrisp(chrome) ? "gap-0.5" : "rounded-full bg-sand ring-1 ring-inset ring-border"}`}>
+      <button type="button" className={`grid h-7 w-7 place-items-center text-muted transition hover:text-ink ${isCrisp(chrome) ? "rounded hover:bg-sand" : "rounded-full hover:bg-paper hover:shadow-sm"}`} aria-label={`Hide ${label}`} title={`Hide ${label}`}>
         <EyeOff size={14} aria-hidden />
       </button>
-      <button type="button" onClick={onToggleMaximize} className={`grid h-7 w-7 place-items-center text-muted transition hover:text-ink ${chrome === "crisp" ? "rounded hover:bg-sand" : "rounded-full hover:bg-paper hover:shadow-sm"}`} aria-label={maximized ? `Restore ${label}` : `Maximize ${label}`} title={maximized ? "Restore" : "Maximize"}>
+      <button type="button" onClick={onToggleMaximize} className={`grid h-7 w-7 place-items-center text-muted transition hover:text-ink ${isCrisp(chrome) ? "rounded hover:bg-sand" : "rounded-full hover:bg-paper hover:shadow-sm"}`} aria-label={maximized ? `Restore ${label}` : `Maximize ${label}`} title={maximized ? "Restore" : "Maximize"}>
         {maximized ? <Minimize2 size={14} aria-hidden /> : <Maximize2 size={14} aria-hidden />}
       </button>
     </div>
@@ -102,7 +111,7 @@ function PaneHeader({ chrome, label, context, Icon, maximized, onToggleMaximize,
     <header className="flex h-9 shrink-0 items-center gap-2 border-b border-border px-2.5" data-lab-change="Pane header">
       <Icon size={14} className="shrink-0 text-muted" aria-hidden />
       <h2 className="shrink-0 text-[13px] font-semibold tracking-[-0.01em] text-ink">{label}</h2>
-      <div className="min-w-0 flex-1 pl-1">{children}</div>
+      <div className="flex min-w-0 flex-1 items-center justify-between gap-2 pl-1">{children}</div>
       {controls}
     </header>
   );
@@ -110,24 +119,24 @@ function PaneHeader({ chrome, label, context, Icon, maximized, onToggleMaximize,
 
 function paneShell(chrome: Chrome) {
   if (chrome === "soft") return "flex h-full min-h-0 flex-col overflow-hidden rounded-xl bg-paper shadow-[0_1px_2px_oklch(0.28_0.05_45/0.05),0_6px_20px_-14px_oklch(0.28_0.05_45/0.25)] ring-1 ring-border/70";
-  if (chrome === "crisp") return "flex h-full min-h-0 flex-col overflow-hidden rounded-md border border-border bg-paper";
+  if (isCrisp(chrome)) return "flex h-full min-h-0 flex-col overflow-hidden rounded-md border border-border bg-paper";
   return "flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-paper shadow-card";
 }
 
 function Toolbar({ chrome }: { chrome: Chrome }) {
-  const toggle = (active: boolean) => chrome === "crisp"
+  const toggle = (active: boolean) => isCrisp(chrome)
     ? `inline-flex h-7 items-center gap-1 rounded px-2 text-xs font-semibold transition ${active ? "bg-paper text-ink shadow-sm ring-1 ring-border" : "text-muted hover:text-ink"}`
     : chrome === "soft"
       ? `inline-flex h-7 items-center gap-1 rounded-full px-2.5 text-xs font-medium transition ${active ? "bg-paper text-ink shadow-sm" : "text-muted hover:text-ink"}`
       : `inline-flex h-7 items-center justify-center gap-1 rounded-full px-2 text-xs font-semibold transition ${active ? "bg-clay-soft text-ink shadow-sm ring-1 ring-clay/20" : "text-muted hover:bg-paper hover:text-ink"}`;
-  const group = chrome === "crisp" ? "flex items-center gap-0.5 rounded-md bg-sand p-0.5" : "flex items-center gap-0.5 rounded-full border border-border bg-sand p-0.5";
+  const group = isCrisp(chrome) ? "flex items-center gap-0.5 rounded-md bg-sand p-0.5" : "flex items-center gap-0.5 rounded-full border border-border bg-sand p-0.5";
   return (
     <header className="relative z-20 flex h-10 shrink-0 items-center gap-2.5 border-b border-border bg-paper px-4" data-lab-change={chrome === "today" ? undefined : "Toolbar finish"}>
       <span className="inline-flex shrink-0 items-center gap-2">
         <Compass size={17} className="text-brand" aria-hidden />
-        <span className={chrome === "crisp" ? "text-[15px] font-semibold tracking-[-0.01em] text-ink" : "display text-lg text-ink"}>AI Tripplanner</span>
+        <span className={isCrisp(chrome) ? "text-[15px] font-semibold tracking-[-0.01em] text-ink" : "display text-lg text-ink"}>AI Tripplanner</span>
       </span>
-      <button type="button" className={`inline-flex h-7 items-center gap-1.5 px-2.5 text-xs font-semibold text-ink ${chrome === "crisp" ? "rounded-md border border-border" : "rounded-full border border-border bg-paper"}`}>
+      <button type="button" className={`inline-flex h-7 items-center gap-1.5 px-2.5 text-xs font-semibold text-ink ${isCrisp(chrome) ? "rounded-md border border-border" : "rounded-full border border-border bg-paper"}`}>
         <MapPin size={13} className="text-brand" aria-hidden /> Jaipur &amp; Udaipur <span className="font-normal text-muted">(4)</span> <ChevronDown size={13} aria-hidden />
       </button>
       <div className="h-6 w-px shrink-0 bg-border" aria-hidden />
@@ -139,11 +148,11 @@ function Toolbar({ chrome }: { chrome: Chrome }) {
           <button type="button" className={toggle(true)} aria-pressed><PanelRight size={15} aria-hidden /> Guide</button>
           <button type="button" className={toggle(true)} aria-pressed><MessageCircle size={15} aria-hidden /> Assistant</button>
         </div>
-        <div role="group" className={chrome === "crisp" ? "flex items-center gap-0.5" : "flex items-center gap-0.5 rounded-full border border-border bg-paper p-0.5"} aria-label="Rate this trip">
+        <div role="group" className={isCrisp(chrome) ? "flex items-center gap-0.5" : "flex items-center gap-0.5 rounded-full border border-border bg-paper p-0.5"} aria-label="Rate this trip">
           <button type="button" className="grid h-7 w-7 place-items-center rounded-full text-muted hover:text-ink" title="Helpful"><ThumbsUp size={14} aria-hidden /></button>
           <button type="button" className="grid h-7 w-7 place-items-center rounded-full text-muted hover:text-ink" title="Not helpful"><ThumbsDown size={14} aria-hidden /></button>
         </div>
-        <div role="group" className={chrome === "crisp" ? "flex items-center gap-0.5 rounded-md border border-border p-0.5" : "flex items-center gap-0.5 rounded-full border border-border bg-paper p-0.5"} aria-label="Trip actions">
+        <div role="group" className={isCrisp(chrome) ? "flex items-center gap-0.5 rounded-md border border-border p-0.5" : "flex items-center gap-0.5 rounded-full border border-border bg-paper p-0.5"} aria-label="Trip actions">
           <button type="button" className="grid h-7 w-7 place-items-center rounded-full text-muted hover:text-ink" title="Export"><Download size={14} aria-hidden /></button>
           <span className="h-4 w-px bg-border" aria-hidden />
           <button type="button" className="inline-flex h-7 items-center gap-1.5 rounded-full px-2 text-xs font-semibold text-ink"><Plus size={14} className="text-clay" aria-hidden /> New trip</button>
@@ -153,7 +162,7 @@ function Toolbar({ chrome }: { chrome: Chrome }) {
         <span className="h-5 w-px bg-border" aria-hidden />
         <button type="button" className="grid h-7 w-7 place-items-center rounded-full text-muted" title="Home"><House size={15} aria-hidden /></button>
         <button type="button" className="grid h-7 w-7 place-items-center rounded-full border border-border text-muted" title="Settings"><Settings size={15} aria-hidden /></button>
-        <button type="button" className={`inline-flex h-7 items-center px-3 text-xs font-semibold text-white shadow-sm ${chrome === "crisp" ? "rounded-md bg-ink" : "rounded-full bg-brand"}`}>Sign in</button>
+        <button type="button" className={`inline-flex h-7 items-center px-3 text-xs font-semibold text-white shadow-sm ${isCrisp(chrome) ? "rounded-md bg-ink" : "rounded-full bg-brand"}`}>Sign in</button>
       </nav>
     </header>
   );
@@ -169,7 +178,7 @@ function NoticeStrip({ chrome }: { chrome: Chrome }) {
       </div>
     );
   }
-  if (chrome === "crisp") {
+  if (isCrisp(chrome)) {
     return (
       <div aria-label="Workspace notifications" className="flex h-7 shrink-0 items-center gap-2 border-b border-border bg-paper px-4 text-xs text-muted" data-lab-change="Notification strip">
         <span className="h-1.5 w-1.5 rounded-full bg-ochre" aria-hidden /> <span className="truncate">{NOTICE}</span>
@@ -183,23 +192,36 @@ function NoticeStrip({ chrome }: { chrome: Chrome }) {
   );
 }
 
+function DayBarExtra({ day, selected }: { day: PlannerState["itinerary"]["days"][number]; selected: boolean }) {
+  const planned = day.stops.filter((stop) => !["hotel", "airport", "origin"].includes(stop.kind));
+  const booked = planned.filter((stop) => stop.booked).length;
+  const date = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${day.date}T00:00:00Z`));
+  return (
+    <>
+      <span className={`font-normal ${selected ? "text-white/75" : "text-muted"}`}>{date}</span>
+      <span className={`rounded px-1 text-[10px] font-semibold tabular-nums ${selected ? "bg-white/15 text-white" : booked === planned.length ? "bg-emerald-50 text-emerald-700" : "bg-sand text-muted"}`} title={`${booked} of ${planned.length} planned stops confirmed`}>{booked}/{planned.length}</span>
+    </>
+  );
+}
+
 function DayBar({ chrome, state }: { chrome: Chrome; state: PlannerState }) {
   const days = state.itinerary.days;
   const active = state.circuitDay ?? state.focus?.day ?? null;
-  const groupClass = chrome === "crisp" ? "flex items-center gap-0.5" : "flex items-center gap-0.5 rounded-full bg-sand p-0.5 ring-1 ring-inset ring-border";
+  const groupClass = isCrisp(chrome) ? "flex items-center gap-0.5" : "flex items-center gap-0.5 rounded-full bg-sand p-0.5 ring-1 ring-inset ring-border";
   return (
     <nav aria-label="Trip days and stop sequence" className={`relative z-10 flex h-8 shrink-0 items-center gap-2 px-3 ${chrome === "soft" ? "bg-background" : "border-b border-border bg-paper"}`} data-lab-change={chrome === "today" ? undefined : "Day bar"}>
       <div className={groupClass}>
-        <button type="button" onClick={state.showAllDays} className={`h-6 px-2.5 text-[11px] font-semibold transition ${chrome === "crisp" ? "rounded" : "rounded-full"} ${state.allDays || active == null ? chrome === "crisp" ? "bg-ink text-white" : "bg-paper text-ink shadow-sm" : "text-muted hover:text-ink"}`}>All days</button>
+        <button type="button" onClick={state.showAllDays} className={`h-6 px-2.5 text-[11px] font-semibold transition ${isCrisp(chrome) ? "rounded" : "rounded-full"} ${state.allDays || active == null ? isCrisp(chrome) ? "bg-ink text-white" : "bg-paper text-ink shadow-sm" : "text-muted hover:text-ink"}`}>All days</button>
         {days.map((day) => {
           const selected = !state.allDays && active === day.day;
           if (chrome === "today") {
             return <button key={day.day} type="button" onClick={() => state.showDay(day.day)} className={`h-6 rounded-full px-2.5 text-[11px] font-semibold transition ${selected ? "text-white shadow-sm" : "text-muted hover:bg-paper hover:text-ink"}`} style={selected ? { backgroundColor: day.color } : undefined}>Day {day.day}</button>;
           }
           return (
-            <button key={day.day} type="button" onClick={() => state.showDay(day.day)} className={`inline-flex h-6 items-center gap-1.5 px-2.5 text-[11px] font-semibold transition ${chrome === "crisp" ? `rounded ${selected ? "bg-ink text-white" : "text-muted hover:bg-sand hover:text-ink"}` : `rounded-full ${selected ? "bg-paper text-ink shadow-sm" : "text-muted hover:text-ink"}`}`}>
+            <button key={day.day} type="button" onClick={() => state.showDay(day.day)} className={`inline-flex h-6 items-center gap-1.5 px-2.5 text-[11px] font-semibold transition ${isCrisp(chrome) ? `rounded ${selected ? "bg-ink text-white" : "text-muted hover:bg-sand hover:text-ink"}` : `rounded-full ${selected ? "bg-paper text-ink shadow-sm" : "text-muted hover:text-ink"}`}`}>
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: day.color }} aria-hidden />
               Day {day.day}
+              {chrome === "crisp2" && <DayBarExtra day={day} selected={selected} />}
             </button>
           );
         })}
@@ -256,7 +278,7 @@ function DetailsBody({ chrome, state }: { chrome: Chrome; state: PlannerState })
   // Details shows Hawa Mahal until a stop is chosen, so the frame never opens empty.
   const target = state.focus ?? { day: 1, index: 4 };
   const focused = state.itinerary.days.find((day) => day.day === target.day)?.stops[target.index - 1];
-  const chip = chrome === "crisp"
+  const chip = isCrisp(chrome)
     ? "inline-flex items-center gap-1 rounded border border-border px-1.5 py-0.5 text-[11px] font-medium text-muted"
     : chrome === "soft"
       ? "inline-flex items-center gap-1 rounded-full border border-border/80 bg-paper px-2.5 py-0.5 text-[11px] font-medium text-muted"
@@ -264,9 +286,9 @@ function DetailsBody({ chrome, state }: { chrome: Chrome; state: PlannerState })
   if (!focused) return <p className="p-4 text-xs text-muted">Choose a stop to see its details.</p>;
   return (
     <div className="p-4" data-lab-change={chrome === "today" ? undefined : "Details finish"}>
-      <div className={`h-32 w-full ${chrome === "crisp" ? "rounded-md" : "rounded-xl"}`} style={{ background: "linear-gradient(135deg,#f6d9c4 0%,#e9b99a 45%,#c9d8c5 100%)" }} aria-hidden />
-      <p className={`mt-3 text-[10px] font-bold uppercase tracking-[0.08em] ${chrome === "crisp" ? "text-muted" : "text-brand"}`}>{focused.kind}</p>
-      <h3 className={chrome === "crisp" ? "mt-0.5 text-base font-semibold tracking-[-0.01em] text-ink" : "display mt-0.5 text-xl leading-tight text-ink"}>{focused.name}</h3>
+      <div className={`h-32 w-full ${isCrisp(chrome) ? "rounded-md" : "rounded-xl"}`} style={{ background: "linear-gradient(135deg,#f6d9c4 0%,#e9b99a 45%,#c9d8c5 100%)" }} aria-hidden />
+      <p className={`mt-3 text-[10px] font-bold uppercase tracking-[0.08em] ${isCrisp(chrome) ? "text-muted" : "text-brand"}`}>{focused.kind}</p>
+      <h3 className={isCrisp(chrome) ? "mt-0.5 text-base font-semibold tracking-[-0.01em] text-ink" : "display mt-0.5 text-xl leading-tight text-ink"}>{focused.name}</h3>
       <div className="mt-2 flex flex-wrap gap-1">
         {typeof focused.rating === "number" && <span className={chip}>★ {focused.rating.toFixed(1)}{focused.review_count ? ` · ${new Intl.NumberFormat("en", { notation: "compact" }).format(focused.review_count)} reviews` : ""}</span>}
         {focused.cost_display && <span className={chip}>{focused.cost_display}</span>}
@@ -274,9 +296,9 @@ function DetailsBody({ chrome, state }: { chrome: Chrome; state: PlannerState })
       </div>
       {(focused.insight || focused.note) && <p className="mt-3 text-xs leading-relaxed text-muted">{focused.insight || focused.note}</p>}
       <div className="mt-4 grid grid-cols-3 gap-1.5">
-        {["#e8d5c4", "#d6e0cf", "#efe1d2"].map((color) => <span key={color} className={`h-14 ${chrome === "crisp" ? "rounded" : "rounded-lg"}`} style={{ background: color }} aria-hidden />)}
+        {["#e8d5c4", "#d6e0cf", "#efe1d2"].map((color) => <span key={color} className={`h-14 ${isCrisp(chrome) ? "rounded" : "rounded-lg"}`} style={{ background: color }} aria-hidden />)}
       </div>
-      <p className={`mt-4 text-[10px] font-bold uppercase tracking-[0.08em] ${chrome === "crisp" ? "text-muted" : "text-muted"}`}>Recent reviews</p>
+      <p className={`mt-4 text-[10px] font-bold uppercase tracking-[0.08em] ${isCrisp(chrome) ? "text-muted" : "text-muted"}`}>Recent reviews</p>
       <p className="mt-1 text-xs leading-relaxed text-muted">“Worth every minute — go early and the light on the sandstone is unforgettable.”</p>
     </div>
   );
@@ -284,23 +306,24 @@ function DetailsBody({ chrome, state }: { chrome: Chrome; state: PlannerState })
 
 function AssistantDock({ chrome }: { chrome: Chrome }) {
   return (
-    <div className={`absolute bottom-3 right-3 z-20 flex w-[min(25%,360px)] items-center gap-2 bg-paper p-1.5 pl-3 ${chrome === "crisp" ? "rounded-md border border-border shadow-sm" : "rounded-full shadow-pop ring-1 ring-border"}`}>
+    <div className={`absolute bottom-3 right-3 z-20 flex w-[min(25%,360px)] items-center gap-2 bg-paper p-1.5 pl-3 ${isCrisp(chrome) ? "rounded-md border border-border shadow-sm" : "rounded-full shadow-pop ring-1 ring-border"}`}>
       <Sparkles size={14} className="shrink-0 text-brand" aria-hidden />
       <span className="min-w-0 flex-1 truncate text-xs text-muted">Ask the Assistant to change this trip…</span>
       <span className="hidden text-[10px] text-muted xl:inline">Default preferences</span>
-      <button type="button" className={`grid h-7 w-7 place-items-center text-white ${chrome === "crisp" ? "rounded bg-ink" : "rounded-full bg-brand"}`} aria-label="Send"><Send size={13} aria-hidden /></button>
+      <button type="button" className={`grid h-7 w-7 place-items-center text-white ${isCrisp(chrome) ? "rounded bg-ink" : "rounded-full bg-brand"}`} aria-label="Send"><Send size={13} aria-hidden /></button>
     </div>
   );
 }
 
 /** The itinerary pane alone, at a fixed pane width, for side-by-side comparison. */
 export function PaneFrame({ chrome, state, children }: { chrome: Chrome; state: PlannerState; children: ReactNode }) {
-  const themeClass = chrome === "crisp" ? "ipp-crisp" : chrome === "soft" ? "ipp-soft" : "";
+  const themeClass = chrome === "crisp2" ? "ipp-crisp ipp-readable" : isCrisp(chrome) ? "ipp-crisp" : chrome === "soft" ? "ipp-soft" : "";
   return (
     <div className={`h-full w-full bg-background p-1.5 text-ink ${themeClass}`} style={{ fontFamily: '"Work Sans", ui-sans-serif, system-ui, sans-serif' }}>
       <article className={paneShell(chrome)}>
         <PaneHeader chrome={chrome} label="Itinerary" context="Read and refine" Icon={ListChecks} maximized={false} onToggleMaximize={() => undefined}>
           <FilterGroup state={state} chrome={chrome} />
+          {chrome === "crisp2" && <ReadyHint state={state} />}
         </PaneHeader>
         <div className="min-h-0 flex-1">{children}</div>
       </article>
@@ -316,17 +339,18 @@ export function Workspace({ chrome, state, width, onWidth, itinerary }: {
   itinerary: ReactNode;
 }) {
   const maximized = width === "maximized";
-  const themeClass = chrome === "crisp" ? "ipp-crisp" : chrome === "soft" ? "ipp-soft" : "";
+  const themeClass = chrome === "crisp2" ? "ipp-crisp ipp-readable" : isCrisp(chrome) ? "ipp-crisp" : chrome === "soft" ? "ipp-soft" : "";
   return (
     <div className={`ipp-workspace relative flex h-[900px] w-[1440px] flex-col overflow-hidden bg-sand text-ink ${themeClass}`} style={{ fontFamily: '"Work Sans", ui-sans-serif, system-ui, sans-serif' }}>
       <Toolbar chrome={chrome} />
       <NoticeStrip chrome={chrome} />
       <DayBar chrome={chrome} state={state} />
-      <main className={`grid min-h-0 flex-1 overflow-hidden bg-background ${chrome === "soft" ? "gap-2 p-2" : chrome === "crisp" ? "gap-1.5 p-1.5" : "gap-1.5 p-1.5"}`} style={{ gridTemplateColumns: COLUMNS[width] }}>
+      <main className={`grid min-h-0 flex-1 overflow-hidden bg-background ${chrome === "soft" ? "gap-2 p-2" : isCrisp(chrome) ? "gap-1.5 p-1.5" : "gap-1.5 p-1.5"}`} style={{ gridTemplateColumns: COLUMNS[width] }}>
         <section className="min-h-0 min-w-0">
           <article className={paneShell(chrome)}>
             <PaneHeader chrome={chrome} label="Itinerary" context="Read and refine" Icon={ListChecks} maximized={maximized} onToggleMaximize={() => onWidth(maximized ? "default" : "maximized")}>
               <FilterGroup state={state} chrome={chrome} />
+              {chrome === "crisp2" && <ReadyHint state={state} />}
             </PaneHeader>
             <div className="min-h-0 flex-1" data-lab-change="Itinerary pane body">{itinerary}</div>
           </article>

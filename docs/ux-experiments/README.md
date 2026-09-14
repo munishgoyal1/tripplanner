@@ -151,7 +151,9 @@ The itinerary pane polish lab is available at
 look-and-feel directions that keep every fact and control: a crisp list with a matching
 workspace finish, a quiet timeline rail, warm editorial tiles with a softer workspace finish, a
 precise ledger agenda, and structured cards with collapsible days. Only the two harmonised
-options touch chrome outside the pane, and neither moves a pane or control. A fact matrix records
+options touch chrome outside the pane, and neither moves a pane or control. A second round
+(2026-09-14) added F and G, two refinements of the owner-preferred A with slimmer responsive rows
+that shorten as the pane widens and clearer day boundaries. A fact matrix records
 where every production fact lives in each option, and a node-project test enforces it. No
 production code is changed by the Lab. See [`ITINERARY_PANE_POLISH.md`](ITINERARY_PANE_POLISH.md).
 

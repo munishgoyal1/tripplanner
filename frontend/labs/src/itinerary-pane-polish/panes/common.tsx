@@ -203,7 +203,7 @@ export function TripLength({ state, look }: { state: PlannerState; look: Look })
   );
 }
 
-export function BookingToggle({ state, day, row, look }: { state: PlannerState; day: number; row: RowFacts; look: Look }) {
+export function BookingToggle({ state, day, row, look, short = false }: { state: PlannerState; day: number; row: RowFacts; look: Look; short?: boolean }) {
   if (!row.bookable) return null;
   const booked = row.stop.booked;
   const shape = look === "crisp" || look === "agenda" ? "rounded" : "rounded-full";
@@ -216,10 +216,10 @@ export function BookingToggle({ state, day, row, look }: { state: PlannerState; 
       aria-pressed={booked}
       aria-label={`${row.stop.name}: ${booked ? "Mark as needing booking" : "Mark confirmed"}`}
       onClick={(event) => { event.stopPropagation(); state.toggleBooked(day, row); }}
-      className={`inline-flex h-6 shrink-0 items-center gap-1 px-2 text-[10px] font-semibold transition ${shape} ${tone}`}
+      className={`inline-flex ${short ? "h-5" : "h-6"} shrink-0 items-center gap-1 px-2 text-[10px] font-semibold transition ${shape} ${tone}`}
     >
       {booked ? <Check size={11} aria-hidden /> : <CalendarCheck2 size={11} aria-hidden />}
-      {booked ? "Confirmed" : "Needs booking"}
+      {booked ? "Confirmed" : short ? "To book" : "Needs booking"}
     </button>
   );
 }

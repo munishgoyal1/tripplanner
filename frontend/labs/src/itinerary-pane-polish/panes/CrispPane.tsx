@@ -17,7 +17,7 @@ import {
 
 type Tab = "overview" | "weather" | "budget";
 
-function Snapshot({ state }: { state: PlannerState }) {
+export function CrispSnapshot({ state }: { state: PlannerState }) {
   const trip = tripFacts(state);
   const [tab, setTab] = useState<Tab>("overview");
   return (
@@ -150,7 +150,7 @@ function Day({ state, facts }: { state: PlannerState; facts: DayFacts }) {
 export function CrispPane({ state }: { state: PlannerState }) {
   return (
     <div className="h-full overflow-y-auto bg-paper">
-      <Snapshot state={state} />
+      <CrispSnapshot state={state} />
       <div className="border-b border-border px-3.5 py-2"><Checks state={state} look="crisp" /></div>
       <header className="flex items-center gap-2 border-b border-border px-3.5 py-1">
         <h2 className="text-[11px] font-semibold text-muted">Day by day</h2>
