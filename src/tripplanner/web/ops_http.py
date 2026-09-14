@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import re
+import threading
 from datetime import date
+from time import monotonic
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
@@ -14,6 +16,33 @@ from tripplanner.user_context import set_user_id
 from tripplanner.web.http_context import set_request_user as _set_request_user
 
 router = APIRouter()
+
+_USAGE_REPORT_LOCK = threading.Lock()
+_USAGE_REPORT_CACHE: tuple[tuple, float, dict[str, Any]] | None = None
+
+
+def _provider_usage_report(**kwargs) -> dict[str, Any]:
+    from tripplanner.config import get_settings
+    from tripplanner.provider_usage import summary
+
+    settings = get_settings()
+    if not settings.cosmos_emulator:
+        return summary(**kwargs)
+    key = (
+        settings.cosmos_endpoint, settings.cosmos_database,
+        kwargs.get("days"), kwargs.get("start_date"), kwargs.get("end_date"),
+        tuple(sorted(kwargs.get("trip_names", {}).items())),
+    )
+    global _USAGE_REPORT_CACHE
+    with _USAGE_REPORT_LOCK:
+        if _USAGE_REPORT_CACHE is not None:
+            previous_key, expires, report = _USAGE_REPORT_CACHE
+            if previous_key == key and monotonic() < expires:
+                return report
+        report = summary(**kwargs)
+        _USAGE_REPORT_CACHE = (key, monotonic() + 60, report)
+        return report
+
 
 @router.post("/analytics/event", include_in_schema=False, status_code=204)
 async def analytics_event(request: Request) -> Response:
@@ -56,7 +85,6 @@ def ops_overview(
 
     from tripplanner.observability import tool_metrics_snapshot
     from tripplanner.ops_metrics import snapshot
-    from tripplanner.provider_usage import summary as provider_usage_summary
     from tripplanner.providers.cache import provider_cache_status
     from tripplanner.providers.fares import get_provider_stats
     from tripplanner.tools.trip_planner import list_saved_trips
@@ -147,7 +175,7 @@ def ops_overview(
     }
     runtime["cache"] = provider_cache_status()
     try:
-        runtime["provider_usage"] = provider_usage_summary(
+        runtime["provider_usage"] = _provider_usage_report(
             days=days,
             start_date=start_date,
             end_date=end_date,

@@ -1139,7 +1139,10 @@ EB-TRACE-001; hosted environments still prohibit the local raw trip archive.
 batches, or before any consented analytics event has been saved.
 
 **Expected:** The usage report reads accounting entries without diagnostic event
-arrays, retaining legacy entries and date filtering. An absent product-events
+arrays, retaining legacy entries and date filtering. Local emulator usage reports
+are shared for up to 60 seconds for an identical database/range/trip-name key;
+concurrent refreshes share that calculation. Other runtime figures stay live.
+An absent product-events
 collection means no saved analytics events. Other database failures remain errors.
 Synchronous reporting and usage reads run in the HTTP worker pool so health and
 workspace requests remain responsive. The dashboard permits one refresh at a

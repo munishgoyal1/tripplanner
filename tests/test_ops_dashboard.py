@@ -324,3 +324,28 @@ def test_slow_ops_storage_does_not_block_health(monkeypatch):
         finally:
             release.set()
         assert pending.result(timeout=5).status_code == 200
+
+
+def test_local_usage_report_cache_reuses_reads_and_expires(monkeypatch):
+    from types import SimpleNamespace
+
+    from tripplanner.web import ops_http
+
+    clock = [100.0]
+    calls = []
+    monkeypatch.setattr(ops_http, "_USAGE_REPORT_CACHE", None)
+    monkeypatch.setattr(ops_http, "monotonic", lambda: clock[0])
+    monkeypatch.setattr("tripplanner.config.get_settings", lambda: SimpleNamespace(
+        cosmos_emulator=True, cosmos_endpoint="https://localhost:8081", cosmos_database="test",
+    ))
+
+    def report(**kwargs):
+        calls.append(kwargs)
+        return {"value": len(calls)}
+
+    monkeypatch.setattr("tripplanner.provider_usage.summary", report)
+    assert ops_http._provider_usage_report(days=30) == {"value": 1}
+    assert ops_http._provider_usage_report(days=30) == {"value": 1}
+    clock[0] = 161
+    assert ops_http._provider_usage_report(days=30) == {"value": 2}
+    assert ops_http._provider_usage_report(days=7) == {"value": 3}
