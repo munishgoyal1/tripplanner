@@ -30,6 +30,22 @@ def test_hotel_city_matching_accepts_known_spellings_but_not_other_cities():
     assert not _city_in_address("Goa", "Hotel in Goalpara, Assam")
 
 
+def test_hotel_alias_search_retires_the_same_city_gate():
+    messages = [HumanMessage(content="Repair this road trip"), AIMessage(content="", tool_calls=[
+        {"name": "search_hotels", "args": {"city": "Rameswaram"}, "id": "hotels"},
+    ]), ToolMessage(tool_call_id="hotels", content=json.dumps({
+        "hotel_research": {"city": "Rameswaram", "reason": "rate_and_availability_unverified"},
+        "candidates": [{"name": "Hotel Rameswaram Grand", "place_id": "property"}],
+    }))]
+    plan = {"destination": "Rameshwaram", "day_wise_itinerary": [
+        {"day": 1, "stops": [{"name": "Rameshwaram hotel TBD", "kind": "hotel"}]},
+    ]}
+    assert unresearched_hotel_cities(messages, plan) == []
+    decision = resolve_completion_policy(messages=messages, active_trip=plan,
+                                         proposal_only=False, has_planning_intent=True)
+    assert decision.forced_tool == "update_trip_plan"
+
+
 def test_property_candidates_force_selection_without_requiring_room_rates():
     messages = [HumanMessage(content="Finish this road trip"), AIMessage(content="", tool_calls=[
         {"name": "search_hotels", "args": {"city": "Madurai"}, "id": "hotels"},

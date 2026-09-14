@@ -2284,3 +2284,6 @@ the outcome.
 - Even a final prompt containing saved JSON did not prevent the model from narrating
   rejected changes as saved. Render stopped-run replies directly from persisted
   days and gaps, and test both the graph and API safety-limit exits.
+- Apply locality normalization to research coverage as well as provider filtering.
+  Otherwise a successful Rameswaram search leaves Rameshwaram pending forever.
+  An end-to-end policy test must show that alias evidence advances to selection.
