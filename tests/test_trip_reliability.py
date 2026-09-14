@@ -378,6 +378,11 @@ def test_sse_model_recovery_discards_fragments_and_never_replays_saved_tools(
     model = DisconnectingModel()
 
     def trip_agent(state):
+        if not saved_tools:
+            return {"messages": [AIMessage(
+                content="Preliminary plan while I keep working",
+                tool_calls=[{"name": "save_flight", "args": {}, "id": "save-once"}],
+            )], "current_agent": "trip"}
         return {
             "messages": [model_recovery.invoke_model(model, state["messages"])],
             "current_agent": "trip",
@@ -386,9 +391,11 @@ def test_sse_model_recovery_discards_fragments_and_never_replays_saved_tools(
     builder = StateGraph(AgentState)
     builder.add_node("tools", ToolNode([save_flight]))
     builder.add_node("trip_agent", trip_agent)
-    builder.set_entry_point("tools")
+    builder.set_entry_point("trip_agent")
     builder.add_edge("tools", "trip_agent")
-    builder.add_edge("trip_agent", END)
+    builder.add_conditional_edges(
+        "trip_agent", lambda state: "tools" if state["messages"][-1].tool_calls else END,
+    )
     monkeypatch.setattr(graph_mod, "app_graph", builder.compile())
 
     async def reserve(*_args):
@@ -396,7 +403,6 @@ def test_sse_model_recovery_discards_fragments_and_never_replays_saved_tools(
 
     history = [
         HumanMessage(content="Add flights"),
-        AIMessage(content="", tool_calls=[{"name": "save_flight", "args": {}, "id": "save-once"}]),
     ]
     monkeypatch.setattr(api, "_reserve_cost", reserve)
     monkeypatch.setattr(api, "_completed_chat_request", lambda _: None)
@@ -420,6 +426,7 @@ def test_sse_model_recovery_discards_fragments_and_never_replays_saved_tools(
     assert model.attempts == 2
     assert saved_tools == ["saved"]
     assert "Discard this fragment" not in response.text
+    assert "Preliminary plan while I keep working" not in response.text
     assert ("event: error" in response.text) is persistent
     reply = saved_chats[-1][2][-1].content
     assert reply == ("(interrupted)" if persistent else "Flights saved")

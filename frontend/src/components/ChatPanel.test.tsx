@@ -123,7 +123,7 @@ describe("ChatPanel progress", () => {
       handlers?.onToken("I found a better route.");
     });
 
-    expect(await screen.findByText("I found a better route.")).toBeInTheDocument();
+    expect(screen.queryByText("I found a better route.")).not.toBeInTheDocument();
     expect(screen.getByText(/Reviewing the results/)).toBeInTheDocument();
   });
 
@@ -147,13 +147,36 @@ describe("ChatPanel progress", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
     await waitFor(() => expect(streamChatMock).toHaveBeenCalledOnce());
-    await screen.findByText("Partial itinerary");
+    expect(screen.queryByText("Partial itinerary")).not.toBeInTheDocument();
     fireEvent.click(await screen.findByRole("button", { name: "Stop response" }));
 
     expect(await screen.findByText(/Response stopped\./)).toHaveTextContent("Partial itinerary");
     expect(screen.queryByRole("button", { name: "Retry request" })).not.toBeInTheDocument();
     expect(composer).toBeEnabled();
     expect(onTurnStatus).toHaveBeenLastCalledWith(null);
+  });
+
+  it("presents the complete reply only after the trip panes finish refreshing", async () => {
+    let release!: () => void;
+    const refresh = new Promise<void>((resolve) => { release = resolve; });
+    const onTurnComplete = vi.fn(() => refresh);
+    streamChatMock.mockImplementation((_message: string, handlers: StreamHandlers) => {
+      handlers.onToken("Intermediate draft");
+      handlers.onDone("All eight days and remaining gaps", "family-trip");
+      return Promise.resolve();
+    });
+    render(<ChatPanel onTurnComplete={onTurnComplete} />);
+    const composer = await readyComposer();
+    fireEvent.change(composer, { target: { value: "Plan the family road trip" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await waitFor(() => expect(onTurnComplete).toHaveBeenCalledOnce());
+    expect(screen.queryByText("Intermediate draft")).not.toBeInTheDocument();
+    expect(screen.queryByText("All eight days and remaining gaps")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Send" })).not.toBeInTheDocument();
+    await act(async () => { release(); await refresh; });
+    expect(await screen.findByText("All eight days and remaining gaps")).toBeInTheDocument();
+    expect(screen.queryByText("Intermediate draft")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Send" })).toBeInTheDocument();
   });
 
   it("copies messages and loads prior user text for editing and resend", async () => {

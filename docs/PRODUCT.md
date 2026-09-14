@@ -54,6 +54,12 @@ useful itinerary. Interactive mode permits optional refinement after the first
 saved itinerary. Old kickoff cards cannot block an empty draft. Persist the useful
 day-by-day proposal before additional research, then enrich it with provider facts.
 Missing origin remains unresolved travel, not self-arranged arrival.
+The traveller reviews one coherent itinerary when the planning turn and all trip
+panes are ready. Internal saves may build the draft incrementally, but progress
+is the only presentation until that boundary. Present every day, then assumptions
+and unresolved gaps; do not substitute a status checklist or imply missing days
+will arrive through background work. A stopped build must be explicitly labelled
+incomplete. Guide and photo warming is separate from itinerary construction.
 Research hotels with a bounded place fallback. Recommend a suitable grounded
 property even when its room rate and date availability remain unverified. Only
 missing suitable property evidence becomes a city-specific Hotel TBD, with the

@@ -696,6 +696,7 @@ def _itinerary_time_errors(itinerary: Any) -> list[str]:
                     f"{previous_name} and its visit or journey duration "
                     f"(not before {_fmt_hhmm(minimum_start % 1440)})."
                 )
+                current_start = minimum_start
             previous_start = current_start
             previous_end = current_start + validate_guard._duration_of(stop)
             previous_name = name
