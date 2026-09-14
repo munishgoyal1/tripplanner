@@ -538,10 +538,10 @@
   "planner-layout-directions": {
     "labId": "planner-layout-directions",
     "labTitle": "Four ways to inhabit a trip",
-    "selection": "refined",
-    "selectionLabel": "C · Refined spatial workspace",
+    "selection": "storyboard",
+    "selectionLabel": "B · Trip storyboard",
     "comment": "",
-    "disposition": "implemented-review",
+    "disposition": "completed",
     "handoffs": [
       {
         "version": 1,
@@ -577,8 +577,24 @@
         "disposition": "implemented-review",
         "summary": "Restored the persistent compact notification row, added the shared day and Sequence navigation row, matched the Lab download glyph, kept Workspace/Itinerary/Map/Guide labels visible, and added coherent Add/Reduce day controls with optional whole-trip replanning.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: 2e46ad3e5872; Recorded: 2026-09-09 08:09 UTC; Session: Restore planner navigation rows",
         "recordedAt": "2026-09-09T08:09:19.0393101Z"
+      },
+      {
+        "version": 5,
+        "selection": "storyboard",
+        "selectionLabel": "B · Trip storyboard",
+        "comment": "",
+        "disposition": "completed",
+        "recordedAt": "2026-09-14T11:02:20.492Z"
       }
     ],
+    "implementation": {
+      "selection": "refined",
+      "selectionLabel": "C · Refined spatial workspace",
+      "comment": "",
+      "summary": "Restored the persistent compact notification row, added the shared day and Sequence navigation row, matched the Lab download glyph, kept Workspace/Itinerary/Map/Guide labels visible, and added coherent Add/Reduce day controls with optional whole-trip replanning.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: 2e46ad3e5872; Recorded: 2026-09-09 08:09 UTC; Session: Restore planner navigation rows",
+      "handoffVersion": 4,
+      "recordedAt": "2026-09-09T08:09:19.0393101Z"
+    },
     "implementations": [
       {
         "version": 1,
@@ -608,17 +624,8 @@
         "recordedAt": "2026-09-09T08:09:19.0393101Z"
       }
     ],
-    "stateChangedAt": "2026-09-09T08:09:19.0393101Z",
-    "updatedAt": "2026-09-09T08:09:19.0393101Z",
-    "implementation": {
-      "handoffVersion": 4,
-      "selection": "refined",
-      "selectionLabel": "C · Refined spatial workspace",
-      "comment": "",
-      "summary": "Restored the persistent compact notification row, added the shared day and Sequence navigation row, matched the Lab download glyph, kept Workspace/Itinerary/Map/Guide labels visible, and added coherent Add/Reduce day controls with optional whole-trip replanning.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: 2e46ad3e5872; Recorded: 2026-09-09 08:09 UTC; Session: Restore planner navigation rows",
-      "recordedAt": "2026-09-09T08:09:19.0393101Z"
-    },
-    "implementationSummary": "Restored the persistent compact notification row, added the shared day and Sequence navigation row, matched the Lab download glyph, kept Workspace/Itinerary/Map/Guide labels visible, and added coherent Add/Reduce day controls with optional whole-trip replanning.\nLane: 4-implement-labs (sandbox/4-implement-labs); Commit: 2e46ad3e5872; Recorded: 2026-09-09 08:09 UTC; Session: Restore planner navigation rows"
+    "stateChangedAt": "2026-09-14T11:02:20.492Z",
+    "updatedAt": "2026-09-14T11:02:20.492Z"
   },
   "itinerary-trip-book": {
     "labId": "itinerary-trip-book",
