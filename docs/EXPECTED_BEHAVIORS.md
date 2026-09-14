@@ -54,6 +54,9 @@ departure ordering must not move home arrival before driving. Removed unresolved
 route alternatives are not protected transport commitments to restore later.
 Presence checks accept arrival at home after returning, and its map row reuses
 the origin-city anchor instead of searching for a business named "City home".
+Saved identity annotation uses the same day locality as map preparation. Generic
+home-arrival rows replace stale business coordinates with the known origin-city
+identity; explicit confirmed place bindings remain authoritative.
 Checkout fitting, chronology and feasibility agree on a 10-minute road departure
 buffer. A terminal-arrival marker is not another departure needing that buffer.
 Forced full repairs receive the actual saved stop list, not only day titles.

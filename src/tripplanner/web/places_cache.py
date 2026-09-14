@@ -1321,18 +1321,32 @@ def annotate_stops_with_known_identity(plan: dict[str, Any]) -> int:
 
     Returns the number of stops annotated, for logging.
     """
+    from tripplanner.tools.trip_guard import _is_home_endpoint
+    from tripplanner.web.map_pins import _day_place_context
+
     destination = str(plan.get("destination") or "").strip()
+    origin = str(plan.get("origin") or "").strip()
     annotated = 0
     for day in plan.get("day_wise_itinerary") or []:
         if not isinstance(day, dict):
             continue
         for stop in day.get("stops") or []:
-            if not isinstance(stop, dict) or stop.get("lat") is not None:
+            if not isinstance(stop, dict):
                 continue
             name = str(stop.get("name") or "").strip()
+            home = (stop.get("kind") not in {"transport", "flight"}
+                    and _is_home_endpoint(stop, origin))
+            if home and name.lower() not in (plan.get("place_bindings") or {}):
+                for field in ("place_id", "lat", "lng"):
+                    stop.pop(field, None)
+                name, context = origin, ""
+            else:
+                if stop.get("lat") is not None:
+                    continue
+                context = str(stop.get("city") or _day_place_context(day, destination))
             if not name or not is_lookupable_place_name(name):
                 continue
-            key = _key(name, _lookup_city(name, destination))
+            key = _key(name, _lookup_city(name, context))
             with _CACHE_LOCK:
                 entry = _CACHE.get(key)
             if not entry or _is_miss(entry) or not _has_location(entry):
