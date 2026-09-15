@@ -107,22 +107,22 @@ export default function TripVerificationCard({
   const Icon = verdict === "issues" ? AlertTriangle : verdict === "clear" ? ShieldCheck : HelpCircle;
   const tone =
     verdict === "issues"
-      ? "border-rose-200 bg-rose-50"
+      ? "text-rose-600"
       : verdict === "clear"
-        ? "border-emerald-200 bg-emerald-50"
-        : "border-amber-200 bg-amber-50";
+        ? "text-emerald-600"
+        : "text-amber-600";
 
   return (
-    <section className={`rounded-lg border px-3 py-2 text-sm ${tone}`} aria-label="Plan checks">
+    <section className="text-sm" aria-label="Plan checks">
       <button
         type="button"
-        className="flex w-full items-center gap-2 text-left"
+        className="flex w-full items-center gap-2 text-left text-[13px]"
         onClick={() => setExpanded((open) => !open)}
         aria-expanded={expanded}
       >
-        <Icon className="h-4 w-4 shrink-0" aria-hidden />
-        <span className="font-medium">{HEADLINE[verdict]}</span>
-        <span className="ml-auto text-xs text-slate-600">
+        <Icon className={`h-4 w-4 shrink-0 ${tone}`} aria-hidden />
+        <span className="font-medium text-ink">{HEADLINE[verdict]}</span>
+        <span className="ml-auto shrink-0 text-xs text-muted">
           {counts.passed} passed
           {counts.failed > 0 && ` · ${counts.failed} failed`}
           {counts.unverified > 0 && ` · ${counts.unverified} unverified`}
@@ -130,10 +130,10 @@ export default function TripVerificationCard({
       </button>
 
       {failed.length > 0 && (
-        <ul className="mt-2 space-y-1">
+        <ul className="mt-2 space-y-1 rounded-md bg-rose-50 px-2.5 py-2 ring-1 ring-rose-100">
           {failed.flatMap((check) =>
             check.findings.map((finding) => (
-              <li key={`${check.code}-${finding}`} className="flex gap-2 text-slate-800">
+              <li key={`${check.code}-${finding}`} className="flex gap-2 text-rose-900">
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rose-600" aria-hidden />
                 <span>{finding}</span>
               </li>
@@ -148,17 +148,17 @@ export default function TripVerificationCard({
             type="button"
             onClick={runRepair}
             disabled={repairing}
-            className="inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 rounded bg-ink px-2.5 py-1 text-xs font-medium text-white disabled:opacity-60"
           >
             <Wand2 className="h-3.5 w-3.5" aria-hidden />
             {repairing ? "Rearranging…" : "Rearrange the trip"}
           </button>
-          <span className="text-xs text-slate-500">Only stops you have not chosen will move.</span>
+          <span className="text-xs text-muted">Only stops you have not chosen will move.</span>
         </div>
       )}
 
       {outcome.length > 0 && (
-        <ul className="mt-2 space-y-0.5 text-xs text-slate-700">
+        <ul className="mt-2 space-y-0.5 text-xs text-muted">
           {outcome.map((line) => (
             <li key={line}>{line}</li>
           ))}
@@ -166,12 +166,12 @@ export default function TripVerificationCard({
       )}
 
       {expanded && (
-        <div className="mt-2 flex items-center gap-2 text-xs text-slate-600">
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted">
           <button
             type="button"
             onClick={runRefresh}
             disabled={refreshing}
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2.5 py-1 font-medium text-slate-700 disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 rounded border border-border bg-paper px-2.5 py-1 font-medium text-ink disabled:opacity-60"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} aria-hidden />
             {refreshing ? "Rechecking…" : "Recheck place facts"}
@@ -186,7 +186,7 @@ export default function TripVerificationCard({
         <ul className="mt-2 space-y-1 text-xs">
           {advisories.flatMap((check) =>
             check.findings.map((finding) => (
-              <li key={`${check.code}-${finding}`} className="flex gap-2 text-slate-600">
+              <li key={`${check.code}-${finding}`} className="flex gap-2 text-muted">
                 <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" aria-hidden />
                 <span>{finding} (estimated travel time)</span>
               </li>
@@ -196,14 +196,14 @@ export default function TripVerificationCard({
       )}
 
       {expanded && (
-        <div className="mt-3 space-y-3 border-t border-white/60 pt-2 text-xs">
+        <div className="mt-3 space-y-3 border-t border-border pt-2 text-xs">
           <ul className="space-y-1">
             {report.checks.map((check) => {
               const { icon: StatusIcon, className } = TONE[check.status];
               return (
                 <li key={check.code} className="flex gap-2">
                   <StatusIcon className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${className}`} aria-hidden />
-                  <span className="text-slate-700">
+                  <span className="text-ink">
                     <span className="font-medium">{check.rule}</span> — {check.statement}
                   </span>
                 </li>
@@ -213,8 +213,8 @@ export default function TripVerificationCard({
 
           {report.unverified_stops.length > 0 && (
             <div>
-              <p className="font-medium text-slate-700">Could not verify</p>
-              <ul className="mt-1 space-y-0.5 text-slate-600">
+              <p className="font-medium text-ink">Could not verify</p>
+              <ul className="mt-1 space-y-0.5 text-muted">
                 {report.unverified_stops.map((gap) => (
                   <li key={`${gap.day}-${gap.name}`}>
                     Day {gap.day} · {gap.name} — no {gap.missing.join(", no ")}
@@ -226,8 +226,8 @@ export default function TripVerificationCard({
 
           {report.days.some((day) => day.holiday) && (
             <div>
-              <p className="font-medium text-slate-700">Public holidays</p>
-              <ul className="mt-1 space-y-0.5 text-slate-600">
+              <p className="font-medium text-ink">Public holidays</p>
+              <ul className="mt-1 space-y-0.5 text-muted">
                 {report.days
                   .filter((day) => day.holiday)
                   .map((day) => (
@@ -241,8 +241,8 @@ export default function TripVerificationCard({
 
           {report.freshness && report.freshness.failed.length > 0 && (
             <div>
-              <p className="font-medium text-slate-700">Could not refresh</p>
-              <ul className="mt-1 space-y-0.5 text-slate-600">
+              <p className="font-medium text-ink">Could not refresh</p>
+              <ul className="mt-1 space-y-0.5 text-muted">
                 {report.freshness.failed.map((place) => (
                   <li key={place.name}>{place.name} — kept the last known facts</li>
                 ))}
@@ -253,15 +253,15 @@ export default function TripVerificationCard({
           {report.freshness?.closure_watch &&
             report.freshness.closure_watch.advisories.length > 0 && (
             <div>
-              <p className="font-medium text-slate-700">Possible closure notices</p>
-              <ul className="mt-1 space-y-1 text-slate-600">
+              <p className="font-medium text-ink">Possible closure notices</p>
+              <ul className="mt-1 space-y-1 text-muted">
                 {report.freshness.closure_watch.advisories.map((advisory) => (
                   <li key={`${advisory.name}-${advisory.url}`}>
                     <a
                       href={advisory.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="font-medium text-slate-700 underline"
+                      className="font-medium text-ink underline"
                     >
                       {advisory.name} — {advisory.title}
                     </a>

@@ -260,6 +260,66 @@ describe("ItineraryPanel", () => {
     expect(snapshot).not.toHaveTextContent("Estimate · 50% live price coverage");
   });
 
+  it("keeps weather and budget one tap away in snapshot tabs", async () => {
+    const onAllDaysMap = vi.fn();
+    render(
+      <ItineraryPanel
+        onAllDaysMap={onAllDaysMap}
+        overview={{
+          ...overview,
+          budget: {
+            currency: "USD", spent: 45000, spent_display: "$45,000", travelers: 2, per_traveler: 22500,
+            per_traveler_display: "$22,500", breakdown: {}, target: 60000, target_display: "$60,000",
+            remaining: 15000, remaining_display: "$15,000", pct_used: 75, over_budget: false, estimated: false,
+            evidence_coverage_pct: 100, verified_spent: 45000,
+          },
+        }}
+      />,
+    );
+
+    await screen.findByText("Museums and river");
+    const snapshot = screen.getByRole("region", { name: "Trip snapshot" });
+    const [overviewPanel, weatherPanel, budgetPanel] = Array.from(snapshot.querySelectorAll<HTMLElement>("[role=tabpanel]"));
+    expect(overviewPanel).not.toHaveAttribute("hidden");
+    expect(weatherPanel).toHaveAttribute("hidden");
+    expect(weatherPanel).toHaveTextContent("Compact umbrella and light rain jacket");
+    expect(budgetPanel).toHaveAttribute("hidden");
+
+    fireEvent.click(screen.getByRole("tab", { name: "Weather" }));
+    expect(screen.getByRole("tab", { name: "Weather" })).toHaveAttribute("aria-selected", "true");
+    expect(weatherPanel).not.toHaveAttribute("hidden");
+    expect(overviewPanel).toHaveAttribute("hidden");
+
+    fireEvent.click(screen.getByRole("tab", { name: /Budget/ }));
+    expect(budgetPanel).not.toHaveAttribute("hidden");
+    expect(budgetPanel).toHaveTextContent("75% used");
+    expect(onAllDaysMap).not.toHaveBeenCalled();
+  });
+
+  it("puts readiness in the pane header and reports the itinerary it shows", async () => {
+    const header = document.createElement("div");
+    document.body.appendChild(header);
+    const onItineraryChange = vi.fn();
+    render(<ItineraryPanel headerTarget={header} onFilterToggle={vi.fn()} onItineraryChange={onItineraryChange} />);
+
+    await screen.findByText("Museums and river");
+    expect(header).toHaveTextContent("0/2 ready");
+    expect(onItineraryChange).toHaveBeenLastCalledWith(itinerary);
+    header.remove();
+  });
+
+  it("tightens row spacing in compact density without hiding facts", async () => {
+    render(<ItineraryPanel />);
+
+    const louvre = await screen.findByText("Louvre Museum");
+    const row = louvre.closest("article");
+    expect(row).toHaveClass("py-2.5");
+    fireEvent.click(screen.getByRole("button", { name: "compact" }));
+    expect(row).toHaveClass("py-1.5");
+    expect(screen.getByText("Must-visit score 91/100")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "compact" })).toHaveAttribute("aria-pressed", "true");
+  });
+
   it("keeps summary and weather visible when an older trip has no forecast", async () => {
     render(<ItineraryPanel overview={{ ...overview, notes: "", weather: null }} />);
 
@@ -622,7 +682,7 @@ describe("ItineraryPanel", () => {
     const returnLabel = await screen.findByText("Return to Hotel Lutetia");
     const returnRow = returnLabel.closest("li");
     expect(returnRow).toHaveAttribute("data-stop-indexes", "3");
-    expect(returnRow?.querySelector("article")).toHaveClass("bg-paper", "ring-clay/15");
+    expect(returnRow?.querySelector("article")).toHaveClass("bg-sand", "ring-clay/15");
     expect(scrollIntoViewMock.mock.instances[0]).toBe(returnRow);
   });
 
@@ -930,7 +990,7 @@ describe("ItineraryPanel", () => {
     expect(bookingAction).toHaveTextContent("Confirmed");
 
     await waitFor(() => expect(bookingAction).toHaveAttribute("aria-pressed", "false"));
-    expect(bookingAction).toHaveTextContent("Needs booking");
+    expect(bookingAction).toHaveTextContent("To book");
     expect(screen.getByRole("status")).toHaveTextContent("Could not update the booking status.");
   });
 

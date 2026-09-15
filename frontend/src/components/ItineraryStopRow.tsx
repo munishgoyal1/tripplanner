@@ -1,22 +1,36 @@
-import { CalendarCheck2, Check, ChevronDown, Loader2, MapPin, Route, Trash2 } from "lucide-react";
+import {
+  BedDouble, BusFront, CalendarCheck2, CarFront, Check, ChevronDown, Clock3, Flame, Footprints, Landmark, Loader2, MapPin,
+  Plane, PlaneLanding, PlaneTakeoff, Route, Ship, Star, TrainFront, Trash2, UtensilsCrossed,
+} from "lucide-react";
 import { useState } from "react";
 import type { ItineraryStop } from "../types";
 import { isIntercityTravel } from "./map/routeDerivations";
 import { formatCostDisplay, useDisplayPreferences } from "../lib/displayPreferences";
 import { useUnmappedStop } from "../lib/unmappedStops";
 
-const KIND_ICON: Record<string, string> = {
-  hotel: "\u{1F3E8}",
-  origin: "\u{1F4CD}",
-  attraction: "\u{1F3AF}",
-  meal: "\u{1F37D}\uFE0F",
-  transport: "\u{1F695}",
-  flight: "\u2708\uFE0F",
-  airport: "\u{1F6EB}",
-  station: "\u{1F686}",
-  bus_station: "\u{1F68F}",
-  other: "\u{1F4CD}",
-};
+/** Line icons for stops without a map marker (hotels are lettered, visits numbered). */
+function kindIcon(stop: ItineraryStop) {
+  if (stop.kind === "hotel") return BedDouble;
+  if (stop.kind === "meal" || stop.kind === "restaurant") return UtensilsCrossed;
+  if (stop.kind === "flight") return Plane;
+  if (stop.kind === "airport") return stop.terminal_role === "departure" ? PlaneTakeoff : PlaneLanding;
+  if (stop.kind === "station") return TrainFront;
+  if (stop.kind === "bus_station") return BusFront;
+  if (stop.kind === "transport") return CarFront;
+  if (stop.kind === "attraction") return Landmark;
+  return MapPin;
+}
+
+function modeIcon(mode: string) {
+  const value = mode.toLowerCase();
+  if (value.includes("walk")) return Footprints;
+  if (value.includes("boat") || value.includes("ferry")) return Ship;
+  if (value.includes("train") || value.includes("rail")) return TrainFront;
+  if (value.includes("bus") || value.includes("coach")) return BusFront;
+  if (value.includes("flight")) return Plane;
+  if (value.includes("drive") || value.includes("car") || value.includes("taxi")) return CarFront;
+  return Route;
+}
 
 function canFocus(stop: ItineraryStop): boolean {
   return ["hotel", "attraction", "meal", "restaurant", "airport", "station", "bus_station", "origin"].includes(stop.kind)
@@ -79,12 +93,21 @@ export interface ItineraryStopRowProps {
   active: boolean;
   jumpActive: boolean;
   rowId: string;
+  /** Tighter vertical rhythm; content and order are unchanged. */
+  compact?: boolean;
   onToggleBooked: (next: boolean) => void;
   onFocus: () => void;
   onMap: () => void;
   onRemove?: () => void | Promise<void>;
 }
 
+const TAG = "inline-flex items-center gap-1 whitespace-nowrap rounded border border-border bg-paper px-1.5 py-px text-[11.5px] text-muted";
+
+/**
+ * One itinerary stop as a responsive grid (see `.it-stop` in index.css). A narrow
+ * pane stacks name, details, tags and notes; a wide pane puts the tags, Notes &
+ * tips and booking status on the stop's own line, so rows get shorter.
+ */
 export default function ItineraryStopRow({
   stop,
   day,
@@ -98,6 +121,7 @@ export default function ItineraryStopRow({
   active,
   jumpActive,
   rowId,
+  compact = false,
   onToggleBooked,
   onFocus,
   onMap,
@@ -144,6 +168,21 @@ export default function ItineraryStopRow({
     ? `${stop.kind === "flight" ? "Arrive" : stop.kind === "transport" ? "Ends" : "Leave"} ${stop.departure_time}`
     : null;
   const hasNotes = noteTexts.length > 0 || (!circuitReturn && insightTexts.length > 0);
+  const bookable = !circuitReturn && !["airport", "station", "bus_station", "origin"].includes(stop.kind);
+  const travel = stop.travel_from_previous;
+  const TravelIcon = travel ? modeIcon(travel.mode) : Route;
+  const KindIcon = kindIcon(stop);
+  const arrivalTone = stop.timing_conflict_display && !stop.buffer_before_display
+    ? "font-medium text-rose-700"
+    : stop.buffer_before_min != null && stop.buffer_before_min < 5
+      ? "font-medium text-amber-700"
+      : stop.buffer_before_display
+        ? "text-emerald-700"
+        : "text-muted";
+  const hasTags = !circuitReturn && Boolean(
+    stop.cost_display || stop.opening_hours || typeof stop.rating === "number"
+    || (typeof stop.popularity_score === "number" && stop.kind === "attraction"),
+  );
   const handleRowClick = () => {
     if (focusable) {
       onFocus();
@@ -159,24 +198,30 @@ export default function ItineraryStopRow({
       onClick={handleRowClick}
       className="group"
     >
-      {stop.travel_from_previous && (
-        <div className="flex items-start gap-2 py-1.5 pl-3">
-          <span className="mt-2 h-px w-4 flex-shrink-0 bg-border" aria-hidden />
+      {travel && (
+        <div className="it-leg px-3">
+          <span className="flex justify-center" aria-hidden><span className="w-px bg-border" /></span>
           <div
-            aria-label={`Travel from previous stop: ${stop.travel_from_previous.distance_display}, ${stop.travel_from_previous.duration_display}`}
-            className="flex flex-wrap items-center gap-x-1.5 text-[10px] font-medium text-accent"
-            title={`${stop.travel_from_previous.mode} estimate`}
+            aria-label={`Travel from previous stop: ${travel.distance_display}, ${travel.duration_display}`}
+            className="it-leg-text min-w-0 py-1 text-[12px] leading-snug text-muted"
+            title={`${travel.mode} estimate`}
           >
-            <Route size={11} aria-hidden />
-            <span className="font-semibold capitalize">{stop.travel_from_previous.mode}</span>
-            <span>{stop.travel_from_previous.distance_display}</span>
-            <span aria-hidden>·</span>
-            <span>{stop.travel_from_previous.duration_display}</span>
-            {stop.travel_from_previous.detail && (
-              <span className="basis-full font-normal text-muted">{stop.travel_from_previous.detail}</span>
-            )}
+            <span className="min-w-0">
+              <TravelIcon size={13} className="mr-1.5 inline -translate-y-px" aria-hidden />
+              <span className="font-medium capitalize text-ink">{travel.mode}</span>
+              <span aria-hidden> · </span>
+              <span className="tabular-nums">{travel.distance_display}</span>
+              <span aria-hidden> · </span>
+              <span className="tabular-nums">{travel.duration_display}</span>
+              {travel.detail && (
+                <>
+                  <span aria-hidden> — </span>
+                  <span>{travel.detail}</span>
+                </>
+              )}
+            </span>
             {stop.expected_arrival_time && (
-              <span className="basis-full font-normal text-muted">
+              <span className={`it-leg-arrival tabular-nums ${arrivalTone}`}>
                 Earliest arrival {stop.expected_arrival_time}
                 {stop.buffer_before_display && stop.time
                   ? ` · ${stop.buffer_before_display} free before ${stop.time}`
@@ -189,116 +234,140 @@ export default function ItineraryStopRow({
         </div>
       )}
       <article
-        className={`rounded-md border p-2.5 transition ${
+        className={`it-stop px-3 transition ${compact ? "py-1.5" : "py-2.5"} ${
           jumpActive
-            ? "border-amber-300 bg-amber-50 shadow-card"
+            ? "bg-amber-50"
             : active
-              ? "border-clay/50 bg-paper shadow-card ring-1 ring-clay/15"
+              ? "bg-sand ring-1 ring-inset ring-clay/15"
               : focusable
-                ? "cursor-pointer border-border bg-paper hover:border-clay/40 hover:bg-clay-soft/20"
-                : "border-border bg-paper"
+                ? "cursor-pointer hover:bg-sand/60"
+                : ""
         }`}
+        style={active ? { boxShadow: `inset 3px 0 0 ${stop.color}` } : undefined}
       >
-        <div className="flex flex-wrap items-start gap-2.5">
-          {mapLabel ? (
-            <span
-              aria-label={mapLabel.startsWith("H")
-                ? "Hotel map marker"
-                : `Map stop ${mapLabel}`}
-              aria-current={active ? "location" : undefined}
-              className={`mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-full border text-[10px] font-semibold tabular-nums transition ${active ? "scale-110 text-white shadow-sm" : "bg-paper"}`}
-              style={{
-                borderColor: stop.color,
-                color: active ? "white" : stop.color,
-                backgroundColor: active ? stop.color : "white",
+        <div className="it-stop-time pt-px text-right text-[13px] font-semibold leading-tight tabular-nums text-ink">
+          {stop.time && <span>{stop.time}{stop.time_estimated ? " est." : ""}</span>}
+        </div>
+        <div className="it-stop-main">
+          <div className="it-stop-name flex items-start gap-2">
+            {mapLabel ? (
+              <span
+                aria-label={mapLabel.startsWith("H")
+                  ? "Hotel map marker"
+                  : `Map stop ${mapLabel}`}
+                aria-current={active ? "location" : undefined}
+                className={`mt-px grid h-5 w-5 flex-shrink-0 place-items-center rounded-full border-[1.5px] text-[10px] font-semibold tabular-nums transition ${active ? "scale-110 text-white shadow-sm" : "bg-paper"}`}
+                style={{
+                  borderColor: stop.color,
+                  color: active ? "white" : stop.color,
+                  backgroundColor: active ? stop.color : "white",
+                }}
+              >
+                {mapLabel}
+              </span>
+            ) : (
+              <span aria-hidden className="mt-px grid h-5 w-5 flex-shrink-0 place-items-center rounded bg-sand text-muted ring-1 ring-border">
+                <KindIcon size={11} />
+              </span>
+            )}
+            <button
+              type="button"
+              disabled={!focusable}
+              onClick={(event) => {
+                event.stopPropagation();
+                onFocus();
               }}
+              className={`min-w-0 flex-1 text-left text-[14px] font-semibold leading-snug tracking-[-0.005em] ${
+                focusable ? "text-ink hover:text-brand" : "cursor-default text-ink"
+              }`}
+              title={routeFocusable
+                ? "Show complete route"
+                : stop.kind === "airport"
+                  ? "Show airport details"
+                  : focusable ? "Show photos & reviews" : undefined}
             >
-              {mapLabel}
-            </span>
-          ) : (
-            <span
-              aria-hidden
-              className="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-full border border-border bg-sand text-[10px]"
-            >
-              {KIND_ICON[stop.kind] || KIND_ICON.other}
-            </span>
-          )}
-          <div className="min-w-0 flex-1 basis-[calc(100%-2.5rem)]">
-            <div className="flex flex-wrap items-baseline gap-x-1.5">
-              {stop.time && (
-                <span className="text-[11px] font-medium tabular-nums text-muted">
-                  {stop.time}{stop.time_estimated ? " est." : ""}
+              {circuitReturn ? `Return to ${stop.name}` : stop.name}
+            </button>
+          </div>
+          <p className="it-stop-detail mt-0.5 flex flex-wrap items-center gap-x-1.5 pl-7 text-[12px] text-muted">
+            <span>{timingLabel}</span>
+            <span aria-hidden>·</span>
+            <span>{circuitReturn ? "Hotel return" : stop.kind}</span>
+            {unmapped && (
+              <>
+                <span aria-hidden>·</span>
+                <span
+                  title={
+                    unmapped.candidate
+                      ? `The map found “${unmapped.candidate.name}” instead. Confirm it on the map to pin this stop.`
+                      : "The map could not place this stop."
+                  }
+                  className={`font-semibold ${unmapped.tier === "anchor" ? "text-amber-600" : "text-amber-700"}`}
+                >
+                  Not on map
+                </span>
+              </>
+            )}
+            {durationText && (
+              <>
+                <span aria-hidden>·</span>
+                <span>{durationText}</span>
+              </>
+            )}
+            {departureText && (
+              <>
+                <span aria-hidden>·</span>
+                <span className="tabular-nums">{departureText}</span>
+              </>
+            )}
+          </p>
+        </div>
+        <div className="it-stop-tags flex flex-wrap items-center gap-1 pl-7 pt-1.5">
+          {(hasTags || hasNotes) && (
+            <>
+              {!circuitReturn && typeof stop.rating === "number" && (
+                <span className={TAG} aria-label={`${stop.name} rating ${stop.rating.toFixed(1)} out of 5`}>
+                  <Star size={11} className="fill-amber-400 text-amber-400" aria-hidden />
+                  <b className="font-semibold text-ink">{stop.rating.toFixed(1)}</b>
+                  {typeof stop.review_count === "number" && stop.review_count > 0 && (
+                    <span>· {reviewCountLabel(stop.review_count)} reviews</span>
+                  )}
                 </span>
               )}
-              <button
-                type="button"
-                disabled={!focusable}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onFocus();
-                }}
-                className={`block w-full text-left text-sm font-medium leading-snug ${
-                  focusable ? "text-ink hover:text-brand" : "cursor-default text-ink"
-                }`}
-                title={routeFocusable
-                  ? "Show complete route"
-                  : stop.kind === "airport"
-                    ? "Show airport details"
-                    : focusable ? "Show photos & reviews" : undefined}
-              >
-                {circuitReturn ? `Return to ${stop.name}` : stop.name}
-              </button>
-            </div>
-            <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[11px] text-muted">
-              <span className="font-medium text-muted">{timingLabel}</span>
-              <span aria-hidden>·</span>
-              <span className="font-medium text-muted">{circuitReturn ? "Hotel return" : stop.kind}</span>
-              {unmapped && (
-                <>
-                  <span aria-hidden>·</span>
-                  <span
-                    title={
-                      unmapped.candidate
-                        ? `The map found “${unmapped.candidate.name}” instead. Confirm it on the map to pin this stop.`
-                        : "The map could not place this stop."
-                    }
-                    className={`font-semibold ${unmapped.tier === "anchor" ? "text-amber-600" : "text-muted"}`}
-                  >
-                    Not on map
-                  </span>
-                </>
+              {!circuitReturn && typeof stop.popularity_score === "number" && stop.kind === "attraction" && (
+                <span
+                  className={`${TAG} text-brand`}
+                  title="Estimated from Google rating and review volume; not an itinerary inclusion percentage."
+                >
+                  <Flame size={11} aria-hidden />
+                  <span>Must-visit score {stop.popularity_score}/100</span>
+                </span>
               )}
-              {durationText && (
-                <>
-                  <span aria-hidden>·</span>
-                  <span>{durationText}</span>
-                </>
+              {!circuitReturn && stop.cost_display && <span className={TAG}>{formatCostDisplay(stop.cost_display, currency)}</span>}
+              {!circuitReturn && stop.opening_hours && (
+                <span className={`${TAG} tabular-nums`}>
+                  <Clock3 size={11} aria-hidden />
+                  <span>{stop.opening_hours}</span>
+                </span>
               )}
-              {departureText && (
-                <>
-                  <span aria-hidden>·</span>
-                  <span className="font-medium tabular-nums text-muted">{departureText}</span>
-                </>
+              {hasNotes && (
+                <button
+                  type="button"
+                  aria-expanded={notesOpen}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setNotesOpen((open) => !open);
+                  }}
+                  className="inline-flex h-[22px] items-center gap-1 whitespace-nowrap rounded px-1.5 text-[11.5px] font-semibold text-muted transition hover:bg-sand hover:text-ink"
+                >
+                  {notesOpen ? "Hide notes" : "Notes & tips"}
+                  <ChevronDown size={12} className={`transition ${notesOpen ? "rotate-180" : ""}`} aria-hidden />
+                </button>
               )}
-            </p>
-          </div>
-          {!circuitReturn && !["airport", "station", "bus_station", "origin"].includes(stop.kind) && <button
-            type="button"
-            aria-pressed={stop.booked}
-            aria-label={`${stop.name}: ${stop.booked ? "Mark as needing booking" : "Mark confirmed"}`}
-            onClick={(event) => {
-              event.stopPropagation();
-              onToggleBooked(!stop.booked);
-            }}
-            className={`ml-[2.125rem] inline-flex h-6 flex-shrink-0 items-center gap-1 rounded-full px-2 text-[10px] font-semibold ring-1 transition ${
-              stop.booked
-                ? "bg-emerald-50 text-emerald-700 ring-emerald-200 hover:bg-emerald-100"
-                : "bg-amber-50 text-amber-800 ring-amber-200 hover:text-brand hover:ring-brand/30"
-            }`}
-          >
-            {stop.booked ? <Check size={11} aria-hidden /> : <CalendarCheck2 size={11} aria-hidden />}
-            {stop.booked ? "Confirmed" : "Needs booking"}
-          </button>}
+            </>
+          )}
+        </div>
+        <div className="it-stop-status flex items-center gap-0.5">
           <div className="flex flex-shrink-0 items-center gap-0.5 transition sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
             <button
               type="button"
@@ -307,7 +376,7 @@ export default function ItineraryStopRow({
                 onMap();
               }}
               aria-label={`Show ${stop.name} on the map`}
-              className="grid h-6 w-6 place-items-center rounded-full text-muted transition hover:bg-sand hover:text-brand"
+              className="grid h-6 w-6 place-items-center rounded text-muted transition hover:bg-sand hover:text-brand"
               title={routeFocusable ? "Show complete route" : "Show on map"}
             >
               <MapPin size={13} aria-hidden />
@@ -326,61 +395,50 @@ export default function ItineraryStopRow({
                   }
                 }}
                 aria-label={`Remove ${stop.name} from itinerary`}
-                className="grid h-6 w-6 place-items-center rounded-full text-muted transition hover:bg-sand hover:text-rose-600"
+                className="grid h-6 w-6 place-items-center rounded text-muted transition hover:bg-sand hover:text-rose-600"
                 title="Remove from itinerary"
               >
                 {removing ? <Loader2 size={12} className="animate-spin" aria-hidden /> : <Trash2 size={13} aria-hidden />}
               </button>
             )}
           </div>
-        </div>
-        <div className="mt-2 flex flex-wrap items-center gap-1 pl-[2.375rem]">
-          {!circuitReturn && stop.cost_display && <span className="chip">{formatCostDisplay(stop.cost_display, currency)}</span>}
-          {!circuitReturn && stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
-          {!circuitReturn && typeof stop.rating === "number" && (
-            <span className="chip" aria-label={`${stop.name} rating ${stop.rating.toFixed(1)} out of 5`}>
-              ★ {stop.rating.toFixed(1)}
-              {typeof stop.review_count === "number" && stop.review_count > 0
-                ? ` · ${reviewCountLabel(stop.review_count)} reviews`
-                : ""}
-            </span>
-          )}
-          {!circuitReturn && typeof stop.popularity_score === "number" && stop.kind === "attraction" && (
-            <span
-              className="chip"
-              title="Estimated from Google rating and review volume; not an itinerary inclusion percentage."
-            >
-              Must-visit score {stop.popularity_score}/100
-            </span>
-          )}
-        </div>
-        {concernTexts.length > 0 && (
-          <div className="mt-2 space-y-0.5 pl-[2.375rem]">
-            {concernTexts.map((text) => <p key={text} className="text-xs font-medium text-rose-700">{text}</p>)}
-          </div>
-        )}
-        {hasNotes && (
-          <div className="pl-[2.375rem]">
+          {bookable && (
             <button
               type="button"
-              aria-expanded={notesOpen}
+              aria-pressed={stop.booked}
+              aria-label={`${stop.name}: ${stop.booked ? "Mark as needing booking" : "Mark confirmed"}`}
               onClick={(event) => {
                 event.stopPropagation();
-                setNotesOpen((open) => !open);
+                onToggleBooked(!stop.booked);
               }}
-              className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-muted transition hover:text-ink"
+              className={`inline-flex h-5 flex-shrink-0 items-center gap-1 rounded px-1.5 text-[10.5px] font-semibold ring-1 transition ${
+                stop.booked
+                  ? "bg-emerald-50/60 text-emerald-700 ring-emerald-200 hover:bg-emerald-50"
+                  : "bg-amber-50 text-amber-800 ring-amber-200 hover:ring-brand/30"
+              }`}
             >
-              {notesOpen ? "Hide notes" : "Notes & tips"}
-              <ChevronDown size={12} className={`transition ${notesOpen ? "rotate-180" : ""}`} aria-hidden />
+              {stop.booked ? <Check size={11} aria-hidden /> : <CalendarCheck2 size={11} aria-hidden />}
+              {stop.booked ? "Confirmed" : "To book"}
             </button>
-            {notesOpen && (
-              <div className="mt-1 space-y-0.5 border-l-2 border-border/60 pl-2.5">
-                {noteTexts.map((text) => <p key={text} className="text-xs text-muted">{text}</p>)}
-                {!circuitReturn && insightTexts.map((text) => <p key={text} className="text-xs text-muted">{text}</p>)}
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
+        <div className="it-stop-extra pl-7">
+          {(concernTexts.length > 0 || notesOpen) && (
+            <>
+              {concernTexts.length > 0 && (
+                <div className="mt-1.5 space-y-0.5">
+                  {concernTexts.map((text) => <p key={text} className="text-[12px] font-medium text-rose-700">{text}</p>)}
+                </div>
+              )}
+              {notesOpen && (
+                <div className="mt-1.5 space-y-0.5 border-l-2 border-border pl-2.5">
+                  {noteTexts.map((text) => <p key={text} className="text-[12.5px] leading-relaxed text-muted">{text}</p>)}
+                  {!circuitReturn && insightTexts.map((text) => <p key={text} className="text-[12.5px] leading-relaxed text-muted">{text}</p>)}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </article>
     </li>
   );
