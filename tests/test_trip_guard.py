@@ -454,13 +454,14 @@ def test_long_road_day_requires_a_named_meal_break() -> None:
             "name": "Drive: Bangalore to Madurai",
             "kind": "transport",
             "duration_min": 540,
+            "time": "08:00",
         }],
     }]
 
     warnings = trip_validation._restaurant_itinerary_warnings(itinerary)
-    assert warnings == ["Day 1's long road journey has no named restaurant meal break."]
+    assert len(warnings) == 1 and "adequately timed named restaurant" in warnings[0]
 
-    itinerary[0]["stops"].append({"name": "Sree Sabarees", "kind": "meal"})
+    itinerary[0]["stops"].append({"name": "Sree Sabarees", "kind": "meal", "time": "12:00", "duration_min": 60})
     assert trip_validation._restaurant_itinerary_warnings(itinerary) == []
 
 

@@ -65,7 +65,7 @@ class Search(BaseModel):
     children_ages: list[int] = Field(default_factory=list, max_length=8)
     rooms: int = Field(default=1, ge=1, le=8)
     currency: str = Field(default="INR", pattern=r"^[A-Z]{3}$")
-    nationality: str = Field(default="IN", pattern=r"^[A-Z]{2}$")
+    nationality: str = Field(default="", pattern=r"^(?:[A-Z]{2})?$")
     cabin: Literal["ECONOMY", "PREMIUM_ECONOMY", "BUSINESS", "FIRST"] = "ECONOMY"
     refundable_only: bool = False
 
@@ -150,6 +150,10 @@ def execute_command(req: BookingCommand) -> dict:
                 raise ValueError("Hotel checkout must follow check-in.")
             if any(age < 0 or age > 17 for age in search.children_ages):
                 raise ValueError("Child ages must be between 0 and 17.")
+            if len(search.children_ages) != search.children + search.infants:
+                raise ValueError("Supply one age for every child and infant in the hotel search.")
+            if not search.nationality:
+                raise ValueError("Supply the guest nationality for hotel research.")
             from tripplanner.tools.hotel_search import search_hotels
 
             result = search_hotels.invoke(

@@ -121,7 +121,8 @@ resets the active path; `map_view.py` builds legs separately for each segment.
 | `src/tripplanner/decisions/booking_intent.py` | Pure purchase grouping, category feasibility, intent fingerprints, isolated adjustment candidates and external-booking reconciliation |
 | `src/tripplanner/web/booking_http.py` | Authenticated active-trip/revision binding, serialized preview/apply, explicit research and booking snapshot routes; saves through `tools/trip_planner.py` |
 | `src/tripplanner/web/booking_export.py` | Cache-only redacted booking-intent packets shared by HTML/PDF/JSON/email/share; no provider calls |
-| `frontend/src/components/BookingPage.tsx`, `frontend/src/bookingApi.ts` | Responsive `/bookings` research/review/lock/report surface and revision-bound API; Trip actions navigation and existing ExportModal delivery |
+| `src/tripplanner/decisions/booking_defaults.py` | Read-only projection of saved party, ages, currency and per-flight/per-stay search context, with explicit assumptions |
+| `frontend/src/components/BookingPage.tsx`, `frontend/src/bookingApi.ts` | Responsive `/bookings` research/review/lock/report surface and revision-bound API; direct toolbar navigation, saved search target selection and existing ExportModal delivery |
 | `src/tripplanner/web/itinerary_email.py` | Itinerary email composition handoff, ACS/SMTP delivery, provider usage telemetry, mail-client fallback, and durable idempotency orchestration; `api.py` retains identity and HTTP adaptation |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
 | `src/tripplanner/storage_cosmos.py` | Cosmos implementation and conditional replacement |

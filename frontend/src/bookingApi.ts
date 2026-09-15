@@ -23,6 +23,7 @@ export interface BookingRow extends Choice {
   warnings?: string[];
 }
 export interface BookingView {
+  research_defaults?: Record<"flights" | "hotels", { id: string; label: string; search: Search; assumptions: string[] }[]>;
   trip_id: string; updated_at: string; destination: string; travelers: string | number;
   rows: BookingRow[]; coverage: string; locked_count: number; booked_count: number;
   schedule?: { date: string; stops: { name: string; time: string; booked: boolean }[] }[];
