@@ -1,4 +1,4 @@
-import { AlertTriangle, Bell, Compass, House, LayoutDashboard, List, MapPin, MessageCircle, PanelRight, Plus, RotateCcw, Settings, UserRound } from "lucide-react";
+import { AlertTriangle, Bell, BookOpenCheck, Compass, House, LayoutDashboard, List, MapPin, MessageCircle, PanelRight, Plus, RotateCcw, Settings, UserRound } from "lucide-react";
 import { useNotice } from "../lib/notices";
 import type { TripWorkspaceView } from "../types";
 import StatusBar from "./StatusBar";
@@ -94,6 +94,14 @@ export default function DesktopToolbar({
             ))}
           </div>
           <TripFeedbackControl disabled={tripActionsDisabled} initial={feedback} />
+          <a
+            href="/bookings"
+            className={`inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-paper px-2.5 text-xs font-semibold text-ink transition hover:bg-sand ${tripActionsDisabled ? "pointer-events-none opacity-40" : ""}`}
+            aria-disabled={tripActionsDisabled}
+          >
+            <BookOpenCheck size={14} className="text-brand" aria-hidden />
+            <span className="hidden xl:inline">Bookings</span>
+          </a>
           <div role="group" className="flex items-center gap-0.5 rounded-md border border-border bg-paper p-0.5" aria-label="Trip actions">
             <TripActionsMenu disabled={tripActionsDisabled} onExport={onExport} compactTrigger />
             <span className="h-4 w-px shrink-0 bg-border" aria-hidden />

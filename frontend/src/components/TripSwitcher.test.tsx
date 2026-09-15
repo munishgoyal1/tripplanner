@@ -53,7 +53,10 @@ describe("TripSwitcher deletion", () => {
     ]);
     render(<TripSwitcher version={1} onSwitched={vi.fn()} />);
 
-    fireEvent.click(await screen.findByTitle("Switch between your saved trips"));
+    const trigger = await screen.findByTitle("Switch between your saved trips");
+    expect(trigger).toHaveClass("rounded-md");
+    expect(trigger).not.toHaveClass("rounded-full");
+    fireEvent.click(trigger);
     const menu = await screen.findByTestId("saved-trips-menu");
 
     expect(menu.textContent).toContain("#3");

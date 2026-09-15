@@ -945,6 +945,36 @@ def test_restaurant_research_continues_past_the_first_turn_phase_budget() -> Non
     assert decision.forced_reason == "missing_named_restaurant"
 
 
+def test_first_turn_researches_a_meal_for_a_long_road_day() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="Plan a road trip from Bangalore to Madurai"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+            _tool_call("update_trip_plan", "update-1"),
+            ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        ],
+        active_trip={
+            "destination": "Madurai",
+            "origin": "Bangalore",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{
+                    "name": "Drive: Bangalore to Madurai",
+                    "kind": "transport",
+                    "duration_min": 540,
+                }],
+            }],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.forced_tool == "nearby_restaurants"
+    assert decision.forced_reason == "missing_named_restaurant"
+    assert "long road journey" in (decision.requirement or "")
+
+
 def test_planning_resume_cannot_end_without_arrival_journey() -> None:
     decision = resolve_completion_policy(
         messages=[

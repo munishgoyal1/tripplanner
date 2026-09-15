@@ -700,7 +700,6 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     const dateAndStayChanges = direction === "add"
       ? "Extend the return date by one day and extend the relevant hotel stay by one night."
       : "Move the return date one day earlier and shorten the relevant hotel stay by one night.";
-    dismissNotice("meal-gap");
     setChatOpen(true);
     setAssistantView("bar");
     setAssistantRequest({
@@ -977,22 +976,6 @@ export default function App({ initialRequest = null }: { initialRequest?: string
       detail,
     });
   }, [assistantTurnStatus]);
-
-  const mealGapDay = panelSeed?.itinerary?.days?.find((day) => (
-    !day.stops.some((stop) => stop.kind === "meal" || stop.kind === "restaurant")
-  ));
-  useEffect(() => {
-    if (!mealGapDay) {
-      dismissNotice("meal-gap");
-      return;
-    }
-    notify({
-      id: "meal-gap",
-      tone: "decision",
-      message: `${mealGapDay.title || `Day ${mealGapDay.day}`} has no meal stop.`,
-      detail: "Use the Assistant to add a meal that fits the route and schedule.",
-    });
-  }, [mealGapDay?.day, mealGapDay?.title]);
 
   return <>
     {!isDesktop && <FloatingStatusBar />}

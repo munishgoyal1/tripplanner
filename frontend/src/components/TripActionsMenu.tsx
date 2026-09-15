@@ -84,11 +84,6 @@ export default function TripActionsMenu({ disabled = false, onExport, compactTri
               <small className="text-muted">Preview, PDF, or email</small>
             </span>
           </button>
-          <a role="menuitem" href="/bookings"
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-ink hover:bg-sand">
-            <FileDown size={16} className="text-muted" aria-hidden />
-            <span><strong className="block font-medium">Bookings</strong><small className="text-muted">Compare, lock, export and record purchases</small></span>
-          </a>
           <button
             type="button"
             role="menuitem"

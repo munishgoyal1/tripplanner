@@ -625,6 +625,9 @@ describe("App responsive workspace", () => {
     expect(screen.getByText("Assistant", { selector: "header span" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Trip actions" })).toHaveClass("text-muted");
     expect(screen.getByRole("button", { name: "Trip actions" }).querySelector("svg.lucide-download")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Bookings" })).toHaveAttribute("href", "/bookings");
+    expect(screen.getByRole("group", { name: "Rate this trip" })).toHaveClass("rounded-md");
+    expect(screen.getByTestId("trip-switcher")).toBeInTheDocument();
     expect(screen.getByLabelText("Workspace notifications")).toHaveTextContent("Start a trip to see planning updates here.");
     expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Guest");
     expect(screen.queryByRole("button", { name: "Travel preferences" })).not.toBeInTheDocument();
@@ -1120,6 +1123,7 @@ describe("App responsive workspace", () => {
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Guest"));
     fireEvent.click(screen.getByRole("button", { name: "Trip actions" }));
+    expect(screen.queryByRole("menuitem", { name: /Bookings/ })).not.toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: /Share trip/ })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: /Add to calendar/ })).toHaveAttribute(
       "href",

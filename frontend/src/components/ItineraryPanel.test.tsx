@@ -160,6 +160,22 @@ describe("ItineraryPanel", () => {
     expect(fetchItineraryMock).toHaveBeenCalledTimes(2);
   });
 
+  it("ends a stalled initial load with a recoverable error", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    fetchItineraryMock.mockReturnValue(new Promise(() => undefined));
+    try {
+      render(<ItineraryPanel />);
+
+      expect(await screen.findByText("Loading itinerary…")).toBeInTheDocument();
+      await vi.advanceTimersByTimeAsync(30_000);
+
+      expect(screen.getByText("The itinerary took too long to load.")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("shows the compact brief and agenda metadata", async () => {
     render(<ItineraryPanel />);
 

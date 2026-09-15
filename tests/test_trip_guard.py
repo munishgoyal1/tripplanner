@@ -447,6 +447,23 @@ def test_substantial_day_requires_specific_preference_matched_meal() -> None:
     ) == []
 
 
+def test_long_road_day_requires_a_named_meal_break() -> None:
+    itinerary = [{
+        "day": 1,
+        "stops": [{
+            "name": "Drive: Bangalore to Madurai",
+            "kind": "transport",
+            "duration_min": 540,
+        }],
+    }]
+
+    warnings = trip_validation._restaurant_itinerary_warnings(itinerary)
+    assert warnings == ["Day 1's long road journey has no named restaurant meal break."]
+
+    itinerary[0]["stops"].append({"name": "Sree Sabarees", "kind": "meal"})
+    assert trip_validation._restaurant_itinerary_warnings(itinerary) == []
+
+
 @pytest.mark.parametrize(
     ("day", "stop_name"),
     [
