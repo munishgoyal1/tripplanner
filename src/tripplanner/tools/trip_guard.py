@@ -371,7 +371,7 @@ def facts_for(name: str, destination: str) -> place_facts.PlaceFacts:
 
 
 def day_dates(plan: dict[str, Any]) -> dict[int, str]:
-    """Calendar date per day number, from the entry itself or the start date.
+    """Calendar date per day number, anchored to departure when known.
 
     A weekday closure is only checkable against a real date, so a plan that
     never wrote one simply keeps those invariants silent.
@@ -387,25 +387,17 @@ def day_dates(plan: dict[str, Any]) -> dict[int, str]:
     out: dict[int, str] = {}
     for day, entry, _stops in days_of(plan):
         text = str(entry.get("date") or "").strip()
-        if place_facts.weekday_of(text) is not None:
-            out[day] = text
-        elif start is not None:
+        if start is not None:
             out[day] = (start + timedelta(days=day - 1)).isoformat()
+        elif place_facts.weekday_of(text) is not None:
+            out[day] = text
     return out
 
 
 def _calendar_violations(
     plan: dict[str, Any], structured: list[tuple[int, dict[str, Any], list[Any]]]
 ) -> list[Violation]:
-    """A day's own written date must land inside the trip's booked window.
-
-    Content merged or replaced from an unrelated trip carries that trip's own
-    dates, which essentially never fall inside this trip's departure/return
-    range. Catching that here is exact and needs no place lookups or identity
-    matching -- unlike trying to confirm content belongs to a destination by
-    name. Only days that wrote a real, parseable date are checked; a day that
-    never wrote one degrades this invariant to silent, per module contract.
-    """
+    """Written dates must follow day numbers within the booked window."""
     departure_raw = str(plan.get("departure_date") or "").strip()
     return_raw = str(plan.get("return_date") or "").strip()
     try:
@@ -420,7 +412,14 @@ def _calendar_violations(
         return []
 
     out: list[Violation] = []
+    seen_days: set[int] = set()
     for day, entry, _stops in structured:
+        if day in seen_days:
+            out.append(Violation(
+                "I14", "Trip calendar", f"Day {day} occurs more than once in the itinerary.",
+                day, None,
+            ))
+        seen_days.add(day)
         text = str(entry.get("date") or "").strip()
         try:
             entry_date = date.fromisoformat(text) if text else None
@@ -428,6 +427,7 @@ def _calendar_violations(
             entry_date = None
         if entry_date is None:
             continue
+        expected = departure + timedelta(days=day - 1)
         if entry_date < departure or entry_date > return_day:
             out.append(
                 Violation(
@@ -439,6 +439,12 @@ def _calendar_violations(
                     None,
                 )
             )
+        elif entry_date != expected:
+            out.append(Violation(
+                "I14", "Trip calendar",
+                f"Day {day} is dated {text}, but must be {expected.isoformat()} "
+                "in the trip's consecutive day sequence.", day, None,
+            ))
     return out
 
 
@@ -827,6 +833,7 @@ def _stay_violations(
     if not required:
         return []
     cities = _stay_locations(plan)
+    dates = day_dates(plan)
     out: list[Violation] = []
     for day, _entry, stops in structured:
         if day not in required:
@@ -837,6 +844,15 @@ def _stay_violations(
             for stop in stays
             if not _HOTEL_PLACEHOLDER_RE.search(_stop_name(stop))
             and not unnamed_lodging(_stop_name(stop), cities)
+            and (
+                not isinstance(stop, dict) or (
+                    stop.get("stay_role") != "checkout"
+                    and (not stop.get("checkin") or not dates.get(day)
+                         or str(stop["checkin"]) <= dates[day])
+                    and (not stop.get("checkout") or not dates.get(day)
+                         or dates[day] < str(stop["checkout"]))
+                )
+            )
         ]
         if concrete:
             continue

@@ -122,6 +122,8 @@ resets the active path; `map_view.py` builds legs separately for each segment.
 | `src/tripplanner/web/booking_http.py` | Authenticated active-trip/revision binding, serialized preview/apply, explicit research and booking snapshot routes; saves through `tools/trip_planner.py` |
 | `src/tripplanner/web/booking_export.py` | Cache-only redacted booking-intent packets shared by HTML/PDF/JSON/email/share; no provider calls |
 | `src/tripplanner/decisions/booking_defaults.py` | Read-only projection of saved party, ages, currency and per-flight/per-stay search context, with explicit assumptions |
+| `src/tripplanner/party.py` | Shared explicit adult/child/infant counts and optional headcount for search defaults, quote compatibility, pricing and budget projection; age numbers are excluded |
+| `src/tripplanner/decisions/booking_stays.py` | Per-night reconciliation after an actual hotel report; identity-scoped gaps, checkout-only anchors and recovery without overwriting unrelated stays |
 | `frontend/src/components/BookingPage.tsx`, `frontend/src/bookingApi.ts` | Responsive `/bookings` research/review/lock/report surface and revision-bound API; direct toolbar navigation, saved search target selection and existing ExportModal delivery |
 | `src/tripplanner/web/itinerary_email.py` | Itinerary email composition handoff, ACS/SMTP delivery, provider usage telemetry, mail-client fallback, and durable idempotency orchestration; `api.py` retains identity and HTTP adaptation |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |

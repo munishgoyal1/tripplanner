@@ -120,8 +120,9 @@ def _facts(raw: dict, plan: dict) -> dict:
     context = raw.get("search_context") or {}
     context_warning = ""
     if raw.get("checkin") or raw.get("departure_date"):
-        counts = re.findall(r"\d+", str(plan.get("travelers") or ""))
-        party = sum(map(int, counts)) if counts else None
+        from tripplanner.party import party_size
+
+        party = party_size(plan.get("travelers"))
         occupancy = (
             (
                 (number(context.get("adults_per_room")) or 0) * (number(context.get("rooms")) or 0)
@@ -313,10 +314,13 @@ def units(plan: dict) -> list[dict]:
                     for row in rows
                     if (
                         stop.get("booking_item_id") == row["id"]
-                        or stop.get("decision_id")
+                        or not stop.get("booking_item_id")
+                        and stop.get("decision_id")
                         and stop["decision_id"] == row.get("decision_id")
                         or category == "hotels"
                         and row["category"] == "hotels"
+                        and not stop.get("booking_item_id")
+                        and not stop.get("decision_id")
                         and row["name"].casefold() == str(stop.get("name") or "").casefold()
                         and (
                             not row["start_date"] or str(day.get("date") or "") >= row["start_date"]
@@ -902,6 +906,10 @@ def prepare_change(plan: dict, command: dict) -> tuple[dict, list[str]]:
                 or candidate["day_wise_itinerary"][path[1]].get("date") == row["start_date"]
             ):
                 target["time"] = actual["time"]
+        if row["category"] == "hotels":
+            from tripplanner.decisions.booking_stays import reconcile_stay
+
+            warnings.extend(reconcile_stay(candidate, row["id"], targets))
         for index in changed_days:
             candidate["day_wise_itinerary"][index]["stops"].sort(
                 key=lambda stop: str(stop.get("time") or "23:59")

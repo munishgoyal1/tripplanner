@@ -28,10 +28,6 @@ _CURRENCY_SYMBOLS = {
     "CHF": "CHF ",
 }
 _PRICE_KEYS = ("price", "total_price", "total", "cost", "amount", "fare")
-_TRAVELER_RE = re.compile(
-    r"(\d+)\s*(adults?|children|child|kids?|elderly|seniors?|infants?|people|travell?ers?|pax)",
-    re.I,
-)
 
 
 def fmt_money(value: Any, symbol: str = "\u20b9") -> str:
@@ -89,11 +85,9 @@ def traveler_count(travelers: Any) -> int:
     Only counts numbers that precede a traveler word so trailing ages
     ("(ages 5)") don't inflate the total. Falls back to 1.
     """
-    if isinstance(travelers, (int, float)) and not isinstance(travelers, bool):
-        return int(travelers) or 1
-    matches = _TRAVELER_RE.findall(str(travelers or ""))
-    count = sum(int(m[0]) for m in matches)
-    return count or 1
+    from tripplanner.party import party_size
+
+    return party_size(travelers) or 1
 
 
 def _budget_target(trip: dict[str, Any]) -> tuple[float, str, str, str]:

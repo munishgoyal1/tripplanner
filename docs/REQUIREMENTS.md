@@ -681,6 +681,10 @@ implemented capability baseline.
   confirmation across units is rejected. Tickets/flight anchors can move to an
   existing trip day; missing days must be added first. Changed products lose stale
   location/offer terms, and unresolved timing/cost conflicts remain explicit.
+  Hotel date shifts reconcile linked nights with explicit uncovered-stay anchors,
+  preserve other bookings, and prevent map returns to uncovered hotels. Checkout
+  is a morning occurrence, not overnight coverage. Booking defaults, occupancy
+  checks and price multipliers share party counts that exclude children's ages.
 - No provider purchase, hold, payment or confirmation verification is performed.
   Live entitlement, Tiqets integration, document import, full dependency repair
   and native Bookings UI parity remain tracked under #315.

@@ -2367,3 +2367,16 @@ between the validator and renderer; unknown geography is not zero travel.
 - Booking search defaults are part of the trip data contract. Project each saved
   stay's city, dates and occupancy from the backend, preserve the explicit party,
   and test the submitted provider arguments as well as the visible fields.
+
+## 2026-09-15 - Reconcile identities against calendar coverage
+
+- Range membership does not prove calendar order. Bind each day number to the
+  departure date and use that date for closure checks as well as completion gates.
+- Headcount is semantic data: numbers in ages are not passengers. Share an
+  explicit party parser between search defaults, quote compatibility and pricing;
+  keep unknown counts unverified rather than asserting a match to a default.
+- A reported booking is truth about a purchase, not proof that every linked day
+  remains covered. Reconcile nights separately, retain checkout as a morning
+  occurrence, and test map projection too: a fallback loop can otherwise recreate
+  a hotel return that persistence correctly removed. Scope recovery by booking
+  identity so repeat-city stays and independent replacement bookings survive.

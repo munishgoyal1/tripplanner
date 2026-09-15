@@ -122,12 +122,9 @@ def _modes(raw: Any) -> frozenset[TransportMode]:
 
 
 def _travellers_from_trip(plan: dict[str, Any] | None, fallback: int) -> int:
-    travelers = (plan or {}).get("travelers")
-    if isinstance(travelers, dict):
-        count = int(travelers.get("adults") or 0) + int(travelers.get("children") or 0)
-        if count > 0:
-            return count
-    return max(1, fallback)
+    from tripplanner.party import party_size
+
+    return party_size((plan or {}).get("travelers")) or max(1, fallback)
 
 
 def _build_option(

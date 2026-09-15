@@ -1258,7 +1258,7 @@ def test_a_day_dated_inside_the_booked_window_is_not_flagged() -> None:
         departure_date="2026-07-18",
         return_date="2026-07-24",
     )
-    in_range["day_wise_itinerary"][0]["date"] = "2026-07-24"
+    in_range["day_wise_itinerary"][0]["date"] = "2026-07-18"
 
     codes = {v.code for v in trip_guard.validate_plan(in_range)}
 

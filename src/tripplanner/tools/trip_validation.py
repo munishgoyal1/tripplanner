@@ -38,7 +38,7 @@ from tripplanner.tools.trip_guard import (
 #: Invariants that mean the itinerary contradicts itself about time or place.
 #: Temporal feasibility is left out on purpose: it degrades with missing cached
 #: facts, and a gate must not fire on what it cannot know.
-_COHERENCE_CODES = frozenset({"I1", "I2", "I5", "I9"})
+_COHERENCE_CODES = frozenset({"I1", "I2", "I5", "I9", "I14"})
 
 
 def itinerary_coherence_gaps(plan: dict[str, Any]) -> list[str]:

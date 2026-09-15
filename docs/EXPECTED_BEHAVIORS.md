@@ -128,6 +128,9 @@ either enabled (the default) or disabled.
 
 **Expected:**
 
+- Day N's calendar date is departure plus N minus one. Duplicate day numbers,
+  reversed dates and mismatched dates inside the trip window are coherence gaps.
+  Closure checks use that canonical date; overnight transport does not shift day labels.
 - In every planning mode, build immediately using explicit trip facts first,
   then saved travel-party/family context, preferences and relevant history, then
   sensible editable assumptions. Do not ask to confirm party, days, dates or routine
@@ -402,11 +405,19 @@ an intention, or record a purchase made through any provider/offline.
   unknown paid amounts without inventing zero, and reject duplicate confirmations.
   Old coordinates and product-specific terms cannot masquerade as the new product.
   Timing/cost mismatches are previewed and retained as review warnings.
+- Reported hotel dates reconcile linked overnight anchors. Uncovered nights show
+  Hotel TBD without stale booking/place identity; checkout covers the morning,
+  not that night's lodging. Maps cannot close a route back to an uncovered stay.
+  Extensions may restore that booking's unresolved anchors; unrelated stays,
+  including repeat visits to the same property, remain intact and require review.
+- Search defaults, quote occupancy checks and price totals share explicit party
+  counts. Decimal ages never add passengers; unknown headcounts remain unverified.
 - Keyboard confirmation and a 320px layout retain the same review step as desktop.
 
 **Executable proof:**
 
 - [`tests/test_booking_intent.py`](../tests/test_booking_intent.py)
+- [`tests/test_calendar_booking_reconcile.py`](../tests/test_calendar_booking_reconcile.py)
 - [`frontend/src/components/BookingPage.test.tsx`](../frontend/src/components/BookingPage.test.tsx)
 - [`frontend/e2e/booking-intent.spec.ts`](../frontend/e2e/booking-intent.spec.ts)
 

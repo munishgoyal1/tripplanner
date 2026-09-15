@@ -273,7 +273,19 @@ def _build_days(
             stay_ids = _active_stay_ids(
                 trip, itinerary_days, pin_for_stop, d, selected_stay_ids
             )
-            ids = _local_day_pin_ids(ids, pin_by_id, resolved_stay_ids, stay_ids)
+            uncovered = any(
+                stop.get("uncovered_booking_item_id") and stop.get("name") == "Hotel TBD"
+                for index, entry in enumerate(trip.get("day_wise_itinerary") or [])
+                if isinstance(entry, dict) and _day_number(entry, index) == d
+                for stop in entry.get("stops") or [] if isinstance(stop, dict)
+            )
+            if uncovered:
+                ids = [
+                    pid for pid in ids
+                    if pin_by_id[pid]["kind"] != "hotel" or pid in resolved_stay_ids
+                ]
+            else:
+                ids = _local_day_pin_ids(ids, pin_by_id, resolved_stay_ids, stay_ids)
             route_ids = [pid for pid in ids if pin_by_id[pid]["kind"] not in TERMINAL_KINDS]
         if not journey.is_transfer:
             segments = [route_ids]

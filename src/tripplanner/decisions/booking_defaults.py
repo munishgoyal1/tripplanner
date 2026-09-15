@@ -3,6 +3,8 @@
 import math
 import re
 
+from tripplanner.party import party_counts, party_size
+
 
 def _count(value, fallback):
     try:
@@ -20,15 +22,7 @@ def research_defaults(plan: dict) -> dict:
     preferences = plan.get("preferences_snapshot") or {}
     family = preferences.get("family") or {}
     text = str(plan.get("travelers") or "")
-    counts = {}
-    for key, words in (
-        ("adults", "adults?"),
-        ("children", "children|child|kids?"),
-        ("infants", "infants?|babies|baby"),
-    ):
-        match = re.search(rf"\b(\d+)\s+(?:{words})\b", text, re.I)
-        if match:
-            counts[key] = int(match[1])
+    counts = party_counts(plan.get("travelers"))
     assumptions = []
     if counts:
         adults = counts.get("adults", 1)
@@ -36,8 +30,8 @@ def research_defaults(plan: dict) -> dict:
         infants = counts.get("infants", 0)
         if "adults" not in counts:
             assumptions.append("One adult assumed; the trip does not specify the adult count.")
-    elif text.strip().isdigit():
-        adults, children, infants = max(1, int(text)), 0, 0
+    elif party_size(plan.get("travelers")):
+        adults, children, infants = party_size(plan.get("travelers")), 0, 0
         assumptions.append(
             "The saved headcount does not distinguish ages; all travellers are provisionally adults."
         )
