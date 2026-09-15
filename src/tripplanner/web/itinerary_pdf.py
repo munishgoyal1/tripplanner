@@ -8,11 +8,16 @@ fallback renderer and follows the same day/stop structure, not the old tables.
 from __future__ import annotations
 
 import base64
+import contextvars
 import os
 import re
 import shutil
+import signal
 import subprocess
 import tempfile
+import time
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from html import escape, unescape
 from io import BytesIO
 from pathlib import Path
@@ -26,7 +31,14 @@ _IMG_SRC = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 _IMG_TAG = re.compile(r"<img\b[^>]*>", re.IGNORECASE | re.DOTALL)
+_TAG_SRC = re.compile(r"\bsrc=(['\"])([^'\"]+)\1", re.IGNORECASE)
 _MAX_INLINE_IMAGE_BYTES = 1_500_000
+_IMAGE_FETCH_TIMEOUT_S = 6
+_IMAGE_FETCH_WORKERS = 8
+# A 4 MB photo packet prints in 3-7s. These bound the pathological case only:
+# one attempt that outlives its timeout ends the browser path for the request.
+_PRINT_ATTEMPT_TIMEOUT_S = 40.0
+_PRINT_TOTAL_DEADLINE_S = 60.0
 _IMAGE_FETCH_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -79,30 +91,67 @@ def inline_remote_images(html: str) -> str:
 
 
 def embed_packet_images(html: str, destination: str = "") -> str:
-    """Rewrite packet images to data URIs using URL bytes, then Places media."""
+    """Rewrite packet images to data URIs using URL bytes, then Places media.
+
+    A week-long packet carries ~30 photos, maps and QR codes. Fetched one at a
+    time that was 15-30s before the browser even started, and one slow CDN
+    response added its full timeout; distinct images are fetched concurrently.
+    """
+    def key_for(tag: str) -> tuple[str, str] | None:
+        """(image URL, Places fallback name) for a tag that still needs bytes."""
+        src_match = _TAG_SRC.search(tag)
+        if not src_match:
+            return None
+        src = unescape(src_match.group(2)).strip()
+        if src.startswith("data:image/"):
+            return None
+        alt = ""
+        if "stop-photo" in tag and destination:
+            alt_match = re.search(r"\balt=(['\"])(.*?)\1", tag, re.IGNORECASE | re.DOTALL)
+            alt = unescape(alt_match.group(2)).strip() if alt_match else ""
+        return src, alt
+
+    def data_uri(result: tuple[bytes, str]) -> str:
+        payload, content_type = result
+        if not payload or not content_type:
+            return ""
+        return f"data:{content_type};base64,{base64.b64encode(payload).decode('ascii')}"
+
+    keys = [key for key in (key_for(m.group(0)) for m in _IMG_TAG.finditer(html)) if key]
+    if not keys:
+        return html
+    by_src = _fetch_concurrently(_image_bytes, list(dict.fromkeys(src for src, _ in keys)))
+    by_src = {src: data_uri(result) for src, result in by_src.items()}
+    fallback_names = list(dict.fromkeys(alt for src, alt in keys if alt and not by_src[src]))
+    by_name = {
+        name: data_uri(result)
+        for name, result in _fetch_concurrently(
+            lambda name: places_cache.get_photo_bytes(name, destination), fallback_names
+        ).items()
+    }
 
     def replace(match: re.Match[str]) -> str:
         tag = match.group(0)
-        src_match = re.search(r"\bsrc=(['\"])([^'\"]+)\1", tag, re.IGNORECASE)
-        if not src_match:
+        key = key_for(tag)
+        uri = (by_src[key[0]] or by_name.get(key[1], "")) if key else ""
+        src_match = _TAG_SRC.search(tag)
+        if not uri or not src_match:
             return tag
-        src = unescape(src_match.group(2)).strip()
-        if src.startswith("data:image/"):
-            return tag
-        payload, content_type = _image_bytes(src)
-        if not payload and "stop-photo" in tag and destination:
-            alt_match = re.search(r"\balt=(['\"])(.*?)\1", tag, re.IGNORECASE | re.DOTALL)
-            alt = unescape(alt_match.group(2)).strip() if alt_match else ""
-            if alt:
-                payload, content_type = places_cache.get_photo_bytes(alt, destination)
-        if not payload or not content_type:
-            return tag
-        encoded = base64.b64encode(payload).decode("ascii")
-        uri = f"data:{content_type};base64,{encoded}"
         start, end = src_match.start(2), src_match.end(2)
         return f"{tag[:start]}{uri}{tag[end:]}"
 
     return _IMG_TAG.sub(replace, html)
+
+
+def _fetch_concurrently(
+    fetch: Callable[[str], tuple[bytes, str]], items: list[str]
+) -> dict[str, tuple[bytes, str]]:
+    if not items:
+        return {}
+    with ThreadPoolExecutor(max_workers=min(_IMAGE_FETCH_WORKERS, len(items))) as pool:
+        # copy_context carries the paid-provider scope into Places photo fetches.
+        futures = [pool.submit(contextvars.copy_context().run, fetch, item) for item in items]
+        return dict(zip(items, (future.result() for future in futures), strict=True))
 
 
 def materialize_images(html: str, folder: Path) -> str:
@@ -145,7 +194,7 @@ def _image_bytes(src: str) -> tuple[bytes, str]:
     try:
         response = http_client.get(
             src,
-            timeout=12,
+            timeout=_IMAGE_FETCH_TIMEOUT_S,
             headers=_IMAGE_FETCH_HEADERS,
             follow_redirects=True,
         )
@@ -172,16 +221,22 @@ def html_to_pdf_bytes(html: str, destination: str = "") -> bytes | None:
     """Print the export HTML to PDF with a local Chromium-family browser."""
     if os.getenv("TRIPPLANNER_HTML_PDF", "1").strip().lower() in {"0", "false", "no"}:
         return None
-    with tempfile.TemporaryDirectory() as tmp:
+    # Browser profiles can keep files locked briefly after exit on Windows.
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         html_path = Path(tmp) / "itinerary.html"
         pdf_path = Path(tmp) / "itinerary.pdf"
         printable = embed_packet_images(html, destination)
         html_path.write_text(printable, encoding="utf-8")
         uri = html_path.resolve().as_uri()
         wait_ms = "12000" if "data:image/" in printable else "8000"
-        timeout_s = 40 if wait_ms == "12000" else 20
+        deadline = time.monotonic() + _PRINT_TOTAL_DEADLINE_S
+        attempt = 0
         for browser in _browser_paths():
             for headless in ("--headless=new", "--headless"):
+                remaining = deadline - time.monotonic()
+                if remaining <= 1:
+                    return None
+                attempt += 1
                 if pdf_path.exists():
                     pdf_path.unlink()
                 cmd = [
@@ -192,26 +247,76 @@ def html_to_pdf_bytes(html: str, destination: str = "") -> bytes | None:
                     "--disable-extensions",
                     "--no-first-run",
                     "--no-default-browser-check",
+                    # A private profile per attempt: never hand the job to (or
+                    # queue behind) the user's own browser or another automation.
+                    f"--user-data-dir={Path(tmp) / f'profile-{attempt}'}",
                     "--run-all-compositor-stages-before-draw",
                     f"--virtual-time-budget={wait_ms}",
                     f"--print-to-pdf={pdf_path}",
                     "--print-to-pdf-no-header",
                     uri,
                 ]
-                try:
-                    subprocess.run(
-                        cmd,
-                        check=True,
-                        timeout=timeout_s,
-                        capture_output=True,
-                    )
-                except (OSError, subprocess.SubprocessError, subprocess.TimeoutExpired):
-                    continue
+                finished = _run_browser(cmd, min(_PRINT_ATTEMPT_TIMEOUT_S, remaining))
                 if pdf_path.is_file() and pdf_path.stat().st_size > 8:
                     data = pdf_path.read_bytes()
                     if data.startswith(b"%PDF"):
                         return data
+                if finished is None:
+                    # It hung. Another browser/mode on the same packet has only
+                    # ever hung too; fall back instead of stacking timeouts.
+                    return None
     return None
+
+
+def _run_browser(cmd: list[str], timeout_s: float) -> int | None:
+    """Run one print attempt; the exit code, or ``None`` if it was killed.
+
+    On 2026-09-15 a local export sat in the print step for 25 minutes under
+    ``subprocess.run(capture_output=True, timeout=40)`` across four attempts.
+    That wedge did not reproduce offline, so every way to wait is removed
+    rather than tuned: no captured pipes to drain after a kill, and a timed-out
+    attempt loses its whole process tree, not just the launcher.
+    """
+    popen_kwargs: dict[str, Any] = {
+        "stdin": subprocess.DEVNULL,
+        "stdout": subprocess.DEVNULL,
+        "stderr": subprocess.DEVNULL,
+    }
+    if os.name == "nt":
+        popen_kwargs["creationflags"] = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+    else:
+        popen_kwargs["start_new_session"] = True
+    try:
+        process = subprocess.Popen(cmd, **popen_kwargs)
+    except OSError:
+        return 1
+    try:
+        return process.wait(timeout=timeout_s)
+    except subprocess.TimeoutExpired:
+        _kill_process_tree(process)
+        return None
+
+
+def _kill_process_tree(process: subprocess.Popen[bytes]) -> None:
+    try:
+        if os.name == "nt":
+            subprocess.run(
+                ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=10,
+                check=False,
+            )
+        else:
+            os.killpg(process.pid, signal.SIGKILL)
+    except (OSError, subprocess.SubprocessError):
+        pass
+    try:
+        process.kill()
+        process.wait(timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        pass
 
 
 def build_itinerary_pdf_bytes(

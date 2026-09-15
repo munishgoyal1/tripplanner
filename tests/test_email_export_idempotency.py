@@ -138,3 +138,30 @@ def test_new_request_id_allows_new_explicit_send(monkeypatch, tmp_path) -> None:
     assert second.status_code == 200
     assert len(email_client.calls) == 2
     assert email_client.calls[0][1] != email_client.calls[1][1]
+
+
+def test_pdf_and_email_exports_render_off_the_event_loop(monkeypatch, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    import asyncio
+
+    on_loop: list[bool] = []
+
+    def record_pdf(*_args, **_kwargs) -> bytes:  # type: ignore[no-untyped-def]
+        try:
+            asyncio.get_running_loop()
+            on_loop.append(True)
+        except RuntimeError:
+            on_loop.append(False)
+        return b"%PDF-1.4 test"
+
+    client = _configure_export(monkeypatch, tmp_path, _EmailClient())
+    monkeypatch.setattr(itinerary_pdf, "build_itinerary_pdf_bytes", record_pdf)
+
+    pdf = client.get("/trip/export.pdf?template=standard&include_photos=1")
+    email = client.post("/trip/export/email", json=_payload("send-off-loop"))
+
+    assert pdf.status_code == 200
+    assert pdf.content.startswith(b"%PDF")
+    assert email.status_code == 200
+    # A blocking render on the loop froze every other request for the whole
+    # export (26 minutes on 2026-09-15).
+    assert on_loop == [False, False]

@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import base64
+import subprocess
+import time
 from types import SimpleNamespace
 
 import pytest
@@ -274,6 +276,173 @@ def test_embed_packet_images_uses_places_bytes_when_url_fetch_fails(
     out = itinerary_pdf.embed_packet_images(html, "Goa")
     assert "data:image/jpeg;base64," in out
     assert "lh3.googleusercontent.com" not in out
+
+
+def test_embed_packet_images_fetches_distinct_images_concurrently(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fetched: list[str] = []
+
+    def slow_bytes(src: str) -> tuple[bytes, str]:
+        fetched.append(src)
+        time.sleep(0.3)
+        return b"\xff\xd8\xff" + src.encode(), "image/jpeg"
+
+    monkeypatch.setattr(itinerary_pdf, "_image_bytes", slow_bytes)
+    urls = [f"https://photos.example/{index}.jpg" for index in range(10)]
+    html = "".join(
+        f"<img class='stop-photo' src='{url}' alt='p{index}' />" for index, url in enumerate(urls)
+    )
+    html += f"<img class='stop-photo' src='{urls[0]}' alt='repeat' />"
+
+    started = time.perf_counter()
+    out = itinerary_pdf.embed_packet_images(html, "Goa")
+    elapsed = time.perf_counter() - started
+
+    assert elapsed < 1.5, f"10 image fetches ran serially ({elapsed:.1f}s)"
+    assert sorted(fetched) == sorted(urls)
+    assert "photos.example" not in out
+    for index, url in enumerate(urls):
+        encoded = base64.b64encode(b"\xff\xd8\xff" + url.encode()).decode("ascii")
+        assert f"src='data:image/jpeg;base64,{encoded}' alt='p{index}'" in out
+
+
+class _HungBrowser:
+    """A browser process that never exits on its own."""
+
+    launched: list[_HungBrowser] = []
+
+    def __init__(self, cmd: list[str], **kwargs: object) -> None:
+        self.cmd = cmd
+        self.kwargs = kwargs
+        self.pid = 4242
+        self.killed = False
+        _HungBrowser.launched.append(self)
+
+    def wait(self, timeout: float | None = None) -> int:
+        if self.killed:
+            return -9
+        raise subprocess.TimeoutExpired(self.cmd, timeout or 0)
+
+    def kill(self) -> None:
+        self.killed = True
+
+
+def test_html_to_pdf_stops_after_a_hung_browser(monkeypatch: pytest.MonkeyPatch) -> None:
+    _HungBrowser.launched = []
+    killed: list[int] = []
+    monkeypatch.setattr(itinerary_pdf, "_browser_paths", lambda: ["edge.exe", "chrome.exe"])
+    monkeypatch.setattr(itinerary_pdf.subprocess, "Popen", _HungBrowser)
+    monkeypatch.setattr(
+        itinerary_pdf,
+        "_kill_process_tree",
+        lambda process: (killed.append(process.pid), process.kill()),
+    )
+    monkeypatch.setattr(itinerary_pdf, "_PRINT_ATTEMPT_TIMEOUT_S", 0.01)
+
+    assert itinerary_pdf.html_to_pdf_bytes("<html><body>x</body></html>") is None
+
+    # One hang means the print is not going to finish; retrying three more
+    # browser/mode combinations is what turned a slow export into a 26 minute one.
+    assert len(_HungBrowser.launched) == 1
+    assert killed == [4242]
+    launched = _HungBrowser.launched[0]
+    assert any(arg.startswith("--user-data-dir=") for arg in launched.cmd)
+    assert launched.kwargs.get("stdout") is subprocess.DEVNULL
+    assert launched.kwargs.get("stderr") is subprocess.DEVNULL
+
+
+def test_build_export_html_warms_places_and_maps_concurrently(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    prefetched: list[tuple[list[str], str, int]] = []
+    maps: list[tuple[str, ...]] = []
+    monkeypatch.setattr(
+        itinerary_export.places_cache,
+        "prefetch",
+        lambda names, city, *, max_photos, with_reviews: prefetched.append(
+            (list(names), city, max_photos)
+        ),
+    )
+    monkeypatch.setattr(itinerary_export.places_cache, "get_details", lambda *_a, **_k: {})
+    monkeypatch.setattr(itinerary_export.places_cache, "get_photos", lambda *_a, **_k: [])
+
+    def static_map(pin_ids: list[str], _pins: dict) -> str:
+        # Mirrors the real function's cache: only a miss pays the round-trip.
+        if tuple(pin_ids) not in maps:
+            maps.append(tuple(pin_ids))
+            time.sleep(0.3)
+        return _PNG_DATA_URI
+
+    monkeypatch.setattr(itinerary_export, "_static_map_data_uri", static_map)
+    days = [
+        {
+            "day": number,
+            "title": f"Day {number}",
+            "stops": [
+                {"name": f"Temple {number}", "kind": "attraction"},
+                {"name": "Drive: A to B", "kind": "transit"},
+                {"name": "Sea View Hotel", "kind": "hotel"},
+            ],
+        }
+        for number in range(1, 7)
+    ]
+    monkeypatch.setattr(itinerary_export.trip_view, "build_itinerary", lambda _trip: {"days": days})
+    monkeypatch.setattr(
+        itinerary_export.trip_view,
+        "build_map_view",
+        lambda _trip: {
+            "pins": [
+                {"id": f"p{number}", "name": f"P{number}", "lat": 9.0, "lng": 78.0 + number / 10}
+                for number in range(0, 7)
+            ],
+            "days": [
+                {"day": number, "pin_ids": [f"p{number - 1}", f"p{number}"], "route": {}}
+                for number in range(1, 7)
+            ],
+        },
+    )
+
+    started = time.perf_counter()
+    with places_budget_scope("user_interaction"):
+        html = itinerary_export.build_export_html(
+            {"destination": "Rameshwaram"}, include_photos=True, include_map_circuit=True
+        )
+    elapsed = time.perf_counter() - started
+
+    assert elapsed < 1.5, f"six static maps ran serially ({elapsed:.1f}s)"
+    assert prefetched == [
+        (
+            ["Temple 1", "Sea View Hotel", *(f"Temple {n}" for n in range(2, 7))],
+            "Rameshwaram",
+            1,
+        )
+    ]
+    assert len(maps) == 6
+    assert html.count(_PNG_DATA_URI) == 6
+
+
+def test_build_export_html_does_not_warm_without_paid_scope(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        itinerary_export.places_cache,
+        "prefetch",
+        lambda *_a, **_k: pytest.fail("read-only export must not warm paid lookups"),
+    )
+    monkeypatch.setattr(itinerary_export.places_cache, "get_details", lambda *_a, **_k: {})
+    monkeypatch.setattr(
+        itinerary_export.trip_view,
+        "build_itinerary",
+        lambda _trip: {"days": [{"day": 1, "stops": [{"name": "Fort", "kind": "attraction"}]}]},
+    )
+    monkeypatch.setattr(
+        itinerary_export.trip_view, "build_map_view", lambda _trip: {"pins": [], "days": []}
+    )
+
+    itinerary_export.build_export_html(
+        {"destination": "Goa"}, include_photos=True, include_map_circuit=True
+    )
 
 
 def test_materialize_images_writes_local_files(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:

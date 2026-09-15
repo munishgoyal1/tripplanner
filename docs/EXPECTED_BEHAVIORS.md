@@ -979,7 +979,10 @@ printable file. Standard (including the older `detailed` alias) keeps itinerary
 panel facts without Trip Book contents. PDF download uses the same HTML layout
 as preview. Checked stop photos appear in the PDF, not only in HTML preview.
 Download PDF and Send show independent progress. Email includes the PDF and a
-trip URL.
+trip URL. Generating a PDF or email never stalls the rest of the app: other
+requests keep answering while it runs. A browser print that hangs is abandoned
+within about a minute and the ReportLab fallback is returned, rather than
+retrying every browser in turn.
 
 **Executable proof:**
 
@@ -989,6 +992,8 @@ trip URL.
 - [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `offers Standard and Trip Book with budget and photo checkboxes off`
 - [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `does not mark email as sending while a PDF download is in progress`
 - [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_embed_packet_images_uses_places_bytes_when_url_fetch_fails`
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_html_to_pdf_stops_after_a_hung_browser`
+- [`tests/test_email_export_idempotency.py`](../tests/test_email_export_idempotency.py) - `test_pdf_and_email_exports_render_off_the_event_loop`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 
