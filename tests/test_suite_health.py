@@ -341,7 +341,9 @@ Set-Content -Path (Join-Path $LogDir "prod-deploy.log") -Value "live"
 Set-Content -Path (Join-Path $LogDir "prod-deploy.1.log") -Value "rotated"
 Set-Content -Path (Join-Path $LogDir "sandbox.pid42.log") -Value "live"
 Set-Content -Path (Join-Path $LogDir "finished.log") -Value "done"
+Set-Content -Path (Join-Path $LogDir "run-latest-master.log") -Value "idle app"
 $held = @(
+    [System.IO.File]::Open((Join-Path $LogDir "run-latest-master.log"), "Open", "Read", "Read"),
     [System.IO.File]::Open((Join-Path $LogDir "prod-deploy.log"), "Open", "Read", "Read"),
     [System.IO.File]::Open((Join-Path $LogDir "prod-deploy.1.log"), "Open", "Read", "Read"),
     [System.IO.File]::Open((Join-Path $LogDir "sandbox.pid42.log"), "Open", "Read", "Read")

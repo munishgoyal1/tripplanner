@@ -37,11 +37,15 @@ function Test-RunLogWritable {
 function Get-ConcurrentRunNames {
     # Other scripts running right now, known by the transcript each holds open.
     # A suite measured beside a deploy's image build reports load, not code.
+    # The owner's local app launchers hold their transcript for hours while
+    # mostly idle; they are a standing service, not a competing batch job.
     $own = if ($global:TripplannerRunLog) { $global:TripplannerRunLog.Path } else { "" }
+    $services = '^(run-latest-master|dev-spa(-\d+)?)$'
     $names = @()
     try {
         foreach ($file in Get-ChildItem -LiteralPath (Get-RunLogDirectory) -Filter "*.log" -ErrorAction SilentlyContinue) {
             if ($file.Name -match '\.\d+\.log$' -or $file.Name -eq "runs.log") { continue }
+            if (($file.BaseName -replace '\.pid\d+$', '') -match $services) { continue }
             if ($own -and $file.FullName -eq ([System.IO.Path]::GetFullPath($own))) { continue }
             if (-not (Test-RunLogWritable -Path $file.FullName)) {
                 $names += ($file.BaseName -replace '\.pid\d+$', '')
