@@ -14,7 +14,7 @@
   ],
   "generated": "2026-09-15",
   "ref": "claude/suite-health-deploy-fixes",
-  "commit": "dae74906",
+  "commit": "620ff391",
   "pytest": {
     "command": "python -m pytest tests -q -n 2",
     "failures": [],
@@ -30,20 +30,11 @@
   },
   "vitest": {
     "command": "npx vitest run",
-    "failures": [
-      {
-        "id": "frontend/labs/feedback-plugin.test.ts::commitSelectionStore reports a push failure after preserving the local Lab commit",
-        "first_seen": "2026-09-15",
-        "message": "Error: STACK_TRACE_ERROR",
-        "category": "unreviewed",
-        "owner": "unassigned",
-        "note": ""
-      }
-    ],
+    "failures": [],
     "totals": {
       "tests": 466,
-      "passed": 465,
-      "failed": 1,
+      "passed": 466,
+      "failed": 0,
       "skipped": 0,
       "files_ran": 61,
       "files_expected": 61

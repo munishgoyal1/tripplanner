@@ -2429,3 +2429,10 @@ between the validator and renderer; unknown geography is not zero travel.
 - The shared `.venv` imports `tripplanner` from the primary checkout's `src`
   (editable install). Running pytest in a worktree without
   `PYTHONPATH=<worktree>\src` silently tests master's code, not the fix.
+- A git process on the owner's Windows machine measured 0.5-1.5s at times
+  (`git config` alone 1.5s), and ~0.25s at others. Tests that build fixture
+  repositories should write `.git/config` directly and avoid bare remotes and
+  hook shells; the Lab store tests went from 6-27s to under 1.5s. One run of
+  that test also stalled 18 minutes inside a synchronous git spawn and never
+  reproduced; `execFileSync` has no timeout, so a stall freezes the whole
+  process, vitest's own test timeout included.
