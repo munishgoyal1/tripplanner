@@ -2320,7 +2320,7 @@ the outcome.
   generic home-arrival row, while preserving explicit confirmed bindings.
 
 
-### 2026-09-14 — Reproduce projection and validation, not only repaired state
+### 2026-09-14 â€” Reproduce projection and validation, not only repaired state
 
 The Rameshwaram replay exposed correct saved coordinates being replaced by a
 multi-city cache lookup in the itinerary projection, while the guard ignored saved
@@ -2331,3 +2331,16 @@ saved identity versus stale lookup results, cold-cache physical feasibility,
 transfer allocation, cumulative lateness/midnight, and preserved hotel ordering.
 Keep planned clock values distinct from feasible arrivals and share route arithmetic
 between the validator and renderer; unknown geography is not zero travel.
+
+## 2026-09-15 - Every fallback request needs its own completion bound
+
+- A workspace bootstrap timeout allowed individual panes to recover, but the
+  itinerary fallback request itself had no deadline. A pending fetch therefore
+  preserved `Loading itinerary` forever after home-to-planner navigation. Bound
+  each fallback independently and replace indefinite loading with an actionable
+  retry state.
+- Prompt prose and a toolbar warning did not make long-drive meal coverage part of
+  completion. Put traveller-sensitive requirements in deterministic validation so
+  the planning loop researches and persists the missing stop before presenting the
+  itinerary. UI notices should report state, not hand routine planning work back to
+  the traveller.

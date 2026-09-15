@@ -182,8 +182,12 @@ either enabled (the default) or disabled.
   New research between saves resets the consecutive no-progress guard; two
   unproductive saves against unchanged evidence still stop the loop. Chronology
   rejection reports cascading earliest times together, avoiding one-stop retries.
+  Returning to Planner reuses the workspace response when available and otherwise
+  performs a bounded itinerary fetch. A request that never settles leaves the
+  loading state after 30 seconds, reports the failure, and offers Retry.
   Proof: `tests/test_graph_policy.py`, `tests/test_itinerary_completion.py`,
-  `tests/test_trip_reliability.py`, and `frontend/src/components/ChatPanel.test.tsx`.
+  `tests/test_trip_reliability.py`, `frontend/src/components/ChatPanel.test.tsx`,
+  and `frontend/src/components/ItineraryPanel.test.tsx`.
 - A planning turn normally uses at most ten tool phases. A first planning turn
   that reaches that semantic budget permits bounded initial repairs for
   journey edges, named meal coverage on substantial days, and positive
@@ -368,7 +372,7 @@ the evidence that produced the finding.
 
 ### EB-BOOKING-001 - Research, lock, export and report external bookings
 
-**Trigger:** Open Bookings from Trip actions, adjust a saved alternative, export
+**Trigger:** Open Bookings directly from the workspace toolbar, adjust a saved alternative, export
 an intention, or record a purchase made through any provider/offline.
 
 **Expected:**
@@ -885,9 +889,11 @@ inter-city edge. A road journey that starts the day renders the saved home area
 or origin city as a separate `O` endpoint, labels the drive as departing from
 that origin, formats long durations in hours and minutes, and includes planned
 snack/rest breaks using saved or inferred driving preferences. Its insight says
-that the same taxi or self-drive vehicle continues through authored waypoints,
-calls out scenic breaks, and prompts a meal stop on a long drive when none is
-authored. An explicit meal remains a separately focusable itinerary waypoint.
+  that the same taxi or self-drive vehicle continues through authored waypoints
+  and calls out scenic breaks. A drive of four hours or longer without a named
+  restaurant meal break is an incomplete itinerary: planning researches and saves
+  the stop instead of assigning the gap to the traveller as a toolbar warning.
+  An explicit meal remains a separately focusable itinerary waypoint.
 For Drive and Bus transfers, worthwhile researched scenic and named meal breaks
 are explicit ordered stops before the destination terminal/check-in. A fixed bus
 service includes only real scheduled or feasible breaks and never implies a
@@ -903,6 +909,7 @@ incomplete plan returns an actionable correction.
 - [`tests/test_trip_plan.py`](../tests/test_trip_plan.py) - `test_create_trip_plan_defaults_origin_from_saved_home_area`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_city_origin_drive_includes_origin_and_rest_break`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
+- [`tests/test_graph_policy.py`](../tests/test_graph_policy.py) - `test_first_turn_researches_a_meal_for_a_long_road_day`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_bus_transfer_builds_separate_road_circuit_with_route_breaks`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_mode_tagged_gangtok_flights_expand_with_both_airports`
 - [`tests/test_trip_persistence.py`](../tests/test_trip_persistence.py) - `test_prompt_requires_grounded_ordered_road_breaks`

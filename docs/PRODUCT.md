@@ -264,8 +264,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   route, and Trip context — so the three-column hierarchy is legible before its content
   loads. New trip uses a restrained
   coral tint rather than a solid fill; active pane controls use quiet neutral fills,
-  while export/new/reset share one outlined group and thumbs up/down/rating share
-  one sand-colored group. Thin separators make each feedback and itinerary action
+  while export/new/reset share one outlined group, Bookings is a direct workflow
+  action, and thumbs up/down/rating share one sand-colored group. Saved-trip,
+  feedback, and action outlines use the same restrained rounded-rectangle radius.
+  Thin separators make each feedback and itinerary action
   independently scannable without breaking the compact groups. Account preferences use a gear beside the sign-in or
   short identity label. This
   keeps itinerary, map, and trip decisions visually dominant.

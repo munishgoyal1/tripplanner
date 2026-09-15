@@ -50,7 +50,7 @@ export default function TripFeedbackControl({ disabled = false, initial, mobile 
   };
 
   return (
-    <div ref={rootRef} role="group" aria-label="Rate this trip" className={`relative flex shrink-0 items-center ${mobile ? "gap-0" : "gap-0 rounded-full border border-border bg-sand p-0.5"}`}>
+    <div ref={rootRef} role="group" aria-label="Rate this trip" className={`relative flex shrink-0 items-center ${mobile ? "gap-0" : "gap-0 rounded-md border border-border bg-sand p-0.5"}`}>
       {rollup.count > 0 && !mobile && (
         <span className="sr-only">
           <Check size={11} aria-hidden /> Sent {rollup.count > 1 ? `· ${rollup.count}` : ""}
@@ -64,7 +64,7 @@ export default function TripFeedbackControl({ disabled = false, initial, mobile 
             type="button"
             disabled={disabled || saving}
             onClick={() => { setCurrentFeedbackId(null); void submit({ sentiment }); setOpen(true); }}
-            className="inline-flex h-7 w-7 items-center justify-center border-r border-border/80 text-muted transition first:rounded-l-full hover:bg-paper hover:text-ink disabled:opacity-40"
+            className="inline-flex h-7 w-7 items-center justify-center border-r border-border/80 text-muted transition first:rounded-l hover:bg-paper hover:text-ink disabled:opacity-40"
             aria-label={sentiment === "up" ? "This trip works" : "This trip misses"}
           >
             <Icon size={15} className={rollup.last_sentiment === sentiment ? "text-clay" : undefined} aria-hidden />
@@ -76,7 +76,7 @@ export default function TripFeedbackControl({ disabled = false, initial, mobile 
           type="button"
           disabled={disabled}
           onClick={() => setOpen((current) => !current)}
-          className="inline-flex h-7 items-center gap-1 rounded-r-full px-2 text-xs font-semibold text-muted transition hover:bg-paper hover:text-ink disabled:opacity-40"
+          className="inline-flex h-7 items-center gap-1 rounded-r px-2 text-xs font-semibold text-muted transition hover:bg-paper hover:text-ink disabled:opacity-40"
           aria-expanded={open}
         >
           <Star size={13} aria-hidden /> Rate

@@ -63,12 +63,26 @@ _INTERCITY_TRANSFER_RE = re.compile(
     r"\b(?:flight|train|bus|drive|ferry)\b.*(?:→|\bto\b)|\b(?:overnight|sleeper)\b",
     re.I,
 )
+_LONG_ROAD_MEAL_MIN = 240
+
+
+def _long_road_journey(stops: list[Any]) -> bool:
+    return any(
+        isinstance(stop, dict)
+        and _stop_kind(stop) == "transport"
+        and re.search(r"\bdrive\b", _stop_name(stop), re.I)
+        and isinstance(stop.get("duration_min"), (int, float))
+        and int(stop["duration_min"]) >= _LONG_ROAD_MEAL_MIN
+        for stop in stops
+    )
 
 
 def _day_allows_open_meals(day: dict[str, Any], stops: list[Any]) -> bool:
     day_text = " ".join(str(day.get(key) or "") for key in ("title", "summary", "note", "notes"))
     if _MEAL_OPEN_RE.search(day_text) or _WHOLE_DAY_LEISURE_RE.search(day_text):
         return True
+    if _long_road_journey(stops):
+        return False
     return any(
         _stop_kind(stop) in {"flight", "transport"}
         and _INTERCITY_TRANSFER_RE.search(_stop_name(stop))
@@ -128,6 +142,10 @@ def _restaurant_itinerary_warnings(
         ]
         if placeholders:
             warnings.append(f"Day {day_num} has a meal placeholder instead of a named restaurant.")
+        elif _long_road_journey(stops) and not meal_stops and not _day_allows_open_meals(day, stops):
+            warnings.append(
+                f"Day {day_num}'s long road journey has no named restaurant meal break."
+            )
         elif place_count >= 2 and not meal_stops and not _day_allows_open_meals(day, stops):
             warnings.append(f"Day {day_num} has multiple activities but no named restaurant stop.")
         elif meal_stops and diet_tokens:

@@ -11,6 +11,8 @@ import TripVerificationCard from "./TripVerificationCard";
 import WeatherIcon from "./WeatherIcon";
 import { hotelIdentityGroups, hotelIdentityMatches } from "./map/placeIdentity";
 
+const ITINERARY_LOAD_DEADLINE_MS = 30_000;
+
 interface Props {
   filters?: readonly ItineraryFilter[];
   onFilterToggle?: (filter: ItineraryFilter) => void;
@@ -465,6 +467,13 @@ export default function ItineraryPanel({
     }
     setLoading(true);
     setError(null);
+    const deadline = window.setTimeout(() => {
+      if (cancelled) return;
+      cancelled = true;
+      controller.abort();
+      setError("The itinerary took too long to load.");
+      setLoading(false);
+    }, ITINERARY_LOAD_DEADLINE_MS);
     fetchItinerary(controller.signal)
       .then((data) => {
         if (!cancelled) setIt(data);
@@ -473,10 +482,12 @@ export default function ItineraryPanel({
         if (!cancelled) setError("Could not refresh the itinerary.");
       })
       .finally(() => {
+        window.clearTimeout(deadline);
         if (!cancelled) setLoading(false);
       });
     return () => {
       cancelled = true;
+      window.clearTimeout(deadline);
       controller.abort();
     };
   }, [reloadToken, retryToken, tripId, seed, seedPending]);
