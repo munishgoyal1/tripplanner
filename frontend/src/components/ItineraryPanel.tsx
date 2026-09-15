@@ -415,9 +415,7 @@ export default function ItineraryPanel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const previousTripIdRef = useRef(tripId);
   const consumedSeedRef = useRef<Itinerary | null>(null);
-  // Set while a seed has been applied during render and the effect below has
-  // not yet seen it, so that effect knows the data question is already answered.
-  const seedJustAppliedRef = useRef(false);
+  const seededRequestRef = useRef<{ reloadToken: typeof reloadToken; retryToken: number; tripId: typeof tripId } | null>(null);
   const [density, setDensity] = useState<RowDensity>("comfortable");
   const allDaysActive = circuitFocusDay == null && circuitFocusToken > 0;
   const readiness = it?.has_itinerary
@@ -427,34 +425,26 @@ export default function ItineraryPanel({
     ? <ItineraryFilterControls filters={filters} onToggle={onFilterToggle} target={headerTarget} trailing={readiness} />
     : null;
 
-  // Drop the outgoing trip's days as soon as the trip changes; leaving them on
-  // screen while the new itinerary loaded looked like the switch had failed.
-  if (previousTripIdRef.current !== tripId) {
-    previousTripIdRef.current = tripId;
-    if (it) setIt(null);
-  }
-
-  // The workspace payload already carries this itinerary, so it is applied here
-  // during render rather than from an effect. An effect only runs after the
-  // commit, which left one render showing the loading state for data the panel
-  // already had -- and made the hand-off depend on effect ordering across three
-  // components. A render-phase update to this component's own state is the
-  // supported way to derive state from props.
-  if (seed && seed !== consumedSeedRef.current) {
-    consumedSeedRef.current = seed;
-    seedJustAppliedRef.current = true;
-    setIt(seed);
-    setError(null);
-    setLoading(false);
-  }
-
   useEffect(() => {
     let cancelled = false;
     const controller = new AbortController();
-    // The render above already applied a seed for this reload, so there is
-    // nothing to fetch.
-    if (seedJustAppliedRef.current) {
-      seedJustAppliedRef.current = false;
+    if (previousTripIdRef.current !== tripId) {
+      previousTripIdRef.current = tripId;
+      setIt(null);
+    }
+    // Commit seed consumption with the state update. Render-time ref mutations
+    // survive discarded StrictMode renders while their state updates do not.
+    if (seed && seed !== consumedSeedRef.current) {
+      consumedSeedRef.current = seed;
+      seededRequestRef.current = { reloadToken, retryToken, tripId };
+      setIt(seed);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+    const seededRequest = seededRequestRef.current;
+    if (seed && seededRequest?.reloadToken === reloadToken
+      && seededRequest.retryToken === retryToken && seededRequest.tripId === tripId) {
       return;
     }
     // A workspace payload carrying this itinerary is on its way. Racing it with

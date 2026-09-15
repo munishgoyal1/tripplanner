@@ -2344,3 +2344,13 @@ between the validator and renderer; unknown geography is not zero travel.
   the planning loop researches and persists the missing stop before presenting the
   itinerary. UI notices should report state, not hand routine planning work back to
   the traveller.
+
+## 2026-09-15 - Reproduce the application render lifecycle
+
+- The itinerary spinner persisted even after a fetch deadline was added because
+  the actual failure did not involve a pending request. A render mutated the
+  consumed-seed ref before the state update committed. Strict Mode replay kept
+  that ref, discarded the state update, and skipped both seed application and
+  fetching. Move consumption into the effect with the state update, and test with
+  the same Strict Mode wrapper as the application. Cover arrival, remount, and
+  explicit revision so avoiding duplicate reads does not suppress future refreshes.
