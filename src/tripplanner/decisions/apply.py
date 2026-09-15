@@ -76,11 +76,10 @@ class ApplyResult:
 
 
 def _travellers(plan: dict[str, Any]) -> int:
+    from tripplanner.party import party_size
+
     raw = plan.get("travelers") or plan.get("travellers") or ""
-    if isinstance(raw, int):
-        return max(1, raw)
-    numbers = [int(n) for n in re.findall(r"\d+", str(raw))]
-    return max(1, sum(numbers)) if numbers else 1
+    return party_size(raw) or 1
 
 
 def _to_number(value: Any) -> float | None:
