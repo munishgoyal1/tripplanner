@@ -2380,3 +2380,26 @@ between the validator and renderer; unknown geography is not zero travel.
   occurrence, and test map projection too: a fallback loop can otherwise recreate
   a hotel return that persistence correctly removed. Scope recovery by booking
   identity so repeat-city stays and independent replacement bookings survive.
+
+## 2026-09-15 - A Sync Export In An Async Route Freezes The Whole App
+
+- A local Standard PDF export with photos took 1,547s. Image fetching took about
+  45s (28 images one at a time, one 12s CDN timeout plus a 10s Places fallback).
+  About 25 minutes went into browser print attempts. ReportLab then paid for
+  another 45 serial photo fetches. The route was `async def` doing blocking I/O,
+  so every other request queued behind it and they all completed the same
+  second the export returned. Any route that renders, fetches or spawns a
+  process belongs in `asyncio.to_thread`.
+- The print wedge did not reproduce offline. Headless Chrome printed the same
+  4 MB packet in 3-13s, and `subprocess.run` timeouts held in isolation. It did
+  line up with a prod deploy, a canary deploy (Playwright Chrome smoke tests)
+  and suite-health all running at once, and it released one second after the
+  deploy exited. When a hang cannot be reproduced, remove the ways to wait
+  rather than tuning timeouts: a private `--user-data-dir` per attempt, no
+  captured pipes, a process-tree kill, a total deadline, and no retrying other
+  browsers after a hang.
+- To time a worktree's code against real config, run from a directory whose
+  code has `.env`: settings resolve `.env` beside the code, not in the working
+  directory. Without it, static maps silently fall back to SVG and a
+  "faster" run is really a different packet. Compare image counts, not just
+  timings.
