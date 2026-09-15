@@ -64,16 +64,16 @@ export default function DesktopToolbar({
       <header className="relative z-50 flex h-10 shrink-0 items-center gap-2 overflow-visible border-b border-border bg-paper px-3 lg:gap-2.5 lg:px-4">
         <span className="hidden shrink-0 items-center gap-2 xl:inline-flex">
           <Compass size={17} className="text-brand" aria-hidden />
-          <span className="display text-lg text-ink">AI Tripplanner</span>
+          <span className="text-[15px] font-semibold tracking-[-0.01em] text-ink">AI Tripplanner</span>
         </span>
         <TripSwitcher version={tripVersion} onSwitched={onTripSwitched} />
         <div className="h-6 w-px shrink-0 bg-border" aria-hidden />
         <nav className="ml-auto flex shrink-0 items-center gap-1.5 lg:gap-2" aria-label="Workspace controls">
-          <span className="hidden items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted lg:inline-flex">
+          <span className="hidden items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted 2xl:inline-flex">
             <LayoutDashboard size={14} className="text-brand" aria-hidden /> Workspace
           </span>
           <div
-            role="group" className="flex shrink-0 items-center gap-0.5 rounded-full border border-border bg-sand p-0.5"
+            role="group" className="flex shrink-0 items-center gap-0.5 rounded-md bg-sand p-0.5"
             aria-label="Pane visibility"
           >
             {PANES.map(({ pane, label, Icon, title }) => (
@@ -81,9 +81,9 @@ export default function DesktopToolbar({
                 key={pane}
                 type="button"
                 onClick={() => onTogglePane(pane)}
-                className={`inline-flex h-7 items-center justify-center gap-1 rounded-full px-2 text-xs font-semibold transition ${
+                className={`inline-flex h-7 items-center justify-center gap-1 rounded px-2 text-xs font-semibold transition ${
                   paneVisibility[pane]
-                    ? "bg-clay-soft text-ink shadow-sm ring-1 ring-clay/20"
+                    ? "bg-paper text-ink shadow-sm ring-1 ring-border"
                     : "text-muted hover:bg-paper hover:text-ink"
                 }`}
                 aria-pressed={paneVisibility[pane]}
@@ -94,13 +94,13 @@ export default function DesktopToolbar({
             ))}
           </div>
           <TripFeedbackControl disabled={tripActionsDisabled} initial={feedback} />
-          <div role="group" className="flex items-center gap-0.5 rounded-full border border-border bg-paper p-0.5" aria-label="Trip actions">
+          <div role="group" className="flex items-center gap-0.5 rounded-md border border-border bg-paper p-0.5" aria-label="Trip actions">
             <TripActionsMenu disabled={tripActionsDisabled} onExport={onExport} compactTrigger />
             <span className="h-4 w-px shrink-0 bg-border" aria-hidden />
             <button
               type="button"
               onClick={onStartNewTrip}
-              className="inline-flex h-7 items-center gap-1.5 rounded-full bg-paper px-2 text-xs font-semibold text-ink transition hover:bg-clay-soft"
+              className="inline-flex h-7 items-center gap-1.5 rounded bg-paper px-2 text-xs font-semibold text-ink transition hover:bg-sand"
               title="Start a new trip"
               aria-label="New trip"
             >
@@ -111,7 +111,7 @@ export default function DesktopToolbar({
             <button
               type="button"
               onClick={onResetTrip}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted transition hover:bg-sand hover:text-ink"
+              className="inline-flex h-7 w-7 items-center justify-center rounded text-muted transition hover:bg-sand hover:text-ink"
               title="Clear this trip's plan and start over, keeping the destination, dates and travellers"
               aria-label="Reset trip"
             >
@@ -140,7 +140,7 @@ export default function DesktopToolbar({
           <button
             type="button"
             onClick={onOpenAccount}
-            className={`inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition ${signedIn ? "border border-border text-ink hover:bg-sand" : "bg-brand text-white shadow-sm hover:bg-brand-600"}`}
+            className={`inline-flex h-7 items-center gap-1.5 rounded-md px-3 text-xs font-semibold transition ${signedIn ? "border border-border text-ink hover:bg-sand" : "bg-ink text-white shadow-sm hover:bg-ink/90"}`}
             title="Account settings"
             aria-label="Account settings"
           >
@@ -150,7 +150,7 @@ export default function DesktopToolbar({
           </button>
         </nav>
       </header>
-      <div aria-label="Workspace notifications" className="relative z-40 flex h-7 shrink-0 items-center gap-x-3 border-b border-ochre/20 bg-ochre/15 px-3">
+      <div aria-label="Workspace notifications" className="relative z-40 flex h-7 shrink-0 items-center gap-x-3 border-b border-border bg-paper px-3">
         <div className="mr-auto min-w-0 flex-1">
           {notice ? <StatusBar compact /> : (
             <div className="flex items-center gap-2 text-xs font-medium text-muted" role="status">

@@ -10,6 +10,7 @@ interface Props {
   children: ReactNode;
 }
 
+/** Flat one-line pane header: identity, pane-owned controls, then Hide and Maximize. */
 export default function CanvasPaneFrame({
   label,
   maximized,
@@ -21,21 +22,16 @@ export default function CanvasPaneFrame({
   const Icon = label === "Map" ? MapPin : ListChecks;
   const context = label === "Map" ? "Explore and route" : "Read and refine";
   return (
-    <article className="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-paper shadow-card">
-      <header className="flex h-10 shrink-0 items-center gap-2.5 border-b border-border bg-sidebar/70 px-3">
-        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-paper text-brand shadow-sm ring-1 ring-border" aria-hidden>
-          <Icon size={14} />
-        </span>
-        <span className="flex shrink-0 flex-col leading-none">
-          <span className="text-[9px] font-bold uppercase tracking-[0.09em] text-muted">{context}</span>
-          <h2 className="mt-1 text-sm font-semibold text-ink">{label}</h2>
-        </span>
-        {headerTargetRef && <div ref={headerTargetRef} className="min-w-0 flex-1" />}
-        <div role="group" aria-label={`${label} pane controls`} className="ml-auto flex shrink-0 items-center rounded-full bg-sand p-0.5 ring-1 ring-inset ring-border">
+    <article className="flex h-full min-h-0 flex-col overflow-hidden rounded-md border border-border bg-paper">
+      <header className="flex h-9 shrink-0 items-center gap-2 border-b border-border px-2.5" title={context}>
+        <Icon size={14} className="shrink-0 text-muted" aria-hidden />
+        <h2 className="shrink-0 text-[13px] font-semibold tracking-[-0.01em] text-ink">{label}</h2>
+        {headerTargetRef && <div ref={headerTargetRef} className="flex min-w-0 flex-1 items-center justify-between gap-2 pl-1" />}
+        <div role="group" aria-label={`${label} pane controls`} className="ml-auto flex shrink-0 items-center gap-0.5">
           <button
             type="button"
             onClick={onHide}
-            className="grid h-7 w-7 place-items-center rounded-full text-muted transition hover:bg-paper hover:text-ink hover:shadow-sm"
+            className="grid h-7 w-7 place-items-center rounded text-muted transition hover:bg-sand hover:text-ink"
             aria-label={`Hide ${label}`}
             title={`Hide ${label}`}
           >
@@ -44,7 +40,7 @@ export default function CanvasPaneFrame({
           <button
             type="button"
             onClick={onToggleMaximize}
-            className="grid h-7 w-7 place-items-center rounded-full text-muted transition hover:bg-paper hover:text-ink hover:shadow-sm"
+            className="grid h-7 w-7 place-items-center rounded text-muted transition hover:bg-sand hover:text-ink"
             aria-label={maximized ? `Restore ${label}` : `Maximize ${label}`}
             title={maximized ? "Restore" : "Maximize"}
           >

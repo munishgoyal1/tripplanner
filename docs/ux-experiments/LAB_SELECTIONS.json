@@ -697,7 +697,7 @@
     "selection": "flow",
     "selectionLabel": "F · Crisp flow rows",
     "comment": "",
-    "disposition": "ready",
+    "disposition": "implemented-review",
     "handoffs": [
       {
         "version": 1,
@@ -706,10 +706,38 @@
         "comment": "",
         "disposition": "ready",
         "recordedAt": "2026-09-14T13:11:55.493Z"
+      },
+      {
+        "version": 2.0,
+        "selection": "flow",
+        "selectionLabel": "F · Crisp flow rows",
+        "comment": "",
+        "disposition": "implemented-review",
+        "summary": "Option F (Crisp flow rows) plus the shared crisp2 workspace finish implemented in ItineraryStopRow/ItineraryPanel/WorkspaceDayBar/CanvasPaneFrame/DetailsPaneShell/DesktopToolbar/TripSnapshot/TripVerificationCard/ItineraryFilterControls and index.css. 61 frontend test files (461 tests), TypeScript, and production build pass. Commit a0e9c1cb on claude/implement-lab31-flow-rows.",
+        "recordedAt": "2026-09-15T03:47:41.8038436Z"
       }
     ],
-    "implementations": [],
-    "stateChangedAt": "2026-09-14T13:11:55.493Z",
-    "updatedAt": "2026-09-14T13:11:55.493Z"
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2.0,
+        "selection": "flow",
+        "selectionLabel": "F · Crisp flow rows",
+        "comment": "",
+        "summary": "Option F (Crisp flow rows) plus the shared crisp2 workspace finish implemented in ItineraryStopRow/ItineraryPanel/WorkspaceDayBar/CanvasPaneFrame/DetailsPaneShell/DesktopToolbar/TripSnapshot/TripVerificationCard/ItineraryFilterControls and index.css. 61 frontend test files (461 tests), TypeScript, and production build pass. Commit a0e9c1cb on claude/implement-lab31-flow-rows.",
+        "recordedAt": "2026-09-15T03:47:41.8038436Z"
+      }
+    ],
+    "stateChangedAt": "2026-09-15T03:47:41.8038436Z",
+    "updatedAt": "2026-09-15T03:47:41.8038436Z",
+    "implementation": {
+      "handoffVersion": 2.0,
+      "selection": "flow",
+      "selectionLabel": "F · Crisp flow rows",
+      "comment": "",
+      "summary": "Option F (Crisp flow rows) plus the shared crisp2 workspace finish implemented in ItineraryStopRow/ItineraryPanel/WorkspaceDayBar/CanvasPaneFrame/DetailsPaneShell/DesktopToolbar/TripSnapshot/TripVerificationCard/ItineraryFilterControls and index.css. 61 frontend test files (461 tests), TypeScript, and production build pass. Commit a0e9c1cb on claude/implement-lab31-flow-rows.",
+      "recordedAt": "2026-09-15T03:47:41.8038436Z"
+    },
+    "implementationSummary": "Option F (Crisp flow rows) plus the shared crisp2 workspace finish implemented in ItineraryStopRow/ItineraryPanel/WorkspaceDayBar/CanvasPaneFrame/DetailsPaneShell/DesktopToolbar/TripSnapshot/TripVerificationCard/ItineraryFilterControls and index.css. 61 frontend test files (461 tests), TypeScript, and production build pass. Commit a0e9c1cb on claude/implement-lab31-flow-rows."
   }
 }

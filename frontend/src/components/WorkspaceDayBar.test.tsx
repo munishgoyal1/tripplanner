@@ -38,4 +38,30 @@ describe("WorkspaceDayBar", () => {
     expect(onDay).toHaveBeenCalledWith(1);
     expect(onToggleSequence).toHaveBeenCalled();
   });
+
+  it("adds each day's date and confirmed count without renaming the day control", () => {
+    render(
+      <WorkspaceDayBar
+        days={[
+          { day: 1, label: "Day 1", color: "#bd542f", pin_ids: ["one"], route },
+          { day: 2, label: "Day 2", color: "#668064", pin_ids: ["two"], route },
+        ]}
+        activeDay={1}
+        sequenceOpen={false}
+        onAllDays={vi.fn()}
+        onDay={vi.fn()}
+        onToggleSequence={vi.fn()}
+        dayFacts={{
+          1: { date: "2026-10-14", booked: 2, planned: 5 },
+          2: { date: "2026-10-15", booked: 3, planned: 3 },
+        }}
+      />,
+    );
+
+    const dayOne = screen.getByRole("button", { name: "Day 1" });
+    expect(dayOne).toHaveTextContent("Day 114 Oct2/5");
+    expect(dayOne).toHaveAttribute("title", "Day 1 · 14 Oct · 2 of 5 planned stops confirmed");
+    expect(dayOne).toHaveClass("bg-ink", "text-white");
+    expect(screen.getByRole("button", { name: "Day 2" })).toHaveTextContent("3/3");
+  });
 });
