@@ -383,6 +383,11 @@ an intention, or record a purchase made through any provider/offline.
 
 - Opening/reloading reads saved evidence only. Explicit flight/hotel research
   retains the existing intention and exposes refreshed alternatives separately.
+- Booking research prefills explicit trip party counts, ages and currency, and
+  lets the traveller select the saved flight or stay whose city and dates apply.
+  Hotel searches retain matching saved room allocation and nationality. Unknown
+  allocation/profile assumptions are visible; missing nationality or child ages
+  must be supplied before hotel research. Each child and infant needs one age.
 - Whole-party flight and all-night stay caps are independent; known over-cap
   choices fail without a write. Missing fees/party/baggage/freshness/currency remain
   unverified. Same-property room variants are not collapsed into one product.
@@ -894,10 +899,15 @@ or origin city as a separate `O` endpoint, labels the drive as departing from
 that origin, formats long durations in hours and minutes, and includes planned
 snack/rest breaks using saved or inferred driving preferences. Its insight says
   that the same taxi or self-drive vehicle continues through authored waypoints
-  and calls out scenic breaks. A drive of four hours or longer without a named
-  restaurant meal break is an incomplete itinerary: planning researches and saves
-  the stop instead of assigning the gap to the traveller as a toolbar warning.
+  and calls out scenic breaks. Four hours or more of driving across a day requires
+  a named restaurant meal within the journey, with a saved time and at least
+  20 minutes for the meal. Driving between meals cannot exceed four hours;
+  splitting the drive into legs or adding dinner after arrival cannot satisfy
+  coverage. Missing journey clocks remain unresolved. Planning researches and
+  saves the stop instead of assigning the gap to the traveller as a toolbar warning.
   An explicit meal remains a separately focusable itinerary waypoint.
+  Every planned meal must evidence every applicable saved dietary restriction;
+  negated or explicitly unverified text cannot establish a dietary match.
 For Drive and Bus transfers, worthwhile researched scenic and named meal breaks
 are explicit ordered stops before the destination terminal/check-in. A fixed bus
 service includes only real scheduled or feasible breaks and never implies a

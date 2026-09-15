@@ -2354,3 +2354,16 @@ between the validator and renderer; unknown geography is not zero travel.
   fetching. Move consumption into the effect with the state update, and test with
   the same Strict Mode wrapper as the application. Cover arrival, remount, and
   explicit revision so avoiding duplicate reads does not suppress future refreshes.
+
+## 2026-09-15 - Validate coverage in time and preserve search context
+
+- Presence is weaker than coverage: dinner after a nine-hour drive did not feed
+  travellers during the journey, and splitting the drive bypassed a per-leg
+  threshold. Check the driving intervals between usable timed meals, while keeping
+  geography/physical feasibility under the existing itinerary guard.
+- One dietary token anywhere in a day cannot confirm several restrictions for
+  every meal. Match complete requirements, preserve unknown/negated evidence, and
+  route the missing evidence into the existing research/completion policy.
+- Booking search defaults are part of the trip data contract. Project each saved
+  stay's city, dates and occupancy from the backend, preserve the explicit party,
+  and test the submitted provider arguments as well as the visible fields.

@@ -66,15 +66,59 @@ _INTERCITY_TRANSFER_RE = re.compile(
 _LONG_ROAD_MEAL_MIN = 240
 
 
+def _road_minutes(stop: Any) -> float:
+    if not isinstance(stop, dict) or _stop_kind(stop) != "transport":
+        return 0
+    if not re.search(r"\b(?:drive|driving|car|taxi|cab|road)\b", str(stop.get("mode", "")) + " " + _stop_name(stop), re.I):
+        return 0
+    duration = stop.get("duration_min")
+    return float(duration) if isinstance(duration, (int, float)) and duration > 0 else 0
+
+
 def _long_road_journey(stops: list[Any]) -> bool:
-    return any(
-        isinstance(stop, dict)
-        and _stop_kind(stop) == "transport"
-        and re.search(r"\bdrive\b", _stop_name(stop), re.I)
-        and isinstance(stop.get("duration_min"), (int, float))
-        and int(stop["duration_min"]) >= _LONG_ROAD_MEAL_MIN
-        for stop in stops
-    )
+    return sum(_road_minutes(stop) for stop in stops) >= _LONG_ROAD_MEAL_MIN
+
+
+def _road_meal_missing(stops: list[Any]) -> bool:
+    roads = [stop for stop in stops if _road_minutes(stop)]
+    if not _long_road_journey(roads):
+        return False
+    intervals = []
+    for stop in roads:
+        start = _parse_hhmm(str(stop.get("time") or ""))
+        if start is None:
+            return True
+        intervals.append((start, start + _road_minutes(stop)))
+    intervals.sort()
+    # Merge authored whole-journey rows and overlapping component legs rather
+    # than counting the same road time twice.
+    merged: list[tuple[float, float]] = []
+    for start, end in intervals:
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(end, merged[-1][1]))
+        else:
+            merged.append((start, end))
+    meals = []
+    for stop in stops:
+        if _stop_kind(stop) != "meal":
+            continue
+        start = _parse_hhmm(str(stop.get("time") or ""))
+        duration = stop.get("duration_min")
+        if start is not None and isinstance(duration, (int, float)) and duration >= 20:
+            if merged[0][0] < start and start + duration <= merged[-1][1]:
+                meals.append((start, start + duration))
+    if not meals:
+        return True
+
+    def driving_between(start: float, end: float) -> float:
+        return sum(max(0, min(b, end) - max(a, start)) for a, b in merged)
+
+    last = merged[0][0]
+    for start, end in sorted(meals):
+        if driving_between(last, start) > _LONG_ROAD_MEAL_MIN:
+            return True
+        last = max(last, end)
+    return driving_between(last, merged[-1][1]) > _LONG_ROAD_MEAL_MIN
 
 
 def _day_allows_open_meals(day: dict[str, Any], stops: list[Any]) -> bool:
@@ -120,12 +164,8 @@ def _restaurant_itinerary_warnings(
     if not isinstance(itinerary, list):
         return warnings
     known_cities = cities or set()
-    diet_tokens = {
-        token
-        for diet in (dietary or [])
-        for token in re.split(r"[\s,;/]+", diet)
-        if len(token) >= 4
-    }
+    diets = sorted({part.strip().lower() for diet in (dietary or [])
+                    for part in re.split(r"[,;/]|\band\b", diet) if part.strip()})
     for index, day in enumerate(itinerary):
         if not isinstance(day, dict):
             continue
@@ -142,25 +182,42 @@ def _restaurant_itinerary_warnings(
         ]
         if placeholders:
             warnings.append(f"Day {day_num} has a meal placeholder instead of a named restaurant.")
-        elif _long_road_journey(stops) and not meal_stops and not _day_allows_open_meals(day, stops):
+        elif _road_meal_missing(stops) and not _day_allows_open_meals(day, stops):
             warnings.append(
-                f"Day {day_num}'s long road journey has no named restaurant meal break."
+                f"Day {day_num}'s long road journey has no adequately timed named restaurant "
+                "meal break. Save meal times and durations within the journey, with no more "
+                "than four hours of driving between meals."
             )
         elif place_count >= 2 and not meal_stops and not _day_allows_open_meals(day, stops):
             warnings.append(f"Day {day_num} has multiple activities but no named restaurant stop.")
-        elif meal_stops and diet_tokens:
-            meal_text = " ".join(
-                str(value)
-                for stop in meal_stops
-                if isinstance(stop, dict)
-                for value in stop.values()
-            ).lower()
-            if not any(token in meal_text for token in diet_tokens):
+        if meal_stops and diets:
+            for stop in meal_stops:
+                missing = [diet for diet in diets if not _meal_confirms_diet(stop, diet)]
+                if not missing:
+                    continue
                 warnings.append(
-                    f"Day {day_num}'s named meal does not confirm the saved dietary "
-                    f"preference ({', '.join(sorted(set(dietary or [])))})."
+                    f"Day {day_num}'s named restaurant meal {_stop_name(stop)} does not confirm the saved dietary "
+                    f"preference ({', '.join(missing)})."
                 )
     return warnings
+
+
+def _meal_confirms_diet(stop: Any, diet: str) -> bool:
+    if not isinstance(stop, dict):
+        return False
+    text = re.sub(r"[-_]", " ", " ".join(str(v) for v in stop.values()).lower())
+    requirement = re.sub(r"[-_]", " ", diet)
+    pattern = r"\b" + r"\s+".join(re.escape(word) for word in requirement.split()) + r"\b"
+    confirmed = False
+    for match in re.finditer(pattern, text):
+        before = text[max(0, match.start() - 45):match.start()]
+        after = text[match.end():match.end() + 45]
+        if re.search(r"\b(?:not|no|non|without|unconfirmed|unverified|unknown|check|confirm|verify|ask)\s+(?:\w+\s+){0,3}$", before):
+            return False
+        if re.match(r"\s+(?:(?:options?|diet|availability|is|are)\s+)*(?:not|unknown|unverified|unconfirmed|unavailable|uncertain|needs? confirmation)\b", after):
+            return False
+        confirmed = True
+    return confirmed
 
 
 def _empty_itinerary_day_warnings(itinerary: Any) -> list[str]:

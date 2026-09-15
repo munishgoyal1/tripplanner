@@ -461,6 +461,8 @@ def budget_summary(plan: dict, rows: list[dict] | None = None) -> dict:
 
 
 def build_booking_view(plan: dict | None, *, private: bool = True) -> dict:
+    from tripplanner.decisions.booking_defaults import research_defaults
+
     plan = plan or {}
     records = (plan.get("booking_intent") or {}).get("records") or {}
     rows = units(plan)
@@ -489,6 +491,7 @@ def build_booking_view(plan: dict | None, *, private: bool = True) -> dict:
         "updated_at": plan.get("updated_at") or "",
         "destination": plan.get("destination") or "",
         "travelers": plan.get("travelers") or "",
+        "research_defaults": research_defaults(plan) if private else None,
         "rows": rows,
         "budgets": budget_summary(plan, rows),
         "category_caps": caps_for(plan),

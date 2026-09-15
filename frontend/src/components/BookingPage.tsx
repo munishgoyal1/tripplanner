@@ -61,28 +61,54 @@ function ReportForm({ row, disabled, onPreview, intent = false }: {
 function ResearchForm({ view, disabled, onSearch }: {
   view: BookingView; disabled: boolean; onSearch: (command: Command) => void;
 }) {
-  const first = view.rows.find((row) => row.category === "flights");
-  const [query, setQuery] = useState<Search>({
-    category: "flights", origin: String(first?.details.from || ""), destination: view.destination,
-    start_date: first?.start_date || "", end_date: first?.end_date || "",
-    adults: 1, rooms: 1, children: 0, infants: 0, children_ages: [],
-    currency: "INR", nationality: "IN", cabin: "ECONOMY", refundable_only: false,
-  });
-  const [ages, setAges] = useState("");
+  const initialCategory = view.rows.some((row) => row.category === "hotels") ? "hotels" : "flights";
+  const fallback = (category: Search["category"]): Search => {
+    const row = view.rows.find((item) => item.category === category);
+    return { category, origin: String(row?.details.from || ""), destination: view.destination,
+      start_date: row?.start_date || "", end_date: row?.end_date || "", adults: 1, rooms: 1,
+      children: 0, infants: 0, children_ages: [], currency: row?.currency || "INR",
+      nationality: "", cabin: "ECONOMY", refundable_only: false };
+  };
+  const initial = view.research_defaults?.[initialCategory]?.[0];
+  const [query, setQuery] = useState<Search>(initial?.search || fallback(initialCategory));
+  const [targetId, setTargetId] = useState(initial?.id || "");
+  const [assumptions, setAssumptions] = useState(initial?.assumptions || ["Saved search context is unavailable. Confirm all party and date fields."]);
+  const [ages, setAges] = useState((initial?.search.children_ages || []).join(", "));
+  const [formError, setFormError] = useState("");
+  const selectTarget = (category: Search["category"], id?: string) => {
+    const targets = view.research_defaults?.[category] || [];
+    const target = targets.find((item) => item.id === id) || targets[0];
+    setQuery(target?.search || fallback(category));
+    setTargetId(target?.id || "");
+    setAges((target?.search.children_ages || []).join(", "));
+    setAssumptions(target?.assumptions || ["Confirm the party and dates for this search."]);
+    setFormError("");
+  };
   return <details className="rounded-2xl border border-border bg-paper p-5">
     <summary className="cursor-pointer font-semibold">Research / recheck flights and hotels</summary>
     <form className="mt-4 grid gap-3 sm:grid-cols-3" onSubmit={(event) => {
-      event.preventDefault(); onSearch({ action: "research", search: {
-        ...query, children_ages: ages.trim() ? ages.split(",").map((age) => Number(age.trim())) : [],
+      event.preventDefault();
+      const childAges = ages.trim() ? ages.split(",").map((age) => Number(age.trim())) : [];
+      if (query.category === "hotels" && (childAges.length !== query.children + query.infants
+        || childAges.some((age) => !Number.isInteger(age) || age < 0 || age > 17))) {
+        setFormError("Enter one whole-year age (0–17) for every child and infant."); return;
+      }
+      setFormError(""); onSearch({ action: "research", search: {
+        ...query, children_ages: childAges,
       } });
     }}>
-      <p className="text-sm text-muted sm:col-span-3">Uses LiteAPI. Confirm exact dates and occupancy; defaults are assumptions. Research does not book or replace your selections.</p>
-      <label>Category<select className="input w-full" value={query.category} onChange={(e) => setQuery({ ...query, category: e.target.value as Search["category"] })}><option value="flights">Flights</option><option value="hotels">Hotels</option></select></label>
+      <p className="text-sm text-muted sm:col-span-3">Saved trip party and selected journey/stay dates are prefilled. Research does not book or replace your selections.</p>
+      {assumptions.map((note) => <p key={note} className="text-sm text-amber-800 sm:col-span-3">{note}</p>)}
+      {formError && <p role="alert" className="text-sm text-red-700 sm:col-span-3">{formError}</p>}
+      <label>Category<select className="input w-full" value={query.category} onChange={(e) => selectTarget(e.target.value as Search["category"])}><option value="flights">Flights</option><option value="hotels">Hotels</option></select></label>
+      {(view.research_defaults?.[query.category]?.length || 0) > 0 && <label>Saved journey or stay<select className="input w-full" value={targetId} onChange={(e) => selectTarget(query.category, e.target.value)}>
+        {view.research_defaults?.[query.category].map((target) => <option key={target.id} value={target.id}>{target.label} · {target.search.start_date} → {target.search.end_date}</option>)}
+      </select></label>}
       {(["origin", "destination", "start_date", "end_date", "adults", "rooms", "children", "infants", "currency", "nationality"] as const).map((key) =>
         <label key={key} className="text-sm capitalize">{key === "adults" && query.category === "hotels" ? "Adults per room" : key.replaceAll("_", " ")}
           <input className="input mt-1 w-full" type={key.includes("date") ? "date" : typeof query[key] === "number" ? "number" : "text"}
             min={["children", "infants"].includes(key) ? 0 : 1} max={9}
-            required={["destination", "start_date"].includes(key)} value={query[key]}
+            required={["destination", "start_date"].includes(key) || (query.category === "hotels" && ["end_date", "nationality"].includes(key))} value={query[key]}
             onChange={(e) => setQuery({ ...query, [key]: typeof query[key] === "number" ? Number(e.target.value) : ["currency", "nationality"].includes(key) ? e.target.value.toUpperCase() : e.target.value })} />
         </label>)}
       {query.category === "flights" ? <label>Cabin<select className="input w-full" value={query.cabin} onChange={(e) => setQuery({ ...query, cabin: e.target.value })}>

@@ -314,6 +314,25 @@ def test_http_preview_apply_trip_binding_and_replay(client):
     )
 
 
+def test_hotel_research_requires_complete_child_ages_before_provider_call(client, monkeypatch):
+    from types import SimpleNamespace
+    from tripplanner.tools import hotel_search
+
+    calls = []
+    monkeypatch.setattr(hotel_search, "search_hotels", SimpleNamespace(invoke=lambda query: calls.append(query) or '{}'))
+    http, _ = client
+    command = {"trip_id": "goa-1", "updated_at": "v1", "action": "research",
+               "search": {"category": "hotels", "destination": "Goa", "start_date": "2026-12-01",
+                          "end_date": "2026-12-03", "adults": 5, "rooms": 1, "children": 2,
+                          "children_ages": [11], "nationality": "IN", "currency": "USD"}}
+    assert http.post("/trip/bookings", json=command).status_code == 422
+    assert calls == []
+    command["search"]["children_ages"] = [11, 2]
+    assert http.post("/trip/bookings", json=command).status_code == 200
+    assert calls[0]["adults"] == 5 and calls[0]["children_ages"] == [11, 2]
+    assert calls[0]["currency"] == "USD" and calls[0]["checkin"] == "2026-12-01"
+
+
 def test_recommendation_applies_cap_before_stops():
     plan = make_plan()
     decision = booking.list_decisions(plan)[0]

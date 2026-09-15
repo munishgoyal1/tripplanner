@@ -35,6 +35,38 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("Booking intent workflow", () => {
+  it("submits saved family occupancy and changes hotel dates with the selected stay", async () => {
+    const base = { category: "hotels" as const, origin: "Bangalore", destination: "Madurai",
+      start_date: "2026-10-12", end_date: "2026-10-14", adults: 5, children: 2, infants: 0,
+      children_ages: [11, 2], rooms: 1, currency: "USD", nationality: "IN", cabin: "ECONOMY", refundable_only: false };
+    fetchBookings.mockResolvedValue({ ...view, research_defaults: {
+      hotels: [
+        { id: "madurai", label: "Heritage Madurai", search: base, assumptions: ["Confirm room allocation."] },
+        { id: "rameshwaram", label: "Daiwik", search: { ...base, destination: "Rameshwaram", start_date: "2026-10-14", end_date: "2026-10-16" }, assumptions: [] },
+      ], flights: [{ id: "flight", label: "Outbound", search: { ...base, category: "flights", adults: 5, rooms: 1 }, assumptions: [] }],
+    } });
+    bookingCommand.mockResolvedValue({ ok: true, bookings: view, message: "Research complete" });
+    render(<BookingPage />);
+    await screen.findByText("Confirm room allocation.");
+    fireEvent.click(screen.getByText("Research / recheck flights and hotels"));
+    expect(screen.getByLabelText("Adults per room")).toHaveValue(5);
+    expect(screen.getByLabelText("Child ages, comma-separated")).toHaveValue("11, 2");
+    fireEvent.change(screen.getByLabelText("Saved journey or stay"), { target: { value: "rameshwaram" } });
+    fireEvent.click(screen.getByRole("button", { name: "Research exact options" }));
+    await waitFor(() => expect(bookingCommand).toHaveBeenCalledTimes(1));
+    expect(bookingCommand.mock.calls[0][1].search).toMatchObject({ destination: "Rameshwaram", start_date: "2026-10-14", end_date: "2026-10-16", adults: 5, children: 2, children_ages: [11, 2], currency: "USD" });
+  });
+
+  it("does not research a hotel with missing child ages", async () => {
+    render(<BookingPage />);
+    await screen.findByRole("heading", { name: "Garden Hotel" });
+    fireEvent.click(screen.getByText("Research / recheck flights and hotels"));
+    fireEvent.change(screen.getByLabelText("children"), { target: { value: "2" } });
+    fireEvent.change(screen.getByLabelText("nationality"), { target: { value: "IN" } });
+    fireEvent.click(screen.getByRole("button", { name: "Research exact options" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("every child and infant");
+    expect(bookingCommand).not.toHaveBeenCalled();
+  });
   it("opens saved evidence without research and exports the bound trip", async () => {
     render(<BookingPage />);
     await screen.findByRole("heading", { name: "Garden Hotel" });
