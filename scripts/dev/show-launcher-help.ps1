@@ -10,6 +10,7 @@ param(
         "sync-sbxs-from-master",
         "sync-all-from-master",
         "prune-merged-branches",
+        "prune-merged-branches-everywhere",
         "emergency-bringdown",
         "emergency-control",
         "apply-runtime-config",
@@ -181,6 +182,40 @@ Examples:
   Prune-Merged-Branches -WhatIf
   Prune-Merged-Branches
   Prune-Merged-Branches -IncludeRemote
+"@
+    "prune-merged-branches-everywhere" = @"
+Prune-Merged-Branches-Everywhere - delete local branches merged into master with
+no lost commits, even when checked out in a worktree or a registered sandbox.
+
+Usage: Prune-Merged-Branches-Everywhere [-BaseBranch master] [-NoFetch] [-IncludeRemote] [-WhatIf]
+
+  -NoFetch        Compare against the local base branch instead of fetching origin first.
+  -IncludeRemote  Also delete origin's matching branch once it is safely removed.
+  -WhatIf         Preview which branches would be removed or discarded.
+
+A more aggressive sibling of Prune-Merged-Branches. Still requires the same
+double guarantee -- every commit already an ancestor of origin/master, and the
+branch's checkout free of uncommitted changes -- but instead of always skipping
+an attached branch, it removes the worktree (or discards the sandbox) so the
+branch itself can also be deleted:
+
+  - Unattached branches are deleted with `git branch -d`, same as
+    Prune-Merged-Branches.
+  - Registered sandboxes are handed to `sandbox.ps1 -Discard`, which
+    re-verifies merged-and-clean itself and owns dropping the sandbox's
+    emulator database and preserving its corpus data.
+  - Any other worktree (plain agent worktree, multiagent worktree, etc.) is
+    removed with `git worktree remove --force` after this script confirms
+    `git status --porcelain` is empty, then its branch is deleted.
+
+The primary checkout's current branch is never touched. Confirmation impact is
+High: expect a confirmation prompt per removal unless you pass -Confirm:`$false`
+or preview with -WhatIf first.
+
+Examples:
+  Prune-Merged-Branches-Everywhere -WhatIf
+  Prune-Merged-Branches-Everywhere
+  Prune-Merged-Branches-Everywhere -IncludeRemote
 "@
     "run-latest-master" = @"
 Run-Latest-Master - fast-forward primary master and start its canonical local stack.
