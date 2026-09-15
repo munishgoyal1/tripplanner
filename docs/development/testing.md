@@ -215,7 +215,8 @@ budget that reflects real contention, never a logic change.
 
 A health run is only a measurement of the code when it has the machine to itself.
 Before each suite, the script lists other live runs by the `logs/last-run`
-transcript each holds open (a deploy, sync, or sandbox). A contended run still
+transcript each holds open (a deploy, sync, or sandbox; the idle local app
+launchers `run-latest-master` and `dev-spa` are not counted). A contended run still
 reports, marked **CONTENDED RUN** in `report.md` and `contended_by` in
 `report.json`, but it never writes the baseline, and `-UpdateBaseline` refuses to
 start while another run is live. The 2026-09-15 run was started together with
