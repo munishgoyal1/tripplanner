@@ -185,6 +185,10 @@ either enabled (the default) or disabled.
   Returning to Planner reuses the workspace response when available and otherwise
   performs a bounded itinerary fetch. A request that never settles leaves the
   loading state after 30 seconds, reports the failure, and offers Retry.
+  Bookings/Home return navigation must display a received itinerary under React
+  Strict Mode. Seed consumption occurs with committed state updates; repeated
+  renders cannot mark an unapplied payload as consumed. Remounts reuse the payload,
+  while a subsequent explicit revision still fetches fresh itinerary data.
   Proof: `tests/test_graph_policy.py`, `tests/test_itinerary_completion.py`,
   `tests/test_trip_reliability.py`, `frontend/src/components/ChatPanel.test.tsx`,
   and `frontend/src/components/ItineraryPanel.test.tsx`.

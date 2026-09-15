@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { StrictMode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { writeDisplayPreferences } from "../lib/displayPreferences";
 import type { Itinerary, TripOverview } from "../types";
@@ -1058,6 +1059,25 @@ describe("ItineraryPanel", () => {
 
     expect(await screen.findByText("Museums and river")).toBeTruthy();
     expect(fetchItineraryMock).not.toHaveBeenCalled();
+  });
+
+  it("renders a returned workspace seed under the application's StrictMode", async () => {
+    const { rerender } = render(<StrictMode><ItineraryPanel seedPending /></StrictMode>);
+    rerender(<StrictMode><ItineraryPanel seedPending={false} seed={itinerary} /></StrictMode>);
+    expect(await screen.findByText("Museums and river")).toBeInTheDocument();
+    expect(screen.queryByText("Loading itinerary…")).not.toBeInTheDocument();
+    expect(fetchItineraryMock).not.toHaveBeenCalled();
+  });
+
+  it("reuses a seed on StrictMode remount but refreshes it after an explicit revision", async () => {
+    const first = render(<StrictMode><ItineraryPanel seed={itinerary} /></StrictMode>);
+    expect(await screen.findByText("Museums and river")).toBeInTheDocument();
+    first.unmount();
+    const { rerender } = render(<StrictMode><ItineraryPanel seed={itinerary} /></StrictMode>);
+    expect(await screen.findByText("Museums and river")).toBeInTheDocument();
+    expect(fetchItineraryMock).not.toHaveBeenCalled();
+    rerender(<StrictMode><ItineraryPanel seed={itinerary} reloadToken={1} /></StrictMode>);
+    await waitFor(() => expect(fetchItineraryMock).toHaveBeenCalledTimes(1));
   });
 
   it("fetches for itself when the workspace payload never arrives", async () => {
