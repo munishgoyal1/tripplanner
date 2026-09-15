@@ -836,9 +836,16 @@ Journey and After check-in sections.
 public-transit evidence.
 
 **Expected:** Legs up to 1.5 km may be shown as Walk. A 3 km leg is shown as Taxi,
-and Metro is never inferred from distance alone.
+and Metro is never inferred from distance alone. A longer leg never takes less
+time than a shorter one: each mode band starts at the previous band's upper-edge
+duration, so a 1.6 km taxi shows 20 min (the 1.5 km walk), not 4. The validator
+and the trip rebalance share this estimate, so a tidy clustered day is never
+traded apart to "save" travel.
 
 **Executable proof:**
+
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_a_longer_local_hop_never_takes_less_time`
+- [`tests/test_trip_rebalance.py`](../tests/test_trip_rebalance.py) - `test_it_leaves_a_good_plan_alone`
 
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_local_route_uses_taxi_for_three_kilometres`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_local_route_keeps_short_walks_walkable`

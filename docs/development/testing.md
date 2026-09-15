@@ -213,6 +213,21 @@ widening timing budgets, weakening assertions.
 pass serially and fail only under concurrent load; their fix is isolation or a
 budget that reflects real contention, never a logic change.
 
+A health run is only a measurement of the code when it has the machine to itself.
+Before each suite, the script lists other live runs by the `logs/last-run`
+transcript each holds open (a deploy, sync, or sandbox). A contended run still
+reports, marked **CONTENDED RUN** in `report.md` and `contended_by` in
+`report.json`, but it never writes the baseline, and `-UpdateBaseline` refuses to
+start while another run is live. The 2026-09-15 run was started together with
+`deploy-prod.ps1`; its vitest half overlapped the canary image's `tsc` + `vite`
+build and filed six load-only timeouts as NEW (one 1s test took 21s).
+
+Frontend `findBy*`/`waitFor` calls wait up to 5s (`asyncUtilTimeout` in
+`frontend/src/test/setup.ts`), not Testing Library's 1s default. That default is
+not a product latency: an idle machine measured 1.4-2.4s from `render(<App />)` to
+the first day heading and 0.7-2.7s for the first accessible-name query of a file.
+A missing element still fails; `testTimeout` (20s) remains the per-test ceiling.
+
 ### Which gates run, and turning them back on
 
 The gates are declared in the `Local validation gates` section of

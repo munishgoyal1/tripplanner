@@ -2403,3 +2403,29 @@ between the validator and renderer; unknown geography is not zero travel.
   directory. Without it, static maps silently fall back to SVG and a
   "faster" run is really a different packet. Compare image counts, not just
   timings.
+
+## 2026-09-15 - A Step Function In A Shared Cost Is An Optimiser Bug Waiting
+
+- Sharing one local-travel estimate between the renderer and the validator was
+  right, but the estimate was a step function: 1.5 km walked took 20 min, 1.6 km
+  by taxi took 4. The trip rebalance hill-climbs on that cost, so a tidy
+  clustered day scored as more travel than a scattered one and it traded stops
+  apart, reporting four "moves" that cancelled out and left gaps in both days.
+  Any cost an optimiser reads must be monotonic in the quantity it stands for;
+  band each mode from the previous band's edge instead of from zero.
+- A read-only `az containerapp list` after a 19-minute canary deploy hung seven
+  minutes and died on a TLS reset (WinError 10054), throwing away a verified
+  canary. `az` stderr never reaches a PowerShell transcript: the traceback was
+  only in `~/.azure/commands/<timestamp>.<command>.<pid>.log`. Retry idempotent
+  control-plane reads and include the CLI output in the thrown error.
+- A nested script's `Stop-RunLog` stopped its caller's transcript, so
+  `canary-deploy.log` ended at the image push and never showed the deploy or
+  smoke stage. A shared begin/end helper needs a depth, not a flag.
+- Suite health started beside `deploy-prod.ps1` filed six vitest timeouts as NEW;
+  all passed serially. Record what shared the machine and never accept a baseline
+  from that run. The one serial failure was Testing Library's 1s `findBy`
+  default against a 2s cold first render of `<App />`: `testTimeout` had been
+  raised for this machine, but `findBy` has its own budget.
+- The shared `.venv` imports `tripplanner` from the primary checkout's `src`
+  (editable install). Running pytest in a worktree without
+  `PYTHONPATH=<worktree>\src` silently tests master's code, not the fix.

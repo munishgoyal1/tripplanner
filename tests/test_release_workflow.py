@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 
@@ -487,6 +488,65 @@ def test_production_repairs_missing_canary_gate_before_approval() -> None:
     assert "if ($canaryImageMatches)" in production
     assert "no canary redeploy was required" in production
     assert "$uniqueCanaryImages = @($canaryImages | Select-Object -Unique)" in production
+
+
+def test_canary_image_inspection_survives_a_transient_azure_cli_failure(tmp_path: Path) -> None:
+    # The post-canary read-back once hit a TLS reset (WinError 10054) and threw
+    # away a canary that had just deployed and passed smoke.
+    harness = tmp_path / "canary-images-harness.ps1"
+    harness.write_text(
+        r"""
+param([string]$SourcePath, [string]$Mode)
+$source = Get-Content -Raw -LiteralPath $SourcePath
+$definition = [regex]::Match($source, '(?ms)^function Get-CanaryImages \{.*?^\}').Value
+if (-not $definition) { throw "Get-CanaryImages was not found." }
+Invoke-Expression $definition
+
+$CanaryResourceGroup = "rg-test"
+$CanaryAppNamePrefix = "canary-app-"
+$script:calls = 0
+function Start-Sleep { param([int]$Seconds) }
+function az {
+    $script:calls++
+    if ($Mode -eq "always-fail" -or $script:calls -eq 1) {
+        $global:LASTEXITCODE = 1
+        Write-Error "ConnectionResetError(10054)" 2>&1
+        return
+    }
+    $global:LASTEXITCODE = 0
+    "ghcr.io/munishgoyal1/tripplanner:abc1234"
+}
+
+try {
+    $images = @(Get-CanaryImages)
+    @{ images = $images; calls = $script:calls; error = "" } | ConvertTo-Json -Compress
+} catch {
+    @{ images = @(); calls = $script:calls; error = "$_" } | ConvertTo-Json -Compress
+}
+""".strip(),
+        encoding="utf-8",
+    )
+    source = Path(__file__).parents[1] / "infra" / "deploy-prod.ps1"
+
+    def run(mode: str) -> dict:
+        result = subprocess.run(
+            ["pwsh", "-NoProfile", "-File", str(harness), "-SourcePath", str(source), "-Mode", mode],
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+        assert result.returncode == 0, result.stderr
+        return json.loads(result.stdout.strip().splitlines()[-1])
+
+    recovered = run("fail-once")
+    assert recovered["images"] == ["ghcr.io/munishgoyal1/tripplanner:abc1234"]
+    assert recovered["calls"] == 2
+    assert recovered["error"] == ""
+
+    failed = run("always-fail")
+    assert failed["calls"] == 3
+    assert "after 3 attempts" in failed["error"]
+    assert "ConnectionResetError(10054)" in failed["error"]
 
 
 def test_image_push_requires_fresh_publish_authentication_before_build() -> None:

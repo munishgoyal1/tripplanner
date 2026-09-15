@@ -34,6 +34,25 @@ function Test-RunLogWritable {
     }
 }
 
+function Get-ConcurrentRunNames {
+    # Other scripts running right now, known by the transcript each holds open.
+    # A suite measured beside a deploy's image build reports load, not code.
+    $own = if ($global:TripplannerRunLog) { $global:TripplannerRunLog.Path } else { "" }
+    $names = @()
+    try {
+        foreach ($file in Get-ChildItem -LiteralPath (Get-RunLogDirectory) -Filter "*.log" -ErrorAction SilentlyContinue) {
+            if ($file.Name -match '\.\d+\.log$' -or $file.Name -eq "runs.log") { continue }
+            if ($own -and $file.FullName -eq ([System.IO.Path]::GetFullPath($own))) { continue }
+            if (-not (Test-RunLogWritable -Path $file.FullName)) {
+                $names += ($file.BaseName -replace '\.pid\d+$', '')
+            }
+        }
+    } catch {
+        # Detection is advisory; it must never break a run.
+    }
+    return @($names | Sort-Object -Unique)
+}
+
 function Remove-StaleRunLogs {
     # Concurrent runs leave per-process transcripts behind; they are only ever
     # read while diagnosing that run, so a few days is generous.
@@ -121,14 +140,17 @@ function Start-RunLog {
     param([Parameter(Mandatory = $true)][string]$Name)
 
     if ($global:TripplannerRunLog) {
-        return $null   # a nested script keeps writing to the outer transcript
+        # A nested script keeps writing to the outer transcript. Its own
+        # Stop-RunLog must then only unwind this level, not end the outer run.
+        $global:TripplannerRunLog.Depth++
+        return $null
     }
     $started = Get-Date
     # A caller that already redirects its own output (the detached sandbox runner)
     # opts out, so it never holds the shared transcript open for hours.
     if ($env:TRIPPLANNER_RUN_LOG -eq "0") {
         $global:TripplannerRunLog = [pscustomobject]@{
-            Name = $Name; Path = ""; Started = $started; Transcript = $false
+            Name = $Name; Path = ""; Started = $started; Transcript = $false; Depth = 0
         }
         return $null
     }
@@ -151,7 +173,7 @@ function Start-RunLog {
     # Registered even when the transcript failed: a nested script must not then
     # open a second transcript and file this run's output under its own name.
     $global:TripplannerRunLog = [pscustomobject]@{
-        Name = $Name; Path = $path; Started = $started; Transcript = $transcribing
+        Name = $Name; Path = $path; Started = $started; Transcript = $transcribing; Depth = 0
     }
     if (-not $transcribing) { return $null }
     $here = (Get-Location).Path
@@ -170,6 +192,10 @@ function Stop-RunLog {
 
     $log = $global:TripplannerRunLog
     if (-not $log) { return }
+    if ($log.Depth -gt 0) {
+        $log.Depth--
+        return
+    }
     Write-Host ("[time]    {0} {1} after {2:hh\:mm\:ss}" -f `
             $log.Name, $Outcome, ((Get-Date) - $log.Started))
     Add-RunLogIndex -Name $log.Name -Outcome $Outcome
