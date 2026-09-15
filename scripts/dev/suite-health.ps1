@@ -55,12 +55,30 @@ if ($BackendOnly -and $FrontendOnly) {
 
 Start-RunLog -Name "suite-health" | Out-Null
 
+# Fail before twenty minutes of work rather than after: suite_health.py will not
+# accept a baseline from a run that shared the machine.
+if ($UpdateBaseline -and ($busy = @(Get-ConcurrentRunNames)).Count -gt 0) {
+    Stop-RunLog -Outcome "refused"
+    throw ("-UpdateBaseline needs a quiet machine; still running: " + ($busy -join ", ") +
+        ". Let those finish, then retry.")
+}
+
 $scriptRepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $repoRoot = Resolve-PrimaryCheckoutRoot -RepoRoot $scriptRepoRoot
 $baseline = Join-Path $scriptRepoRoot "scripts/dev/test-health-baseline.json"
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $outputRoot = Join-Path $repoRoot "logs/suite-health/$stamp"
 New-Item -ItemType Directory -Path $outputRoot -Force | Out-Null
+
+$script:contendedBy = @()
+function Register-ConcurrentRuns {
+    param([Parameter(Mandatory = $true)][string]$Suite)
+    $others = @(Get-ConcurrentRunNames)
+    if ($others.Count -eq 0) { return }
+    Write-Host ("[warn]    $Suite is sharing the machine with: " + ($others -join ", ") +
+        ". Timing failures from this run may be that load.") -ForegroundColor Yellow
+    $script:contendedBy = @($script:contendedBy + $others | Sort-Object -Unique)
+}
 
 function Invoke-Suite {
     <#
@@ -142,6 +160,7 @@ try {
 
     if (-not $FrontendOnly) {
         Write-Host "== pytest ==" -ForegroundColor Cyan
+        Register-ConcurrentRuns -Suite "pytest"
         $python = (Resolve-TripplannerPython -RepoRoot $worktree).Python
         $junit = Join-Path $outputRoot "pytest-junit.xml"
         $pytestLog = Join-Path $outputRoot "pytest.log"
@@ -163,6 +182,7 @@ try {
 
     if (-not $BackendOnly) {
         Write-Host "== vitest ==" -ForegroundColor Cyan
+        Register-ConcurrentRuns -Suite "vitest"
         $frontend = Join-Path $worktree "frontend"
         Use-CompatibleNode
         Push-Location $frontend
@@ -201,6 +221,7 @@ try {
         }
     }
 
+    foreach ($name in $script:contendedBy) { $arguments += @("--contended-by", $name) }
     if ($UpdateBaseline) { $arguments += "--update-baseline" }
 
     Write-Host "== classifying against the baseline ==" -ForegroundColor Cyan

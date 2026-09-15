@@ -293,6 +293,80 @@ def test_a_vitest_file_whose_worker_never_started_makes_the_run_incomplete(
     assert "INCOMPLETE: 1 TEST FILE(S) DID NOT RUN" in markdown
 
 
+def test_a_contended_run_is_labelled_and_never_rewrites_the_baseline(tmp_path: Path) -> None:
+    # A health run started beside deploy-prod.ps1 overlapped the canary's image
+    # build and filed six load-only timeouts as NEW failures.
+    frontend = ROOT / "frontend" / "src"
+    failing = {
+        "name": str(frontend / "App.test.tsx"),
+        "assertionResults": [{"fullName": "App slow", "status": "failed", "failureMessages": ["x"]}],
+    }
+    (tmp_path / "vitest.json").write_text(json.dumps({"testResults": [failing]}), encoding="utf-8")
+    (tmp_path / "vitest-files.json").write_text(
+        json.dumps([{"file": (frontend / "App.test.tsx").as_posix(), "projectName": "dom"}]),
+        encoding="utf-8",
+    )
+    baseline_path = tmp_path / "baseline.json"
+    baseline_path.write_text(json.dumps({"version": 1}), encoding="utf-8")
+    out = tmp_path / "out"
+
+    code = suite_health.main([
+        "--vitest-json", str(tmp_path / "vitest.json"),
+        "--vitest-files", str(tmp_path / "vitest-files.json"),
+        "--vitest-exit-code", "1",
+        "--baseline", str(baseline_path),
+        "--out", str(out),
+        "--contended-by", "prod-deploy",
+        "--contended-by", "canary-deploy",
+        "--update-baseline",
+    ])
+
+    assert code == 2
+    assert json.loads(baseline_path.read_text(encoding="utf-8")) == {"version": 1}
+    report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+    assert report["contended_by"] == ["canary-deploy", "prod-deploy"]
+    assert "CONTENDED RUN" in (out / "report.md").read_text(encoding="utf-8")
+
+
+def test_the_run_log_library_names_other_live_runs_by_their_open_transcript(
+    tmp_path: Path,
+) -> None:
+    harness = tmp_path / "concurrent-harness.ps1"
+    harness.write_text(
+        r"""
+param([string]$LibPath, [string]$LogDir)
+. $LibPath
+function Get-RunLogDirectory { return $LogDir }
+Set-Content -Path (Join-Path $LogDir "prod-deploy.log") -Value "live"
+Set-Content -Path (Join-Path $LogDir "prod-deploy.1.log") -Value "rotated"
+Set-Content -Path (Join-Path $LogDir "sandbox.pid42.log") -Value "live"
+Set-Content -Path (Join-Path $LogDir "finished.log") -Value "done"
+Set-Content -Path (Join-Path $LogDir "run-latest-master.log") -Value "idle app"
+$held = @(
+    [System.IO.File]::Open((Join-Path $LogDir "run-latest-master.log"), "Open", "Read", "Read"),
+    [System.IO.File]::Open((Join-Path $LogDir "prod-deploy.log"), "Open", "Read", "Read"),
+    [System.IO.File]::Open((Join-Path $LogDir "prod-deploy.1.log"), "Open", "Read", "Read"),
+    [System.IO.File]::Open((Join-Path $LogDir "sandbox.pid42.log"), "Open", "Read", "Read")
+)
+try { (Get-ConcurrentRunNames) -join "," } finally { $held | ForEach-Object { $_.Dispose() } }
+""".strip(),
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [
+            "pwsh", "-NoProfile", "-File", str(harness),
+            "-LibPath", str(ROOT / "scripts" / "dev" / "lib" / "run-log.ps1"),
+            "-LogDir", str(tmp_path),
+        ],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "prod-deploy,sandbox"
+
+
 # ---------------------------------------------------------------------------
 # classification -- the part that keeps the debt honest
 # ---------------------------------------------------------------------------

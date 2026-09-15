@@ -22,6 +22,13 @@ _INTERCITY_SPEED_KMH = {
     "Drive": 65.0,
 }
 
+#: Local transfer bands: (upper distance km, mode, average speed km/h).
+_ROUTE_BANDS = (
+    (1.5, "Walk", 4.5),
+    (20.0, "Taxi", 25.0),
+    (math.inf, "Taxi", 35.0),
+)
+
 
 def _haversine_km(a: tuple[float, float], b: tuple[float, float]) -> float:
     """Great-circle distance in km between two (lat, lng) points."""
@@ -60,14 +67,16 @@ def _route_stats_for_day(
 def _route_stats_for_distance(
     distance: float, *, from_name: str = "", to_name: str = ""
 ) -> dict[str, Any]:
-    if distance <= 1.5:
-        mode, speed = "Walk", 4.5
-    elif distance <= 20:
-        mode, speed = "Taxi", 25.0
-    else:
-        mode, speed = "Taxi", 35.0
-
-    duration_min = int(round((distance / speed) * 60)) if speed > 0 else 0
+    # A faster mode past a band edge must not make a longer hop quicker than a
+    # shorter one: 1.6 km by taxi once took 4 minutes against 20 on foot for
+    # 1.5 km, so the validator and the rebalance scored scattered stops as less
+    # travel than a tight cluster. Each band starts where the previous one ends.
+    duration_min = 0
+    for limit, mode, speed in _ROUTE_BANDS:
+        if distance <= limit:
+            duration_min = max(duration_min, int(round((distance / speed) * 60)))
+            break
+        duration_min = max(duration_min, int(round((limit / speed) * 60)))
     distance_1 = round(distance, 1)
     result = {
         "distance_km": distance_1,

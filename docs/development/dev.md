@@ -72,7 +72,10 @@ Use these launchers by outcome:
 Every launcher writes a transcript to `logs/last-run/<script>.log` in the primary
 checkout, shared by all worktrees. The two previous runs are kept alongside it as
 `<script>.1.log` and `<script>.2.log`, so a failure can be compared against the
-run before it; `logs/last-run/runs.log` indexes every run.
+run before it; `logs/last-run/runs.log` indexes every run. A script started
+in-process by another (`push-image.ps1` inside `deploy-canary.ps1`, which itself
+runs under `deploy-prod.ps1` as a child `pwsh`) writes into its caller's
+transcript, and its `Stop-RunLog` only unwinds its own level.
 
 ---
 

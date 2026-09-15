@@ -86,14 +86,28 @@ $imagePrefix = "ghcr.io/munishgoyal1/tripplanner:"
 $canaryHistoryLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-canary.log"
 
 function Get-CanaryImages {
-    $images = @(az containerapp list `
-        --resource-group $CanaryResourceGroup `
-        --query "[?starts_with(name, '$CanaryAppNamePrefix')].properties.template.containers[0].image" `
-        --output tsv)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Could not inspect canary images in $CanaryResourceGroup."
+    # A read-only query, so a transient transport failure is retried. It runs
+    # again straight after a ~20 minute canary deploy, where one TLS reset
+    # (WinError 10054) used to discard an already verified canary.
+    $attempts = 3
+    for ($attempt = 1; $attempt -le $attempts; $attempt++) {
+        $output = @(az containerapp list `
+            --resource-group $CanaryResourceGroup `
+            --query "[?starts_with(name, '$CanaryAppNamePrefix')].properties.template.containers[0].image" `
+            --output tsv 2>&1)
+        if ($LASTEXITCODE -eq 0) {
+            return @($output |
+                Where-Object { $_ -isnot [System.Management.Automation.ErrorRecord] } |
+                ForEach-Object { "$_".Trim() } |
+                Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+        }
+        $errors = ($output | ForEach-Object { "$_" }) -join "`n"
+        if ($attempt -lt $attempts) {
+            Write-Host -ForegroundColor Yellow "[canary] Image inspection attempt $attempt of $attempts failed; retrying.`n$errors"
+            Start-Sleep -Seconds (10 * $attempt)
+        }
     }
-    return @($images | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    throw "Could not inspect canary images in $CanaryResourceGroup after $attempts attempts. Azure CLI output:`n$errors"
 }
 
 function Test-CanaryImageVerified {

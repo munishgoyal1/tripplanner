@@ -11,20 +11,48 @@ from tripplanner.config import Settings
 from tripplanner.storage_cosmos import _client_options
 
 
-def test_provider_usage_indexes_every_path_its_query_filters_and_nothing_else() -> None:
+def test_provider_usage_indexes_every_path_its_query_filters_and_nothing_else(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Indexing every nested entry was most of a ~150 KB usage write's RU."""
-    import inspect
     import re
+    from datetime import UTC, datetime
     from pathlib import Path
+    from types import SimpleNamespace
 
     from tripplanner import provider_usage
 
     policy = storage_cosmos._CONTAINER_INDEXING["provider_usage"]
     included, excluded = storage_cosmos._indexed_paths(policy)
-    queried = set(re.findall(r"\bc\.(\w+)", inspect.getsource(provider_usage._read)))
 
-    assert queried, "provider_usage._read no longer queries a field; revisit the policy"
-    assert {f"/{field}/?" for field in queried} <= included
+    # Inspect the queries the hosted read actually sends, not every ``c.<field>``
+    # in its source: a JOIN source (``c.entries``) or a projection is not a filter
+    # and needs no index. Indexing ``entries`` is precisely the write cost this
+    # policy removes.
+    queries: list[str] = []
+
+    class _Container:
+        def query_items(self, **kwargs):
+            queries.append(kwargs["query"])
+            return []
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(storage_cosmos, "_container", lambda _name: _Container())
+    monkeypatch.setattr(
+        storage_cosmos, "get_settings", lambda: SimpleNamespace(cosmos_emulator=False)
+    )
+    provider_usage._read(datetime(2026, 8, 2, tzinfo=UTC), datetime(2026, 8, 3, tzinfo=UTC))
+
+    filters = [query.split(" WHERE ", 1)[1] for query in queries if " WHERE " in query]
+    assert filters, "provider_usage._read no longer filters a field; revisit the policy"
+    for condition in filters:
+        compared = set(re.findall(r"\bc\.(\w+)\s*(?:>=|<=|!=|=|<|>)", condition))
+        assert compared, f"unindexed filter would scan the container: {condition}"
+        assert {f"/{field}/?" for field in compared} <= included, condition
+        # A presence test on an unindexed path is only cheap when an indexed
+        # range has already narrowed the documents it is evaluated against.
+        if "IS_DEFINED(" in condition:
+            assert "c.occurred_at >= @since" in condition, condition
     assert excluded == {"/*"}
     bicep = (Path(__file__).resolve().parents[1] / "infra/modules/cosmos-data.bicep").read_text(
         "utf-8"
