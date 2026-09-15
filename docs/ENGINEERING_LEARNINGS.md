@@ -2455,3 +2455,9 @@ between the validator and renderer; unknown geography is not zero travel.
 - A `.tsx` test that renders nothing still paid ~1s for jsdom under the
   `**/*.test.tsx` project rule. `// @vitest-environment node` removes it. Vitest
   `threads` was slower than `forks` on this Windows machine.
+- Process creation itself is the unbounded cost here: `git --version` and
+  `node -e 0` each took 1.0-2.5s under load with Defender scanning. The Lab store
+  tests spawned ~9 git processes and timed out in two health runs after a fixture
+  trim. `commitSelectionStore` now takes a `GitRunner`; its unit tests assert the
+  exact commands (pathspec on add and commit, push after commit) in milliseconds.
+  Reserve real subprocesses for tests whose subject is the subprocess.
