@@ -629,15 +629,18 @@ def launch_worker(
         "--session-id", session_id,
         "--log-dir", str(space.runtime / "copilot-logs"),
     ]
-    handle = transcript.open("w", encoding="utf-8")
-    process = subprocess.Popen(  # noqa: S603 - fixed argv, no shell
-        command,
-        cwd=str(space.slot_path(slot)),
-        stdout=handle,
-        stderr=subprocess.STDOUT,
-        stdin=subprocess.DEVNULL,
-        start_new_session=True,
-    )
+    # The child inherits its own handle; the dispatcher's copy is closed at once
+    # rather than left open (and, on Windows, locking the transcript) for the
+    # life of the dispatcher.
+    with transcript.open("w", encoding="utf-8") as handle:
+        process = subprocess.Popen(  # noqa: S603 - fixed argv, no shell
+            command,
+            cwd=str(space.slot_path(slot)),
+            stdout=handle,
+            stderr=subprocess.STDOUT,
+            stdin=subprocess.DEVNULL,
+            start_new_session=True,
+        )
     return process.pid, session_id, transcript
 
 

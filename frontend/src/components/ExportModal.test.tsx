@@ -62,6 +62,12 @@ describe("ExportModal", () => {
   it("does not mark email as sending while a PDF download is in progress", async () => {
     vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:trip");
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    // jsdom cannot navigate to a blob: URL and logs "Not implemented: navigation
+    // to another Document" into the suite output; record the download instead.
+    const downloads: string[] = [];
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
+      downloads.push(`${this.download} ${this.href}`);
+    });
     let resolvePdf: (value: { ok: boolean; blob: Blob; filename: string }) => void = () => {};
     downloadTripPdfMock.mockReturnValue(
       new Promise((resolve) => {
@@ -78,5 +84,6 @@ describe("ExportModal", () => {
 
     resolvePdf({ ok: true, blob: new Blob(["pdf"]), filename: "trip.pdf" });
     await waitFor(() => expect(screen.getByRole("button", { name: "Download PDF" })).toBeInTheDocument());
+    expect(downloads).toEqual(["trip.pdf blob:trip"]);
   });
 });

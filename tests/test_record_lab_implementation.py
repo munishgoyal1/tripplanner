@@ -212,8 +212,9 @@ def test_promotion_allows_lab_record_commit_but_rejects_later_product_work(
     repo = tmp_path / "sandbox"
     repo.mkdir()
     subprocess.run(["git", "init", "-q", str(repo)], check=True)
-    subprocess.run(["git", "-C", str(repo), "config", "user.email", "test@example.com"], check=True)
-    subprocess.run(["git", "-C", str(repo), "config", "user.name", "Test"], check=True)
+    # Written directly: each git process costs up to 1.5s on a loaded Windows box.
+    with (repo / ".git" / "config").open("a", encoding="utf-8") as config:
+        config.write("[user]\n\temail = test@example.com\n\tname = Test\n[core]\n\tautocrlf = false\n")
 
     def commit(path: str, content: str, message: str) -> str:
         target = repo / path

@@ -1,5 +1,4 @@
-import { execFileSync } from "node:child_process";
-import { appendFile, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -11,43 +10,37 @@ import {
   type LabSelection,
 } from "./lab-selection-store";
 
-const temporaryRepositories: string[] = [];
+const temporaryRoots: string[] = [];
 
-async function createRepository() {
+async function createCheckout() {
   const root = await mkdtemp(resolve(tmpdir(), "tripplanner-lab-store-"));
-  temporaryRepositories.push(root);
+  temporaryRoots.push(root);
   const storePath = resolve(root, "docs/ux-experiments/LAB_SELECTIONS.json");
   await mkdir(dirname(storePath), { recursive: true });
-  await writeFile(storePath, "{}\n", "utf8");
-  await writeFile(resolve(root, "unrelated.txt"), "initial\n", "utf8");
-  execFileSync("git", ["init", "-q"], { cwd: root });
-  // Every git process costs 0.5-1.5s on the owner's Windows machine (measured
-  // 2026-09-15; `git config` alone took 1.5s), so configuration is written
-  // directly rather than spawned three more times.
-  await appendFile(
-    resolve(root, ".git/config"),
-    "[user]\n\tname = Lab Test\n\temail = lab-test@example.com\n[commit]\n\tgpgsign = false\n",
-    "utf8",
-  );
-  execFileSync("git", ["add", "."], { cwd: root });
-  execFileSync("git", ["commit", "-q", "-m", "Initial"], { cwd: root });
+  await writeFile(storePath, "{\"trip-feedback\": {}}\n", "utf8");
   return { root, storePath };
 }
 
-// Only the push-failure test below needs a remote. An origin that does not exist
-// fails the push with no bare repository to create and no hook shell to start,
-// which together cost more than the rest of that test.
-async function addUnreachableRemote(root: string) {
-  const remote = resolve(root, "..", `${root.split(/[\\/]/).pop()}-missing-remote.git`);
-  await appendFile(
-    resolve(root, ".git/config"),
-    `[remote "origin"]\n\turl = ${remote.replaceAll("\\", "/")}\n\tfetch = +refs/heads/*:refs/remotes/origin/*\n`,
-    "utf8",
-  );
+// These tests once drove real git: ~9 processes each, and a git process on the
+// owner's Windows machine took 1.0-2.5s under load (`git --version` measured
+// 2026-09-15), so they timed out in two health runs while passing alone. What
+// they protect is which git commands run and in what order -- the pathspec
+// that keeps unrelated work out of the commit, and a push failure surfacing
+// after the local commit -- so they record the commands instead.
+function fakeGit(root: string, { status = " M docs/ux-experiments/LAB_SELECTIONS.json", pushFails = false } = {}) {
+  const calls: string[] = [];
+  const git = (args: string[], cwd: string) => {
+    calls.push(`${args.join(" ")} @ ${cwd === root ? "root" : cwd}`);
+    if (args[0] === "rev-parse") return `${root}\n`;
+    if (args[0] === "status") return status;
+    if (args[0] === "push" && pushFails) throw new Error("Command failed: git push -q origin HEAD");
+    return "";
+  };
+  return { git, calls };
 }
 
 afterEach(async () => {
-  await Promise.all(temporaryRepositories.splice(0).map((path) => rm(path, { recursive: true, force: true })));
+  await Promise.all(temporaryRoots.splice(0).map((path) => rm(path, { recursive: true, force: true })));
 });
 
 const baseSelection: LabSelection = {
@@ -113,36 +106,36 @@ describe("buildHandoffHistory", () => {
 
 describe("commitSelectionStore", () => {
   it("commits only the Lab store and leaves unrelated changes untouched", async () => {
-    const { root, storePath } = await createRepository();
-    await writeFile(storePath, "{\"trip-feedback\": {}}\n", "utf8");
-    await writeFile(resolve(root, "unrelated.txt"), "owner work\n", "utf8");
+    const { root, storePath } = await createCheckout();
+    const { git, calls } = fakeGit(root);
 
-    expect(commitSelectionStore("trip-feedback", storePath, false)).toBe(true);
-    expect(execFileSync("git", ["log", "-1", "--pretty=%s"], { cwd: root, encoding: "utf8" }).trim())
-      .toBe("Record trip-feedback Lab handoff");
-    expect(await readFile(storePath, "utf8")).toBe("{\"trip-feedback\": {}}\n");
-    expect(execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).trim())
-      .toBe("M unrelated.txt");
+    expect(commitSelectionStore("trip-feedback", storePath, false, git)).toBe(true);
+    const store = "docs/ux-experiments/LAB_SELECTIONS.json";
+    expect(calls).toEqual([
+      `rev-parse --show-toplevel @ ${dirname(storePath)}`,
+      `status --porcelain -- ${store} @ root`,
+      `add -- ${store} @ root`,
+      `commit -m Record trip-feedback Lab handoff -- ${store} @ root`,
+    ]);
   });
 
   it("does not create a commit when the Lab store is unchanged", async () => {
-    const { root, storePath } = await createRepository();
-    const previousHead = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+    const { root, storePath } = await createCheckout();
+    const { git, calls } = fakeGit(root, { status: "" });
 
-    expect(commitSelectionStore("trip-feedback", storePath, false)).toBe(false);
-    expect(execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim())
-      .toBe(previousHead);
+    expect(commitSelectionStore("trip-feedback", storePath, false, git)).toBe(false);
+    expect(calls.some((call) => call.startsWith("add") || call.startsWith("commit"))).toBe(false);
   });
 
   it("reports a push failure after preserving the local Lab commit", async () => {
-    const { root, storePath } = await createRepository();
-    await addUnreachableRemote(root);
-    await writeFile(storePath, "{\"trip-feedback\": {}}\n", "utf8");
+    const { root, storePath } = await createCheckout();
+    const { git, calls } = fakeGit(root, { pushFails: true });
 
-    expect(() => commitSelectionStore("trip-feedback", storePath)).toThrow(/git push/);
-    expect(execFileSync("git", ["log", "-1", "--pretty=%s"], { cwd: root, encoding: "utf8" }).trim())
-      .toBe("Record trip-feedback Lab handoff");
-  }, 15_000);
+    expect(() => commitSelectionStore("trip-feedback", storePath, true, git)).toThrow(/git push/);
+    const commit = calls.findIndex((call) => call.startsWith("commit "));
+    expect(commit).toBeGreaterThan(-1);
+    expect(calls.slice(commit + 1)).toEqual(["push -q origin HEAD @ root"]);
+  });
 });
 
 describe("migrateLegacyHandoffs", () => {
