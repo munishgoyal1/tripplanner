@@ -6,6 +6,10 @@ import react from "@vitejs/plugin-react";
 // only files that actually render components pay for it; everything else
 // runs under the cheap "node" environment. `environmentMatchGlobs` did this
 // in older Vitest but was removed in v4 in favor of `projects`.
+// A .tsx test that renders nothing should start with
+// `// @vitest-environment node`: each jsdom start costs ~1s per file here.
+// pool "threads" was measured against "forks" on 2026-09-15 and was slower
+// (a worker also failed to start), so forks stays.
 const domOnlyTests = [
   "**/*.test.tsx",
   "src/components/map/overlaySync.test.ts",

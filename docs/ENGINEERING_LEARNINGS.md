@@ -2436,3 +2436,22 @@ between the validator and renderer; unknown geography is not zero travel.
   that test also stalled 18 minutes inside a synchronous git spawn and never
   reproduced; `execFileSync` has no timeout, so a stall freezes the whole
   process, vitest's own test timeout included.
+
+## 2026-09-15 - A Green Suite Can Still Be Lying Or Loud
+
+- A clean suite-health report hid three problems. The corpus-generation tests
+  let `place_cache.collect` reach the owner's real Cosmos emulator on
+  localhost:8081, because the network guard allowed every local address; each
+  refused IPv6 attempt also cost ~2s. A localhost allowance has to exclude the
+  ports of real local services.
+- "--- Logging error --- I/O operation on closed file" came and went between runs.
+  `setup_logging(force=True)` inside a `capsys` test left a root handler on the
+  closed capture buffer; whichever later log line landed on that xdist worker
+  printed the traceback, here a background writer thread. Restore global logging
+  state per test instead of chasing the thread that happened to log.
+- A test file that said "Not a test of behaviour; a measurement" and asserted
+  nothing cost 3-14s per run. Delete measurements from the suite once the
+  question is answered; the history keeps them.
+- A `.tsx` test that renders nothing still paid ~1s for jsdom under the
+  `**/*.test.tsx` project rule. `// @vitest-environment node` removes it. Vitest
+  `threads` was slower than `forks` on this Windows machine.

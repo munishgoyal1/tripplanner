@@ -51,6 +51,34 @@ def _isolate_cost_ledger(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Non
 
 
 @pytest.fixture(autouse=True)
+def _restore_root_logging():
+    """Undo a test's ``setup_logging(force=True)``.
+
+    That call binds a root ``StreamHandler`` to ``sys.stdout`` as it is during
+    the test -- ``capsys``'s buffer, closed when the test ends. Every later log
+    line on that worker, from any thread, then printed "--- Logging error ---
+    ValueError: I/O operation on closed file" into the suite output. Which lines
+    hit it depended on xdist scheduling, so the noise came and went between runs.
+    """
+    import logging
+
+    from tripplanner import observability
+
+    root = logging.getLogger()
+    handlers, level, setup_done = list(root.handlers), root.level, observability._SETUP_DONE
+    yield
+    for handler in list(root.handlers):
+        if handler not in handlers:
+            root.removeHandler(handler)
+            handler.close()
+    for handler in handlers:
+        if handler not in root.handlers:
+            root.addHandler(handler)
+    root.setLevel(level)
+    observability._SETUP_DONE = setup_done
+
+
+@pytest.fixture(autouse=True)
 def _force_local_storage(monkeypatch: pytest.MonkeyPatch) -> None:
     from tripplanner import storage_cosmos
     from tripplanner.web import places_cache
@@ -80,6 +108,11 @@ def _disable_debug_store(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 _LOCAL_HOSTS = {"127.0.0.1", "::1", "localhost", "0.0.0.0"}
+#: Local ports that belong to real shared services, not to a server a test
+#: started for itself. The Cosmos emulator holds the owner's local and sandbox
+#: databases: corpus-generation tests were reading it whenever it happened to be
+#: running, and each IPv6 attempt first spent ~2s being refused.
+_LOCAL_SERVICE_PORTS = {8081: "the Cosmos DB emulator", 6379: "Redis"}
 
 
 @pytest.fixture(autouse=True)
@@ -99,6 +132,12 @@ def _no_outbound_network(monkeypatch: pytest.MonkeyPatch) -> None:
     def guarded(self, address, *args, **kwargs):  # type: ignore[no-untyped-def]
         host = address[0] if isinstance(address, tuple) else address
         if isinstance(host, str) and host.split("%")[0] in _LOCAL_HOSTS:
+            port = address[1] if isinstance(address, tuple) and len(address) > 1 else None
+            if port in _LOCAL_SERVICE_PORTS:
+                raise ConnectionRefusedError(
+                    f"Tests may not reach {_LOCAL_SERVICE_PORTS[port]} on port {port}. "
+                    "Stub the client instead."
+                )
             return real_connect(self, address, *args, **kwargs)
         raise OSError(
             f"Outbound network is disabled in tests (tried {host}). "

@@ -26,7 +26,9 @@ async function createRepository() {
   // directly rather than spawned three more times.
   await appendFile(
     resolve(root, ".git/config"),
-    "[user]\n\tname = Lab Test\n\temail = lab-test@example.com\n[commit]\n\tgpgsign = false\n",
+    // autocrlf off: Git for Windows defaults it on, which printed an "LF will be
+    // replaced by CRLF" warning into the suite output for every fixture commit.
+    "[user]\n\tname = Lab Test\n\temail = lab-test@example.com\n[commit]\n\tgpgsign = false\n[core]\n\tautocrlf = false\n",
     "utf8",
   );
   execFileSync("git", ["add", "."], { cwd: root });
