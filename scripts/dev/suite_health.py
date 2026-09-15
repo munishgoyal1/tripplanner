@@ -438,6 +438,13 @@ def render_markdown(
     if total_unrun:
         verdict += f" — INCOMPLETE: {total_unrun} TEST FILE(S) DID NOT RUN"
     lines += ["", f"**{verdict}**", ""]
+    if context.get("contended_by"):
+        lines += [
+            f"> **CONTENDED RUN** — ran alongside {', '.join(context['contended_by'])}. "
+            "Timing failures here may be that load, not a regression: reproduce each "
+            "serially before treating it as real. The baseline is not updated from this run.",
+            "",
+        ]
 
     for classification in classifications:
         lines.append(f"## {classification.suite}")
@@ -600,6 +607,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--commit", default="")
     parser.add_argument("--repo-root", type=Path)
     parser.add_argument("--today", default=date.today().isoformat())
+    parser.add_argument(
+        "--contended-by",
+        action="append",
+        default=[],
+        help="another live run (deploy, sync, sandbox) that shared the machine; repeatable",
+    )
     args = parser.parse_args(argv)
 
     repo_root = args.repo_root or Path(__file__).resolve().parents[2]
@@ -609,7 +622,10 @@ def main(argv: list[str] | None = None) -> int:
     results = build_results(args, repo_root)
     classifications = [classify(result, baseline) for result in results]
 
-    context = {"ref": args.ref, "commit": args.commit}
+    context: dict[str, Any] = {"ref": args.ref, "commit": args.commit}
+    contended_by = sorted({name for name in args.contended_by if name})
+    if contended_by:
+        context["contended_by"] = contended_by
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "report.md").write_text(
@@ -619,6 +635,16 @@ def main(argv: list[str] | None = None) -> int:
     payload = to_json(classifications, today=args.today, context=context)
     (out / "report.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
+    # A run that shared the machine with a deploy's image build once filed six
+    # load-only timeouts as NEW. Accepting them as known debt would hide them.
+    if args.update_baseline and contended_by:
+        print((out / "report.md").read_text(encoding="utf-8"))
+        print(
+            "Baseline NOT updated: this run was contended by "
+            f"{', '.join(contended_by)}. Re-run -UpdateBaseline on a quiet machine.",
+            file=sys.stderr,
+        )
+        return 2
     if args.update_baseline:
         merged = merge_baseline(baseline, classifications, today=args.today)
         merged["ref"] = args.ref or merged.get("ref", "")

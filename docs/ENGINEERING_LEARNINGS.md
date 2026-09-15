@@ -2380,3 +2380,59 @@ between the validator and renderer; unknown geography is not zero travel.
   occurrence, and test map projection too: a fallback loop can otherwise recreate
   a hotel return that persistence correctly removed. Scope recovery by booking
   identity so repeat-city stays and independent replacement bookings survive.
+
+## 2026-09-15 - A Sync Export In An Async Route Freezes The Whole App
+
+- A local Standard PDF export with photos took 1,547s. Image fetching took about
+  45s (28 images one at a time, one 12s CDN timeout plus a 10s Places fallback).
+  About 25 minutes went into browser print attempts. ReportLab then paid for
+  another 45 serial photo fetches. The route was `async def` doing blocking I/O,
+  so every other request queued behind it and they all completed the same
+  second the export returned. Any route that renders, fetches or spawns a
+  process belongs in `asyncio.to_thread`.
+- The print wedge did not reproduce offline. Headless Chrome printed the same
+  4 MB packet in 3-13s, and `subprocess.run` timeouts held in isolation. It did
+  line up with a prod deploy, a canary deploy (Playwright Chrome smoke tests)
+  and suite-health all running at once, and it released one second after the
+  deploy exited. When a hang cannot be reproduced, remove the ways to wait
+  rather than tuning timeouts: a private `--user-data-dir` per attempt, no
+  captured pipes, a process-tree kill, a total deadline, and no retrying other
+  browsers after a hang.
+- To time a worktree's code against real config, run from a directory whose
+  code has `.env`: settings resolve `.env` beside the code, not in the working
+  directory. Without it, static maps silently fall back to SVG and a
+  "faster" run is really a different packet. Compare image counts, not just
+  timings.
+
+## 2026-09-15 - A Step Function In A Shared Cost Is An Optimiser Bug Waiting
+
+- Sharing one local-travel estimate between the renderer and the validator was
+  right, but the estimate was a step function: 1.5 km walked took 20 min, 1.6 km
+  by taxi took 4. The trip rebalance hill-climbs on that cost, so a tidy
+  clustered day scored as more travel than a scattered one and it traded stops
+  apart, reporting four "moves" that cancelled out and left gaps in both days.
+  Any cost an optimiser reads must be monotonic in the quantity it stands for;
+  band each mode from the previous band's edge instead of from zero.
+- A read-only `az containerapp list` after a 19-minute canary deploy hung seven
+  minutes and died on a TLS reset (WinError 10054), throwing away a verified
+  canary. `az` stderr never reaches a PowerShell transcript: the traceback was
+  only in `~/.azure/commands/<timestamp>.<command>.<pid>.log`. Retry idempotent
+  control-plane reads and include the CLI output in the thrown error.
+- A nested script's `Stop-RunLog` stopped its caller's transcript, so
+  `canary-deploy.log` ended at the image push and never showed the deploy or
+  smoke stage. A shared begin/end helper needs a depth, not a flag.
+- Suite health started beside `deploy-prod.ps1` filed six vitest timeouts as NEW;
+  all passed serially. Record what shared the machine and never accept a baseline
+  from that run. The one serial failure was Testing Library's 1s `findBy`
+  default against a 2s cold first render of `<App />`: `testTimeout` had been
+  raised for this machine, but `findBy` has its own budget.
+- The shared `.venv` imports `tripplanner` from the primary checkout's `src`
+  (editable install). Running pytest in a worktree without
+  `PYTHONPATH=<worktree>\src` silently tests master's code, not the fix.
+- A git process on the owner's Windows machine measured 0.5-1.5s at times
+  (`git config` alone 1.5s), and ~0.25s at others. Tests that build fixture
+  repositories should write `.git/config` directly and avoid bare remotes and
+  hook shells; the Lab store tests went from 6-27s to under 1.5s. One run of
+  that test also stalled 18 minutes inside a synchronous git spawn and never
+  reproduced; `execFileSync` has no timeout, so a stall freezes the whole
+  process, vitest's own test timeout included.

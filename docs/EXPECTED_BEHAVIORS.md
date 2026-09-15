@@ -836,9 +836,16 @@ Journey and After check-in sections.
 public-transit evidence.
 
 **Expected:** Legs up to 1.5 km may be shown as Walk. A 3 km leg is shown as Taxi,
-and Metro is never inferred from distance alone.
+and Metro is never inferred from distance alone. A longer leg never takes less
+time than a shorter one: each mode band starts at the previous band's upper-edge
+duration, so a 1.6 km taxi shows 20 min (the 1.5 km walk), not 4. The validator
+and the trip rebalance share this estimate, so a tidy clustered day is never
+traded apart to "save" travel.
 
 **Executable proof:**
+
+- [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_a_longer_local_hop_never_takes_less_time`
+- [`tests/test_trip_rebalance.py`](../tests/test_trip_rebalance.py) - `test_it_leaves_a_good_plan_alone`
 
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_local_route_uses_taxi_for_three_kilometres`
 - [`tests/test_trip_view_journeys_transfers.py`](../tests/test_trip_view_journeys_transfers.py) - `test_local_route_keeps_short_walks_walkable`
@@ -979,7 +986,10 @@ printable file. Standard (including the older `detailed` alias) keeps itinerary
 panel facts without Trip Book contents. PDF download uses the same HTML layout
 as preview. Checked stop photos appear in the PDF, not only in HTML preview.
 Download PDF and Send show independent progress. Email includes the PDF and a
-trip URL.
+trip URL. Generating a PDF or email never stalls the rest of the app: other
+requests keep answering while it runs. A browser print that hangs is abandoned
+within about a minute and the ReportLab fallback is returned, rather than
+retrying every browser in turn.
 
 **Executable proof:**
 
@@ -989,6 +999,8 @@ trip URL.
 - [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `offers Standard and Trip Book with budget and photo checkboxes off`
 - [`frontend/src/components/ExportModal.test.tsx`](../frontend/src/components/ExportModal.test.tsx) - `does not mark email as sending while a PDF download is in progress`
 - [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_embed_packet_images_uses_places_bytes_when_url_fetch_fails`
+- [`tests/test_itinerary_export.py`](../tests/test_itinerary_export.py) - `test_html_to_pdf_stops_after_a_hung_browser`
+- [`tests/test_email_export_idempotency.py`](../tests/test_email_export_idempotency.py) - `test_pdf_and_email_exports_render_off_the_event_loop`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 
