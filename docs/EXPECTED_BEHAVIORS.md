@@ -1293,3 +1293,20 @@ arrivals. Day travel totals include explicit drives. Known overlapping durations
 remain validation failures even when coordinates are unavailable. These checks feed
 the existing graph completion gate; saved invalid plans are not silently repaired
 by reading the itinerary.
+
+### Incremental offline trip evaluation (2026-09-18)
+
+An explicit trip JSON input uses the same offline evaluator families as corpus
+trips. Repeating unchanged inputs reuses results and retains known failures without
+reporting them as new. Changed requests, preferences, plan/evidence, ratings or
+implementation invalidate the relevant results. The CLI defaults to active
+artifacts; historical, superseded and regression evidence remains available by
+explicit selection. Obsolete artifacts are classified deliberately, never inferred
+from age alone. Exclusions, missing evidence and evaluator errors cannot establish
+a fix. Fix verification requires linked failed/passing receipts on a clean declared
+fix commit; regenerated evidence also identifies that commit as its producer.
+A fresh recurrence remains actionable even if the symptom was previously accepted.
+No audit operation regenerates a trip or invokes a judge model.
+
+**Proof:** `tests/test_incremental_evaluation.py`; operational commands and reusable
+boundaries are owned by `docs/CODEMAP.md`.

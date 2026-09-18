@@ -13,7 +13,8 @@ contains historical assumptions; current implementation ownership is in
    coupling; do not publish a library or add LLM judging in this milestone.
 2. **Incremental evaluation and corpus lifecycle** — common evaluation cases,
    relevant-input result reuse, current/historical/regression selection and
-   post-fix evidence. Not implemented by milestone 1.
+   post-fix evidence. Approved in-chat after milestone 1;
+   [#351](https://github.com/munishgoyal1/tripplanner/issues/351) owns implementation.
 3. **Whole-itinerary model judging** — evidence-grounded, versioned rubrics,
    structured scores, human calibration and explicit judge budgets. Not started.
 4. **Step evaluation** — semantic model-step input/output evidence and appropriate
@@ -36,6 +37,47 @@ Milestone 1 acceptance/validation matrix:
 This brief remains active because later milestones are incomplete. Publication and
 validation evidence for the bounded first milestone lives in #349; closing that
 issue does not mean the full evaluation roadmap has shipped.
+
+---
+
+## Milestone 2 implementation contract
+
+- Enrich the shared trip input with stable case identity, immutable artifact
+  identity, request/preferences, optional final response/steps, and producer
+  provenance. Missing legacy metadata stays unknown. Accept explicit local JSON
+  cases as well as the existing corpus readers; never infer unavailable traces.
+- Cache each evaluator family independently in private local `audit/state/`.
+  Keys include exact relevant input/evidence, applicable human ratings,
+  evaluator configuration, implementation/dependency fingerprint and schema
+  version. Conservatively hash the Python source tree, installed runtime package
+  versions and effective settings until a narrower dependency graph is proven.
+  Do not invalidate on unrelated documentation commits. Persist atomic receipts;
+  malformed or incomplete results never become a cached pass.
+- CLI defaults to active artifacts and incremental reuse. Keep explicit all,
+  historical and regression selections, a force option, and evaluator selection.
+  Retain old `--all` meaning (show known findings); do not overload it. The direct
+  audit API remains compatible unless incremental state/selection is requested.
+- Artifact lifecycle is explicit: active, historical, superseded, regression.
+  Intermediate debug revisions default historical. Do not guess that an older
+  producer commit makes a user's current trip obsolete. Selected old failures
+  remain reusable regression evidence; original artifacts are never rewritten.
+- Reports keep cached failures visible and separately count executed/reused/
+  excluded/insufficient/error outcomes. A repeat occurrence is known, not new;
+  accepted baselines cannot hide a verified finding recurring on a new artifact.
+  A narrowed/partial run cannot claim unseen findings were fixed.
+- Verified fixes require linked failed and passing evaluator receipts for the
+  same case and evaluator. Replay proves changed checker/render behavior on the
+  same artifact; regeneration requires a different artifact with explicit
+  producer commit matching the declared fix commit. Never auto-close GitHub issues.
+- Preserve existing default-deny provider boundary and reports. No paid calls,
+  auto-replanning, automatic repair, LLM judges or production changes.
+
+Validation: repeat-call counters; plan/request/preference/place/rating/config/code
+invalidation; corrupt/failed receipt recovery; context-aware dedupe; legacy unknown
+provenance; lifecycle selection; explicit local inputs; verified-fix rejection and
+fresh recurrence; report comparison/coverage honesty; existing audit/harness tests,
+launcher checks and Ruff. Generic receipts/hashing are horizontal candidates;
+trip adaptation and lifecycle policy stay application-owned.
 
 ---
 
@@ -466,3 +508,11 @@ one.
 | Date | Change | Author |
 |---|---|---|
 | 2026-08-14 | Brief created from owner's dictated intent | Agent |
+
+Milestone 2 delivery evidence (2026-09-18): 324 selected tests passed, 3 skipped;
+Ruff publication floor and changed-module lint passed. A real CLI explicit-input
+smoke run executed one evaluator first, reused it on the second run, preserved
+insufficient-evidence status and changed the new-finding exit from 1 to 0. The
+final receipt review additionally requires identical input/evidence snapshots for
+replay verification. Windows verified; macOS host execution remains unverified.
+Publication is tracked in #351; milestones 3–5 remain open in this brief.

@@ -50,6 +50,7 @@ logs/
 audit/reports/
 audit/latest.json
 audit/index.json
+audit/state/
 
 # Temporary Microsoft Office lock files
 ~$*

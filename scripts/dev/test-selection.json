@@ -123,6 +123,7 @@
       "patterns": ["src/tripplanner/validation/**", "src/tripplanner/harness/**", "src/tripplanner/evals/**", "src/tripplanner/evals.py", "scripts/dev/build_corpus.py", "scripts/dev/trip_audit.py", "scripts/dev/corpus_cache.py", "scripts/prod_cache_sync.py", "scripts/derive_limits.py"],
       "backend": [
         "tests/test_validation_harness.py",
+        "tests/test_incremental_evaluation.py",
         "tests/test_evals.py",
         "tests/test_harness_boundaries.py",
         "tests/test_harness_evidence.py",
