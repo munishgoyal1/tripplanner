@@ -154,6 +154,12 @@ def _run(argv: list[str] | None = None) -> int:
         choices=("plan", "human", "render", "metamorphic"),
     )
     parser.add_argument("--state-root", type=Path, default=REPORT_ROOT / "audit" / "state")
+    parser.add_argument(
+        "--judge-profile", type=Path, help="optional judge JSON profile; cache-only by default"
+    )
+    parser.add_argument("--allow-judge-spend", action="store_true")
+    parser.add_argument("--judge-budget-inr", type=float, default=0)
+    parser.add_argument("--judge-human-ratings", type=Path)
     parser.add_argument("--set-state", choices=lifecycle.STATES)
     parser.add_argument("--artifact", default="")
     parser.add_argument("--reason", default="")
@@ -165,6 +171,22 @@ def _run(argv: list[str] | None = None) -> int:
     parser.add_argument("--fix-commit", default="")
     parser.add_argument("--issue", default="")
     args = parser.parse_args(argv)
+    if (
+        args.allow_judge_spend or args.judge_budget_inr or args.judge_human_ratings
+    ) and not args.judge_profile:
+        parser.error("Judge options require --judge-profile")
+    if args.judge_profile and (args.accept or args.set_state or args.verify_fix or args.rules):
+        parser.error("Run judging separately from audit management commands")
+    judge_profile = None
+    human_comparison = {}
+    if args.judge_profile:
+        from tripplanner.harness.judge_transport import JudgeProfile
+
+        judge_profile = JudgeProfile.model_validate_json(
+            args.judge_profile.read_text(encoding="utf-8")
+        )
+        if args.judge_human_ratings:
+            human_comparison = json.loads(args.judge_human_ratings.read_text(encoding="utf-8"))
     if args.evaluator and (args.no_render or args.no_mutate):
         parser.error("Use --evaluator or --no-render/--no-mutate, not both")
     if args.set_state and args.verify_fix:
@@ -211,6 +233,26 @@ def _run(argv: list[str] | None = None) -> int:
         force=args.force,
         evaluators=tuple(dict.fromkeys(args.evaluator)) if args.evaluator else None,
     )
+
+    if judge_profile is not None:
+        from tripplanner.harness import judging
+
+        result.evaluation["judge"] = judging.run(
+            result.records,
+            args.state_root / "judge",
+            judge_profile,
+            allow_spend=args.allow_judge_spend,
+            budget_inr=args.judge_budget_inr,
+            force=args.force,
+            human=human_comparison,
+        )
+        if not args.as_json:
+            judged = result.evaluation["judge"]
+            print(
+                f"Judge (advisory): {judged['executed']} executed, {judged['reused']} reused, "
+                f"{judged['pending']} pending, {judged['errors']} errors; "
+                f"charged/reserved INR {judged['charged_inr']:.4f}"
+            )
 
     if args.as_json:
         print(
@@ -273,7 +315,9 @@ def _run(argv: list[str] | None = None) -> int:
         print("\nCorpus is empty: nothing was checked.", file=sys.stderr)
         return 2
 
-    if result.evaluation.get("errors"):
+    if result.evaluation.get("errors") or result.evaluation.get("judge", {}).get("errors"):
+        return 2
+    if args.allow_judge_spend and result.evaluation.get("judge", {}).get("pending"):
         return 2
     stale = payload["retired"]
     if stale and not args.as_json:

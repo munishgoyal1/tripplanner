@@ -84,6 +84,8 @@ def verify_fix(
     before, after = store.read(before_id), store.read(after_id)
     if not before or not after or before_id == after_id:
         raise ValueError("Distinct valid failed and passing result receipts are required")
+    if before["evaluator"] == "itinerary_judge" or after["evaluator"] == "itinerary_judge":
+        raise ValueError("Advisory model judgments cannot verify a preventive fix")
     keys = {f"{item['rule']}|{item['symptom']}" for item in before["findings"]}
     if finding_key not in keys or after["status"] != "pass":
         raise ValueError(

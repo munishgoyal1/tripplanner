@@ -91,6 +91,25 @@ def _summary_markdown(payload: dict[str, Any], report_path: Path) -> str:
             f"- `{item['code']}`: {item['trips']}/{item['evaluated']} evaluated trips "
             f"failed ({rate:.1f}%) - {item['title']}"
         )
+    judged = payload.get("evaluation", {}).get("judge")
+    if judged:
+        lines.extend(
+            [
+                "",
+                "## Model judge (advisory)",
+                "",
+                f"- Executed: {judged['executed']}; reused: {judged['reused']}; "
+                f"pending: {judged['pending']}; errors: {judged['errors']}",
+                f"- Charged/reserved: INR {judged['charged_inr']:.4f}",
+                f"- Human comparison: {judged['calibration']['status']}",
+            ]
+        )
+        for result in judged["results"]:
+            score = result.get("judgement", {}).get("overall_score")
+            lines.append(
+                f"- `{result['artifact_id'][:12]}`: {score if score is not None else 'unscored'}"
+                f" / 5; {result['status']}"
+            )
     return "\n".join(lines) + "\n"
 
 
