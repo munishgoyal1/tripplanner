@@ -20,21 +20,21 @@
 
   Supports -WhatIf/-Confirm to preview before deleting anything.
 
-.PARAMETER IncludeRemote
-  After a local branch is safely deleted, also delete origin's matching branch
-  if one still exists. Off by default because it changes a shared remote.
+.PARAMETER KeepRemote
+  Skip deleting origin's matching branch after the local branch is removed.
+  By default the remote branch is deleted once the local delete succeeds.
 
 .EXAMPLE
   ./scripts/dev/prune-merged-branches.ps1 -WhatIf
   ./scripts/dev/prune-merged-branches.ps1
-  ./scripts/dev/prune-merged-branches.ps1 -IncludeRemote
+  ./scripts/dev/prune-merged-branches.ps1 -KeepRemote
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "Medium")]
 param(
     [string]$BaseBranch = "master",
     [switch]$NoFetch,
-    [switch]$IncludeRemote
+    [switch]$KeepRemote
 )
 
 $ErrorActionPreference = "Stop"
@@ -118,7 +118,7 @@ foreach ($branch in $merged) {
     $deletedCount++
     Write-Host "Deleted local branch $branch"
 
-    if ($IncludeRemote) {
+    if (-not $KeepRemote) {
         & git -C $primaryRoot ls-remote --exit-code --heads origin $branch 2>$null | Out-Null
         if ($LASTEXITCODE -eq 0) {
             if ($PSCmdlet.ShouldProcess("origin/$branch", "Delete remote branch")) {

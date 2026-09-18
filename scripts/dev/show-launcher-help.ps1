@@ -165,11 +165,11 @@ Examples:
     "prune-merged-branches" = @"
 Prune-Merged-Branches - delete local branches already merged into master with no lost commits.
 
-Usage: Prune-Merged-Branches [-BaseBranch master] [-NoFetch] [-IncludeRemote] [-WhatIf]
+Usage: Prune-Merged-Branches [-BaseBranch master] [-NoFetch] [-KeepRemote] [-WhatIf]
 
-  -NoFetch        Compare against the local base branch instead of fetching origin first.
-  -IncludeRemote  Also delete origin's matching branch once the local delete succeeds.
-  -WhatIf         Preview which branches would be deleted.
+  -NoFetch      Compare against the local base branch instead of fetching origin first.
+  -KeepRemote   Skip deleting origin's matching branch (remote branches are deleted by default).
+  -WhatIf       Preview which branches would be deleted.
 
 A branch is only deleted with the safe `git branch -d`, which itself refuses
 anything Git cannot prove is fully merged, so the ancestor check and the delete
@@ -181,17 +181,17 @@ alone.
 Examples:
   Prune-Merged-Branches -WhatIf
   Prune-Merged-Branches
-  Prune-Merged-Branches -IncludeRemote
+  Prune-Merged-Branches -KeepRemote
 "@
     "prune-merged-branches-everywhere" = @"
 Prune-Merged-Branches-Everywhere - delete local branches merged into master with
 no lost commits, even when checked out in a worktree or a registered sandbox.
 
-Usage: Prune-Merged-Branches-Everywhere [-BaseBranch master] [-NoFetch] [-IncludeRemote] [-WhatIf]
+Usage: Prune-Merged-Branches-Everywhere [-BaseBranch master] [-NoFetch] [-KeepRemote] [-WhatIf]
 
-  -NoFetch        Compare against the local base branch instead of fetching origin first.
-  -IncludeRemote  Also delete origin's matching branch once it is safely removed.
-  -WhatIf         Preview which branches would be removed or discarded.
+  -NoFetch      Compare against the local base branch instead of fetching origin first.
+  -KeepRemote   Skip deleting origin's matching branch (remote branches are deleted by default).
+  -WhatIf       Preview which branches would be removed or discarded.
 
 A more aggressive sibling of Prune-Merged-Branches. Still requires the same
 double guarantee -- every commit already an ancestor of origin/master, and the
@@ -206,7 +206,11 @@ branch itself can also be deleted:
     emulator database and preserving its corpus data.
   - Any other worktree (plain agent worktree, multiagent worktree, etc.) is
     removed with `git worktree remove --force` after this script confirms
-    `git status --porcelain` is empty, then its branch is deleted.
+    `git status --porcelain` is empty, then its branch is deleted. If a locked
+    file stops the folder deletion (Windows: a running esbuild service, an
+    editor, a terminal with its cwd inside), the branch is still deleted once
+    git unregisters the worktree, and the leftover folder is retried, then
+    reported for manual deletion.
 
 The primary checkout's current branch is never touched. Confirmation impact is
 High: expect a confirmation prompt per removal unless you pass -Confirm:`$false`
@@ -215,7 +219,7 @@ or preview with -WhatIf first.
 Examples:
   Prune-Merged-Branches-Everywhere -WhatIf
   Prune-Merged-Branches-Everywhere
-  Prune-Merged-Branches-Everywhere -IncludeRemote
+  Prune-Merged-Branches-Everywhere -KeepRemote
 "@
     "run-latest-master" = @"
 Run-Latest-Master - fast-forward primary master and start its canonical local stack.
