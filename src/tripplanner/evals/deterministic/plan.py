@@ -223,7 +223,10 @@ def _evaluate_check(
         elif cost is None:
             reason = "plan has no numeric total_cost"
         else:
-            reason = f"total_cost {cost:g} <= budget {limit:g}" if ok else f"total_cost {cost:g} > budget {limit:g}"
+            reason = (
+                f"total_cost {cost:g} <= budget {limit:g}"
+                if ok else f"total_cost {cost:g} > budget {limit:g}"
+            )
         return _result(check, ok, reason)
 
     if cid == "grounded_reply":
@@ -301,7 +304,9 @@ SCENARIOS: tuple[EvalScenario, ...] = (
             EvalCheck("has_flights", "Includes flight selections"),
             EvalCheck("has_hotels", "Includes hotel selections"),
             EvalCheck("within_budget", "Keeps total cost within budget", weight=2),
-            EvalCheck("grounded_reply", "Final reply only cites evidenced prices/times/URLs", weight=2),
+            EvalCheck(
+                "grounded_reply", "Final reply only cites evidenced prices/times/URLs", weight=2,
+            ),
             EvalCheck("finalize_critic_clean", "Passes finalized-plan critic"),
         ),
     ),

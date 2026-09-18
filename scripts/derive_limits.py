@@ -44,9 +44,7 @@ GUARDRAILS_PATH = ROOT / "infra" / "billing-guardrails.json"
 ENVIRONMENTS = ("local", "canary", "prod")
 
 sys.path.insert(0, str(ROOT / "src"))
-from tripplanner.validation.harness.pricing import (  # noqa: E402
-    GOOGLE_PLACES_USD_PER_REQUEST,
-)
+from tripplanner.pricing import GOOGLE_PLACES_USD_PER_REQUEST  # noqa: E402
 
 #: Quota id -> the priced SKU it consumes. Quotas with no entry bound an API
 #: surface the application does not call; they stay pinned at their configured

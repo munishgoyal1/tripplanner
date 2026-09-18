@@ -132,6 +132,17 @@ running `npm install` in a fresh worktree to do nothing with it.
 Run mobile typecheck and lint when `mobile/` or the shared client changes. Paid
 providers and hosted stores remain prohibited in automated tests; shared pytest
 fixtures block outbound network and select hermetic local storage by default.
+Localhost is allowed for servers a test starts itself, but not the ports of real
+local services (the Cosmos DB emulator on 8081, Redis on 6379): corpus-generation
+tests had been reading the owner's emulator whenever it was running.
+
+A green run should also be a quiet one. `tests/conftest.py` restores the root
+logger after each test, because `setup_logging(force=True)` under `capsys` left a
+handler on a closed stream and later log lines printed "Logging error" tracebacks
+into the suite output. Test-only noise (jsdom "Not implemented: navigation", git
+CRLF warnings from fixture repositories) is fixed at its source rather than
+filtered. A test with no assertions that only prints a measurement belongs in a
+script, not the suite.
 
 ## Suite health
 

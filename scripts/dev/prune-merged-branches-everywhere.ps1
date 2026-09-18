@@ -13,7 +13,7 @@
   it removes the worktree (or discards the sandbox) so the branch itself can
   be deleted too.
 
-  Three cases, by how the branch is checked out:
+  Four cases, by how the branch or worktree is found:
     - Not checked out anywhere: same as prune-merged-branches.ps1, deleted
       with `git branch -d`, which itself refuses anything Git cannot prove is
       merged.
@@ -24,7 +24,15 @@
     - Checked out in any other worktree (a plain agent worktree, a multiagent
       worktree, etc.): removed with `git worktree remove --force` after this
       script confirms `git status --porcelain` is empty, then the branch is
-      deleted with `git branch -d`.
+      deleted with `git branch -d`. When a locked file stops the folder
+      deletion (common on Windows: a running esbuild service, an editor, or a
+      terminal with its cwd inside), git has usually still unregistered the
+      worktree, so the branch delete proceeds and the leftover folder is
+      retried, then reported for manual deletion.
+    - Detached-HEAD worktrees (no branch, left over from abandoned syncs,
+      old agent runs, or multiagent coordinators): removed after confirming
+      the HEAD commit is already an ancestor of master and the folder is
+      clean. No branch ref is deleted because there is none.
 
   The primary checkout's own current branch is never touched: there is
   nothing here to check out instead, and Git cannot delete it anyway.
@@ -33,23 +41,23 @@
   Confirmation impact is High (unlike prune-merged-branches.ps1's Medium)
   because this script can remove whole worktrees, not just branch refs.
 
-.PARAMETER IncludeRemote
-  After a local branch is safely removed, also delete origin's matching
-  branch if one still exists. Off by default because it changes a shared
-  remote. Forwarded to `sandbox.ps1 -Discard` as -DeleteRemoteBranch so all
-  three cases share the same default.
+.PARAMETER KeepRemote
+  Skip deleting origin's matching branch after a local branch is removed.
+  By default the remote branch is deleted once the local remove succeeds.
+  Forwarded to `sandbox.ps1 -Discard` as -DeleteRemoteBranch so all three
+  cases share the same default.
 
 .EXAMPLE
   ./scripts/dev/prune-merged-branches-everywhere.ps1 -WhatIf
   ./scripts/dev/prune-merged-branches-everywhere.ps1
-  ./scripts/dev/prune-merged-branches-everywhere.ps1 -IncludeRemote
+  ./scripts/dev/prune-merged-branches-everywhere.ps1 -KeepRemote
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "High")]
 param(
     [string]$BaseBranch = "master",
     [switch]$NoFetch,
-    [switch]$IncludeRemote
+    [switch]$KeepRemote
 )
 
 $ErrorActionPreference = "Stop"
@@ -58,6 +66,28 @@ $ErrorActionPreference = "Stop"
 $scriptRepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $primaryRoot = Get-PrimaryRepositoryRoot -RepositoryRoot $scriptRepoRoot
 $sandboxScript = Join-Path $primaryRoot "scripts/dev/sandbox.ps1"
+
+function Remove-WorktreeLeftovers {
+    # Mirrors sandbox.ps1's Remove-SandboxLeftovers: npm workspace links are
+    # reparse points nothing may recurse through, and a locked binary (esbuild,
+    # an editor, a terminal) needs a few retries before Windows lets go.
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) { return $true }
+    Get-ChildItem -LiteralPath $Path -Force -Recurse -Directory -ErrorAction SilentlyContinue |
+        Where-Object { $_.Attributes.HasFlag([IO.FileAttributes]::ReparsePoint) } |
+        ForEach-Object {
+            if ($IsWindows) { & cmd /c rmdir "$($_.FullName)" }
+            else { Remove-Item -LiteralPath $_.FullName -Force -ErrorAction SilentlyContinue }
+        }
+
+    foreach ($attempt in 1..12) {
+        Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue
+        if (-not (Test-Path -LiteralPath $Path)) { return $true }
+        if ($attempt -lt 12) { Start-Sleep -Milliseconds 250 }
+    }
+    return $false
+}
 
 if (-not $NoFetch) {
     & git -C $primaryRoot fetch origin --quiet 2>$null
@@ -73,13 +103,21 @@ if ($LASTEXITCODE -ne 0) { $baseRef = $BaseBranch }
 if ($LASTEXITCODE -ne 0) { throw "Could not resolve '$baseRef' to compare branches against." }
 
 # branch -> worktree path, from every worktree (primary, sandboxes, plain, detached).
+# Detached-HEAD worktrees are also collected for cleanup at the end.
 $worktreePathByBranch = @{}
+$detachedWorktreeList = [System.Collections.Generic.List[object]]::new()
 $currentWorktreePath = $null
+$currentHead = $null
 foreach ($line in @(& git -C $primaryRoot worktree list --porcelain)) {
     if ($line.StartsWith("worktree ")) {
         $currentWorktreePath = $line.Substring(9)
+        $currentHead = $null
+    } elseif ($line.StartsWith("HEAD ")) {
+        $currentHead = $line.Substring(5)
     } elseif ($line.StartsWith("branch refs/heads/") -and $currentWorktreePath) {
         $worktreePathByBranch[$line.Substring(18)] = $currentWorktreePath
+    } elseif ($line -eq "detached" -and $currentWorktreePath) {
+        $detachedWorktreeList.Add([pscustomobject]@{ Path = $currentWorktreePath; Head = $currentHead })
     }
 }
 
@@ -97,6 +135,8 @@ $primaryRootComparable = (Resolve-Path $primaryRoot).Path
 $deletedUnattached = 0
 $deletedWorktrees = 0
 $discardedSandboxes = 0
+$deletedDetached = 0
+$leftoverFolders = [System.Collections.Generic.List[string]]::new()
 $skippedPrimary = [System.Collections.Generic.List[string]]::new()
 $skippedDirty = [System.Collections.Generic.List[string]]::new()
 $skippedUnmerged = [System.Collections.Generic.List[string]]::new()
@@ -122,7 +162,7 @@ foreach ($branch in $localBranches) {
         }
         $deletedUnattached++
         Write-Host "Deleted local branch $branch"
-        if ($IncludeRemote) {
+        if (-not $KeepRemote) {
             & git -C $primaryRoot ls-remote --exit-code --heads origin $branch 2>$null | Out-Null
             if ($LASTEXITCODE -eq 0 -and $PSCmdlet.ShouldProcess("origin/$branch", "Delete remote branch")) {
                 & git -C $primaryRoot push origin --delete $branch
@@ -148,7 +188,7 @@ foreach ($branch in $localBranches) {
         if (-not $PSCmdlet.ShouldProcess($sbx.slug, "Discard sandbox (sandbox.ps1 -Discard)")) { continue }
         Push-Location $primaryRoot
         try {
-            & $sandboxScript -Discard $sbx.slug -BaseBranch $BaseBranch -DeleteRemoteBranch:([bool]$IncludeRemote) -Confirm:$false
+            & $sandboxScript -Discard $sbx.slug -BaseBranch $BaseBranch -DeleteRemoteBranch:(-not $KeepRemote) -Confirm:$false
             if ($LASTEXITCODE -eq 0) {
                 $discardedSandboxes++
             } else {
@@ -184,10 +224,22 @@ foreach ($branch in $localBranches) {
 
     if (-not $PSCmdlet.ShouldProcess($worktreePath, "Remove worktree and delete local branch $branch")) { continue }
     & git -C $primaryRoot worktree remove --force $worktreePath 2>&1 | Out-Host
+    $folderLeftBehind = $false
     if ($LASTEXITCODE -ne 0) {
-        Write-Warning "Could not remove worktree '$worktreePath' (a locked file is a common cause on Windows); left '$branch' in place."
+        # On Windows, git unregisters the worktree yet fails to delete a locked
+        # file. Finish the teardown like sandbox.ps1's discard instead of
+        # stranding the branch: prune, confirm detachment, retry the folder.
         & git -C $primaryRoot worktree prune 2>$null | Out-Null
-        continue
+        $stillAttached = @(& git -C $primaryRoot worktree list --porcelain) |
+            Where-Object { $_ -eq "branch refs/heads/$branch" }
+        if ($stillAttached) {
+            Write-Warning "Could not remove worktree '$worktreePath' (a locked file is a common cause on Windows); left '$branch' in place."
+            continue
+        }
+        if (-not (Remove-WorktreeLeftovers -Path $worktreePath)) {
+            $folderLeftBehind = $true
+            $leftoverFolders.Add($worktreePath)
+        }
     }
     & git -C $primaryRoot branch -d $branch 2>&1 | Out-Host
     if ($LASTEXITCODE -ne 0) {
@@ -195,8 +247,12 @@ foreach ($branch in $localBranches) {
         continue
     }
     $deletedWorktrees++
-    Write-Host "Removed worktree '$worktreePath' and deleted local branch $branch"
-    if ($IncludeRemote) {
+    if ($folderLeftBehind) {
+        Write-Host "Unregistered worktree and deleted local branch $branch (folder left behind, listed below)"
+    } else {
+        Write-Host "Removed worktree '$worktreePath' and deleted local branch $branch"
+    }
+    if (-not $KeepRemote) {
         & git -C $primaryRoot ls-remote --exit-code --heads origin $branch 2>$null | Out-Null
         if ($LASTEXITCODE -eq 0 -and $PSCmdlet.ShouldProcess("origin/$branch", "Delete remote branch")) {
             & git -C $primaryRoot push origin --delete $branch
@@ -207,6 +263,39 @@ foreach ($branch in $localBranches) {
 }
 
 & git -C $primaryRoot worktree prune 2>$null | Out-Null
+
+# Detached-HEAD worktrees whose HEAD is already in master: remove them.
+# These are left over from abandoned syncs, old agent runs, or multiagent
+# coordinators — no branch to protect them, so just check HEAD and cleanliness.
+foreach ($wt in $detachedWorktreeList) {
+    $wtResolved = if (Test-Path $wt.Path) { (Resolve-Path $wt.Path).Path } else { $wt.Path }
+    if ($wtResolved -eq $primaryRootComparable) { continue }
+    if (-not $wt.Head) { $skippedOther.Add("$($wt.Path) (detached, no HEAD)"); continue }
+    & git -C $primaryRoot merge-base --is-ancestor $wt.Head $baseRef 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        $skippedUnmerged.Add("$($wt.Path) (detached HEAD $($wt.Head.Substring(0, 8)))")
+        continue
+    }
+    if (-not (Test-Path $wt.Path)) { continue }
+    $status = @(& git -C $wt.Path status --porcelain 2>$null)
+    if ($LASTEXITCODE -ne 0 -or $status.Count -gt 0) { $skippedDirty.Add("$($wt.Path) (detached)"); continue }
+    if (-not $PSCmdlet.ShouldProcess($wt.Path, "Remove detached worktree")) { continue }
+    & git -C $primaryRoot worktree remove --force $wt.Path 2>&1 | Out-Host
+    $folderLeftBehind = $false
+    if ($LASTEXITCODE -ne 0) {
+        & git -C $primaryRoot worktree prune 2>$null | Out-Null
+        if (-not (Remove-WorktreeLeftovers -Path $wt.Path)) {
+            $folderLeftBehind = $true
+            $leftoverFolders.Add($wt.Path)
+        }
+    }
+    $deletedDetached++
+    if ($folderLeftBehind) {
+        Write-Host "Unregistered detached worktree at $($wt.Path) (folder left behind, listed below)"
+    } else {
+        Write-Host "Removed detached worktree at $($wt.Path)"
+    }
+}
 
 if ($skippedPrimary.Count -gt 0) {
     Write-Host "Skipped (checked out in the primary checkout):"
@@ -224,7 +313,11 @@ if ($skippedOther.Count -gt 0) {
     Write-Host "Skipped (could not verify or clean up safely):"
     foreach ($b in $skippedOther) { Write-Host "  $b" }
 }
+if ($leftoverFolders.Count -gt 0) {
+    Write-Host "Folders left behind (locked by another process; close it and delete manually):"
+    foreach ($p in $leftoverFolders) { Write-Host "  $p" }
+}
 
 if (-not $WhatIfPreference) {
-    Write-Host "Deleted $deletedUnattached unattached branch(es), removed $deletedWorktrees worktree(s) and deleted their branch(es), discarded $discardedSandboxes sandbox(es)."
+    Write-Host "Deleted $deletedUnattached unattached branch(es), removed $deletedWorktrees worktree(s) and deleted their branch(es), discarded $discardedSandboxes sandbox(es), removed $deletedDetached detached worktree(s)."
 }

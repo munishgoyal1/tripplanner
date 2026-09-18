@@ -254,37 +254,34 @@ export async function writeSelections(selections: LabSelections): Promise<void> 
   await rename(canonicalTemporaryPath, canonicalPath);
 }
 
+/** Runs one git command in `cwd` and returns its stdout; throws on failure. */
+export type GitRunner = (args: string[], cwd: string) => string;
+
+const runGit: GitRunner = (args, cwd) =>
+  execFileSync("git", args, {
+    cwd,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+    windowsHide: true,
+  });
+
 export function commitSelectionStore(
   labId: string,
   storePath = canonicalPath,
   push = true,
+  git: GitRunner = runGit,
 ): boolean {
-  const repoRoot = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-    cwd: dirname(storePath),
-    encoding: "utf8",
-    windowsHide: true,
-  }).trim();
+  const repoRoot = git(["rev-parse", "--show-toplevel"], dirname(storePath)).trim();
   const repoPath = relative(realpathSync(repoRoot), realpathSync(storePath)).replaceAll("\\", "/");
-  const changed = execFileSync("git", ["status", "--porcelain", "--", repoPath], {
-    cwd: repoRoot,
-    encoding: "utf8",
-    windowsHide: true,
-  }).trim();
+  const changed = git(["status", "--porcelain", "--", repoPath], repoRoot).trim();
   if (!changed) return false;
 
-  execFileSync("git", ["add", "--", repoPath], { cwd: repoRoot, windowsHide: true });
-  execFileSync(
-    "git",
-    ["commit", "-m", `Record ${labId} Lab handoff`, "--", repoPath],
-    { cwd: repoRoot, windowsHide: true },
-  );
+  // Pathspec on both: the owner's other working-tree changes are never staged
+  // or committed alongside the Lab record.
+  git(["add", "--", repoPath], repoRoot);
+  git(["commit", "-m", `Record ${labId} Lab handoff`, "--", repoPath], repoRoot);
   if (push) {
-    execFileSync("git", ["push", "-q", "origin", "HEAD"], {
-      cwd: repoRoot,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-      windowsHide: true,
-    });
+    git(["push", "-q", "origin", "HEAD"], repoRoot);
   }
   return true;
 }

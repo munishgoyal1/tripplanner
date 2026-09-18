@@ -1,0 +1,1 @@
+"""Budgeted Tripplanner scenario generation."""

@@ -30,8 +30,9 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 for _name in ("COSMOS_ENDPOINT", "COSMOS_KEY", "COSMOS_DATABASE", "COSMOS_EMULATOR"):
     os.environ.pop(_name, None)
 
-from tripplanner.validation import lane_trips, place_cache, runner  # noqa: E402
-from tripplanner.validation.emulator import (  # noqa: E402
+from tripplanner.harness import audit as runner  # noqa: E402
+from tripplanner.harness.sources import lane_trips, place_cache  # noqa: E402
+from tripplanner.harness.sources.emulator import (  # noqa: E402
     EmulatorUnreachableError,
     list_sandbox_databases,
 )

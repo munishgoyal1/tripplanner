@@ -21,15 +21,15 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from tripplanner.validation import budget as budget_module  # noqa: E402
-from tripplanner.validation import (  # noqa: E402
+from tripplanner.harness import audit as runner  # noqa: E402
+from tripplanner.harness import budget as budget_module  # noqa: E402
+from tripplanner.harness.generation import (  # noqa: E402
     generate,
     india_heuristic_matrix,
     india_outbound_matrix,
     matrix,
-    runner,
 )
-from tripplanner.validation.catalog import Catalog  # noqa: E402
+from tripplanner.harness.generation.catalog import Catalog  # noqa: E402
 
 PRIMARY_DATABASE = "tripplanner-local"
 PRIMARY_API = "http://127.0.0.1:8000"

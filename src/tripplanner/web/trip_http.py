@@ -570,8 +570,8 @@ async def debug_audit_open(req: AuditInspectRequest, request: Request) -> dict:
 
     from pathlib import Path
 
+    from tripplanner.harness import audit as audit_runner
     from tripplanner.tools import trip_planner
-    from tripplanner.validation import runner as audit_runner
     from tripplanner.web import trip_operations
 
     user_id = _set_request_user(request, req.user_id)
