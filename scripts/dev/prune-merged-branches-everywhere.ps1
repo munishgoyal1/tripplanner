@@ -13,7 +13,7 @@
   it removes the worktree (or discards the sandbox) so the branch itself can
   be deleted too.
 
-  Three cases, by how the branch is checked out:
+  Four cases, by how the branch or worktree is found:
     - Not checked out anywhere: same as prune-merged-branches.ps1, deleted
       with `git branch -d`, which itself refuses anything Git cannot prove is
       merged.
@@ -29,6 +29,10 @@
       terminal with its cwd inside), git has usually still unregistered the
       worktree, so the branch delete proceeds and the leftover folder is
       retried, then reported for manual deletion.
+    - Detached-HEAD worktrees (no branch, left over from abandoned syncs,
+      old agent runs, or multiagent coordinators): removed after confirming
+      the HEAD commit is already an ancestor of master and the folder is
+      clean. No branch ref is deleted because there is none.
 
   The primary checkout's own current branch is never touched: there is
   nothing here to check out instead, and Git cannot delete it anyway.
@@ -99,13 +103,21 @@ if ($LASTEXITCODE -ne 0) { $baseRef = $BaseBranch }
 if ($LASTEXITCODE -ne 0) { throw "Could not resolve '$baseRef' to compare branches against." }
 
 # branch -> worktree path, from every worktree (primary, sandboxes, plain, detached).
+# Detached-HEAD worktrees are also collected for cleanup at the end.
 $worktreePathByBranch = @{}
+$detachedWorktreeList = [System.Collections.Generic.List[object]]::new()
 $currentWorktreePath = $null
+$currentHead = $null
 foreach ($line in @(& git -C $primaryRoot worktree list --porcelain)) {
     if ($line.StartsWith("worktree ")) {
         $currentWorktreePath = $line.Substring(9)
+        $currentHead = $null
+    } elseif ($line.StartsWith("HEAD ")) {
+        $currentHead = $line.Substring(5)
     } elseif ($line.StartsWith("branch refs/heads/") -and $currentWorktreePath) {
         $worktreePathByBranch[$line.Substring(18)] = $currentWorktreePath
+    } elseif ($line -eq "detached" -and $currentWorktreePath) {
+        $detachedWorktreeList.Add([pscustomobject]@{ Path = $currentWorktreePath; Head = $currentHead })
     }
 }
 
@@ -123,6 +135,7 @@ $primaryRootComparable = (Resolve-Path $primaryRoot).Path
 $deletedUnattached = 0
 $deletedWorktrees = 0
 $discardedSandboxes = 0
+$deletedDetached = 0
 $leftoverFolders = [System.Collections.Generic.List[string]]::new()
 $skippedPrimary = [System.Collections.Generic.List[string]]::new()
 $skippedDirty = [System.Collections.Generic.List[string]]::new()
@@ -251,6 +264,39 @@ foreach ($branch in $localBranches) {
 
 & git -C $primaryRoot worktree prune 2>$null | Out-Null
 
+# Detached-HEAD worktrees whose HEAD is already in master: remove them.
+# These are left over from abandoned syncs, old agent runs, or multiagent
+# coordinators — no branch to protect them, so just check HEAD and cleanliness.
+foreach ($wt in $detachedWorktreeList) {
+    $wtResolved = if (Test-Path $wt.Path) { (Resolve-Path $wt.Path).Path } else { $wt.Path }
+    if ($wtResolved -eq $primaryRootComparable) { continue }
+    if (-not $wt.Head) { $skippedOther.Add("$($wt.Path) (detached, no HEAD)"); continue }
+    & git -C $primaryRoot merge-base --is-ancestor $wt.Head $baseRef 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        $skippedUnmerged.Add("$($wt.Path) (detached HEAD $($wt.Head.Substring(0, 8)))")
+        continue
+    }
+    if (-not (Test-Path $wt.Path)) { continue }
+    $status = @(& git -C $wt.Path status --porcelain 2>$null)
+    if ($LASTEXITCODE -ne 0 -or $status.Count -gt 0) { $skippedDirty.Add("$($wt.Path) (detached)"); continue }
+    if (-not $PSCmdlet.ShouldProcess($wt.Path, "Remove detached worktree")) { continue }
+    & git -C $primaryRoot worktree remove --force $wt.Path 2>&1 | Out-Host
+    $folderLeftBehind = $false
+    if ($LASTEXITCODE -ne 0) {
+        & git -C $primaryRoot worktree prune 2>$null | Out-Null
+        if (-not (Remove-WorktreeLeftovers -Path $wt.Path)) {
+            $folderLeftBehind = $true
+            $leftoverFolders.Add($wt.Path)
+        }
+    }
+    $deletedDetached++
+    if ($folderLeftBehind) {
+        Write-Host "Unregistered detached worktree at $($wt.Path) (folder left behind, listed below)"
+    } else {
+        Write-Host "Removed detached worktree at $($wt.Path)"
+    }
+}
+
 if ($skippedPrimary.Count -gt 0) {
     Write-Host "Skipped (checked out in the primary checkout):"
     foreach ($b in $skippedPrimary) { Write-Host "  $b" }
@@ -273,5 +319,5 @@ if ($leftoverFolders.Count -gt 0) {
 }
 
 if (-not $WhatIfPreference) {
-    Write-Host "Deleted $deletedUnattached unattached branch(es), removed $deletedWorktrees worktree(s) and deleted their branch(es), discarded $discardedSandboxes sandbox(es)."
+    Write-Host "Deleted $deletedUnattached unattached branch(es), removed $deletedWorktrees worktree(s) and deleted their branch(es), discarded $discardedSandboxes sandbox(es), removed $deletedDetached detached worktree(s)."
 }

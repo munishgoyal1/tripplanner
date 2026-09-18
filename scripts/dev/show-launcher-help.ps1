@@ -163,20 +163,19 @@ Examples:
   Suite-Health -UpdateBaseline
 "@
     "prune-merged-branches" = @"
-Prune-Merged-Branches - delete local branches already merged into master with no lost commits.
+Prune-Merged-Branches - delete merged local branches and detached worktrees.
 
 Usage: Prune-Merged-Branches [-BaseBranch master] [-NoFetch] [-KeepRemote] [-WhatIf]
 
   -NoFetch      Compare against the local base branch instead of fetching origin first.
   -KeepRemote   Skip deleting origin's matching branch (remote branches are deleted by default).
-  -WhatIf       Preview which branches would be deleted.
+  -WhatIf       Preview what would be deleted or removed.
 
-A branch is only deleted with the safe `git branch -d`, which itself refuses
-anything Git cannot prove is fully merged, so the ancestor check and the delete
-are a double guarantee against losing commits. Branches checked out in the
-primary checkout, a registered sandbox, or a multiagent worktree are always
-skipped; branches with commits master does not have yet are reported and left
-alone.
+Branches are deleted with the safe `git branch -d` — a double guarantee against
+losing commits. Branches checked out in the primary checkout, a registered
+sandbox, or a multiagent worktree are always skipped. Detached-HEAD worktrees
+(left over from abandoned syncs or old agent runs) are also removed when their
+HEAD is already in master and the folder is clean.
 
 Examples:
   Prune-Merged-Branches -WhatIf
@@ -197,7 +196,7 @@ A more aggressive sibling of Prune-Merged-Branches. Still requires the same
 double guarantee -- every commit already an ancestor of origin/master, and the
 branch's checkout free of uncommitted changes -- but instead of always skipping
 an attached branch, it removes the worktree (or discards the sandbox) so the
-branch itself can also be deleted:
+branch itself can also be deleted. Also removes detached-HEAD worktrees:
 
   - Unattached branches are deleted with `git branch -d`, same as
     Prune-Merged-Branches.
@@ -211,6 +210,8 @@ branch itself can also be deleted:
     editor, a terminal with its cwd inside), the branch is still deleted once
     git unregisters the worktree, and the leftover folder is retried, then
     reported for manual deletion.
+  - Detached-HEAD worktrees (no branch, from abandoned syncs or old agent
+    runs) are removed when HEAD is already in master and the folder is clean.
 
 The primary checkout's current branch is never touched. Confirmation impact is
 High: expect a confirmation prompt per removal unless you pass -Confirm:`$false`
