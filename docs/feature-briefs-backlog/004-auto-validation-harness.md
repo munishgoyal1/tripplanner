@@ -1,5 +1,44 @@
 # 004 - Auto-validation harness
 
+## 2026-09-18 approved milestone sequence
+
+Owner selected implementation one milestone at a time. The original brief below
+contains historical assumptions; current implementation ownership is in
+[`CODEMAP.md`](../CODEMAP.md#harness-engineering-evals-and-reusable-boundaries).
+
+1. **Ownership refactor** — [#349](https://github.com/munishgoyal1/tripplanner/issues/349):
+   separate harness engineering, evals, shared observability/correlation and
+   pricing. Preserve behavior, public imports/CLI, report fingerprints and data
+   locations. List horizontal extraction candidates and their remaining domain
+   coupling; do not publish a library or add LLM judging in this milestone.
+2. **Incremental evaluation and corpus lifecycle** — common evaluation cases,
+   relevant-input result reuse, current/historical/regression selection and
+   post-fix evidence. Not implemented by milestone 1.
+3. **Whole-itinerary model judging** — evidence-grounded, versioned rubrics,
+   structured scores, human calibration and explicit judge budgets. Not started.
+4. **Step evaluation** — semantic model-step input/output evidence and appropriate
+   deterministic/model criteria, with missing evidence reported honestly. Not started.
+5. **Judge routing and reports** — calibrated routine/deep/adjudication profiles,
+   cost controls and comparable consolidated reports. Not started.
+
+Milestone 1 acceptance/validation matrix:
+
+| Contract | Proof |
+| --- | --- |
+| Execution and scoring have distinct owners | Canonical `harness/` and `evals/`; import-boundary tests |
+| Runtime telemetry/accounting does not load eval execution | Fresh-process import/event test; shared context and pricing |
+| Old caller state and command behavior remain valid | Legacy module identity, nested context and module CLI tests; existing audit/harness tests |
+| Findings and reports retain meaning | Before/after offline representative corpus/plan/report comparison; unchanged serialized rule identity |
+| Paid/offline boundaries remain unchanged | Existing isolated audit/generation/provider tests; no live provider run |
+| Future reuse is explicit without premature generalization | CODEMAP horizontal inventory distinguishes generic candidates from trip adapters |
+| Developer workflow remains usable | Updated test-selection rules, launcher tests and narrow Ruff publication gate; macOS execution requires a macOS host |
+
+This brief remains active because later milestones are incomplete. Publication and
+validation evidence for the bounded first milestone lives in #349; closing that
+issue does not mean the full evaluation roadmap has shipped.
+
+---
+
 > Sections 1-5 are **agent-drafted from the owner's dictated intent** on
 > 2026-08-14. Overwrite them freely; the rest was normalized against the current
 > system and is the part to argue with.

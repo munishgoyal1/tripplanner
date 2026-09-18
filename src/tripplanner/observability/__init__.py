@@ -742,7 +742,7 @@ def app_event(kind: str, user_id: str | None = None, **fields: Any) -> None:
         app_event("tool_call", user_id, tool="search_flights_duffel",
                   status="ok", ms=842)
     """
-    from tripplanner.validation.harness.context import current_context
+    from tripplanner.observability.context import current_context
 
     context = current_context()
     if context is not None:

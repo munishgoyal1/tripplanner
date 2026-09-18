@@ -120,12 +120,31 @@
       "reason": "provider normalization and fallback boundary"
     },
     {
-      "patterns": ["src/tripplanner/validation/**", "scripts/dev/build_corpus.py", "scripts/dev/trip_audit.py"],
+      "patterns": ["src/tripplanner/validation/**", "src/tripplanner/harness/**", "src/tripplanner/evals/**", "src/tripplanner/evals.py", "scripts/dev/build_corpus.py", "scripts/dev/trip_audit.py", "scripts/dev/corpus_cache.py", "scripts/prod_cache_sync.py", "scripts/derive_limits.py"],
       "backend": [
         "tests/test_validation_harness.py",
-        "tests/test_evals.py"
+        "tests/test_evals.py",
+        "tests/test_harness_boundaries.py",
+        "tests/test_harness_evidence.py",
+        "tests/test_harness_report.py",
+        "tests/test_harness_runner.py",
+        "tests/test_runtime_evidence_gate.py",
+        "tests/test_dev_launchers.py"
       ],
       "reason": "quality corpus and deterministic audit boundary"
+    },
+    {
+      "patterns": ["src/tripplanner/observability.py", "src/tripplanner/observability/**", "src/tripplanner/pricing.py", "src/tripplanner/provider_usage.py", "src/tripplanner/usage.py", "src/tripplanner/usage_attribution.py"],
+      "backend": [
+        "tests/test_observability.py",
+        "tests/test_provider_usage.py",
+        "tests/test_harness_boundaries.py",
+        "tests/test_harness_evidence.py",
+        "tests/test_harness_report.py",
+        "tests/test_tool_metrics.py",
+        "tests/test_interaction_telemetry.py"
+      ],
+      "reason": "shared telemetry, pricing and harness correlation boundary"
     },
     {
       "patterns": ["scripts/dev/multiagent.py", "scripts/dev/multiagent_core.py", "scripts/dev/test_selection.py", "scripts/dev/test-selection.json"],
