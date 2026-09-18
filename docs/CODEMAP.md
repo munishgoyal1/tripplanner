@@ -748,3 +748,112 @@ Trip case adaptation, stop coverage, lifecycle defaults and finding policy remai
 application-owned. LLM judging, paid refresh, finer dependency fingerprints and
 cross-process execution locking remain later work. Proof:
 `tests/test_incremental_evaluation.py` plus existing audit and boundary tests.
+
+### Whole-itinerary model judging (milestone 3)
+
+`evals/judge.py` owns rubric `itinerary-v1`, strict structured assessments,
+JSON Pointer/quote validation, conservative abstention, derived overall scores
+and human comparison. `harness/judge_transport.py` owns the independently
+configured OpenAI/Azure Chat Completions structured-output adapter;
+`harness/judging.py` owns execution, result reuse, local locking and spend
+reservations. Normal audits and the inspector remain offline. The optional CLI
+judge is not part of graph completion gates and cannot certify a preventive fix.
+
+The eight dimensions reuse existing human concepts: scenario/preference fidelity,
+budget evidence, destination specificity, memorable moments, narrative coherence,
+meal quality, intentional free time and repetition. Each score is 1–5 with anchored
+meaning, rationale and checked evidence references. Missing original intent forces
+fidelity/budget abstention. Missing evidence yields `unverified`, not a pass.
+Only budget applicability can be `not_applicable`. The overall score is the equally
+weighted mean of scored dimensions, and is absent if any dimension is unverified.
+Receipt pass/fail is advisory (any score <=2 means fail), never a production gate.
+Quote validation establishes that cited text exists, not that a model's reasoning
+or the underlying trip facts are correct. Prompt isolation reduces instruction
+injection risk but does not prove immunity.
+
+Create a private JSON profile with these fields (replace every placeholder and
+zero rate before use; zero pricing is rejected):
+
+```json
+{
+  "provider": "azure",
+  "model": "YOUR_JUDGE_DEPLOYMENT",
+  "model_revision": "ACTUAL_PINNED_MODEL_VERSION",
+  "api_key_env": "AZURE_OPENAI_API_KEY",
+  "endpoint_env": "AZURE_OPENAI_ENDPOINT",
+  "api_version": "2024-10-21",
+  "input_usd_per_million": 0,
+  "output_usd_per_million": 0,
+  "price_reference": "YOUR_CURRENT_PROVIDER_PRICE_SOURCE_AND_DATE",
+  "cumulative_cap_inr": 100,
+  "max_completion_tokens": 4096,
+  "max_input_bytes": 100000
+}
+```
+
+For direct OpenAI use `provider: openai`, an accessible structured-output model
+ID and `api_key_env: OPENAI_API_KEY`. Azure can reuse existing credentials with
+an independently selected deployment; a second API key is not intrinsically
+required. Model/API compatibility is checked by the provider, with unsupported
+requests reported as errors. No strongest-model default or quality claim is baked
+in. Pin the actual model snapshot/deployment version and update `model_revision`
+when it changes; a moving alias cannot guarantee cache freshness across provider
+updates. Profile JSON rejects unknown fields, including inline API keys.
+
+From the project root, preview with the same corpus selection or explicit inputs:
+
+```text
+python scripts/dev/trip_audit.py --input path/to/trip.json --judge-profile path/to/judge.json
+python scripts/dev/trip_audit.py --selection active --judge-profile path/to/judge.json --allow-judge-spend --judge-budget-inr 20
+```
+
+The first command reads cached judgements and estimates missing work without a
+model call. The second explicitly authorises calls within INR run/cumulative caps;
+use `--input` there too to restrict a live calibration run. `--force` only permits
+new calls when spend is also authorised. Low advisory scores do not alter audit
+finding exit semantics; errors or unfinished live work due to caps return exit 2.
+Judgements appear in `evaluation.judge` in JSON and dated report markdown, with
+per-artifact overall scores, coverage, returned model, request ID, usage, cost,
+executed/reused/pending/error counts. Current inspector UI does not render these
+new scores; UI consolidation remains milestone 5.
+
+Judge state is separate under `<state-root>/judge/`. It retains exact prompt,
+rubric, inputs, outputs and checksum-protected receipts. These are private data,
+ignored by Git under the default audit/state path. Never commit custom state roots
+or credentials. Reuse depends on exact artifact/evidence, scoring profile, rubric,
+judge implementation and SDK/schema versions. Human ratings, budget caps and price
+updates do not invalidate a judgement; cached costs preserve their original rates.
+Application changes outside the judge do not invalidate unchanged judge evidence.
+
+An exclusive local lock serializes judge runs sharing this state root. The local
+`judge-spend.json` reserves a conservative UTF-8-byte/token bound plus protocol
+headroom and the output-token ceiling before calling. SDK retries are disabled.
+Known token usage reconciles at the supplied rates; missing usage and uncertain
+errors retain the reservation. Pricing and FX are estimates, not provider invoices;
+keep rates current. The sanctioned `cost_model.usd_to_inr` conversion is used.
+Caps apply to this local judge ledger (including multiple profiles), independently
+of runtime and corpus-generation ledgers. Keep one stable state root: deleting or
+changing it resets local accounting. The persisted cap never silently increases;
+raising it requires an explicit ledger policy edit after reviewing spend. Corrupt
+ledgers stop execution. After a process crash, verify that no judge process is
+active before removing its stale `judge.lock`; preserve outstanding reservations.
+Distributed execution/account-wide billing limits are not implemented here.
+
+Human comparison is optional and does not call a model. Pass
+`--judge-human-ratings path/to/ratings.json` with `rubric_version: itinerary-v1`
+and `ratings: {"<exact-artifact-id>": {"<dimension-key>": 1}}` (scores 1–5).
+This is deliberately separate from legacy logical-trip human gates, which can
+span artifact versions. Reports show paired count, mean absolute error and
+>=2-point disagreements. No paired human evidence means `not_calibrated`;
+`compared` is not certification of judge reliability. Score a representative
+human reference set before relying on a cheaper judge or comparing stronger ones.
+Step judging and automated model routing remain milestones 4 and 5.
+
+Reusable candidates: structured assessment contracts, versioned rubric identity,
+evidence citation validation, paired-score comparisons and reserve/reconcile
+execution. Extraction still needs generic input schemas, currency/transport
+injection and a second consumer; trip rubric and applicability rules stay local.
+Tests: `tests/test_itinerary_judge.py`, incremental evaluation and boundary suites.
+No paid calls are required for those tests. Design references:
+[Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
+and [evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices).

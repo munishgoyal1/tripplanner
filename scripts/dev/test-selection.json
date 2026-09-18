@@ -124,6 +124,7 @@
       "backend": [
         "tests/test_validation_harness.py",
         "tests/test_incremental_evaluation.py",
+        "tests/test_itinerary_judge.py",
         "tests/test_evals.py",
         "tests/test_harness_boundaries.py",
         "tests/test_harness_evidence.py",

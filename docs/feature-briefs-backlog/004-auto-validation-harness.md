@@ -16,7 +16,7 @@ contains historical assumptions; current implementation ownership is in
    post-fix evidence. Approved in-chat after milestone 1;
    [#351](https://github.com/munishgoyal1/tripplanner/issues/351) owns implementation.
 3. **Whole-itinerary model judging** — evidence-grounded, versioned rubrics,
-   structured scores, human calibration and explicit judge budgets. Not started.
+   structured scores, human comparison and explicit judge budgets. Implementation: [#353](https://github.com/munishgoyal1/tripplanner/issues/353); live quality calibration remains operator work.
 4. **Step evaluation** — semantic model-step input/output evidence and appropriate
    deterministic/model criteria, with missing evidence reported honestly. Not started.
 5. **Judge routing and reports** — calibrated routine/deep/adjudication profiles,
@@ -516,3 +516,40 @@ insufficient-evidence status and changed the new-finding exit from 1 to 0. The
 final receipt review additionally requires identical input/evidence snapshots for
 replay verification. Windows verified; macOS host execution remains unverified.
 Publication is tracked in #351; milestones 3–5 remain open in this brief.
+
+## Milestone 3 implementation contract (issue #353)
+
+Approved after milestone 2: whole-itinerary judge only. Keep deterministic audit
+execution offline; optional judge work is separately invoked and advisory. No
+step judging, automatic routing, paid acceptance run or production deployment.
+
+- `evals/judge.py` owns a versioned eight-dimension rubric matching the existing
+  fidelity/budget/taste concepts, strict scores/abstention, evidence pointers and
+  quotes, derived overall score, and artifact-matched human calibration summaries.
+- `harness/judging.py` owns selection reuse, receipts and spend admission;
+  `harness/judge_transport.py` owns OpenAI/Azure structured-output calls. Never
+  invoke the planner or tools. Judge input is untrusted data, not instructions.
+- Explicit JSON profile selects provider/model, token ceiling, documented token
+  rates and cumulative INR cap. Secrets come from environment variables only.
+  Cache-only preview is default; spending requires both an opt-in and run INR cap.
+  Reserve a conservative token-cost upper estimate before each request, disable
+  SDK retries, retain reservations on uncertainty, and serialize local paid runs.
+- Store rubric/profile/input/output/usage identities and cache valid judgments.
+  Changes invalidate reuse; errors/refusals/truncation never become a cached pass.
+  Model scores do not become deterministic findings or verified fix receipts.
+- Human comparison uses exact artifact IDs and matching rubric versions, reports
+  coverage/disagreement, and never invents human ratings or asserts calibration.
+
+Validation: fake-transport rubric/evidence/abstention tests; independent model and
+rubric cache invalidation; budget admission/exhaustion/uncertain failures; disabled
+network by default; malformed/refused output; human comparison; CLI integration;
+existing incremental/audit/boundary checks and Ruff. Actual judge quality and live
+provider compatibility require a subsequent explicitly budgeted calibration run.
+
+Milestone 3 validation (2026-09-18): selected focused suite 360 passed, 3 skipped;
+final credential-preflight review 37 judge tests passed. Ruff publication floor,
+changed-module lint and diff checks passed. Actual CLI cache-only preview with a
+synthetic trip executed zero judge calls, reported pending work and zero spend.
+No real model output or human calibration was fabricated. Live provider acceptance
+and measured judge/human agreement remain explicit operator calibration work.
+Windows verified; macOS host execution unverified. Publication tracked in #353.
