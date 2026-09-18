@@ -454,6 +454,8 @@ def build(
                 "at": datetime.now(UTC).isoformat(),
                 "generation_run_id": run_id,
                 "generated_by_commit": generated_by_commit,
+                "request": request.message,
+                "model": result.model,
             }
         )
         save_manifest(corpus_root, manifest)

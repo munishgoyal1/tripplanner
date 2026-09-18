@@ -64,6 +64,31 @@ class CorpusRecord:
     #: Cached ``name|city`` place entries, so a record can be checked offline.
     places: dict[str, Any] = field(default_factory=dict)
     provenance_links: tuple[ProvenanceLink, ...] = ()
+    case_id: str = ""
+    request: str = ""
+    preferences: dict[str, Any] = field(default_factory=dict)
+    final_reply: str = ""
+    steps: tuple[dict[str, Any], ...] = ()
+    generation: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def case_identity(self) -> str:
+        return self.case_id or self.id
+
+    def evaluation_input(self) -> dict[str, Any]:
+        return {
+            "plan": self.plan,
+            "request": self.request,
+            "preferences": self.preferences,
+            "final_reply": self.final_reply,
+            "steps": self.steps,
+            "generation": self.generation,
+        }
+
+    @property
+    def artifact_id(self) -> str:
+        payload = {"case_id": self.case_identity, **self.evaluation_input()}
+        return sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
     @property
     def destination(self) -> str:

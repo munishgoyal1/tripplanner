@@ -148,6 +148,14 @@ def save_report(
     generated_for_commit = int(
         (payload.get("generation") or {}).get("by_commit", {}).get(code["sha"], 0)
     )
+    if payload.get("evaluation"):
+        generated_for_commit = len(
+            {
+                item["artifact_id"]
+                for item in payload["records"]
+                if item.get("generation", {}).get("generated_by_commit") == code["sha"]
+            }
+        )
     payload["evidence"]["fresh_generation"] = {
         "status": "complete" if generated_for_commit else "not_run",
         "trips_for_audited_commit": generated_for_commit,
@@ -181,6 +189,9 @@ def _record_entry(record: CorpusRecord, finding_counts: dict[str, int]) -> dict[
     trip_id = str(plan.get("trip_id") or "")
     return {
         "id": record.id,
+        "case_id": record.case_identity,
+        "artifact_id": record.artifact_id,
+        "generation": record.generation or {"status": "unknown"},
         "logical_trip_id": record.logical_trip_id,
         "provenance": record.provenance,
         "cohorts": record.cohorts,
@@ -255,7 +266,8 @@ def build_report(
         finding for finding in result.findings if finding.record_id in executive_ids
     ]
     executive_groups = group(executive_findings)
-    new_keys = {item.key for item in new_groups(executive_groups, baseline)}
+    newly_reported = result.new if result.evaluation else new_groups(executive_groups, baseline)
+    new_keys = {item.key for item in newly_reported}
 
     finding_counts: dict[str, int] = {}
     for finding in result.findings:
@@ -280,12 +292,24 @@ def build_report(
 
     was = _previous_rule_counts(previous or {})
     rules = registry()
+    completed = {
+        (item["record_id"], item["evaluator"])
+        for item in result.evaluation.get("results", [])
+        if item["status"] in {"pass", "fail"}
+    }
 
     def _denominators(rule: Any, records: list[CorpusRecord]) -> dict[str, int]:
         eligible = [record for record in records if record.executive]
         evaluated = [
             record for record in eligible if not rule.requires_places or bool(record.places)
         ]
+        if result.evaluation:
+            family = {
+                "tripplanner.validation.quality": "human",
+                "tripplanner.validation.render": "render",
+                "tripplanner.validation.mutations": "metamorphic",
+            }.get(rule.evaluated_in, "plan")
+            evaluated = [record for record in evaluated if (record.id, family) in completed]
         evaluated_ids = {record.id for record in evaluated}
         return {
             "eligible": len(eligible),
@@ -299,8 +323,7 @@ def build_report(
     ).hexdigest()[:16]
     rule_fingerprint = hashlib.sha256(
         "\n".join(
-            f"{rule.code}|{rule.severity}|{rule.statement}|{rule.evaluated_in}"
-            for rule in rules
+            f"{rule.code}|{rule.severity}|{rule.statement}|{rule.evaluated_in}" for rule in rules
         ).encode()
     ).hexdigest()[:16]
     previous_corpus = str((previous or {}).get("corpus", {}).get("fingerprint") or "")
@@ -311,11 +334,41 @@ def build_report(
         and previous_corpus == corpus_fingerprint
         and previous_rules == rule_fingerprint
     )
+    from tripplanner.harness.results import fingerprint
+
+    evaluation_identity = (
+        fingerprint(
+            {
+                "selection": result.evaluation.get("selection"),
+                "results": sorted(
+                    item["cache_key"] for item in result.evaluation.get("results", [])
+                ),
+            }
+        )
+        if result.evaluation
+        else ""
+    )
+    if evaluation_identity:
+        comparable = comparable and (
+            (previous or {}).get("evaluation_identity") == evaluation_identity
+        )
+    complete = not result.skipped and not result.evaluation.get("errors")
+    if result.evaluation:
+        complete = (
+            complete
+            and set(result.evaluation["evaluators"])
+            == {
+                "plan",
+                "human",
+                "render",
+                "metamorphic",
+            }
+            and not result.evaluation.get("insufficient_evidence")
+        )
+        comparable = comparable and bool(complete)
     previous_groups = {str(item.get("key")) for item in (previous or {}).get("groups", [])}
     current_groups = {item.key for item in executive_groups}
-    previous_by_rule = {
-        str(item.get("code")): item for item in (previous or {}).get("rules", [])
-    }
+    previous_by_rule = {str(item.get("code")): item for item in (previous or {}).get("rules", [])}
     current_trip_counts = {rule.code: len(affected.get(rule.code, ())) for rule in rules}
     improved = sorted(
         code
@@ -333,19 +386,25 @@ def build_report(
         "generated_at": datetime.now(UTC).isoformat(timespec="microseconds"),
         "compared_with": str((previous or {}).get("generated_at") or ""),
         "evidence": {
-            "deterministic_rules": "complete",
-            "historical_corpus_replay": "complete",
+            "deterministic_rules": "complete" if complete else "partial",
+            "historical_corpus_replay": (
+                "complete"
+                if complete and result.evaluation.get("selection", "all") == "all"
+                else "not_complete"
+            ),
             "fresh_generation": {"status": "not_run", "trips_for_audited_commit": 0},
         },
         "rule_fingerprint": rule_fingerprint,
+        "evaluation_identity": evaluation_identity,
+        "evaluation": result.evaluation,
         "comparison": {
             "status": "comparable" if comparable else "not_comparable",
             "reason": (
                 "same logical corpus and rule contract"
                 if comparable
                 else (
-                    "the previous report used a different corpus/rule contract "
-                    "or lacks identity metadata"
+                    "different corpus, evaluator inputs/configuration or selection; "
+                    "missing identity metadata or incomplete coverage"
                 )
             ),
             "new_groups": sorted(current_groups - previous_groups) if comparable else [],
@@ -392,11 +451,25 @@ def build_report(
             for rule in rules
         ],
         "groups": [_group_entry(item, new_keys, accepted) for item in executive_groups],
-        "retired": stale_keys(executive_groups, baseline),
+        "retired": (
+            stale_keys(executive_groups, baseline)
+            if complete
+            and not result.evaluation.get("excluded")
+            and result.evaluation.get("selection", "all") == "all"
+            else []
+        ),
         "observations": [
             {"label": item.label, "value": item.value, "detail": item.detail}
             for item in observe(executive_records)
         ],
         "quality": quality_report(executive_records, quality_ratings or empty_ratings()),
-        "records": [_record_entry(record, finding_counts) for record in result.records],
+        "records": [
+            {
+                **_record_entry(record, finding_counts),
+                "lifecycle": result.evaluation.get("states", {}).get(
+                    record.artifact_id, "unselected"
+                ),
+            }
+            for record in result.records
+        ],
     }

@@ -24,6 +24,7 @@ class AuditResult:
     new: list[Group] = field(default_factory=list)
     sources: list[str] = field(default_factory=list)
     skipped: list[str] = field(default_factory=list)
+    evaluation: dict[str, Any] = field(default_factory=dict)
 
     @property
     def corpus_size(self) -> int:
@@ -127,6 +128,11 @@ def audit(
     render: bool = True,
     mutate: bool = True,
     quality_ratings: dict[str, Any] | None = None,
+    state_root: Path | None = None,
+    selection: str = "all",
+    force: bool = False,
+    evaluators: tuple[str, ...] | None = None,
+    configuration: dict[str, Any] | None = None,
     **collect_kwargs: Any,
 ) -> AuditResult:
     from tripplanner.evals.deterministic.mutations import check_metamorphic
@@ -140,22 +146,71 @@ def audit(
         records, sources, skipped = collect(repo_root, **collect_kwargs)
     if quality_ratings is None:
         quality_ratings = load_quality_ratings(corpus_root(repo_root))
+    from tripplanner.harness import lifecycle
+
+    manifest = lifecycle.load_manifest(corpus_root(repo_root) / "evaluation-lifecycle.json")
+    records, excluded = lifecycle.select(records, manifest, selection)
+    evaluation: dict[str, Any] = {}
     findings: list[Finding] = []
-    for record in records:
-        findings.extend(check_record(record))
-        findings.extend(gate_findings(record, quality_ratings))
-        if render:
-            findings.extend(check_render(record))
-        if mutate:
-            findings.extend(check_metamorphic(record))
+    actionable: set[str] | None = None
+    if state_root is not None:
+        from tripplanner.harness.incremental import run
+
+        enabled = evaluators or tuple(
+            ["plan", "human"] + (["render"] if render else []) + (["metamorphic"] if mutate else [])
+        )
+        findings, evaluation, actionable = run(
+            records,
+            state_root,
+            repo_root,
+            quality_ratings,
+            enabled,
+            force=force,
+            configuration=configuration,
+        )
+        evaluation.update(
+            {
+                "selection": selection,
+                "excluded": excluded,
+                "states": {
+                    record.artifact_id: lifecycle.state_for(record, manifest) for record in records
+                },
+            }
+        )
+    else:
+        if evaluators is not None:
+            raise ValueError("Evaluator selection requires an incremental state_root")
+        for record in records:
+            findings.extend(check_record(record))
+            findings.extend(gate_findings(record, quality_ratings))
+            if render:
+                findings.extend(check_render(record))
+            if mutate:
+                findings.extend(check_metamorphic(record))
     grouped = group(findings)
     if baseline is None:
         baseline = load_baseline(baseline_path(repo_root))
+    new = new_groups(grouped, baseline)
+    if actionable is not None:
+        for occurrence in evaluation["occurrences"]:
+            if evaluation["states"].get(occurrence["artifact_id"]) in {"historical", "superseded"}:
+                occurrence["status"] = "historical"
+        actionable = {
+            item["key"]
+            for item in evaluation["occurrences"]
+            if item["status"] in {"new", "recurring"}
+        }
+        recurring = {
+            item["key"] for item in evaluation["occurrences"] if item["status"] == "recurring"
+        }
+        allowed = {item.key for item in new} | recurring
+        new = [item for item in grouped if item.key in actionable and item.key in allowed]
     return AuditResult(
         records=records,
         findings=findings,
         groups=grouped,
-        new=new_groups(grouped, baseline),
+        new=new,
         sources=sources,
         skipped=skipped,
+        evaluation=evaluation,
     )

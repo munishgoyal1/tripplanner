@@ -33,6 +33,8 @@ from tripplanner.evals import observations as observations_module  # noqa: E402
 from tripplanner.evals import registry as registry_module  # noqa: E402
 from tripplanner.harness import audit as runner  # noqa: E402
 from tripplanner.harness import baseline as baseline_module  # noqa: E402
+from tripplanner.harness import corpus as corpus_module  # noqa: E402
+from tripplanner.harness import lifecycle  # noqa: E402
 from tripplanner.harness.generation import generate as generate_module  # noqa: E402
 
 _BAR = "-" * 78
@@ -60,6 +62,13 @@ def _print_report(result: runner.AuditResult, *, show_all: bool, rule: str) -> N
         print(f"  read  {source}")
     for skip in result.skipped:
         print(f"  skip  {skip}")
+    if result.evaluation:
+        summary = result.evaluation
+        print(
+            f"Evaluations: {summary['executed']} executed, {summary['reused']} reused, "
+            f"{summary['errors']} errors, {summary['insufficient_evidence']} incomplete; "
+            f"{len(summary['excluded'])} artifacts excluded ({summary['selection']})."
+        )
 
     groups = result.groups if show_all else result.new
     if rule:
@@ -113,7 +122,7 @@ def _issue_group(item: findings_module.Group, result: runner.AuditResult) -> dic
     }
 
 
-def main(argv: list[str] | None = None) -> int:
+def _run(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--all", action="store_true", help="show every finding, not just new ones")
     parser.add_argument("--rule", default="", help="only this rule code, e.g. I9")
@@ -127,10 +136,65 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", dest="as_json", action="store_true")
     parser.add_argument("--rules", action="store_true", help="list every rule and exit")
     parser.add_argument("--observe", action="store_true", help="describe the corpus too")
+    parser.add_argument(
+        "--input",
+        action="append",
+        type=Path,
+        help="only these local trip/envelope JSON files",
+    )
+    parser.add_argument("--selection", choices=lifecycle.SELECTIONS, default="active")
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="execute selected evals despite cached results",
+    )
+    parser.add_argument(
+        "--evaluator",
+        action="append",
+        choices=("plan", "human", "render", "metamorphic"),
+    )
+    parser.add_argument("--state-root", type=Path, default=REPORT_ROOT / "audit" / "state")
+    parser.add_argument("--set-state", choices=lifecycle.STATES)
+    parser.add_argument("--artifact", default="")
+    parser.add_argument("--reason", default="")
+    parser.add_argument("--superseded-by", default="")
+    parser.add_argument("--verify-fix", metavar="FINDING_KEY")
+    parser.add_argument("--before-result", default="")
+    parser.add_argument("--after-result", default="")
+    parser.add_argument("--verification-kind", choices=("replay", "regenerated"))
+    parser.add_argument("--fix-commit", default="")
+    parser.add_argument("--issue", default="")
     args = parser.parse_args(argv)
+    if args.evaluator and (args.no_render or args.no_mutate):
+        parser.error("Use --evaluator or --no-render/--no-mutate, not both")
+    if args.set_state and args.verify_fix:
+        parser.error("Choose a lifecycle edit or fix verification, not both")
 
     if args.rules:
         _print_rules()
+        return 0
+
+    if args.set_state:
+        lifecycle.set_state(
+            runner.corpus_root(REPO_ROOT) / "evaluation-lifecycle.json",
+            args.artifact,
+            args.set_state,
+            args.reason,
+            args.superseded_by,
+        )
+        print(f"Artifact {args.artifact} marked {args.set_state}.")
+        return 0
+    if args.verify_fix:
+        receipt = lifecycle.verify_fix(
+            args.state_root,
+            args.verify_fix,
+            args.before_result,
+            args.after_result,
+            args.verification_kind,
+            args.fix_commit,
+            args.issue,
+        )
+        print(json.dumps(receipt, indent=2))
         return 0
 
     result = runner.audit(
@@ -141,6 +205,11 @@ def main(argv: list[str] | None = None) -> int:
         render=not args.no_render,
         mutate=not args.no_mutate,
         databases=args.database,
+        records=[corpus_module.from_json(path) for path in args.input] if args.input else None,
+        state_root=args.state_root,
+        selection=args.selection,
+        force=args.force,
+        evaluators=tuple(dict.fromkeys(args.evaluator)) if args.evaluator else None,
     )
 
     if args.as_json:
@@ -152,6 +221,7 @@ def main(argv: list[str] | None = None) -> int:
                     "sources": result.sources,
                     "skipped": result.skipped,
                     "groups": [_issue_group(item, result) for item in result.groups],
+                    "evaluation": result.evaluation,
                 },
                 indent=2,
                 ensure_ascii=False,
@@ -189,6 +259,9 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     if args.accept:
+        if result.evaluation.get("errors"):
+            print("Cannot accept an audit with evaluator errors.", file=sys.stderr)
+            return 2
         baseline = baseline_module.accept(result.groups, baseline_module.load_baseline(path))
         baseline_module.save_baseline(path, baseline)
         print(f"\nAccepted {len(result.groups)} finding group(s) into {path.name}.")
@@ -196,14 +269,24 @@ def main(argv: list[str] | None = None) -> int:
 
     # A run that read nothing reports no findings, which reads exactly like a
     # clean run. Say so instead.
-    if not result.corpus_size:
+    if not result.corpus_size and not result.evaluation.get("excluded"):
         print("\nCorpus is empty: nothing was checked.", file=sys.stderr)
         return 2
 
-    stale = baseline_module.stale_keys(result.groups, baseline_module.load_baseline(path))
+    if result.evaluation.get("errors"):
+        return 2
+    stale = payload["retired"]
     if stale and not args.as_json:
-        print(f"\n{len(stale)} accepted finding(s) no longer occur; --accept to prune.")
+        print(f"\n{len(stale)} accepted finding(s) were absent from this complete audit.")
     return 1 if result.new else 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    try:
+        return _run(argv)
+    except (ValueError, OSError) as error:
+        print(f"Audit error: {error}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

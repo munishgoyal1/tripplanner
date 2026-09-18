@@ -209,7 +209,7 @@ Behavior and migration contracts:
   to historical rule fingerprints; a directory move must not invalidate comparison.
 - Corpus files, baselines, ratings, and immutable audit history stay in their
   existing locations. Offline audits stay provider-denied; paid generation remains
-  explicit and budgeted. Incremental reuse and judge calls are later milestones.
+  explicit and budgeted. Incremental reuse is implemented below; judge calls remain later milestones.
 - `tests/test_harness_boundaries.py` protects dependency direction, shared legacy
   module state, context restoration, runtime import isolation and module CLI.
   Existing eval, audit, pricing and report tests continue exercising compatibility
@@ -678,3 +678,73 @@ The non-negotiable gates are:
 
 Update this map only when ownership, contracts, repository structure, or canonical
 commands change. Do not turn it into a release diary or duplicate feature status.
+
+### Incremental evaluation and corpus lifecycle
+
+The audit CLI defaults to active artifacts and reuses completed evaluator results.
+`harness/incremental.py` executes selected families from `evals/suite.py`;
+`harness/results.py` persists content-addressed inputs/evidence, checksummed immutable
+execution receipts and replaceable cache pointers; `harness/lifecycle.py` owns
+artifact selection and evidence-linked fix verification. A case is a stable logical
+scenario, an artifact is its exact input snapshot, and a result is one evaluator
+execution. These identities are deliberately separate.
+
+`python scripts/dev/trip_audit.py --input path/to/case.json` evaluates only the
+specified file (repeatable); it does not discover databases or other trips. A bare
+plan is accepted, or an envelope with `case_id`, `plan`, `places`, `request`,
+`preferences`, `final_reply`, `steps`, and `generation`. Use a stable `case_id` for
+successive versions of one user trip. `places` uses existing `name|city` facts;
+`generation.generated_by_commit` records the actual producer commit. Missing
+request, trace or producer metadata is not invented.
+
+Use `--evaluator plan`, `human`, `render`, or `metamorphic` (repeatable) to select
+families, `--force` to rerun, and `--selection active|historical|regression|all`
+to select artifact lifecycle states. `--all` still means display known findings.
+The direct Python audit API retains uncached/all behavior unless a `state_root`
+is supplied; the inspector retains that compatibility path.
+
+Lifecycle lives in `corpus/evaluation-lifecycle.json`. Mark an artifact using
+`--set-state historical --artifact <report-artifact-id> --reason "obsolete output"`.
+Superseded state also requires `--superseded-by <successor-artifact-id>`; regression
+state keeps useful failures opt-in. Debug intermediate revisions default historical;
+other artifacts default active until explicitly classified. An old producer SHA
+alone never retires a current user trip. Exclusion preserves original evidence and
+cannot establish that a defect is fixed.
+
+Private state defaults to the audit report root's `audit/state/` (override with
+`--state-root`). Inputs may contain user data; state is ignored by Git and has no
+automatic retention cleanup. Keys include exact input, applicable evidence/ratings,
+evaluator settings, schema, Python source content, installed package versions,
+Python/platform and effective settings digest. Only the digest of settings is
+persisted. Source hashing is intentionally conservative: Python edits invalidate
+all families; documentation-only commits do not. Human rating changes invalidate
+only the relevant human evaluation. Corrupt receipts and execution errors rerun;
+missing evidence remains explicit and never becomes a pass.
+
+Reports retain cached failures, execution/reuse/error/insufficient counts, excluded
+artifacts and occurrence status. A known occurrence does not trigger another new
+finding exit (exit 0 means no new actionable findings, not a passing trip). New or
+recurring findings exit 1; errors/empty source input exit 2. Partial runs cannot
+claim resolution. Coverage counts require a completed selected family; missing
+stored coordinates for itinerary stops conservatively make geographic families
+incomplete. This is stored-evidence coverage, not factual verification against a
+live provider. Reports compare only matching corpus, selection and evaluator
+input/configuration identities; code changes may therefore be non-comparable.
+
+After a preventive fix, evaluate on the clean fix commit and retain both result
+IDs. Use `--verify-fix "<rule>|<symptom>" --before-result <id> --after-result <id>
+--verification-kind replay --fix-commit <full-sha> --issue <url>` (one command).
+Replay requires the same case/artifact/evaluator, unchanged evidence/ratings and changed implementation;
+`regenerated` requires a different artifact explicitly produced by that fix commit.
+Both require unchanged evaluator configuration and a fully passing after receipt.
+Use `--force` if a reused result predates the commit to certify. Verification links
+evidence without repairing trips or closing issues. A fresh recurrence bypasses
+an accepted baseline; the original regenerated-away failure stays historical.
+
+Reusable candidates added here: canonical hashing, atomic receipt persistence,
+cache validation and execution accounting. Extract these only after injecting the
+application source/settings fingerprint and stabilizing generic result schemas.
+Trip case adaptation, stop coverage, lifecycle defaults and finding policy remain
+application-owned. LLM judging, paid refresh, finer dependency fingerprints and
+cross-process execution locking remain later work. Proof:
+`tests/test_incremental_evaluation.py` plus existing audit and boundary tests.

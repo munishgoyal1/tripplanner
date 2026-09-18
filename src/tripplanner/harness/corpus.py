@@ -144,6 +144,16 @@ def from_generated_finals(
     records: list[CorpusRecord] = []
     if not directory.exists():
         return records
+    manifest_path = directory.parent / "manifest.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        manifest = {}
+    produced = manifest.get("produced", []) if isinstance(manifest, dict) else []
+    metadata = {
+        entry["slug"]: entry for entry in produced
+        if isinstance(entry, dict) and isinstance(entry.get("slug"), str)
+    }
     for path in sorted(directory.glob("*.json")):
         try:
             plan = json.loads(path.read_text(encoding="utf-8"))
@@ -151,6 +161,7 @@ def from_generated_finals(
             continue
         if not _is_plan(plan):
             continue
+        entry = metadata.get(path.stem, {})
         records.append(
             CorpusRecord(
                 id=f"generated:{path.stem}",
@@ -158,9 +169,45 @@ def from_generated_finals(
                 source=str(path),
                 plan=plan,
                 places=places or {},
+                case_id=f"generated:{path.stem}",
+                request=str(entry.get("request") or ""),
+                preferences=dict(plan.get("preferences_snapshot") or {}),
+                generation={
+                    key: entry[key] for key in (
+                        "generated_by_commit", "generation_run_id", "at", "model",
+                        "scenario_expectations", "budget_evidence_required",
+                    ) if key in entry
+                },
             )
         )
     return records
+
+
+def from_json(path: Path) -> CorpusRecord:
+    """Read an explicit trip or evaluation envelope without contacting any source."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("Evaluation input must be a JSON object")
+    wrapped = "plan" in payload
+    plan = payload.get("plan") if wrapped else payload
+    if not isinstance(plan, dict) or not _is_plan(plan):
+        raise ValueError("Evaluation input needs a trip plan with a destination or trip_id")
+    context = payload if wrapped else {}
+    for key in ("preferences", "places", "generation"):
+        if key in context and not isinstance(context[key], dict):
+            raise ValueError(f"{key} must be an object")
+    steps = context.get("steps", [])
+    if not isinstance(steps, list) or any(not isinstance(step, dict) for step in steps):
+        raise ValueError("steps must be an array of objects")
+    case_id = str(context.get("case_id") or path.resolve())
+    return CorpusRecord(
+        id=f"input:{path.resolve()}", provenance=REAL, source=str(path.resolve()), plan=plan,
+        places=context.get("places", {}), case_id=case_id,
+        request=str(context.get("request") or ""),
+        preferences=context.get("preferences", dict(plan.get("preferences_snapshot") or {})),
+        final_reply=str(context.get("final_reply") or ""), steps=tuple(steps),
+        generation=context.get("generation", {}),
+    )
 
 
 def deduplicate(records: list[CorpusRecord]) -> list[CorpusRecord]:
@@ -171,7 +218,11 @@ def deduplicate(records: list[CorpusRecord]) -> list[CorpusRecord]:
     """
     unique: dict[str, CorpusRecord] = {}
     for record in records:
-        fingerprint = record.logical_trip_id
+        # Legacy context-free copies still collapse; distinct requests/producers do not.
+        context = {key: value for key, value in record.evaluation_input().items() if key != "plan"}
+        fingerprint = record.logical_trip_id + json.dumps(
+            {"case_id": record.case_id, **context}, sort_keys=True, ensure_ascii=False,
+        )
         previous = unique.get(fingerprint)
         if previous is None:
             unique[fingerprint] = replace(record, provenance_links=record.links)
